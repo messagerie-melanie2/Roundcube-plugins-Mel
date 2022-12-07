@@ -200,7 +200,7 @@ class right_panel extends rcube_plugin
           $contacts[] = [
               'muid' => $a_header->uid,
               'type' => 'mail',
-              'subject' => $a_header->get('subject', true),
+              'subject' => htmlspecialchars($a_header->get('subject', true)),
               'munread' => isset($a_header->flags['SEEN']) ? false : true,
               'name' => $name,
               'email' => $a_parts[1]['mailto'],

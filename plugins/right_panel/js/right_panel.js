@@ -43,6 +43,56 @@ var refreshContactsListTimeout = null;
 // Favorites contacts
 var favoritesList = [];
 
+/**
+ * Créer un objet HTML
+ */
+function rhtml({tag, id, className, child, children, content, title} = {}) {
+	let item = document.createElement(tag);
+	if (id) item.id = id;
+	if (className) item.className = className;
+	if (content) item.textContent = content;
+	if (child) item.appendChild(child);
+	if (title) item.title = title;
+	if (children) {
+		for (const key in children) {
+			if (Object.hasOwnProperty.call(children, key)) {
+				item.appendChild(children[key]);				
+			}
+		}
+	}
+	return item;
+}
+/**
+ * Créer un div HTML
+ */
+function rdiv({id, className, child, children, content, title} = {}) {
+	return rhtml({tag: 'div', id: id, className: className, child: child, children: children, content: content, title: title});
+}
+/**
+ * Créer un span HTML
+ */
+function rspan({id, className, child, children, content, title} = {}) {
+	return rhtml({tag: 'span', id: id, className: className, child: child, children: children, content: content, title: title});
+}
+/**
+ * Créer un img HTML
+ */
+function rimg({id, className, child, children, content, title, src, alt} = {}) {
+	let item = rhtml({tag: 'img', id: id, className: className, child: child, children: children, content: content, title: title});
+	if (src) item.src = src;
+	if (alt) item.alt = alt;
+	return item;
+}
+/**
+ * Créer un a HTML
+ */
+function ra({id, className, child, children, content, title, href, onclick} = {}) {
+	let item = rhtml({tag: 'a', id: id, className: className, child: child, children: children, content: content, title: title});
+	if (href) item.href = href;
+	if (onclick) item.onclick = onclick;
+	return item;
+}
+
 // On click right panel minifier
 $(document).on("click", '#right_panel #right_panel_minifier', function(e) {
 	rcmail.right_panel_enable_notification();
@@ -243,8 +293,20 @@ $(document).on("click", '#right_panel_presence', function(event) {
 if (window.rcmail) {
 	rcmail.addEventListener('init', function(evt) {
 		// Ajouter le right panel au body
-		$('body').append('<div id="right_panel"></div>');
-		$('#right_panel').html('<span id="right_panel_minifier">→</span><div id="right_panel_presence" title="' + rcmail.get_label('right_panel.right_panel_presence_title') + '"></div><div id="right_panel_date"><span class="day"></span><span class="date"></span><span class="min"></span></div><div id="right_panel_events"></div><div id="right_panel_contacts"></div>')
+		document.querySelector('body').appendChild(rdiv({id: 'right_panel', 
+				children: [
+					rspan({id: 'right_panel_minifier', content: '→'}),
+					rdiv({id: 'right_panel_presence', title: rcmail.get_label('right_panel.right_panel_presence_title')}),
+					rdiv({id: 'right_panel_date', children: [
+						rspan({className: 'day'}),
+						rspan({className: 'date'}),
+						rspan({className: 'min'})
+					]}),
+					rdiv({id: 'right_panel_events'}),
+					rdiv({id: 'right_panel_contacts'})
+				]
+			})
+		);
 		// Gestion du minified
 		const minified = rcmail.right_panel_storage_get('minified');
 		if (minified && minified === 'true' || $(window).width() <= 1100) {
@@ -469,21 +531,21 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 		rcmail.env['ariane_user_status'] = rcmail.right_panel_storage_get('ariane_user_status');
 	}
 	rcmail.right_panel_storage_set('ariane_user_status', rcmail.env['ariane_user_status']);
+	let right_panel_presence = document.querySelector('#right_panel_presence');
 	if (!$('#right_panel').hasClass('minified') && rcmail.env.web_socket_ariane_url) {
-		$('#right_panel_presence').append('<span class="userstatus"></span>');
-		$('#right_panel_presence').append('<img src="' + rcmail.env.ariane_photo_url + rcmail.env.username + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">');
-		$('#right_panel_presence').append('<span class="fullname">' + rcmail.env['user_fullname'] + '</span>');
+		right_panel_presence.appendChild(rspan({className: 'userstatus'}));
+		right_panel_presence.appendChild(rimg({src: rcmail.env.ariane_photo_url + rcmail.env.username, alt: rcmail.get_label("right_panel.contactphoto")}));
+		right_panel_presence.appendChild(rspan({className: 'fullname', content: rcmail.env['user_fullname']}));
 	}
 	else if (!$('#right_panel').hasClass('minified')) {
-		$('#right_panel_presence').append('<span class="name_no_status">' + rcmail.env['user_fullname'] + '</span>');
+		right_panel_presence.appendChild(rspan({className: 'name_no_status', content: rcmail.env['user_fullname']}));
 	}
 	else if (rcmail.env.web_socket_ariane_url) {
-		$('#right_panel_presence').append('<span class="userstatus"></span>');
-		$('#right_panel_presence').append('<img src="' + rcmail.env.ariane_photo_url + rcmail.env.username + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">');
+		right_panel_presence.appendChild(rspan({className: 'userstatus'}));
+		right_panel_presence.appendChild(rimg({src: rcmail.env.ariane_photo_url + rcmail.env.username, alt: rcmail.get_label("right_panel.contactphoto")}));
 	}
 	else {
-
-		$('#right_panel_presence').append('<span class="name_no_status">' + rcmail.env['user_initials'] + '</span>');
+		right_panel_presence.appendChild(rspan({className: 'name_no_status', content: rcmail.env['user_initials']}));
 	}
 
 	$('#right_panel #right_panel_presence').removeClass('online');
@@ -494,7 +556,7 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 
 	if (rcmail.env.web_socket_ariane_url) {
 		if ($('#right_panel').hasClass('minified')) {
-			$('#right_panel_presence').append('<span class="presence">' + rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status'] + '_min') + '</span>');
+			right_panel_presence.appendChild(rspan({className: 'presence', content: rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status'] + '_min')}));
 			$('#useroptions').addClass('minified');
 			$('#useroptions ul#useroptionsmenu .presence').remove();
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence offline"><a class="active" href="#" onclick="rcmail.change_im_status(\'offline\')">' + rcmail.get_label('right_panel.offline_min') + '</a></li>');
@@ -507,7 +569,7 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 		else {
 			$('#useroptions ul#useroptionsmenu .presence').remove();
 			$('#useroptions').removeClass('minified');
-			$('#right_panel_presence').append('<span class="presence">' + rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status']) + '</span>');
+			right_panel_presence.appendChild(rspan({className: 'presence', content: rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status'])}));
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence offline"><a class="active" href="#" onclick="rcmail.change_im_status(\'offline\')">' + rcmail.get_label('right_panel.offline') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence away"><a class="active" href="#" onclick="rcmail.change_im_status(\'away\')">' + rcmail.get_label('right_panel.away') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy') + '</a></li>');
@@ -698,7 +760,8 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 	}
 
 	let events = window.eventsList;
-	$('#right_panel_events').html('');
+	let right_panel_events = document.querySelector('#right_panel_events');
+	right_panel_events.innerHTML = '';
 	if (events) {
 		// Sort events by event start
 		events.sort(function(x, y) {
@@ -706,8 +769,10 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 		});
 		const today = new Date();
 		if ($('#right_panel').hasClass('minified')) {
-			$('#right_panel_events').append('<div class="pagination"><span class="today" title="' + this.get_label('right_panel.today_title') + '">' + this.get_label('right_panel.today') + '</span></div>');
-			$('#right_panel_events').append('<div class="events_list"></div>');
+			right_panel_events.appendChild(rdiv({className: 'pagination', 
+				child: rspan({className: today, title: this.get_label('right_panel.today_title'), content: this.get_label('right_panel.today')})
+			}));
+			right_panel_events.appendChild(rdiv({className: 'events_list'}));
 			let count_events_today = 0, count_events = 0;
 			// Gestion des alarmes
 			if (window.alarmsList.length) {
@@ -727,7 +792,15 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 					}
 					const title = alarm.title;
 					const type = alarm.id.split(':')[0];
-					$('#right_panel_events .events_list').append('<div class="item alarm" id="' + alarm.id + '" title="' + title + '"><span class="type">' + rcmail.get_label("right_panel." + type) + '</span><span class="date">' + date + '</span><span class="title">' + title + '</span></div>');
+					document.querySelector('#right_panel_events .events_list').appendChild(
+						rdiv({className: 'item alarm', id: alarm.id, title: title, 
+							children: [
+								rspan({className: 'type', content: rcmail.get_label("right_panel." + type)}),
+								rspan({className: 'date', content: date}),
+								rspan({className: 'title', content: title})
+							]
+						})
+					);
 					$('#right_panel_events .events_list .event[id="' + alarm.id + '"]').data('event', event);
 					count_events++;
 					if (count_events == 2) {
@@ -757,13 +830,33 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 						end = checkTime(end_date.getHours()) + ':' + checkTime(end_date.getMinutes());
 					}
 					const title = event.title;
+					
 					if (count_events == 0) {
-						$('#right_panel_events .events_list').append('<div class="event item ' + event.status + '" id="' + event._id + '" title="' + title + '"><span class="title">' + event.title + '</span><span class="start">' + start + '</span><span class="date_separator"></span><span class="end">' + end + '</span></div>');
+						document.querySelector('#right_panel_events .events_list').appendChild(
+							rdiv({className: 'event item ' + event.status, id: event._id, title: title, 
+								children: [
+									rspan({className: 'title', content: title}),
+									rspan({className: 'start', content: start}),
+									rspan({className: 'date_separator'}),
+									rspan({className: 'end', content: end})
+								]
+							})
+						);
 						$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
 						count_events++;
 					}
 					else if (count_events == 1) {
-						$('#right_panel_events .events_list').append('<div class="event item ' + event.status + '" id="' + event._id + '" title="' + title + '"><span class="title">' + event.title + '</span><span class="start">' + start + '</span><span class="date_separator"></span><span class="end">' + end + '</span><span class="count_event_today"></span></div>');
+						document.querySelector('#right_panel_events .events_list').appendChild(
+							rdiv({className: 'event item ' + event.status, id: event._id, title: title, 
+								children: [
+									rspan({className: 'title', content: title}),
+									rspan({className: 'start', content: start}),
+									rspan({className: 'date_separator'}),
+									rspan({className: 'end', content: end}),
+									rspan({className: 'count_event_today'})
+								]
+							})
+						);
 						$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
 						count_events++;
 					}
@@ -781,9 +874,21 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 			}
 		}
 		else {
-			$('#right_panel_events').append('<div class="events_title"><span class="text" title="' + this.get_label("right_panel.event_title") + '">' + this.get_label("right_panel.next_events") + '</span><span class="new_event" title="' + this.get_label("right_panel.new_event_title") + '">' + this.get_label("right_panel.new_event") + '</span></div>');
-			$('#right_panel_events').append('<div class="pagination"><span class="previous" title="' + this.get_label('right_panel.previous_title') + '">' + this.get_label('right_panel.previous') + '</span><span class="today" title="' + this.get_label('right_panel.today_title') + '">' + this.get_label('right_panel.today') + '</span><span class="next" title="' + this.get_label('right_panel.next_title') + '">' + this.get_label('right_panel.next') + '</span></div>');
-			$('#right_panel_events').append('<div class="events_list"></div>');
+			right_panel_events.append(
+				// Events title
+				rdiv({className: 'events_title', children: [
+					rspan({className: 'text', title: this.get_label("right_panel.event_title"), content: this.get_label("right_panel.next_events")}),
+					rspan({className: 'new_event', title: this.get_label("right_panel.new_event_title"), content: this.get_label("right_panel.new_event")})
+				]}),
+				// Pagination
+				rdiv({className: 'pagination', children: [
+					rspan({className: 'previous', title: this.get_label('right_panel.previous_title'), content: this.get_label('right_panel.previous')}),
+					rspan({className: 'today', title: this.get_label('right_panel.today_title'), content: this.get_label('right_panel.today')}),
+					rspan({className: 'next', title: this.get_label('right_panel.next_title'), content: this.get_label('right_panel.next')})
+				]}),
+				// Events list
+				rdiv({className: 'events_list'})
+			);
 			// Gestion des alarmes
 			if (window.alarmsList.length) {
 				for (let i = 0; i < window.alarmsList.length; i++) {
@@ -805,7 +910,19 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 						title += " (" + alarm.location + ")";
 					}
 					const type = alarm.id.split(':')[0];
-					$('#right_panel_events .events_list').append('<div class="item alarm" id="' + alarm.id + '" title="' + title + '"><span class="date">' + date + '</span><span class="type">' + rcmail.get_label("right_panel." + type) + '</span><span class="title">' + title + '</span><div class="alarm_buttons"><span class="later">' + rcmail.get_label("right_panel.later") + '</span><span class="dismiss">' + rcmail.get_label("right_panel.dismiss") + '</span></div></div>');
+					document.querySelector('#right_panel_events .events_list').appendChild(
+						rdiv({className: 'item alarm', id: alarm.id, title: title, 
+							children: [
+								rspan({className: 'date', content: date}),
+								rspan({className: 'type', content: rcmail.get_label("right_panel." + type)}),
+								rspan({className: 'title', content: title}),
+								rdiv({className: 'alarm_buttons', children: [
+									rspan({className: 'later', content: rcmail.get_label("right_panel.later")}),
+									rspan({className: 'dismiss', content: rcmail.get_label("right_panel.dismiss")})
+								]})
+							]
+						})
+					);
 					$('#right_panel_events .events_list .event[id="' + alarm.id + '"]').data('event', event);
 				}
 			}
@@ -845,17 +962,37 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 				if (event.location) {
 					title += " (" + event.location + ")";
 				}
-				$('#right_panel_events .events_list').append('<div class="item event ' + event.status + '" id="' + event._id + '" title="' + title + '"><span class="date">' + date + '</span><span class="table"><span class="row"><span class="start cell">' + start + '</span><span class="title cell"><span class="innerTitle">' + event.title + '</span></span></span><span class="row"><span class="end cell">' + end + '</span><span class="location cell">' + event.location + '</span></span></span></div>');
+				document.querySelector('#right_panel_events .events_list').appendChild(
+					rdiv({className: 'item event ' + event.status, id: event._id, title: title, 
+						children: [
+							rspan({className: 'date', content: date}),
+							rspan({className: 'table', children: [
+								rspan({className: 'row', children: [
+									rspan({className: 'start cell', content: start}),
+									rspan({className: 'title cell', child: rspan({className: 'innerTitle', content: event.title})})
+								]}),
+								rspan({className: 'row', children: [
+									rspan({className: 'end cell', content: end}),
+									rspan({className: 'location cell', content: event.location})
+								]})
+							]})
+						]
+					})
+				);
 				$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
 			}
 		}
 
 		if ($('#right_panel_events .events_list .item').length == 0) {
-			$('#right_panel_events .events_list').append('<div class="item event noevent" title="' + this.get_label("right_panel.no_event_title") + '"><span>' + this.get_label("right_panel.no_event") + '</span></div>');
-			$('#right_panel_events .events_list').append('<div class="item event new_event" title="' + this.get_label("right_panel.new_event_title") + '"><span>' + this.get_label("right_panel.new_event") + '</span></div>');
+			document.querySelector('#right_panel_events .events_list').append(
+				rdiv({className: 'item event noevent', title: this.get_label("right_panel.no_event_title"), child: rspan({content: this.get_label("right_panel.no_event")})}),
+				rdiv({className: 'item event new_event', title: this.get_label("right_panel.new_event_title"), child: rspan({content: this.get_label("right_panel.new_event")})})
+			);
 		}
 		else if (($('#right_panel_events .events_list .item').length % 2) !== 0) {
-			$('#right_panel_events .events_list').append('<div class="item event new_event" title="' + this.get_label("right_panel.new_event_title") + '"><span>' + this.get_label("right_panel.new_event") + '</span></div>');
+			document.querySelector('#right_panel_events .events_list').append(
+				rdiv({className: 'item event new_event', title: this.get_label("right_panel.new_event_title"), child: rspan({content: this.get_label("right_panel.new_event")})})
+			);
 		}
 		if (!$('#right_panel').hasClass('minified')) {
 			this.right_panel_events_pagination();
@@ -903,25 +1040,40 @@ rcube_webmail.prototype.right_panel_events_pagination = function() {
 // Get contacts menu
 rcube_webmail.prototype.right_panel_get_contacts = function(force = false) {
 	if ($('#right_panel').hasClass('minified')) {
-		$('#right_panel_contacts').append('<div class="contacts_count_title">' + this.get_label("right_panel.contacts_count_title") + '</div>');
-		$('#right_panel_contacts').append('<div class="contacts_count"></div>');
-		$('#right_panel_contacts').append('<div class="contacts_favorites_title">' + this.get_label("right_panel.contacts_favorites_title") + '</div>');
-		$('#right_panel_contacts').append('<div class="contacts_favorites"></div>');
-		$('#right_panel_contacts .contacts_count').append('<div class="email">' + window.mailCount + '</div>');
-		$('#right_panel_contacts .contacts_count').append('<div class="im">' + window.imCount + '</div>');
+		document.querySelector('#right_panel_contacts').append(
+			rdiv({className: 'contacts_count_title', content: this.get_label("right_panel.contacts_count_title")}),
+			rdiv({className: 'contacts_count'}),
+			rdiv({className: 'contacts_favorites_title', content: this.get_label("right_panel.contacts_favorites_title")}),
+			rdiv({className: 'contacts_favorites'})
+		);
+		document.querySelector('#right_panel_contacts .contacts_count').append(
+			rdiv({className: 'email', content: window.mailCount}),
+			rdiv({className: 'im', content: window.imCount})
+		);
 		this.right_panel_get_contacts_list_minified(force);
 	}
 	else {
 		const contacts_menu = this.right_panel_storage_get('contacts_menu');
 		if (contacts_menu && contacts_menu == 'favorites_button') {
-			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button disabled" title="' + this.get_label("right_panel.recents_button_title") + '"></span><span class="favorites_button" title="' + this.get_label("right_panel.favorites_button_title") + '"></span></div>');
+			document.querySelector('#right_panel_contacts').appendChild(
+				rdiv({className: 'contacts_menu', children: [
+					rspan({className: 'recents_button disabled', title: this.get_label("right_panel.recents_button_title")}),
+					rspan({className: 'favorites_button', title: this.get_label("right_panel.favorites_button_title")})
+				]}),
+			);
 		}
 		else {
-			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button" title="' + this.get_label("right_panel.recents_button_title") + '"></span><span class="favorites_button disabled" title="' + this.get_label("right_panel.favorites_button_title") + '"></span></div>');
+			document.querySelector('#right_panel_contacts').appendChild(
+				rdiv({className: 'contacts_menu', children: [
+					rspan({className: 'recents_button', title: this.get_label("right_panel.recents_button_title")}),
+					rspan({className: 'favorites_button disabled', title: this.get_label("right_panel.favorites_button_title")})
+				]}),
+			);
 		}
-
-		$('#right_panel_contacts').append('<div class="contacts_recents"></div>');
-		$('#right_panel_contacts').append('<div class="contacts_favorites"></div>');
+		document.querySelector('#right_panel_contacts').append(
+			rdiv({className: 'contacts_recents'}),
+			rdiv({className: 'contacts_favorites'})
+		);
 		// Load current contact list
 		this.right_panel_get_contacts_list(force);
 	}
@@ -1126,8 +1278,8 @@ rcube_webmail.prototype.right_panel_get_contacts_favorites = function(force = fa
 
 // Refresh favorites contacts list
 rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
-	$('#right_panel_contacts .contacts_favorites').html('');
-	$('#right_panel_contacts .contacts_favorites').append('<div class="contacts_list"></div>');
+	document.querySelector('#right_panel_contacts .contacts_favorites').innerHTML = '';
+	document.querySelector('#right_panel_contacts .contacts_favorites').appendChild(rdiv({className: 'contacts_list'}));
 	if (!window.favoritesList) {
 		window.favoritesList = [];
 	}
@@ -1142,19 +1294,19 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 			name = contact.name.split(' - ')[0];
 		}
 		// Contact email
-		let email = '<span class="email"></span>';
+		let email = rspan({className: 'email'});
 		if (contact.email != undefined) {
-			email = '<span class="email"><a href="mailto:' + contact.email + '" onclick="event.preventDefault(); event.stopPropagation(); return rcmail.command(\'compose\',\'' + contact.email + '\',this);"></a></span>';
+			email = rspan({className: 'email', child: ra({href: 'mailto:' + contact.email, onclick: 'event.preventDefault(); event.stopPropagation(); return rcmail.command(\'compose\',\'' + contact.email + '\',this);'})});
 		}
 		// Contact im
-		let im = '<span class="im"></span>';
+		let im = rspan({className: 'im'});
 		if (contact.username != undefined) {
-			im = '<span class="im"><a href="#" onclick="event.preventDefault(); event.stopPropagation(); return rcmail.right_panel_open_rocket_chat_url(\'/direct/' + contact.username + '\');"></a></span>';
+			im = rspan({className: 'im', child: ra({href: '#', onclick: 'event.preventDefault(); event.stopPropagation(); return rcmail.right_panel_open_rocket_chat_url(\'/direct/' + contact.username + '\');'})});
 		}
 		// Contact status
-		let status = '<span class="status offline">none</span>';
+		let status = rspan({className: 'status offline', content: 'none'});
 		if (contact.status != undefined) {
-			status = '<span class="status ' + contact.status + '">' + contact.status + '</span>';
+			status = rspan({className: 'status ' + contact.status, content: contact.status});
 		}
 		// ID
 		let id = contact.cuid
@@ -1169,16 +1321,24 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 		else {
 			photo_url = rcmail.url('addressbook/photo', {_cid: contact.ID, _source: rcmail.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_')});
 		}
-		const photo = '<img src="' + photo_url + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">';
-		$('#right_panel_contacts .contacts_favorites .contacts_list').append('<div class="contact ' + id + '" title="' + contact.name + '"><span class="cid">' + contact.ID + '</span><span class="photo">' + photo + '</span><span class="name">' + name + '</span>' + status + im + email + '</div>');
+		document.querySelector('#right_panel_contacts .contacts_favorites .contacts_list').append(
+			rdiv({className: 'contact ' + id, title: contact.name, children: [
+				rspan({className: 'cid', content: contact.ID}),
+				rspan({className: 'photo', child: rimg({src: photo_url, alt: rcmail.get_label("right_panel.contactphoto")})}),
+				rspan({className: 'name', content: name}),
+				status,
+				im,
+				email
+			]})
+		);
 	}
 	$("#right_panel_contacts .contacts_favorites .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 500});
 };
 
 // Refresh recents contacts list
 rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
-	$('#right_panel_contacts .contacts_recents').html('');
-	$('#right_panel_contacts .contacts_recents').append('<div class="contacts_list"></div>');
+	document.querySelector('#right_panel_contacts .contacts_recents').innerHTML = '';
+	document.querySelector('#right_panel_contacts .contacts_recents').appendChild(rdiv({className: 'contacts_list'}));
 	if (!window.messagesList) {
 		window.messagesList = [];
 	}
@@ -1226,7 +1386,15 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 			const date_text = rcmail.get_label('right_panel.date').replace(/%%day%%/, day).replace(/%%hour%%/, hour);
 			// ID
 			const id = contact.id
-			$('#right_panel_contacts .contacts_recents .contacts_list').append('<div class="contact ' + contact.id + classMunread + '" id="' + i + '" title="' + contact.name + '"><span class="date">' + date_text + '</span><span class="title">' + rcmail.get_label('right_panel.' + contact.type) + '</span><span class="name">' + contact.name + '</span><span class="subject">' + contact.subject + '</span><span class="text">' + contact.text + '</span></div>');
+			document.querySelector('#right_panel_contacts .contacts_recents .contacts_list').append(
+				rdiv({id: i, className: 'contact ' + id, title: contact.name, children: [
+					rspan({className: 'date', content: date_text}),
+					rspan({className: 'title', content: rcmail.get_label('right_panel.' + contact.type)}),
+					rspan({className: 'name', content: contact.name}),
+					rspan({className: 'subject', content: contact.subject}),
+					rspan({className: 'text', content: contact.text})
+				]})
+			);
 		}
 	}
 	$("#right_panel_contacts .contacts_recents .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 500});

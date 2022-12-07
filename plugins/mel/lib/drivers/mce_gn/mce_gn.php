@@ -113,7 +113,7 @@ class mce_gn_driver_mel extends mce_driver_mel {
         return $subject;
     }
     public function fixMail($mail) {
-        return strpos($mail, '@') !== false ? $mail : mel::str_lreplace('%', '@', $mail);
+        return strpos($mail, '@') !== false ? $mail : $this->str_lreplace('%', '@', $mail);
     }
 
     /**

@@ -58,10 +58,14 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, assistanc
   let json_page = rcmail.env.help_page_onboarding[task];
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
-      json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + task + '.png')
+      json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + task + '.png')
       json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
+      json = json.replace("%%IMAGE_MAP%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/map.jpg')
+      json = json.replace("%%IMAGE_ROCKET%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/rocket.png')
+      json = json.replace("%%IMAGE_CHECKMARK%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/checkmark.png')
+      json = json.replace("%%IMAGE_CHECKMARK2%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/checkmark.png')
+      json = json.replace("%%IMAGE_CHECKMARK3%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/checkmark.png')
       window.current_onboarding = JSON.parse(json);
-
       current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
 
       if (task == "mail") {
@@ -98,6 +102,7 @@ function startIntro(task) {
   window.exit_main_intro = true;
   window.exit_details_intro = true;
   let intro = current_window.introJs();
+  
   if (task == "bureau" && rcmail.env.is_framed) {
     intro = bureau_intro(intro);
   } else {
@@ -136,18 +141,50 @@ function startIntro(task) {
       }
     }
   }).onafterchange(function () {
+    $('.introjs-tooltipbuttons').hide();
+
     setTimeout(() => {
+      if (this._introItems[this._currentStep].hideButtons) {
+        $('.introjs-tooltipbuttons').hide();
+
+        $('#custom-next-button').on('click', function() {
+          intro.nextStep();
+        })
+  
+        $('#custom-done-button').on('click', function() {
+          intro.exit();
+        })
+      }
+      else {
+        $('.introjs-tooltipbuttons').show();
+      }
+     
+      if ($('#onboarding-theme-panel .contents').length) {
+        let darkTheme = { dark: { name: "Sombre", picture: "./skins/mel_elastic/images/icon_dark.svg" } };
+        MEL_ELASTIC_UI.init_theme($('#onboarding-theme-panel .contents'), true, (event) => {
+console.log(MEL_ELASTIC_UI.get_current_theme());
+          if ((MEL_ELASTIC_UI.get_current_theme() == 'default' || MEL_ELASTIC_UI.get_current_theme() == 'Classique') && $(event.currentTarget).data('name') == 'Sombre') {
+            MEL_ELASTIC_UI.switch_color();
+          }
+          else if (MEL_ELASTIC_UI.get_current_theme() == 'Sombre' && ($(event.currentTarget).data('name') == 'default' || $(event.currentTarget).data('name') == 'Classique')) {
+            MEL_ELASTIC_UI.switch_color();
+          }
+          return true;
+        }, darkTheme);
+      }
+
+      
       if (this._introItems[this._currentStep].passed) {
         let item = this._introItems[this._currentStep];
         current_window.$('#' + item.id + '-details').on('click', function () {
           if (item.details.hints) {
-            intro_hints(item, intro);          
+            intro_hints(item, intro);
           } else if (item.details.steps) {
             intro_details_tour(item, intro)
           }
         });
       }
-    }, 500);
+    }, 400);
   }).onexit(function () {
     if (window.exit_main_intro) {
       return window.parent.rcmail.onboarding_close()
@@ -247,7 +284,7 @@ function intro_hints(item, intro_main) {
     window.parent.$('#layout-menu').addClass('force-open');
   }
 
-  intro_main.setOptions({ exitOnEsc: false})
+  intro_main.setOptions({ exitOnEsc: false })
 
   let details = item.details;
   let intro = current_window.introJs();
@@ -294,7 +331,7 @@ function intro_hints(item, intro_main) {
       }
       current_window.$(".hide-hint").css('display', 'block');
       item.passed_hints = true;
-      intro_main.setOptions({ exitOnEsc: true})
+      intro_main.setOptions({ exitOnEsc: true })
     }
   });
 }

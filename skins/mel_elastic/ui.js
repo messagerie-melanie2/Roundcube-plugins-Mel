@@ -395,38 +395,42 @@ $(document).ready(() => {
               return this;
         }
 
-        init_theme()
+        init_theme($panel = $('#theme-panel .contents'), $force = false, callback_click = null, callback_add = null)
         {
+            let additionnalThemes = callback_add  ?? [];
+
             let tlength = 0;
             let html = '';
             this.theme = rcmail.env.current_theme || 'default';
 
             if (!!rcmail.env.current_theme) $('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
 
-            if (!!rcmail.env.mel_themes) {
+            if (!!rcmail.env.mel_themes || $force) {
                 const themes = rcmail.env.mel_themes;
                 rcmail.env.mel_themes = null;
+                
+                this.themes = themes || this.themes;
 
-                this.themes = themes;
-
-                for (const key in this.themes) {
-                    if (Object.hasOwnProperty.call(this.themes, key)) {
+                for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).toArray()) {
+                    const key = iterator.key;
                         ++tlength;
-                        this.themes[key].css_path = 'unavailable';
-                        this.themes[key].path = 'unavailable';
+                        if (this.themes[key]?.css_path)
+                          this.themes[key].css_path = 'unavailable';                        
+
+                        if (this.themes[key]?.path)  
+                          this.themes[key].path = 'unavailable';                        
 
                         html += `
-                        <div class="row mel-selectable ${this.themes[key].name === this.theme ? 'selected' : ''}" data-name="${this.themes[key].name}" role="button" aria-pressed="${this.themes[key].name === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
+                        <div class="row mel-selectable ${iterator.value.name === this.theme ? 'selected' : ''}" data-name="${iterator.value.name}" role="button" aria-pressed="${iterator.value.name === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
                             <div class="col-4">
-                                <img src="${this.themes[key].picture}" style="width:100%;" />
+                                <img src="${iterator.value.picture}" style="width:100%;" />
                             </div>
                             <div class="col-8" style="display:flex;">
                                 <span style="display: block;
-                                align-self: center;">${(this.themes[key].name === 'default' ? 'Par défaut' : this.themes[key].name)}</span>
+                                align-self: center;">${(iterator.value.name === 'default' ? 'Par défaut' : iterator.value.name)}</span>
                             </div>
                         </div>
                         `;
-                    }
                 }
             }
 
@@ -435,6 +439,9 @@ $(document).ready(() => {
             {
                 if (tlength > 1)
                 {
+                  if (!this.theme_button_activated)
+                  {
+                      this.theme_button_activated = true;
                     $theme_button.click(($e) => {
                         $e = $($e.currentTarget);
 
@@ -450,10 +457,14 @@ $(document).ready(() => {
                             $('#theme-panel').css('display', 'none');
                         }
                     });
+                  }
 
-                    $('#theme-panel .contents').html(html).find('.mel-selectable').click((e) => {
+                    $panel.html(html).find('.mel-selectable').click((e) => {
+                        let dosomething = callback_click ? callback_click(e) : true;
+                        if (!dosomething) return;
+
                         e = $(e.currentTarget);
-                        $('#theme-panel .contents .mel-selectable').removeClass('selected');
+                        $panel.find('.mel-selectable').removeClass('selected');
                         e.addClass('selected');
 
                         this.update_theme(e.data('name'));

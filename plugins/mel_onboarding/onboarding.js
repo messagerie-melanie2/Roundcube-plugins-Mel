@@ -60,11 +60,9 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, assistanc
     res.text().then((json) => {
       json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + task + '.png')
       json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
-      json = json.replace("%%IMAGE_MAP%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/map.jpg')
-      json = json.replace("%%IMAGE_ROCKET%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/rocket.png')
-      json = json.replace("%%IMAGE_CHECKMARK%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/checkmark.png')
-      json = json.replace("%%IMAGE_CHECKMARK2%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/checkmark.png')
-      json = json.replace("%%IMAGE_CHECKMARK3%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/checkmark.png')
+
+      json = replaceImages(json);
+
       window.current_onboarding = JSON.parse(json);
       current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
 
@@ -153,6 +151,7 @@ function startIntro(task) {
   
         $('#custom-done-button').on('click', function() {
           intro.exit();
+          //TODO Notification
         })
       }
       else {
@@ -478,4 +477,15 @@ function addBulletTitle() {
     $(element).attr('aria-label', $(element).data('title'));
     $(element).attr('role', 'tab');
   }
+}
+
+function replaceImages(json) {
+  let imageReplace = json.match(/(?<=%%)([A-Z_]*?)(?=%%)/g);
+  imageReplace.forEach(image => {
+    let imageSplit = image.split('_');
+    let imageName = imageSplit[0];
+    let imageFormat = imageSplit[1].toLowerCase();
+    json = json.replace('%%' + image + '%%', location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + imageName + '.' + imageFormat)
+  });
+  return json;
 }

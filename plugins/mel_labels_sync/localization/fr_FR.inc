@@ -8,6 +8,7 @@
 $labels = array();
 
 $labels['labels'] = 'Étiquettes';
+$labels['no label'] = 'Pas d\'étiquette';
 $labels['labels settings'] = 'Étiquettes des messages';
 $labels['labels list'] = 'Liste des étiquettes';
 $labels['label'] = 'Étiqueter les messages';

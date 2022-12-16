@@ -1544,7 +1544,7 @@ function m_mp_help_video() {
 
         for (const [key, element] of Object.entries(rcmail.env.help_video)) {
             html += '<li class="col-sd-12 col-md-12" id="helppage_video" title="Cliquer pour voir la vidéo">';
-            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="rcmail.m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
+            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="rcmail.m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
             html += '</li>';
         }
         html += '</ul>';

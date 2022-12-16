@@ -100,7 +100,7 @@ function startIntro(task) {
   window.exit_main_intro = true;
   window.exit_details_intro = true;
   let intro = current_window.introJs();
-  
+
   if (task == "bureau" && rcmail.env.is_framed) {
     intro = bureau_intro(intro);
   } else {
@@ -123,10 +123,15 @@ function startIntro(task) {
     //On ajoute le bouton permettant de lancer la démonstration
     let item = this._introItems[this._currentStep];
     if (item.button && !item.passed) {
-      let buttonDetails = '<div class="text-left"><button class="mel-button btn btn-secondary float-right" id="' + item.id + '-details">' + item.button + '</button></div><br/><br/><br/>'
+      let buttonDetails = '<div class="text-left"><a href="#" class="float-right" id="' + item.id + '-details">' + item.button + '</a></div><br/>'
 
-      this._introItems[this._currentStep].intro += buttonDetails;
-      this._introItems[this._currentStep].passed = true;
+      item.intro += buttonDetails;
+      item.passed = true;
+    }
+
+    if (item.hideButtons && !item.buttonPassed) {
+      item.intro += "<div class='row'><div class='custom-tooltipbuttons mx-5 mb-3'>" + item.customButton + "</div></div>",
+        item.buttonPassed = true;
     }
 
     //On skip l'intro si l'élément n'existe pas
@@ -145,34 +150,55 @@ function startIntro(task) {
       if (this._introItems[this._currentStep].hideButtons) {
         $('.introjs-tooltipbuttons').hide();
 
-        $('#custom-next-button').on('click', function() {
+        $('#custom-next-button').on('click', function () {
           intro.nextStep();
         })
-  
-        $('#custom-done-button').on('click', function() {
+        $('#custom-previous-button').on('click', function () {
+          intro.previousStep();
+        })
+
+        $('#custom-done-button').on('click', function () {
           intro.exit();
-          //TODO Notification
+          send_notification();
         })
       }
       else {
         $('.introjs-tooltipbuttons').show();
       }
-     
-      if ($('#onboarding-theme-panel .contents').length) {
-        let darkTheme = { dark: { name: "Sombre", picture: "./skins/mel_elastic/images/icon_dark.svg" } };
-        MEL_ELASTIC_UI.init_theme($('#onboarding-theme-panel .contents'), true, (event) => {
-console.log(MEL_ELASTIC_UI.get_current_theme());
-          if ((MEL_ELASTIC_UI.get_current_theme() == 'default' || MEL_ELASTIC_UI.get_current_theme() == 'Classique') && $(event.currentTarget).data('name') == 'Sombre') {
-            MEL_ELASTIC_UI.switch_color();
+
+      if ($('#theme_select').length) {
+        for (const key in MEL_ELASTIC_UI.themes) {
+          if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
+            const theme = MEL_ELASTIC_UI.themes[key];
+            let value = theme.name;
+            let text = theme.name == 'default' ? 'Par défaut' : theme.name;
+            $('#theme_select').append(new Option(text, value))
           }
-          else if (MEL_ELASTIC_UI.get_current_theme() == 'Sombre' && ($(event.currentTarget).data('name') == 'default' || $(event.currentTarget).data('name') == 'Classique')) {
-            MEL_ELASTIC_UI.switch_color();
-          }
-          return true;
-        }, darkTheme);
+        }
+
+        //On ajoute le thème sombre manuellement
+        $('#theme_select').append(new Option("Sombre", "Sombre"))
+
+        if (MEL_ELASTIC_UI.color_mode() == 'dark') {
+          $('#theme_select option[value="Sombre"]').prop('selected', true);
+        }
+        else {
+          $('#theme_select option[value="' + MEL_ELASTIC_UI.get_current_theme() + '"]').prop('selected', true);
+        }
       }
 
-      
+      $('#theme_select').on('change', function (e) {
+        if (MEL_ELASTIC_UI.color_mode() != 'dark' && e.currentTarget.value == 'Sombre') {
+          MEL_ELASTIC_UI.switch_color();
+        }
+        else {
+          if (MEL_ELASTIC_UI.color_mode() == 'dark' && e.currentTarget.value != 'Sombre') {
+            MEL_ELASTIC_UI.switch_color();
+          }
+          MEL_ELASTIC_UI.update_theme(e.currentTarget.value);
+        }
+      })
+
       if (this._introItems[this._currentStep].passed) {
         let item = this._introItems[this._currentStep];
         current_window.$('#' + item.id + '-details').on('click', function () {
@@ -489,3 +515,24 @@ function replaceImages(json) {
   });
   return json;
 }
+
+function send_notification() {
+  top.rcmail.triggerEvent('plugin.push_notification', {
+    uid: 'help-' + Math.random(),
+    title: "Retrouvez votre aide interactive",
+    content: "Contenu de la notif",
+    category: 'help',
+    action: [
+      {
+        href: 'javascript:void(0)',
+        title: "Cliquez ici pour ouvrir l'aide",
+        text: "Lancer l'aide",
+        command: "open_help",
+      }
+    ],
+    created: Math.floor(Date.now() / 1000),
+    modified: Math.floor(Date.now() / 1000),
+    isread: false,
+    local: true,
+  });
+};

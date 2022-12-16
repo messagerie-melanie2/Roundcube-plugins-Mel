@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap'); */
 
 :root {
   --circle-size: clamp(1.5rem, 5vw, 2rem);
@@ -61,6 +61,10 @@
   width: 400px !important;
   max-width: 400px !important;
 }
+.width-intro-300 {
+  width: 300px !important;
+  max-width: 300px !important;
+}
 
 .height-intro-600 {
   min-height: 600px !important;
@@ -68,9 +72,39 @@
 .height-intro-500 {
   min-height: 500px !important;
 }
+.height-intro-450 {
+  min-height: 450px !important;
+}
 .height-intro-400 {
   min-height: 400px !important;
 }
+
+html.dark-mode .onboarding-image {
+  background-image: url('../../skins/mel_elastic/images/Computer_dark.png');
+}
+
+.onboarding-image {
+  background-image: url('../../skins/mel_elastic/themes/default/images/Computer_default.png');
+  height: 130px;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+#theme_select {
+  width: 100%;
+  height: calc(1.5em + .75rem + 2px);
+  padding: .375rem .75rem;
+  border: 1px solid #ced4da;
+  border-radius: 16px;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  background-color: #fff;
+  color: #2c363a;
+  border-color: var(--secondary-focus-border);
+  box-shadow: 0 0 0 0.2rem var(--secondary-focus);
+}
+
 
 
 .accueil-intro {
@@ -80,12 +114,19 @@
 
 .introjs-tooltiptext .subtitle {
   color: #5C5CFF;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
 }
 
+.introjs-tooltiptext .subtitle.small-font {
+  font-size: 15px;
+}
+.introjs-tooltiptext .semibold.small-font {
+  font-size: 19px;
+}
+
 .introjs-tooltiptext .semibold {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #3A3E5E;
 }
@@ -93,7 +134,6 @@
 .home-image {
   width: 150px;
   border-radius: 50%;
-  margin-top: 15px;
 }
 
 .checkmark-text {
@@ -102,12 +142,20 @@
   font-size: 15px;
 }
 
+.center-button {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
 /*
  * INTRO JS
  */
 
-.introjs-tooltipReferenceLayer * {
-  font-family: 'Open Sans' !important;
+.introjs-tooltip.menu-shadow-bureau.introjs-right {
+  padding-top: 20px;
 }
 
 .introjs-tooltip {
@@ -136,7 +184,7 @@
 
 .custom-tooltipbuttons {
   border-top: none !important;
-  padding: 20px 0 5px !important;
+  /* padding: 20px 0 5px !important; */
 }
 
 .introjs-nextbutton {
@@ -162,7 +210,7 @@
   text-shadow: none !important;
   float: left !important;
   font-weight: 600 !important;
-  width: 140px !important;
+  /* width: 140px !important; */
 }
 
 .next-button {
@@ -173,11 +221,13 @@
   background-color: #4c4cbb !important;
 }
 
-.done-button {
+.done-button,
+.previous-button {
   background-color: #F0F0FF !important;  
   color: #5C5CFF !important; 
 }
-.done-button:hover {
+.done-button:hover,
+.previous-button:hover {
   background-color: #e1e1ec !important;
 }
 
@@ -193,6 +243,10 @@
   padding: 0px 20px 20px 20px !important;
 }
 
+.intro-no-margin .introjs-tooltiptext {
+  padding-left: 0px !important;
+}
+
 .introjs-skipbutton {
   font-size: 37px !important;
   font-weight: 100 !important;
@@ -200,17 +254,21 @@
 }
 
 .introjs-bullets ul li a {
-  width: 15px !important;
-  height: 15px !important;
+  /* width: 15px !important;
+  height: 15px !important; */
 }
 
 .introjs-bullets ul li a.active {
-  width: 15px !important;
+  width: 6px !important;
 }
 
 .introjs-bullets ul li a:focus,
 .introjs-bullets ul li a:hover {
   width: 15px !important;
+}
+
+.introjs-bullets ul li a.active {
+  background-color: #5C5CFF !important;
 }
 
 .introjs-bullets ul li a:after {

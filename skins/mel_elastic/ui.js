@@ -468,11 +468,7 @@ $(document).ready(() => {
                         e.addClass('selected');
 
                         this.update_theme(e.data('name'));
-                        mel_metapage.Functions.post(
-                            mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
-                            {_t:e.data('name')},
-                            (f) => {},
-                        );
+                        
 
                         this._update_theme_color();
                     });
@@ -2652,6 +2648,12 @@ $(document).ready(() => {
                     
                 }
             });
+
+            mel_metapage.Functions.post(
+              mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
+              {_t:theme},
+              (f) => {},
+          );
 
             return this;
         }

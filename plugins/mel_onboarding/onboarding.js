@@ -88,15 +88,15 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, assistanc
           }, 250);
         }
       } else if (rcmail.env.is_framed) {
-        window.parent = startIntro(task)
+        window.parent = startIntro(task, assistance)
       } else {
-        startIntro(task);
+        startIntro(task, assistance);
       }
     });
   });
 };
 
-function startIntro(task) {
+function startIntro(task, assistance = false) {
   window.exit_main_intro = true;
   window.exit_details_intro = true;
   let intro = current_window.introJs();
@@ -196,6 +196,8 @@ function startIntro(task) {
             MEL_ELASTIC_UI.switch_color();
           }
           MEL_ELASTIC_UI.update_theme(e.currentTarget.value);
+          $('#theme-panel .contents').find('.mel-selectable').removeClass('selected');
+          $('#theme-panel .contents').find(`[data-name='${e.currentTarget.value}']`).addClass('selected');
         }
       })
 
@@ -215,6 +217,10 @@ function startIntro(task) {
       return window.parent.rcmail.onboarding_close()
     }
   }).start();
+
+  if (assistance) {
+    // intro.goToStep(4);
+  }
   addBulletTitle();
 }
 

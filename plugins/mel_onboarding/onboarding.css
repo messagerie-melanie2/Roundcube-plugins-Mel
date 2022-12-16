@@ -154,6 +154,7 @@ html.dark-mode .onboarding-image {
  * INTRO JS
  */
 
+
 .introjs-tooltip.menu-shadow-bureau.introjs-right {
   padding-top: 20px;
 }
@@ -161,6 +162,7 @@ html.dark-mode .onboarding-image {
 .introjs-tooltip {
   color: #000;
   border-radius: 8px !important;
+  min-width: 300px !important;
 }
 
 .introjs-tooltipbuttons{

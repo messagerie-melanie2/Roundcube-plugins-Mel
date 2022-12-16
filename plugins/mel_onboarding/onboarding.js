@@ -46,6 +46,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
   } else {
     window.parent.rcmail.show_current_page_onboarding(task, true);
     window.parent.rcmail.env.hide_modal = 1;
+    // window.parent.rcmail.onboarding_close(true)
   }
 }
 
@@ -266,40 +267,49 @@ function bureau_intro(intro) {
 /**
  * Fermer l'onboarding
  */
-rcube_webmail.prototype.onboarding_close = function () {
+rcube_webmail.prototype.onboarding_close = function (popup = false) {
 
-  let buttons = [{
-    text: rcmail.gettext('hide all help', 'mel_onboarding'),
-    click: function () {
-      rcmail.http_post('settings/plugin.set_onboarding', {
-        _onboarding: true,
-        _see_help_again: $('#see_help_again').is(":checked"),
-      });
-      $(this).closest('.ui-dialog-content').dialog('close');
+  if (popup) {
+    let buttons = [{
+      text: rcmail.gettext('hide all help', 'mel_onboarding'),
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: $('#see_help_again').is(":checked"),
+        });
+        $(this).closest('.ui-dialog-content').dialog('close');
+      }
+    },
+    {
+      text: rcmail.gettext('hide this help', 'mel_onboarding'),
+      'class': 'mainaction text-white',
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: $('#see_help_again').is(":checked"),
+        });
+        $(this).closest('.ui-dialog-content').dialog('close');
+      }
     }
-  },
-  {
-    text: rcmail.gettext('hide this help', 'mel_onboarding'),
-    'class': 'mainaction text-white',
-    click: function () {
-      rcmail.http_post('settings/plugin.set_onboarding', {
-        _onboarding: true,
-        _see_help_again: $('#see_help_again').is(":checked"),
-      });
-      $(this).closest('.ui-dialog-content').dialog('close');
+    ];
+
+
+    let content = rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title=`Afficher l' aide`><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br /><br /><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input' checked><label for='see_help_again' class ='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>";
+
+    let title = rcmail.gettext('close help', 'mel_onboarding');
+    // On n'ouvre pas la modal si l'onboarding est lancé depuis l'assistance
+    if (!window.parent.rcmail.env.hide_modal) {
+      window.parent.rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
     }
+    delete window.parent.rcmail.env.hide_modal;
   }
-  ];
-
-
-  let content = rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title=`Afficher l' aide`><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br /><br /><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input' checked><label for='see_help_again' class ='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>";
-
-  let title = rcmail.gettext('close help', 'mel_onboarding');
-  // On n'ouvre pas la modal si l'onboarding est lancé depuis l'assistance
-  if (!window.parent.rcmail.env.hide_modal) {
-    window.parent.rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
+  else { 
+    rcmail.http_post('settings/plugin.set_onboarding', {
+      _onboarding: true,
+      _see_help_again: false,
+    });
   }
-  delete window.parent.rcmail.env.hide_modal;
+
 };
 
 

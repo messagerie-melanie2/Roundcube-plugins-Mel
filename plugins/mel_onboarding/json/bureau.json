@@ -6,12 +6,12 @@
   "hidePrev": true,
   "hideNext": true,
   "scrollTo": "tooltip",
-  "nextLabel": "Suivant",
+  "nextLabel": "Continuer",
   "prevLabel": "Précédent",
   "doneLabel": "Fermer",
   "steps": [
     {
-      "intro": "<div id='accueil' class='mx-5'><div class='row'><div class='col-8'><div class='row'><span class='subtitle'>Accueil</span></div><div class='row'><p class='semibold'>Bienvenue <br />sur votre Bureau Numérique</p></div><div class='row'><p>Découvrez votre nouvel outil</p></div></div><div class='col-4'><p><img src='%%MAP_JPG%%' class='home-image'></p></div></div></div>",
+      "intro": "<div id='accueil' tabindex='0' class='mx-5'><div class='row'><div class='col-8'><div class='row'><span class='subtitle'>Accueil</span></div><div class='row'><p class='semibold'>Bienvenue <br />sur votre Bureau Numérique</p></div><div class='row'><p>Découvrez votre nouvel outil</p></div></div><div class='col-4'><p><img src='%%MAP_JPG%%' class='home-image'></p></div></div></div>",
       "tooltipClass": "width-intro-600",
       "customButton": "<button id='custom-next-button' class='next-button'>Montrez moi</button><button id='custom-done-button' class='done-button ml-3'>Plus tard</button>",
       "hideButtons": true
@@ -24,7 +24,9 @@
     },
     {
       "intro": "<div id='change_theme'r><div class='row d-flex justify-content-center mb-4 mt-0'><div class='onboarding-image'></div></div><div class='row d-flex justify-content-center mb-2'><p class='semibold'>Choisir votre thème</p></div><div class='row d-flex justify-content-center'><div class='col-10'><p class='mb-4'>Vous pourrez facilement changer de thème dans votre menu utilisateur</p><select name='theme_select' id='theme_select' class='mb-4'></select></div></div></div></div>",
-      "tooltipClass": "width-intro-500 height-intro-450 text-center"
+      "tooltipClass": "width-intro-500 height-intro-450 text-center",
+      "customButton": "<div class='mt-5 mb-2'><button id='custom-next-button' class='next-button center-button'>Lancer l'aide</button></div>",
+      "hideButtons": true
     },
     {
       "id": "navigation",
@@ -32,7 +34,7 @@
       "intro": "<div id='navigation' class='mx-5' style='margin-top:-30px'><div class='row'><div class='col-12'><div class='row'><span class='subtitle small-font'>Accueil</span></div><div class='row'><p class='semibold small-font'>Barre de navigation</p></div><div class='row'><p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications</p></div></div></div></div>",
       "tooltipClass": "mt-4 width-intro-600 hide-hint intro-no-margin",
       "button": "<span>Découvrir la barre de navigation</span><span class='icon-mel-arrow-right ml-3 plus'></span>",
-      "customButton": "<button id='custom-previous-button' class='previous-button mt-3'>Précédent</button><button id='custom-next-button' class='next-button ml-3 mt-3'>Suivant</button>",
+      "customButton": "<button id='custom-next-button' class='next-button ml-3 mt-3'>Continuer</button>",
       "hideButtons": true,
       "details": {
         "hintClass": "menu-hint-bureau",

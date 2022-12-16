@@ -267,6 +267,11 @@ html.dark-mode #notifications-panel article span.notification_button a:hover {
     content: "\e901";
 }
 
+#notificationstack article.help span.category::before,
+#notifications-panel article.help span.category::before {
+    content: "\e917";
+}
+
 #notificationstack article.news span.category::before,
 #notifications-panel article.news span.category::before {
     content: "\e91a";

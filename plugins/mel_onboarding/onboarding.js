@@ -150,6 +150,8 @@ function startIntro(task, assistance = false) {
       if (this._introItems[this._currentStep].hideButtons) {
         $('.introjs-tooltipbuttons').hide();
 
+        $('#accueil').focus();
+
         $('#custom-next-button').on('click', function () {
           intro.nextStep();
         })
@@ -219,7 +221,7 @@ function startIntro(task, assistance = false) {
   }).start();
 
   if (assistance) {
-    intro.goToStep(4);
+    // intro.goToStep(4);
   }
   addBulletTitle();
 }
@@ -536,7 +538,7 @@ function send_notification() {
     uid: 'help-' + Math.random(),
     title: "Aide interactive",
     content: "Retrouvez votre aide interactive sur le bouton 'Aide de la page'",
-    category: 'help',
+    category: 'onboarding',
     action: [
       {
         href: 'javascript:void(0)',

@@ -219,7 +219,7 @@ function startIntro(task, assistance = false) {
   }).start();
 
   if (assistance) {
-    // intro.goToStep(4);
+    intro.goToStep(4);
   }
   addBulletTitle();
 }
@@ -534,8 +534,8 @@ function replaceImages(json) {
 function send_notification() {
   top.rcmail.triggerEvent('plugin.push_notification', {
     uid: 'help-' + Math.random(),
-    title: "Retrouvez votre aide interactive",
-    content: "Contenu de la notif",
+    title: "Aide interactive",
+    content: "Retrouvez votre aide interactive sur le bouton 'Aide de la page'",
     category: 'help',
     action: [
       {

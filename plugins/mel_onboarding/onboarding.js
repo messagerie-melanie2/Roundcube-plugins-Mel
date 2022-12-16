@@ -39,7 +39,6 @@ if (window.rcmail) {
 
 //Ouvre l'onboarding depuis la fenêtre d'assistance
 rcube_webmail.prototype.current_page_onboarding = function (task) {
-  // window.parent.help_popUp.close();
   window.help_popUp.close();
   var iframe = window.parent.$('iframe.' + task + '-frame')[0];
   if (iframe) {

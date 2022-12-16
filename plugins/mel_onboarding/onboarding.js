@@ -221,7 +221,7 @@ function startIntro(task, assistance = false) {
   }).start();
 
   if (assistance) {
-    // intro.goToStep(4);
+    intro.goToStep(4);
   }
   addBulletTitle();
 }

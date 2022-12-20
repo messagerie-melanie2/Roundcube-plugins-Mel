@@ -2800,6 +2800,66 @@ class mel_driver extends calendar_driver {
   }
 
   /**
+   * Récupération de la clé de partage pour les rendez-vous
+   * @param string $calendar
+   * @return string|NULL
+   */
+  public function get_appointment_public_key($calendar) {
+    $result = null;
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
+
+    if (isset($value)) {
+      $value = unserialize($value);
+      if (isset($value[$calendar])) {
+        $result = $value[$calendar];
+      }
+    }
+    return $result;
+  }
+   /**
+   * Création de la clé pour les rendez-vous pour le partage public
+   * @param string $calendar
+   * @param string $key
+   */
+  public function add_appointment_public_key($calendar, $key) {
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
+
+    if (isset($value)) {
+      $value = unserialize($value);
+      $value[$calendar] = $key;
+    }
+    else {
+      $value = array($calendar => $key);
+    }
+    // Enregistrement de la valeur de pref
+    return driver_mel::gi()->getUser()->saveCalendarPreference("appointmentkeyhash", serialize($value));
+  }
+
+  /**
+   * Suppression de la clé pour les rendez-vous
+   * @param string $calendar
+   */
+  public function delete_appointment_public_key($calendar) {
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
+
+    if (isset($value)) {
+      $value = unserialize($value);
+      if (isset($value[$calendar])) {
+        unset($value[$calendar]);
+        // Enregistrement de la valeur de pref
+        return driver_mel::gi()->getUser()->saveCalendarPreference("appointmentkeyhash", serialize($value));
+      }
+    }
+    return true;
+  }
+
+  /**
    * List availabale categories
    * The default implementation reads them from config/user prefs
    */

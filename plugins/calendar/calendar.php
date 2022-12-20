@@ -4171,6 +4171,36 @@ $("#rcmfd_new_category").keypress(function(event) {
     return rcube_utils::resolve_url($url);
   }
 
+    /**
+   * PAMELA - Build an absolute URL with the given parameters
+   */
+  public function get_appointment_url($calendar)
+  {
+    // Récupération de la clé
+    $_hashkey = $this->driver->get_appointment_public_key($calendar);
+    if (!isset($_hashkey)) {
+      // Pas de clé, donc pas d'url publique
+      return null;
+    }
+
+    // PAMELA - Nouvelle URL
+    $url = 'public/fullcalendar/';
+    $delm = '?';
+    $_cal = $this->ical_feed_hash($calendar) . '.ics';
+
+    $param = array('_cal' => $_cal, '_key' => $_hashkey);
+
+    foreach ($param as $key => $val) {
+      if ($val !== '' && $val !== null) {
+        $par  = $key;
+        $url .= $delm.urlencode($par).'='.urlencode($val);
+        $delm = '&';
+      }
+    }
+
+    return rcube_utils::resolve_url($url);
+  }
+
 
     public function ical_feed_hash($source)
     {

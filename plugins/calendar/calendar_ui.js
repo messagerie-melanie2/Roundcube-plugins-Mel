@@ -3424,8 +3424,6 @@ function rcube_calendar_ui(settings) {
     let user_pref = JSON.parse(rcmail.env.user_appointment_pref);
     if (user_pref) {
 
-      console.log(user_pref);
-
       form.find('#check_appointment').prop('checked', user_pref)
       form.find('#appointment_url').val(user_pref.url);
       form.find('#check_user_select_time').prop('checked', user_pref.check_user_select_time === 'true');

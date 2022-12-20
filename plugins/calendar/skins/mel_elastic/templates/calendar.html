@@ -243,8 +243,10 @@
     <roundcube:endif />
     <roundcube:button type="link-menuitem" command="calendar-showurl" label="calendar.showurl" class="showurl disabled"
       classAct="showurl active" />
+    <roundcube:if condition="config:enable_appointment" />
     <roundcube:button type="link-menuitem" command="calendar-appointment" label="calendar.configureappointment"
       class="appointment disabled" classAct="appointment active" />
+    <roundcube:endif />
     <roundcube:if condition="!empty(env:calendar_settings['freebusy_url'])" />
     <roundcube:button type="link-menuitem" command="calendar-showfburl" label="calendar.showfburl"
       class="showurl disabled" classAct="showurl active" />
@@ -613,7 +615,7 @@
                       <div class="col-1"></div>
                       <div class="col-11">
                         <input type="text" id="address_input" class="form-control" placeholder="Adresse"
-                          value="<roundcube:var name="env:user_address" />">
+                          value="<roundcube:var name=" env:user_address" />">
                         <span class="text-danger" id="address_error"></span>
                       </div>
                     </div>
@@ -634,19 +636,23 @@
                           <input class="form-check-input" type="radio" name="callRadio" id="organizer_call"
                             onchange="show_phone_field(false)" value="switch" checked>
                           <label class="form-check-label" for="organizer_call">
-                            J'appellerais mon invité <span class="icofont-info-circle ml-3" title="Le numéro de votre invité sera demandé lors de la prise du rendez-vous" style="cursor: help;"></span>
+                            J'appellerais mon invité <span class="icofont-info-circle ml-3"
+                              title="Le numéro de votre invité sera demandé lors de la prise du rendez-vous"
+                              style="cursor: help;"></span>
                           </label>
                         </div>
                         <div class="form-check mb-2">
                           <input class="form-check-input" type="radio" name="callRadio" id="attendee_call"
                             onchange="show_phone_field(true)" value="switch">
                           <label class="form-check-label" for="attendee_call">
-                            Mon invité doit m'appeler <span class="icofont-info-circle ml-3" title="Votre numéro ne sera affiché qu'après la prise de rendez-vous validée" style="cursor: help;"></span>
+                            Mon invité doit m'appeler <span class="icofont-info-circle ml-3"
+                              title="Votre numéro ne sera affiché qu'après la prise de rendez-vous validée"
+                              style="cursor: help;"></span>
                           </label>
                         </div>
                         <div id="phone_number_field" style="display: none;">
                           <input type="text" class="form-control" id="phone_input" placeholder="Numéro de téléphone"
-                            value="<roundcube:var name="env:user_phone">">
+                            value="<roundcube:var name=" env:user_phone">">
                           <span class="text-danger" id="phone_error"></span>
                         </div>
                       </div>
@@ -679,8 +685,8 @@
                           <div class="col-7">
                             <div class="input-group mb-3">
                               <div class="input-group-prepend">
-                                <button type="button" class="form-control" id="phone"
-                                 disabled style="color: #000;"><span class="icofont-phone"></span></button>
+                                <button type="button" class="form-control" id="phone" disabled
+                                  style="color: #000;"><span class="icofont-phone"></span></button>
                               </div>
                               <input type="text" id="webconf_phone" class="form-control"
                                 placeholder="Téléphone du salon" aria-describedby="phone" disabled>
@@ -690,8 +696,8 @@
                           <div class="col-5" style="padding-left: 0;">
                             <div class="input-group mb-3">
                               <div class="input-group-prepend">
-                                <button type="button" class="form-control" id="phone_pin"
-                               disabled style="color: #000;"><span class="icofont-lock"></span></button>
+                                <button type="button" class="form-control" id="phone_pin" disabled
+                                  style="color: #000;"><span class="icofont-lock"></span></button>
                               </div>
                               <input type="text" id="webconf_phone_pin" class="form-control" placeholder="Code pin"
                                 aria-describedby="lock" disabled>

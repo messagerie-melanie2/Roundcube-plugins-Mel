@@ -2896,7 +2896,7 @@ function rcube_calendar_ui(settings) {
         if (cal.active) {
           fc.fullCalendar('addEventSource', cal);
         }
-
+          
       });
 
       this.quickview_active = false;
@@ -2951,7 +2951,7 @@ function rcube_calendar_ui(settings) {
       if (cal.active) {
         fc.fullCalendar('addEventSource', cal);
       }
-
+        
     });
 
     // uncheck all active quickview icons
@@ -3080,39 +3080,16 @@ function rcube_calendar_ui(settings) {
     if (url) {
       $('.ui-dialog #input_calpublicfeedurl').show();
       $('.ui-dialog #calpublicfeedurl').val(url);
+      $('.ui-dialog #button_fullcalendarurl').show();
       $(".ui-dialog #checkpublicfeedurl").prop("checked", true);
       this.calendars[calendar].feedcalendarurl = url;
     }
     else {
       $('.ui-dialog #input_calpublicfeedurl').hide();
       $('.ui-dialog #calpublicfeedurl').val('');
+      $('.ui-dialog #button_fullcalendarurl').hide();
       $(".ui-dialog #checkpublicfeedurl").prop("checked", false);
       delete this.calendars[calendar].feedcalendarurl;
-    }
-  };
-
-  this.toggle_appointment = function (calendar) {
-    setTimeout(() => {
-      var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
-      rcmail.http_post('calendar', { action: 'toggle_appointment', c: { id: calendar.id, checked: $('.ui-dialog #check_appointment').prop('checked') } }, lock);
-      return true;
-    }, 200);
-  };
-
-  this.appointment_show_url = function (calendar, url) {
-    if (url) {
-      $('.ui-dialog #appointment_url').val(url);
-      $('.ui-dialog #button_fullcalendarurl').show();
-      $('.ui-dialog #appointment_configuration').show();
-      $(".ui-dialog #check_appointment").prop("checked", true);
-      this.calendars[calendar].appointment_url = url;
-    }
-    else {
-      $('.ui-dialog #appointment_url').val('');
-      $('.ui-dialog #button_fullcalendarurl').hide();
-      $('.ui-dialog #appointment_configuration').hide();
-      $(".ui-dialog #check_appointment").prop("checked", false);
-      this.calendars[calendar].appointment_url = url;
     }
   };
 
@@ -3357,18 +3334,18 @@ function rcube_calendar_ui(settings) {
         $('#calendarcaldavurl', dialog).hide();
       }
 
-      if (calendar.caldavurl) {
-        $('#caldavurl', dialog).val(calendar.caldavurl);
-        $('#calendarcaldavurl', dialog).show();
-      }
-      else {
-        $('#calendarcaldavurl', dialog).hide();
-      }
-
-      if (calendar.feedfreebusyurl) {
-        $('#calfreebusyurl', dialog).val(calendar.feedfreebusyurl);
-        $('#calendarcalfreebusyurl', dialog).show();
-      }
+        if (calendar.caldavurl) {
+          $('#caldavurl', dialog).val(calendar.caldavurl);
+          $('#calendarcaldavurl', dialog).show();
+        }
+        else {
+          $('#calendarcaldavurl', dialog).hide();
+        }
+        
+        if (calendar.feedfreebusyurl) {
+          $('#calfreebusyurl', dialog).val(calendar.feedfreebusyurl);
+          $('#calendarcalfreebusyurl', dialog).show();
+        }
 
 
       if (calendar.showfeedcalendarurl) {
@@ -3396,263 +3373,6 @@ function rcube_calendar_ui(settings) {
         cancel_button: 'close'
       });
     }
-  };
-
-  //PAMELA appointment configuration
-  this.appointment = function (calendar) {
-    let dialog = $('#appointmentbox').clone(true).removeClass('uidialog');
-    let form = dialog.find('#appointmentpropform');
-
-    //On initialise le datetimepicker sur tous les jours de la semaines
-    for (let i = 1; i < 8; i++) {
-      $('#time_start_' + i + '-1', dialog).datetimepicker({
-        datepicker: false,
-        format: 'H:i',
-        step: 15,
-        value: settings.work_start + ':00'
-      });
-
-      $('#time_end_' + i + '-1', dialog).datetimepicker({
-        datepicker: false,
-        format: 'H:i',
-        step: 15,
-        value: settings.work_end + ':00'
-      });
-    }
-
-
-    let user_pref = JSON.parse(rcmail.env.user_appointment_pref);
-    if (user_pref) {
-
-      form.find('#check_appointment').prop('checked', user_pref)
-      form.find('#appointment_url').val(user_pref.url);
-      form.find('#check_user_select_time').prop('checked', user_pref.check_user_select_time === 'true');
-      if (user_pref.check_user_select_time === 'true') {
-        form.find('#time').hide();
-      }
-      else {
-        if (user_pref.custom_time_select) {
-          form.find(`#time_select option[value="custom"]`).prop('selected', true);
-          form.find('#custom_time').show();
-          form.find(`#custom_time_select option[value="${user_pref.custom_time_select}"]`).prop('selected', true);
-          form.find('#custom_time_input').val(user_pref.time_select)
-
-        } else {
-          form.find(`#time_select option[value="${user_pref.time_select}"]`).prop('selected', true);
-        }
-      }
-
-      if (user_pref.place) {
-        user_pref.place.forEach(element => {
-          switch (element.type) {
-            case "attendee_call":
-              form.find(`#phone`).prop('checked', true);
-              form.find('#phone_fields').show();
-              form.find(`#attendee_call`).prop('checked', true);
-              form.find('#phone_number_field').show();
-              form.find('#phone_input').val(element.value);
-              break;
-            case "organizer_call":
-              form.find(`#phone`).prop('checked', true);
-              form.find('#phone_fields').show();
-              form.find(`#organizer_call`).prop('checked', true);
-              break;
-            case "address":
-              form.find(`#${element.type}`).prop('checked', true);
-              form.find('#address_fields').show();
-              form.find('#address_input').val(element.value);
-              break;
-            case "webconf":
-              form.find(`#${element.type}`).prop('checked', true);
-              form.find('#webconf_fields').show();
-              form.find('#webconf_input').val(element.value);
-              form.find('#webconf_phone').val(element.phone);
-              form.find('#webconf_phone_pin').val(element.pin);
-              break;
-
-            default:
-              break;
-          }
-        });
-      }
-
-      form.find(`#time_before_select option[value="${user_pref.time_before_select}"]`).prop('selected', true);
-      form.find(`#time_after_select option[value="${user_pref.time_after_select}"]`).prop('selected', true);
-      form.find('#custom_reason').prop('checked', user_pref.custom_reason === 'true');
-
-      if (user_pref.reason) {
-        user_pref.reason.forEach((element, index) => {
-          if (index == 0) {
-            form.find('#time_reason-1').val(element)
-          }
-          else {
-            let input_array = form.find('#appointment_reason .row:last-child').find('input');
-            let start_input = input_array.attr('id').split('-');
-            let new_id = parseInt(start_input[1]) + 1;
-
-            form.find('#appointment_reason').append('<div id="row' + new_id + '" class="form-group row mt-3"><div class="col-10"><input type="text" class="form-control" id="time_reason-' + new_id + '" placeholder="Motif" value="' + element + '"></div><div class="col-1"><button class="btn btn-danger" title="Supprimer le motif de rendez-vous" id="reason_trash_' + new_id + '" onclick="remove_reason(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div></div>');
-
-          }
-        })
-      }
-
-      for (let i = 0; i < 7; i++) {
-        let day_range = user_pref.range[i];
-
-        let new_i;
-        i == 0 ? new_i = 7 : new_i = i;
-        if (day_range != "") {
-          form.find('#day_check_' + new_i).prop('checked', true);
-          form.find('#appointment_range_' + new_i).show();
-
-          form.find(`#time_start_${new_i}-1`).val(day_range[0])
-          form.find(`#time_end_${new_i}-1`).val(day_range[1])
-
-          if (day_range.length > 2) {
-            for (let j = 2; j < day_range.length; j += 2) {
-              let id = new_i + '-' + j;
-              form.find('#appointment_range_' + new_i).append('<div id="row' + id + '" class="row mt-2"><div class="col-5"><input id="time_start_' + id + '" name="time_start_' + id + '" type="text" class="form-control" onchange="check_time_validity(`' + id + '`)"></div>-<div class="col-5"><input id="time_end_' + id + '" name="time_end_' + id + '"  type="text" class="form-control" onchange="check_time_validity(`' + id + '`)"></div><div class="col-1 pl-0"><button class="btn btn-danger" id="time_trash_' + id + '" onclick="remove_time(`' + id + '`)"><span class="icon-mel-trash"></span></button></div><span id="time_alert_' + id + '" class="text-danger" style="display: none;"></span></div>');
-
-              form.find('#time_start_' + id).datetimepicker({
-                datepicker: false,
-                format: 'H:i',
-                step: 15,
-                value: day_range[j]
-              });
-
-              form.find('#time_end_' + id).datetimepicker({
-                datepicker: false,
-                format: 'H:i',
-                step: 15,
-                value: day_range[j + 1]
-              });
-            }
-          }
-        }
-        else {
-          form.find('#day_check_' + new_i).prop('checked', false);
-          form.find('#appointment_range_' + new_i).hide();
-        }
-      }
-
-    }
-    else {
-      form.find('#appointment_configuration').hide();
-      dialog.find('#button_fullcalendarurl').hide();
-    }
-
-    save_func = function () {
-      let appointment = {};
-
-      appointment.check_user_select_time = form.find('#check_user_select_time').prop('checked');
-
-      if (!appointment.check_user_select_time) {
-        appointment.time_select = form.find('#time_select').val();
-
-        if (appointment.time_select == 'custom') {
-          appointment.custom_time_select = form.find('#custom_time_select').val();
-          appointment.time_select = form.find('#custom_time_input').val();
-        }
-      }
-
-      let error_message = "Ce champs est obligatoire";
-      let error = false;
-      for (let e of form.find('input[required]')) {
-        if (!($(e).val() || null)) {
-          form.find(`#${e.id}`).addClass('is-invalid');
-          form.find(`#${e.id.split('_')[0]}_error`).text(error_message);
-          error = true;
-        }
-        else {
-          form.find(`#${e.id}`).removeClass('is-invalid');
-          form.find(`#${e.id.split('_')[0]}_error`).text("");
-        }
-      }
-      if (error) {
-        return;
-      }
-
-      appointment.range = {};
-
-
-      for (let i = 1; i < 8; i++) {
-        let inputs_val = [""];
-
-        if (form.find('#day_check_' + i).prop('checked')) {
-
-          let inputs = form.find('#appointment_range_' + i).find('input');
-          inputs_val = [];
-          inputs.each((index, input) => {
-            inputs_val.push(input.value)
-          })
-        }
-
-        //le dimanche doit être 0 pour fullcalendar
-        if (i == 7) {
-          appointment.range[0] = inputs_val;
-        }
-        else {
-          appointment.range[i] = inputs_val;
-        }
-      }
-
-      appointment.time_before_select = form.find('#time_before_select').val();
-      appointment.time_after_select = form.find('#time_after_select').val();
-
-      let appointment_reason = [];
-      let inputs_reason = form.find('#appointment_reason').find('input');
-      inputs_reason.each((index, input) => {
-        appointment_reason.push(input.value)
-      })
-      appointment.reason = appointment_reason;
-
-      appointment.custom_reason = form.find('#custom_reason').prop('checked');
-
-      select_place = form.find('#place').find('input:checkbox');
-
-      let place = [];
-      select_place.each((index, input) => {
-        if ($(input).prop('checked')) {
-          let id = input.id;
-          switch (id) {
-            case 'address':
-              place.push({ "type": id, value: form.find('#address_input').val(), text: form.find('#adress_text').text() })
-              break;
-            case 'phone':
-              form.find('#phone_fields').find('input').each((index, input) => {
-                if ($(input).prop('checked')) {
-                  if (input.id == "organizer_call") {
-                    place.push({ "type": input.id, value: true, text: form.find('#phone_text').text() })
-                  }
-                  if (input.id == "attendee_call") {
-                    place.push({ "type": input.id, value: form.find('#phone_input').val(), text: form.find('#phone_text').text() })
-                  }
-                }
-
-              })
-              break;
-            case 'webconf':
-              place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text(), phone: form.find('#webconf_phone').val(), pin: form.find('#webconf_phone_pin').val() })
-              break;
-
-            default:
-              break;
-          }
-        }
-      });
-
-      appointment.place = place;
-      appointment.url = form.find('#appointment_url').val();
-
-      rcmail.env.user_appointment_pref = JSON.stringify(appointment);
-
-      var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
-      rcmail.http_post('calendar', { action: "appointment", c: appointment }, lock);
-    };
-
-    rcmail.simple_dialog(dialog, rcmail.gettext('configureappointment', 'calendar'), save_func, {
-      cancel_button: 'close'
-    });
   };
 
   // show free-busy URL in a dialog box
@@ -3920,7 +3640,7 @@ function rcube_calendar_ui(settings) {
         // PAMELA
         fc.fullCalendar('addResource', me.calendars[id]);
       }
-
+        
       var submit = { id: id, active: cal.active ? 1 : 0 };
       if (cal.subscribed !== undefined)
         submit.permanent = cal.subscribed ? 1 : 0;
@@ -3992,14 +3712,13 @@ function rcube_calendar_ui(settings) {
   calendars_list.addEventListener('select', function (node) {
     if (node && node.id && me.calendars[node.id]) {
       me.select_calendar(node.id, true);
-      rcmail.enable_command('calendar-edit', 'calendar-showurl', 'calendar-appointment', 'calendar-showfburl', true);
+      rcmail.enable_command('calendar-edit', 'calendar-showurl', 'calendar-showfburl', true);
       rcmail.enable_command('calendar-delete', me.calendars[node.id].editable);
       rcmail.enable_command('calendar-remove', me.calendars[node.id] && me.calendars[node.id].removable);
       // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
       rcmail.enable_command('calendar-delete-all', true);
       // MANTIS 3896: Partage public et protégé de l'agenda
       rcmail.enable_command('calendar-check-feed-url', true);
-      rcmail.enable_command('toggle-appointment', true);
       rcmail.enable_command('calendar-setting-resource', true);
     }
   });
@@ -4683,7 +4402,6 @@ window.rcmail && rcmail.addEventListener('init', function (evt) {
   rcmail.register_command('calendar-delete', function () { cal.calendar_delete(cal.calendars[cal.selected_calendar]); }, false);
   rcmail.register_command('events-import', function () { cal.import_events(cal.calendars[cal.selected_calendar]); }, true);
   rcmail.register_command('calendar-showurl', function () { cal.showurl(cal.calendars[cal.selected_calendar]); }, false);
-  rcmail.register_command('calendar-appointment', function () { cal.appointment(cal.calendars[cal.selected_calendar]); }, false);
   rcmail.register_command('calendar-showfburl', function () { cal.showfburl(); }, false);
   rcmail.register_command('event-download', function () { console.log("d", cal.selected_event, cal); cal.event_download(cal.selected_event); }, true);
   rcmail.register_command('event-sendbymail', function (p, obj, e) { cal.event_sendbymail(cal.selected_event, e); }, true);
@@ -4722,9 +4440,7 @@ window.rcmail && rcmail.addEventListener('init', function (evt) {
 
   // MANTIS 3896: Partage public et protégé de l'agenda
   rcmail.register_command('calendar-check-feed-url', function () { cal.calendar_check_feed_url(cal.calendars[cal.selected_calendar]); }, true);
-  rcmail.register_command('toggle-appointment', function () { cal.toggle_appointment(cal.calendars[cal.selected_calendar]); }, true);
   rcmail.addEventListener('plugin.show_feed_url', function (p) { cal.calendar_show_feed_url(p.id, p.url); });
-  rcmail.addEventListener('plugin.appointment_show_url', function (p) { cal.appointment_show_url(p.id, p.url); });
 
   $(window).resize(function (e) {
     // check target due to bugs in jquery

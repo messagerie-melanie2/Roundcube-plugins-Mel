@@ -183,7 +183,7 @@ class mel extends rcube_plugin
       if ((!isset($_GET['_is_from']) || $_GET['_is_from'] != 'iframe')
         && !isset($_GET['_extwin'])
         && !isset($_GET['_framed'])
-        && $this->rc->task != 'login'
+        && $this->rc->task != 'login' 
         && $this->rc->task != 'logout'
       ) {
         if (driver_mel::gi()->getUser()->load(['lastname', 'firstname', 'email', 'service'])) {
@@ -234,12 +234,6 @@ class mel extends rcube_plugin
           'task' => 'settings'
         )));
         $this->api->add_content($content, 'calendaroptionsmenu');
-        $user = driver_mel::gi()->getUser();
-        $user->load(['phonenumber', 'mobilephone', 'street', 'postalcode', 'locality']);
-
-        $this->rc->output->set_env('user_appointment_pref', $user->getCalendarPreference("appointment_properties"));
-        $this->rc->output->set_env('user_phone', isset($user->mobilephone) ? $user->mobilephone : $user->phonenumber);
-        $this->rc->output->set_env('user_address', isset($user->street) ? $user->street . ' ' . $user->postalcode . ' ' . $user->locality : null);
       } else if ($this->rc->task == 'tasks') {
         // Link to Settings/Folders
         $content = html::tag('li', array(
@@ -459,7 +453,8 @@ class mel extends rcube_plugin
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
     }
 
-    if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0) {
+    if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0)
+    {
       $bal = driver_mel::gi()->user();
       $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $args['folder']);
       $bal->load();
@@ -476,31 +471,34 @@ class mel extends rcube_plugin
   public function imap_search_before($args)
   {
 
-    if (is_array($args['folder'])) {
+    if (is_array($args['folder']))
+    {
       $isBalp = false;
       $bal = driver_mel::gi()->user();
       foreach ($args['folder'] as $key => $value) {
-        if (strpos($value, driver_mel::gi()->getBalpLabel()) === 0) {
+        if (strpos($value, driver_mel::gi()->getBalpLabel()) === 0)
+        {
           $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $value);
-          if ($bal->load()) {
+          if ($bal->load())
+          {
             $isBalp = true;
             $hostname = driver_mel::gi()->getRoutage($bal, 'imap_search_before');
             $uid = driver_mel::gi()->getUser()->uid . driver_mel::gi()->objectShareDelimiter() . $bal->uid;
-            $this->rc->storage->connect(
-              $hostname,
-              $uid,
-              $this->rc->decrypt($_SESSION['password']),
-              $_SESSION['storage_port'],
-              $_SESSION['storage_ssl']
-            );
+            $this->rc->storage->connect($hostname, 
+                              $uid, 
+                              $this->rc->decrypt($_SESSION['password']), 
+                              $_SESSION['storage_port'], 
+                              $_SESSION['storage_ssl']);
             break;
           }
         }
       }
 
-      if ($isBalp) {
+      if ($isBalp)
+      {
         foreach ($args['folder'] as $key => $value) {
-          if (strpos($value, driver_mel::gi()->getBalpLabel()) !== 0) {
+          if (strpos($value, driver_mel::gi()->getBalpLabel()) !== 0)
+          {
             unset($args['folder'][$key]);
           }
         }
@@ -1134,9 +1132,7 @@ class mel extends rcube_plugin
    */
   public static function is_internal()
   {
-    if (isset($_GET['internet'])) {
-      return false;
-    }
+    if (isset($_GET['internet'])) { return false; }
 
     return rcmail::get_instance()->config->get('is_internal', false);
   }
@@ -1147,16 +1143,16 @@ class mel extends rcube_plugin
    * 
    * @return boolean
    */
-  public static function is_auth_strong()
+  public static function is_auth_strong() 
   {
     $eidas = $_SESSION['eidas'];
     //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
-
+  
     return mel::is_internal() // Connexion intranet
       || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)
       || $eidas == "eidas3"; // Cerbère Certif (logiciel RGS1, carte à puce RGS3)
   }
-
+  
   /**
    * Retourne l'adresse ip
    * @return string

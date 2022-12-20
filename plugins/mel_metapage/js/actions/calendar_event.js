@@ -1,6 +1,36 @@
 $(document).ready(
   function () {
 
+    function tab($item) {
+      const tab = $item.attr('id');
+      let other_tabs = $item.parent().parent().find('a');
+
+      $item.on('show.bs.tab');
+
+      let id;
+      for (let iterator of other_tabs) {
+        iterator = $(iterator);
+        id = iterator.attr('id');
+        if (id !== tab) {
+          iterator.removeClass('active');
+          $(`.tab-pane[aria-labelledby="${id}"]`).removeClass('active');
+          iterator.on('hide.bs.tab');
+        }
+        else {
+          iterator.addClass('active');
+          $(`.tab-pane[aria-labelledby="${id}"]`).addClass('active');
+        }
+
+      }
+
+      $item.on('shown.bs.tab');
+    }
+
+    $('#myTab a').on('click', function (e) {
+      e.preventDefault()
+      tab($(e.currentTarget));
+    })
+
     function calendar_waiting_number() {
       if (!window.rcube_calendar || !rcube_calendar.get_number_waiting_events) return;
 
@@ -114,9 +144,6 @@ $(document).ready(
       });
 
     });
-
-
-
   }
 );
 
@@ -297,23 +324,12 @@ function copy_calendar_url(input_id) {
   }
 }
 
-function open_external_calendar(id) {
-  let url = new URL($('.ui-dialog #' + id).val());
+function open_external_calendar() {
+  let url = new URL($('.ui-dialog #appointment_url').val());
   url.searchParams.append('_name', window.btoa(rcmail.env.current_user.full))
 
   if (url) {
-    switch (id) {
-      case 'calpublicfeedurl':
-        window.open(url.href.replace('feed', 'fullcalendar'), '_blank');
-        break;
-
-      case 'calfreebusyurl':
-        window.open(url.href.replace('freebusy', 'fullcalendar'), '_blank');
-        break;
-
-      default:
-        break;
-    }
+    window.open(url, '_blank');
   }
 }
 
@@ -338,4 +354,213 @@ function collapse_url_block(id) {
       $(this).attr('class', 'icon_url icon-mel-chevron-down')
     }
   });
+}
+
+function toggle_user_select_time() {
+  $('.ui-dialog #time').toggle();
+}
+
+function toggle_custom_time() {
+  if ($('.ui-dialog #time_select').val() == 'custom') {
+    $('.ui-dialog #custom_time').show();
+  }
+  else {
+    $('.ui-dialog #custom_time_input').val('');
+    $('.ui-dialog #custom_time').hide();
+  }
+}
+
+function toggle_appointment_range(day) {
+  if ($('.ui-dialog #day_check_' + day).prop('checked')) {
+    $('.ui-dialog #appointment_range_' + day).show();
+  }
+  else {
+    $('.ui-dialog #appointment_range_' + day).hide();
+  }
+}
+
+function add_time(id) {
+  if ($('.ui-dialog #day_check_' + id).prop('checked')) {
+    let input_array = $('.ui-dialog #appointment_range_' + id + ' .row:last-child').find('input');
+    let start_input = input_array.attr('id').split('-');
+    let old_id = id + '-' + parseInt(start_input[1]);
+    let new_id = id + '-' + (parseInt(start_input[1]) + 1);
+
+    $('.ui-dialog #appointment_range_' + id).append('<div id="row' + new_id + '" class="row mt-2"><div class="col-5"><input id="time_start_' + new_id + '" name="time_start_' + new_id + '" type="text" class="form-control" onchange="check_time_validity(`' + new_id + '`)"></div>-<div class="col-5"><input id="time_end_' + new_id + '" name="time_end_' + new_id + '"  type="text" class="form-control" onchange="check_time_validity(`' + new_id + '`)"></div><div class="col-1 pl-0"><button class="btn btn-danger" id="time_trash_' + new_id + '" onclick="remove_time(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div><span id="time_alert_' + new_id + '" class="text-danger" style="display: none;"></span></div>');
+
+    initalize_new_datetimepicker(old_id, new_id);
+  }
+  else {
+    $('.ui-dialog #day_check_' + id).prop('checked', true)
+    toggle_appointment_range(id);
+  }
+}
+
+function initalize_new_datetimepicker(id, new_id) {
+
+  if ($('.ui-dialog #time_end_' + id).length) {
+    let value = $('.ui-dialog #time_end_' + id).datetimepicker('getValue');
+    let date1 = value.addHours(1)
+    let date2 = value.addHours(2)
+
+    $('.ui-dialog #time_start_' + new_id).datetimepicker({
+      datepicker: false,
+      format: 'H:i',
+      step: 15,
+      value: date1
+    });
+
+    $('.ui-dialog #time_end_' + new_id).datetimepicker({
+      datepicker: false,
+      format: 'H:i',
+      step: 15,
+      value: date2
+    });
+  }
+}
+
+function remove_time(new_id) {
+  $('.ui-dialog #row' + new_id).remove()
+  $('.ui-dialog #time_alert_' + new_id).remove()
+  check_time_validity(new_id);
+}
+
+function check_time_validity(id) {
+  let appointment_id = id.split('-')[0];
+  let input_array = $('.ui-dialog #appointment_range_' + appointment_id + ' .row').find('input');
+
+  let time_start = $('.ui-dialog #time_start_' + id);
+  let time_end = $('.ui-dialog #time_end_' + id);
+  let time_alert = $('.ui-dialog #time_alert_' + id);
+
+  if (time_end.val()) {
+    if (time_start.val() >= time_end.val()) {
+      time_end.addClass('border-danger')
+      time_alert.text('Merci de sélectionner une heure plus tardive').show()
+      $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", true);
+      return;
+    }
+    else {
+      time_end.removeClass('border-danger')
+      time_alert.hide()
+      $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", false);
+    }
+  }
+
+  //Si la valeur est comprise entre une autre plage déjà planifiée
+  for (let i = 1; i <= (input_array.length / 2); i++) {
+    let input_id = appointment_id + '-' + i;
+    let i_time_start = $('.ui-dialog #time_start_' + input_id);
+    let i_time_end = $('.ui-dialog #time_end_' + input_id);
+
+    if ((time_start.val() > i_time_start.val() && time_start.val() < i_time_end.val())
+      || (time_end.val() > i_time_start.val() && time_end.val() < i_time_end.val())
+      || (time_start.val() <= i_time_start.val() && (time_end.val() >= i_time_end.val()))) {
+      if (input_id != id) {
+        i_time_start.addClass('border-danger')
+        i_time_end.addClass('border-danger')
+        time_start.addClass('border-danger')
+        time_end.addClass('border-danger')
+        time_alert.text('Les heures se chevauchent avec une autre période').show()
+        $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", true);
+        return;
+      }
+
+    }
+    else {
+      i_time_start.removeClass('border-danger')
+      i_time_end.removeClass('border-danger')
+      time_start.removeClass('border-danger')
+      time_end.removeClass('border-danger')
+      time_alert.hide()
+      $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", false);
+    }
+  }
+}
+
+
+function add_reason(id) {
+  let input_array = $('.ui-dialog #appointment_reason .row:last-child').find('input');
+  let start_input = input_array.attr('id').split('-');
+  let new_id = parseInt(start_input[1]) + 1;
+
+  $('.ui-dialog #appointment_reason').append('<div id="row' + new_id + '" class="form-group row mt-3"><div class="col-10"><input type="text" class="form-control" id="time_reason-' + new_id + '" placeholder="Motif"></div><div class="col-1"><button class="btn btn-danger" title="Supprimer le motif de rendez-vous" id="reason_trash_' + new_id + '" onclick="remove_reason(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div></div>');
+}
+
+function remove_reason(new_id) {
+  $('.ui-dialog #row' + new_id).remove()
+}
+
+function toggle_fields(field) {
+  $(`.ui-dialog #${field}_fields`).toggle()
+  $(`.ui-dialog #${field}_input`).prop("required", !$(`.ui-dialog #${field}_input`).prop("required"))
+}
+
+function show_phone_field(show) {
+  if (show && $('.ui-dialog #attendee_call').prop('checked')) {
+    $('.ui-dialog #phone_number_field').show();
+    $('.ui-dialog #phone_input').prop('required', true);
+
+  }
+  else if(!show && !$('.ui-dialog #attendee_call').prop('checked')) {
+    $('.ui-dialog #phone_number_field').hide();
+    $('.ui-dialog #phone_input').prop('required', false);
+  }
+}
+
+function generateWebconf() {
+  $(".ui-dialog .mainaction").prop("disabled", true);
+  $(".ui-dialog #webconf_input").removeClass("is-invalid");
+
+  $(".ui-dialog #webconf_error").hide();
+
+  let webConfRoomName = mel_metapage.Functions.generateWebconfRoomName()
+
+  window.webconf_helper.phone.getAll(webConfRoomName).then((datas) => {
+    $('.ui-dialog #webconf_phone').val(datas.number);
+    $('.ui-dialog #webconf_phone_pin').val(datas.pin);
+    $(".ui-dialog .mainaction").prop("disabled", false);
+
+  })
+
+  $('.ui-dialog #webconf_input').val(webConfRoomName);
+
+}
+
+function checkWebconfName() {
+  let querry = $(".ui-dialog #webconf_input");
+  querry.val(querry.val().toUpperCase());
+  let val = querry.val();
+
+  if (val.includes(rcmail.env["webconf.base_url"].toUpperCase())) {
+    val = val.split("/");
+    val = val[val.length - 1];
+    querry.val(val.toUpperCase());
+  }
+
+  const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', 'mel_metapage') : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', 'mel_metapage') : rcmail.gettext('webconf_saloon_incorrect_format', 'mel_metapage');
+  $(".ui-dialog #webconf_error").text(text);
+
+  if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val)) {
+    $(".ui-dialog #webconf_input").addClass("is-invalid");
+    $(".ui-dialog #webconf_error").show();
+    $(".ui-dialog .mainaction").prop("disabled", true);
+    $('.ui-dialog #webconf_phone').val("");
+    $('.ui-dialog #webconf_phone_pin').val("");
+  }
+  else {
+    $(".ui-dialog #webconf_input").removeClass("is-invalid");
+    $(".ui-dialog #webconf_error").hide();
+    window.webconf_helper.phone.getAll(val).then((datas) => {
+      $('.ui-dialog #webconf_phone').val(datas.number);
+      $('.ui-dialog #webconf_phone_pin').val(datas.pin);
+      $(".ui-dialog .mainaction").prop("disabled", false);
+    })
+  }
+}
+
+Date.prototype.addHours = function (h) {
+  var copiedDate = new Date(this.getTime());
+  copiedDate.setHours(copiedDate.getHours() + h);
+  return copiedDate;
 }

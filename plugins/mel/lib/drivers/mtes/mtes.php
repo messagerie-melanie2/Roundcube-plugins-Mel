@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 /**
  * Plugin Mél
  *
@@ -17,39 +18,41 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 use LibMelanie\Ldap\Ldap as Ldap;
 
 include_once __DIR__ . '/../mce/mce.php';
 
-class mtes_driver_mel extends mce_driver_mel {
+class mtes_driver_mel extends mce_driver_mel
+{
   /**
    * Label utilisé dans les boites partagées pour l'arborescence des dossiers
    * 
    * @var string
    */
   protected $BALP_LABEL = 'Boite partag&AOk-e';
-  
+
   /**
    * Dossier pour les brouillons
    * 
    * @var string
    */
   protected $MBOX_DRAFT = "Brouillons";
-  
+
   /**
    * Dossier pour les éléments envoyés
    *  
    * @var string
    */
   protected $MBOX_SENT = "&AMk-l&AOk-ments envoy&AOk-s";
-  
+
   /**
    * Dossier pour les indésirables
    * 
    * @var string
    */
   protected $MBOX_JUNK = "Ind&AOk-sirables";
-  
+
   /**
    * Dossier pour la corbeille
    * 
@@ -96,7 +99,8 @@ class mtes_driver_mel extends mce_driver_mel {
    *
    * @return \LibMelanie\Api\Defaut\Group
    */
-  public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null) {
+  public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null)
+  {
     if (!$fromCache) {
       $group = $this->group([null, $itemName]);
       $group->dn = $group_dn;
@@ -118,7 +122,7 @@ class mtes_driver_mel extends mce_driver_mel {
     }
     return self::$_groups[$keyCache];
   }
-  
+
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée
    * Peut être INBOX ou autre chose si besoin
@@ -126,16 +130,16 @@ class mtes_driver_mel extends mce_driver_mel {
    * @param string $balpname
    * @return string $mbox par defaut
    */
-  public function getMboxFromBalp($balpname) {
+  public function getMboxFromBalp($balpname)
+  {
     if (isset($balpname)) {
       $delimiter = rcmail::get_instance()->get_storage()->delimiter;
       return $this->BALP_LABEL . $delimiter . $balpname;
-    }
-    else {
+    } else {
       return 'INBOX';
     }
   }
-  
+
   /**
    * Récupère et traite les infos de routage depuis l'objet LDAP 
    * pour retourner le hostname de connexion IMAP et/ou SMTP
@@ -145,7 +149,8 @@ class mtes_driver_mel extends mce_driver_mel {
    * 
    * @return string $hostname de routage, null si pas de routage trouvé
    */
-  public function getRoutage($infos, $function = '') {
+  public function getRoutage($infos, $function = '')
+  {
     $hostname = null;
     if (is_array($infos)) {
       if (isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
@@ -158,44 +163,47 @@ class mtes_driver_mel extends mce_driver_mel {
           }
         }
       }
-    }
-    else {
+    } else {
       $infos->load(['server_host']);
       $hostname = $infos->server_host;
     }
     return $hostname;
   }
-  
+
   /**
    * Positionne des headers pour un message avant de l'envoyer
    * 
    * @param array $headers Liste des headers a fournir au message
    * @return array $headers Retourne les headers completes
    */
-  public function setHeadersMessageBeforeSend($headers) {
+  public function setHeadersMessageBeforeSend($headers)
+  {
     // Positionner le HEADER pour indiquer l'origine du message (internet, intranet)
     $headers['Received'] = 'from butineur (par ' . $_SERVER["HTTP_X_MINEQPROVENANCE"] . ' [' . $_SERVER["HTTP_X_FORWARDED_FOR"] . ']) by ' . $_SERVER["HTTP_X_FORWARDED_SERVER"] . ' [' . $_SERVER["SERVER_ADDR"] . ']';
-    
+
     return $headers;
   }
-  
+
   /**
    * Est-ce que l'utilisateur courant a le droit d'accéder au stockage
    * 
    * @return boolean true si le stockage doit être affiché, false sinon
    */
-  public function userHasAccessToStockage() {
+  public function userHasAccessToStockage()
+  {
     // Gestion du filtre LDAP
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
     $hasAccess = false;
     $user = driver_mel::gi()->getUser();
     $user->load(array_keys($filter_ldap));
-    
+
     if (isset($filter_ldap) && count($filter_ldap) > 0) {
       foreach ($filter_ldap as $key => $value) {
-        if (isset($user->$key) 
-            && (is_array($user->$key) && in_array($value, $user->$key) 
-              || is_string($user->$key) && $user->$key == $value)) {
+        if (
+          isset($user->$key)
+          && (is_array($user->$key) && in_array($value, $user->$key)
+            || is_string($user->$key) && $user->$key == $value)
+        ) {
           // Le filtre est valide, l'utilisateur a accès au stockage
           $hasAccess = true;
         }
@@ -218,14 +226,18 @@ class mtes_driver_mel extends mce_driver_mel {
     }
     // Si on est sur Internet, vérifier que l'utilisateur a la double auth
     // ou une auth Cerbère suffisante (carte agent, double auth, etc)
-    if($hasAccess
-        && !mel::is_auth_strong()
-        && class_exists('mel_doubleauth')
-        && !mel_doubleauth::is_double_auth_enable()) { $hasAccess = false; }
-        
+    if (
+      $hasAccess
+      && !mel::is_auth_strong()
+      && class_exists('mel_doubleauth')
+      && !mel_doubleauth::is_double_auth_enable()
+    ) {
+      $hasAccess = false;
+    }
+
     return $hasAccess;
   }
-  
+
   /**
    * Est-ce que le mot de passe de l'utilisateur doit changer
    * Si c'est le cas la page de changement de mot de passe sera affichée après le login
@@ -234,23 +246,22 @@ class mtes_driver_mel extends mce_driver_mel {
    * @param string $title Titre de la fenetre de changement de mot de passe
    * @return boolean Le mot de passe doit changer
    */
-  public function isPasswordNeedsToChange(&$title) {
+  public function isPasswordNeedsToChange(&$title)
+  {
     if (!isset($_SESSION['plugin.show_password_change'])) {
       // Récupération des informations sur l'utilisateur courant
       $infos = Ldap::GetUserInfos(rcmail::get_instance()->get_user_name(), null, array(
-          'mineqpassworddoitchanger'
+        'mineqpassworddoitchanger'
       ), \LibMelanie\Config\Ldap::$AUTH_LDAP);
       if (!empty($infos['mineqpassworddoitchanger'][0])) {
         $title = $infos['mineqpassworddoitchanger'][0];
         $_SESSION['plugin.show_password_change'] = true;
         $_SESSION['plugin.password_change_title'] = $title;
-      }
-      else {
+      } else {
         $_SESSION['plugin.show_password_change'] = false;
         unset($_SESSION['plugin.password_change_title']);
       }
-    }
-    else if ($_SESSION['plugin.show_password_change'] && isset($_SESSION['plugin.password_change_title'])) {
+    } else if ($_SESSION['plugin.show_password_change'] && isset($_SESSION['plugin.password_change_title'])) {
       $title = $_SESSION['plugin.password_change_title'];
     }
     return $_SESSION['plugin.show_password_change'];
@@ -262,7 +273,8 @@ class mtes_driver_mel extends mce_driver_mel {
    * @param string $user Identifiant de l'objet group
    * @return boolean true si c'est un groupe, false sinon
    */
-  public function userIsGroup($user) {
+  public function userIsGroup($user)
+  {
     return strpos($user, "mineqRDN=") === 0 && strpos($user, "ou=organisation,dc=equipement,dc=gouv,dc=fr") !== false;
   }
 
@@ -275,7 +287,8 @@ class mtes_driver_mel extends mce_driver_mel {
    * 
    * @return boolean true si la commande s'est correctement lancée
    */
-  public function unexpunge($mbox, $folder, $hours) {
+  public function unexpunge($mbox, $folder, $hours)
+  {
     $_user = $this->getUser($mbox, false);
     if ($_user->is_objectshare) {
       $_user = $_user->objectshare->mailbox;
@@ -297,16 +310,14 @@ class mtes_driver_mel extends mce_driver_mel {
     if (flock($fic, LOCK_EX)) {
       fputs($fic, 'recuperation:' . $hours);
       flock($fic, LOCK_UN);
-    }
-    else {
+    } else {
       return false;
     }
     fclose($fic);
 
     if (file_exists($nom)) {
       $res = chmod($nom, 0444);
-    }
-    else {
+    } else {
       return false;
     }
     return true;
@@ -319,7 +330,8 @@ class mtes_driver_mel extends mce_driver_mel {
    * 
    * @return array $args personnalisé
    */
-  public function contact_form($args) {
+  public function contact_form($args)
+  {
     $args['head_fields']['category'] = ['category'];
     $args['head_fields']['type'] = ['type'];
     if (isset($args['form']['head'])) {
@@ -333,30 +345,30 @@ class mtes_driver_mel extends mce_driver_mel {
       $args['form']['function'] = [
         'name'    => $plugin->gettext('function'),
         'content' => [
-            'jobtitle'      => array('type' => 'text', 'label' => $plugin->gettext('jobtitle')),
-            'jobs'          => array('type' => 'text', 'label' => $plugin->gettext('jobs')),
-            'assignments'   => array('type' => 'text', 'label' => $plugin->gettext('assignments')),
+          'jobtitle'      => array('type' => 'text', 'label' => $plugin->gettext('jobtitle')),
+          'jobs'          => array('type' => 'text', 'label' => $plugin->gettext('jobs')),
+          'assignments'   => array('type' => 'text', 'label' => $plugin->gettext('assignments')),
         ],
       ];
       // Add members list
       $args['form']['members'] = [
-          'name'    => $plugin->gettext('members'),
-          'content' => [
-              'members' => array('type' => 'text', 'label' => false),
-          ],
+        'name'    => $plugin->gettext('members'),
+        'content' => [
+          'members' => array('type' => 'text', 'label' => false),
+        ],
       ];
       // Add owner list
       $args['form']['owner'] = [
         'name'    => $plugin->gettext('owners'),
         'content' => [
-            'owner' => array('type' => 'html', 'label' => false, 'render_func' => [$this, 'renderOwner']),
+          'owner' => array('type' => 'html', 'label' => false, 'render_func' => [$this, 'renderOwner']),
         ],
       ];
       // Add share list
       $args['form']['share'] = [
         'name'    => $plugin->gettext('shares'),
         'content' => [
-            'share' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderShare']),
+          'share' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderShare']),
         ],
       ];
       if (isset($args['record']['email'])) {
@@ -373,14 +385,14 @@ class mtes_driver_mel extends mce_driver_mel {
             ];
           }
           // Sort lists
-          usort($args['record']['list'], function($a, $b) {
+          usort($args['record']['list'], function ($a, $b) {
             return strcmp($a['mail'], $b['mail']);
           });
           // Add share list
           $args['form']['list'] = [
             'name'    => $plugin->gettext('lists'),
             'content' => [
-                'list' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderList']),
+              'list' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderList']),
             ],
           ];
         }
@@ -391,11 +403,10 @@ class mtes_driver_mel extends mce_driver_mel {
             unset($args['record']['share'][$k]);
           }
         }
-      }
-      else if (isset($args['record']['share']) && strpos($args['record']['share'], ':G') === false) {
+      } else if (isset($args['record']['share']) && strpos($args['record']['share'], ':G') === false) {
         unset($args['record']['share']);
       }
-      
+
       // Order share
       if (is_array($args['record']['share'])) {
         sort($args['record']['share']);
@@ -412,7 +423,7 @@ class mtes_driver_mel extends mce_driver_mel {
         $args['form']['sympa'] = [
           'name'    => $plugin->gettext('sympaUrl'),
           'content' => [
-              'sympa' => array('type' => 'html', 'label' => false, 'render_func' => [$this, 'renderSympa']),
+            'sympa' => array('type' => 'html', 'label' => false, 'render_func' => [$this, 'renderSympa']),
           ],
         ];
         $conf = rcmail::get_instance()->config->get('contacts_robots_sympa', null);
@@ -424,8 +435,10 @@ class mtes_driver_mel extends mce_driver_mel {
             $split[1] = substr($split[1], 0, strpos($split[1], '.'));
             $args['record']['sympa'] = str_replace(['%l', '%h'], $split, $url['href']);
           }
-          
         }
+      }
+      if (isset($args['form']['contact']['content']['phone'])) {
+        $args['form']['contact']['content']['phone']['render_func'] =  [$this, 'renderPhone'];
       }
     }
     return $args;
@@ -434,7 +447,8 @@ class mtes_driver_mel extends mce_driver_mel {
   /**
    * Render owner field
    */
-  public function renderOwner($val, $col) {
+  public function renderOwner($val, $col)
+  {
     $user = $this->user();
     $user->dn = $val;
     if ($user->load(['fullname'])) {
@@ -446,16 +460,18 @@ class mtes_driver_mel extends mce_driver_mel {
   /**
    * Render sympa field
    */
-  public function renderSympa($val, $col) {
-    return html::label([], rcmail::get_instance()->plugins->get_plugin('mel_contacts')->gettext('sympaUrllabel')) 
-          . html::br()
-          . html::a(['target' => '_blank', 'href' => $val], $val);   
+  public function renderSympa($val, $col)
+  {
+    return html::label([], rcmail::get_instance()->plugins->get_plugin('mel_contacts')->gettext('sympaUrllabel'))
+      . html::br()
+      . html::a(['target' => '_blank', 'href' => $val], $val);
   }
 
   /**
    * Render share field
    */
-  public function renderShare($val, $col) {
+  public function renderShare($val, $col)
+  {
     $share = explode(':', $val, 2);
     $user = $this->getUser($share[0], false);
     if ($user->load(['dn', 'fullname'])) {
@@ -463,12 +479,26 @@ class mtes_driver_mel extends mce_driver_mel {
     }
     return null;
   }
-  
+
   /**
    * Render list field
    */
-  public function renderList($val, $col) {
+  public function renderList($val, $col)
+  {
     return html::a(['target' => '_blank', 'href' => rcmail::get_instance()->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val['dn'])])], $val['mail']);
+  }
+
+  /**
+   * Render phone field with href 
+   */
+  public function renderPhone($val, $col)
+  {
+    return html::a(
+      [
+        'href'    => 'tel:' . $val
+      ],
+      rcube::Q($val)
+    );
   }
 
   /**
@@ -480,7 +510,8 @@ class mtes_driver_mel extends mce_driver_mel {
    * 
    * @return boolean
    */
-  public function workspace_group($workspace_id, $members = [], $mdrive = true) {
+  public function workspace_group($workspace_id, $members = [], $mdrive = true)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::workspace_group($workspace_id, $mdrive)");
     $group = $this->group([null, 'webmail.workspace']);
@@ -512,9 +543,10 @@ class mtes_driver_mel extends mce_driver_mel {
 
     // Gestion du MDrive
     $group->mdrive = $mdrive;
-    
+
     // Gérer les membres
-    $membersList = []; $membersEmail = [];
+    $membersList = [];
+    $membersEmail = [];
     foreach ($members as $member) {
       $user = $this->getUser($member);
       if (isset($user)) {
@@ -541,7 +573,8 @@ class mtes_driver_mel extends mce_driver_mel {
    * 
    * @return null|\LibMelanie\Api\Defaut\Group
    */
-  public function get_workspace_group($workspace_id) {
+  public function get_workspace_group($workspace_id)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::get_workspace_group($workspace_id)");
     $group = $this->group([null, 'webmail.workspace']);
@@ -553,8 +586,7 @@ class mtes_driver_mel extends mce_driver_mel {
     $group->dn = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], self::WS_GROUP['dn']);
     if ($group->load(['fullname', 'email', 'members', 'members_email', 'mdrive'])) {
       return $group;
-    }
-    else {
+    } else {
       return null;
     }
   }

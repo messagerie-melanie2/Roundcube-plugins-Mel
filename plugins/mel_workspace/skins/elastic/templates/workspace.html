@@ -1,7 +1,7 @@
 <roundcube:include file="includes/layout.html" />
 <roundcube:include file="includes/menu.html" />
 
-<h1 class="voice"><roundcube:label name="workspaces" /></h1>
+<h1 class="voice"><roundcube:label name="mel_workspace.workspaces" /></h1>
 
 <roundcube:object name=wsp-style />
 
@@ -42,16 +42,19 @@
 				</div>
 			</div>
 		</div>
-		<!-- <div class="wsp-description">
-			<div class=row>
-				<div class="col-12">
-					<roundcube:object name="wsp-desc" />
-				</div>
-				<div class="col-4 wsp-background-color-modifier dark-blue wsp-font-size-modifier smaller">
-					
-				</div>
-			</div>
-		</div> -->
+    <roundcube:if condition="env:wsp_one_admin" />
+    <div class="wsp-description">
+      <div class="row text-center">
+        <div class="col-12">
+          <!-- <roundcube:object name="wsp-desc" /> -->
+          <roundcube:label name="mel_workspace.add_second_admin" />
+        </div>
+        <!-- <div class="col-4 wsp-background-color-modifier dark-blue wsp-font-size-modifier smaller">
+    					Rajoute un 2ème admin !
+    				</div> -->
+      </div>
+    </div>
+    <roundcube:endif />
 		<separate class="wsp"></separate>
 		<!-- <h2 class=wsp-toolbar-title style=margin-bottom:15px>Mes accès rapides</h2> -->
 		<div class="wsp-toolbar melw-wsp" >

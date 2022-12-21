@@ -303,6 +303,13 @@
                     default:
                         break;
                 }
+                if ($('#wsp-user-rights').find('.select-button-mel.o').length < 2) {
+                  $('.wsp-description').show();
+                }
+                else {
+                  $('.wsp-description').hide();
+                }
+                  
             },
             (a,b,c) => {
                 console.error("###[update_user_right]",a,b,c);
@@ -313,7 +320,7 @@
                 });
                 this.busy(false);
                 $(".btn-u-r").removeClass("disabled").removeAttr("disabled");
-            });
+            });         
         }
 
         update_end_date(new_date)

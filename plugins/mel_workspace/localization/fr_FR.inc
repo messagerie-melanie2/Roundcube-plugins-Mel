@@ -54,3 +54,4 @@ $labels["notification_content2"] = "Vous pouvez ouvrir l'espace \"<wsp/>\" en cl
 
 $labels["change_title_confirmation"] = "Attention, le changement de titre de l'espace de travail ne modifiera pas le titre des modules associés (canal de discussion, Drive T, liste de diffusion ...).\r\nConfirmez-vous la demande de changement du titre de votre espace ?";
 $labels['create_survey'] = 'Créer un sondage';
+$labels['add_second_admin'] = 'Merci de rajouter un deuxième admin à l\'espace de travail depuis les paramètres';

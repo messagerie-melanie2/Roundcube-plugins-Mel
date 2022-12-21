@@ -399,6 +399,9 @@ class mel_workspace extends rcube_plugin
         $this->currentWorkspace = driver_mel::gi()->workspace();
         $this->currentWorkspace->uid = $workspace_id;
         $this->currentWorkspace->load();
+
+        $this->rc->output->set_env('wsp_one_admin', self::is_one_admin($this->currentWorkspace));
+
         
         try {
             if (self::is_in_workspace($this->currentWorkspace) && $this->services_action_errors($this->currentWorkspace))
@@ -2611,6 +2614,7 @@ class mel_workspace extends rcube_plugin
             $workspace = self::get_workspace($uid);
             if (self::is_admin($workspace))
             {
+             
                 if (self::nb_admin($workspace) === 1 && $new_right === "w")
                 {
                     echo "you are the alone";
@@ -4219,4 +4223,11 @@ class mel_workspace extends rcube_plugin
         }
     }
 
+  private function is_one_admin($workspace)
+  {
+    if (self::is_admin($workspace) && (self::nb_admin($workspace) < 2)) {
+      return true;
+    }
+    return false;
+  }
 }

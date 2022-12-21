@@ -37,6 +37,13 @@ if (rcmail)
         rcmail.register_command("open_suggestion", () => {
           mel_metapage.Functions.change_page("settings",'plugin.mel_suggestion_box')
         }, true);
+
+        rcmail.register_command("change_page", (args) => {
+          const task = args.task;
+          const action = args.action;
+          const params = args.params;
+          mel_metapage.Functions.change_page(task, action, params);
+        }, true);
         
         rcmail.register_command('mel-compose', () => {
             rcmail.set_busy(false);

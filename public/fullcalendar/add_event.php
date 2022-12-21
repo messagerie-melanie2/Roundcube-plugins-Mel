@@ -105,9 +105,10 @@ function SendOrganizerNotification($user, $attendee_post, $appointment)
   $notification->content = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' à pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'] . ' pour "' . $appointment['object'] . '"';
   $notification->action = serialize([
     [
-      'href' => "/bureau/?_task=calendar",
       'text' => "Ouvrir mon agenda",
       'title' => "Cliquez pour ouvrir votre agenda",
+      'command' => 'change_page',
+      'params' => ['task' => 'calendar']
     ]
   ]);
 

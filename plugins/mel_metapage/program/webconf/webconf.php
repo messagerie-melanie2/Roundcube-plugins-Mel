@@ -277,7 +277,7 @@ class Webconf extends Program
             }
 
             $html = '<select class="ariane_select input-mel '.$classes.'">';
-            $html .= "<option value=home>".$this->rc->gettext("nothing", "mel_metapage")."</option>";
+            $html .= "<option value=home selected>".$this->rc->gettext("nothing", "mel_metapage")."</option>";
 
             foreach (($ownerOnly ? $list["channel"] : $list["channel"]->channels) as $key => $value) {
                 $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';

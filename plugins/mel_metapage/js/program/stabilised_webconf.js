@@ -689,6 +689,7 @@ class Webconf{
         //this.chat.$frame_chat.css('background-color', 'blue');
         //this.screen_manager.fullscreen(!this.chat.hidden);
         if (!this.key || this._need_config) {
+            this._need_config = false;
             this.webconf_page_creator.startup().show();
 
             if (this.wsp.have_workspace())
@@ -696,7 +697,7 @@ class Webconf{
                 this.webconf_page_creator.$state[0].checked = true;
                 this.webconf_page_creator.$wsp.val(this.wsp.uid);
             }
-            else if (this.chat.chat_visible())
+            else if (this.chat.chat_visible() && this.chat.room !== '@home' && this.chat.room !== 'home')
             {
                 this.webconf_page_creator.$state[0].checked = false;
                 this.webconf_page_creator.$chat.val(this.chat.room);
@@ -723,6 +724,7 @@ class Webconf{
                     break;
                     case ewebconf_state.wsp:
                         {
+                            top.rcmail.display_message('Chargement de l\'espace....', 'loading');
                             await         mel_metapage.Functions.post(
                                 mel_metapage.Functions.url("webconf", "get_workspace_datas"),
                                 {
@@ -734,6 +736,7 @@ class Webconf{
                                     this.chat.privacy = this.wsp?.privacy;
                                     this.chat.room = this.wsp.objects?.channel?.name || '@home'
                                     this.chat.hidden = !this.wsp.have_chatroom()
+                                    top.rcmail.clear_messages();
                                 }
                             );
                         }
@@ -2326,8 +2329,12 @@ function create_on_page_change(var_name, var_webconf_started_name, var_screen_ma
 
         top.metapage_frames.addEvent('after', ignoreChat);
         top.metapage_frames.addEvent('onload.after', () => {
-            top[var_screen_manager_name].webconf.set_document_title();
-            document.title = 'Visioconférence';
+            //Si webconf
+            if (top[var_webconf_started_name] === true)
+            {
+                top[var_screen_manager_name].webconf.set_document_title();
+                document.title = 'Visioconférence';
+            }
         });
     }
 }

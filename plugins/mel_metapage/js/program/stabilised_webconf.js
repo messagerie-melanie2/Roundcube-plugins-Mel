@@ -675,6 +675,8 @@ class Webconf{
             })
         }
 
+        if (this.chat.room === "@home") this.chat.hidden = true;
+
         this.webconf_page_creator = new WebconfPageCreator(ask_datas?.$page, ask_datas?.$error, ask_datas?.$room, ask_datas?.$state, ask_datas?.$chat, ask_datas?.$wsp, ask_datas?.$start, ask_datas?.config ?? {});
         this.$frame_webconf = $(`#${frameconf_id}`);
         this.screen_manager = new InternalWebconfScreenManager(this.chat, this.$frame_webconf, size_buttons, ariane_size, this._is_framed);
@@ -687,10 +689,12 @@ class Webconf{
     }
 
     startup() {
+        debugger;
         //this.$frame_webconf.css('background', 'url(https://img.freepik.com/free-vector/night-ocean-landscape-full-moon-stars-shine_107791-7397.jpg?w=2000)').css('display', '').css('background-size', 'contain');
         //this.chat.$frame_chat.css('background-color', 'blue');
         //this.screen_manager.fullscreen(!this.chat.hidden);
         if (!this.key || this._need_config) {
+            debugger;
             this._need_config = false;
             this.webconf_page_creator.startup().show();
 
@@ -1872,6 +1876,7 @@ class MasterWebconfBar {
               });
         }
 
+        this.toggleChat(false);
         
         top.$("html").removeClass("webconf-started");
         

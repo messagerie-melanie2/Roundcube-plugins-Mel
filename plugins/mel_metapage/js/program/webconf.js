@@ -1808,7 +1808,7 @@ class MasterWebconfBar {
                     html += `<button onclick="window.webconf_master_bar.set_device('${html_helper.JSON.stringify(element)}')" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`;
                 }
                 html += "</div>";
-                if (this.webconf.audio_style_params == 'large') html += '<separate class="device"></separate>';
+                if (true) html += '<separate class="device"></separate>';
             }
         }
 
@@ -2221,7 +2221,6 @@ class ListenerWebConfBar
     async hangup()
     {
         this.webconf.jitsii.executeCommand('hangup');
-        //this.webconf.jitsii.dispose();
     }
 
     dispose()

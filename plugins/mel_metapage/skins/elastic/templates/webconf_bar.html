@@ -4,24 +4,24 @@
             
         </div>
     </div>
-    <button style="padding: 0;border:none;" title="<roundcube:label name='mel_metapage.webconf_round_help' />"  onclick="webconf_master_bar.update_toolbar()" class="mel-focus light-focus tiny-webconf-menu enabled dwp-round" ></button>
+    <button style="padding: 0;border:none;" title="<roundcube:label name='mel_metapage.webconf_round_help' />"  data-witem="round" data-function="update_toolbar" class="mel-focus light-focus tiny-webconf-menu enabled dwp-round" ></button>
     <div onclick="" class="wsp-toolbar-item empty first"><span  class="invisible icofont-ui-folder"></span></div>
-    <button title="<roundcube:label name='mel_metapage.webconf_nextcloud_help' />" onclick="webconf_master_bar.nextcloud()" class="wsp-toolbar-item conf-documents"><span class="icon-mel-folder icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.documents' /></span></button>
-    <button title="<roundcube:label name='mel_metapage.webconf_rocket_chat_help' />" onclick="webconf_master_bar.switch_ariane()" class="wsp-toolbar-item conf-ariane"><span class="icon-mel-message icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.ariane' /></span></button>
+    <button title="<roundcube:label name='mel_metapage.webconf_nextcloud_help' />" data-witem="document" data-function="nextcloud" data-click="true" class="wsp-toolbar-item conf-documents"><span class="icon-mel-folder icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.documents' /></span></button>
+    <button title="<roundcube:label name='mel_metapage.webconf_rocket_chat_help' />" data-witem="chat" data-function="toggleChat" class="wsp-toolbar-item conf-ariane"><span class="icon-mel-message icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.ariane' /></span></button>
     <v_separate></v_separate>
     <div style="position: relative;">
-        <button title="<roundcube:label name='mel_metapage.webconf_mic_help' />" onclick="webconf_master_bar.mute_demute(MasterWebconfBar.micro)" class="wsp-toolbar-item conf-micro muted"><span class="icon-mel-micro-off icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.audioinput' /></span></button>
-        <button onclick="webconf_master_bar.switch_popup_micro()" class="mel-focus light-focus roundbadge jitsi-select mel-hoverable-icon wsp-icon-micro"><span class="mel-icon icon-chevron-down"></span></button>
+        <button title="<roundcube:label name='mel_metapage.webconf_mic_help' />" data-witem="mic" data-function="toggle_mic" class="wsp-toolbar-item conf-micro muted"><span class="icon-mel-micro-off icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.audioinput' /></span></button>
+        <button data-witem="popup_mic" data-function="togglePopUpMic" class="mel-focus light-focus roundbadge jitsi-select mel-hoverable-icon wsp-icon-micro"><span class="mel-icon icon-chevron-down"></span></button>
     </div>
-    <button title="<roundcube:label name='mel_metapage.webconf_hangup_help' />" onclick="webconf_master_bar.hangup()" class="wsp-toolbar-item conf-call-stop"><span class="icon-mel-phone  icon-item stop"></span><span class="text-item"><roundcube:label name='mel_metapage.hangup' /></span></button>
+    <button title="<roundcube:label name='mel_metapage.webconf_hangup_help' />" data-witem="hangup" data-function="hangup" data-click="true" class="wsp-toolbar-item conf-call-stop"><span class="icon-mel-phone  icon-item stop"></span><span class="text-item"><roundcube:label name='mel_metapage.hangup' /></span></button>
     <div style="position: relative;">
-        <button title="<roundcube:label name='mel_metapage.webconf_vid_help' />" onclick="webconf_master_bar.mute_demute(MasterWebconfBar.video)" class="wsp-toolbar-item conf-video muted"><span class="icon-mel-camera-off icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.videoinput' /></span></button>
-        <button onclick="webconf_master_bar.switch_popup_video()" class="mel-focus light-focus roundbadge jitsi-select mel-hoverable-icon wsp-icon-video"><span class="mel-icon icon-chevron-down"></span></button>
+        <button title="<roundcube:label name='mel_metapage.webconf_vid_help' />" data-witem="cam" data-function="toggle_cam" class="wsp-toolbar-item conf-video muted"><span class="icon-mel-camera-off icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.videoinput' /></span></button>
+        <button data-witem="popup_cam" data-function="togglePopUpCam" class="mel-focus light-focus roundbadge jitsi-select mel-hoverable-icon wsp-icon-video"><span class="mel-icon icon-chevron-down"></span></button>
     </div>  
     <v_separate class="separate-right"></v_separate>
-    <button title="<roundcube:label name='mel_metapage.webconf_share_screen_help' />" onclick="webconf_master_bar.share_screen()" class="wsp-toolbar-item conf-diffuser"><span class="icon-mel-screen-share icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.diffuse' /></span></button>
-    <button  onclick="webconf_master_bar.toggleHand()" class="wsp-toolbar-item conf-participate"><span class="icon-mel-hand icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.to_participate' /></span></button>
-    <button title="<roundcube:label name='mel_metapage.webconf_tile_help' />" onclick="webconf_master_bar.toogle_film_strip()" class="wsp-toolbar-item conf-mozaique"><span class="icon-mel-grid"></span><span class="text-item"><roundcube:label name='mel_metapage.mosaik' /></span></button>
+    <button title="<roundcube:label name='mel_metapage.webconf_share_screen_help' />" data-noff="true" data-witem="share_screen" data-function="share_screen" data-click="true" class="wsp-toolbar-item conf-diffuser"><span class="icon-mel-screen-share icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.diffuse' /></span></button>
+    <button  data-witem="hand" data-function="toggleHand" class="wsp-toolbar-item conf-participate"><span class="icon-mel-hand icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.to_participate' /></span></button>
+    <button title="<roundcube:label name='mel_metapage.webconf_tile_help' />" data-function="toggle_film_strip" data-witem="grid" class="wsp-toolbar-item conf-mozaique"><span class="icon-mel-grid"></span><span class="text-item"><roundcube:label name='mel_metapage.mosaik' /></span></button>
     <!-- <button title="<roundcube:label name='mel_metapage.webconf_bckg_help' />" onclick="webconf_master_bar.toogle_virtualbackground()" class="wsp-toolbar-item conf-bckg"><span class="icofont-image"></span><span class="text-item"><roundcube:label name='mel_metapage.bckg' /></span></button> -->
     
     <!-- <button title="<roundcube:label name='mel_metapage.webconf_copy_help' />"  onclick="webconf_master_bar.copy()" class="wsp-toolbar-item conf-copy"><span class="icon-mel-copy icon-item"></span><span class="text-item"><roundcube:label name='mel_metapage.url' /></span></button> -->

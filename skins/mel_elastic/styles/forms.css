@@ -595,6 +595,11 @@ input.input-mel.error {
 	height: calc(1.5em + .75rem + 10px);
 } */
 
+.form-floating.pixel-correction{
+	margin-bottom: -35px;
+	margin-top:13px;
+}
+
 .form-floating > label {
     bottom: 34px;
     left: 8px;

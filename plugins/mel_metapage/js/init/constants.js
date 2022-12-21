@@ -385,6 +385,11 @@ const mel_metapage = {
         },
         ariane:null,
     },
+    Other:{
+        webconf:{
+            private:'/group'
+        }
+    },
     RCMAIL_Start:{
         async ping_nextcloud()
         {

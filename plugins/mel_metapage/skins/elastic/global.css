@@ -248,15 +248,24 @@ bottom: 21px; */
     right: 120px;
 }
 
-.toolbar-popup.large-toolbar {
+/* .toolbar-popup.large-toolbar {
 	top: unset;
 	border-radius: 15px;
 	height: 450px;
 	bottom: 100px;
 	width: 300px;
 	right: 164px;
+} */
+.toolbar-popup.large-toolbar {
+	top: unset;
+	border-radius: 15px;
+	height: 450px;
+	bottom: 100px;
+	width: 300px;
+	left: 50%;
+	-ms-transform: translateX(-50%);
+	transform: translateX(-50%);
 }
-
 .toolbar-popup>.toolbar-datas {
     height: 100%;
     overflow-y: auto;

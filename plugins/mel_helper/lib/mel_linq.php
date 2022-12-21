@@ -249,6 +249,7 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
 
         if ($this->is_assoc($this->array_like))
         {
+            if (is_string($this->array_like)) $this->array_like = str_split($this->array_like);
             foreach ($this->array_like as $key => $value) {
                 yield $key => $value;//new Mel_KeyValue($key, $value);
             }

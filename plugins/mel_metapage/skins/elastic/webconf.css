@@ -20,6 +20,7 @@
 	height: calc(100%);
 }
 
+#mm-ariane-loading,
 #mm-ariane {
 	position: absolute;
 	right: 0;
@@ -28,6 +29,7 @@
 	height: calc(100%);
 }
 
+.mm-frame #mm-ariane-loading,
 .mm-frame #mm-ariane {
 	height: calc(100% - 60px);
 }

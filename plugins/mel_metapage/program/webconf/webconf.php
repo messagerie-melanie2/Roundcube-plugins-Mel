@@ -19,6 +19,7 @@ class Webconf extends Program
     {
         $this->register_action("index", [$this, "index"]);
         $this->register_action("jwt", [$this, "get_jwt"]);
+        $this->register_action("get_workspace_datas", [$this, "get_workspace_datas"]);
         $this->register_action("onGo", [$this, "onGo"]);
         $this->register_action("notify", [$this, "notify"]);
         
@@ -26,7 +27,7 @@ class Webconf extends Program
         {
             $this->include_js("../../../rocket_chat/favico.js");
             $this->include_js("../../../rocket_chat/rocket_chat.js");
-            $this->include_js("webconf.js");
+            $this->include_js("stabilised_webconf.js");
             $this->include_css("webconf.css");
         }
     }
@@ -86,7 +87,9 @@ class Webconf extends Program
 
     public function index()
     {
+        $key_invalid = false;
         $need_config = $this->get_input("_need_config") ?? false;
+        $locks = $this->get_input("_locks") ?? [];
         $key = $this->get_input("_key");
         $this->tmp_key = $key;// ?? $this->generate_key();
         $this->set_env_var("webconf.key", $key);
@@ -118,12 +121,20 @@ class Webconf extends Program
         ]);
         $this->set_env_var("webconf.bar", $this->parse("webconf_bar"));
 
+        //check if key is valid
+        if ($need_config != 1 && $key !== null && $key !== '' && !$this->check_key_validity($key)) {
+            $key_invalid = true;
+            $need_config = 1;
+        }
+
         if ($need_config == 1 || $key === null || $key === '')
         {
             $this->add_handler("roomkey", [$this, "get_key"]);
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
             $this->add_handler("selectwsp", [$this, "get_all_workspaces"]);
-            $this->set_env_var("webconf.need_config", true);
+
+            if (!$key_invalid) $this->set_env_var("webconf.need_config", true);
+            $this->set_env_var("webconf.locks", $locks);
         }
         else if ($key !== null && ($wsp !== null || $ariane !== null))
         {
@@ -140,6 +151,21 @@ class Webconf extends Program
         $this->send("webconf");
     }
 
+    public function get_workspace_datas()
+    {
+        $uid = $this->get_input("_uid");
+        $workspace = $this->workspace($uid);
+                    $wsp = [
+                "objects" => json_decode($workspace->objects), 
+                "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $workspace->uid, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
+                    ,"title" => $workspace->title,
+                    "color" => json_decode($workspace->settings)->color
+                    ]
+                ];
+        echo json_encode($wsp);
+        exit;
+    }
+
     public function onGo()
     {
         if (rcube_utils::get_input_value('_alreadyLogged', rcube_utils::INPUT_POST) === null)
@@ -150,6 +176,13 @@ class Webconf extends Program
 
         echo 0;
         exit;
+    }
+
+    public function check_key_validity($key)
+    {
+        return strlen($key) >= 10 && mel_helper::Enumerable($key)->where(function ($k, $v) {
+            return preg_match("/\d/", $v) === 1;
+        })->count() >= 3 && preg_match("/^[0-9a-zA-Z]+$/", $key);
     }
 
     public function notify()
@@ -201,14 +234,14 @@ class Webconf extends Program
         $html = '<select class="wsp_select input-mel">';
 
         foreach ($workspaces as $key => $workspace) {
-            $wsp = [
-                "objects" => json_decode($workspace->objects), 
-                "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $workspace->uid, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
-                    ,"title" => $workspace->title,
-                    "color" => json_decode($workspace->settings)->color
-                    ]
-                ];
-            $html .= '<option '.($this->get_input("_wsp") !== null && $this->get_input("_wsp") === $workspace->uid ? "selected" : "" ).' value="'.str_replace('"', $replace, json_encode($wsp)).'">'.$workspace->title.'</option>';
+            // $wsp = [
+            //     "objects" => json_decode($workspace->objects), 
+            //     "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $workspace->uid, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
+            //         ,"title" => $workspace->title,
+            //         "color" => json_decode($workspace->settings)->color
+            //         ]
+            //     ];
+            $html .= '<option '.($this->get_input("_wsp") !== null && $this->get_input("_wsp") === $workspace->uid ? "selected" : "" ).' value="'.$workspace->uid.'">'.$workspace->title.'</option>';
         }
         $html .= "</select>";
 

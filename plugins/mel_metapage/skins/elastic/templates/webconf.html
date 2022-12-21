@@ -11,7 +11,10 @@
                     <div style="text-align: left;">
                         <span class="title-conf-item"><roundcube:label name="mel_metapage.saloon" /></span>
                         <br/>
-                        <input oninput="Webconf.update_room_name()" id="webconf-room-name" type="text" style="background-clip: unset" class="form-control input-mel" value=<roundcube:object name="roomkey" />>
+                        <div class="form-floating pixel-correction">
+                            <input id="webconf-room-name" type="text" style="background-clip: unset" required class="form-control input-mel" />
+                            <label for="webconf-room-name">10 caractères alphanumérique avec au moins 3 chiffres</label>
+                          </div>
                         <div class="webconf-error-text" style=display:none><roundcube:label name="mel_metapage.webconf_saloon_name_error" /></div>
                     </div>
                     <div class="form-conf">              
@@ -31,7 +34,7 @@
                         <span class="title-conf-item red-star-after"><roundcube:label name="mel_metapage.choose" /> <roundcube:label name="mel_metapage.a_workspace" /></span>
                         <roundcube:object name="selectwsp" />
                     </div>
-                    <div title="<roundcube:label name='mel_metapage.webconf_enter_help' />" id=webconf-enter style="margin-top: 15px;" class="mel-button invite-button create" onclick="Webconf.set_webconf()">
+                    <div title="<roundcube:label name='mel_metapage.webconf_enter_help' />" id=webconf-enter style="margin-top: 15px;" class="mel-button invite-button create">
                         <span><roundcube:label name="mel_metapage.enter" /></span>
                         <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
                     </div>
@@ -43,12 +46,22 @@
         </div>
     </div>
     <div>
-        <div class=webconf-frame id=mm-webconf style="display: none;"></div>
+        <div class=webconf-frame id=mm-webconf style="display: none;">
+            <div class="absolute-center">
+                <p class="loading-visio-text">Chargement de la visio....</p>
+                <center><span class="spinner-border spiner-border-lg"></span></center>
+            </div></div>
         <iframe class=webconf-frame id=mm-ariane style="display: none;"></iframe>
-        <div onclick="MasterWebconfBar.fullscreen()" class="webconf-fullscreen roundbadge large" style="display: none;
+        <div class=webconf-frame id=mm-ariane-loading style="display: none;">
+            <div class="absolute-center">
+                <p>Chargement du chat....</p>
+                <center><span class="spinner-border"></span></center>
+            </div>
+        </div>
+        <div onclick="" class="webconf-fullscreen roundbadge large" style="display: none;
         margin-top: 6px;"><span class="icon-mel-expand"></span></div>
 
-         <div onclick="MasterWebconfBar.minimize()" class="webconf-minimize roundbadge large" style="display: none;
+         <div onclick="" class="webconf-minimize roundbadge large" style="display: none;
         margin-top: 6px;top:5px;"><span class="icon-mel-undo"></span></div> 
     </div>
     <div id="visio-right-pannel-util">

@@ -689,12 +689,10 @@ class Webconf{
     }
 
     startup() {
-        debugger;
         //this.$frame_webconf.css('background', 'url(https://img.freepik.com/free-vector/night-ocean-landscape-full-moon-stars-shine_107791-7397.jpg?w=2000)').css('display', '').css('background-size', 'contain');
         //this.chat.$frame_chat.css('background-color', 'blue');
         //this.screen_manager.fullscreen(!this.chat.hidden);
         if (!this.key || this._need_config) {
-            debugger;
             this._need_config = false;
             this.webconf_page_creator.startup().show();
 
@@ -863,6 +861,10 @@ class Webconf{
     startChat() {
         this.chat.onloading = () => {
             this.screen_manager.updateMode();
+            this.chat.$frame_chat.postMessage({
+                externalCommand: 'set-user-status',
+                status: 'busy'
+              }, '*');
         };
         this.chat.$frame_chat[0].src = rcmail.env.rocket_chat_url + this.chat.get_room();
         return this;
@@ -1461,531 +1463,539 @@ class RightPannel
 }
 
 //MasterWebconfBar
-class MasterWebconfBar {
-    /**
-     * 
-    * @param {Webconf} webconfManager Id de l'iframe qui contient la webconf
-    * @param {string} framechat_id Id de l frame qui contient rocket.chat
-    * @param {string} ask_id Id de la div qui permet de configurer la webconf
-    * @param {string} key Room de la webconf 
-    * @param {string} ariane Room ariane
-    * @param {JSON} wsp Infos de l'espace de travail si il y en a
-    * @param {int} ariane_size Taille en largeur et en pixel de la frale ariane 
-    * @param {boolean} is_framed Si la webconf est dans une frame ou non 
-     */
-    constructor(globalScreenManager, webconfManager, $right_pannel, more_actions, rawbar, bar_visible = true) {
-        this._init()._setup(globalScreenManager, webconfManager, $right_pannel)._create_bar(rawbar, more_actions);
-
-        if (!bar_visible) this.$bar.css('display', 'none');
-        else this.launch_timeout();
-    }
-
-    _init() {
-        this.globalScreenManager = null;
-        this.webconfManager = null;
-        this.$bar = null;
-        this.items = {};
-        this.ignore_send = false;
-        this.listener = null;
-        this.popup = null;
-        this.right_pannel = null;
-        this.ondispose = null;
-        return this;
-    }
-
-    /**
-     * 
-     * @param {Webconf} globalScreenManager 
-     * @param {*} webconfManager 
-     * @param {*} $right_pannel 
-     * @returns 
-     */
-    _setup(globalScreenManager, webconfManager, $right_pannel) {
-        this.globalScreenManager = globalScreenManager.setMasterBar(this);
-        this.webconfManager = webconfManager;
-        this.right_pannel = new RightPannel($right_pannel).toTop();
-        return this;
-    }
-  
-    _create_bar(rawbar, more_actions) {
-        const isff = MasterWebconfBar.isFirefox();
-        $("body").append(rawbar);
-
-        for (var iterator of Enumerable.from($('.wsp-toolbar.webconf-toolbar button')).concat(more_actions.$buttons)) {
-            iterator = $(iterator);
-             if (!!iterator.data('witem')) {
-                this.items[iterator.data('witem')] = new MasterWebconfBarItem(iterator, {
-                    caller:this,
-                    func:iterator.data('function')
-                }, !iterator.data('click'));
-
-                if (!!iterator.data('noff') && isff) this.items[iterator.data('witem')].hide();
-             }
+var MasterWebconfBar = (() => {
+    let _$ = top.$;
+    class MasterWebconfBar {
+        /**
+         * 
+        * @param {Webconf} webconfManager Id de l'iframe qui contient la webconf
+        * @param {string} framechat_id Id de l frame qui contient rocket.chat
+        * @param {string} ask_id Id de la div qui permet de configurer la webconf
+        * @param {string} key Room de la webconf 
+        * @param {string} ariane Room ariane
+        * @param {JSON} wsp Infos de l'espace de travail si il y en a
+        * @param {int} ariane_size Taille en largeur et en pixel de la frale ariane 
+        * @param {boolean} is_framed Si la webconf est dans une frame ou non 
+         */
+        constructor(globalScreenManager, webconfManager, $right_pannel, more_actions, rawbar, bar_visible = true) {
+            this._init()._setup(globalScreenManager, webconfManager, $right_pannel)._create_bar(rawbar, more_actions);
+    
+            if (!bar_visible) this.$bar.css('display', 'none');
+            else this.launch_timeout();
         }
-
-        //Link
-        if (!!this.items['popup_mic'] && !!this.items['popup_cam'])
-        {
-            this.items['popup_mic'].addLink('other', this.items['popup_cam'], 'other');
-        }
-
-        this.$bar = $('.wsp-toolbar.webconf-toolbar');
-        this.popup = new MasterWebconfBarPopup(this.$bar.find('.toolbar-popup'));
-
-        this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`);
-
-        this._$more_actions = more_actions.$button.css('display', '').removeClass('hidden').removeClass('active').appendTo(this.$bar);
-        
-        $(window).resize(() => {
-            this.popup.$popup.css('height', `${window.innerHeight / 2}px`);
-        });
-        return this;
-    }
-
-    updateLogo()
-    {
-        const wsp = this.webconfManager.wsp;
-
-        if (wsp.have_workspace()) {
-            if (wsp.logo != "false") this.items['round'].$item.html(`<img src="${wsp.logo}" />`).css("background-color", wsp.color);
-            else this.items['round'].$item.html(`<span>${wsp.title.slice(0,3).toUpperCase()}</span>`).css("background-color", wsp.color);
-        }
-        else if (!!this.items['round']) {
-            this.items['round'].$item.append('<span class="icon-mel-videoconference"></span>');
-        }
-        return this;
-    }
-
-    updateBarAtStartup()
-    {
-        const wsp = this.webconfManager.wsp;
-
-        if (!!this.items['chat'] && this.webconfManager.chat.chat_visible()) {
-            this.items['chat'].active();
-        }
-
-        if (!(!!this.items['document'] && !!wsp.objects && wsp.objects.doc))
-        {
-            this.items['document'].$item.remove();
-            delete this.items['document'];
-        }
-        return this;
-    }
-
-    setListener(listener) {
-        this.listener = listener;
-    }
-
-    setOnDipose(callback) {
-        this.ondispose = callback;
-    }
-
-    show() {
-        this.$bar.css('display', '');
-    }
-
-    toggle_mic_or_cam(state, item, on, off, listener_func)
-    {
-        const FOR = item;
-        const class_on = `.${on}`;
-        const class_off = `.${off}`;
-
-        if (!!this.items && this.items[FOR])
-        {
-            if (state) {
-                this.items[FOR].$item.find(class_off).removeClass(off).addClass(on);
-            }
-            else {
-                this.items[FOR].$item.find(class_on).removeClass(on).addClass(off);
-            }
-
-            if (!this.ignore_send) {
-                this.listener[listener_func]();
-            }
-        }
-
-        return this;
-    }
-
-    toggle_mic(state)
-    {
-        return this.toggle_mic_or_cam(state, 'mic', 'icon-mel-micro', 'icon-mel-micro-off', 'toggle_micro');
-    }
-
-    toggle_cam(state)
-    {
-        return this.toggle_mic_or_cam(state, 'cam', 'icon-mel-camera', 'icon-mel-camera-off', 'toggle_video');
-    }
-
-    update_item_icon(state, item, debug, active_symbol = 'icon-mel-close', inactive_symbol = 'icon-chevron-down')
-    {
-        console.log('update_item_icon', item, state);
-        if (state) {
-            const links = item.getAllLinks()
-            let element;
-            for (const key in links) {
-                if (Object.hasOwnProperty.call(links, key)) {
-                    element = links[key];
-                    if (element.state) element.disable();
-                }
-            }
-
-            item.$item.find('.mel-icon').addClass(active_symbol).removeClass(inactive_symbol);
-        }
-        else {
-            item.$item.find('.mel-icon').removeClass(active_symbol).addClass(inactive_symbol);
-        }
-
-        return this;
-    }
-
-    update_popup_devices(devices) {
-        let devices_by_kind = {};
-
-        for (let index = 0; index < devices.length; ++index) {
-            const element = devices[index];
-            if (devices_by_kind[element.kind] === undefined)
-                devices_by_kind[element.kind] = [];
-            devices_by_kind[element.kind].push(element);
-        }
-
-        let html = this.popup.$contents.html('');
-
-        for (const key in devices_by_kind) {
-            if (Object.hasOwnProperty.call(devices_by_kind, key)) {
-                const array = devices_by_kind[key];
-                html.append(`<span class=toolbar-title>${rcmail.gettext(key, "mel_metapage")}</span><div class="btn-group-vertical" style=width:100% role="group" aria-label="groupe des ${key}">`);
-                for (let index = 0; index < array.length; ++index) {
-                    const element = array[index];
-                    const disabled = element.isCurrent === true ? "disabled" : "";
-                    html.append($(`<button title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`).click(() => {
-
-                    }));
-                }
-
-                if (true) html.append('<separate class="device"></separate>');
-            }
-        }
-
-        html.find('separate').last().remove();
-
-        return this;
-    }
-
-    async togglePopUpMic(state, item) {
-        const FOR = 'popup_mic';
-
-        if (!!this.items && this.items[FOR])
-        {
-            if (state) {
-                const hangup = this.items['hangup'].$item[0];
-                this.popup.$popup.css('left', `${hangup.offsetLeft + (hangup.offsetWidth/2)}px`);
-                this.update_item_icon(state, item, [$('.jitsi-select .mel-icon')]).popup.loading().show();
-                this.update_popup_devices(await this.listener.get_micro_and_audio_devices());
-            }
-            else {
-                this.update_item_icon(state, item, null).popup.empty().hidden();
-            }
-        }
-    }
-
-    async togglePopUpCam(state, item) {
-        const FOR = 'popup_cam';
-
-        if (!!this.items && this.items[FOR])
-        {
-            if (state) {
-                const hangup = this.items['hangup'].$item[0];
-                this.popup.$popup.css('left', `${hangup.offsetLeft + (hangup.offsetWidth/2)}px`);
-                this.update_item_icon(state, item, [$('.jitsi-select .mel-icon')]).popup.loading().show();
-                this.update_popup_devices(await this.listener.get_video_devices());
-            }
-            else {
-                this.update_item_icon(state, item, null).popup.empty().hidden();
-            }
-        }
-    }
-
-    nextcloud()
-    {
-        let config = {};
-
-        try{
-            if (this.webconf.wsp !== undefined && this.webconf.wsp.datas !== undefined && this.webconf.wsp.datas.uid !== undefined)
-            {
-                config = {_params: `/apps/files?dir=/dossiers-${this.webconfManager.wsp.uid}`,
-                _is_from:"iframe"
-                };
-            }
-        }catch (er)
-        {}
-
-        mel_metapage.Functions.change_page("stockage", null, config);
-    }
-
-    copyUrl()
-    {
-        //TODO => Ajouter les infos d'ariane de d'espaces de travail
-        mel_metapage.Functions.copy(mel_metapage.Functions.public_url(this.webconfManager.get_url(true)));
-    }
-
-    async get_phone_datas()
-    {   
-        if (!this._phone_datas) 
-        {
-            this._phone_datas = await webconf_helper.phone.getAll();
-        }
-
-
-        const copy_value = `Numéro : ${this._phone_datas.number} - PIN : ${this._phone_datas.pin}`;
-        mel_metapage.Functions.copy(copy_value);
-    }
-
-    toggleChat(state) {
-        this.globalScreenManager.webconf.chat.hidden = !state;
-        this.listener.switchAriane(state);
-        
-        if (state) this.right_pannel.enable_right_mode();
-        else this.right_pannel.disable_right_mode();
-    }
-
-    toggleInternalChat()
-    {
-        this.listener.toggle_chat();
-    }
-
-    async toggle_mp()
-    {
-        if (this.right_pannel.is_open()) {
-            this.right_pannel.close();
-        }
-        else {
-            this.right_pannel.$pannel.find('.back-button').css('display', '');
-            let $html = $('<div></div>');
-            const users = await this.listener.get_room_infos();
-
-            let html_icon = null;
-            for (const user of users) {
-
-                if (!!user.avatarURL) html_icon = `<div class="dwp-round" style="width:32px;height:32px;"><img src="${user.avatarURL}" style="width:100%" /></div>`;
-                else html_icon = '';
-
-                $(`<div tabindex="0" class="mel-selectable mel-focus with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
-                    e = $(e.currentTarget);
-                    //this.send('initiatePrivateChat', `"${e.data('id')}"`);
-                    this.listener.initiatePrivateChat(e.data('id'));
-                    this.right_pannel.close();
-                }).appendTo($html);
-            }
-
-            return this.right_pannel.set_title('A qui envoyer un message privé ?')
-            .open()
-            .set_content($html, (pannel) => {
-                let $tmp = pannel.find('.mel-selectable');
-                if ($tmp.length > 0) $tmp.first()[0].focus();
-                else pannel.find('button').first()[0].focus();
-            });
-        }
-    }
-
-    toggle_participantspane()
-    {
-        this.listener.toggle_participantspane();
-    }
-
-    open_virtual_background()
-    {
-        this.listener.open_virtual_background();
-    }
-
-    /**
-     * Affiche ou cache la toolbar
-     */
-    update_toolbar(state)
-    {
-        const FOR = 'round';
-
-        if (!!this.items && this.items[FOR])
-        {
-            if (state) //On cache
-            {
-                for (const key in this.items) {
-                    if (Object.hasOwnProperty.call(this.items, key)) {
-                        const element = this.items[key];
-                        if (key === FOR) element.$item.removeClass('active');
-                        else {
-                            element.hide();
-                        }
-                    }
-                }
-
-                this._$more_actions.hide();
-                this.$bar.css('background-color', 'var(--invisible)').css('border-color', 'var(--invisible)').find('v_separate').css('display', 'none');
-            }
-            else {
-                for (const key in this.items) {
-                    if (Object.hasOwnProperty.call(this.items, key)) {
-                        const element = this.items[key];
-                        if (key === FOR) continue;
-                        else {
-                            if (!!element.$item.data('noff') && MasterWebconfBar.isFirefox()) continue;
-                            else element.show();
-                        }
-                    }
-                }
-
-                this.$bar.css('background-color', '').css('border-color', '').find('v_separate').css('display', '');
-                this._$more_actions.show();
-            }
-        }
-
-        return this;
-    }
-
-    toggleHand()
-    {
-        this.listener.toggleHand();
-    }
-
-    toggle_film_strip()
-    {
-        this.listener.toggle_film_strip();
-    }
-
-    share_screen()
-    {
-        this.listener.share_screen();
-    }
-
-    /**
-     * Vérifie si on est sous firefox
-     * @returns {boolean}
-     */
-    static isFirefox()
-    {
-        return window?.mel_metapage?.Functions?.isNavigator(mel_metapage?.Symbols?.navigator?.firefox) ?? (typeof InstallTrigger !== 'undefined');
-    }
-
-    async hangup()
-    {
-        this._$more_actions.addClass('hidden').appendTo('body');
-        
-        if (this.globalScreenManager.current_mode !== ewsmode.fullscreen && rcmail.env.current_frame_name !== 'webconf') {
-            await mel_metapage.Functions.change_frame('webconf', true, true).then(() => {
-                top.rcmail.clear_messages();
-              });
-        }
-
-        this.toggleChat(false);
-        
-        top.$("html").removeClass("webconf-started");
-        
-        this.listener.hangup();
-        this.$bar.remove();
-        this.dispose();
-    }
-
-    minify()
-    {
-        if (this.is_minimised) return this;
-        
-        const ignore = ['popup_cam', 'popup_mic', 'cam', 'mic', 'hangup'];
-        for (const key in this.items) {
-            if (Object.hasOwnProperty.call(this.items, key)) {
-                //console.log('item', element, key, this.items[key].$item.parent()[0].nodeName, !ignore.includes(key), this.items[key].$item.parent()[0].nodeName !== 'LI');
-                if (!ignore.includes(key) && this.items[key].$item.parent()[0].nodeName !== 'LI')
-                {
-                    this.items[key].hide();
-                }
-                
-            }
-        }
-
-        this.$bar.find('v_separate').css('display', 'none');
-        this.$bar.find('.empty').css('display', 'none');
-        this.$bar.css('right', '60px').css('left', 'unset').css('transform', 'unset');
-        this.is_minimised = true;
-
-        return this;
-    }
-
-    maximise()
-    {
-        if (!this.is_minimised) return this;
-
-        for (const key in this.items) {
-            if (Object.hasOwnProperty.call(this.items, key)) {
-                this.items[key].show();
-            }
-        }
-
-        this.$bar.find('v_separate').css('display', '');
-        this.$bar.find('.empty').css('display', '');
-        this.$bar.css('right', '').css('left', '').css('transform', '');
-        this.is_minimised = false;
-
-        return this;
-    }
-
-    timeout_delay()
-    {
-        return 10;
-    }
-
-    show_masterbar() {
-        if (this.$bar.css('display') === 'none') this.$bar.css('display', '');
-        return this.launch_timeout();
-    }
-
-    hide_masterbar() 
-    {
-        if (this.$bar.css('display') !== 'none') this.$bar.css('display', 'none');
-
-        if (this._timeout_id !== undefined) this._timeout_id = undefined;
-        
-        return this;
-    }
-
-    launch_timeout()
-    {
-        if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
-        this._timeout_id = setTimeout(() => {
-            this.hide_masterbar();
-        }, this.timeout_delay() * 1000);
-        return this;
-    }
-
-    dispose()
-    {
-        if (this._timeout_id !== undefined){
-            clearTimeout(this._timeout_id);
-            this._timeout_id = undefined
-        };
-
-        if (!!this.disposed) return;
-        this.disposed = true;
-
-        if (!!this.ondispose) this.ondispose();
-
-        this.globalScreenManager.dispose();
-        this.globalScreenManager = null;
-        this.webconfManager.dispose();
-        this.webconfManager = null;
-        this.$bar = null;
-        this.items = {};
-        this.ignore_send = false;
-        if (!!this.listener)
-        {
-            this.listener.dispose();
+    
+        _init() {
+            this.globalScreenManager = null;
+            this.webconfManager = null;
+            this.$bar = null;
+            this.items = {};
+            this.ignore_send = false;
             this.listener = null;
+            this.popup = null;
+            this.right_pannel = null;
+            this.ondispose = null;
+            return this;
         }
-        this.popup.dispose();
-        this.popup = null;
-        this.right_pannel.dispose();
-        this.right_pannel = null;
+    
+        /**
+         * 
+         * @param {Webconf} globalScreenManager 
+         * @param {*} webconfManager 
+         * @param {*} $right_pannel 
+         * @returns 
+         */
+        _setup(globalScreenManager, webconfManager, $right_pannel) {
+            this.globalScreenManager = globalScreenManager.setMasterBar(this);
+            this.webconfManager = webconfManager;
+            this.right_pannel = new RightPannel($right_pannel).toTop();
+            return this;
+        }
+      
+        _create_bar(rawbar, more_actions) {
+            const isff = MasterWebconfBar.isFirefox();
+            _$("body").append(rawbar);
+    
+            for (var iterator of Enumerable.from(_$('.wsp-toolbar.webconf-toolbar button')).concat(more_actions.$buttons)) {
+                iterator = _$(iterator);
+                 if (!!iterator.data('witem')) {
+                    this.items[iterator.data('witem')] = new MasterWebconfBarItem(iterator, {
+                        caller:this,
+                        func:iterator.data('function')
+                    }, !iterator.data('click'));
+    
+                    if (!!iterator.data('noff') && isff) this.items[iterator.data('witem')].hide();
+                 }
+            }
+    
+            //Link
+            if (!!this.items['popup_mic'] && !!this.items['popup_cam'])
+            {
+                this.items['popup_mic'].addLink('other', this.items['popup_cam'], 'other');
+            }
+    
+            this.$bar = _$('.wsp-toolbar.webconf-toolbar');
+            this.popup = new MasterWebconfBarPopup(this.$bar.find('.toolbar-popup'));
+    
+            this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`);
+    
+            this._$more_actions = more_actions.$button.css('display', '').removeClass('hidden').removeClass('active').appendTo(this.$bar);
+            
+            _$(window).resize(() => {
+                this.popup.$popup.css('height', `${window.innerHeight / 2}px`);
+            });
+            return this;
+        }
+    
+        updateLogo()
+        {
+            const wsp = this.webconfManager.wsp;
+    
+            if (wsp.have_workspace()) {
+                if (wsp.logo != "false") this.items['round'].$item.html(`<img src="${wsp.logo}" />`).css("background-color", wsp.color);
+                else this.items['round'].$item.html(`<span>${wsp.title.slice(0,3).toUpperCase()}</span>`).css("background-color", wsp.color);
+            }
+            else if (!!this.items['round']) {
+                this.items['round'].$item.append('<span class="icon-mel-videoconference"></span>');
+            }
+            return this;
+        }
+    
+        updateBarAtStartup()
+        {
+            const wsp = this.webconfManager.wsp;
+    
+            if (!!this.items['chat'] && this.webconfManager.chat.chat_visible()) {
+                this.items['chat'].active();
+            }
+    
+            if (!(!!this.items['document'] && !!wsp.objects && wsp.objects.doc))
+            {
+                this.items['document'].$item.remove();
+                delete this.items['document'];
+            }
+            return this;
+        }
+    
+        setListener(listener) {
+            this.listener = listener;
+        }
+    
+        setOnDipose(callback) {
+            this.ondispose = callback;
+        }
+    
+        show() {
+            this.$bar.css('display', '');
+        }
+    
+        toggle_mic_or_cam(state, item, on, off, listener_func)
+        {
+            const FOR = item;
+            const class_on = `.${on}`;
+            const class_off = `.${off}`;
+    
+            if (!!this.items && this.items[FOR])
+            {
+                if (state) {
+                    this.items[FOR].$item.find(class_off).removeClass(off).addClass(on);
+                }
+                else {
+                    this.items[FOR].$item.find(class_on).removeClass(on).addClass(off);
+                }
+    
+                if (!this.ignore_send) {
+                    this.listener[listener_func]();
+                }
+            }
+    
+            return this;
+        }
+    
+        toggle_mic(state)
+        {
+            return this.toggle_mic_or_cam(state, 'mic', 'icon-mel-micro', 'icon-mel-micro-off', 'toggle_micro');
+        }
+    
+        toggle_cam(state)
+        {
+            return this.toggle_mic_or_cam(state, 'cam', 'icon-mel-camera', 'icon-mel-camera-off', 'toggle_video');
+        }
+    
+        update_item_icon(state, item, debug, active_symbol = 'icon-mel-close', inactive_symbol = 'icon-chevron-down')
+        {
+            console.log('update_item_icon', item, state);
+            if (state) {
+                const links = item.getAllLinks()
+                let element;
+                for (const key in links) {
+                    if (Object.hasOwnProperty.call(links, key)) {
+                        element = links[key];
+                        if (element.state) element.disable();
+                    }
+                }
+    
+                item.$item.find('.mel-icon').addClass(active_symbol).removeClass(inactive_symbol);
+            }
+            else {
+                item.$item.find('.mel-icon').removeClass(active_symbol).addClass(inactive_symbol);
+            }
+    
+            return this;
+        }
+    
+        update_popup_devices(devices) {
+            let devices_by_kind = {};
+    
+            for (let index = 0; index < devices.length; ++index) {
+                const element = devices[index];
+                if (devices_by_kind[element.kind] === undefined)
+                    devices_by_kind[element.kind] = [];
+                devices_by_kind[element.kind].push(element);
+            }
+    
+            let html = this.popup.$contents.html('');
+    
+            for (const key in devices_by_kind) {
+                if (Object.hasOwnProperty.call(devices_by_kind, key)) {
+                    const array = devices_by_kind[key];
+                    html.append(`<span class=toolbar-title>${rcmail.gettext(key, "mel_metapage")}</span><div class="btn-group-vertical" style=width:100% role="group" aria-label="groupe des ${key}">`);
+                    for (let index = 0; index < array.length; ++index) {
+                        const element = array[index];
+                        const disabled = element.isCurrent === true ? "disabled" : "";
+                        html.append(_$(`<button title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`).click(() => {
+    
+                        }));
+                    }
+    
+                    if (true) html.append('<separate class="device"></separate>');
+                }
+            }
+    
+            html.find('separate').last().remove();
+    
+            return this;
+        }
+    
+        async togglePopUpMic(state, item) {
+            const FOR = 'popup_mic';
+    
+            if (!!this.items && this.items[FOR])
+            {
+                if (state) {
+                    const hangup = this.items['hangup'].$item[0];
+                    this.popup.$popup.css('left', `${hangup.offsetLeft + (hangup.offsetWidth/2)}px`);
+                    this.update_item_icon(state, item, [_$('.jitsi-select .mel-icon')]).popup.loading().show();
+                    this.update_popup_devices(await this.listener.get_micro_and_audio_devices());
+                }
+                else {
+                    this.update_item_icon(state, item, null).popup.empty().hidden();
+                }
+            }
+        }
+    
+        async togglePopUpCam(state, item) {
+            const FOR = 'popup_cam';
+    
+            if (!!this.items && this.items[FOR])
+            {
+                if (state) {
+                    const hangup = this.items['hangup'].$item[0];
+                    this.popup.$popup.css('left', `${hangup.offsetLeft + (hangup.offsetWidth/2)}px`);
+                    this.update_item_icon(state, item, [_$('.jitsi-select .mel-icon')]).popup.loading().show();
+                    this.update_popup_devices(await this.listener.get_video_devices());
+                }
+                else {
+                    this.update_item_icon(state, item, null).popup.empty().hidden();
+                }
+            }
+        }
+    
+        nextcloud()
+        {
+            let config = {};
+    
+            try{
+                if (this.webconf.wsp !== undefined && this.webconf.wsp.datas !== undefined && this.webconf.wsp.datas.uid !== undefined)
+                {
+                    config = {_params: `/apps/files?dir=/dossiers-${this.webconfManager.wsp.uid}`,
+                    _is_from:"iframe"
+                    };
+                }
+            }catch (er)
+            {}
+    
+            mel_metapage.Functions.change_page("stockage", null, config);
+        }
+    
+        copyUrl()
+        {
+            //TODO => Ajouter les infos d'ariane de d'espaces de travail
+            mel_metapage.Functions.copy(mel_metapage.Functions.public_url(this.webconfManager.get_url(true)));
+        }
+    
+        async get_phone_datas()
+        {   
+            if (!this._phone_datas) 
+            {
+                this._phone_datas = await webconf_helper.phone.getAll();
+            }
+    
+    
+            const copy_value = `Numéro : ${this._phone_datas.number} - PIN : ${this._phone_datas.pin}`;
+            mel_metapage.Functions.copy(copy_value);
+        }
+    
+        toggleChat(state) {
+            this.globalScreenManager.webconf.chat.hidden = !state;
+            this.listener.switchAriane(state);
+            
+            if (state) this.right_pannel.enable_right_mode();
+            else this.right_pannel.disable_right_mode();
+        }
+    
+        toggleInternalChat()
+        {
+            this.listener.toggle_chat();
+        }
+    
+        async toggle_mp()
+        {
+            if (this.right_pannel.is_open()) {
+                this.right_pannel.close();
+            }
+            else {
+                this.right_pannel.$pannel.find('.back-button').css('display', '');
+                let $html = _$('<div></div>');
+                const users = await this.listener.get_room_infos();
+    
+                let html_icon = null;
+                for (const user of users) {
+    
+                    if (!!user.avatarURL) html_icon = `<div class="dwp-round" style="width:32px;height:32px;"><img src="${user.avatarURL}" style="width:100%" /></div>`;
+                    else html_icon = '';
+    
+                    _$(`<div tabindex="0" class="mel-selectable mel-focus with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
+                        e = _$(e.currentTarget);
+                        //this.send('initiatePrivateChat', `"${e.data('id')}"`);
+                        this.listener.initiatePrivateChat(e.data('id'));
+                        this.right_pannel.close();
+                    }).appendTo($html);
+                }
+    
+                return this.right_pannel.set_title('A qui envoyer un message privé ?')
+                .open()
+                .set_content($html, (pannel) => {
+                    let $tmp = pannel.find('.mel-selectable');
+                    if ($tmp.length > 0) $tmp.first()[0].focus();
+                    else pannel.find('button').first()[0].focus();
+                });
+            }
+        }
+    
+        toggle_participantspane()
+        {
+            this.listener.toggle_participantspane();
+        }
+    
+        open_virtual_background()
+        {
+            this.listener.open_virtual_background();
+        }
+    
+        /**
+         * Affiche ou cache la toolbar
+         */
+        update_toolbar(state)
+        {
+            const FOR = 'round';
+    
+            if (!!this.items && this.items[FOR])
+            {
+                if (state) //On cache
+                {
+                    for (const key in this.items) {
+                        if (Object.hasOwnProperty.call(this.items, key)) {
+                            const element = this.items[key];
+                            if (key === FOR) element.$item.removeClass('active');
+                            else {
+                                element.hide();
+                            }
+                        }
+                    }
+    
+                    this._$more_actions.hide();
+                    this.$bar.css('background-color', 'var(--invisible)').css('border-color', 'var(--invisible)').find('v_separate').css('display', 'none');
+                }
+                else {
+                    for (const key in this.items) {
+                        if (Object.hasOwnProperty.call(this.items, key)) {
+                            const element = this.items[key];
+                            if (key === FOR) continue;
+                            else {
+                                if (!!element.$item.data('noff') && MasterWebconfBar.isFirefox()) continue;
+                                else element.show();
+                            }
+                        }
+                    }
+    
+                    this.$bar.css('background-color', '').css('border-color', '').find('v_separate').css('display', '');
+                    this._$more_actions.show();
+                }
+            }
+    
+            return this;
+        }
+    
+        toggleHand()
+        {
+            this.listener.toggleHand();
+        }
+    
+        toggle_film_strip()
+        {
+            this.listener.toggle_film_strip();
+        }
+    
+        share_screen()
+        {
+            this.listener.share_screen();
+        }
+    
+        /**
+         * Vérifie si on est sous firefox
+         * @returns {boolean}
+         */
+        static isFirefox()
+        {
+            return window?.mel_metapage?.Functions?.isNavigator(mel_metapage?.Symbols?.navigator?.firefox) ?? (typeof InstallTrigger !== 'undefined');
+        }
+    
+        async hangup()
+        {
+            this._$more_actions.addClass('hidden').appendTo('body');
+            
+            if (this.globalScreenManager.current_mode !== ewsmode.fullscreen && rcmail.env.current_frame_name !== 'webconf') {
+                await mel_metapage.Functions.change_frame('webconf', true, true).then(() => {
+                    top.rcmail.clear_messages();
+                  });
+            }
+    
+            this.webconfManager.chat.$frame_chat[0].contentWindow.postMessage({
+                externalCommand: 'set-user-status',
+                status: 'online'
+              }, '*');
+    
+            this.toggleChat(false);
+            
+            _$("html").removeClass("webconf-started");
+            
+            this.listener.hangup();
+            this.$bar.remove();
+            this.dispose();
+        }
+    
+        minify()
+        {
+            if (this.is_minimised) return this;
+            
+            const ignore = ['popup_cam', 'popup_mic', 'cam', 'mic', 'hangup'];
+            for (const key in this.items) {
+                if (Object.hasOwnProperty.call(this.items, key)) {
+                    //console.log('item', element, key, this.items[key].$item.parent()[0].nodeName, !ignore.includes(key), this.items[key].$item.parent()[0].nodeName !== 'LI');
+                    if (!ignore.includes(key) && this.items[key].$item.parent()[0].nodeName !== 'LI')
+                    {
+                        this.items[key].hide();
+                    }
+                    
+                }
+            }
+    
+            this.$bar.find('v_separate').css('display', 'none');
+            this.$bar.find('.empty').css('display', 'none');
+            this.$bar.css('right', '60px').css('left', 'unset').css('transform', 'unset');
+            this.is_minimised = true;
+    
+            return this;
+        }
+    
+        maximise()
+        {
+            if (!this.is_minimised) return this;
+    
+            for (const key in this.items) {
+                if (Object.hasOwnProperty.call(this.items, key)) {
+                    this.items[key].show();
+                }
+            }
+    
+            this.$bar.find('v_separate').css('display', '');
+            this.$bar.find('.empty').css('display', '');
+            this.$bar.css('right', '').css('left', '').css('transform', '');
+            this.is_minimised = false;
+    
+            return this;
+        }
+    
+        timeout_delay()
+        {
+            return 10;
+        }
+    
+        show_masterbar() {
+            if (this.$bar.css('display') === 'none') this.$bar.css('display', '');
+            return this.launch_timeout();
+        }
+    
+        hide_masterbar() 
+        {
+            if (this.$bar.css('display') !== 'none') this.$bar.css('display', 'none');
+    
+            if (this._timeout_id !== undefined) this._timeout_id = undefined;
+            
+            return this;
+        }
+    
+        launch_timeout()
+        {
+            if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
+            this._timeout_id = setTimeout(() => {
+                this.hide_masterbar();
+            }, this.timeout_delay() * 1000);
+            return this;
+        }
+    
+        dispose()
+        {
+            if (this._timeout_id !== undefined){
+                clearTimeout(this._timeout_id);
+                this._timeout_id = undefined
+            };
+    
+            if (!!this.disposed) return;
+            this.disposed = true;
+    
+            if (!!this.ondispose) this.ondispose();
+    
+            this.globalScreenManager.dispose();
+            this.globalScreenManager = null;
+            this.webconfManager.dispose();
+            this.webconfManager = null;
+            this.$bar = null;
+            this.items = {};
+            this.ignore_send = false;
+            if (!!this.listener)
+            {
+                this.listener.dispose();
+                this.listener = null;
+            }
+            this.popup.dispose();
+            this.popup = null;
+            this.right_pannel.dispose();
+            this.right_pannel = null;
+        }
     }
-}
-
+    return MasterWebconfBar;    
+})();
 class ListenerWebConfBar {
     constructor(webconf = new Webconf(), masterBar = new MasterWebconfBar())
     {
@@ -2348,9 +2358,10 @@ function create_on_page_change(var_name, var_webconf_started_name, var_screen_ma
         top.metapage_frames.addEvent('before', (eClass) => {
             if (top[var_webconf_started_name] === true)
             {
+                eClass = top.mm_st_ClassContract(eClass);
                 let $selector = top.$(`iframe.${eClass}-frame`);
 
-                if ($selector.length === 0 && $(`.${eClass}-frame`).length > 0) {
+                if ($selector.length === 0 && top.$(`.${eClass}-frame`).length > 0) {
                     top.$(`.${eClass}-frame`).remove();//.removeClass(`${eClass}-frame`).addClass('visio-temp-frame').data('start', eClass);
                 }
             }

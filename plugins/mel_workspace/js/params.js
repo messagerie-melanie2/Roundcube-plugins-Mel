@@ -700,7 +700,7 @@
                 await parent.webconf_helper.notify(key, rcmail.env.current_workspace_uid);
             }
             else
-                await parent.webconf_helper.go("", rcmail.env.current_workspace_uid, null);  
+                await parent.webconf_helper.go("", rcmail.env.current_workspace_uid, null, true, [1]);  
         }
 
         generate_webconf()

@@ -238,6 +238,21 @@ class WebconfChat{
         }
     }
 
+    async setStatus(status) {
+        let $querry = this.$frame_chat;//top.$('.discussion-frame');
+        // if (top.$('.discussion-frame').length <= 0) {
+        //     await mel_metapage.Functions.change_frame('rocket', false, true);
+        //     $querry = top.$('.discussion-frame');
+        // }
+
+        $querry[0].contentWindow.postMessage({
+            externalCommand: 'set-user-status',
+            status: status
+          }, '*');
+
+          top.ariane.update_status(status);
+    }
+
     dispose() {
         if (!!this.disposed) return;
         this.disposed = true;
@@ -389,6 +404,10 @@ class WebconfPageCreator {
             this.onstart(this);
         });
 
+        return this;
+    }
+
+    setLocks() {
         if (!!this.config.locks && this.config.locks.length > 0)
         {
             for (const iterator of this.config.locks) {
@@ -397,6 +416,7 @@ class WebconfPageCreator {
                         this.$room_key.addClass('disabled').attr('disabled', 'disabled');
                         break;
                     case elocks.mode:
+                        this.$state.change();
                         this.$state.addClass('disabled').attr('disabled', 'disabled');
                         this.$chat.addClass('disabled').attr('disabled', 'disabled');
                         this.$wsp.addClass('disabled').attr('disabled', 'disabled');
@@ -406,8 +426,6 @@ class WebconfPageCreator {
                 }
             }
         }
-
-        return this;
     }
 
     enabled() {
@@ -520,7 +538,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
     _setup(chat, $frame_webconf, m_m_button, ariane_size, is_framed)
     {
         this.chat = chat;
-        this.chat.$loaging.css('width', `${ariane_size}px`);
+        this.chat.$loaging.css('width', `${ariane_size}px`).css('min-width', `${ariane_size}px`);
         this.$frame_webconf = $frame_webconf;
         this.$button_maximize = m_m_button.$maximise;
         this.$button_minimize = m_m_button.$minimize;
@@ -781,6 +799,8 @@ class Webconf{
                 this.webconf_page_creator.$chat.val(this.chat.room);
             }
 
+            this.webconf_page_creator.setLocks();
+
             this.webconf_page_creator.onstart = async (webconf_page_creator) => {
                 this.key = webconf_page_creator.getRoomKey();
 
@@ -943,12 +963,14 @@ class Webconf{
     startChat() {
         this.chat.onloading = () => {
             this.screen_manager.updateMode();
-            this.chat.$frame_chat[0].contentWindow.postMessage({
-                externalCommand: 'set-user-status',
-                status: 'busy'
-              }, '*');
+            this.chat.setStatus('busy');
+            // this.chat.$frame_chat[0].contentWindow.postMessage({
+            //     externalCommand: 'set-user-status',
+            //     status: 'busy'
+            //   }, '*');
         };
         this.chat.$frame_chat[0].src = rcmail.env.rocket_chat_url + this.chat.get_room();
+
         return this;
     }
 
@@ -1779,6 +1801,7 @@ var MasterWebconfBar = (() => {
                     this.update_popup_devices(await this.listener.get_micro_and_audio_devices(), (id, kind, label) => {
                         if (kind === 'audioinput') this.listener.set_micro_device(label, id);
                         else this.listener.set_audio_device(label, id);
+                        this.update_item_icon(state, item, null).popup.empty().hidden();
                     });
                 }
                 else {
@@ -1798,6 +1821,7 @@ var MasterWebconfBar = (() => {
                     this.update_item_icon(state, item, [_$('.jitsi-select .mel-icon')]).popup.loading().show();
                     this.update_popup_devices(await this.listener.get_video_devices(), (id, kind, label) => {
                         this.listener.set_video_device(label, id);
+                        this.update_item_icon(state, item, null).popup.empty().hidden();
                     });
                 }
                 else {
@@ -1812,7 +1836,7 @@ var MasterWebconfBar = (() => {
             let config = {};
     
             try{
-                if (this.webconf.wsp !== undefined && this.webconf.wsp.datas !== undefined && this.webconf.wsp.datas.uid !== undefined)
+                if (this.webconf.wsp !== undefined && this.webconf.wsp.uid !== undefined)
                 {
                     config = {//_params: `/apps/files?dir=/dossiers-${this.webconfManager.wsp.uid}`,
                         _is_from:"iframe",
@@ -1980,11 +2004,6 @@ var MasterWebconfBar = (() => {
                     top.rcmail.clear_messages();
                   });
             }
-    
-            this.webconfManager.chat.$frame_chat[0].contentWindow.postMessage({
-                externalCommand: 'set-user-status',
-                status: 'online'
-              }, '*');
     
             this.toggleChat(false);
             
@@ -2468,6 +2487,21 @@ function create_listeners() {
             jwt_token = evt.response.jwt;
         }
     });
+
+    window.addEventListener('message', (e) => {
+		if (e.data.eventName === undefined)
+			return;
+
+		if (top.ariane !== undefined)
+		{
+			if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")
+			{
+				const value = e.data.data;
+				top.ariane.update_status(value?.id ?? value);
+				rcmail.env.ariane_have_calls = true;
+			}
+		}
+	});
 }
 
 function create_on_page_change(var_name, var_webconf_started_name, var_webconf_screen_manager_name) {
@@ -2617,6 +2651,7 @@ $(document).ready(() => {
         top.$('html').addClass(class_to_add_to_top);
     }, () => {
         console.log('on dispose starting...');
+        window[var_visio].chat.setStatus('online');
         top[var_top_webconf_started] = undefined;
         top[var_global_screen_manager] = undefined;
 

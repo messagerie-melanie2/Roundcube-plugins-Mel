@@ -90,6 +90,15 @@ class Webconf extends Program
         $key_invalid = false;
         $need_config = $this->get_input("_need_config") ?? false;
         $locks = $this->get_input("_locks") ?? [];
+
+        if (is_string($locks))
+        {
+            if (strpos($locks, ',') !== false) $locks = mel_helper::Enumerable(explode(',', $locks))->select(function ($k, $v) {
+                return intval($v);
+            })->toArray();
+            else $locks = [intval($locks)];
+        }
+
         $key = $this->get_input("_key");
         $this->tmp_key = $key;// ?? $this->generate_key();
         $this->set_env_var("webconf.key", $key);

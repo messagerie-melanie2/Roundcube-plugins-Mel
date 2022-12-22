@@ -1,16 +1,22 @@
 (() => {
 //Constantes
+//Nom des variables globales
 const var_visio = 'mel.visio';
 const var_global_screen_manager = 'mel.screen_manager.global';
 const var_top_on_change_added = 'mel.onchange.state.added';
 const var_top_webconf_started = 'mel.visio.started';
+//Autres variables
 const private_key = mel_metapage.Other.webconf.private;
 const public_room = 'channel';
 const private_room = 'group';
+const right_item_size  = 340;
+const class_to_add_to_top = 'webconf-started';
+//Noms des enums
 const enum_privacy_name = 'eprivacy';
 const enum_created_state = 'ewstate';
 const enum_screen_mode = 'ewsmode';
 const enum_locks = 'enum_webconf_locks'
+//Enums
 const eprivacy = MelEnum.createEnum(enum_privacy_name, {public:Symbol(), private:Symbol()});
 const ewebconf_state = MelEnum.createEnum(enum_created_state, {chat:Symbol(), wsp:Symbol()});
 const ewsmode = MelEnum.createEnum(enum_screen_mode, {fullscreen:0, minimised:1, fullscreen_w_chat:2, minimised_w_chat:3, chat:4});
@@ -18,22 +24,36 @@ const elocks = MelEnum.createEnum(enum_locks, {
     room:0,
     mode:1
 });
-const right_item_size  = 340;
-const class_to_add_to_top = 'webconf-started';
 
 //Globales
+/**
+ * Token qui permet de se connecter à la visio
+ */
 var jwt_token = undefined;
 
 //Classes
 
 //Abstraites
+/**
+ * Classe abstraite qui contient les variables et fonctiones de base pour gérer
+ * la disposition de la visio
+ */
 class AMelScreenManager {
+    /**
+     * Constructeur de AMelScreenManager
+     * @param {*} modes Modes de dispositions. (Facultatif)
+     */
     constructor(modes = null)
     {
         this.modes = modes || {};
         this.current_mode = null;
     }
 
+    /**
+     * Change la diposition de l'écran.
+     * @param {MelEnum} mode Disposition de l'écran
+     * @returns Chaîne
+     */
     switchMode(mode) 
     {
         this.modes[mode](this.reinit());
@@ -42,18 +62,36 @@ class AMelScreenManager {
         return this;
     }
 
+    /**
+     * Réinitialise la disposition de l'écran
+     * @returns Chaîne
+     */
     reinit() {
         return this;
     }
 }
 
 //Composants de la webconf
+/**
+ * Gère le chat de la visioconférence.
+ */
 class WebconfChat{
+    /**
+     * Constructeur de WebconfChat, appel "_init" et "_setup".
+     * @param {$} frame_chat Jquery de la frame de chat
+     * @param {$} $loading_chat Jquery de la div de chargement
+     * @param {{room:string, privacy:MelEnum, hidden:boolean}} param2 Information de la room et du chat (Facultatif)
+     */
     constructor(frame_chat, $loading_chat, {room='', privacy=eprivacy.public, hidden=true})
     {
         this._init()._setup(frame_chat, $loading_chat, room, privacy, hidden);
     }
 
+    /**
+     * Initialise les variables de la classe
+     * @private Fonction privée, merci de ne pas l'appeler en dehord de cette classe
+     * @returns Chaîne
+     */
     _init(){
         this.$frame_chat = null;
         this.$loaging = null; 
@@ -65,15 +103,28 @@ class WebconfChat{
         return this;
     }
 
+    /**
+     * Assigne les variables aux paramètres passer dans le constructeur.
+     * @param {$} frame_chat Jquery de la frame de chat
+     * @param {$} $loading_chat Jquery de la div de chargement
+     * @param {string} room Nom de la room
+     * @param {MelEnum} privacy Public/privé
+     * @param {boolean} hidden Chat caché au lancement ?
+     * @private Fonction privée, merci de ne pas l'appeler en dehord de cette classe
+     * @returns Chaîne
+     */
     _setup(frame_chat, $loading_chat, room, privacy, hidden) {
+        //Vérifie que la confidentialitée éxiste
         if (!this._check_privacy(privacy)) {
-            console.error(`### [WebconfChat/setup]La confidencialitée donnée n'éxiste pas !`);
+            console.error(`### [WebconfChat/setup]La confidentialitée donnée n'éxiste pas !`);
             throw privacy;
         }
         else {
             this.privacy = privacy;
             this.hidden = hidden;
+            //Affectation de la frame + défini les actions à faire au chargement
             this.$frame_chat = frame_chat.on('load', () => {
+                //A faire que si le chat n'est pas déjà chargé
                 if (this.is_loading)
                 {
                     this.is_loading = false;
@@ -92,6 +143,11 @@ class WebconfChat{
         return this;
     }
 
+    /**
+     * Vérifie si la confidentialitée éxiste.
+     * @param {MelEnum} privacy Valeur de eprivacy
+     * @returns Confidentialitée dans "eprivacy" ou si erreur de code.
+     */
     _check_privacy(privacy) {
         for (const key in eprivacy) {
             if (Object.hasOwnProperty.call(eprivacy, key)) {
@@ -103,19 +159,37 @@ class WebconfChat{
         return false;
     }
 
+    /**
+     * Vérifie si la room est public ou privée
+     * @returns Vrai => public
+     */
     is_public_room() {
         return this.privacy === eprivacy.public;
     }
 
+    /**
+     * Récupère le chemin de la room
+     * @returns home si pas de room par défaut, confidentialité/room sinon
+     */
     get_room(){
         if (this.room === '@home' || !(this.room || false)) return 'home';
         return `${(this.is_public_room() ? public_room : private_room)}/${this.room}`;
     }
 
+    /**
+     * Vérifie si le chat est visible ou non
+     * @returns vrai => visible
+     */
     chat_visible() {
         return (!!(this.room || false)) && !this.hidden;
     }
 
+    /**
+     * Effectue un postMessage sur la frame de chat pour aller dans une room précise.
+     * @param {string | null} room Nom de la room (facultatif)
+     * @param {MelEnum | null} privacy Confidentialitée de la room (facultatif)
+     * @return Chaîne
+     */
     go_to_room(room = null, privacy = null)
     {
 
@@ -131,6 +205,8 @@ class WebconfChat{
             externalCommand: 'go',
             path: `/${this.get_room()}`
         }, '*')
+
+        return this;
     }
 
     getChatElement() {
@@ -690,9 +766,6 @@ class Webconf{
     }
 
     startup() {
-        //this.$frame_webconf.css('background', 'url(https://img.freepik.com/free-vector/night-ocean-landscape-full-moon-stars-shine_107791-7397.jpg?w=2000)').css('display', '').css('background-size', 'contain');
-        //this.chat.$frame_chat.css('background-color', 'blue');
-        //this.screen_manager.fullscreen(!this.chat.hidden);
         if (!this.key || this._need_config) {
             this._need_config = false;
             this.webconf_page_creator.startup().show();
@@ -1545,20 +1618,18 @@ var MasterWebconfBar = (() => {
             this.$bar = _$('.wsp-toolbar.webconf-toolbar');
             this.popup = new MasterWebconfBarPopup(this.$bar.find('.toolbar-popup'));
     
-            this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`);
+            this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`).css('min-height', '250px');
     
             this._$more_actions = more_actions.$button.css('display', '').removeClass('hidden').removeClass('active').appendTo(this.$bar);
             
             if (!top.webconf_resize_set)
             {
                 top.webconf_resize_set = true;
-                _$(window).resize(() => {
-                    try {
-                        this.popup.$popup.css('height', `${window.innerHeight / 2}px`);   
-                    } catch (error) {
-                        if (!!top && !!top.masterbar && !!top.masterbar.popup) top.masterbar.popup.$popup.css('height', `${window.innerHeight / 2}px`);   
-                    }
-                });
+                top.eval(`
+                    top.$(window).resize(() => {
+                        if (!!top && !!top.masterbar && !!top.masterbar.popup) top.masterbar.popup.$popup.css('height', (window.innerHeight / 2)+'px');     
+                    });
+                `);
             }
 
             return this;
@@ -1604,6 +1675,7 @@ var MasterWebconfBar = (() => {
     
         show() {
             this.$bar.css('display', '');
+            this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`);
         }
     
         toggle_mic_or_cam(state, item, on, off, listener_func)
@@ -1661,7 +1733,7 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
-        update_popup_devices(devices) {
+        update_popup_devices(devices, click) {
             let devices_by_kind = {};
     
             for (let index = 0; index < devices.length; ++index) {
@@ -1680,8 +1752,9 @@ var MasterWebconfBar = (() => {
                     for (let index = 0; index < array.length; ++index) {
                         const element = array[index];
                         const disabled = element.isCurrent === true ? "disabled" : "";
-                        html.append(_$(`<button title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`).click(() => {
-    
+                        html.append(_$(`<button data-deviceid="${element.deviceId}" data-devicekind="${element.kind}" data-devicelabel="${element.label}" title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`).click((e) => {
+                            e = $(e.currentTarget);
+                            click(e.data('deviceid'), e.data('devicekind'), e.data('devicelabel'));
                         }));
                     }
     
@@ -1703,7 +1776,10 @@ var MasterWebconfBar = (() => {
                     const hangup = this.items['hangup'].$item[0];
                     this.popup.$popup.css('left', `${hangup.offsetLeft + (hangup.offsetWidth/2)}px`);
                     this.update_item_icon(state, item, [_$('.jitsi-select .mel-icon')]).popup.loading().show();
-                    this.update_popup_devices(await this.listener.get_micro_and_audio_devices());
+                    this.update_popup_devices(await this.listener.get_micro_and_audio_devices(), (id, kind, label) => {
+                        if (kind === 'audioinput') this.listener.set_micro_device(label, id);
+                        else this.listener.set_audio_device(label, id);
+                    });
                 }
                 else {
                     this.update_item_icon(state, item, null).popup.empty().hidden();
@@ -1720,7 +1796,9 @@ var MasterWebconfBar = (() => {
                     const hangup = this.items['hangup'].$item[0];
                     this.popup.$popup.css('left', `${hangup.offsetLeft + (hangup.offsetWidth/2)}px`);
                     this.update_item_icon(state, item, [_$('.jitsi-select .mel-icon')]).popup.loading().show();
-                    this.update_popup_devices(await this.listener.get_video_devices());
+                    this.update_popup_devices(await this.listener.get_video_devices(), (id, kind, label) => {
+                        this.listener.set_video_device(label, id);
+                    });
                 }
                 else {
                     this.update_item_icon(state, item, null).popup.empty().hidden();
@@ -1730,25 +1808,30 @@ var MasterWebconfBar = (() => {
     
         nextcloud()
         {
+            let task = 'stockage'
             let config = {};
     
             try{
                 if (this.webconf.wsp !== undefined && this.webconf.wsp.datas !== undefined && this.webconf.wsp.datas.uid !== undefined)
                 {
-                    config = {_params: `/apps/files?dir=/dossiers-${this.webconfManager.wsp.uid}`,
-                    _is_from:"iframe"
+                    config = {//_params: `/apps/files?dir=/dossiers-${this.webconfManager.wsp.uid}`,
+                        _is_from:"iframe",
+                        _action:'workspace',
+                        _uid:this.webconfManager.wsp.datas.uid,
+                        _page:'stockage'
                     };
+                    task = 'workspace';
                 }
             }catch (er)
             {}
     
-            mel_metapage.Functions.change_page("stockage", null, config);
+            mel_metapage.Functions.change_page(task, null, config);
         }
     
         copyUrl()
         {
             //TODO => Ajouter les infos d'ariane de d'espaces de travail
-            mel_metapage.Functions.copy(mel_metapage.Functions.public_url(this.webconfManager.get_url(true)));
+            mel_metapage.Functions.copy(this.webconfManager.get_url(true));
         }
     
         async get_phone_datas()
@@ -2256,6 +2339,22 @@ class ListenerWebConfBar {
         return devices;
     }
 
+    set_micro_device(label, id)
+    {
+        this.webconf.jitsii.setAudioInputDevice(label, id);
+    }
+
+    set_audio_device(label, id)
+    {
+        this.webconf.jitsii.setAudioOutputDevice(label, id);
+    }
+
+
+    set_video_device(label, id)
+    {
+        this.webconf.jitsii.setVideoInputDevice(label, id);
+    }
+
     async get_room_infos()
     {
         return this.webconf.jitsii.getParticipantsInfo();
@@ -2517,7 +2616,6 @@ $(document).ready(() => {
         top[var_top_webconf_started] = true;
         top.$('html').addClass(class_to_add_to_top);
     }, () => {
-        //top[var_top_on_change_added] = undefined;
         console.log('on dispose starting...');
         top[var_top_webconf_started] = undefined;
         top[var_global_screen_manager] = undefined;
@@ -2533,18 +2631,6 @@ $(document).ready(() => {
     });
 
     $('.footer').css('display', "none");
-
-    //top[var_top_webconf_started] = true;
-
-    // window.debug_w.addDisposition('samsung_z', (screen_manager) => {
-    //     const chat_enabled = !screen_manager.chat.hidden;
-    //     screen_manager.$frame_webconf.css('width', `calc(100% - ${screen_manager.pixel_correction()}px)`)
-    //                                  .css('height', `${chat_enabled ? '50' : '100'}%`);
-    //                                  screen_manager.chat.$frame_chat.css('display', chat_enabled ? '' : 'none')
-    //                          .css('height', `calc(${chat_enabled ? '50' : '100'}% - ${screen_manager.pixel_correction()}px)`)
-    //                          .css('width', `calc(100% - ${screen_manager.pixel_correction()}px)`);
-    // });
-
 
 });
 

@@ -13,7 +13,7 @@ const enum_screen_mode = 'ewsmode';
 const enum_locks = 'enum_webconf_locks'
 const eprivacy = MelEnum.createEnum(enum_privacy_name, {public:Symbol(), private:Symbol()});
 const ewebconf_state = MelEnum.createEnum(enum_created_state, {chat:Symbol(), wsp:Symbol()});
-const ewsmode = MelEnum.createEnum(enum_screen_mode, {fullscreen:Symbol(), minimised:Symbol(), fullscreen_w_chat:Symbol(), minimised_w_chat:Symbol(), chat:Symbol()});
+const ewsmode = MelEnum.createEnum(enum_screen_mode, {fullscreen:0, minimised:1, fullscreen_w_chat:2, minimised_w_chat:3, chat:4});
 const elocks = MelEnum.createEnum(enum_locks, {
     room:0,
     mode:1
@@ -86,7 +86,7 @@ class WebconfChat{
 
                 rcmail.triggerEvent("init_ariane", "mm-ariane");
             });
-            this.$loaging = $loading_chat;
+            this.$loaging = $loading_chat.css('width', '');
             this.room = room;
         }
         return this;
@@ -444,6 +444,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
     _setup(chat, $frame_webconf, m_m_button, ariane_size, is_framed)
     {
         this.chat = chat;
+        this.chat.$loaging.css('width', `${ariane_size}px`);
         this.$frame_webconf = $frame_webconf;
         this.$button_maximize = m_m_button.$maximise;
         this.$button_minimize = m_m_button.$minimize;
@@ -724,6 +725,8 @@ class Webconf{
                             this.chat.room = splited[1];
                             this.chat.hidden = false;
                         }
+
+                        this.chat.$loaging.css('width', `${this.screen_manager._ariane_size}px`);
                     }
                     break;
                     case ewebconf_state.wsp:
@@ -791,6 +794,8 @@ class Webconf{
 
         const global_on_start = this.onstart;
 
+        let alreadyStarted = false;
+
         const options = {
             jwt:await this.jwt(),
             roomName: this.key,
@@ -799,9 +804,13 @@ class Webconf{
             parentNode: document.querySelector('#mm-webconf'),
             onload(){
                 //if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
-                if (!!global_on_start) global_on_start();
-                mel_metapage.Storage.set("webconf_token", true);
-                $('#mm-webconf').find('iframe').css('display', '').parent().find('.absolute-center').remove();
+                if (!alreadyStarted)
+                {
+                    alreadyStarted = true;
+                    if (!!global_on_start) global_on_start();
+                    mel_metapage.Storage.set("webconf_token", true);
+                    $('#mm-webconf').find('iframe').css('display', '').parent().find('.absolute-center').remove();
+                }
                 
             },
             configOverwrite: { 
@@ -861,7 +870,7 @@ class Webconf{
     startChat() {
         this.chat.onloading = () => {
             this.screen_manager.updateMode();
-            this.chat.$frame_chat.postMessage({
+            this.chat.$frame_chat[0].contentWindow.postMessage({
                 externalCommand: 'set-user-status',
                 status: 'busy'
               }, '*');
@@ -1402,7 +1411,7 @@ class RightPannel
     }
 
     toTop() {
-        this.$pannel = this.$pannel.appendTo(top.$('#layout'));
+        this.$pannel = this.$pannel.appendTo(window.top.$('#layout'));
         return this;
     }
 
@@ -1540,9 +1549,18 @@ var MasterWebconfBar = (() => {
     
             this._$more_actions = more_actions.$button.css('display', '').removeClass('hidden').removeClass('active').appendTo(this.$bar);
             
-            _$(window).resize(() => {
-                this.popup.$popup.css('height', `${window.innerHeight / 2}px`);
-            });
+            if (!top.webconf_resize_set)
+            {
+                top.webconf_resize_set = true;
+                _$(window).resize(() => {
+                    try {
+                        this.popup.$popup.css('height', `${window.innerHeight / 2}px`);   
+                    } catch (error) {
+                        if (!!top && !!top.masterbar && !!top.masterbar.popup) top.masterbar.popup.$popup.css('height', `${window.innerHeight / 2}px`);   
+                    }
+                });
+            }
+
             return this;
         }
     
@@ -2297,8 +2315,8 @@ class ListenerWebConfBar {
 window.Webconf = window.Webconf || Webconf;
 window.WebconfScreenManager = window.WebconfScreenManager || WebconfScreenManager;
 window.MasterWebconfBar = window.MasterWebconfBar || MasterWebconfBar;
-top.WebconfScreenManager = top.WebconfScreenManager || WebconfScreenManager;
-top.MasterWebconfBar = top.MasterWebconfBar || MasterWebconfBar;
+// top.WebconfScreenManager = top.WebconfScreenManager || WebconfScreenManager;
+// top.MasterWebconfBar = top.MasterWebconfBar || MasterWebconfBar;
 
 
 function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_config, onvisiostart = null, ondispose = null) {
@@ -2316,7 +2334,8 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
         config:page_creator_config
     }, rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"], right_item_size, null, () => {
         onvisiostart();
-        const interval1 = setInterval(() => {
+        let interval1 = setInterval(() => {
+            console.log('interval1', top.masterbar, !!top.masterbar, interval1);
             if (!!top.masterbar) {
                 clearInterval(interval1);
                 top.masterbar.show();
@@ -2325,7 +2344,8 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
             }
         }, 10);
 
-        const interval = setInterval(() => {
+        let interval = setInterval(() => {
+            console.log('interval2', window.listener, !!window.listener, interval);
             if (!!window.listener) {
                 clearInterval(interval);
                 window.listener.start();
@@ -2334,7 +2354,7 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
     });
 
     top[screen_manager_var_name] = new WebconfScreenManager(top.$('.webconf-frame'), top.$('#layout-frames'), window[webconf_var_name], right_item_size);
-    top.masterbar = new top.MasterWebconfBar(top[screen_manager_var_name], window[webconf_var_name], $('#visio-right-pannel-util'),{
+    top.masterbar = new MasterWebconfBar(top[screen_manager_var_name], window[webconf_var_name], $('#visio-right-pannel-util'),{
         $buttons:top.$('#webconfmoreactions a'),
         $button:top.$('#wmap')
     },rcmail.env["webconf.bar"], false);
@@ -2351,89 +2371,113 @@ function create_listeners() {
     });
 }
 
-function create_on_page_change(var_name, var_webconf_started_name, var_screen_manager_name) {
+function create_on_page_change(var_name, var_webconf_started_name, var_webconf_screen_manager_name) {
     if (!top[var_name]) {
         top[var_name] = true;
+        top.var_webconf_started_name = var_webconf_started_name;
+        top.var_webconf_screen_manager_name = var_webconf_screen_manager_name;
+        top.ewsmode = ewsmode;
 
         top.metapage_frames.addEvent('before', (eClass) => {
-            if (top[var_webconf_started_name] === true)
-            {
-                eClass = top.mm_st_ClassContract(eClass);
-                let $selector = top.$(`iframe.${eClass}-frame`);
-
-                if ($selector.length === 0 && top.$(`.${eClass}-frame`).length > 0) {
-                    top.$(`.${eClass}-frame`).remove();//.removeClass(`${eClass}-frame`).addClass('visio-temp-frame').data('start', eClass);
+            try {
+                if (!top.masterbar && top[var_webconf_started_name] === true) top[var_webconf_started_name] = false; 
+                if (top[var_webconf_started_name] === true)
+                {
+                    eClass = top.mm_st_ClassContract(eClass);
+                    let $selector = top.$(`iframe.${eClass}-frame`);
+    
+                    if ($selector.length === 0 && top.$(`.${eClass}-frame`).length > 0) {
+                        top.$(`.${eClass}-frame`).remove();//.removeClass(`${eClass}-frame`).addClass('visio-temp-frame').data('start', eClass);
+                    }
                 }
+            } catch (error) {
+                
             }
-        });
+        }, true);
 
         top.metapage_frames.addEvent('changepage', (eClass, changepage, isAriane, querry, id) => {
-            //Si webconf
-            if (top[var_webconf_started_name] === true)
-            {
-                top.masterbar.maximise().listener.webconf.screen_manager.update_button_size();
-                top[var_screen_manager_name].$webconf.css('display', '');
-                
-                if (top[var_screen_manager_name].$layout_frames.length === 0) top[var_screen_manager_name].$layout_frames = top.$('#layout-frames');
-                //Cas 1 => Changement de page
-                if (eClass !== 'webconf' && !isAriane){
-                    top[var_screen_manager_name].switchMode(ewsmode.minimised);
+            try {
+                //Si webconf
+                if (top[var_webconf_started_name] === true)
+                {
+                    top.masterbar.maximise().listener.webconf.screen_manager.update_button_size();
+                    top[var_webconf_screen_manager_name].$webconf.css('display', '');
+                    
+                    if (top[var_webconf_screen_manager_name].$layout_frames.length === 0) top[var_webconf_screen_manager_name].$layout_frames = top.$('#layout-frames');
+                    //Cas 1 => Changement de page
+                    if (eClass !== 'webconf' && !isAriane){
+                        top[var_webconf_screen_manager_name].switchMode(ewsmode.minimised);
 
-                    if (eClass === 'workspace') top.masterbar.minify();
-                }
-                //Cas 2 => Chat
-                else if (isAriane) {
-                    try {
-                        mel_metapage.PopUp.ariane.is_show = false;
-                    } catch (error) {
-                        
+                        if (eClass === 'workspace') top.masterbar.minify();
                     }
-                    top[var_screen_manager_name].switchMode(ewsmode.chat);
-                    return "break";
+                    //Cas 2 => Chat
+                    else if (isAriane) {
+                        try {
+                            mel_metapage.PopUp.ariane.is_show = false;
+                        } catch (error) {
+                            
+                        }
+                        top[var_webconf_screen_manager_name].switchMode(ewsmode.chat);
+                        return "break";
+                    }
+                    //Cas 3 => Retour à la visio
+                    else {
+                        top[var_webconf_screen_manager_name].switchMode(ewsmode.fullscreen);
+                    }
                 }
-                //Cas 3 => Retour à la visio
-                else {
-                    top[var_screen_manager_name].switchMode(ewsmode.fullscreen);
-                }
+            } catch (error) {
+                //console.error(error, 'rotomeca');
             }
-        });
+        }, true);
 
         top.metapage_frames.addEvent('changepage.after', () => {
-            //Si webconf
-            if (top[var_webconf_started_name] === true)
-            {
-                top[var_screen_manager_name].switchModeFrame();
+            try {
+                //Si webconf
+                if (top[var_webconf_started_name] === true)
+                {
+                    top[var_webconf_screen_manager_name].switchModeFrame();
+                }
+            } catch (error) {
+                
             }
-        });
+        }, true);
 
         const ignoreChat = (eClass, changepage, isAriane, querry, id) => {
-            if (top[var_webconf_started_name] === true)
-            {
-                if (isAriane) {
-                    if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
-                    {
-                        mel_metapage.PopUp.ariane.hide();
-                        window.bnum_chat_hidden = true;
+            try {
+                if (top[var_webconf_started_name] === true)
+                {
+                    if (isAriane) {
+                        if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
+                        {
+                            mel_metapage.PopUp.ariane.hide();
+                            window.bnum_chat_hidden = true;
+                        }
+    
+                        top.rcmail.set_busy(false);
+                        top.rcmail.clear_messages();
                     }
-
-                    top.rcmail.set_busy(false);
-                    top.rcmail.clear_messages();
+    
+                    top[var_webconf_screen_manager_name].webconf.set_document_title();
+                    document.title = 'Visioconférence';
                 }
-
-                top[var_screen_manager_name].webconf.set_document_title();
-                document.title = 'Visioconférence';
+            } catch (error) {
+                
             }
         };
 
-        top.metapage_frames.addEvent('after', ignoreChat);
+        top.metapage_frames.addEvent('after', ignoreChat, true);
         top.metapage_frames.addEvent('onload.after', () => {
-            //Si webconf
-            if (top[var_webconf_started_name] === true)
-            {
-                top[var_screen_manager_name].webconf.set_document_title();
-                document.title = 'Visioconférence';
+            try {
+                //Si webconf
+                if (top[var_webconf_started_name] === true)
+                {
+                    top[var_webconf_screen_manager_name].webconf.set_document_title();
+                    document.title = 'Visioconférence';
+                }
+            } catch (error) {
+                
             }
-        });
+        }, true);
     }
 }
 
@@ -2473,14 +2517,24 @@ $(document).ready(() => {
         top[var_top_webconf_started] = true;
         top.$('html').addClass(class_to_add_to_top);
     }, () => {
-        top[var_top_on_change_added] = undefined;
+        //top[var_top_on_change_added] = undefined;
+        console.log('on dispose starting...');
         top[var_top_webconf_started] = undefined;
         top[var_global_screen_manager] = undefined;
+
+        try {
+            delete top[var_top_webconf_started];
+            delete top[var_global_screen_manager];
+        } catch (error) {
+            console.error('error', error);
+        }
+
+        console.log('on dispose finished !');
     });
 
     $('.footer').css('display', "none");
 
-    top[var_top_webconf_started] = true;
+    //top[var_top_webconf_started] = true;
 
     // window.debug_w.addDisposition('samsung_z', (screen_manager) => {
     //     const chat_enabled = !screen_manager.chat.hidden;

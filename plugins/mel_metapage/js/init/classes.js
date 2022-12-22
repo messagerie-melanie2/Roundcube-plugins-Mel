@@ -622,8 +622,16 @@ class MetapageFrames {
         return true;
     }
 
-    addEvent(key, event)
+    addEvent(key, event, ignore_context = false)
     {
+        if (ignore_context)
+        {
+            event = {
+                ignore_context:true,
+                ev:event
+            };
+        }
+
         if (this._events[key] === undefined)
             this._events[key] = [];
         this._events[key].push(event);
@@ -637,7 +645,7 @@ class MetapageFrames {
             let result = null;
 
             for (let index = 0; index < this._events[key].length; index++) {
-                const element = this._events[key][index];
+                const element = typeof this._events[key][index] != 'function' && this._events[key][index]?.ignore_context ? eval(this._events[key][index].ev + '') : this._events[key][index];
                 try {
 
                     if (index === 0)

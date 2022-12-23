@@ -136,6 +136,7 @@ $labels['unified_pref_text'] = "Dossiers unifiés";
 $labels['subfolders'] = 'Dossiers';
 $labels['welcome'] = 'Bienvenue';
 $labels['on_your_dwp'] = 'sur votre bureau numérique';
+$labels['baseline'] = 'Les outils que vous connaissez, accessibles sur une seule page web, pour tout retrouver simplement.';
 
 $labels['inbox'] = 'Courrier entrant';
 $labels['drafts'] = 'Brouillons';

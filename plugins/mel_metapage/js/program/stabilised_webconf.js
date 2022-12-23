@@ -1,5 +1,23 @@
+/*****************************************************************/
+/*                 SYSTEME DE VISIOCONFERENCE
+/*
+/* Le système de visioconférence gravite autour de plusieurs classes : 
+/* Webconf => Qui gère la visioconférence
+/* WebconfMasterBar => Qui gère la barre d'outil de la visio
+/* ScreenManagers => Qui gèrent la disposition de l'écran
+/* Dans toutes les classes, la liste des variables de la classe se trouve dans la fonction "_init".
+/* Dans un premier temps, le script va créer tout ce qu'on a besoin pour que le système fonctionne
+/* puis va créer les différents éléments.
+/* Toutes les classes sont disposables pour utiliser le moins de mémoire possible à la fin de la visio.
+/* En cas de modifications, essayez de respectez cette règle : 1 fonction => 1 classe
+/* Les constantes se trouvent en premier.
+/* Les classes ensuite.
+/* Enfin les actions.
+/* Pour rechercher les classes ou les points d'intérêts, faites une recherche sur "¤"
+/* Dans la doc, le symbole "$" pour un type, signifie qu'il s'agit d'un élément jquery (ex : $('body'))
+/*****************************************************************/
 (() => {
-//Constantes
+//¤Constantes
 //Nom des variables globales
 const var_visio = 'mel.visio';
 const var_global_screen_manager = 'mel.screen_manager.global';
@@ -16,7 +34,7 @@ const enum_privacy_name = 'eprivacy';
 const enum_created_state = 'ewstate';
 const enum_screen_mode = 'ewsmode';
 const enum_locks = 'enum_webconf_locks'
-//Enums
+//¤Enums
 /**
  * Enumerable lié à la confidentialité
  * @param {Symbol} public
@@ -53,15 +71,16 @@ const elocks = MelEnum.createEnum(enum_locks, {
     mode:1
 });
 
-//Globales
+//¤Globales
 /**
  * Token qui permet de se connecter à la visio
  */
 var jwt_token = undefined;
 
-//Classes
+//¤Classes
 
-//Abstraites
+//¤Abstraites
+//¤AMelScreenManager
 /**
  * Classe abstraite qui contient les variables et fonctiones de base pour gérer
  * la disposition de la visio
@@ -107,6 +126,7 @@ class AMelScreenManager {
 }
 
 //Composants de la webconf
+//¤WebconfChat
 /**
  * Gère le chat de la visioconférence. Le chat est en 2 parties : une version de chargement et la frame de chat.
  * Tant que la frame de chat, la classe va travailler avec la div de chargement, ensuite, elle travaillera avec la frame de chat.
@@ -207,6 +227,7 @@ class WebconfChat{
 
     /**
      * Vérifie si la confidentialitée éxiste.
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
      * @param {MelEnum} privacy Valeur de eprivacy
      * @returns Confidentialitée dans "eprivacy" ou si erreur de code.
      */
@@ -365,6 +386,7 @@ WebconfChat.from_string = (str) => {
     }
 };
 
+//¤WebconfWorkspaceManager
 /**
  * Classe qui gère les données de l'espace de travail lié à la visio.
  */
@@ -379,6 +401,7 @@ class WebconfWorkspaceManager {
 
     /**
      * Initialise les variables de la classe
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
      * @returns Chaîne
      */
     _init(){
@@ -426,6 +449,7 @@ class WebconfWorkspaceManager {
     /**
      * Assigne les variables de l'espace
      * @param {*} wsp Objet récupérer depuis le php qui contient les données de l'espace. Peut être null.
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
      * @returns Chaîne
      */
     _setup(wsp) {
@@ -510,6 +534,7 @@ class WebconfWorkspaceManager {
     }
 }
 
+//¤WebconfPageCreator
 /**
  * Classe qui gère le paramètragle de la visio
  */
@@ -534,6 +559,7 @@ class WebconfPageCreator {
 
     /**
      * Initialise les variables de la classe
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
      * @returns Chapine
      */
     _init() {
@@ -603,7 +629,8 @@ class WebconfPageCreator {
      * @param {$} $startedMic [NOT IMPLEMENTED]Checkbox du choix d'entrer avec le micro ou non 
      * @param {$} $startedCam [NOT IMPLEMENTED]Checkbox du choix d'entrer avec la cam ou non 
      * @param {Function} callbackStart Action à faire lorsque l'on clique sur le bouton "entrer"
-     * @returns 
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
+     * @returns Chaîne
      */
     _setup($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, $startedMic = null, $startedCam = null, callbackStart = null) {
         this.$page = $page;
@@ -615,7 +642,7 @@ class WebconfPageCreator {
         this.$button_start = $start_button;
         this.onstart = callbackStart;
         this.config = config;
-        return null;
+        return this;
     }
 
     /**
@@ -802,19 +829,21 @@ class WebconfPageCreator {
     }
 }
 
+//¤InternalWebconfScreenManager
 /**
  * Gère la disposition de la visio avec le chat
  * @extends AMelScreenManager
+ * @todo Faire en sorte que ariane size soit une fonction et que ariane size s'adapte au menu bienvenue (Avec une width minimum)
  */
 class InternalWebconfScreenManager extends AMelScreenManager {
     /**
      * Constructeur de la classe
-     * @param {*} chat 
-     * @param {*} $frame_webconf 
-     * @param {*} minimise_and_maximise_buttons 
-     * @param {*} ariane_size 
-     * @param {*} is_framed 
-     * @param {*} modes 
+     * @param {WebconfChat} chat Chat de la visio
+     * @param {$} $frame_webconf Frame de la visio
+     * @param {{$maximise:$, $minimize:$}} minimise_and_maximise_buttons Boutons minimiser et maximiser
+     * @param {number} ariane_size Taille du chat en pixel
+     * @param {boolean} is_framed [DEPRECATED]
+     * @param {JSON | null} modes Modes additionnels
      */
     constructor(chat, $frame_webconf, minimise_and_maximise_buttons, ariane_size, is_framed, modes = null)
     {
@@ -822,20 +851,75 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         this._init()._setup(chat, $frame_webconf, minimise_and_maximise_buttons, ariane_size, is_framed);
     }
 
+    /**
+     * Initialise le chat
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
+     * @returns Chaîne
+     */
     _init() {
+        /**
+         * Chat de la visio
+         * @type {WebconfChat}
+         */
         this.chat = null;
+        /**
+         * Frame de la visio
+         * @type {$}
+         */
         this.$frame_webconf = null;
+        /**
+         * Bouton "Minimiser"
+         * @type {$}
+         */
         this.$button_minimize = null;
+        /**
+         * Bouton "Maximiser"
+         * @type {$}
+         */
         this.$button_maximize = null;
+        /**
+         * Taille du chat lorsqu'il est visible
+         * @constant Cette variable est costante, éviter de la changer hors de la classe "_setup"
+         * @private Cette variable est privé, évitez de l'utiliser hors de cette classe
+         * @type {number}
+         */
         this._ariane_size = 0;
-        this.modes = null;
+        /**
+         * Mode en cours
+         * @type {MelEnum} Utilisez l'enumerable ewsmode
+         */
         this.current_mode = ewsmode.fullscreen;
+        /**
+         * [DEPRECATED]La webconf est en iframe ou non ?
+         * @deprecated Cette variable est déprécié, évitez de l'utiliser
+         * @private Cette variable est privé, évitez de l'utiliser hors de cette classe
+         * @type {boolean}
+         */
         this._is_framed = false;
+        /**
+         * Liste des mesures à ajouter au bouton "minimiser"
+         * @private Cette variable est privé, évitez de l'utiliser hors de cette classe
+         * @type {JSON}
+         */
         this._button_size_correction = {};
+        /**
+         * Si vrai, ignore les corrections de "_button_size_correction"
+         * @type {boolean}
+         */
         this.ignore_correction = false;
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
+     * @param {WebconfChat} chat Chat de la visio
+     * @param {$} $frame_webconf Frame de la visio
+     * @param {{$maximise:$, $minimize:$}} m_m_button Boutons minimiser et maximiser
+     * @param {number} ariane_size Taille du chat en pixel
+     * @param {boolean} is_framed [DEPRECATED]
+     * @returns 
+     */
     _setup(chat, $frame_webconf, m_m_button, ariane_size, is_framed)
     {
         this.chat = chat;
@@ -848,6 +932,11 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         return this;
     }
 
+    /**
+     * Change le mode de disposition de l'écran
+     * @param {MelEnum} mode Utilisez ewsmode
+     * @returns Chaîne
+     */
     switchMode(mode) 
     {
         switch (mode) {
@@ -863,10 +952,11 @@ class InternalWebconfScreenManager extends AMelScreenManager {
             case ewsmode.minimised_w_chat:
                 this.minimise(true);
                 break;
-            case ewsmode.chat:
+            case ewsmode.chat: //Inverse le chat et la visio
                 this.fullscreen_chat(!this.chat.hidden);
                 break
             default:
+                //Modes custom
                 this.modes[mode](this.reinit());
                 break;
         }
@@ -876,11 +966,19 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         return this;
     }
 
+    /**
+     * Récupère la frame de chat si elle est chargée, sinon, la div de chargement
+     * @returns {$}
+     */
     getChatElement() {
         if (this.chat.is_loading) return this.chat.$loaging;
         else return this.chat.$frame_chat;
     }
 
+    /**
+     * Met à jours le mode en fonction si le chat est actif ou non
+     * @returns Chaîne
+     */
     updateMode()
     {
         switch (this.current_mode) {
@@ -907,23 +1005,39 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         return this;
     }
 
+    /**
+     * [DEPRECATED]Permet de prendre en compte la taille de la barre de navigation.
+     * @deprecated Cette fonction est dépréciée évitez de l'utiliser
+     * @returns 
+     */
     pixel_correction()
     {
         if (this._is_framed) return 0;
         else return 60;
     }
 
+    /**
+     * Réinitialise le css des différents éléments.
+     * @returns 
+     */
     reinit() {
+        //Réinitialise le css de la frame de la visio
         this.$frame_webconf.css('left', '')
                            .css('right', '')
                            .css('width', '')
                            .css('height', '');
+        //Réinitialise la frame de chat
         this.getChatElement().css('height', '').css('width', this._ariane_size + 'px').css('left', '').css('right', '');
+        //Réinitialise les boutons minimiser et maximiser
         this.$button_minimize.css('display', 'none').css('top', '').css('right', '');
-        this.$button_maximize.css('display', 'none');
+        this.$button_maximize.css('display', 'none'); //On effectue pas de transformation sur ce bouton
         return super.reinit();
     }
 
+    /**
+     * Passe la visio en plein écran : Visio en plein + le chat
+     * @param {boolean} chat_enabled Pousse un peu la visio pour que le chat soit visible.
+     */
     fullscreen(chat_enabled) {
         this.reinit().$button_minimize.css('display', '')
                                       .css('top', '15px')
@@ -935,6 +1049,10 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         this.chat.hidden = !chat_enabled;
     }
 
+    /**
+     * Passe la visio à droite. Si la visio est active, elle sera en haut, à droite
+     * @param {boolean} chat_enabled Pousse un peu la visio pour que le chat soit visible.
+     */
     minimise(chat_enabled){
         this.reinit();
         this.$button_maximize.css('display', '').css('top', '15px').css('right', '15px');
@@ -948,6 +1066,11 @@ class InternalWebconfScreenManager extends AMelScreenManager {
 
     }
 
+    /**
+     * Passe le chat en plein écran, avec la visio à côté
+     * @param {true} chat_enabled [DEPRECATED]
+     * @returns 
+     */
     fullscreen_chat(chat_enabled) {
         chat_enabled = true;
         if (chat_enabled) {
@@ -961,23 +1084,40 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         else return this.fullscreen(false);
     }
 
+    /**
+     * Met à jour la position du bouton "Minimiser"
+     * @returns Chaîne
+     */
     update_button_size()
     {
         const str = `calc(${15 + (!this.chat.hidden ? this._ariane_size : 0)}px + ${this.get_button_size_correction()})`;
-        console.log('size', str);
         this.$button_minimize.css('right', str);
         return this;
     }
 
+    /**
+     * Ajout un nouveau positionnement pour le bouton "Minimiser"
+     * @param {string} key Clé de la position
+     * @param {string} add format css (ex: XXpx, XX% etc...) 
+     */
     button_size_correction(key, add) {
         this._button_size_correction[key] = add;
     }
 
+    /**
+     * Supprime un positionnement pour le bouton "Minimiser"
+     * @param {string} key Clé à supprimer
+     */
     delete_button_size_correction(key)
     {
         this._button_size_correction[key] = null;
     }
 
+    /**
+     * Récupère la position additionnel du bouton "Minimiser"
+     * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+     * @returns {string | '0px'} format : xxY + xxY + 0px avec xx un chiffre et Y une unitée de mesure (px, %, etc...)
+     */
     _get_button_size_correction()
     {
         let correction = '';
@@ -997,19 +1137,30 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         return correction || '0px';
     }
 
+    /**
+     * Récupère la position additionnel du bouton "Minimiser"
+     * @returns 
+     */
     get_button_size_correction()
     {
-        return this.ignore_correction ? 0 : this._get_button_size_correction();
+        return this.ignore_correction ? '0px' : this._get_button_size_correction();
     }
 
+    /**
+     * Libère les variables
+     * @returns /
+     */
     dispose()
     {
         if (!!this.disposed) return;
         this.disposed = true;
 
+        //Réinitialise le bouton "minimiser" pour l'utiliser plus tard
         this.$button_minimize.css('display', '').css('top', '').css('right', '');
-        this.$button_maximize.css('display', 'none');
+        //On cache le bouton "maximiser", il ne servira plus
+        this.$button_maximize.css('display', 'none'); 
 
+        //On change la fonction du bouton "minimiser", il devient le bouton pour quitter la visio
         const parent = this.$button_minimize.parent();
         this.$button_minimize.remove();
         this.$button_minimize = $(this.$button_minimize[0].outerHTML).css('top', '15px').css('right', '15px').click(() => {
@@ -1018,7 +1169,9 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         this.$button_minimize.find('.icon-mel-undo').removeClass('icon-mel-undo').addClass('icon-mel-close');
         parent.append(this.$button_minimize);
 
+        //Dispose du chat
         this.chat.dispose();
+        //On libère le reste
         this.chat = null;
         this.$frame_webconf = null;
         this.$button_minimize = null;
@@ -1033,25 +1186,105 @@ class InternalWebconfScreenManager extends AMelScreenManager {
 
 }
 
-//Webconf
+//¤Webconf
+/**
+ * Gère la webconf, permet d'intéragir avec toute la frame de visio
+ */
 class Webconf{
+    /**
+     * Constructeur de la classe
+     * @param {string} frameconf_id Id de la frame de la visio (sans le #)
+     * @param {string} framechat_id  Id de la frame de chat (sans le #)
+     * @param {$} $loading_chat Div de chargement
+     * @param {{$maximise:$, $minimise:$}} size_buttons Boutons minimiser et maximiser
+     * @param {{$page:$, $error:$, $room:$, $state:$, $chat:$,$wsp:$, $start:$,config:{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined}} ask_datas Champs de la page de paramètres + données par défaut de la page de paramètres
+     * @param {string | null} key Nom de la room
+     * @param {string | null} ariane Salon de chat
+     * @param {string | null} wsp Id de l'espace lié à cette visio
+     * @param {number} ariane_size Taille de la frame de chat
+     * @param {true} is_framed [DEPRECATED]
+     * @param {Function} onstart Action à faire lorsque la visio commence
+     */
     constructor(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, ariane_size = 323, is_framed=null, onstart = null){
         this._init()._setup(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, ariane_size, is_framed, onstart).startup();
     }
 
+    /**
+     * Initialise les variables de la classe
+     * @returns Chaîne
+     */
     _init() {
+        /**
+         * [DEPRECATED]Si la visio se trouve dans une frame ou non
+         * @deprecated Cette variable est dépréciée, merci de ne pas l'utiliser
+         * @private Cette variable est privée, merci de ne pas l'utiliser en dehord de cette classe
+         * @type {boolean}
+         */
         this._is_framed = false;
+        /**
+         * Données de l'espace de travail
+         * @type {WebconfWorkspaceManager}
+         */
         this.wsp = null;
+        /**
+         * Gestion du chat
+         * @type {WebconfChat}
+         */
         this.chat = null;
+        /**
+         * Frame de la visio
+         * @type {$}
+         */
         this.$frame_webconf = null;
+        /**
+         * Nom de la visio
+         * @type {string}
+         */
         this.key = '';
+        /**
+         * Gestionnaire des paramètres
+         * @type {WebconfPageCreator}
+         */
         this.webconf_page_creator = null;
+        /**
+         * Gestionnaire de dispositions
+         * @type {InternalWebconfScreenManager}
+         */
         this.screen_manager = null;
+        /**
+         * Action à faire lorsque l'on commence une visio
+         * @type {Function | null}
+         */
         this.onstart = null;
+        /**
+         * Besoin d'afficher la page de paramètrage ?
+         * @type {boolean}
+         */
         this._need_config = false;
+        /**
+         * Token JWT qui permet de lancer une visio.
+         * @type {undefined | string}
+         */
+        this._jwt = undefined;
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @param {string} frameconf_id Id de la frame de la visio (sans le #)
+     * @param {string} framechat_id  Id de la frame de chat (sans le #)
+     * @param {$} $loading_chat Div de chargement
+     * @param {{$maximise:$, $minimise:$}} size_buttons Boutons minimiser et maximiser
+     * @param {{$page:$, $error:$, $room:$, $state:$, $chat:$,$wsp:$, $start:$,config:{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined}} ask_datas Champs de la page de paramètres + données par défaut de la page de paramètres
+     * @param {string | null} key Nom de la room
+     * @param {string | null} ariane Salon de chat
+     * @param {string | null} wsp Id de l'espace lié à cette visio
+     * @param {number} ariane_size Taille de la frame de chat
+     * @param {true} is_framed [DEPRECATED]
+     * @param {Function} onstart Action à faire lorsque la visio commence
+     * @private Cette fonction est privée, évitez de l'utilisez en dehors de cette classe
+     * @returns Chaîne
+     */
     _setup(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, ariane_size = 323, is_framed=null, onstart = null){
         const $chat = $(`#${framechat_id}`);
 
@@ -1084,6 +1317,9 @@ class Webconf{
         return this;
     }
 
+    /**
+     * Met en place la page de création ou la visioconférence
+     */
     startup() {
         if (!this.key || this._need_config) {
             this._need_config = false;
@@ -1175,33 +1411,54 @@ class Webconf{
 
     }
 
+    /**
+     * Lance la visioconférence
+     * @async
+     */
     async start(){
+        //Si la clé n'est pas bonne, en génrer une nouvelle (vraimment utile ? idk)
         this.key = this.key || this.webconf_page_creator.generateRandomlyKey();
 
+        //Si on est sous ff, avertir que c'est pas ouf d'utiliser ff
         await this.navigatorWarning();
 
+        //Démarrer le chat
         this.startChat();
 
+        /**
+         * Url de la visio
+         * @type {string}
+         */
         const domain = rcmail.env["webconf.base_url"].replace("http://", "").replace("https://", "");
 
         this.$frame_webconf.find('.loading-visio-text').html('Récupération du jeton...');
 
+        /**
+         * Action à faire lorsque la visio est chargée.
+         * On la met hors du "onload" pour que ça fonctionne
+         * @type {Function}
+         */
         const global_on_start = this.onstart;
 
+        /**
+         * Eviter de démarrer 2 fois la visio
+         * @type {boolean}
+         */
         let alreadyStarted = false;
 
         const options = {
-            jwt:await this.jwt(),
+            jwt:await this.jwt(), //Récupère le token jwt pour pouvoir lancer la visio
             roomName: this.key,
             width: "100%",
             height: "100%",
             parentNode: document.querySelector('#mm-webconf'),
             onload(){
-                //if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
                 if (!alreadyStarted)
                 {
                     alreadyStarted = true;
+
                     if (!!global_on_start) global_on_start();
+
                     mel_metapage.Storage.set("webconf_token", true);
                     $('#mm-webconf').find('iframe').css('display', '').parent().find('.absolute-center').remove();
                 }
@@ -1236,6 +1493,7 @@ class Webconf{
 
         this.$frame_webconf.find('.loading-visio-text').html('Connexion à la visioconférence...')
 
+        //On attend que l'api soit disponible
         await wait(() => window.JitsiMeetExternalAPI === undefined);
         console.log('Connexion...')
         this.jitsii = new JitsiMeetExternalAPI(domain, options);
@@ -1263,20 +1521,23 @@ class Webconf{
         if (top.$('#layout-frames').css('display') === 'none') top.$('#layout-frames').css('display', '');
     }
 
+    /**
+     * Mettre les actions à faire lors du chargement du chat + mettre l'url du chat dans la frame
+     * @returns Chaîne
+     */
     startChat() {
         this.chat.onloading = () => {
             this.screen_manager.updateMode();
             this.chat.setStatus('busy');
-            // this.chat.$frame_chat[0].contentWindow.postMessage({
-            //     externalCommand: 'set-user-status',
-            //     status: 'busy'
-            //   }, '*');
         };
         this.chat.$frame_chat[0].src = rcmail.env.rocket_chat_url + this.chat.get_room();
 
         return this;
     }
 
+    /**
+     * Affiche un message si l'utilisateur est sous FF
+     */
     async navigatorWarning()
     {
         
@@ -1349,6 +1610,10 @@ class Webconf{
         } //Fin si firefox
     }
 
+    /**
+     * Récupère le token JWT
+     * @returns {string} token JWT
+     */
     async jwt()
     {
         if (this._jwt === undefined)
@@ -1364,28 +1629,50 @@ class Webconf{
         return this._jwt;
     }
 
+    /**
+     * Ajoute une disposition d'écran
+     * @param {string} key Clé de la disposition
+     * @param {Function} callback Fonction de la disposition
+     */
     addDisposition(key, callback) {
         if (!this.screen_manager.modes) this.screen_manager.modes = {};
 
         this.screen_manager.modes[key] = callback;
     }
 
+    /**
+     * Affiche le chat
+     * @returns Chaîne
+     */
     showChat() {
         this.chat.show().hidden = false;
         this.screen_manager.updateMode();
         return this;
     }
 
+    /**
+     * Cache le chat
+     * @returns Chaîne
+     */
     hideChat() {
         this.chat.hide().hidden = true;
         this.screen_manager.updateMode();
         return this;
     }
 
+    /**
+     * Bascule l'état du chat
+     * @returns Chaîne
+     */
     toggleChat(){
         return this.chat.chat_visible() ? this.hideChat() : this.showChat();
     }
 
+    /**
+     * Récupère l'url de la visio
+     * @param {boolean} ispublic Si vrai, l'url "/public" sera renvoyé
+     * @returns {string}
+     */
     get_url(ispublic = false)
     {
         let config = {
@@ -1401,6 +1688,10 @@ class Webconf{
         return url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
     }
 
+    /**
+     * Met à jours l'url de la page
+     * @returns /
+     */
     set_document_title()
     {
         if (!this.key) return; 
@@ -1408,6 +1699,10 @@ class Webconf{
         top.mel_metapage.Functions.title(this.get_url());
     }
 
+    /**
+     * Libère les variables
+     * @returns /
+     */
     dispose()
     {
         if (!!this.disposed) return;
@@ -1425,31 +1720,80 @@ class Webconf{
         this.screen_manager.dispose();
         this.screen_manager = null;
         this.onstart = null;
-
-        // try {
-        //     this.jitsii.dispose();
-        // } catch (error) {
-            
-        // }
     }
 }
 
+//¤WebconfScreenManager
+/**
+ * Gère la disposition de la visio avec les autres frames.
+ * @extends AMelScreenManager
+ */
 class WebconfScreenManager extends AMelScreenManager {
+    /**
+     * Constructeur de la classe
+     * @param {$} $webconf Frame de la visio
+     * @param {$} $frames [DEPRECATED]
+     * @param {Webconf} webconfitem Visioconférence
+     * @param {number} webconf_size Taille de la visio
+     * @param {JSON} modes Modes additionnels
+     * @param {JSON} frameModes Modes additionnels
+     */
     constructor($webconf, $frames, webconfitem, webconf_size = 423, modes = null, frameModes = null) {
         super(modes);
-        this._init()._setup($webconf, $frames, webconfitem, webconf_size);
+        this._init()._setup($webconf, $frames, webconfitem, webconf_size, frameModes);
     }
 
+    /**
+     * Initialise les variables de la classe
+     * @private Cette fonction est privée, merci de ne pas l'utiliser en dehord de cette classe
+     * @returns Chaîne
+     */
     _init() {
+        /**
+         * Frame de la visio
+         * @type {$}
+         */
         this.$webconf = null;
+        /**
+         * [DEPRECATED]
+         * @deprecated Cette fonction est dépréciée, merci de ne pas l'utiliser
+         * @type {$}
+         */
         this.$layout_frames = null;
+        /**
+         * Barre d'outil de la visio
+         * @type {MasterWebconfBar}
+         */
         this.master_bar = null;
-        this._minified_size = 0;
+        /**
+         * Visioconférence
+         * @type {Webconf}
+         */
         this.webconf = null;
+        /**
+         * Modes custom, actions  à faires aux autres frames
+         */
         this.frames_modes = null;
+        /**
+         * Taille de la visio quand elle partage son espace avec une autre frame
+         * @constant Cette variable est constantes, évitez de la modifier en dehors de la fonction "_setup"
+         * @private Cette variable est privée, évitez de l'utiliser en dehors de cette classe  
+         * @type {number}
+         */
+        this._minified_size = 0;
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @param {$} $webconf Frame de la visio
+     * @param {$} $frames [DEPRECATED]
+     * @param {Webconf} webconfitem Visioconférence
+     * @param {number} webconf_size Taille de la visio
+     * @param {JSON} frameModes Modes additionnels
+     * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+     * @returns Chaîne
+     */
     _setup($webconf, $frames, webconfitem, webconf_size, frameModes) {
         this.$webconf = $webconf;
         this.$layout_frames = $frames;
@@ -1473,11 +1817,21 @@ class WebconfScreenManager extends AMelScreenManager {
         return this;
     }
 
+    /**
+     * Assigne une barre d'outil
+     * @param {MasterWebconfBar} bar Barre d'outil
+     * @returns Chaîne
+     */
     setMasterBar(bar) {
         this.master_bar = bar;
         return this;
     }
 
+    /**
+     * Change la disposition de l'écran
+     * @param {MelEnum} mode Utilisez ewsmode
+     * @returns Chaîne
+     */
     switchMode(mode) 
     {
         let is_fullscreen_chat = false;
@@ -1502,7 +1856,13 @@ class WebconfScreenManager extends AMelScreenManager {
         return this;
     }
 
+    /**
+     * Change la disposition de l'écran - actions liés aux frames
+     */
     switchModeFrame() {
+        /**
+         * Mode en cours
+         */
         const mode = this.current_mode;
 
         switch (mode) {
@@ -1522,23 +1882,47 @@ class WebconfScreenManager extends AMelScreenManager {
         }
     }
 
+    /**
+     * [DEPRECATED]Check si la visio est en iframe
+     * @deprecated Cette fonction est dépréciée, évitez de l'utiliser
+     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe 
+     * @returns {boolean}
+     */
     _is_visio_framed(){
         return this.$webconf[0].nodeName === 'iframe';
     }
 
+    /**
+     * Récupère la classe de la frame en cours
+     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe 
+     * @returns {string}
+     */
     _getCurrentPage() {
         return top.rcmail.env.current_frame_name;
     }
 
+    /**
+     * Récupère la frame en cours
+     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe 
+     * @returns {$}
+     */
     _getOtherPage() {
         return  top.$(`iframe.${this._getCurrentPage()}-frame`);
     }
 
+    /**
+     * Réinitialise le css de la visio
+     * @returns Chaîne
+     */
     reinit() {
         this.$webconf.css('width', '100%').css('position', '').css('left', '').css('right', '').css('top', '').css('padding-left', '');
         return this;
     }
 
+    /**
+     * Réinitialise le css des autres frames
+     * @returns Chaîne
+     */
     reinitFrame() {
         for (var iterator of top.$('.mm-frame')) {
             iterator = $(iterator);
@@ -1550,6 +1934,10 @@ class WebconfScreenManager extends AMelScreenManager {
         return this;
     }
 
+    /**
+     * Passe la visio en plein écran
+     * @param {boolean} chat Si vrai, le chat sera passé en plein écran
+     */
     fullscreen(chat = false) {
         const chat_hidden = this.webconf.chat.hidden;
         this.reinit();
@@ -1570,6 +1958,9 @@ class WebconfScreenManager extends AMelScreenManager {
         this.webconf.chat.hidden = chat_hidden;
     }
 
+    /**
+     * Minimise la visio
+     */
     minimise() {
         const chat_hidden = this.webconf.chat.hidden;
         this.reinit().$webconf.css('position', 'absolute')
@@ -1592,6 +1983,9 @@ class WebconfScreenManager extends AMelScreenManager {
         this.reinitFrame();
     }
 
+    /**
+     * Passe les autres pages en plein écran
+     */
     minimiseFrame() {
         this.reinitFrame()._getOtherPage().css('width', `calc(100% - ${this._minified_size}px)`)
                                           .css('position', 'absolute')
@@ -1599,6 +1993,13 @@ class WebconfScreenManager extends AMelScreenManager {
                                           .css('left', '0');
     }
 
+    /**
+     * [DEPRECATED]Cette fonction est dépréciée, évitez de l'utiliser
+     * @deprecated Cette fonction est dépréciée, évitez de l'utiliser
+     * @param {$} $item 
+     * @param {boolean} use_margin_instead_right 
+     * @returns Chaîne
+     */
     fit_item_to_guest_screen($item, use_margin_instead_right = true)
     {
         const w = `calc(100% - ${this._minified_size}px)`;
@@ -1607,6 +2008,10 @@ class WebconfScreenManager extends AMelScreenManager {
         return this;
     }
 
+    /**
+     * Libère les variables
+     * @returns /
+     */
     dispose()
     {
         if (!!this.disposed) return;
@@ -1627,22 +2032,69 @@ class WebconfScreenManager extends AMelScreenManager {
 }
 
 //MasterWebconfBarElement
+//¤MasterWebconfBarItem
+/**
+ * Element de la barre d'outil de la visio
+ */
 class MasterWebconfBarItem {
+    /**
+     * Constructeur de la classe
+     * @param {$} $item Element de la barre d'outil
+     * @param {Function} action Action à faire au clique
+     * @param {boolean} toggle Si vrai, l'élément possède 2 état, sinon, un clique simple sera fait
+     */
     constructor($item, action, toggle = true)
     {
         this._init()._setup($item, action, toggle);
     }
 
+    /**
+     * Intialise les variables de la classe
+     * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+     * @returns Chaîne
+     */
     _init() {
+        /**
+         * Elément cliquable
+         * @type {$}
+         */
         this.$item = null;
+        /**
+         * Action à faire au clique
+         * @type {function}
+         */
         this.action = null;
+        /**
+         * Action à faire lorsque l'on passe l'élément dans l'état "actif"
+         * @type {function}
+         */
         this.onactive = null;
+        /**
+         * Action à faire lorsque l'on passe l'élément dans l'état "inactif"
+         * @type {function}
+         */
         this.ondisable = null;
+        /**
+         * Etat de l'élément
+         * @type {boolean}
+         */
         this.state = false;
+        /**
+         * Autres éléments liés à cet élement.
+         * @type {Array<MasterWebconfBarItem>}
+         */
         this._linkedItems = null;
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @param {$} $item Element de la barre d'outil
+     * @param {Function} action Action à faire au clique
+     * @param {boolean} toggle Si vrai, l'élément possède 2 état, sinon, un clique simple sera fait
+     * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+     * @returns Chaîne
+     */
     _setup($item, action, toggle) {
         this.$item = $item;
         this.action = action;
@@ -1659,15 +2111,28 @@ class MasterWebconfBarItem {
         return this;
     }
 
+    /**
+     * Execute l'action de l'élément
+     * @param  {...any} args Arguments de l'action
+     * @returns 
+     */
     _execute_action(...args)
     {
         return this.action.caller[this.action.func].call(this.action.caller, ...args);
     }
 
+    /**
+     * Element actif ?
+     * @returns 
+     */
     is_active() {
         return this.state;
     }
 
+    /**
+     * Active l'élement
+     * @returns Chaîne
+     */
     active() {
         this.state = true;
         this.$item.addClass('active');
@@ -1677,6 +2142,10 @@ class MasterWebconfBarItem {
         return this;
     }
 
+    /**
+     * Désactive l'élement
+     * @returns Chaîne
+     */
     disable() {
         this.state = false;
         this.$item.removeClass('active');
@@ -1686,6 +2155,10 @@ class MasterWebconfBarItem {
         return this;
     }
 
+    /**
+     * Bascule l'élément
+     * @returns Chaîne
+     */
     toggle() {
         if (this.state) this.disable();
         else this.active();
@@ -1693,20 +2166,37 @@ class MasterWebconfBarItem {
         return this;
     }
 
+    /**
+     * Execute l'action de l'élément, sans l'activer ou le désactiver
+     * @returns Chaîne
+     */
     click() {
         this._execute_action(true, this);
 
         return this;
     }
 
+    /**
+     * Cache l'élement
+     */
     hide() {
         this.$item.css('display', 'none');
     }
 
+    /**
+     * Affiche l'élement
+     */
     show() {
         this.$item.css('display', '');
     }
 
+    /**
+     * Lie un élément
+     * @param {string} key Clé pour retrouver l'élément 
+     * @param {MasterWebconfBarItem} item Elément lié
+     * @param {string} selfKeyLink Clé pour cette élément, si défini, lie automatiquement cet élément à l'autre élément
+     * @returns Chaîne
+     */
     addLink(key, item, selfKeyLink = null) {
         if (!this._linkedItems) this._linkedItems = {};
 
@@ -1719,15 +2209,28 @@ class MasterWebconfBarItem {
         return this;
     }
 
+    /**
+     * Récupère un lien
+     * @param {string} key Clé du lien à récupérer
+     * @returns {MasterWebconfBarItem | null}
+     */
     getLink(key) {
         if (!!this._linkedItems) return this._linkedItems[key];
         return null;
     }
 
+    /**
+     * Récupère tout les liens
+     * @returns {Array<MasterWebconfBarItem> | {}}
+     */
     getAllLinks() {
         return this._linkedItems ?? {};
     }
 
+    /**
+     * Libère les variables
+     * @returns /
+     */
     dispose() {
         if (!!this.disposed) return;
         this.disposed = true;

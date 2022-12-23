@@ -304,6 +304,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
     if (changepage)//Actions à faire si on change de page.
         metapage_frames.triggerEvent("changepage", eClass, changepage, isAriane, querry);
 
+    metapage_frames.triggerEvent("before.after", eClass, changepage, isAriane, querry);
+
     if (querry.length == 0) //Si on doit créer la frame
     {
         if (rcmail.nb_frames === undefined)

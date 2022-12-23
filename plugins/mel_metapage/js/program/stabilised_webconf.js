@@ -958,6 +958,8 @@ class Webconf{
             ongo_config,
             (datas) => {}
         );
+
+        if (top.$('#layout-frames').css('display') === 'none') top.$('#layout-frames').css('display', '');
     }
 
     startChat() {
@@ -1294,6 +1296,14 @@ class WebconfScreenManager extends AMelScreenManager {
                                           .css('position', 'absolute')
                                           .css('top', '0')
                                           .css('left', '0');
+    }
+
+    fit_item_to_guest_screen($item, use_margin_instead_right = true)
+    {
+        const w = `calc(100% - ${this._minified_size}px)`;
+        $item.css('width', w).css('max-width', w);
+        $item.css(use_margin_instead_right ? 'mergin-right' : 'right', `${this._minified_size}px)`);
+        return this;
     }
 
     dispose()
@@ -1836,15 +1846,16 @@ var MasterWebconfBar = (() => {
             let config = {};
     
             try{
-                if (this.webconf.wsp !== undefined && this.webconf.wsp.uid !== undefined)
+                if (this.webconfManager.wsp !== undefined && this.webconfManager.wsp.uid !== undefined)
                 {
-                    config = {//_params: `/apps/files?dir=/dossiers-${this.webconfManager.wsp.uid}`,
+                    config = {
+                        _params: `/apps/files?dir=/dossiers-${this.webconfManager.wsp.uid}`,
                         _is_from:"iframe",
-                        _action:'workspace',
-                        _uid:this.webconfManager.wsp.datas.uid,
-                        _page:'stockage'
+                        // _action:'workspace',
+                        // _uid:this.webconfManager.wsp.uid,
+                        // _page:'stockage'
                     };
-                    task = 'workspace';
+                    //task = 'workspace';
                 }
             }catch (er)
             {}
@@ -2011,7 +2022,20 @@ var MasterWebconfBar = (() => {
             
             this.listener.hangup();
             this.$bar.remove();
+
+            let $guest_bar = _$(".wsp-toolbar-edited");
+            if ($guest_bar.length > 0)
+            {
+                $guest_bar.removeClass('webconfstarted').css('max-width', '');
+            }
+
             this.dispose();
+        }
+
+        minify_item($item)
+        {
+            this.globalScreenManager.fit_item_to_guest_screen($item);
+            return this;
         }
     
         minify()
@@ -2516,6 +2540,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                 if (!top.masterbar && top[var_webconf_started_name] === true) top[var_webconf_started_name] = false; 
                 if (top[var_webconf_started_name] === true)
                 {
+                    debugger;
                     eClass = top.mm_st_ClassContract(eClass);
                     let $selector = top.$(`iframe.${eClass}-frame`);
     
@@ -2528,11 +2553,12 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
             }
         }, true);
 
-        top.metapage_frames.addEvent('changepage', (eClass, changepage, isAriane, querry, id) => {
+        top.metapage_frames.addEvent('before.after', (eClass, changepage, isAriane, querry, id) => {
             try {
                 //Si webconf
                 if (top[var_webconf_started_name] === true)
                 {
+                    debugger;
                     top.masterbar.maximise().listener.webconf.screen_manager.update_button_size();
                     top[var_webconf_screen_manager_name].$webconf.css('display', '');
                     
@@ -2541,7 +2567,15 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                     if (eClass !== 'webconf' && !isAriane){
                         top[var_webconf_screen_manager_name].switchMode(ewsmode.minimised);
 
-                        if (eClass === 'workspace') top.masterbar.minify();
+                        let $toolbaredited = top.$('.wsp-toolbar-edited.melw-wsp');
+                        if (eClass === 'workspace' || $toolbaredited.length > 0){
+                            top.masterbar.minify();
+
+                            // if ($toolbaredited.length > 0)
+                            // {
+                            //     top.masterbar.minify_item($toolbaredited);
+                            // }
+                        }
                     }
                     //Cas 2 => Chat
                     else if (isAriane) {
@@ -2563,7 +2597,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
             }
         }, true);
 
-        top.metapage_frames.addEvent('changepage.after', () => {
+        top.metapage_frames.addEvent('after', () => {
             try {
                 //Si webconf
                 if (top[var_webconf_started_name] === true)

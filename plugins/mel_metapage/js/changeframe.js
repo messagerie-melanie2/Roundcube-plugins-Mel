@@ -149,6 +149,7 @@ function InitialiseDatas()
 
 function UpdateMenu(_class, _picture, _toolbar)
 {
+    const is_in_visio = !!top['mel.visio.started'];
     var $ = top.$;
     InitialiseDatas();
     if (rcmail.env.wsp_datas.toolbar.current === "inpage")
@@ -272,10 +273,9 @@ function UpdateMenu(_class, _picture, _toolbar)
                 exists: true
             };
 
-            if (window.webconf_master_bar !== undefined)
+            if (is_in_visio)
             {
-                window.webconf_master_bar.minify_toolbar();
-                $(".wsp-toolbar-edited").addClass("webconfstarted");
+                $(".wsp-toolbar-edited").addClass("webconfstarted").css('max-width', `calc(100% - ${$('iframe.webconf-frame').width()}px)`);
             }
 
         }
@@ -617,6 +617,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
 async function ChangeFrame(_class, otherDatas = null)
 {
+    const is_in_visio = !!top['mel.visio.started'];
     //Actions à faire avant de changer de frame
     if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
         ArianeButton.default().hide_button();
@@ -637,7 +638,7 @@ async function ChangeFrame(_class, otherDatas = null)
 
     const style = ($('iframe.workspace-frame').length > 0 ? $('iframe.workspace-frame')[0].contentWindow.rcmail.env.current_bar_colors : rcmail.env.current_bar_colors);
 
-    if (window.webconf_master_bar === undefined)
+    if (!is_in_visio)
         $(".mm-frame").css("display", "none");
     else
         $(".mm-frame").each((i,e) => {
@@ -850,6 +851,10 @@ async function ChangeFrame(_class, otherDatas = null)
     $(`#${id}`).css("display", "");
     $(".workspace-frame").css("display", "none");
 
+    if (is_in_visio){
+        $(`#${id}`).css('width', `calc(100% - ${$('iframe.webconf-frame').width()}px)`);
+    }
+
     rcmail.env.have_frame_positioned = true;
     rcmail.set_busy(false);
     rcmail.clear_messages();
@@ -857,7 +862,8 @@ async function ChangeFrame(_class, otherDatas = null)
 
 async function ChangePage(_class)
 {
-    if (window.webconf_master_bar === undefined)
+    const is_in_visio = !!top['mel.visio.started'];
+    if (!is_in_visio)
         $(".mm-frame").css("display", "none");
     else
         $(".mm-frame").each((i,e) => {
@@ -868,7 +874,7 @@ async function ChangePage(_class)
 
     let layout_frame = $("#layout-frames");
 
-    if (window.webconf_master_bar === undefined)
+    if (true)
     {
         layout_frame.css("position", "")
         .css("height", "");
@@ -905,6 +911,7 @@ window.ChangeToolbarPage = ChangeToolbarPage;
 
 async function ChangeToolbarPage(_class)
 {
+    const is_in_visio = !!top['mel.visio.started'];
     let layout_frame = $("#layout-frames");
     let workspace_frame = layout_frame.find(".workspace-frame");
 
@@ -918,8 +925,12 @@ async function ChangeToolbarPage(_class)
     _$(".wsp-object").css("display", "none");
     _$(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");
 
-    if (window.webconf_master_bar !== undefined)
-        window.webconf_master_bar.minify_toolbar();
+    // if (window.webconf_master_bar !== undefined)
+    //     window.webconf_master_bar.minify_toolbar();
+    if (is_in_visio && !!top.masterbar)
+    {
+        top.masterbar.show_masterbar();
+    }
     //console.log($(".wsp-object"), $(".wsp-toolbar-item.first"), $(".wsp-home"));
     switch (_class) {
         case "home":

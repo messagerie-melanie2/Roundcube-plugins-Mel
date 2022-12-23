@@ -17,9 +17,37 @@ const enum_created_state = 'ewstate';
 const enum_screen_mode = 'ewsmode';
 const enum_locks = 'enum_webconf_locks'
 //Enums
+/**
+ * Enumerable lié à la confidentialité
+ * @param {Symbol} public
+ * @param {Symbol} private
+ * @type {MelEnum}
+ */
 const eprivacy = MelEnum.createEnum(enum_privacy_name, {public:Symbol(), private:Symbol()});
+/**
+ * Enumerable lié à la checkbox "Etat".
+ * @param {Symbol} chat
+ * @param {Symbol} wsp
+ * @type {MelEnum}
+ */
 const ewebconf_state = MelEnum.createEnum(enum_created_state, {chat:Symbol(), wsp:Symbol()});
+/**
+ * Enumerable des différentes dispositions de la visio
+ * @param {number} fullscreen
+ * @param {number} minimised
+ * @param {number} fullscreen_w_chat
+ * @param {number} minimised_w_chat
+ * @param {number} chat
+ * @type {MelEnum}
+ */
 const ewsmode = MelEnum.createEnum(enum_screen_mode, {fullscreen:0, minimised:1, fullscreen_w_chat:2, minimised_w_chat:3, chat:4});
+/**
+ * Enumerable des locks disponibles
+ * @see {WebconfPageCreator}
+ * @param {number} room (0) => Désactive l'input du nom de la room
+ * @param {number} mode (1) => Désactive la checkbox du choix et les selects lié à l'espace et au chat
+ * @type {MelEnum}
+ */
 const elocks = MelEnum.createEnum(enum_locks, {
     room:0,
     mode:1
@@ -45,7 +73,14 @@ class AMelScreenManager {
      */
     constructor(modes = null)
     {
+        /**
+         * Modes de configuration d'écrans disponible
+         */
         this.modes = modes || {};
+        /**
+         * Mode en cours
+         * @type {MelEnum} Utilisez l'énumérable ewsmode
+         */
         this.current_mode = null;
     }
 
@@ -73,7 +108,8 @@ class AMelScreenManager {
 
 //Composants de la webconf
 /**
- * Gère le chat de la visioconférence.
+ * Gère le chat de la visioconférence. Le chat est en 2 parties : une version de chargement et la frame de chat.
+ * Tant que la frame de chat, la classe va travailler avec la div de chargement, ensuite, elle travaillera avec la frame de chat.
  */
 class WebconfChat{
     /**
@@ -93,12 +129,38 @@ class WebconfChat{
      * @returns Chaîne
      */
     _init(){
+        /**
+         * Jquery de la frame de chat
+         * @type {$}
+         */
         this.$frame_chat = null;
+        /**
+         * Jquery de la div de chargement
+         * @type {$}
+         */
         this.$loaging = null; 
+        /**
+         * Nom de la room
+         */
         this.room = '';
+        /**
+         * Confidentialité de la room (publi ou privée).
+         * Il faut utiliser l'énumérable eprivacy.
+         * @type {MelEnum}
+         */
         this.privacy = eprivacy.public;
+        /**
+         * Information de la visibilitée du chat
+         */
         this.hidden = true;
+        /**
+         * Information de l'état de la frame de chat
+         */
         this.is_loading = true;
+        /**
+         * Action à faire lorsque le chargement est fini
+         * @type {Function}
+         */
         this.onloading = null;
         return this;
     }
@@ -209,23 +271,39 @@ class WebconfChat{
         return this;
     }
 
+    /**
+     * Si la frame de chat est chargé, on la récupère, sinon, on récupère la div de chargement.
+     * @returns {$} Frame de chat ou div de chargement
+     */
     getChatElement() {
         if (this.is_loading) return this.$loaging;
         else return this.$frame_chat;
     }
 
+    /**
+     * Cache le chat
+     * @returns Chaîne
+     */
     hide()
     {
         this.getChatElement().css('display', 'none');
         return this;
     }
 
+    /**
+     * Affiche le chat
+     * @returns Chaîne
+     */
     show()
     {
         this.getChatElement().css('display', '');
         return this;
     }
 
+    /**
+     * Attend que le chat est fini de charger.
+     * @returns Vrai si le chat est chargé
+     */
     async waitLoading(){
         if (!this.is_loading) return true;
         else {
@@ -238,21 +316,25 @@ class WebconfChat{
         }
     }
 
+    /**
+     *  Change le status sur ariane
+     * @param {string} status busy/online/offline
+     */
     async setStatus(status) {
-        let $querry = this.$frame_chat;//top.$('.discussion-frame');
-        // if (top.$('.discussion-frame').length <= 0) {
-        //     await mel_metapage.Functions.change_frame('rocket', false, true);
-        //     $querry = top.$('.discussion-frame');
-        // }
-
-        $querry[0].contentWindow.postMessage({
+        //Change le status dans le chat
+        this.$frame_chat[0].contentWindow.postMessage({
             externalCommand: 'set-user-status',
             status: status
           }, '*');
 
+          //Change le status dans le bnum
           top.ariane.update_status(status);
     }
 
+    /**
+     * Libère les variables
+     * @returns /
+     */
     dispose() {
         if (!!this.disposed) return;
         this.disposed = true;
@@ -268,6 +350,11 @@ class WebconfChat{
 
 }
 
+/**
+ * Récupère les données de chat depuis une chaîne de charactères.
+ * @param {string} str string sous la forme "bool:id_room"
+ * @returns Données ou null si str vide
+ */
 WebconfChat.from_string = (str) => {
 
     if (!(str || false)) return null; 
@@ -278,24 +365,73 @@ WebconfChat.from_string = (str) => {
     }
 };
 
+/**
+ * Classe qui gère les données de l'espace de travail lié à la visio.
+ */
 class WebconfWorkspaceManager {
+    /**
+     * Constructeur de la classe
+     * @param {*} wsp Objet récupérer depuis le php qui contient les données de l'espace. Peut être null.
+     */
     constructor(wsp) {
-        return this._init()._setup(wsp);
+        this._init()._setup(wsp);
     }
 
+    /**
+     * Initialise les variables de la classe
+     * @returns Chaîne
+     */
     _init(){
+        /**
+         * L'espace de travail a-t-il un chat ?
+         * @type {boolean}
+         */
         this.have_chat = false;
+        /**
+         * Couleur de l'espace
+         * @type {string} couleur hexa ou nom
+         */
         this.color = 'blue';
+        /**
+         * Confidentialité de l'espace
+         * @type {MelEnum} Il faut utiliser l'énumerable eprivacy.
+         */
         this.privacy = eprivacy.public;
+        /**
+         * Logo de l'espace
+         * @type {string}
+         */
         this.logo = '';
+        /**
+         * Titre de l'espace
+         * @type {string}
+         */
         this.title = '';
+        /**
+         * Identifiant de l'espace
+         * @type {string}
+         */
         this.uid = null;
+        /**
+         * Modules disponibles de l'espace
+         */
         this.objects = null;
+        /**
+         * Données brutes de l'espace
+         */
         this._original_datas = null;
         return this;
     }
 
+    /**
+     * Assigne les variables de l'espace
+     * @param {*} wsp Objet récupérer depuis le php qui contient les données de l'espace. Peut être null.
+     * @returns Chaîne
+     */
     _setup(wsp) {
+        /**
+         * Données brut de l'espace, sans les modules
+         */
         const datas = wsp?.datas;
         this.have_chat = datas?.allow_ariane;
         this.color = datas?.color;
@@ -308,19 +444,38 @@ class WebconfWorkspaceManager {
         return this;
     }
 
+    /**
+     * Check si la classe contient les données d'un espace.
+     * Si l'identifiant n'est pas défini, c'est que la visio n'est pas lié à un espace de travail
+     * @returns 
+     */
     have_workspace()
     {
         return !!this.uid;
     }
 
+    /**
+     * Vérifie si la classe possède un chat
+     * @returns 
+     */
     have_chatroom(){
         return this.have_chat && !!this.objects && !!this.objects.channel && !!this.objects.channel.name;
     }
 
+    /**
+     * Vérifie si la classe à un cloud
+     * @returns 
+     */
     have_cloud() {
         return !!this.objects && !!this.objects.doc;
     }
 
+    /**
+     * Créer un chat en fonction des informations de l'espace
+     * @param {$} $framechat Frame de chat nécéssaire à la construction de l'objet WebconfChat
+     * @param {$} $loading_chat Div de chargement nécéssaire à la construction de l'objet WebconfChat
+     * @returns {WebconfChat | null} Si l'espace n'a pas de chat (ou si il n'y a pas d'espaces), renvoit null, sinon, renvoit WebconfChat
+     */
     create_chat($framechat, $loading_chat){
         let chat = null;
 
@@ -335,6 +490,10 @@ class WebconfWorkspaceManager {
         return chat;
     }
 
+    /**
+     * Libère les variables
+     * @returns /
+     */
     dispose()
     {
         if (!!this.disposed) return;
@@ -351,20 +510,79 @@ class WebconfWorkspaceManager {
     }
 }
 
+/**
+ * Classe qui gère le paramètragle de la visio
+ */
 class WebconfPageCreator {
+    /**
+     * Constructeur de la classe
+     * @param {$} $page Div qui contient les paramètres
+     * @param {$} $page_error_text Jquery du texte d'erreur du nom de la room
+     * @param {$} $room Input du nom de la room
+     * @param {$} $state Checkbox du choix entre chat ou espace de travail
+     * @param {$} $chat Select du chat
+     * @param {$} $wsp Select de l'espace de travail
+     * @param {$} $start_button Bouton qui lance la visio
+     * @param {{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined} config Configuration diverses de la visio. Pour le moment il contient (ou pas), le paramètre need_config qui affiche la page des paramètres ainsi que locks qui désactive certains champs. 
+     * @param {$} $startedMic [NOT IMPLEMENTED]Checkbox du choix d'entrer avec le micro ou non 
+     * @param {$} $startedCam [NOT IMPLEMENTED]Checkbox du choix d'entrer avec la cam ou non 
+     * @param {Function} callbackStart Action à faire lorsque l'on clique sur le bouton "entrer"
+     */
     constructor($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, $startedMic = null, $startedCam = null, callbackStart = null) {
         this._init()._setup($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, $startedMic, $startedCam, callbackStart);
     }
 
+    /**
+     * Initialise les variables de la classe
+     * @returns Chapine
+     */
     _init() {
+        /**
+         * Jquery des paramètres
+         * @type {$}
+         */
         this.$page = null;
+        /**
+         * Jquery du texte d'erreur sur le nom de la room
+         * @type {$}
+         */
         this.$page_error_text = null;
+        /**
+         * Input du nom de la room
+         * @type {$}
+         */
         this.$room_key = null;
+        /**
+         * Checkbox du choix entre chat ou espace de travail
+         * @type {$}
+         */
         this.$state = null;
+        /**
+         * Select du chat
+         * @type {$}
+         */
         this.$chat = null;
+        /**
+         * Select de l'espace de travail
+         * @type {$}
+         */
         this.$wsp = null;
+        /**
+         * Bouton de lancement de la visio
+         * @type {$}
+         */
         this.$button_start = null;
+        /**
+         * Action à faire lorsque l'on clique sur le bouton de lancement de la visio
+         * @type {function | null}
+         */
         this.onstart = null;
+        /**
+         * Configuration des paramètres
+         * @param {number | null | undefined} need_config Si 1, la page des paramètres s'affichera forcément
+         * @param {Array<number> | null | undefined} locks Item à locks, voir l'enum elocks
+         * @type {{need_config:number | null | undefined, locks:Array<number> | null | undefined} | null | undefined}
+         */
         this.config = {
             need_config:1,
             locks:[]
@@ -372,6 +590,21 @@ class WebconfPageCreator {
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @param {$} $page Div qui contient les paramètres
+     * @param {$} $page_error_text Jquery du texte d'erreur du nom de la room
+     * @param {$} $room Input du nom de la room
+     * @param {$} $state Checkbox du choix entre chat ou espace de travail
+     * @param {$} $chat Select du chat
+     * @param {$} $wsp Select de l'espace de travail
+     * @param {$} $start_button Bouton qui lance la visio
+     * @param {{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined} config Configuration diverses de la visio. Pour le moment il contient (ou pas), le paramètre need_config qui affiche la page des paramètres ainsi que locks qui désactive certains champs. 
+     * @param {$} $startedMic [NOT IMPLEMENTED]Checkbox du choix d'entrer avec le micro ou non 
+     * @param {$} $startedCam [NOT IMPLEMENTED]Checkbox du choix d'entrer avec la cam ou non 
+     * @param {Function} callbackStart Action à faire lorsque l'on clique sur le bouton "entrer"
+     * @returns 
+     */
     _setup($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, $startedMic = null, $startedCam = null, callbackStart = null) {
         this.$page = $page;
         this.$page_error_text = $page_error_text;
@@ -385,6 +618,10 @@ class WebconfPageCreator {
         return null;
     }
 
+    /**
+     * Créer les actions des différents objets des formulaires (onchange, click etc....)
+     * @returns Chaîne
+     */
     startup() {
         this.$room_key.val(this.generateRandomlyKey());
         this.$room_key.on('input', (e) => {
@@ -407,6 +644,9 @@ class WebconfPageCreator {
         return this;
     }
 
+    /**
+     * Désactive les champs à désactivé (si il y en a)
+     */
     setLocks() {
         if (!!this.config.locks && this.config.locks.length > 0)
         {
@@ -428,32 +668,59 @@ class WebconfPageCreator {
         }
     }
 
+    /**
+     * Page visible ?
+     */
     enabled() {
         return this.$page.css('display') !== 'none';
     }
 
+    /**
+     * Affiche la page
+     * @returns Chaîne
+     */
     show() {
         this.$page.css('display', '');
         return this;
     }
 
+    /**
+     * Cache la page
+     * @returns Chaîne
+     */
     hide() {
         this.$page.css('display', 'none');
         return this;
     }
 
+    /**
+     * Génère un nom de room au hasard
+     * @returns {string} >= 10 charactères, >=3 chiffres, alphanumérique seulement
+     */
     generateRandomlyKey(){
         return mel_metapage.Functions.generateWebconfRoomName();
     }
 
+    /**
+     * Récupère la valeur de la room
+     * @returns {string}
+     */
     getRoomKey(){
         return this.$room_key.val();
     }
 
+    /**
+     * Récupère "l'état" de la checkbox
+     * @returns {MelEnum} ewebconf_state
+     */
     getState(){
         return this.$state[0].checked ? ewebconf_state.wsp : ewebconf_state.chat;
     }
 
+    /**
+     * Récupère la valeur du select en cours
+     * @returns {string}
+     */
     getStateValue() {
         switch (this.getState()) {
             case ewebconf_state.wsp:
@@ -466,24 +733,41 @@ class WebconfPageCreator {
         }
     }
 
+    /**
+     * Récupère une url traditionnel de la visio, et récupère le nom de la room inclut dans l'url
+     * @param {string} url 
+     * @returns Nom de la room
+     */
     transformUrlIntoKey(url){
         return mel_metapage.Functions.webconf_url(url.toLowerCase());
     }
 
+    /**
+     * Vérifie si le nom de la room est valide
+     * @param {string} val Nom de la room 
+     * @returns 
+     */
     checkKeyIsValid(val) {
         return val.length >= 10 && Enumerable.from(val).where(x => /\d/.test(x)).count() >= 3 && /^[0-9a-zA-Z]+$/.test(val);
     }
 
+    /**
+     * Vérifie si le nom de la room est valide
+     * @param {string | null | undefined} val Nom de la room, si non défini, la valeur de l'input sera récupéré
+     */
     checkFormAction(val = null) {
         val = val || this.getRoomKey();
+        //Si il y a une url dans le champs, on récupère la clé contenue dans l'url
         {
             const detected = this.transformUrlIntoKey(val) || false;
             if (!!detected) val = detected;
             
         }
 
+        //On met à jour la valeur si il y a besoin et on la capitalise
         this.$room_key.val(val.toUpperCase());
 
+        //Si la clé est valide
         if (this.checkKeyIsValid(val))
         {
             const url = mel_metapage.Functions.url('webconf', '', {_key:val});
@@ -492,12 +776,16 @@ class WebconfPageCreator {
             this.$button_start.removeClass("disabled").removeAttr("disabled", "disabled");
             this.$page_error_text.css("display", "none").css("color", "black");
         }
-        else {
+        else { //Sinon
             this.$button_start.addClass("disabled").attr("disabled", "disabled");
             this.$page_error_text.css("display", "").css("color", "red");
         }
     }
-
+    
+    /**
+     * Libère les variables
+     * @returns 
+     */
     dispose()
     {
         if (!!this.disposed) return;
@@ -514,7 +802,20 @@ class WebconfPageCreator {
     }
 }
 
+/**
+ * Gère la disposition de la visio avec le chat
+ * @extends AMelScreenManager
+ */
 class InternalWebconfScreenManager extends AMelScreenManager {
+    /**
+     * Constructeur de la classe
+     * @param {*} chat 
+     * @param {*} $frame_webconf 
+     * @param {*} minimise_and_maximise_buttons 
+     * @param {*} ariane_size 
+     * @param {*} is_framed 
+     * @param {*} modes 
+     */
     constructor(chat, $frame_webconf, minimise_and_maximise_buttons, ariane_size, is_framed, modes = null)
     {
         super(modes);
@@ -908,7 +1209,7 @@ class Webconf{
             },
             configOverwrite: { 
                 hideLobbyButton: true,
-                startWithAudioMuted: true,
+                startWithAudioMuted: false,
                 startWithVideoMuted:true,
                 prejoinConfig: {
                     enabled:false,
@@ -2030,6 +2331,11 @@ var MasterWebconfBar = (() => {
             }
 
             this.dispose();
+
+            if (!rcmail.env['webconf.have_feed_back'])
+            {
+                mel_metapage.Frames.back();
+            }
         }
 
         minify_item($item)
@@ -2540,7 +2846,6 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                 if (!top.masterbar && top[var_webconf_started_name] === true) top[var_webconf_started_name] = false; 
                 if (top[var_webconf_started_name] === true)
                 {
-                    debugger;
                     eClass = top.mm_st_ClassContract(eClass);
                     let $selector = top.$(`iframe.${eClass}-frame`);
     
@@ -2558,7 +2863,6 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                 //Si webconf
                 if (top[var_webconf_started_name] === true)
                 {
-                    debugger;
                     top.masterbar.maximise().listener.webconf.screen_manager.update_button_size();
                     top[var_webconf_screen_manager_name].$webconf.css('display', '');
                     

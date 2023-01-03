@@ -90,16 +90,16 @@ class mel_junk extends rcube_plugin
             , 'toolbar');
 
             // add the buttons to the main toolbar
-            $this->add_button(array(
-                'command'    => 'plugin.markasjunk.not_junk',
-                'type'       => 'link',
-                'class'      => 'button buttonPas notjunk disabled',
-                'classact'   => 'button notjunk',
-                'classsel'   => 'button notjunk pressed',
-                'title'      => 'mel_junk.buttonnotjunk',
-                'innerclass' => 'inner',
-                'label'      => 'markasjunk.notjunk'
-            ), 'toolbar');
+            // $this->add_button(array(
+            //     'command'    => 'plugin.markasjunk.not_junk',
+            //     'type'       => 'link',
+            //     'class'      => 'button buttonPas notjunk disabled',
+            //     'classact'   => 'button notjunk',
+            //     'classsel'   => 'button notjunk pressed',
+            //     'title'      => 'mel_junk.buttonnotjunk',
+            //     'innerclass' => 'inner',
+            //     'label'      => 'markasjunk.notjunk'
+            // ), 'toolbar');
         }
     }
 
@@ -116,8 +116,6 @@ class mel_junk extends rcube_plugin
         $attrib = [
             'id'    => 'mel_junk-box',
             'class' => 'popupmenu',
-            'data-sticky' => 'true',
-            'data-align' => 'bottom',
         ];
 
         $button = new html_inputfield(array('type' => 'button'));
@@ -125,6 +123,7 @@ class mel_junk extends rcube_plugin
     
         $rcmail->output->add_footer(html::div($attrib,
           $rcmail->output->form_tag(array('name' => 'mel_junkform', 'method' => 'post', 'action' => './', 'enctype' => 'multipart/form-data'),
+          html::tag('ul').
             html::tag('input', array('type' => "hidden", 'name' => '_action', 'value' => 'mel_junk')) .
               html::div('mel_junk-title', rcube_utils::rep_specialchars_output($this->gettext('title'), 'html', 'strict')) .
             html::div('junk-body',

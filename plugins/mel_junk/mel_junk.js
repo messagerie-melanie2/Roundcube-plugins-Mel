@@ -37,7 +37,7 @@ if (window.rcmail) {
         rcmail.mel_junk_toggle_button();
     });
 
-    rcmail.addEventListener('listupdate', function() { rcmail.mel_junk_toggle_button(); });
+    // rcmail.addEventListener('listupdate', function() { rcmail.mel_junk_toggle_button(); });
 }
 
 rcube_webmail.prototype.mel_junk_toggle_button = function() {

@@ -39,7 +39,6 @@ if (window.rcmail) {
 
 //Ouvre l'onboarding depuis la fenêtre d'assistance
 rcube_webmail.prototype.current_page_onboarding = function (task) {
-  // window.parent.help_popUp.close();
   window.help_popUp.close();
   var iframe = window.parent.$('iframe.' + task + '-frame')[0];
   if (iframe) {
@@ -47,6 +46,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
   } else {
     window.parent.rcmail.show_current_page_onboarding(task, true);
     window.parent.rcmail.env.hide_modal = 1;
+    // window.parent.rcmail.onboarding_close(true)
   }
 }
 
@@ -58,10 +58,12 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, assistanc
   let json_page = rcmail.env.help_page_onboarding[task];
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
-      json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + task + '.png')
+      json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + task + '.png')
       json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
-      window.current_onboarding = JSON.parse(json);
 
+      json = replaceImages(json);
+
+      window.current_onboarding = JSON.parse(json);
       current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
 
       if (task == "mail") {
@@ -86,18 +88,19 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, assistanc
           }, 250);
         }
       } else if (rcmail.env.is_framed) {
-        window.parent = startIntro(task)
+        window.parent = startIntro(task, assistance)
       } else {
-        startIntro(task);
+        startIntro(task, assistance);
       }
     });
   });
 };
 
-function startIntro(task) {
+function startIntro(task, assistance = false) {
   window.exit_main_intro = true;
   window.exit_details_intro = true;
   let intro = current_window.introJs();
+
   if (task == "bureau" && rcmail.env.is_framed) {
     intro = bureau_intro(intro);
   } else {
@@ -120,10 +123,15 @@ function startIntro(task) {
     //On ajoute le bouton permettant de lancer la démonstration
     let item = this._introItems[this._currentStep];
     if (item.button && !item.passed) {
-      let buttonDetails = '<div class="text-left"><button class="mel-button btn btn-secondary float-right" id="' + item.id + '-details">' + item.button + '</button></div><br/><br/><br/>'
+      let buttonDetails = '<div class="text-left"><a href="#" class="float-right" id="' + item.id + '-details">' + item.button + '</a></div><br/>'
 
-      this._introItems[this._currentStep].intro += buttonDetails;
-      this._introItems[this._currentStep].passed = true;
+      item.intro += buttonDetails;
+      item.passed = true;
+    }
+
+    if (item.hideButtons && !item.buttonPassed) {
+      item.intro += "<div class='row'><div class='custom-tooltipbuttons mx-5 mb-3'>" + item.customButton + "</div></div>",
+        item.buttonPassed = true;
     }
 
     //On skip l'intro si l'élément n'existe pas
@@ -136,23 +144,85 @@ function startIntro(task) {
       }
     }
   }).onafterchange(function () {
+    $('.introjs-tooltipbuttons').hide();
+
     setTimeout(() => {
+      if (this._introItems[this._currentStep].hideButtons) {
+        $('.introjs-tooltipbuttons').hide();
+
+        $('#accueil').focus();
+
+        $('#custom-next-button').on('click', function () {
+          intro.nextStep();
+        })
+        $('#custom-previous-button').on('click', function () {
+          intro.previousStep();
+        })
+
+        $('#custom-done-button').on('click', function () {
+          intro.exit();
+          send_notification();
+        })
+      }
+      else {
+        $('.introjs-tooltipbuttons').show();
+      }
+
+      if ($('#theme_select').length) {
+        for (const key in MEL_ELASTIC_UI.themes) {
+          if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
+            const theme = MEL_ELASTIC_UI.themes[key];
+            let value = theme.name;
+            let text = theme.name == 'default' ? 'Par défaut' : theme.name;
+            $('#theme_select').append(new Option(text, value))
+          }
+        }
+
+        //On ajoute le thème sombre manuellement
+        $('#theme_select').append(new Option("Sombre", "Sombre"))
+
+        if (MEL_ELASTIC_UI.color_mode() == 'dark') {
+          $('#theme_select option[value="Sombre"]').prop('selected', true);
+        }
+        else {
+          $('#theme_select option[value="' + MEL_ELASTIC_UI.get_current_theme() + '"]').prop('selected', true);
+        }
+      }
+
+      $('#theme_select').on('change', function (e) {
+        if (MEL_ELASTIC_UI.color_mode() != 'dark' && e.currentTarget.value == 'Sombre') {
+          MEL_ELASTIC_UI.switch_color();
+        }
+        else {
+          if (MEL_ELASTIC_UI.color_mode() == 'dark' && e.currentTarget.value != 'Sombre') {
+            MEL_ELASTIC_UI.switch_color();
+          }
+          MEL_ELASTIC_UI.update_theme(e.currentTarget.value);
+          $('#theme-panel .contents').find('.mel-selectable').removeClass('selected');
+          $('#theme-panel .contents').find(`[data-name='${e.currentTarget.value}']`).addClass('selected');
+        }
+      })
+
       if (this._introItems[this._currentStep].passed) {
         let item = this._introItems[this._currentStep];
         current_window.$('#' + item.id + '-details').on('click', function () {
           if (item.details.hints) {
-            intro_hints(item, intro);          
+            intro_hints(item, intro);
           } else if (item.details.steps) {
             intro_details_tour(item, intro)
           }
         });
       }
-    }, 500);
+    }, 400);
   }).onexit(function () {
     if (window.exit_main_intro) {
       return window.parent.rcmail.onboarding_close()
     }
   }).start();
+
+  if (assistance) {
+    intro.goToStep(4);
+  }
   addBulletTitle();
 }
 
@@ -205,40 +275,49 @@ function bureau_intro(intro) {
 /**
  * Fermer l'onboarding
  */
-rcube_webmail.prototype.onboarding_close = function () {
+rcube_webmail.prototype.onboarding_close = function (popup = false) {
 
-  let buttons = [{
-    text: rcmail.gettext('hide all help', 'mel_onboarding'),
-    click: function () {
-      rcmail.http_post('settings/plugin.set_onboarding', {
-        _onboarding: true,
-        _see_help_again: $('#see_help_again').is(":checked"),
-      });
-      $(this).closest('.ui-dialog-content').dialog('close');
+  if (popup) {
+    let buttons = [{
+      text: rcmail.gettext('hide all help', 'mel_onboarding'),
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: $('#see_help_again').is(":checked"),
+        });
+        $(this).closest('.ui-dialog-content').dialog('close');
+      }
+    },
+    {
+      text: rcmail.gettext('hide this help', 'mel_onboarding'),
+      'class': 'mainaction text-white',
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: $('#see_help_again').is(":checked"),
+        });
+        $(this).closest('.ui-dialog-content').dialog('close');
+      }
     }
-  },
-  {
-    text: rcmail.gettext('hide this help', 'mel_onboarding'),
-    'class': 'mainaction text-white',
-    click: function () {
-      rcmail.http_post('settings/plugin.set_onboarding', {
-        _onboarding: true,
-        _see_help_again: $('#see_help_again').is(":checked"),
-      });
-      $(this).closest('.ui-dialog-content').dialog('close');
+    ];
+
+
+    let content = rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title=`Afficher l' aide`><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br /><br /><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input' checked><label for='see_help_again' class ='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>";
+
+    let title = rcmail.gettext('close help', 'mel_onboarding');
+    // On n'ouvre pas la modal si l'onboarding est lancé depuis l'assistance
+    if (!window.parent.rcmail.env.hide_modal) {
+      window.parent.rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
     }
+    delete window.parent.rcmail.env.hide_modal;
   }
-  ];
-
-
-  let content = rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title=`Afficher l' aide`><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br /><br /><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input' checked><label for='see_help_again' class ='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>";
-
-  let title = rcmail.gettext('close help', 'mel_onboarding');
-  // On n'ouvre pas la modal si l'onboarding est lancé depuis l'assistance
-  if (!window.parent.rcmail.env.hide_modal) {
-    window.parent.rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
+  else { 
+    rcmail.http_post('settings/plugin.set_onboarding', {
+      _onboarding: true,
+      _see_help_again: false,
+    });
   }
-  delete window.parent.rcmail.env.hide_modal;
+
 };
 
 
@@ -247,7 +326,7 @@ function intro_hints(item, intro_main) {
     window.parent.$('#layout-menu').addClass('force-open');
   }
 
-  intro_main.setOptions({ exitOnEsc: false})
+  intro_main.setOptions({ exitOnEsc: false })
 
   let details = item.details;
   let intro = current_window.introJs();
@@ -294,7 +373,7 @@ function intro_hints(item, intro_main) {
       }
       current_window.$(".hide-hint").css('display', 'block');
       item.passed_hints = true;
-      intro_main.setOptions({ exitOnEsc: true})
+      intro_main.setOptions({ exitOnEsc: true })
     }
   });
 }
@@ -442,3 +521,35 @@ function addBulletTitle() {
     $(element).attr('role', 'tab');
   }
 }
+
+function replaceImages(json) {
+  let imageReplace = json.match(/(?<=%%)([A-Z_]*?)(?=%%)/g);
+  imageReplace.forEach(image => {
+    let imageSplit = image.split('_');
+    let imageName = imageSplit[0];
+    let imageFormat = imageSplit[1].toLowerCase();
+    json = json.replace('%%' + image + '%%', location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + imageName + '.' + imageFormat)
+  });
+  return json;
+}
+
+function send_notification() {
+  top.rcmail.triggerEvent('plugin.push_notification', {
+    uid: 'help-' + Math.random(),
+    title: "Aide interactive",
+    content: "Retrouvez votre aide interactive sur le bouton 'Aide de la page'",
+    category: 'onboarding',
+    action: [
+      {
+        href: 'javascript:void(0)',
+        title: "Cliquez ici pour ouvrir l'aide",
+        text: "Lancer l'aide",
+        command: "open_help",
+      }
+    ],
+    created: Math.floor(Date.now() / 1000),
+    modified: Math.floor(Date.now() / 1000),
+    isread: false,
+    local: true,
+  });
+};

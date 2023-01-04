@@ -432,6 +432,9 @@ html.theme-classique #melplusmails:hover {
 html.theme-classique #melplusmails:focus {
   color: var(--secondary-text-color);
 }
+html.theme-classique .onboarding-image {
+  background-image: url('images/Computer_classic.png');
+}
 html.theme-classique body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   background-color: #edebe9 !important;
 }

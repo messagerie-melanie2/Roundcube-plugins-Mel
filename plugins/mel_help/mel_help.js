@@ -218,7 +218,7 @@ rcube_webmail.prototype.video_search = function(event, object) {
 
                     let image = document.createElement('img');
                     image.className = "img-fluid rounded-start";
-                    image.src = location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + json_video.poster;
+                    image.src = location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + json_video.poster;
                     image_col.appendChild(image);
 
                     let text_col = document.createElement('div');

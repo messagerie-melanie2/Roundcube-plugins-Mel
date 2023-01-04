@@ -49,8 +49,8 @@ class mel_onboarding extends rcube_plugin
     $this->load_config();
     $this->rc->output->set_env('help_page_onboarding', $this->rc->config->get('help_page_onboarding'));
 
-     // Si la page est affichée dans un iframe
-    $is_framed = rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) == 'iframe' ? true : false; 
+    // Si la page est affichée dans un iframe
+    $is_framed = rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) == 'iframe' ? true : false;
     $this->rc->output->set_env('is_framed', $is_framed);
 
     $this->add_texts('localization/', true);

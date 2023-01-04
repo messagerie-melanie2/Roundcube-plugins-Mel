@@ -1379,7 +1379,7 @@ function m_mp_Help() {
         helppage_general: get_action("mel_metapage.h_general", "icon-mel-help", "window.open('" + rcmail.env.help_page + "', '_blank');"),
         helppage_video: get_action("mel_metapage.h_video", "icon-mel-camera", "m_mp_help_video()"),
         helppage_suggestion: get_action("mel_metapage.h_suggestion", "icon-mel-notes", ``),
-        helppage_current: get_action("mel_metapage.h_current", "icon-mel-newspaper", "rcmail.current_page_onboarding(m_mp_DecodeUrl().task)")
+        helppage_current: get_action("mel_metapage.h_current", "icon-mel-newspaper", "rcmail.current_page_onboarding((m_mp_DecodeUrl().task).replace('#',''))")
     };
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
@@ -1427,7 +1427,7 @@ function m_mp_Help() {
         let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
         let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, false) + '</li>'
         let helppage_current = "";
-        if (rcmail.env.help_page_onboarding[m_mp_DecodeUrl().task]) {
+        if (rcmail.env.help_page_onboarding[(m_mp_DecodeUrl().task).replace('#','')]) {
             helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
         }
 
@@ -1547,7 +1547,7 @@ function m_mp_help_video() {
 
         for (const [key, element] of Object.entries(rcmail.env.help_video)) {
             html += '<li class="col-sd-12 col-md-12" id="helppage_video" title="Cliquer pour voir la vidéo">';
-            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="rcmail.m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
+            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="rcmail.m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
             html += '</li>';
         }
         html += '</ul>';

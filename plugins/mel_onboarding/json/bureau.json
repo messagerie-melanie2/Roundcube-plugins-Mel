@@ -1,26 +1,41 @@
 {
   "scrollToElement": true,
-  "showBullets": true,
+  "showBullets": false,
   "exitOnOverlayClick": false,
   "disableInteraction": false,
   "hidePrev": true,
+  "hideNext": true,
   "scrollTo": "tooltip",
-  "nextLabel": "Suivant",
+  "nextLabel": "Continuer",
   "prevLabel": "Précédent",
   "doneLabel": "Fermer",
   "steps": [
     {
-      "title": "Accueil",
-      "intro": "<h2>Découvrez votre Bureau numérique : l'Accueil</h2><br/><div class='video mt-2'><video alt=\"Vidéo de présentation de l'accueil du Bureau Numérique\" controls poster='%%POSTER%%' ><source src='%%VIDEO%%' type='video/mp4' >Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div><br/><h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interactive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier aperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalités de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette fenêtre peut être fermée en cliquant sur la croix en haut à droite et rouverte à tout moment en passant par le bouton \"Assistance\".</p>",
-      "tooltipClass": "accueil-intro text-center"
+      "intro": "<div id='accueil' tabindex='0' class='mx-5'><div class='row'><div class='col-8'><div class='row'><span class='subtitle'>Accueil</span></div><div class='row'><p class='semibold'>Bienvenue <br />sur votre Bureau Numérique</p></div><div class='row'><p>Découvrez votre nouvel outil</p></div></div><div class='col-4'><p><img src='%%MAP_JPG%%' class='home-image'></p></div></div></div>",
+      "tooltipClass": "width-intro-600",
+      "customButton": "<button id='custom-next-button' class='next-button'>Montrez moi</button><button id='custom-done-button' class='done-button ml-3'>Plus tard</button>",
+      "hideButtons": true
+    },
+    {
+      "intro": "<div id='avantages'><div class='row d-flex justify-content-center mb-4 mt-0'><img src='%%ROCKET_PNG%%' width='150'></div><div class='row d-flex justify-content-center mb-3'><p class='semibold'>Les avantages du Bureau Numérique</p></div><div class='row d-flex justify-content-center mb-3'><div class='col-1'><img src='%%CHECKMARK_PNG%%' width='30'></div><div class='col-9'><p class='checkmark-text'>Vos onglets restent toujours ouvert pour gagner en rapidité</p></div></div><div class='row d-flex justify-content-center mb-3'><div class='col-1'><img src='%%CHECKMARK_PNG%%' width='30'></div><div class='col-9'><p class='checkmark-text'>Gardez toutes vos données de Melweb</p></div></div><div class='row d-flex justify-content-center mb-3'><div class='col-1'><img src='%%CHECKMARK_PNG%%' width='30'></div><div class='col-9'><p class='checkmark-text'>Plus de fonctionnalités</p></div></div></div></div>",
+      "tooltipClass": "width-intro-500 height-intro-500",
+      "customButton": "<div class='mt-3 mb-4'><button id='custom-next-button' class='next-button center-button'>Suivant</button></div>",
+      "hideButtons": true
+    },
+    {
+      "intro": "<div id='change_theme'r><div class='row d-flex justify-content-center mb-4 mt-0'><div class='onboarding-image'></div></div><div class='row d-flex justify-content-center mb-2'><p class='semibold'>Choisir votre thème</p></div><div class='row d-flex justify-content-center'><div class='col-10'><p class='mb-4'>Vous pourrez facilement changer de thème dans votre menu utilisateur</p><select name='theme_select' id='theme_select' class='mb-4'></select></div></div></div></div>",
+      "tooltipClass": "width-intro-500 height-intro-450 text-center",
+      "customButton": "<div class='mt-5 mb-2'><button id='custom-next-button' class='next-button center-button'>Lancer l'aide</button></div>",
+      "hideButtons": true
     },
     {
       "id": "navigation",
-      "title": "Barre de navigation",
       "element": "#layout-menu",
-      "intro": "<br/><p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications.</p><p><strong>Bon à savoir :</strong> Avec le Bnum, plus besoin d'ouvrir plusieurs onglets, dés qu'une application est ouverte elle est gardée en mémoire et peut être rouverte instantanément à tout moment, le travail en cours ne sera pas perdu.</p>",
-      "tooltipClass": "mt-4 big-width-intro hide-hint",
-      "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
+      "intro": "<div id='navigation' class='mx-5' style='margin-top:-30px'><div class='row'><div class='col-12'><div class='row'><span class='subtitle small-font'>Accueil</span></div><div class='row'><p class='semibold small-font'>Barre de navigation</p></div><div class='row'><p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications</p></div></div></div></div>",
+      "tooltipClass": "mt-4 width-intro-600 hide-hint intro-no-margin",
+      "button": "<span>Découvrir la barre de navigation</span><span class='icon-mel-arrow-right ml-3 plus'></span>",
+      "customButton": "<button id='custom-next-button' class='next-button ml-3 mt-3'>Continuer</button>",
+      "hideButtons": true,
       "details": {
         "hintClass": "menu-hint-bureau",
         "disableInteraction": false,
@@ -109,16 +124,15 @@
     },
     {
       "id": "outils",
-      "title": "Barre d'outils",
       "element": ".barup",
-      "intro": "<p>Cette barre d'outils reste tout le temps accessible quelle que soit la page du Bnum affichée.</p><p>Elle permet d'accéder rapidement aux fonctionnalités importantes du Bureau Numérique :</p><ul class='onboarding-list'><li>Créer des espaces de travail, des mails, des rendez-vous</li><li>Accéder à l'assistance</li><li>Les raccourcis vers l'affichage de \"Ma journée\"</li><li>La recherche globale dans les mails, contacts et rendez-vous</li><li>Le menu Bienvenue permettant de se déconnecter</li></ul>",
-      "tooltipClass": "big-width-intro",
-      "button": "<span>Découvrir la barre d'outils</span><span class='icon-mel-arrow-right plus'></span>",
+      "intro": "<div id='tools' style='margin-top:-30px'><div class='row'><div class='col-12'><div class='row'><span class='subtitle small-font'>Accueil</span></div><div class='row'><p class='semibold small-font'>Barre d'outils</p></div><div class='row'><p>Cette barre d'outils permet d'accéder rapidement aux fonctionnalités importantes du Bureau Numérique :</p><ul class='onboarding-list'><li>Créer des espaces de travail, des mails, des rendez-vous</li><li>Accéder à l'assistance</li><li>Les raccourcis vers l'affichage de \"Ma journée\"</li><li>La recherche globale dans les mails, contacts et rendez-vous</li><li>Le menu Bienvenue permettant de se déconnecter</li></ul></div></div></div>",
+      "tooltipClass": "width-intro-600",
+      "button": "<span>Découvrir la barre d'outils</span><span class='icon-mel-arrow-right plus ml-3'></span>",
       "details": {
         "nextLabel": "Suivant",
         "prevLabel": "Précédent",
         "doneLabel": "Fermer",
-        "tooltipClass": "average-width-intro",
+        "tooltipClass": "width-intro-400",
         "steps": [
           {
             "title": "Créer",
@@ -226,7 +240,7 @@
                   "element": "#helppage_suggestion button",
                   "intro": "Proposez une amélioration pour le Bureau Numérique (ou les outils Mel en général).",
                   "position": "bottom",
-                  "tooltipClass": "big-width-intro"
+                  "tooltipClass": "width-intro-600"
                 },
                 {
                   "title": "Aide page courante",
@@ -329,24 +343,25 @@
       "title": "Ma journée",
       "element": "#myday",
       "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
-      "tooltipClass": "big-width-intro"
+      "tooltipClass": "width-intro-600"
     },
     {
       "title": "Informations",
       "element": ".--row.--row-dwp--under",
       "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
-      "tooltipClass": "big-width-intro"
+      "tooltipClass": "width-intro-600"
     },
     {
       "title": "Mes espaces de travail",
       "element": ".workspaces.module_parent",
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
-      "tooltipClass": "big-width-intro"
+      "tooltipClass": "width-intro-600"
     },
     {
       "title": "Discussion ",
       "element": ".tiny-rocket-chat",
-      "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil"
+      "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
+      "tooltipClass": "width-intro-300"
     }
   ]
 }

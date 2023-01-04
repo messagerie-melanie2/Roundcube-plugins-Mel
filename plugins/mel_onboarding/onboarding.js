@@ -526,7 +526,7 @@ function replaceImages(json) {
   let imageReplace = json.match(/(?<=%%)([A-Z_]*?)(?=%%)/g);
   imageReplace.forEach(image => {
     let imageSplit = image.split('_');
-    let imageName = imageSplit[0];
+    let imageName = imageSplit[0].toLowerCase();
     let imageFormat = imageSplit[1].toLowerCase();
     json = json.replace('%%' + image + '%%', location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + imageName + '.' + imageFormat)
   });

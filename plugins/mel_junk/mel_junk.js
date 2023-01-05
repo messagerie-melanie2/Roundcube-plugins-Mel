@@ -91,22 +91,38 @@ rcube_webmail.prototype.mel_junk_toggle_button = function() {
 
 // Open mel junk box
 function mel_junk_box(prop, item, event) {
-    rcmail.show_menu('mel_junk-box', true, event);
-    // rcmail.command('menu-open', 'mel_junk-box', event.target, event);
+    open_dialog();
 }
+
+ /**
+     * Messages list options dialog
+     */
+ function open_dialog()
+ {
+     var content = $('#mel_junk-box'),
+         dialog = content.clone(true);
+
+    //  // Fix id/for attributes
+     $('input', dialog).each(function() { this.id = this.id + '_clone'; });
+     $('label', dialog).each(function() { $(this).attr('for', $(this).attr('for') + '_clone'); });
+
+     var save_func = function(e) {
+        rcmail.command('plugin.mel_junk_send', dialog.find('form'))
+         return true;
+     };
+
+     dialog = rcmail.simple_dialog(dialog, rcmail.gettext('mel_junk.title'), save_func, {
+         closeOnEscape: true,
+         minWidth: 400,
+         height: 60
+     });
+ };
 
 // mel junk action
 function mel_junk_send(prop, item, event) {
-    if ($('#mel_junk-box').is(':visible')) {
-        // Quels sont les choix de l'utilisateur dans le popup ?
-        var send_admin = $('#mel_junk-box #mel_junk_send_admin').is(':checked');
-        var junk_folder = $('#mel_junk-box #mel_junk_folder').is(':checked');
-    }
-    else {
-        // Si le popup est masqué c'est une action directe
-        var send_admin = true;
-        var junk_folder = true;
-    }
+  var junk_folder = prop.find('#mel_junk_folder_clone').is(':checked');
+  var send_admin = prop.find('#mel_junk_send_admin_clone').is(':checked');
+
     // Send message to administrator ? (bounce)
     if (send_admin) {      
         // Récupère les uid de messages sélectionnés
@@ -133,9 +149,6 @@ function mel_junk_send(prop, item, event) {
     // Put message in junk folder ? (markasjunk plugin)
     if (junk_folder) {
         rcmail.markasjunk_mark(true);
-    }
-    if ($('#mel_junk-box').is(':visible')) {
-        $('#mel_junk-box').hide();
     }
     return true;
 }

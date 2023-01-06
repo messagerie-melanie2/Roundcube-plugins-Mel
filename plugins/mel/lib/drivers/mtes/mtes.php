@@ -437,7 +437,7 @@ class mtes_driver_mel extends mce_driver_mel
           }
         }
       }
-      if (isset($args['form']['contact']['content']['phone'])) {
+      if (isset($args['form']['contact']['content']['phone']) && rcube_utils::get_input_value('_action', rcube_utils::INPUT_GET) != "edit") {
         $args['form']['contact']['content']['phone']['render_func'] =  [$this, 'renderPhone'];
       }
     }

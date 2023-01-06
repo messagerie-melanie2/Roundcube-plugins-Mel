@@ -4163,6 +4163,10 @@ function rcube_calendar_ui(settings) {
       // trigger callback (using timeout, otherwise clientEvents is always empty)
       if (!isLoading)
         setTimeout(function () { me.events_loaded(); }, 20);
+      setTimeout(() => {
+        let time = settings.first_hour < 10 ? '0' + settings.first_hour : settings.first_hour;
+        $(".fc-scroller").scrollTop($('[data-time="' + time + ':00:00' + '"]').position().top);
+      }, 20);
     },
     // callback for date range selection
     // PAMELA - Fullcalendar premium
@@ -4272,6 +4276,8 @@ function rcube_calendar_ui(settings) {
       }
     }
   }));
+
+
 
   // if start date is changed, shift end date according to initial duration
   var shift_enddate = function (dateText) {

@@ -90,7 +90,7 @@ function rcube_calendar_ui(settings) {
       start: settings.work_start + ':00',
       end: settings.work_end + ':00'
     },
-    scrollTime: settings.work_start + ':00',
+    scrollTime: settings.first_hour + ':00',
     views: {
       list: {
         titleFormat: settings.dates_long,

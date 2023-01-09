@@ -1192,6 +1192,7 @@ class mel_driver extends calendar_driver {
           $result = $_event->uid;
         }
         else if (isset($event['_savemode']) && $event['_savemode'] == 'all') {
+          $exceptions = $_event->exceptions;
           // Gérer la sequence
           if (is_int($_event->sequence)) {
             $_event->sequence = $_event->sequence + 1;

@@ -814,7 +814,7 @@ class MelEnum
 
 
 var _paq = _paq || [];
-_paq.push(['setDocumentTitle', rcmail.task]);
+_paq.push(['setDocumentTitle', rcmail.env.task]);
 _paq.push(['setDownloadClasses', ["LienTelecharg","document"]]);
 _paq.push(['trackPageView']);
 _paq.push(['enableLinkTracking']);

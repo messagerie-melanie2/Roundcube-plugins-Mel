@@ -2785,6 +2785,10 @@ var MasterWebconfBar = (() => {
     
             return this;
         }
+
+        // tileViewUpdated(state){
+
+        // }
     
         toggleHand()
         {
@@ -2958,6 +2962,7 @@ class ListenerWebConfBar {
         this.participantPan = false;
         this.chatOpen = false;
         this._intervals = {};
+        this.filmstrip_visible = true;
     }
 
     start()
@@ -3031,6 +3036,7 @@ class ListenerWebConfBar {
             });
 
             this.webconf.jitsii.addEventListener('filmstripDisplayChanged', (datas) => {
+                this.filmstrip_visible = datas.visible;
                 if (datas.visible) 
                 {
                     this.webconf.screen_manager.button_size_correction('strip', '129px');
@@ -3054,6 +3060,12 @@ class ListenerWebConfBar {
                 this.chatOpen = datas.isOpen;
             });
 
+            this.webconf.jitsii.addEventListener("tileViewChanged", (datas) => {
+                const enabled = datas.enabled;
+
+                this.tileViewChanged(enabled);
+            });
+
             // this.webconf.jitsii.addEventListener("errorOccurred", (datas) =>{
             //     console.error('###[VISIO]', datas);
             // });
@@ -3063,6 +3075,21 @@ class ListenerWebConfBar {
                 console.log("[VISIO]La visio est prête à être fermée !");
             });
         }
+    }
+
+    tileViewChanged(enabled) {
+        if (enabled) {
+            this.webconf.screen_manager.delete_button_size_correction('strip');
+        }
+        else if (this.filmstrip_visible){
+            this.webconf.screen_manager.button_size_correction('strip', '129px');
+        }
+        else 
+        {
+            this.webconf.screen_manager.delete_button_size_correction('strip');
+        }
+
+        this.webconf.screen_manager.update_button_size();
     }
 
     isParticipantPaneOpen() {

@@ -51,6 +51,7 @@ class mel_elastic extends rcube_plugin
             $this->register_action('update_theme', array($this, 'update_theme'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
+            $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->rc->output->set_env('mel_themes', $this->mep_themes());

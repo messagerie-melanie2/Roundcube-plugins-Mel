@@ -2516,7 +2516,15 @@ class mel_metapage extends rcube_plugin
                 if ($datas !== false) $folder = "Boite partag&AOk-e/$tmp/$folder";
             }
         }
-        else  $datas = $this->rc->imap->save_message($folder, $msg);
+        else  {
+            if (!isset($this->rc->imap)) {
+                $this->rc->storage_init();
+            }
+
+            if (isset($this->rc->imap)) {
+                $datas = $this->rc->imap->save_message($folder, $msg);
+            }
+        }
 
         if ($datas !== false)
         {

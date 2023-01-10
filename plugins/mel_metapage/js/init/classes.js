@@ -814,7 +814,7 @@ class MelEnum
 
 
 var _paq = _paq || [];
-_paq.push(['setDocumentTitle', rcmail.task]);
+_paq.push(['setDocumentTitle', rcmail.env.task]);
 _paq.push(['setDownloadClasses', ["LienTelecharg","document"]]);
 _paq.push(['trackPageView']);
 _paq.push(['enableLinkTracking']);
@@ -825,6 +825,21 @@ _paq.push(['setSiteId','1503']);
 var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
 g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
 })();
+
+$(document).ready(function() {
+  $('#button-create').click(() => {
+    _paq.push(['trackEvent', 'Button click', 'Button create click', 'Clicked']);
+  });
+  $('#button-help').click(() => {
+    _paq.push(['trackEvent', 'Button click', 'Button help click', 'Clicked']);
+  });
+  $('#button-shortcut').click(() => {
+    _paq.push(['trackEvent', 'Button click', 'Button shortcut click', 'Clicked']);
+  });
+  $('#user-up-panel').click(() => {
+    _paq.push(['trackEvent', 'Button click', 'User panel click', 'Clicked']);
+  });
+});
 
 function piwikTrackVideo(type,section,page,x1){
 _paq.push(['trackEvent', 'Video', 'Play', page]);

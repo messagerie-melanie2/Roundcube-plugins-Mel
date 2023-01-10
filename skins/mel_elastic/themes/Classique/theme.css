@@ -399,6 +399,9 @@ html.theme-classique .task-addressbook .searchbar {
   border: solid thin var(--main-text-color) !important;
   background-color: var(--default-background) !important;
 }
+html.theme-classique .task-addressbook .listing-info {
+  color: var(--theme-base-text-color);
+}
 html.theme-classique .task-tasks .searchbar {
   border: solid thin var(--main-text-color) !important;
   background-color: var(--default-background) !important;

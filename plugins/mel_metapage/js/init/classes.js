@@ -797,19 +797,35 @@ class MelEnum
 		}
 	}
 
-	static createEnum(name, json)
+	static createEnum(name, json, save_enum = true)
 	{
-		if (MelEnum.createEnum.enums === undefined) MelEnum.createEnum.enums = {};
+        if (!save_enum) {
+            return new MelEnum(json); 
+        }
+        else {
+            if (MelEnum.createEnum.enums === undefined) MelEnum.createEnum.enums = {};
 		
-		if (MelEnum.createEnum.enums[name] !== undefined) throw 'Already exist';
-		else MelEnum.createEnum.enums[name] = new MelEnum(json);
-
-		return MelEnum.createEnum.enums[name];
+            if (MelEnum.createEnum.enums[name] !== undefined) throw 'Already exist';
+            else MelEnum.createEnum.enums[name] = new MelEnum(json);
+    
+            return MelEnum.createEnum.enums[name];
+        }
 	}
 
 	static get(name) {
 		return MelEnum.createEnum.enums[name];
 	}
+
+    static deleteEnum(name)
+    {
+        if (!!MelEnum.createEnum.enums) {
+            try {
+                delete MelEnum.createEnum.enums[name];
+            } catch (error) {
+                MelEnum.createEnum.enums[name] = null;
+            }
+        }
+    }
 }
 
 

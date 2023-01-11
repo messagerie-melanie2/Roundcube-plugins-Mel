@@ -62,6 +62,11 @@ function check_workspace_integrity()
     const workspace_services = rcmail.env.current_workspace_services;
 
     /**
+     * Liste d'appels ajax
+     * @type {Array<Promise>} 
+     */
+    let calls = [];
+    /**
      * Liste des éléments de la toolbar qui seront modifiés
      */
     let items = {};
@@ -70,6 +75,11 @@ function check_workspace_integrity()
      * @type {string | null}
      */
     let toolbar_item = null;
+    /**
+     * Appel ajax courant de la boucle
+     * @type {Promise}
+     */
+    let ajax_call = null;
     for (const key in workspace_services) {
         if (Object.hasOwnProperty.call(workspace_services, key)) {
             const element = workspace_services[key];
@@ -118,7 +128,7 @@ function check_workspace_integrity()
                 }
 
                 //Lance le check du service
-                mel_metapage.Functions.post(
+                ajax_call = mel_metapage.Functions.post(
                     mel_metapage.Functions.url('workspace', 'check_service_async'),
                     {
                         _id:uid,
@@ -132,7 +142,7 @@ function check_workspace_integrity()
                             console.error(`###[checks]${text}`, datas);
                             rcmail.display_message(text, 'error');
 
-                            mel_metapage.Functions.post( //On créer le service
+                            let child_call = mel_metapage.Functions.post( //On créer le service
                                 mel_metapage.Functions.url('workspace', 'create_service_async'),
                                 {
                                     _id:uid,
@@ -191,15 +201,27 @@ function check_workspace_integrity()
                                     if (!!items[datas.service]) set_toolbar_item_valid(items[datas.service].find('span').first())
                                 }
                             );
+
+                            calls.push(child_call);
                         }
                         else {
                             if (!!items[datas.service]) set_toolbar_item_valid(items[datas.service].find('span').first())
                         }
                     }
-                )
+                );
+
+                calls.push(ajax_call);
+                ajax_call = null;
             }
         }
     }
+    
+    //Supprimer les enums inutile pour libérer la mémoire
+    Promise.allSettled(calls).then(() => {
+        MelEnum.deleteEnum('wsp.states');
+        MelEnum.deleteEnum('wspservices');
+        calls = null;
+    });
 }
 
 $(document).ready(() => {

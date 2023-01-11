@@ -41,14 +41,14 @@ const enum_locks = 'enum_webconf_locks'
  * @param {Symbol} private
  * @type {MelEnum}
  */
-const eprivacy = MelEnum.createEnum(enum_privacy_name, {public:Symbol(), private:Symbol()});
+const eprivacy = MelEnum.createEnum(enum_privacy_name, {public:Symbol(), private:Symbol()}, false);
 /**
  * Enumerable lié à la checkbox "Etat".
  * @param {Symbol} chat
  * @param {Symbol} wsp
  * @type {MelEnum}
  */
-const ewebconf_state = MelEnum.createEnum(enum_created_state, {chat:Symbol(), wsp:Symbol()});
+const ewebconf_state = MelEnum.createEnum(enum_created_state, {chat:Symbol(), wsp:Symbol()}, false);
 /**
  * Enumerable des différentes dispositions de la visio
  * @param {number} fullscreen
@@ -58,7 +58,7 @@ const ewebconf_state = MelEnum.createEnum(enum_created_state, {chat:Symbol(), ws
  * @param {number} chat
  * @type {MelEnum}
  */
-const ewsmode = MelEnum.createEnum(enum_screen_mode, {fullscreen:0, minimised:1, fullscreen_w_chat:2, minimised_w_chat:3, chat:4});
+const ewsmode = MelEnum.createEnum(enum_screen_mode, {fullscreen:0, minimised:1, fullscreen_w_chat:2, minimised_w_chat:3, chat:4}, false);
 /**
  * Enumerable des locks disponibles
  * @see {WebconfPageCreator}
@@ -69,7 +69,7 @@ const ewsmode = MelEnum.createEnum(enum_screen_mode, {fullscreen:0, minimised:1,
 const elocks = MelEnum.createEnum(enum_locks, {
     room:0,
     mode:1
-});
+}, false);
 
 //¤Globales
 /**

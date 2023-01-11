@@ -155,6 +155,9 @@ function m_mp_Create() {
             }
         });
         window.create_popUp = create_popUp.haveReduced();
+
+        rcmail.triggerEvent('on_create_window.create', {popup:create_popUp});
+
     } else if (!isSmall) //Si elle existe, on l'affiche.
     {
         window.create_popUp.show();

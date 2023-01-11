@@ -9,6 +9,9 @@ function set_toolbar_item_valid($item) {
     $item.parent().removeClass('disabled').removeAttr('disabled');
 }
 
+/**
+ * Main
+ */
 function check_workspace_integrity() 
 {
     /**

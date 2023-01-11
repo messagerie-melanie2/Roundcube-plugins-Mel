@@ -156,7 +156,7 @@ function m_mp_Create() {
         });
         window.create_popUp = create_popUp.haveReduced();
 
-        rcmail.triggerEvent('on_create_window.create', {popup:create_popUp});
+        rcmail.triggerEvent('on_create_window.matomo');
 
     } else if (!isSmall) //Si elle existe, on l'affiche.
     {
@@ -575,6 +575,8 @@ function m_mp_createworkspace() {
                     continue; 
             }
         }
+        rcmail.triggerEvent('on_click_button.matomo', 'Créer - Un espace de travail');
+
         create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
         mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_create_workspace"), {},
             (datas) => {
@@ -1452,6 +1454,10 @@ function m_mp_Help() {
             mel_metapage.Functions.change_page(rcmail.env.help_suggestion_url.task, rcmail.env.help_suggestion_url.action);
             help_popUp.close();
         }).removeClass('disabled').removeAttr('disabled');
+
+        rcmail.triggerEvent('on_create_window.matomo');
+
+
     } else if (!isSmall) //Si elle existe, on l'affiche.
     {
         window.help_popUp.show();
@@ -1534,6 +1540,8 @@ function m_mp_help_video() {
             });
         }
 
+        rcmail.triggerEvent('on_click_button.matomo', 'Aide - Voir les vidéos');
+
         // Positionnement des variables d'env
         rcmail.env.video_index = index;
 
@@ -1613,6 +1621,8 @@ function m_mp_CreateDocumentIconContract(icon, type) {
  * Affiche les données pour créer un document dans la modale de création.
  */
 async function m_mp_InitializeDocument(initPath = null) {
+    rcmail.triggerEvent('on_click_button.matomo', 'Créer - Un document');
+
     create_popUp.editTitleAndSetBeforeTitle('<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>', 'Création d\'un nouveau document');
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
 

@@ -255,6 +255,8 @@ class mel_metapage extends rcube_plugin
         }
 
         $this->rc->output->set_env("plugin.mel_metapage", true);//compose_extwin
+        $this->rc->output->set_env("matomo_tracking", $this->rc->config->get("matomo_tracking", false));
+        $this->rc->output->set_env("matomo_tracking_popup", $this->rc->config->get("matomo_tracking_popup", false));
         //$this->rc->output->set_env("compose_extwin", true);
         $config = $this->rc->config->get("mel_metapage_chat_visible", true);
 

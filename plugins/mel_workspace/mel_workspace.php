@@ -141,8 +141,91 @@ class mel_workspace extends rcube_plugin
         $this->register_action('update_wekan_board', [$this, 'update_wekan_board']);
         $this->register_action('add_survey', [$this, 'add_survey']);
         $this->register_action('delete_survey', [$this, 'delete_survey']);
+        $this->register_action('check_service_async', [$this, 'check_service_action']);
+        $this->register_action('create_service_async', [$this, 'create_service_action']);
         //stockage_user_updated
         //toggle_nav_color
+    }
+
+    function check_service_action()
+    {
+        $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
+        $service = rcube_utils::get_input_value('_service', rcube_utils::INPUT_GPC);
+
+        $return = [
+            'service' => $service,
+            'state' => 'valid',
+            'service_state' => true
+        ];
+
+        $workspace = driver_mel::gi()->workspace();
+        $workspace->uid = $id;
+        $workspace->load();
+
+        $service = $this->check_services($service, $workspace);
+
+        if ($service === null || !$service) {
+            $return['state'] = 'invalid';
+            $return['service_state'] = $service;
+        }
+
+        echo json_encode($return);
+
+        exit;
+    }
+
+    function create_service_action()
+    {
+        $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
+        $service = rcube_utils::get_input_value('_service', rcube_utils::INPUT_GPC);
+        $state = rcube_utils::get_input_value('_state', rcube_utils::INPUT_GPC);
+
+        if ($state === '') $state = null;
+        else if ($state === 'true' || $state === 'false') $state = $state === 'true';
+
+        $workspace = driver_mel::gi()->workspace();
+        $workspace->uid = $id;
+        $workspace->load();
+
+        $need_update = $this->services_action_errors($workspace, [$service => $state]);
+
+        $datas = false;
+
+        if ($need_update) {
+            $workspace->save();
+            $workspace->load();
+
+            $datas = [
+                'env' => [],
+                'update_button' => [],
+                'triggers' => []
+            ];
+
+            switch ($service) {
+                case self::WEKAN:
+                    $datas['env']['wekan_datas'] = $this->get_object($workspace, self::WEKAN);
+                    $datas['update_button'][] = [
+                        'id' => 'wsp-wekan',
+                        'is_class' => true,
+                        'datas' => ['wekan' => $datas['env']['wekan_datas']->id]
+                    ];
+                    break;
+
+                case self::TASKS:
+                    $datas['triggers'][] = ['is_top' => true, 'trigger' => 'mel_metapage.tasks_updated'];
+                    break;
+
+                case self::AGENDA:
+                    $datas['triggers'][] = ['is_top' => true, 'trigger' => 'mel_metapage.calendar_updated'];
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+
+        echo json_encode($datas);
+        exit;
     }
 
     function registerListeners()
@@ -403,15 +486,15 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->set_env('wsp_one_admin', self::is_one_admin($this->currentWorkspace));
 
         
-        try {
-            if (self::is_in_workspace($this->currentWorkspace) && $this->services_action_errors($this->currentWorkspace))
-            {
-                $this->currentWorkspace->save();        
-                $this->currentWorkspace->load();
-            }
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
+        // try {
+        //     if (self::is_in_workspace($this->currentWorkspace) && $this->services_action_errors($this->currentWorkspace))
+        //     {
+        //         $this->currentWorkspace->save();        
+        //         $this->currentWorkspace->load();
+        //     }
+        // } catch (\Throwable $th) {
+        //     //throw $th;
+        // }
 
         $this->rc->output->add_handlers(array(
             'wsp-style'    => array($this, 'set_wsp_style'),
@@ -1655,6 +1738,7 @@ class mel_workspace extends rcube_plugin
 
         if ($this->rc->action === "workspace")
         {
+            $this->include_script('js/checks.js');
             $this->include_script('js/workspace.js');
             $this->include_script('js/params.js');
         }
@@ -3074,7 +3158,7 @@ class mel_workspace extends rcube_plugin
                         else if ($this->get_setting($workspace, self::WEKAN) === true)
                             $this->add_setting($workspace, self::WEKAN, false);
 
-                        return $this->check_wekan_member($board, driver_mel::gi()->getUser()->uid) ? true : null;
+                        return $this->check_wekan_member($board_id, driver_mel::gi()->getUser()->uid) ? true : null;
                     }
                     else 
                         return false;
@@ -3140,11 +3224,11 @@ class mel_workspace extends rcube_plugin
         return mel_utils::cal_check_category($category);
     }
 
-    function services_action_errors(&$workspace)
+    function services_action_errors(&$workspace, $services = null)
     {
         try {
             $needUpdate = false;
-            $services = $this->check_services("all", $workspace);
+            $services = $services ?? $this->check_services("all", $workspace);
 
             foreach ($services as $key => $value) {
                 if ($services[$key] === null || !$services[$key])
@@ -3230,7 +3314,7 @@ class mel_workspace extends rcube_plugin
                                 };
                                 $users = array_map($map, $workspace->shares);
 
-                                $this->create_wekan($workspace, $services, $users);
+                                $this->create_wekan($workspace, $services, $users, null);
                             }
 
                             $needUpdate = true;

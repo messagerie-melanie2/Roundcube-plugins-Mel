@@ -879,7 +879,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         this.$button_maximize = null;
         /**
          * Taille du chat lorsqu'il est visible
-         * @constant Cette variable est costante, éviter de la changer hors de la classe "_setup"
+         * @constant Cette variable est constante, éviter de la changer hors de la classe "_setup"
          * @private Cette variable est privé, évitez de l'utiliser hors de cette classe
          * @type {number}
          */
@@ -2255,19 +2255,50 @@ class MasterWebconfBarItem {
     }
 }
 
+//¤MasterWebconfBarPopup
+/**
+ * Actions et données de la popup ouverte par la barre d'outil de la visio
+ */
 class MasterWebconfBarPopup {
+    /**
+     * Constructeur de la classe
+     * @param {$} $popup Popup
+     */
     constructor($popup)
     {
         this._init()._setup($popup);
     }
 
+    /**
+     * Initialise les variables de la classe
+     * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+     * @returns Chaîne
+     */
     _init() {
+        /**
+         * Jquery de la popup
+         * @type {$} 
+         */
         this.$popup = null;
+        /**
+         * Jquery de la div qui affiche les données
+         * @type {$} 
+         */
         this.$contents = null;
+        /**
+         * [DEPRECATED]
+         * @deprecated
+         */
         this.last_state = 'hidden';
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @param {$} $popup Jquery de la popup
+     * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+     * @returns Chaîne
+     */
     _setup($popup)
     {
         this.$popup = $popup;
@@ -2275,31 +2306,57 @@ class MasterWebconfBarPopup {
         return this;
     }
 
+    /**
+     * Vide la popup
+     * @returns Chaîne
+     */
     empty() {
         this.$contents.html('');
         return this;
     }
 
+    /**
+     * Affiche la popup
+     * @returns Chaîne
+     */
     show() {
         this.$popup.css('display', '');
         return this;
     }
 
+    /**
+     * Cache la popup
+     * @returns Chaîne
+     */
     hidden() {
         this.$popup.css('display', 'none');
         return this;
     }
 
+    /**
+     * Met à jour la popup
+     * @param {$ | string} datas Element jquery qui sera ajouté à la popup ou html à afficher
+     * @returns Chaîne
+     */
     update_content(datas) {
         this.$contents.html(datas);
         return this;
     }
 
+    /**
+     * Affiche un chargement dans la fenêtre de popup
+     * @param {string} text Texte afficher dans la popup 
+     * @returns Chapine
+     */
     loading(text = 'Chargement des données...') {
         this.$contents.html(`<div><p>${text}</p><span class=spinner-grow></span></div>`);
         return this;
     }
 
+    /**
+     * Libère les variables
+     * @returns /
+     */
     dispose(){
         if (!!this.disposed) return;
         this.disposed = true;
@@ -2310,54 +2367,114 @@ class MasterWebconfBarPopup {
     }
 }
 
+//¤RightPannel
+/**
+ * Gère la panneau de droite
+ */
 class RightPannel
 {
+    /**
+     * Constructeur de la classe 
+     * 
+     * /!\Pas de fonction "_init" et "_setup" pour cette classe
+     * @param {$} $pannel Div du pannel
+     * 
+     */
     constructor($pannel)
     {
+        /**
+         * Div du pannel
+         * @type {$}
+         */
         this.$pannel = $pannel;
+        /**
+         * @constant Cette variable est constante, éviter de la changer hors du constructeur
+         * @type {string} visible-mode
+         */
         this.CONST_VISIBLE_MODE = 'visible-mode';
+        /**
+         * @constant Cette variable est constante, éviter de la changer hors du constructeur
+         * @type {string} right-mode
+         */
         this.CONST_RIGHT_MODE = 'right-mode';
     }
 
+    /**
+     * Envoie le panneau à la fenêtre parente
+     * @returns Chaîne
+     */
     toTop() {
         this.$pannel = this.$pannel.appendTo(window.top.$('#layout'));
         return this;
     }
 
+    /**
+     * Affiche la panneau
+     * @returns Chaîne
+     */
     open() {
         if (!this.is_open()) this.$pannel.addClass(this.CONST_VISIBLE_MODE);
         return this;
     }
 
+    /**
+     * Cache le panneau
+     * @returns Chaîne
+     */
     close()
     {
         this.$pannel.removeClass(this.CONST_VISIBLE_MODE);
         return this;
     }
 
+    /**
+     * Vérifie si le panneau est ouvert (true) ou non (false)
+     * @returns {boolean}
+     */
     is_open()
     {
         return this.$pannel.hasClass(this.CONST_VISIBLE_MODE);
     }
 
+    /**
+     * Change le titre du panneau
+     * @param {string} title Nouveau title de panneau
+     * @returns Chaîne
+     */
     set_title(title)
     {
         this.$pannel.find('.title').html(title);
         return this;
     }
 
+    /**
+     * Active le mode "droit"
+     * 
+     * Utilisé en général quand le tchat est ouvert, décalle le panneau à gauche
+     * @returns Chaîne
+     */
     enable_right_mode()
     {
         if (!this.$pannel.hasClass(this.CONST_RIGHT_MODE)) this.$pannel.addClass(this.CONST_RIGHT_MODE);
         return this;
     }
 
+    /**
+     * Désactive le mode "droit"
+     * @returns Chaîne
+     */
     disable_right_mode()
     {
         if (!this.cannot_be_disabled) this.$pannel.removeClass(this.CONST_RIGHT_MODE);
         return this;
     }
 
+    /**
+     * Change le contenu du panneau
+     * @param {$ | string} content Div ou html
+     * @param {function | null} callback Action à faire après ajout du contenu
+     * @returns Chaîne
+     */
     set_content(content, callback = null)
     {
         this.$pannel.find('#html-pannel').html(content);
@@ -2370,6 +2487,9 @@ class RightPannel
         return this;
     }
 
+    /**
+     * Libère les variables
+     */
     dispose() {
         if (!!this.disposed) return;
         this.disposed = true;
@@ -2380,20 +2500,29 @@ class RightPannel
     }
 }
 
-//MasterWebconfBar
+//¤MasterWebconfBar
+/**
+ * Gère la barre d'outil de la visio
+ */
 var MasterWebconfBar = (() => {
+    /**
+     * Besoin de faire des appels jquerry à partir de top.
+     * @type {typeof $}
+     */
     let _$ = top.$;
+
+    /**
+     * Gère la barre d'outil de la visio et les actions des items
+     */
     class MasterWebconfBar {
         /**
-         * 
-        * @param {Webconf} webconfManager Id de l'iframe qui contient la webconf
-        * @param {string} framechat_id Id de l frame qui contient rocket.chat
-        * @param {string} ask_id Id de la div qui permet de configurer la webconf
-        * @param {string} key Room de la webconf 
-        * @param {string} ariane Room ariane
-        * @param {JSON} wsp Infos de l'espace de travail si il y en a
-        * @param {int} ariane_size Taille en largeur et en pixel de la frale ariane 
-        * @param {boolean} is_framed Si la webconf est dans une frame ou non 
+         * Constructeur de la classe
+         * @param {WebconfScreenManager} globalScreenManager Objet qui gère la disposition de l'écran de la visio
+         * @param {Webconf} webconfManager Visioconférence
+         * @param {$} $right_pannel Div du panneau de droite
+         * @param {{$buttons:$, $button:$}} more_actions Liste des actions supplémentaires qui se trouve dans le menu "plus d'actions" + le bouton d'appel
+         * @param {string} rawbar Barre de navigation sous format html
+         * @param {boolean} bar_visible Affiche la barre d'outil tout de suite ou non
          */
         constructor(globalScreenManager, webconfManager, $right_pannel, more_actions, rawbar, bar_visible = true) {
             this._init()._setup(globalScreenManager, webconfManager, $right_pannel)._create_bar(rawbar, more_actions);
@@ -2402,25 +2531,67 @@ var MasterWebconfBar = (() => {
             else this.launch_timeout();
         }
     
+        /**
+         * Initialise les variables de la classe
+         * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+         * @returns Chaîne
+         */
         _init() {
+            /**
+             * Gère la disposition de l'écran
+             * @type {WebconfScreenManager}
+             */
             this.globalScreenManager = null;
+            /**
+             * Visioconférence
+             * @type {Webconf}
+             */
             this.webconfManager = null;
+            /**
+             * Div de la barre d'outil
+             * @type {$}
+             */
             this.$bar = null;
+            /**
+             * Boutons de la barre d'outil
+             * @type {{[x:string]: MasterWebconfBarItem}}
+             */
             this.items = {};
+            /**
+             * Lorsque le bouton en vrai, le listener n'est pas appelé
+             * @type {boolean}
+             */
             this.ignore_send = false;
+            /**
+             * Listener, il fait la jointure entre la barre d'outil et la visio
+             * @type {ListenerWebConfBar}
+             */
             this.listener = null;
+            /**
+             * Popup qui peut être ouverte/fermé ou modifié
+             * @type {MasterWebconfBarPopup}
+             */
             this.popup = null;
+            /**
+             * Panneau de droite qui peut être ouverte/fermé ou modifié
+             * @type {RightPannel}
+             */
             this.right_pannel = null;
+            /**
+             * Action à faire lorsque l'on libère la classe
+             * @type {function | null}
+             */
             this.ondispose = null;
             return this;
         }
     
         /**
-         * 
-         * @param {Webconf} globalScreenManager 
-         * @param {*} webconfManager 
-         * @param {*} $right_pannel 
-         * @returns 
+         * Assigne les variables de la classe
+         * @param {WebconfScreenManager} globalScreenManager 
+         * @param {Webconf} webconfManager 
+         * @param {$} $right_pannel 
+         * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+         * @returns Chaîne 
          */
         _setup(globalScreenManager, webconfManager, $right_pannel) {
             this.globalScreenManager = globalScreenManager.setMasterBar(this);
@@ -2429,10 +2600,31 @@ var MasterWebconfBar = (() => {
             return this;
         }
       
+        /**
+         * Créer la barre d'outil (visuellement et fonctionellement)
+         * 
+         * Elle récupère les données des datas des boutons qui la compose puis va assigner les comportements de chacun 
+         * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+         * @param {string} rawbar 
+         * @param {{$buttons:$, $button:$}} more_actions 
+         * @returns Chaîne
+         */
         _create_bar(rawbar, more_actions) {
+            /**
+             * Si on est sous firefox ou non
+             * @type {boolean}
+             */
             const isff = MasterWebconfBar.isFirefox();
-            _$("body").append(rawbar);
+            _$("body").append(rawbar); //Ajoute la barre au body
     
+            //Boucle sur tout les boutons, et leurs assigne leurs fonctionnements
+            /*
+            Liste des datas : 
+            witem : id du bouton dans le code, permet de le retrouver plus tard
+            function : Fonction de MasterWebconfBar qui sera appelé lors du clique
+            click : vaut 'true' ou 'false' (par défaut), si c'est vrai, aucun état ne sera passé à la fonction
+            noff : Pour "no firefox", si on est sous ff, le bouton ne sera pas affiché
+            */
             for (var iterator of Enumerable.from(_$('.wsp-toolbar.webconf-toolbar button')).concat(more_actions.$buttons)) {
                 iterator = _$(iterator);
                  if (!!iterator.data('witem')) {
@@ -2445,7 +2637,7 @@ var MasterWebconfBar = (() => {
                  }
             }
     
-            //Link
+            //Link les popups du micro et de la caméra pour pouvoir basculer de l'un à l'autre plus tard
             if (!!this.items['popup_mic'] && !!this.items['popup_cam'])
             {
                 this.items['popup_mic'].addLink('other', this.items['popup_cam'], 'other');
@@ -2454,13 +2646,19 @@ var MasterWebconfBar = (() => {
             this.$bar = _$('.wsp-toolbar.webconf-toolbar');
             this.popup = new MasterWebconfBarPopup(this.$bar.find('.toolbar-popup'));
     
+            /**
+             * La popup fais la moitié de la taille de l'écran
+             */
             this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`).css('min-height', '250px');
     
+            //Ajoute le bouton "plus d'action" à la barre d'outil
             this._$more_actions = more_actions.$button.css('display', '').removeClass('hidden').removeClass('active').appendTo(this.$bar);
             
+            //Action à faire qu'une seul fois par session
             if (!top.webconf_resize_set)
             {
                 top.webconf_resize_set = true;
+                //Redimensionne la popup lorsque la taille de l'écran change
                 top.eval(`
                     top.$(window).resize(() => {
                         if (!!top && !!top.masterbar && !!top.masterbar.popup) top.masterbar.popup.$popup.css('height', (window.innerHeight / 2)+'px');     
@@ -2471,6 +2669,12 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Affiche le logo ou le nom de l'espace lié à la visio. 
+         * 
+         * Si la visio n'est pas lié à un espace, un logo par défaut sera attribué
+         * @returns Chaîne
+         */
         updateLogo()
         {
             const wsp = this.webconfManager.wsp;
@@ -2485,6 +2689,10 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Lors du lancement de la visio, met à jours l'état des boutons de la barre d'outil pour correspondre à ceux de la visio
+         * @returns Chaîne
+         */
         updateBarAtStartup()
         {
             const wsp = this.webconfManager.wsp;
@@ -2501,35 +2709,56 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Lie le listener à la barre d'outil
+         * @param {ListenerWebConfBar} listener 
+         */
         setListener(listener) {
             this.listener = listener;
         }
     
+        /**
+         * Action qui sera appelé lorsque la visio sera finie
+         * @param {function} callback Fonction à appeler
+         */
         setOnDipose(callback) {
             this.ondispose = callback;
         }
     
+        /**
+         * Affiche la barre d'outil
+         */
         show() {
             this.$bar.css('display', '');
             this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`);
         }
     
-        toggle_mic_or_cam(state, item, on, off, listener_func)
+        /**
+         * Change l'état du micro ou de la caméra
+         * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
+         * @param {boolean} state Etat du micro ou de la caméra (true => actif, false => inactif)
+         * @param {string} item doit être "mic" ou "cam" 
+         * @param {string} on Icône qui doit être affiché lorsque l'état est "actif"
+         * @param {string} off  Icône qui doit être affiché lorsque l'état est "inactif"
+         * @param {string} listener_func Fonction qui sera appelé par le listener
+         * @returns Chaîne
+         */
+        _toggle_mic_or_cam(state, item, on, off, listener_func)
         {
             const FOR = item;
             const class_on = `.${on}`;
             const class_off = `.${off}`;
     
-            if (!!this.items && this.items[FOR])
+            if (!!this.items && this.items[FOR]) //Ne rien faire si il n'y a pas les items demandés
             {
-                if (state) {
+                if (state) { 
                     this.items[FOR].$item.find(class_off).removeClass(off).addClass(on);
                 }
                 else {
                     this.items[FOR].$item.find(class_on).removeClass(on).addClass(off);
                 }
     
-                if (!this.ignore_send) {
+                if (!this.ignore_send) { //On active le micro ou la caméra ou inversement
                     this.listener[listener_func]();
                 }
             }
@@ -2537,20 +2766,39 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Active ou désactive le micro
+         * @param {boolean} state Etat du micro  
+         * @returns Chaîne
+         */
         toggle_mic(state)
         {
-            return this.toggle_mic_or_cam(state, 'mic', 'icon-mel-micro', 'icon-mel-micro-off', 'toggle_micro');
+            return this._toggle_mic_or_cam(state, 'mic', 'icon-mel-micro', 'icon-mel-micro-off', 'toggle_micro');
         }
     
+        /**
+         * Active ou désactive la caméra
+         * @param {boolean} state Etat de la caméra  
+         * @returns Chaîne
+         */
         toggle_cam(state)
         {
-            return this.toggle_mic_or_cam(state, 'cam', 'icon-mel-camera', 'icon-mel-camera-off', 'toggle_video');
+            return this._toggle_mic_or_cam(state, 'cam', 'icon-mel-camera', 'icon-mel-camera-off', 'toggle_video');
         }
     
+        /**
+         * Met à jour l'icône du bouton qui ouvre la popup des audios et celui de la caméra (et vice versa)
+         * @param {boolean} state Etat de la popup (ouverte ou non) 
+         * @param {MasterWebconfBarItem} item Item d'où vient le click
+         * @param {*} debug [DEPRECATED]
+         * @param {string} active_symbol Icône à afficher lorsque la popup est ouverte
+         * @param {string} inactive_symbol Icône à afficher lorsque la popup est fermée
+         * @returns Chaîne
+         */
         update_item_icon(state, item, debug, active_symbol = 'icon-mel-close', inactive_symbol = 'icon-chevron-down')
         {
-            console.log('update_item_icon', item, state);
             if (state) {
+                //Désactive les autres items lié à celui-ci
                 const links = item.getAllLinks()
                 let element;
                 for (const key in links) {
@@ -2569,6 +2817,12 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Met à jour la liste des périphériques afficher sur la popup
+         * @param {Array<*>} devices Liste des devices envoyé par jitsii
+         * @param {function} click Action à faire lorsque l'on clique sur un device 
+         * @returns Chaîne
+         */
         update_popup_devices(devices, click) {
             let devices_by_kind = {};
     
@@ -2603,6 +2857,12 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Ouvre ou ferme une popup qui affiche la liste des micros et des audios
+         * @todo Ajouter des fonctionnalités pour pouvoir tester l'audio ou le micro en temps réel
+         * @param {boolean} state Ouvre ou ferme la popup (true => ouverture)
+         * @param {MasterWebconfBarItem} item Item à changer
+         */
         async togglePopUpMic(state, item) {
             const FOR = 'popup_mic';
     
@@ -2624,6 +2884,12 @@ var MasterWebconfBar = (() => {
             }
         }
     
+        /**
+         * Ouvre ou ferme une popup qui affiche la liste des caméras
+         * @todo Ajouter des fonctionnalités pour pouvoir tester l'audio ou le micro en temps réel
+         * @param {boolean} state Ouvre ou ferme la popup (true => ouverture)
+         * @param {MasterWebconfBarItem} item Item à changer
+         */
         async togglePopUpCam(state, item) {
             const FOR = 'popup_cam';
     
@@ -2644,6 +2910,10 @@ var MasterWebconfBar = (() => {
             }
         }
     
+        /**
+         * Affiche la page nextcloud de la visio lié à l'espace
+         * @todo Ouvrir l'espace de travail qui ouvre nextcloud
+         */
         nextcloud()
         {
             let task = 'stockage'
@@ -2667,12 +2937,19 @@ var MasterWebconfBar = (() => {
             mel_metapage.Functions.change_page(task, null, config);
         }
     
+        /**
+         * Copie dans le presse papier l'url de la visio
+         * @todo Ajouter les infos d'ariane de d'espaces de travail
+         */
         copyUrl()
         {
             //TODO => Ajouter les infos d'ariane de d'espaces de travail
             mel_metapage.Functions.copy(this.webconfManager.get_url(true));
         }
     
+        /**
+         * Copie de la presse papier les infos pour rejoindre la visio par téléphone
+         */
         async get_phone_datas()
         {   
             if (!this._phone_datas) 
@@ -2685,6 +2962,10 @@ var MasterWebconfBar = (() => {
             mel_metapage.Functions.copy(copy_value);
         }
     
+        /**
+         * Affiche ou ferme le tchat du Bnum
+         * @param {boolean} state true => Ouvert 
+         */
         toggleChat(state) {
             this.globalScreenManager.webconf.chat.hidden = !state;
             this.listener.switchAriane(state);
@@ -2693,11 +2974,18 @@ var MasterWebconfBar = (() => {
             else this.right_pannel.disable_right_mode();
         }
     
+        /**
+         * Affiche ou ferme le tchat de jitsii
+         */
         toggleInternalChat()
         {
             this.listener.toggle_chat();
         }
     
+        /**
+         * Affiche une fenêtre qui permet d'écrire des messages privés à utilisateur de la visio
+         * @returns 
+         */
         async toggle_mp()
         {
             if (this.right_pannel.is_open()) {
@@ -2716,7 +3004,6 @@ var MasterWebconfBar = (() => {
     
                     _$(`<div tabindex="0" class="mel-selectable mel-focus with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
                         e = _$(e.currentTarget);
-                        //this.send('initiatePrivateChat', `"${e.data('id')}"`);
                         this.listener.initiatePrivateChat(e.data('id'));
                         this.right_pannel.close();
                     }).appendTo($html);
@@ -2732,18 +3019,27 @@ var MasterWebconfBar = (() => {
             }
         }
     
+        /**
+         * Ouvre le menu "Participants" de jitsii
+         * @todo Faire le notre
+         */
         toggle_participantspane()
         {
             this.listener.toggle_participantspane();
         }
     
+        /**
+         * Ouvre le menu des backgrounds de jitsii
+         */
         open_virtual_background()
         {
             this.listener.open_virtual_background();
         }
     
         /**
-         * Affiche ou cache la toolbar
+         * Minimise ou maximise la barre d'outil
+         * @param {boolean} state true => caché 
+         * @returns Chaîne
          */
         update_toolbar(state)
         {
@@ -2785,21 +3081,26 @@ var MasterWebconfBar = (() => {
     
             return this;
         }
-
-        // tileViewUpdated(state){
-
-        // }
     
+        /**
+         * Lève ou baisse la main dans jitsii (pour demander la parole)
+         */
         toggleHand()
         {
             this.listener.toggleHand();
         }
     
+        /**
+         * Passe en mosaïque ou non
+         */
         toggle_film_strip()
         {
             this.listener.toggle_film_strip();
         }
     
+        /**
+         * Lance ou arrête le partage d'écran
+         */
         share_screen()
         {
             this.listener.share_screen();
@@ -2814,30 +3115,37 @@ var MasterWebconfBar = (() => {
             return window?.mel_metapage?.Functions?.isNavigator(mel_metapage?.Symbols?.navigator?.firefox) ?? (typeof InstallTrigger !== 'undefined');
         }
     
+        /**
+         * Ferme la visio
+         */
         async hangup()
         {
+            //Déplace le "plus d'actions" pour pouvoir le réutiliser plus tard
             this._$more_actions.addClass('hidden').appendTo('body');
             
+            //Revenir dans la visio
             if (this.globalScreenManager.current_mode !== ewsmode.fullscreen && rcmail.env.current_frame_name !== 'webconf') {
                 await mel_metapage.Functions.change_frame('webconf', true, true).then(() => {
                     top.rcmail.clear_messages();
                   });
             }
     
+            //Ferme le tchat du bnum
             this.toggleChat(false);
             
             _$("html").removeClass("webconf-started");
             
-            this.listener.hangup();
-            this.$bar.remove();
+            this.listener.hangup(); //Arrête la visio
+            this.$bar.remove(); //Supprime la barre d'outil, elle ne sert plus
 
+            //Remet la barre des espaces de travail correctement
             let $guest_bar = _$(".wsp-toolbar-edited");
             if ($guest_bar.length > 0)
             {
                 $guest_bar.removeClass('webconfstarted').css('max-width', '');
             }
 
-            this.dispose();
+            this.dispose(); //Libère les variables
 
             if (!rcmail.env['webconf.have_feed_back'])
             {
@@ -2845,18 +3153,28 @@ var MasterWebconfBar = (() => {
             }
         }
 
+        /**
+         * [DEPRECATED]Cette fonction est déprécié, évitez de l'utiliser
+         * @deprecated Cette fonction est déprécié, évitez de l'utiliser
+         * @param {$} $item 
+         * @returns Chaîne
+         */
         minify_item($item)
         {
             this.globalScreenManager.fit_item_to_guest_screen($item);
             return this;
         }
     
+        /**
+         * Minimise la barre d'outil pour affiche seulement le micro, la caméra ainsi que le bouton "raccrocher".
+         * @returns Chaîne
+         */
         minify()
         {
             if (this.is_minimised) return this;
             
             const ignore = ['popup_cam', 'popup_mic', 'cam', 'mic', 'hangup'];
-            for (const key in this.items) {
+            for (const key in this.items) { //Cacher tout les items
                 if (Object.hasOwnProperty.call(this.items, key)) {
                     //console.log('item', element, key, this.items[key].$item.parent()[0].nodeName, !ignore.includes(key), this.items[key].$item.parent()[0].nodeName !== 'LI');
                     if (!ignore.includes(key) && this.items[key].$item.parent()[0].nodeName !== 'LI')
@@ -2867,7 +3185,7 @@ var MasterWebconfBar = (() => {
                 }
             }
     
-            this.$bar.find('v_separate').css('display', 'none');
+            this.$bar.find('v_separate').css('display', 'none'); //Cacher les séparateurs
             this.$bar.find('.empty').css('display', 'none');
             this.$bar.css('right', '60px').css('left', 'unset').css('transform', 'unset');
             this.is_minimised = true;
@@ -2875,6 +3193,10 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Maximise la barre d'outil pour affiche seulement le micro, la caméra ainsi que le bouton "raccrocher".
+         * @returns Chaîne
+         */
         maximise()
         {
             if (!this.is_minimised) return this;
@@ -2893,16 +3215,28 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Retourne au bout de combien de temps (en s) la barre d'outil se cache.
+         * @returns 
+         */
         timeout_delay()
         {
             return 10;
         }
     
+        /**
+         * Affiche la barre d'outil et lance un timer qui la cache lorsque celui-ci est écoulé
+         * @returns Chaîne
+         */
         show_masterbar() {
             if (this.$bar.css('display') === 'none') this.$bar.css('display', '');
             return this.launch_timeout();
         }
     
+        /**
+         * Cache la barre d'outil
+         * @returns Chaîne
+         */
         hide_masterbar() 
         {
             if (this.$bar.css('display') !== 'none') this.$bar.css('display', 'none');
@@ -2912,6 +3246,10 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Lance un time qui, à la fin de celui-ci, cache la barre d'outil
+         * @returns Chapine
+         */
         launch_timeout()
         {
             if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
@@ -2921,6 +3259,10 @@ var MasterWebconfBar = (() => {
             return this;
         }
     
+        /**
+         * Libère les variables
+         * @returns /
+         */
         dispose()
         {
             if (this._timeout_id !== undefined){
@@ -2953,18 +3295,61 @@ var MasterWebconfBar = (() => {
     }
     return MasterWebconfBar;    
 })();
+
+//¤ListenerWebConfBar
+/**
+ * Lie la barre d'outil et la visio
+ */
 class ListenerWebConfBar {
-    constructor(webconf = new Webconf(), masterBar = new MasterWebconfBar())
+    /**
+     * Constructeur de la classe
+     * 
+     * /!\ Pas de fonction "_init" ou "_setup" pour cette classe
+     * @param {Webconf} webconf Visioconférence qui sera affecté par les fonctions de la barre d'outil
+     * @param {MasterWebconfBar} masterBar Barre d'outil qui effectuera des actions sur la visio
+     */
+    constructor(webconf, masterBar)
     {
+        /**
+         * Visioconférence qui est affecté par les fonctions de la barre d'outil
+         * @type {Webconf}
+         */
         this.webconf = webconf;
+        /**
+         * Barre d'outil qui effectue des actions sur la visio
+         * @type {MasterWebconfBar}
+         */
         this.masterBar = masterBar;
+        /**
+         * Indique si les listener de jitsii ont déjà été activé ou non
+         * @type {boolean} 
+         */
         this.alreadyListening = false;
+        /**
+         * Si le pannel des participants est ouvert ou non
+         * @type {boolean}
+         */
         this.participantPan = false;
+        /**
+         * Si le tchat de jitsii est ouvert ou non
+         * @type {boolean}
+         */
         this.chatOpen = false;
+        /**
+         * Liste d'intervales
+         * @type {{[x:string]: number}}
+         */
         this._intervals = {};
+        /**
+         * Si le "filmstrip" est ouvert ou non
+         * @type {boolean}
+         */
         this.filmstrip_visible = true;
     }
 
+    /**
+     * Démarre la classe. Lance les listeners de la visio et initialise l'état de la caméro et du micro
+     */
     start()
     {
         this.isVideoMuted().then(muted => {
@@ -2978,6 +3363,10 @@ class ListenerWebConfBar {
         this.listen();
     }
 
+    /**
+     * Affiche ou ferme le tchat du BNum
+     * @param {boolean} state true => pouvert 
+     */
     switchAriane(state) {
         if (state)
         {
@@ -2987,6 +3376,11 @@ class ListenerWebConfBar {
         else this.webconf.hideChat();
     }
 
+    /**
+     * Active ou désactive le micro dans la barre d'outil
+     * @param {string} item Item à activer ou a désactiver
+     * @param {boolean} muted true => désactivé 
+     */
     mute_or_unmute(item, muted) {
         const FOR = item;
 
@@ -3003,6 +3397,13 @@ class ListenerWebConfBar {
         }
     }
 
+    /**
+     * Ajoute un interval à la liste des intervales de la classe
+     * @param {string} key Pour retrouver l'interval plus tard
+     * @param {function} callback Callback à éxécuter
+     * @param {number} ms Timeout
+     * @returns Chaîne
+     */
     addCustomListener(key, callback, ms = 500)
     {
         if (!!this._intervals[key]) clearInterval(this._intervals[key]);
@@ -3013,12 +3414,20 @@ class ListenerWebConfBar {
         return this;
     }
 
+    /**
+     * Supprime un interval de la liste des intervales
+     * @param {string} key Interval à supprimer
+     * @returns Chaîne
+     */
     removeCustomListener(key)
     {
         clearInterval(this._intervals[key]);
         return this;
     }
 
+    /**
+     * Créer les listeners de jitsii
+     */
     listen()
     {
         if (!this.alreadyListening)
@@ -3048,9 +3457,6 @@ class ListenerWebConfBar {
     
                 this.webconf.screen_manager.update_button_size();
             });
-            // this.webconf.jitsii.addEventListener("incomingMessage", (message) => {
-            //     parent.rcmail.display_message(`${message.nick} : ${message.message}`, (message.privateMessage ? "notice private" : "notice notif"));
-            // });
 
             this.webconf.jitsii.addEventListener("mouseMove", (MouseEvent) => {
                 this.masterBar.show_masterbar();
@@ -3065,11 +3471,6 @@ class ListenerWebConfBar {
 
                 this.tileViewChanged(enabled);
             });
-
-            // this.webconf.jitsii.addEventListener("errorOccurred", (datas) =>{
-            //     console.error('###[VISIO]', datas);
-            // });
-
             
             this.webconf.jitsii.addEventListener("readyToClose", () =>{
                 console.log("[VISIO]La visio est prête à être fermée !");
@@ -3077,6 +3478,11 @@ class ListenerWebConfBar {
         }
     }
 
+    /**
+     * Action à faire lorsque l'on passe en mosaïque ou non
+     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe
+     * @param {boolean} enabled true => mosaïque
+     */
     tileViewChanged(enabled) {
         if (enabled) {
             this.webconf.screen_manager.delete_button_size_correction('strip');
@@ -3092,64 +3498,91 @@ class ListenerWebConfBar {
         this.webconf.screen_manager.update_button_size();
     }
 
-    isParticipantPaneOpen() {
-
-    }
-
-    isFilmStripDisplay()
-    {
-        
-    }
-
+    /**
+     * Vérifie si la caméra est désactivée
+     * @returns {boolean}
+     */
     isVideoMuted()
     {
         return this.webconf.jitsii.isVideoMuted();
     }
 
+    /**
+     * Vérifie si le micro est désactivé
+     * @returns {boolean}
+     */
     isAudioMuted()
     {
         return this.webconf.jitsii.isAudioMuted();
     }
 
+    /**
+     * Active ou désactive la caméra de la visio
+     */
     toggle_video()
     {
         this.webconf.jitsii.executeCommand('toggleVideo');
     }
 
+    /**
+     * Active ou désactive le micro de la visio
+     */
     toggle_micro()
     {
         this.webconf.jitsii.executeCommand('toggleAudio');
     }
 
+    /**
+     * Démarre un partage d'écran
+     */
     share_screen()
     {
         this.webconf.jitsii.executeCommand('toggleShareScreen');
     }
 
+    /**
+     * Passe en mode mosaïque ou non
+     */
     toggle_film_strip()
     {
         this.webconf.jitsii.executeCommand('toggleTileView');
     }
 
+    /**
+     * Lève ou baisse la main dans jitsii pour prendre la parole
+     */
     toggleHand(){
         this.webconf.jitsii.executeCommand('toggleRaiseHand');
     }
 
+    /**
+     * Affiche ou ferme le tchat interne
+     */
     toggle_chat()
     {
         this.webconf.jitsii.executeCommand('toggleChat');
     }
 
+    /**
+     * Affiche ou ferme les background virtuels de jitsii
+     */
     async open_virtual_background()
     {
         this.webconf.jitsii.executeCommand('toggleVirtualBackgroundDialog');
     }
 
+    /**
+     * Lance un tchat privé avec un utilisateur de la visio
+     * @param {string} id Id de la personne avec laquel on souhaite communiquer 
+     */
     initiatePrivateChat(id)
     {
         this.webconf.jitsii.executeCommand('initiatePrivateChat',id);
     }
 
+    /**
+     * Affiche ou ferme le pannel des participants
+     */
     toggle_participantspane() {
         this.webconf.jitsii.isParticipantsPaneOpen().then(state => {
             this.participantPan = !state;
@@ -3158,6 +3591,8 @@ class ListenerWebConfBar {
             if (this.participantPan) 
             {
                 this.webconf.screen_manager.button_size_correction('pane','315px');
+                //Lance un listener pour savoir si on passe par autre chose pour ferme la pannel
+                //et mettre le bouton minimiser à la bonne position
                 this.addCustomListener('ppt', () => {
                     this.webconf.jitsii.isParticipantsPaneOpen().then(state => {
                         if (this.participantPan != state)
@@ -3183,11 +3618,18 @@ class ListenerWebConfBar {
         });
     }
 
+    /**
+     * Lance un partage d'écran
+     */
     share_screen()
     {
         this.webconf.jitsii.executeCommand('toggleShareScreen');
     }
 
+    /**
+     * Récupère les périphériques de sorties et d'entrés de la visio
+     * @returns {Array}
+     */
     async get_micro_and_audio_devices()
     {
         var devices = await this.webconf.jitsii.getAvailableDevices();
@@ -3218,27 +3660,49 @@ class ListenerWebConfBar {
         return devices;
     }
 
+    /**
+     * Change le micro de la visio
+     * @param {string} label Nom du périphérique
+     * @param {string} id  id du périphérique
+     */
     set_micro_device(label, id)
     {
         this.webconf.jitsii.setAudioInputDevice(label, id);
     }
 
+    /**
+     * Change la sortie audio de la visio
+     * @param {string} label Nom du périphérique
+     * @param {string} id  id du périphérique
+     */
     set_audio_device(label, id)
     {
         this.webconf.jitsii.setAudioOutputDevice(label, id);
     }
 
-
+    /**
+     * Change la caméra de la visio
+     * @param {string} label Nom du périphérique
+     * @param {string} id  id du périphérique
+     */
     set_video_device(label, id)
     {
         this.webconf.jitsii.setVideoInputDevice(label, id);
     }
 
+    /**
+     * Récupère les données de la visio
+     * @returns 
+     */
     async get_room_infos()
     {
         return this.webconf.jitsii.getParticipantsInfo();
     }
 
+    /**
+     * Récupère les caméras disponibles dans jitsii
+     * @returns {Array}
+     */
     async get_video_devices()
     {
         var devices = await this.webconf.jitsii.getAvailableDevices();
@@ -3263,11 +3727,18 @@ class ListenerWebConfBar {
         return devices;
     }
 
+    /**
+     * Termine la visio
+     */
     hangup()
     {
         this.webconf.jitsii.executeCommand('hangup');
     }
 
+    /**
+     * Libère les variables de l'objet
+     * @returns /
+     */
     dispose()
     {
         if (!!this.disposed) return;
@@ -3290,13 +3761,19 @@ class ListenerWebConfBar {
     }
 }
 
+//Pouvoir utiliser les fonctions en dehord de la classe
 window.Webconf = window.Webconf || Webconf;
 window.WebconfScreenManager = window.WebconfScreenManager || WebconfScreenManager;
 window.MasterWebconfBar = window.MasterWebconfBar || MasterWebconfBar;
-// top.WebconfScreenManager = top.WebconfScreenManager || WebconfScreenManager;
-// top.MasterWebconfBar = top.MasterWebconfBar || MasterWebconfBar;
 
-
+/**
+ * Créer les objets utile à la visio
+ * @param {string} webconf_var_name Nom de la variable globale qui contiendra la visio
+ * @param {string} screen_manager_var_name Nom de la variable globale qui contiendra le gestionnaire d'écran
+ * @param {{need_config:boolean, locks:Array<MelEnum>}} page_creator_config Données de la page de création
+ * @param {function | null} onvisiostart Fonction à lancer lorsque la visio commence
+ * @param {function | null} ondispose Action à faire lorsque l'on termine la visio
+ */
 function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_config, onvisiostart = null, ondispose = null) {
     window[webconf_var_name] = new Webconf("mm-webconf", "mm-ariane", $('#mm-ariane-loading'), {
         $maximise:$('.webconf-fullscreen'),
@@ -3341,6 +3818,9 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
     top.masterbar.setOnDipose(ondispose);
 }
 
+/**
+ * Créer les différents listeners utile à la visio
+ */
 function create_listeners() {
     rcmail.addEventListener('responseafterjwt', function(evt) {
         if (evt.response.id) {
@@ -3364,6 +3844,12 @@ function create_listeners() {
 	});
 }
 
+/**
+ * Créer les actions à faire lorsque l'on change de page et garder la visio active et visible
+ * @param {string} var_name Nom de la variable globale qui contient l'information que les actions ont déjà été créés
+ * @param {string} var_webconf_started_name Nom de la variable globale qui contient l'info que la visio à commencé
+ * @param {string} var_webconf_screen_manager_name Nom de la variable globale qui contiendra le gestionnaire d'écran
+ */
 function create_on_page_change(var_name, var_webconf_started_name, var_webconf_screen_manager_name) {
     if (!top[var_name]) {
         top[var_name] = true;
@@ -3483,6 +3969,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
 }
 
 $(document).ready(() => {
+    //Un visio ne doit pas être top, si c'est le cas, on vire tout, puis on lance la visio dans une iframe
     if (top === window) {
         $('.webconf-frame').remove();
         $('#layout-content').remove();
@@ -3505,6 +3992,7 @@ $(document).ready(() => {
         return;
     }
 
+    //Récupérer et charger l'api de jitsii
     $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
 
     const page_creator_config = {
@@ -3512,6 +4000,7 @@ $(document).ready(() => {
         locks:rcmail.env['webconf.locks']
     }
 
+    //Création de la visio
     create_on_page_change(var_top_on_change_added, var_top_webconf_started, var_global_screen_manager);
     create_listeners();
     create_webconf(var_visio, var_global_screen_manager, page_creator_config, () => {
@@ -3533,6 +4022,7 @@ $(document).ready(() => {
         console.log('on dispose finished !');
     });
 
+    //Pour le mobile
     $('.footer').css('display', "none");
 
 });

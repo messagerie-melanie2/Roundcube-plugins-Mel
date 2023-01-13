@@ -1186,7 +1186,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
 
 }
 
-//¤Webconf
+//¤Webconf 
 /**
  * Gère la webconf, permet d'intéragir avec toute la frame de visio
  */
@@ -2500,7 +2500,7 @@ class RightPannel
     }
 }
 
-//¤MasterWebconfBar
+//¤MasterWebconfBar 
 /**
  * Gère la barre d'outil de la visio
  */
@@ -3500,7 +3500,7 @@ class ListenerWebConfBar {
 
     /**
      * Vérifie si la caméra est désactivée
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
     isVideoMuted()
     {
@@ -3509,7 +3509,7 @@ class ListenerWebConfBar {
 
     /**
      * Vérifie si le micro est désactivé
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
     isAudioMuted()
     {

@@ -3617,21 +3617,34 @@ class mel_workspace extends rcube_plugin
             $current_user = driver_mel::gi()->getUser()->uid;
             $board_id = $return["board"]["board_id"] !== null ? $return["board"]["board_id"] : json_decode($return["board"]["content"])->_id;
 
-            foreach ($users as $key => $value) {
-                if (!$wekan->check_if_user_exist($board_id, $value))
-                {
-                    try {
-                        $return["users"][$value] = $wekan->add_member($board_id, $value, self::is_admin($workspace, $value));
-                        $wekan->update_user_status($board_id, $value, self::is_admin($workspace, $value));
-                    } catch (\Throwable $th) {
-                        //throw $th;
-                    }
-                }
-
-            }
+            $return['users'] = $this->add_users_to_wekan_board($workspace, $users, $board_id, $wekan, $current_user)['users'];
 
             $return["board_id"] = $board_id;
             $return["board_title"] = null;//$return["board"]["board_title"] !== null ? $return["board"]["board_title"] : json_decode($return["board"]["content"])->title;
+        }
+
+        return $return;
+    }
+
+    function add_users_to_wekan_board($workspace, $users, $board_id = null, $wekan = null, $current_user = null)
+    {
+        if (!isset($current_user)) $current_user = driver_mel::gi()->getUser()->uid;
+        if (!isset($wekan)) $wekan = $this->wekan();
+
+        if (!isset($board_id)) $board_id = $this->get_object($workspace, self::WEKAN)->id;
+
+        $return = ['users' => []];
+
+        foreach ($users as $key => $value) {
+            if (!$wekan->check_if_user_exist($board_id, $value))
+            {
+                try {
+                    $return['users'][$value] = $wekan->add_member($board_id, $value, self::is_admin($workspace, $value));
+                    $wekan->update_user_status($board_id, $value, self::is_admin($workspace, $value));
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+            }
         }
 
         return $return;
@@ -4134,6 +4147,7 @@ class mel_workspace extends rcube_plugin
         {
             $wekan = $this->get_object($wsp, self::WEKAN);
             $wekan->id = $id;
+            $this->add_users_to_wekan_board($wsp, $this->get_workspace_users($wsp, 'id'), $wekan->id);
             $wekan->updated = true;
             $this->save_object($wsp, self::WEKAN, $wekan);
             $wsp->save();
@@ -4142,6 +4156,45 @@ class mel_workspace extends rcube_plugin
         else echo "denied";
 
          exit;
+    }
+
+    private function get_workspace_users_generator($wsp, $mode) {
+        $shared = $wsp->shares;
+        foreach ($shared as $key => $value) {
+            switch ($mode) {
+                case 'all':
+                    yield $value;
+
+                case 'id':
+                    yield $value->user;
+                
+                default:
+                    throw new Exception("$mode not exist", 1);
+            }
+        }
+    }
+
+    private function get_workspace_users($wsp, $mode)
+    {
+        $shared = $wsp->shares;
+
+        if ($mode !== 'all') {
+            $tmp = [];
+
+            foreach ($shared as $key => $value) {
+                switch ($mode) {
+                    case 'id':
+                        $tmp[] = $value->user;
+                        break;
+                    
+                    default:
+                        throw new Exception("$mode not exist", 1);
+                }
+            }
+            $shared = $tmp;
+        }
+
+        return $shared;
     }
 
     /**

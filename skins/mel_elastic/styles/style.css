@@ -1371,6 +1371,9 @@ a.roundbadge.link:hover {
 .task-error-login > #layout > #layout-content {
   margin-top: 60px;
 }
+.task-login #layout {
+  overflow: auto;
+}
 /** BOUTTONS **/
 html.layout-small .floating-action-buttons {
   top: 0px;
@@ -2541,4 +2544,26 @@ html.dark-mode #visio-right-pannel-util {
 #html-pannel {
   max-height: 80%;
   overflow: hidden auto;
+}
+.rotovisua {
+  display: flex;
+}
+.rotovisua .button {
+  max-width: 70%;
+}
+.rotovisua .visu {
+  max-width: 30%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.rotovisua .visu > div {
+  display: inline-block;
+  width: 3px;
+  height: 33px;
+  margin: 0 1px;
+  background: currentColor;
+  transform: scaleY(0.5);
+  opacity: 0.25;
 }

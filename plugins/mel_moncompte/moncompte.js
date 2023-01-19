@@ -155,14 +155,33 @@ $(document).on({
   click : function(e) {
     var dn_list = $('#liste_listes option:selected').val();
     if (dn_list) {
-      UI.show_uploadform();
-      $('#hidden_dn_list').val(dn_list);
+      show_uploadform(dn_list);
     }
     else {
       alert(rcmail.gettext('mel_moncompte.listes_noselect'));
     }
   }
 }, "#listes_importer");
+
+function show_uploadform(dn_list) {
+  var content = $('#upload-dialog');
+  dialog = content.clone(true);
+
+  dialog.find('#hidden_dn_list').val(dn_list)
+  rcmail.gui_objects.uploadform = dialog.find('#upload-formFrm')[0];
+
+  var save_func = function (e) {
+    rcmail.command('upload-listes-csv', '', this, e)
+    return true;
+  };
+
+  dialog = rcmail.simple_dialog(dialog, rcmail.gettext('mel_moncompte.listes_importer'), save_func, {
+    button: 'import',
+    closeOnEscape: true,
+    minWidth: 400,
+    height: 60
+  });
+}
 
 // -----------------------------------
 

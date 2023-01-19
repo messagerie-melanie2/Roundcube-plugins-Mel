@@ -3,3 +3,8 @@
 //         if (e.checked) $('#themevalue').val(e.value);
 //     });
 // };
+
+
+$(document).ready(() => {
+    $('#rcmfd_lang').parent().parent().hide();
+});

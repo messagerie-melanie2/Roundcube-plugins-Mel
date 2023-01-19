@@ -27,6 +27,7 @@ class Webconf extends Program
         {
             $this->include_js("../../../rocket_chat/favico.js");
             $this->include_js("../../../rocket_chat/rocket_chat.js");
+            $this->include_js("webconf_audio_visualiser.js");
             $this->include_js("stabilised_webconf.js");
             $this->include_css("webconf.css");
         }

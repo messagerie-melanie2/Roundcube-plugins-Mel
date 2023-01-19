@@ -93,3 +93,9 @@ html.layout-phone .mm-frame #mm-webconf
 {
 	width: 100%!important;
 }
+
+button.mel-button.mel-test-audio-button {
+    position: absolute;
+    top: 0;
+    right: 5px;
+}

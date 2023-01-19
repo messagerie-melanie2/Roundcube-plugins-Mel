@@ -1,0 +1,27 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+
+<style>
+.visu {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.visu  > div {
+    display: inline-block;
+    width: 3px;
+    height: 100px;
+    margin: 0 7px;
+    background: currentColor;
+    transform: scaleY( .5 );
+    opacity: .25;
+  }
+</style>
+
+<div id="layout-content">
+    <div id="canvas-visualizer"></div>
+    <button id="tstart">Start</button>
+</div>
+<roundcube:include file="includes/footer.html" />

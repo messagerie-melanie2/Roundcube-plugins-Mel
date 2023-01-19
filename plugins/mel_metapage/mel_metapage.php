@@ -357,6 +357,8 @@ class mel_metapage extends rcube_plugin
                 $this->register_task("questionswebconf");
             else if ($this->rc->task === "custom_page")
                 $this->register_task("custom_page");
+            else if ($this->rc->task === "rotomecatest")
+                $this->register_task("rotomecatest");
             else
                 $this->register_task("mel_metapage");               
 
@@ -369,6 +371,11 @@ class mel_metapage extends rcube_plugin
             if ($this->rc->task === "calendar")
             {
                 $this->rc->output->set_env("calendar_custom_dialog", true);
+            }
+
+            if ($this->rc->task === "rotomecatest")
+            {
+                $this->register_action('index', array($this, 'debug_and_test'));
             }
 
             //$this->rc->output->set_env('navigation_apps', $this->rc->config->get('navigation_apps', null));
@@ -2534,6 +2541,12 @@ class mel_metapage extends rcube_plugin
             $this->rc->imap->set_flag($datas, 'SEEN', $folder);
         }
 
+    }
+
+    public function debug_and_test()
+    {
+        $this->include_script('js/program/webconf_audio_visualiser.js');
+        $this->rc->output->send('mel_metapage.test');
     }
 
 }

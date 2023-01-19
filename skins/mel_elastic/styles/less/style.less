@@ -3920,3 +3920,29 @@ a.rcmContactAddress {
 	max-height: 80%;
 	overflow: hidden auto;
 }
+
+.rotovisua {
+	display: flex;
+
+    .button {
+        max-width: 70%;
+    }
+
+    .visu {
+        max-width: 30%;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        & > div {
+            display: inline-block;
+            width: 3px;
+            height: 33px;
+            margin: 0 1px;
+            background: currentColor;
+            transform: scaleY( .5 );
+            opacity: .25;
+        }
+    }
+}

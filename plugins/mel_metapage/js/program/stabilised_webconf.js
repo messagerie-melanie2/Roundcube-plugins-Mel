@@ -2578,6 +2578,15 @@ var MasterWebconfBar = (() => {
              */
             this.right_pannel = null;
             /**
+             * Gére la visualisation audio
+             * @type {MelAudioManager}
+             */
+            this.audio_manager = null;
+            /**
+             * @type {MelAudioTesterManager}
+             */
+            this.audio_tester = null;
+            /**
              * Action à faire lorsque l'on libère la classe
              * @type {function | null}
              */
@@ -2597,6 +2606,8 @@ var MasterWebconfBar = (() => {
             this.globalScreenManager = globalScreenManager.setMasterBar(this);
             this.webconfManager = webconfManager;
             this.right_pannel = new RightPannel($right_pannel).toTop();
+            this.audio_manager = new MelAudioManager();
+            this.audio_tester = new MelAudioTesterManager();
             return this;
         }
       
@@ -2823,7 +2834,7 @@ var MasterWebconfBar = (() => {
          * @param {function} click Action à faire lorsque l'on clique sur un device 
          * @returns Chaîne
          */
-        update_popup_devices(devices, click) {
+        async update_popup_devices(devices, click) {
             let devices_by_kind = {};
     
             for (let index = 0; index < devices.length; ++index) {
@@ -2832,9 +2843,9 @@ var MasterWebconfBar = (() => {
                     devices_by_kind[element.kind] = [];
                 devices_by_kind[element.kind].push(element);
             }
-    
+
+            let $button = null;
             let html = this.popup.$contents.html('');
-    
             for (const key in devices_by_kind) {
                 if (Object.hasOwnProperty.call(devices_by_kind, key)) {
                     const array = devices_by_kind[key];
@@ -2842,10 +2853,58 @@ var MasterWebconfBar = (() => {
                     for (let index = 0; index < array.length; ++index) {
                         const element = array[index];
                         const disabled = element.isCurrent === true ? "disabled" : "";
-                        html.append(_$(`<button data-deviceid="${element.deviceId}" data-devicekind="${element.kind}" data-devicelabel="${element.label}" title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`).click((e) => {
+
+                        $button = _$(`<button data-deviceid="${element.deviceId}" data-devicekind="${element.kind}" data-devicelabel="${element.label}" title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`).click((e) => {
                             e = $(e.currentTarget);
                             click(e.data('deviceid'), e.data('devicekind'), e.data('devicelabel'));
-                        }));
+                        });
+
+                        if (element.kind === 'audioinput') //Visualiser les micros
+                        {
+                            $button = (await this.audio_manager.addElement(element, $button)).$main.parent();                            
+                        }
+                        else if (element.kind === 'audiooutput') { //Tester l'audio
+                            var $button_div = $('<div></div>').css('position', 'relative')
+                            $button.on('mouseover', (event) => {
+                                let $e =  $(event.currentTarget);
+                                let $parent = $e.parent();
+ 
+                                let $tmp = $('<button>Test</button>').data('devicelabel', $e.data('devicelabel'))
+                                .addClass('mel-button btn btn-secondary no-button-margin mel-test-audio-button')
+                                .click(async (testbuttonevent) => {
+                                    const data = $(testbuttonevent.currentTarget).data('devicelabel');
+
+                                    if (!!this.audio_tester.audios[data]) await this.audio_tester.audios[data].test({
+                                        kind:'audiooutput',
+                                        label:data
+                                    });
+                                    else {
+                                        this.audio_tester.addAudio(data, await (new MelAudioTester(this.audio_manager.devices)).test({
+                                            kind:'audiooutput',
+                                            label:data
+                                        }));
+                                    }
+                                }).on('mouseleave', (levent) => {
+                                    if (!$(levent.relatedTarget).hasClass('mel-ui-button')) {
+                                        $(levent.currentTarget).remove();
+                                    }
+                                });
+
+                                $parent.append($tmp);
+                            }).on('mouseleave', (event) => {
+                                console.log('event', event);
+                                if (!$(event.relatedTarget).hasClass('mel-test-audio-button'))
+                                {
+                                    $(event.currentTarget).parent().find('.mel-test-audio-button').remove();
+                                }
+                            })
+                            .appendTo($button_div);
+
+                            $button = $button_div;
+                            $button_div = null;
+                        }
+
+                        html.append($button);
                     }
     
                     if (true) html.append('<separate class="device"></separate>');
@@ -2853,7 +2912,7 @@ var MasterWebconfBar = (() => {
             }
     
             html.find('separate').last().remove();
-    
+
             return this;
         }
     
@@ -2880,6 +2939,8 @@ var MasterWebconfBar = (() => {
                 }
                 else {
                     this.update_item_icon(state, item, null).popup.empty().hidden();
+                    this.audio_manager.dispose();
+                    this.audio_manager = new MelAudioManager(); 
                 }
             }
         }
@@ -3147,6 +3208,8 @@ var MasterWebconfBar = (() => {
 
             this.dispose(); //Libère les variables
 
+            top.navigator.mediaSession.setMicrophoneActive(false)
+
             if (!rcmail.env['webconf.have_feed_back'])
             {
                 mel_metapage.Frames.back();
@@ -3239,6 +3302,7 @@ var MasterWebconfBar = (() => {
          */
         hide_masterbar() 
         {
+            return this;
             if (this.$bar.css('display') !== 'none') this.$bar.css('display', 'none');
     
             if (this._timeout_id !== undefined) this._timeout_id = undefined;
@@ -3291,6 +3355,9 @@ var MasterWebconfBar = (() => {
             this.popup = null;
             this.right_pannel.dispose();
             this.right_pannel = null;
+
+            this.audio_manager.dispose();
+            this.audio_tester.dispose();
         }
     }
     return MasterWebconfBar;    

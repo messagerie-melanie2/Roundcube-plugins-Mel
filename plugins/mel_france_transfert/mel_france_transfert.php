@@ -73,9 +73,18 @@ class mel_france_transfert extends rcube_plugin {
 
       // Charger le javascript si on est dans l'écriture d'un message
       if ($this->rc->action == 'compose') {
+        $max_attachments_size = $this->rc->config->get('max_attachments_size', 5000000);
+        $sizes_list = $this->rc->config->get('max_attachments_size_user_list', []);
+        $max_attachments_size_label = $max_attachments_size;
+        if (in_array($max_attachments_size, $sizes_list)) {
+          $max_attachments_size_label = array_search($max_attachments_size, $sizes_list);
+        }
+        // Modifier le libéllé
+        $this->rc->gettext(['name' => 'maxuploadsize', 'fr_fr' => str_replace('%%max_attachments_size%%', $max_attachments_size_label, $this->gettext('maxuploadsize'))]);
+        
         $this->require_plugin('jqueryui');
         $this->include_script('francetransfert.js');
-        $this->rc->output->set_env("max_attachments_size", $this->rc->config->get('max_attachments_size', 5000000));
+        $this->rc->output->set_env("max_attachments_size", $max_attachments_size);
       }
     }
     else if ($this->rc->task == 'settings') {
@@ -256,19 +265,19 @@ class mel_france_transfert extends rcube_plugin {
       $success = false;
     }
 
-    // delete previous saved draft
-    $old_id = rcube_utils::get_input_value('_draft_saveid', rcube_utils::INPUT_POST);
-    if ($old_id && $success) {
-      $drafts_mbox = $this->rc->config->get('drafts_mbox');
-      $deleted = $this->rc->storage->delete_message($old_id, $drafts_mbox);
-    }
+    // // delete previous saved draft
+    // $old_id = rcube_utils::get_input_value('_draft_saveid', rcube_utils::INPUT_POST);
+    // if ($old_id && $success) {
+    //   $drafts_mbox = $this->rc->config->get('drafts_mbox');
+    //   $deleted = $this->rc->storage->delete_message($old_id, $drafts_mbox);
+    // }
 
-    // Cleanup session
-    if ($success) {
-      $this->rcmail_compose_cleanup($COMPOSE_ID);
-      // MANTIS 4164: Ajouter des logs à l'envoi France Transfert pour les statistiques
-      mel_logs::get_instance()->log(mel_logs::INFO, "mel_france_transfert::sendMessageByFranceTransfert() [success] to $mailto cc $mailcc bcc $mailbcc");
-    }
+    // // Cleanup session
+    // if ($success) {
+    //   $this->rcmail_compose_cleanup($COMPOSE_ID);
+    //   // MANTIS 4164: Ajouter des logs à l'envoi France Transfert pour les statistiques
+    //   mel_logs::get_instance()->log(mel_logs::INFO, "mel_france_transfert::sendMessageByFranceTransfert() [success] to $mailto cc $mailcc bcc $mailbcc");
+    // }
 
     // Retourne le résultat au javascript
     $result = array(
@@ -288,12 +297,56 @@ class mel_france_transfert extends rcube_plugin {
   public function updateProgressBar() {
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
+    $finish = false;
+    $success = false;
+
+    // Actualisation du statut
+    if (!$this->ws->getStatus($COMPOSE_ID, $COMPOSE['ft_from'])) {
+      $finish = true;
+
+      unset($COMPOSE['ft_pli']);
+      unset($COMPOSE['ft_value']);
+      unset($COMPOSE['ft_from']);
+    }
+
+    // Le pli est prêt au téléchargement
+    if ($COMPOSE['ft_pli']->statutPli->codeStatutPli == '032-PAT') {
+      $finish = true;
+      $success = true;
+
+      // delete previous saved draft
+      $old_id = rcube_utils::get_input_value('_draft_saveid', rcube_utils::INPUT_POST);
+      if ($old_id) {
+        $drafts_mbox = $this->rc->config->get('drafts_mbox');
+        $deleted = $this->rc->storage->delete_message($old_id, $drafts_mbox);
+      }
+
+      // Cleanup session
+      $this->rcmail_compose_cleanup($COMPOSE_ID);
+
+      // MANTIS 4164: Ajouter des logs à l'envoi France Transfert pour les statistiques
+      $mailto = $COMPOSE['param']['to'];
+      mel_logs::get_instance()->log(mel_logs::INFO, "mel_france_transfert::sendMessageByFranceTransfert() [success] to $mailto");
+    }
+        // Erreur imprévue lors du chargement des fichiers du pli
+    else if ($COMPOSE['ft_pli']->statutPli->codeStatutPli == '011-ECH' 
+        // Erreur détectée lors de l’analyse des types de fichier : au moins un fichier a un mimetype non autorisé
+        || $COMPOSE['ft_pli']->statutPli->codeStatutPli == '021-ETF'
+        // Erreur détectée lors de l’analyse des types de fichier : au moins un fichier est un virus
+        || $COMPOSE['ft_pli']->statutPli->codeStatutPli == '022-EAV') {
+      $finish = true;
+      unset($COMPOSE['ft_pli']);
+      unset($COMPOSE['ft_value']);
+      unset($COMPOSE['ft_from']);
+    }
 
     // Retourne le résultat au javascript
     $result = array(
-            'action' => 'plugin.update_progressbar',
-            'current_action' => $COMPOSE['ft_action'] ?: '',
-            'current_value' => $COMPOSE['ft_value'] ?: null,
+            'action'          => 'plugin.update_progressbar',
+            'current_action'  => $COMPOSE['ft_action'] ?: '',
+            'current_value'   => $COMPOSE['ft_value'] ?: null,
+            'finish'          => $finish,
+            'success'         => $success,
     );
     echo json_encode($result);
     exit();
@@ -312,18 +365,24 @@ class mel_france_transfert extends rcube_plugin {
     $select = new html_select(array());
 
     for ($i = 1; $i <= $this->rc->config->get('francetransfert_max_days_duration', 90); $i ++) {
-      $select->add($i);
+      $select->add($i . " " . $this->gettext('Send France Transfert days'), $i);
     }
 
     $html = html::div(array(
             "id" => "use_francetransfert_dialog"
     ), html::div(array(
-            "class" => "dialog_title"
-    ), $this->gettext('Send France Transfert title')) . html::div(array(
+            "class" => "dialog_title row align-items-center"
+    ), html::span('col-3', html::img(['alt' => 'Logo République française', 'src' => 'https://francetransfert.numerique.gouv.fr/assets/logos/republique_francaise_logo.svg'])) . 
+        html::span('col-6', html::img(['alt' => 'Logo France transfert', 'src' => 'https://francetransfert.numerique.gouv.fr/assets/logos/france_transfert_logo.svg']))) . 
+    
+      html::div(array(
             "class" => "dialog_text"
-    ), $this->gettext('Send France Transfert text')) . html::div(array(
+    ), $this->gettext('Send France Transfert text')) . 
+    
+      html::div(array(
             "class" => "dialog_select"
-    ), html::span(array(), $this->gettext('Send France Transfert keep the file')) . $select->show($this->rc->config->get('francetransfert_max_days_duration', 90)) . html::span(array(), $this->gettext('Send France Transfert days'))));
+    ), html::span([], $this->gettext('Send France Transfert keep the file')) . 
+        $select->show($this->rc->config->get('francetransfert_max_days_duration', 90))));
 
     return $html;
   }

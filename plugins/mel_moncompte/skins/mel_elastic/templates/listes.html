@@ -36,12 +36,12 @@
 					<div class="col-md-3"></div>
 				</div>
 			</fieldset>
-			<div id="upload-dialog" class="propform popupdialog" title="<roundcube:label name='mel_moncompte.listes_upload' />">
+			<div id="upload-dialog" class="popupmenu hidden" title="<roundcube:label name='mel_moncompte.listes_upload' />">
 				<roundcube:object name="listes_upload_csv" id="upload-form" size="30" buttons="no" />
-				<div class="formbuttons">
+				<!-- <div class="formbuttons">
 					<roundcube:button command="upload-listes-csv" type="input" class="btn btn-primary button mainaction" label="upload" />
 					<roundcube:button name="close" type="input" class="button btn btn-warning" label="cancel" onclick="UI.show_uploadform()" />
-				</div>
+				</div> -->
 			</div>
 			<roundcube:include file="/includes/footer.html" />
 		</div>

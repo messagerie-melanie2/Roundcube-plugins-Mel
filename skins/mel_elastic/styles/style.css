@@ -1502,6 +1502,11 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   background-color: var(--success-color);
   border-color: var(--success-color);
 }
+.mel-button.mel-test-audio-button {
+  position: absolute;
+  top: 0;
+  right: 5px;
+}
 .mel-button:hover,
 .mel-button.under-button.selected:hover {
   background-color: var(--tierciary-bckg-color);

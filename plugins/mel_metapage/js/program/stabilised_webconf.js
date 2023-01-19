@@ -2934,7 +2934,8 @@ var MasterWebconfBar = (() => {
                     this.update_popup_devices(await this.listener.get_micro_and_audio_devices(), (id, kind, label) => {
                         if (kind === 'audioinput') this.listener.set_micro_device(label, id);
                         else this.listener.set_audio_device(label, id);
-                        this.update_item_icon(state, item, null).popup.empty().hidden();
+                        //this.update_item_icon(state, item, null).popup.empty().hidden();
+                        item.disable();
                     });
                 }
                 else {
@@ -2962,7 +2963,7 @@ var MasterWebconfBar = (() => {
                     this.update_item_icon(state, item, [_$('.jitsi-select .mel-icon')]).popup.loading().show();
                     this.update_popup_devices(await this.listener.get_video_devices(), (id, kind, label) => {
                         this.listener.set_video_device(label, id);
-                        this.update_item_icon(state, item, null).popup.empty().hidden();
+                        item.disable();
                     });
                 }
                 else {

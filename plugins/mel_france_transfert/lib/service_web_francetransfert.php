@@ -177,8 +177,8 @@ class ServiceWebFranceTransfert {
     // Récupération des codes/erreurs
     $this->_httpCode = $result['httpCode'];
 
-    // Gestion des résultats : 201 = OK
-    if ($this->_httpCode == 201) {
+    // Gestion des résultats : 200/201 = OK
+    if ($this->_httpCode == 200 || $this->_httpCode == 201) {
       // Actualiser l'action
       $COMPOSE['ft_action'] = 'Pli initialisé sur France Transfert';
 
@@ -190,6 +190,7 @@ class ServiceWebFranceTransfert {
       //     }
       //
       $COMPOSE['ft_pli'] = $content;
+      $COMPOSE['ft_from'] = $from;
       return true;
     }
     else if ($this->_httpCode == 403) {
@@ -205,6 +206,9 @@ class ServiceWebFranceTransfert {
           $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
         }
         $this->_errorMessage = implode(' / ', $errors);
+      }
+      else if (isset($content->errors) && isset($content->errors->message)) {
+        $this->_errorMessage = $content->errors->message;
       }
       mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlMessageFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
       return false;
@@ -230,8 +234,8 @@ class ServiceWebFranceTransfert {
     $COMPOSE['ft_action'] = "Envoi du fichier '$name' vers France Transfert";
     $COMPOSE['ft_value'] = 0;
 
-    if (isset($COMPOSE['ft_pli']['idPli'])) {
-      $idPli = $COMPOSE['ft_pli']['idPli'];
+    if (isset($COMPOSE['ft_pli']->idPli)) {
+      $idPli = $COMPOSE['ft_pli']->idPli;
     }
     else {
       return false;
@@ -252,21 +256,22 @@ class ServiceWebFranceTransfert {
     while ($total_chunk_size < $file_size) {
       // Génération de la boundary
       $boundary = '-----=' . md5(uniqid(mt_rand()));
+      $delimiter = '--' . $boundary;
   
       $contents = fread($handle, $chunk_size);
       $current_chunk_size = strlen($contents);
 
-      $parts = $this->getChunkParts($boundary, $idPli, $from, $chunk_number, $current_chunk_size, $file_size, $id, $name, $total_chunks_number);
-      $parts[] = $boundary;
-      $parts[] = 'Content-Disposition: form-data; name="file"; filename="' . $name . '"';
+      $parts = $this->getChunkParts($delimiter, $idPli, $from, $chunk_number, $current_chunk_size, $file_size, $id, $name, $total_chunks_number);
+      $parts[] = $delimiter;
+      $parts[] = 'Content-Disposition: form-data; name="fichier"; filename="' . $name . '"';
       $parts[] = 'Content-Type: application/octet-stream';
       $parts[] = '';
       $parts[] = $contents;
-      $parts[] = $boundary . '--';
+      $parts[] = $delimiter . '--';
       $parts = implode("\r\n", $parts);
 
       // Appel à l'enregistrement du message du service Web
-      $result = $this->_post_url($url, $parts, null, true, $boundary);
+      $result = $this->_post_url($url, null, $parts, true, $boundary);
 
       // Content
       $content = json_decode($result['content']);
@@ -274,10 +279,10 @@ class ServiceWebFranceTransfert {
       // Récupération des codes/erreurs
       $this->_httpCode = $result['httpCode'];
 
-      // Gestion des résultats : 201 = OK
-      if ($this->_httpCode == 201) {
+      // Gestion des résultats : 200/201 = OK
+      if ($this->_httpCode == 200 || $this->_httpCode == 201) {
         // Actualiser la value
-        $COMPOSE['ft_value'] = intdiv($file_size * 100, $total_chunk_size);
+        $COMPOSE['ft_value'] = $total_chunk_size === 0 ? $total_chunk_size : intdiv($file_size * 100, $total_chunk_size);
       }
       else if ($this->_httpCode == 403) {
         $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
@@ -393,8 +398,8 @@ class ServiceWebFranceTransfert {
 
     $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
 
-    if (isset($COMPOSE['ft_pli']['idPli'])) {
-      $idPli = $COMPOSE['ft_pli']['idPli'];
+    if (isset($COMPOSE['ft_pli']->idPli)) {
+      $idPli = $COMPOSE['ft_pli']->idPli;
     }
     else {
       return false;
@@ -417,10 +422,10 @@ class ServiceWebFranceTransfert {
     // Récupération des codes/erreurs
     $this->_httpCode = $result['httpCode'];
 
-    // Gestion des résultats : 201 = OK
-    if ($this->_httpCode == 201) {
+    // Gestion des résultats : 200/201 = OK
+    if ($this->_httpCode == 200 || $this->_httpCode == 201) {
       // Actualiser l'action
-      $COMPOSE['ft_action'] = $content["statutPli"]["libelleStatutPli"];
+      $COMPOSE['ft_action'] = $content->statutPli->libelleStatutPli;
 
       //
       //         "idPli": "9210fa47-366b-49bc-a50b-e561b72a0889",
@@ -548,6 +553,92 @@ class ServiceWebFranceTransfert {
       $data_string = "";
     }
 
+    $fp = fopen('/var/log/roundcube/bnum/curl_errors.log', 'w');
+
+    // Options list
+    $options = [
+      CURLOPT_RETURNTRANSFER  => true, // return web page
+      CURLOPT_HEADER          => false, // don't return headers
+      CURLOPT_USERAGENT       => $this->rc->config->get('curl_user_agent', ''), // name of client
+      CURLOPT_CONNECTTIMEOUT  => $this->rc->config->get('curl_connecttimeout', 120), // time-out on connect
+      CURLOPT_TIMEOUT         => $this->rc->config->get('curl_timeout', 1200), // time-out on response
+      CURLOPT_SSL_VERIFYPEER  => $this->rc->config->get('curl_ssl_verifierpeer', 0),
+      CURLOPT_SSL_VERIFYHOST  => $this->rc->config->get('curl_ssl_verifierhost', 0),
+      CURLOPT_VERBOSE         => true,
+      CURLOPT_STDERR          => $fp,
+      CURLOPT_POST            => true,
+      CURLOPT_POSTFIELDS      => $data_string,
+    ];
+
+    // Gestion d'un envoi multipart
+    if ($multipart) {
+      $options[CURLOPT_HTTPHEADER] = [
+        'Content-Type: multipart/form-data; boundary=' . $boundary,
+        'Content-Length: ' . strlen($data_string),
+        'Expect:',
+        self::API_KEY_HEADER . ': ' . $this->rc->config->get('francetransfert_api_key', ''),
+      ];
+    }
+    else {
+      $options[CURLOPT_HTTPHEADER] = [
+        'Content-Type: application/json; charset=utf-8',
+        'Content-Length: ' . strlen($data_string),
+        self::API_KEY_HEADER . ': ' . $this->rc->config->get('francetransfert_api_key', ''),
+      ];
+    }
+
+    // CA File
+    $curl_cafile = $this->rc->config->get('curl_cainfo', null);
+    if (isset($curl_cafile)) {
+      $options[CURLOPT_CAINFO] = $curl_cafile;
+      $options[CURLOPT_CAPATH] = $curl_cafile;
+    }
+
+    // HTTP Proxy
+    $curl_proxy = $this->rc->config->get('curl_http_proxy', null);
+    if (isset($curl_proxy)) {
+      $options[CURLOPT_PROXY] = $curl_proxy;
+    }
+
+    // open connection
+    $ch = curl_init($url);
+    // Set the options
+    curl_setopt_array($ch, $options);
+    // Execute the request and get the content
+    $content = curl_exec($ch);
+
+    // Get error
+    if ($content === false) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::_post_url() Error " . curl_errno($ch) . " : " . curl_error($ch));
+    }
+
+    // Get the HTTP Code
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // Close connection
+    curl_close($ch);
+
+    // Return the content
+    return [
+        'httpCode' => $httpcode,
+        'content' => $content
+    ];
+  }
+
+  /**
+   * Permet de poster un fichier vers une page web
+   *
+   * @param string $url
+   * @param array $params [Optionnel]
+   * @param string $json [Optionnel]
+   * @param boolean $multipart
+   * @param string $boundary
+   * 
+   * @return array('content', 'httpCode')
+   */
+  private function _post_file_url($url, $file, $filename) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::_post_file_url($url)");
+    
     // Options list
     $options = [
       CURLOPT_RETURNTRANSFER  => true, // return web page

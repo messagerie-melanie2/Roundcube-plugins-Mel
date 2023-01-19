@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<info>
+	<id>bnum</id>
+	<name>nextCloud for Bnum</name>
+	<description>Integration between Bnum and nextCloud</description>
+	<licence>AGPL</licence>
+	<author>Thomas Payen</author>
+	<version>0.1</version>
+	<dependencies>
+		<nextcloud min-version="21" max-version="21" />
+	</dependencies>
+</info>

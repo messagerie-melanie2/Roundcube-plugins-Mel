@@ -1,9 +1,11 @@
+#use_francetransfert_dialog,
+#send_francetransfert_dialog {
+  overflow: hidden;
+}
+
 #use_francetransfert_dialog .dialog_title,
 #send_francetransfert_dialog .dialog_title {
-	background-color: #cce1a2;
-	color: #478d4f;
-	font-size: 2em;
-	padding: 15px;
+	background-color: #f3f3f3;
 }
 
 #use_francetransfert_dialog .dialog_text,
@@ -26,7 +28,7 @@
 }
 
 #send_francetransfert_dialog .uil-rolling-css {
-  background-image: url("images/rolling.gif");
+  background-image: url("images/rolling.gif?v=05d7.390");
   height: 30px;
   width: 30px;
   margin-bottom: 10px;

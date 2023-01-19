@@ -1371,6 +1371,9 @@ a.roundbadge.link:hover {
 .task-error-login > #layout > #layout-content {
   margin-top: 60px;
 }
+.task-login #layout {
+  overflow: auto;
+}
 /** BOUTTONS **/
 html.layout-small .floating-action-buttons {
   top: 0px;

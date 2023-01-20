@@ -2587,6 +2587,10 @@ var MasterWebconfBar = (() => {
              */
             this.audio_tester = null;
             /**
+             * @type {MelVideoManager}
+             */
+            this.video_manager = null;
+            /**
              * Action à faire lorsque l'on libère la classe
              * @type {function | null}
              */
@@ -2608,6 +2612,7 @@ var MasterWebconfBar = (() => {
             this.right_pannel = new RightPannel($right_pannel).toTop();
             this.audio_manager = new MelAudioManager();
             this.audio_tester = new MelAudioTesterManager();
+            this.video_manager = new MelVideoManager();
             return this;
         }
       
@@ -2845,6 +2850,7 @@ var MasterWebconfBar = (() => {
             }
 
             let $button = null;
+            let type = '';
             let html = this.popup.$contents.html('');
             for (const key in devices_by_kind) {
                 if (Object.hasOwnProperty.call(devices_by_kind, key)) {
@@ -2854,10 +2860,14 @@ var MasterWebconfBar = (() => {
                         const element = array[index];
                         const disabled = element.isCurrent === true ? "disabled" : "";
 
-                        $button = _$(`<button data-deviceid="${element.deviceId}" data-devicekind="${element.kind}" data-devicelabel="${element.label}" title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`).click((e) => {
+                        type = element.kind === 'videoinput' ? 'div' : 'button';
+
+                        $button = _$(`<${type} data-deviceid="${element.deviceId}" data-devicekind="${element.kind}" data-devicelabel="${element.label}" title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}></${type}>`).click((e) => {
                             e = $(e.currentTarget);
                             click(e.data('deviceid'), e.data('devicekind'), e.data('devicelabel'));
                         });
+
+                        if (type === 'button') $button.html(element.label);
 
                         if (element.kind === 'audioinput') //Visualiser les micros
                         {
@@ -2903,6 +2913,9 @@ var MasterWebconfBar = (() => {
                             $button = $button_div;
                             $button_div = null;
                         }
+                        else { //Visualiser les caméras
+                            await this.video_manager.addVideo($button, element, false);
+                        }
 
                         html.append($button);
                     }
@@ -2912,6 +2925,12 @@ var MasterWebconfBar = (() => {
             }
     
             html.find('separate').last().remove();
+
+            if (this.video_manager.count() > 0){
+                (await this.video_manager.oncreate((video, device) => {
+                    $('<label></label>').addClass('video-visio-label').html(device.label).appendTo($(video).parent().css('position', 'relative'));
+                }).create()).updateSizePerfect('100%', 'unset');
+            }
 
             return this;
         }
@@ -2968,6 +2987,8 @@ var MasterWebconfBar = (() => {
                 }
                 else {
                     this.update_item_icon(state, item, null).popup.empty().hidden();
+                    this.video_manager.dispose();
+                    this.video_manager = new MelVideoManager();
                 }
             }
         }

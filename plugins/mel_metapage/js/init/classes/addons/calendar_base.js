@@ -1667,8 +1667,8 @@ $(document).ready(() => {
         <span class="icofont-hand-right  plus" style="vertical-align: top;margin-left: 15px;"></span>
     </button>`).click(() => window.open('https://audio.mtes.fr/', '_blank').focus())
     .appendTo($audioDiv.find('.abutton'));
-        let $audioCode = $('<input type="text" class="form-control input-mel">').appendTo($audioDiv.find('.anum'));
-        let $audioPhone = $('<input type="tel" class="form-control input-mel" />').appendTo($audioDiv.find('.aphone'));
+        let $audioCode = $('<input type="text" class="form-control input-mel">').attr('title', 'Numéro de l’audio - Mode d’événement par audio').attr('aria-labelledby', 'mel-event-audio-num-sr-only').appendTo($audioDiv.find('.anum'));
+        let $audioPhone = $('<input type="tel" class="form-control input-mel" />').attr('title', 'Téléphone de l’audio - Mode d’événement par audio').attr('aria-labelledby', 'mel-event-audio-phone-sr-only').appendTo($audioDiv.find('.aphone'));
         let $visioDiv = $(`<div class="visio-${mainDivId}">
         <span class="span-mel t2 red-star-after margin ${baseId === 0 ? '' : 'hidden'}">Choix de l'option</span>
             <div class="">

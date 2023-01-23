@@ -2682,6 +2682,8 @@ var MasterWebconfBar = (() => {
                 `);
             }
 
+            if (_$('#layout-frames').css('display') === 'none') _$('#layout-frames').css('display', '');
+
             return this;
         }
     
@@ -3324,7 +3326,6 @@ var MasterWebconfBar = (() => {
          */
         hide_masterbar() 
         {
-            return this;
             if (this.$bar.css('display') !== 'none') this.$bar.css('display', 'none');
     
             if (this._timeout_id !== undefined) this._timeout_id = undefined;

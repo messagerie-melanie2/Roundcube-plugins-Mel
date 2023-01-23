@@ -3132,36 +3132,40 @@ var MasterWebconfBar = (() => {
     
             if (!!this.items && this.items[FOR])
             {
-                if (state) //On cache
-                {
-                    for (const key in this.items) {
-                        if (Object.hasOwnProperty.call(this.items, key)) {
-                            const element = this.items[key];
-                            if (key === FOR) element.$item.removeClass('active');
-                            else {
-                                element.hide();
-                            }
-                        }
-                    }
+                if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
+                this._timeout_id = undefined;
+                this.hide_masterbar();
+
+                // if (state) //On cache
+                // {
+                //     for (const key in this.items) {
+                //         if (Object.hasOwnProperty.call(this.items, key)) {
+                //             const element = this.items[key];
+                //             if (key === FOR) element.$item.removeClass('active');
+                //             else {
+                //                 element.hide();
+                //             }
+                //         }
+                //     }
     
-                    this._$more_actions.hide();
-                    this.$bar.css('background-color', 'var(--invisible)').css('border-color', 'var(--invisible)').find('v_separate').css('display', 'none');
-                }
-                else {
-                    for (const key in this.items) {
-                        if (Object.hasOwnProperty.call(this.items, key)) {
-                            const element = this.items[key];
-                            if (key === FOR) continue;
-                            else {
-                                if (!!element.$item.data('noff') && MasterWebconfBar.isFirefox()) continue;
-                                else element.show();
-                            }
-                        }
-                    }
+                //     this._$more_actions.hide();
+                //     this.$bar.css('background-color', 'var(--invisible)').css('border-color', 'var(--invisible)').find('v_separate').css('display', 'none');
+                // }
+                // else {
+                //     for (const key in this.items) {
+                //         if (Object.hasOwnProperty.call(this.items, key)) {
+                //             const element = this.items[key];
+                //             if (key === FOR) continue;
+                //             else {
+                //                 if (!!element.$item.data('noff') && MasterWebconfBar.isFirefox()) continue;
+                //                 else element.show();
+                //             }
+                //         }
+                //     }
     
-                    this.$bar.css('background-color', '').css('border-color', '').find('v_separate').css('display', '');
-                    this._$more_actions.show();
-                }
+                //     this.$bar.css('background-color', '').css('border-color', '').find('v_separate').css('display', '');
+                //     this._$more_actions.show();
+                // }
             }
     
             return this;

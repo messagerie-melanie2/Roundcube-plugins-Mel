@@ -661,6 +661,7 @@ function m_mp_NotificationsAppendFilters() {
         option = document.createElement('option');
 
     select.className = 'categories input-mel mel-input custom-select pretty-select';
+    select.setAttribute('aria-labelledby', 'mel-notification-title')
 
     // All categories
     option.value = 'all';
@@ -689,9 +690,12 @@ function m_mp_NotificationsAppendFilters() {
         m_mp_NotificationFilter();
     };
 
+    let title = e('title', rcmail.get_label('mel_notification.Notifications'));
+    title.id = 'mel-notification-title';
+
     // Ajouter les filters
     let filters = e('filters container',
-        e('row', e('col', e('title', rcmail.get_label('mel_notification.Notifications')))),
+        e('row', e('col', title)),
         e('row', 
             (rcmail.env.notifications_set_read_on_panel_close ? '' : e('col-md-auto hide-touch', b(
                 '#', 'read',

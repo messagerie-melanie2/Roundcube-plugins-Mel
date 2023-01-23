@@ -105,7 +105,7 @@ function notes()
                     <table>
                     <tr>
                         <td><button title="${rcmail.gettext('new_n', plugin_text)}" class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button></td>
-                        <td style="width:100%"><input class="change mel-focus" type=text style="width:100%;background-color:${this.color};color:${this.textcolor}" value="${this.title}" /></td>
+                        <td style="width:100%"><input title="Titre de la note" class="change mel-focus" type=text style="width:100%;background-color:${this.color};color:${this.textcolor}" value="${this.title}" /></td>
                         <td><button title="Se concentrer sur cette note" class="mel-button no-button-margin bckg true eye" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-eye"></span></button></td>
                         <td><button title="${rcmail.gettext('settings', plugin_text)}" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button></td>
                         <td><button title="${rcmail.gettext('delete')}" class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button></td>
@@ -121,7 +121,7 @@ function notes()
                     <button title="Réinitialiser la taille de la note" class="  mel-button no-button-margin bckg true rsb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-normalscreen"></span></button>
                 </div>
                 <div class="note-body">
-                    <textarea rows="5" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor};${(!!this.height ? `height:${this.height}px;` : '')}">${this.text}</textarea>
+                    <textarea rows="5" title="Ecrivez vos notes dans ce champ" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor};${(!!this.height ? `height:${this.height}px;` : '')}">${this.text}</textarea>
                 </div>
             </div>
             `;

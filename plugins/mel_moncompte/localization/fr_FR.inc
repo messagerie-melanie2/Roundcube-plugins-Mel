@@ -165,7 +165,7 @@ $labels['changepassword_explic'] = "<p>Le nouveau mot de passe doit être diffé
 <br>- Il doit avoir une longueur d'au moins 10 caractères, avec au moins un caractère de chaque type : majuscule, minuscule, chiffre, caractère spécial (!\"#$%&'()*+,-./:<=>?@[^]_{|}~). Les accents (â à â é è ê …) ne sont pas autorisés.
 <br>- Si vous synchronisez un téléphone avec Mél, pensez à mettre à jour le nouveau mot de passe sur les comptes du téléphone.
 </p>
-<p><b>ATTENTION - pour les agents des services MTE/MCTRCT (sauf DREAL Grand-Est, CGDD Orléans et DRIEE) et des DDT :</b>
+<p><b>ATTENTION - pour les agents des services MTECT/MTE (sauf DREAL Grand-Est, CGDD Orléans et DRIEE) et des DDT :</b>
 <br>- Si vous êtes au bureau ou connecté en VPN, vous devez ensuite synchroniser votre mot de passe de session Windows, pour cela verrouillez (touches Windows +L) puis déverrouillez votre session Windows en saisissant votre nouveau mot de passe.
 <br>- Si vous n'êtes pas au bureau et n'utilisez pas le VPN, votre mot de passe ne sera changé sur votre poste Windows qu'au retour lors de votre première connexion au réseau. Ainsi jusqu'à votre retour votre ancien mot de passe sera celui de votre session Windows, il ne faudra pas oublier de saisir ce nouveau mot de passe de session lors de votre retour sur votre poste de travail au bureau.
 </p>

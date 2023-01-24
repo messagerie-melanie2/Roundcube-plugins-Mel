@@ -1586,6 +1586,10 @@ $(document).ready(() => {
                 this.css_rules.remove(css_key);
             }
 
+            if (this.isScollBarAuto()) { //Le mode automatique n'existe plus
+                rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] = rcmail.gettext('default', 'mel_metapage');
+            }
+
             if (this.isScollBarAuto() && !this.updateScollBarMode.initialized)
             {
                 let ele;

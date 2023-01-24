@@ -182,6 +182,12 @@ class mel_metapage extends rcube_plugin
             }
         }
 
+        if ($this->rc->task === 'loading'){
+            $this->register_task("loading");
+            $this->register_action('index', array($this, 'action_loading_frame'));
+            return;
+        }
+
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
@@ -2557,6 +2563,10 @@ class mel_metapage extends rcube_plugin
     {
         $this->include_script('js/program/webconf_video_manager.js');
         $this->rc->output->send('mel_metapage.test');
+    }
+
+    public function action_loading_frame() {
+        $this->rc->output->send('mel_metapage.loader');
     }
 
 }

@@ -2586,20 +2586,37 @@ html.dark-mode #visio-right-pannel-util {
   text-align: center;
 }
 .loader-base {
-  background: url("/skins/mel_elastic/images/bnumloader.svg");
+  /* background: url("/skins/mel_elastic/images/bnumloader.svg");
   background-size: contain;
-  background-repeat: no-repeat;
-  width: 100px;
-  height: 100px;
-  clip-path: url("/skins/mel_elastic/images/bnumloader.svg");
-  -webkit-clip-path: url("/skins/mel_elastic/images/bnumloader.svg");
+  background-repeat: no-repeat; */
+  width: 200px;
+  height: 200px;
+  mask: conic-gradient(from 90deg at 50% 50%, #ffffff 0%, rgba(140, 140, 140, 0) 51%, rgba(0, 0, 0, 0) 100%);
+  animation: spin 1s linear infinite;
+}
+.loader-base.loaded {
+  animation: loaded 0.5s linear forwards;
+}
+.loader-base.loaded .loader-looping {
+  animation: none;
 }
 .loader-looping {
-  background: url("/skins/mel_elastic/images/meuf.svg");
-  background-size: contain;
+  background: url("/skins/mel_elastic/images/bnumloader.svg");
+  background-size: 50%;
   background-repeat: no-repeat;
-  width: 100px;
-  height: 100px;
-  clip-path: url("/skins/mel_elastic/images/bnumloader.png");
-  -webkit-clip-path: url("/skins/mel_elastic/images/bnumloader.svg");
+  width: 100%;
+  height: 100%;
+  animation: spin 1s linear infinite;
+  animation-direction: reverse;
+  /* position: absolute; */
+  /* transform-origin: center; */
+  /* background: ; */
+  background-position: 64% 58%;
+}
+.loader-div {
+  position: absolute;
+  top: 60px;
+  left: 60px;
+  width: calc(100% - 60px);
+  height: calc(100% - 60px);
 }

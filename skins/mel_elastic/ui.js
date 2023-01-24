@@ -1270,7 +1270,7 @@ $(document).ready(() => {
                     const url = rcmail.url('mail/compose', p);
                     let config = {
                         title:"Rédaction",
-                        content:`<center><div class='spinner-border'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
+                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="display:none;width:100%;height:calc(100%);"/>`,
                         onclose(popup) {
                             if (popup.box.close.data('force') == '1') return;
                             if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
@@ -1310,7 +1310,8 @@ $(document).ready(() => {
                                 box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
                             });
 
-                            box.content.find("center").css('display', 'none');
+                            box.content.find("#rotomecamelloader").css('display', 'none');
+                            box.content.find("iframe").css('display', '');
                             const obj = frame_context.$('#compose-subject').val();
 
                             if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
@@ -1321,7 +1322,7 @@ $(document).ready(() => {
                                     box.get.find('iframe').css("display", 'none');
                                     box.close.addClass('disabled').attr('disabled', 'disabled');
                                     box.title.find('h3').html(box.title.find('h3').html().replace('Rédaction : ', 'Envoi de : '));
-                                    box.content.find("center").css('display', '');
+                                    box.content.find("#rotomecamelloader").css('display', '');
                                 }
                             });
 
@@ -1354,7 +1355,7 @@ $(document).ready(() => {
                                 box.close.removeClass('disabled').removeAttr('disabled');
                                 box.get.find('iframe').css("display", '');
                                 box.title.find('h3').html(box.title.find('h3').html().replace('Envoi de : ', 'Rédaction : '));
-                                box.content.find("center").css('display', 'none');
+                                box.content.find("#rotomecamelloader").css('display', 'none');
                             });
 
                             frame_context.$("#toolbar-menu a.send").removeAttr('href');
@@ -1363,12 +1364,12 @@ $(document).ready(() => {
 
                             });
 
-                            let spinner = box.content.find(".spinner-border").css("width", '30%');
+                            // let spinner = box.content.find(".spinner-border").css("width", '30%');
 
-                            let spinner_size = Math.round(box.content.find(".spinner-border").width()); 
+                            // let spinner_size = Math.round(box.content.find(".spinner-border").width()); 
 
-                            spinner.css("width", `${spinner_size}px`)
-                            .css('height', `${spinner_size}px`).css('margin', '15px');
+                            // spinner.css("width", `${spinner_size}px`)
+                            // .css('height', `${spinner_size}px`).css('margin', '15px');
                             
                         },
                         width:"calc(100% - 60px)",
@@ -2225,6 +2226,14 @@ $(document).ready(() => {
             }
 
             return this;
+        }
+
+        create_loader(id, absoluteCentered = true) {
+            let $loading = $('<div class="loader-base"><div class="loader-looping"></div></div>');
+
+            if (absoluteCentered) $loading = $('<div class="absolute-center"></div>').append($loading);
+
+            return $(`<div id="${id}"></div>`).append($loading);
         }
 
         ////////////************* Pagination functions *************///////////

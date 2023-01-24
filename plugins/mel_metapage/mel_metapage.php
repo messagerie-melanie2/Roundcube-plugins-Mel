@@ -315,8 +315,10 @@ class mel_metapage extends rcube_plugin
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
         {
+            $this->include_internal_and_external_buttons();
             $this->include_stylesheet($this->local_skin_path().'/modal.css');
             $this->include_script('js/init/events.js');
+            $this->include_script('js/init/commands.js');
             $this->include_script('js/init/classes/addons/array.js');
             $this->add_hook("startup", array($this, "send_spied_urls"));
             return;
@@ -484,6 +486,9 @@ class mel_metapage extends rcube_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
         }
+        else if ($this->rc->task === 'mail') {
+            $this->include_internal_and_external_buttons();
+        }
 
         if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
         {
@@ -556,8 +561,22 @@ class mel_metapage extends rcube_plugin
         return $this;
     }
 
+    private function include_internal_and_external_buttons() {
+        $this->add_button(array(
+            'command' => "new-mail-from",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'compose mel-new-compose options rcm-active',
+            'classsel' => 'compose mel-new-compose options rcm-active',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.new-mail-from',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "messagemenu");
+    }
+
     function mm_include_plugin()
     {
+        $this->include_internal_and_external_buttons();
         $this->add_button(array(
             'command' => 'last_frame',
             'href' => '?_task=last_frame',
@@ -580,16 +599,7 @@ class mel_metapage extends rcube_plugin
             'type'       => 'link',
         ), "taskbar");
 
-        $this->add_button(array(
-            'command' => "new-mail-from",
-            // 'href' => './?_task=mail&_action=compose',
-            'class'	=> 'compose mel-new-compose options rcm-active',
-            'classsel' => 'compose mel-new-compose options rcm-active',
-            'innerclass' => 'inner',
-            'label'	=> 'mel_metapage.new-mail-from',
-            'title' => '',
-            'type'       => 'link-menuitem',
-        ), "messagemenu");
+
 
         $this->add_button(array(
             'command' => "mel-compose",

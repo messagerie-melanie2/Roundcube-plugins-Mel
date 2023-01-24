@@ -1961,16 +1961,20 @@ async function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, 
 async function m_mp_sondage()
 {
     $('.modal-close ').click();
-    let $querry = $('iframe.sondage-frame');
+    // let $querry = $('iframe.sondage-frame');
 
-    if ($querry.length > 0) $querry[0].src = rcmail.env.sondage_create_sondage_url;
-    else if($('.sondage-frame').length > 0) $('.sondage-frame')[0].contentWindow.$('#mel_sondage_frame')[0].src = rcmail.env.sondage_create_sondage_url;
-    else
-    {
-        await mel_metapage.Functions.change_frame('sondage', true, true, {
-            _url:rcmail.env.sondage_create_sondage_url
-        });
-    }
+    // if ($querry.length > 0) $querry[0].src = rcmail.env.sondage_create_sondage_url;
+    // else if($('.sondage-frame').length > 0) $('.sondage-frame')[0].contentWindow.$('#mel_sondage_frame')[0].src = rcmail.env.sondage_create_sondage_url;
+    // else
+    // {
+    //     await mel_metapage.Functions.change_frame('sondage', true, true, {
+    //         _url:rcmail.env.sondage_create_sondage_url
+    //     });
+    // }
+
+    await mel_metapage.Functions.change_page('sondage', null, {
+        _url:encodeURIComponent(rcmail.env.sondage_create_sondage_url)
+    }, true, true);
 } 
 
 /**

@@ -2585,3 +2585,21 @@ html.dark-mode #visio-right-pannel-util {
   transform: translate(-50%, -50%);
   text-align: center;
 }
+.loader-base {
+  background: url("/skins/mel_elastic/images/bnumloader.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100px;
+  height: 100px;
+  clip-path: url("/skins/mel_elastic/images/bnumloader.svg");
+  -webkit-clip-path: url("/skins/mel_elastic/images/bnumloader.svg");
+}
+.loader-looping {
+  background: url("/skins/mel_elastic/images/meuf.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100px;
+  height: 100px;
+  clip-path: url("/skins/mel_elastic/images/bnumloader.png");
+  -webkit-clip-path: url("/skins/mel_elastic/images/bnumloader.svg");
+}

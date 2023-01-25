@@ -1389,7 +1389,7 @@ function m_mp_Help() {
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
 
-    if (window.create_event === true) {
+    if (window.create_event === true && !!actions.event) {
         eval(actions.event.action);
         return;
     }

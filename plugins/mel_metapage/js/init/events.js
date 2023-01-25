@@ -158,13 +158,12 @@ if (rcmail && window.mel_metapage)
 
     //Action à faire après certains actions des mails.
     rcmail.addEventListener('responsebefore', function(props) {
-        if (props.response && (/*props.response.action == 'mark' ||*/ props.response.action=='getunread')) {
+        if (props.response && props.response.action=='getunread') {
             parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get);
         }
     });
 
     rcmail.addEventListener('set_unread', function(props) {
-        // //if (props.response && (props.response.action == 'mark' || props.response.action=='getunread')) {
          if (props.mbox === "INBOX")
          {
             parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get, {
@@ -341,11 +340,7 @@ if (rcmail && window.mel_metapage)
             if (args.eventDatas.allDay === true && args.eventDatas.sensitivity && args.eventDatas.sensitivity != 'public')
             {
                 let $title = args.element.find('.fc-content');
-
-                // if (args.eventDatas.sensitivity && args.eventDatas.sensitivity != 'public')
-                // {
-                    $title.prepend('<i class="fc-icon-sensitive"></i>').addClass('sensible');
-                //}
+                $title.prepend('<i class="fc-icon-sensitive"></i>').addClass('sensible');
             }
             return true;
 
@@ -372,10 +367,9 @@ if (rcmail && window.mel_metapage)
 
                     if (index !== splited.length - 1) text += '<br/>';
                 }
-                //let text = mel_metapage.Functions.updateRichText(desc.html()).replaceAll('{mel.newline}', ' | ');
+
                 desc.html(text);
             }
-            //desc.html(desc.text(desc.html()).replaceAll('{mel.newline}', ' | '))
 
             return true;
         });
@@ -479,7 +473,7 @@ if (rcmail && window.mel_metapage)
             //AUTRE
             const bap = 'Boite partag&AOk-e/';
             const splited_key = '.-.';
-            let current_bal =  rcmail.get_message_mailbox();//$('.mailbox.selected a').first().attr('rel');
+            let current_bal =  rcmail.get_message_mailbox();
 
             if (current_bal.includes(balp))
             {
@@ -521,7 +515,7 @@ if (rcmail && window.mel_metapage)
         const config = rcmail.env["mel_metapage.tab.notification_style"];
         const get = mel_metapage.Storage.get;
         const current_task = top.rcmail.env.current_task;
-        const current_title = top.document.title;//mel_metapage.Functions.get_current_title(current_task);
+        const current_title = top.document.title;
 
         let temp= null;
         let numbers = 0;
@@ -566,8 +560,6 @@ if (rcmail && window.mel_metapage)
 
                     case 'mail':
                         return;
-                        // numbers += parseInt(get('mel_metapage.mail.count') ?? 0);
-                        // break;
 
                     default:
                         break;
@@ -593,9 +585,7 @@ if (rcmail && window.mel_metapage)
             title = `(${numbers}) ${title || current_title}`;
         }
 
-        //top.document.title = title;
         rcmail.set_pagetitle(title);
-        //console.log('true title', title, top.document.title);
 
         return title;
     }
@@ -629,7 +619,7 @@ if (rcmail && window.mel_metapage)
         if (datas.showed.end.format === undefined) datas.showed.end = moment(datas.showed.end);
 
         const event = datas.showed;
-        const isInvited = datas.show_rsvp;//event.attendees !== undefined && event.attendees.length > 0 && Enumerable.from(event.attendees).where(x => rcmail.env.mel_metapage_user_emails.includes(x.email)).first().status === "NEEDS-ACTION";
+        const isInvited = datas.show_rsvp;
 
         rcmail.env.bnum_last_event_datas = datas;
 
@@ -829,7 +819,7 @@ if (rcmail && window.mel_metapage)
 
         const config = new GlobalModalConfig(title, "default", html);
         let modal = new GlobalModal("globalModal", config, true);
-        modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem")
+        modal.modal.find(".modal-lg").css("font-size", "1.2rem")
         .find('.a-event-wsp-link').click((e) => {
             e.preventDefault();
             mel_metapage.Functions.change_page('workspace', 'workspace', {
@@ -994,7 +984,7 @@ if (rcmail && window.mel_metapage)
         modal.close();
     }))
 
-    modal.contents.css("height", `${window.innerHeight - 250}px`).css("overflow-y", "auto").css("overflow-x", "hidden");//.css("height", "").css("overflow", "");
+    modal.contents.css("height", `${window.innerHeight - 250}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
 
     modal.onClose(() => {
         modal.footer.querry.css("position", "")
@@ -1023,9 +1013,9 @@ if (rcmail && window.mel_metapage)
                     e.stopPropagation();
                     modal.close();
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
-                    const ariane = null;//categoryExist && event.categories[0].includes("ws#") ? null : "";
+                    const ariane = null;
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
-                    //console.log("test : ", querry.attr("href"), mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+
                     setTimeout(() => {
                         rcmail.set_busy(false);
                         window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
@@ -1100,7 +1090,7 @@ if (rcmail && window.mel_metapage)
         else $(".mel-event-compose").css("display", "");
 
         if (event.calendar === mceToRcId(rcmail.env.username) || event.attendees === undefined) $(".mel-event-self-invitation").css("display", "none");
-        else $(".mel-event-self-invitation").css("display", ""); /*TODO : Activer lorsque ça fonctoinnera*/
+        else $(".mel-event-self-invitation").css("display", "");
 
 
         //Button edit
@@ -1118,8 +1108,6 @@ if (rcmail && window.mel_metapage)
                     }
                     else
                         window.event_can_close = true;
-
-                    // modal.close();
                 });
                 $this.data("state", closed).find("span").removeClass("icon-mel-pencil").addClass("icon-mel-close");
             }
@@ -1151,7 +1139,7 @@ if (rcmail && window.mel_metapage)
             if (event.attachments.length > 0) {
                 $('#mel-event-attachments').show();
                 $('#mel-event-attachments').find("ul").css("background-color", "transparent").css("border-color", "transparent");
-                $('#mel-event-attachments').find('.mel-event-text')/*.css("font-size", "1.2rem")*/.css("width","94%").find("li").each((i,e) => {
+                $('#mel-event-attachments').find('.mel-event-text').css("width","94%").find("li").each((i,e) => {
                     const txt = $(e).addClass("mel-before-remover").css("display", "block").find("a").find("span").html();
                     const splited = txt.split(".");
                     const ext = splited[splited.length-1];
@@ -1169,7 +1157,6 @@ if (rcmail && window.mel_metapage)
 
     async function deplace_popup_if_exist(rec)
     {
-        //popover .show
         let it = -1;
         return wait(() => {
             ++it;
@@ -1182,7 +1169,6 @@ if (rcmail && window.mel_metapage)
             else
                 return true;
         }).then(() => {
-            //$(".popover.show")
             const top = rec.top + (rec.height/2);
             const left = rec.left + rec.width;
             var popup = $(".popover.show")
@@ -1198,9 +1184,6 @@ if (rcmail && window.mel_metapage)
                         {
                             rcmail.env.bnum_itip_action(e);
                         }
-                        // else {
-                        //     rcmail.triggerEvent("calendar.event_show_dialog.custom", rcmail.env.bnum_last_event_datas);
-                        // }
                     });
                 });
                 deplace_popup_if_exist.hasAlready = true;
@@ -1232,7 +1215,7 @@ if (rcmail && window.mel_metapage)
     }
 
     rcmail.addEventListener('rcube_libcalendaring.itip_delegate_dialog.open', (datas) => {
-        //datas = $(datas.item);
+
         window.current_event_modal.modal.css('display', 'none');
         $('.modal-backdrop').css('display', 'none');
 
@@ -1254,10 +1237,8 @@ if (rcmail && window.mel_metapage)
     }
 
     rcmail.addEventListener('contextmenu_init', function(menu) {
-        //debugger;
         // identify the folder list context menu
         if (menu.menu_name == 'messagelist') {
-            //debugger;
           // add a shortcut to the folder management screen to the end of the menu
           //menu.menu_source.push({label: rcmail.gettext('new-mail-from', "mel_metapage"), command: 'new-mail-from', classes: 'compose mel-new-compose options'});
 
@@ -1289,7 +1270,7 @@ if (rcmail && window.mel_metapage)
             //AUTRE
             const bap = 'Boite partag&AOk-e/';
             const splited_key = '.-.';
-            let current_bal =  rcmail.get_message_mailbox();//$('.mailbox.selected a').first().attr('rel');
+            let current_bal =  rcmail.get_message_mailbox();
 
             if (current_bal.includes(balp))
             {
@@ -1389,7 +1370,7 @@ if (rcmail && window.mel_metapage)
 
             if ($("#layout-content .header ul#toolbar-menu li.hidden-item-mt").length > 0)
             {
-                $("#layout-content .header ul#toolbar-menu li.hidden-item-mt").removeClass("hidden-item-mt");//.css("display", "");
+                $("#layout-content .header ul#toolbar-menu li.hidden-item-mt").removeClass("hidden-item-mt");
                 $("#message-menu > ul.menu .moved-item-mt").remove();
             }
 

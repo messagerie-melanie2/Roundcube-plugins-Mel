@@ -10,7 +10,6 @@ if (rcmail)
 
             addUpdate(funcName, func)
             {
-                //this.funcs[funcName] = rcmail[funcName];
                 rcmail[funcName + "_parent"] = rcmail[funcName];
                 rcmail[funcName] = (...args) => {
                     rcmail[funcName + "_parent"](...args);

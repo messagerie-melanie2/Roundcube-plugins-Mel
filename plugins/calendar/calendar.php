@@ -3453,30 +3453,28 @@ $("#rcmfd_new_category").keypress(function(event) {
             $has_events = true;
 
             // get prepared inline UI for this event object
-            if ($ical_objects->method) {
-                $append   = '';
-                $date_str = $this->rc->format_date($event['start'], $this->rc->config->get('date_format'), empty($event['start']->_dateonly));
-                $date     = new DateTime($event['start']->format('Y-m-d') . ' 12:00:00', new DateTimeZone('UTC'));
+              $append   = '';
+              $date_str = $this->rc->format_date($event['start'], $this->rc->config->get('date_format'), empty($event['start']->_dateonly));
+              $date     = new DateTime($event['start']->format('Y-m-d') . ' 12:00:00', new DateTimeZone('UTC'));
 
-                // prepare a small agenda preview to be filled with actual event data on async request
-                if ($ical_objects->method == 'REQUEST') {
-                    $append = html::div('calendar-agenda-preview',
-                        html::tag('h3', 'preview-title', $this->gettext('agenda') . ' ' . html::span('date', $date_str))
-                        . '%before%' . $this->mail_agenda_event_row($event, 'current') . '%after%'
-                    );
-                }
+              // prepare a small agenda preview to be filled with actual event data on async request
+              if ($ical_objects->method == 'REQUEST') {
+                  $append = html::div('calendar-agenda-preview',
+                      html::tag('h3', 'preview-title', $this->gettext('agenda') . ' ' . html::span('date', $date_str))
+                      . '%before%' . $this->mail_agenda_event_row($event, 'current') . '%after%'
+                  );
+              }
 
-                $html .= html::div('calendar-invitebox invitebox boxinformation',
-                    $this->itip->mail_itip_inline_ui(
-                        $event,
-                        $ical_objects->method,
-                        $ical_objects->mime_id . ':' . $idx,
-                        'calendar',
-                        rcube_utils::anytodatetime($ical_objects->message_date),
-                        $this->rc->url(['task' => 'calendar']) . '&view=agendaDay&date=' . $date->format('U')
-                    ) . $append
-                );
-            }
+              $html .= html::div('calendar-invitebox invitebox boxinformation',
+                  $this->itip->mail_itip_inline_ui(
+                      $event,
+                      $ical_objects->method,
+                      $ical_objects->mime_id . ':' . $idx,
+                      'calendar',
+                      rcube_utils::anytodatetime($ical_objects->message_date),
+                      $this->rc->url(['task' => 'calendar']) . '&view=agendaDay&date=' . $date->format('U')
+                  ) . $append
+              );
 
             // limit listing
             if ($idx >= 3) {
@@ -3985,6 +3983,24 @@ $("#rcmfd_new_category").keypress(function(event) {
         if ($success) {
             $msg = $this->gettext(['name' => 'importsuccess', 'vars' => ['nr' => $success]]);
             $this->rc->output->command('display_message', $msg, 'confirmation');
+
+            //PAMELA - Passage du mail en RdvTraité après l'ajout dans l'agenda
+            $metadata = [
+              'uid'       => $event['uid'],
+              '_instance' => isset($event['_instance']) ? $event['_instance'] : null,
+              'changed'   => is_object($event['changed']) ? $event['changed']->format('U') : 0,
+              'sequence'  => intval($event['sequence']),
+              'fallback'  => strtoupper($status),
+              'method'    => $event['_method'],
+              'task'      => 'calendar',
+          ];
+
+            $metadata['calendar'] = isset($event['calendar']) ? $event['calendar'] : null;
+            $metadata['nosave']   = false;
+            $metadata['rsvp']     = !empty($metadata['rsvp']);
+            $metadata['after_action'] = $this->rc->config->get('calendar_itip_after_action', $this->defaults['calendar_itip_after_action']);
+            $this->rc->output->command('plugin.itip_message_processed', $metadata);
+            $this->rc->output->send();
         }
         else if ($existing) {
             $this->rc->output->command('display_message', $this->gettext('importwarningexists'), 'warning');
@@ -3992,6 +4008,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         else {
             $this->rc->output->command('display_message', $this->gettext('errorimportingevent'), 'error');
         }
+
+       
     }
 
     /**

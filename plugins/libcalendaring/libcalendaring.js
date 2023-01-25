@@ -1517,6 +1517,7 @@ rcube_libcalendaring.update_itip_object_status = function(p)
   if (p.action == 'rsvp') {
     $('#rsvp-'+p.id+' input.button').prop('disabled', false)
       .filter('.'+String(p.status||'unknown').toLowerCase()).prop('disabled', p.latest);
+    rcmail.enable_command('attachment-save-calendar', true);
   }
 
   // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée

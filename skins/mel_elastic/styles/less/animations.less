@@ -6,10 +6,12 @@
 
 @keyframes loaded{
     0% { 
+      opacity: 0;
         mask:radial-gradient(circle, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 0%, rgba(0,0,0,0) 0%);
      }
      10% { 
         mask:radial-gradient(circle, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 0%, rgba(0,0,0,0) 10%);
+        opacity: 1;
      }
      20% { 
         mask:radial-gradient(circle, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 0%, rgba(0,0,0,0) 20%);
@@ -35,9 +37,13 @@
      90% { 
         mask:radial-gradient(circle, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 0%, rgba(0,0,0,0) 90%);
      }
-     100% { 
+     99% { 
         mask:radial-gradient(circle, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 0%, rgba(0,0,0,0) 100%);
-        display: none;
+
+     }
+     100%{
+      mask:radial-gradient(circle, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 0%, rgba(0,0,0,0) 100%);
+      opacity: 1;
      }
 }
 

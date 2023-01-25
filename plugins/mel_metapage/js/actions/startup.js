@@ -566,7 +566,7 @@ metapage_frames.addEvent("generate-loading-frame", (eClass, changepage, isAriane
     if ($loading.length === 0) {
         $('<div id="bnum-loading-div"><div style="position:relative;width:100%;height:100%"><div class="absolute-center"><div class="loader-base"><div class="loader-looping"></div></div></div></div></div>').addClass('loader-div').appendTo($("#layout-frames"));
     }
-    else $loading.css('display', '');
+    else $loading.removeClass('loaded');
 });
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, args, result) => {
@@ -645,7 +645,7 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
     try {
-        $('#bnum-loading-div').css('display', 'none');//.addClass('loaded');
+        $('#bnum-loading-div').addClass('loaded');
         //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
         let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
         const _$ = querry_content.$;

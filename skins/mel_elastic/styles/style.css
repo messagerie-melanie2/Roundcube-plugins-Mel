@@ -2,6 +2,7 @@
 /** FONTS **/
 /* CONTENT */
 /** ANIMATIONS **/
+/** LOADER **/
 /** WIDTH **/
 .mel-no-border {
   border: none;
@@ -2586,32 +2587,39 @@ html.dark-mode #visio-right-pannel-util {
   text-align: center;
 }
 .loader-base {
-  /* background: url("/skins/mel_elastic/images/bnumloader.svg");
-  background-size: contain;
-  background-repeat: no-repeat; */
-  width: 200px;
-  height: 200px;
-  mask: conic-gradient(from 90deg at 50% 50%, #ffffff 0%, rgba(140, 140, 140, 0) 51%, rgba(0, 0, 0, 0) 100%);
+  width: var(--loader-width);
+  height: var(--loader-height);
+  mask: var(--loader-mask);
+  -webkit-mask: var(--loader-mask);
   animation: spin 1s linear infinite;
+  /** Exemple **/
+  /** FIN Exemple **/
 }
-.loader-base.loaded {
-  animation: loaded 0.5s linear forwards;
+.loader-base.tiny {
+  --loader-width: 50px;
+  --loader-height: 50px;
 }
-.loader-base.loaded .loader-looping {
+.loader-base.large {
+  --loader-width: 400px;
+  --loader-height: 400px;
+}
+.loaded .loader-base {
   animation: none;
+  display: none;
+}
+.loaded .loader-base .loader-looping {
+  animation: none;
+  display: none;
 }
 .loader-looping {
-  background: url("/skins/mel_elastic/images/bnumloader.svg");
+  background: var(--loader-image);
   background-size: 50%;
   background-repeat: no-repeat;
   width: 100%;
   height: 100%;
   animation: spin 1s linear infinite;
   animation-direction: reverse;
-  /* position: absolute; */
-  /* transform-origin: center; */
-  /* background: ; */
-  background-position: 64% 58%;
+  background-position: var(--loader-background-position);
 }
 .loader-div {
   position: absolute;
@@ -2619,4 +2627,7 @@ html.dark-mode #visio-right-pannel-util {
   left: 60px;
   width: calc(100% - 60px);
   height: calc(100% - 60px);
+}
+.loader-div.loaded {
+  display: none;
 }

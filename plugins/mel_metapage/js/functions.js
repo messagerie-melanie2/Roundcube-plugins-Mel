@@ -140,11 +140,14 @@ function m_mp_Create() {
                 
                 let $have_minified = $('#mel-have-something-minified-main-create');
                 if ($have_minified.length > 0) $have_minified.length.remove();
+
+                $('#button-create').focus();
             }
         }
         create_popUp.on_click_minified = () => {
             window.create_popUp.close();
             func_minifier();
+            $('#button-create').focus();
         };
         create_popUp.onClose(() => {
             if (!!window.create_popUp) func_minifier();

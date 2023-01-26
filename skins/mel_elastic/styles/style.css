@@ -2591,7 +2591,8 @@ html.dark-mode #visio-right-pannel-util {
   height: var(--loader-height);
   mask: var(--loader-mask);
   -webkit-mask: var(--loader-mask);
-  animation: spin 1s linear infinite;
+  animation: mel-mask-loader-spin 1s linear infinite;
+  animation-direction: reverse;
   /** Exemple **/
   /** FIN Exemple **/
 }
@@ -2617,8 +2618,6 @@ html.dark-mode #visio-right-pannel-util {
   background-repeat: no-repeat;
   width: 100%;
   height: 100%;
-  animation: spin 1s linear infinite;
-  animation-direction: reverse;
   background-position: var(--loader-background-position);
 }
 .loader-div {

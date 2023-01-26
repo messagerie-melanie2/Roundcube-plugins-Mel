@@ -3979,7 +3979,8 @@ a.rcmContactAddress {
         height: var(--loader-height);
         mask:var(--loader-mask);
         -webkit-mask:var(--loader-mask);
-        animation: spin 1s linear infinite;
+        animation: mel-mask-loader-spin 1s linear infinite;
+        animation-direction: reverse;
 
         /** Exemple **/
         &.tiny {
@@ -4014,8 +4015,8 @@ a.rcmContactAddress {
         background-repeat: no-repeat;
         width: 100%;
         height: 100%;
-        animation: spin 1s linear infinite;
-        animation-direction: reverse;
+        // animation: spin 1s linear infinite;
+        // animation-direction: reverse;
         background-position: var(--loader-background-position);
     }
 

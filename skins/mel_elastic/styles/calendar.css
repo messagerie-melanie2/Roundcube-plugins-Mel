@@ -2,7 +2,18 @@
 /** FONTS **/
 /* CONTENT */
 /** ANIMATIONS **/
+/** LOADER **/
 /** WIDTH **/
+/**
+ * Roundcube Webmail styles for the Elastic skin
+ *
+ * Copyright (c) The Roundcube Dev Team
+ *
+ * The contents are subject to the Creative Commons Attribution-ShareAlike
+ * License. It is allowed to copy, distribute, transmit and to adapt the work
+ * by keeping credits to the original authors in the README.md file.
+ * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+ */
 .task-calendar #layout > div > .header {
   background-color: var(--calendar-base-header-background-color) !important;
 }
@@ -472,13 +483,6 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   font-family: DWP!important;
   font-weight: normal!important;
 }
-
-.menu a.appointment::before {
-	content: "\e930"!important;
-    font-family: DWP!important;
-    font-weight: normal!important;
-}
-
 .menu a.settings::before {
   content: "\e925" !important;
   font-family: DWP!important;
@@ -657,26 +661,18 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   background-color: var(--calendar-list-item-hover-background-color);
   border-radius: 5px;
 }
-
-#calendarurlbox .switch, 
-#appointmentbox .switch {
+#calendarurlbox .switch {
   position: relative;
   display: inline-block;
   width: 30px;
   height: 17px;
 }
-
-/* Hide default HTML checkbox */
-#calendarurlbox .switch input, 
-#appointmentbox .switch input {
+#calendarurlbox .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
-
-/* The slider */
-#calendarurlbox .slider,
-#appointmentbox .slider {
+#calendarurlbox .slider {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -687,9 +683,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
-
-#calendarurlbox .slider:before,
-#appointmentbox .slider:before {
+#calendarurlbox .slider::before {
   position: absolute;
   content: "";
   height: 13px;
@@ -706,19 +700,10 @@ ul#calendarslist.treelist li div.treetoggle:hover {
 #calendarurlbox .slider.round::before {
   border-radius: 50%;
 }
-
-#calendarurlbox input:checked + .slider,
-#appointmentbox input:checked + .slider {
+#calendarurlbox input:checked + .slider {
   background-color: #2196F3;
 }
-
-#calendarurlbox input:focus + .slider,
-#appointmentbox input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-#calendarurlbox input:checked + .slider:before,
-#appointmentbox input:checked + .slider:before {
+#calendarurlbox input:checked + .slider::before {
   -webkit-transform: translateX(13px);
   -ms-transform: translateX(13px);
   transform: translateX(13px);
@@ -762,13 +747,9 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
-
-#calendarurlbox .slider.round,
 #appointmentbox .slider.round {
   border-radius: 34px;
 }
-
-#calendarurlbox .slider.round:before,
 #appointmentbox .slider.round::before {
   border-radius: 50%;
 }
@@ -782,4 +763,17 @@ ul#calendarslist.treelist li div.treetoggle:hover {
 }
 #appointmentbox input:focus + .slider {
   box-shadow: 0 0 1px #2196F3;
+}
+.calendar-scheduler .schedule-table tr.times th {
+  cursor: pointer;
+  min-width: 48px;
+  max-width: 48px;
+  font-size: 0.7rem;
+  text-align: center;
+  color: #00acff;
+  height: 1.4rem;
+  padding: 0 0.1rem;
+  vertical-align: middle;
+  border-top: 1px solid #d4dbde;
+  border-left: 1px solid #f1f3f4;
 }

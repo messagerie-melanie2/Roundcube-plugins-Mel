@@ -1518,7 +1518,7 @@ function rcube_calendar_ui(settings) {
 
       // set css class according to working hours
       css = is_weekend(curdate) || (freebusy_ui.interval <= 60 && !is_workinghour(curdate)) ? 'offhours' : 'workinghours';
-      times_row += '<td scope="col" class="' + times_css + css + '" id="t-' + Math.floor(t / 1000) + '">' + Q(allday ? rcmail.gettext('all-day', 'calendar') : format_date(curdate, settings.time_format)) + '</td>';
+      times_row += '<th scope="col" class="' + times_css + css + '" id="t-' + Math.floor(t / 1000) + '">' + Q(allday ? rcmail.gettext('all-day', 'calendar') : format_date(curdate, settings.time_format)) + '</th>';
       slots_row += '<td class="' + css + '">&nbsp;</td>';
 
       t += interval * 60000;

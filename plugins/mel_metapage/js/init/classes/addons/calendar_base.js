@@ -1667,8 +1667,8 @@ $(document).ready(() => {
         <span class="icofont-hand-right  plus" style="vertical-align: top;margin-left: 15px;"></span>
     </button>`).click(() => window.open('https://audio.mtes.fr/', '_blank').focus())
     .appendTo($audioDiv.find('.abutton'));
-        let $audioCode = $('<input type="text" class="form-control input-mel">').appendTo($audioDiv.find('.anum'));
-        let $audioPhone = $('<input type="tel" class="form-control input-mel" />').appendTo($audioDiv.find('.aphone'));
+        let $audioCode = $('<input type="text" class="form-control input-mel">').attr('title', 'Numéro de l’audio - Mode d’événement par audio').attr('aria-labelledby', 'mel-event-audio-num-sr-only').appendTo($audioDiv.find('.anum'));
+        let $audioPhone = $('<input type="tel" class="form-control input-mel" />').attr('title', 'Téléphone de l’audio - Mode d’événement par audio').attr('aria-labelledby', 'mel-event-audio-phone-sr-only').appendTo($audioDiv.find('.aphone'));
         let $visioDiv = $(`<div class="visio-${mainDivId}">
         <span class="span-mel t2 red-star-after margin ${baseId === 0 ? '' : 'hidden'}">Choix de l'option</span>
             <div class="">
@@ -1976,9 +1976,13 @@ $(document).ready(() => {
 
     rcube_calendar.prototype.create_event_from_somewhere = async function(event = null)
     {
+        let isFromGlobalModal = false;
+
         if (event === null)
         {
             event = rcmail.local_storage_get_item("tmp_calendar_event");
+
+            if (!!event) isFromGlobalModal = true;
         }
 
         if (window.create_event !== true)
@@ -2092,6 +2096,7 @@ $(document).ready(() => {
                 window.event_reduced = true;
                 window.kolab_event_dialog_element.close();
                 func_minifier();
+                if (isFromGlobalModal) $('#button-create').focus();
             };
             window.kolab_event_dialog_element.on_click_exit = () => {
                 window.kolab_event_dialog_element.close();
@@ -2099,6 +2104,8 @@ $(document).ready(() => {
                 window.create_event = false;
                 window.event_reduced = false;
                 window.kolab_event_dialog_element = null;
+
+                if (isFromGlobalModal) $('#button-create').focus();
             };
             window.kolab_event_dialog_element.onClose(() => {
                 if (window.event_reduced === false)
@@ -2112,6 +2119,8 @@ $(document).ready(() => {
                     window.event_reduced = true;
                     func_minifier();
                 }
+
+                if (isFromGlobalModal) $('#button-create').focus();
             });
         }
         else 

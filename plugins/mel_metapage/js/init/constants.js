@@ -684,7 +684,7 @@ const mel_metapage = {
          * @param {JSON} params 
          * @returns 
          */
-        async change_page(task, action = null, params = {}, update = true)
+        async change_page(task, action = null, params = {}, update = true, force = false)
         {
             let contracted_task;
             let $querry;
@@ -705,7 +705,10 @@ const mel_metapage = {
                     action = mel_metapage.Functions.url(task, null, params);
 
                 try {
-                    if ($querry[0].contentWindow.location.href !== action) $querry[0].src = action;
+                        if ($querry[0].contentWindow.location.href !== action) $querry[0].src = action;
+                        else if (force) {
+                            $querry[0].contentWindow.location.reload();
+                        }
                 } catch (error) {
                     
                 }

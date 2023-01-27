@@ -542,6 +542,15 @@ class libcalendaring_itip
                 $action = '';
             }
         }
+        else if ($event['method'] == '') {
+          if ($existing) {
+            $html = html::div('rsvp-status', $this->gettext('eventalreadyinyouragenda'));          
+            $action = '';
+          }
+          else {
+            $html = html::div('rsvp-status', $this->gettext('youcanacceptinyouragenda'));          
+          }
+        }
 
         return array(
             'uid'        => $event['uid'],
@@ -822,6 +831,37 @@ class libcalendaring_itip
 
             $rsvp_status = 'CANCELLED';
             $metadata['rsvp'] = true;
+        }
+
+        // for messages who have no method
+        else if ($method == '') {
+          $title = $this->gettext('itipinvitation');
+
+          $attachment_id = explode(':',$mime_id)[1];
+         // 1. Save the event in our calendar
+          $button_save_in_calendar = html::tag('input', array(
+            'type' => 'button',
+            'class' => 'button',
+            'onclick' => "return " . rcmail_output::JS_OBJECT_NAME . ".command('attachment-save-calendar','".$this->lib->ical_parts[$attachment_id]."',this,event)",
+            'value' => $this->gettext('calendar.savetocalendar'),
+          ));
+
+          // 2. Add button to open calendar/preview
+          if (!empty($preview_url)) {
+            $msgref = $this->lib->ical_message->folder . '/' . $this->lib->ical_message->uid . '#' . $mime_id;
+            $rsvp_buttons .= html::tag('input', array(
+                'type'    => 'button',
+                'class'   => "button preview hidden-phone hidden-small",
+                'onclick' => "rcube_libcalendaring.open_itip_preview('" . rcube::JQ($preview_url) . "', '" . rcube::JQ($msgref) . "')",
+                'value'   => $this->gettext('openpreview'),
+            ));
+        }
+
+          $buttons[] = html::div(array('id' => 'rsvp-'.$dom_id, 'style' => 'display:none'), $button_save_in_calendar . $rsvp_buttons);
+
+          $rsvp_status = 'NEEDS-ACTION';
+          $metadata['nosave'] = true;
+          $metadata['rsvp'] = true;
         }
 
         // append generic import button

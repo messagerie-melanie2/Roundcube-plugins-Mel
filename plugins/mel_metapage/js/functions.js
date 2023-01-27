@@ -140,11 +140,14 @@ function m_mp_Create() {
                 
                 let $have_minified = $('#mel-have-something-minified-main-create');
                 if ($have_minified.length > 0) $have_minified.length.remove();
+
+                $('#button-create').focus();
             }
         }
         create_popUp.on_click_minified = () => {
             window.create_popUp.close();
             func_minifier();
+            $('#button-create').focus();
         };
         create_popUp.onClose(() => {
             if (!!window.create_popUp) func_minifier();
@@ -1389,7 +1392,7 @@ function m_mp_Help() {
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
 
-    if (window.create_event === true) {
+    if (window.create_event === true && !!actions.event) {
         eval(actions.event.action);
         return;
     }
@@ -1439,7 +1442,7 @@ function m_mp_Help() {
         let html = "<div class='row' id='search_row'>";
         html += '<label for="workspace-title" class="span-mel t2 first ml-4">' + rcmail.gettext("mel_metapage.describe_your_need_in_few_words") + '</label>';
         html += '<div class="input-group mx-4">';
-        html += '<label class="sr-only" for="helppage-search-input">Rechercher</label>';
+        html += '<label class="sr-only" for="helppage-search-input">Rechercher une aide pour le Bnum</label>';
         html += '<input id="helppage-search-input" type="text" title="Recherche globale" placeholder="Recherche globale..." class="form-control mel-focus" onkeyup="rcmail.help_search(event, this);">';
         html += ' <div class="input-group-append">';
         html += '<span class="icofont-search input-group-text"></span>';
@@ -1545,8 +1548,8 @@ function m_mp_help_video() {
         // Positionnement des variables d'env
         rcmail.env.video_index = index;
 
-        let html = '<label for="workspace-title" class="span-mel t2 first">' + rcmail.gettext("mel_metapage.search_a_video") + '</label>';
-        html += '<input id="videos-search-input" type="text" title="Rechercher" placeholder="Accueil..." class="form-control mel-focus mb-4" onkeyup="rcmail.video_search(event, this);">';
+        let html = '<label id="video-search-label-title" for="workspace-title" class="span-mel t2 first">' + rcmail.gettext("mel_metapage.search_a_video") + '</label>';
+        html += '<input id="videos-search-input" aria-labelledby="video-search-label-title" type="text" title="Rechercher" placeholder="Accueil..." class="form-control mel-focus mb-4" onkeyup="rcmail.video_search(event, this);">';
 
 
 
@@ -1961,16 +1964,20 @@ async function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, 
 async function m_mp_sondage()
 {
     $('.modal-close ').click();
-    let $querry = $('iframe.sondage-frame');
+    // let $querry = $('iframe.sondage-frame');
 
-    if ($querry.length > 0) $querry[0].src = rcmail.env.sondage_create_sondage_url;
-    else if($('.sondage-frame').length > 0) $('.sondage-frame')[0].contentWindow.$('#mel_sondage_frame')[0].src = rcmail.env.sondage_create_sondage_url;
-    else
-    {
-        await mel_metapage.Functions.change_frame('sondage', true, true, {
-            _url:rcmail.env.sondage_create_sondage_url
-        });
-    }
+    // if ($querry.length > 0) $querry[0].src = rcmail.env.sondage_create_sondage_url;
+    // else if($('.sondage-frame').length > 0) $('.sondage-frame')[0].contentWindow.$('#mel_sondage_frame')[0].src = rcmail.env.sondage_create_sondage_url;
+    // else
+    // {
+    //     await mel_metapage.Functions.change_frame('sondage', true, true, {
+    //         _url:rcmail.env.sondage_create_sondage_url
+    //     });
+    // }
+
+    await mel_metapage.Functions.change_page('sondage', null, {
+        _url:encodeURIComponent(rcmail.env.sondage_create_sondage_url)
+    }, true, true);
 } 
 
 /**

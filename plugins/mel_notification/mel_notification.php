@@ -153,6 +153,19 @@ class mel_notification extends rcube_plugin
         exit;
     }
 
+    public function test_mail()
+    {
+      $this->add_texts('localization/', true);
+
+      $args = [
+        'mailbox' => "INBOX", 'is_current' => false, 'diff' => [
+          'new' => "1",
+        ],
+        'abort' => false
+      ];
+      $this->notify_mail($args);
+    }
+
     /**
      * Gestion des actions sur les notifications (passage en lu, suppression, ...)
      */
@@ -294,7 +307,7 @@ class mel_notification extends rcube_plugin
                 $mailbox = driver_mel::gi()->getUser()->uid;
                 
                 if ($mbox != 'INBOX') {
-                    $content = $content . " > " . $mbox;
+                    $content = $content . " > " . rcube_charset::utf7imap_to_utf8($mbox);
                 }
             }
             

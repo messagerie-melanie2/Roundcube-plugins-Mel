@@ -3958,3 +3958,78 @@ a.rcmContactAddress {
         }
     }
 }
+
+.video-visio-label {
+    position: absolute;
+    /* bottom: 5px; */
+    /* left: 18%; */
+    background-color: #00000094;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.loader {
+    &-base {
+        width: var(--loader-width);
+        height: var(--loader-height);
+        mask:var(--loader-mask);
+        -webkit-mask:var(--loader-mask);
+        animation: mel-mask-loader-spin 1s linear infinite;
+        animation-direction: reverse;
+
+        /** Exemple **/
+        &.tiny {
+            --loader-width: 50px;
+            --loader-height: 50px;
+        }
+
+        &.large {
+            --loader-width: 400px;
+            --loader-height: 400px;
+        }
+        /** FIN Exemple **/
+
+        .loaded &{
+            // animation: loaded 0.5s linear forwards;
+            // animation-direction: reverse;
+            animation: none;
+            display: none;
+    
+            .loader-looping {
+                animation: none;
+                display: none;
+            }
+        }
+
+
+    }
+
+    &-looping {
+        background: var(--loader-image);
+        background-size: 50%;
+        background-repeat: no-repeat;
+        width: 100%;
+        height: 100%;
+        // animation: spin 1s linear infinite;
+        // animation-direction: reverse;
+        background-position: var(--loader-background-position);
+    }
+
+    &-div {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: calc(100% - 60px);
+        height: calc(100% - 60px);
+
+        &.loaded{
+            display:none;
+        }
+    }
+}
+

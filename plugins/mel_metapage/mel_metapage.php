@@ -182,6 +182,12 @@ class mel_metapage extends rcube_plugin
             }
         }
 
+        if ($this->rc->task === 'loading'){
+            $this->register_task("loading");
+            $this->register_action('index', array($this, 'action_loading_frame'));
+            return;
+        }
+
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
@@ -315,8 +321,10 @@ class mel_metapage extends rcube_plugin
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
         {
+            $this->include_internal_and_external_buttons();
             $this->include_stylesheet($this->local_skin_path().'/modal.css');
             $this->include_script('js/init/events.js');
+            $this->include_script('js/init/commands.js');
             $this->include_script('js/init/classes/addons/array.js');
             $this->add_hook("startup", array($this, "send_spied_urls"));
             return;
@@ -484,6 +492,9 @@ class mel_metapage extends rcube_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
         }
+        else if ($this->rc->task === 'mail') {
+            $this->include_internal_and_external_buttons();
+        }
 
         if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
         {
@@ -556,8 +567,22 @@ class mel_metapage extends rcube_plugin
         return $this;
     }
 
+    private function include_internal_and_external_buttons() {
+        $this->add_button(array(
+            'command' => "new-mail-from",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'compose mel-new-compose options rcm-active',
+            'classsel' => 'compose mel-new-compose options rcm-active',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.new-mail-from',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "messagemenu");
+    }
+
     function mm_include_plugin()
     {
+        $this->include_internal_and_external_buttons();
         $this->add_button(array(
             'command' => 'last_frame',
             'href' => '?_task=last_frame',
@@ -580,16 +605,7 @@ class mel_metapage extends rcube_plugin
             'type'       => 'link',
         ), "taskbar");
 
-        $this->add_button(array(
-            'command' => "new-mail-from",
-            // 'href' => './?_task=mail&_action=compose',
-            'class'	=> 'compose mel-new-compose options rcm-active',
-            'classsel' => 'compose mel-new-compose options rcm-active',
-            'innerclass' => 'inner',
-            'label'	=> 'mel_metapage.new-mail-from',
-            'title' => '',
-            'type'       => 'link-menuitem',
-        ), "messagemenu");
+
 
         $this->add_button(array(
             'command' => "mel-compose",
@@ -1618,251 +1634,6 @@ class mel_metapage extends rcube_plugin
 
         return $p;
     }
-    
-    /**
-     * Handler for user preferences form (preferences_list hook)
-     */
-    public function prefs_list($args) {
-
-        if ($args['section'] == 'general') {
-            // Load localization and configuration
-            $this->add_texts('localization/');
-
-            $icon = "mel-icon-size";
-            $folder_space = "mel-folder-space";
-            $message_space = "mel-message-space";
-            $mel_column = "mel-3-columns";
-            $chat_placement = "mel-chat-placement";
-            $scrollbar_size = 'mel-scrollbar-size';
-
-            // Check that configuration is not disabled
-            $config = $this->rc->config->get('mel_mail_configuration', [
-                $icon => $this->gettext("normal", "mel_metapage"),
-                $folder_space => $this->gettext("normal", "mel_metapage"),
-                $message_space => $this->gettext("normal", "mel_metapage"),
-                $mel_column => $this->gettext("yes", "mel_metapage"),
-                $chat_placement => $this->gettext("down", "mel_metapage"),
-                $scrollbar_size => $this->gettext("auto", "mel_metapage")
-            ]);
-
-            $options = [
-                $icon => [
-                    $this->gettext("smaller", "mel_metapage"),
-                    $this->gettext("normal", "mel_metapage")
-                ],
-                $folder_space => [
-                    $this->gettext("smaller", "mel_metapage"),
-                    $this->gettext("normal", "mel_metapage"),
-                    $this->gettext("larger", "mel_metapage")
-                ],
-                $message_space => [
-                    $this->gettext("smaller", "mel_metapage"),
-                    $this->gettext("normal", "mel_metapage"),
-                    $this->gettext("larger", "mel_metapage")
-                ],
-                $mel_column => [
-                    $this->gettext("yes", "mel_metapage"),
-                    $this->gettext("no", "mel_metapage")
-                ],
-                $chat_placement => [
-                    $this->gettext("up", "mel_metapage"),
-                    $this->gettext("down", "mel_metapage")
-                ],
-                $scrollbar_size => [
-                    $this->gettext('auto', 'mel_metapage'),
-                    $this->gettext("default", 'mel_metapage'),
-                    $this->gettext("normal", "mel_metapage"),
-                    $this->gettext("large", "mel_metapage")
-                ]
-            ];
-
-            if ($config[$chat_placement] === null || $config[$chat_placement] === "")
-                $config[$chat_placement] = $this->gettext("down", "mel_metapage");
-
-            if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "")
-                $config[$scrollbar_size] = $this->gettext("auto", "mel_metapage");
-
-            foreach ($config as $key => $value) {
-                if ($key === $chat_placement) continue;
-                $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
-            }
-            
-        }
-        else if($args['section'] == 'calendar'){
-            $this->add_texts('localization/');
-
-            $calendar_space = "mel-calendar-space";
-
-            $config = $this->rc->config->get('mel_calendar_configuration', [
-                $calendar_space => $this->gettext("normal", "mel_metapage"),
-            ]);
-
-            $options = [
-                $calendar_space => [
-                    $this->gettext("without_spaces", "mel_metapage"),
-                    $this->gettext("smaller", "mel_metapage"),
-                    $this->gettext("normal", "mel_metapage"),
-                    $this->gettext("larger", "mel_metapage")
-                ]
-            ];
-
-            foreach ($config as $key => $value) {
-                $args['blocks']['view']['options'][$key] = $this->create_pref_select($key, $value, $options[$key]);
-            }
-        }
-        else if ($args['section'] == 'globalsearch')
-        {
-            $this->add_texts('localization/');
-            mel_helper::settings(true);
-
-            //Max search mail
-            $search_mail_max = 'search_mail_max';
-            $search_mail_max_config = $this->rc->config->get($search_mail_max, 9999);
-            $search_input = (new setting_option_value_input(0, setting_option_value_input::INFINITY))->html($search_mail_max, $search_mail_max_config, ['name' => $search_mail_max], $this);//new html_inputfield(['name' => $search_mail_max, 'id' => $search_mail_max]);
-
-            $args['blocks']['general']['options'][$search_mail_max] = $search_input;/*[
-                'title'   => html::label($search_mail_max, rcube::Q($this->gettext($search_mail_max))),
-                'content' => $search_input->show($search_mail_max_config),
-            ];*/
-
-            //Search on all bal
-            $search_on_all_bal = 'search_on_all_bal';
-            $search_on_all_bal_config = $this->rc->config->get($search_on_all_bal, true);
-            $search_check = new html_checkbox(['name' => $search_on_all_bal, 'id' => $search_on_all_bal, 'value' => 1]);
-
-            $args['blocks']['general']['options'][$search_on_all_bal] = [
-                'title'   => html::label($search_on_all_bal, rcube::Q($this->gettext($search_on_all_bal))),
-                'content' => $search_check->show($search_on_all_bal_config ? 1 : 0),
-            ];
-
-            $args['blocks']['general']['options']['balp_settings'] = [
-                'content' => $this->create_balp_selection($this->rc->config->get('global_search_balp_configs', []))->show(['style' => ($search_on_all_bal_config ? 'display:none' : '')]),
-            ];
-
-            //Search on all bali
-            $search_on_all_bali_folders = 'search_on_all_bali_folders';
-            $search_on_all_bali_folders_config = $this->rc->config->get($search_on_all_bali_folders, true);
-            $search_check = new html_checkbox(['name' => $search_on_all_bali_folders, 'id' => $search_on_all_bali_folders, 'value' => 1]);
-
-            $args['blocks']['general']['options'][$search_on_all_bali_folders] = [
-                'title'   => html::label($search_on_all_bali_folders, rcube::Q($this->gettext($search_on_all_bali_folders))),
-                'content' => $search_check->show($search_on_all_bali_folders_config ? 1 : 0),
-            ];
-
-            $args['blocks']['general']['options']['bali_settings'] = [
-                'content' => $this->create_bali_folders_selection($this->rc->config->get('global_search_bali_folders_configs', []))->show(['style' => ($search_on_all_bali_folders_config ? 'display:none' : '')]),
-            ];
-            
-        }
-        else if ($args['section'] == 'chat')
-        {
-            $this->add_texts('localization/');
-            $startup = 'chat_startup';
-            $startup_config = $this->rc->config->get($startup, false);
-
-            $startup_check = new html_checkbox(['name' => $startup, 'id' => $startup, 'value' => 1]);
-            $args['blocks']['general']['options'][$askOnEnd] = [
-                'title'   => html::label($startup, rcube::Q($this->gettext($startup))),
-                'content' => $startup_check->show($startup_config ? 1 : 0),
-            ];
-
-            $icon = "mel-icon-size";
-            $folder_space = "mel-folder-space";
-            $message_space = "mel-message-space";
-            $mel_column = "mel-3-columns";
-            $chat_placement = "mel-chat-placement";
-            $scrollbar_size = 'mel-scrollbar-size';
-
-            // Check that configuration is not disabled
-            $config = $this->rc->config->get('mel_mail_configuration', [
-                $icon => $this->gettext("normal", "mel_metapage"),
-                $folder_space => $this->gettext("normal", "mel_metapage"),
-                $message_space => $this->gettext("normal", "mel_metapage"),
-                $mel_column => $this->gettext("yes", "mel_metapage"),
-                $chat_placement => $this->gettext("down", "mel_metapage"),
-                $scrollbar_size => $this->gettext("auto", "mel_metapage")
-            ]);
-
-            if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
-            if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "") $config[$scrollbar_size] = $this->gettext("auto", "mel_metapage");
-
-            $options = [
-                $chat_placement => [
-                    $this->gettext("up", "mel_metapage"),
-                    $this->gettext("down", "mel_metapage")
-                ]
-            ];
-
-            foreach ($config as $key => $value) {
-                if ($options[$key] !== null)
-                {
-                    $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
-                }
-            }
-        }
-        else if ($args['section'] == 'notifications')
-        {
-            $this->add_texts('localization/');
-            $tab_title_style = 'tab_title_style';
-            $value = $this->rc->config->get($tab_title_style, 'page');
-
-            $options = ['all', 'page', 'nothing'];
-            $texts = [];
-
-            foreach ($options as $txt) {
-                $texts[] = $this->gettext("notif-$txt");
-            }
-
-            $args['blocks']['main_nav']['name'] = 'Navigation principale';
-            $args['blocks']['main_nav']['options'][$tab_title_style] = $this->create_pref_select_more($tab_title_style, $value, $texts, $options, ['title' => str_replace('<all/>', $this->gettext("notif-all"), str_replace('<page/>', $this->gettext("notif-page"), $this->gettext('tab_title_style_help')))]);
-            
-        }
-        else if ($args['section'] == 'navigation')
-        {
-            mel_helper::html_helper();
-            $this->add_texts('localization/');
-            $templates = $this->rc->config->get('template_navigation_apps', []);//mel_helper::Enumerable($this->rc->config->get('navigation_apps', []));
-            $config = $this->rc->config->get('navigation_apps', []);
-            // $main = $config->where(function ($k, $v) {
-            //     return !isset($v['link']);
-            // });
-
-            $args['blocks']['main_nav']['name'] = 'Applications par défauts';
-
-            foreach ($templates as $key => $value) {
-                //$key = $value->get_key();
-                //$value = $value->get_value();
-                $check = new html_checkbox(['name' => $key, 'id' => $key, 'value' => 1]);
-                $args['blocks']['main_nav']['options'][$key] = [
-                    'title'   => html::label($key, rcube::Q($this->gettext($key, 'mel_metapage'))),
-                    'content' => $check->show(($config[$key]['enabled'] ?? $value['enabled']) ? 1 : 0),
-                ];
-            }
-        }
-        else if ($args['section'] == 'bnum-experimental')
-        {
-            $settings = $this->rc->config->get('experimental-settings', []);
-
-            $args['blocks']['general']['name'] = 'Gérer des paramètres expérimentaux';
-
-            foreach ($settings as $id => $datas) {
-                switch ($datas['style']) {
-                    case 'checkbox':
-                        $check = new html_checkbox(['name' => $id, 'id' => $id, 'value' => 1]);
-                        $args['blocks']['general']['options'][$id] = [
-                            'title'   => html::label($startup, rcube::Q($this->gettext($datas['name']))),
-                            'content' => $check->show($this->rc->config->get($datas['config'], $datas['default']) ? 1 : 0),
-                        ];
-                        break;
-                    
-                    default:
-                        break;
-                }
-            }
-        }
-
-        return $args;
-    }
 
     function create_bali_folders_selection($config)
     {
@@ -1962,6 +1733,251 @@ class mel_metapage extends rcube_plugin
   }
 
     /**
+     * Handler for user preferences form (preferences_list hook)
+     */
+    public function prefs_list($args) {
+
+        if ($args['section'] == 'general') {
+            // Load localization and configuration
+            $this->add_texts('localization/');
+
+            $icon = "mel-icon-size";
+            $folder_space = "mel-folder-space";
+            $message_space = "mel-message-space";
+            $mel_column = "mel-3-columns";
+            $chat_placement = "mel-chat-placement";
+            $scrollbar_size = 'mel-scrollbar-size';
+
+            // Check that configuration is not disabled
+            $config = $this->rc->config->get('mel_mail_configuration', [
+                $icon => $this->gettext("normal", "mel_metapage"),
+                $folder_space => $this->gettext("normal", "mel_metapage"),
+                $message_space => $this->gettext("normal", "mel_metapage"),
+                $mel_column => $this->gettext("yes", "mel_metapage"),
+                $chat_placement => $this->gettext("down", "mel_metapage"),
+                $scrollbar_size => $this->gettext("auto", "mel_metapage")
+            ]);
+
+            $options = [
+                $icon => [
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage")
+                ],
+                $folder_space => [
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("larger", "mel_metapage")
+                ],
+                $message_space => [
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("larger", "mel_metapage")
+                ],
+                $mel_column => [
+                    $this->gettext("yes", "mel_metapage"),
+                    $this->gettext("no", "mel_metapage")
+                ],
+                $chat_placement => [
+                    $this->gettext("up", "mel_metapage"),
+                    $this->gettext("down", "mel_metapage")
+                ],
+                $scrollbar_size => [
+                    //$this->gettext('auto', 'mel_metapage'),
+                    $this->gettext("default", 'mel_metapage'),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("large", "mel_metapage")
+                ]
+            ];
+
+            if ($config[$chat_placement] === null || $config[$chat_placement] === "")
+                $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+            if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "" || $config[$scrollbar_size] === $this->gettext('auto', 'mel_metapage'))
+                $config[$scrollbar_size] = $this->gettext("default", "mel_metapage");
+
+            foreach ($config as $key => $value) {
+                if ($key === $chat_placement) continue;
+                $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
+            }
+            
+        }
+        else if($args['section'] == 'calendar'){
+            $this->add_texts('localization/');
+
+            $calendar_space = "mel-calendar-space";
+
+            $config = $this->rc->config->get('mel_calendar_configuration', [
+                $calendar_space => $this->gettext("normal", "mel_metapage"),
+            ]);
+
+            $options = [
+                $calendar_space => [
+                    $this->gettext("without_spaces", "mel_metapage"),
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("larger", "mel_metapage")
+                ]
+            ];
+
+            foreach ($config as $key => $value) {
+                $args['blocks']['view']['options'][$key] = $this->create_pref_select($key, $value, $options[$key]);
+            }
+        }
+        else if ($args['section'] == 'globalsearch')
+        {
+            $this->add_texts('localization/');
+            mel_helper::settings(true);
+
+            //Max search mail
+            $search_mail_max = 'search_mail_max';
+            $search_mail_max_config = $this->rc->config->get($search_mail_max, 9999);
+            $search_input = (new setting_option_value_input(0, setting_option_value_input::INFINITY))->html($search_mail_max, $search_mail_max_config, ['name' => $search_mail_max], $this);//new html_inputfield(['name' => $search_mail_max, 'id' => $search_mail_max]);
+
+            $args['blocks']['general']['options'][$search_mail_max] = $search_input;/*[
+                'title'   => html::label($search_mail_max, rcube::Q($this->gettext($search_mail_max))),
+                'content' => $search_input->show($search_mail_max_config),
+            ];*/
+
+            //Search on all bal
+            $search_on_all_bal = 'search_on_all_bal';
+            $search_on_all_bal_config = $this->rc->config->get($search_on_all_bal, true);
+            $search_check = new html_checkbox(['name' => $search_on_all_bal, 'id' => $search_on_all_bal, 'value' => 1]);
+
+            $args['blocks']['general']['options'][$search_on_all_bal] = [
+                'title'   => html::label($search_on_all_bal, rcube::Q($this->gettext($search_on_all_bal))),
+                'content' => $search_check->show($search_on_all_bal_config ? 1 : 0),
+            ];
+
+            $args['blocks']['general']['options']['balp_settings'] = [
+                'content' => $this->create_balp_selection($this->rc->config->get('global_search_balp_configs', []))->show(['style' => ($search_on_all_bal_config ? 'display:none' : '')]),
+            ];
+
+            //Search on all bali
+            $search_on_all_bali_folders = 'search_on_all_bali_folders';
+            $search_on_all_bali_folders_config = $this->rc->config->get($search_on_all_bali_folders, true);
+            $search_check = new html_checkbox(['name' => $search_on_all_bali_folders, 'id' => $search_on_all_bali_folders, 'value' => 1]);
+
+            $args['blocks']['general']['options'][$search_on_all_bali_folders] = [
+                'title'   => html::label($search_on_all_bali_folders, rcube::Q($this->gettext($search_on_all_bali_folders))),
+                'content' => $search_check->show($search_on_all_bali_folders_config ? 1 : 0),
+            ];
+
+            $args['blocks']['general']['options']['bali_settings'] = [
+                'content' => $this->create_bali_folders_selection($this->rc->config->get('global_search_bali_folders_configs', []))->show(['style' => ($search_on_all_bali_folders_config ? 'display:none' : '')]),
+            ];
+            
+        }
+        else if ($args['section'] == 'chat')
+        {
+            $this->add_texts('localization/');
+            $startup = 'chat_startup';
+            $startup_config = $this->rc->config->get($startup, false);
+
+            $startup_check = new html_checkbox(['name' => $startup, 'id' => $startup, 'value' => 1]);
+            $args['blocks']['general']['options'][$askOnEnd] = [
+                'title'   => html::label($startup, rcube::Q($this->gettext($startup))),
+                'content' => $startup_check->show($startup_config ? 1 : 0),
+            ];
+
+            $icon = "mel-icon-size";
+            $folder_space = "mel-folder-space";
+            $message_space = "mel-message-space";
+            $mel_column = "mel-3-columns";
+            $chat_placement = "mel-chat-placement";
+            $scrollbar_size = 'mel-scrollbar-size';
+
+            // Check that configuration is not disabled
+            $config = $this->rc->config->get('mel_mail_configuration', [
+                $icon => $this->gettext("normal", "mel_metapage"),
+                $folder_space => $this->gettext("normal", "mel_metapage"),
+                $message_space => $this->gettext("normal", "mel_metapage"),
+                $mel_column => $this->gettext("yes", "mel_metapage"),
+                $chat_placement => $this->gettext("down", "mel_metapage"),
+                $scrollbar_size => $this->gettext("default", "mel_metapage")
+            ]);
+
+            if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+            if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "" || $config[$scrollbar_size] === $this->gettext('auto', 'mel_metapage')) $config[$scrollbar_size] = $this->gettext("default", "mel_metapage");
+
+            $options = [
+                $chat_placement => [
+                    $this->gettext("up", "mel_metapage"),
+                    $this->gettext("down", "mel_metapage")
+                ]
+            ];
+
+            foreach ($config as $key => $value) {
+                if ($options[$key] !== null)
+                {
+                    $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
+                }
+            }
+        }
+        else if ($args['section'] == 'notifications')
+        {
+            $this->add_texts('localization/');
+            $tab_title_style = 'tab_title_style';
+            $value = $this->rc->config->get($tab_title_style, 'page');
+
+            $options = ['all', 'page', 'nothing'];
+            $texts = [];
+
+            foreach ($options as $txt) {
+                $texts[] = $this->gettext("notif-$txt");
+            }
+
+            $args['blocks']['main_nav']['name'] = 'Navigation principale';
+            $args['blocks']['main_nav']['options'][$tab_title_style] = $this->create_pref_select_more($tab_title_style, $value, $texts, $options, ['title' => str_replace('<all/>', $this->gettext("notif-all"), str_replace('<page/>', $this->gettext("notif-page"), $this->gettext('tab_title_style_help')))]);
+            
+        }
+        else if ($args['section'] == 'navigation')
+        {
+            mel_helper::html_helper();
+            $this->add_texts('localization/');
+            $templates = $this->rc->config->get('template_navigation_apps', []);//mel_helper::Enumerable($this->rc->config->get('navigation_apps', []));
+            $config = $this->rc->config->get('navigation_apps', []);
+            // $main = $config->where(function ($k, $v) {
+            //     return !isset($v['link']);
+            // });
+
+            $args['blocks']['main_nav']['name'] = 'Applications par défauts';
+
+            foreach ($templates as $key => $value) {
+                //$key = $value->get_key();
+                //$value = $value->get_value();
+                $check = new html_checkbox(['name' => $key, 'id' => $key, 'value' => 1]);
+                $args['blocks']['main_nav']['options'][$key] = [
+                    'title'   => html::label($key, rcube::Q($this->gettext($key, 'mel_metapage'))),
+                    'content' => $check->show(($config[$key]['enabled'] ?? $value['enabled']) ? 1 : 0),
+                ];
+            }
+        }
+        else if ($args['section'] == 'bnum-experimental')
+        {
+            $settings = $this->rc->config->get('experimental-settings', []);
+
+            $args['blocks']['general']['name'] = 'Gérer des paramètres expérimentaux';
+
+            foreach ($settings as $id => $datas) {
+                switch ($datas['style']) {
+                    case 'checkbox':
+                        $check = new html_checkbox(['name' => $id, 'id' => $id, 'value' => 1]);
+                        $args['blocks']['general']['options'][$id] = [
+                            'title'   => html::label($startup, rcube::Q($this->gettext($datas['name']))),
+                            'content' => $check->show($this->rc->config->get($datas['config'], $datas['default']) ? 1 : 0),
+                        ];
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return $args;
+    }
+
+    /**
    * Handler for user preferences save (preferences_save hook)
    */
   public function prefs_save($args) {
@@ -1983,14 +1999,14 @@ class mel_metapage extends rcube_plugin
             $message_space => $this->gettext("normal", "mel_metapage"),
             $mel_column => $this->gettext("yes", "mel_metapage"),
             $chat_placement => $this->gettext("down", "mel_metapage"),
-            $scrollbar_size => $this->gettext("auto", "mel_metapage")
+            $scrollbar_size => $this->gettext("default", "mel_metapage")
         ]);
 
         if ($config[$chat_placement] === null || $config[$chat_placement] === "")
             $config[$chat_placement] = $this->gettext("down", "mel_metapage");
 
-        if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "")
-            $config[$scrollbar_size] = $this->gettext("auto", "mel_metapage");
+        if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "" || $config[$scrollbar_size] === $this->gettext('auto', 'mel_metapage'))
+            $config[$scrollbar_size] = $this->gettext("default", "mel_metapage");
 
         $chat = $config[$chat_placement];
 
@@ -2545,8 +2561,12 @@ class mel_metapage extends rcube_plugin
 
     public function debug_and_test()
     {
-        $this->include_script('js/program/webconf_audio_visualiser.js');
+        $this->include_script('js/program/webconf_video_manager.js');
         $this->rc->output->send('mel_metapage.test');
+    }
+
+    public function action_loading_frame() {
+        $this->rc->output->send('mel_metapage.loader');
     }
 
 }

@@ -18,10 +18,28 @@
     transform: scaleY( .5 );
     opacity: .25;
   }
+
+
+  label {
+    position: absolute;
+    /* bottom: 5px; */
+    /* left: 18%; */
+    background-color: #00000094;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
 </style>
 
-<div id="layout-content">
-    <div id="canvas-visualizer"></div>
-    <button id="tstart">Start</button>
+<div id="layout-content" style="overflow: auto;">
+    <div class="loader-base" style="position: absolute;top:60px;right:50%;">
+      <!-- <img src="./skins/mel_elastic/images/bnumloader.svg" /> -->
+      <div class="loader-looping"></div>
+    </div>
+
 </div>
 <roundcube:include file="includes/footer.html" />

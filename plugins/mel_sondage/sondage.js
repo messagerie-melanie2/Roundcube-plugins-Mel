@@ -19,9 +19,11 @@ $(document).ready(function() {
 			}
 		   $("#wait_box").hide();
 		   top.rcmail.env.sondage_loaded = true;
+		   console.log('Login success !', data);
 	   },
 	   error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
 		   $("#wait_box").hide();
+		   console.error('Login failed !', xhr, ajaxOptions, thrownError);
 	   },
 	});
 });

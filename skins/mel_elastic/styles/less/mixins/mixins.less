@@ -110,3 +110,8 @@
     list-style-type: none;
     padding: 0;
 }
+
+.mask-conic-gradiant(@deg) {
+    mask:conic-gradient(from @deg at 50% 50%, @loader-mask-color[A] 0%, @loader-mask-color[B] 51%, @loader-mask-color[C] 100%);
+    -webkit-mask: conic-gradient(from @deg at 50% 50%, @loader-mask-color[A] 0%, @loader-mask-color[B] 51%, @loader-mask-color[C] 100%);;
+}

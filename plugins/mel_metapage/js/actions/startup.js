@@ -319,6 +319,10 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
         //Mise à jours de la frame
         metapage_frames.triggerEvent("editFrame", eClass, changepage, isAriane, $("#"+id));
 
+        if (metapage_frames.triggerEvent("have-loading-frame", eClass, changepage, isAriane, querry, id)) {
+            metapage_frames.triggerEvent("generate-loading-frame", eClass, changepage, isAriane, querry, id)
+        }
+
         if (changepage) rcmail.set_busy(true, "loading");
 
         $("."+eClass+"-frame").on("load", () =>
@@ -528,6 +532,11 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         btn.hide_button();
         $(".a-frame").css("display", "");
     }
+
+    if (isAriane)// || $("iframe."+eClass+"-frame").length === 0)
+        $("#layout-frames").css("display", "none");
+    else 
+        $("#layout-frames").css("display", "");
 });
 
 metapage_frames.addEvent("rcmailconfig.no", (eClass, changepage, isAriane, querry, id) => {
@@ -546,6 +555,19 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
     else
         return (isAriane ? $("#layout") : $("#layout-frames"));
 })
+
+metapage_frames.addEvent("have-loading-frame", (eClass, changepage, isAriane, querry, id, args, result) => {
+    return !isAriane && changepage;
+});
+
+metapage_frames.addEvent("generate-loading-frame", (eClass, changepage, isAriane, querry, id, args, result) => {
+    let $loading = $('#bnum-loading-div');
+
+    if ($loading.length === 0) {
+        $('<div id="bnum-loading-div"><div style="position:relative;width:100%;height:100%"><div class="absolute-center"><div class="loader-base"><div class="loader-looping"></div></div></div></div></div>').addClass('loader-div').appendTo($("#layout-frames"));
+    }
+    else $loading.removeClass('loaded');
+});
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, args, result) => {
     const empty = "";
@@ -623,6 +645,7 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
     try {
+        $('#bnum-loading-div').addClass('loaded');
         //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
         let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
         const _$ = querry_content.$;
@@ -671,12 +694,6 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     }
 
     metapage_frame_actions(actions, id, true);
-
-    if (isAriane || $("iframe."+eClass+"-frame").length === 0)
-        $("#layout-frames").css("display", "none");
-    else 
-        $("#layout-frames").css("display", "");
-
 });
 
 function metapage_frame_actions(actions, id, after_load) {

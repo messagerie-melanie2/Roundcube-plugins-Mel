@@ -167,6 +167,9 @@
 				<label for="mel-calendar-has-phone-datas" class="custom-control-label" title="">Afficher le numéro de téléphone de la visio ?</label>
 			</div>
 
+			<label class="sr-only" id="mel-event-audio-phone-sr-only"><roundcube:label name='mel_metapage.audio_phone' /></label>
+			<label class="sr-only" id="mel-event-audio-num-sr-only"><roundcube:label name='mel_metapage.audio_num' /></label>
+
             <div class="row" style="display: none;">
                 <div class="col-6">
                     <span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.event_mode' /></span>
@@ -268,6 +271,8 @@
                 </label>
             </div>
             <!-- <span class="red-star-after span-mel t1">Rattacher l'évènement à un espace de travail</span> -->
+			<label class="sr-only" for="wsp-event-all-cal-mm">Rattacher l'évènement à un espace de travail</label>
+			<label class="sr-only" for="categories-event-all-cal-mm">Attacher une catégorie à cet évènement</label>
 			<div id="div-events-wsp">
 				<roundcube:object name="event-wsp"/>
 			</div>
@@ -289,7 +294,7 @@
 
 			<div class="form-group row" id="calendar-select">
 				<!-- <label for="edit-calendar" class="col-sm-2 col-form-label"><roundcube:label name="calendar.calendar" /></label> -->
-				<label for="edit-title" class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.choose_calendar' /></label>
+				<label for="edit-calendar" class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.choose_calendar' /></label>
 				<div class="col-sm-12">
 					<roundcube:object name="plugin.calendar_select" id="edit-calendar" class="form-control input-mel" />
 				</div>
@@ -301,7 +306,7 @@
 				</div>
 			</div>
 			<div class="form-group row">
-				<label for="edit-title" class="span-mel t1"><roundcube:label name='mel_metapage.choose_event_state' /></label>
+				<label for="edit-event-status" class="span-mel t1"><roundcube:label name='mel_metapage.choose_event_state' /></label>
 				<!-- <label for="edit-event-status" class="col-sm-2 col-form-label"><roundcube:label name="calendar.status" /></label> -->
 				<div class="col-sm-12">
 					<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control input-mel" />
@@ -320,7 +325,7 @@
 				</div>
 			</div>
 			<div class="form-group row">
-				<label for="edit-title" class="span-mel t1"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
+				<label for="edit-sensitivity" class="span-mel t1"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
 				<!-- <label for="edit-sensitivity" class="col-sm-2 col-form-label"><roundcube:label name="calendar.sensitivity" /></label> -->
 				<div class="col-sm-12">
 					<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control input-mel" />

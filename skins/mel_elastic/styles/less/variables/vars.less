@@ -15,6 +15,20 @@
 /** ANIMATIONS **/
 @mel-default-animation:all 0.1s ease-in;
 
+/** LOADER **/
+@loader-image:"./../images/bnumloader.svg";
+@loader-size:{
+    WIDTH:200px;
+    HEIGHT:200px;
+}
+@loader-background-position:65% 57%;
+@loader-mask-color:{
+    A:rgb(255, 255, 255);
+    B:rgba(140, 140, 140, 0);
+    C:rgba(0, 0, 0, 0);
+}
+@loader-mask:conic-gradient(from 90deg at 50% 50%, @loader-mask-color[A] 0%, @loader-mask-color[B] 51%, @loader-mask-color[C] 100%);
+
 /** WIDTH **/
 @scrollbar-webkit-width:{
     SMALL:6px;

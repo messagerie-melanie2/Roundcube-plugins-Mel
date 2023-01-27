@@ -445,7 +445,7 @@ class mel_notification extends rcube_plugin
 
         // Add headers
         foreach (['notifications', 'inside_notification', 'desktop_notification', 'notifications_center'] as $name) {
-            $table->add_header(['class' => $name], $this->gettext($name));
+            $table->add_header(['class' => $name, 'scope' => 'col'], $this->gettext($name));
         }
 
         $notifications_settings = $this->rc->config->get('notifications_settings', []);
@@ -456,7 +456,7 @@ class mel_notification extends rcube_plugin
             $config = isset($notifications_settings[$key]) ? $notifications_settings[$key] : [];
 
             // Colonne avec le nom du settings
-            $table->add([], $name);
+            $table->add(['scope' => 'row'], $name);
 
             // Parcours les configurations
             foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
@@ -477,7 +477,7 @@ class mel_notification extends rcube_plugin
                 $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
 
                 // Ajouter la BALI
-                $table->add([], $this->gettext('mailbox') . driver_mel::gi()->getUser()->fullname);
+                $table->add(['scope' => 'row'], $this->gettext('mailbox') . driver_mel::gi()->getUser()->fullname);
 
                 // Parcours les configurations
                 foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
@@ -498,7 +498,7 @@ class mel_notification extends rcube_plugin
                     $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
 
                     // Colonne avec le nom du settings
-                    $table->add([], $this->gettext('mailbox') . $object->mailbox->fullname);
+                    $table->add(['scope' => 'row'], $this->gettext('mailbox') . $object->mailbox->fullname);
 
                     // Parcours les configurations
                     foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {

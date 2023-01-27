@@ -35,6 +35,7 @@
 		 * the files that the user shared with others (false).
 		 */
 			_entities: true,
+			_personal: false,
 			_clientSideSort: true,
 			_allowSelection: false,
 
@@ -51,6 +52,10 @@
 				if (options && !options.entities) {
 					this._entities = false
 				}
+				if (options && options.personal) {
+					this._personal = true
+					// this._renderNewButton();
+				}
 			},
 
 			_renderRow: function() {
@@ -64,18 +69,20 @@
 			// TODO: hook earlier and render the whole row here
 				var $tr = OCA.Files.FileList.prototype._createRow.apply(this, arguments);
 
-				let simpleQuota;
-				if (fileData.quota < 0) {
-					simpleQuota = 'Illimité';
+				if (fileData.quota) {
+					let simpleQuota;
+					if (fileData.quota < 0) {
+						simpleQuota = 'Illimité';
+					}
+					else if (fileData.quota === 0) {
+						simpleQuota = 0;
+					}
+					else {
+						simpleQuota = OC.Util.humanFileSize(parseInt(fileData.quota, 10), true);
+					}
+					
+					$tr.find('td.date').before($('<td class="filequota">' + simpleQuota + '</td>'));
 				}
-				else if (fileData.quota === 0) {
-					simpleQuota = 0;
-				}
-				else {
-					simpleQuota = OC.Util.humanFileSize(parseInt(fileData.quota, 10), true);
-				}
-				
-				$tr.find('td.date').before($('<td class="filequota">' + simpleQuota + '</td>'));
 				return $tr
 			},
 
@@ -105,8 +112,17 @@
 				}
 			},
 
+			/**
+			 * Returns the directory permissions
+			 * @return permission value as integer
+			 */
 			getDirectoryPermissions: function() {
-				return OC.PERMISSION_READ | OC.PERMISSION_DELETE
+				if (this._personal) {
+					return this && this.dirInfo && this.dirInfo.permissions ? this.dirInfo.permissions : parseInt(this.$el.find('#permissions').val(), 10);
+				}
+				else {
+					return OC.PERMISSION_READ;
+				}
 			},
 
 			updateStorageStatistics: function() {
@@ -117,6 +133,24 @@
 			updateRow: function($tr, fileInfo, options) {
 			// no-op, suppress re-rendering
 				return $tr
+			},
+
+			_renderNewButton: function() {
+				// if an upload button (legacy) already exists or no actions container exist, skip
+				var $actionsContainer = this.$el.find('#controls .actions');
+				if (!$actionsContainer.length || this.$el.find('.button.upload').length) {
+					return;
+				}
+				var $newButton = $(OCA.Files.Templates['template_addbutton']({
+					addText: t('files', 'New'),
+					iconClass: 'icon-add'
+				}));
+	
+				$actionsContainer.prepend($newButton);
+				$newButton.tooltip({'placement': 'bottom'});
+	
+				$newButton.click(_.bind(this._onClickNewButton, this));
+				this._newButton = $newButton;
 			},
 
 			reload: function() {
@@ -135,7 +169,8 @@
 					/* jshint camelcase: false */
 					data: {
 						format: 'json',
-						entities: true
+						entities: true,
+						personal: false
 					},
 					type: 'GET',
 					beforeSend: function(xhr) {
@@ -148,7 +183,22 @@
 					/* jshint camelcase: false */
 					data: {
 						format: 'json',
-						entities: false
+						entities: false,
+						personal: false
+					},
+					type: 'GET',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('OCS-APIREQUEST', 'true')
+					}
+				}
+
+				var personalfiles = {
+					url: OC.linkToOCS('apps/bnum/api/v1', 2) + 'folders',
+					/* jshint camelcase: false */
+					data: {
+						format: 'json',
+						entities: false,
+						personal: true
 					},
 					type: 'GET',
 					beforeSend: function(xhr) {
@@ -158,7 +208,10 @@
 
 				// Add the proper ajax requests to the list and run them
 				// and make sure we have 2 promises
-				if (this._entities) {
+				if (this._personal) {
+					promises.push($.ajax(personalfiles))
+				}
+				else if (this._entities) {
 					promises.push($.ajax(entities))
 				} else {
 					promises.push($.ajax(workspaces))
@@ -183,6 +236,16 @@
 				if (files.ocs && files.ocs.data) {
 					// result = result.concat(this._makeFiles(files.ocs.data))
 					result = result.concat(files.ocs.data)
+				}
+
+				if (this._personal) {
+					// first entry is the root
+					this.dirInfo = result.shift();
+					this.breadcrumb.setDirectoryInfo(this.dirInfo);
+
+					if (this.dirInfo.permissions) {
+						this._updateDirectoryPermissions();
+					}
 				}
 
 				this.setFiles(result)
@@ -215,105 +278,6 @@
 					.value()
 				return files
 			},
-
-		/**
-		 * Converts the OCS API share response data to a file info
-		 * list
-		 * @param {Array} data OCS API share array
-		 * @returns {Array.<OCA.Bnum.SharedFileInfo>} array of shared file info
-		 */
-			_makeFilesOld: function(data, sharedWithUser) {
-			/* jshint camelcase: false */
-				var files = data
-
-				// OCS API uses non-camelcased names
-				files = _.chain(files)
-				// convert share data to file data
-					.map(function(_file) {
-					// TODO: use OC.Files.FileInfo
-						var file = {
-							id: _file.id,
-							type: 'dir',
-							mimetype: 'httpd/unix-directory',
-							name: OC.basename(_file.name),
-							path: OC.dirname(_file.path),
-							permissions: _file.permissions
-						}
-						
-						if (file.path) {
-							file.extraData = _file.path
-						}
-						return file
-					})
-				// Group all files and have a "shares" array with
-				// the share info for each file.
-				//
-				// This uses a hash memo to cumulate share information
-				// inside the same file object (by file id).
-					.reduce(function(memo, file) {
-						var data = memo[file.id]
-						var recipient = file.share.targetDisplayName
-						var recipientId = file.share.targetShareWithId
-						if (!data) {
-							data = memo[file.id] = file
-							data.shares = [file.share]
-							// using a hash to make them unique,
-							// this is only a list to be displayed
-							data.recipients = {}
-							data.recipientData = {}
-							// share types
-							data.shareTypes = {}
-							// counter is cheaper than calling _.keys().length
-							data.recipientsCount = 0
-							data.mtime = file.share.stime
-						} else {
-						// always take the most recent stime
-							if (file.share.stime > data.mtime) {
-								data.mtime = file.share.stime
-							}
-							data.shares.push(file.share)
-						}
-
-						if (recipient) {
-						// limit counterparts for output
-							if (data.recipientsCount < 4) {
-							// only store the first ones, they will be the only ones
-							// displayed
-								data.recipients[recipient] = true
-								data.recipientData[data.recipientsCount] = {
-									'shareWith': recipientId,
-									'shareWithDisplayName': recipient
-								}
-							}
-							data.recipientsCount++
-						}
-
-						data.shareTypes[file.share.type] = true
-
-						delete file.share
-						return memo
-					}, {})
-				// Retrieve only the values of the returned hash
-					.values()
-				// Clean up
-					.each(function(data) {
-					// convert the recipients map to a flat
-					// array of sorted names
-						data.mountType = 'shared'
-						delete data.recipientsCount
-						if (sharedWithUser) {
-						// only for outgoing shares
-							delete data.shareTypes
-						} else {
-							data.shareTypes = _.keys(data.shareTypes)
-						}
-					})
-				// Finish the chain by getting the result
-					.value()
-
-				// Sort by expected sort comparator
-				return files.sort(this._sortComparator)
-			}
 		})
 
 	/**

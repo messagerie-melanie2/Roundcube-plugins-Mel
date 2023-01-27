@@ -92,7 +92,8 @@ class BnumAPIController extends OCSController {
 	 * @throws OCSNotFoundException
 	 */
 	public function getFolders(
-		string $entities = 'true'
+		string $entities = 'true',
+		string $personal = 'false'
 	): DataResponse {
 		
 		$folders = [];
@@ -105,9 +106,26 @@ class BnumAPIController extends OCSController {
 			$_folders = $folderManager->getFoldersForUser($this->userSession->getUser());
 			$entitiesLabel = 'entite-';
 			$workspacesLabel = 'dossiers-';
+
+			if ($personal == 'true') {
+				// Dossier à retourner en API
+				$folders[] = [
+					'id' => $userFolder->getId(),
+					'path' => $userFolder->getPath(),
+					'type' => $userFolder->getType(),
+					'displayName' => $userFolder->getName(),
+					'name' => $userFolder->getName(),
+					'mimetype' => $userFolder->getMimetype(),
+					'permissions' => $userFolder->getPermissions(),
+					'size' => $userFolder->getSize(),
+					'etag' => $userFolder->getEtag(),
+					'mtime' => $userFolder->getMTime() * 1000,
+				];
+			}
 			
 			foreach ($userFolder->getDirectoryListing() as $directory) {
-				if ($directory->getMountPoint() instanceof \OCA\GroupFolders\Mount\GroupMountPoint) {
+				$isGroupFolder = $directory->getMountPoint() instanceof \OCA\GroupFolders\Mount\GroupMountPoint;
+				if ($personal == 'false' && $isGroupFolder) {
 					if ($entities == 'true' && strpos($directory->getName(), $entitiesLabel) !== 0
 							|| $entities == 'false' && strpos($directory->getName(), $workspacesLabel) !== 0) {
 						continue;
@@ -144,6 +162,21 @@ class BnumAPIController extends OCSController {
 						'permissions' => $directory->getPermissions(),
 						'quota' => $quota,
 						'size' => $directory->getSize(),
+						'mtime' => $directory->getMTime() * 1000,
+					];
+				}
+				else if ($personal == 'true' && !$isGroupFolder) {
+					// Dossier à retourner en API
+					$folders[] = [
+						'id' => $directory->getId(),
+						'path' => $directory->getPath(),
+						'type' => $directory->getType(),
+						'displayName' => $directory->getName(),
+						'name' => $directory->getName(),
+						'mimetype' => $directory->getMimetype(),
+						'permissions' => $directory->getPermissions(),
+						'size' => $directory->getSize(),
+						'etag' => $directory->getEtag(),
 						'mtime' => $directory->getMTime() * 1000,
 					];
 				}

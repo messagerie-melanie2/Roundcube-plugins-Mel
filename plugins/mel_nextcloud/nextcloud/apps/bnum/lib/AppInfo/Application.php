@@ -67,12 +67,9 @@ class Application extends App implements IBootstrap {
 	}
 
     public function boot(IBootContext $context): void {
-		$urls = [
-			"/mdrive/index.php/apps/files/",
-			"/preproddrive/index.php/apps/files/"
-		];
-		if ($_SERVER['REQUEST_METHOD'] == 'GET' 
-				&& in_array($_SERVER['SCRIPT_URL'], $urls)) {
+		if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD'])
+				&& $_SERVER['REQUEST_METHOD'] == 'GET' 
+				&& $_SERVER['PATH_INFO'] == "/apps/files/") {
 			$context->injectFn(Closure::fromCallable([$this, 'registerNavigation']));
 		}
 	}
@@ -81,8 +78,9 @@ class Application extends App implements IBootstrap {
 		// PAMELA 
         // \Psr\Container\ContainerInterface::get(\OCA\GroupFolders\Folder\FolderManager::class);
 		$folderManager = $this->getContainer()->query(\OCA\GroupFolders\Folder\FolderManager::class);
-		if (isset($folderManager)) {
-			$folders = $folderManager->getFoldersForUser($userSession->getUser());
+		$user = $userSession->getUser();
+		if (isset($folderManager) && isset($user)) {
+			$folders = $folderManager->getFoldersForUser($user);
 
             // Sort folders by alphabetical order
 			usort($folders, function($a, $b) {
@@ -115,6 +113,9 @@ class Application extends App implements IBootstrap {
 				if (strpos($folder['mount_point'], $entitiesLabel) === 0) {
 					$sortingValue = ++$entitiesCurrentCount;
 					$name = str_replace($entitiesLabel, '', $folder['mount_point']);
+					if (strpos($name, ',') !== false) {
+						$name = substr($name, strrpos($name, ',') + 1);
+					}
 					$order = $entitiesNavBarPositionPosition;
 				}
 				// Workspaces
@@ -141,6 +142,7 @@ class Application extends App implements IBootstrap {
 
 				// Entites
 				if (strpos($folder['mount_point'], $entitiesLabel) === 0) {
+					$element['expandedState'] = 'show_entities_menu';
 					array_push($entitiesSublist, $element);
 					$entitiesNavBarPositionPosition++;
 				}
@@ -149,7 +151,6 @@ class Application extends App implements IBootstrap {
 					array_push($workspacesSublist, $element);
 					$workspacesNavBarPositionPosition++;
 				}
-				
 			}
 
 			$entitiesCollapseClasses = '';
@@ -161,8 +162,20 @@ class Application extends App implements IBootstrap {
 			if (count($workspacesSublist) > 0) {
 				$workspacesCollapseClasses = 'collapsible';
 			}
-			
-			// PAMELA - Entites
+
+			// // Fichiers perso
+			// \OCA\Files\App::getNavigationManager()->add(function () use ($l10n) {
+			// 	return [
+			// 		'id' => 'personalfiles',
+			// 		'appname' => self::APP_ID,
+			// 		'script' => 'list.php',
+			// 		'icon' => 'files',
+			// 		'order' => 1,
+			// 		'name' => $l10n->t('Fichiers personnels')
+			// 	];
+			// });
+
+			// Entites
 			\OCA\Files\App::getNavigationManager()->add(function () use ($entitiesNavBarPosition, $l10n, $entitiesCollapseClasses, $entitiesSublist) {
 				return [
 					'id' => 'entities',
@@ -177,7 +190,7 @@ class Application extends App implements IBootstrap {
 				];
 			});
 
-			// PAMELA - Espaces de travail
+			// Espaces de travail
 			\OCA\Files\App::getNavigationManager()->add(function () use ($workspacesNavBarPosition, $l10n, $workspacesCollapseClasses, $workspacesSublist) {
 				return [
 					'id' => 'workspaces',

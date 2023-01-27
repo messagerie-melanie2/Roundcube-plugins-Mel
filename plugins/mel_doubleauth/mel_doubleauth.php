@@ -343,8 +343,8 @@ class mel_doubleauth extends rcube_plugin {
         /**
          * Create a bootstrap col in one row
          */
-        function rowcol($content, $rowclass = 'row', $colclass = 'col-sm my-auto') { 
-            return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass"], $content)); 
+        function rowcol($content, $rowclass = 'row', $colclass = 'col-sm my-auto', $rowid = null) { 
+            return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass", 'id' => $rowid], $content)); 
         }
         
         $data = $this->__get2FAconfig();
@@ -388,10 +388,10 @@ class mel_doubleauth extends rcube_plugin {
 
             $hidden_fields .= $html_recovery_codes;
         } else {
-            $html_check_code = '<input type="text" id="2FA_code_to_check" class="form-control" maxlength="10">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
+            $html_check_code = '<input type="text" id="2FA_code_to_check" class="form-control" maxlength="10" aria-labelledby="info_check_code">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
 
             $div_container .= rowcol($this->gettext('info_active_ok'));
-            $div_container .= rowcol($this->gettext('info_check_code'));
+            $div_container .= rowcol($this->gettext('info_check_code'), 'row', 'col-sm my-auto','info_check_code');
             $div_container .= rowcol($html_check_code);
             $div_container .= rowcol('<br>');
 

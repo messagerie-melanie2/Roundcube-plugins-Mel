@@ -386,8 +386,8 @@ class M2mailbox {
       return 'Folders error';
     }
 
-    $input = new html_inputfield(array('name' => 'nbheures','size' => '2'));
-    $select = new html_select(array('name' => 'folder'));
+    $input = new html_inputfield(array('name' => 'nbheures', 'title' => 'Sélectionner l’heure(s) où lescourriels on été supprimer (maximum 168 heures)'));
+    $select = new html_select(array('name' => 'folder', 'title' => 'Sélectionner le dossier à récupérer'));
     $delimiter = $imap->get_hierarchy_delimiter();
 
     foreach ($folders as $folder) {

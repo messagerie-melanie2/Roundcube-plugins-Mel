@@ -42,6 +42,7 @@ use OCP\IL10N;
 use OCP\Util;
 use OCP\IURLGenerator;
 use OCP\IUserSession;
+use OCP\Files\IRootFolder;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'bnum';
@@ -74,13 +75,14 @@ class Application extends App implements IBootstrap {
 		}
 	}
 
-    private function registerNavigation(IL10N $l10n, IUserSession $userSession, IURLGenerator $urlGenerator): void {
+    private function registerNavigation(IL10N $l10n, IUserSession $userSession, IURLGenerator $urlGenerator, IRootFolder $rootFolder): void {
 		// PAMELA 
         // \Psr\Container\ContainerInterface::get(\OCA\GroupFolders\Folder\FolderManager::class);
 		$folderManager = $this->getContainer()->query(\OCA\GroupFolders\Folder\FolderManager::class);
 		$user = $userSession->getUser();
 		if (isset($folderManager) && isset($user)) {
 			$folders = $folderManager->getFoldersForUser($user);
+			$userFolder = $rootFolder->getUserFolder($user->getUID());
 
             // Sort folders by alphabetical order
 			usort($folders, function($a, $b) {
@@ -90,44 +92,64 @@ class Application extends App implements IBootstrap {
 				return ($a['mount_point'] < $b['mount_point']) ? -1 : 1;
 			});
 
+			$personalFoldersSublist = [];
+			$personalFoldersNavBarPosition = 6;
+			$personalFoldersNavBarPositionPosition = $personalFoldersNavBarPosition;
+			$personalFoldersCurrentCount = 0;
+
 			// Entities params
 			$entitiesLabel = 'entite-';
-			$entitiesNavBarPosition = 6;
+			$entitiesNavBarPosition = 7;
 			$entitiesNavBarPositionPosition = $entitiesNavBarPosition;
 			$entitiesCurrentCount = 0;
 			$entitiesSublist = [];
 
 			// Workspaces params
 			$workspacesLabel = 'dossiers-';
-			$workspacesNavBarPosition = 7;
+			$workspacesNavBarPosition = 8;
 			$workspacesNavBarPositionPosition = $workspacesNavBarPosition;
 			$workspacesSublist = [];
 			$workspacesCurrentCount = 0;
 
-			foreach ($folders as $folder) {
-				$id = '-' . $folder['mount_point'];
-				$dir = '/' . $folder['mount_point'];
+			foreach ($userFolder->getDirectoryListing() as $directory) {
+				$id = '-' . $directory->getName();
+				$dir = '/' . $directory->getName();
 				$link = $urlGenerator->linkToRoute('files.view.index', ['dir' => $dir, 'view' => 'files']);
 
-				// Entites
-				if (strpos($folder['mount_point'], $entitiesLabel) === 0) {
-					$sortingValue = ++$entitiesCurrentCount;
-					$name = str_replace($entitiesLabel, '', $folder['mount_point']);
-					if (strpos($name, ',') !== false) {
-						$name = substr($name, strrpos($name, ',') + 1);
+				$isGroupFolder = $directory->getMountPoint() instanceof \OCA\GroupFolders\Mount\GroupMountPoint;
+				if ($isGroupFolder) {
+					if (strpos($directory->getName(), $entitiesLabel) !== 0 && strpos($directory->getName(), $workspacesLabel) !== 0) {
+						continue;
 					}
-					$order = $entitiesNavBarPositionPosition;
-				}
-				// Workspaces
-				else if (strpos($folder['mount_point'], $workspacesLabel) === 0) {
-					$sortingValue = ++$workspacesCurrentCount;
-					$name = str_replace($workspacesLabel, '', $folder['mount_point']);
-					if (substr($name, -2) == '-1') {
-						$name = substr($name, 0, strlen($name) - 2);
+
+					// Entites
+					if (strpos($directory->getName(), $entitiesLabel) === 0) {
+						$sortingValue = ++$entitiesCurrentCount;
+						$name = str_replace($entitiesLabel, '', $directory->getName());
+						if (strpos($name, ',') !== false) {
+							$name = substr($name, strrpos($name, ',') + 1);
+						}
+						$order = $entitiesNavBarPositionPosition;
 					}
-					$order = $workspacesNavBarPositionPosition;
+					// Workspaces
+					else if (strpos($directory->getName(), $workspacesLabel) === 0) {
+						$sortingValue = ++$workspacesCurrentCount;
+						$name = str_replace($workspacesLabel, '', $directory->getName());
+						if (substr($name, -2) == '-1') {
+							$name = substr($name, 0, strlen($name) - 2);
+						}
+						$order = $workspacesNavBarPositionPosition;
+					}
 				}
-					
+				else if ($directory->getType() != 'dir') {
+					continue;
+				}
+				else {
+					$name = $directory->getName();
+					$sortingValue = ++$personalFoldersCurrentCount;
+					$order = $personalFoldersNavBarPositionPosition;
+				}
+
 				$element = [
 					'id' => $id,
 					'view' => 'files',
@@ -140,22 +162,36 @@ class Application extends App implements IBootstrap {
 					'quickaccesselement' => 'true'
 				];
 
-				// Entites
-				if (strpos($folder['mount_point'], $entitiesLabel) === 0) {
-					$element['expandedState'] = 'show_entities_menu';
+				if (!$isGroupFolder) {
+					array_push($personalFoldersSublist, $element);
+					$personalFoldersNavBarPositionPosition++;
+				}
+				else if (strpos($directory->getName(), $entitiesLabel) === 0) {
 					array_push($entitiesSublist, $element);
 					$entitiesNavBarPositionPosition++;
 				}
-				// Workspaces
-				else if (strpos($folder['mount_point'], $workspacesLabel) === 0) {
+				else if (strpos($directory->getName(), $workspacesLabel) === 0) {
 					array_push($workspacesSublist, $element);
 					$workspacesNavBarPositionPosition++;
 				}
 			}
 
+			$personalFoldersCollapseClasses = '';
+			if (count($personalFoldersSublist) > 0) {
+				$personalFoldersCollapseClasses = 'collapsible';
+			}
+
 			$entitiesCollapseClasses = '';
 			if (count($entitiesSublist) > 0) {
 				$entitiesCollapseClasses = 'collapsible';
+
+				// Trier par name
+				usort($entitiesSublist, function ($a, $b) {
+					if ($a['name'] == $b['name']) {
+						return 0;
+					}
+					return ($a['name'] < $b['name']) ? -1 : 1;
+				});
 			}
 
 			$workspacesCollapseClasses = '';
@@ -163,17 +199,20 @@ class Application extends App implements IBootstrap {
 				$workspacesCollapseClasses = 'collapsible';
 			}
 
-			// // Fichiers perso
-			// \OCA\Files\App::getNavigationManager()->add(function () use ($l10n) {
-			// 	return [
-			// 		'id' => 'personalfiles',
-			// 		'appname' => self::APP_ID,
-			// 		'script' => 'list.php',
-			// 		'icon' => 'files',
-			// 		'order' => 1,
-			// 		'name' => $l10n->t('Fichiers personnels')
-			// 	];
-			// });
+			// Fichiers perso
+			\OCA\Files\App::getNavigationManager()->add(function () use ($l10n, $personalFoldersCollapseClasses, $personalFoldersNavBarPosition, $personalFoldersSublist) {
+				return [
+					'id' => 'personalfiles',
+					'appname' => self::APP_ID,
+					'script' => 'list.php',
+					'classes' => $personalFoldersCollapseClasses,
+					'icon' => 'files',
+					'order' => $personalFoldersNavBarPosition,
+					'name' => $l10n->t('Espace individuel'),
+					'expandedState' => 'show_personal_files_menu',
+					'sublist' => $personalFoldersSublist,
+				];
+			});
 
 			// Entites
 			\OCA\Files\App::getNavigationManager()->add(function () use ($entitiesNavBarPosition, $l10n, $entitiesCollapseClasses, $entitiesSublist) {

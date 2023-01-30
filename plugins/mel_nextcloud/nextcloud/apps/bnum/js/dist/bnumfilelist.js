@@ -248,6 +248,7 @@
 					}
 				}
 
+				result.sort(this._sortComparator);
 				this.setFiles(result)
 				return true
 			},

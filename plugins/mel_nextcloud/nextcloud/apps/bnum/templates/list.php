@@ -1,14 +1,3 @@
-<div id="controls">
-		<div class="actions creatable hidden">
-			<div id="uploadprogresswrapper">
-			</div>
-		</div>
-		<div id="file_action_panel"></div>
-		<div class="notCreatable notPublic hidden">
-			<div class="icon-alert-outline"></div>
-			<?php p($l->t('You don’t have permission to upload or create files here'))?>
-		</div>
-</div>
 <div id="filelist-header"></div>
 
 <div id="emptycontent" class="hidden">

@@ -68,7 +68,7 @@ class mel_signatures extends rcube_plugin
     {
         $args['actions'][] = array(
             'action' => 'plugin.mel_signatures',
-            'class'  => 'signatures',
+            'class'  => 'signatures identities',
             'label'  => 'task',
             'domain' => 'mel_signatures',
             'title'  => 'signaturestitle',
@@ -91,9 +91,19 @@ class mel_signatures extends rcube_plugin
             $value = $user->$field;
             // Gestion du service
             if ($field == 'service' && !empty($value)) {
-                $tmp = explode('/', $value, 2);
-                $this->rc->output->set_env('department', $this->get_direction_name($tmp[0], $user->dn));
-                $this->rc->output->set_env($field, $tmp[1]);
+                $tmp = explode('/', $value, 3);
+
+                $direction = $tmp[0];
+                $subdirection = $tmp[1] ?: null;
+                $service = $tmp[2] ?: null;
+
+                // Gérer les directions multiples
+                $this->get_direction_name($direction, $subdirection, $service, $user->dn);
+
+                $this->rc->output->set_env('department', isset($subdirection) ? $subdirection . " | " . $direction : $direction);
+                $this->rc->output->set_env('logotype', $direction);
+                
+                $this->rc->output->set_env($field, $service);
             }
             else if ($field == 'roomnumber' && !empty($value) && strpos($value, $this->gettext('roomnumber')) === false) {
                 $this->rc->output->set_env('roomnumber', $this->gettext('roomnumber') . $value);
@@ -109,6 +119,7 @@ class mel_signatures extends rcube_plugin
         $this->rc->output->add_handlers(array(
             'signaturelinks'        => array($this, 'links'),
             'signaturelogo'         => array($this, 'logo'),
+            'logotype'              => array($this, 'logotype'),
             'datalistfunctions'     => array($this, 'functions'),
             'identiteslist'         => array($this, 'identities'),
         ));
@@ -147,21 +158,40 @@ class mel_signatures extends rcube_plugin
      * 
      * @return string Nom complet de la direction
      */
-    private function get_direction_name($direction, $dn = null) {
+    private function get_direction_name(&$direction, &$subdirection, &$service, $dn = null) {
+        // Gestion de la direction
         $pos = strpos($dn, "ou=$direction,");
         if ($pos !== false) {
-            $searchDN = substr($dn, $pos);
-            $ou = driver_mel::gi()->user();
-            $ou->dn = $searchDN;
-            if ($ou->load('observation')) {
-                $direction = $ou->observation;
+            $res = $this->get_dn_label(substr($dn, $pos));
+            if (isset($res)) {
+                $direction = $res; 
             }
         }
-        else {
-            $directions = $this->rc->config->get('signature_directions', []);
-            $direction = $directions[$direction] ?: $direction;
+
+        // Gestion de la sous direction
+        $pos = strpos($dn, "ou=$subdirection,");
+        if ($pos !== false) {
+            $res = $this->get_dn_label(substr($dn, $pos));
+            if (isset($res) && (strpos(strtolower($res), 'direction') === 0 || !isset($service))) {
+                $subdirection = $res; 
+            }
+            else if (isset($service)) {
+                $service = "$subdirection/$service";
+                $subdirection = null;
+            }
         }
-        return $direction;
+    }
+
+    /**
+     * Retourne l'observation à partir d'un dn
+     */
+    private function get_dn_label($dn) {
+        $ou = driver_mel::gi()->user();
+        $ou->dn = $dn;
+        if ($ou->load(['observation'])) {
+            return $ou->observation;
+        }
+        return null;
     }
 
     /**
@@ -190,6 +220,22 @@ class mel_signatures extends rcube_plugin
             }
         }
         return isset($links['default']) ? $links['default'] : null;
+    }
+
+    /**
+     * Return the default logotype for the user dn
+     * 
+     * @return string default logotype
+     */
+    private function get_default_logotype() {
+        $dn = driver_mel::gi()->getUser()->dn;
+        $logotype = $this->rc->config->get('signature_default_logotype', []);
+        foreach ($logotype as $serviceDN => $link) {
+            if (strpos($dn, $serviceDN) !== false) {
+                return $link;
+            }
+        }
+        return isset($logotype['default']) ? $logotype['default'] : null;
     }
 
     /**
@@ -243,6 +289,46 @@ class mel_signatures extends rcube_plugin
             }
         }
         $this->rc->output->set_env('logo_sources', $sources);
+        return html::tag('select', $attrib, $content);
+    }
+
+    /**
+     * Handler pour le choix du logotype
+     */
+    function logotype($attrib) {
+        if (empty($attrib['id']))
+            $attrib['id'] = 'input-logotype';
+
+        $content = "";
+        $sources = [];
+        $default_logotype = $this->get_default_logotype();
+        foreach ($this->rc->config->get('signature_logotype_images', []) as $name => $logotype) {
+            if (is_array($logotype)) {
+                $logo_html = "";
+                foreach ($logotype as $n => $l) {
+                    if ($default_logotype == $n) {
+                        $params = ['value' => $l, 'selected' => 'selected'];
+                    }
+                    else {
+                        $params = ['value' => $l];
+                    }
+                    $sources[$l] = $this->image_data($l);
+                    $logo_html .= html::tag('option', $params, $n);
+                }
+                $content .= html::tag('optgroup', ['label' => $name], $logo_html);
+            }
+            else {
+                if ($default_logotype == $name) {
+                    $params = ['value' => $logotype, 'selected' => 'selected'];
+                }
+                else {
+                    $params = ['value' => $logotype];
+                }
+                $sources[$logotype] = $this->image_data($logotype);
+                $content .= html::tag('option', $params, $name);
+            }
+        }
+        $this->rc->output->set_env('logotype_sources', $sources);
         return html::tag('select', $attrib, $content);
     }
 

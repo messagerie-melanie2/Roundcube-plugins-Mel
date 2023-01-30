@@ -92,11 +92,15 @@ legend.span-mel.t1 {
 	margin-top: 6px;
 	display: inline-block;
 }
+
+#listview-float-right #list-contacts .listsearchbox input,
+#edit-alarm-item,
 #edit-attendees-comment,
 #edit-attendee-name,
 #edit-identities-list,
 .edit-attendee-role,
 textarea.input-mel,
+.fake-input.input-mel,
 select.input-mel,
 input.input-mel {
 	border-radius: 60px;
@@ -113,13 +117,18 @@ input.input-mel {
 	border-bottom-left-radius: 60px !important;
 }
 
+input.input-mel.alternate-background{
+	border-color: white;
+	background-color: white;
+}
+
 .mel-input-container.form-control.input-mel
 {
 	border-radius: 60px;
     border-top-left-radius: 60px;
     border-bottom-left-radius: 60px;
 	height: 51px;
-	background-color: #fbfbfb;
+	/* background-color: #fbfbfb; */
 }
 
 .mel-input-container.form-control.input-mel input,
@@ -163,8 +172,12 @@ input.input-mel {
 	color:white;
 }
 
+.input-group .form-control.input-mel.mel-input-container:not(:last-child) {
+	border-top-right-radius: 0!important;
+   border-bottom-right-radius: 0!important;
+ }
 
-
+#edit-alarm-item:focus,
 #edit-attendees-comment:focus,
 #edit-attendee-name:focus,
 #edit-identities-list:focus,
@@ -176,6 +189,12 @@ input.input-mel:focus {
 	border-color: #484D7A;
 	box-shadow: 0 0 0 .2rem #C8CDFC59;
 }
+
+input.input-mel.alternate-background:focus{
+	background-color: white;
+}
+
+#edit-alarm-item,
 select.input-mel{
 	cursor: pointer;
 }
@@ -322,6 +341,7 @@ textarea.input-mel{
 	cursor: unset;
 }
 
+#edit-alarm-item,
 select.input-mel.custom-select
 {
 	background-image: url("../fonts/mel_icons/Chevron_down.svg");
@@ -401,7 +421,8 @@ input.input-mel.error {
 #eventedit ul
 {
 	position: sticky;
-	top:-15px;
+	top: -15px;
+	margin: -15px -2px 1rem;
 	z-index: 5;
 	background-color: white;
 } 
@@ -482,3 +503,126 @@ input.input-mel.error {
 		margin-left: 3px;
 	}
 }
+
+#mailsearchform {
+  box-shadow: none;
+}
+
+.mel-input.search-like{
+	background-color:white;
+	border-color: #424665;
+}
+
+.custom-switch .custom-control-label::before {
+	border-color: black;
+	background-color: #F0F0F0;
+}
+
+.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	border-color: black;
+	background-color: #484D7A;
+}
+
+.inverted .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	background-color: #363A5B;
+}
+
+.selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	border-color: black;
+	background-color: #363A5B ;
+}
+
+.inverted .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	background-color: #484D7A ;
+}
+
+.custom-switch .custom-control-label::after
+{
+	border-style: solid;
+	border-width: thin;
+	border-color: black;
+	background-color:white;
+	left: 2px;
+	top: 0.3rem;
+	width: 15px;
+	height: 15px;
+}
+
+.datetime input.input-mel.small-input
+{
+	width: 10em !important;
+}
+
+.ui-slider {
+	border-color: black;
+}
+
+.ui-slider .ui-slider-range
+{
+	background-color: #484D7A;
+}
+
+.ui-slider .ui-slider-handle {
+	border-radius: 100%;
+	background-color: #F0F0F0;
+}
+
+.ui-slider .ui-slider-handle.ui-state-active {
+	border-color: black;
+	background-color: #484D7A;
+}
+
+#calendars-content .custom-switch .custom-control-label::after
+{
+	border:none;
+	background-color: transparent!important;
+}
+
+.input-group .input-group-prepend .form-control.input-mel {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.input-group-text.mel {
+	border-top-left-radius: 60px;
+	border-bottom-left-radius: 60px;
+	border-right: none;
+	background-color: #F0F0F0;
+	border-color: #F0F0F0;
+}
+
+/* .form-floating > .form-control.input-mel {
+	height: calc(1.5em + .75rem + 10px);
+} */
+
+.form-floating.pixel-correction{
+	margin-bottom: -35px;
+	margin-top:13px;
+}
+
+.form-floating > label {
+    bottom: 34px;
+    left: 8px;
+    position: relative;
+    /* background-color: white; */
+    padding: 5px;
+    font-size: 1.1em;
+    transition: 0.1s;
+    pointer-events: none;
+    font-weight: 500 !important;
+    transform-origin: bottom left;
+}
+
+.form-floating > .form-control:focus~label{
+    transform: translate(1px,-85%) scale(0.80);
+    opacity: .8;
+	font-style: italic;
+    /* color: #005ebf; */
+}
+
+.form-floating > .form-control:valid~label{
+    transform-origin: bottom left;
+    transform: translate(1px,-85%) scale(0.80);
+    opacity: .8;
+}
+

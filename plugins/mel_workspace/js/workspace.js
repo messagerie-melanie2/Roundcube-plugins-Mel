@@ -1,6 +1,41 @@
 $(document).ready(async () => {
     initCloud();
-    WSPReady();
+    WSPReady().then(() => {
+        function init_clicks()
+        {
+            for (const iterator of $('.click-tab')) {
+                //récupération du namespace
+    
+                $(iterator).click((e) => {
+                    const namespace = get_namespace(e.currentTarget);
+                    const id = e.currentTarget.id;
+                    e = $(e.currentTarget);
+    
+                    if (e.hasClass('selected'))
+                    {
+                        $(`.${namespace}.${id}`).addClass('hidden');
+                        e.removeClass('selected').find('span.icon-mel-chevron-down').removeClass('icon-mel-chevron-down').addClass('icon-mel-chevron-right');
+                    }
+                    else {
+                        $(`.${namespace}.${id}`).removeClass('hidden');
+                        e.addClass('selected').find('span.icon-mel-chevron-right').removeClass('icon-mel-chevron-right').addClass('icon-mel-chevron-down');
+                    }
+                }); 
+            }
+        }
+        
+        function get_namespace(node)
+        {
+            return Enumerable.from(node.classList).where(x => x.includes('click') && x !== 'click-tab').first();
+        }
+    
+        init_clicks();
+        //init_sondages();
+        connect_sondage();
+    
+        window.init_clicks = window.init_clicks || init_clicks;
+    });
+
 });
 
 /**
@@ -68,6 +103,10 @@ function Start(uid, hasAriane, datas) {
         }
     });
 
+    $('#button-create-new-survey').click(() => {
+        rcmail.command('workspace.survey.create');
+    });
+
     if (!parent.$("body").hasClass("task-workspace")) parent.$(".mwsp-style").remove();
     
     if (style !== undefined && style !== null && style !== '') if (!parent.$("body").hasClass("task-workspace")) parent.$("body").prepend(`<div class="mwsp-style">${style}</div>`);
@@ -111,6 +150,11 @@ function Start(uid, hasAriane, datas) {
         }
         parent.wsp_cf_d = true;
     }
+
+    $(".wsp-copy-button").click(() => {
+        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
+        mel_metapage.Functions.copy(url);
+    });
 
     setup_end_date();
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
@@ -161,7 +205,11 @@ function Middle(uid, hasAriane, datas) {
         //console.log("c");
         let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
         //console.log("Init()", datas, channel, datas[channel]);
-        UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
+        UpdateAriane(channel, false, (datas[channel] === undefined ? 0 : datas[channel]));
+
+        rcmail.addEventListener(`storage.change.${mel_metapage.Storage.ariane}`, (items) => {
+            UpdateAriane(channel, false, window.new_ariane(items).getChannel(channel));
+        });
     }
 
     UpdateCalendar();
@@ -221,14 +269,14 @@ async function End(uid, hasAriane, datas) {
     if (rcmail.env.current_workspace_services.wekan && !wekan.isLogged())
         promises.push(wekan.login());
 
-    if (hasAriane)
-    {
-        promises.push(wait(() => {
-                return window.ariane === undefined
-            })
-            .then(() => {window.ariane.addEventListener("update", UpdateAriane);})
-        );
-    }
+    // if (hasAriane)
+    // {
+    //     promises.push(wait(() => {
+    //             return window.ariane === undefined
+    //         })
+    //         .then(() => {window.ariane.addEventListener("update", UpdateAriane);})
+    //     );
+    // }
 
     if (rcmail.env.current_workspace_file !== undefined && rcmail.env.current_workspace_services.doc)
     {
@@ -369,7 +417,7 @@ function UpdateCalendar()
         const id = before + uid;
         let tmp = Enumerable.from(data).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id));
         array = tmp.toArray();
-        tmp = tmp.where(x => x.free_busy !== "free");
+        tmp = tmp.where(x => x.free_busy !== "free" && x.free_busy !== "telework");
         if (tmp.any())
             return tmp.count();
         else
@@ -384,7 +432,7 @@ function UpdateCalendar()
             setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
         else
         {
-            const count = Enumerable.from(array).where(x => x.free_busy !== "free").count();
+            const count = Enumerable.from(array).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
             setup_calendar(array, querry);
             UpdateSomething(count, "wsp-agenda-icon");
             $(".wsp-agenda-icon").find(".roundbadge").addClass("edited");
@@ -893,7 +941,7 @@ async function InitLinks()
         }
 
         $(".tab-ressources.mel-tab.mel-tabheader").each((i, e) => {
-            if (e.id === "ressources-links")
+            if (e.id === "ressources-links" || e.id === 'ressources-surveys')
             {
                 $(e).click(() => {
                     $(e).parent().parent().find(".wsp-block.wsp-left.wsp-resources").css("background-color", "transparent")
@@ -935,7 +983,7 @@ function PaperClipCopy(link)
     }
     const url = link[0].href;
     copyOnClick(url);
-    rcmail.display_message(`${url} copier dans le presse-papier.`, "confirmation")
+    rcmail.display_message(`${url} copié dans le presse-papier.`, "confirmation")
 }
 
 function refreshUsefulLinks()
@@ -1013,5 +1061,74 @@ function setup_end_date()
             querry.html("<i>Espace clôt !</i>")
         else
             querry.html(`Date de fin : ${date}`);
+    }
+}
+
+function survey_edit(e)
+{
+    e = $(e);
+    rcmail.command('workspace.survey.edit', {
+        id:e.data('sid'),
+        title:e.data('stitle'),
+        link:e.data('slink')
+    });
+}
+
+function survey_delete(e)
+{
+    rcmail.command('workspace.survey.delete', $(e).data('sid'));
+}
+
+function survey_copy(e)
+{
+    mel_metapage.Functions.copy($(e).data('slink'))
+}
+
+function connect_sondage()
+{
+    //if (!!top.rcmail.env.sondage_loaded) return $.ajax();
+
+    return $.ajax({ // fonction permettant de faire de l'ajax
+        type: "POST", // methode de transmission des données au fichier php
+        url: rcmail.env.sondage_url+'/?_p=external_login', // url du fichier php
+        data: "username="+rcmail.env.sondage_username+"&password="+rcmail.env.sondage_password+"&timezone="+rcmail.env.sondage_timezone, // données à transmettre
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
+        success: function (data) {
+            let url;
+            for (const iterator of $('iframe.wsp-sondage')) {
+                url = $(iterator).data('src');
+                iterator.src = url;
+                if (navigator.appName == "Microsoft Internet Explorer"){
+                    iterator.reload(true);
+                }
+            }
+
+            $("#wait_box").hide();
+            top.rcmail.env.sondage_loaded = true;
+        },
+        error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+            $("#wait_box").hide();
+        },
+    });
+}
+
+function inject_embeded(iframe)
+{
+    const $ = iframe.contentWindow.$;
+    $('#head').css('display', 'none');
+    $('.toolbar').css('display', 'none');
+    $('#left-panel').css('display', 'none');
+}
+
+function init_sondages()
+{
+    for (const iterator of $('iframe.wsp-sondage')) {
+        $(iterator).on('load', (e) => {
+            inject_embeded(e.currentTarget);
+        });
+        inject_embeded(iterator);
     }
 }

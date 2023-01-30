@@ -17,29 +17,79 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+mel_helper::html_helper();
 include_once "search_result.php";
 /**
  * Représente un contact une fois rechercher, ainsi que les actions à effectuer.
  */
 class SearchResultContact extends ASearchResult
 {
+    private $username;
+    private $mail;
+    private $phone;
+    private $pitcure;
+    private $cid;
+    private $source;
     public function __construct($contact, $search, $rcmail) {
-        $nom = $contact['surname'];;
-        $prenom = $contact['firstname'];
+        $nom = '';
+        $prenom = '';
+
+        if ($contact['name'] === null )
+        {
+            $nom = $contact['surname'];
+            $prenom = $contact['firstname'];
+        }
+        else $prenom = $contact['name'];
+
         $mail = $this->mail($contact["email"], $search);
         $vcard = (new rcube_vcard($contact["vcard"]))->get_assoc();
         $tel = "";
 
-        foreach ($vcard as $key => $value) {
+        foreach ($contact as $key => $value) {
             if (strpos($key, "phone") !== false)
             {
-                $tel = $value[0];
+                $tel = $value;
                 break;
             }
         }
 
-        parent::__construct($this->up($nom, $prenom, $contact), $this->down($mail, $tel), "");
+        $this->username = "$nom $prenom";
+        $this->mail = $mail;
+        $this->phone = $tel;
+        $this->picture = "./?_task=addressbook&_action=photo&_email=$email&_cid=".$contact['ID']."&_source=".$contact["sourceid"].'&_error=1';
+        $this->cid = $contact['ID'];
+        $this->source = $contact["sourceid"];
+
+        parent::__construct('', $this->_create_action(), ['date' => null, 'raw' => $contact, 'picture', $this->pitcure]);
     }  
+
+    protected function _html()
+    {
+        $firstcol = $this->username;
+        $secondcol = (!empty($this->mail) ? $this->mail : $this->phone);
+        $thirdcol = ($this->phone === $secondcol ? '' : $this->phone);
+        return html::div(["style" => "display:inline-block;margin-right:15px;"], html::div(["class" => "dwp-round", 'style' => 'background-color:white;'], '<img src="'.$this->picture.'" onerror="this.onerror = null; this.src = \'skins/elastic/images/contactpic.svg\';"/>')).
+        html::div(['style' => 'display:inline-block;width:90%'], 
+            html_helper::row([], html_helper::col(4, ['class' => 'col-item'], $firstcol).
+            html_helper::col(6, ['class' => 'col-item'], $secondcol).
+            html_helper::col(2, ['class' => 'col-item', 'style' => 'text-align:right'], $thirdcol)
+            )
+        );
+    }
+
+    private function _create_action()
+    {
+        $text = '';
+        $onclick = 'rcmail.command(`mel.show_contact`, '.json_encode(['_task' => 'mel_metapage', 
+        '_action' => 'contact',
+        '_source' => $this->source,
+        '_cid' => $this->cid]).')';
+
+        if (isset($this->plugin)) $text = $this->plugin->gettext('seecontacts', 'mel_metapage');
+        else $text = 'Voir dans les contacts';
+
+        return $this->create_action($text, $onclick);
+    }
 
     /**
      * Récupre l'en-tête.

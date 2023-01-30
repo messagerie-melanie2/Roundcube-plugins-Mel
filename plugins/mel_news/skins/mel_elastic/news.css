@@ -26,3 +26,148 @@
 	height: 340px;
 	overflow: auto;
 }
+
+.headlines-by.headlines-rss-type {
+	background-color: transparent;
+	color: #1F8073 !important;
+}
+
+.headlines-source
+{
+	/* margin-left:30px; */
+	background-color: #F0F0F0;
+	align-self: flex-end;
+	display: flex;
+	height: 100%;
+	width: 100%;
+	position: unset!important;
+
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	padding: 15px;
+}
+
+.headlines-source p{
+	align-self: flex-end;
+	margin: 0;
+}
+
+.twitter .headlines-by.headlines-rss-type,
+.twitter .headlines-title,
+.twitter .headlines-publish {
+	display: none;
+}
+
+.twitter .headlines-contents
+{
+	margin: 0;
+	border: solid thin #F0F0F0;
+}
+
+html.dark-mode .twitter .headlines-contents
+{
+	border:none;
+}
+
+.twitter .square-contents {
+	padding-top: 0;
+	padding-right: 0;
+	padding-left: 0;
+}
+
+.roundbadge.r-news{
+	background-color: #DBDBDB;
+	font-size: 12px;
+	height: 25px;
+	width: 25px;
+	border-color: #DBDBDB;
+	line-height: 0px;
+	text-align: center;
+	text-align: -moz-center;
+	color: #363A5B;
+}
+
+.roundbadge.r-news:hover{
+	border-color: #484D7A;
+	background-color: #484D7A;
+	color: white;
+}
+
+html.dark-mode .roundbadge.r-news:hover{
+	border-color: #E1C58F;
+}
+
+.roundbadge.r-news > span
+{
+	margin-left: -0.28rem;
+}
+
+.p-buttons{
+	flex: 1 auto;
+	text-align: right;
+}
+
+.headlines-twitter{
+	position: sticky;
+	bottom: 0;
+	background-color: #F0F0F0;
+}
+
+html.dark-mode .headlines-twitter{
+	background-color: #323F4B;
+}
+
+.headlines-twitter p {
+	/* margin-top: 5px; */
+	/* margin-bottom: 5px; */
+	margin: 5px;
+}
+
+.news-bottom-button-modal-l{
+	position:absolute;
+	left:40px;
+}
+
+html.layout-phone .news-bottom-button-modal-l,
+html.layout-small .news-bottom-button-modal-l{
+	left:5px;
+	bottom: 5px;
+}
+
+.news-bottom-button-modal-r{
+	margin-right:40px;
+}
+
+html.layout-phone .news-bottom-button-modal-r,
+html.layout-small .news-bottom-button-modal-r{
+	margin-right:0px;
+	position:absolute;
+	right:5px;
+	bottom: 5px;
+}
+
+html.layout-phone .flux,
+html.layout-small .flux{
+	margin-top: 0px!important;
+}
+
+html.layout-phone .right,
+html.layout-small .right{
+	margin-top: 0px;
+}
+
+html.layout-phone .flux > div:first-of-type,
+html.layout-small .flux > div:first-of-type
+{
+	display: block!important;
+}
+
+html.layout-phone #news-button-filter,
+html.layout-small #news-button-filter,
+html.layout-phone #news-button-add,
+html.layout-small #news-button-add{
+	margin-top:0!important;
+	margin-bottom: 5px!important;
+	margin-left:0!important;
+	margin-right: 5px!important;
+}

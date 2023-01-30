@@ -21,6 +21,11 @@ abstract class Page extends Program
         $this->after_init();
     }
 
+    public function program_task()
+    {
+        return null;
+    }
+
     protected function before_init() {}
     protected function after_init() {}
 

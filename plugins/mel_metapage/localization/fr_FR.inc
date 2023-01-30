@@ -1,13 +1,17 @@
 <?php
 $labels = array();
+$labels['...'] = "...";
 $labels['mails'] = "Mails";
+$labels['mail'] = $labels['mails'];
 $labels["contacts"] = "Contacts";
+$labels["contact"] = $labels["contacts"];
 $labels['create'] = "Créer";
-$labels['support'] = "Assistance";
+$labels['support'] = "Aide";
 $labels['my_favorites'] = "Mes raccourcis";
 $labels["contacts_organization"] = "Gestion des Annuaires";
 $labels["last_frame_opened"] = "Revenir à";
 $labels["nothing"] = "Aucun";
+$labels["empty_nothing"] = "Rien";
 
 $labels["nextcloud_connection_error"] = "Impossible de récupérer les documents, l'authentification a échoué ou le plugin n'est pas bien configuré.";
 $labels["a_worspace"] = "Un espace de travail";
@@ -16,14 +20,24 @@ $labels["a_task"] = "Une tâche";
 $labels["a_meeting"] = "Un évènement";
 $labels["a_web_conf"] = "Une web-conférence";
 $labels["a_document"] = "Un document";
-$labels["a_wordpad"] = "Un bloc-note";
+$labels["a_wordpad"] = "Une note";
 $labels["a_survey"] = "Un sondage Pégase";
+
+$labels["h_general"] = "Aide générale";
+$labels["h_video"] = "Voir les vidéos";
+$labels["h_suggestion"] = "Proposer une amélioration";
+$labels["h_current"] = "Aide de la page";
+
+$labels["assistance"] = $labels['support'];
+$labels["describe_your_need_in_few_words"] = 'Décrivez-nous votre besoin en quelques mots pour que l\'on puisse vous aider';
+$labels["search_a_video"] = 'Rechercher une vidéo';
 
 $labels["what_do_you_want_create"] = "Que souhaitez-vous créer ?";
 $labels["choose_type_doc"] = "Choisissez le type de document :";
 $labels["document_folder"] = "Dossier du nouveau document";
 $labels["document_name"] = "Nom du nouveau document :";
 $labels["create_doc"] = "Créer un document";
+$labels['create_event'] = 'Créer un évènement';
 
 $labels["text_document"] = "Document texte";
 $labels["text_office_document"] = "Document office";
@@ -54,6 +68,7 @@ $labels["close_modal"] = "Fermer la modale";
 $labels["create_help"] = "Ouvre la fenêtre de création (email, espaces de travail, etc...)";
 $labels["help_help"] = "Ouvre la fenêtre d'aide";
 $labels["shortcuts_help"] = "Affiche les raccourcis";
+$labels["welcome"] = "Bienvenue";
 $labels["user_help"] = "Bienvenue ! - Options de compte";
 $labels["ariane_help"] = "Ouvre la fenêtre de discussion instantanée";
 $labels["webconf_enter_help"] = "Ouvre la visioconférence";
@@ -71,6 +86,9 @@ $labels["webconf_round_help"] = "Affiche ou cache la barre d'outil";
 
 $labels["saloon"] = "Salon";
 $labels["webconf_saloon_name_error"] = "Le nom du salon doit faire au moins 10 caractères avec au moins 3 chiffres. Alphanumérique seulement.";
+$labels["webconf_saloon_name_error_small"] = 'Le nom du salon doit faire au moins 10 caractères !';
+$labels["webconf_saloon_incorrect_format_number"] = 'Il doit y avoir au moins 3 chiffres dans le nom du salon !';
+$labels["webconf_saloon_incorrect_format"] = 'Alphanumérique seulement !';
 $labels["attach_to"] = "Rattacher à";
 $labels["a_workspace"] = "un espace de travail";
 $labels["choose"] = "Choisissez";
@@ -122,6 +140,7 @@ $labels["add_all_member_from_a_workspace"] = "Ajouter tous les membres de l'espa
 $labels["add_all"] = "Ajouter tous les membres de l'espace";
 $labels["select_attendees"] = "Sélectionner les participants";
 $labels["back"] = "Retour";
+$labels['create_modal_back'] = 'Retour à la modale de création';
 $labels["save_event"] = "Sauvegarder l'évènement";
 
 $labels["worskpace_name"] = "Nom de l'espace de travail";
@@ -149,6 +168,11 @@ $labels["menu_create_help_doc"] = "Créer un nouveau document";
 $labels["menu_create_help_note"] = "Créer une nouvelle note";
 $labels["menu_create_help_survey"] = "Créer un nouveau sondage";
 
+$labels["menu_assistance_helppage_general"] = "Aide générale";
+$labels["menu_assistance_helppage_video"] = "Voir les vidéos";
+$labels["menu_assistance_helppage_suggestion"] = "Proposer une amélioration";
+$labels["menu_assistance_helppage_current"] = "Aide de la page";
+
 $labels["change_avatar"] = "Changer d'avatar";
 
 $labels["last_day"] = "Jour précédent";
@@ -167,11 +191,11 @@ $labels["down"] = "En bas";
 $labels["mel-icon-size"] = "Mail - Taille des icônes en tête";
 $labels["mel-folder-space"] = "Mail - Espacement des dossiers";
 $labels["mel-message-space"] = "Mail - Espacement des messages";
-$labels["mel-chat-placement"] = "Chat - Placement de la bulle";
+$labels["mel-chat-placement"] = "Placement de la bulle";
 $labels["mel-calendar-space"] = "Espacement des agendas";
 
-$labels["hide_bubble"] = "Cacher la bulle de discussion instantée";
-$labels["show_bubble"] = "Afficher la bulle de discussion instantée";
+$labels["hide_bubble"] = "Cacher la bulle de discussion";
+$labels["show_bubble"] = "Afficher la bulle de discussion";
 $labels["all-day"] = "Journée entière";
 
 $labels["without_spaces"] = "Sans espaces";
@@ -184,3 +208,127 @@ $labels["more"] = "Plus";
 $labels["toggle_chat"] = "Afficher/Fermer le chat interne";
 $labels["webconf_tile_help"] = "Affiche ou ferme le chat qui sert à communiquer avec les personnes externe au BNum";
 $labels["change_theme"] = "Changer de thème";
+
+$labels["event-compose"] = "Ecrire aux participants";
+$labels["event-self-invitation"] = "S'inviter";
+$labels["duplicate"] = "Dupliquer";
+$labels["copy_w_p"] = "Copier sans les participants";
+
+$labels["force-refresh"] = "Recharger et actualiser les dossiers";
+$labels["new-mail-from"] = "Nouveau message aux mêmes destinataires";
+
+$labels['calendar'] = 'Agenda';
+
+$labels['globalsearch'] = 'Recherche globale';
+$labels['search_mail_max'] = 'Nombre de résultats max depuis les mails';
+$labels['search_on_all_bal'] = 'Rechercher dans toutes les boîtes partagées ?';
+$labels['search_on_all_bali_folders'] = 'Rechercher dans tous les sous dossiers de la bali ?';
+$labels['balp'] = 'Boîte partagée';
+$labels['search-in-this-balp'] = 'Rechercher dans cette boîte ?';
+$labels['search-in-this-folder'] = 'Rechercher dans ce dossier ?';
+
+$labels['main_nav'] = 'Navigation principale';
+$labels['secondary_nav'] = 'Navigation Secondaire';
+$labels['main_contents'] = 'Contenu principal';
+
+$labels['to_search'] = 'Rechercher';
+$labels['global_search_title'] = 'Recherche globale : recherche dans les contacts, les mails ansi que l\'agenda.';
+
+$labels['open_chat_popup'] = 'Ouvrir la discussion instantanée';
+$labels['other_actions'] = 'Autres actions';
+$labels['avatars'] = 'Avatars';
+$labels['open_create_popup'] = 'Ouvrir la popup de création';
+$labels['create_things'] = 'Création';
+$labels['filter_by'] = 'Filtrer par';
+$labels['content_type'] = 'Type de contenu';
+$labels['mel_box'] = 'Boîte';
+$labels['all_mel_boxes'] = 'Toutes';
+$labels['results_for'] = 'résultats pour';
+$labels['order_by'] = 'Trier par';
+$labels['desc'] = 'Le plus récent';
+$labels['asc'] = 'Le plus ancien';
+$labels['hide_chat_popup_button'] = 'Cacher la bulle de discussion instantée';
+$labels['to_participate'] = 'Participer';
+
+$labels['title_needed'] = 'Vous devez mettre un titre !';
+$labels['startdate_needed'] = 'Vous devez mettre une date de début !';
+$labels['enddate_needed'] = 'Vous devez mettre une date de fin !';
+$labels['bad_format_date'] = 'Vous devez mettre une date au format jj/MM/yyyy HH:mm !';
+
+$labels['add_user_button_title'] = 'Ajoute le participant saisi dans le champ précédent.';
+$labels['add_user_to_event'] = 'Ajouter un participant'; 
+$labels['add_user_to_event_title'] = "Saisissez le nom de l'utilisateur pour afficher l'autocomplétion ou saisissez une adresse email puis cliquez sur 'Ajouter'";
+
+$labels['no_events_today'] = "Pas de réunion aujourd'hui !";
+$labels['no_events_this_day'] = 'Pas de réunion à cette date !';
+
+$labels['webconf_already_running'] = "Une visioconférence est déja en cours, finissez celle en cours avant d'en démarrer une nouvelle !";
+$labels['see_plus'] = 'Voir plus';
+$labels['see_minus'] = 'Voir moins';
+
+$labels['note_created_success'] = 'Note créée avec succès !';
+$labels['note_reinit_success'] = 'Note réinitialisée avec succès !';
+$labels['note_deleted_success'] = 'Note supprimée avec succès !';
+$labels['note_move_success'] = 'Notes déplacées avec succès !';
+
+$labels['settings'] = 'Paramètres';
+
+$labels['change_background_color'] = 'Changer la couleur de fond';
+$labels['change_text_color'] = 'Changer la couleur du texte';
+
+$labels['quit_settings'] = 'Quitter les paramètres';
+
+$labels['move_up'] = 'Déplacer en haut';
+$labels['move_down'] = 'Déplacer en bas';
+
+$labels['search_settings'] = 'Paramètres de la recherche';
+
+$labels['webconf_toggle_participantspane_help'] = "Ouvrir ou fermer la boîte des participants";
+$labels['toggle_participantspane'] = 'Participants';
+$labels['save_model'] = 'Modèle';
+$labels['save_model_title'] = 'Sauvegarder comme un nouveau modèle';
+$labels['is_model'] = 'Ce message est un modèle';
+$labels['use'] = 'Utiliser';
+$labels['model_saved'] = 'Modèle enregistré avec succès !';
+$labels['itipaccepted'] = 'Accepté';
+$labels['webconf_toggle_chat_help'] = "Affiche ou ferme le tchat interne";
+$labels['webconf_phone_help'] = "Copie le numéro de téléphone pour permettre à d'autre de rejoindre la visio en cours";
+$labels['webconf_phone'] = "Rejoindre par téléphone";
+$labels['visio'] = 'Visioconférences';
+$labels['chat'] = 'Discussions';
+
+$labels['visio_ask_on_end'] = 'Afficher le questionnaire satisfaction ?';
+$labels['visio_audio_parameters'] = 'Affichage des options micro et vidéo';
+$labels['chat_startup'] = 'Connexion automatique au démarrage ?';
+
+$labels['mel-scrollbar-size'] = 'Taille de la barre de défilement';
+$labels['default'] = 'Défaut';
+$labels['auto'] = 'Automatique (test)';
+$labels['compact'] = "Compact";
+$labels['large'] = 'Large';
+
+$labels['tab_title_style'] = "Affichage des notifications de la navigation pricipale sur l'onglet en cours";
+
+$labels['notif-all'] = "Somme des notifications";
+$labels['notif-page'] = "Notifications de la page en cours";
+$labels['notif-nothing'] = "Rien/Fonctionnement par défaut";
+
+$labels['tab_title_style_help'] = "\"<all/>\" affiche sur l'onglet la somme des notifications sur la navigation principal (ex : 5 mail, 3 évènements => (8) Paramètres)\r\n\"<page/>\" affiche seulement les notifications de la page en cours (ex : (3) Agenda).\r\nFonctionnement par défaut sinon.";
+
+$labels['app_chat'] = 'Mes discussions';
+$labels['app_documents'] = 'Mes documents';
+$labels['app_tasks'] = 'Mes tâches';
+$labels['app_news'] = 'M\'informer';
+$labels['app_ul'] = 'Mes liens utiles';
+$labels['app_kanban'] = 'Kanban';
+$labels['app_survey'] = 'Sondage';
+$labels['app_rizomo'] = 'Outils SNAP';
+
+$labels['to_comment'] = 'Commenter';
+
+$labels['experimental'] = 'Expérimental';
+$labels['param-note-in-my-day'] = 'Activer les notes dans ma journée ?';
+$labels['param-reorder-notes'] = 'Réordonner vos notes ?';
+
+$labels['toggle_mp'] = 'Envoyer un message privé';
+$labels['webconf_toggle_mp_help'] = 'Envoyer un message privé à quelqu\'un';

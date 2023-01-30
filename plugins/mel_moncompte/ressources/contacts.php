@@ -297,7 +297,8 @@ class M2contacts {
       }
       $this->addressbook->id = $this->mbox ?: $this->user->uid;
       $this->addressbook->owner = $this->user->uid;
-      if (!is_null($this->addressbook->save())) {
+      $ret = $this->addressbook->save();
+			if (!is_null($ret)) {
         return $this->addressbook->load();
       }
       else {

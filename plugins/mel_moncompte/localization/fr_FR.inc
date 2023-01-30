@@ -165,7 +165,7 @@ $labels['changepassword_explic'] = "<p>Le nouveau mot de passe doit être diffé
 <br>- Il doit avoir une longueur d'au moins 10 caractères, avec au moins un caractère de chaque type : majuscule, minuscule, chiffre, caractère spécial (!\"#$%&'()*+,-./:<=>?@[^]_{|}~). Les accents (â à â é è ê …) ne sont pas autorisés.
 <br>- Si vous synchronisez un téléphone avec Mél, pensez à mettre à jour le nouveau mot de passe sur les comptes du téléphone.
 </p>
-<p><b>ATTENTION - pour les agents des services MTE/MCTRCT (sauf DREAL Grand-Est, CGDD Orléans et DRIEE) et des DDT :</b>
+<p><b>ATTENTION - pour les agents des services MTECT/MTE (sauf DREAL Grand-Est, CGDD Orléans et DRIEE) et des DDT :</b>
 <br>- Si vous êtes au bureau ou connecté en VPN, vous devez ensuite synchroniser votre mot de passe de session Windows, pour cela verrouillez (touches Windows +L) puis déverrouillez votre session Windows en saisissant votre nouveau mot de passe.
 <br>- Si vous n'êtes pas au bureau et n'utilisez pas le VPN, votre mot de passe ne sera changé sur votre poste Windows qu'au retour lors de votre première connexion au réseau. Ainsi jusqu'à votre retour votre ancien mot de passe sera celui de votre session Windows, il ne faudra pas oublier de saisir ce nouveau mot de passe de session lors de votre retour sur votre poste de travail au bureau.
 </p>
@@ -237,9 +237,9 @@ $labels['acces_internet_enable'] = "Activé";
 $labels['acces_internet_disable'] = "Désactivé";
 $labels['acces_internet_button_enable'] = "Activer";
 $labels['acces_internet_button_disable'] = "Désactiver";
-$labels['acces_internet_disable_label_forbidden'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Pour accéder à Mél depuis n'importe où, contactez votre service informatique.";
-$labels['acces_internet_disable_label_allowed'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder à Mél depuis n'importe où.";
-$labels['acces_internet_enable_label'] = "Vous pouvez accéder à Mél depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
+$labels['acces_internet_disable_label_forbidden'] = "Vous ne pouvez accéder au Bnum que depuis le réseau ministériel. Pour accéder au Bnum depuis n'importe où, contactez votre service informatique.";
+$labels['acces_internet_disable_label_allowed'] = "Vous ne pouvez accéder au Bnum que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder au Bnum depuis n'importe où.";
+$labels['acces_internet_enable_label'] = "Vous pouvez accéder au Bnum depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr/bureau";
 $labels['acces_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accès, vous devez vous connecter à cet écran depuis le réseau ministériel.";
 
 $labels['acces_internet_enable_ok'] = "Votre accès internet a bien été activé";
@@ -257,6 +257,10 @@ $labels['tabrecurrence'] = 'Absences hebdomadaires';
 $labels['absence_date'] = 'Dates de début et de fin';
 $labels['absence_date_debut'] = 'À partir du : ';
 $labels['absence_date_fin'] = "Jusqu'au : ";
+$labels['absence_perimetre_label'] = "Périmètres de la réponse";
+$labels['absence_type_all'] = "Tous";
+$labels['absence_type_interne'] = "Interne";
+$labels['absence_type_externe'] = "Externe";
 $labels['absence_interne_legende'] = "Réponse interne";
 $labels['absence_texte_interne'] = "Activer la réponse automatique pour les correspondants internes (déclarés dans l'annuaire).";
 $labels['absence_externe_legende'] = "Réponse externe";
@@ -388,4 +392,7 @@ $labels['success_DeleteUserDeviceZP1'] = "Le compte vient d'être supprimé de l
 
 $labels['Webservice error'] = "Une erreur s'est produite, il est possible que le serveur de synchronisation mobile soit injoignable. Veuillez réessayer.";
 $labels['Missing arguments'] = "Une erreur s'est produite, essayez de vous déconnecter/reconnecter.";
-?>
+$labels['suspectsurls'] = 'Liens suspects';
+$labels['suspects_websites'] = 'Adresses suspicieuses';
+$labels['bloqued'] = 'Est bloqué';
+$labels['text_suspects'] = "Vous trouverez ici la liste des adresses de site web potentiellement dangereux. Les adresses définie par défaut ne peuvent pas être supprimé mais peuvent être bloqué ou débloqué. Si une adresse est bloqué, si celle-ci ce trouve dans le corps d'un des messages, celui-ci ne pourra pas être ouvert. Dans le cas contraire, le message s'affichera correctement, mais vous aurez une alerte indiquant que le message contient un lieu probablement dangereux.";

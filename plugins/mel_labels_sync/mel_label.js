@@ -33,8 +33,6 @@ if (window.rcmail) {
 				else {
 					key = rcmail_tb_labels_key_to_css(rcmail.env.username);
 				}
-				$('#tb_label_popup .toolbarmenu li.labels.'+key).addClass('show');
-				$('#searchfilter option.labels.'+key).addClass('show');	
 
 				if (Enumerable.from(rcmail.options_labels).count() == 0)
 				{
@@ -66,6 +64,9 @@ if (window.rcmail) {
 					}
 
 				}
+
+				$('#tb_label_popup .toolbarmenu li.labels.'+key).addClass('show');
+				$('#searchfilter option.labels.'+key).addClass('show');
 			});
 		}
 	});
@@ -110,7 +111,7 @@ function rcm_tb_label_insert(uid, row)
 		var rowobj = $(row.obj);
 		for (idx in message.flags.tb_labels) {
 			rowobj.addClass('label_' + message.flags.tb_labels[idx].replace('~', ''));
-			html += `<span>${rcmail.env.labels_translate[message.flags.tb_labels[idx].replace('~', '')]}</span>`;
+			html += `<span class="text_${'label_' + message.flags.tb_labels[idx].replace('~', '')}">${rcmail.env.labels_translate[message.flags.tb_labels[idx].replace('~', '')]}</span>`;
 		}
 		if (html !== "")
 			rowobj.find("td.subject").prepend(`<td class="labels">${html}</td>`);
@@ -217,9 +218,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 			
 			if (rowobj.find('td.labels').length > 0) {
 				if (rowobj.find('td.labels').html() == "") {
-					rowobj.find('td.labels').html(`<span>${label_name}</span>`);
+					rowobj.find('td.labels').html(`<span class="text_${'label_' + toggle_label.replace('~','')}">${label_name}</span>`);
 				} else {
-					rowobj.find('td.labels').append(`<span>${label_name}</span>`);
+					rowobj.find('td.labels').append(`<span class="text_${'label_' + toggle_label.replace('~','')}">${label_name}</span>`);
 				}
 			}
 			else if (rowobj.find('span.labels').length > 0) {
@@ -241,7 +242,7 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 				message.flags.tb_labels.splice(pos, 1);
 			
 			if (rowobj.find('td.labels').length > 0) {
-				rowobj.find('td.labels').html(rowobj.find('td.labels').html().replace(`<span>${label_name}</span>`, ''));
+				rowobj.find('td.labels').html(rowobj.find('td.labels').html().replace(`<span class="text_${'label_' + toggle_label.replace('~','')}">${label_name}</span>`, ''));
 			}
 			else if (rowobj.find('span.labels').length > 0) {
 				rowobj.find('span.labels').text(rowobj.find('span.labels').text().replace(label_name + ', ','').replace(', ' + label_name,'').replace(label_name,''));
@@ -267,8 +268,15 @@ function rcm_tb_label_unflag_msgs(unflag_uids, toggle_label)
 function rcm_tb_label_get_selection()
 {
 	var selection = rcmail.message_list ? rcmail.message_list.get_selection() : [];
-	if (selection.length == 0 && rcmail.env.uid)
-		selection = [rcmail.env.uid, ];
+
+	if (selection.length === 0 && !!rcmail.env.itip_current_mail_selected)
+	{
+		selection = rcmail.env.itip_current_mail_selected;
+		delete rcmail.env.itip_current_mail_selected;
+	}
+
+	if (selection.length == 0 && rcmail.env.uid) selection = [rcmail.env.uid, ];
+	
 	return selection;
 }
 
@@ -451,9 +459,16 @@ rcube_webmail.prototype.mel_label_toggle = function(toggle_label) {
 		}
 	});
 	// Fermer le pop up au click
-	closeAction();
+	try {
+		closeAction();
+	} catch (error) {
+		
+	}
 	//rcmail.hide_menu('tb_label_popup');
 };
+
+	
+	//kMel_LuminanceRatioAAA(kMel_extractRGB('#1A2F34'), kMel_extractRGB('rgb(230, 199, 66)')) 
 
 $(document).ready(function() {
 	rcm_tb_label_init_onclick();
@@ -494,84 +509,19 @@ $(document).ready(function() {
 		});
 	} 
 	else {
-
-		function luminance(r, g, b) {
-			var a = [r, g, b].map(function (v) {
-				v /= 255;
-				return v <= 0.03928
-					? v / 12.92
-					: Math.pow( (v + 0.055) / 1.055, 2.4 );
-			});
-			return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-		}
-		function contrast(rgb1, rgb2) {
-			var lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
-			var lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
-			var brightest = Math.max(lum1, lum2);
-			var darkest = Math.min(lum1, lum2);
-			return (brightest + 0.05)
-				 / (darkest + 0.05);
-		}
-
-		function hexToRgb(hex) {
-			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-			return result ? {
-			  r: parseInt(result[1], 16),
-			  g: parseInt(result[2], 16),
-			  b: parseInt(result[3], 16)
-			} : null;
-		  }
-
-		  function componentToHex(c) {
-			var hex = c.toString(16);
-			return hex.length == 1 ? "0" + hex : hex;
-		  }
-		  
-		  function rgbToHex(r, g, b) {
-			return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-		  }
-		  
-
 		$.each(rcmail.env.labels_color, function(id, val) {
 
-			if (val === null)
-				val = "#737373";
-			else {
-				let hex = hexToRgb(val);
-				if (hex !== null)
-				{
-					let _contrast = contrast([hex.r, hex.g, hex.b], [255, 255, 255]);
-					if (_contrast === 1) //same color
-						val = "#737373";
-					// else if (_contrast < 4.5)
-					// {
-					// 	let max = Math.max(hex.r, hex.g, hex.b);
-					// 	let index = max === hex.r ? "r" : max === hex.g ? "g" : "b";
+			if (val === null) val = "#737373";
 
-					// 	while (contrast([hex.r, hex.g, hex.b], [255, 255, 255]) < 4.5) {
-							
-					// 		if (max >= 255)
-					// 			break;
+			const default_h = "#FFFFFF";
+			let textcolor = default_h;
 
-					// 		max += 10;
-					// 		if (max > 255)
-					// 			max = 255;
-
-					// 		hex[index] = max;
-					// 		console.log(val, hex, max, index);
-					// 	}
-
-					// 	console.log("old", val, "new", rgbToHex(hex.r, hex.g, hex.b), "ratio", contrast([hex.r, hex.g, hex.b], [255, 255, 255]));
-					// 	val = rgbToHex(hex.r, hex.g, hex.b);
-					// }
-				}
-
+			try {
+				if (!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB(val), mel_metapage.Functions.colors.kMel_extractRGB(textcolor)))	textcolor = 'black'; 
+			} catch (error) {
 				
-
-				// if (hex !== null && contrast([hex.r, hex.g, hex.b], [255, 255, 255]) <= 4.5)
-				// 	val = "grey";
 			}
-				
+
 			id = id.replace('~', '').replace(/\./g,'\\.');
 			css += "#messagelist tr.label_" + id + " td,\n";
 			// css += "#messagelist tr.label_" + id + " td a,\n";
@@ -581,6 +531,21 @@ $(document).ready(function() {
 			css += "{\n";
 			css += "  color: " + val + ";\n";
 			css += "}\n";
+			css += `#messagelist tr.label_${id} td.labels span.text_label_${id} {
+				color:${textcolor};
+				background-color:${val};
+				border:thin solid ${textcolor};
+			}
+
+			#messagelist tr.label_${id} td{
+				background-color:${val}20;
+			}
+
+			#messagelist tr.label_${id} td.labels::before
+			{
+				text-shadow: ${textcolor} 1px 0px 0px, ${textcolor} 0.540302px 0.841471px 0px, ${textcolor} -0.416147px 0.909297px 0px, ${textcolor} -0.989993px 0.14112px 0px, ${textcolor} -0.653644px -0.756803px 0px, ${textcolor} 0.283662px -0.958924px 0px, ${textcolor} 0.96017px -0.279416px 0px;
+			}
+			`;
 			css += "#messagelist tr.selected.label_" + id + " td,\n";
 			css += "#messagelist tr.selected.label_" + id + " td a\n";
 			css += "{\n";
@@ -591,7 +556,7 @@ $(document).ready(function() {
 				html.dark-mode #messagelist tr.label_${id} td,
 				html.dark-mode #messagelist tr.selected.label_${id} td
 				{
-					color: ${val}!important;
+						color: ${val}!important;
 				}
 			`;
 		});

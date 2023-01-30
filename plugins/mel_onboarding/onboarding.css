@@ -1,143 +1,345 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap'); */
+
 :root {
-    --circle-size: clamp(1.5rem, 5vw, 2rem);
-    --spacing: clamp(0.25rem, 2vw, 0.5rem);
+  --circle-size: clamp(1.5rem, 5vw, 2rem);
+  --spacing: clamp(0.25rem, 2vw, 0.5rem);
 }
 
 .ui-dialog-buttonpane {
-    padding: 0 !important;
-    margin: 0 1.5rem !important;
+  padding: 0 !important;
+  margin: 0 1.5rem !important;
 }
 
 .onboarding-list {
-    display: inline-block;
-    text-align: left;
+  display: inline-block;
+  text-align: left;
 }
 
 #helppageframe {
-    border-radius: 10px;
+  border-radius: 10px;
 }
 
 .video video {
-    width: 60%;
-    border-radius: 3px;
+  width: 60%;
+  border-radius: 3px;
 }
 
 .menu-hint-bureau {
-    height: 62px !important;
-    width: 206px !important;
-    left: -180px !important;
+  height: 62px !important;
+  width: 206px !important;
+  left: -180px !important;
 }
 
 .folderlist-hint-mail {
-    height: 35px !important;
-    width: 500px !important;
-    top: -8px !important;
-    left: -450px !important;
+  height: 35px !important;
+  width: 500px !important;
+  top: -8px !important;
+  left: -450px !important;
 }
 
 .header-hint-mail {
-    top: -40px !important;
-    height: 62px !important;
-    width: 75px !important;
-    left: -30px !important;
+  top: -40px !important;
+  height: 62px !important;
+  width: 75px !important;
+  left: -30px !important;
 }
 
 .toolbar-hint-workspace {
-    top: 0px !important;
-    width: 70px !important;
+  top: 0px !important;
+  width: 70px !important;
 }
 
-.big-width-intro {
-    width: 600px !important;
-    max-width: 600px !important;
+.width-intro-600 {
+  width: 600px !important;
+  max-width: 600px !important;
 }
 
-.average-width-intro {
-    width: 400px !important;
-    max-width: 400px !important;
+.width-intro-500 {
+  width: 500px !important;
+  max-width: 500px !important;
 }
+
+.width-intro-400 {
+  width: 400px !important;
+  max-width: 400px !important;
+}
+
+.width-intro-300 {
+  width: 300px !important;
+  max-width: 300px !important;
+}
+
+.height-intro-600 {
+  min-height: 600px !important;
+}
+
+.height-intro-500 {
+  min-height: 500px !important;
+}
+
+.height-intro-450 {
+  min-height: 450px !important;
+}
+
+.height-intro-400 {
+  min-height: 400px !important;
+}
+
+html.dark-mode .onboarding-image {
+  background-image: url('../../skins/mel_elastic/images/Computer_dark.png');
+}
+
+.onboarding-image {
+  background-image: url('../../skins/mel_elastic/themes/default/images/Computer_default.png');
+  height: 130px;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+#theme_select {
+  width: 100%;
+  height: calc(1.5em + .75rem + 2px);
+  padding: .375rem .75rem;
+  border: 1px solid #ced4da;
+  border-radius: 16px;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  background-color: #fff;
+  color: #2c363a;
+  border-color: var(--secondary-focus-border);
+  box-shadow: 0 0 0 0.2rem var(--secondary-focus);
+}
+
+
 
 .accueil-intro {
-    width: 50vw !important;
-    max-width: 50vw !important;
+  width: 50vw !important;
+  max-width: 50vw !important;
 }
 
+.introjs-tooltiptext .subtitle {
+  color: #5C5CFF;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.introjs-tooltiptext .subtitle.small-font {
+  font-size: 15px;
+}
+
+.introjs-tooltiptext .semibold.small-font {
+  font-size: 19px;
+}
+
+.introjs-tooltiptext .semibold {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3A3E5E;
+}
+
+.home-image {
+  width: 150px;
+  border-radius: 50%;
+}
+
+.checkmark-text {
+  margin-top: 4px;
+  color: #3A3E5E;
+  font-size: 15px;
+}
+
+.center-button {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
 
 /*
  * INTRO JS
  */
 
+.introjs-tooltip button:focus {
+  outline: 0;
+  text-decoration: none;
+  -webkit-box-shadow: 0 0 0 .2rem rgba(158, 158, 158, .5);
+  box-shadow: 0 0 0 .2rem rgba(158, 158, 158, .5);
+  border: 1px solid #616161;
+}
+
+.introjs-skipbutton:focus,
+.introjs-skipbutton:hover {
+  color: red !important;
+}
+
+.introjs-tooltip.menu-shadow-bureau.introjs-right {
+  padding-top: 20px;
+}
+
 .introjs-tooltip {
-    color: #000;
+  color: #000;
+  border-radius: 8px !important;
+  min-width: 300px !important;
+}
+
+.introjs-tooltipbuttons {
+  border-top: none !important;
+  padding: 0px 20px 25px 20px !important;
+}
+
+.introjs-tooltipbuttons a {
+  border-radius: 30px !important;
+  padding: 8px 25px 8px 25px !important;
+  border: none !important;
+  text-shadow: none !important;
+  font-weight: 600 !important;
+  width: 70px !important;
+  text-align: center;
 }
 
 .introjs-tooltiptext.mel-button {
-    background-color: #000 !important;
+  background-color: #000 !important;
+}
+
+.custom-tooltipbuttons {
+  border-top: none !important;
+  /* padding: 20px 0 5px !important; */
+}
+
+.introjs-nextbutton {
+  background-color: #5C5CFF !important;
+  color: #fff !important;
+}
+
+.introjs-nextbutton:hover,
+.introjs-nextbutton:focus {
+  background-color: #4c4cbb !important;
+}
+
+.introjs-prevbutton {
+  background-color: #F0F0FF !important;
+  color: #5C5CFF !important;
+}
+
+.introjs-prevbutton:hover,
+.introjs-prevbutton:focus {
+  background-color: #e1e1ec !important;
+}
+
+.custom-tooltipbuttons button {
+  border-radius: 30px !important;
+  padding: 8px 25px 8px 25px !important;
+  border: none !important;
+  text-shadow: none !important;
+  float: left !important;
+  font-weight: 600 !important;
+  /* width: 140px !important; */
+}
+
+.next-button {
+  background-color: #5C5CFF !important;
+  color: #fff !important;
+}
+
+.next-button:hover,
+.next-button:focus {
+  background-color: #4c4cbb !important;
+}
+
+.done-button,
+.previous-button {
+  background-color: #F0F0FF !important;
+  color: #5C5CFF !important;
+}
+
+.done-button:hover,
+.previous-button:hover,
+.done-button:focus,
+.previous-button:focus {
+  background-color: #e1e1ec !important;
 }
 
 .introjs-hint {
-    z-index: 9999999;
+  z-index: 9999999;
+}
+
+.introjs-tooltip-header {
+  /* display: none !important; */
+}
+
+.introjs-tooltiptext {
+  padding: 0px 20px 20px 20px !important;
+}
+
+.intro-no-margin .introjs-tooltiptext {
+  padding-left: 0px !important;
 }
 
 .introjs-skipbutton {
-    font-size: 37px !important;
-    font-weight: 100 !important;
-    padding: 0px !important;
+  font-size: 37px !important;
+  font-weight: 100 !important;
+  padding: 0px !important;
 }
 
 .introjs-bullets ul li a {
-    width: 15px !important;
-    height: 15px !important;
+  /* width: 15px !important;
+  height: 15px !important; */
 }
 
 .introjs-bullets ul li a.active {
-    width: 15px !important;
+  width: 6px !important;
 }
 
 .introjs-bullets ul li a:focus,
 .introjs-bullets ul li a:hover {
-    width: 15px !important;
+  width: 15px !important;
+}
+
+.introjs-bullets ul li a.active {
+  background-color: #5C5CFF !important;
 }
 
 .introjs-bullets ul li a:after {
-    z-index: 9999999 !important;
-    padding: 2px;
-    display: none;
-    position: relative;
-    top: -5px;
-    right: 0;
-    width: 150px;
-    text-align: center;
-    box-sizing: content-box;
-    padding: 0.5rem 1rem;
-    border: 1px solid #bdbdbd;
-    text-decoration: none;
-    text-shadow: 1px 1px 0 #fff;
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden !important;
-    text-overflow: ellipsis;
-    color: #424242;
-    cursor: pointer;
-    outline: 0;
-    background-color: #f4f4f4;
-    border-radius: 0.2em;
-    zoom: 1;
+  z-index: 9999999 !important;
+  padding: 2px;
+  display: none;
+  position: relative;
+  top: -5px;
+  right: 0;
+  width: 150px;
+  text-align: center;
+  box-sizing: content-box;
+  padding: 0.5rem 1rem;
+  border: 1px solid #bdbdbd;
+  text-decoration: none;
+  text-shadow: 1px 1px 0 #fff;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  color: #424242;
+  cursor: pointer;
+  outline: 0;
+  background-color: #f4f4f4;
+  border-radius: 0.2em;
+  zoom: 1;
 }
 
 .introjs-bullets ul li a:hover:after {
-    display: block;
+  display: block;
 }
 
 .introjs-bullets ul li a:after {
-    content: attr(data-title);
+  content: attr(data-title);
 }
 
 .iframed {
-    margin-top: 60px !important;
-    margin-left: 55px !important;
+  margin-top: 60px !important;
+  margin-left: 55px !important;
 }
 
 .wsp-toolbar-padding {
-    padding-bottom: 12px !important;
+  padding-bottom: 12px !important;
 }

@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?ixpbsz') format('truetype'),
-    url('fonts/DWP.woff?ixpbsz') format('woff'),
-    url('fonts/DWP.svg?ixpbsz#DWP') format('svg');
+    url('fonts/DWP.ttf?wiyoyo') format('truetype'),
+    url('fonts/DWP.woff?wiyoyo') format('woff'),
+    url('fonts/DWP.svg?wiyoyo#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -26,30 +26,39 @@
 
 .icon-mel-lock:before {
   content: "\e966";
+  
 }
 .icon-mel-log-out:before {
   content: "\e967";
+  
 }
 .icon-mel-clock:before {
   content: "\e95e";
+  
 }
 .icon-mel-descri:before {
   content: "\e960";
+  
 }
 .icon-mel-eye-crossed:before {
   content: "\e961";
+  
 }
 .icon-mel-eye:before {
   content: "\e962";
+  
 }
 .icon-mel-pin-location:before {
   content: "\e963";
+  
 }
 .icon-mel-notif:before {
   content: "\e964";
+  
 }
 .icon-mel-print:before {
   content: "\e965";
+  
 }
 .icon-mel-trello:before {
   content: "\e94c";
@@ -107,12 +116,16 @@
 }
 .icon-mel-upload:before {
   content: "\e95f";
+  
 }
 .icon-mel-edit:before {
   content: "\e90e";
 }
 .icon-mel-expand:before {
   content: "\e90f";
+}
+.icon-mel-normalscreen:before {
+  content: "\e969";
 }
 .icon-mel-popup-expand:before {
   content: "\e940";
@@ -264,6 +277,10 @@
 .icon-mel-reply:before {
   content: "\e92a";
 }
+.icon-mel-reply-full:before {
+  content: "\e96a";
+  
+}
 .icon-mel-reply-all:before {
   content: "\e95a";
 }
@@ -335,4 +352,7 @@
 }
 .icon-mel-empty-dot:before {
   content: "\e94e";
+}
+.icon-mel-painting:before {
+  content: "\e968";
 }

@@ -1,127 +1,814 @@
 $(document).ready(() => {
 
+    const plugin_text = 'mel_metapage';
+    const audio_url = rcmail.env.mel_metapage_audio_url;
+    const newline = String.fromCharCode('8199');
+    const reload = '{¤reload¤mel}';
+    const visio_phone_start = ' (';
+    const visio_phone_end = ')';
+    const visio_phone_separator = ' | ';
+
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
-        
-    window.rcube_calendar_ui.continue = function()
+
+    class AEventLocation extends MetapageObject{
+        constructor(...args)
+        {
+            super(...args);
+            this.init().setup(...args);
+        }
+
+        init()
+        {
+            return this;
+        }
+
+        setup(...args)
+        {
+            return this;
+        }
+
+        setValue(val) {
+            return this;
+        }
+
+        async getValue(){
+            return '';
+        }
+
+        check() {
+            return false;
+        }
+
+        checkError()
+        {
+            if (this.check()) this._onValid();
+            else this._onError();
+            return this;
+        }
+
+        _onError() {}
+        _onValid() {}
+    }
+
+    class PlaceEventLocation extends AEventLocation
     {
-        let canContinue = true;
+        constructor($place){
+            super($place)
+        }
 
-        if ($("#edit-title").val() === "")
+        init()
         {
-            canContinue = false;
-            $("#edit-title").focus();
-            if ($("#edit-title").parent().find(".required-text").length > 0)
-                $("#edit-title").parent().find(".required-text").css("display", "");
-            else
-                $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>`);
-        
-            $('li > a[href="#event-panel-summary"]').click();
-        }
-        else {
-            if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
-                $(".have-workspace").css("display", "");
-            else
-                $(".have-workspace").css("display", "none");
-        
-            if ($("#edit-title").parent().find(".required-text").length > 0)
-                $("#edit-title").parent().find(".required-text").remove();
+            super.init();
+            this.$place = null;
+            return this;
         }
 
-        let date = {
-            start:{
-                querry:$("#mel-metapage-added-input-mel-start-datetime"),
-                val:null,
-                text_id:"edit-start-error-text"
-            },
-            end:{
-                querry:$("#mel-metapage-added-input-mel-end-datetime"),
-                val:null,
-                text_id:"edit-end-error-text"
+        setup($place)
+        {
+            super.setup($place);
+            this.$place = $place;
+            return this;
+        }
+
+        async getValue()
+        {
+            let val = await super.getValue();
+            
+            return val + this.$place.val();
+        }
+
+        setValue(val)
+        {
+            super.setValue(val);
+            this.$place.val(val);
+            return this;
+        }
+
+        check() {
+            return true;
+        }
+        
+
+    }
+
+    class AudioEventLocation extends AEventLocation
+    {
+        constructor(audioUrl, $audioPhone, $audioNumber){
+            super(audioUrl, $audioPhone, $audioNumber)
+        }
+
+        init()
+        {
+            super.init();
+            this.$phone = null;
+            this.$number = null;
+            this.url = '';
+            return this;
+        }
+
+        setup(audioUrl, $audioPhone, $audioNumber)
+        {
+            super.setup(audioUrl, $audioPhone, $audioNumber);
+            this.$phone = $audioPhone;
+            this.$number = $audioNumber;
+            this.url = audioUrl;
+            return this;
+        }
+
+        async getValue()
+        {
+            let val = await super.getValue();
+            
+            return val + `${this.url} : ${this.$phone.val()} - ${this.$number.val()}`;
+        }
+
+        setValue(val)
+        {
+            super.setValue(val);
+            val = val.split(':');
+            switch (val[0]) {
+                case 'url':
+                    this.url = val[1];
+                    break;
+
+                case 'phone':
+                    this.$phone.val(val[1]);
+                    break;
+
+                case 'number':
+                    this.$number.val(val[1]);
+                    break;
+            
+                default:
+                    break;
             }
+            return this;
         }
 
-        date.start.val = date.start.querry.val();
-        date.end.val = date.end.querry.val();
-
-        if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
+        setAudioUrl(url)
         {
-            canContinue = false;
-            date.start.querry.focus();
-
-            const text_id = date.start.text_id;
-            let parent = date.start.querry.parent();
-            if ($(`#${text_id}`).length > 0)
-                $(`#${text_id}`).remove();
-
-            const text = date.start.val === "" ? "Vous devez mettre une date de début !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
-            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
+            return this.setValue(`url:${url}`);
         }
-        else if ($(`#${date.start.text_id}`).length > 0)
-            $(`#${date.start.text_id}`).remove();
 
-        if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
+        setAudioNumber(number)
         {
-            canContinue = false;
-            date.end.querry.focus();
-
-            const text_id = date.end.text_id;
-            let parent = date.end.querry.parent();
-            if ($(`#${text_id}`).length > 0)
-                $(`#${text_id}`).remove();
-
-            const text = date.end.val === "" ? "Vous devez mettre une date de fin !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
-            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
+            return this.setValue(`number:${number}`);
         }
-        else if ($(`#${date.end.text_id}`).length > 0)
-            $(`#${date.end.text_id}`).remove();
 
-
-        if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
+        setAudioPhone(number)
         {
-            const text_id = "key-error-cal";
-            let val = $("#key-visio-cal").val();
+            return this.setValue(`phone:${number}`);
+        }
 
-            $(`#${text_id}`).remove();
+        check()
+        {
+            return this.$phone.val() !== '';
+        }
 
-            if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
+        _onError() {
+            super._onError();
+            this.$phone.parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre une valeur !</span>`);
+        }
+        _onValid() {
+            super._onValid();
+            this.$phone.parent().find('.required-text').remove();
+        }
+    }
+
+    class VisioPhoneLocation extends AEventLocation
+    {
+
+        constructor($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent = null)
+        {
+            super($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent);
+            // this.$phoneEnabled = $enablePhone;
+            // this.$phoneNumber = $phoneNumber;
+            // this.$phonePin = $phonePin;
+            // this.parentLocation = parent;
+        }
+
+        /**
+         * 
+         * @param {VisioPhoneLocation} visioPhone 
+         */
+        static from(visioPhone, parent)
+        {
+            return new VisioPhoneLocation(visioPhone.$phoneEnabled, visioPhone.$phoneNumber, visioPhone.$phonePin, visioPhone.$phoneDatas, parent);
+        }
+
+        init()
+        {
+            super.init();
+            this.$phoneEnabled = null;
+            this.$phoneNumber = null;
+            this.$phonePin = null;
+            this.$phoneDatas = null;
+            this.parentLocation = null;//new VisioEventLocation(null, null, null, null, null);
+            this.lastRoomName = '';
+            return this;
+        }
+
+        setup($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent)
+        {
+            super.setup($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent);
+            this.$phoneEnabled = $enablePhone;
+            this.$phoneNumber = $phoneNumber;
+            this.$phonePin = $phonePin;
+            this.$phoneDatas = $visioPhonesDatas;
+            this.parentLocation = parent;
+            return this;
+        }
+
+        update()
+        {
+            if (this.parentLocation.$type.val() === 'intregrated' && this.enabled())
             {
+                let parentVal = this.parentLocation.$visioState.val();
 
-                const text = val.length < 10 ? "Le nom du salon doit faire 10 caractères minimum !" : /^[0-9a-zA-Z]+$/.test(val) ? "Il doit y avoir au moins 3 chiffres dans le nom du salon !" : "Alphanumérique seulement !";
-                //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
-                //$(".webconf-error-text").css("display", "").css("color", "red");
-                $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-                canContinue = false;
+                if (parentVal.includes(visio_phone_start))
+                {
+                    let tmp = parentVal.split(visio_phone_start)[1].split(visio_phone_separator);
+                    const phone = tmp[0];
+                    const pin = tmp[1].replace(visio_phone_end, '');
+
+                    this.$phoneNumber.val(phone);
+                    this.$phonePin.val(pin);
+
+                    this.parentLocation.$visioState.val(parentVal.split(visio_phone_start)[0]);
+                    parentVal = parentVal.split(visio_phone_start)[0];
+                }
+                
+                if (this.$phoneNumber.val() !== '' && parentVal !== '')
+                {
+                    this.$phoneEnabled.css('display', '');
+                    this.$phoneDatas.css('display', '');
+                }
+                else {
+                    this.$phoneEnabled.css('display', 'none');
+                    this.$phoneDatas.css('display', 'none');
+                }
+                
+                this.lastRoomName = parentVal;
+            }
+            else 
+            {
+                this.$phoneEnabled.css('display', 'none');
+                this.$phoneDatas.css('display', 'none');
+            }
+
+            return this;
+        }
+
+        enabled()
+        {
+            return this.$phoneEnabled[0].checked && this.parentLocation.$type.val() === 'intregrated';
+        }
+
+        async getValue()
+        {
+            let val = await super.getValue();
+            
+            if (this.$phoneNumber.val() !== '' && this.parentLocation.$visioState.val() === this.lastRoomName)
+            {
+                val = this.formatValue(this.$phoneNumber.val(), this.$phonePin.val());// `${this.$phoneNumber.val()}${visio_phone_separator}${this.$phonePin.val()}`;
+            }
+            else if(this.enabled() && this.parentLocation.$visioState.val() !== '') {
+                rcmail.set_busy(true, 'loading');
+                let datas = await webconf_helper.phone.getAll(this.parentLocation.$visioState.val())
+                this.$phoneNumber.val(datas.number);
+                this.$phonePin.val(datas.pin);
+                rcmail.set_busy(false);
+                rcmail.clear_messages();
+                this.update();
+                val = this.formatValue(datas.number, datas.pin);// `${datas.number}${visio_phone_separator}${datas.pin}`;
+            }
+
+            return val;
+        }
+
+        formatValue(phone, pin)
+        {
+            return `${phone}${visio_phone_separator}${pin}`
+        }
+
+        setValue(val)
+        {
+            val = val.split(visio_phone_separator);
+            const phone = val[0];
+            const pin = val[1].replace(visio_phone_end, '');
+
+            this.$phoneNumber.val(phone);
+            this.$phonePin.val(pin);
+
+            return this;
+        }
+
+    }
+
+    class VisioEventLocation extends AEventLocation
+    {
+        constructor($visioType, $visioIntegrated, $visioCustom, $haveWsp, $wsp, visioPhone)
+        {
+            super($visioType, $visioIntegrated, $visioCustom, $haveWsp, $wsp, visioPhone);
+        }
+
+        init()
+        {
+            super.init();
+            this.$type = null;
+            this.$visioState = null;
+            this.$visioCustom = null;
+            this.$haveWorkspace = null;
+            this.$workspace = null;
+            this.visioPhone = null;
+            return this;
+        }
+
+        setup($visioType, $visioState, $visioCustom, $haveWorkspace, $workspace, visioPhone)
+        {
+            super.setup($visioType, $visioState, $visioCustom);
+
+            const hasPhone = !!visioPhone;
+
+            this.$type = $visioType;
+            this.$visioState = $visioState;
+            this.$visioCustom = $visioCustom;
+
+            if (hasPhone) this.visioPhone = VisioPhoneLocation.from(visioPhone, this);
+            
+            //lecture seul
+            this.$haveWorkspace = $haveWorkspace;
+            this.$workspace = $workspace;
+
+            if (hasPhone) this.visioPhone.update();
+            return this;
+        }
+
+        async getValue()
+        {
+            let val = await super.getValue();
+
+            //if (!!this.visioPhone) this.visioPhone.update();
+            
+            switch (this.$type.val()) {
+                case 'intregrated': //visio intégrée
+                    let config = {
+                        _key:this.$visioState.val()
+                    };
+
+                    {
+                        const detected = mel_metapage.Functions.webconf_url(config._key.toLowerCase());
+                        if ((detected || false) !== false)
+                        {
+                            config._key = detected;
+                            this.$visioState.val(detected.toUpperCase());
+                        }
+                    }
+
+                    if (this.$haveWorkspace[0].checked && this.$workspace.val() !== "#none")
+                        config["_wsp"] = this.$workspace.val();
+
+                    const tmp = !this.visioPhone.enabled() ? '' : (await this.visioPhone.getValue());
+
+                    if (tmp === reload) val = tmp;
+                    else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `${visio_phone_start}${tmp}${visio_phone_end}`);
+
+                    break;
+
+                case 'custom':
+                    val += `@visio:${this.$visioCustom.val()}`;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return val;
+        }
+
+        setValue(val)
+        {
+            val = val.split(':');
+            const key = val[0];
+            const value = val[1];
+
+            switch(key)
+            {
+                case 'type':
+                    this.$type.val(value);
+                    break;
+
+                case 'key':
+                    val = value;
+                    if (val.includes('(')) 
+                    {
+                        val = val.split('(');
+                        this.visioPhone.setValue(val[1]);
+                        val = val[0];
+                    }
+                    this.$visioState.val(val);
+                    break;
+
+                case 'custom':
+                    this.$visioCustom.val(value);
+                    break;
+
+                default:
+                    break;
+            }
+
+            return this;
+        }
+
+        setType(val)
+        {
+            return this.setValue(`type:${val}`);
+        }
+
+        setIntegratedKey(key)
+        {
+            return this.setValue(`key:${key}`);
+        }
+
+        setCustomVisio(url)
+        {
+            return this.setValue(`custom:${url}`);
+        }
+
+        check()
+        {
+            switch (this.$type.val()) {
+                case 'intregrated': //visio intégrée
+                    {
+                        const val = this.$visioState.val();
+                        //Si l'url est invalide
+                        if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
+                        {      
+                            return false;
+                        }
+                    }
+                    break;
+
+                case 'custom':
+                    return this.$visioCustom.val() !== '';
+            
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        //<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>
+        _onError() {
+            super._onError();
+            switch (this.$type.val()) {
+                case 'intregrated': //visio intégrée
+                    {
+                        const val = this.$visioState.val();
+                        const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
+                        this.$visioState.parent().append(`<span class="required-text" style="color:red;display:block">*${text}</span>`);
+                    }
+                    break;
+
+                case 'custom':
+                    this.$visioCustom.parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre une valeur !</span>`);
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+        _onValid() {
+            super._onValid();
+            this.$visioCustom.parent().find('.required-text').remove();
+            this.$visioState.parent().find('.required-text').remove();
+        }
+    }
+
+    class EventsLocation extends AEventLocation
+    {
+        constructor(id, placeEvent, audioEvent, visioEvent, $select)
+        {
+            super(id, placeEvent, audioEvent, visioEvent, $select);
+        }
+
+        init()
+        {
+            super.init();
+            this.id = '';
+            /**
+             * @type {AEventLocation}
+             */
+            this.placeEvent = null;
+                        /**
+             * @type {AEventLocation}
+             */
+            this.audioEvent = null;
+                        /**
+             * @type {AEventLocation}
+             */
+            this.visioEvent = null;
+            this.$selectEventType = null;
+            return this;
+        }
+
+        setup(id, placeEvent, audioEvent, visioEvent, $select)
+        {
+            super.setup(id, placeEvent, audioEvent, visioEvent, $select);
+            this.placeEvent = placeEvent;
+            this.audioEvent = audioEvent;
+            this.visioEvent = visioEvent;
+            this.$selectEventType = $select;
+            this.id = id;
+            return this;
+        }
+
+        async getValue()
+        {
+            let val = await super.getValue();
+
+            switch (this.$selectEventType.val()) {
+                case 'default':
+                    val += await this.placeEvent.getValue();
+                    break;
+
+                case 'visio':
+                    val += await this.visioEvent.getValue();
+                    break;
+
+                case 'audio':
+                val += await this.audioEvent.getValue();
+                    break;
+            
+                default:
+                    break;
+            }
+
+            return val;
+        }
+
+        check()
+        {
+            switch (this.$selectEventType.val()) {
+                case 'default':
+                    return this.placeEvent.check();
+
+                case 'visio':
+                    return this.visioEvent.check();
+
+                case 'audio':
+                    return this.audioEvent.check();
+            
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        isVisio()
+        {
+            return this.$selectEventType.val() === 'visio';
+        }
+
+        checkError()
+        {
+            switch (this.$selectEventType.val()) {
+                case 'default':
+                    return this.placeEvent.checkError();
+
+                case 'visio':
+                    return this.visioEvent.checkError();
+
+                case 'audio':
+                    return this.audioEvent.checkError();
+            
+                default:
+                    break;
+            }
+           return this;
+        }
+    }
+
+    class EventLocation extends AEventLocation
+    {
+        constructor($haveWorkspace, $workspace, ...events)
+        {
+            super($haveWorkspace, $workspace, ...events);
+        }
+
+        init()
+        {
+            super.init();
+            /**
+             * @type {Array<EventsLocation>}
+             */
+            this.locations = {};
+            this.$haveWorkspace = null;
+            this.$workspace = null;
+            this._count = 0;
+            return this;
+        }
+
+        setup($haveWorkspace, $workspaceSelect, ...events)
+        {
+            super.setup($haveWorkspace, $workspaceSelect, ...events);
+            this.$haveWorkspace = $haveWorkspace;
+            this.$workspace = $workspaceSelect;
+
+            for (let index = 0; index < events.length; ++index) {
+                const element = events[index];
+                this.addEvent(element);
             }
         }
 
-        if (canContinue)
-            $(".nav-link.nav-icon.attendees").click();
+        addEvent(eventsLocation)
+        {
+            if ((eventsLocation ?? null) === null || this.locations[eventsLocation.id] !== undefined) return this;
+
+            ++this._count;
+            this.locations[eventsLocation.id] = eventsLocation;
+            return this;
+        }
+
+        have(type)
+        {
+            return Enumerable.from(this.locations).any(x => x.value.$selectEventType.val() === type);
+        }
+
+        delete(id)
+        {
+            const tmp = this.locations[id];
+            delete this.locations[id];
+            --this._count;
+            return tmp;
+        }
+
+        restart()
+        {
+            this.locations = {};
+            this._count = 0;
+            return this;
+        }
+
+        count()
+        {
+            return this._count;
+        }
+
+        async getValue()
+        {
+            let val = await super.getValue();
+
+            for (const key in this.locations) {
+                if (Object.hasOwnProperty.call(this.locations, key)) {
+                    const element = this.locations[key];
+                    const _val = await element.getValue();
+
+                    if (_val === reload && element.isVisio()) 
+                    {
+                        return _val;
+                    }
+
+                    val += _val + newline;
+                }
+            }
+
+            val = val.slice(0, val.length - newline.length);
+
+            return val === newline ? '' : val;
+        }
+
+        check()
+        {
+            return !Enumerable.from(this.locations).any(x => !x.value.check());
+        }
+
+        each(func)
+        {
+            for (const key in this.locations) {
+                if (Object.hasOwnProperty.call(this.locations, key)) {
+                    const element = this.locations[key];
+                    func(key, element);
+                }
+            }
+
+            return this;
+        }
+
+        checkError()
+        {
+            return this.each((key, value) => {
+                value.checkError();
+            });
+        }
+
+        static async InitFromEvent(location, $mainDiv, init_function, $haveWsp, $wsp, update_location)
+        {
+            $mainDiv.html('');
+            await update_location('restart');
+
+            if ((location || false) !== false && location !== newline)
+            {
+                location = location.split(newline);
+
+                for (let index = 0; index < location.length; index++) {
+                    const currentString = location[index] || null;
+
+                    if (currentString === null) continue;
+
+                    //Si c'est un localisation audio
+                    if (currentString.includes(`${audio_url} : `))
+                    {
+                        const audio = currentString.replace(`${audio_url} : `, "").split(" - ");
+                        await init_function($haveWsp, $wsp, update_location, 0, {
+                            audio:{
+                                tel:audio[0],
+                                num:audio[1]
+                            },
+                            type:'audio'
+                        });
+                    }
+                    //Si c'est un localisation visio
+                    else if (currentString.includes("#visio") || currentString.includes("@visio") || currentString.includes('public/webconf'))
+                    {
+                        const isRc = currentString.includes("#visio") || currentString.includes('public/webconf');
+
+                        if (isRc) //Visio de l'état
+                        {
+
+                            await init_function($haveWsp, $wsp, update_location, 0, {
+                                visio:{
+                                    type:'integrated',
+                                    val:currentString.split("_key=")[1].split("&")[0]
+                                },
+                                type:'visio'
+                            });
+                        }
+                        else // Visio custom
+                        {
+                            await init_function($haveWsp, $wsp, update_location, 0, {
+                                visio:{
+                                    type:'custom',
+                                    val:currentString.replace("@visio:", "")
+                                },
+                                type:'visio'
+                            });
+                        }
+                    }
+                    //Si c'est une visio de l'état
+                    else if (currentString.includes(rcmail.env["webconf.base_url"]))
+                    {
+                        await init_function($haveWsp, $wsp, update_location, 0, {
+                            visio:{
+                                type:'integrated',
+                                val:mel_metapage.Functions.webconf_url(currentString)
+                            },
+                            type:'visio'
+                        });
+                    }
+                    //Si c'est un lieu
+                    else {
+                        await init_function($haveWsp, $wsp, update_location, 0, {
+                            place:currentString,
+                            type:'default'
+                        });
+                    }
+                }
+            }
+            else {
+                await init_function($haveWsp, $wsp, update_location);
+            }
+
+            await update_location(null);
+        }
     }
 
-    window.rcube_calendar_ui.back = function()
-    {
-        $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
-    }
-
+    /**
+     * Sauvegarde l'évènement
+     * @returns {boolean} Faux si il y a des champs invalides
+     */
     rcube_calendar_ui.save = function()
     {
-
         let canContinue = true;
 
+        //Si l'évènement n'a pas de titre
         if ($("#edit-title").val() === "")
         {
+            //On se met sur le bon onglet, on focus le champs, puis on affiche le texte d'erreur.
             $('li > a[href="#event-panel-summary"]').click();
             canContinue = false;
             $("#edit-title").focus();
             if ($("#edit-title").parent().find(".required-text").length > 0)
                 $("#edit-title").parent().find(".required-text").css("display", "");
             else
-                $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>`);
+                $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*${rcmail.gettext('title_needed', plugin_text)}</span>`);
         }
+        //Sinon, ok
         else {
+            //Suppression du message d'erreur
             if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
                 $(".have-workspace").css("display", "");
             else
@@ -131,12 +818,17 @@ $(document).ready(() => {
                 $("#edit-title").parent().find(".required-text").remove();
         }
 
+        /**
+         * Données des dates
+         */
         let date = {
+            /**Date de début */
             start:{
                 querry:$("#mel-metapage-added-input-mel-start-datetime"),
                 val:null,
                 text_id:"edit-start-error-text"
             },
+            /**Date de fin */
             end:{
                 querry:$("#mel-metapage-added-input-mel-end-datetime"),
                 val:null,
@@ -147,26 +839,31 @@ $(document).ready(() => {
         date.start.val = date.start.querry.val();
         date.end.val = date.end.querry.val();
 
+        //Si la date de début n'est pas valide
         if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
         {
+            //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur
             canContinue = false;
             $('li > a[href="#event-panel-summary"]').click();
             date.start.querry.focus();
 
             const text_id = date.start.text_id;
             let parent = date.start.querry.parent();
+
             if ($(`#${text_id}`).length > 0)
                 $(`#${text_id}`).remove();
 
-            const text = date.start.val === "" ? "Vous devez mettre une date de début !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
+            const text = date.start.val === "" ? rcmail.gettext('startdate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
             parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
 
         }
-        else if ($(`#${date.start.text_id}`).length > 0)
-            $(`#${date.start.text_id}`).remove();
+        //Suppression du message d'erreur
+        else if ($(`#${date.start.text_id}`).length > 0) $(`#${date.start.text_id}`).remove();
 
+        //Si la date de fin est invalide
         if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
         {
+            //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur
             $('li > a[href="#event-panel-summary"]').click();
             canContinue = false;
             date.end.querry.focus();
@@ -176,38 +873,78 @@ $(document).ready(() => {
             if ($(`#${text_id}`).length > 0)
                 $(`#${text_id}`).remove();
 
-            const text = date.end.val === "" ? "Vous devez mettre une date de fin !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
+            const text = date.end.val === "" ? rcmail.gettext('enddate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
             parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
 
         }
-        else if ($(`#${date.end.text_id}`).length > 0)
-            $(`#${date.end.text_id}`).remove();
+        //Suppression du message d'erreur
+        else if ($(`#${date.end.text_id}`).length > 0) $(`#${date.end.text_id}`).remove();
 
+        // //Si la visio de l'état est activée
+        // if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
+        // {
+        //     //On supprime le message d'erreur est on récupère les données.
+        //     const text_id = "key-error-cal";
+        //     let val = $("#key-visio-cal").val();
 
-        if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
+        //     $(`#${text_id}`).remove();
+
+        //     //Si l'url est invalide
+        //     if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
+        //     {      
+        //         //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur   
+        //         $('li > a[href="#event-panel-detail"]').click();
+
+        //         const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
+                
+        //         $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+        //         canContinue = false;
+        //     }
+        // }
+  
+        if (!window.rcube_calendar_ui.edit._events.checkError().check())
         {
-            const text_id = "key-error-cal";
-            let val = $("#key-visio-cal").val();
+            $('li > a[href="#event-panel-detail"]').click();
+            canContinue = false;
+        }
 
-            $(`#${text_id}`).remove();
+        if (canContinue && $('#edit-location').val() === reload)
+        {
+            const i = setInterval(() => {
+                if ($('#edit-location').val() !== reload)
+                {
+                    clearInterval(i);
+                    rcube_calendar_ui.save();
+                }
+            }, 10);
+            canContinue = false;
+        }
+        else if (canContinue && $('#edit-location').val().includes( mel_metapage.Functions.public_url('webconf', '')))
+        {
+            const link = new IntegratedWebconfLink($('#edit-location').val());
 
-            if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
-            {            
-                $('li > a[href="#event-panel-detail"]').click();
-
-                const text = val.length < 10 ? "Le nom du salon doit faire 10 caractères minimum !" : /^[0-9a-zA-Z]+$/.test(val) ? "Il doit y avoir au moins 3 chiffres dans le nom du salon !" : "Alphanumérique seulement !";
-                //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
-                //$(".webconf-error-text").css("display", "").css("color", "red");
-                $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+            if (link.key === '')
+            {
+                let interval_link = null;
+                const i = setInterval(() => {
+                    interval_link = new IntegratedWebconfLink($('#edit-location').val());
+                    if (interval_link.key !== '')
+                    {
+                        interval_link = null;
+                        clearInterval(i);
+                        rcube_calendar_ui.save();
+                    }
+                }, 10);
                 canContinue = false;
+
             }
         }
 
+        //Si il n'y a pas d'erreurs
         if (canContinue)
         {
+            //On sauvegarde l'évènement
             let querry = $("#eventedit").parent().parent().find(".ui-dialog-buttonset").find(".save.mainaction");
-            
-            //console.log("[rcube_calendar_ui.save]",querry);
 
             if (querry.length > 0)
                 querry.click();
@@ -227,8 +964,8 @@ $(document).ready(() => {
 
             return true;
         }
-        else
-            return false;
+        //Si erreur(s)
+        else return false;
         
     }
 
@@ -248,32 +985,30 @@ $(document).ready(() => {
         return event;
     };
 
+    /**
+     * Mélange un texte
+     * @param {Array<any>} array 
+     * @returns {string}
+     */
     window.rcube_calendar_ui.shuffle = function (array) {
-        var currentIndex = array.length, temporaryValue, randomIndex;
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-        return array;
+        return mel_metapage.Functions._shuffle(array);
     };
 
+    /**
+     * Génère le nom de la room d'une visio
+     * @returns {string} Nom de la room
+     */
     window.rcube_calendar_ui.generateRoomName = function() {
-        var charArray= ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-        var digitArray= ["0","1","2","3","4","5","6","7","8","9"];
-        var roomName = window.rcube_calendar_ui.shuffle(digitArray).join("").substring(0,3) + window.rcube_calendar_ui.shuffle(charArray).join("").substring(0,7);
-        return window.rcube_calendar_ui.shuffle(roomName.split("")).join("");
+        return mel_metapage.Functions.generateWebconfRoomName();
     };
 
+    /**
+     * Affiche la modale d'édition d'un évènement
+     * @param {JSON} event Event plugin calendar
+     */
     window.rcube_calendar_ui.edit = function(event)
     {
+        //Récupération de l'évènement mis en mémoire si l'évènement passé en paramètre est vide.
         if (event === "" && rcmail.env.event_prop !== undefined)
         {
             event = rcmail.env.event_prop;
@@ -286,48 +1021,92 @@ $(document).ready(() => {
             else if (event.end === undefined)
                 event.end = moment().add(30, "m");
         }
-        //console.log("copy event", event, rcmail.env.event_prop);
-        //Shuffle array elements
+
+        //Initialisation des fonctions
         const shuffle = window.rcube_calendar_ui.shuffle;
         const generateRoomName = rcube_calendar_ui.generateRoomName;
+        /**
+         * Récupère une date "string" sous forme de "moment"
+         * @param {string} string Date 
+         * @returns {moment} Date
+         */
         const getDate = function(string)
         {
             string = string.split(" ");
             const date = string[0].split("/");
-            const time = string[1].split(":");
+            const time = string.length > 1 ? string[1].split(":") : ['00','00'];
 
             return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
         };
-        const update_location = function()
-        {
-            if ($("#eb-mm-em-p")[0].checked)
-            {
-                //Si présentiel
-                $("#edit-location").val($("#presential-cal-location").val());
+        /**
+         * Met à jour le champ de location
+         */
+        // const update_location = function()
+        // {
+        //     if ($("#eb-mm-em-p")[0].checked)
+        //     {
+        //         //Si présentiel
+        //         $("#edit-location").val($("#presential-cal-location").val());
 
-            }
-            else if ($("#eb-mm-em-v")[0].checked)
-            {
-                //Visio
-                if ($("#eb-mm-wm-e")[0].checked)
+        //     }
+        //     else if ($("#eb-mm-em-v")[0].checked)
+        //     {
+        //         //Visio
+        //         if ($("#eb-mm-wm-e")[0].checked)
+        //         {
+        //             let config = {
+        //                 _key:$("#key-visio-cal").val()
+        //             };
+
+        //             if ($("#wsp-event-all-cal-mm").val() !== "#none")
+        //                 config["_wsp"] = $("#wsp-event-all-cal-mm").val();
+
+        //             $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));
+        //         }
+        //         else
+        //             $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
+        //     }
+        //     else {
+        //         //Audio
+        //         $("#edit-location").val(`${audio_url} : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
+        //     }
+        // };
+        
+        /**
+         * 
+         * @param {EventsLocation} events 
+         */
+        const update_location = async function (events)
+        {
+            if (window.rcube_calendar_ui.edit._events === undefined) window.rcube_calendar_ui.edit._events = new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
+
+            if (typeof events === 'string' ) {
+                if (!!window.rcube_calendar_ui.edit._events)
                 {
-                    // let config = {
-                    //     _key:$("#key-visio-cal").val()//generateRoomName(),
-                    // };
-                    // if ($("#wsp-event-all-cal-mm").val() !== "#none")
-                    //     config["_wsp"] = $("#wsp-event-all-cal-mm").val();
-                    // else
-                    //     config["_ariane"] = "@home";
-                    $("#edit-location").val(`${rcmail.env["webconf.base_url"]}/${$("#key-visio-cal").val()}`);
+                    if (events.includes('remove'))
+                    {
+                        window.rcube_calendar_ui.edit._events.delete(events.split(':')[1]);
+                    }
+                    else if (events.includes('restart')){
+                        window.rcube_calendar_ui.edit._events.restart();
+                    }
+                    else if (events.includes('get'))
+                    {
+                        return window.rcube_calendar_ui.edit._events;// ?? new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
+                    }
                 }
-                else
-                    $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
+                events = null;
             }
-            else {
-                //Audio
-                $("#edit-location").val(`https://audio.mtes.fr/ : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
-            }
-        };
+            
+            /**
+             * @type {EventLocation}
+             */
+            const current_location = window.rcube_calendar_ui.edit._events.addEvent(events);
+            const val = await current_location.getValue();
+            $("#edit-location").val(val);
+        }
+        
+        /**Met à jour le champs date */
         const update_date = () => {
             let val = $(".input-mel-datetime .input-mel.start").val().split(" ");
             $("#edit-startdate").val(val[0]);
@@ -335,28 +1114,75 @@ $(document).ready(() => {
             val = $(".input-mel-datetime .input-mel.end").val().split(" ");
             $("#edit-enddate").val(val[0]);
             $("#edit-endtime").val(val[1]);
-        }
+        };
+        /**
+         * Actions à faire lors du changement de date
+         * @param {*} date 
+         * @param {boolean} isEndDate 
+         * @param {boolean} doShow 
+         */
+        let onChangeDateTime = (date, isEndDate = false, doShow = false) => {
+            //Empêche les erreurs d'affichages
+            if (onChangeDateTime.from_start_do_show !== undefined)
+            {
+                doShow = onChangeDateTime.from_start_do_show;
+                onChangeDateTime.from_start_do_show = undefined;
+            }
+
+            //Initialisatoins des variables
+            let bool;
+            let querry = $(".input-mel-datetime .input-mel.end");
+            const end_val = isEndDate ? moment(date) : getDate(querry.val());
+            const start_val_raw = $(".input-mel-datetime .input-mel.start").val();
+            const start_val = getDate(start_val_raw);
+
+            const min_date = start_val_raw.split(' ')[0];
+
+            //L'heure de fin est changée lorsque la date de fin est identique à la date de début.
+
+            if (onChangeDateTime.minDate !== min_date)
+            {
+                querry.datetimepicker('setOptions', {minDate:min_date, formatDate:'d/m/Y'});
+                onChangeDateTime.minDate = min_date;
+            }
+
+            if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
+            {
+                onChangeDateTime.from_start_do_show = doShow;
+                const allday = $("#edit-allday")[0].checked;
+                const dif = window.rcube_calendar_ui.difTime === undefined || allday || isEndDate ? 3600 : window.rcube_calendar_ui.difTime;
+                querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(allday ? format.split(' ')[0] : format) );
+                update_date();
+                bool = start_val.format('DD/MM/YYYY') === getDate($(".input-mel-datetime .input-mel.start").val()).format('DD/MM/YYYY');
+            }
+            else {
+                bool = start_val.format('DD/MM/YYYY') === end_val.format('DD/MM/YYYY');
+            }
+
+            let min_time;
+            if (start_val_raw.includes(' ') && bool) min_time = moment(start_val).add(1, 'm').format('HH:mm');
+            else min_time = false;
+
+            if (onChangeDateTime.minTime !== min_time)
+            {
+                querry.datetimepicker('setOptions', {minTime:min_time});
+                if (doShow && onChangeDateTime.minTime !== undefined) querry.datetimepicker('hide').datetimepicker('show');
+                onChangeDateTime.minTime = min_time;
+            }
+        };
         const format = "DD/MM/YYYY HH:mm";
         const have_created_callback = $("#eventedit").data("callbacks") === "ok";
+        //Création des actions
         if (!have_created_callback)
         {
-            //Update datetime
+            //Initialisation des champs dates
             $(".input-mel-datetime .input-mel.start").datetimepicker({
                 format: 'd/m/Y H:i',
                 lang:"fr",
                 step:15,
                 dayOfWeekStart:1,
-                onChangeDateTime:() => {
-                    let querry = $(".input-mel-datetime .input-mel.end");
-                    const end_val = getDate(querry.val());
-                    const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
-
-                    if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    {
-                        const dif = window.rcube_calendar_ui.difTime === undefined ? 3600 : window.rcube_calendar_ui.difTime;
-                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(format) );
-                        update_date();
-                    }
+                onChangeDateTime:(date) => {
+                    onChangeDateTime(date, false, false);
                 }
             });
             $(".input-mel-datetime .input-mel.end").datetimepicker({
@@ -364,104 +1190,103 @@ $(document).ready(() => {
                 lang:"fr",
                 step:15,
                 dayOfWeekStart:1,
-                onChangeDateTime:() => {
-                    let querry = $(".input-mel-datetime .input-mel.end");
-                    const end_val = getDate(querry.val());
-                    const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
-
-                    if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    {
-                        const dif = window.rcube_calendar_ui.difTime === undefined ? 3600 : window.rcube_calendar_ui.difTime;
-                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(format) );
-                        update_date();
-                    }
+                onChangeDateTime:(date) => {
+                    onChangeDateTime(date, true, true);
                 }
             });
             $(".input-mel-datetime .input-mel.start").on("change", () => {
                 const val = $(".input-mel-datetime .input-mel.start").val().split(" ");
                 $("#edit-startdate").val(val[0]);
-                $("#edit-starttime").val(val[1]);
+                if (val.length > 1) $("#edit-starttime").val(val[1]);
+                else $("#edit-starttime").val('00:00');
             });
             $(".input-mel-datetime .input-mel.end").on("change", () => {
                 const val = $(".input-mel-datetime .input-mel.end").val().split(" ");
                 $("#edit-enddate").val(val[0]);
-                $("#edit-endtime").val(val[1]);
+                if (val.length > 1) $("#edit-endtime").val(val[1]);
+                else $("#edit-endtime").val('00:00');
             });
-            // $("#edit-allday").on("click", (e) => {
-            //     e = e.target;
-            //     let moment = getDate($(".input-mel-datetime .input-mel.start").val());
-            //     if (e.checked)
-            //     {
-            //         $(".input-mel-datetime .input-mel.start").addClass("disabled").attr("disabled", "disabled"); 
-            //         $(".input-mel-datetime .input-mel.end").addClass("disabled").attr("disabled", "disabled"); 
-            //         $(".input-mel-datetime .input-mel.start").val(moment.startOf("day").format(format));
-            //         $(".input-mel-datetime .input-mel.end").val(moment.endOf("day").format(format));
-            //         update_date();
-            //     }
-            //     else
-            //     {
-            //         $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-            //         $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-            //         update_date();
-            //     }
-            // })
-            //update locations
+
+            //Initalisation du bouton "Toute la journée"
+            $("#edit-allday").on("click", (e) => {
+                e = e.target;
+
+                if (e.checked)
+                {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y', timepicker:false});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y', timepicker:false});
+
+                    $(".input-mel-datetime .input-mel.start").val($(".input-mel-datetime .input-mel.start").val().split(' ')[0]);
+                    $(".input-mel-datetime .input-mel.end").val($(".input-mel-datetime .input-mel.end").val().split(' ')[0]);
+                }
+                else {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+
+                    $(".input-mel-datetime .input-mel.start").val($(".input-mel-datetime .input-mel.start").val() + ' 00:00');
+                    $(".input-mel-datetime .input-mel.end").val($(".input-mel-datetime .input-mel.end").val() + ' 00:00');
+                    onChangeDateTime(null, false, false);
+                }
+            })
+
+            // //Initialisation des localisations
+            // rcube_calendar_ui._init_location($('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
+            //Actions à faire lors de l'appuie d'un bouton radio
             $(".form-check-input.event-mode").on("click", (e) => {
                 e = e.target;
                 $(".content.event-mode").css("display", "none");
                 $(`.${e.id}`).css("display", "");
-                update_location();
+                //update_location();
             });
+            //Action à faire lors de l'écriture du lieu
             $("#edit-location").on("change", () => {
-                update_location();
+                //update_location();
             });
+            //Actions à faire lors de l'appuie d'un bouton radio pour la séléction d'une webconf
             $("#eb-mm-wm-e").on("change", () => {
-                update_location();
-                //console.log($("#eb-mm-wm-e")[0].checked, "checked");
-                if (!$("#eb-mm-wm-e")[0].checked)
+                //update_location();
+
+                if (!$("#eb-mm-wm-e")[0].checked) //Visio custom
                 {
-                    $("#url-visio-cal").removeClass("hidden");//.removeClass("disabled").removeAttr("disabled");
+                    $("#url-visio-cal").removeClass("hidden");
                     $("#row-for-key-visio-cal").addClass("hidden");
                 }
-                else
+                else //Visio de l'état
                 {
-                    $("#url-visio-cal").addClass("hidden");//addClass("disabled").attr("disabled", "disabled");
+                    $("#url-visio-cal").addClass("hidden");
                     $("#row-for-key-visio-cal").removeClass("hidden");
                 }
             });
             $("#eb-mm-wm-a").on("change", () => {
-                update_location();
-                //console.log($("#eb-mm-wm-e")[0].checked, "checked");
-                // if (!$("#eb-mm-wm-e")[0].checked)
-                //     $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
-                // else
-                //     $("#url-visio-cal").addClass("disabled").attr("disabled", "disabled");
-                if (!$("#eb-mm-wm-e")[0].checked)
+                //update_location();
+
+                if (!$("#eb-mm-wm-e")[0].checked) //Visio custom
                 {
-                    $("#url-visio-cal").removeClass("hidden");//.removeClass("disabled").removeAttr("disabled");
+                    $("#url-visio-cal").removeClass("hidden");
                     $("#row-for-key-visio-cal").addClass("hidden");
                 }
-                else
+                else //Visio de l'état
                 {
-                    $("#url-visio-cal").addClass("hidden");//addClass("disabled").attr("disabled", "disabled");
+                    $("#url-visio-cal").addClass("hidden");
                     $("#row-for-key-visio-cal").removeClass("hidden");
                 }
             });
+            //Maj de l'url d'un visio custom
             $("#url-visio-cal").on("change", () => {
-                update_location();
+                //update_location();
             });
+            //Maj de la localisation
             $("#presential-cal-location").on("change", () => {
-                update_location();
+                //update_location();
             });
+            //Maj du tel
             $("#tel-input-cal-location").on("change", () => {
-                update_location();
-            });
-            $("#tel-input-cal-location").on("change", () => {
-                update_location();
+                //update_location();
             });
             $("#num-audio-input-cal-location").on("change", () => {
-                update_location();
+               // update_location();
             });
+            //Maj de l'url de la visio de l'état
             $("#key-visio-cal").on("input", () => {
                 let val = $("#key-visio-cal").val().toUpperCase();
                 if (val.includes(rcmail.env["webconf.base_url"].toUpperCase()))
@@ -474,9 +1299,10 @@ $(document).ready(() => {
             });
 
             $("#key-visio-cal").on("change", () => {
-                update_location();
+               // update_location();
             });
 
+            //Check wsp ou catégorie
             $("#edit-wsp").on("click", (e) => {
                 e = e.target;
                 if (e.checked)
@@ -487,11 +1313,15 @@ $(document).ready(() => {
                         $(".have-workspace").css("display", "none");
                     else
                         $(".have-workspace").css("display", "");
+                    
+                    $("#wsp-event-all-cal-mm").change();
                 }
                 else {
                     $("#div-events-wsp").css("display", "none");
                     $("#div-events-category").css("display", "");
                     $(".have-workspace").css("display", "none");
+
+                    $('#categories-event-all-cal-mm').change();
                 }
             });
             $("#wsp-event-all-cal-mm").on("change", () => {
@@ -505,8 +1335,8 @@ $(document).ready(() => {
                 {
                     $(".have-workspace").css("display", "none");
                     $("#edit-categories").val("");
-                    update_location();
                 }
+                update_location(null);
             });
             $("#categories-event-all-cal-mm").on("change", () => {
                 const val = $("#categories-event-all-cal-mm").val();
@@ -515,7 +1345,7 @@ $(document).ready(() => {
                 else
                     $("#edit-categories").val("");
                 $("#wsp-event-all-cal-mm").val("#none");
-                update_location();
+                update_location(null);
             });
             $("#fake-event-rec").on("change", (e) => {
                 $("#edit-recurrence-frequency").val(e.target.value);
@@ -528,65 +1358,34 @@ $(document).ready(() => {
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
             
-            $("#edit-attendee-add").attr("title", 'Ajoute le participant saisi dans le champ précédent.');
-            $("#edit-attendee-name").attr("placeholder", 'Ajouter un participant...').attr("title", "Saisissez le nom de l'utilisateur pour afficher l'autocomplétion ou saisissez une adresse email puis cliquez sur 'Ajouter'");
+            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text)).before($('#showcontacts_edit-attendee-name'));
+            $("#edit-attendee-name").attr("placeholder", `${rcmail.gettext('add_user_to_event', plugin_text)}...`).attr("title", rcmail.gettext('add_user_to_event_title', plugin_text))
+            .css('border-bottom-right-radius', 0)
+            .css('border-top-right-radius', 0);
 
+            $("#mel-calendar-has-phone-datas").addClass('custom-control-input')
+            .click(() => {
+                if ($("#mel-calendar-has-phone-datas")[0].checked)
+                    $('.visio-phone-datas').css('display', '');
+                else
+                    $('.visio-phone-datas').css('display', 'none');
+
+                update_location(null);
+            });
+
+            $('#edit-sensitivity option[value="confidential"]').remove();
+
+            $('#edit-recurrence-enddate').on('mousedown',() => {
+                $('#edit-recurrence-repeat-until')[0].checked = true;
+            });
             //ok
             $("#eventedit").data("callbacks", "ok");
 
         }
         
-        setTimeout(() => {
+        setTimeout(async () => {
             $("#wsp-event-all-cal-mm").removeClass("disabled").removeAttr("disabled");
-            $("#edit-wsp").removeClass("disabled").removeAttr("disabled");
-            const update_desc = function (description) 
-            {
-                //$("#key-visio-cal").val(generateRoomName());
-
-                if (description !== undefined && description !== "")
-                {
-                    if (description.includes("https://audio.mtes.fr/ : "))
-                    {
-                        $("#eb-mm-em-a")[0].click();
-                        const audio = description.replace("https://audio.mtes.fr/ : ", "").split(" - ");
-                        $("#tel-input-cal-location").val(audio[0]);
-                        $("#num-audio-input-cal-location").val(audio[1]);
-                    }
-                    else if (description.includes("#visio") || description.includes("@visio") )
-                    {
-                        const isRc = description.includes("#visio");
-                        $("#eb-mm-em-v").click();
-                        if (isRc)
-                        {
-                            $("#eb-mm-wm-e").click();
-                            $("#url-visio-cal").addClass("hidden");
-                            $("#row-for-key-visio-cal").removeClass("hidden");
-                            $("#key-visio-cal").val(description.split("&_key=")[1].split("&")[0]);
-                        }
-                        else
-                        {
-                            $("#eb-mm-wm-a").click();
-                            $("#url-visio-cal").removeClass("hidden").val(description.replace("@visio:", ""));
-                            $("#row-for-key-visio-cal").addClass("hidden");
-                            //.removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
-                        }
-                    }
-                    else if (description.includes(rcmail.env["webconf.base_url"]))
-                    {
-                        $("#eb-mm-em-v").click();
-                        $("#eb-mm-wm-e").click();
-                        $("#url-visio-cal").addClass("hidden");
-                        $("#row-for-key-visio-cal").removeClass("hidden");
-                        $("#key-visio-cal").val(mel_metapage.Functions.webconf_url(description));
-                    }
-                    else {
-                        $("#eb-mm-em-p").click();
-                        $("#presential-cal-location").val(description);
-                    }
-                }
-                else
-                    $("#eb-mm-em-p").click();         
-            };        
+            $("#edit-wsp").removeClass("disabled").removeAttr("disabled");   
 
             if (event === "") //nouvel event
             {
@@ -613,8 +1412,11 @@ $(document).ready(() => {
 
                 $("#fake-event-rec").val("")
 
-                // if ($("#edit-allday")[0].checked)
-                //     $("#edit-allday").click().click();
+                if ($("#edit-allday")[0].checked) $("#edit-allday").click().click();
+                else {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                }
                 // else
                 // {
                 //     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
@@ -640,7 +1442,7 @@ $(document).ready(() => {
                     }
                 }
 
-                update_desc($("#edit-location").val());
+                await EventLocation.InitFromEvent($("#edit-location").val(), $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
 
                 $("#fake-event-rec").val($("#edit-recurrence-frequency").val());
 
@@ -649,57 +1451,40 @@ $(document).ready(() => {
 
             }
             else{ //ancien event
-                $(".input-mel-datetime .input-mel.start").val(moment(event.start).format(format));
-                $(".input-mel-datetime .input-mel.end").val(moment(event.end).format(format));
+                // Gestion des dates - 0007033: Modification d'un évenement récurrent
+                if ($('input.edit-recurring-savemode:checked').val() == 'all' && event.master_start) {
+                    $(".input-mel-datetime .input-mel.start").val(moment(event.master_start).format(format));
+                    $(".input-mel-datetime .input-mel.end").val(moment(event.master_end).format(format));
+                }
+                else {
+                    $(".input-mel-datetime .input-mel.start").val(moment(event.start).format(format));
+                    $(".input-mel-datetime .input-mel.end").val(moment(event.end).format(format));
+                }
                 update_date();
 
                 window.rcube_calendar_ui.difTime = (moment(event.end) - moment(event.start))/1000.0;
                 if (window.rcube_calendar_ui.difTime === 0)
                     window.rcube_calendar_ui.difTime = undefined;
 
-                // if ($("#edit-allday")[0].checked)
-                //     $("#edit-allday").click().click();
-                // else
-                // {
-                //     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-                //     $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-                // }
+                if ($("#edit-allday")[0].checked) $("#edit-allday").click().click();
+                else {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    onChangeDateTime(null, false, false);
+                }
 
+                //Gestion de la récurence
                 const req = event.recurrence;
                 if (req !== undefined && req !== null)
                 {
                     $("#fake-event-rec").val(req.FREQ);
                 }
 
+                //Gestion de la localisation
                 const description = event.location;
-                update_desc(description);
-                // if (description !== undefined)
-                // {
-                //     if (description.includes("https://audio.mtes.fr/ : "))
-                //     {
-                //         $("#eb-mm-em-a")[0].click();
-                //         const audio = description.replace("https://audio.mtes.fr/ : ", "").split(" - ");
-                //         $("#tel-input-cal-location").val(audio[0]);
-                //         $("#num-audio-input-cal-location").val(audio[1]);
-                //     }
-                //     else if (description.includes("#visio") || description.includes("@visio") )
-                //     {
-                //         const isRc = description.includes("#visio");
-                //         $("#eb-mm-em-v").click();
-                //         if (isRc)
-                //             $("#eb-mm-wm-e").click();
-                //         else
-                //         {
-                //             $("#eb-mm-wm-a").click();
-                //             $("#url-visio-cal").removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
-                //         }
-                //     }
-                //     else {
-                //         $("#eb-mm-em-p").click();
-                //         $("#presential-cal-location").val(description);
-                //     }
-                // }
+                await EventLocation.InitFromEvent(description, $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
 
+                //Gestion des alarmes
                 if (event.alarms !== undefined && event.alarms !== null)
                 {
 
@@ -748,6 +1533,7 @@ $(document).ready(() => {
                     {}
                 }
 
+                //Gestion des catégories
                 if (parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").length > 0  && parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").css("display") !== "none")
                 {
                     if (event._id === undefined) event.categories = [`ws#${mel_metapage.Storage.get("current_wsp")}`];
@@ -785,6 +1571,9 @@ $(document).ready(() => {
                         }
                         $("#categories-event-all-cal-mm").val(event.categories[0]);
                     }
+
+                    $("#edit-categories").val(event.categories[0]);
+
                 }
                 else {
                     $(".have-workspace").css("display", "none");
@@ -795,10 +1584,11 @@ $(document).ready(() => {
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
             update_location();
         }, 10);
+
         //Suppression text
-        //$("#eventedit").find(".nav.nav-tabs").css("display", "");
         $("#eventedit").find(".create_poll_link").css("display", "none");
         $("#edit-recurrence-frequency").parent().parent().find("label").css("display", "none");
+
         //maj des boutons
         let button_toolbar = $("#eventedit").parent().parent().find(".ui-dialog-buttonset");
         if (rcmail.env.task !== "calendar")
@@ -806,13 +1596,6 @@ $(document).ready(() => {
             if (button_toolbar.length > 0)
             {
                 button_toolbar.find(".btn").css("display", "none");
-                // if (button_toolbar.find(".continue").length > 0)
-                //     button_toolbar.find(".continue").css("display", "");
-                // else
-                // {
-                //     button_toolbar.append(`<button class="btn btn-primary continue" onclick="rcube_calendar_ui.continue()">Continuer</button>`);
-                //     button_toolbar.append(`<button style="display:none;" class="btn btn secondary back" onclick="rcube_calendar_ui.back()">Retour</button>`);
-                // }
             }
         }
         else {
@@ -837,15 +1620,261 @@ $(document).ready(() => {
             button_toolbar.find(".save").css("display", "none");
         }
 
+        //Maj des onglets
         $('li > a[href="#event-panel-summary"]').html("Résumé");
         $('li > a[href="#event-panel-detail"]').html("Détails");
-    //     $("#eventedit ul.nav.nav-tabs #saveeventbutton").remove();
-    //     $("#eventedit ul.nav.nav-tabs").append(`<li>
-    //     <button id="saveeventbutton" type="button" style="margin-top: 0.5rem" class="mel-button invite-button mel-before-remover create" onclick="window.rcube_calendar_ui.save()">
-    //     <span class="icon-pencil"><span class="sr-only>${rcmail.gettext("mel_metapage.save_event")}</span></span>
-    // </button></li>
-    //     `)
     }
+
+    window.rcube_calendar_ui._init_location = async function($haveWorkspace, $workspaceSelect, update_location, baseId = 0, _default = null)
+    {
+        const mainDivId = `em-locations-base-id-${baseId}`;
+
+        if ($(`#${mainDivId}`).length > 0) return await rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
+
+        let locationTypeOptions = {
+            default_selected:'En présentiel',
+            visio:'Par visioconférence',
+            audio:'Par audio'
+        };
+
+        const visioTypeOptions = {
+            intregrated_selected:rcmail.gettext('mel_metapage.state_tool_conf'),
+            custom:rcmail.gettext('mel_metapage.other_tool_conf'),
+        };
+
+        let $parentDiv = $('#em-locations').append(`<div id="${mainDivId}" class="row locations"></div>`);
+        let $mainDiv = $parentDiv.find(`#${mainDivId}`);
+        
+        let $leftCol = $( `<div class="col-6"> <label for="presential-cal-location" class="span-mel t1 margin ${baseId === 0 ? '' : 'hidden'}" style="margin-bottom:10px"><span class="">${rcmail.gettext('mel_metapage.event_mode')}</span></label></div>`).appendTo($mainDiv);
+        let $rightCol = $('<div class="col-6"></div>').appendTo($mainDiv);
+
+        let $audioDiv = $(`
+        <div class="audio-${mainDivId}">
+        <span class="span-mel t2 margin red-star-after ${baseId === 0 ? '' : 'hidden'}">Choix de l'option</span>
+            <center><div class="abutton"></div></center>
+            <div class="rrow">
+                <div class="rcol-md-6 aphone">
+                <label>Téléphone de l'audio</label>
+                </div>
+                <div class="rcol-md-6 anum">
+                <label>Numéro de l'audio</label>
+                </div>
+            </div>
+        </div>
+        `).appendTo($rightCol);
+        let $audioButton = $(`<button type="button" style="margin-top:0" class="mel-button mel-before-remover invite-button create btn btn-secondary">
+        <span>Réserver</span>
+        <span class="icofont-hand-right  plus" style="vertical-align: top;margin-left: 15px;"></span>
+    </button>`).click(() => window.open('https://audio.mtes.fr/', '_blank').focus())
+    .appendTo($audioDiv.find('.abutton'));
+        let $audioCode = $('<input type="text" class="form-control input-mel">').attr('title', 'Numéro de l’audio - Mode d’événement par audio').attr('aria-labelledby', 'mel-event-audio-num-sr-only').appendTo($audioDiv.find('.anum'));
+        let $audioPhone = $('<input type="tel" class="form-control input-mel" />').attr('title', 'Téléphone de l’audio - Mode d’événement par audio').attr('aria-labelledby', 'mel-event-audio-phone-sr-only').appendTo($audioDiv.find('.aphone'));
+        let $visioDiv = $(`<div class="visio-${mainDivId}">
+        <span class="span-mel t2 red-star-after margin ${baseId === 0 ? '' : 'hidden'}">Choix de l'option</span>
+            <div class="">
+                <div class="rcol-6 vselect">
+                </div>
+                <div class="rcol-6 vinput">
+                    <div class="vintegrated">
+                        <div class="input-group viinput">
+                        <!--TODO : input group -->
+                            <div class="vbutton input-group-prepend"></div>
+                            <!-- <div class="viinput"></div> -->
+                        </div>
+                    </div>
+                    <div class="vcustom">
+                    </div>
+                </div>
+            </div>
+        </div>`).appendTo($rightCol);
+        let $visioSelect = $('<select class="form-control input-mel"></select>').appendTo($visioDiv.find('.vselect'));
+        let $visioButton = $('<button type="button" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover btn btn-secondary"><span class="icofont-refresh"></span></button>').click(() => {
+            $visioWebconfInput.val(mel_metapage.Functions.generateWebconfRoomName());
+        }).appendTo($visioDiv.find('.vinput .vintegrated .vbutton'));
+        let $visioPhoneDatas = $(`
+        <div class='input-group visio-phone-datas'>
+            <div class="input-group-prepend" style="max-width:50%">
+                <div class='input-group pn'>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text mel icon-mel-phone"></span>
+                    </div>
+                </div>
+            </div>
+        </div>`).css('display', 'none');
+        let $visioPhoneNumber = $(`<input type='text' disabled class="form-control input-mel" />`).appendTo($visioPhoneDatas.find('.input-group-prepend .pn'));
+        let $visioPhonePin = $(`<input type='text' disabled class="form-control input-mel" />`).appendTo($visioPhoneDatas);
+        let $visioWebconfInput = $(`<input type="text" pattern="^(?=(?:[a-zA-Z0-9]*[a-zA-Z]))(?=(?:[a-zA-Z0-9]*[0-9]){3})[a-zA-Z0-9]{10,}$" class="form-control input-mel" title="Le nom de la conférence doit contenir un minimum de 10 caractères dont au moins 3 chiffres. Ces caractères sont exclusivement des lettres de l’alphabet et des chiffres, la casse (Min/Maj) n’a pas d’importance." placeholder="Saisir le nom du salon" />`).appendTo($visioDiv.find('.vinput .vintegrated .viinput'));
+        let $visioCustomInput = $(`                        <input type="text" id="url-visio-cal" class="form-control input-mel" placeholder="Saisir l'url de visioconférence" />`)
+        .appendTo($visioDiv.find('.vinput .vcustom'));
+        let $placeInput = $(`<div class="place-${mainDivId}"><label for="presential-cal-location-${mainDivId}" class="${baseId === 0 ? '' : 'hidden'} span-mel t2 margin">Choix de l'option</label>
+        <input type="text" id="presential-cal-location-${mainDivId}" class="form-control input-mel" placeholder="Nom du lieu" /></div>`).appendTo($rightCol);
+        
+        let $divSelect = $('<div class="input-group">  <div class="input-group-prepend"></div></div>').appendTo($leftCol);
+        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
+
+        if (baseId !== 0)
+        {
+            $(`<button type="button" style="margin-top:0" class="mel-button btn btn-secondary"><span class="icon-mel-trash"></span></button>`)
+            .appendTo($divSelect.find('.input-group-prepend'))
+            .click(() => {
+                update_location(`remove:${mainDivId}`).then(() => {
+                $mainDiv.remove();});
+            });
+        }
+        else {
+            $(`<button type="button" style="margin-top:0" class="mel-button btn btn-secondary"><span class="icon-mel-plus"></span></button>`).appendTo($divSelect.find('.input-group-prepend'))
+            .click(async () => {
+                await window.rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId);
+                $('.custom-calendar-option-select').each((i,e) => {
+                    if (e.value === 'visio') $(e).change();
+                })
+            });
+        }
+
+        for (const key in locationTypeOptions) {
+            if (Object.hasOwnProperty.call(locationTypeOptions, key)) {
+                const element = locationTypeOptions[key];
+                $optionSelect.append(`<option value=${key.replace('_selected', '')} ${(key.includes('_selected') ? 'selected' : '')}>${element}</option>`)
+            }
+        }
+
+        for (const key in visioTypeOptions) {
+            if (Object.hasOwnProperty.call(visioTypeOptions, key)) {
+                const element = visioTypeOptions[key];
+                $visioSelect.append(`<option value=${key.replace('_selected', '')} ${(key.includes('_selected') ? 'selected' : '')}>${element}</option>`)
+            }
+        }
+
+        $visioPhoneDatas.appendTo($leftCol);
+
+        if (_default !== null)
+        {
+            for (const key in _default) {
+                if (Object.hasOwnProperty.call(_default, key)) {
+                    const element = _default[key];
+                    switch (key) {
+                        case 'place':
+                            $placeInput.find('input').val(element);
+                            break;
+
+                        case 'visio':
+                            switch (element.type) {
+                                case 'integrated':
+                                    $visioSelect.val('intregrated');
+                                    $visioWebconfInput.val(element.val);
+                                    break;
+
+                                case 'custom':
+                                    $visioSelect.val('custom');
+                                    $visioCustomInput.val(element.val);
+                                    break;
+                            
+                                default:
+                                    break;
+                            }
+                            break;
+
+                        case 'audio':
+                            $audioPhone.val(element.tel);
+                            $audioCode.val(element.num);
+                            break;
+
+                        case 'type':
+                            $optionSelect.val(element);
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        let placeLocation = new PlaceEventLocation($placeInput.find('input'));
+        let audioLocation = new AudioEventLocation(audio_url, $audioPhone, $audioCode);
+        let visioPhoneLocation = new VisioPhoneLocation($("#mel-calendar-has-phone-datas"), $visioPhoneNumber, $visioPhonePin, $visioPhoneDatas);
+        let visioLocation = new VisioEventLocation($visioSelect, $visioWebconfInput, $visioCustomInput, $haveWorkspace, $workspaceSelect, visioPhoneLocation);
+
+        [$audioCode, $audioPhone, $visioSelect, $visioWebconfInput, $visioCustomInput, $placeInput, $optionSelect].forEach(item => {
+            item.on('change', () => {
+                update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
+            });
+        });
+
+        $visioButton.click(() => {
+            update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
+        });
+
+        $optionSelect.on('change', async (e) => {
+            let $showPhone = $("#mel-calendar-has-phone-datas").parent().css('display', 'none'); 
+
+            e = $(e.currentTarget);
+
+            $visioDiv.css('display', 'none');
+            $placeInput.css('display', 'none');
+            $audioDiv.css('display', 'none');
+
+            const haveVisio = (await update_location('get')).have('visio');
+
+            if (haveVisio || (!haveVisio && e.val() === 'visio')) 
+            {
+                $('.custom-calendar-option-select').each((i, e) => {
+                    e = $(e);
+
+                    if (e.val() !== 'visio')
+                    {
+                        e.find('option[value="visio"]').css('display', 'none');
+                    }
+                });
+            }
+            else $('.custom-calendar-option-select option[value="visio"]').css('display', '');
+
+            $visioPhoneDatas.css('display', 'none');
+
+            switch (e.val()) {
+                case 'default':
+                    $placeInput.css('display', '');
+                    break;
+
+                case 'visio':
+                    $visioDiv.css('display', '');
+                    $showPhone.css('display', '');
+                    visioLocation.visioPhone.update();
+                    break;
+
+                case 'audio':
+                    $audioDiv.css('display', '');
+                    break;
+            
+                default:
+                    break;
+            }
+        });
+
+        $visioSelect.on('change', (e) => {
+            let $integrated = $visioDiv.find('.vinput .vintegrated').css('display', 'none');
+            let $custom = $visioDiv.find('.vinput .vcustom').css('display', 'none');
+
+            switch ($(e.currentTarget).val()) {
+                case 'intregrated':
+                    $integrated.css('display', '');
+                    break;
+
+                case 'custom':
+                    $custom.css('display', '');
+                    break;
+
+            
+                default:
+                    break;
+            }
+        })
+
+        $optionSelect.change();
+        $visioSelect.change();
+
+        return $mainDiv;
+    };
 
         rcmail.addEventListener("edit-event", (event) =>{
             window.rcube_calendar_ui.edit(event);
@@ -947,15 +1976,21 @@ $(document).ready(() => {
 
     rcube_calendar.prototype.create_event_from_somewhere = async function(event = null)
     {
+        let isFromGlobalModal = false;
+
         if (event === null)
         {
             event = rcmail.local_storage_get_item("tmp_calendar_event");
+
+            if (!!event) isFromGlobalModal = true;
         }
 
         if (window.create_event !== true)
             window.create_event = true;
         else
         {
+            $('#mel-have-something-minified-main-create').remove();
+            window.event_reduced = false;
             window.kolab_event_dialog_element.show()
             return;
         }
@@ -1010,7 +2045,7 @@ $(document).ready(() => {
         if ($("#globalModal .modal-close-footer").length == 0)
             await GlobalModal.resetModal();
 
-        const config = new GlobalModalConfig(`Créer un évènement`, "default", dialog, null);
+        const config = new GlobalModalConfig(rcmail.gettext('create_event', plugin_text), "default", dialog, null);
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
 
         kolab_event_dialog_element.footer.buttons.save.click(() => {
@@ -1041,15 +2076,54 @@ $(document).ready(() => {
         // ${event.from === "barup" ? '' : ""}
         if (event.from === "barup")
         {
+            $('#mel-have-something-minified-main-create').remove();
+            const func_minifier = () => {
+                if ($('#mel-have-something-minified-main-create').length === 0 && $("#globallist").length === 0)
+                {
+                    let $qu = $('#button-create').append(`
+                    <span id="mel-have-something-minified-main-create" class="badge badge-pill badge-primary" style="position: absolute;
+                    top: -5px;
+                    right: -5px;">•</span>
+                    `);
+    
+                    if ($qu.css('position') !== 'relative') $qu.css('position', 'relative');
+                }
+            };
             // create_popUp.close();
-            window.kolab_event_dialog_element.setBeforeTitle('<a href=# title="Retour" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>Retour à la modale de création</span></a>');
+            window.event_reduced = true;
+            window.kolab_event_dialog_element.setBeforeTitle(`<a href=# title="${rcmail.gettext('back')}" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$('iframe#kolabcalendarinlinegui').remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>${rcmail.gettext('create_modal_back', plugin_text)}</span></a>`);
+            window.kolab_event_dialog_element.haveReduced().on_click_minified = () => {
+                window.event_reduced = true;
+                window.kolab_event_dialog_element.close();
+                func_minifier();
+                if (isFromGlobalModal) $('#button-create').focus();
+            };
+            window.kolab_event_dialog_element.on_click_exit = () => {
+                window.kolab_event_dialog_element.close();
+                window.event_saved = false;
+                window.create_event = false;
+                window.event_reduced = false;
+                window.kolab_event_dialog_element = null;
+
+                if (isFromGlobalModal) $('#button-create').focus();
+            };
+            window.kolab_event_dialog_element.onClose(() => {
+                if (window.event_reduced === false)
+                {
+                    window.event_saved = false;
+                    window.create_event = false;
+                    window.kolab_event_dialog_element = null;
+                    $('#mel-have-something-minified-main-create').remove();
+                }
+                else {
+                    window.event_reduced = true;
+                    func_minifier();
+                }
+
+                if (isFromGlobalModal) $('#button-create').focus();
+            });
         }
-
-        window.kolab_event_dialog_element.autoHeight();
-        window.kolab_event_dialog_element.onDestroy((globalModal) => {
-            globalModal.contents.find("iframe").remove();  
-        });
-
+        else 
         window.kolab_event_dialog_element.onClose(() => {
             if (window.event_saved === true)
             {
@@ -1057,6 +2131,14 @@ $(document).ready(() => {
                 delete window.create_event;
             }
         });
+        
+
+        window.kolab_event_dialog_element.autoHeight();
+        window.kolab_event_dialog_element.onDestroy((globalModal) => {
+            globalModal.contents.find("iframe").remove();  
+        });
+
+
 
     // var sheet = window.document.styleSheets[0];
     // sheet.insertRule('.ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default { color: black!important; }', sheet.cssRules.length);
@@ -1173,9 +2255,9 @@ $(document).ready(() => {
          {
             let _html;
             if (date === moment().startOf("day"))
-                _html = "Pas de réunion aujourd'hui !";
+                _html = rcmail.gettext('no_events_today', plugin_text);
             else
-                _html = "Pas de réunion à cette date !";
+                _html = rcmail.gettext('no_events_this_day', plugin_text);
             if (jquery_element !== null)
             {
                 querry.html(_html);
@@ -1256,11 +2338,11 @@ $(document).ready(() => {
 
      }
 
-     /**
-      * Ouvre la fenêtre qui permet de créer un évènement.
-      */
-     rcube_calendar.mel_create_event = function()
-     {
+    /**
+     * Ouvre la fenêtre qui permet de créer un évènement.
+     */
+    rcube_calendar.mel_create_event = function()
+    {
         const format = "DD/MM/YYYY HH:mm";
         const getDate = function(string)
         {
@@ -1274,8 +2356,10 @@ $(document).ready(() => {
         var create_popUp = new GlobalModal();
 
         create_popUp = window.create_popUp;
-         if (create_popUp === undefined)
-            create_popUp = new GlobalModal();
+
+            if (create_popUp === undefined)
+                create_popUp = new GlobalModal();
+
         create_popUp.editTitle("Créer une réunion (étape 1/2)");
         create_popUp.editBody("<center><span class=spinner-border></span></center>");
         mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_event_html"), mel_metapage.Symbols.null, (datas) => {
@@ -1321,7 +2405,94 @@ $(document).ready(() => {
             `)
             create_popUp.show();
         });
-     }
+    }
+
+    rcube_calendar.is_desc_webconf = function(text)
+    {
+    return text.includes('@visio') || rcube_calendar.is_desc_bnum_webconf(text) || rcube_calendar.is_desc_frame_webconf(text);
+    };
+
+    rcube_calendar.is_desc_bnum_webconf = function(text)
+    {
+    return text.includes('#visio') || text.includes('public/webconf');
+    };
+
+    rcube_calendar.is_desc_frame_webconf = function(text)
+    {
+        return text.includes(rcmail.env["webconf.base_url"])
+    };
+
+    rcube_calendar.is_valid_for_bnum_webconf = function(text)
+    {
+        return rcube_calendar.is_desc_frame_webconf(text) || rcube_calendar.is_desc_bnum_webconf(text);
+    }
+
+    Object.defineProperty(rcube_calendar, 'newline_key', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value:newline
+    });
+
+    Object.defineProperty(rcube_calendar, 'old_newline_key', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value:'{mel.newline}'
+    });
+
+    rcube_calendar.number_waiting_events = function (events = [], get_number = true)
+    {
+        const user = top.rcmail.env.email.toUpperCase();
+        let numbers = (get_number ? 0 : []);
+
+        for (const key in events) {
+            if (Object.hasOwnProperty.call(events, key)) {
+                const element = events[key];
+
+                if (Array.isArray(element)) 
+                {
+                    if (get_number) numbers += rcube_calendar.number_waiting_events(element, get_number);
+                    else numbers = numbers.concat(rcube_calendar.number_waiting_events(element, get_number));
+                }
+                else if (!!element?.attendees && element.attendees.length > 0)
+                {
+                    if (Enumerable.from(element.attendees).any(x => x.email.toUpperCase() === user && x.status === 'NEEDS-ACTION'))
+                    {
+                        if (get_number) ++numbers;
+                        else numbers.push(element);
+                    }
+                }
+            }
+        }
+
+        return numbers;
+    }
+
+    rcube_calendar.get_number_waiting_events = function(get_number = true) {
+        const events_key = mel_metapage.Storage.calendar_by_days;
+
+        if (get_number)
+        {
+            const key = mel_metapage.Storage.calendars_number_wainting;
+
+            let number = mel_metapage.Storage.get(key);
+
+            if (!mel_metapage.Storage.exists(number))
+            {
+                const events = mel_metapage.Storage.get(events_key);
+                number = rcube_calendar.number_waiting_events(mel_metapage.Storage.exists(events) ? events : []);
+                mel_metapage.Storage.set(number);
+            }
+
+            return number;
+        }
+        else 
+        {
+            const events = mel_metapage.Storage.get(events_key);
+            return rcube_calendar.number_waiting_events(mel_metapage.Storage.exists(events) ? events : [], get_number);
+        } 
+    };
 
 });
 

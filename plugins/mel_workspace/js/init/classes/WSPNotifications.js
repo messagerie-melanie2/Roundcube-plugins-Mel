@@ -129,7 +129,7 @@ WSPNotification.agenda = function ()
     return new WSPNotification("calendar-notif", "all_events", "rcmail.mel_metapage_fn.calendar_updated()", "icon-mel-calendar", (cal, id) => {
         // console.log("update-func",cal, id, Enumerable.from(cal),  Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories[0].includes(id)));
         id = "ws#" + id;
-        return  Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories[0].includes(id) && x.free_busy !== "free").count();
+        return  Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories[0].includes(id) && x.free_busy !== "free" && x.free_busy !== "telework").count();
     }, mel_metapage.Storage.last_calendar_update, mel_metapage.EventListeners.calendar_updated.after);
 }
 
@@ -164,7 +164,7 @@ WSPNotification.documents = function()
     txt += `mel_metapage.Storage.set('wsp_doc_parent${rcmail.env.username}', true);})()`;
     txt = new WSPNotification("doc-notif", `wsp_have_news_${rcmail.env.username}`, txt, "icon-mel-folder", (item, id) => {
         
-        //console.log("LOG",item, id, item[id]);
+        console.log("LOG",item, id, item[id]);
         if (item !== undefined && item !== null && item[id])
             return "•";
 

@@ -1,626 +1,704 @@
-html.layout-large .task-mail #layout-sidebar > .header
-{
-    display: none;
+/** COLORS **/
+/** FONTS **/
+/* CONTENT */
+/** ANIMATIONS **/
+/** WIDTH **/
+.task-mail #layout-sidebar {
+  border-right-color: var(--layout-border);
+  border-right-style: solid;
+  border-right-width: thin;
+  background-color: var(--mail-layout-sidebar-background-color) !important;
 }
-
-.task-mail #layout-sidebar, 
-.task-mail #layout-sidebar > .header,
-.task-mail #layout-content > .header,
-.task-mail #layout-list
-{
-    background-color:#484D7A!important;
+.task-mail #layout-sidebar > .header {
+  background-color: var(--mail-header-layout-list-background-color) !important;
 }
-
-.task-mail #layout-sidebar,
-.task-mail #layout-list
-{
-    border-right-color: white;
-    border-right-style: solid;
-    border-right-width: thin;
+html.layout-large .task-mail #layout-sidebar > .header {
+  display: none;
 }
-
-.task-mail #layout-list #messagelist-header/*,
-.task-mail #layout-content > .header */
-{
-    justify-content: left;
+.task-mail #layout-content > .header {
+  background-color: var(--mail-header-layout-content-background-color) !important;
 }
-
-.task-mail #messagelist-content{
-    background-color: white!important;
-}
-
 .task-mail #layout-content > .header #toolbar-menu li a {
-	color: white;
+  color: var(--secondary-text-color);
 }
-
 .task-mail #layout-content > .header #toolbar-menu li .dropbutton {
-	background-color: #484D7A  ;
+  background-color: var(--tierciary-bckg-color);
 }
-
-.task-mail #layout-list.full,
-.task-mail #layout-list.initial{
-    max-width: 100%;
-    width:100%!important;
-    flex: 0 1 auto!important;
+.task-mail #layout-list {
+  border-right-color: var(--layout-border);
+  border-right-style: solid;
+  border-right-width: thin;
 }
-
-
-.messagelist tr.unread > td:first-child,
-.messagelist:not(.withselection) tr.unread > td.selection + td {
-    border-left: 2px solid #363A5B !important;
+.task-mail #layout-list #messagelist-header {
+  justify-content: left;
 }
-
-.messagelist tr.message td {
-    border-bottom: 1px solid #3E4261;
-    padding-top: 0.4rem;
-    padding-bottom: 0.4rem;
+.task-mail #layout-list.initial,
+.task-mail #layout-list.full {
+  max-width: 100%;
+  width: 100%!important;
+  flex: 0 1 auto!important;
 }
-
-.messagelist td.subject span.date,
-html body div#layout-list .messagelist td.subject a,
-.messagelist tr.flagged td, 
-.messagelist tr.flagged td.subject span.subject a, 
-.messagelist tr.flagged td.subject span.date
-{
-    color: #363A5B;
+.task-mail #messagelist-content {
+  background-color: var(--layout-content-background-color) !important;
 }
-
-.messagelist td.subject span.fromto,
-.messagelist tr.flagged td.subject span.fromto {
-    color: #15193A;
-}
-
-.messagelist td.subject span.msgicon.status::before {
-    color:#3E4261;
-}
-
-.messagelist .unread td.subject span.date,
-.messagelist tr.unread td.subject a,
-.messagelist .unread td.subject span.fromto,
-.messagelist td.subject span.msgicon.status.unread::before {
-    font-weight: bold;
-    color:#363A5B;
-}
-
-
-.messagelist .unread{
-    background-color: #F0F0F0;
-}
-
-.messagelist .selected .subject,
-.messagelist .contextRow.context-source .subject,
-.messagelist .contextRow.context-source td.subject span.date, .messagelist .contextRow.context-source td.subject a, .messagelist .contextRow.context-source td.subject span.fromto
-{
-    color:white!important;
-}
-
-.messagelist td.subject .msgicon {
-	/* display: none; */
-}
-
-.messagelist td.subject .fromto
-{
-    padding-left:0!important;
-    /* font-size: 100%!important; */
-}
-
-table.messagelist td.subject span.msgicon::before{
-    content: "\e94e" !important;
-    font-family:"DWP" !important;
-    font-style: normal !important;
-    color: #A8ACC0 !important;
-    margin-right: 13px !important;
-    font-size: 1rem !important;
-}
-
-table.messagelist td.subject span.msgicon.replied::before{
-    content:"\e92a"!important;
-}
-
-table.messagelist td.subject span.msgicon.forwarded::before{
-    content:"\e92a"!important;
-    transform: scaleX(-1);
-}
-
-table.messagelist td.subject span.msgicon.replied.forwarded::before
-{
-    transform: none;
-}
-
-table.messagelist td.subject span.msgicon.replied.forwarded::after{
-    content:"\e92a"!important;
-    transform: scaleX(-1);
-    font-family:"DWP"!important;
-    font-style: normal!important;
-    opacity: 1!important;
-    color:#A8ACC0!important;
-}
-
-table.messagelist .unread td.subject span.msgicon::before{
-    content:"\e94d"!important;
-    color:#363A5B!important;
-}
-
-table.messagelist .contextRow.context-source td.subject span.msgicon::before,
-table.messagelist .selected td.subject span.msgicon::before,
-table.messagelist .contextRow.context-source td.subject span.msgicon::after,
-table.messagelist .selected td.subject span.msgicon::after
-{
-    color:white!important;
-}
-
-.messagelist .selected td.subject .fromto::before,
-.messagelist .contextRow.context-source td.subject .fromto::before
-{
-    color:white;
-}
-
-.messagelist td.subject span.subject
-{
-    padding-left: 2rem;
-    /* font-size: 95%; */
-}
-
-.messagelist .selected td.subject span.date,
-.messagelist .selected td.subject a,
-.messagelist .selected td.subject span.fromto {
-    color:white!important;
-}
-
-.messagelist .flags {
-	color: #363A5B;
-}
-
-.messagelist tr.message td
-{
-    border-color:#D1D3DD;
-}
-
-#mailsearchlist
-{
-    position: absolute;
-    right: 0;
-}
-
-html body.task-mail #mailsearchlist .searchbar a
-{
-    color:#363A5B;
-}
-
-#mailsearchlist .searchbar a.unread::before {
-	content: "\e91e";
-	font-family: DWP;
-	font-weight: normal;
-}
-
-#mailsearchlist .searchbar a.options::before {
-	content: "\e907";
-	font-family: DWP;
-	font-weight: normal;
-}
-
-#mailsearchlist .searchbar.open a.options::before{
-    content: "\e906";
-}
-
-#messagelist-header {
-	display: flex !important;
-}
-
-html body.task-mail #layout > div > .footer.small {
-	background-color: transparent;
-    height: 80px;
-}
-
 .task-mail .quota-widget {
-	color: white;
-    flex-wrap: wrap;
-    padding: .5rem 3.7rem;
-    max-width: none;
+  color: var(--secondary-text-color);
+  flex-wrap: wrap;
+  padding: 0.5rem 3.7rem;
+  max-width: none;
 }
-
+.task-mail .quota-widget::before {
+  content: "\e94f";
+  font-family: DWP;
+}
 .task-mail .quota-widget .count {
-	color: white;
+  color: var(--secondary-text-color);
 }
-
 .task-mail .quota-widget .bar {
-	background-color: #80D5C6;
-	border-color: #80D5C6;
-    margin-left: 0;
+  background-color: var(--quota-bar-bckg-color);
+  border-color: var(--quota-bar-border-color);
+  margin-left: 0;
 }
-
 .task-mail .quota-widget .value {
-	background-color: #2C3054;
+  background-color: var(--quota-bar-color);
 }
-
-.quota-widget::before {
-	content: "\e94f";
-    font-family:DWP;
+html body.task-mail.action-show #layout-content {
+  overflow: auto;
 }
-
+/*Liste des messages*/
+table.messagelist tr.unread {
+  background-color: var(--alternate-bckg-color);
+}
+table.messagelist tr.unread > td:first-child {
+  border-left: 2px solid var(--primary-border-color) !important;
+}
+table.messagelist tr.unread td.subject span.date {
+  font-weight: bold;
+  color: var(--main-text-color);
+}
+table.messagelist tr.unread td.subject span.fromto {
+  font-weight: bold;
+  color: var(--main-text-color);
+}
+table.messagelist tr.unread td.subject span.msgicon::before {
+  content: "\e94d" !important;
+  color: var(--main-text-color) !important;
+}
+table.messagelist tr.unread td.subject span.msgicon.status.unread.selected::before {
+  color: var(--secondary-text-color);
+}
+table.messagelist tr.unread td.subject span.msgicon.replied::before {
+  content: "\e96a" !important;
+}
+table.messagelist tr.unread td.subject span.msgicon.forwarded::before {
+  content: "\e96a" !important;
+  transform: scaleX(-1);
+}
+table.messagelist tr.unread td.subject span.msgicon.forwarded.replied::before {
+  content: "\e96a" !important;
+  transform: scaleX(1);
+}
+table.messagelist tr.unread td.subject a {
+  font-weight: bold;
+  color: var(--main-text-color);
+}
+table.messagelist tr.unread.selected td.subject span.fromto {
+  color: var(--secondary-text-color);
+}
+table.messagelist tr.message td {
+  border-bottom: 1px solid var(--base-message-border-color);
+  border-color: var(--message-border-color);
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  cursor: pointer !important;
+}
+html.dark-mode table.messagelist tr.message td {
+  border-color: #2c373a;
+}
+table.messagelist tr.message td span {
+  cursor: pointer !important;
+}
+html body table.messagelist tr.message td.labels {
+  background-color: var(--invisible) !important;
+  border: none!important;
+  padding-top: 0px!important;
+}
+table.messagelist tr.message:hover {
+  box-shadow: 0px 2px 2px var(--message-hover-shadow);
+  position: relative;
+}
+table.messagelist tr.message:hover td.subject span.msgicon.status::before {
+  color: var(--main-text-color) !important;
+}
+table.messagelist tr.message:hover td.subject span.msgicon.status:hover::before {
+  color: var(--mail-icon-hover-color) !important;
+}
+table.messagelist tr.message:hover td.subject span.msgicon.status.unread:hover::before {
+  color: var(--mail-unread-icon-hover-color) !important;
+}
+table.messagelist tr.message:hover td.flags span.flagged:hover::before {
+  color: var(--mail-unread-icon-hover-color) !important;
+}
+table.messagelist tr.message:hover td.flags span.unflagged:hover::before {
+  color: var(--mail-icon-hover-color) !important;
+}
+table.messagelist tr.message.selected:hover {
+  box-shadow: 0px 2px 2px var(--message-hover-shadow);
+  position: relative;
+}
+table.messagelist tr.message.selected:hover td.subject span.msgicon.status::before {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist tr.flagged td {
+  color: var(--main-text-color);
+}
+table.messagelist tr.flagged td.subject span.subject a {
+  color: var(--main-text-color);
+}
+table.messagelist tr.flagged td.subject span.date {
+  color: var(--main-text-color);
+}
+table.messagelist tr.flagged td.subject span.fromto {
+  color: var(--mail-unread-icon-color);
+}
+table.messagelist tr:hover span.unflagged::before {
+  content: "\e958" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
+table.messagelist tr.selected {
+  background-color: var(--secondary-bckg-color);
+}
+table.messagelist tr.selected td {
+  background-color: var(--secondary-bckg-color);
+}
+table.messagelist tr.message.bloqued td {
+  border-left: var(--danger-color) thick solid !important;
+  border-color: var(--danger-color);
+  border-style: solid !important;
+  border-width: thick !important;
+}
+table.messagelist tr.message.bloqued td.subject {
+  border-right: none!important;
+}
+table.messagelist tr.message.bloqued td.flags {
+  border-left: none!important;
+}
+table.messagelist tr.message.bloqued .msgicon.status::before {
+  content: '\e939' !important;
+  font-family: DWP!important;
+  color: var(--danger-color) !important;
+}
+table.messagelist tr.message.bloqued .msgicon.status.unread::before {
+  content: '\e939' !important;
+  font-family: DWP!important;
+}
+table.messagelist tr.message.suspect td {
+  border-left: var(--warning-color) thick solid !important;
+  border-color: var(--warning-color);
+  border-style: solid !important;
+  border-width: thick !important;
+}
+table.messagelist tr.message.suspect td.subject {
+  border-right: none!important;
+}
+table.messagelist tr.message.suspect td.flags {
+  border-left: none!important;
+}
+table.messagelist tr.message.suspect .msgicon.status::before {
+  content: '\e939' !important;
+  font-family: DWP!important;
+}
+table.messagelist tr.message.suspect .msgicon.status.unread::before {
+  content: '\e939' !important;
+  font-family: DWP!important;
+}
+table.messagelist td.subject span.date {
+  color: var(--main-text-color);
+}
+table.messagelist td.subject span.fromto {
+  color: var(--mail-unread-icon-color);
+  padding-left: 0!important;
+}
+table.messagelist td.subject span.msgicon.status::before {
+  font-weight: bold;
+  color: var(--main-text-color);
+}
+table.messagelist td.subject span.msgicon.replied::before {
+  content: "\e92a" !important;
+}
+table.messagelist td.subject span.msgicon.replied.forwarded::before {
+  transform: none;
+}
+table.messagelist td.subject span.msgicon.replied.forwarded::after {
+  content: "\e92a" !important;
+  transform: scaleX(-1);
+  font-family: "DWP" !important;
+  font-style: normal!important;
+  opacity: 1!important;
+  color: var(--mail-unread-icon-hover-color) !important;
+}
+table.messagelist td.subject span.msgicon.forwarded::before {
+  content: "\e92a" !important;
+  transform: scaleX(-1);
+}
+table.messagelist td.subject span.msgicon::before {
+  content: "\e94e" !important;
+  font-family: "DWP" !important;
+  font-style: normal !important;
+  color: var(--mail-unread-icon-hover-color) !important;
+  margin-right: 13px !important;
+  font-size: 1rem !important;
+}
+table.messagelist td.subject span.subject {
+  padding-left: 2rem;
+}
+html body div#layout-list table.messagelist td.subject a {
+  color: var(--main-text-color);
+}
+table.messagelist td.labels::before {
+  font-family: 'DWP' !important;
+  content: "\e955";
+  margin-left: -3px;
+  margin-right: 12px;
+}
+table.messagelist td.labels span {
+  margin-right: 15px;
+  border-radius: 5px;
+  padding: 2px;
+}
+html.touch table.messagelist td.flags {
+  position: initial;
+}
+table.messagelist span.threads > div {
+  color: var(--main-text-color);
+}
+table.messagelist span.flagged::before {
+  content: "\e957" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
+table.messagelist span.attachment span::before {
+  content: "\e959" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
+table.messagelist .selected .subject {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .selected td.subject span.msgicon::before,
+table.messagelist .selected td.subject span.msgicon::after {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .selected td.subject span.date {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .selected td.subject span.fromto {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .selected td.subject span.fromto::before {
+  color: var(--secondary-text-color);
+}
+table.messagelist .selected td.subject a {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .selected span.threads > div {
+  color: var(--secondary-text-color);
+}
+table.messagelist .contextRow.context-source.subject {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .contextRow.context-source td.subject {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .contextRow.context-source td.subject span.date {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .contextRow.context-source td.subject span.fromto {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .contextRow.context-source td.subject span.fromto::before {
+  color: var(--secondary-text-color);
+}
+table.messagelist .contextRow.context-source td.subject span.msgicon::before,
+table.messagelist .contextRow.context-source td.subject span.msgicon::after {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .contextRow.context-source td.subject a {
+  color: var(--secondary-text-color) !important;
+}
+table.messagelist .contextRow.context-source span.threads > div {
+  color: var(--secondary-text-color);
+}
+table.messagelist .flags {
+  color: var(--main-text-color);
+}
+table.messagelist .unread.selected td.subject span.fromto,
+table.messagelist .unread.selected td.subject span.date {
+  color: var(--secondary-text-color);
+}
+table.messagelist:not(.withselection) tr.unread > td.selection + td {
+  border-left: 2px solid var(--primary-border-color) !important;
+}
+table.messagelist:not(.threaded) tbody tr:nth-child(2n) td {
+  background-color: var(--default-background-lighter);
+}
+table.messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
+  background-color: var(--default-background-lighter);
+}
+table.messagelist:not(.threaded) tbody tr.unread td {
+  background-color: var(--default-background);
+}
+table.messagelist:not(.threaded) tbody tr.unread.selected td {
+  background-color: var(--secondary-bckg-color);
+}
+table.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
+  background-color: var(--secondary-bckg-color);
+}
+#mailsearchlist {
+  position: absolute;
+  right: 0;
+}
+html body.task-mail #mailsearchlist .searchbar a {
+  color: var(--main-text-color);
+}
+#mailsearchlist .searchbar a.unread::before {
+  content: "\e91e";
+  font-family: DWP;
+  font-weight: normal;
+}
+#mailsearchlist .searchbar a.options::before {
+  content: "\e907";
+  font-family: DWP;
+  font-weight: normal;
+}
+#mailsearchlist .searchbar.open a.options::before {
+  content: "\e906";
+}
+#mailsearchlist.hoverable {
+  right: 20px;
+}
+#mailsearchlist.hoverable .searchbar.menu {
+  width: 0;
+}
+#mailsearchlist.hoverable .icon-mel-search {
+  margin-right: 4px;
+}
+#messagelist-header {
+  display: flex !important;
+}
+html body.task-mail #layout > div > .footer.small {
+  background-color: var(--invisible);
+  height: 80px;
+}
+/* deprecated ? */
 #backtomails {
-	margin-left: 30px;
+  margin-left: 30px;
 }
-
 #backtomails + separate {
-	display: block;
-	border-color: #D1D3DD;
+  display: block;
+  border-color: #D1D3DD;
 }
-
-/* #messagecontframe
-{
-    padding-left: 18px;
-    height: calc(100% - 6.22rem)!important;
-} */
-
 .contextmenu li a.label.selected {
-	background: #484D7A;
-	color: white;
+  background: var(--tierciary-bckg-color);
+  color: var(--secondary-text-color);
 }
-
-.messagelist td.labels span {
-	margin-right: 15px;
+.contextmenu.rcmsubmenu .cmd_move {
+  display: none!important;
 }
-
-.messagelist td.labels::before
-{
-    font-family: 'DWP' !important;
-    content: "\e955";
-    margin-left: -3px;
-    margin-right: 12px;
+#rcm_messagelist li .ct-tb::before {
+  font-family: 'DWP' !important;
+  content: "\e956";
 }
-
-#rcm_messagelist li .ct-tb::before{
-    font-family: 'DWP' !important;
-    content: "\e956";
+#rcm_messagelist li .ct-tb::after {
+  color: #737677;
+  font-size: 0.9em;
+  margin: 0 0 0 0.2em;
+  min-width: 1.18em;
+  content: "\f054";
+  display: block;
+  float: right;
+  width: 1.18em;
+  height: 1em;
+  font-family: 'Icons';
+  font-style: normal;
+  font-weight: 900;
+  text-decoration: inherit;
+  text-align: center;
 }
-
-#rcm_messagelist li .ct-tb::after{
-    color: #737677;
-    font-size: .9em;
-    margin: 0 0 0 .2em;
-    min-width: 1.18em;
-    content: "\f054";
-
-    /* font-size: 1.25em; */
-display: block;
-float: right;
-/* margin: 0 .25rem 0 0; */
-width: 1.18em;
-height: 1em;
-font-family: 'Icons';
-font-style: normal;
-font-weight: 900;
-text-decoration: inherit;
-text-align: center;
+#folderlist-content {
+  padding: 0 20px;
 }
-
-.messagelist span.threads > div
-{
-    color:#363A5B;
+#folderlist-content > a.button {
+  color: var(--secondary-text-color);
+  position: absolute;
+  padding-bottom: 10px;
+  top: 24px;
+  right: 18px;
+  z-index: 1;
+  padding-left: 3px;
 }
-
-.messagelist .contextRow.context-source span.threads > div,
-.messagelist .selected span.threads > div
-{
-    color:white;
+#folderlist-content > a.button:hover {
+  background-color: var(--secondary-bckg-color);
 }
-
-#folderlist-content > a.button{
-    color:white;
-    position: absolute;
-    padding-bottom: 10px;
-    /* margin-top: 5px; */
-    top: 24px;
-    right: 18px;
-    z-index:5;
-    padding-left: 3px;
+#folderlist-content ul#mailboxlist > li.mailbox.virtual.drafts,
+#folderlist-content ul#mailboxlist > li.mailbox.virtual.models,
+#folderlist-content ul#mailboxlist > li.mailbox.virtual.sent,
+#folderlist-content ul#mailboxlist > li.mailbox.virtual.junk,
+#folderlist-content ul#mailboxlist > li.mailbox.virtual.trash,
+#folderlist-content ul#mailboxlist > li.mailbox.virtual.inbox {
+  margin: 20px 0;
+  margin-bottom: -10px;
+  padding-right: 0;
 }
-
-#folderlist-content > a.button:hover{
-    background-color: #2C3054;
-}
-
-#folderlist-content ul#mailboxlist > li.mailbox.inbox.virtual,
-#folderlist-content ul#mailboxlist > li.mailbox.drafts.virtual,
-#folderlist-content ul#mailboxlist > li.mailbox.models.virtual,
-#folderlist-content ul#mailboxlist > li.mailbox.sent.virtual,
-#folderlist-content ul#mailboxlist > li.mailbox.junk.virtual,
-#folderlist-content ul#mailboxlist > li.mailbox.trash.virtual,
-#folderlist-content li.mailbox.boite
-{
-    margin: 20px 0;
-    margin-bottom: -10px;
-    padding-right: 0;
-}
-
-#folderlist-content li.mailbox.boite[aria-expanded="true"]{
-    border:none;
-}
-
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type {
-	border-top-style: solid;
-	border-top-width: thin;
-	margin-top: 15px;
-	padding-top: 10px;
-	/* position: relative; */
+  border-top-style: solid;
+  border-top-width: thin;
+  margin-top: 15px;
+  padding-top: 10px;
 }
-
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle {
-	top: 10px;
+  top: 10px;
 }
-
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
-	top: 10px;
+  top: 10px;
 }
-
-#folderlist-content ul#mailboxlist > li ~ li{
-    padding-right:0;
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type [aria-level="3"] .unreadcount {
+  top: unset;
 }
-
-#folderlist-content
-{
-    padding: 0 20px;
+#folderlist-content ul#mailboxlist > li ~ li {
+  padding-right: 0;
 }
-
- #folderlist-content ul#mailboxlist > li:first-of-type .unreadcount{
-    right: 15px;
+#folderlist-content ul#mailboxlist > li:first-of-type .unreadcount {
+  right: 15px;
 }
-
-#folderlist-content ul#mailboxlist ul > li .unreadcount {
-	right: 0 !important;
-} 
-
-#rcm_labellist {
-	overflow: auto;
-	max-height: 400px;
-}
-
-ul#mailboxlist ul li.mailbox.selected a {
-	background-color: #2C3054;
-}
-
 #folderlist-content ul#mailboxlist > li:first-of-type > a {
-    padding-right: 1.5rem;
+  padding-right: 1.5rem;
 }
-
 #folderlist-content ul#mailboxlist > li:first-of-type[aria-expanded=false] > a {
-    padding-right: 4rem;
+  padding-right: 4rem;
 }
-
-#folderlist-content ul#mailboxlist.unified > li:first-of-type > ul:first-of-type li[aria-level="2"]
-{
-    margin-right: 0;
-} 
-
+#folderlist-content ul#mailboxlist > li .unreadcount {
+  right: 0 !important;
+}
 #folderlist-content ul#mailboxlist.unified {
-    margin-top: 20px;
+  margin-top: 20px;
 }
-
+#folderlist-content ul#mailboxlist.unified > li:first-of-type > ul:first-of-type li[aria-level="2"] {
+  margin-right: 0;
+}
+#folderlist-content ul li.mailbox.selected a {
+  background-color: var(--secondary-bckg-color);
+}
+#folderlist-content li.mailbox.boite {
+  margin: 20px 0;
+  margin-bottom: -10px;
+  padding-right: 0;
+}
+#folderlist-content li.mailbox.boite[aria-expanded="true"] {
+  border: none;
+}
+#rcm_labellist {
+  overflow: auto;
+  max-height: 400px;
+}
 /**ICONS**/
 .menu a#listmenulink.options::before {
-	content: "\e95d"!important;
-    font-family: DWP!important;
-    font-weight: normal !important;
+  content: "\e95d" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
 .menu a.compose::before {
-	content: "\e953"!important;
-    font-family: DWP!important;
-    font-weight: normal !important;
+  content: "\e953" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
-a.button.icon.refresh::before, button.btn.refresh::before {
-	content: "\e95b"!important;
-    font-family: DWP!important;
-    font-weight: normal !important;
-}
-
-.folderlist li.drafts a::before {
-	content: "\e95c"!important;
-    font-family: DWP!important;
-    font-weight: normal !important;
-}
-
 .menu a.reply::before {
-	content: "\e92a"!important;
-    font-family: DWP!important;
-    font-weight: normal !important;
+  content: "\e92a" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
-.menu a.reply-all::before, .menu a.reply.all::before, .menu a.reply.list::before {
-	content: "\e95a"!important;
-    font-family: DWP!important;
-    font-weight: normal !important;
+.menu a.reply-all::before,
+.menu a.reply.all::before,
+.menu a.reply.list::before {
+  content: "\e95a" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
-.folderlist li.trash a::before,
 .menu a.delete::before {
-	content: "\e934"!important;
-    font-family: DWP!important;
-    font-weight: normal !important;
+  content: "\e934" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
-#tb_label_popuplink::before
-{
-    font-family: 'DWP'!important;
-    content: "\e956"!important;
-    font-weight: normal !important;
-}
-
-/* .menu a.junk::before,
-.folderlist li.junk a::before {
-    font-family: 'DWP'!important;
-    content: "\e908"!important;
-    font-weight: normal !important;
-} */
-
 .menu a.more::before {
-    font-family: 'DWP'!important;
-    content: "\e90c"!important;
-    font-weight: normal !important;
+  content: "\e90c" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
 .menu a.close-visu::before {
-    font-family: 'DWP'!important;
-    content: "\e908"!important;
-    font-weight: normal !important;
+  content: "\e908" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
-.menu a.forward::before, .menu a.forward.attachment::before, .menu a.forward.bounce::before, .menu a.forward.inline::before {
-    font-family: 'DWP'!important;
-    content: "\e92a"!important;
-    font-weight: normal !important;
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
+.menu a.forward::before {
+  content: "\e92a" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
 }
-
+.menu a.forward.attachment::before,
+.menu a.forward.bounce::before,
+.menu a.forward.inline::before {
+  content: "\e92a" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
+.menu a.threads::before {
+  content: "\e920" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
+a.button.icon.refresh::before {
+  content: "\e95b" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
+button.btn.refresh::before {
+  content: "\e95b" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
 .folderlist li a::before {
-	content: "\e951"!important;
-    font-family: 'DWP'!important;
-    font-weight: normal !important;
+  content: "\e951" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
+.folderlist li.drafts a::before {
+  content: "\e95c" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
+.folderlist li.trash a::before {
+  content: "\e934" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
 .folderlist li.sent a::before {
-	content: "\e954"!important;
-    font-family: 'DWP'!important;
-    font-weight: normal !important;
+  content: "\e954" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
 }
-
 .folderlist li.inbox > a::before,
 .folderlist li.boite > a::before {
-	content: "\f01c"!important;
-	font-weight: 900!important;
-    font-family: 'Icons'!important;
+  content: "\f01c" !important;
+  font-weight: 900!important;
+  font-family: 'Icons' !important;
 }
-
-.menu a.threads::before {
-	content: "\e920"!important;
-    font-family: 'DWP'!important;
-    font-weight: normal !important;
-}
-
-.messagelist tr:hover span.unflagged::before {
-	content: "\e958"!important;
-    font-family: 'DWP'!important;
-    font-weight: normal !important;
-}
-
-.messagelist span.flagged::before {
-	content: "\e957"!important;
-    font-family: 'DWP'!important;
-    font-weight: normal !important;
-}
-
-.messagelist span.attachment span::before {
-	content: "\e959"!important;
-    font-family: 'DWP'!important;
-    font-weight: normal !important;
-    color:#363A5B!important;
-}
-
-#mailsearchlist{
-    /* transition: width 0.1s ease-in; */
-}
-
-#mailsearchlist.hoverable {
-    right:20px;
-}
-
-/* #mailsearchlist.hoverable .searchbar.menu
-{
-    width:100%;
-} */
-
-#mailsearchlist.hoverable .searchbar.menu {
-     /* display:none;  */
-     width: 0;
-    /* animation: slide 0.1s linear;/* delay iteration-count direction fill-mode;*
-    animation-fill-mode: forwards;
-    -webkit-animation: slide 0.1s linear; */
-}
-
-#mailsearchlist.hoverable .icon-mel-search
-{
-    margin-right: 4px;
-}
-
-/* @-webkit-keyframes slide {
-    from {width: 100%;}
-    to {width: 0;}
-  }
-@keyframes slide {
-    from {width: 100%;}
-    to {width: 0;}
-  } */
-
- td.subject td.labels {
-	padding-bottom: 0 !important;
-	line-height: 15px !important;
-    font-size: 0.8rem !important;
-}
-
-.popover-body #message-menu .tb_noclass::after {
-	content: none !important;
-}
-
-.popover-body #message-menu .tb_noclass::before {
-	font-family: DWP !important;
-	content: "\e956" !important;
-}
-
 .folderlist li.junk a::before {
-	content: "\f7e4" !important;
-	font-weight: 900!important;
-    font-family: Icons!important;
+  content: "\f7e4" !important;
+  font-weight: 900!important;
+  font-family: Icons!important;
 }
-
+#tb_label_popuplink::before {
+  content: "\e956" !important;
+  font-family: DWP !important;
+  font-weight: normal !important;
+}
+/****/
+td.subject td.labels {
+  padding-bottom: 0 !important;
+  line-height: 15px !important;
+  font-size: 0.8rem !important;
+}
+.popover-body #message-menu .tb_noclass::before {
+  font-family: DWP !important;
+  content: "\e956" !important;
+}
+.popover-body #message-menu .tb_noclass::after {
+  content: none !important;
+}
 .parent-close-visu {
-	margin-right: 10px;
-	padding-right: 10px;
-	border-right-color: white !important;
-	border-right-style: solid !important;
-	border-right-width: thin !important;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right-color: var(--secondary-text-color) !important;
+  border-right-style: solid !important;
+  border-right-width: thin !important;
 }
-
 #message-header .mel-header-from,
-#message-header .mel-header-date
-{
-    display: none;
+#message-header .mel-header-date {
+  display: none;
 }
-
-#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type [aria-level="3"] .unreadcount {
-    top: unset;
+.success-search {
+  color: #4bbc52 !important;
 }
-
-html body.task-mail.action-show #layout-content
-{
-    overflow: auto;
+.success-search::before {
+  color: #4bbc52 !important;
 }
-
-.messagelist:not(.threaded) tbody tr:nth-child(2n) td {
-    background-color: #FAFAFA;
+#mail-search-border {
+  height: calc(1.5em + 0.75rem + 2px);
+  margin: 0 15px;
+  width: 92%;
+  position: relative;
+  border: none;
 }
-
-.messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
-    background-color: #FAFAFA;
+html.dark-mode #mail-search-border {
+  border: 1px solid #E1C58F;
+  background-color: #323F4B !important;
 }
-
-.messagelist:not(.threaded) tbody tr.unread td {
-    background-color: white;
+#mail-search-icon {
+  font-size: 1.5rem;
+  margin-top: 4px;
+  display: inline-block;
+  color: #2c363a;
 }
-
-.messagelist tr.selected, 
-.messagelist tr.selected td,
-.messagelist:not(.threaded) tbody tr.unread.selected td,
-.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
-    background-color: #2C3054;
+html.dark-mode #searchmenu {
+  background-color: #323f4b !important;
 }
-
-.messagelist .unread.selected td.subject span.date, 
-.messagelist tr.unread.selected td.subject a, 
-.messagelist .unread.selected td.subject span.fromto, 
-.messagelist td.subject span.msgicon.status.unread.selected::before
-{
-    color: white;
+html.dark-mode .mel-input-container.form-control.input-mel .icon-mel-search.success-search {
+  color: #4bbc52 !important;
+}
+html.dark-mode .mel-input-container.form-control.input-mel.border-success-search {
+  border-color: #4bbc52 !important;
+}
+.button.icon.toolbar-button.refresh:focus {
+  border-left: 2px solid var(--secondary-focus-border) !important;
+  background-color: var(--secondary-bckg-color) !important;
+  color: var(--secondary-text-color) !important;
+}
+html.dark-mode .button.icon.toolbar-button.refresh:focus {
+  color: #c7dfff !important;
+}
+ul ul li.mailbox > a {
+  cursor: pointer !important;
+}
+ul ul li.mailbox.select > a:first-of-type {
+  cursor: default !important;
+}
+ul ul li.mailbox:hover > a:first-of-type {
+  background-color: var(--secondary-bckg-color);
+  border-radius: 5px;
+}
+ul ul li.mailbox.droptarget:hover > a:first-of-type {
+  background-color: var(--drag-n-drop-bckg-color) !important;
+}
+.mail-show-hover {
+  background-color: #4f4f4f33;
+  animation: mail-show-hover 0.05s linear forwards;
+  width: 30px;
+  height: 30px;
+}
+body.task-mail.action-compose a.removelink {
+  display: none;
+}
+#compose-contacts .modal-title {
+  display: inline-block;
+}
+#compose-contacts .modal-close {
+  float: right;
+}
+#melplusmails {
+  color: var(--secondary-text-color);
 }

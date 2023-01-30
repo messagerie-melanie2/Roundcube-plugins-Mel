@@ -622,8 +622,16 @@ class MetapageFrames {
         return true;
     }
 
-    addEvent(key, event)
+    addEvent(key, event, ignore_context = false)
     {
+        if (ignore_context)
+        {
+            event = {
+                ignore_context:true,
+                ev:event
+            };
+        }
+
         if (this._events[key] === undefined)
             this._events[key] = [];
         this._events[key].push(event);
@@ -637,7 +645,7 @@ class MetapageFrames {
             let result = null;
 
             for (let index = 0; index < this._events[key].length; index++) {
-                const element = this._events[key][index];
+                const element = typeof this._events[key][index] != 'function' && this._events[key][index]?.ignore_context ? eval(this._events[key][index].ev + '') : this._events[key][index];
                 try {
 
                     if (index === 0)
@@ -668,3 +676,198 @@ var metapage_frames = new MetapageFrames();
 
 
 
+class Roundcube_Mel_Color{
+
+    constructor() {
+        this.init().setup();
+    }
+
+    init()
+    {
+        this.color = '';
+        return this;
+    }
+
+    setup()
+    {
+        this.color = mel_metapage.Storage.get(Roundcube_Mel_Color.storageKey);
+
+        if (!this.color){
+            this.color = rcmail.get_cookie(Roundcube_Mel_Color.cookieKey);
+        }
+
+        if (!this.color){
+            if($('html').hasClass('dark-mode')) this.color = Roundcube_Mel_Color.dark;
+            else this.color = Roundcube_Mel_Color.light;
+        }
+        return this;
+    }
+
+    isDarkMode()
+    {
+        return this.color === Roundcube_Mel_Color.dark;
+    }
+
+    isLightMode()
+    {
+        return this.color === Roundcube_Mel_Color.light;
+    }
+
+    switch_color()
+    {
+        Roundcube_Mel_Color.switch_theme_function();
+        return this.setup();
+    }
+
+    setColor(color)
+    {
+        if (color === Roundcube_Mel_Color.light && this.isDarkMode()) this.switch_color();
+        else if (color === Roundcube_Mel_Color.dark && this.isLightMode()) this.switch_color();
+        else if (color !== Roundcube_Mel_Color.dark && color !== Roundcube_Mel_Color.light)
+        {
+            throw `###[Roundcube_Mel_Color]La couleur ${color} n'éxiste pas...`;
+        }
+        return this;
+    }
+
+    update()
+    {
+        return this.setup();
+    }
+}
+
+Object.defineProperty(Roundcube_Mel_Color, 'light', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value:'light'
+});
+
+Object.defineProperty(Roundcube_Mel_Color, 'dark', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value:'dark'
+});
+
+Object.defineProperty(Roundcube_Mel_Color, 'storageKey', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value:'colorMode'
+});
+
+Object.defineProperty(Roundcube_Mel_Color, 'cookieKey', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value:'colorMode'
+});
+
+Object.defineProperty(Roundcube_Mel_Color, 'html_dark_mode_class', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value:'dark-mode'
+});
+
+Object.defineProperty(Roundcube_Mel_Color, 'switch_theme_function', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value:() => {
+        MEL_ELASTIC_UI.switch_color();
+    }
+});
+
+class MelEnum
+{
+	constructor(json)
+	{
+		for (const key in json) {
+			if (Object.hasOwnProperty.call(json, key)) {
+				const element = json[key];
+				Object.defineProperty(this, key, {
+					enumerable: true,
+					configurable: false,
+					writable: false,
+					value:element
+				});
+			}
+		}
+	}
+
+	static createEnum(name, json, save_enum = true)
+	{
+        if (!save_enum) {
+            return new MelEnum(json); 
+        }
+        else {
+            if (MelEnum.createEnum.enums === undefined) MelEnum.createEnum.enums = {};
+		
+            if (MelEnum.createEnum.enums[name] !== undefined) throw 'Already exist';
+            else MelEnum.createEnum.enums[name] = new MelEnum(json);
+    
+            return MelEnum.createEnum.enums[name];
+        }
+	}
+
+	static get(name) {
+		return MelEnum.createEnum.enums[name];
+	}
+
+    static deleteEnum(name)
+    {
+        if (!!MelEnum.createEnum.enums) {
+            try {
+                delete MelEnum.createEnum.enums[name];
+            } catch (error) {
+                MelEnum.createEnum.enums[name] = null;
+            }
+        }
+    }
+}
+
+
+var _paq = _paq || [];
+_paq.push(['setDocumentTitle', rcmail.env.task]);
+_paq.push(['setDownloadClasses', ["LienTelecharg","document"]]);
+_paq.push(['trackPageView']);
+_paq.push(['enableLinkTracking']);
+(function() {
+var u="//audience-sites.din.developpement-durable.gouv.fr/";
+_paq.push(['setTrackerUrl', u+'piwik.php']);
+_paq.push(['setSiteId','1503']);
+var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+})();
+
+$(document).ready(function() {
+  piwikTrackClick(rcmail.env.matomo_tracking);
+});
+
+rcmail.addEventListener('on_create_window.matomo', () => {
+  piwikTrackClick(rcmail.env.matomo_tracking_popup);
+})
+
+rcmail.addEventListener('on_click_button.matomo', (args) => {
+  _paq.push(['trackEvent', 'Bouton', args, 'Clic']);
+})
+
+
+function piwikTrackVideo(type,section,page,x1){
+_paq.push(['trackEvent', 'Video', 'Play', page]);
+}
+
+function piwikTrackClick(config_value) {
+  if (config_value) {
+    for (const key in config_value) {
+      if (Object.hasOwnProperty.call(config_value, key)) {
+        const element = config_value[key];
+        $(key).on('click', () => {
+          _paq.push([...element]);
+        });
+      }
+    }
+  }
+}

@@ -38,28 +38,41 @@ class mel_wekan extends rcube_plugin
         $this->register_action('login', array($this, 'login'));
         $this->register_action('create_board', array($this, 'action_create_board'));
         $this->register_action('check_board', array($this, 'action_check_board'));
+        $this->register_action('get_user_board', [$this, 'action_get_user_board']);
         $this->register_action('index', array($this, 'index'));
         $this->include_script('js/wekan.js');
 
         $this->load_lib();
         $this->wekanApi = new mel_wekan_api($this->rc, $this);
 
-        $this->add_button(array(
-            'command' => 'wekan',
-            'class'	=> 'button-mel-wekan icon-mel-trello wekan',
-            'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
-            'innerclass' => 'button-inner inner',
-            'label'	=> 'mel_wekan.kanban',
-            'title' => 'mel_wekan.kanban',
-            'type'       => 'link'
-        ), "otherappsbar");
+        $need_button = true;
+        if (class_exists("mel_metapage")) {
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban');
+        }
+
+        if ($need_button)
+        {
+            $this->add_button(array(
+                'command' => 'wekan',
+                'class'	=> 'button-mel-wekan icon-mel-trello wekan',
+                'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
+                'innerclass' => 'button-inner inner',
+                'label'	=> 'mel_wekan.kanban',
+                'title' => 'mel_wekan.kanban',
+                'type'       => 'link'
+            ), "taskbar");
+        }
 
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->wekan_url(false), 'kanban');
 
     }
 
     function index()
     {
+
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("wekan_startup_url", $startupUrl);
 
         $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
 
@@ -258,9 +271,19 @@ class mel_wekan extends rcube_plugin
      */
     public function board_exist($board)
     {
+        $board_exist = false;
         $board = $this->check_board($board);
 
-        return $board["httpCode"] == 200 && $board["content"] !== "{}";
+        if($board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"])
+        || $board["httpCode"] !== null && $board["httpCode"] != 200) 
+        {
+            $board_exist = true;
+        }
+        else {
+            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist|".driver_mel::gi()->getUser()->uid."]Recréation d'un board ! : ".json_encode($board));
+        }
+
+        return $board_exist;
     }
 
     /**
@@ -295,5 +318,61 @@ class mel_wekan extends rcube_plugin
     public function wekan_url($server = true)
     {
         return $server ? $this->wekanApi->get_url() : $this->rc->config->get("wekan_url");
+    }
+
+    public function get_user_admin_board($username)
+    {
+        return $this->wekanApi->get_user_boards_admin($username);
+    }
+
+    public function get_user_admin_board_generator($username)
+    {
+        return $this->wekanApi->get_user_boards_admin_generator($username);
+    }
+
+    public function action_get_user_board()
+    {
+        $this->require_plugin('mel_helper');
+        $user = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
+        $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
+        $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
+        $only_title_and_id = (rcube_utils::get_input_value('_minified_datas', rcube_utils::INPUT_POST) ?? true) == 'true';
+        $mode = (int) $mode;
+
+        $list;
+        if ($moderator_only) $list = $this->get_user_admin_board_generator($user);
+        else $list = $this->wekanApi->get_user_boards_objects_generator($user);
+
+        $list = mel_helper::Enumerable($list);
+
+        switch ($mode) {
+            case 1://public
+                $perm = 'public';
+            case 2://private
+                if ($mode === 2) $perm = 'private';
+            case 3:
+                $list = $list->where(function ($k, $v) use($perm) {
+                    return $v->permission === $perm;
+                });
+                break;
+            
+            default:
+                break;
+        }
+
+        if ($only_title_and_id) $list = $list->select(function ($k, $v){
+            return [
+                'title' => $v->get_value()->title,
+                'id' => $v->get_value()->id
+            ];
+        });
+
+        echo json_encode($list->toArray());
+        exit;
+    }
+
+    public function __api()
+    {
+        return $this->wekanApi;
     }
 }

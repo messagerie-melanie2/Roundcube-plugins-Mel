@@ -61,12 +61,12 @@ class csv_export extends rcube_plugin
         
         $this->add_texts('localization', true);
 
-        global $CONTACTS;
-
         require_once(__DIR__ . '/vcard2csv.php');
 
         $csv    = new vcard2csv($this);
         $rcmail = rcube::get_instance();
+
+        $CONTACTS = rcmail_action_contacts_index::contact_source(null, true);
 
         $rcmail->output->nocacheing_headers();
 
@@ -81,7 +81,7 @@ class csv_export extends rcube_plugin
 
         while ($row = $p['result']->next()) {
             if ($CONTACTS) {
-                prepare_for_export($row, $CONTACTS);
+                rcmail_action_contacts_export::prepare_for_export($row, $CONTACTS);
             }
 
             echo $csv->record($row['vcard']);

@@ -1,100 +1,125 @@
+/** COLORS **/
+/** FONTS **/
+/* CONTENT */
+/** ANIMATIONS **/
+/** WIDTH **/
 body.task-useful_links separate {
-	border-top-color: #E0E1E8;
-	border-top-style: solid;
-	border-top-width: thin;
-	margin: 50px 200px;
-	display: block;
+  border-top-color: var(--separate-light);
+  border-top-style: solid;
+  border-top-width: thin;
+  margin: 50px 200px;
+  display: block;
 }
-
-.link-block .pin{
-	top:15px;
+.link-block .pin {
+  top: 15px;
 }
-
-button.btn.icon-mel-copy::before
-{
-	font-family: DWP!important;
-	content: "\e90a"!important;
-	font-weight: normal!important;
+.link-block .tools {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
 }
-
-button.btn.icon-mel-pencil::before
-{
-	font-family: DWP!important;
-	content: "\e95c"!important;
-	font-weight: normal!important;
+.link-block .tools a.roundbadge {
+  color: white;
+  background-color: #0000006e !important;
+  transition: all 0.1s ease-in;
+  margin-left: 5px;
 }
-
-.link-block .tools{
-	position: absolute;
-	right:15px;
-	bottom: 15px;
+.link-block .tools a.roundbadge:hover {
+  color: var(--roundbadge-bkcg-color-on-block);
+  background-color: white!important;
+  text-decoration: none;
 }
-
-.link-block .tools a.roundbadge
-{
-	color:#424564;
-	transition: all 0.1s ease-in;
-	margin-left: 5px;
+.link-block .tools a.roundbadge.eye:hover::before {
+  color: white!important;
+  content: "\e961" !important;
+  color: var(--roundbadge-bkcg-color-on-block) !important;
 }
-
-.link-block .tools a.roundbadge:hover
-{
-	color:white;
-	background-color: #484D7A;
-	text-decoration: none;
+.link-block .tools a.roundbadge.crossed-eye::before {
+  content: "\e961" !important;
 }
-
-#mulsah,
-#mulba
-{
-	margin-top:0;
-	float: right;
+.link-block .tools a.roundbadge.crossed-eye::before:hover {
+  color: white!important;
+  content: "\e962" !important;
 }
-
-html body #mulsah span::before
-{
-	color:white!important;
+button.btn.icon-mel-copy {
+  font-family: DWP !important;
+  font-weight: normal !important;
+  content: "\e95c" !important;
 }
-
-#mulsah.eye:hover span::before,
-.link-block .tools a.roundbadge.eye:hover::before
-{
-	color:white!important;
-	content: "\e961"!important;
+button.btn.icon-mel-pencil {
+  font-family: DWP !important;
+  font-weight: normal !important;
+  content: "\e95c" !important;
 }
-
-.link-block .tools a.roundbadge.crossed-eye::before
-{
-	content: "\e961"!important;
+#mulsah {
+  margin-top: 0;
+  float: right;
 }
-
-.link-block .tools a.roundbadge.crossed-eye:hover::before,
-#mulsah.crossed-eye:hover span::before
-{
-	color:white!important;
-	content: "\e962"!important;
+html.layout-phone #mulsah,
+html.layout-small #mulsah {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
-
-.tools .hidden-link,
-.tak.hidden-link
-{
-	display: none!important;
+html body #mulsah span::before {
+  color: white!important;
 }
-
-.square_div.hidden-link .contents.square-contents {
-	background-color: #F0F0F042;
-	color: #0000006b;
-	border: solid;
-	border-color: #F0F0F0;
+#mulsah.eye:hover span::before {
+  color: white!important;
+  content: "\e961" !important;
 }
-
-.link-test-color
-{
-	margin-left:30px;
-	padding: 15px;
+#mulsah.crossed-eye:hover span::before {
+  color: white!important;
+  content: "\e962" !important;
 }
-
-.tools .roundbadge
-{
-	background-color: #00000021!important;
+#mulba {
+  margin-top: 0;
+  float: right;
+}
+html.layout-phone #mulba,
+html.layout-small #mulba {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+html.layout-phone #mulba .add,
+html.layout-small #mulba .add {
+  display: none;
+}
+html.layout-phone #mulba .plus,
+html.layout-small #mulba .plus {
+  margin: 0!important;
+}
+.hidden-link.tak,
+.tools .hidden-link {
+  display: none!important;
+}
+.link-test-color {
+  margin-left: 30px;
+  padding: 15px;
+}
+.tools .roundbadge {
+  background-color: var(--roundbadge-bkcg-color-tools) !important;
+}
+.multilink-sub {
+  display: flex;
+  background-color: #0000006e;
+  transition: all 0.1s ease-in;
+}
+.multilink-sub-copy {
+  text-decoration: none!important;
+  transition: all 0.1s ease-in;
+  display: block;
+  align-self: center;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: var(--white);
+}
+.multilink-sub:hover {
+  background-color: #ffffff70;
+}
+.multilink-sub:hover .multilink-sub-copy {
+  color: black!important;
+}
+html.layout-small .joinedtitle,
+html.layout-phone .joinedtitle {
+  display: flex;
 }

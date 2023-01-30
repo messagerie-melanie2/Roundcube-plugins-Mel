@@ -171,8 +171,8 @@ rcube_webmail.prototype.plugin_archiver = function () {
             frame.dialog('destroy').remove();
         },
         buttons: buttons,
-        width: 400,
-        height: 435,
+        width: 660,
+        height: 500,
         rcmail: rcmail
-    }).width(380);
+    }).width(640);
 };

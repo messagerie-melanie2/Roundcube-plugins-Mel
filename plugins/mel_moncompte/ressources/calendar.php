@@ -305,7 +305,8 @@ class M2calendar {
       }
       $this->calendar->id = $this->mbox ?  : $this->user->uid;
       $this->calendar->owner = $this->user->uid;
-      if (! is_null($this->calendar->save())) {
+      $ret = $this->calendar->save();
+			if (!is_null($ret)) {
         return $this->calendar->load();
       }
       else {
@@ -362,6 +363,10 @@ class M2calendar {
           'class' => $calendar->owner == $this->user->uid && $calendar->id != $this->user->uid ? ' personnal' : '',
         ];
         if (($order = array_search(driver_mel::gi()->mceToRcId($calendar->id), $sort_calendars)) !== false) {
+
+          if ($calendar->owner != $this->user->uid) $order += count($_calendars);
+          if ($calendar->owner == $this->user->uid && $calendar->id == $this->user->uid) $order -= count($_calendars);
+
           $calendars[$calendar->id]['order'] = $order;
         }
         else if ($calendar->owner == $this->user->uid) {

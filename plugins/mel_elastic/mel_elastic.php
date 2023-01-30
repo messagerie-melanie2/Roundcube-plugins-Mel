@@ -19,6 +19,8 @@
  */
 class mel_elastic extends rcube_plugin
 {
+    public const DEFAULT_THEME = 'default';
+
     public $tasks = '.*';
     private $rc;
     /**
@@ -34,6 +36,9 @@ class mel_elastic extends rcube_plugin
      */
     private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css"];
 
+    private $loaded_theme;
+    private $themes;
+
     function init()
     {
         $this->skinPath = getcwd()."/skins/mel_elastic";
@@ -42,10 +47,14 @@ class mel_elastic extends rcube_plugin
         {
             $this->add_hook('preferences_list', array($this, 'prefs_list'));
             $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+            $this->add_hook('ready', array($this, 'set_theme'));
+            $this->register_action('update_theme', array($this, 'update_theme'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
+            $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
+            $this->rc->output->set_env('mel_themes', $this->mep_themes());
             $this->load_folders();
             $this->add_texts('localization/', true);
             //$this->add_hook('messages_list', [$this, 'mail_messages_list']);
@@ -137,31 +146,133 @@ class mel_elastic extends rcube_plugin
             'title' => html::label($attrib, rcube::Q($this->gettext($text_size, "mel_elastic"))),
             'content' => $input->show($config),
           );
-          
+        
+          //THEMES
+        //   $args['blocks']['themes']['name'] = 'Thèmes';
+        //   $current_theme = $this->get_current_theme();
+        //   $themes = $this->load_themes();
+
+        //   foreach ($themes as $theme) {
+        //     $radio = new html_radiobutton(['name' => 'themes', 'id' => $theme->name, 'value' => $theme->name, 'class' => 'form-check-input themesettingsrb']);
+        //     $args['blocks']['themes']['options'][$theme->name] = [
+        //         //'title' => html::label([], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name),
+        //         'content' => html::div([], html::div(['style' => 'display:inline-block;margin-right:5px;width:150px;'], html::tag('img', ['src' => $theme->picture, 'style' => 'max-width:150px'])).html::div(['class' => 'form-check', 'style' => 'display:inline-block'], $radio->show($current_theme).html::label(['class' => 'form-check-label', 'for' => $theme->name], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name)))
+        //     ];
+        //   }
+
+        //   $args['blocks']['themes']['options']['hiddenthemes'] = [
+        //     'content' => (new html_hiddenfield(['name' => 'themevalue', 'id' => 'themevalue', 'value' => $current_theme]))->show()
+        //   ];
+
         }
+
     
         return $args;
       }
 
 
-      public function prefs_save($args) {
+    public function prefs_save($args) {
         if ($args['section'] == 'general') {
-    
+
             $this->add_texts('localization/');
-    
+
             $text_size = "mel-text-size";
-    
+
             // Check that configuration is not disabled
             $config = $this->rc->config->get('custom-font-size', 'lg');
-    
+
             $config = rcube_utils::get_input_value($text_size, rcube_utils::INPUT_POST);
-          
-    
-          $args['prefs']["custom-font-size"] = $config;
-          
-        //   $this->rc->output->set_env("custom-font-size", $config);
+            
+
+            $args['prefs']["custom-font-size"] = $config;
+            
+            // $current_theme = $this->get_current_theme();
+            // $current_theme = rcube_utils::get_input_value('themes', rcube_utils::INPUT_POST);
+            // $args['prefs']['mel_elastic.current'] = $current_theme;
+
+            // $this->rc->output->set_env('current_theme', $current_theme);
         }
-    
+
         return $args;
-      }
+    }
+
+    private function load_themes()
+    {
+        if (!isset($this->themes))
+        {
+            include_once __DIR__.'/program/theme.php';
+            $theme_folder = $this->skinPath.'/themes/';
+            $themes = [new Theme($theme_folder.self::DEFAULT_THEME)];
+            $folders = scandir($theme_folder);
+            
+            foreach ($folders as $id => $folder) {
+                if ($folder !== '.' && $folder !== '..' && is_dir($theme_folder.$folder) && $folder !== self::DEFAULT_THEME)
+                {
+                    $themes[] = new Theme($theme_folder.$folder);
+                }
+            }
+            $this->themes = $themes;
+        }
+
+
+        return $this->themes;
+    }
+
+    private function mep_themes() {
+        $themes = $this->load_themes();
+        $mep = [];
+
+        foreach ($themes as $key => $value) {
+            $mep[$value->name] = $value;
+        }
+
+        return $mep;
+    }
+
+    private function unload_current_theme()
+    {
+        unset($this->loaded_theme);
+        return $this;
+    }
+
+
+    public function get_current_theme()
+    {
+        if (!isset($this->loaded_theme))
+        {
+            $this->load_config();
+            $this->loaded_theme = $this->rc->config->get('mel_elastic.current', self::DEFAULT_THEME);
+        }
+
+        return $this->loaded_theme;
+    }
+
+    public function is_default_theme()
+    {
+        return $this->get_current_theme() === self::DEFAULT_THEME;
+    }
+
+    public function set_theme($useless)
+    {
+        if (!$this->is_default_theme())
+        {
+            //$this->include_stylesheet('/themes/'.$this->get_current_theme().'/theme.css');
+            $this->rc->output->set_env('current_theme', $this->get_current_theme());
+        }
+
+        foreach ($this->load_themes() as $key => $value) {
+            $this->include_stylesheet('/themes/'.$value->name.'/theme.css');
+        }
+
+        return $useless;
+    }
+
+    public function update_theme()
+    {
+        $theme = rcube_utils::get_input_value('_t', rcube_utils::INPUT_POST);
+        $this->rc->user->save_prefs(array('mel_elastic.current' => $theme));
+        $this->unload_current_theme();
+        echo 'ok';
+        exit;
+    }
 }

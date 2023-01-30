@@ -31,7 +31,6 @@ class GlobalModalConfig
     }
 }
 
-
 /**
  * Gère la modale globale.
  */
@@ -98,12 +97,21 @@ class GlobalModal
                 this.footer.buttons.save.click(config.footer.save.onclick);
         }
 
-        $(".modal-close").click(() => {
+        this.on_click_exit = () => {
             this.close();
+        };
+        this.on_click_minified = this.on_click_exit;
+        let $close = $(".modal-close");
+        $close.click(() => {
+            this.on_click_exit();
         });
+        this.notHaveReduced($close);
+        $close = null;
 
         if (show)
             this.show();
+
+        this.have_reduced = false;
     }
 
     /**
@@ -131,9 +139,11 @@ class GlobalModal
         $(back).appendTo($(`#${id}`));
         this.header.title = $(".global-modal-title");
         this.header.title.appendTo($(`#${id}`));
-        $(".modal-close").click(() => {
-            this.close();
-        });
+        $(".modal-close").click(this.on_click_exit);
+        if (this.have_reduced)
+        {
+            $('.modal-minify-mel').click(this.on_click_minified);
+        }
     }
 
     editTitleAndSetBeforeTitle(before, title)
@@ -181,6 +191,7 @@ class GlobalModal
     appendToBody(querry)
     {
         querry.appendTo(this.contents);
+        return this;
     }
 
     /**
@@ -200,6 +211,60 @@ class GlobalModal
     autoHeight()
     {
         this.editHeight(window.innerHeight-(this.isPhone() ? 0 : 60));
+    }
+
+    haveReduced()
+    {
+        this.have_reduced = true;
+        return this._create_reduced();
+    }
+
+    notHaveReduced($close_button = null)
+    {
+        const class_tra = GlobalModal.consts.classes.top_right_action;
+
+        let $close = $close_button || $(".modal-close");
+        this.have_reduced = false;
+        let $modal_minifier = $('.modal-minify-mel')
+
+        if ($modal_minifier.length > 0) 
+        {
+            $close.addClass(class_tra).appendTo($close.parent().parent());
+            $modal_minifier.parent().remove();
+        }
+
+        $modal_minifier = null;
+        return this;
+    }
+
+    _create_reduced()
+    {
+        const class_tra = GlobalModal.consts.classes.top_right_action;
+
+        let button = document.createElement('button');
+        let span = document.createElement('span');
+
+        span.classList.add("icon-mel-minus-roundless");
+        button.append(span);
+        span = null;
+        span = document.createElement('span');
+        span.classList.add('sr-only');
+        span.innerText = 'Minifier la modale';
+        button.append(span);
+        span = null;
+        span = document.createElement('div');
+        let $close = $('.modal-close');
+        $close.removeClass(class_tra).parent().append(span);
+
+        $(span).addClass(class_tra).append($(button).addClass('btn btn-secondary modal-minify-mel').click(() => {
+            this.on_click_minified();
+        })).append($close);
+
+        span = null;
+        button = null;
+        $close = null;
+
+        return this;
     }
 
     onDestroy(func)
@@ -276,14 +341,23 @@ class GlobalModal
 
     static resetModal()
     {
-        return mel_metapage.Functions.get(
-            mel_metapage.Functions.url("mel_metapage", "modal"),
-            {},
-            (datas) => {
-                $("#globalModal").remove();
-                $("body").append(datas);
-            }
-        );
+        if (!!this.raw_datas)
+        {
+            $("#globalModal").remove();
+            $("body").append(this.raw_datas);
+            return $.ajax();
+        }
+        else {
+            return mel_metapage.Functions.get(
+                mel_metapage.Functions.url("mel_metapage", "modal"),
+                {},
+                (datas) => {
+                    $("#globalModal").remove();
+                    $("body").append(datas);
+                    this.raw_datas = datas;
+                }
+            );
+        }
     }
 
 }
@@ -295,3 +369,12 @@ GlobalModal.close = function ()
 {
     $("#globalModal").modal('hide');
 }
+
+GlobalModal.consts = {
+    classes:{
+        top_right_action:'modal-top-right-actions'
+    }
+};
+
+window.GlobalModal = GlobalModal;
+window.GlobalModalConfig = GlobalModalConfig;

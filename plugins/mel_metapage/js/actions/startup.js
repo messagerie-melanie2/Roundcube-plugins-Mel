@@ -1,87 +1,141 @@
 const mm_frame = "mm-frame";
-$(document).ready(function() {
-
-    $("#layout-list").addClass(rcmail.env.task + "-frame");
-    $("#layout-list").addClass(mm_frame);
-    $("#layout-sidebar").addClass(rcmail.env.task + "-frame");
-    $("#layout-content").addClass(rcmail.env.task + "-frame");
-    $("#layout-sidebar").addClass(mm_frame);
-    $("#layout-content").addClass(mm_frame);
-    $(".startup").addClass(rcmail.env.task + "-frame");
-    $(".startup").addClass(mm_frame);
-
-    //rcmail.addEventListener("init", async () => {
-
-    if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
-    {
-        mel_metapage.Storage.set("open_frame", "rocket");
-        window.location.href = "./?_task=bureau";
-        return;
-    }
-    else if (parent === window && mel_metapage.Storage.get("open_frame") !== null)
-    {
-        $(document).ready(() =>{
-            mm_st_CreateOrOpenModal(mel_metapage.Storage.get("open_frame"));
-            mel_metapage.Storage.remove("open_frame");
-        });
-    }
-
-    //await wait(() => $("#layout-menu a.selected").length === 0);
-    const task = mm_st_ClassContract(rcmail.env.task);
-
-    rcmail.env.last_frame_class = task;//[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
-    //rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
-    if ($("#layout-menu a.selected").length === 0)
-    {
-        rcmail.env.last_frame_name = document.title;
-    }
-    else
-        rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
-
-    event_keys.init.chat_button.trigger();
-
-    let querry = $(".menu-last-frame").find(".inner");
-    querry.html(`<span class=menu-last-frame-inner-up>`+rcmail.gettext('last_frame_opened', "mel_metapage")+` :</span><span class=menu-last-frame-inner-down>`+rcmail.gettext('nothing', "mel_metapage")+`</span>`); 
-    rcmail.enable_command('last_frame', true);
-
-    rcmail.register_command('last_frame', function() {
-        try {
-            event.preventDefault();
-        } catch (error) {
-            
+rcmail.addEventListener('init', () => {
+    $(document).ready(function() {
+        $("#layout-list").addClass(rcmail.env.task + "-frame");
+        $("#layout-list").addClass(mm_frame);
+        $("#layout-sidebar").addClass(rcmail.env.task + "-frame");
+        $("#layout-content").addClass(rcmail.env.task + "-frame");
+        $("#layout-sidebar").addClass(mm_frame);
+        $("#layout-content").addClass(mm_frame);
+        $(".startup").addClass(rcmail.env.task + "-frame");
+        $(".startup").addClass(mm_frame);
+    
+        if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
+        {
+            mel_metapage.Storage.set("open_frame", "rocket");
+            window.location.href = "./?_task=bureau";
+            return;
+        }
+        else if (parent === window && mel_metapage.Storage.get("open_frame") !== null)
+        {
+            $(document).ready(() =>{
+                mm_st_CreateOrOpenModal(mel_metapage.Storage.get("open_frame"));
+                mel_metapage.Storage.remove("open_frame");
+            });
         }
 
-        if ($("#taskmenu .menu-last-frame").hasClass("disabled"))
+        let task = rcmail.env.task;//mm_st_ClassContract(rcmail.env.task);
+        //task = $(`.${task}`).length > 0 ? task : mm_st_ClassContract(task);
+
+        if (task === 'chat') task = 'discussion';
+        else if (task === "home") task = 'bureau';
+    
+        rcmail.env.last_frame_class = rcmail.env.current_frame_name = task;
+    
+        if ($("#layout-menu a.selected").length === 0)
         {
-            rcmail.display_message("Vous ne pouvez pas revenir en arrière si vous n'avez pas déjà changer de page.");
-            $("#taskmenu .menu-last-frame").attr("disabled", "disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+            rcmail.env.last_frame_name = document.title;
         }
         else
-            mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
-
-        }); 
-
-    rcmail.env.can_backward = true;
-    //});
-
+            rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
     
-    if (rcmail.env.task === "addressbook")
-    {
-        $(".task-addressbook").children().each((i,e) => {
-
-            if (e.classList.contains("modal"))
-                return;
-
-            if (e.id == "layout")
-                return;
-
-            e.classList.add(rcmail.env.task + "-frame");
-            e.classList.add(mm_frame);
+        //mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class));
+    
+        event_keys.init.chat_button.trigger();
+    
+        let querry = $(".menu-last-frame").find(".inner");
+        querry.html(`<span class=menu-last-frame-inner-up>`+rcmail.gettext('last_frame_opened', "mel_metapage")+` :</span><span class=menu-last-frame-inner-down>`+rcmail.gettext('nothing', "mel_metapage")+`</span>`); 
+        
+        const last_action = () => {
+            const quit = () => {
+                $('#frame-mel-history').remove();
+                $('#black-frame-mel-history').remove();
+                $('#layout-menu').css('left', '0');
+            };
+    
+            //console.log('history', mel_metapage.Frames.lastFrames);
+    
+            if ($('#frame-mel-history').length > 0) 
+            {
+                $('#frame-mel-history').remove();
+                $('#black-frame-mel-history').remove();
+            }
+    
+            let $history = $('<div id="frame-mel-history"><div style="margin-top:5px"><center><h3>Historique</h3></center></div></div>');
+            let $buttons = $('<div id="frame-buttons-history"></div>').appendTo($history);
+    
+            for (let index = mel_metapage.Frames.lastFrames.length - 1; index >= 0; --index) {
+                const element = mel_metapage.Frames.lastFrames[index];
+                $buttons.append($(`<button class="history-button mel-button btn btn-secondary no-button-margin color-for-dark bckg true"><span class="history-icon ${element.icon}"></span><span class="history-text">${element.name}</span></button>`).click(() => {
+                    mel_metapage.Functions.change_frame(element.task, true);
+                    quit();
+                }));
+            }
+    
+            $('#layout').append($history).append($('<div id="black-frame-mel-history"></div>').click(() => {
+                quit();
+            }));
+    
+            $('#layout-menu').css('left', '120px');
+    
+    
+    
+            return false;
+        };
+    
+        querry.parent().on('contextmenu', (ev) => {
+            ev.preventDefault();
+            return last_action();
+        }).on('mousedown', (e) => {
+            if (e.button === 1) {
+                e.preventDefault();
+                return last_action();
+             }
         });
-    }
+        
+        rcmail.enable_command('last_frame', true);
+    
+        rcmail.register_command('last_frame', function() {
+            try {
+                event.preventDefault();
+            } catch (error) {
+                
+            }
+    
+            if ($("#taskmenu .menu-last-frame").hasClass("disabled"))
+            {
+                rcmail.display_message("Vous ne pouvez pas revenir en arrière si vous n'avez pas déjà changer de page.");
+                $("#taskmenu .menu-last-frame").attr("disabled", "disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+            }
+            else
+                //mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
+                mel_metapage.Frames.back();
+            }
+        ); 
+    
+        rcmail.env.can_backward = true;
+    
+        
+        if (rcmail.env.task === "addressbook")
+        {
+            $(".task-addressbook").children().each((i,e) => {
+    
+                if (e.classList.contains("modal"))
+                    return;
+    
+                if (e.id == "layout")
+                    return;
+    
+                e.classList.add(rcmail.env.task + "-frame");
+                e.classList.add(mm_frame);
+            });
+        }
+    
+        mm_st_ChangeClicks();
+        mm_st_ChangeClicks("#otherapps");
 
-    mm_st_ChangeClicks();
-    mm_st_ChangeClicks("#otherapps");
+        rcmail.env.current_task = rcmail.env.task;
+    });
 });
 
 function mm_st_GetClass(classlist)
@@ -110,12 +164,13 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
         e.classList.forEach((a) => {
             switch (a) {
                 case "mel-focus":
-                    return;
                 case "selected":
-                    return;
                 case "order1":
-                    return;
+                case 'disabled':
                 case "mel":
+                case '-normal-touch':
+                case 'menu-small':
+                case 'stopAppMenu':
                     return;
                 default:
                     break;
@@ -133,6 +188,7 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
             case "about":
             case "compose":
             case "menu-last-frame":
+            case '':
                 return;
         
             default:
@@ -144,6 +200,39 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
         };
     });
 }
+
+function mm_st_getNavClass(element)
+{
+    e = element;
+    if (e.classList.contains("more-options"))
+        return "more-options";
+
+    let cClass = "";
+    e.classList.forEach((a) => {
+        switch (a) {
+            case "mel-focus":
+                return;
+            case "selected":
+                return;
+            case "order1":
+                return;
+            case "mel":
+                return;
+            default:
+                break;
+        }
+        if (a.includes("icofont"))
+            return;
+        if (a.includes("icon-mel-"))
+            return;
+        if (a.includes("button"))
+            return;
+        cClass = a;
+    });
+
+    return cClass;
+}
+window.mm_st_getNavClass = mm_st_getNavClass;
 
 function mm_st_ClassContract(_class)
 {
@@ -173,6 +262,8 @@ function mm_st_ClassContract(_class)
     }
 }
 
+window.mm_st_ClassContract = mm_st_ClassContract;
+
 function mm_st_CommandContract(_class)
 {
     switch (_class) {
@@ -196,8 +287,9 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
     if (args === null || args === undefined)
         args = {};
 
-    if (rcmail.busy)
+    if (rcmail.busy && rcmail.env.can_change_while_busy !== true)
         return "busy";
+    else if (rcmail.env.can_change_while_busy === true) rcmail.env.can_change_while_busy = false;
 
     //Actions à faire avant de traiter la classe.
     metapage_frames.triggerEvent("before", eClass, changepage);
@@ -212,6 +304,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
     if (changepage)//Actions à faire si on change de page.
         metapage_frames.triggerEvent("changepage", eClass, changepage, isAriane, querry);
 
+    metapage_frames.triggerEvent("before.after", eClass, changepage, isAriane, querry);
+
     if (querry.length == 0) //Si on doit créer la frame
     {
         if (rcmail.nb_frames === undefined)
@@ -224,7 +318,12 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
         .append(metapage_frames.triggerEvent("frame", eClass, changepage, isAriane, querry, id, args) /* Récupération de la frame */);
         //Mise à jours de la frame
         metapage_frames.triggerEvent("editFrame", eClass, changepage, isAriane, $("#"+id));
-        rcmail.set_busy(true, "loading");
+
+        if (metapage_frames.triggerEvent("have-loading-frame", eClass, changepage, isAriane, querry, id)) {
+            metapage_frames.triggerEvent("generate-loading-frame", eClass, changepage, isAriane, querry, id)
+        }
+
+        if (changepage) rcmail.set_busy(true, "loading");
 
         $("."+eClass+"-frame").on("load", () =>
         {
@@ -270,11 +369,37 @@ metapage_frames.addEvent("before", (eClass, changepage) => {
     {
         if (rcmail.env.current_frame_name !== undefined && rcmail.env.current_frame_name !== null)
         {
+            let querry_selector =  "." + mm_st_ClassContract(rcmail.env.current_frame_name);
             rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
-            rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+
+            if (!m_mp_s_is_valid_class(rcmail.env.last_frame_class)) rcmail.env.last_frame_class = undefined;
+
+            rcmail.env.last_frame_name = $(querry_selector).find(".inner").html();
+
+            if (!rcmail.env.last_frame_name)
+            {
+                querry_selector = `.${rcmail.env.current_frame_name}`;
+                rcmail.env.last_frame_name = $(querry_selector).find(".inner").html();
+
+            }
+
+            const icon = Enumerable.from($(querry_selector)[0]?.classList ?? []).firstOrDefault(x => x.includes('icon-mel'), '');
+            
+            if (rcmail.env.last_frame_class !== undefined) mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class, icon));
         }
     }
 });
+
+function m_mp_s_is_valid_class(_class)
+{
+    switch (_class) {
+        case "webconf":
+            return false
+    
+        default:
+            return true;
+    }
+}
 
 metapage_frames.addEvent("changepage.before", (eClass) => {
     if ($(".ui-dialog-titlebar-close").length > 0)
@@ -319,29 +444,40 @@ metapage_frames.addEvent("changepage.before", (eClass) => {
 });
 
 metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) => {
-
     rcmail.env.current_frame_name = eClass;
 
     mel_metapage.Functions.update_refresh_thing();
 
+    $('.wlp_box').each((i,e) => {
+        e = $(e);
+        if (!e.hasClass('questionnaireWebconf')) 
+        {
+            if (e.find('.wlp-minixpand .icon-mel-minus-roundless').length > 0) e.find('.wlp-minixpand').click();
+        }
+    });
+
+    let _bool;
     $("."+mm_frame).each((i,e) => {
-        //console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
-        //e.classList.contains("webconf-frame") , window.webconf_helper.already());
 
-        if ((mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already()))
-            return;
+    try {
+        _bool = (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already());
+        if (!_bool) e.style.display = "none";
+    } catch (error) {
+        console.warn('/!\\[changepage]', error);
+        try {
+            if (!(mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame"))) e.style.display = "none";
+            if (!(window.webconf_helper && e.classList.contains("webconf-frame") && window.webconf_helper.already())) e.style.display = "none";
+        } catch (error) {
+            console.error('###[changepage]', error);
+        }
+    }
 
-        e.style.display = "none";
-    });//.css("display", "none");
+        
+    });
 
     $(".a-frame").css("display", "none");
     const url = rcmail.get_task_url((isAriane ? "chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 
     window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
-
-    if (isAriane || $("."+eClass+"-frame").length > 1)
-        $("#layout-frames").css("display", "none");
-    else 
-        $("#layout-frames").css("display", "");
     
     let arianeIsOpen = mel_metapage.PopUp.ariane === undefined || mel_metapage.PopUp.ariane === null ? false : mel_metapage.PopUp.ariane.is_show;
     
@@ -396,6 +532,11 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         btn.hide_button();
         $(".a-frame").css("display", "");
     }
+
+    if (isAriane)// || $("iframe."+eClass+"-frame").length === 0)
+        $("#layout-frames").css("display", "none");
+    else 
+        $("#layout-frames").css("display", "");
 });
 
 metapage_frames.addEvent("rcmailconfig.no", (eClass, changepage, isAriane, querry, id) => {
@@ -414,6 +555,19 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
     else
         return (isAriane ? $("#layout") : $("#layout-frames"));
 })
+
+metapage_frames.addEvent("have-loading-frame", (eClass, changepage, isAriane, querry, id, args, result) => {
+    return !isAriane && changepage;
+});
+
+metapage_frames.addEvent("generate-loading-frame", (eClass, changepage, isAriane, querry, id, args, result) => {
+    let $loading = $('#bnum-loading-div');
+
+    if ($loading.length === 0) {
+        $('<div id="bnum-loading-div"><div style="position:relative;width:100%;height:100%"><div class="absolute-center"><div class="loader-base"><div class="loader-looping"></div></div></div></div></div>').addClass('loader-div').appendTo($("#layout-frames"));
+    }
+    else $loading.removeClass('loaded');
+});
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, args, result) => {
     const empty = "";
@@ -466,7 +620,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (eClass === "discussion")
     {
         html = "";
-        html += '<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;">';
+        html += `<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;${(!changepage ? 'display:none;' : '')}">`;
         html += '<div class="card-header-disabled frame-header" >';
         // html += '<span>Ariane</span>';
         html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-popup-cose card-close mel-focus"></a>`;
@@ -490,8 +644,9 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 });
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
-
     try {
+        $('#bnum-loading-div').addClass('loaded');
+        //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
         let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
         const _$ = querry_content.$;
 
@@ -509,7 +664,7 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
         }
         
     } catch (error) {
-        console.error("###[onload|querry_content]", error);
+        //console.error("###[onload|querry_content]", error);
     }
 
     rcmail.set_busy(false);
@@ -532,10 +687,13 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     }
 
     if (changepage)
-        Title.update(id, true);
+    {
+        Title.updateAsync(id, true).then(() => {
+            window.update_notification_title();
+        });
+    }
 
     metapage_frame_actions(actions, id, true);
-
 });
 
 function metapage_frame_actions(actions, id, after_load) {
@@ -580,23 +738,28 @@ function metapage_frame_actions(actions, id, after_load) {
 }
 
 metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
-    if (rcmail.env.can_backward === true)
-        m_mp_ChangeLasteFrameInfo();
+    top.rcmail.env.current_task = rcmail.env.current_task = eClass;
+    if (rcmail.env.can_backward === true) m_mp_ChangeLasteFrameInfo();
 
-        if (isAriane)
-        {
-            setTimeout(() => {
-                Title.update(id, true);
-            }, 10);
-        }
+    if (isAriane)
+    {
+        setTimeout(() => {
+            Title.updateAsync(id, true).then(() => {
+                window.update_notification_title();
+            });
+        }, 10);
+    }
 });
 
 metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, actions) => {
-
     if ($(`iframe#${id}`).length === 0)
-        Title.set(Title.defaultTitle, true);
+        Title.set(Title.defaultTitle, true).then(() => {
+            window.update_notification_title();
+        });
     else
-        Title.update(id, true);
+        Title.updateAsync(id, true).then(()=> {
+            window.update_notification_title();
+        });
 
     try {
         if (window.FrameUpdate === undefined)
@@ -619,6 +782,8 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
                 await Title.set(Title.defaultTitle, true);
             else
                 await Title.updateAsync(id, true);
+
+            window.update_notification_title();
             Title.focusHidden();
         }, 10);
     }
@@ -631,24 +796,54 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
     if (parent === window && $("html").hasClass("webconf-started"))
         $(window).resize();
 
+    if (isAriane || $("iframe."+eClass+"-frame").length === 0)
+        $("#layout-frames").css("display", "none");
+    else 
+        $("#layout-frames").css("display", "");
+
 });
 
-function m_mp_ChangeLasteFrameInfo()
+function m_mp_ChangeLasteFrameInfo(force = false)
 {
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
-    const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
+    const isUndefined = rcmail.env.last_frame_class === undefined || rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
+
+    if (!isUndefined && (rcmail.env.current_frame_name === rcmail.env.last_frame_class || mm_st_ClassContract(rcmail.env.current_frame_name) === rcmail.env.last_frame_class) && !force)
+    {
+        mel_metapage.Frames.pop();
+        return;
+    }
+    
+    if (rcmail.env.last_frame_class === undefined)
+    {
+        let it = 0;
+        let pop
+        do {
+            pop = mel_metapage.Frames.last(it);
+            rcmail.env.last_frame_class = pop?.task;
+            rcmail.env.last_frame_name = pop?.name;
+            ++it;
+        } while (!rcmail.env.last_frame_class && !!pop);
+
+        if (!!pop) return m_mp_ChangeLasteFrameInfo(force);
+    }
 
     if (isUndefined)
         rcmail.env.last_frame_name = rcmail.gettext('nothing', "mel_metapage");
 
     let querry = $(".menu-last-frame").find(".inner");
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
-    window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+    window.document.title = mel_metapage.Functions.get_current_title(null, ($("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html() ?? window.document.title));//$("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html() ?? window.document.title;
+    top.update_notification_title();
 
     try {
         if (!isUndefined)
         {
-            m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
+            let selector = "#taskmenu ." + rcmail.env.last_frame_class;
+
+            if ($(selector).length === 0) selector = "#taskmenu ." + mm_st_ClassContract(rcmail.env.last_frame_class);
+           
+            m_mp_CreateOrUpdateIcon(selector);
             $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
         }
         else
@@ -661,18 +856,17 @@ function m_mp_ChangeLasteFrameInfo()
     }
 
 }
+window.m_mp_ChangeLasteFrameInfo = m_mp_ChangeLasteFrameInfo;
 
 function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
 {
-
-    //console.error("querry-selector", querry_selector, default_content);
+    const css_key = 'm_mp_CreateOrUpdateIcon';
 
     if ($(".menu-last-frame").find(".menu-last-frame-item").length == 0)
         $(".menu-last-frame").append(`<span class="menu-last-frame-item"></span>`);
     else
     {
-        document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
-        document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
+        MEL_ELASTIC_UI.css_rules.remove(css_key);
     }
 
     var font;
@@ -700,8 +894,9 @@ function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
         font = "DWP";
     }
 
-    document.styleSheets[0].addRule('.menu-last-frame-item:before', 'content: "\\' + content + '"; font-family: "'+font+'"');
-    document.styleSheets[0].addRule('.menu-last-frame-item:before', 'font-family: '+font+';');
+    MEL_ELASTIC_UI.css_rules.addAdvanced(css_key, '.menu-last-frame-item:before', 
+    `content:"\\${content}"`,
+    `font-family:${font}`);
 }
 
 function m_mp_focus_current_frame($this)

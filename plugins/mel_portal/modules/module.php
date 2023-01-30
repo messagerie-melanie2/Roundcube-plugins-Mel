@@ -292,7 +292,7 @@ class Module implements iModule {
             if ($i !== 0)
                 $tab->attributes[] = "tabindex=-1";
 
-            $tab->html(($array[$i]["deco"] === null ? "" : $array[$i]["deco"])." ".($array[$i]["name"] === null ? "" : $array[$i]["name"]));
+            $tab->html(($array[$i]["deco"] === null ? "" : $array[$i]["deco"])." <span class=tab-title>".($array[$i]["name"] === null ? "" : $array[$i]["name"]).'</span>');
             $tab->content->id = $array[$i]["id"];
             $tab->content->classes = ["tabcontent"];
 

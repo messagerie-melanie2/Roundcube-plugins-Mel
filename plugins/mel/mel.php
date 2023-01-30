@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél
  *
@@ -21,7 +22,8 @@
 @include_once 'includes/libm2.php';
 require_once 'lib/drivers/driver_mel.php';
 
-class mel extends rcube_plugin {
+class mel extends rcube_plugin
+{
 
   static $VERSION = "Mél";
 
@@ -79,7 +81,8 @@ class mel extends rcube_plugin {
    *
    * @see rcube_plugin::init()
    */
-  function init() {
+  function init()
+  {
     $this->rc = rcmail::get_instance();
     // Mise à jour de la version
     include_once __DIR__ . '/../../version.php';
@@ -95,6 +98,7 @@ class mel extends rcube_plugin {
     $this->add_hook('identities_list',      array($this, 'identities_list'));
     $this->add_hook('identity_update',      array($this, 'identity_update'));
     $this->add_hook('message_before_send',  array($this, 'message_before_send'));
+    $this->add_hook('imap_search_before', [$this, 'imap_search_before']);
 
     // Template
     $this->add_hook('template_object_loginform',  array($this, 'login_form'));
@@ -134,7 +138,8 @@ class mel extends rcube_plugin {
   /**
    * Initializes plugin's UI (localization, js script)
    */
-  private function init_ui() {
+  private function init_ui()
+  {
     if ($this->ui_initialized) {
       return;
     }
@@ -167,89 +172,109 @@ class mel extends rcube_plugin {
 
     // Use infinite scroll ?
     $this->rc->output->set_env('use_infinite_scroll', $this->rc->config->get('use_infinite_scroll', true));
-    
+
     if (!$this->rc->config->get('hide_keep_login_button', false)) {
-        // Keep login
-        $this->rc->output->set_env('keep_login', isset($_SESSION['_keeplogin']) ? $_SESSION['_keeplogin'] : false);
+      // Keep login
+      $this->rc->output->set_env('keep_login', isset($_SESSION['_keeplogin']) ? $_SESSION['_keeplogin'] : false);
     }
 
     // ajouter les boites partagées
     if ($this->api->output->type == 'html') {
+      if ((!isset($_GET['_is_from']) || $_GET['_is_from'] != 'iframe')
+        && !isset($_GET['_extwin'])
+        && !isset($_GET['_framed'])
+        && $this->rc->task != 'login'
+        && $this->rc->task != 'logout'
+      ) {
+        if (driver_mel::gi()->getUser()->load(['lastname', 'firstname', 'email', 'service'])) {
+          $this->rc->output->set_env('firstname', driver_mel::gi()->getUser()->firstname);
+          $this->rc->output->set_env('lastname', driver_mel::gi()->getUser()->lastname);
+          $this->rc->output->set_env('email', driver_mel::gi()->getUser()->email);
+          $this->rc->output->set_env('service', self::format_service(driver_mel::gi()->getUser()->service));
+        }
+      }
       if ($this->rc->task == 'mail') {
         // 0005830: Bouton pour créer directement un dossier dans l'interface Courriel
         $content = html::tag('li', array(
           'role' => 'menuitem'
         ), $this->api->output->button(array(
-                'label' => 'mel.menumanage_create_mailbox_folder',
-                'type' => 'link',
-                'class' => "create",
-                'classact' => 'create active',
-                'command' => 'window-edit-folder'
+          'label' => 'mel.menumanage_create_mailbox_folder',
+          'type' => 'link',
+          'class' => "create",
+          'classact' => 'create active',
+          'command' => 'window-edit-folder'
         )));
         $this->api->add_content($content, 'mailboxoptions');
-          // Link to Settings/Folders
-          $button_array = [                  
-            'label' => 'mel.menumanageresources_mailboxes',
+        // Link to Settings/Folders
+        $button_array = [
+          'label' => 'mel.menumanageresources_mailboxes',
           'type' => 'link',
           "class" => "settings",
           'classact' => 'settings active',
-          'command' => 'plugin.mel_resources_bal'];
-          if ($this->rc->plugins->get_plugin('mel_metapage') !== null)
-            $button_array["command"] = "mel_metapage_manage_mail_box";
-          else
-            $button_array["task"] = "settings";
+          'command' => 'plugin.mel_resources_bal'
+        ];
+        if ($this->rc->plugins->get_plugin('mel_metapage') !== null)
+          $button_array["command"] = "mel_metapage_manage_mail_box";
+        else
+          $button_array["task"] = "settings";
 
-          $content = html::tag('li', array(
-                  'role' => 'menuitem'
-          ), $this->api->output->button($button_array));
+        $content = html::tag('li', array(
+          'role' => 'menuitem'
+        ), $this->api->output->button($button_array));
         $this->api->add_content($content, 'mailboxoptions');
-      }
-      else if ($this->rc->task == 'calendar') {
+      } else if ($this->rc->task == 'calendar') {
         // Link to Settings/Folders
         $content = html::tag('li', array(
-                'class' => 'separator_above'
+          'class' => 'separator_above'
         ), $this->api->output->button(array(
-                'label' => 'mel.menumanageresources_calendars',
-                'type' => 'link',
-                'classact' => 'active',
-                'command' => 'plugin.mel_resources_agendas',
-                'task' => 'settings'
+          'label' => 'mel.menumanageresources_calendars',
+          'type' => 'link',
+          'classact' => 'active',
+          'command' => 'plugin.mel_resources_agendas',
+          'task' => 'settings'
         )));
         $this->api->add_content($content, 'calendaroptionsmenu');
-      }
-      else if ($this->rc->task == 'tasks') {
+        $user = driver_mel::gi()->getUser();
+        $user->load(['phonenumber', 'mobilephone', 'street', 'postalcode', 'locality']);
+
+        $this->rc->output->set_env('user_appointment_pref', $user->getCalendarPreference("appointment_properties"));
+        $this->rc->output->set_env('user_phone', isset($user->mobilephone) ? $user->mobilephone : $user->phonenumber);
+        $this->rc->output->set_env('user_address', isset($user->street) ? $user->street . ' ' . $user->postalcode . ' ' . $user->locality : null);
+      } else if ($this->rc->task == 'tasks') {
         // Link to Settings/Folders
         $content = html::tag('li', array(
-                'class' => 'separator_above'
+          'class' => 'separator_above'
         ), $this->api->output->button(array(
-                'label' => 'mel.menumanageresources_taskslists',
-                'type' => 'link',
-                'classact' => 'active',
-                'command' => 'plugin.mel_resources_tasks',
-                'task' => 'settings'
+          'label' => 'mel.menumanageresources_taskslists',
+          'type' => 'link',
+          'classact' => 'active',
+          'command' => 'plugin.mel_resources_tasks',
+          'task' => 'settings'
         )));
         $this->api->add_content($content, 'tasklistoptionsmenu');
-      }
-      elseif ($this->rc->task == 'login' || $this->rc->task == 'logout') {
+      } elseif ($this->rc->task == 'login' || $this->rc->task == 'logout') {
         $this->api->add_content(html::div(null, $this->gettext('login_footer')) . html::br() . html::div(null, $this->gettext('login from') . ucfirst($_SERVER["HTTP_X_MINEQPROVENANCE"])), 'loginfooter');
       }
       // Gestion du mot de passe trop ancien
       $passwordchange_title = '';
-      if (!isset($_SESSION['plugin.show_password_change'])
-          && !$this->rc->output->get_env('ismobile') 
-          && driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title)) {
+      if (
+        !isset($_SESSION['plugin.show_password_change'])
+        && !$this->rc->output->get_env('ismobile')
+        && driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title)
+      ) {
         $this->rc->output->set_env('passwordchange_title', $passwordchange_title);
         $this->rc->output->set_env('plugin.show_password_change', true);
       }
     }
     $this->ui_initialized = true;
   }
-  
+
   /**
    * Force un account différent si besoin
    * @param string $_account
    */
-  public function set_account($_account) {
+  public function set_account($_account)
+  {
     $this->get_account = $_account;
     $this->set_user_properties();
   }
@@ -257,11 +282,11 @@ class mel extends rcube_plugin {
   /**
    * Permet de récupérer l'account courant
    */
-  public static function get_account() {
+  public static function get_account()
+  {
     if (isset($_POST['_account']) && !empty($_POST['_account'])) {
       $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_POST));
-    }
-    else {
+    } else {
       $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
     }
     return $_account;
@@ -273,10 +298,11 @@ class mel extends rcube_plugin {
   /**
    * RAZ de la page courante
    */
-  public function set_current_page() {
+  public function set_current_page()
+  {
     $_SESSION['page'] = 1;
     $result = array(
-            'action' => 'plugin.set_current_page'
+      'action' => 'plugin.set_current_page'
     );
     echo json_encode($result);
     exit();
@@ -288,7 +314,8 @@ class mel extends rcube_plugin {
   /**
    * Supprimer la liste des serveurs
    */
-  public function version($args) {
+  public function version($args)
+  {
     $args['content'] = self::$VERSION;
     return $args;
   }
@@ -299,7 +326,8 @@ class mel extends rcube_plugin {
   /**
    * Sets defaults for new user.
    */
-  public function user_create($args) {
+  public function user_create($args)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::user_create()");
 
@@ -338,17 +366,17 @@ class mel extends rcube_plugin {
    * Connect to smtp
    * Utilise les identifiants de la balp si nécessaire
    */
-  public function smtp_connect($args) {
+  public function smtp_connect($args)
+  {
     if (!empty($_SESSION['m2_from_identity'])) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::smtp_connect()");
       if (!empty($_SESSION['m2_uid_identity'])) {
         $args['smtp_user'] = $_SESSION['m2_uid_identity'];
-      }
-      else {
+      } else {
         $user = driver_mel::gi()->user();
         $user->email = $_SESSION['m2_from_identity'];
-        if ($user->load('uid')) {
+        if ($user->load(['uid'])) {
           $args['smtp_user'] = $user->uid;
         }
       }
@@ -360,14 +388,14 @@ class mel extends rcube_plugin {
    * After login user
    * Gestion des identités
    */
-  public function login_after($args) {
+  public function login_after($args)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::login_after()");
 
     if (isset($_GET['_goto_task'])) {
       $args['_task'] = trim(rcube_utils::get_input_value('_goto_task', rcube_utils::INPUT_GET));
-    }
-    else if ($args['_task'] == 'mail')  {
+    } else if ($args['_task'] == 'mail') {
       $args['_task'] = $this->rc->config->get('default_task', 'bureau');
       if ($args['_task'] == 'portail') {
         // Problème avec le passage portail Mél web vers Bureau
@@ -396,8 +424,7 @@ class mel extends rcube_plugin {
         }
         // Vide le tableau pour lister ensuite les identities à créer
         unset($m2_identities[strtolower($rc_i['email'])]);
-      }
-      else {
+      } else {
         $delete_identities[] = $rc_i['identity_id'];
       }
     }
@@ -426,19 +453,68 @@ class mel extends rcube_plugin {
    *
    * @return string Account
    */
-  public function m2_get_account() {
+  public function m2_get_account($args = [])
+  {
     if (mel_logs::is(mel_logs::DEBUG)) {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
     }
+
+    if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0) {
+      $bal = driver_mel::gi()->user();
+      $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $args['folder']);
+      $bal->load();
+      $uid = driver_mel::gi()->getUser()->uid . driver_mel::gi()->objectShareDelimiter() . $bal->uid;
+      $this->set_account(urlencode($uid) . '@' . driver_mel::gi()->getRoutage($bal, 'm2_get_account'));
+    }
+
+
     return array(
       "account" => $this->get_account
     );
   }
 
+  public function imap_search_before($args)
+  {
+
+    if (is_array($args['folder'])) {
+      $isBalp = false;
+      $bal = driver_mel::gi()->user();
+      foreach ($args['folder'] as $key => $value) {
+        if (strpos($value, driver_mel::gi()->getBalpLabel()) === 0) {
+          $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $value);
+          if ($bal->load()) {
+            $isBalp = true;
+            $hostname = driver_mel::gi()->getRoutage($bal, 'imap_search_before');
+            $uid = driver_mel::gi()->getUser()->uid . driver_mel::gi()->objectShareDelimiter() . $bal->uid;
+            $this->rc->storage->connect(
+              $hostname,
+              $uid,
+              $this->rc->decrypt($_SESSION['password']),
+              $_SESSION['storage_port'],
+              $_SESSION['storage_ssl']
+            );
+            break;
+          }
+        }
+      }
+
+      if ($isBalp) {
+        foreach ($args['folder'] as $key => $value) {
+          if (strpos($value, driver_mel::gi()->getBalpLabel()) !== 0) {
+            unset($args['folder'][$key]);
+          }
+        }
+      }
+    }
+
+    return $args;
+  }
+
   /**
    * Handler for user preferences form (preferences_list hook)
    */
-  function prefs_list($args) {
+  function prefs_list($args)
+  {
     if ($args['section'] == 'general') {
       // Load localization and configuration
       $this->add_texts('localization/');
@@ -465,8 +541,7 @@ class mel extends rcube_plugin {
           'content' => $input->show($value),
         );
       }
-    }
-    else if ($args['section'] == 'mailbox') {
+    } else if ($args['section'] == 'mailbox') {
       // Load localization and configuration
       $this->add_texts('localization/');
 
@@ -479,15 +554,15 @@ class mel extends rcube_plugin {
         $field_id = "_" . $key;
         $is_checked = $this->rc->config->get($config_key, true);
         $input = new html_checkbox(array(
-                'name' => $field_id,
-                'id' => $field_id,
-                'value' => 1
+          'name' => $field_id,
+          'id' => $field_id,
+          'value' => 1
         ));
         $content = $input->show($is_checked);
 
         $args['blocks']['main']['options'][$key] = array(
-                'title' => html::label($field_id, rcube::Q($this->gettext($key))),
-                'content' => $content
+          'title' => html::label($field_id, rcube::Q($this->gettext($key))),
+          'content' => $content
         );
       }
     }
@@ -497,21 +572,21 @@ class mel extends rcube_plugin {
   /**
    * Handler for user preferences save (preferences_save hook)
    */
-  public function prefs_save($args) {
+  public function prefs_save($args)
+  {
     if ($args['section'] == 'general') {
       // Check that configuration is not disabled
-      $dont_override = ( array ) $this->rc->config->get('dont_override', array());
+      $dont_override = (array) $this->rc->config->get('dont_override', array());
       $key = 'mel_default_task';
       if (!in_array($key, $dont_override)) {
         $config_key = 'default_task';
         $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
       }
-    }
-    else if ($args['section'] == 'mailbox') {
+    } else if ($args['section'] == 'mailbox') {
       // Check that configuration is not disabled
-      $dont_override = ( array ) $this->rc->config->get('dont_override', array());
+      $dont_override = (array) $this->rc->config->get('dont_override', array());
       $key = 'mel_use_infinite_scroll';
-      if (! in_array($key, $dont_override)) {
+      if (!in_array($key, $dont_override)) {
         $config_key = 'use_infinite_scroll';
         $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST) ? true : false;
       }
@@ -522,7 +597,8 @@ class mel extends rcube_plugin {
   /**
    * Handler for user identity edit form
    */
-  public function identity_form($args) {
+  public function identity_form($args)
+  {
     if (mel_logs::is(mel_logs::TRACE)) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identity_form() args : " . var_export($args, true));
     }
@@ -532,9 +608,9 @@ class mel extends rcube_plugin {
     $uid['label'] = $this->gettext('uid');
     $args['form']['addressing']['content']['name']['label'] = $this->gettext('name identity');
     $args['form']['addressing']['content'] = array_slice($args['form']['addressing']['content'], 0, 1, true) + array(
-            'realname' => $realname
+      'realname' => $realname
     ) + array(
-            'uid' => $uid
+      'uid' => $uid
     ) + array_slice($args['form']['addressing']['content'], 1, count($args['form']['addressing']['content']) - 1, true);
 
     return $args;
@@ -543,7 +619,8 @@ class mel extends rcube_plugin {
   /**
    * Handler for user identities list
    */
-  public function identities_list($args) {
+  public function identities_list($args)
+  {
     if (mel_logs::is(mel_logs::TRACE)) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identities_list() args : " . var_export($args, true));
     }
@@ -554,7 +631,8 @@ class mel extends rcube_plugin {
   /**
    * Handler for user identity update
    */
-  public function identity_update($args) {
+  public function identity_update($args)
+  {
     if (mel_logs::is(mel_logs::TRACE)) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identity_update() args : " . var_export($args, true));
     }
@@ -565,7 +643,8 @@ class mel extends rcube_plugin {
   /**
    * Ajout des headers dans le message via le driver mel
    */
-  public function message_before_send($args) {
+  public function message_before_send($args)
+  {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::gi()->l(mel_logs::DEBUG, "mel::message_before_send()");
 
@@ -583,7 +662,8 @@ class mel extends rcube_plugin {
   /**
    * Supprimer la liste des serveurs
    */
-  public function login_form($args) {
+  public function login_form($args)
+  {
     $is_courrielleur = trim(rcube_utils::get_input_value('_courrielleur', rcube_utils::INPUT_GET));
     if (isset($is_courrielleur) && $is_courrielleur >= 1) {
       // Usage avec le courrielleur
@@ -594,10 +674,9 @@ class mel extends rcube_plugin {
       }
 
       $args['content'] = html::tag('h1', null, $this->gettext('You are disconnect from Roundcube')) . html::p(null, $this->gettext('You can close and reopen the tab')) . html::a(array(
-              'href' => '?_task=login&_courrielleur=' . $is_courrielleur
+        'href' => '?_task=login&_courrielleur=' . $is_courrielleur
       ), $this->gettext('Or you can clic here to relogin'));
-    }
-    else {
+    } else {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::login_form()");
       if (isset($_POST['_user']))
@@ -611,47 +690,47 @@ class mel extends rcube_plugin {
         $url = $_SERVER['QUERY_STRING'];
 
       $input_task = new html_hiddenfield(array(
-              'name' => '_task',
-              'value' => 'login'
+        'name' => '_task',
+        'value' => 'login'
       ));
       $input_action = new html_hiddenfield(array(
-              'name' => '_action',
-              'value' => 'login'
+        'name' => '_action',
+        'value' => 'login'
       ));
       $input_timezone = new html_hiddenfield(array(
-              'name' => '_timezone',
-              'id' => 'rcmlogintz',
-              'value' => '_default_'
+        'name' => '_timezone',
+        'id' => 'rcmlogintz',
+        'value' => '_default_'
       ));
       $input_url = new html_hiddenfield(array(
-              'name' => '_url',
-              'id' => 'rcmloginurl',
-              'value' => $url
+        'name' => '_url',
+        'id' => 'rcmloginurl',
+        'value' => $url
       ));
       $input_class = (($this->rc->config->get('skin') == 'mel_elastic' || $this->rc->config->get('skin') == 'elastic') ? "form-control" : "");
       $input_login = new html_inputfield(array(
-              'name' => '_user',
-              'id' => 'rcmloginuser',
-              'size' => '40',
-              'autocapitalize' => 'off',
-              'autocomplete' => 'on',
-              "class" => $input_class
+        'name' => '_user',
+        'id' => 'rcmloginuser',
+        'size' => '40',
+        'autocapitalize' => 'off',
+        'autocomplete' => 'on',
+        "class" => $input_class
       ));
       $input_password = new html_passwordfield(array(
-              'name' => '_pass',
-              'id' => 'rcmloginpwd',
-              'size' => '40',
-              'autocapitalize' => 'off',
-              'autocomplete' => 'off',
-              'class' => $input_class
+        'name' => '_pass',
+        'id' => 'rcmloginpwd',
+        'size' => '40',
+        'autocapitalize' => 'off',
+        'autocomplete' => 'off',
+        'class' => $input_class
       ));
       if (!$this->rc->config->get('hide_keep_login_button', false)) {
-          $checkbox_keeplogin = new html_checkbox(array(
-              'name' => '_keeplogin',
-              'id' => 'rcmloginkeep',
-              'value' => 'keeplogin',
-              'title' => $this->gettext('computer_private_title')
-          ));
+        $checkbox_keeplogin = new html_checkbox(array(
+          'name' => '_keeplogin',
+          'id' => 'rcmloginkeep',
+          'value' => 'keeplogin',
+          'title' => $this->gettext('computer_private_title')
+        ));
       }
 
       $keeplogin = "";
@@ -665,106 +744,102 @@ class mel extends rcube_plugin {
         }
         if (isset($login[1])) {
           $cn = $login[1];
-        }
-        else {
+        } else {
           $cn = $username;
         }
         $keeplogin = "keeplogin";
         $class_tr = "hidden_login_input";
         $login_div = html::div(array(
-                'class' => 'login_div'
+          'class' => 'login_div'
         ), html::div(array(
-                'class' => 'img'
+          'class' => 'img'
         ), " ") . html::div(array(
-                'class' => 'name'
+          'class' => 'name'
         ), $cn) . html::a(array(
-                'id' => 'rcmchangeuserbutton',
-                'href' => '#'
+          'id' => 'rcmchangeuserbutton',
+          'href' => '#'
         ), $this->gettext('change_user')));
-      }
-      else if (isset($_POST['_keeplogin']) && !$this->rc->config->get('hide_keep_login_button', false)) {
+      } else if (isset($_POST['_keeplogin']) && !$this->rc->config->get('hide_keep_login_button', false)) {
         $keeplogin = "keeplogin";
       }
-      
+
       if ($this->rc->output->get_env('ismobile')) {
         if ($this->rc->config->get('hide_keep_login_button', false)) {
-            $keeplogin_html = '';
-        }
-        else {
-            $keeplogin_html = html::div(array(
-                'class' => $class_tr
-            ), $checkbox_keeplogin->show($keeplogin) . html::label(array(
-                'for' => 'rcmloginkeep'
-            ), $this->gettext('device_private')));
+          $keeplogin_html = '';
+        } else {
+          $keeplogin_html = html::div(array(
+            'class' => $class_tr
+          ), $checkbox_keeplogin->show($keeplogin) . html::label(array(
+            'for' => 'rcmloginkeep'
+          ), $this->gettext('device_private')));
         }
         $args['content'] = $input_task->show() . $input_action->show() . $input_timezone->show() . $input_url->show() . $login_div . html::div(array(
-                'id' => 'formlogintable'
+          'id' => 'formlogintable'
         ), html::div(array(
-                'class' => $class_tr
+          'class' => $class_tr
         ), html::label(array(
-                'for' => 'rcmloginuser'
+          'for' => 'rcmloginuser'
         ), $this->rc->gettext('username'))) . html::div(array(
-                'class' => $class_tr
+          'class' => $class_tr
         ), $input_login->show($username)) . html::div(null, html::label(array(
-                'for' => 'rcmloginpwd'
+          'for' => 'rcmloginpwd'
         ), $this->rc->gettext('password'))) . html::div(null, $input_password->show()) . $keeplogin_html) . html::p(array(
-                'class' => 'formbuttons'
+          'class' => 'formbuttons'
         ), html::tag('button', array(
-                'id' => 'rcmloginsubmit',
-                'class' => 'button mainaction',
-                'type' => 'submit',
-                'value' => $this->rc->gettext('login')
+          'id' => 'rcmloginsubmit',
+          'class' => 'button mainaction',
+          'type' => 'submit',
+          'value' => $this->rc->gettext('login')
         ), $this->rc->gettext('login')));
-      }
-      else {
+      } else {
         $table = new html_table(array(
-                'id' => 'formlogintable'
+          'id' => 'formlogintable'
         ));
         $table->add_row(array(
-                'class' => $class_tr
+          'class' => $class_tr
         ));
         $table->add(array(
-                'class' => 'title'
+          'class' => 'title'
         ), html::label(array(
-                'for' => 'rcmloginuser'
+          'for' => 'rcmloginuser'
         ), $this->rc->gettext('username')));
         $table->add(array(
-                'class' => 'input'
+          'class' => 'input'
         ), $input_login->show($username));
         $table->add_row();
         $table->add(array(
-                'class' => 'title'
+          'class' => 'title'
         ), html::label(array(
-                'for' => 'rcmloginpwd'
+          'for' => 'rcmloginpwd'
         ), $this->rc->gettext('password')));
         $table->add(array(
-                'class' => 'input'
+          'class' => 'input'
         ), $input_password->show());
         $table->add_row(array(
-                'class' => $class_tr
+          'class' => $class_tr
         ));
         if (!$this->rc->config->get('hide_keep_login_button', false)) {
-            $table->add(array(
-                'class' => 'input'
-            ), $checkbox_keeplogin->show($keeplogin));
-            $table->add(array(
-                'class' => 'title'
-            ), html::label(array(
-                'for' => 'rcmloginkeep'
-            ), $this->gettext('computer_private')));
+          $table->add(array(
+            'class' => 'input'
+          ), $checkbox_keeplogin->show($keeplogin));
+          $table->add(array(
+            'class' => 'title'
+          ), html::label(array(
+            'for' => 'rcmloginkeep'
+          ), $this->gettext('computer_private')));
         }
 
         $args['content'] = $input_task->show() . $input_action->show() . $input_timezone->show() . $input_url->show() . $login_div . $table->show() . html::p(array(
-                'class' => 'formbuttons'
+          'class' => 'formbuttons'
         ), html::tag('button', array(
-                'id' => 'rcmloginsubmit',
-                'class' => 'button mainaction',
-                'type' => 'submit',
-                'value' => $this->rc->gettext('login')
+          'id' => 'rcmloginsubmit',
+          'class' => 'button mainaction',
+          'type' => 'submit',
+          'value' => $this->rc->gettext('login')
         ), $this->rc->gettext('login')));
         if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
           $args['content'] .= html::div(array(), html::a(array(
-                  "href" => "./changepassword/index.php"
+            "href" => "./changepassword/index.php"
           ), $this->gettext('no bal')));
         }
       }
@@ -780,7 +855,8 @@ class mel extends rcube_plugin {
   /**
    * Initialisation du cache en session
    */
-  protected static function _InitSessionCache() {
+  protected static function _InitSessionCache()
+  {
     if (!isset($_SESSION[self::CACHE_KEY])) {
       $_SESSION[self::CACHE_KEY] = array();
     }
@@ -792,7 +868,8 @@ class mel extends rcube_plugin {
    *
    * @param array $cache
    */
-  protected static function _SetSessionCache($cache) {
+  protected static function _SetSessionCache($cache)
+  {
     $_SESSION[self::CACHE_KEY] = $cache;
   }
 
@@ -804,7 +881,8 @@ class mel extends rcube_plugin {
    * @param boolean $reset RAZ du timer de cache (defaut false)
    * @param int $duration [Optionnel] Durée du cache pour cette clé
    */
-  public static function setCache($key, &$value, $reset = false, $duration = null) {
+  public static function setCache($key, &$value, $reset = false, $duration = null)
+  {
     $cache = self::_InitSessionCache();
     if (!isset($duration)) {
       $default_duration = rcmail::get_instance()->config->get("cache_default-duration", 300);
@@ -812,8 +890,7 @@ class mel extends rcube_plugin {
     }
     if (!$reset && isset($cache[$key])) {
       $cache[$key]['value'] = serialize($value);
-    }
-    else {
+    } else {
       $cache[$key] = [
         'expire'  => time() + $duration,
         'value' => serialize($value),
@@ -829,12 +906,12 @@ class mel extends rcube_plugin {
    * 
    * @return boolean
    */
-  public static function issetCache($key) {
+  public static function issetCache($key)
+  {
     $cache = self::_InitSessionCache();
     if (isset($cache[$key]) && isset($cache[$key]['expire']) && $cache[$key]['expire'] > time()) {
       return true;
-    }
-    else if (isset($cache[$key])) {
+    } else if (isset($cache[$key])) {
       unset($cache[$key]);
       self::_SetSessionCache($cache);
     }
@@ -848,15 +925,15 @@ class mel extends rcube_plugin {
    * 
    * @return mixed $value, null si non trouvée
    */
-  public static function &getCache($key) {
+  public static function &getCache($key)
+  {
     $cache = self::_InitSessionCache();
     if (isset($cache[$key]) && isset($cache[$key]['expire']) && $cache[$key]['expire'] > time()) {
       $ret = unserialize($cache[$key]['value']);
       if ($ret !== false) {
         return $ret;
       }
-    }
-    else if (isset($cache[$key])) {
+    } else if (isset($cache[$key])) {
       unset($cache[$key]);
       self::_SetSessionCache($cache);
     }
@@ -868,7 +945,8 @@ class mel extends rcube_plugin {
    * 
    * @param $key Identifiant du cache
    */
-  public static function unsetCache($key) {
+  public static function unsetCache($key)
+  {
     $cache = self::_InitSessionCache();
     if (isset($cache[$key])) {
       unset($cache[$key]);
@@ -881,7 +959,8 @@ class mel extends rcube_plugin {
    *
    * @return string
    */
-  public function get_username() {
+  public function get_username()
+  {
     if (!isset($this->user_name)) {
       $this->set_user_properties();
     }
@@ -892,7 +971,8 @@ class mel extends rcube_plugin {
    *
    * @return string
    */
-  public function get_user_bal() {
+  public function get_user_bal()
+  {
     if (!isset($this->user_bal)) {
       $this->set_user_properties();
     }
@@ -903,7 +983,8 @@ class mel extends rcube_plugin {
    *
    * @return string
    */
-  public function get_share_objet() {
+  public function get_share_objet()
+  {
     if (!isset($this->user_objet_share)) {
       $this->set_user_properties();
     }
@@ -915,7 +996,8 @@ class mel extends rcube_plugin {
    * @param string $share_objet
    * @return string
    */
-  public function set_share_objet($share_objet) {
+  public function set_share_objet($share_objet)
+  {
     $this->user_objet_share = $share_objet;
   }
   /**
@@ -923,7 +1005,8 @@ class mel extends rcube_plugin {
    *
    * @return string
    */
-  public function get_host() {
+  public function get_host()
+  {
     if (!isset($this->user_host)) {
       $this->set_user_properties();
     }
@@ -935,7 +1018,8 @@ class mel extends rcube_plugin {
    * @param string $host
    * @return string
    */
-  public function set_host($host) {
+  public function set_host($host)
+  {
     $this->user_host = $host;
   }
   /**
@@ -944,7 +1028,8 @@ class mel extends rcube_plugin {
   /**
    * Définition des propriétées de l'utilisateur
    */
-  private function set_user_properties() {
+  private function set_user_properties()
+  {
     if (!empty($this->get_account) && $this->get_account != $this->rc->get_user_name()) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
@@ -954,12 +1039,10 @@ class mel extends rcube_plugin {
       $user = driver_mel::gi()->getUser($this->user_objet_share, false);
       if ($user->is_objectshare) {
         $this->user_bal = $user->objectshare->mailbox_uid;
-      }
-      else {
+      } else {
         $this->user_bal = $this->user_objet_share;
       }
-    }
-    else {
+    } else {
       // Récupération du username depuis la session
       $this->user_name = $this->rc->get_user_name();
       $this->user_objet_share = $this->rc->user->get_username('local');
@@ -972,7 +1055,8 @@ class mel extends rcube_plugin {
    *
    * @return array
    */
-  private function m2_list_identities() {
+  private function m2_list_identities()
+  {
     $user = driver_mel::gi()->getUser();
     $_objects = $user->getObjectsSharedEmission();
     $identities = [];
@@ -1030,12 +1114,12 @@ class mel extends rcube_plugin {
    * @param string $name
    * @return string
    */
-  private function m2_identity_shortname($name) {
+  private function m2_identity_shortname($name)
+  {
     if (strpos($name, ' emis par ') !== false) {
       $name = explode(' emis par ', $name);
       $name = $name[0] . " (partagée)";
-    }
-    elseif (strpos($name, ' - ') !== false) {
+    } elseif (strpos($name, ' - ') !== false) {
       $name = explode(' - ', $name);
       $name = $name[0];
     }
@@ -1043,31 +1127,67 @@ class mel extends rcube_plugin {
   }
 
   /**
-   * Défini si on est dans une instance interne ou extene de l'application
+   * Définit si on est dans une instance interne ou externe de l'application
    * Permet la selection de la bonne url
+   * 
+   * @return boolean
    */
-  public static function is_internal() {
+  public static function is_internal()
+  {
     if (isset($_GET['internet'])) {
       return false;
     }
+
     return rcmail::get_instance()->config->get('is_internal', false);
   }
+
+  /**
+   * Définit si on est dans une situation où l'auth est assez forte
+   * Permet de ne pas déclencher la double auth, ou d'accéder à stockage via internet
+   * 
+   * @return boolean
+   */
+  public static function is_auth_strong()
+  {
+    $eidas = $_SESSION['eidas'];
+    //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
+
+    return mel::is_internal() // Connexion intranet
+      || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)
+      || $eidas == "eidas3"; // Cerbère Certif (logiciel RGS1, carte à puce RGS3)
+  }
+
   /**
    * Retourne l'adresse ip
    * @return string
    * @private
    */
-  private function _get_address_ip() {
+  private function _get_address_ip()
+  {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
       $ip = $_SERVER['HTTP_CLIENT_IP'];
-      $ip = "[".$_SERVER['REMOTE_ADDR']."]/[$ip]";
+      $ip = "[" . $_SERVER['REMOTE_ADDR'] . "]/[$ip]";
     } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
       $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-      $ip = "[".$_SERVER['REMOTE_ADDR']."]/[$ip]";
+      $ip = "[" . $_SERVER['REMOTE_ADDR'] . "]/[$ip]";
     } else {
       $ip = $_SERVER['REMOTE_ADDR'];
-      $ip = "[$ip]/[".$_SERVER['REMOTE_ADDR']."]";
+      $ip = "[$ip]/[" . $_SERVER['REMOTE_ADDR'] . "]";
     }
     return $ip;
+  }
+
+  /**
+   * Format l'affichage du service pour la barre d'utilisateur
+   * @return string
+   * @private
+   */
+  private function format_service($service)
+  {
+    if (strstr($service, '/')) {
+      $split_service = explode('/', $service);
+      $service = implode('/', array_slice($split_service, -3, 3, true));
+    }
+    return $service;
   }
 }

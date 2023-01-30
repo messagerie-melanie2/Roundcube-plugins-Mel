@@ -1,11 +1,17 @@
-<div class="square_div mel-news <type/>" <optional_style/> data-uid="<uid/>">
+<div  class="square_div mel-news <type/>" <optional_style/> data-copy="<datacopy/>" data-site="<site/>" data-date="<raw_date/>" data-uid="<uid/>" data-link="<datalink/>" data-format="<dataformat/>" data-type="<datatype/>">
     <div_title/>
-    <div class="contents" >
-        <div class="square-contents" >
-            <p class="headlines-by"><service/></p>
+    <div class="contents" style="border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    height: 300px;"
+    tabindex="0" 
+    onclick="rcmail.command('news.click', {_event:event, element:$(this)})" onkeydown="rcmail.command('news.keydown', {_event:event, element:$(this)})" >
+        <div class="square-contents" style="height: 100%;display: flex;
+        flex-direction: column;" >
+            <div class="headlines-by <headlines_other_classes/>"><service/></div>
             <h3 class="headlines-title bold"><title/></h3>
-            <p class="headlines-publish"><date/></p>
-            <p class="headlines-contents"><text/></p>
+            <div class="headlines-publish"><date/></div>
+            <div class="headlines-contents" ><text/></div>
         </div>
     </div>
+    <additionnal_contents/>
 </div>

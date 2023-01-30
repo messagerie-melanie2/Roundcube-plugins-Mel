@@ -4,6 +4,12 @@
 if (window.rcmail) {
 	// Plugin  init
 	rcmail.addEventListener('init', function(evt) {
+
+		if (!!(rcmail.env.settings_frame_url || false))
+		{
+			$('#settings-suggest-frame').attr('src',rcmail.env.settings_frame_url).parent().css('height', '100%').parent().css('height', '100%');
+		}
+
 		var tab = $('<li>').attr('id', 'settingstabpluginmel_suggestion_box')
 	    	.addClass('tablink mel_suggestion_box'), button = $('<a>')
 	    	.attr('href', rcmail.env.comm_path

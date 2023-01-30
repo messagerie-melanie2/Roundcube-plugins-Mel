@@ -74,3 +74,13 @@ html.layout-phone .square_div > .contents
 .headlines-contents {
 	margin-top: 20px;
 }
+
+
+.headlines-source {
+    display:none;
+}
+
+.square_div.mel-news .contents{
+    border-radius: 5px!important;
+    height: 340px!important;
+}

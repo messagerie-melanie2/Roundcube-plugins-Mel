@@ -1,10 +1,3 @@
-/* html.dark-mode .barup .user-child .mel-icofont-theme::before
-{
-    font-family: "Icofont";
-    content: "\ee81";
-    color:#e4e7eb;
-} */
-
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
 	border-color: #E1C58F;
 	background-color: #181C28;
@@ -30,6 +23,11 @@ html.dark-mode nav.otherapps,
 html.dark-mode #layout-menu {
     background-color:#1f2933;
     color:#c7dfff;
+}
+
+html.dark-mode #frame-mel-history
+{
+    background-color:#1f2933;
 }
 
 html.dark-mode nav.otherapps
@@ -60,6 +58,8 @@ html.dark-mode #otherapps .action-buttons a:hover,
 html.dark-mode #otherapps a:hover span,
 html.dark-mode #layout-menu:hover a:hover > span.inner, 
 html.dark-mode #layout-menu.force-open a.force-hover > span.inner,
+html.dark-mode #layout-menu:hover a.selected > span.inner, 
+html.dark-mode #layout-menu.force-open a.selected > span.inner,
 html.dark-mode #taskmenu a:focus,
 html.dark-mode #layout-menu a:focus > span.inner, 
 html.dark-mode #layout-menu span > a:focus > span.inner,
@@ -139,6 +139,11 @@ html.dark-mode .mel-button {
     border-width: thin;
 }
 
+html.dark-mode .mel-button.bckg.color-for-dark
+{
+    color: #E1C58F;
+}
+
 html.dark-mode .tiny-webconf-menu.dwp-round.hidden-toolbar
 {
     background-color: #1F2933;
@@ -153,6 +158,11 @@ html.dark-mode .tiny-webconf-menu.dwp-round
 html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select
 {
     background-color:#1F2933;
+}
+
+html.dark-mode .mel-button.bckg.true:hover
+{
+	border-color: #E1C58F;
 }
 
 html.dark-mode .mel-button.dark-no-border-default
@@ -200,6 +210,8 @@ html.dark-mode .btn:focus
     color: #E1C58F!important;
 }
 
+html.dark-mode .custom-switch .custom-control-label::after,
+html.dark-mode #groupoptions-user .more-options:hover,
 html.dark-mode .roundbadge.icon-mel-videoconference:hover,
 html.dark-mode .tiny-webconf-menu.dwp-round:hover,
 html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select:hover,
@@ -214,6 +226,7 @@ html.dark-mode .mel-button:hover {
     color: #E1C58F!important;
 }
 
+html.dark-mode #groupoptions-user .more-options:hover,
 html.dark-mode .mel-button.dark-no-border-default:hover
 {
     border-color: #E1C58F!important; 
@@ -249,6 +262,22 @@ html.dark-mode .mel-button:active {
 
 html.dark-mode .barup > .wrapper > .user #user-welcome{
     color:#c7dfff!important;
+}
+
+html.dark-mode .large-toolbar .mel-ui-button.btn{
+    color:#96b9e7
+}
+
+html.dark-mode .large-toolbar .mel-ui-button.btn:hover {
+    background-color: #36383c;
+    color: #E1C58F;
+    border-color:transparent;
+}
+
+html.dark-mode .large-toolbar .mel-ui-button.btn.disabled {
+    background-color: #131519;
+    color: #E1C58F;
+    opacity: 1!important;
 }
 /******** Navigation des espaces *********/
 /*#4d6066*/
@@ -290,6 +319,18 @@ html.dark-mode .watermark::before
 {
     background-color: #1F2933;
     color:#96b9e7;
+}
+
+html.dark-mode .message-htmlpart blockquote
+{
+    color: #c7dfff;
+    background-color: #323F4B;
+}
+
+html.dark-mode .message-htmlpart blockquote *, 
+html.dark-mode .message-part blockquote * {
+    color: #c7dfff!important;
+    background-color: #323F4B!important;
 }
 
 html.dark-mode .frame-header
@@ -375,11 +416,13 @@ html.dark-mode #tasklist span.date{
     color:#e4e7eb;
 }
 
+html.dark-mode #groupoptions-user .more-options,
 html.dark-mode .mel-not-link:hover
 {
     color:#E1C58F;
 }
 
+html.dark-mode .waiting-events-number,
 html.dark-mode #mm-cw-participants,
 html.dark-mode .task-calendar .fc .fc-header-toolbar,
 html.dark-mode .workspace,
@@ -393,11 +436,13 @@ html.dark-mode .workspace-users-added button,
 html.dark-mode .task-mail #layout-content > .header #toolbar-menu li .dropbutton,
 html.dark-mode #layout > div > .header,
 html.dark-mode div#layout-sidebar,
-html.dark-mode .messagelist .unread
+html.dark-mode .messagelist .unread,
+html.dark-mode .mel-left-pannel
 {
     background-color: #323F4B !important
 }
 
+html.dark-mode .headlines-source,
 html.dark-mode .wsp-block,
 html.dark-mode .square_div > .contents,
 html.dark-mode .tablinks.selected,
@@ -528,6 +573,8 @@ html.dark-mode .fc .fc-day-number
     color:#96b9e7!important;
 }
 
+
+html.dark-mode .headlines-source,
 html.dark-mode .wsp-toolbar.webconf-toolbar .wsp-toolbar-item,
 html.dark-mode .task-addressbook .listing tbody td, 
 html.dark-mode .task-addressbook #layout-list .header,
@@ -535,7 +582,7 @@ html.dark-mode .wsp-block,
 html.dark-mode .ui-datepicker th,
 html.dark-mode body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col,
 html.dark-mode .task-calendar #layout #layout-content > .header a.button,
-.task-calendar #layout > #layout-content > .header .header-title span
+html.dark-mode .task-calendar #layout > #layout-content > .header .header-title span
 {
     color: #c7dfff!important;
 }
@@ -648,9 +695,34 @@ html.dark-mode .task-tasks #layout-list .header
     background-color: #3e4c59 !important;
 }
 
-html.dark-mode .link-block.square_div > .contents
+/* html.dark-mode .link-block.square_div > .contents
 {
     color:#1F2933;
+} */
+html.dark-mode .link-block .tools a.roundbadge {
+	background-color: #fff !important;
+    transition: all 0.1s ease-in;
+    color:var(--main-text-color)!important;
+}
+html.dark-mode .link-block .tools a.roundbadge:hover {
+	background-color: #1F2933 !important;
+    color:white!important;
+}
+html.dark-mode .link-block .tools a.roundbadge.eye:hover::before{
+    color:white!important;
+}
+
+html.dark-mode  .multilink-sub {
+    background-color: var(--white);
+}
+html.dark-mode  .multilink-sub-copy {
+    color: var(--main-text-color);
+}
+html.dark-mode  .multilink-sub:hover {
+    background-color: #1F2933;
+}
+html.dark-mode  .multilink-sub:hover .multilink-sub-copy {
+    color: white!important;
 }
 
 html.dark-mode #worspace-avatar-a span,
@@ -710,10 +782,12 @@ html.dark-mode .roundrive-folder-create-select
 
 /******** Modales ********/
 html.dark-mode .wlp_box,
+html.dark-mode .wlp-contents,
 html.dark-mode .wlp-minifieds .wlp-header,
 html.dark-mode .toolbar-popup,
 html.dark-mode .wsp-toolbar.webconf-toolbar,
-html.dark-mode .modal-content
+html.dark-mode .modal-content,
+html.dark-mode #waiting-events-list-items
 {
     background-color: #1F2933;
     color:#96b9e7;
@@ -765,6 +839,7 @@ html.dark-mode #eventedit li.nav-item a
     border-top-left-radius: 0;
 }
 
+html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
 html.dark-mode .mel-tab.mel-tabheader{
     color:#E1C58F!important;
 	border-color: #E1C58F!important;
@@ -776,6 +851,7 @@ html.dark-mode .mel-tab.mel-tabheader{
     text-decoration: none!important;
 }
 
+html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
 html.dark-mode .mel-tab.mel-tabheader.last
 {
     margin-left:5px;
@@ -786,6 +862,7 @@ html.dark-mode #eventedit li.nav-item a:hover
     background-color: #2E2E2E;
 }
 
+html.dark-mode .mel-responsive-tabheader.mel-responsive-tab:hover,
 html.dark-mode .mel-tab.mel-tabheader:hover
 {
     background-color: #2E2E2E!important;
@@ -798,6 +875,7 @@ html.dark-mode #eventedit li.nav-item a.active
 	border-color: #2E2E2E;
 }
 
+html.dark-mode .mel-responsive-tabheader.mel-responsive-tab.selected,
 html.dark-mode .mel-tab.mel-tabheader.active
 {
     background-color: #E1C58F!important;
@@ -860,6 +938,7 @@ html.dark-mode #edit-identities-list,
 html.dark-mode .edit-attendee-role, 
 html.dark-mode textarea.input-mel, 
 html.dark-mode select.input-mel, 
+html.dark-mode #edit-alarm-item,
 html.dark-mode input.input-mel,
 html.dark-mode #annuaireselector
 {
@@ -899,11 +978,13 @@ html.dark-mode  body.task-calendar select.mel-input.calendar:active
 	border-color: #2E2E2E!important;
 }
 
+html.dark-mode #mail-user-gp:hover,
 html.dark-mode  body.task-calendar select.mel-input.calendar:focus
 {
     color:#E1C58F!important;
 }
 
+html.dark-mode .ui-slider,
 html.dark-mode .task-calendar #layout-content .searchbar.menu
 {
     border: solid #E1C58F thin!important;
@@ -917,12 +998,16 @@ html.dark-mode select.input-mel.custom-select {
 	background-image: url("../fonts/mel_icons/Chevron_down_dark.svg");
 }
 
+html.dark-mode .custom-switch .custom-control-label::before,
 html.dark-mode .mel-radio-1 span
 {
     border-color: #E1C58F;
     background-color: black;
 }
 
+html.dark-mode .ui-slider .ui-slider-handle,
+html.dark-mode .custom-switch .custom-control-label::after,
+html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
 html.dark-mode  .mel-radio-1 input[type="checkbox"] + label span::before
 {
     border-color: #E1C58F;
@@ -930,6 +1015,9 @@ html.dark-mode  .mel-radio-1 input[type="checkbox"] + label span::before
     /*#3e4c59*/
 }
 
+html.dark-mode .ui-slider .ui-slider-handle.ui-state-active,
+html.dark-mode .ui-slider .ui-slider-range,
+html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
 html.dark-mode  .mel-radio-1 input[type="checkbox"]:checked + label span
 {
     background-color: #3e4c59;
@@ -947,8 +1035,7 @@ html.dark-mode.iframe #eventedit .alarms-input .input-group-text
     color: #E1C58F;
 }
 
-html.dark-mode .ui.alert.boxinformation,
-html.dark-mode #mailsearchlist
+html.dark-mode .ui.alert.boxinformation
 {
     background-color: #323F4B !important;
 }
@@ -959,6 +1046,7 @@ html.dark-mode .list-of-all-hashtag {
     border: solid #323F4B thin;
 }
 
+html.dark-mode #mail-user-gp,
 html.dark-mode #myday .element-no
 {
     color:#c7dfff;
@@ -968,10 +1056,205 @@ html.dark-mode .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
     background-color: #1A222B;
 }
 
-html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
-    background-color: #1A222B;
-}
+/* html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
+    background-color: #323F4B !important;
+} */
 
 html.dark-mode .messagelist:not(.threaded) tbody tr.unread td {
-    background-color: #1F2933;
+    background-color: #323F4B !important;
+}
+
+html.dark-mode .headlines-by.headlines-rss-type {
+	color: #36D2BD  !important;
+}
+
+html.dark-mode table.table-striped thead.mel_striped td
+{
+  background-color: #1F2933;  
+}
+
+html.dark-mode .wlp-contents
+{
+    border:none;
+}
+
+html.dark-mode a.rcmContactAddress {
+    color: #96b9e7;
+} 
+
+html.dark-mode .mel-block-list {
+	background-color: #323F4B;
+}
+
+html.dark-mode #quicksearchbar .button.options.annuaire-filter-selected
+{
+    background-color:green;
+}
+
+html.dark-mode ul#tasklist li.taskitem:nth-child(2n)
+{
+    background-color:#4B5C6C;
+}
+
+html.dark-mode body.task-tasks .listing li:hover > div > a:first-child:hover {
+	border: #E1C58F solid thin !important;
+    background-color: initial!important;
+	border-top-right-radius: 15px;
+	border-bottom-right-radius: 15px;
+}
+/***Survol***/
+html.dark-mode ul ul li.mailbox:hover > a:first-of-type {
+	background-color: transparent;
+}
+
+html.dark-mode ul ul li.mailbox:hover > a:first-of-type{
+    /* border: #E1C58F solid thin !important; */
+    background-color: #2E2E2E!important;
+    /* color: #E1C58F!important; */
+}
+
+html.dark-mode ul ul li.mailbox.selected:hover > a:first-of-type{
+	background-color: transparent!important;
+    border-radius: 0;
+}
+
+html.dark-mode .messagelist tr.message:hover{
+    box-shadow: 0px 2px 2px #8FABE147;
+}
+
+html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.status::before {
+	color: #96b9e7  !important;
+}
+
+html.dark-mode .messagelist tr.message.selected:hover td.subject span.msgicon.status::before {
+	color: #E1C58F !important;
+    /* text-shadow: 1px 1px 0px #000; */
+}
+
+html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.status:hover::before {
+    color: #E1C58F  !important;
+}
+
+html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.unread.status:hover::before {
+    color: #E1C58F  !important;
+}
+
+html.dark-mode .messagelist tr.message:hover td.flags span.unflagged:hover::before {
+    color: #E1C58F  !important;
+}
+
+html.dark-mode .messagelist tr.message:hover td.flags span.flagged:hover::before {
+    color: #E1C58F  !important;
+}
+/**calendar survol**/
+html.dark-mode ul#calendarslist.treelist li div.treetoggle:hover
+{
+    background-color: #2E2E2E!important;
+    /* color: #E1C58F!important; */
+}
+
+html.dark-mode ul#calendarslist .calendar:hover {
+    background-color: #2E2E2E!important;
+    border-radius: 5px;
+}
+
+html.dark-mode ul#calendarslist li.selected > .calendar:hover {
+    background-color: transparent!important;
+}
+
+/**anuaire*/
+html.dark-mode .gestion-options:hover,
+html.dark-mode ul#directorylist.treelist li:hover > div > a, 
+html.dark-mode ul#directorylist.treelist li:hover > a,
+html.dark-mode #contacts-table.listing li:hover, 
+html.dark-mode #contacts-table.listing tr:hover td, 
+html.dark-mode .popupmenu #contacts-table.listing li:hover {
+    background-color: #2E2E2E!important;
+    /* color: #E1C58F!important; */
+    border-radius: 5px;
+}
+
+html.dark-mode ul#directorylist.treelist li.selected:hover > div > a, 
+html.dark-mode ul#directorylist.treelist li.selected:hover > a,
+html.dark-mode #contacts-table.listing li.selected:hover, 
+html.dark-mode #contacts-table.listing tr.selected:hover td, 
+html.dark-mode .popupmenu #contacts-table.listing li.selected:hover {
+    background-color: transparent!important;
+    border-radius: 0;
+}
+
+/**settings**/
+html.dark-mode .task-settings .listing tbody td:hover,
+html.dark-mode .task-settings .scroller > .listing li:hover {
+    background-color: #2E2E2E!important;
+    border-radius: 5px;
+}
+
+html.dark-mode .task-settings .listing tbody .selected td:hover,
+html.dark-mode .task-settings .scroller > .listing li.selected:hover {
+    background-color: transparent!important;
+    border-radius: 5px;
+}
+
+html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut
+{
+    background-color: #323F4B;
+}
+
+html.dark-mode .input-group-text.mel {
+	border-top-left-radius: 60px;
+	border-bottom-left-radius: 60px;
+	border-right: none;
+	background-color: transparent;
+	border-color: #E1C58F;
+	color: #E1C58F;
+}
+
+html.dark-mode .messagelist tr.message.bloqued .msgicon.status::before{
+    color:red!important;
+}
+
+html.dark-mode #message-model {
+	background-color: #323F4B;
+}
+
+html.dark-mode separate.device{
+    border-color:#4c4d50;
+}
+
+html.dark-mode .message-htmlpart table td {
+	background-color: white;
+}
+
+html.dark-mode button.btn-mel:hover + button.mel-button.under-button{
+  color: #E1C58F;
+} 
+
+html.dark-mode button.btn-mel.active + button.mel-button.under-button {
+    color: black;
+} 
+
+html.dark-mode button.btn-mel:hover + button.mel-button.under-button:hover,
+html.dark-mode button.btn-mel.active + button.mel-button.under-button:hover {
+  color: #E1C58F;
+  background-color: #2E2E2E;
+}
+
+html.dark-mode .message-partheaders .falselink{
+    color:#96b9e7;
+}
+
+html.dark-mode .mel-selectable:hover {
+    background-color: #2E2E2E;
+    color: #E1C58F;
+}
+
+html.dark-mode .mel-selectable.selected {
+    background-color: #2E2E2E;
+    color: #E1C58F;
+    border-left: solid thick #E1C58F;
+}
+
+html.dark-mode optgroup {
+    background: #2E2E2E;
 }

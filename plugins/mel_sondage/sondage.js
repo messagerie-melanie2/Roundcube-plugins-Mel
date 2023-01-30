@@ -8,18 +8,22 @@ $(document).ready(function() {
 	    },
 	   crossDomain: true,
 	   success: function (data) {
+		   const url = rcmail.env.sondage_startup_url != null && rcmail.env.sondage_startup_url !== undefined ? rcmail.env.sondage_startup_url : rcmail.env.sondage_gotourl;
 		   if (navigator.appName == "Microsoft Internet Explorer"){
-			   window.document.getElementById('mel_sondage_frame').src = rcmail.env.sondage_gotourl;
+			   window.document.getElementById('mel_sondage_frame').src = url;
 			    window.document.getElementById('mel_sondage_frame').contentWindow.location.reload(true);
 			} else if (rcmail.env.ismobile) {
-			  window.location = rcmail.env.sondage_gotourl;
+			  window.location = url;
 			} else {
-			   window.document.getElementById('mel_sondage_frame').src = rcmail.env.sondage_gotourl;
+			   window.document.getElementById('mel_sondage_frame').src = url;
 			}
 		   $("#wait_box").hide();
+		   top.rcmail.env.sondage_loaded = true;
+		   console.log('Login success !', data);
 	   },
 	   error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
 		   $("#wait_box").hide();
+		   console.error('Login failed !', xhr, ajaxOptions, thrownError);
 	   },
 	});
 });

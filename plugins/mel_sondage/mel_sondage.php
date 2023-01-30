@@ -46,39 +46,57 @@ class mel_sondage extends rcube_plugin
 
         // ajout de la tache
         $this->register_task('sondage');
+
+        if (mel::is_internal()) {
+    	    $sondage_url = $rcmail->config->get('sondage_url');
+    	} else {
+    	    $sondage_url = $rcmail->config->get('sondage_external_url');
+    	}
+        
+        $rcmail->output->set_env('sondage_url', $sondage_url);
+        
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($sondage_url, 'sondage');
         // Ajoute le bouton en fonction de la skin
-        if ($rcmail->config->get('ismobile', false)) {
-            $this->add_button(array(
-                'command' => 'sondage',
-                'class'	=> 'button-mel_sondage ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-                'classsel' => 'button-mel_sondage button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-                'innerclass' => 'button-inner',
-                'label'	=> 'mel_sondage.task',
-            ), 'taskbar_mobile');
-        } else {
-            $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
-            $this->add_button(array(
-                'command' => 'sondage',
-                'class'	=> 'button-mel_sondage icon-mel-sondage sondage',
-                'classsel' => 'button-mel_sondage button-selected icon-mel-sondage sondage',
-                'innerclass' => 'button-inner inner',
-                'label'	=> 'mel_sondage.task',
-                'title' => 'mel_sondage.sondages_title',
-                'type'       => 'link'
-            ), "otherappsbar");
+        $need_button = true;
+        if (class_exists("mel_metapage")) {
+          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_survey');
+        }
+
+        if ($need_button)
+        {
+            if ($rcmail->config->get('ismobile', false)) {
+                $this->add_button(array(
+                    'command' => 'sondage',
+                    'class'	=> 'button-mel_sondage ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+                    'classsel' => 'button-mel_sondage button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+                    'innerclass' => 'button-inner',
+                    'label'	=> 'mel_sondage.task',
+                ), 'taskbar_mobile');
+            } else {
+                $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+                $this->add_button(array(
+                    'command' => 'sondage',
+                    'class'	=> 'button-mel_sondage icon-mel-sondage sondage',
+                    'classsel' => 'button-mel_sondage button-selected icon-mel-sondage sondage',
+                    'innerclass' => 'button-inner inner',
+                    'label'	=> 'mel_sondage.task',
+                    'title' => 'mel_sondage.sondages_title',
+                    'type'       => 'link'
+                ), "taskbar");
+            }
         }
 
         // Si tache = sondage, on charge l'onglet
-        if ($rcmail->task == 'sondage') {
+        if ($rcmail->task == 'sondage' || ($rcmail->task == 'workspace' && $rcmail->action === 'workspace')) {
             $this->register_action('index', array($this, 'action'));
             $rcmail->output->set_env('refresh_interval', 0);
-            $this->login_sondage();
+            $this->login_sondage(!($rcmail->task == 'workspace' && $rcmail->action === 'workspace'));
         } elseif ($rcmail->task == 'mail'
                     || $rcmail->task == 'addressbook'
                     || $rcmail->task == 'calendar'
                     || $rcmail->task == 'jappix') {
             // Appel le script de de gestion des liens vers le sondage
-            $this->include_script('sondage_link.js');
+            if (!class_exists("mel_metapage")) $this->include_script('sondage_link.js');
             $rcmail->output->set_env('sondage_apppoll_url', $rcmail->url(array("_task" => "sondage", "_params" => "%%other_params%%")));
             $rcmail->output->set_env('sondage_external_url', $rcmail->config->get('sondage_external_url'));
             $rcmail->output->set_env('sondage_create_sondage_url', $rcmail->config->get('sondage_create_sondage_url'));
@@ -95,6 +113,10 @@ class mel_sondage extends rcube_plugin
         $rcmail->output->add_handlers(array(
         		'mel_sondage_frame'    => array($this, 'sondage_frame'),
         ));
+
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        if ($startupUrl !== null && $startupUrl !== "") $rcmail->output->set_env("sondage_startup_url", $startupUrl);
+
         // Chargement du template d'affichage
         $rcmail->output->set_pagetitle($this->gettext('title'));
         $rcmail->output->send('mel_sondage.mel_sondage');
@@ -144,7 +166,7 @@ class mel_sondage extends rcube_plugin
     /**
      * Méthode pour se logger dans l'application de sondage
      */
-    private function login_sondage() {
+    private function login_sondage($include_script = true) {
     	$rcmail = rcmail::get_instance();
     	if (mel::is_internal()) {
     	    $sondage_url = $rcmail->config->get('sondage_url');
@@ -165,7 +187,8 @@ class mel_sondage extends rcube_plugin
     	  $skin = $rcmail->config->get("skin");
     		$rcmail->output->set_env('sondage_gotourl', $sondage_url . "?_skin=$skin");
     	}
+
     	// Appel le script de connexion du sondage
-    	$this->include_script('sondage.js');
+    	if ($include_script) $this->include_script('sondage.js');
     }
 }

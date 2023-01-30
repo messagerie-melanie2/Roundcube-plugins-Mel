@@ -1,73 +1,67 @@
-.btn.btn-block.btn-secondary.btn-mel{
+.btn.btn-block.btn-secondary.btn-mel {
     margin-bottom: 20px;
     min-height: 160px;
     background-color: #F0F0F0;
-    border:none;
-    color:inherit;
+    border: none;
+    color: inherit;
 }
 
-.btn.btn-block.btn-secondary.btn-mel:hover{
+.btn.btn-block.btn-secondary.btn-mel:hover {
     /* background-color:rgba(0, 0, 0, 0.05);
     color:inherit; */
     background-color: #484d7a;
-    color:white;
-    border:none;
+    color: white;
+    border: none;
 }
 
-.btn.btn-block.btn-secondary.btn-mel.disabled{
+.btn.btn-block.btn-secondary.btn-mel.disabled {
     background-color: #d4d1d1;
     pointer-events: none;
     cursor: not-allowed;
 }
 
 .btn.btn-block.btn-secondary.btn-mel.active,
-.btn.btn-block.btn-secondary.btn-mel:focus
-{
+.btn.btn-block.btn-secondary.btn-mel:focus {
     background-color: #484d7a;
-    color:white;
-    border:none;
+    color: white;
+    border: none;
 }
 
 .btn.btn-block.btn-secondary.btn-mel.doc-fav.active,
-.btn.btn-block.btn-secondary.btn-mel.doc-fav:focus
-{
-    color:#FDCF42;
+.btn.btn-block.btn-secondary.btn-mel.doc-fav:focus {
+    color: #FDCF42;
 }
 
-.btn.btn-block.btn-secondary.btn-mel > span
-{
+.btn.btn-block.btn-secondary.btn-mel>span {
     font-size: 80px;
     margin-right: 50px;
 }
 
-.btn.btn-block.btn-secondary.btn-mel > span.block
-{
+.btn.btn-block.btn-secondary.btn-mel>span.block {
     display: block;
     margin-right: 0px;
     font-size: 60px;
     margin-bottom: 20px;
 }
 
-html.layout-small .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable {
+html.layout-small .task-calendar>.ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable {
     /* top: 70px !important; */
     /* z-index: 9999; */
     margin-left: 80px;
     max-width: 400px;
 }
 
-html.layout-small #globalModal
-{
-    padding-left:60px!important;
+html.layout-small #globalModal {
+    padding-left: 60px!important;
 }
 
-html.touch .square-body > h3
-{
+html.touch .square-body>h3 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.shortcut-task{
+.shortcut-task {
     max-width: 350px;
     /* margin: 50px auto; */
     display: inline-block;
@@ -75,165 +69,148 @@ html.touch .square-body > h3
     margin-right: 7.5px;
 }
 
-html.touch .shortcut-task{
+html.touch .shortcut-task {
     max-width: 100%;
     margin-left: 15px;
     margin-right: 15px;
 }
 
-.task-title{
+.task-title {
     padding-bottom: 20px;
 }
 
-.task-title > span
-{
+.task-title>span {
     font-size: larger;
     font-weight: bold;
 }
 
-.shortcut-task.square_div > .contents{
+.shortcut-task.square_div>.contents {
     height: unset;
 }
 
+
 /*******/
-.wsp-toolbar.webconf-toolbar{
-	 
-	position: absolute;
-	bottom: 20px;
-	top: unset;
-	left:calc(50% + 60px);
-	transform: translateX(-50%);
+
+.wsp-toolbar.webconf-toolbar {
+    position: absolute;
+    bottom: 20px;
+    top: unset;
+    left: calc(50% + 60px);
+    transform: translateX(-50%);
     width: unset;
 }
 
-.wsp-toolbar.webconf-toolbar .wsp-toolbar-item
-{
-	font-size: 20px;
-	padding: 0 15px;
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item {
+    font-size: 20px;
+    padding: 0 15px;
     margin-bottom: 25px;
-	border: none;
+    border: none;
     background: none!important;
-    color:white;
+    color: white;
 }
 
-.wsp-toolbar.webconf-toolbar .conf-call-stop
-{
-    background: radial-gradient(circle, #BD2217 52%, rgba(255,255,255,0) 52%)!important;
+.wsp-toolbar.webconf-toolbar .conf-call-stop {
+    background: radial-gradient(circle, #BD2217 52%, rgba(255, 255, 255, 0) 52%)!important;
 }
 
-.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active{
-    background: radial-gradient(circle, #363A5B 52%, rgba(255,255,255,0) 52%)!important;
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active {
+    background: radial-gradient(circle, #363A5B 52%, rgba(255, 255, 255, 0) 52%)!important;
 }
 
-.wsp-toolbar.webconf-toolbar .wsp-toolbar-item:hover
-{
-    background: radial-gradient(circle, #42548F 52%, rgba(255,255,255,0) 52%)!important;
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item:hover {
+    background: radial-gradient(circle, #42548F 52%, rgba(255, 255, 255, 0) 52%)!important;
 }
 
-.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item:focus
-{
+.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item:focus {
     box-shadow: none;
-    background: radial-gradient(circle, transparent 20%, #484D7A4F 52%, rgba(255,255,255,0) 52%)!important;
+    background: radial-gradient(circle, transparent 20%, #484D7A4F 52%, rgba(255, 255, 255, 0) 52%)!important;
 }
 
-.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item.active:focus
-{
+.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item.active:focus {
     box-shadow: none;
-    background: radial-gradient(circle, #363A5B 40%, #484D7A4F 52%, rgba(255,255,255,0) 52%)!important;
+    background: radial-gradient(circle, #363A5B 40%, #484D7A4F 52%, rgba(255, 255, 255, 0) 52%)!important;
 }
 
-.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item:focus:hover
-{
+.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item:focus:hover {
     box-shadow: none;
-    background: radial-gradient(circle, #42548F 40%, #484D7A4F 52%, rgba(255,255,255,0) 52%)!important;
+    background: radial-gradient(circle, #42548F 40%, #484D7A4F 52%, rgba(255, 255, 255, 0) 52%)!important;
 }
 
-.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active
-{
-	cursor: pointer;
-	pointer-events: all;
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active {
+    cursor: pointer;
+    pointer-events: all;
 }
 
-.wsp-toolbar.webconf-toolbar .first
-{
-	margin-left:15px;
-	pointer-events: none;
+.wsp-toolbar.webconf-toolbar .first {
+    margin-left: 15px;
+    pointer-events: none;
 }
 
 .tiny-webconf-menu {
-	position: absolute;
-	top: 4px;
-	left: -1px;
-	z-index: 50;
+    position: absolute;
+    top: 4px;
+    left: -1px;
+    z-index: 50;
 }
 
-.tiny-webconf-menu
-{
+.tiny-webconf-menu {
     cursor: pointer;
     transition: all 0.1s ease-in;
 }
 
-.tiny-webconf-menu:hover
-{
-    background-color:#42548F!important
+.tiny-webconf-menu:hover {
+    background-color: #42548F!important
 }
 
-.tiny-webconf-menu > img
-{
+.tiny-webconf-menu>img {
     transition: all 0.1s ease-in;
 }
 
-.tiny-webconf-menu:hover > img
-{
+.tiny-webconf-menu:hover>img {
     filter: saturate(7);
 }
 
-.tiny-webconf-menu:focus > img
-{
+.tiny-webconf-menu:focus>img {
     filter: contrast(1000%);
 }
 
-.tiny-webconf-menu:focus:hover > img
-{
+.tiny-webconf-menu:focus:hover>img {
     filter: contrast(1000%) saturate(7);
 }
 
-.conf-call-stop
-{
-	/* transform: rotateZ(118deg); */
+.conf-call-stop {
+    /* transform: rotateZ(118deg); */
 }
 
-.wsp-toolbar.webconf-toolbar  .wsp-toolbar-item > .text-item {
-	position: absolute;
-	font-size: 8px;
-	left: 50%;
-	bottom: -14px;
-	transform: translateX(-50%);
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item>.text-item {
+    position: absolute;
+    font-size: 8px;
+    left: 50%;
+    bottom: -14px;
+    transform: translateX(-50%);
 }
 
-.wsp-toolbar.webconf-toolbar  .wsp-toolbar-item.conf-call-stop > .text-item
-{
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.conf-call-stop>.text-item {
     /* transform: rotateZ(-118deg);
 bottom: 21px; */
 }
 
-.wsp-toolbar.webconf-toolbar  .wsp-toolbar-item > .icon-item
-{
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item>.icon-item {
     margin-top: 8px!important;
     display: inline-block;
 }
 
-.wsp-toolbar.webconf-toolbar .wsp-toolbar-item > .icon-item.stop {
-	margin-top: 7px!important;
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item>.icon-item.stop {
+    margin-top: 7px!important;
 }
 
 .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select {
     cursor: pointer;
-	position: absolute;
-	top: -10px;
-	right: 16px;
-	height: 18px;
-	width: 18px;
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    height: 18px;
+    width: 18px;
     background-color: white;
     border-color: #424564;
     border-style: solid;
@@ -242,8 +219,7 @@ bottom: 21px; */
     transform: rotateZ(180deg);
 }
 
-.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select.stop-rotate
-{
+.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select.stop-rotate {
     transform: rotateZ(0deg);
 }
 
@@ -255,86 +231,106 @@ bottom: 21px; */
 .toolbar-popup {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-	position: absolute;
+    position: absolute;
     top: -200px;
-	right: 215px;
-	height: 200px;
-	width: 181px;
+    right: 215px;
+    height: 200px;
+    width: 181px;
     padding: 15px;
     background-color: #5870BF;
 }
 
-.mozilla .toolbar-popup
-{
+.mozilla .toolbar-popup {
     right: 165px;
 }
 
-.toolbar-popup > .toolbar-datas
-{
+.mozilla .toolbar-popup {
+    right: 120px;
+}
+
+/* .toolbar-popup.large-toolbar {
+	top: unset;
+	border-radius: 15px;
+	height: 450px;
+	bottom: 100px;
+	width: 300px;
+	right: 164px;
+} */
+.toolbar-popup.large-toolbar {
+	top: unset;
+	border-radius: 15px;
+	height: 450px;
+	bottom: 100px;
+	width: 300px;
+	left: 50%;
+	-ms-transform: translateX(-50%);
+	transform: translateX(-50%);
+}
+.toolbar-popup>.toolbar-datas {
     height: 100%;
     overflow-y: auto;
 }
 
 #mm-cw-participants {
-	border-radius: 5px;
-	background-color: #F0F0F0;
-	padding: 15px;
+    border-radius: 5px;
+    background-color: #F0F0F0;
+    padding: 15px;
     overflow: auto;
 }
 
 #mm-cw-participants .dwp-round {
-	width: 50px;
-	height: 50px;
+    width: 50px;
+    height: 50px;
 }
 
 #list-of-all-hashtag,
 .list-of-all-hashtag {
-	background-color: #F0F0F0;
-	padding-top: 20px;
+    background-color: #F0F0F0;
+    padding-top: 20px;
     padding-left: 10px;
     padding-bottom: 10px;
     padding-right: 10px;
-	margin-top: -20px;
+    margin-top: -20px;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
 }
 
-#list-of-all-hashtag > div,
-.list-of-all-hashtag > div {
-	width: 100%;
-	max-height: 200px;
-	overflow: auto;
+#list-of-all-hashtag>div,
+.list-of-all-hashtag>div {
+    width: 100%;
+    max-height: 200px;
+    overflow: auto;
 }
 
 #list-of-all-hashtag-param,
-.list-of-all-hashtag-param
-{
+.list-of-all-hashtag-param {
     position: absolute;
     z-index: 99;
 }
 
-.btn.metapage-wsp-button
-{
+.btn.metapage-wsp-button {
     text-align: left;
     background-color: transparent;
     border-color: transparent;
 }
 
-.btn.metapage-wsp-button:hover
-{
+.btn.metapage-wsp-button:hover {
     background-color: #484D7A;
     border-color: #484D7A;
-    color:white;
+    color: white;
 }
+
 
 /***************/
 
- /* .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable > .ui-dialog-buttonpane
+
+/* .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable > .ui-dialog-buttonpane
 {
     position: absolute;
     top: 0px;
     width: 100%;
 }  */
+
 
 /* .icon-gestion{
     display: inline !important;
@@ -385,17 +381,27 @@ font-family: 'IcoFont'!important;
     height: inherit!important; *
 } */
 
-.task-mail.action-compose #layout-content
-{
+/* .task-mail.action-compose #layout-content {
     margin-left: 60px!important;
-}
+} */
 
-html.touch .task-mail.action-compose #layout-content
-{
+html.touch .task-mail.action-compose #layout-content {
     margin-left: 0px!important;
 }
 
-.required-text
-{
+.required-text {
     display: block!important;
+}
+
+.max-video video {
+    width: 100%;
+    border-radius: 3px;
+}
+
+.top-right {
+    font-size: 13px !important;
+    margin-right: 20px !important;
+    position: absolute;
+    top: 5px;
+    right: 0;
 }

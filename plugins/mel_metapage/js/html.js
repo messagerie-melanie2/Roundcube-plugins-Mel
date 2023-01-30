@@ -1,8 +1,24 @@
 
-function html_helper(option, html, optional_classes = ""){
+function html_helper(option, html, optional_classes = "", attribs = null){
+
+	if (!!attribs)
+	{
+		const tmp = attribs;
+		attribs = '';
+
+		for (const key in tmp) {
+			if (Object.hasOwnProperty.call(tmp, key)) {
+				const element = tmp[key];
+				attribs += `${key}="${element}" `;
+			}
+		}
+
+	}
+	else attribs = '';
+
     switch (option) {
         case html_helper.options["block"]:   
-            return '<div class="square_div '+optional_classes+'"><div class=contents><div class=square-contents>'+html+'</div></div></div>';
+            return  `<div class="square_div ${optional_classes}" ${attribs}><div class=contents><div class=square-contents>${html}</div></div></div>`;
         case html_helper.options.create_button:
 
 			let onclick = "";
@@ -27,7 +43,7 @@ function html_helper(option, html, optional_classes = ""){
 			if (classes !== "")
 				classes = `class="${classes}"`;
 
-			return `<button ${id} ${classes} ${onclick} >${html}</button>`;
+			return `<button ${id} ${classes} ${onclick} ${attribs} >${html}</button>`;
 		default:
             return html;
     }
@@ -259,34 +275,43 @@ html_helper.Calendars = function({datas, config = {
 			if (element.status === "CANCELLED")
 				continue;
 
-			title = element.title;
+			title = mel_metapage.Functions.updateRichText(element.title);
 
 			if (element.free_busy === "free")
-				title += ' (libre)'
+				title += ' (libre)';
+			else if (element.free_busy === "telework")
+				title += ' (télétravail)';
 
 			if (element.attendees !== undefined && element.attendees.length > 0)
 			{
 				bool = false;
-				const item = Enumerable.from(element.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).first();
-				switch (item.status) {
-					case "NEEDS-ACTION":
-						title += ` (En attente)`;
-						break;
-
-					case "ACCEPTED":
-						title += ` (Accepté)`;
-						break;
-
-					case "TENTATIVE":
-						title += ` (Peut-être)`;
-						break;
-
-					case "CANCELLED":
-						bool = true;
-						break;
-				
-					default:
-						break;
+				const item = Enumerable.from(element.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).firstOrDefault(null);
+				if (item !== null)
+				{
+					try {
+						switch (item.status) {
+							case "NEEDS-ACTION":
+								title += ` (En attente)`;
+								break;
+	
+							case "ACCEPTED":
+								title += ` (Accepté)`;
+								break;
+	
+							case "TENTATIVE":
+								title += ` (Peut-être)`;
+								break;
+	
+							case "CANCELLED":
+								bool = true;
+								break;
+						
+							default:
+								break;
+						}
+					} catch (error) {
+						
+					}
 				}
 
 				if (bool)
@@ -309,24 +334,28 @@ html_helper.Calendars = function({datas, config = {
 
 				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(element)}"><span class="element-title default-text bold element-block">${text}</span><span class="element-desc secondary-text element-block">${title}</span></a></div>`;
 
-				if (element.location.includes("@visio") || element.location.includes("#visio") || element.location.includes(rcmail.env["webconf.base_url"]))
+				if (rcube_calendar.is_desc_webconf(element.location))//element.location.includes("@visio") || element.location.includes("#visio") || element.location.includes(rcmail.env["webconf.base_url"]))
 				{
 					style = "";
 					if (element.location.includes("@visio"))
 						link = `target="_blank" href="${element.location.replace("@visio:", "")}"`;
-					else if (element.location.includes("#visio"))
-					{
-						var tmp_link = new WebconfLink(element.location);
-						link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+					else {
+						var tmp_link = WebconfLink.create(element);
+						link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;	
 					}
-					else
-					{
-						const categoryExist = element.categories !== undefined && element.categories !== null && element.categories.length > 0;
-						const isWsp = categoryExist && element.categories[0].includes("ws#");
-						const ariane = isWsp ? "null" : "'@home'";
-						const wsp = isWsp ? `'${element.categories[0].replace("ws#", "")}'` : "null";
-						link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(element.location)}', ${wsp}, ${ariane})"`;
-					}
+					// else if (element.location.includes("#visio"))
+					// {
+					// 	var tmp_link = new WebconfLink(element.location);
+					// 	link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+					// }
+					// else
+					// {
+					// 	const categoryExist = element.categories !== undefined && element.categories !== null && element.categories.length > 0;
+					// 	const isWsp = categoryExist && element.categories[0].includes("ws#");
+					// 	const ariane = isWsp ? "null" : "'@home'";
+					// 	const wsp = isWsp ? `'${element.categories[0].replace("ws#", "")}'` : "null";
+					// 	link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(element.location)}', ${wsp}, ${ariane})"`;
+					// }
 				}
 				else
 					style = "display:none;";
@@ -340,7 +369,7 @@ html_helper.Calendars = function({datas, config = {
 		else 
 		{
 			const raw_storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
-			const storage = Enumerable.from(config.next_when_empty_today_function !== null ? config.next_when_empty_today_function(raw_storage) : raw_storage);
+			const storage = Enumerable.from(config.next_when_empty_today_function !== null && typeof config.next_when_empty_today_function === "function" ? config.next_when_empty_today_function(raw_storage) : raw_storage);
 			const storage_count = storage.count();
 			if (storage_count > 0)
 			{
@@ -430,3 +459,122 @@ html_helper.Calendars.generate_link = function(event)
 
 	return link;
 }
+
+class mel_html{
+	constructor(tag, attribs = {}, content = '')
+	{
+		this.tag = tag.toLowerCase();
+		this.attribs = attribs;
+		this.content = content;
+	}
+
+	generate(additionnal_attribs = {})
+	{
+		let multi_balise = true;
+
+		switch (this.tag) {
+			case 'img':
+			case 'input':
+			case 'br':
+				multi_balise = false;
+				break;
+		
+			default:
+				break;
+		}
+
+		if (multi_balise && !!this.attribs['NO_MULTI_BALISE']) multi_balise = false;
+
+		let $html = $(`<${this.tag} ${(!multi_balise ? '/' : '')}>${(multi_balise ? `</${this.tag}>` : '')}`);
+
+		for (const iterator of Enumerable.from(this.attribs).concat(additionnal_attribs)) {
+			switch (iterator.key) {
+				case 'class':
+					$html.addClass(iterator.value);
+					break;
+				case 'on':
+					for (const key in iterator.value) {
+						if (Object.hasOwnProperty.call(iterator.value, key)) {
+							const element = iterator.value[key];
+							$html.on(key, element);
+						}
+					}
+					break;
+				default:
+					$html.attr(iterator.key, iterator.value);
+					break;
+			}
+		}
+
+		return this._generateContent($html, this.content);
+	}
+
+	create($parent, additionnal_attribs = [])
+	{
+		return this.generate(additionnal_attribs).appendTo($parent);
+	}
+
+	_generateContent($html, content) {
+		return $html.html(content);
+	}
+}
+
+class mel_option extends mel_html{
+	constructor(value, text, attribs = [])
+	{
+		super('select', attribs, text);
+		this.attribs['value'] = value;
+	}
+}
+
+class amel_form_item extends mel_html {
+	constructor(tag, attribs = {}, content = '')
+	{
+		super(tag, attribs, content);
+
+		if (!this.attribs['class']) {
+			this.attribs['class'] = 'form-control input-mel';
+		}
+		else if (!this.attribs['class'].includes('form-control'))
+		{
+			this.attribs['class'] += ' form-control';
+		}
+		
+		if (!this.attribs['class'].includes('input-mel')) this.attribs['class'] += ' input-mel';
+	}
+
+	toFloatingLabel(label) {
+		let $label = new mel_html('div', {class:'form-floating'}, this.generate({required:'required'})).generate();
+		return $label.append(new mel_html('label', {for:this.attribs['id']}, label).generate());
+	}
+}
+
+class mel_select extends amel_form_item{
+	constructor(attribs = {}, options = [])
+	{
+		super('select', attribs, options);
+	}
+
+	_generateContent($html, content) {
+		//$html = super._generateContent(content);
+		for (const iterator of content) {
+			iterator.create($html);
+		}
+
+		return $html;
+	}
+
+	generate(value, additionnal_attribs = {})
+	{
+		return super.generate(additionnal_attribs).val(value);
+	}
+}
+
+class mel_input extends amel_form_item
+{
+	constructor(attribs = {})
+	{
+		super('input', attribs, '');
+	}
+}
+

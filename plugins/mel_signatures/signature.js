@@ -113,7 +113,7 @@ function download_signature_outlook_htm() {
     html += '<head>';
     html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</head>';
-    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += '<body lang=FR>';
     html += getSignatureHTML(true, '', true);
     html += '</body>';
     html += '</html>';
@@ -130,7 +130,7 @@ function download_signature_outlook_zip() {
     html += '<head>';
     html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</head>';
-    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += '<body lang=FR>';
     html += getSignatureHTML(false, '', true);
     html += '</body>';
     html += '</html>';
@@ -174,7 +174,7 @@ function download_signature_thunderbird() {
     html += '<HTML><HEAD><TITLE>Email Signature</TITLE>';
     html += '<META content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</HEAD>';
-    html += '<BODY style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += '<BODY>';
     html += getSignatureHTML();
     html += '</BODY>';
     html += '</HTML>';
@@ -252,6 +252,10 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     signature_html = signature_html.replace('%%TEMPLATE_SERVICE%%', service ? service + '<br>' : '');
     signature_html = signature_html.replace(/%%TEMPLATE_DIRECTION%%/g, document.getElementById("input-department").value);
 
+    // Logo type
+    let select_logotype = document.getElementById("select-logo-type");
+    signature_html = createLogoType(select_logotype.options[select_logotype.selectedIndex].value, signature_html, isOutlook);
+
     // Gestion des liens
     let checkboxes = document.querySelectorAll("#input-links input");
     let links = "";
@@ -259,7 +263,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
         document.querySelector(".grid-form .custom-link").style.display = 'block';
         let customlink = document.getElementById("input-custom-link").value;
         let a = document.createElement('a');
-        a.style = "color:#000000;font-size:8pt;font-family: Arial,sans-serif; font-weight : bold;";
+        a.style = "color:#000000;font-size:8pt;font-weight:bold;";
         if (customlink.indexOf('://') === -1) {
             a.href = 'http://' + customlink;
         }
@@ -275,7 +279,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     for (const checkbox of checkboxes) {
         if (checkbox.checked && checkbox.id != 'checkbox-custom-link') {
             let a = document.createElement('a');
-            a.style = "color:#000000;font-size:8pt;font-family:arial,sans-serif;font-weight:bold;text-decoration:none;";
+            a.style = "color:#000000;font-size:8pt;font-weight:bold;text-decoration:none;";
             a.href = checkbox.value;
             a.innerText = rcmail.env.signature_links[checkbox.value];
             links += a.outerHTML + '<br>';
@@ -384,9 +388,34 @@ function createLogo(htmlLogo) {
         document.querySelector("#input-custom-logo").value = htmlLogo.replace(/<br>/gi, "\r\n");
     }
     let span = document.createElement('span');
-    span.style = "font-family:arial,sans-serif;font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
+    span.style = "font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
     span.innerHTML = htmlLogo;
     return span.outerHTML;
+}
+
+/**
+ * Retourne le logotype en html
+ */
+ function createLogoType(htmlLogo, signature_html, isOutlook) {
+    if (htmlLogo == 'custom') {
+        document.querySelector(".grid-form .custom-logotype").style.display = 'block';
+        htmlLogo = document.querySelector("#input-logo-type").value.replace(/\r?\n/g, '<br>');
+
+        let logo_type = document.createElement('span');
+        logo_type.style = "display:block;font-weight:bold;font-size:9pt;line-height:9pt;color:#000;max-width:200px;";
+        logo_type.innerText = htmlLogo;
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE%%/g, logo_type.outerHTML);
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_BORDER%%/g, "1.5px solid #3c3c3c");
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_PADDING%%/g, "0 0 15px 15px");
+    }
+    else {
+        document.querySelector(".grid-form .custom-logotype").style.display = 'none';
+        htmlLogo = createImage(rcmail.env.logotype_sources[htmlLogo], 'Logo type signature', isOutlook, 'logotype');
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE%%/g, htmlLogo);
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_BORDER%%/g, "none");
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_PADDING%%/g, "0 0 0 30px");
+    }
+    return signature_html;
 }
 
 /**

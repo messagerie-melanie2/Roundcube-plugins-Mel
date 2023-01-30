@@ -1,0 +1,25 @@
+<?php
+
+// Configuration du passage en lu lors de la fermeture du centre de notification
+$rcmail_config['notifications_set_read_on_panel_close'] = true;
+
+// Configuration du passage en lu lors du clic sur une notif
+$rcmail_config['notifications_set_read_on_click'] = true;
+
+// Configuration de la durée de rafraichissement des notifications par utilisateur (en seconde)
+$rcmail_config['notifications_refresh_interval'] = 60;
+
+// Durée d'affichage une notification quand est envoyée au Bnum (en seconde)
+$rcmail_config['notifications_show_duration'] = 10;
+
+// Durée d'affichage une notification quand est envoyée sur le Bureau (en seconde)
+$rcmail_config['notifications_desktop_duration'] = 5;
+
+// Liste des catégories utilisables pour les notifications (et libellés associés)
+$rcmail_config['notifications_categories'] = [];
+
+// Liste des icons utilisables pour les notifications
+$rcmail_config['notifications_icons'] = [];
+
+// Paramètres des notifications
+$rcmail_config['notifications_settings'] = [];

@@ -146,7 +146,31 @@
 					<input type="text" name="endtime" size="6" id="edit-endtime" class="form-control" aria-label="<roundcube:label name='calendar.endtime' />" />
 				</div>
 			</div> -->
-            <div class="row">
+			<div id="em-locations">
+				<!-- <div class="col-6">
+					<span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.event_mode' /></span>
+					<select class="form-control input-mel">
+						<option value="basic">En présentiel</option>
+						<option value="visio">Par visioconférence</option>
+						<option value="audio">Par audio</option>
+					</select>
+				</div>
+				<div class="col-6">
+					<label for="presential-cal-location" class="span-mel t2 margin"><roundcube:label name='mel_metapage.choose_location' /></label>
+					<span class="red-star-after span-mel t2 margin"><roundcube:label name='mel_metapage.choose_visio_tool' /></span>
+					<span class="red-star-after span-mel t2 margin" style="margin-bottom: 5px;"><roundcube:label name='mel_metapage.reserve' /> <roundcube:label name='mel_metapage.a_niche' /></span>
+				</div> -->
+			</div>
+
+			<div class="custom-control custom-switch">
+				<input name="get-phone-datas" id="mel-calendar-has-phone-datas" value="1" checked="checked" type="checkbox" class="form-check-input custom-control-input">
+				<label for="mel-calendar-has-phone-datas" class="custom-control-label" title="">Afficher le numéro de téléphone de la visio ?</label>
+			</div>
+
+			<label class="sr-only" id="mel-event-audio-phone-sr-only"><roundcube:label name='mel_metapage.audio_phone' /></label>
+			<label class="sr-only" id="mel-event-audio-num-sr-only"><roundcube:label name='mel_metapage.audio_num' /></label>
+
+            <div class="row" style="display: none;">
                 <div class="col-6">
                     <span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.event_mode' /></span>
                     <div class="form-check"> <!--Présentiel-->
@@ -191,7 +215,6 @@
 							<div class="col-10">
 								<input type="text" id="key-visio-cal" pattern="^(?=(?:[a-zA-Z0-9]*[a-zA-Z]))(?=(?:[a-zA-Z0-9]*[0-9]){3})[a-zA-Z0-9]{10,}$" class="form-control input-mel" title="Le nom de la conférence doit contenir un minimum de 10 caractères dont au moins 3 chiffres. Ces caractères sont exclusivement des lettres de l’alphabet et des chiffres, la casse (Min/Maj) n’a pas d’importance." placeholder="Saisir le nom du salon" />
 							</div>
-
 						</div>
                         <div class="form-check"> <!--autre-->
                             <input class="form-check-input custom-control-input" type="radio" name="webconf-mode" id="eb-mm-wm-a" value="2">
@@ -221,7 +244,7 @@
             <!-- <label for="mel_metapage_added_add_file" class="span-mel t1"><roundcube:label name='mel_metapage.add_file' /></label>
             <input id="mel_metapage_added_add_file" class="form-control input-mel file" type="file" /> -->
 
-			<div style="margin-top:15px" id="edit-attachments-droparea" class="file-upload">
+			<!-- <div style="margin-top:15px" id="edit-attachments-droparea" class="file-upload">
 				<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
 				<div id="edit-attachments-form" class="upload-form" role="region" aria-labelledby="aria-label-attachmentuploadform">
 					<roundcube:object name="plugin.attachments_form" mode="hint" />
@@ -230,7 +253,7 @@
 				<div id="edit-attachments">
 					<roundcube:object name="plugin.attachments_list" id="attachmentlist" class="attachmentslist" />
 				</div>
-			</div>
+			</div> -->
 
 			 <div class="form-group hidden">
 				<label for="edit-location"><roundcube:label name="calendar.location" /></label>
@@ -248,6 +271,8 @@
                 </label>
             </div>
             <!-- <span class="red-star-after span-mel t1">Rattacher l'évènement à un espace de travail</span> -->
+			<label class="sr-only" for="wsp-event-all-cal-mm">Rattacher l'évènement à un espace de travail</label>
+			<label class="sr-only" for="categories-event-all-cal-mm">Attacher une catégorie à cet évènement</label>
 			<div id="div-events-wsp">
 				<roundcube:object name="event-wsp"/>
 			</div>
@@ -269,7 +294,7 @@
 
 			<div class="form-group row" id="calendar-select">
 				<!-- <label for="edit-calendar" class="col-sm-2 col-form-label"><roundcube:label name="calendar.calendar" /></label> -->
-				<label for="edit-title" class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.choose_calendar' /></label>
+				<label for="edit-calendar" class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.choose_calendar' /></label>
 				<div class="col-sm-12">
 					<roundcube:object name="plugin.calendar_select" id="edit-calendar" class="form-control input-mel" />
 				</div>
@@ -281,7 +306,7 @@
 				</div>
 			</div>
 			<div class="form-group row">
-				<label for="edit-title" class="span-mel t1"><roundcube:label name='mel_metapage.choose_event_state' /></label>
+				<label for="edit-event-status" class="span-mel t1"><roundcube:label name='mel_metapage.choose_event_state' /></label>
 				<!-- <label for="edit-event-status" class="col-sm-2 col-form-label"><roundcube:label name="calendar.status" /></label> -->
 				<div class="col-sm-12">
 					<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control input-mel" />
@@ -300,7 +325,7 @@
 				</div>
 			</div>
 			<div class="form-group row">
-				<label for="edit-title" class="span-mel t1"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
+				<label for="edit-sensitivity" class="span-mel t1"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
 				<!-- <label for="edit-sensitivity" class="col-sm-2 col-form-label"><roundcube:label name="calendar.sensitivity" /></label> -->
 				<div class="col-sm-12">
 					<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control input-mel" />
@@ -337,6 +362,13 @@
 			<roundcube:object name="plugin.attendees_list" id="edit-attendees-table" class="edit-attendees-table no-img table table-sm"
 				coltitle="attendee" aria-labelledby="aria-label-attendeestable" />
 			<roundcube:object name="plugin.attendees_form" id="edit-attendees-form" />
+			<a href="#add-contact" onclick="m_mp_openTo(this, 'edit-attendee-name', {onselect:m_mp_on_open_select_calendar_contacts})" class="input-group-text mel-button btn btn-secondary no-button-margin icon add recipient showcontacts" title="Ajouter un contact" tabindex="1" id="showcontacts_edit-attendee-name" style="cursor: pointer;border-top-left-radius: 0;
+			border-bottom-left-radius: 0;">
+				<span class="inner">
+					<span class="icon-mel-user"></span>
+					<span class="sr-only">Ajouter un contact</span>
+				</span>
+			</a>
 			<roundcube:include file="/templates/freebusylegend.html" />
 			<!-- <button type="button" class="btn btn-secondary mel" onclick="window.rcube_calendar_ui.back()">Retour</button> -->
 			<!-- <button type="button" style="margin-top: 30px;float: left;" class="mel-button invite-button white" onclick="window.rcube_calendar_ui.back()">
@@ -360,7 +392,7 @@
 		</fieldset>
 
 		<!-- attachments list (with upload form) -->
-		<!-- <fieldset id="event-panel-attachments" data-navlink-class="nav-icon attachments">
+		<fieldset id="event-panel-attachments" data-navlink-class="nav-icon attachments">
 			<legend><roundcube:label name="calendar.tabattachments" /></legend>
 			<div id="edit-attachments-droparea" class="file-upload">
 				<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
@@ -373,13 +405,15 @@
 				</div>
 			</div>
 			<roundcube:object name="plugin.filedroparea" id="edit-attachments-droparea" />
-		</fieldset> -->
+		</fieldset> 
 	</form>
 	<roundcube:object name="plugin.edit_recurrence_sync" id="edit-recurrence-syncstart" class="dialog-message" style="display:none" />
 	<roundcube:object name="plugin.edit_attendees_notify" id="edit-attendees-notify" class="dialog-message" style="display:none" />
 	<roundcube:object name="plugin.edit_recurring_warning" class="dialog-message edit-recurring-warning" style="display:none" />
 	<roundcube:object name="plugin.attachments_form" id="event-attachment-form" mode="smart" />
 	<div id="edit-localchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.localchangeswarning" /></div>
+	<!-- MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement -->
+	<div id="edit-internallocalchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.internallocalchangeswarning" /></div>
 </div>
 
 <roundcube:if condition="in_array(env:task, array('mel_metapage'))" />

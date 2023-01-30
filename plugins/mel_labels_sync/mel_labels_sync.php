@@ -242,6 +242,10 @@ class mel_labels_sync extends rcube_plugin {
               $this,
               'preferences_sections_list'
       ));
+      $this->add_hook('managesieve_custom_flags', array(
+              $this,
+              'managesieve_custom_flags'
+      ));
     }
   }
 
@@ -486,6 +490,28 @@ class mel_labels_sync extends rcube_plugin {
     $out .= '</ul>';
 
     return $out;
+  }
+
+  /**
+   * Handler for managesieve_custom_flags hook.
+   * Return HTML Select with flags list
+   * 
+   * @param array Original parameters
+   * @return array Modified parameters
+   */
+  public function managesieve_custom_flags($p) {
+    $id = $p['id'];
+    $select = new html_select(['name' => "_action_flags[$id][]"]);
+
+    // Empty line
+    $select->add($this->Q($this->gettext('no label')), "");
+
+    foreach ($this->driver->get_user_labels($this->_get_current_user_name()) as $label) {
+      $select->add($label->tag, $label->key);
+    }
+
+    $p['custom_input'] = $select->show($p['custom_flags']);
+    return $p;
   }
 
   /**

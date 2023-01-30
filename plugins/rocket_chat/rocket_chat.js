@@ -202,12 +202,15 @@ if (window.rcmail) {
 					parent.ariane.update_menu();
 				}
 				else
+				{
 					rcmail.env.ariane_have_calls = true;
+				}
 				parent.ariane.update_channel(e);
 			}
 			else if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")
 			{
-				parent.ariane.update_status(e.data.data);
+				const value = e.data.data;
+				parent.ariane.update_status(value?.id ?? value);
 				rcmail.env.ariane_have_calls = true;
 			}
 		}

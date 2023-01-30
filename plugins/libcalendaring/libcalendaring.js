@@ -139,6 +139,34 @@ function rcube_libcalendaring(settings)
     };
 
     /**
+     * Get event organizer
+     * 
+     * MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+     */
+    this.get_organizer = function(event)
+    {
+        var i;
+
+        for (i=0; event.attendees && i < event.attendees.length; i++) {
+            if (event.attendees[i].role == 'ORGANIZER') {
+                return event.attendees[i];
+            }
+        }
+
+        return false;
+    };
+ 
+    /**
+     * Checks if the event organizer is internal
+     * 
+     * MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+     */
+    this.is_internal_organizer = function(event)
+    {
+        return this.get_organizer(event).internal || false;
+    };
+
+    /**
      * Check permissions on the given folder object
      */
     this.has_permission = function(folder, perm)
@@ -753,7 +781,16 @@ function rcube_libcalendaring(settings)
             records.push($('<div>').addClass('alarm-item').html(html).append(actions));
 
             // PAMELA - Display alarm notification
-            this.notification_alarm(Q(alarm.title), Q(this.event_date_text(alarm)), 'calendar');
+            top.rcmail.triggerEvent('plugin.push_notification', {
+                uid: 'calendar-' + alarm.id,
+                title: Q(alarm.title),
+                content: Q(this.event_date_text(alarm)),
+                category: 'agenda',
+                created: Math.floor(Date.now() / 1000),
+                modified: Math.floor(Date.now() / 1000),
+                isread: false,
+                local: true,
+            });
         }
 
         if (audio_alarms.length)
@@ -776,11 +813,10 @@ function rcube_libcalendaring(settings)
 
         buttons.push({
             text: rcmail.gettext('close'),
-            click: function() {
-                // PAMELA - Problème de snooze sur un rappel
-                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
-
+            click: function(event) {
                 $(this).dialog('close');
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link, event);
             },
             'class': 'cancel'
         });
@@ -797,59 +833,22 @@ function rcube_libcalendaring(settings)
                 me.alarm_dialog.parent().find('button:not(.ui-dialog-titlebar-close)').first().focus();
               }, 5);
             },
-            close: function() {
-              // PAMELA - Problème de snooze sur un rappel
-              // $('#alarm-snooze-dropdown').hide();
-              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
-              $(this).dialog('destroy').remove();
-              me.alarm_dialog = null;
-              me.alarm_ids = null;
+            close: function(event) {
+                $(this).dialog('destroy').remove();
+                me.alarm_dialog = null;
+                me.alarm_ids = null;
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link, event);
             },
             drag: function(event, ui) {
-              // PAMELA - Problème de snooze sur un rappel
-              // $('#alarm-snooze-dropdown').hide();
-              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link, event);
             }
         });
 
         this.alarm_dialog.closest('div[role=dialog]').attr('role', 'alertdialog');
 
         this.alarm_ids = event_ids;
-    };
-
-    /**
-     * PAMELA
-     * Show alarm desktop notification if enable
-     */
-    this.notification_alarm = function(title, body, icon, disabled_callback)
-    {
-        var timeout = rcmail.env.newmail_notifier_timeout || 10,
-        icon = rcmail.assets_path('plugins/newmail_notifier/' + icon + '.png'),
-        success_callback = function() {
-            var popup = new window.Notification(title, {
-                dir: "auto",
-                lang: "",
-                body: body,
-                tag: "alarm_notifier",
-                icon: icon
-            });
-            popup.onclick = function() { this.close(); };
-            setTimeout(function() { popup.close(); }, timeout * 1000);
-        };
-
-        try {
-            window.Notification.requestPermission(function(perm) {
-                if (perm == 'granted')
-                    success_callback();
-                else if (perm == 'denied' && disabled_callback)
-                    disabled_callback();
-            });
-
-            return true;
-        }
-        catch (e) {
-            return false;
-        }
     };
 
     /**
@@ -923,7 +922,11 @@ function rcube_libcalendaring(settings)
     {
         // PAMELA - Problème de snooze sur un rappel
         rcmail.command('menu-close', 'alarm-snooze-dropdown', this.dismiss_link, event);
-        rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:snooze } });
+        rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:snooze } })
+        // PAMELA - Correction popup infini
+        .always(() => {         
+            rcmail.triggerEvent("calendar.dismiss.after", {id, snooze, _event:event});
+        });
 
         // remove dismissed alarm from list
         if (this.dismiss_link) {
@@ -1255,6 +1258,9 @@ rcube_libcalendaring.attendee_html = function(data)
  */
 rcube_libcalendaring.add_from_itip_mail = function(mime_id, task, status, dom_id)
 {
+    // PAMELA - Toujours avoir le message séléctionnée
+    rcmail.env.itip_current_mail_selected = rcmail.message_list ? rcmail.message_list.get_selection() : [];
+
     // ask user to delete the declined event from the local calendar (#1670)
     var del = false;
     if (rcmail.env.rsvp_saved && status == 'declined') {
@@ -1304,6 +1310,8 @@ rcube_libcalendaring.add_from_itip_mail = function(mime_id, task, status, dom_id
  */
 rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
 {
+    // PAMELLA
+    rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.before', {callback, selector});
     // show dialog for entering the delegatee address and comment
     var dialog, buttons = [];
     var form = $('<form class="itip-dialog-form propform" action="javascript:void()">' +
@@ -1335,6 +1343,9 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
             var doc = window.parent.document,
                 delegatee = String($('#itip-delegate-to', doc).val()).replace(/(^\s+)|(\s+$)/, '');
 
+            //PAMELA
+            if (delegatee === String(undefined)) delegatee = String($('#itip-delegate-to').val()).replace(/(^\s+)|(\s+$)/, '');
+
             if (delegatee != '' && rcube_check_email(delegatee, true)) {
                 callback({
                     to: delegatee,
@@ -1356,6 +1367,8 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
         text: rcmail.gettext('cancel'),
         'class': 'cancel',
         click: function() {
+            // PAMELLA
+            rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.close', {item:this});
             dialog.dialog('close');
         }
     });
@@ -1376,8 +1389,12 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
             }
             rcm.init_address_input_events($(this).find('#itip-delegate-to').focus(), ac_props);
             rcm.env.recipients_delimiter = '';
+            // PAMELLA
+            rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.open', {item:this, function_event:event, ui});
         },
         close: function(event, ui) {
+            // PAMELLA
+            rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.close', {item:this, function_event:event, ui});
             rcm = rcmail.is_framed() ? parent.rcmail : rcmail;
             rcm.ksearch_blur();
             $(this).remove();
@@ -1404,7 +1421,11 @@ rcube_libcalendaring.itip_rsvp_recurring = function(btn, callback, event)
         $.each(['all','current'/*,'future'*/], function(i, mode) {
             var link = $('<a>').attr({'class': 'active', rel: mode})
                 .text(rcmail.get_label('rsvpmode' + mode))
-                .on('click', function() {callback((/* PAMELA */rcube_libcalendaring.itip_rsvp_recurring.action === undefined ? action : rcube_libcalendaring.itip_rsvp_recurring.action), $(this).attr('rel')); });
+                .on('click', function() {
+                    //PAMELA
+                    rcmail.hide_menu('itip-rsvp-menu', event);
+                    callback((/* PAMELA */rcube_libcalendaring.itip_rsvp_recurring.action === undefined ? action : rcube_libcalendaring.itip_rsvp_recurring.action), $(this).attr('rel')); 
+                });
 
             $('<li>').attr({role: 'menuitem'}).append(link).appendTo(list);
         });
@@ -1496,6 +1517,7 @@ rcube_libcalendaring.update_itip_object_status = function(p)
   if (p.action == 'rsvp') {
     $('#rsvp-'+p.id+' input.button').prop('disabled', false)
       .filter('.'+String(p.status||'unknown').toLowerCase()).prop('disabled', p.latest);
+    rcmail.enable_command('attachment-save-calendar', true);
   }
 
   // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée
@@ -1533,7 +1555,7 @@ rcube_libcalendaring.update_itip_object_status = function(p)
 rcube_libcalendaring.itip_message_processed = function(metadata)
 {
   if (metadata.after_action) {
-    setTimeout(function(){ rcube_libcalendaring.itip_after_action(metadata.after_action); }, 1200);
+    rcube_libcalendaring.itip_after_action(metadata.after_action);//setTimeout(function(){  }, 1200);
   }
   // PAMELA - Mark as read and rdvtraite
   if (!metadata.after_action || metadata.after_action === 5) {

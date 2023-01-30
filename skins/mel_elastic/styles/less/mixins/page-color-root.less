@@ -1,0 +1,43 @@
+//out:false
+.page-root()
+{
+    //Calendar
+        //table
+    --calendar-table-border: #C2C5D3;
+        //Colonnes
+            //Sidebar
+    --calendar-sidebar-text-color: var(--layout-sidebar-text-color);
+    --calendar-sidebar-background-color: var(--tierciary-bckg-color);
+    --calendar-sidebar-right-separator: solid thin var(--layout-border);
+            //Headers
+    --calendar-base-header-background-color: var(--calendar-sidebar-background-color);
+    --calendar-sidebar-header-background-color: var(--calendar-base-header-background-color);
+    --calendar-sidebar-header-bottom-separator: solid thin var(--layout-border);
+    --calendar-sidebar-header-color: var(--calendar-sidebar-text-color);
+    --calendar-content-header-background-color: var(--calendar-base-header-background-color);
+    --calendar-content-header-color: var(--calendar-sidebar-text-color);
+                //Barre d'outils
+    --calendar-toolbar-roundcube-background-color: var(--toolbar-roundcube-background-color);
+    --calendar-toolbar-roundcube-color: var(--toolbar-roundcube-color);
+    --calendar-toolbar-roundcube-hover-background-color: var(--toolbar-roundcube-hover-background-color);
+    --calendar-toolbar-roundcube-hover-color: var(--toolbar-roundcube-hover-color);
+    --calendar-toolbar-search-icon-color: var(--main-text-color);
+        //datepicker
+    --calendar-datepicker-background-color: #31365B;
+    --calendar-datepicker-header-background-color: var(--calendar-datepicker-background-color);
+    --calendar-datepicker-selected-color: var(--calendar-datepicker-background-color);
+    --calendar-datepicker-selected-unactive-background-color: var(--calendar-sidebar-background-color);
+    --calendar-datepicker-active-range-background-color: var(--calendar-datepicker-background-color);
+    --calendar-datepicker-week-column-color: var(--calendar-sidebar-text-color);
+    --calendar-datepicker-top-separator: solid thin var(--calendar-sidebar-text-color);
+        //Calendar list
+    --calendar-list-item-selected-background-color: var(--layout-sidebar-background-color);
+    --calendar-list-item-hover-background-color: var(--calendar-list-item-selected-background-color);
+    --calendar-list-item-switch-background-color: var(--default-background);
+    --calendar-list-item-switch-border-color: black;
+    --calendar-list-item-switch-tick-stroke-color: var(--main-text-color);
+    --calendar-list-item-switch-tick-stroke: 1px var(--calendar-list-item-switch-tick-stroke-color);
+        //widget
+    --calendar-widget-header-background-color:var(--alternate-bckg-color-2);
+    --calendar-widget-header-text-color:var(--secondary-text-color);
+}

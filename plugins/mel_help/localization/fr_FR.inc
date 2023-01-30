@@ -15,6 +15,7 @@ $labels['help no result channel title'] = 'Cliquez-ici pour ouvrir le salon de d
 $labels['make a suggestion'] = 'Proposer une amélioration';
 $labels['make a suggestion title'] = 'Cliquez-ici pour ouvrir la page permettant de faire une suggestion d\'amélioration de Mél';
 $labels['help search no result'] = 'Pas de résultat, essayez de saisir plus de mots clés (ex: agenda, partager, signature, ...).';
+$labels['video search no result'] = 'Pas de résultat, essayez de saisir plus de mots clés (ex: accueil, espace, ...).';
 $labels['help search open'] = 'Aide';
 $labels['help action open'] = ' ';
 $labels['news'] = 'Actualités :';

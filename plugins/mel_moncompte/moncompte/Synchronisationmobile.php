@@ -65,7 +65,8 @@ class Synchronisationmobile extends Moncompteobject {
 				$user->acces_synchro_user_profil = $user->acces_synchro_admin_profil;
 				$user->acces_synchro_user_datetime = gmstrftime('%Y%m%d%H%M%S', time()) . 'Z';
 				// Enregistrement de l'utilisateur avec les nouvelles données
-				if ($user->save()) {
+				$ret = $user->save();
+				if (!is_null($ret)) {
 					// Ok
 					rcmail::get_instance()->output->show_message('mel_moncompte.cgu_mobile_success', 'confirmation');
 					return true;

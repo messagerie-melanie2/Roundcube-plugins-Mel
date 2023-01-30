@@ -29,7 +29,23 @@ The following global options are available:
 * global_events - (object) global events applied to every ContextMenu object
 * menu_events - (object) default events for ContextMenu objects
 
-Note: When specifying multiple classes each one should be separated by a space
+### Skip Commands
+Entries in the skip_commands array should take the form `<task>-<command>`, for example `mail-checkmail`. The following commands are disabled by default:
+* mail-checkmail
+* mail-compose
+* addressbook-add
+* addressbook-import
+* addressbook-advanced-search
+* addressbook-search-create
+
+### Classes
+When specifying multiple classes in the global options **or in specific menu options** each class should be separated by a space, for example:
+```js
+...
+classes: {
+  container: 'contextmenu popupmenu',
+  ...
+```
 
 ## Creating a new ContextMenu
 
@@ -106,11 +122,11 @@ The menu_source parameter can be a string (for building the ContextMenu from a s
 ```php
 $rcube = rcube::get_instance();
 $li = '';
-$li .= html::tag('li', null, $rcube->output->button(array('command' => 'plugin.myplugin.command1', 'type' => 'link', 'class' => 'myclass1', 'label' => 'myplugin.command1')));
-$li .= html::tag('li', null, $rcube->output->button(array('command' => 'plugin.myplugin.command2', 'type' => 'link', 'class' => 'myclass2', 'label' => 'myplugin.command2')));
-$li .= html::tag('li', null, $rcube->output->button(array('command' => 'plugin.myplugin.command3', 'type' => 'link', 'class' => 'myclass3', 'label' => 'myplugin.command3')));
-$out = html::tag('ul', array('id' => 'mymenu'), $li);
-$rcube->output->add_footer(html::div(array('style' => 'display: none;'), $out));
+$li .= html::tag('li', null, $rcube->output->button(['command' => 'plugin.myplugin.command1', 'type' => 'link', 'class' => 'myclass1', 'label' => 'myplugin.command1']));
+$li .= html::tag('li', null, $rcube->output->button(['command' => 'plugin.myplugin.command2', 'type' => 'link', 'class' => 'myclass2', 'label' => 'myplugin.command2']));
+$li .= html::tag('li', null, $rcube->output->button(['command' => 'plugin.myplugin.command3', 'type' => 'link', 'class' => 'myclass3', 'label' => 'myplugin.command3']));
+$out = html::tag('ul', ['id' => 'mymenu'], $li);
+$rcube->output->add_footer(html::div(['style' => 'display: none;'], $out));
 ```
 The ContextMenu can then be invoked like this:
 ```js
@@ -292,5 +308,7 @@ In the plugin folder there is a skins folder, and inside that there is a folder 
 * The HTML object or jQuery selector of the element to attach to.
 * A props object, see [Creating a new ContextMenu](#creating-a-new-contextmenu)
 * An events object, see [Events](#events)
+
+Roundcube, and this plugin, also support placing skin information for plugins' in the core skin's folder, see the [Roundcube Wiki](https://github.com/roundcube/roundcubemail/wiki/Skins#skinning-plugins) for more information.
 
 ContextMenus must be defined separately for each skin because they are built from the toolbar elements in the UI which may have different IDs as well as different construction on each skin.

@@ -49,6 +49,25 @@ class mel_helper extends rcube_plugin
         return new mel_fetch($user_agent, $ssl_verify_peer, $ssl_verify_host);
     }
 
+    public function twitterAccountExists($username, $proxy = null){
+
+/*        $PROXY_HOST = "pfrie-std.proxy.e2.rie.gouv.fr"; // Proxy server address
+        $PROXY_PORT = "8080";    // Proxy server port*/
+
+        $proxy_array = null;
+
+        if ($proxy !== null)
+            $proxy_array = [CURLOPT_PROXY => $proxy];
+
+        $content = $this->fetch("", "", "")->_get_url("https://twitter.com/$username", null, null, $proxy_array);
+
+        if($content["httpCode"] === 404) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * Inclue amel_lib.php
      *
@@ -68,6 +87,11 @@ class mel_helper extends rcube_plugin
     public function include_js_debug()
     {
         $this->include_script('js/debug/watch.js');
+    }
+
+    public function include_js_annuaire_tree()
+    {
+        $this->include_script('js/annuaireTree.js');
     }
 
     /**
@@ -100,12 +124,12 @@ class mel_helper extends rcube_plugin
 
     public static function why_stockage_not_active()
     {
-        if (!mel::is_internal() 
+        if (!self::stockage_active())
+            return self::ST_NO_RIGHTS;
+        else if (!mel::is_internal() 
         && class_exists('mel_doubleauth')
         && !mel_doubleauth::is_double_auth_enable())
             return self::ST_NO_DOUBLE_AUTH;
-        else if (!self::stockage_active())
-            return self::ST_NO_RIGHTS;
 
         return self::ST_ACTIVE;
     }
@@ -114,6 +138,11 @@ class mel_helper extends rcube_plugin
     {
         include_once "lib/mel_color_helper.php";
         return new Mel_Color_Helper();
+    }
+
+    public static function html_helper()
+    {
+        include_once "lib/html_helper.php";
     }
 
     public static function build_folder_tree(&$arrFolders, $folder, $delm = '/', $path = '')
@@ -164,6 +193,71 @@ class mel_helper extends rcube_plugin
    
        return $html;
     }
+
+    public static function settings($only_include = false)
+    {
+        include_once "lib/mel_settings.php";
+
+        if (!$only_include)
+            return settings_helper::Instance();
+    }
+
+    public static function Enumerable($arrayLike)
+    {
+        include_once "lib/mel_linq.php";
+        return Mel_Enumerable::from($arrayLike);
+    }
+
+    public static function get_service_name($dn)
+    {
+        $end = ',dc=equipement,dc=gouv,dc=fr';
+        $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
+
+        if ($ldap->bind4lookup()) {
+
+            if (strpos($dn, $end) === false) $dn .= $end;
+
+            try {
+                $result = $ldap->read($dn, '(objectClass=*)', 'cn');
+
+                if (isset($result) && $ldap->count_entries($result) == 1) {
+                    $infos = $ldap->get_entries($result);
+                    return explode(' (', $infos[0]['cn'][0], 2)[0];
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+
+        return explode('=', explode(",", $dn, 2)[0])[1];
+    }
+
+    public static function clear_folders_cache(&$rc)
+    {
+        $array = ['', $_SESSION["list_attrib"]["folder_name"] ?? '*', isset($_SESSION["list_attrib"]['folder_filter']) ? $_SESSION["list_attrib"]['folder_filter'] : "mail", null];
+        $cache_key = rcube_cache::key_name('mailboxes', $array);
+        $rc->storage->clear_cache($cache_key);
+
+        $cache_key = rcube_cache::key_name('mailboxes.list', $array);
+        $rc->storage->clear_cache($cache_key);
+    }
+
+    public static function array($array = [])
+    {
+        include_once 'lib/mel_array.php';
+        return new MelArray($array);
+    }
     
+    public static function parse_url($url)
+    {
+        include_once 'lib/mel_url.php';
+        return new mel_url($url);
+    }
+
+    public static function load_user_cerbere($user)
+    {
+        $user->load(['cerbere']);
+        return $user->cerbere;
+    }
 
 }

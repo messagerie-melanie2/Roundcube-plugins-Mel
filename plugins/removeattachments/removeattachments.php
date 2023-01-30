@@ -49,7 +49,8 @@ class removeattachments extends rcube_plugin {
     if ($p['name'] == 'attachmentmenu') {
       $link = $this->api->output->button(array(
               'command' => 'plugin.removeattachments.removeone',
-              'classact' => 'removelink icon active',
+              'classact' => 'removelink icon active delete',
+              'type' => 'link',
               'content' => html::tag('span', array(
                       'class' => 'icon cross'
               ), rcube::Q($this->gettext('removeattachments.removeattachment')))
@@ -142,14 +143,19 @@ class removeattachments extends rcube_plugin {
     $body = $MESSAGE->first_text_part();
     $MAIL_MIME->setTXTBody($body, false, true);
 
+    //PAMELLA 
+    $deleted_attachments = [];
     foreach ($MESSAGE->attachments as $attachment) {
       if ($attachment->mime_id != rcube_utils::get_input_value('_part', rcube_utils::INPUT_GET) && rcube_utils::get_input_value('_part', rcube_utils::INPUT_GET) != '-1') {
         $MAIL_MIME->addAttachment($MESSAGE->get_part_content($attachment->mime_id), $attachment->mimetype, $attachment->filename, false, $attachment->encoding, $attachment->disposition, '', $attachment->charset);
       }
+      else {
+        $deleted_attachments[] = $attachment->content_id;
+      }
     }
 
     foreach ($MESSAGE->mime_parts as $attachment) {
-      if (! empty($attachment->content_id)) {
+      if (!empty($attachment->content_id) && !in_array($attachment->content_id, $deleted_attachments)) {
         // covert CID to Mail_MIME format
         $attachment->content_id = str_replace('<', '', $attachment->content_id);
         $attachment->content_id = str_replace('>', '', $attachment->content_id);
@@ -184,7 +190,8 @@ class removeattachments extends rcube_plugin {
       }
     }
 
-    $saved = $imap->save_message($_SESSION['mbox'], $MAIL_MIME->getMessage());
+    //PAMELLA
+    $saved = $imap->save_message($_SESSION['mbox'], $MAIL_MIME->getMessage(), '', false, [], $headers['Date']);
     // write_log("debug","saved=".$saved);
 
     if ($saved) {

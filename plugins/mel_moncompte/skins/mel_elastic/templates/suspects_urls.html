@@ -1,0 +1,22 @@
+<roundcube:include file="includes/layout.html" />
+<link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
+<framed_item>
+	<div class="framed_item">
+		<h1 class="boxtitle">
+			<roundcube:label name="mel_moncompte.suspectsurls" />
+		</h1>
+		<div id="preferences-details" class="boxcontent">
+			<!-- <roundcube:object name="moncompte_balp_list" /> -->
+			<p><roundcube:label name="mel_moncompte.text_suspects" /></p>
+			<form name="customlinks" action="#" method="post" class="propform">
+				<input type="hidden" value="1" name="suspectsurls" />
+				<roundcube:object name="defaultlinks" id="defaultlinks" />
+                <roundcube:object name="customlinks" id="customlinks" />
+				<div style="margin-top:30px" class="formbuttons">
+					<button type="submit" id="su-save" class=" btn btn-primary submit" name="save" />
+					<roundcube:label name="save" /></button>
+				  </div>
+			</form>
+		</div>
+	</div>
+</framed_item>

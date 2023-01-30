@@ -5,7 +5,7 @@
 }
 
 #annuaire-list li {
-	padding: 10px 0px 8px 15px;
+	padding: 5px 0px 5px 15px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -23,16 +23,24 @@
 }
 
 #annuaire-list li.folder div.treetoggle {
-    top: 10px;
+    top: 5px;
     left: 2px;
 }
 
+#annuaire-list li.folder ul div.treetoggle {
+	top: 0;
+}
+
 #annuaire-list li > .name {
+	display: block;
 	font-size: 12px;
 	font-weight: normal;
 	color: #000;
 	color: var(--listbox-text-color);
-	padding: 0 4px 0 18px;
+	line-height: 25px;
+	padding: 0 70px 0 18px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #annuaire-list li.selected > .name {
@@ -47,11 +55,11 @@
 
 #annuaire-list li > .gototree {
 	position: absolute;
-	display: none;
+	cursor: pointer;
 	background: url(images/goto.png?v=e784.5000) center center no-repeat #fff;
 	background-image: var(--image-gototree);
 	background-color: var(--sublistitem-bg-color);
-	left: 0;
+	right: 27px;
 	top: 0;
 	height: 33px;
 	width: 33px;
@@ -72,62 +80,60 @@
 }
 
 #annuaire-list .folder > .description {
+	display: block;
   	font-size: 12px;
   	font-weight: normal;
-	color: #757575;
+	color: #fff;
+	line-height: 20px;
+	padding-left: 18px;
 }
 
-/* #annuaire-list .folder {
-	 background: url(images/folder.png?v=e784.5000) 17px 12px no-repeat;
-}  */
-
 #annuaire-list .folder.annuaire {
-	background: url(images/annuaire.png?v=e784.5000) 17px 13px no-repeat;
+	background: url(images/annuaire.png?v=e784.5000) 17px 11px no-repeat;
 }
 
 #annuaire-list .folder.addressbook {
-	background: url(images/carnet.png?v=e784.5000) 17px 19px no-repeat;
-	/* background-image: var(--image-carnet); */
+	background: url(images/carnet.png?v=e784.5000) 17px 14px no-repeat;
 }
 
 html.dark-mode #annuaire-list .folder.addressbook {
-	background: url(images/carnet-dark.png) 17px 19px no-repeat;
+	background: url(images/carnet-dark.png) 17px 14px no-repeat;
 }
 
 #annuaire-list .list {
-	background: url(images/list.png?v=e784.5000) 14px 20px no-repeat;
+	background: url(images/list.png?v=e784.5000) 10px 11px no-repeat;
 }
 
 #annuaire-list .person {
-	background: url(images/person.png?v=e784.5000) 14px 20px no-repeat;
+	background: url(images/person.png?v=e784.5000) 10px 11px no-repeat;
 }
 
 #annuaire-list .nophoto {
-	background: url(images/nophoto.png?v=e784.5000) 14px 20px no-repeat;
+	background: url(images/nophoto.png?v=e784.5000) 10px 11px no-repeat;
 }
 
 #annuaire-list .service {
-	background: url(images/service.png?v=e784.5000) 18px 22px no-repeat;
+	background: url(images/service.png?v=e784.5000) 14px 12px no-repeat;
 }
 
 #annuaire-list .function {
-	background: url(images/function.png?v=e784.5000) 18px 19px no-repeat;
+	background: url(images/function.png?v=e784.5000) 14px 9px no-repeat;
 }
 
 #annuaire-list .unit {
-	background: url(images/unit.png?v=e784.5000) 18px 20px no-repeat;
+	background: url(images/unit.png?v=e784.5000) 14px 10px no-repeat;
 }
 
 #annuaire-list .resource {
-	background: url(images/resource.png?v=e784.5000) 18px 20px no-repeat;
+	background: url(images/resource.png?v=e784.5000) 14px 10px no-repeat;
 }
 
 #annuaire-list .application {
-	background: url(images/application.png?v=e784.5000) 18px 20px no-repeat;
+	background: url(images/application.png?v=e784.5000) 14px 10px no-repeat;
 }
 
 #annuaire-list .added {
-	background: url(images/ajoute.png?v=e784.5000) 16px 23px no-repeat;
+	background: url(images/ajoute.png?v=e784.5000) 12px 13px no-repeat;
 	font-weight: bold;
 }
 
@@ -301,47 +307,6 @@ li.folder:before
     margin-left: 5px;
 }
 
-.contactslist::before, #annuaire-list li.object::before
-{
-    /* content: " "; */
-    font-size: 1.25em;
-    display: block;
-    float: left;
-    margin: 0 .25rem 0 0;
-    width: 1.18em;
-    height: 1em;
-    font-family: 'Icons';
-    font-style: normal;
-    font-weight: 900;
-    text-decoration: inherit;
-    text-align: center;
-    speak: none;
-    font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-}
-
-.contactslist::before{
-    content: "\f0c0"!important;
-}
-
-li.object{
-    /* background:none!important; */
-}
-#annuaire-list li.object::before
-{
-    content: " ";
-}
-
-#annuaire-list .folder > .description
-{
-    margin-top:-15px;
-    margin-bottom: -15px;
-    display:block;
-    color:white !important;
-	padding-left: 18px;
-}
-
 #annuaire-list [aria-expanded="true"]
 {
 	background-color: #2C3054;
@@ -349,11 +314,11 @@ li.object{
 
 li.folder {
 	-webkit-touch-callout: none; /* iOS Safari */
-	  -webkit-user-select: none; /* Safari */
-	   -khtml-user-select: none; /* Konqueror HTML */
-		 -moz-user-select: none; /* Old versions of Firefox */
-		  -ms-user-select: none; /* Internet Explorer/Edge */
-			  user-select: none; /* Non-prefixed version, currently
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently
 									supported by Chrome, Edge, Opera and Firefox */
 }
 
@@ -423,4 +388,14 @@ li.object[aria-selected="true"]
 
 .filtergroup > .row > div > select{
 	border-radius: 60px;
+}
+
+.from-annuaire {
+	height: unset!important;
+	display: none!important;
+}
+
+html.layout-small .from-annuaire,
+html.layout-phone .from-annuaire{
+	display: block!important;;
 }

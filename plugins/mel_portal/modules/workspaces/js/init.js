@@ -23,38 +23,65 @@
      rcmail.addEventListener("init", () => {
 try {
     //WSPNotification.tasks().update();
-    new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
+    //new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
 } catch (error) {
     console.error("###[WSPNotification.tasks().update()]", error);
 }
 try {
-    WSPNotification.agenda().update();
+    side_notification.wsp_agenda();
 } catch (error) {
     console.error("###[WSPNotification.agenda().update()]", error);
 }
 
 try {
+    side_notification.wsp_documents();
+    // $(".doc-notif").css("display", "none");
 
-    $(".doc-notif").css("display", "none");
+    // if (rcmail.env.bureau === undefined)
+    //     rcmail.env.bureau = {};
+    // rcmail.env.bureau["wsp_doc"] = WSPNotification.documents();
 
-    if (rcmail.env.bureau === undefined)
-        rcmail.env.bureau = {};
-    rcmail.env.bureau["wsp_doc"] = WSPNotification.documents();
-
-    rcmail.env.bureau.wsp_doc.update().then(bool => 
-        {
-            if (!bool)
-                rcmail.env.bureau.wsp_doc.update(true);
-        });
+    // rcmail.env.bureau.wsp_doc.update().then(bool => 
+    //     {
+    //         if (!bool)
+    //             rcmail.env.bureau.wsp_doc.update(true);
+    //     });
     //rcmail.env.bureau.wsp_doc.update(true);
 } catch (error) {
     console.error("###[WSPNotification.documents().update(true)]", error);
 }
 
 try {
-    WSPNotification.mails().update();
+    side_notification.wsp_mail();
+    // WSPNotification.mails().update();
+    // function event_update_mail(key, items = null){
+    //     const storage = items ?? mel_metapage.Storage.get(key);
+    //     console.log("meil-check-global", storage);
+
+    //     $(".workspace .mail").each((i,e) => {
+    //         e = $(e);
+
+    //         if (e.find('.replacedClass').length > 0) e.find('.replacedClass').removeClass('replacedClass').addClass('icon-mel-mail ariane-icon');
+
+    //         const uid = e.parent().parent().parent().attr("id").replace('wsp-', '');
+    //         const datas = storage === null || storage === undefined ? null : storage[uid];
+    //         let notif = e.find(".wsp-notif");
+
+    //         console.log("mail-check", uid, datas, storage);
+
+    //         if (datas !== undefined && datas !== null && datas.length > 0)
+    //         {
+    //             notif.css('display', '').html(datas.length);
+    //         }
+    //         else notif.css('display', 'none').html(0);
+    //     });
+    // }
+    // event_update_mail('mel_metapage.wsp.mails');
+    // rcmail.addEventListener('storage.change.mel_metapage.wsp.mails', (item) => {
+    //         event_update_mail('mel_metapage.wsp.mails', item);
+    // });
 } catch (error) {
-    
+    console.error("mail error", error);
 }
 
         $(".dwp-user").each((i,e) => {
@@ -132,7 +159,7 @@ async function wsp_action_notif(target, page)
      {
          //delete config._action;
          console.log("I GO HERE");
-         await parent.$(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", $(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
+         await parent.$(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", parent.$(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
          parent.$(`iframe.workspace-frame`).remove();
          config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
          await mel_metapage.Functions.change_frame("wsp", true, true, config);
@@ -215,5 +242,11 @@ $(document).ready(() => {
         .on("blur", () => {
             $(`#${$(e).data("id")}`).css("box-shadow","");
         });
+    });
+
+    $("#wsp-see-all").click(() => {
+        let $frames = top.$('.workspace-frame');
+        if ($frames.length > 0) $frames.remove();
+        mel_metapage.Functions.change_frame('wsp');
     });
 });

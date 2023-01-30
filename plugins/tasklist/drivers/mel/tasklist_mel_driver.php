@@ -229,7 +229,8 @@ class tasklist_mel_driver extends tasklist_driver {
       $tasklist->name = $prop['name'];
       $tasklist->id = isset($prop['id']) ? $prop['id'] : md5($prop['name'] . time() . $this->user->uid);
       $tasklist->owner = $this->user->uid;
-      $saved = $tasklist->save();
+      $ret = $tasklist->save();
+      $saved = !is_null($ret);
     }
     if ($saved) {
       // Récupération des préférences de l'utilisateur
@@ -866,7 +867,7 @@ class tasklist_mel_driver extends tasklist_driver {
       $object->completed = 1;
     }
     else if ($task['status'] == LibMelanie\Api\Defaut\Task::STATUS_IN_PROCESS) {
-      $object->completed = 0;
+      $object->completed = $task['complete'];;
     }
     else if (isset($task['complete'])) {
       if ($task['complete'] == 1) {
@@ -874,6 +875,7 @@ class tasklist_mel_driver extends tasklist_driver {
       }
       $object->completed = $task['complete'];
     }
+    else $object->completed = $task['complete'];
     
     // TODO: Mettre à jour le plugin taskslist pour la gestion des alarmes
     if (isset($task['valarms']) && !empty($task['valarms'])) {

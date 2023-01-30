@@ -151,7 +151,7 @@ class Informationspersonnelles extends Moncompteobject {
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.informationspersonnelles');
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
-			$user->load('update_personnal_info');
+			$user->load(['update_personnal_info']);
 			// Readonly ou non ?
 			if ($user->update_personnal_info) {
 				$_attributes = $attributes;
@@ -182,7 +182,8 @@ class Informationspersonnelles extends Moncompteobject {
 				}
 			}
 			// Enregistrement de l'utilisateur avec les nouvelles données
-			if ($user->save()) {
+			$ret = $user->save();
+			if (!is_null($ret)) {
 				// Ok
 				rcmail::get_instance()->output->show_message('mel_moncompte.info_modif_ok', 'confirmation');
 				return true;

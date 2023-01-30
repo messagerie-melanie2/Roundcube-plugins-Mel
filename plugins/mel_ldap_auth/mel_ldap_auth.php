@@ -152,7 +152,11 @@ class mel_ldap_auth extends rcube_plugin {
               // Création du cookie avec le login / cn
               rcube_utils::setcookie('roundcube_login', $user . "###" . $_user_mce->fullname, self::$expire_cookie + time());
               $_SESSION['_keeplogin'] = true;
-            } else {
+
+              // Suppression du cooke error login
+              unset($_COOKIE['roundcube_error_login']);
+              rcube_utils::setcookie('roundcube_error_login', null, -1);
+            } else if (!isset($_SESSION['auth_type'])) {
               // Suppression du cookie
               unset($_COOKIE['roundcube_login']);
               rcube_utils::setcookie('roundcube_login', null, -1);
@@ -171,9 +175,19 @@ class mel_ldap_auth extends rcube_plugin {
       } else {
         $args['abort'] = true;
         $args['error'] = 49;
-        // Suppression du cookie
-        unset($_COOKIE['roundcube_login']);
-        rcube_utils::setcookie('roundcube_login', null, -1);
+        if (isset($_COOKIE['roundcube_error_login']) && $_COOKIE['roundcube_error_login'] >= 3) {
+          // Suppression du cookie
+          unset($_COOKIE['roundcube_login']);
+          rcube_utils::setcookie('roundcube_login', null, -1);
+
+          // Suppression du cooke error login
+          unset($_COOKIE['roundcube_error_login']);
+          rcube_utils::setcookie('roundcube_error_login', null, -1);
+        }
+        else {
+          $error_login = $_COOKIE['roundcube_error_login'] | 0;
+          rcube_utils::setcookie('roundcube_error_login', ++$error_login, self::$expire_cookie + time());
+        }
         
         // 0004988: En mode courrielleur, temporiser les échecs d'authentification
         if (isset($_GET['_courrielleur'])) {
@@ -202,8 +216,11 @@ class mel_ldap_auth extends rcube_plugin {
       if ($args['error'] == 11) {
         if (mel_logs::is(mel_logs::INFO))
           mel_logs::get_instance()->log(mel_logs::INFO, "Blocage du compte <$user>");
-        mail(driver_mel::gi()->getUser($user)->email_send, "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
-
+        // MANTIS 0006881: retour test d'intrusion : comptes bloqués
+        if ($CptEchec_count == $CptEchec_nbtm + 1) {
+          mail(driver_mel::gi()->getUser($user)->email_send, "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
+        }
+        
         // Exécuter la fin de la connexion pour permettre de personnaliser le message d'erreur
         $this->rc->output->show_message($this->rc->gettext('error_block', 'mel'), 'warning');
 

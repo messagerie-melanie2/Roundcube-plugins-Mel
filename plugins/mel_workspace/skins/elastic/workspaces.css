@@ -116,6 +116,11 @@ html.layout-small .wsp-index{
     bottom: 0;
 }
 
+html.layout-phone .wsp-infos,
+html.layout-small .wsp-infos{
+    left: -95px;
+}
+
 .centered{
     text-align: center;
 }
@@ -254,6 +259,7 @@ body.task-workspace  button.wsp-toolbar-item,
     border-radius: 100%;
     background-repeat: no-repeat!important;
     box-shadow: none!important;
+    flex: 1 0 auto;
 }
 
 body.task-workspace  .wsp-toolbar-item,
@@ -347,25 +353,25 @@ html.layout-phone .wsp-toolbar-item{
 .wsp-toolbar-item:hover,
 .wsp-toolbar-item.active{
     cursor: pointer;
-    background: radial-gradient(circle, #42548F 45%, rgba(255,255,255,0) 45%); /*29*/
+    background: radial-gradient(circle, #42548F 10%, rgba(255,255,255,0) 10%); /*29*/
 }
 
 button.wsp-toolbar-item:focus
 {
     box-shadow: none;
-    background: radial-gradient(circle, transparent 20%, #484D7A4F 45%, rgba(255,255,255,0) 28%);
+    background: radial-gradient(circle, transparent 9%, #484D7A4F 11%, rgba(255,255,255,0) 12%);
 }
 
 button.wsp-toolbar-item:focus:hover
 {
     box-shadow: none;
-    background: radial-gradient(circle, #42548F 20%, #484D7A4F 45%, rgba(255,255,255,0) 28%);
+    background: radial-gradient(circle, #42548F 9%, #484D7A4F 11%, rgba(255,255,255,0) 12%);
 }
 
 .wsp-toolbar-item.active,
 .wsp-toolbar-item:active
 {
-    background: radial-gradient(circle, #42548F 45%, rgba(255,255,255,0) 26%)!important;
+    background: radial-gradient(circle, #42548F 10%, rgba(255,255,255,0) 10%)!important;
 }
 
 .wsp-toolbar-item > span {
@@ -1005,4 +1011,58 @@ html.layout-small .webconf-toolbar .wsp-toolbar-item
 .btn.btn-block.wsp-toolbar-melw-wsp-hider:active
 {
     background-color: #363A5B;
+}
+
+.click-master{
+    background-color: #F0F0F0;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+html.dark-mode .click-master{
+    background-color: #323F4B;
+}
+
+.click-master .float-right{
+    margin-top: 7px;
+}
+
+.click-master:last-of-type{
+    margin-bottom: 0;
+} 
+
+.task-workspace.action-action .joined .mel-button.plus.btn.btn-secondary{
+    position: absolute;
+    top: 45px;
+    right: 0px;  
+}
+
+html.layout-phone .task-workspace.action-workspace .responsiveTabList,
+html.layout-small .task-workspace.action-workspace .responsiveTabList {
+    flex-wrap: wrap!important;
+}
+
+html.layout-small .row.wsp-head,
+html.layout-phone .row.wsp-head{
+    margin: 0!important;
+}
+
+html.layout-phone .wsp-copy-button,
+html.layout-small .wsp-copy-button {
+    display: none;
+}
+
+html.layout-phone body.task-workspace separate,
+html.layout-small body.task-workspace separate
+{
+    margin-top: 25px;
+    margin-bottom: 50px;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+body.task-workspace	.table-bordered thead td, 
+body.task-workspace	.table-bordered thead th{
+    background-color: var(--main-bckg-color);
+    color:var(--secondary-text-color);
 }

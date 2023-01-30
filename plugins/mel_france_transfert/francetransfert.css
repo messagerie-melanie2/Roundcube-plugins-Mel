@@ -1,0 +1,35 @@
+#use_francetransfert_dialog,
+#send_francetransfert_dialog {
+  overflow: hidden;
+}
+
+#use_francetransfert_dialog .dialog_title,
+#send_francetransfert_dialog .dialog_title {
+	background-color: #f3f3f3;
+}
+
+#use_francetransfert_dialog .dialog_text,
+#send_francetransfert_dialog .dialog_text {
+  margin-top: 10px;
+  font-weight: bold;
+}
+#send_francetransfert_dialog .dialog_text {
+	position: relative;
+  top: 23px;
+  left: 40px;
+}
+
+#use_francetransfert_dialog .dialog_select {
+  margin-top: 10px;
+}
+
+#send_francetransfert_dialog .current_action {
+  font-size: 90%;
+}
+
+#send_francetransfert_dialog .uil-rolling-css {
+  background-image: url("images/rolling.gif?v=05d7.390");
+  height: 30px;
+  width: 30px;
+  margin-bottom: 10px;
+}

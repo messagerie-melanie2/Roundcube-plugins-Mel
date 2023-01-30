@@ -327,7 +327,7 @@ class mel_acl extends rcube_plugin
                         $input->show('', array(
                             'name' => "acl", 'value' => $val, 'id' => $id))
                         . html::label(array('for' => $id, 'title' => $this->gettext('longacl'.$key)),
-                                $this->gettext('acl'.$key)));
+                                $this->gettext('acl'.$key).' : '.$this->gettext(str_replace('group', '', $this->type)."_$key",'mel_acl')));
             }
         } else {
             $items = array(
@@ -339,7 +339,11 @@ class mel_acl extends rcube_plugin
             );
             // Ne garde le droit privé que pour les agendas
             if ($this->type != 'm2calendar'
-                    && $this->type != 'm2calendargroup') unset($items['private']);
+                    && $this->type != 'm2calendargroup')
+            {
+                unset($items['private']);
+                unset($items['freebusy']);
+            }
 
             foreach ($items as $key => $val) {
                 $id = "acl$key";
@@ -347,7 +351,7 @@ class mel_acl extends rcube_plugin
                         $input->show('', array(
                             'name' => "acl[$val]", 'value' => $val, 'id' => $id))
                         . html::label(array('for' => $id, 'title' => $this->gettext('longacl'.$key)),
-                                $this->gettext('acl'.$key)));
+                                $this->gettext('acl'.$key).' : '.$this->gettext(str_replace('group', '', $this->type)."_$key",'mel_acl')));
             }
         }
 
@@ -454,7 +458,11 @@ class mel_acl extends rcube_plugin
             );
             // Ne garde le droit privé que pour les agendas
             if ($this->type != 'm2calendar'
-                    && $this->type != 'm2calendargroup') unset($items['private']);
+                    && $this->type != 'm2calendargroup')
+            {
+                    unset($items['private']);
+                    unset($items['freebusy']);
+            }
         }
 
         // Create the table

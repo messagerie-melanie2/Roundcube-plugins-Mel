@@ -13,6 +13,8 @@ class FullscreenItem
 
         this.item = parent.find("." + _class);
 
+        this._set_accessibility();
+
         if (this.item.data("is-flex"))
         {
             if (this.item.find(".fullscreen-item-flex").length === 0)
@@ -62,6 +64,23 @@ class FullscreenItem
         this.apps[key] = querry.addClass("apps").data("app-id", key).appendTo(this.item);
     }
 
+    _set_accessibility() {
+        this.item.attr('aria-modal', 'true')
+        .attr('role', 'dialog')
+        .attr('tabindex', -1)
+        .attr('aria-labelledby', 'fullscreenreaderfocus')
+        .attr('id', 'modalfullscreenitemid');
+
+        this.aria_dialog = new aria.Dialog('modalfullscreenitemid', 'button-shortcut');
+
+        this.item.addClass('fullscreen-item');
+        // .on('keydown', (e) => {
+        //     if (e.originalEvent.key === 'Escape') this.close();
+        // });
+
+        return this;
+    }
+
     remove_app(key)
     {
         this.apps[key].remove()
@@ -76,6 +95,7 @@ class FullscreenItem
             this.item.css("display", "");
 
         this.is_open = true;
+        $('.dialog-backdrop').css('display', '');
     }
 
     close()
@@ -86,7 +106,8 @@ class FullscreenItem
             this.item.css("display", "none");
 
         this.is_open = false;
-
+        
+        $('.dialog-backdrop').css('display', 'none');
         $(".my_favorites").focus();
     }
 

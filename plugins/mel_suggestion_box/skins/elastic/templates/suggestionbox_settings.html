@@ -17,12 +17,13 @@
 
 <div id="layout-content" role="main">
 	<div class="header">
-		<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
-		<span class="header-title" style="display:block;"></span>
+		<a class="button icon back-list-button-mel show-touch" href="#back"><span class="icon-mel-undo"></span> <span class="inner"><roundcube:label name="back" /></span></a>
+		<span class="header-title" style="display:block;margin:0;"></span>
 	</div>
 	<div id="mel_suggestion_box_option_box" class="uibox contentbox" style="    margin: 15px;">
-		<h1 class="boxtitle"><roundcube:label name="mel_suggestion_box.suggestionbox" /></h1>
-		<div class="suggestion-box">
+		<iframe id="settings-suggest-frame" style="width:100%;height:100%;" style="display:none;"></iframe>
+		<div class="suggestion-box" style="display:none;">
+				<h1 class="boxtitle"><roundcube:label name="mel_suggestion_box.suggestionbox" /></h1>
 			<div id="preferences-details" class="boxcontent">
 				<form name="form" method="post" action="#" class="propform" id="suggestion_box_form">
 					<fieldset><legend><roundcube:label name="mel_suggestion_box.suggestionboxtext" html="yes"></legend>
@@ -38,5 +39,38 @@
 		  <roundcube:object name="message" id="message" class="statusbar" />
 	</div>
 </div>
+
+<script>
+	rcmail.addEventListener('init', () => {
+		if ((rcmail.env.settings_frame_url || false) !== false)
+		{
+			$('#settings-suggest-frame').css('display', '');
+		}
+		else $('.suggestion-box').css('display', '');
+
+		if ($('html').hasClass('touch'))
+		{
+			let _break = false;
+			const f = () => {
+				const interval = setInterval(() => {
+				if ($('#layout-content').hasClass('hidden') && !_break)
+				{
+					$('#layout-content').removeClass('hidden');
+					$('#layout-sidebar').addClass('hidden');
+				}
+				else clearInterval(interval);
+			}, 200);
+			};
+			$(window).resize(f);
+			f();
+
+			$('a.back-list-button-mel').on('click', () => {
+				_break = true;
+				$('#layout-content').addClass('hidden');
+				$('#layout-sidebar').removeClass('hidden');
+			});
+		}
+	});
+</script>
 
 <roundcube:include file="includes/footer.html" />

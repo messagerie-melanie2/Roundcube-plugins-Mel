@@ -38,8 +38,20 @@ $labels['createcalendar'] = 'Créer un nouveau calendrier';
 $labels['name'] = 'Nom';
 $labels['color'] = 'Couleur';
 $labels['day'] = 'Jour';
+// PAMELA - Fullcalendar premium
+$labels['resources'] = 'Calendriers';
+$labels['views-day'] = 'Vues à la journée';
+$labels['views-week'] = 'Vues à la semaine';
+$labels['views-month'] = 'Vues au mois';
+$labels['views-list'] = 'Vues en liste';
+$labels['timelineday'] = 'Planning du jour';
+$labels['timelineweek'] = 'Planning de la semaine';
+$labels['timelinemonth'] = 'Planning du mois';
+$labels['twoday'] = '2 jours';
+$labels['threeday'] = '3 jours';
 $labels['week'] = 'Semaine';
 $labels['work'] = 'Semaine de travail';
+$labels['workresource'] = 'Agenda de travail';
 $labels['month'] = 'Mois';
 $labels['monthWork'] = 'Mois de travail';
 $labels['agenda'] = 'Ordre du jour';
@@ -81,6 +93,9 @@ $labels['status'] = 'Statut';
 $labels['status-confirmed'] = 'Confirmé';
 $labels['status-cancelled'] = 'Annulé';
 $labels['status-tentative'] = 'Provisoire';
+// MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+$labels['telework'] = 'Télétravail';
+$labels['status-telework'] = 'Télétravail';
 $labels['priority'] = 'Priorité';
 $labels['sensitivity'] = 'Diffusion';
 $labels['public'] = 'publique';
@@ -108,8 +123,11 @@ $labels['importevents'] = 'Importer des événements';
 $labels['importrange'] = 'Événements depuis';
 $labels['onemonthback'] = '1 mois auparavant';
 $labels['nmonthsback'] = '$nr mois précédents';
+$labels['configureappointment'] = 'Configurer la prise de rendez-vous';
 $labels['showurl'] = 'Afficher l\'URL du calendrier';
 $labels['showurldescription'] = 'Utilisez l\'adresse suivante pour accéder (lecture seule) à votre calendrier depuis d\'autres applications. Vous pouvez copier/coller celle-ci dans n\'importe quel calendrier électronique gérant le format iCal.';
+$labels['freebusyurldescription'] = 'L\'adresse suivante permet d\'afficher les disponibilités de l\'agenda depuis une autre application. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. Cette adresse ne nécessite pas d\'authentification.';
+$labels['calendarfeedurldescription'] = 'Cochez cette case pour partager votre agenda via une adresse unique sans authentification. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. ';
 $labels['caldavurldescription'] = 'Copiez cette adresse vers une application client (comme Evolution ou Mozilla Thunderbird) compatible <a href="http://fr.wikipedia.org/wiki/CalDAV" target="_blank">CalDAV</a> pour synchroniser pleinement ce calendrier avec votre ordinateur ou votre smartphone.';
 $labels['findcalendars'] = 'Recherche de calendriers...';
 $labels['searchterms'] = 'Critères de recherche';
@@ -158,6 +176,8 @@ $labels['availfree'] = 'Disponible';
 $labels['availbusy'] = 'Occupé';
 $labels['availunknown'] = 'Inconnu';
 $labels['availtentative'] = 'Provisoire';
+// MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+$labels['availtelework'] = 'Télétravail';
 $labels['availoutofoffice'] = 'Absent';
 $labels['scheduletime'] = 'Trouver les disponibilités';
 $labels['sendinvitations'] = 'Envoyer les invitations';
@@ -170,6 +190,7 @@ $labels['nextslot'] = 'Créneau suivant';
 $labels['suggestedslot'] = 'Emplacement suggéré';
 $labels['noslotfound'] = 'Impossible de trouver un créneau disponible';
 $labels['invitationsubject'] = 'Vous avez été invité à "$title"';
+$labels['invitationmailbody'] = "*\$title*\n\nQuand: \$date\n\nOrganisateur: \$organizer\n\nParticipants: \$attendees\n\n\$description\n\nVous trouverez ci-joint un fichier iCalendar avec toutes les modifications à l'événement que vous pourrez importer dans votre calendrier électronique.";
 $labels['invitationattendlinks'] = "Dans le cas où votre application de messagerie ne gère pas les demandes \"iTip\", vous pouvez utiliser ce lien pour accepter ou refuser l'invitation : \n\$url";
 $labels['eventupdatesubject'] = '"$title" a été modifié';
 $labels['eventupdatesubjectempty'] = 'Un événement vous concernant a été modifié';
@@ -191,10 +212,11 @@ $labels['notanattendee'] = 'Vous n\'êtes pas dans la liste des participants à 
 $labels['eventcancelled'] = 'L\'événement a été annulé';
 $labels['saveincalendar'] = 'enregistrer sous';
 $labels['updatemycopy'] = 'Mise à jour dans mon calendrier';
-$labels['savetocalendar'] = 'Sauvegarde dans le calendrier';
+$labels['savetocalendar'] = 'Sauvegarder dans le calendrier';
 $labels['openpreview'] = 'Consulter le calendrier';
 $labels['noearlierevents'] = 'Aucun événement passé';
 $labels['nolaterevents'] = 'Aucun événement futur';
+$labels['legend'] = 'Légende';
 $labels['resource'] = 'Ressource';
 $labels['addresource'] = 'Carnet de ressources';
 $labels['findresources'] = 'Recherche des ressources';
@@ -233,6 +255,8 @@ $labels['itipresponseerror'] = 'Échec de l\'envoi d\'une réponse à cette invi
 $labels['itipinvalidrequest'] = 'C\'est invitation n\'est plus valide';
 $labels['sentresponseto'] = 'La réponse à l\'invitation a été envoyée à $mailto';
 $labels['localchangeswarning'] = 'Vous êtes sur le point d\'effectuer des modifications qui seront effectives dans votre calendrier mais qui ne seront pas envoyées à l\'organisateur de l’événement.';
+// MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+$labels['internallocalchangeswarning'] = 'Cette invitation est gérée en interne par l\'organisateur, vous ne pouvez pas modifier sa date, son titre, son lieu ou sa description. Toutes les autres modifications resteront dans votre calendrier et ne seront pas envoyées à l\'organisateur.';
 $labels['importsuccess'] = '$nr événements importés.';
 $labels['importnone'] = 'Pas d\'événement à importer';
 $labels['importerror'] = 'Une erreur s\'est produite lors de l\'importation';
@@ -280,6 +304,9 @@ $labels['weeknonone'] = 'Jamais';
 $labels['weeknodatepicker'] = 'Seulement dans le sélecteur de date';
 $labels['weeknoall'] = 'Dans le sélecteur de date ainsi que dans la vue calendrier';
 
+// PAMEA - MANTIS 0006455: Texte non traduit + numéro de semaine incorrect
+$labels['weekshort'] = 'S';
+
 // PAMELA
 $labels['tabsharinggroup'] = 'Partage à un groupe';
 // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
@@ -288,4 +315,35 @@ $labels['gereragenda'] = 'Gérer les agendas';
 // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
 $labels['deleteallcalendarconfirm'] = 'Voulez-vous vraiment supprimer tous les évènements de cet agenda (l\'opération ne peut pas être annulée) ?';
 $labels['event private'] = "Évènement privé";
+$labels['copied_url'] = 'Lien copié !';
+$labels['copied_url_default'] = 'Copier le lien';
+$labels['copied_url_title'] = 'Cliquez-ici pour copier le lien de l\'agenda';
+$labels['open_in_web_page'] = 'Ouvrir dans une page web';
+$labels['open_in_web_page_title'] = 'Cliquez-ici pour ouvrir l\'agenda dans une page web';
+$labels['share_calendar_checkbox'] = 'Partager mon agenda (recocher la case changera l\'url)';
+$labels['share_calendar'] = 'Partager mon agenda';
+$labels['showavailability'] = 'Proposer mes disponibilité';
+$labels['advancedoptions'] = 'Options avancées';
+$labels['appointmentsduration'] = 'Durée des rendez-vous';
+$labels['appointmentsrange'] = 'Plage de rendez-vous';
+$labels['appointmenttimebetween'] = 'Temps entre les rendez-vous';
+$labels['letuserchoosetimeduration'] = 'Laisser l\'utilisateur choisir la durée';
+$labels['monday'] = 'Lun';
+$labels['tuesday'] = 'Mar';
+$labels['wednesday'] = 'Mer';
+$labels['thursday'] = 'Jeu';
+$labels['friday'] = 'Ven';
+$labels['saturday'] = 'Sam';
+$labels['sunday'] = 'Dim';
+$labels['duration'] = 'Durée';
+$labels['place'] = 'Lieu';
+$labels['end_time_alert'] = 'Merci de sélectionner une heure plus tardive';
+$labels['select_time_between_appointment'] = 'Accordez-vous une marge de temps pour vous préparer ou pour conclure vos rendez-vous';
+$labels['before_event'] = 'Avant l\'évènement';
+$labels['after_event'] = 'Après l\'évènement';
+$labels['validate'] = 'Valider';
+$labels['activateappointment'] = 'Activer la prise de rendez-vous';
+$labels['appointmentreason'] = 'Motif de rendez-vous';
+$labels['letusercustomreason'] = 'Laisser la possibilité à l\'utilisateur de choisir un motif personnalisé';
+$labels['see_direct_page'] = 'Voir la page de direct';
 ?>

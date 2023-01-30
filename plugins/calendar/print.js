@@ -161,6 +161,12 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
           cont.after('<div class="fc-event-description">' + Q(event.description) + '</div>');
         }
       }
+
+      //PAMELA - Show status cancelled
+      if (event.status === "CANCELLED")
+      {
+        element.addClass('cal-event-status-cancelled');
+      }
     },
     eventAfterAllRender: function(view) {
       if (view.name == 'list') {

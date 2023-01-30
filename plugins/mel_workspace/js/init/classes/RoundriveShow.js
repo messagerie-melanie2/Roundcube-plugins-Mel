@@ -67,10 +67,11 @@ class RoundriveShow
         {
 
             let tmp = this.expandInitialFolder(initFolder);
+            //debugger;
             if (tmp !== undefined && tmp !== null && tmp.always)
             {
+                //debugger;
                 tmp.always(() => {
-
                     if (config.afterInit !== undefined && config.afterInit !== null)
                         config.afterInit();
         
@@ -108,7 +109,7 @@ class RoundriveShow
 
     expandInitialFolder(initFolder)
     {
-
+        //debugger;
         let treeDatas = this.tree.getFolder(this.wsp, initFolder);
         if (treeDatas.length !== 0)
         {
@@ -141,6 +142,7 @@ class RoundriveShow
                 (xhr, ajaxOptions, thrownError) => {
                     console.error(xhr, ajaxOptions, thrownError, this);
                     this.parent.html("Connexion impossible.");
+                    
                     if (this.showErrors)
                         rcmail.display_message("Impossible de se connecter au stockage !", "error");
                     

@@ -8,23 +8,23 @@
                 <h3 class="wsp-title bold"><workspace-title/></h3>
             </div>
         </div>
-        <div class="row" style="    margin-top: 40px;
-        margin-bottom: 25px;height: 25px;">
+        <div class="row <hide-small/>" style="    margin-top: 20px;
+        margin-bottom: 5px;height: 25px;">
             <div class="col-12">
                 <workspace-avancement/>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="min-height:112px">
             <div class="col-4">
                 <div class=wsp-users>
                     <workspace-users/>
                 </div>
             </div>
             <div class="col-8">
-                <p><workspace-misc/></p>
+                <workspace-misc/>
             </div>
         </div>
-        <div class="row" style="margin: 20px 0;">
+        <div class="row" style="margin: -20px 0 0 0;">
             <div class="col-6">
                 <workspace-task-danger/>
             </div>
@@ -40,4 +40,4 @@
 </div>
     <a href="#" title="<workspace-epingle-title/>" id="tak-<workspace-id/>" onclick="desk_epingle('<workspace-id/>')" class="icon-mel-pin focus-bordered mel-focus tak <workspace-epingle/> roundbadge"></a>
 </div>
-<a class="sr-only sr-only-focusable wsp-focusable-link" data-id="<workspace-id/>"  href=# style="position: absolute;bottom:-1000px;"><p class="sr-only">Voir l'espace de travail "<workspace-title/>"</p></a>
+<a class="sr-only sr-only-focusable wsp-focusable-link" data-id="<workspace-id/>"  href=# ><p class="sr-only">Voir l'espace de travail "<workspace-title/>"</p></a>

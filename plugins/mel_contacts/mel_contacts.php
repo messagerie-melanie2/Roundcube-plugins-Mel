@@ -7,7 +7,7 @@ require_once ('lib/mel_addressbook.php');
 require_once ('lib/all_addressbook.php');
 
 class mel_contacts extends rcube_plugin {
-  public $task = 'mail|settings|addressbook|calendar|ariane|sondage';
+  public $task = 'mail|settings|addressbook|calendar|ariane|sondage|mel_metapage';
 
   // Mél
   /**
@@ -56,11 +56,12 @@ class mel_contacts extends rcube_plugin {
         || $this->rc->task == 'calendar'
         || $this->rc->task == 'ariane'
         || $this->rc->task == 'discussion'
-        || $this->rc->task == 'sondage') {
+        || $this->rc->task == 'sondage'
+        || $this->rc->task == 'mel_metapage') {
       // register hooks
       $this->add_hook('addressbooks_list', array($this,'address_sources'));
       $this->add_hook('addressbook_get', array($this,'get_address_book'));
-      $this->add_hook('config_get', array($this,'config_get'));
+      // $this->add_hook('config_get', array($this,'config_get'));
     }
 
     if ($this->rc->task == 'addressbook') {
@@ -214,15 +215,15 @@ class mel_contacts extends rcube_plugin {
         // Supprimer MAIA de la récupération des photos
         unset($p['sources']['annuaire']);
         unset($p['sources']['amande_group']);
-        $p['sources'] = [$sources[driver_mel::gi()->mceToRcId($this->user->uid)]] + $p['sources'];
+        $p['sources'] = array_merge([$sources[driver_mel::gi()->mceToRcId($this->user->uid)]], $p['sources']);
       }
       else if ($this->rc->task == 'addressbook') {
-        $p['sources'] = $all_source + $p['sources'] + $sources;
+        $p['sources'] = array_merge($all_source, $p['sources'], $sources);
       }
       else {
         $annuaire = $p['sources']['annuaire'];
         unset($p['sources']['annuaire']);
-        $p['sources'] = $all_source + $p['sources'] + $sources + [$annuaire];
+        $p['sources'] = array_merge($all_source, $p['sources'], $sources, [$annuaire]);
       }
       return $p;
     }
@@ -411,7 +412,7 @@ class mel_contacts extends rcube_plugin {
           && $addressbook->delete()) {
         $this->rc->output->show_message('mel_contacts.bookdeleted', 'confirmation');
         $this->rc->output->set_env('pagecount', 0);
-        $this->rc->output->command('set_rowcount', rcmail_get_rowcount_text(new rcube_result_set()));
+        // $this->rc->output->command('set_rowcount', rcmail_get_rowcount_text(new rcube_result_set()));
         $this->rc->output->command('list_contacts_clear');
         $this->rc->output->command('book_delete_done', $addressbook->id);
       }

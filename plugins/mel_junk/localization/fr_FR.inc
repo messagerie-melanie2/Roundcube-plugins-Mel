@@ -18,7 +18,8 @@
  */
 
 $labels = array();
-$labels['title'] = 'Message(s) indésirable(s) : que voulez-vous faire ?';
+$labels['title'] = 'Message(s) indésirable(s)';
+$labels['title_long'] = 'Message(s) indésirable(s) : que voulez-vous faire ?';
 $labels['junk'] = 'Valider';
 $labels['admin'] = 'Signaler à l\'administrateur';
 $labels['buttontitle'] = 'Marquer comme indésirable';

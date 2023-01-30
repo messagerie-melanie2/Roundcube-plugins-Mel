@@ -61,53 +61,65 @@ class rocket_chat extends rcube_plugin {
           $this->register_task('discussion');
         }
 
-
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->rc->config->get('rocket_chat_url'), 'discussion');
         
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
           // Ajoute le bouton en fonction de la skin
-          if ($this->rc->config->get('ismobile', false)) {
-            $this->add_button(array(
-                'href' => 'chat',
-                'class' => ' button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
-                'classsel' => 'button-rocket_chat button-selected ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
-                'innerclass' => 'button-inner',
-                'label' => 'rocket_chat.task'
-            ), 'taskbar_mobile');
-          } else {
-            $this->add_button(array(
-                'href' => './?_task=chat',
-                'class' => 'icon-mel-message button-rocket_chat',
-                'classsel' => 'icon-mel-message button-rocket_chat button-selected',
-                'innerclass' => 'button-inner',
-                'label' => 'rocket_chat.task',
-                'type'=> 'link'
-            ), 'taskbar');
+          $need_button = true;
+          if (class_exists("mel_metapage")) {
+            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('chat');
           }
+
+          if ($need_button) {
+            if ($this->rc->config->get('ismobile', false)) {
+              $this->add_button(array(
+                  'href' => 'chat',
+                  'class' => ' button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
+                  'classsel' => 'button-rocket_chat button-selected ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
+                  'innerclass' => 'button-inner',
+                  'label' => 'rocket_chat.task'
+              ), 'taskbar_mobile');
+            } else {
+              $this->add_button(array(
+                  'href' => './?_task=chat',
+                  'class' => 'icon-mel-message button-rocket_chat',
+                  'classsel' => 'icon-mel-message button-rocket_chat button-selected',
+                  'innerclass' => 'button-inner',
+                  'label' => 'rocket_chat.task',
+                  'type'=> 'link'
+              ), 'taskbar');
+            }
+          }
+
           $this->register_action('create_chanel', array(
             $this,
             'create_chanel'
-        ));
-        $this->register_action('add_users', array(
-          $this,
-          'add_users'
-      ));
-      $this->register_action('get_user_info', array(
-        $this,
-        'get_user_info'
-    ));
-    $this->register_action('get_channel_unread_count', array(
-      $this,
-      'get_channel_unread_count'
-  ));
-   $this->register_action('login', array(
-     $this,
-     'get_log'
- ));
- $this->register_action('logout', array(
-  $this,
-  'logout'
-));
+          ));
+          $this->register_action('add_users', array(
+            $this,
+            'add_users'
+          ));
+          $this->register_action('get_user_info', array(
+            $this,
+            'get_user_info'
+          ));
+          $this->register_action('get_channel_unread_count', array(
+            $this,
+            'get_channel_unread_count'
+          ));
+          $this->register_action('get_joined', array(
+            $this,
+            'get_joined_action'
+          ));
+          $this->register_action('login', array(
+            $this,
+            'get_log'
+          ));
+          $this->register_action('logout', array(
+            $this,
+            'logout'
+          ));
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -179,7 +191,7 @@ EOF;
           $this->include_script('rocket_chat_storage_event.js');
           // Appel le script de gestion des link
           $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
-          $this->include_script('rocket_chat_link.js');
+          if (!class_exists("mel_metapage")) $this->include_script('rocket_chat_link.js');
                         // Appel la lib pour la gestion du Favico
                         $this->include_script('favico.js');
                         // Appel le script de création du chat
@@ -395,7 +407,29 @@ EOF;
      * @return NULL|string
      */
     private function getUserId() {
-      return $this->rc->config->get('rocket_chat_user_id', null);
+      // MANTIS 0006224: Ajouter un mapping entre les utilisateurs Mél et les utilisateurs Rocket Chat
+      $mapping = $this->rc->config->get('rocket_chat_users_mapping', []);
+      if (isset($mapping[$this->rc->get_user_name()])) {
+        $userId = $mapping[$this->rc->get_user_name()];
+        // Enregistrer la nouvelle valeur en pref si jamais elle est différente
+        if ($userId != $this->rc->config->get('rocket_chat_user_id', null)) {
+          $this->setUserId($userId);
+        }
+      }
+      else {
+        $userId = $this->rc->config->get('rocket_chat_user_id', null);
+      }
+      // Problème en conf sur le userId
+      if (is_array($userId)) {
+        if (isset($userId['id'])) {
+          $userId = $userId['id'];
+          $this->setUserId($userId);
+        }
+        else {
+          $userId = null;
+        }
+      }
+      return $userId;
     }
     /**
      * Positionne le user id en session
@@ -660,6 +694,57 @@ EOF;
       $rocketClient = $this->get_rc_client();
 
       return $rocketClient->get_all_joined();
+    }
+
+    public function get_all_moderator_joined($user = null)
+    {
+      $rocketClient = $this->get_rc_client();
+
+      return $rocketClient->get_all_moderator_joined($user ?? driver_mel::gi()->getUser()->uid);
+    }
+
+    public function get_joined_action()
+    {
+      $user_id = rcube_utils::get_input_value('_user_id', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
+      $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
+      $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
+      $mode = (int) $mode;
+
+      $list;
+      try {
+        if ($moderator_only)
+        {
+          $list = $this->get_all_moderator_joined($user_id);
+        }
+        else 
+        {
+          $list = $this->get_joined();
+        }
+  
+        switch ($mode) {
+          case 0:
+            $list = json_encode($list);
+            break;
+  
+          case 1: //public
+            $list = json_encode($list['channel']);
+            break;
+  
+          case 2: //private
+            $list = json_encode($list['group']);
+            break;
+          
+          default:
+            # code...
+            break;
+        }
+      } catch (\Throwable $th) {
+        $list = [];
+      }
+
+      echo $list;
+      exit;
+
     }
 
     public function check_if_room_exist($room_id)

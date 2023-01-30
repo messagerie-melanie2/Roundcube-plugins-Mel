@@ -35,10 +35,12 @@ class Windows_Like_PopUp extends MetapageObject
             onCreatingContent:(html) => html,
             afterCreatingContent:($html, box) => {},
             onminifiedListCreated:($minified) => {
-                $minified.css("left", "60px").css("width", "calc(100% - 60px)");
+                $minified.addClass('auto');//.css("left", "60px").css("width", "auto");
             },
             width:"100%",
-            height:"100%"
+            height:"100%",
+            context:window,
+            fullscreen:false
         };
 
         Windows_Like_PopUp.popUps[this.id] = this;
@@ -74,7 +76,7 @@ class Windows_Like_PopUp extends MetapageObject
         const class_contents = "wlp-contents";
         const class_size = "wlp-minixpand";
         const class_close = "wlp-close";
-        const h = "2";
+        const h = "3";
 
         let html = "";
 
@@ -85,7 +87,7 @@ class Windows_Like_PopUp extends MetapageObject
         //Création du header
         html += `<div class="${class_header}">`;
         html += `<span class="${class_title}"><h${h} style="display:inline-block;">${settings.title}</h${h}></span>`;
-        html += `<span style="float:right;margin-right: 15px;"><button class="${class_size} inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
+        html += `<span style="float:right;margin-right: 15px;"><button class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
         <button class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
         html += '</div>';
 
@@ -93,7 +95,7 @@ class Windows_Like_PopUp extends MetapageObject
         html += `<div class="${class_contents}" style="width:100%;height:100%;">${settings.content}</div>`;
 
         //Création de la box
-        html = `<div id="${id}" class="wlp_box" style="position:absolute;top:0;right:0;width:${settings.width};height:${settings.height};">${settings.onCreatingContent !== null ? settings.onCreatingContent(html) : html}</div>`;
+        html = `<div id="${id}" class="wlp_box ${this.settings.fullscreen === true ? 'fullscreen' : ''}" style="position:absolute;top:0;right:0;width:${settings.width};height:${settings.height};">${settings.onCreatingContent !== null ? settings.onCreatingContent(html) : html}</div>`;
             
         this.parent.append(html);
 
@@ -104,31 +106,27 @@ class Windows_Like_PopUp extends MetapageObject
                 settings.onminifiedListCreated(this.parent.find(".wlp-minifieds"));
         }
 
-        this.box.content = $(`${jid} .${class_contents}`);
-        this.box.header = $(`${jid} .${class_header}`);
-        this.box.title = $(`${jid} .${class_title}`);
-        this.box.get = $(`${jid}`);
-        this.box.close = $(`${jid} .${class_close}`).on("click", () => {
-            if (this.settings.onclose !== null)
-                this.settings.onclose();
-
-            this.destroy();
-            Windows_Like_PopUp.clean();
+        this.box.content = this.parent.find(`${jid} .${class_contents}`);
+        this.box.header = this.parent.find(`${jid} .${class_header}`);
+        this.box.title = this.parent.find(`${jid} .${class_title}`);
+        this.box.get = this.parent.find(`${jid}`);
+        this.box.close = this.parent.find(`${jid} .${class_close}`).on("click", () => {
+            this.close();
         });
-        this.box.minifier = $(`${jid} .${class_size}`).on("click", () => {
+        this.box.minifier = this.parent.find(`${jid} .${class_size}`).on("click", () => {
             let span = this.box.minifier.find('span');
             if (span.hasClass(this.settings.icon_minify))
             {
                 //minify
                 if (this.settings.onminify !== null)
-                    this.settings.onminify();
+                    this.settings.onminify(this);
 
                 this.minify();
             }
             else {
                 //expand
                 if (this.settings.onexpand !== null)
-                    this.settings.onexpand();
+                    this.settings.onexpand(this);
 
                 this.expand();
             }
@@ -136,15 +134,20 @@ class Windows_Like_PopUp extends MetapageObject
 
         //Ajout de actions
         if (settings.afterCreatingContent !== null)
-            settings.afterCreatingContent($(jid), this.box);
+            settings.afterCreatingContent(this.parent.find(jid), this.box, this);
 
         return this;
     }
 
     minify(){
         this.box.minifier.find("span").removeClass(this.settings.icon_minify).addClass(this.settings.icon_expend);
-        this.box.header.clone().appendTo($('.wlp-minifieds')).attr("id", `minified-${this.id}`).find(".wlp-close").click(() => {
-            $(`#minified-${this.id}`).remove();
+        let $header = this.box.header.clone();
+        let $h2 = $header.find('h3');
+
+        if ($h2.html().length > 20) $h2.html($h2.html().slice(0, 20) + '...');
+
+        $header.appendTo(this.settings.context.$('.wlp-minifieds')).attr("id", `minified-${this.id}`).find(".wlp-close").click(() => {
+            this.settings.context.$(`#minified-${this.id}`).remove();
             
             if (this.settings.onclose !== null)
                 this.settings.onclose();
@@ -159,10 +162,12 @@ class Windows_Like_PopUp extends MetapageObject
             this.expand();
         });
         this.box.get.css("display", "none");
+        this._minified_header = $header;
     }
 
     expand(){
-        $(`#minified-${this.id}`).remove();
+        this._minified_header.remove();
+        this._minified_header = null;
         this.box.minifier.find("span").addClass(this.settings.icon_minify).removeClass(this.settings.icon_expend);
         this.box.get.css("display", "");
     }
@@ -170,7 +175,7 @@ class Windows_Like_PopUp extends MetapageObject
     destroy()
     {
         try {
-            $(`#minified-${this.id}`).remove();
+            this.settings.context.$(`#minified-${this.id}`).remove();
         } catch (error) {
             
         }
@@ -186,7 +191,11 @@ class Windows_Like_PopUp extends MetapageObject
     close()
     {
         if (this.settings.onclose !== null)
-            this.settings.onclose();
+        {
+            const action = this.settings.onclose(this);
+
+            if (action === 'break') return;
+        }
 
         this.destroy();
         Windows_Like_PopUp.clean();
@@ -212,8 +221,7 @@ class Windows_Like_PopUp extends MetapageObject
             }
         }
 
-        if (Enumerable.from(Windows_Like_PopUp.popUps).count() === 0)
-            $('.wlp-minifieds').remove();
+        if (Enumerable.from(Windows_Like_PopUp.popUps).count() === 0) $('.wlp-minifieds').remove();
     }
 
     static test()
@@ -226,31 +234,16 @@ class Windows_Like_PopUp extends MetapageObject
             // icon_close:"icon-mel-close",
             // icon_minify:'icon-mel-minus',
             // icon_expend:'icon-mel-expend',
-            content:"Salut bg",
+            content:"Test",
             // onsetup:() => {},
             // aftersetup:() => {},
             // beforeCreatingContent:() => "",
             // onCreatingContent:(html) => html,
              afterCreatingContent:($html, box) => {
-                 box.get.css("left","60px").css("top", "60px").addClass("questionnaireWebconf");
-                 setTimeout(() => {
-                    box.close.addClass("mel-focus focused");
-                    setTimeout(() => {
-                        box.close.removeClass("mel-focus").removeClass("focused");
-                        setTimeout(() => {
-                            box.close.addClass("mel-focus focused");
-                            setTimeout(() => {
-                                box.close.removeClass("mel-focus").removeClass("focused");
-                                setTimeout(() => {
-                                    box.close.focus();
-                                 }, 100);
-                             }, 100);
-                         }, 100);
-                     }, 200);
-                 }, 200);
+                 box.get.addClass("questionnaireWebconf fullscreen");
              },
-            width:"calc(100% - 60px)",
-            height:"calc(100% - 60px)"
+            // width:"calc(100% - 60px)",
+            // height:"calc(100% - 60px)"
         };
 
         return new Windows_Like_PopUp($("body"), config);
@@ -258,3 +251,5 @@ class Windows_Like_PopUp extends MetapageObject
 }
 
 Windows_Like_PopUp.popUps = {};
+
+window.Windows_Like_PopUp = Windows_Like_PopUp;

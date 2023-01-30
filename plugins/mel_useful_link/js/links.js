@@ -10,7 +10,7 @@ function PaperClipCopy(link)
     }
     const url = link[0].href;
     copyOnClick(url);
-    rcmail.display_message(`${url} copier dans le presse-papier.`, "confirmation")
+    rcmail.display_message(`${url} copié dans le presse-papier.`, "confirmation")
 }
 
 function EditLink(id)
@@ -23,7 +23,8 @@ function EditLink(id)
 
 function ModifyLink(link)
 {
-    GetLinkPopUp().setLinkEditor(link).show();
+    if (!!link.links) GetLinkPopUp().setMultiLinkEditor(link).show(); 
+    else GetLinkPopUp().setLinkEditor(link).show();
 }
 
 function CreateLink()
@@ -31,7 +32,20 @@ function CreateLink()
     if (rcmail.busy)
         return;
 
-    GetLinkPopUp().setLinkEditor(new MelLink()).show();
+    GetLinkPopUp().drawChoice('', {
+        icon:'icon-mel-link',
+        name:'Créer un lien unique',
+        click:() => {
+            GetLinkPopUp().setLinkEditor(new MelLink()).show();
+        }
+    },
+    {
+        icon:'icon-mel-grid',
+        name:'Créer un multi-lien',
+        click:() => {
+            GetLinkPopUp().setMultiLinkEditor().show();
+        }
+    }).show();//.setLinkEditor(new MelLink()).show();
 }
 
 function SearchLinks(search)
@@ -172,3 +186,11 @@ function PublicCommands(element)
             break;
     }
 }
+
+$(document).ready(() => {
+    for (const iterator of $('.multi-links-title')) {
+        $(iterator).click((e) => {
+            window.open($(e.currentTarget).parent().find('a').attr('href'), '_blank');
+        });
+    }
+});

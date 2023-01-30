@@ -27,6 +27,7 @@ class mel_wekan_api extends amel_lib
     const CALL_GET_USERS = "/api/users";
     const CALL_SET_MEMBER_PERMISSION = "/api/boards/{board}/members/{member}";
     const CALL_GET_BOARD = "/api/boards/{board}";
+    const CALL_GET_USER_BOARDS = '/api/users/{user}/boards';
     const CALL_DELETE_MEMBER = "/api/boards/{board}/members/{user}/remove";
     const CALL_DELETE_BOARD = "/api/boards";
     const CALL_CREATE_TOKEN = "/api/createtoken";
@@ -290,6 +291,76 @@ class mel_wekan_api extends amel_lib
         }
 
         return $users;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function get_user_boards($username)
+    {
+        //CALL_GET_USER_BOARDS
+        if (!$this->is_logged())  $this->login();
+
+        $username = $this->get_user($username);
+
+        if (gettype($username) !== "string")
+            return null;
+
+        $key = str_replace("{user}", $username, self::CALL_GET_USER_BOARDS);
+        return $this->get($key, null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]);
+    }
+
+    public function get_user_boards_objects_generator($username)
+    {
+        $boards = $this->get_user_boards($username);
+
+        if ($boards !== null && $boards['httpCode'] === 200)
+        {
+            $boards = json_decode($boards['content']);
+            foreach ($boards as $value) {
+                $tmpBoard = $this->get_board($value->_id);
+                if ($tmpBoard['httpCode'] === 200)
+                {
+                    $tmp = json_decode($tmpBoard['content']);
+                    $tmp->id = $value->_id;
+                    yield $tmp;
+                }
+            }
+        }
+    }
+
+    public function get_user_boards_objects($username)
+    {
+        $boards = [];
+        foreach ($this->get_user_boards_objects_generator($username) as $value) {
+            $boards[] = $value;
+        }
+
+        return $boards;
+    }
+
+    public function get_user_boards_admin_generator($username)
+    {
+        $username = $this->get_user($username);
+
+        foreach ($this->get_user_boards_objects_generator($username) as $value) {
+            foreach ($value->members as $user) {
+                if ($user->userId === $username && $user->isAdmin) yield $value;
+            }
+        }
+    }
+
+    public function get_user_boards_admin($username)
+    {
+        $boards = [];
+
+        foreach ($this->get_user_boards_admin_generator($username) as $value) {
+            $boards[] = $value;
+        }
+
+        return $boards;
     }
 
     /**

@@ -38,6 +38,7 @@ class mel_driver extends calendar_driver {
   const SHORT_DB_DATE_FORMAT = 'Y-m-d';
   const RECURRENCE_ID = '@RECURRENCE-ID';
   const RECURRENCE_DATE = '-XXXXXXXX';
+  const CALENDAR_SEPARATOR = '##cal##';
 
   // features this backend supports
   public $alarms = true;
@@ -165,7 +166,7 @@ class mel_driver extends calendar_driver {
    * @return array List of calendars
    */
   public function list_calendars($filter = 0, &$tree = null, $calid = null) {
-    if ($this->rc->task != 'calendar' && $this->rc->task != 'mel_metapage' && $this->rc->task != 'settings' && $this->rc->task != 'login') {
+    if (/*$this->rc->task != 'calendar' && $this->rc->task != 'mel_metapage' && $this->rc->task != 'settings' &&*/ $this->rc->task === 'login') {
       return;
     }
     if (mel_logs::is(mel_logs::DEBUG))
@@ -286,6 +287,7 @@ class mel_driver extends calendar_driver {
             'name'        => $cal->name,
             'listname'    => $calendar_name,
             'editname'    => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name,
+            'title'       => ($this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name) . ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? "" : " 🔒"),
             'color'       => $color,
             'showalarms'  => $alarm ? 1 : 0,
             'default'     => $default_calendar->id == $cal->id,
@@ -327,6 +329,10 @@ class mel_driver extends calendar_driver {
           else {
             // On est dans un calendrier enfant on cherche le parent
             $parentRcId = driver_mel::gi()->mceToRcId($cal->owner);
+
+            // le parent pour les ressources
+            // $calendar['parentId'] = $parentRcId;
+            
             if (isset($tree->children[$parentRcId])) {
               if (!isset($tree->children[$parentRcId]->children)) {
                 $tree->children[$parentRcId]->children = [];
@@ -454,7 +460,7 @@ class mel_driver extends calendar_driver {
 
     try {
       if ($defaultCalendar) {
-        $ret = $this->user->createDefaultCalendar($prop['name']);
+        $saved = $this->user->createDefaultCalendar($prop['name']);
       }
       else {
         $calendar = driver_mel::gi()->calendar([$this->user]);
@@ -462,8 +468,9 @@ class mel_driver extends calendar_driver {
         $calendar->id = isset($prop['id']) ? driver_mel::gi()->rcToMceId($prop['id']) : md5($prop['name'] . time() . $this->user->uid);
         $calendar->owner = $this->user->uid;
         $ret = $calendar->save();
+        $saved = !is_null($ret);
       }
-      if ($ret) {
+      if ($saved) {
         // Récupération des préférences de l'utilisateur
         $active_calendars = $this->rc->config->get('active_calendars', array());
         $color_calendars = $this->rc->config->get('color_calendars', array());
@@ -720,19 +727,17 @@ class mel_driver extends calendar_driver {
       if (!$this->validate($event) || empty($this->calendars) || !isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
         return false;
       }
+
       // Génère l'évènement
       $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
+      
       // Calcul de l'uid de l'évènment
       if (isset($event['uid']) && !empty($event['uid'])) {
         $_event->uid = $event['uid'];
       }
       elseif (isset($event['id'])) {
-        $id = $event['id'];
-        if (strpos($id, '@DATE-') !== false) {
-          $id = explode('@DATE-', $id);
-          $id = $id[0];
-        }
-        else if (strpos($id, self::RECURRENCE_ID) !== false) {
+        $id = $this->get_uid_from_id($event['id']);
+        if (strpos($id, self::RECURRENCE_ID) !== false) {
           $id = substr($id, 0, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID));
           if (!isset($event['_savemode'])) {
             $event['_savemode'] = 'current';
@@ -778,14 +783,20 @@ class mel_driver extends calendar_driver {
             && $_event->owner != $this->user->uid 
             && !$this->calendars[$_event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
+        // Retourner le résultat
+        $result = true;
+
         if ($is_private) {
-          return true;
+          return $result;
         }
         $old = $this->_read_postprocess($_event);
       }
       else {
         $loaded = false;
         $_event->uid = str_replace('/', '', $_event->uid);
+
+        // Gérer la sequence
+        $_event->sequence = 0;
       }
       if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
         $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
@@ -823,6 +834,15 @@ class mel_driver extends calendar_driver {
           $recid = date('Ymd', strtotime($_exception->recurrence_id));
         }
         $exceptions[$recid] = $this->_write_postprocess($_exception, $event, true);
+
+        // Gérer la sequence
+        if (is_int($_exception->sequence)) {
+          $_exception->sequence = $_exception->sequence + 1;
+        }
+        else {
+          $_exception->sequence = 0;
+        }
+
         $_event->exceptions = $exceptions;
         $_event->modified = time();
       }
@@ -830,8 +850,7 @@ class mel_driver extends calendar_driver {
         // Positionnement de la recurrence_id et de l'uid
         $id = $event['id'];
         if (strpos($id, '@DATE-') !== false) {
-          $date = explode('@DATE-', $event['id']);
-          $date = $date[1];
+          $date = explode('@DATE-', $event['id'])[1];
           $enddate = new \DateTime('@'.$date);
         }
         else {
@@ -839,21 +858,40 @@ class mel_driver extends calendar_driver {
           $enddate = clone ($event['start']);
         }
         if ($enddate->getTimestamp() == strtotime($_event->start)) {
-            // Converti les données de l'évènement en évènement Mél
-            $_event = $this->_write_postprocess($_event, $event, false);
+          // Converti les données de l'évènement en évènement Mél
+          $_event = $this->_write_postprocess($_event, $event, false);
+
+          // Gérer la sequence
+          if (is_int($_event->sequence)) {
+            $_event->sequence = $_event->sequence + 1;
+          }
+          else {
+            $_event->sequence = 0;
+          }
         }
         else {
-            $enddate->sub(new DateInterval('P1D'));
+          $enddate->sub(new DateInterval('P1D'));
 
-            $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
-            $_event->recurrence->count = '';
-            $_event->save();
-            // Création de la nouvelle
-            $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
-            // Converti les données de l'évènement en évènement Mél
-            $_event = $this->_write_postprocess($_event, $event, true);
-            $_event->uid = $this->cal->generate_uid();
+          $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
+          $_event->recurrence->count = null;
+
+          // Gérer la sequence
+          if (is_int($_event->sequence)) {
+            $_event->sequence = $_event->sequence + 1;
+          }
+          else {
+            $_event->sequence = 0;
+          }
+
+          $_event->save();
+          // Création de la nouvelle
+          $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
+          // Converti les données de l'évènement en évènement Mél
+          $_event = $this->_write_postprocess($_event, $event, true);
+          $_event->sequence = 0;
+          $_event->uid = $this->cal->generate_uid();
         }
+        $result = $_event->uid;
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'new') {
         $event['uid'] = $_event->uid;
@@ -861,7 +899,9 @@ class mel_driver extends calendar_driver {
         $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, true);
+        $_event->sequence = 0;
         $_event->uid = $this->cal->generate_uid();
+        $result = $_event->uid;
       }
       else {
         if (isset($old) && strpos($event['id'], '@DATE-') !== false) {
@@ -874,12 +914,27 @@ class mel_driver extends calendar_driver {
         }
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, $new);
-        //Supprime le tag que l'alarme a été repoussé
+
+        // Gérer la sequence
+        if (is_int($_event->sequence)) {
+          $_event->sequence = $_event->sequence + 1;
+        }
+        else {
+          $_event->sequence = 0;
+        }
+
+        // Supprime le tag que l'alarme a été repoussé
         if ($_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK) !== null)
-          $_event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK, null); 
+          $_event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK, null);
+        
+        $result = $_event->uid;
       }
 
       if ($_event->save() !== null) {
+        // MANTIS 0006610: EVT RECURRENT: Lors du rajout d'une PJ suite à la modification d'une occurrence. Toute la récurrence est impactée
+        if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
+          $_event = $_exception;
+        }
         // add attachments
         if (is_array($event['attachments'])) {
           foreach ($event['attachments'] as $attachment) {
@@ -894,7 +949,7 @@ class mel_driver extends calendar_driver {
             $this->remove_attachment($attachment, $_event->uid);
           }
         }
-        return $_event->uid;
+        return $result;
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -945,7 +1000,7 @@ class mel_driver extends calendar_driver {
   protected function currentUserIsOrganiser($organizer) {
     $bal = driver_mel::gi()->user();
     $bal->email = $organizer->email;
-    return $bal->load('shares') 
+    return $bal->load(['shares']) 
         && isset($bal->shares[$this->rc->get_user_name()])
         && ($bal->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN 
           || $bal->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_SEND
@@ -988,6 +1043,9 @@ class mel_driver extends calendar_driver {
       }
       elseif (isset($event['id'])) {
         $id = $event['id'];
+        if (strpos($id, self::CALENDAR_SEPARATOR) !== false) {
+          $id = explode(self::CALENDAR_SEPARATOR, $id, 2)[1];
+        }
         if (strpos($id, '@DATE-') !== false) {
           $id = explode('@DATE-', $id, 2);
           $recurrence_date = $id[1];
@@ -1023,7 +1081,6 @@ class mel_driver extends calendar_driver {
         }
 
         if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
-          $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
           if (!is_array($exceptions))
@@ -1036,24 +1093,55 @@ class mel_driver extends calendar_driver {
             $e['allday'] = $event['allday'];
           // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
+          if (strpos($id, self::CALENDAR_SEPARATOR) !== false) {
+            $id = explode(self::CALENDAR_SEPARATOR, $id, 2)[1];
+          }
           if (strpos($id, '@DATE-') !== false) {
-            $recid = explode('@DATE-', $event['id']);
+            $recid = explode('@DATE-', $id);
             $recid = $recid[1];
-            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
+            $exKey = date('Ymd', intval($recid));
+            if (isset($exceptions[$exKey])) {
+              $_exception = $exceptions[$exKey];
+            }
+            else {
+              $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
+              $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
+            }
           }
           else if (strpos($id, self::RECURRENCE_ID) !== false) {
             $recid = substr($id, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID) + 1, - strlen(self::RECURRENCE_ID));
             $recIdDT = DateTime::createFromFormat('Ymd His', $recid . ' ' . $event['start']->format('His'));
-            $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
+            $exKey = $recIdDT->format('Ymd');
+            if (isset($exceptions[$exKey])) {
+              $_exception = $exceptions[$exKey];
+            }
+            else {
+              $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
+              $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
+            }
           }
           else if ($event['start'] instanceof DateTime) {
+            $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
             $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
+            $exKey = $event['start']->format('Ymd');
+          }
+          else {
+            return false;
           }
           $_exception->uid = $_event->uid;
           $_exception->deleted = false;
           // Génération de l'exception
           $_exception = $this->_write_postprocess($_exception, $e, true);
-          $exceptions[] = $_exception;
+
+          // Gérer la sequence
+          if (is_int($_exception->sequence)) {
+            $_exception->sequence = $_exception->sequence + 1;
+          }
+          else {
+            $_exception->sequence = 0;
+          }
+
+          $exceptions[$exKey] = $_exception;
           $_event->exceptions = $exceptions;
           $_event->modified = time();
         }
@@ -1070,12 +1158,23 @@ class mel_driver extends calendar_driver {
             // Définition de la date de fin pour la récurrence courante
           $enddate = clone ($event['start']);
           $enddate->sub(new DateInterval('P1D'));
+          $_event->recurrence->count = null;
           $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
+
+          // Gérer la sequence
+          if (is_int($_event->sequence)) {
+            $_event->sequence = $_event->sequence + 1;
+          }
+          else {
+            $_event->sequence = 0;
+          }
+
           $_event->save();
           // Création de la nouvelle
           $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
+          $_event->sequence = 0;
           $_event->uid = $e['uid'];
           $result = $_event->uid;
         }
@@ -1088,10 +1187,20 @@ class mel_driver extends calendar_driver {
           $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
+          $_event->sequence = 0;
           $_event->uid = $e['uid'];
           $result = $_event->uid;
         }
         else if (isset($event['_savemode']) && $event['_savemode'] == 'all') {
+          $exceptions = $_event->exceptions;
+          // Gérer la sequence
+          if (is_int($_event->sequence)) {
+            $_event->sequence = $_event->sequence + 1;
+          }
+          else {
+            $_event->sequence = 0;
+          }
+
           // Nous sommes dans le cas ou une occurrence est déplacé/resizé pour toute la récurrence
           // Il ne faut pas écraser le start/end de la récurrence mais le recalculer
           if ($resize) {
@@ -1122,6 +1231,14 @@ class mel_driver extends calendar_driver {
           }
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $event, false, true);
+
+          // Gérer la sequence
+          if (is_int($_event->sequence)) {
+            $_event->sequence = $_event->sequence + 1;
+          }
+          else {
+            $_event->sequence = 0;
+          }
         }
         if ($_event->save() !== null) {
           return $result;
@@ -1169,7 +1286,7 @@ class mel_driver extends calendar_driver {
     // Gestion des données de l'évènement
     if ($new) {
       $_event->created = time();
-    }    
+    }
     $_event->all_day = isset($event['allday']) && $event['allday'] == 1;
     if (isset($event['start'])) {
       if ($_event->all_day) {
@@ -1189,6 +1306,13 @@ class mel_driver extends calendar_driver {
         $_event->end = $event['end'];
       }
     }
+
+    // Gérer la sequence
+    // Ignorer la sequence
+    // if (isset($event['sequence'])) {
+    //   $_event->sequence = $event['sequence'];
+    // }
+
     if ($new) {
       $_event->owner = $this->user->uid;
     }
@@ -1283,7 +1407,9 @@ class mel_driver extends calendar_driver {
           $_attendees[] = $attendee;
         }
       }
-      $_event->attendees = $_attendees;
+      if (!isset($event['_method']) || $event['_method'] != 'REQUEST' || $event['calendar'] != $_event->organizer->calendar) {
+        $_event->attendees = $_attendees;
+      }
     }
     // Modified time
     $_event->modified = time();
@@ -1326,6 +1452,9 @@ class mel_driver extends calendar_driver {
       }
       elseif (isset($event['id'])) {
         $id = $event['id'];
+        if (strpos($id, self::CALENDAR_SEPARATOR) !== false) {
+          $id = explode(self::CALENDAR_SEPARATOR, $id, 2)[1];
+        }
         if (strpos($id, '@DATE-') !== false) {
           $id = explode('@DATE-', $id);
           $id = $id[0];
@@ -1341,24 +1470,7 @@ class mel_driver extends calendar_driver {
       else {
         return false;
       }
-      if ($event['_savemode'] == 'all') {
-        if ($_event->load()) {
-          foreach ($_event->exceptions as $exception) {
-            $exception_uid = $exception->uid;
-            $exception->delete();
-            $this->remove_event_attachments($exception_uid);
-          }
-        }
-        $event_uid = $_event->uid;
-        if ($_event->delete()) {
-          $this->remove_event_attachments($event_uid);
-          return true;
-        }
-        else {
-          return false;
-        }
-      }
-      elseif ($event['_savemode'] == 'current') {
+      if ($event['_savemode'] == 'current') {
         if ($_event->load()) {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
@@ -1366,8 +1478,7 @@ class mel_driver extends calendar_driver {
           // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
           if (strpos($id, '@DATE-') !== false) {
-            $recid = explode('@DATE-', $event['id']);
-            $recid = $recid[1];
+            $recid = explode('@DATE-', $event['id'])[1];
             $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
           }
           else if (strpos($id, self::RECURRENCE_ID) !== false) {
@@ -1409,8 +1520,7 @@ class mel_driver extends calendar_driver {
       elseif ($event['_savemode'] == 'future') {
         if ($_event->load()) {
           // Positionnement de la recurrence_id et de l'uid
-          $recid = explode('@DATE-', $event['id']);
-          $recid = $recid[1];
+          $recid = explode('@DATE-', $event['id'])[1];
           $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
           $_event->recurrence->count = '';
           if (strtotime($_event->recurrence->enddate) < strtotime($_event->start)) {
@@ -1426,6 +1536,12 @@ class mel_driver extends calendar_driver {
       else {
         // 0005105: La suppression d'un événement simple ne le charge pas
         if ($_event->load()) {
+          // MANTIS 0006615: L'exception d'une invitation est toujours présente sur le téléphone après suppression de la récurrence complète
+          foreach ($_event->exceptions as $exception) {
+            $exception_uid = $exception->uid;
+            $exception->delete();
+            $this->remove_event_attachments($exception_uid);
+          }
           if ($_event->delete()) {
             $this->remove_event_attachments($_event->uid);
             // Tester si c'est une réunion et que l'organisateur est sur Mel pour refuser l'invitation
@@ -1445,6 +1561,24 @@ class mel_driver extends calendar_driver {
                     $organizer_event->modified += 1;
                     $organizer_event->save();
                     break;
+                  }
+                }
+                // Gérer les exceptions
+                foreach ($organizer_event->exceptions as $organizer_exception) {
+                  // Ne garder que les occurrences modifiées
+                  if ($organizer_exception->deleted) {
+                    continue;
+                  }
+                  $attendees = $organizer_exception->attendees;
+                  foreach ($attendees as $key => $attendee) {
+                    if ($attendee->uid == $this->calendars[$event['calendar']]->owner) {
+                      // Participant courant on le passe en décliné
+                      $attendees[$key]->response = mel_mapping::rc_to_m2_attendee_status('DECLINED');
+                      $organizer_exception->attendees = $attendees;
+                      $organizer_exception->modified += 1;
+                      $organizer_exception->save();
+                      break;
+                    }
                   }
                 }
               }
@@ -1521,6 +1655,9 @@ class mel_driver extends calendar_driver {
         }
         elseif (isset($event['id'])) {
           $id = $event['id'];
+          if (strpos($id, self::CALENDAR_SEPARATOR) !== false) {
+            $id = explode(self::CALENDAR_SEPARATOR, $id, 2)[1];
+          }
           if (strpos($id, '@DATE-') !== false) {
             $id = explode('@DATE-', $id);
             if (isset($event['_savemode']) && ($event['_savemode'] == 'current' || $event['_savemode'] == 'future')) {
@@ -1548,7 +1685,7 @@ class mel_driver extends calendar_driver {
 
             // Initialise l'event id avec le recurrence_date
             if (!isset($event['id'])) {
-              $event['id'] = $event['uid'] . '@DATE-' . $_recurrence_date;
+              $event['id'] = driver_mel::gi()->mceToRcId($_event->calendar) . self::CALENDAR_SEPARATOR . $event['uid'] . '@DATE-' . $_recurrence_date;
             }
 
             // Rechercher si on est pas sur une EXDATE (exception et pas occurrence)
@@ -1630,7 +1767,7 @@ class mel_driver extends calendar_driver {
             $_event->uid = $event['uid'];
           }
           elseif (isset($event['id'])) {
-            $_event->uid = $event['id'];
+            $_event->uid = $this->get_uid_from_id($event['id']);
           }
           else {
             return false;
@@ -1820,6 +1957,10 @@ class mel_driver extends calendar_driver {
                 $next_event["alarm_dismissed"] = ($next_event['start']->getTimestamp() - $next_event['x_alarm_minutes'] * 60) < strtotime($next_event['x_moz_lastack']);
               }
 
+              // Garder la date du master
+              $next_event['master_start'] = $this->cal->lib->adjust_timezone($_event['start'], $_event['allday'])->format('c');
+              $next_event['master_end'] = $this->cal->lib->adjust_timezone($_event['end'], $_event['allday'])->format('c');
+
               $_events[] = $next_event;
             }
             // Ajoute les exceptions
@@ -1898,7 +2039,7 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess()");
     $_event = array();
 
-    $_event['id'] = $event->uid;
+    $_event['id'] = driver_mel::gi()->mceToRcId($event->calendar) . self::CALENDAR_SEPARATOR . $event->uid;
     $_event['uid'] = $event->uid;
     $_event['calendar-name'] = $this->_format_calendar_name($this->calendars[$event->calendar]->name);
 
@@ -1908,6 +2049,7 @@ class mel_driver extends calendar_driver {
       $_event['end'] = new DateTime('1970-01-01');
       // Récupération des exceptions dans la récurrence de l'évènement
       $_event['recurrence'] = $this->_read_event_exceptions($event, array());
+
       return $_event;
     }
 
@@ -1930,9 +2072,42 @@ class mel_driver extends calendar_driver {
         $_event['end']->setTimezone($this->cal->timezone);
       }
     }
+
+    // 0007033: Modification d'un évenement récurrent
+    if ($isexception) {
+      // Savoir si c'est du journée entière (utilisation d'un endswith
+      if ($eventParent->all_day) {
+        $master_allday = 1;
+
+        // Passer les journées entières à 12h - 13h pour régler les problèmes
+        $master_start = new DateTime(substr($eventParent->start, 0, strlen($eventParent->start) - strlen('00:00:00')) . '13:00:00', new DateTimeZone('GMT'));
+        $master_end = new DateTime(substr($eventParent->end, 0, strlen($eventParent->end) - strlen('00:00:00')) . '14:00:00', new DateTimeZone('GMT'));
+        // Supprimer un jour pour le décalage
+        $master_end->sub(new DateInterval("P1D"));       
+      }
+      else {
+        $master_allday = 0;
+        
+        $master_start = new DateTime($eventParent->start, new DateTimeZone($eventParent->timezone));
+        $master_end = new DateTime($eventParent->end, new DateTimeZone($eventParent->timezone));
+        if ($this->cal->timezone->getName() != $eventParent->timezone) {
+          $master_start->setTimezone($this->cal->timezone);
+          $master_end->setTimezone($this->cal->timezone);
+        }
+      }
+      $_event['master_start'] = $this->cal->lib->adjust_timezone($master_start, $master_allday)->format('c');
+      $_event['master_end'] = $this->cal->lib->adjust_timezone($master_end, $master_allday)->format('c');
+    }
+
     $_event['created'] = new DateTime(date('Y-m-d H:i:s', $event->created));
     $_event['changed'] = new DateTime(date('Y-m-d H:i:s', $event->modified));
     $_event['calendar'] = driver_mel::gi()->mceToRcId($event->calendar);
+    $_event['resourceId'] = driver_mel::gi()->mceToRcId($event->calendar);
+
+    // Sequence
+    if (isset($event->sequence)) {
+      $_event['sequence'] = $event->sequence;
+    }
 
     if ($freebusy) {
       // Status
@@ -2033,11 +2208,27 @@ class mel_driver extends calendar_driver {
         // Attendees
         $attendees = $event->attendees;
         if (isset($attendees) && is_array($attendees) && ! empty($attendees)) {
-          $_attendees = array();
+          $_attendees = [];
+          $organizer = $event->organizer;
+          if (isset($organizer)) {
+            $_event_organizer = [];
+            $_event_organizer['email'] = strtolower($organizer->email);
+            $_event_organizer['name'] = $organizer->name;
+            $_event_organizer['role'] = 'ORGANIZER';
+            // $_event_organizer['status'] = 'ACCEPTED';
+            // MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+            if (!$organizer->extern) {
+              $_event_organizer['internal'] = true;
+            }
+            $_attendees[] = $_event_organizer;
+          }
+          
           foreach ($attendees as $attendee) {
-            $_event_attendee = array();
+            $_event_attendee = [];
             $_event_attendee['name'] = $attendee->name;
             $_event_attendee['email'] = strtolower($attendee->email);
+            // type
+            $_event_attendee['cutype'] = mel_mapping::m2_to_rc_attendee_type($attendee->type);
             // role
             $_event_attendee['role'] = mel_mapping::m2_to_rc_attendee_role($attendee->role);
             // status
@@ -2050,14 +2241,6 @@ class mel_driver extends calendar_driver {
               $_event_attendee['skip_notify'] = false;
             }
             $_attendees[] = $_event_attendee;
-          }
-          $organizer = $event->organizer;
-          if (isset($organizer)) {
-            $_event_organizer = array();
-            $_event_organizer['email'] = strtolower($organizer->email);
-            $_event_organizer['name'] = $organizer->name;
-            $_event_organizer['role'] = 'ORGANIZER';
-            $_attendees[] = $_event_organizer;
           }
           $_event['attendees'] = $_attendees;
         }
@@ -2135,7 +2318,7 @@ class mel_driver extends calendar_driver {
         // Génération de l'exception pour Roundcube
         // Ce tableau est ensuite dépilé pour être intégré a la liste des évènements
         $e = $this->_read_postprocess($_exception, null, true, $event);
-        $e['id'] = $_exception->uid . '@DATE-' . strtotime($_exception->recurrence_id);
+        $e['id'] = driver_mel::gi()->mceToRcId($_exception->calendar) . self::CALENDAR_SEPARATOR . $_exception->uid . '@DATE-' . strtotime($_exception->recurrence_id);
         $e['recurrence_id'] = $_exception->uid;
         $e['recurrence'] = $recurrence;
         $e['_instance'] = $_exception->recurrence_id;
@@ -2176,6 +2359,9 @@ class mel_driver extends calendar_driver {
           $this->_read_calendars();
         }
         $calendars = $this->calendars;
+      }
+      if (strpos($event_id, self::CALENDAR_SEPARATOR)) {
+        $event_id = explode(self::CALENDAR_SEPARATOR, $event_id, 2)[1];
       }
       // Traitement de l'id pour les exceptions
       if (strpos($event_id, '@DATE-') !== false) {
@@ -2247,7 +2433,7 @@ class mel_driver extends calendar_driver {
       $_attachment = driver_mel::gi()->attachment();
       $_attachment->modified = time();
       $_attachment->name = $attachment['name'];
-      $_attachment->path = $event->uid . '/' . $this->calendars[$event->calendar]->owner;
+      $_attachment->path = $event->realuid . '/' . $this->calendars[$event->calendar]->id;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
       $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
@@ -2377,7 +2563,7 @@ class mel_driver extends calendar_driver {
       // Récupération des pièces jointes
       $attachments_folders = driver_mel::gi()->attachment();
       $attachments_folders->isfolder = true;
-      $attachments_folders->path = $event->uid;
+      $attachments_folders->path = $event->realuid;
       $folders_list = array();
       // Récupère les dossiers lié à l'évènement
       $folders = $attachments_folders->getList();
@@ -2419,7 +2605,7 @@ class mel_driver extends calendar_driver {
       $attachment = driver_mel::gi()->attachment();
       $attachment->isfolder = false;
       $attachment->id = $id;
-      $attachment->path = $event['id'] . '/%';
+      $attachment->path = $this->get_uid_from_id($event['id']) . '/%';
       foreach ($attachment->getList(null, null, ['path' => MappingMce::like]) as $att) {
         $ret = array('id' => $att->id,'name' => $att->name,'mimetype' => $att->contenttype,'size' => $att->size);
         $this->attachment = $att;
@@ -2458,7 +2644,13 @@ class mel_driver extends calendar_driver {
       $user->email = $email;
       if ($user->load(['uid'])) {
         // map vcalendar fbtypes to internal values
-        $fbtypemap = array('free' => calendar::FREEBUSY_FREE,'tentative' => calendar::FREEBUSY_TENTATIVE,'outofoffice' => calendar::FREEBUSY_OOF,'busy' => calendar::FREEBUSY_BUSY);
+        $fbtypemap = [
+          'free'        => calendar::FREEBUSY_FREE,
+          'tentative'   => calendar::FREEBUSY_TENTATIVE,
+          'outofoffice' => calendar::FREEBUSY_OOF,
+          'busy'        => calendar::FREEBUSY_BUSY,
+          'telework'    => calendar::FREEBUSY_TELEWORK,
+        ];
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
         $events = $this->load_events($start, $end, null, $user->uid, 1, null, true);
         $result = array();
@@ -2478,7 +2670,13 @@ class mel_driver extends calendar_driver {
       }
       else {
         // map vcalendar fbtypes to internal values
-        $fbtypemap = array('FREE' => calendar::FREEBUSY_FREE,'BUSY-TENTATIVE' => calendar::FREEBUSY_TENTATIVE,'X-OUT-OF-OFFICE' => calendar::FREEBUSY_OOF,'OOF' => calendar::FREEBUSY_OOF);
+        $fbtypemap = [
+          'FREE'            => calendar::FREEBUSY_FREE,
+          'BUSY-TENTATIVE'  => calendar::FREEBUSY_TENTATIVE,
+          'X-OUT-OF-OFFICE' => calendar::FREEBUSY_OOF,
+          'OOF'             => calendar::FREEBUSY_OOF,
+          'X-TELEWORK'      => calendar::FREEBUSY_TELEWORK,
+        ];
 
         // Si l'utilisateur n'appartient pas au minitère, on récupère éventuellement les freebusy depuis les contacts
         $fburl = null;
@@ -2597,6 +2795,66 @@ class mel_driver extends calendar_driver {
         unset($value[$calendar]);
         // Enregistrement de la valeur de pref
         return driver_mel::gi()->getUser()->saveCalendarPreference("calendarskeyhash", serialize($value));
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Récupération de la clé de partage pour les rendez-vous
+   * @param string $calendar
+   * @return string|NULL
+   */
+  public function get_appointment_public_key($calendar) {
+    $result = null;
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
+
+    if (isset($value)) {
+      $value = unserialize($value);
+      if (isset($value[$calendar])) {
+        $result = $value[$calendar];
+      }
+    }
+    return $result;
+  }
+   /**
+   * Création de la clé pour les rendez-vous pour le partage public
+   * @param string $calendar
+   * @param string $key
+   */
+  public function add_appointment_public_key($calendar, $key) {
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
+
+    if (isset($value)) {
+      $value = unserialize($value);
+      $value[$calendar] = $key;
+    }
+    else {
+      $value = array($calendar => $key);
+    }
+    // Enregistrement de la valeur de pref
+    return driver_mel::gi()->getUser()->saveCalendarPreference("appointmentkeyhash", serialize($value));
+  }
+
+  /**
+   * Suppression de la clé pour les rendez-vous
+   * @param string $calendar
+   */
+  public function delete_appointment_public_key($calendar) {
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
+
+    if (isset($value)) {
+      $value = unserialize($value);
+      if (isset($value[$calendar])) {
+        unset($value[$calendar]);
+        // Enregistrement de la valeur de pref
+        return driver_mel::gi()->getUser()->saveCalendarPreference("appointmentkeyhash", serialize($value));
       }
     }
     return true;
@@ -2975,6 +3233,23 @@ class mel_driver extends calendar_driver {
   	}
 
   	return false;
+  }
+
+  /**
+   * Récupère l'uid d'un événement à partir de son id
+   * 
+   * @param string $event_id
+   * 
+   * @return string $event_uid
+   */
+  public function get_uid_from_id($event_id) {
+    if (strpos($event_id, self::CALENDAR_SEPARATOR)) {
+      $event_id = explode(self::CALENDAR_SEPARATOR, $event_id, 2)[1];
+    }
+    if (strpos($event_id, '@')) {
+      $event_id = explode('@', $event_id, 2)[0];
+    }
+    return $event_id;
   }
 
   /**

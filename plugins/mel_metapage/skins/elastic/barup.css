@@ -384,6 +384,7 @@ html.touch .ariane-card-body
 #layout-frames
 {
     width: 100%;
+    height: 100%;
 }
 
 html.touch .barup .tiny-rocket-chat-icon.icon-mel-message::before,
@@ -395,6 +396,7 @@ html.touch .hide-touch
     display:none!important;
 } 
 
+.show-row-touch,
 .show-touch {
     display: none;
 }
@@ -406,6 +408,10 @@ html.touch .hide-touch
 html.touch .show-touch
 {
     display: inline-block!important;
+}
+
+html.touch .show-row-touch {
+    display: block;
 }
 
 #touchmelmenu{
@@ -612,3 +618,25 @@ html.layout-phone #barup-wrapper-row
 {
     margin-right: 0!important;
 }
+
+html.layout-large .show-normal-and-inf{
+    display: none;
+}
+
+html.layout-large .show-normal-and-inf.important{
+    display: none!important;
+}
+
+#theme-panel {
+	border-top: 1px solid rgba(46, 46, 46, 0.5);
+}
+
+#theme-panel .container {
+	padding: 5px 15px;
+}
+
+#theme-panel .container .title {
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+

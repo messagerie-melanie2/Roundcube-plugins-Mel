@@ -8,7 +8,11 @@
             "name": "Listen for XDebug",
             "type": "php",
             "request": "launch",
-            "port": 9000
+            "port": 9000,
+            "xdebugSettings": {
+                "max_children": 99999,
+                "max_data": -1,
+            }
         },
         {
             "name": "Launch currently open script",

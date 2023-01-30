@@ -1,8 +1,5 @@
 <?php
 
-// Liste des directions 
-$rcmail_config['signature_directions'] = [];
-
 // Liste des liens pré-établis
 $rcmail_config['signature_links'] = [];
 

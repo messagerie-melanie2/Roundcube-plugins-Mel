@@ -1,5 +1,315 @@
 $(document).ready(() => {
 
+    try {
+        Enumerable.from([]);
+    } catch (error) {
+        window.Enumerable = null;
+    }
+
+    /**
+     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     */
+    class Mel_CSS_Rule {
+        /**
+         * 
+         * @param {string} rule Règle css style "p{color:red;}"
+         */
+        constructor(rule)
+        {
+            this.rule = rule;
+            this.id = null;
+        }
+
+        /**
+         * Intègre le style à la page web
+         * @returns {Mel_CSS_Rule} Chaînage
+         */
+        set()
+        {
+            this.id = Mel_CSS_Rule.component().insertRule(rule, Mel_CSS_Rule.lastIndex());
+            return this;
+        }
+
+        /**
+         * Supprime le style de la page web
+         * @returns {Mel_CSS_Rule} Chaînage
+         */
+        delete()
+        {
+            Mel_CSS_Rule.component().deleteRule(this.id);
+            this.id = null;
+            return this;
+        }
+
+        /**
+         * Retourne la règle css sous forme de string
+         * @returns {string}
+         */
+        toString()
+        {
+            return this.rule;
+        }
+
+        /**
+         * Récupère la première feuille de style du document
+         * @returns {StyleSheetList}
+         */
+        static component()
+        {
+            return document.styleSheets[0];
+        }
+
+        /**
+         * Récupère le prochain index de la feuille de style
+         * @returns {number}
+         */
+        static lastIndex()
+        {
+            return Mel_CSS_Rule.component().cssRules.length
+        }
+    }
+
+    /**
+     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     * Gère un sélécteur ainsi qu'une liste de modificateur css.
+     */
+    class Mel_CSS_Advanced_Rule extends Mel_CSS_Rule{
+        /**
+         * 
+         * @param {string} selector Selector html (exemple: p.maclass)
+         * @param  {...string} rules Liste de règles html (exemple : color:red) sans les ';'
+         */
+        constructor(selector, ...rules)
+        {
+            super(rules),
+            this.selector = selector;
+        }
+
+        /**
+         * Intègre le style à la page web
+         * @returns {Mel_CSS_Advanced_Rule} Chaînage
+         */
+        set()
+        {
+            this.id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
+            return this;
+        }
+
+        /**
+         * Ajoute une règle à la liste des règles
+         * @param {string} rule Règle à ajouté (sans les ;)
+         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
+         */
+        add(rule, force_set = true)
+        {
+            this.rule.push(rule);
+            return this._update_rule(force_set);
+        }
+
+        _update_rule(force_set = true)
+        {
+            if (!!this.id)
+            {
+                this.delete();
+
+                if (force_set) this.set();
+            }
+
+            return this;
+        }
+
+        /**
+         * Supprime une règle
+         * @param {number} index Index de la règle à supprimer 
+         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
+         */
+        remove(index, force_set = true)
+        {
+            this.rule.splice(index, 1);
+            return this._update_rule(force_set);
+        }
+
+        /**
+         * Met à jour une règle
+         * @param {number} index Index de la règle à modifier
+         * @param {string} new_rule Nouvelle règle
+         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
+         */
+        update(index, new_rule, force_set = true)
+        {
+            this.rule[index] = new_rule;
+            return this._update_rule(force_set); 
+        }
+
+        /**
+         * Récupère les règles
+         * @returns {string} Règles
+         */
+        rules()
+        {
+            return this.rule;
+        }
+
+        /**
+         * Retourne la règle css sous forme de string
+         * @returns {string}
+         */
+        toString()
+        {
+            return `${this.selector}{${this.rule.join(';\r\n')}}`;
+        }
+    }
+
+    /**
+     * Gère les différentes règles qu'on ajoute à cette classe.
+     */
+    class Mel_CSS_Style_Sheet {
+        constructor()
+        {
+            this.css = {};
+        }
+
+        /**
+         * Ajoute une règle à la liste de règles
+         * @param {string} key Clé qui permettra de récupérer la règle ajouté
+         * @param {Mel_CSS_Rule} rule Règle qui sera ajouté
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
+         */
+        _add(key, rule)
+        {
+            if (!this.ruleExist()) this.css[key] = rule.set();
+            else {
+                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe déjà !`);
+            }
+            return this;
+        }
+
+        /**
+         * Ajoute une règle à la liste de règle
+         * @param {string} key Clé qui permettra de récupérer la règle ajouté
+         * @param {string} rule Règle qui sera ajouté (ex : p{color:red;}) 
+         * @returns Chaînage
+         */
+        add(key, rule)
+        {
+            return this._add(key, new Mel_CSS_Rule(rule));
+        }
+
+        /**
+         * Ajoute une règle à la liste des règles.
+         * @param {string} key  Clé qui permettra de récupérer la règle ajouté
+         * @param {string} selector Sélécteur html
+         * @param  {...any} rules Liste de règles (ex : 'color:red', 'background-color:blue')
+         * @returns Chaînage
+         */
+        addAdvanced(key, selector, ...rules)
+        {
+            return this._add(key, new Mel_CSS_Advanced_Rule(selector, ...rules));
+        }
+
+        /**
+         * Ajoute plusieurs règles
+         * @param  {...{key:string, rule:string}} rules Règles à ajouter
+         * @returns Chaînage
+         */
+        addRules(...rules)
+        {
+            for (const key in rules) {
+                if (Object.hasOwnProperty.call(rules, key)) {
+                    const element = rules[key];
+                    this.add(element.key, element.rule);
+                }
+            }
+
+            return this;
+        }
+
+        /**
+         * Supprime une règle
+         * @param {string} key 
+         * @returns Chaînage
+         */
+        remove(key)
+        {
+            if (this.ruleExist(key))
+            {
+                this.css[key].delete();
+                delete this.css[key];
+            }
+            
+            return this;
+        }
+
+        removeRules(...keys)
+        {
+            for (const key in keys) {
+                if (Object.hasOwnProperty.call(keys, key)) {
+                    const element = keys[key];
+                    this.remove(element);
+                }
+            }
+
+            return this;
+        }
+
+        /**
+         * Vérifie si une règle éxiste
+         * @param {string} key 
+         * @returns 
+         */
+        ruleExist(key)
+        {
+            return !!this.css[key];
+        }
+
+        /**
+         * Récupère les clés de la classe
+         * @returns {string[]}
+         */
+        getKeys()
+        {
+            return Enumerable?.from(this.css)?.select(x => x.key)?.toArray() ?? [];
+        }
+
+        /**
+         * Récupère la feuille de styme
+         * @returns {string}
+         */
+        getStyleSheet()
+        {
+            return Enumerable?.from(this.css)?.select(x => x.value)?.toArray()?.join('\r\n') ?? '';
+        }
+
+        /**
+         * Remise à zéro de la feuille de style
+         * @returns Chaînage
+         */
+        reset()
+        {
+            for (const key in this.css) {
+                if (Object.hasOwnProperty.call(this.css, key)) {
+                    const element = this.css[key];
+                    element.delete();
+                }
+            }
+
+            this.css = {};
+            return this;
+        }
+
+        static exception(message, ...datas)
+        {
+            return {
+                message,
+                datas
+            };
+        }
+
+    }
+
     /**
      * Classe qui sert à gérer les différentes interfaces
      */
@@ -17,7 +327,9 @@ $(document).ready(() => {
          * @returns {Mel_Elastic} Chaînage
          */
         init(){
-            return this.init_const();
+            this.screen_type = null;
+            this.css_rules = new Mel_CSS_Style_Sheet(); 
+            return this.init_const().init_theme().initResponsive();
         }
 
         /**
@@ -83,6 +395,93 @@ $(document).ready(() => {
               return this;
         }
 
+        init_theme($panel = $('#theme-panel .contents'), $force = false, callback_click = null, callback_add = null)
+        {
+            let additionnalThemes = callback_add  ?? [];
+
+            let tlength = 0;
+            let html = '';
+            this.theme = rcmail.env.current_theme || 'default';
+
+            if (!!rcmail.env.current_theme) $('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
+
+            if (!!rcmail.env.mel_themes || $force) {
+                const themes = rcmail.env.mel_themes;
+                rcmail.env.mel_themes = null;
+                
+                this.themes = themes || this.themes;
+
+                for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).toArray()) {
+                    const key = iterator.key;
+                        ++tlength;
+                        if (this.themes[key]?.css_path)
+                          this.themes[key].css_path = 'unavailable';                        
+
+                        if (this.themes[key]?.path)  
+                          this.themes[key].path = 'unavailable';                        
+
+                        html += `
+                        <div class="row mel-selectable ${iterator.value.name === this.theme ? 'selected' : ''}" data-name="${iterator.value.name}" role="button" aria-pressed="${iterator.value.name === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
+                            <div class="col-4">
+                                <img src="${iterator.value.picture}" style="width:100%;" />
+                            </div>
+                            <div class="col-8" style="display:flex;">
+                                <span style="display: block;
+                                align-self: center;">${(iterator.value.name === 'default' ? 'Par défaut' : iterator.value.name)}</span>
+                            </div>
+                        </div>
+                        `;
+                }
+            }
+
+            let $theme_button = $('#theme-switch-button');
+            if (top === window && $theme_button.length > 0)
+            {
+                if (tlength > 1)
+                {
+                  if (!this.theme_button_activated)
+                  {
+                      this.theme_button_activated = true;
+                    $theme_button.click(($e) => {
+                        $e = $($e.currentTarget);
+
+                        if (!$e.hasClass('activated'))
+                        {
+                            $e.addClass('activated').find('.icon-mel-painting').removeClass('icon-mel-painting').addClass('icon-mel-undo');
+                            $('#notifications-panel').css('display', 'none');
+                            $('#theme-panel').css('display', '');
+                        }
+                        else {
+                            $e.removeClass('activated').find('.icon-mel-undo').addClass('icon-mel-painting').removeClass('icon-mel-undo');
+                            $('#notifications-panel').css('display', '');
+                            $('#theme-panel').css('display', 'none');
+                        }
+                    });
+                  }
+
+                    $panel.html(html).find('.mel-selectable').click((e) => {
+                        let dosomething = callback_click ? callback_click(e) : true;
+                        if (!dosomething) return;
+
+                        e = $(e.currentTarget);
+                        $panel.find('.mel-selectable').removeClass('selected');
+                        e.addClass('selected');
+
+                        this.update_theme(e.data('name'));
+                        
+
+                        this._update_theme_color();
+                    });
+
+                }
+                else {
+                    $theme_button.addClass('disabled').attr('disabled', 'disabled');
+                }
+            }
+
+            return this._update_theme_color();
+        }
+
         /**
          * Différentes actions à faire après l'initialisation.
          * @returns {Mel_Elastic} Chaînage
@@ -95,7 +494,9 @@ $(document).ready(() => {
             .setup_html()
             .setup_nav()
             .setup_tasks()
-            .setup_other_apps();
+            .setup_search()
+            .setup_other_apps()
+            .setup_calendar();
         }
 
         /**
@@ -144,7 +545,7 @@ $(document).ready(() => {
 
                 $("#taskmenu").append('<ul class="list-unstyled"></ul>');
 
-                Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
+                Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
                     let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
                     e = e.item;
                     if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
@@ -178,7 +579,7 @@ $(document).ready(() => {
                 //Revenir à la liste des mails sans rafraîchir la page.
                 if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
                 {
-                    $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
+                    $(`<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
                     .on("click", () => {
                         window.location.href = this.url("mail");
                     })
@@ -219,7 +620,7 @@ $(document).ready(() => {
 
             if (rcmail.env.task === "mail")
             {
-                $(".task-mail #quotadisplay").prepend(`<span>Espace de stockage</span><p style="flex-basis: 100%;
+                $(".task-mail #quotadisplay").prepend(`<span id='stockage-space-text'>Espace de stockage</span><p style="flex-basis: 100%;
                 height: 0;
                 margin: 0;"></p>`);
 
@@ -244,11 +645,10 @@ $(document).ready(() => {
                         $("#layout-list").removeClass("initial");
 
                         //On réduit la recherche au besoin
-                        $("#mailsearchlist").addClass("hoverable").on("mouseover", () => {
+                        $("#mailsearchlist").addClass("hoverable").on("mouseover focusin", () => {
                             if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").removeClass("hoverable");
-                        }).on("mouseleave", () => {
-
+                        }).on("mouseleave focusout", () => {
                             if (document.activeElement === $("#mailsearchform")[0])
                                 return;
 
@@ -323,6 +723,16 @@ $(document).ready(() => {
                 }
                 else if (rcmail.env.action === "" || rcmail.env.action === "index")
                 {
+                    rcmail.addEventListener('init', () => { 
+                        let i = 7;
+                        let $aria = null;
+                        
+                        for (i; ($aria = $(`li[aria-level="${i}"] a`)).length > 0; ++i)
+                        {
+                            $aria.css('padding-left', `${i*1.5-2}em`);
+                        }   
+                    });
+
                     //Gestion de l'apparence et de l'affichage des mails.
                     	// add roundcube events
                     rcmail.addEventListener('insertrow', function(event) { 
@@ -342,11 +752,28 @@ $(document).ready(() => {
                         });
                     });
 
+
+                    $('#mailsearchlist .searchbar .reset').click(() => {
+                        $('#mailsearchlist .searchbar .flag').removeClass('selected');
+                    })
+                    $('#mailsearchlist .searchbar .unread').click(() => {
+                        $('#mailsearchlist .searchbar .flag').removeClass('selected');
+                    }).before($(`<a class="button flag" href="#" role="button" title="Afficher les courriels suivis"></a>`).click((e) => {
+                        const item = $(e.target);
+
+                        if (item.hasClass('selected')) item.removeClass('selected');
+                        else item.addClass('selected');
+                        
+
+                        $(rcmail.gui_objects.search_filter).val(!item.is('.selected') ? 'ALL' : 'FLAGGED');
+                        rcmail.command('search');
+                    }));
+
                     $("#toolbar-list-menu .compose").parent().prependTo($("#toolbar-list-menu .compose").parent().parent());
                 
                     //Ajout de "plus"
                     $("#toolbar-list-menu").append($(`
-                        <li id="limelmailplusmenu"style="display:none" role="menuitem">
+                        <li id="limelmailplusmenu" class="marked" style="display:none" role="menuitem">
                         
                         </li>
                     `).append($("#melplusmails").css("display", "")))
@@ -354,20 +781,30 @@ $(document).ready(() => {
                     const mailConfig = rcmail.env.mel_metapage_mail_configs;
 
                     let test = new ResizeObserver(() => {
-                        const max = mailConfig === null || mailConfig["mel-icon-size"] === rcmail.gettext("normal", "mel_metapage") ? 370 : 347; //370;
-                        if ($("#layout-list").width() < max)
+                        let value = 0;
+                        {
+                            let iterator;
+                            for (iterator of  $('#toolbar-list-menu li')) {
+                                iterator = $(iterator);
+                                if (!iterator.hasClass('marked'))
+                                {
+                                    value += iterator.width();
+                                }
+                            }
+                            iterator = null;
+                            const additional_width =  $('.header .toolbar-button.refresh').width();
+                            value += additional_width + (additional_width / 2.0);
+                        }
+                        const max = $('#layout-list').width() - $('#mail-search-border').width();//mailConfig === null || mailConfig["mel-icon-size"] === rcmail.gettext("normal", "mel_metapage") ? 370 : 347; //370;
+
+                        if (value > max)
                         {
                             $("#toolbar-list-menu li").css("display", "none").find(".compose").parent().css("display", "");
                             $("#limelmailplusmenu").css("display", "")
-                            //$("#melmorethings-menu .select").data("popup", `-${$("#melmorethings-menu .select").data("popup")}`)
-                            // if ($("#melmorethings-menu .select").length === 0)
-                            //     $("#toolbar-list-menu .select").clone().appendTo($("<li></li>")).parent().prependTo($("#melmorethings-menu ul"));
                         }
                         else {
                             $("#toolbar-list-menu li").css("display", "");
                             $("#limelmailplusmenu").css("display", "none");
-                            //$("#melmorethings-menu .select").parent().remove();
-                            //$("#melmorethings-menu .select").data("popup", $("#melmorethings-menu .select").data("popup").replace("-", ""))
                         }
 
                         if (!$("html").hasClass("touch") && $("#toolbar-list-menu").hasClass("hidden")) 
@@ -401,7 +838,7 @@ $(document).ready(() => {
                             }).find("input").on("focusout", (e) => {
                                 if (window.innerWidth < 410)
                                 {
-                                    let parent = e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
+                                    let parent = e.relatedTarget === null ? null : $(e.relatedTarget);//e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
                                     while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
                                     {
                                         //console.log("parent", parent);
@@ -410,7 +847,7 @@ $(document).ready(() => {
 
                                     if (parent === null || parent.hasClass("icon-mel-search") || parent[0].nodeName === "BODY")
                                     {
-                                        if (parent.hasClass("icon-mel-search"))
+                                        if (!!parent && parent.hasClass("icon-mel-search"))
                                             $("#mailsearchlist").addClass("stopclick");
                                         else {
                                             $("#mailsearchlist").addClass("hoverable");
@@ -492,7 +929,70 @@ $(document).ready(() => {
                         }
                         document.getElementsByTagName('head')[0].appendChild(style);
                     }
-                
+
+                    //message_extwin @Rotomeca
+                    const alias_mel_rcmail_show_message = rcmail.show_message
+                    rcmail.show_message = function(id, safe, preview)
+                    {
+                        const openInPopUp = !preview && !this.env.message_extwin && !this.env.extwin;
+
+                        if (openInPopUp) {
+                            let url = this.params_from_uid(id, {_caps: this.browser_capabilities()});
+
+                            if (safe) url._safe = 1;
+                            url._extwin = 1;
+                            url = this.url('show', url);
+                            new Windows_Like_PopUp(top.$("body"), 
+                            {
+                                title:"Ouverture d'un mail...",
+                                content:`<center><div class='spinner-border'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
+                                afterCreatingContent($html, box, popup) {
+                                    box.content.find("iframe").on('load', () => {
+                                        let $iframe = box.content.find("iframe");
+                                        const title = $iframe[0].contentDocument.title;
+                                        const delete_action = function delete_action () {
+                                            try {
+                                                rcmail.command('checkmail');
+                                            } catch (error) { }
+                                            box.close.click();
+                                        };
+
+                                        box.title.find('h3').html(title);
+                                        box.content.find(".spinner-border").remove();
+                                        $iframe.css('display', '');
+                                        $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
+                                        $iframe[0].contentWindow.rcmail.env.is_in_popup_mail = true;
+                                        $iframe[0].contentWindow.rcmail.addEventListener('message.deleted', async (event) => {
+                                            delete_action();
+                                        });
+                                        $iframe[0].contentWindow.rcmail.addEventListener('message.moved', async (event) => {
+                                            delete_action();
+                                        });
+                                        $iframe[0].contentWindow.rcmail.addEventListener('message.junk', async (event) => {
+                                            delete_action();
+                                        });
+
+                                        if (popup._minified_header)
+                                        {
+                                            popup._minified_header.find('h3').html((title.length > 20 ? (title.slice(0, 20) + '...') : title));
+                                        }
+                                    });
+
+                                    let spinner = box.content.find(".spinner-border").css("width", '30%');
+                                    let spinner_size = Math.round(spinner.width());
+                                    spinner.css("width", `${spinner_size}px`)
+                                    .css('height', `${spinner_size}px`).css('margin', '15px');
+                                    
+                                },
+                                width:"calc(100% - 60px)",
+                                height:"calc(100% - 60px)",
+                                context:top,
+                                fullscreen:true
+                            }
+                            );
+                        }
+                        else alias_mel_rcmail_show_message.call(this, id, safe, preview);
+                    };                
                 }
                 else if (rcmail.env.action ==="preview" || rcmail.env.action ==="show"){
                     $("#message-header .headers-table td").each((i,e) => {
@@ -526,11 +1026,36 @@ $(document).ready(() => {
                         }
                     })
                 }
+
+                const alias_mel_rcmail_permanently_remove_messages = rcmail.permanently_remove_messages;
+                rcmail.permanently_remove_messages = function() {
+                    alias_mel_rcmail_permanently_remove_messages.call(this);
+                    rcmail.triggerEvent('message.deleted');
+                }
+
+                const alias_mel_rcmail_move_messages = rcmail.move_messages;
+                rcmail.move_messages = function(mbox, event, uids) {
+                    alias_mel_rcmail_move_messages.call(this, mbox, event, uids);
+                    rcmail.triggerEvent('message.moved', {mbox, uids, e:event});
+                }
+
+                rcmail.addEventListener('responsebeforeplugin.markasjunk.junk', () => {
+                    rcmail.triggerEvent('message.junk', {junk:true});
+                });
+
+                rcmail.addEventListener('responsebeforeplugin.markasjunk.not_junk', () => {
+                    rcmail.triggerEvent('message.junk', {junk:false});
+                });
+
             }
 
             return this.setup_mails_classes().setup_compose();
         }
 
+        /**
+         * Met en place les actions relative aux mails 
+         * @returns 
+         */
         setup_mails_classes()
         {
             if (rcmail.env.task === "mail")
@@ -543,7 +1068,7 @@ $(document).ready(() => {
                 };
 
                 let testing = (e, _class) => {
-                    const array = Enumerable.from(e.classList).toArray();
+                    const array = Enumerable?.from(e.classList)?.toArray() ?? [];
                     const count = array.length;
                     if (count === 1) action($(e), _class);
                     else if (count === 2 && array.includes(_class) && (array.includes("disabled") || array.includes("active")))
@@ -611,7 +1136,7 @@ $(document).ready(() => {
                         
                         if (storage.includes(field))
                         {
-                            storage = Enumerable.from(storage).where(x => x !== field).toArray();
+                            storage = Enumerable?.from(storage)?.where(x => x !== field)?.toArray() ?? [];
                             mel_metapage.Storage.set(key, storage);
                         }
                     });
@@ -620,13 +1145,93 @@ $(document).ready(() => {
                 const storage = mel_metapage.Storage.get(key);
 
                 //Afficher les champs
-                if (storage.length > 0)
+                if (storage !== null && storage.length > 0)
                 {
                     for (let index = 0; index < storage.length; ++index) {
                         const element = storage[index];
                         $(`#compose_${element}`).removeClass("hidden");
                     }
                 }
+
+                //Gestion des options
+                if (rcmail.env.compose_option !== undefined && rcmail.env.compose_option !== null && rcmail.env.compose_option !== "")
+                {
+                    switch (rcmail.env.compose_option) {
+                        case "empty":
+                            $("#compose-subject").val("");
+                            try {
+                                $("#compose-subject").change();
+                            } catch (error) {
+                                
+                            }
+                            
+                            // rcmail.addEventListener('editor-load', () => {
+                            //     if (rcmail.env.editor_emptied !== true)
+                            //     {
+                            //         rcmail.editor.set_content("");
+                            //         rcmail.env.editor_emptied = true;
+                            //     }
+                            // });
+
+                                
+                            
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+
+                if (top !== window)
+                {
+                    $("#toolbar-menu a.send").removeAttr('href');
+                }
+
+                if (window === top && rcmail.env.extwin !== 1)
+                {
+                    let $tmp_quit = $(`<a style="margin-right:15px" class="back" href="#" >Messages</a>`).click(() => {
+                        rcmail.env.action='index';
+                        rcmail.action = 'index';
+                        rcmail.compose_skip_unsavedcheck = true;
+                        const _$ = top.$;
+        
+                        _$('.task-mail.action-compose #taskmenu li a').removeClass('disabled').removeAttr('disabled');
+                        _$('.barup button').removeClass('disabled').removeAttr('disabled');
+                        _$('#barup-search-input').removeClass('disabled').removeAttr('disabled');
+                        _$('#user-up-popup').css('pointer-events', 'all');
+                        _$('.tiny-rocket-chat').removeClass('disabled').removeAttr('disabled');
+                        _$('.task-mail.action-compose #taskmenu li a.menu-last-frame').addClass('disabled').attr('disabled', 'disabled');
+        
+                        if (_$('iframe.mail-frame').length > 0) mel_metapage.Functions.change_frame('mail', true, true);
+                        else if (_$('.mail-frame').length > 0) {
+                            _$('.mail-frame').remove();
+                            mel_metapage.Functions.change_frame('mail', true, true);
+                        }
+                        else mel_metapage.Functions.change_frame('mail', true, true);
+        
+                        _$('body').removeClass('action-compose').addClass('action-none');
+                    });
+        
+                    $("ul#toolbar-menu").prepend($(`<li role="menuitem">
+                    
+                    </li>`).append($tmp_quit));
+    
+                    $('.task-mail.action-compose #taskmenu li a').addClass('disabled').attr('disabled', 'disabled');
+                    $('.barup button').addClass('disabled').attr('disabled', 'disabled');
+                    $('#barup-search-input').addClass('disabled').attr('disabled', 'disabled');
+                    $('#user-up-popup').css('pointer-events', 'none');
+                    const interval = setInterval(() => {
+    
+                        if (!$('.tiny-rocket-chat').hasClass('disabled'))
+                        {
+                            $('.tiny-rocket-chat').addClass('disabled').attr('disabled', 'disabled');
+                        }
+                        else clearInterval(interval);
+                    }, 100);
+    
+                    $("#layout-content").css('margin-left', '60px');
+                }
+
             }
 
             rcmail.addEventListener('fileappended', (file) => {
@@ -636,6 +1241,165 @@ $(document).ready(() => {
                     $('a.delete').html("");
                 }
             });
+
+            const alias_mel_rcmail_open_compose_step = rcmail.open_compose_step;
+            rcmail.open_compose_step = function (p) {
+                if (window.create_popUp !== undefined) create_popUp.close();
+
+                if ((rcmail.env.compose_extwin && !rcmail.env.extwin) || (rcmail.env.extwin)) 
+                {
+                    if (rcmail.env.extwin && rcmail.env.is_in_popup_mail === true)
+                    {
+                        var last_ext_win = rcmail.env.extwin;
+                        rcmail.env.extwin = 0;
+
+                        if (!rcmail.env.compose_extwin)
+                        {
+                            rcmail.open_compose_step(p);
+                            rcmail.env.extwin = last_ext_win
+                            return;
+                        }
+                    }
+
+                    alias_mel_rcmail_open_compose_step.call(this, p);
+
+                    if (last_ext_win !== undefined) rcmail.env.extwin = last_ext_win;
+                }
+                else {
+                    p['_extwin'] = 1;
+                    const url = rcmail.url('mail/compose', p);
+                    let config = {
+                        title:"Rédaction",
+                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="display:none;width:100%;height:calc(100%);"/>`,
+                        onclose(popup) {
+                            if (popup.box.close.data('force') == '1') return;
+                            if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
+                            {
+                                popup.waiting_save = true;
+                                popup.box.close.addClass('disabled').attr('disabled', 'disabled');
+                                popup.box.minifier.addClass('disabled').attr('disabled', 'disabled');
+                                popup.box.title.find('h3').html(popup.box.title.find('h3').html().replace('Rédaction : ', 'Sauvegarde de : '))
+                                
+                                if (popup.box.minifier.find("span").hasClass(popup.settings.icon_minify))
+                                    popup.minify();
+
+                                let frame_context = popup.box.content.find("iframe")[0].contentWindow;
+
+                                const alias_mel_rcmail_compose_field_hash = frame_context.rcmail.compose_field_hash;
+                                frame_context.rcmail.compose_field_hash = function(save) {
+                                    alias_mel_rcmail_compose_field_hash.call(this, save);
+                                    popup.close();
+                                };
+
+                                frame_context.rcmail.command('savedraft');
+
+                                return 'break';
+                            }
+                        },
+                        afterCreatingContent($html, box) {
+                            box.close.data('force', '1');
+                            box.content.find("iframe").on('load', () => {
+                            box.close.data('force', '');
+                            let frame_context = box.content.find("iframe")[0].contentWindow;
+
+                            frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
+
+                            frame_context.$('#compose-subject').on('input', (e) => {
+                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
+                            }).on('change', (e) => {
+                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
+                            });
+
+                            box.content.find("#rotomecamelloader").css('display', 'none');
+                            box.content.find("iframe").css('display', '');
+                            const obj = frame_context.$('#compose-subject').val();
+
+                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+
+                            frame_context.rcmail.addEventListener('message_submited', async (args) => {
+                                if (args.draft !== true)
+                                {
+                                    box.get.find('iframe').css("display", 'none');
+                                    box.close.addClass('disabled').attr('disabled', 'disabled');
+                                    box.title.find('h3').html(box.title.find('h3').html().replace('Rédaction : ', 'Envoi de : '));
+                                    box.content.find("#rotomecamelloader").css('display', '');
+                                }
+                            });
+
+                            frame_context.rcmail.addEventListener('message_sent', async (args) => {
+                                rcmail.display_message(args.msg, args.type);
+                                box.close.data('force', '1');
+                                box.close.removeClass('disabled').removeAttr('disabled');
+                                const interval = setInterval(() => {
+                                    if (rcmail.busy === false)
+                                    {
+
+                                        let frame = top.$('iframe.mail-frame');
+                                        if (frame.length > 0)
+                                        {
+                                            frame[0].contentWindow.rcmail.command('checkmail', '');
+                                        }
+                                        frame = null;
+
+                                        rcmail.command('checkmail', '');
+                                        clearTimeout(interval);
+                                    }
+                                }, 100);
+                                box.close.click();
+                            });
+
+                            frame_context.rcmail.addEventListener('plugin.message_send_error', ($args) =>
+                            {
+                                console.error('###[plugin.message_send_error]', $args);
+                                rcmail.display_message("Impossible d'envoyer le mail !", 'error');
+                                box.close.removeClass('disabled').removeAttr('disabled');
+                                box.get.find('iframe').css("display", '');
+                                box.title.find('h3').html(box.title.find('h3').html().replace('Envoi de : ', 'Rédaction : '));
+                                box.content.find("#rotomecamelloader").css('display', 'none');
+                            });
+
+                            frame_context.$("#toolbar-menu a.send").removeAttr('href');
+
+                            if (frame_context.rcmail.env.is_model) box.close.data('force', '1');
+
+                            });
+
+                            // let spinner = box.content.find(".spinner-border").css("width", '30%');
+
+                            // let spinner_size = Math.round(box.content.find(".spinner-border").width()); 
+
+                            // spinner.css("width", `${spinner_size}px`)
+                            // .css('height', `${spinner_size}px`).css('margin', '15px');
+                            
+                        },
+                        width:"calc(100% - 60px)",
+                        height:"calc(100% - 60px)",
+                        context:top,
+                        fullscreen:true
+                    };
+            
+                    const popup_class = window.Windows_Like_PopUp ?? top.Windows_Like_PopUp;
+                    return new popup_class(top.$("body"), config);
+                }
+            };
+
+            const alias_mel_rcmail_submit_messageform = rcmail.submit_messageform;
+            rcmail.submit_messageform = function(draft, saveonly) {
+                alias_mel_rcmail_submit_messageform.call(this, draft, saveonly);
+
+                rcmail.triggerEvent('message_submited', {
+                    draft, saveonly
+                });
+            };
+
+            const alias_mel_rcmail_sent_successfully = rcmail.sent_successfully;
+            rcmail.sent_successfully = function (type, msg, folders, save_error) {
+                alias_mel_rcmail_sent_successfully.call(this, type, msg, folders, save_error);
+
+                rcmail.triggerEvent('message_sent', {
+                    type, msg, folders, save_error
+                });
+            }
 
             return this;
         }
@@ -650,18 +1414,19 @@ $(document).ready(() => {
             {
                 let $tmp = $(`<button type="button" class="btn btn-secondary mel-button create mel-before-remover">Retour <span class="plus icon-mel-undo "></span></button>`)
                 .on("click", () => {
-                    let $args = {
-                        _source:rcmail.env.annuaire_source
-                    };
+                    return top.rcmail.command('mel.metapage.contacts.back');
+                    // let $args = {
+                    //     _source:rcmail.env.annuaire_source
+                    // };
 
-                    parent.postMessage({
-                        exec:"searchToAddressbook",
-                        _integrated:true,
-                        child:false
-                    }, '*');
+                    // parent.postMessage({
+                    //     exec:"searchToAddressbook",
+                    //     _integrated:true,
+                    //     child:false
+                    // }, '*');
 
-                    rcmail.set_busy(true, "loading");
-                    window.location.href = this.url("addressbook", "plugin.annuaire", $args);
+                    // rcmail.set_busy(true, "loading");
+                    // window.location.href = this.url("addressbook", "plugin.annuaire", $args);
 
 
                 });
@@ -672,16 +1437,35 @@ $(document).ready(() => {
         }
 
         /**
+         * Met en place la recherche
+         * @returns 
+         */
+        setup_search() {
+            let $sbox = $('#quicksearchbox');
+
+            if ($sbox.length === 0) $sbox = $('#searchform');
+
+            if ($sbox.length > 0) $sbox.on('change', () => {
+                $sbox.parent().submit();
+            });
+
+            return this;
+        }
+
+        /**
          * Met en place la barre de navigation pour les autres applis.
          * @returns {Mel_Elastic} Chaînage
          */
-        setup_other_apps()
+        setup_other_apps(ignoreStart = false)
         {
-            //Enrobe les "a" par des "li".
-            $("#listotherapps").find("a").each((i,e) => {
-                let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
-                $(e).addClass("mel-focus").appendTo(tmp);
-            });
+            if (!ignoreStart)
+            {
+                //Enrobe les "a" par des "li".
+                $("#listotherapps").find("a").each((i,e) => {
+                    let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
+                    $(e).addClass("mel-focus").appendTo(tmp);
+                });
+            }
 
             //Gestion de la barre.
             $("#listotherapps").find("a").on('focusout', (e) => {
@@ -700,6 +1484,11 @@ $(document).ready(() => {
                     }
                 }
             });
+
+            // rcmail.addEventListener('plugin.message_send_error', ($args) =>
+            // {
+            //     top.rcmail.command('message_send_error', $args);
+            // });
 
             return this;
         }
@@ -720,6 +1509,130 @@ $(document).ready(() => {
         }
 
         /**
+         * Met en place le calendrier
+         * @returns 
+         */
+        setup_calendar()
+        {
+            if (rcmail.env.task === "calendar")
+            {
+                let $waiting_events = $("#layout-sidebar .waiting-events-number");
+
+                if ($waiting_events.length > 0)
+                {
+                    $waiting_events.on('mouseenter', () => {
+                        const id = 'waiting-events-list';
+                        const id_child = 'waiting-events-list-items';
+                        const id_selector = `#${id}`;
+                        if ($(id_selector).length > 0) 
+                        {
+                            return;
+                        }
+
+                        const events = rcube_calendar.get_number_waiting_events(false)
+
+                        if (!!events && events.length > 0)
+                        {
+                            let $we_list = $(`<div id="${id}"><div id="${id_child}"></div></div>`)
+
+                            let $wel_items = $we_list.find(`#${id_child}`);
+
+                            const format = 'DD/MM/YYYY HH:mm';
+                            const size = events.length;
+                            for (let index = 0; index < size; ++index) {
+                                const element = events[index];
+                                $wel_items.append($(`
+                                <button title="Evènement ${element.title}, cliquez pour afficher l'évènement" class="waiting-event-button mel-button">
+                                    <span class="waiting-event-title">${element.title}</span>
+                                    <span class="waiting-event-horodate">${moment(element.start).format(format)} - ${moment(element.end).format(format)}</span>
+                                </button>
+                                `).click(() => {
+                                    top.SearchResultCalendar.CreateOrOpen(JSON.stringify(element));
+                                }));
+                            }
+
+                            $waiting_events.append($we_list);
+                        }
+
+
+                    })
+                    .on('mouseleave', (e) => {
+                        const id = 'waiting-events-list';
+                        const id_selector = `#${id}`;
+
+                        if ($(id_selector).length > 0) $(id_selector).remove();
+                    });
+                }
+            }
+
+            return this;
+        }
+
+        /**
+         * Renvoie vrai si les barre de défilements sont en mode automatique
+         * @returns 
+         */
+        isScollBarAuto()
+        {
+            if (!this.auto_text) this.auto_text = rcmail.gettext('auto', 'mel_metapage');
+
+            return rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === this.auto_text;
+        }
+
+        updateScollBarMode()
+        {
+            const css_key = 'scroll_bar_size';
+            if (this.css_rules.ruleExist(css_key))
+            {
+                this.css_rules.remove(css_key);
+            }
+
+            if (this.isScollBarAuto()) { //Le mode automatique n'existe plus
+                rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] = rcmail.gettext('default', 'mel_metapage');
+            }
+
+            if (this.isScollBarAuto() && !this.updateScollBarMode.initialized)
+            {
+                let ele;
+                let distance;
+                let last_target = null;
+                document.addEventListener("mousemove", function(e){
+                    if (UI.is_touch() === false && MEL_ELASTIC_UI.isScollBarAuto())
+                    {
+                        ele = e.target;
+    
+                        if (!!last_target) {
+                            if (ele !== last_target) {
+                                $('.more-width').removeClass('more-width');
+                                last_target = ele;
+                            }
+                        }
+                        else last_target = ele;
+        
+                        distance = ele.offsetLeft + ele.offsetWidth - e.pageX;
+                        distance < 15 && distance > -15 ? ele.classList.add('more-width') : ele.classList.remove('more-width');
+                    }
+                });
+                
+                this.updateScollBarMode.initialized = true;
+            }
+            else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('normal', 'mel_metapage'))
+            {
+                this.css_rules.addAdvanced(css_key, ':root',  
+                    '--scrollbar-width-moz:var(--scrollbar-width-moz-normal)!important', 
+                    '--scrollbar-width-webkit:var(--scrollbar-width-webkit-normal)!important');
+            }
+            else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('large', 'mel_metapage'))
+            {
+                this.css_rules.addAdvanced(css_key, ':root', 
+                    '--scrollbar-width-webkit:var(--scrollbar-width-webkit-large)!important',
+                    '--scrollbar-width-moz:var(--scrollbar-width-moz-large)!important');
+            }
+
+            return this;
+        }
+
+        /**
          * Met à jours la page.
          * @returns {Mel_Elastic} Chaînage
          */
@@ -728,6 +1641,7 @@ $(document).ready(() => {
             return this
             .update_tabs()
             .update_pagination()
+            .updateScollBarMode()
             .redStars();
         }
 
@@ -850,7 +1764,7 @@ $(document).ready(() => {
         switch_color()
         {
             rcmail.triggerEvent("switch_color_theme");
-            return this;
+            return this._update_theme_color();
         }
 
         /**
@@ -860,6 +1774,25 @@ $(document).ready(() => {
         color_mode()
         {
             return $('html').hasClass("dark-mode") ? "dark" : "light";
+        }
+
+        _update_theme_color()
+        {
+            let $html = $('html');
+
+            if (this.color_mode() === "dark")
+            {
+                $html.removeClass(`theme-${this.get_current_theme().toLowerCase()}`);
+            }
+            else if (this.get_current_theme() !== 'default') {
+                $html.addClass(`theme-${this.get_current_theme().toLowerCase()}`);
+            }
+            
+            $('iframe.mm-frame').each((i,e) => {
+                e.contentWindow.MEL_ELASTIC_UI._update_theme_color();
+            });
+
+            return this;
         }
 
         ////////////************* Other functions *************///////////
@@ -1295,6 +2228,14 @@ $(document).ready(() => {
             return this;
         }
 
+        create_loader(id, absoluteCentered = true) {
+            let $loading = $('<div class="loader-base"><div class="loader-looping"></div></div>');
+
+            if (absoluteCentered) $loading = $('<div class="absolute-center"></div>').append($loading);
+
+            return $(`<div id="${id}"></div>`).append($loading);
+        }
+
         ////////////************* Pagination functions *************///////////
         /**
          * Créer un html pour le nombre de la pagination
@@ -1456,11 +2397,332 @@ $(document).ready(() => {
             return this;
         }
 
+        initResponsive(key = null, changeReturn = false)
+        {
+            const each = ($tn, tn, t, d, ptl, namespace) => {
+                const $tabName = $tn;//$(e).find('.rTabName');
+                const tabName = tn;//$(e).data('tab-name');
+                const tab = t;//$(e).data('selector-tab');
+                const _default = d;//$(e).data('is-default-tab');
+                const parentTabList = ptl;//$(e).data('parent-tabs');
+
+                const item = {
+                    $tabName:($tabName.length === 0 ? tabName:$tabName),
+                    $tab:$(tab),
+                    default:_default,
+                    $parentTabList:$(parentTabList),
+                    isTabNameString() {
+                        return typeof this.$tabName === 'string';
+                    }
+                };
+
+                return this.initTabResponsive(namespace, item);
+            }
+
+            const tab_class = 'mel-responsive-tab';
+            const tab_header_class = 'mel-responsive-tabheader';
+            const tab_content = 'mel-responsive-tab-content';
+
+            if (!key)
+            {
+                let namespace;
+                switch (rcmail.env.task) {
+                    case 'bureau':
+                        namespace = 'namespace-reponsive-tab-desk';
+                        break;
+                    case 'news':
+                        namespace = 'namespace-reponsive-tab-news';
+                        break;
+                
+                    default:
+                        break;
+                }
+
+                if ($(`.${namespace}`).length === 0)
+                {
+                    $('.module_parent').each((i,e) => {
+                        e = $(e);
+                        each(
+                            e.find('h2').first(),
+                            '',
+                            e,
+                            i === 0,
+                            '#contents',
+                            namespace
+                        );
+                    });
+                    $('#contents').find(`.${tab_class}.${tab_header_class}`).last().addClass('last');
+                }
+
+            }
+            else {
+                let namespace = null;
+
+                switch (key) {
+                    case 'shortcut':
+                        namespace = 'namespace-reponsive-tab-' + key;
+                        break;
+                        
+                
+                    default:
+                        break;
+                }
+
+                let $querry = $(`.${tab_content}${(!!namespace ? `.${namespace}` : '')}`);
+
+                if ($querry.length === 0) $querry = $(`.${tab_content}.no-namespace`);
+
+                const size = $querry.length - 1;
+
+                $(`.${tab_content}${(!!namespace ? `.${namespace}` : '')}`).each((i, e) => {
+                    let $tab = each(
+                        $(e).find('.responsive-tab-name'),
+                        $(e).data('tab-name'),
+                        $(e).data('selector-tab'),
+                        $(e).data('is-default-tab'),
+                        $(e).data('parent-tabs'),
+                        namespace ?? $(e).parent().data('namespace') ?? 'no-namespace'
+                    );
+
+                    if (!!$tab && $tab.length > 0 && i === size) $tab.addClass('last');
+                    
+                });
+            }
+
+            rcmail.addEventListener("skin-resize", (datas) => { 
+                const small = 'small';
+                const phone = 'phone';
+                //const header_to_hide = 'mel-header-to-hidden';
+                const hide_button = 'responsive-hide-button';
+                const tab_list = 'responsiveTabList';
+                const selected_item_class = 'selected';
+                // const tab_content = 'mel-responsive-tab-content';
+                datas = datas.mode;
+
+                if (datas === small) datas = phone;
+
+                if (this.screen_type !== (datas ?? this.screen_type))
+                {
+                    if ((this.screen_type !== phone && this.screen_type !== small) && (datas === phone || datas === small)) //On passe en mode phone
+                    {
+                        $(`.${tab_list}`)
+                        .css('display', '')
+                        .find(`.${selected_item_class}`)
+                        .click();
+
+                        if (rcmail.env.task === "bureau")
+                        {
+                            $("#welcome-text").find('.col-3')
+                            .css('display', 'none')
+                            .parent().find('.col-6').first()
+                            .removeClass('col-6').addClass('col-12').children()
+                            .css('font-size','30px')
+                            .css('margin-top', 0);
+                        }
+                    }
+                    else {
+                        $(`.${tab_list}`)
+                        .css('display', 'none')
+                        .find(`.${hide_button}`)
+                        .click();
+
+                        if (rcmail.env.task === "bureau")
+                        {
+                            $("#welcome-text").find('.col-3')
+                            .css('display', '')
+                            .parent().find('.col-12').first()
+                            .removeClass('col-12').addClass('col-6').children()
+                            .css('font-size','40px')
+                            .css('margin-top','55px');
+                        }
+                    }
+
+                    this.screen_type = datas ?? this.screen_type;
+                }
+            });
+
+            if (!changeReturn) return this;
+            else{
+                const screen_type = this.screen_type;
+                const update_screen_type = (x) => {
+                    this.screen_type = x;
+                };
+                return {
+                    update() {
+                        const tab_list = 'responsiveTabList';
+                        const selected_item_class = 'selected';
+                        const last = screen_type;
+                        update_screen_type(null);
+                        rcmail.triggerEvent('skin-resize', {mode:last});
+
+                        if (last === 'small' || last === 'phone') 
+                            $(`.${tab_list}`)
+                            .css('display', '')
+                            .find(`.${selected_item_class}`)
+                            .click();
+                    }
+                };
+            }
+        }
+
+        initTabResponsive(namespace, item = {isTabNameString:() => {return true;},$parentTabList:$(), $tabName:$(), $tab:$(), default:false})
+        {
+            const header_to_hide = 'mel-header-to-hidden';
+            const hide_button = 'responsive-hide-button';
+            const tab_list = 'responsiveTabList';
+            const selected_item_class = 'selected';
+            const tab_class = 'mel-responsive-tab';
+            const tab_header_class = 'mel-responsive-tabheader';
+            const tab_content = 'mel-responsive-tab-content';
+
+            let tabName = '';
+            let $tab = null;
+
+            //Gestion de l'onglet
+            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est à l'intérieur du corps
+            {
+                tabName = item.$tabName[0].innerText;
+                item.$tabName.addClass(header_to_hide);
+            }
+            else tabName = item.$tabName; //Si c'est juste le nom
+
+            //Id généré depuis son nom
+            const tab_id = 'responsive-generated-' + tabName.replace(/[^0-9a-z]/gi, '').toLowerCase();
+
+            let $tabList = item.$parentTabList.find(`.${tab_list}.${namespace}`);
+
+            //Création de la liste d'onglet si elle n'éxiste pas
+            if ($tabList.length === 0)
+            {
+                $tabList = item.$parentTabList
+                .prepend(`<div class='row ${tab_list} ${namespace}' data-namespace="${namespace}" style="flex-wrap: nowrap;"></div>`)
+                .find(`.${tab_list}.${namespace}`);
+            }
+
+            //Ajout du bouton si il n'éxiste pas
+            $tab = $tabList.find(`#${tab_id}`);
+            if ($tab.length === 0)
+            {
+                $tab = $tabList.append($(`
+                    <button id="${tab_id}" class="${(item.default ? selected_item_class : '')} ${tab_class} ${tab_header_class} ${namespace}">${tabName}</button>
+                `).click(() => {
+                    $(`.${header_to_hide}`).css('display', 'none');
+                    $(`.${tab_content}.${namespace}`).css('display', 'none');
+                    $(`.${tab_class}.${tab_header_class}.${selected_item_class}.${namespace}`).removeClass(selected_item_class);
+                    item.$tab.css('display', '');
+                    $(`#${tab_id}`).addClass(selected_item_class);
+                })
+                ).find(`#${tab_id}`);
+            }
+
+            //Création du bouton de "désaffichage"
+            if ($tabList.find(`.${hide_button}`).length === 0)
+            {
+                $tabList.append(`<button class="${hide_button} ${namespace} hidden"></button>`);
+            }
+
+            $tabList.find(`.${hide_button}.${namespace}`).click(() => {
+                item.$tab.css('display', '');
+
+                //if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) item.$tabName.css('display', '');
+                $(`.${header_to_hide}`).css('display', '');
+            });
+
+            item.$tab.addClass(tab_content).addClass(namespace);
+
+            return $tab;
+        }
+
+        get_current_theme() {
+            return this.theme || 'default';
+        }
+
+        get_current_theme_picture()
+        {
+            return this.get_themes()[this.get_current_theme()];
+        }
+
+        update_theme(theme)
+        {
+            theme = theme || 'default'
+            if (theme !== this.theme) {
+                let $html = $('html');
+                
+                if (this.theme !== 'default') $html.removeClass(`theme-${this.theme.toLowerCase()}`);
+                if (theme !== 'default') $('html').addClass(`theme-${theme.toLowerCase()}`);
+
+                this.theme = theme;
+            }
+
+            $('iframe.mm-frame').each((i, e) => {
+                try {
+                        e.contentWindow.MEL_ELASTIC_UI.update_theme(theme);
+                } catch (error) {
+                    
+                }
+            });
+
+            mel_metapage.Functions.post(
+              mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
+              {_t:theme},
+              (f) => {},
+          );
+
+            return this;
+        }
+
+        get_themes(){
+            return this.themes || [];
+        }
+
     }
 
     /**
      * Contient les fonctions de la classe Mel_Elastic
      */
     window.MEL_ELASTIC_UI = new Mel_Elastic();
+    window.mel_deploy_undeploy = (e, selector) => {
+        e = $(e);
+        if (e.css('display') !== 'none')
+        {
+            e.css('display', 'none');
+            $(selector).css('display', '');
+        }
+        else {
+            e.css('display', '');
+            $(selector).css('display', 'none');
+        }
+    };
 
 });
+
+
+// function tab($item)
+// {
+//     const tab = $item.attr('id');
+//     let other_tabs = $item.parent().parent().find('a');
+
+//     $item.on('show.bs.tab');    
+
+//     let id;
+//     for (let iterator of other_tabs) {
+//         id = iterator.attr('id');
+//         if (id !== tab) {
+//             iterator.removeClass('active');
+//             $(`.tab-pane[aria-labelledby="${id}"]'`).removeClass('active');
+//             iterator.on('hide.bs.tab');
+//         }
+//         else {
+//             iterator.addClass('active');
+//             $(`.tab-pane[aria-labelledby="${id}"]'`).addClass('active');
+//         }
+
+//     }
+
+//     $item.on('shown.bs.tab');   
+// }
+
+// $('#myTab a').on('click', function (e) {
+//     e.preventDefault()
+//     tab($(e.currentTarget));
+// })

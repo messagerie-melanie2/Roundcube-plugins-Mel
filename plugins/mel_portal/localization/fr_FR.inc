@@ -28,6 +28,7 @@ $labels['config'] = "Configuration";
 $labels['agenda'] = "Agenda ";
 $labels['tasks'] = "Tâches";
 $labels['my_day'] = "Ma journée";
+$labels['my_day_and_notes'] = $labels['my_day'];//.' & mes notes';
 $labels['headline'] = "Informations";
 $labels['thematic_1'] = "Thématique 1";
 $labels['thematic_2'] = "Thématique 2";
@@ -42,3 +43,9 @@ $labels["next_agenda_event"] = "Prochaine réunion planifiée le : {date} à {ho
 $labels["next_agenda_event_all_day"] = "Prochaine réunion planifiée le : {date} toute la journée";
 $labels["other_next_agenda_event"] = "Le {date} à {horaire}";
 $labels["other_next_agenda_event_all_day"] = "Le {date} toute la journée";
+
+//Workspaces button title
+$labels['button_title_calendar'] = "Ouvrir le calendrier de l'espace de travail";
+$labels['button_title_doc'] = "Ouvrir les documents de l'espace de travail";
+$labels['button_title_channel'] = "Ouvrir le canal de discussion de l'espace de travail";
+$labels['button_title_mail'] = "Ouvrir la messagerie mail de l'espace de travail";

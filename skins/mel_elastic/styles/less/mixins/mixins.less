@@ -1,0 +1,117 @@
+//out:false
+.mixin-no-border(){
+    border: none;
+}
+
+.mixin-clickable() {
+    cursor: pointer;
+}
+
+.mixin-no-select()
+{
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.mixin-titanic(){
+    float: none;
+}
+
+.mixin-restore-font(){
+    font-family: @default-fonts;
+}
+
+.mixin-mel-max-width(@width: attr(data-max-width))
+{
+    max-width:@width;
+}
+
+.mixin-mel-max-width-500()
+{
+    .mixin-mel-max-width(500px);
+}
+
+.mixin-mel-centered(){
+    justify-content: center;
+}
+
+.mixin-absolute-center() {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translateY(-50%) translateX(-50%);
+    transform: translateY(-50%) translateX(-50%);
+}
+
+.mixin-all-ease-in-animation(){
+    transition: @mel-default-animation;
+}
+
+.mixin-invisible-background()
+{
+    background-color: var(--invisible);
+}
+
+.mixin-invisible-background-important()
+{
+    .mixin-invisible-background()!important;
+}
+
+.mixin-loading(@time: 0.75s) {
+	animation: spin @time linear infinite;
+	display: inline-block;
+}
+
+.mixin-block()
+{
+    display:block;
+}
+
+.mixin-bold(){
+    font-weight: bold;
+}
+
+.mixin-italic(){
+    font-style: italic;
+} 
+
+.mixin-margin-right(@margin: attr(data-margin-right))
+{
+    margin-right: @margin;
+}
+
+.mixin-margin-left(@margin: attr(data-margin-left))
+{
+    margin-left: @margin;
+}
+
+.mixin-margin-top(@margin: attr(data-margin-top))
+{
+    margin-top: @margin;
+}
+
+.mixin-margin-bottom(@margin: attr(data-margin-bottom))
+{
+    margin-bottom: @margin;
+}
+
+.mixin-margin(@top: attr(data-margin-top); @right: attr(data-margin-right); @bottom: attr(data-margin-bottom); @left: attr(data-margin-left))
+{
+    margin: @top @right @bottom @left;
+}
+
+.mixin-ignore-bullet(){
+    list-style-type: none;
+    padding: 0;
+}
+
+.mask-conic-gradiant(@deg) {
+    mask:conic-gradient(from @deg at 50% 50%, @loader-mask-color[A] 0%, @loader-mask-color[B] 51%, @loader-mask-color[C] 100%);
+    -webkit-mask: conic-gradient(from @deg at 50% 50%, @loader-mask-color[A] 0%, @loader-mask-color[B] 51%, @loader-mask-color[C] 100%);;
+}

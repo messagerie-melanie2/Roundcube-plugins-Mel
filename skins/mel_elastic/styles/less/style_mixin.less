@@ -1,0 +1,123 @@
+// out: false
+@import "main.less";
+
+.mel-no-border{
+    .mixin-no-border();
+}
+
+.mel-clickable {
+    .mixin-clickable();
+}
+
+.noselect
+{
+    .mixin-no-select();
+}
+
+.titanic{
+    .mixin-titanic();
+}
+
+.restore-font{
+    .mixin-restore-font();
+}
+
+.mel-max-width-500
+{
+    .mixin-mel-max-width-500();
+}
+
+.mel-centered{
+    .mixin-mel-centered();
+}
+
+.absolute-center {
+    .mixin-absolute-center();
+}
+
+.mel-bnum-indirect-actions()
+{
+    box-shadow: 0 0 0 .2rem #484D7A69;
+}
+
+.mel-bnum-indirect-actions-light()
+{
+    box-shadow: 0 0 0 .2rem #FFFFFF69;
+}
+
+.mel-all-ease-in-animation(){
+    .mixin-all-ease-in-animation();
+}
+
+.mel-invisible-background-unimportant()
+{
+    .mixin-invisible-background();
+}
+
+.mel-invisible-background
+{
+    .mixin-invisible-background-important();
+}
+
+.mel-loading {
+    .mixin-loading();
+}
+
+.element-block
+{
+    .mixin-block();
+}
+
+.bold{
+    .mixin-bold();
+}
+
+.italic{
+    .mixin-italic();
+} 
+
+.margin-right-15{
+    .mixin-margin-right(15px);
+}
+
+.ignore-bullet{
+    .mixin-ignore-bullet();
+}
+
+.mel-main-colors(){
+    background-color: var(--main-bckg-color);
+    color:var(--secondary-text-color);
+}
+
+.mel-main-colors-important(){
+    .mel-main-colors()!important;
+}
+
+.mel-layout-sidebar-colors(){
+    background-color: var(--layout-sidebar-background-color);
+    color:var(--secondary-text-color);
+}
+
+.mel-secondary-colors(){
+    background-color: var(--secondary-bckg-color);
+    color:var(--secondary-text-color);
+}
+
+.mel-secondary-colors-important(){
+    .mel-secondary-colors()!important;
+}
+
+.mel-tiercary-colors(){
+    background-color: var(--tierciary-bckg-color);
+    color:var(--secondary-text-color);
+}
+
+.mel-tiercary-colors-important(){
+    .mel-tiercary-colors()!important;
+}
+
+.mel-layout-list-colors()
+{
+    background-color: var(--layout-list-background-color);
+    color:var(--secondary-text-color);
+}

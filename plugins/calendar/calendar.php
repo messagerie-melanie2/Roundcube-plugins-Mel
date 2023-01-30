@@ -30,6 +30,8 @@ class calendar extends rcube_plugin
     const FREEBUSY_BUSY      = 2;
     const FREEBUSY_TENTATIVE = 3;
     const FREEBUSY_OOF       = 4;
+    // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+    const FREEBUSY_TELEWORK  = 5;
 
     const SESSION_KEY = 'calendar_temp';
 
@@ -228,6 +230,7 @@ class calendar extends rcube_plugin
         // add hooks to display alarms
         $this->add_hook('pending_alarms', [$this, 'pending_alarms']);
         $this->add_hook('dismiss_alarms', [$this, 'dismiss_alarms']);
+        $this->ui->calendar_list([], true);
     }
 
     /**
@@ -402,9 +405,15 @@ class calendar extends rcube_plugin
             $view = $this->rc->config->get('calendar_default_view', $this->defaults['calendar_default_view']);
 
             $select = new html_select(['name' => '_default_view', 'id' => $field_id]);
+            // PAMELA - Fullcalendar premium
+            $select->add($this->gettext('timelineday'), "timelineDay");
             $select->add($this->gettext('day'), "agendaDay");
+            $select->add($this->gettext('twoday'), "agendaTwoDay");
+            $select->add($this->gettext('threeday'), "agendaThreeDay");
+            $select->add($this->gettext('workresource'), "agendaResource");
             $select->add($this->gettext('work'), "agendaWork");
             $select->add($this->gettext('week'), "agendaWeek");
+            $select->add($this->gettext('timelineweek'), "timelineWeek");
             $select->add($this->gettext('monthWork'), "monthWork");
             $select->add($this->gettext('month'), "month");
             $select->add($this->gettext('agenda'), "list");
@@ -962,6 +971,23 @@ $("#rcmfd_new_category").keypress(function(event) {
             $success = $this->driver->delete_all_events($cal);
             $reload = true;
             break;
+        // MANTIS 3896: Partage public et protégé de l'agenda
+        case "check_feed_url":
+          if ($cal['checked'] == 'true') {
+            $result = $this->driver->add_calendar_public_key($cal['id'], base64_encode(uniqid($cal['id'].'_calhashkey_')));
+          }
+          else {
+            $result = $this->driver->delete_calendar_public_key($cal['id']);
+          }
+          if ($result) {
+            $this->rc->output->command('plugin.show_feed_url', array('id' => $cal['id'], 'url' => $this->get_feed_url($cal['id'])));
+            return;
+          }
+          else {
+            $this->rc->output->show_message($this->gettext('errorsaving'), 'error');
+            return;
+          }
+          break;
         case "subscribe":
             if (!$this->driver->subscribe_calendar($cal)) {
                 $this->rc->output->show_message($this->gettext('errorsaving'), 'error');
@@ -1019,21 +1045,39 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $this->rc->output->show_message('autocompletemore', 'notice');
             }
 
-            $reqid = rcube_utils::get_input_value('_reqid', rcube_utils::INPUT_GPC);
-            $this->rc->output->command('multi_thread_http_response', $results, $reqid);
-            return;
+        $reqid = rcube_utils::get_input_value('_reqid', rcube_utils::INPUT_GPC);
+        $this->rc->output->command('multi_thread_http_response', $results, $reqid);
+        return;
+      
+      case "toggle_appointment":
+        if ($cal['checked'] == 'true') {
+          $result = $this->driver->add_appointment_public_key($cal['id'], base64_encode(uniqid($cal['id'] . 'appointmentkeyhash')));
+        } else {
+          $result = $this->driver->delete_appointment_public_key($cal['id']);
         }
+        if ($result) {
+          $this->rc->output->command('plugin.appointment_show_url', array('id' => $cal['id'], 'url' => $this->get_appointment_url($cal['id'])));
+          return;
+        } else {
+          $this->rc->output->show_message($this->gettext('errorsaving'), 'error');
+          return;
+        }
+        break;
 
-        if ($success) {
-            $this->rc->output->show_message('successfullysaved', 'confirmation');
-        }
-        else {
-            $error_msg = $this->gettext('errorsaving');
-            if (!empty($this->driver->last_error)) {
-                $error_msg .= ': ' . $this->driver->last_error;
-            }
-            $this->rc->output->show_message($error_msg, 'error');
-        }
+      case "appointment":
+        $ret = driver_mel::gi()->getUser()->saveCalendarPreference('appointment_properties',json_encode($cal));
+        $this->rc->output->show_message('successfullysaved', 'confirmation');
+        return $ret;
+    }
+    if ($success) {
+      $this->rc->output->show_message('successfullysaved', 'confirmation');
+    } else {
+      $error_msg = $this->gettext('errorsaving');
+      if (!empty($this->driver->last_error)) {
+        $error_msg .= ': ' . $this->driver->last_error;
+      }
+      $this->rc->output->show_message($error_msg, 'error');
+    }
 
         $this->rc->output->command('plugin.unlock_saving');
 
@@ -1066,9 +1110,31 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         switch ($action) {
+        //PAMELA
+        case "invite-self":
+            if ($action === "invite-self")
+            {
+                //Récupération des infos de l'utilisateurs
+                $user = driver_mel::gi()->getUser();
+
+                //Ajouts des infos de l'utilisateur dans l'évènement
+                if (isset($event['attendees']) && is_array($event['attendees']))
+                {
+                    $event['attendees'][] = [
+                        'email' => $user->email,
+                        'name' => $user->fullname,
+                        'role' => 'REQ-PARTICIPANT',
+                        'status' => 'ACCEPTED',
+                        'skip_notify' => 'true',
+                        'noreply' => '1'
+                    ];
+                    //Changement du calendrier
+                    $event['calendar'] = driver_mel::mceToRcId($user->uid);
+                }
+            }
         case "new":
             // create UID for new event
-            $event['uid'] = $this->generate_uid();
+            if ($action === "new") $event['uid'] = $this->generate_uid();
             if (!$this->write_preprocess($event, $action)) {
                 $got_msg = true;
             }
@@ -1082,6 +1148,86 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $reload = $success && !empty($event['recurrence']) ? 2 : 1;
             break;
+        //PAMELA
+        case 'share':
+             $users_email = rcube_utils::get_input_value('_users_to_share', rcube_utils::INPUT_POST);
+
+            if (!isset($event['attendees']) || !is_array($event['attendees']))
+            {
+                // $organizer = rcube_utils::get_input_value('_organizer', rcube_utils::INPUT_POST);
+                $organizer = driver_mel::gi()->getUser();
+                $event['attendees'] = [ ];
+
+                $event['organizer'] = [ 
+                    'email' => $organizer->email,
+                    'name' => $organizer->fullname,
+                    'role' => 'ORGANIZER',
+                    'internal' => 'true',
+                    'noreply' => '1'          
+                ];
+            }
+
+            foreach ($event['attendees'] as $key => $a) {
+                $event['attendees'][$key]['skip_notify'] = 'true';
+                $event['attendees'][$key]['noreply'] = '1';
+            } 
+
+            foreach ($users_email as $mail) {
+                $user = driver_mel::gi()->getUser(null, true, false, null, $mail);
+                
+                if (isset($user))
+                {
+                    $event['attendees'][] = [
+                        'email' => $user->email,
+                        'name' => $user->fullname,
+                        'role' => 'REQ-PARTICIPANT',
+                        'status' => 'NEEDS-ACTION',
+                        'skip_notify' => 'false',
+                        'share' => true
+                       // 'noreply' => '1'
+                    ];
+                }
+                else {
+                    $event['attendees'][] = [
+                        'email' => $mail,
+                        'name' => $mail,
+                        'role' => 'REQ-PARTICIPANT',
+                        'status' => 'NEEDS-ACTION',
+                        'skip_notify' => 'false',
+                        'share' => true
+                        //'noreply' => '1'
+                    ];
+                }
+            }
+            
+            $event['_subject'] = rcube_utils::get_input_value('_subject', rcube_utils::INPUT_POST) ?? '';
+            $event['_comment'] = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
+            $event['_notify'] = "3";
+            $event['share'] = true;
+
+            $event['created'] = new Datetime($event['created']);
+            $event['changed'] = new Datetime($event['changed']);
+            // $event['start'] = new Datetime($event['start']);
+            // $event['end'] = new Datetime($event['end']);
+
+            if ($event['allDay'] == 'true') 
+            {
+                $event['allday'] = $event['allDay'];
+                $event['end'] = $event['start'];
+            }
+            $this->write_preprocess($event, $action);
+
+            $sent = $this->notify_attendees($event, null, $action);
+
+            if ($sent > 0) {
+                $this->rc->output->show_message('calendar.itipsendsuccess', 'confirmation');
+            }
+            else if ($sent < 0) {
+                $this->rc->output->show_message('calendar.errornotifying', 'error');
+            }
+
+            $got_msg = true;
+            break;
 
         case "edit":
             if (!$this->write_preprocess($event, $action)) {
@@ -1094,6 +1240,7 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $reload = $success && (!empty($event['recurrence']) || !empty($event['_savemode']) || !empty($event['_fromcalendar'])) ? 2 : 1;
             break;
+
 
         case "resize":
             if (!$this->write_preprocess($event, $action)) {
@@ -1132,7 +1279,9 @@ $("#rcmfd_new_category").keypress(function(event) {
             // Note: the driver is responsible for setting $_SESSION['calendar_event_undo']
             //       containing 'ts' and 'data' elements
             $success = $this->driver->remove_event($event, $undo_time < 1);
-            $reload = (!$success || !empty($event['_savemode'])) ? 2 : 1;
+            // PAMELA - Fix refresh sur un remove
+            $reload = 2;
+            // $reload = (!$success || !empty($event['_savemode'])) ? 2 : 1;
 
             if ($undo_time > 0 && $success) {
                 // display message with Undo link.
@@ -1435,6 +1584,10 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
             $this->rc->output->command('plugin.refresh_calendar', $args);
         }
+        // else if ($action === 'share') 
+        // {
+        //     $this->rc->output->command('plugin.refresh_calendar', $args);
+        // }
     }
 
     /**
@@ -1468,6 +1621,15 @@ $("#rcmfd_new_category").keypress(function(event) {
             $event['_savemode'] = 'all';
         }
 
+        //PAMELA 
+        $isShare = $event['share'] === true;
+        $body_message_append = $event['message_body_before'];
+        $attendees_default = [];
+
+        foreach ($event['attendees'] as $key => $value) {
+            $attendees_default[$value['email']] = $value['noreply'] == '1';
+        }
+
         // send out notifications
         if (!empty($event['_notify']) && (!empty($event['attendees']) || !empty($old['attendees']))) {
             $_savemode = $event['_savemode'];
@@ -1491,9 +1653,30 @@ $("#rcmfd_new_category").keypress(function(event) {
             else {
                 // make sure we have the complete record
                 $event = $action == 'remove' ? $old : $this->driver->get_event($event, 0, true);
+
+                //pamela
+
+                if (isset($event['attendees']))
+                {
+                    for ($i=0; $i < count($event['attendees']); ++$i) { 
+                        foreach ($attendees_default as $key => $value) {
+                            if ($event['attendees'][$i]['email'] === $key)
+                            {
+                                $event['attendees'][$i]['noreply'] = $value;
+                                break;
+                            }
+                        }
+                    }
+                }
+
             }
 
             $event['_savemode'] = $_savemode;
+
+            //PAMELA
+            $event['share'] = $isShare;
+
+            if (isset($body_message_append)) $event['message_body_before'] = $body_message_append;
 
             if ($old) {
                 $old['thisandfuture'] = $_savemode == 'future';
@@ -2351,7 +2534,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         $attachments = [];
-        $eventid     = 'cal-' . (!empty($event['id']) ? $event['id'] : 'new-event');
+        // PAMELA
+        $eventid     = 'cal-' . (!empty($event['id']) ? $event['id'] : '');
 
         if (!empty($_SESSION[self::SESSION_KEY]) && $_SESSION[self::SESSION_KEY]['id'] == $eventid) {
             if (!empty($_SESSION[self::SESSION_KEY]['attachments'])) {
@@ -2375,7 +2559,7 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         // check for organizer in attendees
-        if ($action == 'new' || $action == 'edit') {
+        if ($action == 'new' || $action == 'edit' /*PAMELA*/|| $action == 'invite-self' || $action == 'share') {
             if (empty($event['attendees'])) {
                 $event['attendees'] = [];
             }
@@ -2468,9 +2652,24 @@ $("#rcmfd_new_category").keypress(function(event) {
         // set a valid recurrence-id if this is a recurrence instance
         libcalendaring::identify_recurrence_instance($event);
 
+        //PAMELA
+        $temp_attendees = unserialize(serialize($event['attendees']));
+        if ($action === 'share')
+        {
+            foreach ($event['attendees'] as $key => $value) {
+                if ($value['share'] === true)  unset($event['attendees'][$key]);
+            }
+
+            if (count($event['attendees']) === 0) unset($event['attendees']);
+        }
+
         // compose multipart message using PEAR:Mail_Mime
         $method  = $action == 'remove' ? 'CANCEL' : 'REQUEST';
         $message = $itip->compose_itip_message($event, $method, $rsvp);
+
+        // PAMELA 
+        $event['attendees'] = $temp_attendees;
+        unset($temp_attendees);
 
         // list existing attendees from $old event
         $old_attendees = [];
@@ -2483,13 +2682,26 @@ $("#rcmfd_new_category").keypress(function(event) {
         // send to every attendee
         $sent    = 0;
         $current = [];
+        //PAMELA
+        $orga = null;
+        $array_attendees = [];
         foreach ((array) $event['attendees'] as $attendee) {
+            // 0007053: MAJ Occurrence: Ajout d'un participant à une occurrence entraine la réception d'une notif d'annulation aux participants
+            $current[] = strtolower($attendee['email']);
+
             // skip myself for obvious reasons
             if (empty($attendee['email']) || in_array(strtolower($attendee['email']), $emails)) {
+                if (!empty($attendee['email'])) $orga = $attendee;
                 continue;
             }
 
-            $current[] = strtolower($attendee['email']);
+            //Correction bug
+            if (is_string($attendee['skip_notify'])) $attendee['skip_notify'] = $attendee['skip_notify'] === "true";
+
+            // 0006967: L'ajout d'un nouveau participant notifie ceux qui ont déjà accepté l'invitation
+            if ($method == 'REQUEST' && isset($attendee['skip_notify']) && $attendee['skip_notify']) {
+                continue;
+            }
 
             // skip if notification is disabled for this attendee
             if (!empty($attendee['noreply']) && $itip_notify & 2) {
@@ -2512,10 +2724,22 @@ $("#rcmfd_new_category").keypress(function(event) {
             // finally send the message
             if ($itip->send_itip_message($event, $method, $attendee, $subject, $bodytext, $message, $is_rsvp)) {
                 $sent++;
+                $array_attendees[] = $attendee;
             }
             else {
                 $sent = -100;
             }
+        }
+        
+        // PAMELA
+        if (count($array_attendees) > 0)
+        {
+            $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [
+                'orga' => $orga,
+                'attendees' => $array_attendees,
+                'message' => $itip->last_message,
+                'event' => $event
+            ]);
         }
 
         // TODO: on change of a recurring (main) event, also send updates to differing attendess of recurrence exceptions
@@ -2565,7 +2789,9 @@ $("#rcmfd_new_category").keypress(function(event) {
             calendar::FREEBUSY_FREE      => 'FREE',
             calendar::FREEBUSY_BUSY      => 'BUSY',
             calendar::FREEBUSY_TENTATIVE => 'TENTATIVE',
-            calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE'
+            calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
+            // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+            calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
         ];
 
         // if the backend has free-busy information
@@ -3227,30 +3453,28 @@ $("#rcmfd_new_category").keypress(function(event) {
             $has_events = true;
 
             // get prepared inline UI for this event object
-            if ($ical_objects->method) {
-                $append   = '';
-                $date_str = $this->rc->format_date($event['start'], $this->rc->config->get('date_format'), empty($event['start']->_dateonly));
-                $date     = new DateTime($event['start']->format('Y-m-d') . ' 12:00:00', new DateTimeZone('UTC'));
+              $append   = '';
+              $date_str = $this->rc->format_date($event['start'], $this->rc->config->get('date_format'), empty($event['start']->_dateonly));
+              $date     = new DateTime($event['start']->format('Y-m-d') . ' 12:00:00', new DateTimeZone('UTC'));
 
-                // prepare a small agenda preview to be filled with actual event data on async request
-                if ($ical_objects->method == 'REQUEST') {
-                    $append = html::div('calendar-agenda-preview',
-                        html::tag('h3', 'preview-title', $this->gettext('agenda') . ' ' . html::span('date', $date_str))
-                        . '%before%' . $this->mail_agenda_event_row($event, 'current') . '%after%'
-                    );
-                }
+              // prepare a small agenda preview to be filled with actual event data on async request
+              if ($ical_objects->method == 'REQUEST') {
+                  $append = html::div('calendar-agenda-preview',
+                      html::tag('h3', 'preview-title', $this->gettext('agenda') . ' ' . html::span('date', $date_str))
+                      . '%before%' . $this->mail_agenda_event_row($event, 'current') . '%after%'
+                  );
+              }
 
-                $html .= html::div('calendar-invitebox invitebox boxinformation',
-                    $this->itip->mail_itip_inline_ui(
-                        $event,
-                        $ical_objects->method,
-                        $ical_objects->mime_id . ':' . $idx,
-                        'calendar',
-                        rcube_utils::anytodatetime($ical_objects->message_date),
-                        $this->rc->url(['task' => 'calendar']) . '&view=agendaDay&date=' . $date->format('U')
-                    ) . $append
-                );
-            }
+              $html .= html::div('calendar-invitebox invitebox boxinformation',
+                  $this->itip->mail_itip_inline_ui(
+                      $event,
+                      $ical_objects->method,
+                      $ical_objects->mime_id . ':' . $idx,
+                      'calendar',
+                      rcube_utils::anytodatetime($ical_objects->message_date),
+                      $this->rc->url(['task' => 'calendar']) . '&view=agendaDay&date=' . $date->format('U')
+                  ) . $append
+              );
 
             // limit listing
             if ($idx >= 3) {
@@ -3626,7 +3850,7 @@ $("#rcmfd_new_category").keypress(function(event) {
             $this->rc->output->command('display_message', $msg, 'confirmation');
         }
 
-        if ($success || $dontsave) {
+        if ($success || $dontsave || /* PAMELA */ ($status == 'declined' && !isset($error_msg))) {
             $metadata['calendar'] = isset($event['calendar']) ? $event['calendar'] : null;
             $metadata['nosave']   = $dontsave;
             $metadata['rsvp']     = !empty($metadata['rsvp']);
@@ -3759,6 +3983,24 @@ $("#rcmfd_new_category").keypress(function(event) {
         if ($success) {
             $msg = $this->gettext(['name' => 'importsuccess', 'vars' => ['nr' => $success]]);
             $this->rc->output->command('display_message', $msg, 'confirmation');
+
+            //PAMELA - Passage du mail en RdvTraité après l'ajout dans l'agenda
+            $metadata = [
+              'uid'       => $event['uid'],
+              '_instance' => isset($event['_instance']) ? $event['_instance'] : null,
+              'changed'   => is_object($event['changed']) ? $event['changed']->format('U') : 0,
+              'sequence'  => intval($event['sequence']),
+              'fallback'  => strtoupper($status),
+              'method'    => $event['_method'],
+              'task'      => 'calendar',
+          ];
+
+            $metadata['calendar'] = isset($event['calendar']) ? $event['calendar'] : null;
+            $metadata['nosave']   = false;
+            $metadata['rsvp']     = !empty($metadata['rsvp']);
+            $metadata['after_action'] = $this->rc->config->get('calendar_itip_after_action', $this->defaults['calendar_itip_after_action']);
+            $this->rc->output->command('plugin.itip_message_processed', $metadata);
+            $this->rc->output->send();
         }
         else if ($existing) {
             $this->rc->output->command('display_message', $this->gettext('importwarningexists'), 'warning');
@@ -3766,6 +4008,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         else {
             $this->rc->output->command('display_message', $this->gettext('errorimportingevent'), 'error');
         }
+
+       
     }
 
     /**
@@ -3894,6 +4138,87 @@ $("#rcmfd_new_category").keypress(function(event) {
         $param += ['task' => 'calendar'];
         return $this->rc->url($param, true, true);
     }
+
+    /**
+   * PAMELA - Build an absolute URL with the given parameters
+   */
+  public function get_freebusy_url($param = array())
+  {
+    // PAMELA - Nouvelle URL
+    $url = '/public/freebusy/';
+    $delm = '?';
+
+    foreach ($param as $key => $val) {
+      if ($val !== '' && $val !== null) {
+        $par  = $key;
+        $url .= $delm.urlencode($par).'='.urlencode($val);
+        $delm = '&';
+      }
+    }
+
+    return rcube_utils::resolve_url($url);
+  }
+
+  /**
+   * PAMELA - Build an absolute URL with the given parameters
+   */
+  public function get_feed_url($calendar)
+  {
+    // Récupération de la clé
+    $_hashkey = $this->driver->get_calendar_public_key($calendar);
+    if (!isset($_hashkey)) {
+      // Pas de clé, donc pas d'url publique
+      return null;
+    }
+
+    // PAMELA - Nouvelle URL
+    $url = 'public/feed/';
+    $delm = '?';
+    $_cal = $this->ical_feed_hash($calendar) . '.ics';
+
+    $param = array('_cal' => $_cal, '_key' => $_hashkey);
+
+    foreach ($param as $key => $val) {
+      if ($val !== '' && $val !== null) {
+        $par  = $key;
+        $url .= $delm.urlencode($par).'='.urlencode($val);
+        $delm = '&';
+      }
+    }
+
+    return rcube_utils::resolve_url($url);
+  }
+
+    /**
+   * PAMELA - Build an absolute URL with the given parameters
+   */
+  public function get_appointment_url($calendar)
+  {
+    // Récupération de la clé
+    $_hashkey = $this->driver->get_appointment_public_key($calendar);
+    if (!isset($_hashkey)) {
+      // Pas de clé, donc pas d'url publique
+      return null;
+    }
+
+    // PAMELA - Nouvelle URL
+    $url = 'public/fullcalendar/';
+    $delm = '?';
+    $_cal = $this->ical_feed_hash($calendar) . '.ics';
+
+    $param = array('_cal' => $_cal, '_key' => $_hashkey);
+
+    foreach ($param as $key => $val) {
+      if ($val !== '' && $val !== null) {
+        $par  = $key;
+        $url .= $delm.urlencode($par).'='.urlencode($val);
+        $delm = '&';
+      }
+    }
+
+    return rcube_utils::resolve_url($url);
+  }
+
 
     public function ical_feed_hash($source)
     {

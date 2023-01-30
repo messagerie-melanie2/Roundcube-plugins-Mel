@@ -59,6 +59,14 @@ class mel_nextcloud extends rcube_plugin {
       }
     }
 
+    if (mel::is_internal()) {
+      $nextcloud_url = $rcmail->config->get('nextcloud_url');
+    }
+    else {
+      $nextcloud_url = $rcmail->config->get('nextcloud_external_url');
+    }
+     if (class_exists("mel_metapage")) mel_metapage::add_url_spied($nextcloud_url, 'stockage');
+
     $this->add_hook('logout_after', array(
             $this,
             'logout_after'
@@ -71,25 +79,33 @@ class mel_nextcloud extends rcube_plugin {
     $this->register_task('stockage');
     $this->get_env_js();
     // Ajoute le bouton en fonction de la skin
-    if ($rcmail->config->get('ismobile', false)) {
-      $this->add_button(array(
-          'command' => 'stockage',
-          'class'	=> 'button-mel_nextcloud ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-          'classsel' => 'button-mel_nextcloud button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-          'innerclass' => 'button-inner',
-          'label'	=> 'mel_nextcloud.task',
-      ), 'taskbar_mobile');
-    } else {
-      $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
-      $this->add_button(array(
-          'command' => 'stockage',
-          'class' => 'button-mel_nextcloud stockage icon-mel-folder',
-          'classsel' => 'button-mel_nextcloud stockage icon-mel-folder button-selected',
-          'innerclass' => 'button-inner',
-          'label' => 'mel_nextcloud.task',
-          'title' => 'mel_nextcloud.stockage_title',
-          'type' =>'link'
-      ), $taskbar);
+    $need_button = true;
+    if (class_exists("mel_metapage")) {
+      $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_documents');
+    }
+
+    if ($need_button)
+    {
+      if ($rcmail->config->get('ismobile', false)) {
+        $this->add_button(array(
+            'command' => 'stockage',
+            'class'	=> 'button-mel_nextcloud ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+            'classsel' => 'button-mel_nextcloud button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+            'innerclass' => 'button-inner',
+            'label'	=> 'mel_nextcloud.task',
+        ), 'taskbar_mobile');
+      } else {
+        $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+        $this->add_button(array(
+            'command' => 'stockage',
+            'class' => 'button-mel_nextcloud stockage icon-mel-folder',
+            'classsel' => 'button-mel_nextcloud stockage icon-mel-folder button-selected',
+            'innerclass' => 'button-inner',
+            'label' => 'mel_nextcloud.task',
+            'title' => 'mel_nextcloud.stockage_title',
+            'type' =>'link'
+        ), $taskbar);
+      }
     }
 
     // Si tache = stockage, on charge l'onglet
@@ -106,7 +122,7 @@ class mel_nextcloud extends rcube_plugin {
     }
     elseif ($rcmail->task == 'mail' || $rcmail->task == 'addressbook' || $rcmail->task == 'calendar') {
       // Appel le script de de gestion des liens vers le sondage
-      $this->include_script('nextcloud_link.js');
+      if (!class_exists("mel_metapage")) $this->include_script('nextcloud_link.js');
       $rcmail->output->set_env('nextcloud_file_url', $rcmail->url(array(
               "_task" => "stockage",
               "_params" => "%%other_params%%"
@@ -146,6 +162,7 @@ class mel_nextcloud extends rcube_plugin {
                     'nextcloud_frame'
             )
     ));
+
     // Chargement du template d'affichage
     $rcmail->output->set_pagetitle($this->gettext('title'));
     $rcmail->output->send('mel_nextcloud.mel_nextcloud');

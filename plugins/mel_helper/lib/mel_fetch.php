@@ -21,7 +21,7 @@ class mel_fetch
    *          [Optionnel]
    * @return array('content', 'httpCode')
    */
-  public function _get_url($url, $params = null, $headers = null) {
+  public function _get_url($url, $params = null, $headers = null, $additionnal_options = null) {
 
     // Options list
     $options = array(
@@ -36,6 +36,14 @@ class mel_fetch
     if (isset($headers)) {
       $options[CURLOPT_HTTPHEADER] = $headers;
     }
+
+    if ($additionnal_options !== null)
+    {
+      foreach ($additionnal_options as $key => $value) {
+        $options[$key] = $value;
+      }
+    }
+
     // params
     if (isset($params)) {
       if (strpos($url, '?') === false) {

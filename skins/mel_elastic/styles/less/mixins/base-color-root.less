@@ -1,0 +1,131 @@
+// out: false
+.color-root()
+{
+    /** TEXT COLOR **/
+    --main-text-color:@main-text-color;
+    --secondary-text-color:@secondary-text-color;
+    --tierciary-text-color:@tierciary-text-color;
+    --fourth-text-color:@fourth-text-color;
+    --other-text-color:@other-text-color;
+    --alternate-text-color:@alternate-text-color;
+    --calendar-week-text-color:@calendar-week-text-color;
+    --calendar-highlight-text-color:@calendar-highlight-text-color;
+    --mel-tab-text-color:@mel-tab-text-color;
+    --text-shadow:@text-shadow;
+
+    /* DISABLED */
+    --disabled-text-color-listing:@disabled[LISTING];
+    --disabled-mel-button-color:@mel-button[DISABLED];
+    
+    /* LINK COLOR */
+    --main-link-color:@main-link-color;
+    --main-link-hover-color:@main-link-hover-color;
+    
+    /* BUTTONS */
+    --btn-primary-border-color:@btn-primary[BORDER_COLOR];
+    --btn-primary-border-color-hover:@btn-primary[HOVER_BORDER_COLOR];
+    --btn-primary-bckg-color-hover:@btn-primary[HOVER_BACKGROUND_COLOR];
+    --windows-like-popup-button-focus:@windows-like-popup[BUTTON_FOCUS];
+    --mel-button-border-color:@mel-button[BORDER_COLOR];
+    --mel-button-border-color-alt:@mel-button[BORDER_COLOR_ALT];
+
+    /** BACKGROUND COLOR **/
+    --main-bckg-color:@main-bckg-color;
+    --secondary-bckg-color:@secondary-bckg-color;
+    --tierciary-bckg-color: @tierciary-bckg-color;
+    --alternate-tierciary-bckg-color:@alternate-tierciary-bckg-color;
+    --alternate-bckg-color:@alternate-bckg-color;
+    --alternate-bckg-color-lighter:@alternate-bckg-color-lighter;
+    --alternate-bckg-color-2:@alternate-bckg-color-2;
+    --drag-n-drop-color:@drag-n-drop-bckg-color;
+    --document-create-list-folder-bckg-color:@document-create-list-folder-bckg-color;
+    --ghost-div-background:@ghost-div-background;
+    --ghost-div-background-inverse:@ghost-div-background-inverse;
+    --default-background:@default-background;
+    --default-background-lighter:@default-background-lighter;
+    --overlay-background:@overlay-background;
+    --quicksearchbar-annuaire-filter-bckg-color:@quicksearchbar-annuaire-filter-bckg-color;
+    --sr-background:@sr-background;
+    --inputs-bg-color:@inputs-bg-color;
+    
+    /* ROUNDBADGE COLOR */
+    --roundbadge-default-bckg-color:@roundbadge-default-bckg-color;
+    --roundbadge-bckg-color:@roundbadge-bckg-color;
+    --roundbadge-menu-bckg-color:@roundbadge-menu-bckg-color;
+    --roundbadge-bkcg-color-on-block:@roundbadge-bkcg-color-on-block;
+    --roundbadge-bkcg-color-on-block-hover:@roundbadge-bkcg-color-on-block-hover;
+    --roundbadge-bkcg-color-tools:@roundbadge-bkcg-color-tools;
+    
+    /* BASE COLOR */
+    --success-color:@success-color;
+    --warning-color:@warning-color;
+    --danger-color:@danger-color;
+    --danger-color-2:@danger-color-2;
+    --royal-color:@royal-color;
+    --private-color:@private-color;
+    --red-star:@red-star;
+
+    /* SCROLLBAR COLOR */
+    --scrollbar-handler-color:@scrollbar-color[HANDLE];
+    --scrollbar-handler-hover-color:@scrollbar-color[HANDLE_HOVER];
+    --scrollbar-background-color:@scrollbar-color[BACKGROUND];
+
+    /* SEPARATE */
+    --separate:@separate-ways[CLASSIC];
+    --separate-light:@separate-ways[LIGHT];
+    --separate-device:@separate-ways[DEVICE];
+
+    /* BORDERS */
+    --primary-border-color:@primary-border-color;
+    --alternate-primary-border-color:@alternate-primary-border-color;
+    --secondary-border-color:@secondary-border-color;
+    --tierciary-border-color:@tierciary-border-color;
+    --windows-like-popup-border:@windows-like-popup[BORDER];
+    --windows-like-popup-border-content:@windows-like-popup[BORDER_CONTENT];
+    --windows-like-popup-border-header:@windows-like-popup[BORDER_HEADER];
+    --tab-header-right-border-color:@tab-header-right-border-color;
+    --layout-border:@layout-border;
+    --base-message-border-color:@base-message-border-color;
+    --message-border-color:@message-border-color;
+
+    /* FOCUS */
+    --secondary-focus:@secondary-focus;
+    --secondary-focus-border:@secondary-focus-border;
+    --tierciary-focus:@tierciary-focus;
+    --background-focus:@background-focus;
+    --other-focus:@other-focus;
+
+    /* WORKSPACES */
+    --default-workspace-side-color:@default-workspace-side-color;
+
+    /* QUOTA BAR */
+    --quota-bar-bckg-color:@quota-bar[BACKGROUND];
+    --quota-bar-border-color:@quota-bar[BORDER];
+    --quota-bar-color:@quota-bar[BAR];
+
+    /* MAILS */
+    --message-hover-shadow:@message-hover-shadow;
+    --mail-unread-icon-color:@mail-unread-icon-color;
+    --mail-icon-hover-color:@mail-icon-hover-color;
+    --mail-unread-icon-hover-color:@mail-unread-icon-hover-color;
+
+    /* MORCEAUX */
+    --layout-sidebar-background-color:var(--main-bckg-color);
+    --mail-layout-sidebar-background-color:var(--tierciary-bckg-color);
+    --calendar-layout-sidebar-background-color:var(--mail-layout-sidebar-background-color);
+    --layout-list-background-color:var(--tierciary-bckg-color);
+    --mail-header-layout-list-background-color:var(--mail-layout-sidebar-background-color);
+    --layout-content-background-color:var(--default-background);
+    --header-layout-content-bckg-color:@header-layout-content-bckg-color;
+    --mail-header-layout-content-background-color:var(--mail-layout-sidebar-background-color);
+    --calendar-header-layout-content-background-color:var(--calendar-layout-sidebar-background-color);
+    --main-navigation-primary-background-color:var(--secondary-bckg-color);
+    --main-navigation-secondary-background-color:var(--tierciary-bckg-color);
+    
+    .dark-mode&{
+        --tierciary-bckg-color:#323F4B;
+        --secondary-bckg-color:#374549;
+        --secondary-text-color: #c7dfff;
+    }
+
+}

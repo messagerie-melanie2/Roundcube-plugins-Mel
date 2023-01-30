@@ -152,7 +152,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user)) {
 					$list_emails = array_map('strtolower', $group->members_email);
 					sort($list_emails);
@@ -182,7 +182,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user)) {
 					if (!$group->is_dynamic) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
@@ -190,7 +190,7 @@ class Gestionnairelistes extends Moncompteobject {
 						if ($group->authentification(null, true)) {
 							$new_member = driver_mel::gi()->member();
 							$new_member->email = $new_smtp;
-							if ($new_member->load('uid')) {
+							if ($new_member->load(['uid'])) {
 								if (!isset($list_members[$new_member->uid])) {
 									$list_members[$new_member->uid] = $new_member;
 									$group->members = $list_members;
@@ -201,7 +201,8 @@ class Gestionnairelistes extends Moncompteobject {
 								sort($list_emails);
 								$group->members_email = $list_emails;
 							}
-							if (!$group->save()) {
+							$ret = $group->save();
+							if (is_null($ret)) {
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::addExterneMember() group->save() ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::addExterneMember() group->save() DN : " . $dn_list);
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::addExterneMember() group->save() OBJECT : " . var_export(array('mineqmelmembres' => $list_emails, 'memberuid' => array_keys($list_members)), true));
@@ -234,7 +235,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user)) {
 					if (!$group->is_dynamic) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
@@ -243,7 +244,7 @@ class Gestionnairelistes extends Moncompteobject {
 						if ($group->authentification(null, true)) {
 							$member_to_delete = driver_mel::gi()->member();
 							$member_to_delete->email = $address;
-							if ($member_to_delete->load('uid')) {
+							if ($member_to_delete->load(['uid'])) {
 								$member_uid = strtolower($member_to_delete->uid);
 								// MANTIS 3570: Problème dans la suppression d'un membre d'une liste
 								if (isset($list_members[$member_uid])) {
@@ -258,7 +259,8 @@ class Gestionnairelistes extends Moncompteobject {
 									$group->members_email = array_values($list_emails);
 								}
 							}
-							if (!$group->save()) {
+							$ret = $group->save();
+							if (is_null($ret)) {
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveMember() ldap_modify ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveMember() ldap_modify DN : " . $dn_list);
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveMember() ldap_modify OBJECT : " . var_export(array('mineqmelmembres' => $list_emails, 'memberuid' => array_keys($list_members)), true));
@@ -287,13 +289,14 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) 
 						&& !$group->is_dynamic 
 						&& $group->authentification(null, true)) {
 					$group->members = [];
 					$group->members_email = [];
-					if (!$group->save()) {
+					$ret = $group->save();
+					if (is_null($ret)) {
 						mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveAllMembers() ldap_modify ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 						mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveAllMembers() ldap_modify DN : " . $dn_list);
 					}
@@ -317,7 +320,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'fullname', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					$members = implode("\r\n", $group->members_email);
 
@@ -349,7 +352,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'fullname', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					if ($filepath = $_FILES['_listes_csv']['tmp_name']) {
 						$lines = file($filepath);
@@ -376,7 +379,7 @@ class Gestionnairelistes extends Moncompteobject {
 							}
 							$member_to_add = driver_mel::gi()->member();
 							$member_to_add->email = $member;
-							if ($member_to_add->load('uid') 
+							if ($member_to_add->load(['uid']) 
 									&& !isset($list_members[$member_to_add->uid])) {
 								$list_members[$member_to_add->uid] = $member_to_add;
 							}
@@ -385,7 +388,8 @@ class Gestionnairelistes extends Moncompteobject {
 						$group->members_email = $list_emails;
 						$group->members = $list_members;
 						if ($group->authentification(null, true)) {
-							if (!$group->save()) {
+							$ret = $group->save();
+							if (is_null($ret)) {
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::uploadCSVMembers() ldap_modify ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::uploadCSVMembers() ldap_modify DN : " . $dn_list);
 							}

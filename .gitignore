@@ -12,3 +12,4 @@ aide/config_search.php
 plugins/mel_portail/modules/fluxrss/rss
 plugins/mel_portail/config
 plugins/mel_help/public/*
+plugins/mel_news/files/*

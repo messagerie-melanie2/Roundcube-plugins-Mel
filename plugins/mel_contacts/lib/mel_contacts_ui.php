@@ -67,11 +67,11 @@ class mel_contacts_ui
                     $this->plugin->api->output->button(array(
                         'label'    => 'mel_contacts.'.str_replace('-', '', $command),
                         'domain'   => $this->ID,
-                        'classact' => 'active',
+                        'class' => 'active '.str_replace('-', '', $command),
                         'command'  => $command,
                         'type'       => 'link'
                 )));
-                $this->plugin->api->add_content($content, 'groupoptions');
+                $this->plugin->api->add_content($content, 'groupoptions-book');
                 $idx++;
             }
             
@@ -80,11 +80,11 @@ class mel_contacts_ui
                     $this->plugin->api->output->button(array(
                         'label'    => 'mel_contacts.manageresources',
                         'type'     => 'link',
-                        'classact' => 'active',
+                        'class' => 'active manageresources',
                         'command'  => 'plugin.mel_resources_contacts',
                         'task'     => 'settings',
                     )));
-            $this->plugin->api->add_content($content, 'groupoptions');
+            $this->plugin->api->add_content($content, 'groupoptions-book');
 
             $this->rc->output->add_label('mel_contacts.bookdeleteconfirm',
                 'mel_contacts.bookdeleting', 'mel_contacts.bookshowurl',
@@ -146,7 +146,7 @@ class mel_contacts_ui
             'name' => $this->rc->gettext('properties'),
         );
         
-        $foldername = new html_inputfield(array('name' => '_name', 'id' => '_name', 'size' => 30));
+        $foldername = new html_inputfield(array('name' => '_name', 'id' => '_name', 'size' => 30, 'class' => 'form-control'));
         $foldername = $foldername->show($name);
 
         $form['props']['fieldsets']['location'] = array(

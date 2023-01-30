@@ -47,6 +47,7 @@ const ping = async function(url, useSSL = true)
     let ok;
     try {
         await $.ajax({
+            type: "GET",
             url: !url.includes("https") && !url.includes("http") ? (ssl + "://" + url) : url,
             success: function(result){
             ok = true;
@@ -65,7 +66,77 @@ const ping = async function(url, useSSL = true)
 const mceToRcId = function (txt = "")
 {
     return txt.replaceAll(".", '_-P-_').replaceAll("@", "'_-A-_'").replaceAll("%", '_-C-_');
-}
+};
+
+(()=> {
+    function ureplacer(pmatch) {
+        var ret = ""
+        pmatch = pmatch.replace(/\,/g,'/')
+        var ix = pmatch.substr(1,pmatch.length-2)
+    
+        if (ix.length % 4 != 0) 
+          ix = ix.padEnd(ix.length+ 4 - ix.length % 4,"=")
+        try {
+        var dx = atob(ix)
+        for (var j = 0; j < dx.length; j = j+2) {
+            ret = ret + String.fromCharCode((dx.charCodeAt(j) << 8) + dx.charCodeAt(j+1))
+        }
+        } catch(err) {
+        console.log("Error in decoding foldername IMAP UTF7, sending empty string back")
+        console.log(err)
+        ret = ""
+        }
+        return ret
+    }
+    
+    function breplacer(umatch) {
+        var bst = ""
+        for (var i=0; i < umatch.length; i++) {
+          var f = umatch.charCodeAt(i)
+          bst = bst + String.fromCharCode(f >> 8) + String.fromCharCode(f & 255)
+        }
+    
+        try {
+        bst = '&'+btoa(bst).replace(/\//g,',').replace(/=+/,'')+'-'
+        }catch(err) {
+        console.log("Error in encoding foldername IMAP UTF7, sending empty string back")
+        console.log(err)
+        bst = ""
+        }
+        return bst
+    }
+    
+    function decode_imap_utf7(mstring) {
+        var stm = new RegExp(/(\&[A-Za-z0-9\+\,]+\-)/,'g')
+        return mstring.replace(stm,ureplacer).replace('&-','&')
+    }
+    
+    function encode_imap_utf7(ustring) {
+        ustring = ustring.replace(/\/|\~|\\/g,'')
+        var vgm = new RegExp(/([^\x20-\x7e]+)/,'g')
+        return ustring.replace('&','&-').replace(vgm,breplacer)
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    window.decode_imap_utf7 = decode_imap_utf7;
+
+    window.setCookie = setCookie;
+
+    window.getCookie = (name) => {
+        return rcmail.get_cookie(name);
+    };
+
+    window.removeCookie = (name) => {
+        setCookie(name, '', -5);
+    };
+    
+})();
 /**
  * Lien du chargement des évènements d'un calendrier.
  */
@@ -94,20 +165,25 @@ const mel_metapage = {
         /**
          * Lorsque le stockage est mis à jours.
          */
-        wsp_stockage_updated: new EventListenerDatas("mel_metapage.wsp_stockage_updated")
+        wsp_stockage_updated: new EventListenerDatas("mel_metapage.wsp_stockage_updated"),
+        workspaces_updated: new EventListenerDatas("workspace.updated")
     },
     /**
      * Différents clés de stockage local.
      */
     Storage: {
         unexist:Symbol("unexist"),
+        exists(val)
+        {
+            return (val ?? this.unexist) !== this.unexist;
+        },
         /**
          * Récupère une donnée depuis le stockage local.
          * @param {string} key Clé de la donnée à récupérer.
          */
-        get(key) {
+        get(key, _default = null) {
             try {
-                return JSON.parse(window.localStorage.getItem(key));
+                return JSON.parse(window.localStorage.getItem(key)) ?? _default;
             } catch (error) {
                 return this.unexist;
             }
@@ -120,6 +196,7 @@ const mel_metapage = {
         set(key, item, stringify = true)
         {
             window.localStorage.setItem(key, stringify ? JSON.stringify(item) : item);
+            this.setStoreChange(key, item);
         },
         /**
          * Supprime une donnée dans le stockage local.
@@ -127,6 +204,19 @@ const mel_metapage = {
          */
         remove(key){
             window.localStorage.removeItem(key);
+            this.setStoreChange(key, undefined);
+        },
+        setStoreChange(key, item)
+        {
+            if (top.rcmail !== undefined) top.rcmail.triggerEvent('storage.change', {key, item});
+
+            top.$('iframe.mm-frame').each((i,e) => {
+                try {
+                    e.contentWindow.rcmail.triggerEvent('storage.change', {key, item});
+                } catch (error) {
+                    
+                }
+            });
         },
         check(storage = null)
         {
@@ -194,6 +284,7 @@ const mel_metapage = {
          */
         calendar:"mel_metapage.calendar",
         calendar_by_days:"mel_metapage.calendars.by_days",
+        calendars_number_wainting:"mel_metapage.calendars.by_days.waiting",
         /**
          * Clé des données des tâches.
          */
@@ -212,6 +303,8 @@ const mel_metapage = {
         wait_frame_waiting:"waiting...",
         wait_frame_loaded:"loaded",
         wait_call_loading:"mel_metapage.call.loading",
+        color_mode:'colorMode',
+        title_workspaces:'workspaces.title'
     },
     /**
      * Liste des symboles.
@@ -233,6 +326,9 @@ const mel_metapage = {
         nextcloud:{
             folder:Symbol("folder"),
             file:Symbol("file")
+        },
+        navigator:{
+            firefox:Symbol('firefox')
         },
         null:Symbol("null")
     },
@@ -262,11 +358,25 @@ const mel_metapage = {
         }
     },
     PopUp:{
-        open_ariane: function () {
+        /**
+         * Ouvre la popup de chat 
+         * @returns 
+         */
+        open_ariane() {
             if (rcmail.busy)
                 return;
+
             if (mel_metapage.PopUp.ariane === null)
+            {
                 mel_metapage.PopUp.ariane = new ArianePopUp(ArianeButton.default());
+                rcmail.addEventListener('toggle-options-user', (show) => {
+                    let $iframe =  mel_metapage.PopUp.ariane.ariane.card.body.card.find('iframe');
+
+                    if (show.show === true) $iframe.css("z-index", '1');
+                    else $iframe.css("z-index", '');
+                    
+                });
+            }
         
             if (mel_metapage.PopUp.ariane.is_show === true)
                 mel_metapage.PopUp.ariane.hide();
@@ -275,8 +385,13 @@ const mel_metapage = {
         },
         ariane:null,
     },
+    Other:{
+        webconf:{
+            private:'/group'
+        }
+    },
     RCMAIL_Start:{
-        ping_nextcloud: async function ()
+        async ping_nextcloud()
         {
             if (rcmail.env.nextcloud_url !== undefined && rcmail.env.nextcloud_url !== null && rcmail.env.nextcloud_url !== "")
             {
@@ -284,6 +399,69 @@ const mel_metapage = {
                 if (rcmail.env.nextcloud_pinged === false)
                     rcmail.env.nextcloud_pinged = await ping(rcmail.env.nextcloud_url, true);
             }
+        }
+    },
+    Frames:{
+        max:10,
+        lastFrames:[],
+        add(frame)
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.add(frame);
+
+            if (frame?.task === 'webconf') return this;
+
+            if (this.lastFrames.length + 1 > 5) this.lastFrames.pop();
+
+            this.lastFrames.push(frame);
+            return this;
+        },
+        reset()
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.reset();
+
+            this.lastFrames = [];
+            return this;
+        },
+        pop()
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.pop();
+
+            if (this.lastFrames.length === 0) return null;
+
+            return this.lastFrames.pop();
+        },
+        last(it = 0)
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.last(it);
+
+            if (this.lastFrames.length === 0) return null;
+
+            return this.lastFrames[this.lastFrames.length - 1 - it];
+        },
+        back(_default = "home")
+        {
+            
+            if (parent !== window) return parent.mel_metapage.Frames.back(_default);
+
+            const unexist = mel_metapage.Storage.unexist;
+            let last = this.pop()?.task || _default;
+
+            if (last === unexist) last = _default;
+
+            return mel_metapage.Functions.change_frame(last, true, true).then(() => {
+                if ($('.menu-last-frame').hasClass('disabled'))
+                {
+                    m_mp_ChangeLasteFrameInfo();
+                }
+            });
+        },
+        create_frame(name, task, icon)
+        {
+            return {
+                name,
+                task,
+                icon
+            };
         }
     },
     Functions:{
@@ -435,6 +613,23 @@ const mel_metapage = {
             return rcmail.get_task_url(url, window.location.origin + window.location.pathname)
         },
 
+        public_url(path, args = null)
+        {
+            let url = window.location.origin + window.location.pathname + (window.location.pathname[window.location.pathname.length - 1] === '/' ? '' : '/') + 'public/' + path;
+
+            if (args !== null)
+            {
+                for (const key in args) {
+                    if (Object.hasOwnProperty.call(args, key)) {
+                        const element = args[key];
+                        url += (url.includes('?') ? "&" : '?') + key + "=" + element
+                    }
+                }
+            }
+
+            return url;
+        },
+
         /**
          * Change de frame, même si l'on est pas depuis "TOP"
          * @param {string} frame Frame à ouvrir
@@ -444,19 +639,19 @@ const mel_metapage = {
          */
         async change_frame(frame, changepage = true, waiting = false, args = null, actions = [])
         {
-            if (frame === "webconf")
-            {
-                var initial_change_page = changepage;
-                changepage = false;
-            }
+            if (changepage) top.rcmail.set_busy(true, 'loading');
+
+            // if (frame === "webconf")
+            // {
+            //     var initial_change_page = changepage;
+            //     changepage = false;
+            // }
 
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
-            
-            workspaces.sync.PostToParent({
-                exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse('${JSON.stringify(args)}'), ${JSON.stringify(actions)})`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
-                child:false
-            });
+
+            top.rcmail.env.can_change_while_busy = true;
+            top.mm_st_OpenOrCreateFrame(frame, changepage, args, actions);
             
             if (waiting)
             {
@@ -464,18 +659,90 @@ const mel_metapage = {
                 mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
             }
 
-            if (frame === "webconf")
+            // if (frame === "webconf")
+            // {
+            //     if (initial_change_page)
+            //     {
+            //         top.mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
+            //     }
+            //     //this.update_refresh_thing();
+            // }
+
+            if (changepage && top.rcmail.busy) 
             {
-                if (initial_change_page)
-                {
-                    mel_metapage.Functions.call('display_webconf', false,{
-                        _integrated:true
-                    });
-                }
+                top.rcmail.set_busy(false);
+                rcmail.clear_messages();
             }
             
             return this;
         },
+
+        /**
+         * Change de page en utilisant le combo tâche + action.
+         * @param {string} task  
+         * @param {string} action 
+         * @param {JSON} params 
+         * @returns 
+         */
+        async change_page(task, action = null, params = {}, update = true, force = false)
+        {
+            let contracted_task;
+            let $querry;
+
+            if (window !== parent) return await parent.mel_metapage.Functions.change_page(task, action, params);
+
+            contracted_task = mm_st_ClassContract(task);
+
+            if (action !== null) params['_action'] = action;
+
+            $querry = $(`iframe.${task}-frame`);
+
+            if (update)
+            {
+                if ($querry.length > 0)
+                {
+                    params[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+                    action = mel_metapage.Functions.url(task, null, params);
+
+                try {
+                        if ($querry[0].contentWindow.location.href !== action) $querry[0].src = action;
+                        else if (force) {
+                            $querry[0].contentWindow.location.reload();
+                        }
+                } catch (error) {
+                    
+                }
+                }
+                else if ($(`.${task}-frame`).length > 0)
+                {
+                    action = mel_metapage.Functions.url(task, null, params);
+                    if (window.location.href !== action) $(`.${task}-frame`).remove();
+                }
+            }
+
+            return await this.change_frame(contracted_task, true, true, params);
+        },
+
+        /**
+         * Ouvre la page de chat, avec un can/group/tem associé ou non.
+         * @param {string} channel_or_group group/ ou channel/
+         * @returns {Promise}
+         */
+        open_chat(channel_or_group = null)
+        {
+            return mel_metapage.Functions.change_frame('rocket', true, true).then(() => {
+                if (channel_or_group !== null && channel_or_group !== undefined)
+                {
+                    if (channel_or_group[0] !== '/')
+                    channel_or_group = `/${channel_or_group}`;
+                    parent.$('.discussion-frame')[0].contentWindow.postMessage({
+                        externalCommand: 'go',
+                        path: channel_or_group
+                    }, '*')
+            }
+            });
+        },
+
 
         /**
          * F5 une frame
@@ -511,6 +778,27 @@ const mel_metapage = {
             }
 
             return (await this.change_frame(last, true, wait));
+        },
+
+        get_current_title(current_task = null, _default = document.title){
+            if (parent !== window) return parent.mel_metapage.Function.get_current_title(current_task, _default);
+
+            if (current_task === null) current_task = top.rcmail.env.current_task;
+
+            if (current_task === 'chat' || current_task === 'discussion')
+            {
+                return 'Discussion';
+            }
+            else if (current_task === 'webconf')
+            {
+                return 'Visioconférence';
+            }
+            else {
+                const frame = $(`iframe.${current_task}-frame`);
+                if (frame.length > 0) return frame[0].contentDocument.title || _default;
+                else if($(`.${current_task}-frame`).length > 0) return document.title;
+                else return _default;
+            }
         },
 
         /**
@@ -645,6 +933,71 @@ const mel_metapage = {
             mel_metapage.Storage.remove("mel.ask");
             return props;
         },
+        
+        updateRichText (html) {
+            return html.replace(/</g,'&lt;');
+        },
+
+        remove_accents(string) {
+            return string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        },
+
+        replace_dets(string = '', rep = '')
+        {
+            const dets = [
+                " le ",
+                " la ",
+                " les ",
+                " un ",
+                " une ",
+                " de ",
+                " des ",
+                " mon ",
+                " ma ",
+                " tes ",
+                " ton ",
+                " ta ",
+                " son ",
+                " sa ",
+                " ses ",
+                " notre ",
+                " nos ",
+                " vos ",
+                " votre ",
+                " leur ",
+                " leurs ",
+                " se ",
+                " ce ",
+                " cette ",
+                " cet ",
+                " ces ",
+                " a ", 
+                "l'"
+            ];
+
+            for (const iterator of dets) {
+                string = string.replaceAll(iterator, rep);
+            }
+
+            while (string[0] === rep)
+            {
+                string = string.slice(1, string.length);
+            }
+
+            return string;
+        },
+
+        replace_special_char(string, rep = ''){
+            const regexp = /[^a-zA-Z0-9_ -]/g;
+            string = string.replace(regexp, rep);
+
+            while (string[0] === rep)
+            {
+                string = string.slice(1, string.length);
+            }
+
+            return string;
+        },
 
         /**
          * 
@@ -653,15 +1006,57 @@ const mel_metapage = {
          */
         webconf_url(url)
         {
+            if (url[url.length - 1] === '&') url = url.slice(0, url.length - 1);
+
             let val = url.toUpperCase();
             
             if (val.includes(rcmail.env["webconf.base_url"].toUpperCase())) {
               val = val.split("/");
               val = val[val.length - 1];
-              return val.toUpperCase();
+              val=  val.toUpperCase();
+            }
+            else if (val.includes('PUBLIC/WEBCONF')) val = val.split("_KEY=")[1].split("&")[0]
+            else {
+                let link = WebconfLink.create({location:url, categories:[]});
+                val = link.key;
+
+                try {
+                    if (val === ""){
+                        link = WebconfLink.create({location:`#visio:${url}`, categories:[]});
+                        val = link.key;
+                    }
+                } catch (error) {
+                    val = null;
+                }
             }
 
-            return null;
+            
+            return val || null;
+        },
+
+        _shuffle(array) {
+            var currentIndex = array.length, temporaryValue, randomIndex;
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+    
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+    
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+            return array;
+        },
+
+        generateWebconfRoomName()
+        {
+            var charArray= ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+            var digitArray= ["0","1","2","3","4","5","6","7","8","9"];
+            var roomName = this._shuffle(digitArray).join("").substring(0,3) + this._shuffle(charArray).join("").substring(0,7);
+            return this._shuffle(roomName.split("")).join("");
         },
 
         /**
@@ -837,19 +1232,23 @@ const mel_metapage = {
 
         update_refresh_thing()
         {
-            let current = $(".refresh-current-thing");
-            switch (rcmail.env.current_frame_name) {
-                case "webconf":
-                case "discussion":
-                    current.addClass("disabled").attr("disabled", "disabled");
-                    break;
-            
-                default:
-                    current.removeClass("disabled").removeAttr("disabled");
-                    break;
-            }
+            let current = top.$(".refresh-current-thing");
+            let action = window.webconf_helper.already() || top.rcmail.env.current_frame_name === "webconf";
+
+            if (action === true) current.addClass("disabled").attr("disabled", "disabled");
+            else current.removeClass("disabled").removeAttr("disabled");
 
             return this;
+        },
+
+        isNavigator(symbol){
+            switch (symbol) {
+                case mel_metapage.Symbols.navigator.firefox:
+                    return typeof InstallTrigger !== 'undefined';
+            
+                default:
+                    throw 'Unknown navigator';
+            }
         },
 
         /**
@@ -884,6 +1283,89 @@ const mel_metapage = {
             parent.$("iframe.stockage-frame")[0].contentWindow.rcmail.env.nextcloud_gotourl = url;
 
             return this;
+        },
+
+        async comment_mail(uid, comment, folder = 'INBOX') {
+            let data = uid;
+            await this.post(
+                mel_metapage.Functions.url('mel_metapage', 'comment_mail'), {
+                    _uid:uid,
+                    _comment:comment,
+                    _folder:folder
+                },
+                (datas) => {
+                    if (datas == 'false')
+                    {
+                        rcmail.display_message('Une erreur est survenue!', 'error');
+                        data = false;
+                    }
+                    else data = datas;
+                }
+            );
+
+            return data;
+        },
+
+        colors:{
+            kMel_Luminance(rgb) {
+                    let R = rgb[0] / 255
+                    let G = rgb[1] / 255
+                    let B = rgb[2] / 255
+                
+                    if (R <= 0.04045) { R = R /12.92 } else { R = ((R +0.055)/1.055) ** 2.4 }
+                    if (G <= 0.04045) { G = G /12.92 } else { G = ((G +0.055)/1.055) ** 2.4 }
+                    if (B <= 0.04045) { B = B /12.92 } else { B = ((B +0.055)/1.055) ** 2.4 }
+                
+                    const L = 0.2126 * R + 0.7152 * G + 0.0722 * B
+                
+                    return L
+                },
+                
+                kMel_CompareLuminance(rgb1, rgb2) {
+                    const l1 = kMel_Luminance(rgb1)
+                    const l2 = kMel_Luminance(rgb2)
+                
+                    let ratio
+                    if (l1 > l2) { ratio = l1 / l2 } else { ratio = l2 / l1 }
+                
+                    return ratio
+                },
+                
+                kMel_LuminanceRatioAAA(rgb1, rgb2) {
+                    const isAAA = kMel_CompareLuminance(rgb1, rgb2) > 7       
+                    return isAAA
+                },
+                
+                kMel_extractRGB (color) {
+                    let regexp = /#[a-fA-F\d]{6}/g
+                    let rgbArray = color.match(regexp)
+                
+                    if (rgbArray) {
+                        rgbArray[0] = parseInt(color.slice(1,3), 16)
+                        rgbArray[1] = parseInt(color.slice(3,5), 16)
+                        rgbArray[2] = parseInt(color.slice(5,7), 16)
+
+                        return rgbArray
+                    }
+                
+                    regexp = /#[a-fA-F\d]{3}/g
+                    rgbArray = color.match(regexp)
+                
+                    if (rgbArray) {
+                        rgbArray[0] = parseInt(color.slice(1,2), 16)
+                        rgbArray[1] = parseInt(color.slice(2,3), 16)
+                        rgbArray[2] = parseInt(color.slice(3,4), 16)
+
+                        return rgbArray
+                    }
+                
+                    regexp = /\d+/g;
+                    rgbArray = color.match(regexp);
+                
+                    if (rgbArray.length === 3 || rgbArray.length === 4) {
+                        return rgbArray
+                    }
+                },
         }
 
 

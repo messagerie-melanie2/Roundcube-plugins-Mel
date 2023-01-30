@@ -126,7 +126,7 @@ class mel_sharedmailboxes extends rcube_plugin {
             $this->assoc_identity_bal();
             // Ajout d'un champ hidden pour stocker l'account
             $hidden_account = new html_hiddenfield(array('id' => '_compose_hidden_account', 'name' => '_account'));
-            $this->api->add_content($hidden_account->show($this->get_account), 'composeoptions');
+            $this->api->add_content($hidden_account->show($this->get_account), 'composeoptionsaccount');
             // Modification de l'affichage des dossiers imap
             $this->set_compose_sent_folder();
         }
@@ -159,10 +159,10 @@ class mel_sharedmailboxes extends rcube_plugin {
                 // Récupération de la liste des balp de l'utilisateur courant
                 if ($list_tasks[$this->rc->task][$this->rc->action]) {
                     // Boites gestionnaires ?
-                    $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsSharedGestionnaire();
+                    $_objects = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsSharedGestionnaire());
                 }
                 else {
-                    $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsShared();
+                    $_objects = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsShared());
                 }
                 // Affichage du nom de l'utilisateur et du menu déroulant de balp
                 if ($this->rc->task == 'settings') {
@@ -276,6 +276,9 @@ class mel_sharedmailboxes extends rcube_plugin {
                             else {
                                 $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action . "&_account=" . $uid;
                             }
+
+                            if (rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) === 'iframe') $href.='&_is_from=iframe';
+
                             // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
                             if (isset($_GET['_courrielleur'])) {
                                 $href .= "&_courrielleur=1";

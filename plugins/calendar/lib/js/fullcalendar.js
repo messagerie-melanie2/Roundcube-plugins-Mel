@@ -15090,6 +15090,9 @@ ViewRegistry_1.defineView('agendaWeek', {
 ViewRegistry_1.defineView('agendaWork', {
     type: 'agendaWeek'
 });
+ViewRegistry_1.defineView('agendaResource', {
+    type: 'agendaWeek'
+});
 ViewRegistry_1.defineView('monthWork', {
     type: 'month'
 });

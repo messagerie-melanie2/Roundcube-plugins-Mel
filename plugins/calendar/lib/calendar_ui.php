@@ -135,7 +135,11 @@ class calendar_ui
     public function addJS()
     {
         $this->cal->include_script('lib/js/moment.js');
+        $this->cal->include_script('lib/js/moment_fr.js');
         $this->cal->include_script('lib/js/fullcalendar.js');
+        // PAMELA - Fullcalendar premium
+        $this->cal->include_script('lib/js/scheduler.js');
+        $this->cal->include_stylesheet('lib/js/scheduler.css');
 
         if ($this->rc->task == 'calendar' && $this->rc->action == 'print') {
             $this->cal->include_script('print.js');
@@ -307,14 +311,25 @@ class calendar_ui
                     'action' => 'feed'
                 ]
             );
+            $prop['feedfreebusyurl'] = $this->cal->get_freebusy_url(array('_cal' => $this->cal->ical_feed_hash($id) . '.ics'));
+            if ($prop['owner'] == $this->cal->rc->get_user_name()) {
+              $prop['showfeedcalendarurl'] = true;
+              $prop['feedcalendarurl'] = $this->cal->get_feed_url($id);
+            }
+            else {
+              $prop['showfeedcalendarurl'] = false;
+              $prop['feedcalendarurl'] = null;
+            }
 
             $jsenv[$id] = $prop;
         }
 
-        if (!empty($prop['title'])) {
-            $title = $prop['title'];
-        }
-        else if ($prop['name'] != $prop['listname'] || strlen($prop['name']) > 25) {
+        // PAMELA - Fullcalendar premium
+        // if (!empty($prop['title'])) {
+        //     $title = $prop['title'];
+        // }
+        // else 
+        if ($prop['name'] != $prop['listname'] || strlen($prop['name']) > 25) {
             $title = html_entity_decode($prop['name'], ENT_COMPAT, RCUBE_CHARSET);
         }
         else {
@@ -494,6 +509,8 @@ class calendar_ui
         $select->add($this->cal->gettext('status-tentative'), 'TENTATIVE');
         //Pamela - Ajout de l'option "Libre"
         $select->add($this->cal->gettext('free'), 'FREE'); //fin pamela
+        // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+        $select->add($this->cal->gettext('status-telework'), 'TELEWORK');
 
         return $select->show(null);
     }

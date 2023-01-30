@@ -5,26 +5,39 @@
         return window.webconf_master_bar !== undefined || parent.webconf_master_bar !== undefined;
     }
 
-    async function go_to_webconf(key = null, wsp = null, ariane = null)
+    async function go_to_webconf(key = null, wsp = null, ariane = null, show_config_popup = false, locks = null)
     {
         if (!webconf_is_active())
         {
+            
+            try {
+                top.m_mp_close_ariane();
+            } catch (error) {
+                
+            }
+
             if ((parent !== window ? parent : window).$(".webconf-frame").length > 0)
                 (parent !== window ? parent : window).$(".webconf-frame").remove();
 
             let config = null;
-            if (key != null || wsp !== null || ariane !== null)
+            if (key != null || wsp !== null || ariane !== null || show_config_popup)
             {
                 config = {};
-                if (key !== null)
-                    config["_key"] = key;
-                if (wsp !== null)
-                    config["_wsp"] = wsp;
-                else if (ariane !== null)
-                    config["_ariane"] = ariane;
+                if (key !== null) config["_key"] = key;
+
+                if (wsp !== null) config["_wsp"] = wsp;
+                else if (ariane !== null) config["_ariane"] = ariane;
+                
+                if (show_config_popup) config['_need_config'] = 1;
+
+                if (!!locks) {
+                    config['_locks'] = locks;
+                }
 
                 config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-            }
+            } 
+
+
             mel_metapage.Functions.call("ArianeButton.default().hide_button()", false);
             mel_metapage.Functions.call(() => {
                 if (window.create_popUp !== undefined)
@@ -33,35 +46,73 @@
             await mel_metapage.Functions.change_frame('webconf', true, true, config);
         }
         else {
-            rcmail.display_message("Une visioconférence est déja en cours, finissez celle en cours avant d'en démarrer une nouvelle !", "warning");
+            rcmail.display_message(rcmail.gettext('webconf_already_running', 'mel_metapage'), "warning");
         }
     }
 
     async function notify(key, uid)
     {
+        let $config = {
+            _link:mel_metapage.Functions.url("webconf", "", {
+                _key:key,
+                _wsp:uid
+            }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ''),
+            _uid:uid
+        };
+
         return mel_metapage.Functions.post(
-            mel_metapage.Functions.url("workspace", "notify_chat"),
-            {
-                _uid:uid,
-                _text:`@all\r\nUne webconference a débuté :\r\n- WebMail => ${mel_metapage.Functions.url("webconf", "", {
-                    _key:key,
-                    _wsp:uid
-                }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '')}\r\n- Lien Classique => ${rcmail.env["webconf.base_url"] + "/" + key}`,
-                _path:(window.location.origin + window.location.pathname).slice(0, (window.location.origin + window.location.pathname).length-1)
-            }
+            mel_metapage.Functions.url("webconf", "notify"),
+            $config
         );
     }
 
-    if (window.Webconf !== undefined)
-        window.Webconf.helpers = {
-            go:go_to_webconf,
-            already:webconf_is_active,
-            notify:notify
-        };
+    async function getWebconfPhoneNumber(webconf)
+    {
+        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        let phoneNumber = null;
+        await mel_metapage.Functions.get(
+            url,
+            {},
+            (datas) => {
+                const indicator = rcmail.env['mel_metapage.webconf_voxify_indicatif'];
+                if (!!datas && datas.numbersEnabled && !!datas.numbers[indicator] && datas.numbers[indicator].length > 0) phoneNumber = datas.numbers[indicator][0];
+            }
+        );
+
+        return phoneNumber;
+    }
+
+    async function getWebconfPhonePin(webconf)
+    {
+        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        let phoneNumber = null;
+        await mel_metapage.Functions.get(
+            url,
+            {},
+            (datas) => {
+                if (!!datas && !!datas.id ) phoneNumber = datas.id;
+            }
+        );
+
+        return phoneNumber;
+    }
+
     window.webconf_helper = {
         go:go_to_webconf,
         already:webconf_is_active,
-        notify:notify
+        notify:notify,
+        phone:{
+            get:getWebconfPhoneNumber,
+            pin:getWebconfPhonePin,
+            async getAll(webconf){
+                const datas = await Promise.allSettled([this.get(webconf), this.pin(webconf)]);
+
+                return {
+                    number:datas[0].value,
+                    pin:datas[1].value
+                }
+            }
+        }
     };
 
 })();

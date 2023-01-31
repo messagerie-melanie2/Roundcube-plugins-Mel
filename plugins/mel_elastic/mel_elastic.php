@@ -41,6 +41,7 @@ class mel_elastic extends rcube_plugin
 
     function init()
     {
+        include_once __DIR__.'/classes/html_table_bnum.php';
         $this->skinPath = getcwd()."/skins/mel_elastic";
         $this->rc = rcmail::get_instance();
         if ($this->rc->config->get('skin') == 'mel_elastic')

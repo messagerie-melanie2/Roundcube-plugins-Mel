@@ -441,7 +441,7 @@ class mel_notification extends rcube_plugin
         // Block avancé pour les notifications
         $p['blocks']['list']['name'] = $this->gettext('Notifications settings');
 
-        $table = new html_table(['id' => 'notificationssettings', 'cols' => 4]);
+        $table = new html_table_bnum(['id' => 'notificationssettings', 'cols' => 4]);
 
         // Add headers
         foreach (['notifications', 'inside_notification', 'desktop_notification', 'notifications_center'] as $name) {
@@ -456,7 +456,7 @@ class mel_notification extends rcube_plugin
             $config = isset($notifications_settings[$key]) ? $notifications_settings[$key] : [];
 
             // Colonne avec le nom du settings
-            $table->add(['scope' => 'row'], $name);
+            $table->add_col_header(['scope' => 'row'], $name, true);
 
             // Parcours les configurations
             foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
@@ -477,7 +477,7 @@ class mel_notification extends rcube_plugin
                 $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
 
                 // Ajouter la BALI
-                $table->add(['scope' => 'row'], $this->gettext('mailbox') . driver_mel::gi()->getUser()->fullname);
+                $table->add_col_header(['scope' => 'row'], $this->gettext('mailbox') . driver_mel::gi()->getUser()->fullname, true);
 
                 // Parcours les configurations
                 foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
@@ -498,7 +498,7 @@ class mel_notification extends rcube_plugin
                     $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
 
                     // Colonne avec le nom du settings
-                    $table->add(['scope' => 'row'], $this->gettext('mailbox') . $object->mailbox->fullname);
+                    $table->add_col_header(['scope' => 'row'], $this->gettext('mailbox') . $object->mailbox->fullname, true);
 
                     // Parcours les configurations
                     foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {

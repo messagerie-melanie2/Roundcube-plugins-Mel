@@ -38,7 +38,7 @@ function my_day(symbol = null)
 function current_day(storage, last_update_storage, trigger, setup_func = (local_storage) => { console.log(local_storage);})
 {
 	let local_storage = mel_metapage.Storage.get(storage);
-	if (moment(mel_metapage.Storage.get(last_update_storage)).format("DD/MM/YYYY") !== moment().startOf('day').format("DD/MM/YYYY"))
+	if (moment(mel_metapage.Storage.get(last_update_storage)).startOf('day').format("DD/MM/YYYY") !== moment().startOf('day').format("DD/MM/YYYY"))
 		local_storage = null;
 	//console.log(local_storage, moment(mel_metapage.Storage.get(last_update_storage)).format("DD/MM/YYYY"), moment().startOf('day').format("DD/MM/YYYY"));
 	if (local_storage !== null)
@@ -46,7 +46,7 @@ function current_day(storage, last_update_storage, trigger, setup_func = (local_
 		setup_func(local_storage)
 	}
 	else{
-		parent.rcmail.triggerEvent(trigger);
+		parent.rcmail.triggerEvent(trigger, {force:true});
 		return true;
 	}
 	return false;

@@ -542,7 +542,7 @@ class libcalendaring_itip
                 $action = '';
             }
         }
-        else if ($event['method'] == '') {
+        else if ($event['method'] == '' || $event['method'] == 'PUBLISH') {
           if ($existing) {
             $html = html::div('rsvp-status', $this->gettext('eventalreadyinyouragenda'));          
             $action = '';
@@ -834,7 +834,7 @@ class libcalendaring_itip
         }
 
         // for messages who have no method
-        else if ($method == '') {
+        else if ($method == '' || $method == 'PUBLISH') {
           $title = $this->gettext('itipinvitation');
 
           $attachment_id = explode(':',$mime_id)[1];

@@ -52,6 +52,8 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
                 search_action(...args.args);
             break;
         case "update_cal":
+            top.event_reduced = false;
+            top.$('#globalModal .modal-content').css('height', '');
             rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
 
             if (args.args !== undefined)

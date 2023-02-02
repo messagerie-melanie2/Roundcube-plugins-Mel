@@ -3246,8 +3246,11 @@ class mel_driver extends calendar_driver {
     if (strpos($event_id, self::CALENDAR_SEPARATOR)) {
       $event_id = explode(self::CALENDAR_SEPARATOR, $event_id, 2)[1];
     }
-    if (strpos($event_id, '@')) {
-      $event_id = explode('@', $event_id, 2)[0];
+    if (strpos($event_id, '@DATE-')) {
+      $event_id = explode('@DATE-', $event_id, 2)[0];
+    }
+    if (strpos($event_id, self::RECURRENCE_ID)) {
+      $event_id = explode(self::RECURRENCE_ID, $event_id, 2)[0];
     }
     return $event_id;
   }

@@ -862,7 +862,7 @@ if (rcmail && window.mel_metapage)
             margin-left: -1px;"/>`);
 
             let $subject = $(`<input class="form-control input-mel" type="text" placeholder="Sujet du message..." value="${top.rcmail.env.firstname ?? ''} ${top.rcmail.env.lastname ?? ''}${(!!top.rcmail.env.firstname && !!top.rcmail.env.lastname ? '' : 'On')} vous partage l'évènement ${event.title}"/>`);
-            let $commentArea = $(`<textarea placeholder="Message optionel ici...." class="input-mel mel-input form-control" row=10 style="width:100%"></textarea>`);
+            let $commentArea = $(`<textarea placeholder="Message optionnel ici...." class="input-mel mel-input form-control" row=10 style="width:100%"></textarea>`);
 
             let $userInputParent = $(`<div></div>`).append($userInput);
 

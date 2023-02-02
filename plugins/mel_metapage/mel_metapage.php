@@ -1871,7 +1871,7 @@ class mel_metapage extends rcube_plugin
         {
             $this->add_texts('localization/');
             $startup = 'chat_startup';
-            $startup_config = $this->rc->config->get($startup, false);
+            $startup_config = $this->rc->config->get($startup, true);
 
             $startup_check = new html_checkbox(['name' => $startup, 'id' => $startup, 'value' => 1]);
             $args['blocks']['general']['options'][$askOnEnd] = [

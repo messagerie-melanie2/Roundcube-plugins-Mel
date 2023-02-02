@@ -142,8 +142,9 @@ if (rcmail)
 
             rcmail.register_command("event-compose", () => {
                 const event = ui_cal.selected_event;
+                const title = `${event.title} - ${moment(event.start).format('DD/MM/YYY HH:mm')}`;
                 window.current_event_modal.close();
-                parent.rcmail.open_compose_step({to:Enumerable.from(event.attendees).select(x => x.email).toArray().join(','),subject:event.title});
+                parent.rcmail.open_compose_step({to:Enumerable.from(event.attendees).select(x => x.email).toArray().join(','),subject:title});
             }, true);
 
             rcmail.register_command("event-self-invitation", () => {

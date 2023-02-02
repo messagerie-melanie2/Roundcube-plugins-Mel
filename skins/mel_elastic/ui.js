@@ -671,6 +671,8 @@ $(document).ready(() => {
 
                         $("#layout-content ul#toolbar-menu").prepend($back);
 
+                        $('#layout-content .header .move.simplified').css('display', 'none');
+
                         //Fermer la prévisu
                         rcmail.register_command("close-mail-visu", () => {
                             $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
@@ -751,7 +753,6 @@ $(document).ready(() => {
                             }
                         });
                     });
-
 
                     $('#mailsearchlist .searchbar .reset').click(() => {
                         $('#mailsearchlist .searchbar .flag').removeClass('selected');

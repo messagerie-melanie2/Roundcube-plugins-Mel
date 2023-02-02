@@ -668,9 +668,9 @@ class mel_metapage extends rcube_plugin
         {
             $this->add_button(array(
                 'command'       => 'move',
-                'class'	        => 'move disabled',
-                'classact'      => 'move',
-                'classsel'      => 'move',
+                'class'	        => 'move disabled simplified',
+                'classact'      => 'move simplified',
+                'classsel'      => 'move simplified',
                 'label'	        => 'move',
                 'title'         => 'moveto',
                 'innerclass'    => 'inner',

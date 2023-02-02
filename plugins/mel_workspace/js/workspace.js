@@ -151,6 +151,8 @@ function Start(uid, hasAriane, datas) {
         parent.wsp_cf_d = true;
     }
 
+    setup_wsp_colors();
+
     $(".wsp-copy-button").click(() => {
         const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
         mel_metapage.Functions.copy(url);
@@ -1130,5 +1132,25 @@ function init_sondages()
             inject_embeded(e.currentTarget);
         });
         inject_embeded(iterator);
+    }
+}
+
+function setup_wsp_colors() {
+   const color = rcmail.env.current_settings.color;
+
+    if (!!color) {
+        let $querry = $('.dwp-round.wsp-picture span');
+
+        if ($querry.length > 0){
+            let textColor =  $('.dwp-round.wsp-picture span').css('color').replaceAll('rgb', '').replaceAll('a', '').replaceAll('(', '').replaceAll(')', '').split(','); 
+            if (!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(textColor, mel_metapage.Functions.colors.kMel_extractRGB(color))) {
+                $querry.css('color', 'white');
+            }
+            else $querry.css('color', '#363A5B');
+
+            textColor = null;
+        }
+
+        $querry = null;
     }
 }

@@ -99,7 +99,7 @@ class Workspaces extends Module
     if ($workspace->logo !== null && $workspace->logo !== "false")
       $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:' . $ws->get_setting($workspace, "color") . '><img alt="" src="' . $workspace->logo . '"></div>', $html);
     else
-      $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:" . $ws->get_setting($workspace, "color") . "><span>" . substr($workspace->title, 0, 3) . "</span></div>", $html);
+      $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:" . $ws->get_setting($workspace, "color") . "><span style=color:". $ws->get_badge_text_color($workspace) .">" . substr($workspace->title, 0, 3) . "</span></div>", $html);
     if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
       $html = str_replace("<workspace-#/>", "#" . $workspace->hashtags[0], $html);
     else

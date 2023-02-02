@@ -1322,8 +1322,8 @@ const mel_metapage = {
                 },
                 
                 kMel_CompareLuminance(rgb1, rgb2) {
-                    const l1 = kMel_Luminance(rgb1)
-                    const l2 = kMel_Luminance(rgb2)
+                    const l1 = this.kMel_Luminance(rgb1)
+                    const l2 = this.kMel_Luminance(rgb2)
                 
                     let ratio
                     if (l1 > l2) { ratio = l1 / l2 } else { ratio = l2 / l1 }
@@ -1332,7 +1332,7 @@ const mel_metapage = {
                 },
                 
                 kMel_LuminanceRatioAAA(rgb1, rgb2) {
-                    const isAAA = kMel_CompareLuminance(rgb1, rgb2) > 7       
+                    const isAAA = this.kMel_CompareLuminance(rgb1, rgb2) > 7       
                     return isAAA
                 },
                 

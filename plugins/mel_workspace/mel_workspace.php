@@ -860,6 +860,19 @@ class mel_workspace extends rcube_plugin
         return html::div([], $html);
     }
 
+    private function compare_AAA($hexaColor, $otherColor = '#FFFFFF') {
+        return !mel_helper::color()->color_from_hexa($hexaColor)->compare_AAA(mel_helper::color()->color_from_hexa($otherColor));
+    }
+
+    public function get_badge_text_color($wsp) {
+        if ($wsp->logo === null || $wsp->logo == 'false' || $wsp->logo == false || $wsp->logo == '')
+        {
+            return !$this->compare_AAA($this->get_setting($wsp, "color"), '#363A5B') ? '#363A5B' : 'white';
+        }
+        
+        return null;
+    }
+
     function set_wsp_style()
     {
         $style = "";
@@ -2316,7 +2329,7 @@ class mel_workspace extends rcube_plugin
         if ($workspace->logo !== null && $workspace->logo !== false  && $workspace->logo !== "false")
             $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img alt="" src="'.$workspace->logo.'"></div>', $html);
         else
-            $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
+            $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span style=color:".$this->get_badge_text_color($workspace).">".substr($workspace->title, 0, 3)."</span></div>", $html);
         
             if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);

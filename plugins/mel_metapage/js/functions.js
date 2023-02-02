@@ -646,7 +646,36 @@ function m_mp_createworkspace() {
                 
 
                 setTimeout(() => {
-                    $('#workspace-color').val(MEL_ELASTIC_UI.getRandomColor());
+                    const rdmColor = MEL_ELASTIC_UI.getRandomColor();
+                    $('#workspace-color').val(rdmColor).on('change', (e) => {
+                        const color = $(e.currentTarget).val();
+                        let $span = $('#worspace-avatar-a');
+                        if ($span.length > 0)
+                        {
+                            if(!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'), mel_metapage.Functions.colors.kMel_extractRGB(color))){
+                                $span.attr('style', 'color:white!important');
+                            }
+                            else {
+                                $span.attr('style', 'color:#363A5B!important');
+                            }
+
+                            $span.css('background-color', color);
+                        }
+                        $span = null;
+
+                    });
+                    let $span = $('#worspace-avatar-a');
+                    if ($span.length > 0)
+                    {
+                        if(!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'), mel_metapage.Functions.colors.kMel_extractRGB(rdmColor))){
+                            $span.attr('style', 'color:white!important');
+                        }
+                        else {
+                            $span.attr('style', 'color:#363A5B!important');
+                        }
+                    }
+                    $span.css('background-color', rdmColor);
+                    $span = null;
                     $("#workspace-date-end").datetimepicker({
                         format: 'd/m/Y H:i',
                         dayOfWeekStart: 1,
@@ -2251,14 +2280,6 @@ function mm_create_calendar(e, existingEvent = null) {
 
     rcmail.local_storage_set_item("tmp_calendar_event", event);
     return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
-    // m_mp_CreateOrOpenFrame(`calendar`, 
-    // () => {
-    //     m_mp_CreateEvent();
-    //     m_mp_CreateEvent(() => {
-    //         m_mp_set_storage("calendar_category", "ws#" + id, false);
-    //     })
-    // }
-    // , m_mp_CreateEvent_inpage)
 }
 
 function m_mp_NewTask() {

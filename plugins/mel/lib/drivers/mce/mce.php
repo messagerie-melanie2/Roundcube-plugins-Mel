@@ -38,6 +38,9 @@ class mce_driver_mel extends driver_mel {
    * @return \LibMelanie\Api\Mce\User
    */
   public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null, $itemName = null) {
+    if (isset($email)) {
+      $email2 = $email;
+    }
     if (!isset($username) && !isset($dn) && !isset($email)) {
       $username = rcmail::get_instance()->user->get_username();
     }

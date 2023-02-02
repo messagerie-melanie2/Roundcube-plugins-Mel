@@ -166,6 +166,9 @@ class BnumAPIController extends OCSController {
 					];
 				}
 				else if ($personal == 'true' && !$isGroupFolder) {
+					if ($directory->getName() == 'Partagés avec vous') {
+						continue;
+					}
 					// Dossier à retourner en API
 					$folders[] = [
 						'id' => $directory->getId(),

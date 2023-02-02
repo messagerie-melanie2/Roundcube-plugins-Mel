@@ -68,29 +68,17 @@ class Application extends App implements IBootstrap {
 	}
 
     public function boot(IBootContext $context): void {
-		if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD'])
+		if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['PATH_INFO'])
 				&& $_SERVER['REQUEST_METHOD'] == 'GET' 
-				&& $_SERVER['PATH_INFO'] == "/apps/files/") {
+				&& trim($_SERVER['PATH_INFO'], '/') == "apps/files") {
 			$context->injectFn(Closure::fromCallable([$this, 'registerNavigation']));
 		}
 	}
 
     private function registerNavigation(IL10N $l10n, IUserSession $userSession, IURLGenerator $urlGenerator, IRootFolder $rootFolder): void {
-		// PAMELA 
-        // \Psr\Container\ContainerInterface::get(\OCA\GroupFolders\Folder\FolderManager::class);
-		$folderManager = $this->getContainer()->query(\OCA\GroupFolders\Folder\FolderManager::class);
 		$user = $userSession->getUser();
-		if (isset($folderManager) && isset($user)) {
-			$folders = $folderManager->getFoldersForUser($user);
+		if (isset($user)) {
 			$userFolder = $rootFolder->getUserFolder($user->getUID());
-
-            // Sort folders by alphabetical order
-			usort($folders, function($a, $b) {
-				if ($a['mount_point'] == $b['mount_point']) {
-					return 0;
-				}
-				return ($a['mount_point'] < $b['mount_point']) ? -1 : 1;
-			});
 
 			$personalFoldersSublist = [];
 			$personalFoldersNavBarPosition = 6;
@@ -141,7 +129,7 @@ class Application extends App implements IBootstrap {
 						$order = $workspacesNavBarPositionPosition;
 					}
 				}
-				else if ($directory->getType() != 'dir') {
+				else if ($directory->getType() != 'dir' || $directory->getName() == 'Partagés avec vous') {
 					continue;
 				}
 				else {

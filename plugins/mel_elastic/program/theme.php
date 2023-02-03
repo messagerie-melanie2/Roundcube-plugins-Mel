@@ -67,7 +67,7 @@ class Theme {
 
     public function prepareToSave() {
         $forSave = [];
-        $array = ['id', 'icon', 'alternate', 'displayed', 'desc', 'class', 'parent'];
+        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent'];
 
         foreach ($array as $value) {
             switch ($value) {

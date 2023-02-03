@@ -28,12 +28,11 @@ $userSession = \OC::$server->getUserSession();
 $publicUploadEnabled = $config->getAppValue('core', 'shareapi_allow_public_upload', 'yes');
 
 $showgridview = $config->getUserValue($userSession->getUser()->getUID(), 'files', 'show_grid', false);
-$isIE = OC_Util::isIe();
 
 // renders the controls and table headers template
 $tmpl = new OCP\Template('bnum', 'list', '');
 
 // gridview not available for ie
-$tmpl->assign('showgridview', $showgridview && !$isIE);
+$tmpl->assign('showgridview', $showgridview);
 $tmpl->assign('publicUploadEnabled', $publicUploadEnabled);
 $tmpl->printPage();

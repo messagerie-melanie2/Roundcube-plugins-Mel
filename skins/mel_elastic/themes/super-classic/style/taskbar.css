@@ -29,6 +29,6 @@ html.theme-super-classique #layout-menu #taskmenu a.selected {
 html.theme-super-classique #layout-menu:hover #taskmenu a.selected {
   border-right: none!important;
 }
-.menu.toolbar a.menu-last-frame::before {
+html.theme-super-classique .menu.toolbar a.menu-last-frame::before {
   color: #127F97;
 }

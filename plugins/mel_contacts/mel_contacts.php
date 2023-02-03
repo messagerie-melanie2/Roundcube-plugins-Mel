@@ -215,15 +215,15 @@ class mel_contacts extends rcube_plugin {
         // Supprimer MAIA de la récupération des photos
         unset($p['sources']['annuaire']);
         unset($p['sources']['amande_group']);
-        $p['sources'] = array_merge([$sources[driver_mel::gi()->mceToRcId($this->user->uid)]], $p['sources']);
+        $p['sources'] = array_replace([$sources[driver_mel::gi()->mceToRcId($this->user->uid)]], $p['sources']);
       }
       else if ($this->rc->task == 'addressbook') {
-        $p['sources'] = array_merge($all_source, $p['sources'], $sources);
+        $p['sources'] = array_replace($all_source, $p['sources'], $sources);
       }
       else {
         $annuaire = $p['sources']['annuaire'];
         unset($p['sources']['annuaire']);
-        $p['sources'] = array_merge($all_source, $p['sources'], $sources, [$annuaire]);
+        $p['sources'] = array_replace($all_source, $p['sources'], $sources, [$annuaire]);
       }
       return $p;
     }

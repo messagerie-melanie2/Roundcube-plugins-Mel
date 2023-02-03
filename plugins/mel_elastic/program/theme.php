@@ -1,20 +1,86 @@
 <?php
+/**
+ * Contient les informations relatif à un thème
+ */
 class Theme {
+    /**
+     * Les extensions autorisés. Si, dans l'icône, pas d'extension est définie, on va chercher parmis ceux-là.
+     */
     public const EXT = ['svg', 'png', 'jpeg', 'jpg', 'gif'];
+    /**
+     * Extension des fichiers de style
+     */
     public const EXT_STYLE = '.css';
+    /**
+     * Chemin du dossier "thème"
+     */
     public const THEME_PATH = '/themes';
-    public $path; //ok
-    public $parent; //ok
-    public $icon; //ok
-    public $enabled; //ok
-    public $id; //ok
-    public $name; //ok
-    private $displayed; //ok
-    private $desc; //ok
-    public $styles; //ok
-    public $class;// ok
+    /**
+     * Chemin du thème
+     *
+     * @var string
+     */
+    public $path; 
+    /**
+     * Données du thème parent 
+     *
+     * @var ParentTheme
+     */
+    public $parent; 
+    /**
+     * Chemin de l'icône
+     *
+     * @var string
+     */
+    public $icon; 
+    /**
+     * Thème actif ou non
+     *
+     * @var boolean
+     */
+    public $enabled; 
+    /**
+     * Id du thème (unique)
+     *
+     * @var string
+     */
+    public $id; 
+    /**
+     * Nom du dossier
+     *
+     * @var string
+     */
+    public $name; 
+    /**
+     * Texte qui sera affiché
+     *
+     * @var ThemeLocalization
+     */
+    private $displayed; 
+    /**
+     * Description qui sera affiché
+     *
+     * @var ThemeLocalization
+     */
+    private $desc;
+    /**
+     * Liste des fichiers css à charger
+     *
+     * @var string[]
+     */
+    public $styles; 
+    /**
+     * Classe qui sera mise dans la balise html
+     *
+     * @var string
+     */
+    public $class;
 
-
+    /**
+     * Constructeur de la classe
+     *
+     * @param string $path Chemin du dossier du thème
+     */
     public function __construct($path)
     {
         $this->path = $path;
@@ -49,6 +115,12 @@ class Theme {
         $this->desc = new ThemeLocalization($this->id, $json->description ?? '', self::SkinPath().self::THEME_PATH.'/'.$this->name.'/localization');
     }
 
+    /**
+     * Accesseur
+     *
+     * @param string $property Propriété appelé, uniquement "displayed" ou "desc"
+     * @return any
+     */
     public function __get($property) {
         switch ($property) {
             case 'displayed':
@@ -60,11 +132,22 @@ class Theme {
         }    
     }
 
+    /**
+     * Assigne un parent à la classe
+     *
+     * @param ParentTheme $parent Référence du parent
+     * @return Theme Chaîne
+     */
     public function setParent($parent) {
         $this->parent->set($parent);
         return $this;
     }
 
+    /**
+     * Renvoie un objet qui contient les données de la classe.
+     *
+     * @return array
+     */
     public function prepareToSave() {
         $forSave = [];
         $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent'];
@@ -94,11 +177,23 @@ class Theme {
         return $forSave;
     }
 
+    /**
+     * Récupère le chemin de fichier "mel_elastic"
+     *
+     * @return string
+     */
     public static function SkinPath()
     {
         return mel_elastic::SkinPath();
     }
 
+    /**
+     * Créer un générateur pour récupérer le chemin des fichiers de css.
+     *
+     * @param array|string $styles Fichier ou fichiers css ou dossiers
+     * @param string $themeFolder
+     * @return generator
+     */
     protected static function generate_style_path($styles, $themeFolder) {
         if (is_array($styles)) {
             foreach ($style as $styles) {
@@ -120,10 +215,23 @@ class Theme {
         }
     }
 
+    /**
+     * Vérifie si un fichier contient ".css"
+     *
+     * @param string $style 
+     * @return boolean
+     */
     protected static function loaded_style_is_folder($style) {
         return strpos($style, self::EXT_STYLE) !== false;
     }
 
+    /**
+     * Créer un générateur pour récupérer le chemin des fichiers de css depuis les dossiers.
+     *
+     * @param string $folder
+     * @param string $themeFolder
+     * @return generator
+     */
     protected static function generate_style_folder($folder, $themeFolder) {
         $files = scandir(self::SkinPath().self::THEME_PATH."/$themeFolder/$folder");
 
@@ -136,8 +244,21 @@ class Theme {
 
 }
 
+/**
+ * Données des thèmes parents
+ */
 class ParentTheme {
+    /**
+     * Id du thème parent
+     *
+     * @var int
+     */
     public $id;
+    /**
+     * Données du thème parent
+     *
+     * @var ParentTheme
+     */
     private $theme;
 
     public function __construct($id)
@@ -165,6 +286,9 @@ class ParentTheme {
     }
 }
 
+/**
+ * Gère la localisation des thèmes
+ */
 class ThemeLocalization  {
     private $theme;
     private $key;
@@ -187,6 +311,9 @@ class ThemeLocalization  {
     }
 } 
 
+/**
+ * Gère ThemeLocalization 
+ */
 class SingletonThemeLocalization {
 
     private static $_instance = null;

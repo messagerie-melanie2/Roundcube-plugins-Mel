@@ -824,6 +824,9 @@ class mel_driver extends calendar_driver {
             $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
           }
         }
+        else if (isset($event['recurrence_date']) && $event['recurrence_date'] instanceof DateTime) {
+          $_exception->recurrence_id = $event['recurrence_date']->format(self::DB_DATE_FORMAT);
+        }
         else if ($event['start'] instanceof DateTime) {
           $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
         }
@@ -845,6 +848,8 @@ class mel_driver extends calendar_driver {
 
         $_event->exceptions = $exceptions;
         $_event->modified = time();
+
+        $result = $_event->uid;
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'future') {
         // Positionnement de la recurrence_id et de l'uid
@@ -1315,6 +1320,8 @@ class mel_driver extends calendar_driver {
 
     if ($new) {
       $_event->owner = $this->user->uid;
+      $_event->creator_email = $this->user->email;
+      $_event->creator_name = $this->user->name;
     }
     if (!$move) {
       if (isset($event['title'])) {

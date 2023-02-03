@@ -403,7 +403,16 @@ $(document).ready(() => {
             let html = '';
             this.theme = rcmail.env.current_theme || 'default';
 
-            if (!!rcmail.env.current_theme) $('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
+            if (!!rcmail.env.current_theme) {
+                //$('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
+                let $html = $('html');
+                let current = rcmail.env.mel_themes[rcmail.env.current_theme];
+
+                do {
+                    $html.addClass(current.class);
+                    current = rcmail.env.mel_themes[current.parent];
+                } while (!!current);
+            }
 
             if (!!rcmail.env.mel_themes || $force) {
                 const themes = rcmail.env.mel_themes;
@@ -421,13 +430,13 @@ $(document).ready(() => {
                           this.themes[key].path = 'unavailable';                        
 
                         html += `
-                        <div class="row mel-selectable ${iterator.value.name === this.theme ? 'selected' : ''}" data-name="${iterator.value.name}" role="button" aria-pressed="${iterator.value.name === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
+                        <div title="${iterator.value.displayed} ${!!iterator.value.desc ? `- ${iterator.value.desc}` : ''}" class="row mel-selectable ${iterator.value.id === this.theme ? 'selected' : ''}" data-name="${iterator.value.id}" role="button" aria-pressed="${iterator.value.id === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
                             <div class="col-4">
-                                <img src="${iterator.value.picture}" style="width:100%;" />
+                                <img src="${iterator.value.icon}" style="width:100%;" />
                             </div>
                             <div class="col-8" style="display:flex;">
                                 <span style="display: block;
-                                align-self: center;">${(iterator.value.name === 'default' ? 'Par défaut' : iterator.value.name)}</span>
+                                align-self: center;">${iterator.value.displayed}</span>
                             </div>
                         </div>
                         `;
@@ -2642,31 +2651,50 @@ $(document).ready(() => {
             return this.get_themes()[this.get_current_theme()];
         }
 
-        update_theme(theme)
+        update_theme(theme, post = true)
         {
             theme = theme || 'default'
             if (theme !== this.theme) {
+                const newThemeDatas = this.themes[theme];
+                const oldThemeDatas = this.themes[this.theme];
                 let $html = $('html');
                 
-                if (this.theme !== 'default') $html.removeClass(`theme-${this.theme.toLowerCase()}`);
-                if (theme !== 'default') $('html').addClass(`theme-${theme.toLowerCase()}`);
+                if (this.theme !== 'default') {
+                    let current = oldThemeDatas;
+
+                    do {
+                        $html.removeClass(current.class);
+                        current = this.themes[current.parent];
+                    } while (!!current);
+                    
+                }
+                if (theme !== 'default') {
+                    let current = newThemeDatas;
+
+                    do {
+                        $html.addClass(current.class);
+                        current = this.themes[current.parent];
+                    } while (!!current);
+                }
 
                 this.theme = theme;
             }
 
             $('iframe.mm-frame').each((i, e) => {
                 try {
-                        e.contentWindow.MEL_ELASTIC_UI.update_theme(theme);
+                        e.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
                 } catch (error) {
                     
                 }
             });
 
-            mel_metapage.Functions.post(
-              mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
-              {_t:theme},
-              (f) => {},
-          );
+            if (post) {
+                mel_metapage.Functions.post(
+                    mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
+                    {_t:theme},
+                    (f) => {},
+                );
+            }
 
             return this;
         }

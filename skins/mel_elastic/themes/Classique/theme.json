@@ -1,0 +1,9 @@
+{
+    "id":"Classique",
+    "display":"classic",
+    "description":"desc",
+    "icon":"icon.svg",
+    "alternate":"images/Computer_classic.png",
+    "style":"theme.css",
+    "class":"theme-classique"
+}

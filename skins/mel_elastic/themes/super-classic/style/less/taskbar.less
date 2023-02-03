@@ -1,0 +1,53 @@
+//compress:false
+html.theme-super-classique {
+    #layout-menu {
+        background-color: #F0F0F0;
+        border-right: solid thin #2C3054;
+
+        #taskmenu{
+            a {
+                color:var(--main-text-color);
+
+                &:hover{
+                    background-color:white!important;
+                    border-top-left-radius: 5px;
+                    border-top-right-radius: 0px;
+                    border-bottom-left-radius: 5px;
+                    border-bottom-right-radius: 0px;
+                    color:#0EAF9C!important;
+
+                    > span.inner {
+                        &:extend(html.theme-super-classique #layout-menu #taskmenu a:hover);
+                        border-top-left-radius: 0px;
+                        border-top-right-radius: 5px;
+                        border-bottom-left-radius: 0px;
+                        border-bottom-right-radius: 5px;
+                    }
+                }
+
+                &.selected{
+                    &:extend(html.theme-super-classique #layout-menu #taskmenu a:hover);
+                    border-right: solid thin #2C3054!important;
+
+                    > span.inner {
+                        &:extend(html.theme-super-classique #layout-menu #taskmenu a:hover > span.inner);
+                    }
+                }
+            }
+        }
+
+        &:hover {
+            #taskmenu {
+                a {
+                    &.selected{
+                        border-right: none!important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.menu.toolbar a.menu-last-frame::before {
+	color: #127F97;
+}

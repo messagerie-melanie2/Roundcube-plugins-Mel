@@ -172,8 +172,8 @@ function startIntro(task, assistance = false) {
         for (const key in MEL_ELASTIC_UI.themes) {
           if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
             const theme = MEL_ELASTIC_UI.themes[key];
-            let value = theme.name;
-            let text = theme.name == 'default' ? 'Par défaut' : theme.name;
+            let value = theme.id;
+            let text = theme.displayed;//theme.name == 'default' ? 'Par défaut' : theme.name;
             $('#theme_select').append(new Option(text, value))
           }
         }

@@ -42,7 +42,7 @@ class mel_elastic extends rcube_plugin
     function init()
     {
         include_once __DIR__.'/classes/html_table_bnum.php';
-        $this->skinPath = getcwd()."/skins/mel_elastic";
+        $this->skinPath = self::SkinPath();
         $this->rc = rcmail::get_instance();
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
@@ -187,11 +187,6 @@ class mel_elastic extends rcube_plugin
 
             $args['prefs']["custom-font-size"] = $config;
             
-            // $current_theme = $this->get_current_theme();
-            // $current_theme = rcube_utils::get_input_value('themes', rcube_utils::INPUT_POST);
-            // $args['prefs']['mel_elastic.current'] = $current_theme;
-
-            // $this->rc->output->set_env('current_theme', $current_theme);
         }
 
         return $args;
@@ -203,13 +198,18 @@ class mel_elastic extends rcube_plugin
         {
             include_once __DIR__.'/program/theme.php';
             $theme_folder = $this->skinPath.'/themes/';
-            $themes = [new Theme($theme_folder.self::DEFAULT_THEME)];
+            $themes = [self::DEFAULT_THEME => new Theme($theme_folder.self::DEFAULT_THEME)];
             $folders = scandir($theme_folder);
             
+            $currentTheme = null;
             foreach ($folders as $id => $folder) {
                 if ($folder !== '.' && $folder !== '..' && is_dir($theme_folder.$folder) && $folder !== self::DEFAULT_THEME)
                 {
-                    $themes[] = new Theme($theme_folder.$folder);
+                    $currentTheme = new Theme($theme_folder.$folder);
+
+                    if (!$currentTheme->enabled) continue;
+
+                    $themes[$currentTheme->id] = $currentTheme;
                 }
             }
             $this->themes = $themes;
@@ -224,7 +224,7 @@ class mel_elastic extends rcube_plugin
         $mep = [];
 
         foreach ($themes as $key => $value) {
-            $mep[$value->name] = $value;
+            $mep[$key] = $value->prepareToSave();
         }
 
         return $mep;
@@ -255,14 +255,17 @@ class mel_elastic extends rcube_plugin
 
     public function set_theme($useless)
     {
+        $themes = $this->load_themes();
         if (!$this->is_default_theme())
         {
-            //$this->include_stylesheet('/themes/'.$this->get_current_theme().'/theme.css');
-            $this->rc->output->set_env('current_theme', $this->get_current_theme());
+            $theme = $this->get_current_theme();
+            if ($themes[$theme] !== null) $this->rc->output->set_env('current_theme', $this->get_current_theme());
         }
 
-        foreach ($this->load_themes() as $key => $value) {
-            $this->include_stylesheet('/themes/'.$value->name.'/theme.css');
+        foreach ($themes as $key => $value) {
+            foreach ($value->styles as $file) {
+                $this->include_stylesheet($file);
+            }
         }
 
         return $useless;
@@ -275,5 +278,9 @@ class mel_elastic extends rcube_plugin
         $this->unload_current_theme();
         echo 'ok';
         exit;
+    }
+
+    public static function SkinPath() {
+        return getcwd()."/skins/mel_elastic";
     }
 }

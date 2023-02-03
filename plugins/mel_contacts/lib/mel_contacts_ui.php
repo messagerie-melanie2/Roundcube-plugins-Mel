@@ -67,7 +67,8 @@ class mel_contacts_ui
                     $this->plugin->api->output->button(array(
                         'label'    => 'mel_contacts.'.str_replace('-', '', $command),
                         'domain'   => $this->ID,
-                        'class' => 'active '.str_replace('-', '', $command),
+                        'class' => 'disabled '.str_replace('-', '', $command),
+                        'classact' => 'active '.str_replace('-', '', $command),
                         'command'  => $command,
                         'type'       => 'link'
                 )));
@@ -80,7 +81,8 @@ class mel_contacts_ui
                     $this->plugin->api->output->button(array(
                         'label'    => 'mel_contacts.manageresources',
                         'type'     => 'link',
-                        'class' => 'active manageresources',
+                        'class' => 'disabled manageresources',
+                        'classact' => 'active manageresources',
                         'command'  => 'plugin.mel_resources_contacts',
                         'task'     => 'settings',
                     )));

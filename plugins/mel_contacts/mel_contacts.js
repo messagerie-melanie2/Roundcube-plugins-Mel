@@ -8,6 +8,31 @@ if (window.rcmail) {
     rcmail.addEventListener('listupdate', function() {
         rcmail.set_book_actions();
     });
+    rcmail.addEventListener('contextmenu_init', function (menu) {
+      if (menu.menu_name == 'abooklist') {
+        menu.addEventListener('activate', function (p) {
+          var ids = rcmail.env.context_menu_source_id.split(':', 2);
+          var cur_source = ids[0];
+          if (p.command == 'book-edit') {
+            if (rcmail.env.address_sources[cur_source].mel && rcmail.env.address_sources[cur_source].editable) {
+              p.enabled = true;
+            }
+            else {
+              p.enabled = false;
+            }
+          }
+          else if (p.command == 'book-delete') {
+            if (rcmail.env.address_sources[cur_source].mel && rcmail.env.address_sources[cur_source].deletable) {
+              p.enabled = true;
+            }
+            else {
+              p.enabled = false;
+            }
+          }
+          return p;
+        });
+      }
+    });
 }
 
 // Search only addressbooks

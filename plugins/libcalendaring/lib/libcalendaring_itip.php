@@ -541,6 +541,10 @@ class libcalendaring_itip
                 $html   = html::div('rsvp-status hint', $this->gettext('itipobjectnotfound'));
                 $action = '';
             }
+            //PAMELA - Si l'invitation est déjà annulée dans l'agenda
+            if ($existing['status'] == 'CANCELLED') {
+              $html   = html::div('rsvp-status hint', $this->gettext('cancelledinvitation'));
+            }
         }
         else if ($event['method'] == '') {
           if ($existing) {
@@ -556,6 +560,8 @@ class libcalendaring_itip
             'uid'        => $event['uid'],
             'id'         => asciiwords($event['uid'], true),
             'existing'   => $existing ? true : false,
+            //PAMELA - Si l'invitation est déjà annulée dans l'agenda
+            'cancelled'   => $existing['status'] == 'CANCELLED' ? true : false,
             'saved'      => $existing ? true : false,
             'latest'     => $latest,
             'status'     => $status,
@@ -819,13 +825,13 @@ class libcalendaring_itip
                 'value' => $this->gettext('removefromcalendar'),
             ));
 
-            // 2. update our copy with status=cancelled
-            $button_update = html::tag('input', array(
+              // 2. update our copy with status=cancelled
+              $button_update = html::tag('input', array(
                 'type'    => 'button',
-                'class'   => 'button',
+                'class'   => 'button cancel',
                 'onclick' => "rcube_libcalendaring.add_from_itip_mail('" . rcube::JQ($mime_id) . "', '$task')",
                 'value'   => $this->gettext('updatemycopy'),
-            ));
+              ));
 
             $buttons[] = html::div(array('id' => 'rsvp-'.$dom_id, 'style' => 'display:none'), $button_remove . $button_update);
 

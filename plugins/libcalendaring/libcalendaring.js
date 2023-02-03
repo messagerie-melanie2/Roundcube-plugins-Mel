@@ -1520,6 +1520,11 @@ rcube_libcalendaring.update_itip_object_status = function(p)
     rcmail.enable_command('attachment-save-calendar', true);
   }
 
+  //PAMELA - On cache le bouton de mise a jour si l'évènement est déjà supprimer
+  if (p.cancelled) {
+    $('#rsvp-'+p.id+' input.button.cancel').hide();
+  }
+
   // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée
   if (!tb_labels_for_message || jQuery.inArray('_-t-_rdvtraite', tb_labels_for_message) === -1) {
     // show rsvp/import buttons (with calendar selector)

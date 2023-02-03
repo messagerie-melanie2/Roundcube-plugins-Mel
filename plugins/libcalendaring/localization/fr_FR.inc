@@ -150,6 +150,7 @@ $labels['attendeein-process'] = 'Cet utilisateur traite la tâche';
 $labels['attendeecompleted'] = 'Cet utilisateur a fini la tâche';
 $labels['notanattendee'] = 'Vous n\'êtes pas dans la liste des participants à cet événement';
 $labels['outdatedinvitation'] = 'Cette invitation a été remplacée par une nouvelle version';
+$labels['cancelledinvitation'] = 'Cette invitation est annulée dans votre calendrier';
 $labels['importtocalendar'] = 'Enregistrer dans mon calendrier';
 $labels['removefromcalendar'] = 'Supprimer de mon calendrier';
 $labels['updatemycopy'] = 'Mise à jour de ma copie';

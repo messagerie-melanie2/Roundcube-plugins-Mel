@@ -357,7 +357,7 @@ class mel_contacts extends rcube_plugin {
    * Handler for address book create/edit form submit
    */
   public function book_save() {
-    $prop = array('id' => trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST)),'name' => trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST)),'oldname' => trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
+    $prop = array('id' => driver_mel::gi()->rcToMceId(trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST))),'name' => trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST)),'oldname' => trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
 'subscribed' => true);
     $type = strlen($prop['oldname']) ? 'update' : 'create';
 
@@ -372,8 +372,10 @@ class mel_contacts extends rcube_plugin {
         $addressbook->id = md5($prop['name'] . time() . $this->user->uid);
       }
 
-      $addressbook->name = $prop['name'];
-      $ret = $addressbook->save();
+      if($addressbook->owner == $this->user->uid && $addressbook->id != $this->user->uid) {
+        $addressbook->name = $prop['name'];
+        $ret = $addressbook->save();
+      }
       if (is_null($ret)) {
         $error = 'mel_contacts.book' . $type . 'error';
         $this->rc->output->show_message($error, 'error');

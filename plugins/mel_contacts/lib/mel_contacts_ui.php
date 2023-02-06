@@ -148,7 +148,7 @@ class mel_contacts_ui
             'name' => $this->rc->gettext('properties'),
         );
         
-        $foldername = new html_inputfield(array('name' => '_name', 'id' => '_name', 'size' => 30, 'class' => 'form-control'));
+        $foldername = new html_inputfield(array('name' => '_name', 'id' => '_name', 'size' => 30, 'class' => 'form-control', 'readonly' => driver_mel::gi()->rcToMceId($folder) == $this->rc->get_user_name() ? true : false));
         $foldername = $foldername->show($name);
 
         $form['props']['fieldsets']['location'] = array(

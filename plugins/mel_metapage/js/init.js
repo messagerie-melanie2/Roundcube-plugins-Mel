@@ -64,16 +64,30 @@
 
                     if (datas.forced != true) {
 
-                        if (raw_events.length !== 0) last_events = mel_metapage.Storage.get('all_events', []);
+                        if (raw_events.length !== 0) {
+                            last_events = mel_metapage.Storage.get('all_events', []);
+                        }
                         else stop = true;
                     }
                     else last_events = [];
 
                     if (!stop)
                     {
+                        let last_enum = null;
+                        let enumerable_last_events = Enumerable.from(last_events);
                         for (const iterator of mel_calendar_updated.generate_readable_events(raw_events)) {
-                            last_events.push(iterator);
+                            last_enum = enumerable_last_events.where(x => x.id === iterator.id);
+
+                            if (last_enum.any()) {
+                                last_events[last_enum.select((x, i) => i).first()] = iterator;
+                            }
+                            else last_events.push(iterator);
+
+                            enumerable_last_events = Enumerable.from(last_events);
                         }
+
+                        last_enum = null;
+                        enumerable_last_events = null;
     
                         const events = Enumerable.from(last_events).orderBy(x => x.order).thenBy(x => moment(x.start)).where(x => moment(x.start) >= moment().startOf("day"));
                         const today = events.where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day"));
@@ -114,16 +128,18 @@
                 if (element.status === "CANCELLED")
                     continue;
 
+                if (typeof element.end === "string") element.end = moment(parse(element.end));
+
                 if (element.allDay)
                     element.order = 0;
                 else
                     element.order = 1;
 
-                if (moment(parse(element.end)) < now)
+                if (element.end < now)
                     continue;
 
                 if (element.allDay) {
-                    element.end = moment(parse(element.end)).startOf("day");
+                    element.end = element.end.startOf("day");
                     if (element.end.format("YYYY-MM-DD HH:mm:ss") == now.format("YYYY-MM-DD HH:mm:ss") && moment(element.start).startOf("day").format("YYYY-MM-DD HH:mm:ss") != element.end.format("YYYY-MM-DD HH:mm:ss"))
                         continue;
                     else

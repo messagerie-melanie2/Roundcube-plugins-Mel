@@ -84,7 +84,7 @@ if (rcmail)
 
             rcmail.register_command("edit_model",
             (a,b,c,d) => {
-                setCookie('current_model_id', rcmail.get_single_uid(), 7);
+                melSetCookie('current_model_id', rcmail.get_single_uid(), 7);
                 rcmail.command('use_as_new');
             }, true);
 

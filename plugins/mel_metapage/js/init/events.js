@@ -266,7 +266,7 @@ if (rcmail && window.mel_metapage)
                     mel_metapage.Functions.url('mel_metapage', 'get_have_cerbere'),
                     {},
                     (datas) => {
-                        setCookie('mel_cerbere', datas, moment().daysInMonth() - moment().date());
+                        melSetCookie('mel_cerbere', datas, moment().daysInMonth() - moment().date());
                     }
                 );
             }

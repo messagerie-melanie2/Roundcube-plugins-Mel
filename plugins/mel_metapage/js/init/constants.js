@@ -126,7 +126,7 @@ const mceToRcId = function (txt = "")
 
     window.decode_imap_utf7 = decode_imap_utf7;
 
-    window.setCookie = setCookie;
+    window.melSetCookie = setCookie;
 
     window.getCookie = (name) => {
         return rcmail.get_cookie(name);

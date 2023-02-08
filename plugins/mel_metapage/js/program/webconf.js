@@ -3999,6 +3999,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                             
                         }
                         top[var_webconf_screen_manager_name].switchMode(ewsmode.chat);
+                        $('#layout-frames').css('display', '');
                         return "break";
                     }
                     //Cas 3 => Retour à la visio

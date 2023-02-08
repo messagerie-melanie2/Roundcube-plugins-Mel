@@ -22,6 +22,7 @@ OCA.Bnum.App = {
 
 	_entitiesFileList: null,
 	_workspacesFileList: null,
+	_personalFileList: null,
 
 	initEntities($el) {
 		if (this._entitiesFileList) {
@@ -33,6 +34,7 @@ OCA.Bnum.App = {
 			{
 				id: 'entities',
 				entities: true,
+				personal: false,
 				fileActions: this._createFileActions(),
 				config: OCA.Files.App.getFilesConfig(),
 				// The file list is created when a "show" event is handled, so
@@ -43,7 +45,7 @@ OCA.Bnum.App = {
 		)
 
 		this._extendFileList(this._entitiesFileList)
-		this._entitiesFileList.appName = t('bnum', 'Entities spaces')
+		this._entitiesFileList.appName = t('bnum', 'Espaces d\'entités')
 		this._entitiesFileList.$el.find('#emptycontent').html('<div class="icon-shared"></div>'
 			+ '<h2>' + t('bnum', 'Pas encore d\'espace d\'entité.') + '</h2>'
 			+ '<p>' + t('bnum', 'Les espaces d\'entités sont créés par votre support informatique local depuis l\'application AMEDEE.') + '</p>')
@@ -60,6 +62,7 @@ OCA.Bnum.App = {
 			{
 				id: 'workspaces',
 				entities: false,
+				personal: false,
 				fileActions: this._createFileActions(),
 				config: OCA.Files.App.getFilesConfig(),
 				// The file list is created when a "show" event is handled, so
@@ -70,11 +73,39 @@ OCA.Bnum.App = {
 		)
 
 		this._extendFileList(this._workspacesFileList)
-		this._workspacesFileList.appName = t('bnum', 'Work spaces')
+		this._workspacesFileList.appName = t('bnum', 'Espaces de travail')
 		this._workspacesFileList.$el.find('#emptycontent').html('<div class="icon-shared"></div>'
 			+ '<h2>' + t('bnum', 'Pas encore d\'espace de travail.') + '</h2>'
 			+ '<p>' + t('bnum', 'Pour créer un espace de travail, utilisez le bouton "Créer" du Bureau numérique.') + '</p>')
 		return this._workspacesFileList
+	},
+
+	initPersonalFiles($el) {
+		if (this._personalFileList) {
+			return this._personalFileList
+		}
+
+		this._personalFileList = new OCA.Bnum.FileList(
+			$el,
+			{
+				id: 'personalfiles',
+				entities: false,
+				personal: true,
+				fileActions: this._createFileActions(),
+				config: OCA.Files.App.getFilesConfig(),
+				// The file list is created when a "show" event is handled, so
+				// it should be marked as "shown" like it would have been done
+				// if handling the event with the file list already created.
+				shown: true,
+			}
+		)
+
+		this._extendFileList(this._personalFileList)
+		this._personalFileList.appName = t('bnum', 'Fichiers personnels')
+		this._personalFileList.$el.find('#emptycontent').html('<div class="icon-shared"></div>'
+			+ '<h2>' + t('bnum', 'Pas de fichier personnel.') + '</h2>'
+			+ '<p>' + t('bnum', 'Créez un fichier ou un dossier personnel via le bouton (+) ci-dessus.') + '</p>')
+		return this._personalFileList
 	},
 
 	removeEntities() {
@@ -89,14 +120,22 @@ OCA.Bnum.App = {
 		}
 	},
 
+	removePersonalFiles() {
+		if (this._personalFileList) {
+			this._personalFileList.$fileList.empty()
+		}
+	},
+
 	/**
 	 * Destroy the app
 	 */
 	destroy() {
 		this.removeEntities()
 		this.removeWorkspaces()
+		this.removePersonalFiles()
 		this._entitiesFileList = null
 		this._workspacesFileList = null
+		this._personalFileList = null
 		delete this._globalActionsInitialized
 	},
 
@@ -161,5 +200,11 @@ window.addEventListener('DOMContentLoaded', function() {
 	})
 	$('#app-content-workspaces').on('hide', function() {
 		OCA.Bnum.App.removeWorkspaces()
+	})
+	$('#app-content-personalfiles').on('show', function(e) {
+		OCA.Bnum.App.initPersonalFiles($(e.target))
+	})
+	$('#app-content-personalfiles').on('hide', function() {
+		OCA.Bnum.App.removePersonalFiles()
 	})
 })

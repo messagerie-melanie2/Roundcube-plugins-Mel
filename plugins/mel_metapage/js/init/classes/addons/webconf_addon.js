@@ -25,7 +25,10 @@
                 config = {};
                 if (key !== null) config["_key"] = key;
 
-                if (wsp !== null) config["_wsp"] = wsp;
+                if (wsp !== null) {
+                    if (wsp.includes(' (')) wsp = wsp.split(' (')[0];
+                    config["_wsp"] = wsp;
+                }
                 else if (ariane !== null) config["_ariane"] = ariane;
                 
                 if (show_config_popup) config['_need_config'] = 1;

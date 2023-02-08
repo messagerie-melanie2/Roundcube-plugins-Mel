@@ -2,6 +2,7 @@
 /** FONTS **/
 /* CONTENT */
 /** ANIMATIONS **/
+/** LOADER **/
 /** WIDTH **/
 html.theme-classique:root {
   --layout-list-background-color: #f3f2f1;
@@ -193,6 +194,9 @@ html.theme-classique .task-mail #layout-sidebar .scroller > .listing li.selected
   background-color: #edebe9 !important;
   border-left-color: var(--tierciary-bckg-color) !important;
   border-bottom: unset!important;
+}
+html.theme-classique .task-mail #layout-sidebar > .header {
+  color: var(--theme-base-text-color) !important;
 }
 html.theme-classique .task-mail #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type {
   border-color: var(--main-bckg-color);

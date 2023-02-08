@@ -426,6 +426,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('toggleChat', array($this, 'toggleChat'));
             $this->register_action('get_have_cerbere', array($this, 'get_have_cerbere'));
             $this->register_action('comment_mail', array($this, 'comment_mail'));
+            $this->register_action('calendar_load_events', [$this, 'calendar_load_events']);
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
@@ -667,9 +668,9 @@ class mel_metapage extends rcube_plugin
         {
             $this->add_button(array(
                 'command'       => 'move',
-                'class'	        => 'move disabled',
-                'classact'      => 'move',
-                'classsel'      => 'move',
+                'class'	        => 'move disabled simplified',
+                'classact'      => 'move simplified',
+                'classsel'      => 'move simplified',
                 'label'	        => 'move',
                 'title'         => 'moveto',
                 'innerclass'    => 'inner',
@@ -2567,6 +2568,68 @@ class mel_metapage extends rcube_plugin
 
     public function action_loading_frame() {
         $this->rc->output->send('mel_metapage.loader');
+    }
+
+    public function calendar_load_events() {
+
+        echo json_encode(
+            $this->_calendar_load_events(
+                $this->input_timestamp('start', rcube_utils::INPUT_GET),
+                $this->input_timestamp('end', rcube_utils::INPUT_GET),
+                rcube_utils::get_input_value('q', rcube_utils::INPUT_GET),
+                rcube_utils::get_input_value('source', rcube_utils::INPUT_GET),
+                rcube_utils::get_input_value('last', rcube_utils::INPUT_GET),
+                rcube_utils::get_input_value('force', rcube_utils::INPUT_GET) ?? 'random',
+                true
+            )
+        );
+        exit;
+
+    }
+
+    private function _calendar_load_events($start, $end, $querry, $calid, $last, $force = 'random', $encode = false) {
+        if (class_exists('calendar')) {
+
+            if ($force === 'true') $force = true;
+            else if ($force === 'false') $force = false;
+
+            if ($force === 'random') {
+                if (rand(0, 10) == 10) return $this->_calendar_load_events($start, $end, $querry, $calid, true);
+            }
+        }
+
+        $calendar = $this->rc->plugins->get_plugin('calendar');
+        $events = $calendar->__get('driver')->load_events(
+            $start,
+            $end,
+            $querry,
+            $calid,
+            1,
+            $force !== true ? $last : null
+        );
+
+        if ($encode) {
+            $events = $calendar->encode($events, !empty($querry));
+        }
+
+        return [
+            'forced' => $force,
+            'events' => $events,
+            'encoded' => $encode,
+            'cal' => $calid
+        ];
+    }
+
+    protected function input_timestamp($name, $type)
+    {
+        $ts = rcube_utils::get_input_value($name, $type);
+
+        if ($ts && (!is_numeric($ts) || strpos($ts, 'T'))) {
+            $ts = new DateTime($ts, $this->timezone);
+            $ts = $ts->getTimestamp();
+        }
+
+        return $ts;
     }
 
 }

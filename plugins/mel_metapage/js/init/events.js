@@ -266,7 +266,7 @@ if (rcmail && window.mel_metapage)
                     mel_metapage.Functions.url('mel_metapage', 'get_have_cerbere'),
                     {},
                     (datas) => {
-                        setCookie('mel_cerbere', datas, moment().daysInMonth() - moment().date());
+                        melSetCookie('mel_cerbere', datas, moment().daysInMonth() - moment().date());
                     }
                 );
             }
@@ -1331,8 +1331,14 @@ if (rcmail && window.mel_metapage)
 
           // make sure this new shortcut is always active
           menu.addEventListener('activate', function(p) {
-            if (p.command == 'gestion_labels') {
-              return true;
+            console.log('p', p);
+            switch (p.command) {
+                case 'move':
+                    $(p.el).attr('aria-disabled', 'false').parent().css('display', '');
+                case 'gestion_labels':
+                    return true;
+                default:
+                    break;
             }
           });
         }

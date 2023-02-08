@@ -73,23 +73,16 @@
 
                     if (!stop)
                     {
-                        let last_enum = null;
-                        let enumerable_last_events = Enumerable.from(last_events);
+ 
+                        let enumerable_last_events = Enumerable.from(last_events).toJsonDictionnary(x => x.id, x => x);
                         for (const iterator of mel_calendar_updated.generate_readable_events(raw_events)) {
-                            last_enum = enumerable_last_events.where(x => x.id === iterator.id);
-
-                            if (last_enum.any()) {
-                                last_events[last_enum.select((x, i) => i).first()] = iterator;
-                            }
-                            else last_events.push(iterator);
-
-                            enumerable_last_events = Enumerable.from(last_events);
+                            enumerable_last_events[iterator.id] = iterator;
                         }
 
-                        last_enum = null;
+                        last_events = Enumerable.from(enumerable_last_events).select(x => x.value);
                         enumerable_last_events = null;
     
-                        const events = Enumerable.from(last_events).orderBy(x => x.order).thenBy(x => moment(x.start)).where(x => moment(x.start) >= moment().startOf("day"));
+                        const events = Enumerable.from(last_events).where(x => x !== null).orderBy(x => x.order).thenBy(x => moment(x.start)).where(x => moment(x.start) >= moment().startOf("day"));
                         const today = events.where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day"));
                         mel_metapage.Storage.set("all_events", events.toArray());
                         try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);

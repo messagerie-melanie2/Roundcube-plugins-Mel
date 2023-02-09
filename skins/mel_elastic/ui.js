@@ -1280,7 +1280,7 @@ $(document).ready(() => {
                     const url = rcmail.url('mail/compose', p);
                     let config = {
                         title:"Rédaction",
-                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="display:none;width:100%;height:calc(100%);"/>`,
+                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe class="sr-only" title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
                         onclose(popup) {
                             if (popup.box.close.data('force') == '1') return;
                             if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
@@ -1321,7 +1321,7 @@ $(document).ready(() => {
                             });
 
                             box.content.find("#rotomecamelloader").css('display', 'none');
-                            box.content.find("iframe").css('display', '');
+                            box.content.find("iframe").removeClass('sr-only');
                             const obj = frame_context.$('#compose-subject').val();
 
                             if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);

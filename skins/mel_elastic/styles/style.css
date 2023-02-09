@@ -2643,3 +2643,10 @@ html.dark-mode #visio-right-pannel-util {
 .loader-div.loaded {
   display: none;
 }
+#visio-right-pannel-util.password {
+  top: calc(50% + 60px);
+  left: calc(50% + 60px);
+  transform: translateY(-50%) translateX(-50%);
+  width: 50%;
+  height: 50%;
+}

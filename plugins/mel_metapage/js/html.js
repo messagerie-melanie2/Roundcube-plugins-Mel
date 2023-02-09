@@ -576,5 +576,75 @@ class mel_input extends amel_form_item
 	{
 		super('input', attribs, '');
 	}
+
+	static togglePasswordShowed(element) {
+		const INPUT_DATA = 'for';
+		const IS_SHOWED_DATA = 'isShowed';
+		const DATA_VALID = 'yes';
+		const DATA_INVALID = 'no';
+		const ATTR = 'type';
+		const ATTR_PASSWORD = 'password';
+		const ATTR_TEXT = 'text';
+		element = $(element);
+		let $input = $(`#${element.data(INPUT_DATA)}`);
+	
+		if ($input.data(IS_SHOWED_DATA) === DATA_VALID) {
+			$input.attr(ATTR, ATTR_PASSWORD);
+			$input.data(IS_SHOWED_DATA, DATA_INVALID);
+		}
+		else {
+			$input.attr(ATTR, ATTR_TEXT);
+			$input.data(IS_SHOWED_DATA, DATA_VALID);
+		}
+
+		mel_input.togglePasswordShowed.updateButton(element);
+	}
+
+	static floatingSetFocusClass(element, isOut = false) {
+		const DIV = 'for';
+		const CLASS = 'floating-focus';
+		element = $(element);
+		let $div = $(`#${element.data(DIV)}`);
+		
+		if (isOut) {
+			$div.removeClass(CLASS);
+		}
+		else {
+			$div.addClass(CLASS);
+		}
+	}
+
+	static floatingSetInput(element) {
+		const DIV = 'for';
+		const CLASS = 'floating-not-empty';
+		element = $(element);
+		let $div = $(`#${element.data(DIV)}`);
+
+		if (element.val() !== '') $div.addClass(CLASS);
+		else $div.removeClass(CLASS);
+	}
 }
 
+mel_input.togglePasswordShowed.updateButton = function ($event) {
+	const DATA_SHOW = 'icon-show';
+	const DATA_HIDE = 'icon-hide';
+	const BALISE = 'span';
+	
+	const icon_show = $event.data(DATA_SHOW);
+	
+	if (!!icon_show) {
+		const icon_hide = $event.data(DATA_HIDE);
+
+		if (!!icon_hide) {
+			let $span = $event.find(BALISE);
+	
+			if ($span.hasClass(icon_show)) {
+				$span.removeClass(icon_show).addClass(icon_hide);
+			} else {
+				$span.removeClass(icon_hide).addClass(icon_show);
+			}
+		}
+	}
+
+
+}

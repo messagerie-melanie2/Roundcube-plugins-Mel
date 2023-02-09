@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*                 SYSTEME DE VISIOCONFERENCE
 /*
-/* Le système de visioconférence gravite autour de plusieurs classes : 
+/* Le système de visioconférence gravite autour de plusieurs classes :
 /* Webconf => Qui gère la visioconférence
 /* WebconfMasterBar => Qui gère la barre d'outil de la visio
 /* ScreenManagers => Qui gèrent la disposition de l'écran
@@ -108,7 +108,7 @@ class AMelScreenManager {
      * @param {MelEnum} mode Disposition de l'écran
      * @returns Chaîne
      */
-    switchMode(mode) 
+    switchMode(mode)
     {
         this.modes[mode](this.reinit());
         this.current_mode = mode;
@@ -158,7 +158,7 @@ class WebconfChat{
          * Jquery de la div de chargement
          * @type {$}
          */
-        this.$loaging = null; 
+        this.$loaging = null;
         /**
          * Nom de la room
          */
@@ -361,7 +361,7 @@ class WebconfChat{
         this.disposed = true;
 
         this.$frame_chat = null;
-        this.$loaging = null; 
+        this.$loaging = null;
         this.room = null;
         this.privacy = null;
         this.hidden = null;
@@ -378,7 +378,7 @@ class WebconfChat{
  */
 WebconfChat.from_string = (str) => {
 
-    if (!(str || false)) return null; 
+    if (!(str || false)) return null;
 
     return {
         privacy:(str.includes(private_key) ? eprivacy.private : eprivacy.public),
@@ -471,7 +471,7 @@ class WebconfWorkspaceManager {
     /**
      * Check si la classe contient les données d'un espace.
      * Si l'identifiant n'est pas défini, c'est que la visio n'est pas lié à un espace de travail
-     * @returns 
+     * @returns
      */
     have_workspace()
     {
@@ -480,7 +480,7 @@ class WebconfWorkspaceManager {
 
     /**
      * Vérifie si la classe possède un chat
-     * @returns 
+     * @returns
      */
     have_chatroom(){
         return this.have_chat && !!this.objects && !!this.objects.channel && !!this.objects.channel.name;
@@ -488,7 +488,7 @@ class WebconfWorkspaceManager {
 
     /**
      * Vérifie si la classe à un cloud
-     * @returns 
+     * @returns
      */
     have_cloud() {
         return !!this.objects && !!this.objects.doc;
@@ -548,13 +548,14 @@ class WebconfPageCreator {
      * @param {$} $chat Select du chat
      * @param {$} $wsp Select de l'espace de travail
      * @param {$} $start_button Bouton qui lance la visio
-     * @param {{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined} config Configuration diverses de la visio. Pour le moment il contient (ou pas), le paramètre need_config qui affiche la page des paramètres ainsi que locks qui désactive certains champs. 
-     * @param {$} $startedMic [NOT IMPLEMENTED]Checkbox du choix d'entrer avec le micro ou non 
-     * @param {$} $startedCam [NOT IMPLEMENTED]Checkbox du choix d'entrer avec la cam ou non 
+     * @param {{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined} config Configuration diverses de la visio. Pour le moment il contient (ou pas), le paramètre need_config qui affiche la page des paramètres ainsi que locks qui désactive certains champs.
+     * @param {$} $startedMic [NOT IMPLEMENTED]Checkbox du choix d'entrer avec le micro ou non
+     * @param {$} $startedCam [NOT IMPLEMENTED]Checkbox du choix d'entrer avec la cam ou non
+     * @param {*} otherButtons Autres boutons ou inputs
      * @param {Function} callbackStart Action à faire lorsque l'on clique sur le bouton "entrer"
      */
-    constructor($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, $startedMic = null, $startedCam = null, callbackStart = null) {
-        this._init()._setup($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, $startedMic, $startedCam, callbackStart);
+    constructor($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, otherButtons = {}, $startedMic = null, $startedCam = null, callbackStart = null) {
+        this._init()._setup($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, otherButtons, $startedMic, $startedCam, callbackStart);
     }
 
     /**
@@ -599,6 +600,16 @@ class WebconfPageCreator {
          */
         this.$button_start = null;
         /**
+         * Checkbox d'une visio sécurisée ou non
+         * @type {$}
+         */
+        this.$password_check = null;
+        /**
+         * Input du mot de passe
+         * @type {$}
+         */
+        this.$password_datas = null;
+        /**
          * Action à faire lorsque l'on clique sur le bouton de lancement de la visio
          * @type {function | null}
          */
@@ -625,14 +636,14 @@ class WebconfPageCreator {
      * @param {$} $chat Select du chat
      * @param {$} $wsp Select de l'espace de travail
      * @param {$} $start_button Bouton qui lance la visio
-     * @param {{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined} config Configuration diverses de la visio. Pour le moment il contient (ou pas), le paramètre need_config qui affiche la page des paramètres ainsi que locks qui désactive certains champs. 
-     * @param {$} $startedMic [NOT IMPLEMENTED]Checkbox du choix d'entrer avec le micro ou non 
-     * @param {$} $startedCam [NOT IMPLEMENTED]Checkbox du choix d'entrer avec la cam ou non 
+     * @param {{need_config:boolean | null | undefined, locks:Array<number> | null | undefined} | null | undefined} config Configuration diverses de la visio. Pour le moment il contient (ou pas), le paramètre need_config qui affiche la page des paramètres ainsi que locks qui désactive certains champs.
+     * @param {$} $startedMic [NOT IMPLEMENTED]Checkbox du choix d'entrer avec le micro ou non
+     * @param {$} $startedCam [NOT IMPLEMENTED]Checkbox du choix d'entrer avec la cam ou non
      * @param {Function} callbackStart Action à faire lorsque l'on clique sur le bouton "entrer"
      * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
      * @returns Chaîne
      */
-    _setup($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, $startedMic = null, $startedCam = null, callbackStart = null) {
+    _setup($page, $page_error_text, $room, $state, $chat, $wsp, $start_button, config, others = {}, $startedMic = null, $startedCam = null, callbackStart = null) {
         this.$page = $page;
         this.$page_error_text = $page_error_text;
         this.$room_key = $room;
@@ -642,6 +653,23 @@ class WebconfPageCreator {
         this.$button_start = $start_button;
         this.onstart = callbackStart;
         this.config = config;
+        return this._setup_others(others);
+    }
+
+    /**
+     * Assigne les variables de l'argument "other".
+     * @private Cette fonction est privée, évitez de l'utiliser hors de cette classe
+     * @param {*} others Autres boutons ou inputs
+     * @returns Chaîne
+     */
+    _setup_others(others = {}){
+        for (const key in others) {
+            if (Object.hasOwnProperty.call(others, key)) {
+                const element = others[key];
+                this[key] = element;
+            }
+        }
+
         return this;
     }
 
@@ -667,6 +695,22 @@ class WebconfPageCreator {
         this.$button_start.on('click', () => {
             this.onstart(this);
         });
+
+        if (!!this.$password_check && !!this.$password_datas) {
+            this.$password_check.on('change', (e) => {
+                if ($(e.currentTarget)[0].checked) {
+                    this.$password_datas.parent().parent().parent().css('display', '');
+                }
+                else this.$password_datas.parent().parent().parent().css('display', 'none');
+            });
+
+            this.$password_datas.on('input', (e) => {
+                e = $(e.currentTarget);
+
+                if (e.val() !== '') e.parent().parent().parent().find('.alert').css('display', '');
+                else e.parent().parent().parent().find('.alert').css('display', 'none');
+            });
+        }
 
         return this;
     }
@@ -754,7 +798,7 @@ class WebconfPageCreator {
                 return this.$wsp.val();
             case ewebconf_state.chat:
                 return this.$chat.val();
-        
+
             default:
                 throw 'error';
         }
@@ -762,7 +806,7 @@ class WebconfPageCreator {
 
     /**
      * Récupère une url traditionnel de la visio, et récupère le nom de la room inclut dans l'url
-     * @param {string} url 
+     * @param {string} url
      * @returns Nom de la room
      */
     transformUrlIntoKey(url){
@@ -771,8 +815,8 @@ class WebconfPageCreator {
 
     /**
      * Vérifie si le nom de la room est valide
-     * @param {string} val Nom de la room 
-     * @returns 
+     * @param {string} val Nom de la room
+     * @returns
      */
     checkKeyIsValid(val) {
         return val.length >= 10 && Enumerable.from(val).where(x => /\d/.test(x)).count() >= 3 && /^[0-9a-zA-Z]+$/.test(val);
@@ -788,7 +832,7 @@ class WebconfPageCreator {
         {
             const detected = this.transformUrlIntoKey(val) || false;
             if (!!detected) val = detected;
-            
+
         }
 
         //On met à jour la valeur si il y a besoin et on la capitalise
@@ -808,10 +852,18 @@ class WebconfPageCreator {
             this.$page_error_text.css("display", "").css("color", "red");
         }
     }
-    
+
+    /**
+     * Check si la visio à un mot de passe
+     * @returns {string}
+     */
+    havePassword() {
+        return !!this.$password_datas && !!this.$password_check && this.$password_check[0]?.checked && this.$password_datas.val() !== '';
+    }
+
     /**
      * Libère les variables
-     * @returns 
+     * @returns
      */
     dispose()
     {
@@ -918,7 +970,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
      * @param {{$maximise:$, $minimize:$}} m_m_button Boutons minimiser et maximiser
      * @param {number} ariane_size Taille du chat en pixel
      * @param {boolean} is_framed [DEPRECATED]
-     * @returns 
+     * @returns
      */
     _setup(chat, $frame_webconf, m_m_button, ariane_size, is_framed)
     {
@@ -937,7 +989,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
      * @param {MelEnum} mode Utilisez ewsmode
      * @returns Chaîne
      */
-    switchMode(mode) 
+    switchMode(mode)
     {
         switch (mode) {
             case ewsmode.fullscreen:
@@ -1008,7 +1060,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
     /**
      * [DEPRECATED]Permet de prendre en compte la taille de la barre de navigation.
      * @deprecated Cette fonction est dépréciée évitez de l'utiliser
-     * @returns 
+     * @returns
      */
     pixel_correction()
     {
@@ -1018,7 +1070,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
 
     /**
      * Réinitialise le css des différents éléments.
-     * @returns 
+     * @returns
      */
     reinit() {
         //Réinitialise le css de la frame de la visio
@@ -1069,7 +1121,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
     /**
      * Passe le chat en plein écran, avec la visio à côté
      * @param {true} chat_enabled [DEPRECATED]
-     * @returns 
+     * @returns
      */
     fullscreen_chat(chat_enabled) {
         chat_enabled = true;
@@ -1080,7 +1132,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
                                  .css('right', 'unset')
                                  .css('left', this.pixel_correction() + 'px');
 
-        }   
+        }
         else return this.fullscreen(false);
     }
 
@@ -1098,7 +1150,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
     /**
      * Ajout un nouveau positionnement pour le bouton "Minimiser"
      * @param {string} key Clé de la position
-     * @param {string} add format css (ex: XXpx, XX% etc...) 
+     * @param {string} add format css (ex: XXpx, XX% etc...)
      */
     button_size_correction(key, add) {
         this._button_size_correction[key] = add;
@@ -1139,7 +1191,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
 
     /**
      * Récupère la position additionnel du bouton "Minimiser"
-     * @returns 
+     * @returns
      */
     get_button_size_correction()
     {
@@ -1158,7 +1210,7 @@ class InternalWebconfScreenManager extends AMelScreenManager {
         //Réinitialise le bouton "minimiser" pour l'utiliser plus tard
         this.$button_minimize.css('display', '').css('top', '').css('right', '');
         //On cache le bouton "maximiser", il ne servira plus
-        this.$button_maximize.css('display', 'none'); 
+        this.$button_maximize.css('display', 'none');
 
         //On change la fonction du bouton "minimiser", il devient le bouton pour quitter la visio
         const parent = this.$button_minimize.parent();
@@ -1201,12 +1253,13 @@ class Webconf{
      * @param {string | null} key Nom de la room
      * @param {string | null} ariane Salon de chat
      * @param {string | null} wsp Id de l'espace lié à cette visio
+     * @param {{visio:{}, creator:{}}} other Autres données
      * @param {number} ariane_size Taille de la frame de chat
      * @param {true} is_framed [DEPRECATED]
      * @param {Function} onstart Action à faire lorsque la visio commence
      */
-    constructor(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, ariane_size = 323, is_framed=null, onstart = null){
-        this._init()._setup(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, ariane_size, is_framed, onstart).startup();
+    constructor(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, other = {},ariane_size = 323, is_framed=null, onstart = null){
+        this._init()._setup(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, other, ariane_size, is_framed, onstart).startup();
     }
 
     /**
@@ -1279,13 +1332,14 @@ class Webconf{
      * @param {string | null} key Nom de la room
      * @param {string | null} ariane Salon de chat
      * @param {string | null} wsp Id de l'espace lié à cette visio
+     * @param {{visio:{}, creator:{}}} other Autres données
      * @param {number} ariane_size Taille de la frame de chat
      * @param {true} is_framed [DEPRECATED]
      * @param {Function} onstart Action à faire lorsque la visio commence
      * @private Cette fonction est privée, évitez de l'utilisez en dehors de cette classe
      * @returns Chaîne
      */
-    _setup(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, ariane_size = 323, is_framed=null, onstart = null){
+    _setup(frameconf_id, framechat_id, $loading_chat, size_buttons, ask_datas, key, ariane, wsp, other = {}, ariane_size = 323, is_framed=null, onstart = null){
         const $chat = $(`#${framechat_id}`);
 
         if (is_framed === null && parent !== window) this._is_framed = true;
@@ -1306,7 +1360,7 @@ class Webconf{
 
         if (this.chat.room === "@home") this.chat.hidden = true;
 
-        this.webconf_page_creator = new WebconfPageCreator(ask_datas?.$page, ask_datas?.$error, ask_datas?.$room, ask_datas?.$state, ask_datas?.$chat, ask_datas?.$wsp, ask_datas?.$start, ask_datas?.config ?? {});
+        this.webconf_page_creator = new WebconfPageCreator(ask_datas?.$page, ask_datas?.$error, ask_datas?.$room, ask_datas?.$state, ask_datas?.$chat, ask_datas?.$wsp, ask_datas?.$start, ask_datas?.config ?? {}, other.creator);
         this.$frame_webconf = $(`#${frameconf_id}`);
         this.screen_manager = new InternalWebconfScreenManager(this.chat, this.$frame_webconf, size_buttons, ariane_size, this._is_framed);
         this.key = key || null;
@@ -1462,9 +1516,9 @@ class Webconf{
                     mel_metapage.Storage.set("webconf_token", true);
                     $('#mm-webconf').find('iframe').css('display', '').parent().find('.absolute-center').remove();
                 }
-                
+
             },
-            configOverwrite: { 
+            configOverwrite: {
                 hideLobbyButton: true,
                 startWithAudioMuted: false,
                 startWithVideoMuted:true,
@@ -1540,7 +1594,7 @@ class Webconf{
      */
     async navigatorWarning()
     {
-        
+
         if (MasterWebconfBar.isFirefox())
         {
             let misc_urls = {
@@ -1556,9 +1610,9 @@ class Webconf{
                 position: absolute;
                 z-index:9999;
                 text-align: center;">
-                Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence. 
+                Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence.
                 <br/>
-                Nous vous conseillons d'utiliser un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre <a href="tel:${this.key};${(await window.webconf_helper.phone.pin(this.key))}#">téléphone</a>. 
+                Nous vous conseillons d'utiliser un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre <a href="tel:${this.key};${(await window.webconf_helper.phone.pin(this.key))}#">téléphone</a>.
                 <button style="margin-top:-12px" type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -1592,14 +1646,14 @@ class Webconf{
                 try {
                     value -= 2;
                     $ff.find('.progress-bar').css('width', `${value}%`).attr('aria-valuenow', value);
-    
+
                     if (value <= 0) {
                         clearInterval(inter);
                         setTimeout(() => { // Laisser la barre finir
                             try {
                                 $ff.remove();
                             } catch (error) {
-                                
+
                             }
                         }, 200);
                     }
@@ -1683,7 +1737,7 @@ class Webconf{
             config["_wsp"] = this.wsp.uid;
         else if (this.chat.chat_visible())
             config["_ariane"] = (`${this.chat.room}${(this.chat.privacy === eprivacy.private ? private_key : "")}`);
-        
+
         const url = ispublic ? mel_metapage.Functions.public_url('webconf', config) : MEL_ELASTIC_UI.url("webconf", "", config);
         return url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
     }
@@ -1694,8 +1748,8 @@ class Webconf{
      */
     set_document_title()
     {
-        if (!this.key) return; 
-        
+        if (!this.key) return;
+
         top.mel_metapage.Functions.title(this.get_url());
     }
 
@@ -1777,7 +1831,7 @@ class WebconfScreenManager extends AMelScreenManager {
         /**
          * Taille de la visio quand elle partage son espace avec une autre frame
          * @constant Cette variable est constantes, évitez de la modifier en dehors de la fonction "_setup"
-         * @private Cette variable est privée, évitez de l'utiliser en dehors de cette classe  
+         * @private Cette variable est privée, évitez de l'utiliser en dehors de cette classe
          * @type {number}
          */
         this._minified_size = 0;
@@ -1832,7 +1886,7 @@ class WebconfScreenManager extends AMelScreenManager {
      * @param {MelEnum} mode Utilisez ewsmode
      * @returns Chaîne
      */
-    switchMode(mode) 
+    switchMode(mode)
     {
         let is_fullscreen_chat = false;
         switch (mode) {
@@ -1885,7 +1939,7 @@ class WebconfScreenManager extends AMelScreenManager {
     /**
      * [DEPRECATED]Check si la visio est en iframe
      * @deprecated Cette fonction est dépréciée, évitez de l'utiliser
-     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe 
+     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe
      * @returns {boolean}
      */
     _is_visio_framed(){
@@ -1894,7 +1948,7 @@ class WebconfScreenManager extends AMelScreenManager {
 
     /**
      * Récupère la classe de la frame en cours
-     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe 
+     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe
      * @returns {string}
      */
     _getCurrentPage() {
@@ -1903,7 +1957,7 @@ class WebconfScreenManager extends AMelScreenManager {
 
     /**
      * Récupère la frame en cours
-     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe 
+     * @private Cette fonction est privée, évitez de l'utiliser en dehord de cette classe
      * @returns {$}
      */
     _getOtherPage() {
@@ -1944,12 +1998,12 @@ class WebconfScreenManager extends AMelScreenManager {
         this.webconf.screen_manager.switchMode(chat ? ewsmode.chat : ewsmode.fullscreen);
 
         this.master_bar.right_pannel.cannot_be_disabled = false;
-        if (chat_hidden) 
+        if (chat_hidden)
         {
             this.webconf.hideChat();
             if (!!this.master_bar) this.master_bar.right_pannel.disable_right_mode();
         }
-        else 
+        else
         {
             this.webconf.showChat();
 
@@ -1970,7 +2024,7 @@ class WebconfScreenManager extends AMelScreenManager {
                               .css('width', this._minified_size);
         this.webconf.screen_manager.switchMode(ewsmode.minimised);
 
-        if (!!this.master_bar) 
+        if (!!this.master_bar)
         {
             this.master_bar.right_pannel.enable_right_mode();
             this.master_bar.right_pannel.cannot_be_disabled = true;
@@ -1996,8 +2050,8 @@ class WebconfScreenManager extends AMelScreenManager {
     /**
      * [DEPRECATED]Cette fonction est dépréciée, évitez de l'utiliser
      * @deprecated Cette fonction est dépréciée, évitez de l'utiliser
-     * @param {$} $item 
-     * @param {boolean} use_margin_instead_right 
+     * @param {$} $item
+     * @param {boolean} use_margin_instead_right
      * @returns Chaîne
      */
     fit_item_to_guest_screen($item, use_margin_instead_right = true)
@@ -2028,7 +2082,7 @@ class WebconfScreenManager extends AMelScreenManager {
         this.webconf.dispose();
         this.frames_modes = null;
     }
-    
+
 }
 
 //MasterWebconfBarElement
@@ -2114,7 +2168,7 @@ class MasterWebconfBarItem {
     /**
      * Execute l'action de l'élément
      * @param  {...any} args Arguments de l'action
-     * @returns 
+     * @returns
      */
     _execute_action(...args)
     {
@@ -2123,7 +2177,7 @@ class MasterWebconfBarItem {
 
     /**
      * Element actif ?
-     * @returns 
+     * @returns
      */
     is_active() {
         return this.state;
@@ -2137,7 +2191,7 @@ class MasterWebconfBarItem {
         this.state = true;
         this.$item.addClass('active');
         this._execute_action(true, this);
-        
+
         if (!!this.onactive) this.onactive(this);
         return this;
     }
@@ -2150,7 +2204,7 @@ class MasterWebconfBarItem {
         this.state = false;
         this.$item.removeClass('active');
         this._execute_action(false, this);
-        
+
         if (!!this.ondisable) this.ondisable(this);
         return this;
     }
@@ -2192,7 +2246,7 @@ class MasterWebconfBarItem {
 
     /**
      * Lie un élément
-     * @param {string} key Clé pour retrouver l'élément 
+     * @param {string} key Clé pour retrouver l'élément
      * @param {MasterWebconfBarItem} item Elément lié
      * @param {string} selfKeyLink Clé pour cette élément, si défini, lie automatiquement cet élément à l'autre élément
      * @returns Chaîne
@@ -2277,12 +2331,12 @@ class MasterWebconfBarPopup {
     _init() {
         /**
          * Jquery de la popup
-         * @type {$} 
+         * @type {$}
          */
         this.$popup = null;
         /**
          * Jquery de la div qui affiche les données
-         * @type {$} 
+         * @type {$}
          */
         this.$contents = null;
         /**
@@ -2345,7 +2399,7 @@ class MasterWebconfBarPopup {
 
     /**
      * Affiche un chargement dans la fenêtre de popup
-     * @param {string} text Texte afficher dans la popup 
+     * @param {string} text Texte afficher dans la popup
      * @returns Chapine
      */
     loading(text = 'Chargement des données...') {
@@ -2374,14 +2428,15 @@ class MasterWebconfBarPopup {
 class RightPannel
 {
     /**
-     * Constructeur de la classe 
-     * 
+     * Constructeur de la classe
+     *
      * /!\Pas de fonction "_init" et "_setup" pour cette classe
      * @param {$} $pannel Div du pannel
-     * 
+     *
      */
     constructor($pannel)
     {
+        this._currentClass = null;
         /**
          * Div du pannel
          * @type {$}
@@ -2449,13 +2504,13 @@ class RightPannel
 
     /**
      * Active le mode "droit"
-     * 
+     *
      * Utilisé en général quand le tchat est ouvert, décalle le panneau à gauche
      * @returns Chaîne
      */
     enable_right_mode()
     {
-        if (!this.$pannel.hasClass(this.CONST_RIGHT_MODE)) this.$pannel.addClass(this.CONST_RIGHT_MODE);
+        if (!this.$pannel.hasClass(this.CONST_RIGHT_MODE) &&!this.cannot_be_enabled) return this.set_class(this.CONST_RIGHT_MODE);
         return this;
     }
 
@@ -2465,7 +2520,22 @@ class RightPannel
      */
     disable_right_mode()
     {
-        if (!this.cannot_be_disabled) this.$pannel.removeClass(this.CONST_RIGHT_MODE);
+        if (!this.cannot_be_disabled) return this.remove_class(this.CONST_RIGHT_MODE);
+        return this;
+    }
+
+    set_class(classSetted) {
+        this.remove_class(this._currentClass);
+        this._currentClass = classSetted;
+        this.$pannel.addClass(classSetted);
+        return this;
+    }
+
+    remove_class(classRemoved) {
+        if (!!classRemoved) {
+            this.$pannel.removeClass(classRemoved);
+        }
+        this._currentClass = null;
         return this;
     }
 
@@ -2500,7 +2570,7 @@ class RightPannel
     }
 }
 
-//¤MasterWebconfBar 
+//¤MasterWebconfBar
 /**
  * Gère la barre d'outil de la visio
  */
@@ -2526,11 +2596,11 @@ var MasterWebconfBar = (() => {
          */
         constructor(globalScreenManager, webconfManager, $right_pannel, more_actions, rawbar, bar_visible = true) {
             this._init()._setup(globalScreenManager, webconfManager, $right_pannel)._create_bar(rawbar, more_actions);
-    
+
             if (!bar_visible) this.$bar.css('display', 'none');
             else this.launch_timeout();
         }
-    
+
         /**
          * Initialise les variables de la classe
          * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
@@ -2597,14 +2667,14 @@ var MasterWebconfBar = (() => {
             this.ondispose = null;
             return this;
         }
-    
+
         /**
          * Assigne les variables de la classe
-         * @param {WebconfScreenManager} globalScreenManager 
-         * @param {Webconf} webconfManager 
-         * @param {$} $right_pannel 
+         * @param {WebconfScreenManager} globalScreenManager
+         * @param {Webconf} webconfManager
+         * @param {$} $right_pannel
          * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
-         * @returns Chaîne 
+         * @returns Chaîne
          */
         _setup(globalScreenManager, webconfManager, $right_pannel) {
             this.globalScreenManager = globalScreenManager.setMasterBar(this);
@@ -2615,14 +2685,14 @@ var MasterWebconfBar = (() => {
             this.video_manager = new MelVideoManager();
             return this;
         }
-      
+
         /**
          * Créer la barre d'outil (visuellement et fonctionellement)
-         * 
-         * Elle récupère les données des datas des boutons qui la compose puis va assigner les comportements de chacun 
+         *
+         * Elle récupère les données des datas des boutons qui la compose puis va assigner les comportements de chacun
          * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
-         * @param {string} rawbar 
-         * @param {{$buttons:$, $button:$}} more_actions 
+         * @param {string} rawbar
+         * @param {{$buttons:$, $button:$}} more_actions
          * @returns Chaîne
          */
         _create_bar(rawbar, more_actions) {
@@ -2632,10 +2702,10 @@ var MasterWebconfBar = (() => {
              */
             const isff = MasterWebconfBar.isFirefox();
             _$("body").append(rawbar); //Ajoute la barre au body
-    
+
             //Boucle sur tout les boutons, et leurs assigne leurs fonctionnements
             /*
-            Liste des datas : 
+            Liste des datas :
             witem : id du bouton dans le code, permet de le retrouver plus tard
             function : Fonction de MasterWebconfBar qui sera appelé lors du clique
             click : vaut 'true' ou 'false' (par défaut), si c'est vrai, aucun état ne sera passé à la fonction
@@ -2648,28 +2718,28 @@ var MasterWebconfBar = (() => {
                         caller:this,
                         func:iterator.data('function')
                     }, !iterator.data('click'));
-    
+
                     if (!!iterator.data('noff') && isff) this.items[iterator.data('witem')].hide();
                  }
             }
-    
+
             //Link les popups du micro et de la caméra pour pouvoir basculer de l'un à l'autre plus tard
             if (!!this.items['popup_mic'] && !!this.items['popup_cam'])
             {
                 this.items['popup_mic'].addLink('other', this.items['popup_cam'], 'other');
             }
-    
+
             this.$bar = _$('.wsp-toolbar.webconf-toolbar');
             this.popup = new MasterWebconfBarPopup(this.$bar.find('.toolbar-popup'));
-    
+
             /**
              * La popup fais la moitié de la taille de l'écran
              */
             this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`).css('min-height', '250px');
-    
+
             //Ajoute le bouton "plus d'action" à la barre d'outil
             this._$more_actions = more_actions.$button.css('display', '').removeClass('hidden').removeClass('active').appendTo(this.$bar);
-            
+
             //Action à faire qu'une seul fois par session
             if (!top.webconf_resize_set)
             {
@@ -2677,7 +2747,7 @@ var MasterWebconfBar = (() => {
                 //Redimensionne la popup lorsque la taille de l'écran change
                 top.eval(`
                     top.$(window).resize(() => {
-                        if (!!top && !!top.masterbar && !!top.masterbar.popup) top.masterbar.popup.$popup.css('height', (window.innerHeight / 2)+'px');     
+                        if (!!top && !!top.masterbar && !!top.masterbar.popup) top.masterbar.popup.$popup.css('height', (window.innerHeight / 2)+'px');
                     });
                 `);
             }
@@ -2686,17 +2756,17 @@ var MasterWebconfBar = (() => {
 
             return this;
         }
-    
+
         /**
-         * Affiche le logo ou le nom de l'espace lié à la visio. 
-         * 
+         * Affiche le logo ou le nom de l'espace lié à la visio.
+         *
          * Si la visio n'est pas lié à un espace, un logo par défaut sera attribué
          * @returns Chaîne
          */
         updateLogo()
         {
             const wsp = this.webconfManager.wsp;
-    
+
             if (wsp.have_workspace()) {
                 if (wsp.logo != "false") this.items['round'].$item.html(`<img src="${wsp.logo}" />`).css("background-color", wsp.color);
                 else this.items['round'].$item.html(`<span>${wsp.title.slice(0,3).toUpperCase()}</span>`).css("background-color", wsp.color);
@@ -2706,7 +2776,7 @@ var MasterWebconfBar = (() => {
             }
             return this;
         }
-    
+
         /**
          * Lors du lancement de la visio, met à jours l'état des boutons de la barre d'outil pour correspondre à ceux de la visio
          * @returns Chaîne
@@ -2714,11 +2784,11 @@ var MasterWebconfBar = (() => {
         updateBarAtStartup()
         {
             const wsp = this.webconfManager.wsp;
-    
+
             if (!!this.items['chat'] && this.webconfManager.chat.chat_visible()) {
                 this.items['chat'].active();
             }
-    
+
             if (!(!!this.items['document'] && !!wsp.objects && wsp.objects.doc))
             {
                 this.items['document'].$item.remove();
@@ -2726,15 +2796,15 @@ var MasterWebconfBar = (() => {
             }
             return this;
         }
-    
+
         /**
          * Lie le listener à la barre d'outil
-         * @param {ListenerWebConfBar} listener 
+         * @param {ListenerWebConfBar} listener
          */
         setListener(listener) {
             this.listener = listener;
         }
-    
+
         /**
          * Action qui sera appelé lorsque la visio sera finie
          * @param {function} callback Fonction à appeler
@@ -2742,7 +2812,7 @@ var MasterWebconfBar = (() => {
         setOnDipose(callback) {
             this.ondispose = callback;
         }
-    
+
         /**
          * Affiche la barre d'outil
          */
@@ -2750,12 +2820,12 @@ var MasterWebconfBar = (() => {
             this.$bar.css('display', '');
             this.popup.$popup.addClass('large-toolbar').css('height', `${window.innerHeight / 2}px`);
         }
-    
+
         /**
          * Change l'état du micro ou de la caméra
          * @private Cette fonction est privée, évitez de l'utiliser en dehors de cette classe
          * @param {boolean} state Etat du micro ou de la caméra (true => actif, false => inactif)
-         * @param {string} item doit être "mic" ou "cam" 
+         * @param {string} item doit être "mic" ou "cam"
          * @param {string} on Icône qui doit être affiché lorsque l'état est "actif"
          * @param {string} off  Icône qui doit être affiché lorsque l'état est "inactif"
          * @param {string} listener_func Fonction qui sera appelé par le listener
@@ -2766,47 +2836,47 @@ var MasterWebconfBar = (() => {
             const FOR = item;
             const class_on = `.${on}`;
             const class_off = `.${off}`;
-    
+
             if (!!this.items && this.items[FOR]) //Ne rien faire si il n'y a pas les items demandés
             {
-                if (state) { 
+                if (state) {
                     this.items[FOR].$item.find(class_off).removeClass(off).addClass(on);
                 }
                 else {
                     this.items[FOR].$item.find(class_on).removeClass(on).addClass(off);
                 }
-    
+
                 if (!this.ignore_send) { //On active le micro ou la caméra ou inversement
                     this.listener[listener_func]();
                 }
             }
-    
+
             return this;
         }
-    
+
         /**
          * Active ou désactive le micro
-         * @param {boolean} state Etat du micro  
+         * @param {boolean} state Etat du micro
          * @returns Chaîne
          */
         toggle_mic(state)
         {
             return this._toggle_mic_or_cam(state, 'mic', 'icon-mel-micro', 'icon-mel-micro-off', 'toggle_micro');
         }
-    
+
         /**
          * Active ou désactive la caméra
-         * @param {boolean} state Etat de la caméra  
+         * @param {boolean} state Etat de la caméra
          * @returns Chaîne
          */
         toggle_cam(state)
         {
             return this._toggle_mic_or_cam(state, 'cam', 'icon-mel-camera', 'icon-mel-camera-off', 'toggle_video');
         }
-    
+
         /**
          * Met à jour l'icône du bouton qui ouvre la popup des audios et celui de la caméra (et vice versa)
-         * @param {boolean} state Etat de la popup (ouverte ou non) 
+         * @param {boolean} state Etat de la popup (ouverte ou non)
          * @param {MasterWebconfBarItem} item Item d'où vient le click
          * @param {*} debug [DEPRECATED]
          * @param {string} active_symbol Icône à afficher lorsque la popup est ouverte
@@ -2825,25 +2895,25 @@ var MasterWebconfBar = (() => {
                         if (element.state) element.disable();
                     }
                 }
-    
+
                 item.$item.find('.mel-icon').addClass(active_symbol).removeClass(inactive_symbol);
             }
             else {
                 item.$item.find('.mel-icon').removeClass(active_symbol).addClass(inactive_symbol);
             }
-    
+
             return this;
         }
-    
+
         /**
          * Met à jour la liste des périphériques afficher sur la popup
          * @param {Array<*>} devices Liste des devices envoyé par jitsii
-         * @param {function} click Action à faire lorsque l'on clique sur un device 
+         * @param {function} click Action à faire lorsque l'on clique sur un device
          * @returns Chaîne
          */
         async update_popup_devices(devices, click) {
             let devices_by_kind = {};
-    
+
             for (let index = 0; index < devices.length; ++index) {
                 const element = devices[index];
                 if (devices_by_kind[element.kind] === undefined)
@@ -2873,14 +2943,14 @@ var MasterWebconfBar = (() => {
 
                         if (element.kind === 'audioinput') //Visualiser les micros
                         {
-                            $button = (await this.audio_manager.addElement(element, $button)).$main.parent();                            
+                            $button = (await this.audio_manager.addElement(element, $button)).$main.parent();
                         }
                         else if (element.kind === 'audiooutput') { //Tester l'audio
                             var $button_div = $('<div></div>').css('position', 'relative')
                             $button.on('mouseover', (event) => {
                                 let $e =  $(event.currentTarget);
                                 let $parent = $e.parent();
- 
+
                                 let $tmp = $('<button>Test</button>').data('devicelabel', $e.data('devicelabel'))
                                 .addClass('mel-button btn btn-secondary no-button-margin mel-test-audio-button')
                                 .click(async (testbuttonevent) => {
@@ -2921,11 +2991,11 @@ var MasterWebconfBar = (() => {
 
                         html.append($button);
                     }
-    
+
                     if (true) html.append('<separate class="device"></separate>');
                 }
             }
-    
+
             html.find('separate').last().remove();
 
             if (this.video_manager.count() > 0){
@@ -2936,7 +3006,7 @@ var MasterWebconfBar = (() => {
 
             return this;
         }
-    
+
         /**
          * Ouvre ou ferme une popup qui affiche la liste des micros et des audios
          * @todo Ajouter des fonctionnalités pour pouvoir tester l'audio ou le micro en temps réel
@@ -2945,7 +3015,7 @@ var MasterWebconfBar = (() => {
          */
         async togglePopUpMic(state, item) {
             const FOR = 'popup_mic';
-    
+
             if (!!this.items && this.items[FOR])
             {
                 if (state) {
@@ -2962,11 +3032,11 @@ var MasterWebconfBar = (() => {
                 else {
                     this.update_item_icon(state, item, null).popup.empty().hidden();
                     this.audio_manager.dispose();
-                    this.audio_manager = new MelAudioManager(); 
+                    this.audio_manager = new MelAudioManager();
                 }
             }
         }
-    
+
         /**
          * Ouvre ou ferme une popup qui affiche la liste des caméras
          * @todo Ajouter des fonctionnalités pour pouvoir tester l'audio ou le micro en temps réel
@@ -2975,7 +3045,7 @@ var MasterWebconfBar = (() => {
          */
         async togglePopUpCam(state, item) {
             const FOR = 'popup_cam';
-    
+
             if (!!this.items && this.items[FOR])
             {
                 if (state) {
@@ -2994,7 +3064,7 @@ var MasterWebconfBar = (() => {
                 }
             }
         }
-    
+
         /**
          * Affiche la page nextcloud de la visio lié à l'espace
          * @todo Ouvrir l'espace de travail qui ouvre nextcloud
@@ -3003,7 +3073,7 @@ var MasterWebconfBar = (() => {
         {
             let task = 'stockage'
             let config = {};
-    
+
             try{
                 if (this.webconfManager.wsp !== undefined && this.webconfManager.wsp.uid !== undefined)
                 {
@@ -3018,10 +3088,10 @@ var MasterWebconfBar = (() => {
                 }
             }catch (er)
             {}
-    
+
             mel_metapage.Functions.change_page(task, null, config);
         }
-    
+
         /**
          * Copie dans le presse papier l'url de la visio
          * @todo Ajouter les infos d'ariane de d'espaces de travail
@@ -3031,34 +3101,34 @@ var MasterWebconfBar = (() => {
             //TODO => Ajouter les infos d'ariane de d'espaces de travail
             mel_metapage.Functions.copy(this.webconfManager.get_url(true));
         }
-    
+
         /**
          * Copie de la presse papier les infos pour rejoindre la visio par téléphone
          */
         async get_phone_datas()
-        {   
-            if (!this._phone_datas) 
+        {
+            if (!this._phone_datas)
             {
                 this._phone_datas = await webconf_helper.phone.getAll();
             }
-    
-    
+
+
             const copy_value = `Numéro : ${this._phone_datas.number} - PIN : ${this._phone_datas.pin}`;
             mel_metapage.Functions.copy(copy_value);
         }
-    
+
         /**
          * Affiche ou ferme le tchat du Bnum
-         * @param {boolean} state true => Ouvert 
+         * @param {boolean} state true => Ouvert
          */
         toggleChat(state) {
             this.globalScreenManager.webconf.chat.hidden = !state;
             this.listener.switchAriane(state);
-            
+
             if (state) this.right_pannel.enable_right_mode();
             else this.right_pannel.disable_right_mode();
         }
-    
+
         /**
          * Affiche ou ferme le tchat de jitsii
          */
@@ -3066,34 +3136,34 @@ var MasterWebconfBar = (() => {
         {
             this.listener.toggle_chat();
         }
-    
+
         /**
          * Affiche une fenêtre qui permet d'écrire des messages privés à utilisateur de la visio
-         * @returns 
+         * @returns
          */
         async toggle_mp()
         {
-            if (this.right_pannel.is_open()) {
+            if (this.right_pannel.$pannel.hasClass('mp') && this.right_pannel.is_open()) {
                 this.right_pannel.close();
             }
             else {
-                this.right_pannel.$pannel.find('.back-button').css('display', '');
+                this.right_pannel.set_class('mp').$pannel.find('.back-button').css('display', '');
                 let $html = _$('<div></div>');
                 const users = await this.listener.get_room_infos();
-    
+
                 let html_icon = null;
                 for (const user of users) {
-    
+
                     if (!!user.avatarURL) html_icon = `<div class="dwp-round" style="width:32px;height:32px;"><img src="${user.avatarURL}" style="width:100%" /></div>`;
                     else html_icon = '';
-    
+
                     _$(`<div tabindex="0" class="mel-selectable mel-focus with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
                         e = _$(e.currentTarget);
                         this.listener.initiatePrivateChat(e.data('id'));
                         this.right_pannel.close();
                     }).appendTo($html);
                 }
-    
+
                 return this.right_pannel.set_title('A qui envoyer un message privé ?')
                 .open()
                 .set_content($html, (pannel) => {
@@ -3103,7 +3173,7 @@ var MasterWebconfBar = (() => {
                 });
             }
         }
-    
+
         /**
          * Ouvre le menu "Participants" de jitsii
          * @todo Faire le notre
@@ -3112,7 +3182,7 @@ var MasterWebconfBar = (() => {
         {
             this.listener.toggle_participantspane();
         }
-    
+
         /**
          * Ouvre le menu des backgrounds de jitsii
          */
@@ -3120,57 +3190,46 @@ var MasterWebconfBar = (() => {
         {
             this.listener.open_virtual_background();
         }
-    
+
         /**
          * Minimise ou maximise la barre d'outil
-         * @param {boolean} state true => caché 
+         * @param {boolean} state true => caché
          * @returns Chaîne
          */
         update_toolbar(state)
         {
             const FOR = 'round';
-    
+
             if (!!this.items && this.items[FOR])
             {
                 if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
                 this._timeout_id = undefined;
                 this.hide_masterbar();
-
-                // if (state) //On cache
-                // {
-                //     for (const key in this.items) {
-                //         if (Object.hasOwnProperty.call(this.items, key)) {
-                //             const element = this.items[key];
-                //             if (key === FOR) element.$item.removeClass('active');
-                //             else {
-                //                 element.hide();
-                //             }
-                //         }
-                //     }
-    
-                //     this._$more_actions.hide();
-                //     this.$bar.css('background-color', 'var(--invisible)').css('border-color', 'var(--invisible)').find('v_separate').css('display', 'none');
-                // }
-                // else {
-                //     for (const key in this.items) {
-                //         if (Object.hasOwnProperty.call(this.items, key)) {
-                //             const element = this.items[key];
-                //             if (key === FOR) continue;
-                //             else {
-                //                 if (!!element.$item.data('noff') && MasterWebconfBar.isFirefox()) continue;
-                //                 else element.show();
-                //             }
-                //         }
-                //     }
-    
-                //     this.$bar.css('background-color', '').css('border-color', '').find('v_separate').css('display', '');
-                //     this._$more_actions.show();
-                // }
             }
-    
+
             return this;
         }
-    
+
+        open_password() {
+            if (this.right_pannel.$pannel.hasClass('password') && this.right_pannel.is_open()) {
+                this.right_pannel.close();
+            }
+            else {
+                this.right_pannel.set_class('password').$pannel.find('.back-button').css('display', '');
+                let $html = _$('<div></div>');
+ 
+
+
+                return this.right_pannel.set_title('Gestion du mot de passe')
+                .open()
+                /*.set_content($html, (pannel) => {
+                    let $tmp = pannel.find('.mel-selectable');
+                    if ($tmp.length > 0) $tmp.first()[0].focus();
+                    else pannel.find('button').first()[0].focus();
+                })*/;
+            }
+        }
+
         /**
          * Lève ou baisse la main dans jitsii (pour demander la parole)
          */
@@ -3178,7 +3237,7 @@ var MasterWebconfBar = (() => {
         {
             this.listener.toggleHand();
         }
-    
+
         /**
          * Passe en mosaïque ou non
          */
@@ -3186,7 +3245,7 @@ var MasterWebconfBar = (() => {
         {
             this.listener.toggle_film_strip();
         }
-    
+
         /**
          * Lance ou arrête le partage d'écran
          */
@@ -3194,7 +3253,7 @@ var MasterWebconfBar = (() => {
         {
             this.listener.share_screen();
         }
-    
+
         /**
          * Vérifie si on est sous firefox
          * @returns {boolean}
@@ -3203,7 +3262,7 @@ var MasterWebconfBar = (() => {
         {
             return window?.mel_metapage?.Functions?.isNavigator(mel_metapage?.Symbols?.navigator?.firefox) ?? (typeof InstallTrigger !== 'undefined');
         }
-    
+
         /**
          * Ferme la visio
          */
@@ -3211,19 +3270,19 @@ var MasterWebconfBar = (() => {
         {
             //Déplace le "plus d'actions" pour pouvoir le réutiliser plus tard
             this._$more_actions.addClass('hidden').appendTo('body');
-            
+
             //Revenir dans la visio
             if (this.globalScreenManager.current_mode !== ewsmode.fullscreen && rcmail.env.current_frame_name !== 'webconf') {
                 await mel_metapage.Functions.change_frame('webconf', true, true).then(() => {
                     top.rcmail.clear_messages();
                   });
             }
-    
+
             //Ferme le tchat du bnum
             this.toggleChat(false);
-            
+
             _$("html").removeClass("webconf-started");
-            
+
             this.listener.hangup(); //Arrête la visio
             this.$bar.remove(); //Supprime la barre d'outil, elle ne sert plus
 
@@ -3247,7 +3306,7 @@ var MasterWebconfBar = (() => {
         /**
          * [DEPRECATED]Cette fonction est déprécié, évitez de l'utiliser
          * @deprecated Cette fonction est déprécié, évitez de l'utiliser
-         * @param {$} $item 
+         * @param {$} $item
          * @returns Chaîne
          */
         minify_item($item)
@@ -3255,7 +3314,7 @@ var MasterWebconfBar = (() => {
             this.globalScreenManager.fit_item_to_guest_screen($item);
             return this;
         }
-    
+
         /**
          * Minimise la barre d'outil pour affiche seulement le micro, la caméra ainsi que le bouton "raccrocher".
          * @returns Chaîne
@@ -3263,7 +3322,7 @@ var MasterWebconfBar = (() => {
         minify()
         {
             if (this.is_minimised) return this;
-            
+
             const ignore = ['popup_cam', 'popup_mic', 'cam', 'mic', 'hangup'];
             for (const key in this.items) { //Cacher tout les items
                 if (Object.hasOwnProperty.call(this.items, key)) {
@@ -3272,18 +3331,18 @@ var MasterWebconfBar = (() => {
                     {
                         this.items[key].hide();
                     }
-                    
+
                 }
             }
-    
+
             this.$bar.find('v_separate').css('display', 'none'); //Cacher les séparateurs
             this.$bar.find('.empty').css('display', 'none');
             this.$bar.css('right', '60px').css('left', 'unset').css('transform', 'unset');
             this.is_minimised = true;
-    
+
             return this;
         }
-    
+
         /**
          * Maximise la barre d'outil pour affiche seulement le micro, la caméra ainsi que le bouton "raccrocher".
          * @returns Chaîne
@@ -3291,30 +3350,30 @@ var MasterWebconfBar = (() => {
         maximise()
         {
             if (!this.is_minimised) return this;
-    
+
             for (const key in this.items) {
                 if (Object.hasOwnProperty.call(this.items, key)) {
                     this.items[key].show();
                 }
             }
-    
+
             this.$bar.find('v_separate').css('display', '');
             this.$bar.find('.empty').css('display', '');
             this.$bar.css('right', '').css('left', '').css('transform', '');
             this.is_minimised = false;
-    
+
             return this;
         }
-    
+
         /**
          * Retourne au bout de combien de temps (en s) la barre d'outil se cache.
-         * @returns 
+         * @returns
          */
         timeout_delay()
         {
             return 10;
         }
-    
+
         /**
          * Affiche la barre d'outil et lance un timer qui la cache lorsque celui-ci est écoulé
          * @returns Chaîne
@@ -3323,20 +3382,20 @@ var MasterWebconfBar = (() => {
             if (this.$bar.css('display') === 'none') this.$bar.css('display', '');
             return this.launch_timeout();
         }
-    
+
         /**
          * Cache la barre d'outil
          * @returns Chaîne
          */
-        hide_masterbar() 
+        hide_masterbar()
         {
             if (this.$bar.css('display') !== 'none') this.$bar.css('display', 'none');
-    
+
             if (this._timeout_id !== undefined) this._timeout_id = undefined;
-            
+
             return this;
         }
-    
+
         /**
          * Lance un time qui, à la fin de celui-ci, cache la barre d'outil
          * @returns Chapine
@@ -3349,7 +3408,7 @@ var MasterWebconfBar = (() => {
             }, this.timeout_delay() * 1000);
             return this;
         }
-    
+
         /**
          * Libère les variables
          * @returns /
@@ -3360,12 +3419,12 @@ var MasterWebconfBar = (() => {
                 clearTimeout(this._timeout_id);
                 this._timeout_id = undefined
             };
-    
+
             if (!!this.disposed) return;
             this.disposed = true;
-    
+
             if (!!this.ondispose) this.ondispose();
-    
+
             this.globalScreenManager.dispose();
             this.globalScreenManager = null;
             this.webconfManager.dispose();
@@ -3387,7 +3446,7 @@ var MasterWebconfBar = (() => {
             this.audio_tester.dispose();
         }
     }
-    return MasterWebconfBar;    
+    return MasterWebconfBar;
 })();
 
 //¤ListenerWebConfBar
@@ -3397,7 +3456,7 @@ var MasterWebconfBar = (() => {
 class ListenerWebConfBar {
     /**
      * Constructeur de la classe
-     * 
+     *
      * /!\ Pas de fonction "_init" ou "_setup" pour cette classe
      * @param {Webconf} webconf Visioconférence qui sera affecté par les fonctions de la barre d'outil
      * @param {MasterWebconfBar} masterBar Barre d'outil qui effectuera des actions sur la visio
@@ -3416,7 +3475,7 @@ class ListenerWebConfBar {
         this.masterBar = masterBar;
         /**
          * Indique si les listener de jitsii ont déjà été activé ou non
-         * @type {boolean} 
+         * @type {boolean}
          */
         this.alreadyListening = false;
         /**
@@ -3439,12 +3498,48 @@ class ListenerWebConfBar {
          * @type {boolean}
          */
         this.filmstrip_visible = true;
+        /**
+         * Role de l'utilisateur
+         * @type {Symbol}
+         */
+        let role = ListenerWebConfBar.roles.other;
+        /**
+         * Mot de passe de la visio
+         * @type {string}
+         */
+        let password = '';
+        /**
+         * Met le mot de passe de la visio
+         * @param {string} pass Nouveau mot de passe
+         * @returns
+         */
+        this.setPassword = function (pass, executeCommand = true) {
+            if (role === ListenerWebConfBar.roles.moderator)
+            {
+                password = pass;
+                if (executeCommand) this.webconf.jitsii.executeCommand('password', password);
+            }
+            else rcmail.display_message('Vous devez être modérateur pour changer de mot de passe !', 'error');
+
+            return this;
+        }
+
+        /**
+         * Récupère le mot de passe de la visio
+         * @returns {string} Mot de passe
+         */
+        this.showPassword = () => role === ListenerWebConfBar.roles.moderator ? password : null;
+
+        this.onRoleChanged = (event) => {
+            if (event.role === "moderator") role = ListenerWebConfBar.roles.moderator;
+            else role = ListenerWebConfBar.roles.other;
+        }
     }
 
     /**
      * Démarre la classe. Lance les listeners de la visio et initialise l'état de la caméro et du micro
      */
-    start()
+    async start()
     {
         this.isVideoMuted().then(muted => {
             this.mute_or_unmute('cam', muted);
@@ -3459,7 +3554,7 @@ class ListenerWebConfBar {
 
     /**
      * Affiche ou ferme le tchat du BNum
-     * @param {boolean} state true => pouvert 
+     * @param {boolean} state true => pouvert
      */
     switchAriane(state) {
         if (state)
@@ -3473,7 +3568,7 @@ class ListenerWebConfBar {
     /**
      * Active ou désactive le micro dans la barre d'outil
      * @param {string} item Item à activer ou a désactiver
-     * @param {boolean} muted true => désactivé 
+     * @param {boolean} muted true => désactivé
      */
     mute_or_unmute(item, muted) {
         const FOR = item;
@@ -3540,7 +3635,7 @@ class ListenerWebConfBar {
 
             this.webconf.jitsii.addEventListener('filmstripDisplayChanged', (datas) => {
                 this.filmstrip_visible = datas.visible;
-                if (datas.visible) 
+                if (datas.visible)
                 {
                     this.webconf.screen_manager.button_size_correction('strip', '129px');
                     this.webconf.jitsii.executeCommand('resizeFilmStrip', {
@@ -3548,7 +3643,7 @@ class ListenerWebConfBar {
                     });
                 }
                 else this.webconf.screen_manager.delete_button_size_correction('strip');
-    
+
                 this.webconf.screen_manager.update_button_size();
             });
 
@@ -3565,9 +3660,53 @@ class ListenerWebConfBar {
 
                 this.tileViewChanged(enabled);
             });
-            
+
             this.webconf.jitsii.addEventListener("readyToClose", () =>{
                 console.log("[VISIO]La visio est prête à être fermée !");
+            });
+
+            this.webconf.jitsii.addEventListener('participantRoleChanged', (event) => {
+                this.onRoleChanged(event);
+            });
+
+            let setPassword = true;
+            let erroredPassword = false;
+            this.webconf.jitsii.addEventListener('passwordRequired', () =>
+            {
+                if (this.webconf.webconf_page_creator.havePassword() && !erroredPassword) {
+                    setPassword = false;
+                    const password = this.webconf.webconf_page_creator.$password_datas.val();
+                    this.webconf.jitsii.executeCommand('password', password);
+                }
+                else if (erroredPassword) {
+                    setPassword = false;
+                    
+                }
+            });
+
+            this.webconf.jitsii.addEventListener('videoConferenceJoined', (event) => {
+                this.webconf.jitsii.getRoomsInfo().then((rooms) => {
+                    for (let index = 0; index < rooms.rooms.length; ++index) {
+                        const element = rooms.rooms[index];
+                        if (element.isMainRoom) {;
+
+                            for (let j = 0; j < element.participants.length; ++j) {
+                                const user = element.participants[j];
+        
+                                if (user.id === this.webconf.jitsii._myUserID)
+                                {
+                                    this.onRoleChanged(user);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+        
+                    if (this.webconf.webconf_page_creator.havePassword()){
+                        const password = this.webconf.webconf_page_creator.$password_datas.val();
+                        this.setPassword(erroredPassword ? ListenerWebConfBar.erronedPassword : password, setPassword);
+                    }
+                });
             });
         }
     }
@@ -3584,7 +3723,7 @@ class ListenerWebConfBar {
         else if (this.filmstrip_visible){
             this.webconf.screen_manager.button_size_correction('strip', '129px');
         }
-        else 
+        else
         {
             this.webconf.screen_manager.delete_button_size_correction('strip');
         }
@@ -3667,7 +3806,7 @@ class ListenerWebConfBar {
 
     /**
      * Lance un tchat privé avec un utilisateur de la visio
-     * @param {string} id Id de la personne avec laquel on souhaite communiquer 
+     * @param {string} id Id de la personne avec laquel on souhaite communiquer
      */
     initiatePrivateChat(id)
     {
@@ -3682,7 +3821,7 @@ class ListenerWebConfBar {
             this.participantPan = !state;
             this.webconf.jitsii.executeCommand('toggleParticipantsPane', this.participantPan);
 
-            if (this.participantPan) 
+            if (this.participantPan)
             {
                 this.webconf.screen_manager.button_size_correction('pane','315px');
                 //Lance un listener pour savoir si on passe par autre chose pour ferme la pannel
@@ -3692,17 +3831,17 @@ class ListenerWebConfBar {
                         if (this.participantPan != state)
                         {
                             this.participantPan = state;
-                
+
                             if (this.participantPan) this.webconf.screen_manager.button_size_correction('pane','315px');
                             else this.webconf.screen_manager.delete_button_size_correction('pane');
-                
+
                             this.webconf.screen_manager.update_button_size();
                             this.removeCustomListener('ppt');
                         }
                     });
                 }, 100);
             }
-            else 
+            else
             {
                 this.webconf.screen_manager.delete_button_size_correction('pane');
                 this.removeCustomListener('ppt');
@@ -3729,7 +3868,7 @@ class ListenerWebConfBar {
         var devices = await this.webconf.jitsii.getAvailableDevices();
 
         devices = Enumerable.from(devices.audioOutput).union(devices.audioInput).toArray();
-        
+
         var current_devices = await this.webconf.jitsii.getCurrentDevices();
 
         for (const key in current_devices) {
@@ -3786,7 +3925,7 @@ class ListenerWebConfBar {
 
     /**
      * Récupère les données de la visio
-     * @returns 
+     * @returns
      */
     async get_room_infos()
     {
@@ -3855,6 +3994,17 @@ class ListenerWebConfBar {
     }
 }
 
+/**
+ * Rôle d'un utilisateur
+ * @type {{moderator:symbol, other:symbol}}
+ */
+ListenerWebConfBar.roles = MelEnum.createEnum('roles', {
+    moderator:Symbol(),
+    other:Symbol()
+}, false);
+
+ListenerWebConfBar.erronedPassword = Symbol();
+
 //Pouvoir utiliser les fonctions en dehord de la classe
 window.Webconf = window.Webconf || Webconf;
 window.WebconfScreenManager = window.WebconfScreenManager || WebconfScreenManager;
@@ -3868,7 +4018,7 @@ window.MasterWebconfBar = window.MasterWebconfBar || MasterWebconfBar;
  * @param {function | null} onvisiostart Fonction à lancer lorsque la visio commence
  * @param {function | null} ondispose Action à faire lorsque l'on termine la visio
  */
-function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_config, onvisiostart = null, ondispose = null) {
+function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_config, addittionnal = {}, onvisiostart = null, ondispose = null) {
     window[webconf_var_name] = new Webconf("mm-webconf", "mm-ariane", $('#mm-ariane-loading'), {
         $maximise:$('.webconf-fullscreen'),
         $minimize:$('.webconf-minimize')
@@ -3881,10 +4031,10 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
         $wsp:$('.webconf-wsp select.wsp_select'),
         $start:$('#webconf-enter'),
         config:page_creator_config
-    }, rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"], right_item_size, null, () => {
+    }, rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"], addittionnal, right_item_size, null, () => {
         onvisiostart();
         let interval1 = setInterval(() => {
-            console.log('interval1', top.masterbar, !!top.masterbar, interval1);
+            //console.log('interval1', top.masterbar, !!top.masterbar, interval1);
             if (!!top.masterbar) {
                 clearInterval(interval1);
                 top.masterbar.show();
@@ -3894,7 +4044,7 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
         }, 10);
 
         let interval = setInterval(() => {
-            console.log('interval2', window.listener, !!window.listener, interval);
+            //console.log('interval2', window.listener, !!window.listener, interval);
             if (!!window.listener) {
                 clearInterval(interval);
                 window.listener.start();
@@ -3953,18 +4103,18 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
 
         top.metapage_frames.addEvent('before', (eClass) => {
             try {
-                if (!top.masterbar && top[var_webconf_started_name] === true) top[var_webconf_started_name] = false; 
+                if (!top.masterbar && top[var_webconf_started_name] === true) top[var_webconf_started_name] = false;
                 if (top[var_webconf_started_name] === true)
                 {
                     eClass = top.mm_st_ClassContract(eClass);
                     let $selector = top.$(`iframe.${eClass}-frame`);
-    
+
                     if ($selector.length === 0 && top.$(`.${eClass}-frame`).length > 0) {
                         top.$(`.${eClass}-frame`).remove();//.removeClass(`${eClass}-frame`).addClass('visio-temp-frame').data('start', eClass);
                     }
                 }
             } catch (error) {
-                
+
             }
         }, true);
 
@@ -3975,7 +4125,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                 {
                     top.masterbar.maximise().listener.webconf.screen_manager.update_button_size();
                     top[var_webconf_screen_manager_name].$webconf.css('display', '');
-                    
+
                     if (top[var_webconf_screen_manager_name].$layout_frames.length === 0) top[var_webconf_screen_manager_name].$layout_frames = top.$('#layout-frames');
                     //Cas 1 => Changement de page
                     if (eClass !== 'webconf' && !isAriane){
@@ -3996,7 +4146,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                         try {
                             mel_metapage.PopUp.ariane.is_show = false;
                         } catch (error) {
-                            
+
                         }
                         top[var_webconf_screen_manager_name].switchMode(ewsmode.chat);
                         $('#layout-frames').css('display', '');
@@ -4020,7 +4170,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                     top[var_webconf_screen_manager_name].switchModeFrame();
                 }
             } catch (error) {
-                
+
             }
         }, true);
 
@@ -4034,16 +4184,16 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                             mel_metapage.PopUp.ariane.hide();
                             window.bnum_chat_hidden = true;
                         }
-    
+
                         top.rcmail.set_busy(false);
                         top.rcmail.clear_messages();
                     }
-    
+
                     top[var_webconf_screen_manager_name].webconf.set_document_title();
                     document.title = 'Visioconférence';
                 }
             } catch (error) {
-                
+
             }
         };
 
@@ -4057,7 +4207,7 @@ function create_on_page_change(var_name, var_webconf_started_name, var_webconf_s
                     document.title = 'Visioconférence';
                 }
             } catch (error) {
-                
+
             }
         }, true);
     }
@@ -4098,7 +4248,13 @@ $(document).ready(() => {
     //Création de la visio
     create_on_page_change(var_top_on_change_added, var_top_webconf_started, var_global_screen_manager);
     create_listeners();
-    create_webconf(var_visio, var_global_screen_manager, page_creator_config, () => {
+    create_webconf(var_visio, var_global_screen_manager, page_creator_config, {
+        visio:{},
+        creator:{
+            $password_check:$('#visio-pass'),
+            $password_datas:$('#webconf-room-pass')
+        }
+    }, () => {
         top[var_top_webconf_started] = true;
         top.$('html').addClass(class_to_add_to_top);
     }, () => {

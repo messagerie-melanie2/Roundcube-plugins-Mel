@@ -617,9 +617,10 @@ class roundcube_auth extends rcube_plugin
                         explode(" ", $rcmail->config->get('oidc_scope')),
                         false, // host verification (TODO enable)
                         false, // peer verification (TODO enable)
-                        $rcmail->config->get('oidc_proxy')
+                        $rcmail->config->get('oidc_proxy'),
+                        $rcmail->config->get('oidc_redirect')
                     );
-
+                    
                     // Authenticate
                     $this->oidc_helper->doAuth();
                 }
@@ -696,7 +697,8 @@ class roundcube_auth extends rcube_plugin
             try
             {
                 // Get user information
-                //$user = json_decode(json_encode($this->tokenHelper->getUserInfo()), true);
+                // $user = json_decode(json_encode($this->oidc_helper->getUserInfo()), true);
+                // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - User information : ". json_encode($user));
 
                 // Get ID Token
                 $token = $this->oidc_helper->getOIDC()->getIdTokenPayload();

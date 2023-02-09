@@ -379,7 +379,7 @@
                         a{
                             &.quickview{
                                 &::before{
-                                    opacity: 0.2;
+                                    opacity: 1;
                                     content: "\e962";
                                 }
                             }
@@ -1129,6 +1129,10 @@ ul{
             &:hover{
                 background-color: var(--calendar-list-item-hover-background-color);
             }
+
+            &.focusview{
+                font-weight: bold;
+            }
         }
 
         li{
@@ -1247,4 +1251,12 @@ ul{
       border-left: 1px solid @color-list-border;
     }
   }
+}
+
+body.quickview-active {
+    .fc {
+        .fc-scroller {
+            background: none !important;
+        }
+    }
 }

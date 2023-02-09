@@ -2870,6 +2870,11 @@ function rcube_calendar_ui(settings) {
         // remove all current quickview event sources
         if (this.quickview_active) {
           fc.fullCalendar('removeEventSources');
+
+          // PAMELA 
+          $.each(this.calendars, function (k, cal) {
+            fc.fullCalendar('removeResource', cal);
+          });
         }
 
         this.quickview_sources = [];
@@ -2895,8 +2900,10 @@ function rcube_calendar_ui(settings) {
       $.each(this.calendars, function (k, cal) {
         if (cal.active) {
           fc.fullCalendar('addEventSource', cal);
-        }
 
+          // PAMELA
+          fc.fullCalendar('addResource', cal);
+        }
       });
 
       this.quickview_active = false;
@@ -2913,9 +2920,17 @@ function rcube_calendar_ui(settings) {
       // remove regular calendar event sources
       fc.fullCalendar('removeEventSources');
 
+      // PAMELA 
+      $.each(this.calendars, function (k, cal) {
+        fc.fullCalendar('removeResource', cal);
+      });
+
       // register quickview event sources
       $.each(this.quickview_sources, function (i, src) {
         fc.fullCalendar('addEventSource', src);
+
+        // PAMELA
+        fc.fullCalendar('addResource', src);
       });
 
       this.quickview_active = true;
@@ -2924,9 +2939,15 @@ function rcube_calendar_ui(settings) {
     // update quickview sources
     else if (in_quickview) {
       fc.fullCalendar('removeEventSource', src);
+
+      // PAMELA
+      fc.fullCalendar('removeResource', src);
     }
     else if (src) {
       fc.fullCalendar('addEventSource', src);
+
+      // PAMELA
+      fc.fullCalendar('addResource', src);
     }
 
     // activate quickview icon
@@ -2950,8 +2971,10 @@ function rcube_calendar_ui(settings) {
     $.each(me.calendars, function (k, cal) {
       if (cal.active) {
         fc.fullCalendar('addEventSource', cal);
-      }
 
+        // PAMELA
+        fc.fullCalendar('addResource', cal);
+      }
     });
 
     // uncheck all active quickview icons

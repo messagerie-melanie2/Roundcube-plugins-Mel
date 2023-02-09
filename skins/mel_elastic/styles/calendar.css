@@ -222,7 +222,7 @@ html.layout-small .task-calendar .calendar-datepicker .ui-datepicker {
   opacity: 1;
 }
 .task-calendar .listing li > div.focusview a.quickview::before {
-  opacity: 0.2;
+  opacity: 1;
   content: "\e962";
 }
 .task-calendar .listing li[aria-level="2"] .custom-control {
@@ -651,6 +651,9 @@ ul#calendarslist .calendar {
 ul#calendarslist .calendar:hover {
   background-color: var(--calendar-list-item-hover-background-color);
 }
+ul#calendarslist .calendar.focusview {
+  font-weight: bold;
+}
 ul#calendarslist li.selected > .calendar {
   cursor: default;
 }
@@ -776,4 +779,7 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   vertical-align: middle;
   border-top: 1px solid #d4dbde;
   border-left: 1px solid #f1f3f4;
+}
+body.quickview-active .fc .fc-scroller {
+  background: none !important;
 }

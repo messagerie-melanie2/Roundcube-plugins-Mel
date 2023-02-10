@@ -1792,10 +1792,18 @@ $(document).ready(() => {
 
             if (this.color_mode() === "dark")
             {
-                $html.removeClass(`theme-${this.get_current_theme().toLowerCase()}`);
+                let current = this.themes[this.get_current_theme()];
+                do {
+                    $html.removeClass(current.class);
+                    current = this.themes[current.parent];
+                } while (!!current);
             }
             else if (this.get_current_theme() !== 'default') {
-                $html.addClass(`theme-${this.get_current_theme().toLowerCase()}`);
+                let current = this.themes[this.get_current_theme()];
+                do {
+                    $html.addClass(current.class);
+                    current = this.themes[current.parent];
+                } while (!!current);
             }
             
             $('iframe.mm-frame').each((i,e) => {

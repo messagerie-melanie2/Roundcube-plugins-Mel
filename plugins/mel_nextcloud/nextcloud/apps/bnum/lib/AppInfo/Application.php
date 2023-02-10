@@ -50,12 +50,12 @@ class Application extends App implements IBootstrap {
     public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
 
-		$container = $this->getContainer();
+		// $container = $this->getContainer();
 
-		/** @var IEventDispatcher $dispatcher */
-		$dispatcher = $container->query(IEventDispatcher::class);
+		// /** @var IEventDispatcher $dispatcher */
+		// $dispatcher = $container->query(IEventDispatcher::class);
 
-		$dispatcher->addServiceListener(LoadAdditionalScriptsEvent::class, LoadAdditionalListener::class);
+		// $dispatcher->addServiceListener(LoadAdditionalScriptsEvent::class, LoadAdditionalListener::class);
 
 		/**
 		 * Always add bnum script

@@ -8,4 +8,33 @@ html.theme-super-classique {
             --tierciary-bckg-color:#0EAF9C;
         }
     }
+
+    .barup {
+        background: url('../images/bailey-zindel-NRQV-hBF10M-unsplash.jpg');
+        background-size: cover;
+        background-position-y: center;
+
+        #button-help{
+            background-color:#F0F0F0;
+
+            &:hover{
+                background-color: var(--tierciary-bckg-color);
+            }
+        }
+    }
+
+    #theme-switch-button {
+        .icon-mel-painting {
+            &::before{
+                content: "\efb3";
+                font-family: 'icofont';
+            }
+        }
+    }
+
+    .loader {
+        &-base {
+            animation-direction:initial;
+        }
+    }
 }

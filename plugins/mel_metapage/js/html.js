@@ -683,6 +683,30 @@ class mel_password extends mel_input {
 	}
 }
 
+mel_input.togglePasswordShowed.updateButton = function ($event) {
+	const DATA_SHOW = 'icon-show';
+	const DATA_HIDE = 'icon-hide';
+	const BALISE = 'span';
+	
+	const icon_show = $event.data(DATA_SHOW);
+	
+	if (!!icon_show) {
+		const icon_hide = $event.data(DATA_HIDE);
+
+		if (!!icon_hide) {
+			let $span = $event.find(BALISE);
+	
+			if ($span.hasClass(icon_show)) {
+				$span.removeClass(icon_show).addClass(icon_hide);
+			} else {
+				$span.removeClass(icon_hide).addClass(icon_show);
+			}
+		}
+	}
+
+
+}
+
 class mel_password_with_button extends mel_password{
 	constructor(id, input_id, attribs = {}, attribsOnParent = {}, attribsOnButton = {}) {
 		super(attribs);
@@ -753,26 +777,36 @@ class mel_button extends mel_html {
 	}
 }
 
-mel_input.togglePasswordShowed.updateButton = function ($event) {
-	const DATA_SHOW = 'icon-show';
-	const DATA_HIDE = 'icon-hide';
-	const BALISE = 'span';
-	
-	const icon_show = $event.data(DATA_SHOW);
-	
-	if (!!icon_show) {
-		const icon_hide = $event.data(DATA_HIDE);
+Object.defineProperty(mel_button, 'html_base_class', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:new MelEnum({
+		base:'mel-button',
+		boostrap:new MelEnum({
+			base:'btn',
+			state:'btn-secondary'
+		}, false)
+	}, false)
+});
 
-		if (!!icon_hide) {
-			let $span = $event.find(BALISE);
-	
-			if ($span.hasClass(icon_show)) {
-				$span.removeClass(icon_show).addClass(icon_hide);
-			} else {
-				$span.removeClass(icon_hide).addClass(icon_show);
-			}
-		}
-	}
+Object.defineProperty(mel_button, 'html_base_class_no_margin', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:'no-button-margin'
+});
 
+Object.defineProperty(mel_button, 'html_base_class_success', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:'btn-success'
+});
 
-}
+Object.defineProperty(mel_button, 'html_base_class_danger', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:'btn-danger'
+});

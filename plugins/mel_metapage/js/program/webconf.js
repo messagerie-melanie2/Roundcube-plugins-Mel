@@ -34,6 +34,25 @@ const enum_privacy_name = 'eprivacy';
 const enum_created_state = 'ewstate';
 const enum_screen_mode = 'ewsmode';
 const enum_locks = 'enum_webconf_locks'
+//Constantes de texte
+const TEXT_BALISE_DIV = 'div';
+const BALISE_DIV_START = `<${TEXT_BALISE_DIV}>`;
+const BALISE_DIV_END = `</${TEXT_BALISE_DIV}>`;
+const BALISE_DIV = `${BALISE_DIV_START}${BALISE_DIV_END}`;
+const TEXT_BALISE_INPUT = 'input';
+const CSS_DISPLAY = 'display';
+const CSS_PADDING = 'padding';
+const CLASS_PASSWORD = 'password';
+const CLASS_FORM_INVALID = 'is-invalid';
+const MESSAGE_ERROR = 'error';
+const MESSAGE_CONFIRMATION = 'confirmation';
+const ATTR_CLASS = 'class';
+const SELECTOR_CLASS = '.';
+const SELECTOR_ID = '#';
+const EMPTY_STRING = '';
+const EMPTY_OBJECT = {};
+
+
 //¤Enums
 /**
  * Enumerable lié à la confidentialité
@@ -2576,6 +2595,14 @@ class RightPannel
     }
 }
 
+Object.defineProperty(RightPannel, 'back_button', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:'back-button'
+});
+
+
 //¤MasterWebconfBar
 /**
  * Gère la barre d'outil de la visio
@@ -3216,66 +3243,94 @@ var MasterWebconfBar = (() => {
             return this;
         }
 
+        /**
+         * Ouvre une fenêtre qui permet de modifier ou supprimer un mot de passe.
+         * @returns {Promise<RightPannel>} 
+         */
         async open_password() {
+            const PLUGIN = 'mel_metapage';
+            const KEY_TEXT_PASSWORD = CLASS_PASSWORD;
+            const KEY_TEXT_TITLE = 'visio_password_manager';
+            const KEY_TEXT_SAVE = 'save';
+            const KEY_TEXT_VISIO_LOCKED = 'visio_locked';
+            const KEY_TEXT_VISIO_UNLOCKED = 'visio_unlocked';
+            const KEY_TEXT_REMOVE = 'delete_password';
+            const KEY_TEXT_PASSWORD_ERROR = 'password_visio_error';
+            const BALISE_PASSWORD = '<password/>';
+            const CLASS_FLOAT_RIGHT = 'float-right';
+            const CLASS_RIGHT_PANNEL_BACK_BUTTON = `${SELECTOR_CLASS}${RightPannel.back_button}`;
+            const CSS_BASE_PADDING = '15px';
+            const ID_MAIN_DIV = 'generated-parent-div-password-visio';
+            const ID_INPUT = 'generated-visio-input-password';
+            const INPUT_MAX_LENGTH = 40;
+
             if (await this.listener.getRole() === ListenerWebConfBar.roles.moderator) {
-                if (this.right_pannel.$pannel.hasClass('password') && this.right_pannel.is_open()) {
+                if (this.right_pannel.$pannel.hasClass(CLASS_PASSWORD) && this.right_pannel.is_open()) {
                     this.right_pannel.close();
                 }
                 else {
-                    const password = await this.listener.showPassword();
-                    this.right_pannel.set_class('password').$pannel.find('.back-button').css('display', '');
-                    let $html = _$('<div></div>').css('padding', '15px');
+                    //Gestion du pannel
+                    this.right_pannel.set_class(CLASS_PASSWORD).$pannel.find(CLASS_RIGHT_PANNEL_BACK_BUTTON).css(CSS_DISPLAY, EMPTY_STRING);
+                    //Génération du contenu
+                    let $html = _$(BALISE_DIV).css(CSS_PADDING, CSS_BASE_PADDING);
      
-                    let html_input = new mel_password_with_button('generated-parent-div-password-visio', 'generated-visio-input-password', {'maxlength':40});
+                    //Mot de passe et bouton
+                    let html_input = new mel_password_with_button(ID_MAIN_DIV, ID_INPUT, {maxlength:INPUT_MAX_LENGTH});
+                    
                     html_input.oninput.push(() => {
-                        let $input = html_input.find('input');
+                        let $input = html_input.find(TEXT_BALISE_INPUT);
 
-                        if ($input.hasClass('is-invalid')) {
-                            if ($input.val() !== '') $input.removeClass('is-invalid');
+                        if ($input.hasClass(CLASS_FORM_INVALID)) {
+                            if ($input.val() !== EMPTY_STRING) $input.removeClass(CLASS_FORM_INVALID);
                         }
                     });
-                    html_input = html_input.generate('', 'Mot de passe');
+                    html_input = html_input.generate(EMPTY_STRING, rcmail.gettext(KEY_TEXT_PASSWORD, PLUGIN));
                     $html.append(html_input);
 
-                    let button = new mel_button({}, 'Sauvegarder');
-                    button.onclick.push(async (event) => {
-                        let $input = html_input.find('input');
+                    //Bouton sauvegarder
+                    let button = new mel_button(EMPTY_OBJECT, rcmail.gettext(KEY_TEXT_SAVE));
+                    button.onclick.push(async () => {
+                        let $input = html_input.find(TEXT_BALISE_INPUT);
                         const val = $input.val();
 
                         if (!!val){
+                            const text = rcmail.gettext(KEY_TEXT_VISIO_LOCKED, PLUGIN).replace(BALISE_PASSWORD, val);
                             await this.listener.setPassword(val, true);
-                            this.listener.webconf.jitsii.executeCommand('sendChatMessage',
-                                `La visioconférence a été vérouiller par le mot de passe : ${val}`,
-                                '',
+                            this.listener.webconf.jitsii.executeCommand(ListenerWebConfBar.visio_commands.sendChatMessage,
+                                text,
+                                EMPTY_STRING,
                                 true
                             );
                             this.right_pannel.close();
-                            rcmail.display_message(`La visioconférence a été vérouiller par le mot de passe : ${val}`, 'confirmation');
+                            rcmail.display_message(text, MESSAGE_CONFIRMATION);
                         }
                         else {
-                            $input.addClass('is-invalid');
-                            rcmail.display_message('Vous devez mettre un mot de passe !', 'error');
+                            $input.addClass(CLASS_FORM_INVALID);
+                            rcmail.display_message(rcmail.gettext(KEY_TEXT_PASSWORD_ERROR, PLUGIN), MESSAGE_ERROR);
                         } 
                         
                     });
-                    button.attribs['class'] = button.attribs['class'].replace('btn-secondary', '');
-                    button.generate({class:'btn-success'}).appendTo($html);
+                    button.attribs[ATTR_CLASS] = button.attribs[ATTR_CLASS].replace(mel_button.html_base_class.boostrap.state, EMPTY_STRING);
+                    button.generate({class:mel_button.html_base_class_success}).appendTo($html);
 
-                    let removePassword = new mel_button({}, 'Supprimer le mot de passe');
+                    //Bouton supprimer
+                    let removePassword = new mel_button(EMPTY_OBJECT, rcmail.gettext(KEY_TEXT_REMOVE, PLUGIN));
                     removePassword.onclick.push(async() => {
-                        await this.listener.setPassword('', true);
-                            this.listener.webconf.jitsii.executeCommand('sendChatMessage',
-                            `La visioconférence a été dévérouiller !`,
-                            '',
+                        const text = rcmail.gettext(KEY_TEXT_VISIO_UNLOCKED, PLUGIN);
+                        await this.listener.setPassword(EMPTY_STRING, true);
+                            this.listener.webconf.jitsii.executeCommand(ListenerWebConfBar.visio_commands.sendChatMessage,
+                            text,
+                            EMPTY_STRING,
                             true
                         );
                         this.right_pannel.close();
-                        rcmail.display_message('La visioconférence a été dévérouiller', 'confirmation');
+                        rcmail.display_message(text, MESSAGE_CONFIRMATION);
                     });
-                    removePassword.attribs['class'] = button.attribs['class'].replace('btn-secondary', '');
-                    removePassword.generate({class:'btn-danger float-right'}).appendTo($html);
+                    removePassword.attribs[ATTR_CLASS] = button.attribs[ATTR_CLASS].replace(mel_button.html_base_class.boostrap.state, EMPTY_STRING);
+                    removePassword.generate({class:`${mel_button.html_base_class_danger} ${CLASS_FLOAT_RIGHT}`}).appendTo($html);
     
-                    return this.right_pannel.set_title(`Gestion du mot de passe`)
+                    //Mise en place du contenu
+                    return this.right_pannel.set_title(rcmail.gettext(KEY_TEXT_TITLE, PLUGIN))
                     .open()
                     .set_content($html);
                 }
@@ -4045,6 +4100,16 @@ ListenerWebConfBar.roles = MelEnum.createEnum('roles', {
 }, false);
 
 ListenerWebConfBar.erronedPassword = Symbol();
+
+Object.defineProperty(ListenerWebConfBar, 'visio_commands', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:new MelEnum({
+        sendChatMessage:'sendChatMessage'
+    }, false)
+});
+
 
 //Pouvoir utiliser les fonctions en dehord de la classe
 window.Webconf = window.Webconf || Webconf;

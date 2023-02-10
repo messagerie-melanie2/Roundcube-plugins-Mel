@@ -2510,7 +2510,7 @@ class RightPannel
      */
     enable_right_mode()
     {
-        if (!this.$pannel.hasClass(this.CONST_RIGHT_MODE) &&!this.cannot_be_enabled) return this.set_class(this.CONST_RIGHT_MODE);
+        if (!this.$pannel.hasClass(this.CONST_RIGHT_MODE)) this.$pannel.addClass(this.CONST_RIGHT_MODE);
         return this;
     }
 
@@ -2520,7 +2520,7 @@ class RightPannel
      */
     disable_right_mode()
     {
-        if (!this.cannot_be_disabled) return this.remove_class(this.CONST_RIGHT_MODE);
+        if (!this.cannot_be_disabled) this.$pannel.removeClass(this.CONST_RIGHT_MODE);
         return this;
     }
 
@@ -2554,6 +2554,12 @@ class RightPannel
             callback(this.$pannel);
         }
 
+        return this;
+    }
+
+    erase_style() {
+        this.$pannel.attr('style', '');
+        this.$pannel.find('#html-pannel').attr('style', '');
         return this;
     }
 
@@ -3147,7 +3153,7 @@ var MasterWebconfBar = (() => {
                 this.right_pannel.close();
             }
             else {
-                this.right_pannel.set_class('mp').$pannel.find('.back-button').css('display', '');
+                this.right_pannel.erase_style().set_class('mp').$pannel.find('.back-button').css('display', '');
                 let $html = _$('<div></div>');
                 const users = await this.listener.get_room_infos();
 
@@ -3210,23 +3216,69 @@ var MasterWebconfBar = (() => {
             return this;
         }
 
-        open_password() {
-            if (this.right_pannel.$pannel.hasClass('password') && this.right_pannel.is_open()) {
-                this.right_pannel.close();
-            }
-            else {
-                this.right_pannel.set_class('password').$pannel.find('.back-button').css('display', '');
-                let $html = _$('<div></div>');
- 
+        async open_password() {
+            if (await this.listener.getRole() === ListenerWebConfBar.roles.moderator) {
+                if (this.right_pannel.$pannel.hasClass('password') && this.right_pannel.is_open()) {
+                    this.right_pannel.close();
+                }
+                else {
+                    const password = await this.listener.showPassword();
+                    this.right_pannel.set_class('password').$pannel.find('.back-button').css('display', '');
+                    let $html = _$('<div></div>').css('padding', '15px');
+     
+                    let html_input = new mel_password_with_button('generated-parent-div-password-visio', 'generated-visio-input-password', {'maxlength':40});
+                    html_input.oninput.push(() => {
+                        let $input = html_input.find('input');
 
+                        if ($input.hasClass('is-invalid')) {
+                            if ($input.val() !== '') $input.removeClass('is-invalid');
+                        }
+                    });
+                    html_input = html_input.generate('', 'Mot de passe');
+                    $html.append(html_input);
 
-                return this.right_pannel.set_title('Gestion du mot de passe')
-                .open()
-                /*.set_content($html, (pannel) => {
-                    let $tmp = pannel.find('.mel-selectable');
-                    if ($tmp.length > 0) $tmp.first()[0].focus();
-                    else pannel.find('button').first()[0].focus();
-                })*/;
+                    let button = new mel_button({}, 'Sauvegarder');
+                    button.onclick.push(async (event) => {
+                        let $input = html_input.find('input');
+                        const val = $input.val();
+
+                        if (!!val){
+                            await this.listener.setPassword(val, true);
+                            this.listener.webconf.jitsii.executeCommand('sendChatMessage',
+                                `La visioconférence a été vérouiller par le mot de passe : ${val}`,
+                                '',
+                                true
+                            );
+                            this.right_pannel.close();
+                            rcmail.display_message(`La visioconférence a été vérouiller par le mot de passe : ${val}`, 'confirmation');
+                        }
+                        else {
+                            $input.addClass('is-invalid');
+                            rcmail.display_message('Vous devez mettre un mot de passe !', 'error');
+                        } 
+                        
+                    });
+                    button.attribs['class'] = button.attribs['class'].replace('btn-secondary', '');
+                    button.generate({class:'btn-success'}).appendTo($html);
+
+                    let removePassword = new mel_button({}, 'Supprimer le mot de passe');
+                    removePassword.onclick.push(async() => {
+                        await this.listener.setPassword('', true);
+                            this.listener.webconf.jitsii.executeCommand('sendChatMessage',
+                            `La visioconférence a été dévérouiller !`,
+                            '',
+                            true
+                        );
+                        this.right_pannel.close();
+                        rcmail.display_message('La visioconférence a été dévérouiller', 'confirmation');
+                    });
+                    removePassword.attribs['class'] = button.attribs['class'].replace('btn-secondary', '');
+                    removePassword.generate({class:'btn-danger float-right'}).appendTo($html);
+    
+                    return this.right_pannel.set_title(`Gestion du mot de passe`)
+                    .open()
+                    .set_content($html);
+                }
             }
         }
 
@@ -3499,11 +3551,6 @@ class ListenerWebConfBar {
          */
         this.filmstrip_visible = true;
         /**
-         * Role de l'utilisateur
-         * @type {Symbol}
-         */
-        let role = ListenerWebConfBar.roles.other;
-        /**
          * Mot de passe de la visio
          * @type {string}
          */
@@ -3513,10 +3560,10 @@ class ListenerWebConfBar {
          * @param {string} pass Nouveau mot de passe
          * @returns
          */
-        this.setPassword = function (pass, executeCommand = true) {
-            if (role === ListenerWebConfBar.roles.moderator)
+        this.setPassword = async function (pass, executeCommand = true) {
+            password = pass;
+            if ((await this.getRole()) === ListenerWebConfBar.roles.moderator)
             {
-                password = pass;
                 if (executeCommand) this.webconf.jitsii.executeCommand('password', password);
             }
             else rcmail.display_message('Vous devez être modérateur pour changer de mot de passe !', 'error');
@@ -3526,14 +3573,9 @@ class ListenerWebConfBar {
 
         /**
          * Récupère le mot de passe de la visio
-         * @returns {string} Mot de passe
+         * @returns {Promise<string> | Promise<void> | Promise<Symbol>} Mot de passe
          */
-        this.showPassword = () => role === ListenerWebConfBar.roles.moderator ? password : null;
-
-        this.onRoleChanged = (event) => {
-            if (event.role === "moderator") role = ListenerWebConfBar.roles.moderator;
-            else role = ListenerWebConfBar.roles.other;
-        }
+        this.showPassword = async () => (await this.getRole()) === ListenerWebConfBar.roles.moderator ? password : null;
     }
 
     /**
@@ -3550,6 +3592,28 @@ class ListenerWebConfBar {
         });
 
         this.listen();
+    }
+
+    async getRole() {
+        let role = ListenerWebConfBar.roles.other;
+        await this.webconf.jitsii.getRoomsInfo().then((rooms) => {
+            for (let index = 0; index < rooms.rooms.length; ++index) {
+                const element = rooms.rooms[index];
+
+                for (let j = 0; j < element.participants.length; ++j) {
+                    const user = element.participants[j];
+
+                    if (user.id === this.webconf.jitsii._myUserID)
+                    {
+                        if (user.role === "moderator") role = ListenerWebConfBar.roles.moderator;
+                        break;
+                    }
+                }
+                
+            }
+        });
+
+        return role;
     }
 
     /**
@@ -3665,48 +3729,25 @@ class ListenerWebConfBar {
                 console.log("[VISIO]La visio est prête à être fermée !");
             });
 
-            this.webconf.jitsii.addEventListener('participantRoleChanged', (event) => {
-                this.onRoleChanged(event);
-            });
-
             let setPassword = true;
             let erroredPassword = false;
             this.webconf.jitsii.addEventListener('passwordRequired', () =>
             {
-                if (this.webconf.webconf_page_creator.havePassword() && !erroredPassword) {
-                    setPassword = false;
+                setPassword = false;
+                if (this.webconf.webconf_page_creator.havePassword()) {
                     const password = this.webconf.webconf_page_creator.$password_datas.val();
                     this.webconf.jitsii.executeCommand('password', password);
                 }
-                else if (erroredPassword) {
-                    setPassword = false;
-                    
+                else {
+                    erroredPassword = true;
                 }
             });
 
             this.webconf.jitsii.addEventListener('videoConferenceJoined', (event) => {
-                this.webconf.jitsii.getRoomsInfo().then((rooms) => {
-                    for (let index = 0; index < rooms.rooms.length; ++index) {
-                        const element = rooms.rooms[index];
-                        if (element.isMainRoom) {;
-
-                            for (let j = 0; j < element.participants.length; ++j) {
-                                const user = element.participants[j];
-        
-                                if (user.id === this.webconf.jitsii._myUserID)
-                                {
-                                    this.onRoleChanged(user);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-        
-                    if (this.webconf.webconf_page_creator.havePassword()){
-                        const password = this.webconf.webconf_page_creator.$password_datas.val();
-                        this.setPassword(erroredPassword ? ListenerWebConfBar.erronedPassword : password, setPassword);
-                    }
-                });
+                if (this.webconf.webconf_page_creator.havePassword() || erroredPassword){
+                    const password = this.webconf.webconf_page_creator.$password_datas.val();
+                    this.setPassword(erroredPassword ? ListenerWebConfBar.erronedPassword : password, setPassword);
+                }
             });
         }
     }

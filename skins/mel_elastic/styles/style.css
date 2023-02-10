@@ -2541,6 +2541,8 @@ html.layout-small .toolbar-popup {
   background-color: #F0F0F0;
   display: none;
   padding: 15px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
   transition: all 0.1s ease-in;
 }
 #visio-right-pannel-util.right-mode {
@@ -2549,6 +2551,16 @@ html.layout-small .toolbar-popup {
 }
 #visio-right-pannel-util.visible-mode {
   display: unset;
+}
+#visio-right-pannel-util.password {
+  border-radius: 5px;
+  top: calc(50% + 60px);
+  left: calc(50% + 60px);
+  right: unset;
+  transform: translateY(-50%) translateX(-50%);
+  width: 50%;
+  height: fit-content;
+  background-color: white;
 }
 #visio-right-pannel-util .title {
   margin-bottom: 15px;

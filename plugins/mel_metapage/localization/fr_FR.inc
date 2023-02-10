@@ -332,3 +332,10 @@ $labels['param-reorder-notes'] = 'Réordonner vos notes ?';
 
 $labels['toggle_mp'] = 'Envoyer un message privé';
 $labels['webconf_toggle_mp_help'] = 'Envoyer un message privé à quelqu\'un';
+
+$labels['visio_password_manager'] = 'Gestion du mot de passe';
+$labels['password'] = 'Mot de passe';
+$labels['password_visio_error'] = 'Vous devez mettre un mot de passe !';
+$labels['delete_password'] = 'Supprimer le mot de passe';
+$labels['visio_locked'] = 'La visioconférence a été vérouiller par le mot de passe : <password/>';
+$labels['visio_unlocked'] = 'La visioconférence a été dévérouiller !';

@@ -3911,6 +3911,8 @@ a.rcmContactAddress {
 	background-color: #F0F0F0;
     display: none;
     padding: 15px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
     .mel-all-ease-in-animation();
 
     &.right-mode {
@@ -3922,6 +3924,17 @@ a.rcmContactAddress {
         display: unset;
     }
 
+    &.password {
+        border-radius: 5px;
+        top: calc(50% + 60px);
+        left: calc(50% + 60px);
+        right: unset;
+        transform: translateY(-50%) translateX(-50%);
+        width: 50%;
+        height: fit-content;
+        background-color: white;
+    }
+
     .title {
         margin-bottom: 15px;
     }
@@ -3930,6 +3943,7 @@ a.rcmContactAddress {
         padding: 15px;
         margin-bottom: 5px;
     }
+
 
     html.dark-mode &{
         background-color: #141414;
@@ -4040,4 +4054,3 @@ a.rcmContactAddress {
         }
     }
 }
-

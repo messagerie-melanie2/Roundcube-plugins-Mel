@@ -61,6 +61,16 @@ legend.span-mel.t1 {
     transition: all 0.1s ease-in;
 }
 
+.mel-radio-1.radio-small span {
+	width: 25px;
+	height: 15px;
+	width: 25px;
+	height: 15px;
+	margin-right: 10px;
+	/* margin-left: 10px; */
+	margin-top: 9px;
+}
+
 .mel-radio-1 input[type="checkbox"]:checked + label span
 {
     background-color:#484D7A
@@ -85,6 +95,11 @@ legend.span-mel.t1 {
 	top: -1px;
 	right: -1px;
     left:unset;
+}
+
+.mel-radio-1.radio-small input[type="checkbox"] + label span:before {
+	height: 15px;
+	width: 15px;
 }
 
 .mel-radio-1 text {
@@ -613,14 +628,16 @@ input.input-mel.error {
     transform-origin: bottom left;
 }
 
-.form-floating > .form-control:focus~label{
+.form-floating > .form-control:focus~label,
+.form-floating.floating-focus > label{
     transform: translate(1px,-85%) scale(0.80);
     opacity: .8;
 	font-style: italic;
     /* color: #005ebf; */
 }
 
-.form-floating > .form-control:valid~label{
+.form-floating > .form-control:valid~label, 
+.form-floating.floating-not-empty > label{
     transform-origin: bottom left;
     transform: translate(1px,-85%) scale(0.80);
     opacity: .8;

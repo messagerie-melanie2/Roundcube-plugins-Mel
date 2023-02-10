@@ -35,10 +35,13 @@ const enum_created_state = 'ewstate';
 const enum_screen_mode = 'ewsmode';
 const enum_locks = 'enum_webconf_locks'
 //Constantes de texte
+const PLUGIN = 'mel_metapage';
+const KEY_TEXT_VISIO_LOCKED = 'visio_locked';
 const TEXT_BALISE_DIV = 'div';
 const BALISE_DIV_START = `<${TEXT_BALISE_DIV}>`;
 const BALISE_DIV_END = `</${TEXT_BALISE_DIV}>`;
 const BALISE_DIV = `${BALISE_DIV_START}${BALISE_DIV_END}`;
+const BALISE_PASSWORD = '<password/>';
 const TEXT_BALISE_INPUT = 'input';
 const CSS_DISPLAY = 'display';
 const CSS_PADDING = 'padding';
@@ -1685,7 +1688,7 @@ class Webconf{
 
     /**
      * Récupère le token JWT
-     * @returns {string} token JWT
+     * @returns {Promise<string>} token JWT
      */
     async jwt()
     {
@@ -3248,15 +3251,12 @@ var MasterWebconfBar = (() => {
          * @returns {Promise<RightPannel>} 
          */
         async open_password() {
-            const PLUGIN = 'mel_metapage';
             const KEY_TEXT_PASSWORD = CLASS_PASSWORD;
             const KEY_TEXT_TITLE = 'visio_password_manager';
             const KEY_TEXT_SAVE = 'save';
-            const KEY_TEXT_VISIO_LOCKED = 'visio_locked';
             const KEY_TEXT_VISIO_UNLOCKED = 'visio_unlocked';
             const KEY_TEXT_REMOVE = 'delete_password';
             const KEY_TEXT_PASSWORD_ERROR = 'password_visio_error';
-            const BALISE_PASSWORD = '<password/>';
             const CLASS_FLOAT_RIGHT = 'float-right';
             const CLASS_RIGHT_PANNEL_BACK_BUTTON = `${SELECTOR_CLASS}${RightPannel.back_button}`;
             const CSS_BASE_PADDING = '15px';
@@ -3619,9 +3619,13 @@ class ListenerWebConfBar {
             password = pass;
             if ((await this.getRole()) === ListenerWebConfBar.roles.moderator)
             {
-                if (executeCommand) this.webconf.jitsii.executeCommand('password', password);
+                if (executeCommand) {
+                    this.webconf.jitsii.executeCommand('password', password);
+                    const text = rcmail.gettext(KEY_TEXT_VISIO_LOCKED, PLUGIN).replace(BALISE_PASSWORD, password);
+                    rcmail.display_message(text, MESSAGE_CONFIRMATION);
+                }
             }
-            else rcmail.display_message('Vous devez être modérateur pour changer de mot de passe !', 'error');
+            else rcmail.display_message('Vous devez être modérateur pour changer de mot de passe !', MESSAGE_ERROR);
 
             return this;
         }
@@ -3798,9 +3802,12 @@ class ListenerWebConfBar {
                 }
             });
 
-            this.webconf.jitsii.addEventListener('videoConferenceJoined', (event) => {
+            this.webconf.jitsii.addEventListener('videoConferenceJoined', () => {
+                console.log('videoConferenceJoined');
+                console.log('videoConferenceJoined', this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
                 if (this.webconf.webconf_page_creator.havePassword() || erroredPassword){
                     const password = this.webconf.webconf_page_creator.$password_datas.val();
+                    console.log('videoConferenceJoined 2 ', password, this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
                     this.setPassword(erroredPassword ? ListenerWebConfBar.erronedPassword : password, setPassword);
                 }
             });

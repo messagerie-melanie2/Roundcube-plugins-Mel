@@ -466,6 +466,7 @@ class mel_html{
 		this.tag = tag.toLowerCase();
 		this.attribs = attribs;
 		this.content = content;
+		this.onclick = new MelEvent();
 	}
 
 	generate(additionnal_attribs = {})
@@ -506,7 +507,13 @@ class mel_html{
 			}
 		}
 
-		return this._generateContent($html, this.content);
+		let generated = this._generateContent($html, this.content);
+
+		if (this.onclick.haveEvents()) generated.on('click', (event) => {
+			this.onclick.call(event);
+		});
+
+		return generated;
 	}
 
 	create($parent, additionnal_attribs = [])
@@ -541,11 +548,47 @@ class amel_form_item extends mel_html {
 		}
 		
 		if (!this.attribs['class'].includes('input-mel')) this.attribs['class'] += ' input-mel';
+
+		this.onfocusout = new MelEvent();
+		this.onfocus = new MelEvent();
+		this.onchange = new MelEvent();
+		this.oninput = new MelEvent();
 	}
 
 	toFloatingLabel(label) {
 		let $label = new mel_html('div', {class:'form-floating'}, this.generate({required:'required'})).generate();
 		return $label.append(new mel_html('label', {for:this.attribs['id']}, label).generate());
+	}
+
+	generate(value, additionnal_attribs = {})
+	{
+		let generated = super.generate(additionnal_attribs).val(value);
+
+		if (this.onfocus.haveEvents()) {
+			generated.on('focus', (event) => {
+				this.onfocus.call(event);
+			});
+		}
+
+		if (this.onfocusout.haveEvents()) {
+			generated.on('blur', (event) => {
+				this.onfocusout.call(event);
+			});
+		}
+
+		if (this.oninput.haveEvents()) {
+			generated.on('input', (event) => {
+				this.oninput.call(event);
+			});
+		}
+		
+		if (this.onchange.haveEvents()) {
+			generated.on('change', (event) => {
+				this.onchange.call(event);
+			});
+		}
+
+		return generated;
 	}
 }
 
@@ -556,17 +599,11 @@ class mel_select extends amel_form_item{
 	}
 
 	_generateContent($html, content) {
-		//$html = super._generateContent(content);
 		for (const iterator of content) {
 			iterator.create($html);
 		}
 
 		return $html;
-	}
-
-	generate(value, additionnal_attribs = {})
-	{
-		return super.generate(additionnal_attribs).val(value);
 	}
 }
 
@@ -588,13 +625,18 @@ class mel_input extends amel_form_item
 		element = $(element);
 		let $input = $(`#${element.data(INPUT_DATA)}`);
 	
-		if ($input.data(IS_SHOWED_DATA) === DATA_VALID) {
-			$input.attr(ATTR, ATTR_PASSWORD);
-			$input.data(IS_SHOWED_DATA, DATA_INVALID);
-		}
-		else {
-			$input.attr(ATTR, ATTR_TEXT);
-			$input.data(IS_SHOWED_DATA, DATA_VALID);
+		if ($input.length === 0) $input = top.$(`#${element.data(INPUT_DATA)}`);
+
+		if ($input.length > 0)
+		{
+			if ($input.data(IS_SHOWED_DATA) === DATA_VALID) {
+				$input.attr(ATTR, ATTR_PASSWORD);
+				$input.data(IS_SHOWED_DATA, DATA_INVALID);
+			}
+			else {
+				$input.attr(ATTR, ATTR_TEXT);
+				$input.data(IS_SHOWED_DATA, DATA_VALID);
+			}
 		}
 
 		mel_input.togglePasswordShowed.updateButton(element);
@@ -606,11 +648,15 @@ class mel_input extends amel_form_item
 		element = $(element);
 		let $div = $(`#${element.data(DIV)}`);
 		
-		if (isOut) {
-			$div.removeClass(CLASS);
-		}
-		else {
-			$div.addClass(CLASS);
+		if ($div.length === 0) $div = top.$(`#${element.data(DIV)}`);
+
+		if ($div.length > 0) {
+			if (isOut) {
+				$div.removeClass(CLASS);
+			}
+			else {
+				$div.addClass(CLASS);
+			}
 		}
 	}
 
@@ -620,8 +666,90 @@ class mel_input extends amel_form_item
 		element = $(element);
 		let $div = $(`#${element.data(DIV)}`);
 
-		if (element.val() !== '') $div.addClass(CLASS);
-		else $div.removeClass(CLASS);
+		if ($div.length === 0) $div = top.$(`#${element.data(DIV)}`);
+
+		if ($div.length > 0) {
+			if (element.val() !== '') $div.addClass(CLASS);
+			else $div.removeClass(CLASS);
+		}
+	}
+}
+
+class mel_password extends mel_input {
+	constructor(attribs = {})
+	{
+		super(attribs);
+		this.attribs['type'] = 'password';
+	}
+}
+
+class mel_password_with_button extends mel_password{
+	constructor(id, input_id, attribs = {}, attribsOnParent = {}, attribsOnButton = {}) {
+		super(attribs);
+		this.id = id;
+		this._id = input_id;
+		this.main = new mel_html('div', attribsOnParent);
+		this.button = new mel_button(attribsOnButton);
+		this.button_span = new mel_html('span', {class:'icon-mel-eye'});
+
+		this.onfocus.push(function (event) {
+			mel_input.floatingSetFocusClass(event.currentTarget, false);
+		});
+
+		this.onfocusout.push(function (event) {
+			mel_input.floatingSetFocusClass(event.currentTarget, true);
+		});
+
+		this.oninput.push(function (event) {
+			mel_input.floatingSetInput(event.currentTarget);
+		});
+		
+		this.button.onclick.push(function (event) {
+			mel_input.togglePasswordShowed(event.currentTarget);
+		});
+	}
+
+	generate(value, label = 'Mot de passe', additionnal_attribs = {})
+	{
+		const DATA_FOR = 'data-for';
+		const CLASS_INPUT_GROUP = 'input-group';
+		const CLASS_RETURN = 'form-floating pixel-correction';
+		const ATTR_ID = 'id';
+		const ATTR_REQUIRED = 'required';
+		const BALISE_LABEL = 'label';
+		const BALISE_DIV = 'div';
+
+		const button_config = {
+			'data-for':this._id, 
+			'data-icon-show':mel_password_with_button.password_show_button, 
+			'data-icon-hide':mel_password_with_button.password_hide_button,
+		};
+		const main_config = {class:CLASS_INPUT_GROUP};
+		const return_config = {id:this.id, class:CLASS_RETURN};
+		const label_config = {for:button_config[DATA_FOR]};
+
+		additionnal_attribs[DATA_FOR] = return_config.id;
+		additionnal_attribs[ATTR_ID] = button_config[DATA_FOR];
+		additionnal_attribs[ATTR_REQUIRED] = ATTR_REQUIRED;
+		additionnal_attribs['class'] = 'input-mel';
+
+		let $input = super.generate(value, additionnal_attribs);
+		let $button = new mel_html(BALISE_DIV, {class:'input-group-append'}).generate().append(this.button.generate(button_config).append(this.button_span.generate()));
+		let $main = this.main.generate(main_config).append($input).append($button);
+		let $label = new mel_html(BALISE_LABEL, label_config, label);
+
+		return new mel_html(BALISE_DIV).generate(return_config).append($main).append($label.generate());
+	}
+}
+
+mel_password_with_button.password_show_button = 'icon-mel-eye';
+mel_password_with_button.password_hide_button = 'icon-mel-eye-crossed';
+
+class mel_button extends mel_html {
+	constructor(attribs = {}, content = '')
+	{
+		super('button', attribs, content);
+		this.attribs['class'] = 'mel-button btn btn-secondary no-button-margin'
 	}
 }
 

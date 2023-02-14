@@ -392,6 +392,7 @@ class mel_metapage extends rcube_plugin
             {
                 //$this->rc->plugins->get_plugin('mel_helper')->include_js_debug();
                 $this->rc->output->set_env("is_stockage_active", mel_helper::stockage_active());
+                $this->rc->output->set_env("have_0_quota", self::have_0_quota());
                 $this->rc->output->set_env("why_is_not_active", [
                     "consts" => [
                         "ST_NO_DOUBLE_AUTH" => mel_helper::ST_NO_DOUBLE_AUTH,
@@ -931,9 +932,21 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->send("mel_metapage.ariane");
     }
 
+    public static function stockage_is_active() 
+    {
+        return mel_helper::load_helper(rcmail::get_instance())->why_stockage_not_active() === 'active';
+    }
+
+    public static function have_0_quota($user = null){
+        $user = $user ?? driver_mel::gi()->getUser();
+        $user->load(['mdrive_quota']);
+        return isset($user->mdrive_quota) && $user->mdrive_quota == 0;
+    }
+
     function create_workspace_html()
     {
-        echo $this->rc->output->parse("mel_metapage.create_workspace", false, false);
+        $parsed = $this->rc->output->parse("mel_metapage.create_workspace", false, false);
+        echo $parsed;
         exit;
     }
 

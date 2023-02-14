@@ -1167,6 +1167,15 @@ const mel_metapage = {
                 }
 
                 return mel_metapage.Functions.call(init + go + then);
+            },
+            have_0_quota() {
+                return rcmail.env.have_0_quota ?? false;
+            },
+            is_stockage_active() {
+                return rcmail.env.why_is_not_active.value === rcmail.env.why_is_not_active.consts.ST_ACTIVE;
+            },
+            canDriveActions() {
+                return !this.have_0_quota() && this.is_stockage_active();
             }
         },
 

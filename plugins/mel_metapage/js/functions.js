@@ -96,9 +96,10 @@ function m_mp_Create() {
 
     //Si la popup n'existe pas, on la créer.
     if (window.create_popUp === undefined) {
+        const canDrive = mel_metapage.Functions.stockage.canDriveActions();
         let haveNextcloud = {
-            style: (window.mel_metapage_tmp === null ? "display:none" : ""),
-            col: (window.mel_metapage_tmp === null) ? "4" : "3"
+            style: (!canDrive ? "display:none" : ""),
+            col: (!canDrive ? "4" : "3")
         };
         let button = function(txt, font, click = "") {
             let disabled = click === "" ? "disabled" : "";
@@ -229,6 +230,16 @@ function m_mp_createworskpace_steps() {
             const mel_metapage_templates_services = rcmail.env.mel_metapage_templates_services;
             for (let index = 0; index < mel_metapage_templates_services.length; ++index) {
                 const element = mel_metapage_templates_services[index];
+
+                switch (element.type) {
+                    case 'doc':
+                        if (!mel_metapage.Functions.stockage.canDriveActions()) continue;
+                        break;
+                
+                    default:
+                        break;
+                }
+
                 html += '<div class="col-md-4" style="position:relative;">';
                 html += '<button type=button aria-pressed=false data-type="' + element.type + '" class="doc-' + element.type + ' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `' + JSON.stringify(element).replace(/"/g, "¤¤¤") + '`)"><span style="display:block;margin-right:0px" class="' + m_mp_CreateDocumentIconContract(element.icon) + '"></span>' + rcmail.gettext(element.name) + '</button>';
                 
@@ -583,7 +594,6 @@ function m_mp_createworkspace() {
         create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
         mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_create_workspace"), {},
             (datas) => {
-
                 if ($("#globallist").length > 0)
                     return;
 

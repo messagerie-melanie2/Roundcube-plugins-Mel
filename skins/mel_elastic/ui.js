@@ -567,8 +567,7 @@ $(document).ready(() => {
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
 
                 //On supprime le stockage si on y a pas accès.
-                if (!rcmail.env.is_stockage_active)
-                    $("#taskmenu .stockage").parent().remove();
+                if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();
             }
 
             return this;

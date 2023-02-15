@@ -1162,6 +1162,9 @@ $(document).ready(() => {
                     }
                 }
 
+                //Suppression du "commenter"
+                $('#mel-comment-mail').css('display', 'none');
+
                 //Gestion des options
                 if (rcmail.env.compose_option !== undefined && rcmail.env.compose_option !== null && rcmail.env.compose_option !== "")
                 {

@@ -1792,7 +1792,7 @@ function sendMessageToAriane (data) {
             if (event.data === datas_accepted) {
                 $('#settings-suggest-frame')[0].contentWindow.postMessage({
                     type:suggestionUrl,
-                    value:mel_metapage.Functions.url('settings', 'plugin.mel_suggestion_box', {_uid:suggestionId})
+                    value:mel_metapage.Functions.url('settings', 'plugin.mel_suggestion_box', {_uid:suggestionId}).replace('&_is_from=iframe', '')
                 }, '*');
             }
         }

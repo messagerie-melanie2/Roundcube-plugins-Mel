@@ -756,7 +756,8 @@
         {
             link = MelMultiLink.fromLink(link);
             link.links = {};
-            const datas = JSON.parse(id.data("links").replace(/¤/g, '"'));
+            const raw = id.data("links");
+            const datas = typeof raw === 'string' ? JSON.parse(raw.replace(/¤/g, '"')) : {};
 
             for (const key in datas) {
                 if (Object.hasOwnProperty.call(datas, key)) {

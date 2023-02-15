@@ -91,13 +91,13 @@
 
 <div class="step" id="workspace-step2" style="display:none;">
     <!--Etape 2-->
-    <label for="workspace-user-list" class="span-mel t1 first"><roundcube:label name='mel_metapage.select_attendees2' /></label>
+    <label for="_workspace-user-list" class="span-mel t1 first"><roundcube:label name='mel_metapage.select_attendees2' /></label>
     <div class="input-group">
         <textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>
         <ul id="wspf" class="form-control input-mel recipient-input ac-input rounded-left">
             <li class="input">
                 <!--Participants à ajouter-->
-                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this, m_mp_add_users, false)" oninput="m_mp_autocoplete(this, m_mp_add_users, false)" type="text" autocomplete="on" 
+                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="_workspace-user-list" onchange="m_mp_autocoplete(this, m_mp_add_users, false)" oninput="m_mp_autocoplete(this, m_mp_add_users, false)" type="text" autocomplete="on" 
                         aria-autocomplete="list" aria-expanded="false" role="combobox">
             </li>
         </ul>

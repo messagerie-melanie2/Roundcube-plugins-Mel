@@ -603,7 +603,7 @@ function m_mp_createworkspace() {
                     $("#worspace-avatar-a").html("").css("display", "").appendTo($("#tmpavatar"));
 
                 m_mp_switch_step("workspace-step1");
-                rcmail.init_address_input_events($("#workspace-user-list"));
+                rcmail.init_address_input_events($("#_workspace-user-list"));
                 $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
 
                 create_popUp.contents.find('#workspace-title-param').click((e) => {
@@ -794,7 +794,7 @@ async function m_mp_check_w(step, next) {
             $("#wspf .workspace-recipient").each((i, e) => {
                 users.push($(e).find(".email").html());
             });
-            let input = $("#workspace-user-list");
+            let input = $("#_workspace-user-list");
             if (input.val().length > 0)
                 users.push(input.val());
             if (users.length > 0) {
@@ -1191,7 +1191,7 @@ function m_mp_add_users() {
     users.push($(e).find(".email").html());
   });
 
-  let input = $("#workspace-user-list");
+  let input = $("#_workspace-user-list");
 
   if (input.val().length > 0)
     users.push(input.val().includes('<') ? input.val().split('<')[1].split('>')[0] : input.val());
@@ -1245,7 +1245,7 @@ function m_mp_remove_user(e) {
 
 function m_mp_remove_li(event) {
     $(event).parent().remove();
-    $("#workspace-user-list").focus();
+    $("#_workspace-user-list").focus();
 }
 
 // function m_mp_open_contact(e, idInput, actions = null)
@@ -1303,7 +1303,7 @@ function m_mp_openTo(e, idInput, actions = null) {
         return;
     }
 
-    if (rcmail.env.task !== "mail" && rcmail.env.action !== "compose") {
+    if (rcmail.env.action !== "compose") {
         if (!$(e).hasClass("initialized")) {
             $(e).addClass("showcontacts")[0].id = `showcontacts_${idInput}`;
             setTimeout(() => {

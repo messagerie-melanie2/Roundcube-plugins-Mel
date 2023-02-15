@@ -339,3 +339,7 @@ $labels['password_visio_error'] = 'Vous devez mettre un mot de passe !';
 $labels['delete_password'] = 'Supprimer le mot de passe';
 $labels['visio_locked'] = 'La visioconférence a été vérouiller par le mot de passe : <password/>';
 $labels['visio_unlocked'] = 'La visioconférence a été dévérouiller !';
+
+$labels['custom_calendar_notification_option'] = 'Notif.';
+$labels['custom_calendar_notification_ok_desc'] = "L'utilisateur sera notifié par mail.";
+$labels['custom_calendar_notification_nok_desc'] = "L'utilisateur ne sera pas notifié par mail.";

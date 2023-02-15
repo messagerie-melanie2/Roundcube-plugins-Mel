@@ -182,10 +182,6 @@ $(document).ready(() => {
         constructor($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent = null)
         {
             super($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent);
-            // this.$phoneEnabled = $enablePhone;
-            // this.$phoneNumber = $phoneNumber;
-            // this.$phonePin = $phonePin;
-            // this.parentLocation = parent;
         }
 
         /**
@@ -786,6 +782,371 @@ $(document).ready(() => {
         }
     }
 
+    const EMPTY_STRING = '';
+    const EMPTY_OBJECT = {};
+    const ARRAY_JOIN = ',';
+    const CONST_DATE_FORMAT = 'DD/MM/YYYY HH:mm';
+    const CONST_DATE_FORMAT_DATE_ONLY = 'DD/MM/YYYY';
+    const CONST_DATE_START_OF_DAY = 'day';
+    const CONST_REC_COUNT = 'COUNT';
+    const CONST_REC_INTERVAL = 'INTERVAL';
+    const CONST_REC_UNTIL = 'UNTIL';
+    const CONST_REC_BYDAY = 'BYDAY';
+    const CONST_REC_BYMONTH = 'BYMONTH';
+    const CONST_REC_BYMONTHDAY = 'BYMONTHDAY';
+    const CONST_REC_WEEKLY = 'WEEKLY';
+    const CONST_REC_MONTHLY = 'MONTHLY';
+    const CONST_REC_YEARLY = 'YEARLY';
+    /**
+     * Gère l'affichage de la partie "Notification" de la création d'un évent
+     */
+    class EventUserNotified {
+        /**
+         * Constructeur de la classe
+         * @param {*} event Evènement sélectionné 
+         */
+        constructor(event)
+        {
+            this.currentEvent = event;
+            this.users = {};
+            this.startDatas = {
+                startdate:!!event.location ? moment(event.start).format(CONST_DATE_FORMAT) : null,
+                enddate:!!event.location ? moment(event.end).format(CONST_DATE_FORMAT) : null, 
+                local:event.location ?? null,
+                req:!!event.location ? (JSON.parse(JSON.stringify(event.recurrence ?? EMPTY_STRING)) || EMPTY_OBJECT) : null
+            };
+            this.currentDatas = {
+                startdate:$('#mel-metapage-added-input-mel-start-datetime'),
+                enddate:$('#mel-metapage-added-input-mel-end-datetime'),
+                local:$('#edit-location'),
+                req:{
+                    val: () => {
+                        return this._getReccurence();
+                    }
+                }
+            }
+
+            //Mise en forme de la reccurence si il y en a une
+            if (!!this.startDatas.req) {
+                if (!!this.startDatas.req.UNTIL) this.startDatas.req.UNTIL = moment(this.startDatas.req.UNTIL).startOf(CONST_DATE_START_OF_DAY).format(CONST_DATE_FORMAT_DATE_ONLY);
+                delete this.startDatas.req.EXDATE;
+            }
+        }
+
+        /**
+         * Réccupère les données de réccurence de l'évènement en cours
+         * @returns {{} | {FREQ:string, COUNT:string|undefined, INTERVAL:string|undefined, UNTIL:string|undefined, BYDAY:string|undefined, BYMONTHDAY:string|undefined, BYMONTH:string|undefined}}
+         */
+        _getReccurence() {
+            const event = $('#eventedit form').serializeJSON();
+            if (!!event.frequency) {
+                let config = {
+                    FREQ:event.frequency,
+                };
+
+                //Données par défaut
+                if (!!event.times) config[CONST_REC_COUNT] = event.times;
+                if (!!event.interval) config[CONST_REC_INTERVAL] = event.interval;
+                if (!!event.untildate) {
+                    config[CONST_REC_UNTIL] = moment(event.untildate, CONST_DATE_FORMAT_DATE_ONLY).startOf(CONST_DATE_START_OF_DAY).format(CONST_DATE_FORMAT_DATE_ONLY);
+                    
+                    //Il n'y a pas de count si il y until
+                    if (!!config[CONST_REC_COUNT]) delete config[CONST_REC_COUNT];
+                } //Si pour toujour est activé, on supprime le count
+                else if (event.repeat === EMPTY_STRING && !!config[CONST_REC_COUNT]) {
+                    delete config[CONST_REC_COUNT];
+                }
+
+                //Actions à faire en fonction de la fréquence
+                switch (config.FREQ) {
+                    case CONST_REC_WEEKLY:
+                        config[CONST_REC_BYDAY] = this._rec_each('.edit-recurrence-weekly-byday');
+                        break;
+
+                    case CONST_REC_MONTHLY:
+                        if (event.repeatmode === CONST_REC_BYDAY){
+                            config[CONST_REC_BYDAY] = `${$('#edit-recurrence-monthly-prefix').val()}${$('#edit-recurrence-monthly-byday').val()}`;
+                        }
+                        else {
+                            config[CONST_REC_BYMONTHDAY] = this._rec_each('.edit-recurrence-monthly-bymonthday');
+                        }
+                        break;
+
+                    case CONST_REC_YEARLY:
+                        config[CONST_REC_BYMONTH] = this._rec_each('.edit-recurrence-yearly-bymonth');
+
+                        const bd = `${$('#edit-recurrence-yearly-prefix').val()}${$('#edit-recurrence-yearly-byday').val()}`;
+                        if (bd !== EMPTY_STRING) {
+                            config[CONST_REC_BYDAY] = bd;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                return config;
+            }
+            else {
+                return {};
+            }
+        }
+
+        /**
+         * Récupère les données des fréquences "Mensuel, annuel et hebdomadaire".
+         * @param {string} selector Selecteur qui contient les données
+         * @returns {string}
+         */
+        _rec_each(selector) {
+            let array = [];
+            $(selector).each((i, e) => {
+                if (e.checked) array.push($(e).val())
+            });
+
+            return array.join(ARRAY_JOIN);
+        }
+
+        /**
+         * Vérifie si 2 éléments sont identiques, en prenant en compte les tableaux
+         * @param {string | Array} a 
+         * @param {string | Array} b 
+         * @returns {boolean}
+         */
+        _checkElements(a, b) {
+            if (Array.isArray(a) && Array.isArray(b)) {
+                if (a.length !== b.length) return false;
+                else return Enumerable.from(a).where((x, i) => this._checkElements(x, b[i])).all();
+            }
+
+            return a === b;
+        }
+
+        /**
+         * Vérifie si 2 reccurences sont égales
+         * @param {{} | {FREQ:string, COUNT:string|undefined, INTERVAL:string|undefined, UNTIL:string|undefined, BYDAY:string|undefined, BYMONTHDAY:string|undefined, BYMONTH:string|undefined}} a 
+         * @param {{} | {FREQ:string, COUNT:string|undefined, INTERVAL:string|undefined, UNTIL:string|undefined, BYDAY:string|undefined, BYMONTHDAY:string|undefined, BYMONTH:string|undefined}} b 
+         * @returns {boolean}
+         */
+        _reqIsEqual(a, b) {
+            for (const key in a) {
+                if (Object.hasOwnProperty.call(a, key)) {
+                    const element = a[key];
+                    if (!this._checkElements(element, b[key])) return false;
+                }
+            }
+
+            for (const key in b) {
+                if (Object.hasOwnProperty.call(b, key)) {
+                    const element = b[key];
+                    if (!this._checkElements(element, a[key])) return false;
+                }
+            }
+
+            return true;
+        }
+
+        /**
+         * Vérifie si il s'agit d'un nouvel évènement
+         * @returns {boolean}
+         */
+        _isNewEvent() {
+            let allIsNull = true;
+
+            for (const key in this.startDatas) {
+                if (Object.hasOwnProperty.call(this.startDatas, key)) {
+                    const element = this.startDatas[key];
+                    if (element !== null) {
+                        allIsNull = false;
+                        break;
+                    }
+                }
+            }
+
+            return allIsNull;
+        }
+
+        /**
+         * Vérifie si un utilisateur est en accepté ou en refusé
+         * @param {*} user 
+         * @returns {boolean}
+         */
+        _isAcceptedOrRefusedUser(user) {
+            return user.status === 'ACCEPTED' || user.status === 'REFUSED';
+        }
+
+        /**
+         * Vérifie si l'utilisateur est l'organisateur ou non
+         * @param {*} user 
+         * @returns {boolean}
+         */
+        _isNotOrga(user) {
+            let hasNoEmail = true;
+            for (const iterator of rcmail.env.mel_metapage_user_emails) {
+                if (user.email === iterator) {
+                    hasNoEmail = false;
+                    break;
+                }
+            }
+            return hasNoEmail;
+        }
+
+        /**
+         * Vérifie si des données ont changés
+         * @returns {boolean}
+         */
+        _datasChanged() {
+            for (const key in this.startDatas) {
+                if (Object.hasOwnProperty.call(this.startDatas, key)) {
+                    const element = this.startDatas[key];
+                    switch (key) {
+                        case 'req':
+                            if (!this._reqIsEqual(element, this.currentDatas[key].val())) return true;
+                            break;
+                    
+                        default:
+                            if (element !== this.currentDatas[key].val()) return true;
+                            break;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * Met à jours les données des utilisateurs
+         * @returns Chaîne
+         */
+        updateUsers() {
+            if (!!this.currentEvent.attendees) {
+                let iminvited = false;
+                const isNewEvent = this._isNewEvent();
+                const datasChanged = this._datasChanged();
+                for (let index = 0; index < this.currentEvent.attendees.length; ++index) {
+                    const element = this.currentEvent.attendees[index];
+                    if (element.role === 'ORGANIZER') {
+                        if (this._isNotOrga(element)) iminvited = true;
+                        this.users[element.email] = false;
+                    }
+                    else {
+                        const isAcceptedOrRefused = this._isAcceptedOrRefusedUser(element);
+                        this.users[element.email] = iminvited ? false : (isNewEvent || (isAcceptedOrRefused && datasChanged) || !isAcceptedOrRefused);
+                    }
+                }
+
+                if (iminvited) {
+                    for (const key in this.users) {
+                        if (Object.hasOwnProperty.call(this.users, key)) {
+                            this.users[key] = false;
+                        }
+                    }
+                }
+            }
+            return this;
+        }
+
+        /**
+         * Met à jour la table
+         * @returns Chaîne
+         */
+        updateTable() {
+            const PLUGIN = 'mel_metapage';
+            const ICON_OK = 'icofont-check';
+            const ICON_NOK = 'icofont-close';
+            const NOTIFIED_CLASS = 'notified';
+            const OPTIONS_CLASS = 'options';
+            const CLASS_SELECTOR = '.';
+            const NOTIFIED_SELECTOR = CLASS_SELECTOR + NOTIFIED_CLASS;
+            const OPTIONS_SELECTOR = CLASS_SELECTOR + OPTIONS_CLASS;
+            const TITLE_TEXT = rcmail.gettext('custom_calendar_notification_option', PLUGIN);
+            const OK_DESC = rcmail.gettext('custom_calendar_notification_ok_desc', PLUGIN);
+            const NOK_DESC = rcmail.gettext('custom_calendar_notification_nok_desc', PLUGIN);
+            let title;
+            let $notified;
+            $('#edit-attendees-table tr').each((i, e) => {
+                e = $(e);
+                $notified = e.find(NOTIFIED_SELECTOR);
+                switch (i) {
+                    case 0:
+                        if ($notified.length === 0) {
+                            e.find(OPTIONS_SELECTOR).before( `<th class="${NOTIFIED_CLASS}">${TITLE_TEXT}</th>`);
+                        }
+                        break;
+                
+                    default:
+                        if ($notified.length === 0) {
+                            e.find(OPTIONS_SELECTOR).before(`<td class="${NOTIFIED_CLASS}" title="${OK_DESC}"><span class="${ICON_OK}"></td>`);
+                            $notified = e.find(NOTIFIED_SELECTOR);
+                        }
+
+                        if (e.find('.role select.edit-attendee-role').val() === 'ORGANIZER') {
+                            $notified.html(`<span class="${ICON_NOK}"></span>`).attr('title', NOK_DESC);
+                        }
+                        else {
+                            title = e.find('.attendee-name').children().first().attr('title');
+                            if (this.users[title] !== null && this.users[title] !== undefined) {
+                                const isOK = this.users[title] === true;
+                                $notified.html(`<span class="${isOK ? ICON_OK : ICON_NOK}"></span>`).attr('title', (isOK ? OK_DESC : NOK_DESC));
+                            }
+                        }
+                        
+                        break;
+                }       
+            });
+
+            title = null;
+            $notified = null;
+            return this;
+        }
+
+        /**
+         * Met à jours les données
+         * @returns Chaîne
+         */
+        update() {
+            return this.updateUsers().updateTable();
+        }
+
+        /**
+         * Vide les données
+         * @returns Chaîne
+         */
+        dispose() {
+            this.users = null;
+            this.currentDatas = null;
+            this.currentEvent = null;
+            this.startDatas = null;
+            return this;
+        }
+
+        /**
+         * 
+         * @returns {EventUserNotified}
+         */
+        static CreateInstance(event) {
+            if (!EventUserNotified._instance) EventUserNotified._instance = new EventUserNotified(event);
+            else {
+                EventUserNotified._instance.dispose();
+                EventUserNotified._instance = null;
+                return this.CreateInstance(event);
+            }
+
+            return EventUserNotified._instance;
+        }
+        /**
+         * 
+         * @returns {EventUserNotified | null}
+         */
+        static Instance() {
+            return EventUserNotified._instance;
+        }
+        static Dispose(){
+            if (!!this.Instance()) {
+                this.Instance().dispose();
+                EventUserNotified._instance = null;
+            }
+        }
+    }
+
     /**
      * Sauvegarde l'évènement
      * @returns {boolean} Faux si il y a des champs invalides
@@ -962,6 +1323,8 @@ $(document).ready(() => {
                 });
             }
 
+            EventUserNotified.Dispose();
+
             return true;
         }
         //Si erreur(s)
@@ -1008,6 +1371,7 @@ $(document).ready(() => {
      */
     window.rcube_calendar_ui.edit = function(event)
     {
+        EventUserNotified.CreateInstance(event);
         //Récupération de l'évènement mis en mémoire si l'évènement passé en paramètre est vide.
         if (event === "" && rcmail.env.event_prop !== undefined)
         {
@@ -1038,39 +1402,6 @@ $(document).ready(() => {
 
             return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
         };
-        /**
-         * Met à jour le champ de location
-         */
-        // const update_location = function()
-        // {
-        //     if ($("#eb-mm-em-p")[0].checked)
-        //     {
-        //         //Si présentiel
-        //         $("#edit-location").val($("#presential-cal-location").val());
-
-        //     }
-        //     else if ($("#eb-mm-em-v")[0].checked)
-        //     {
-        //         //Visio
-        //         if ($("#eb-mm-wm-e")[0].checked)
-        //         {
-        //             let config = {
-        //                 _key:$("#key-visio-cal").val()
-        //             };
-
-        //             if ($("#wsp-event-all-cal-mm").val() !== "#none")
-        //                 config["_wsp"] = $("#wsp-event-all-cal-mm").val();
-
-        //             $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));
-        //         }
-        //         else
-        //             $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
-        //     }
-        //     else {
-        //         //Audio
-        //         $("#edit-location").val(`${audio_url} : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
-        //     }
-        // };
         
         /**
          * 
@@ -1092,7 +1423,7 @@ $(document).ready(() => {
                     }
                     else if (events.includes('get'))
                     {
-                        return window.rcube_calendar_ui.edit._events;// ?? new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
+                        return window.rcube_calendar_ui.edit._events;
                     }
                 }
                 events = null;
@@ -1104,6 +1435,7 @@ $(document).ready(() => {
             const current_location = window.rcube_calendar_ui.edit._events.addEvent(events);
             const val = await current_location.getValue();
             $("#edit-location").val(val);
+            //EventUserNotified.Instance().update();
         }
         
         /**Met à jour le champs date */
@@ -1114,6 +1446,7 @@ $(document).ready(() => {
             val = $(".input-mel-datetime .input-mel.end").val().split(" ");
             $("#edit-enddate").val(val[0]);
             $("#edit-endtime").val(val[1]);
+            //EventUserNotified.Instance().update();
         };
         /**
          * Actions à faire lors du changement de date
@@ -1229,7 +1562,7 @@ $(document).ready(() => {
                 }
             })
 
-            // //Initialisation des localisations
+            //Initialisation des localisations
             // rcube_calendar_ui._init_location($('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
             //Actions à faire lors de l'appuie d'un bouton radio
             $(".form-check-input.event-mode").on("click", (e) => {
@@ -1358,10 +1691,34 @@ $(document).ready(() => {
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
             
-            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text)).before($('#showcontacts_edit-attendee-name'));
+            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text)).before($('#showcontacts_edit-attendee-name'))
+            .click(() => {
+                EventUserNotified.Instance().update();
+            });
+
+            let lockedInterval = false;
             $("#edit-attendee-name").attr("placeholder", `${rcmail.gettext('add_user_to_event', plugin_text)}...`).attr("title", rcmail.gettext('add_user_to_event_title', plugin_text))
             .css('border-bottom-right-radius', 0)
-            .css('border-top-right-radius', 0);
+            .css('border-top-right-radius', 0).on('change', () => {
+                if (!lockedInterval) {
+                    lockedInterval = true;
+                    let nbTry = 0;
+                    const rowNumber =  $('#edit-attendees-table tr').length;
+                    const interval = setInterval(() => {
+                            if ($('#edit-attendees-table tr').length !== rowNumber || nbTry++ >= 10) {
+                                EventUserNotified.Instance().update();
+
+                                if (nbTry >= 10) {
+                                    console.warn('/!\\[setInterval]Impossible de trouver l\'état du participant.');
+                                }
+
+                                clearInterval(interval);
+                                nbTry = null;
+                                lockedInterval = false;
+                            }
+                    }, 50);
+                }
+            });
 
             $("#mel-calendar-has-phone-datas").addClass('custom-control-input')
             .click(() => {
@@ -1378,6 +1735,11 @@ $(document).ready(() => {
             $('#edit-recurrence-enddate').on('mousedown',() => {
                 $('#edit-recurrence-repeat-until')[0].checked = true;
             });
+
+            $("#eventedit .nav a.nav-link.attendees").click(() => {
+                EventUserNotified.Instance().update();
+            });
+
             //ok
             $("#eventedit").data("callbacks", "ok");
 
@@ -1582,6 +1944,7 @@ $(document).ready(() => {
                 $("#edit-attendees-donotify").addClass("custom-control-input");
             }
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
+            $('#edit-attendees-notify').css('display', 'none');
             update_location();
         }, 10);
 

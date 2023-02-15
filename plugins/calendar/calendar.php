@@ -1655,7 +1655,6 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $event = $action == 'remove' ? $old : $this->driver->get_event($event, 0, true);
 
                 //pamela
-
                 if (isset($event['attendees']))
                 {
                     for ($i=0; $i < count($event['attendees']); ++$i) { 

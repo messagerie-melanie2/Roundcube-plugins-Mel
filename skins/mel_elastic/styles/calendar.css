@@ -783,3 +783,9 @@ ul#calendarslist.treelist li div.treetoggle:hover {
 body.quickview-active .fc .fc-scroller {
   background: none !important;
 }
+#edit-attendees-table .invite {
+  display: none;
+}
+#edit-attendees-table .notified span::before {
+  line-height: 2;
+}

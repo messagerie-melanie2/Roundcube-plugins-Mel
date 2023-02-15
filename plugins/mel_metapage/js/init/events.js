@@ -1761,6 +1761,9 @@ function sendMessageToAriane (data) {
         'https://ariane.din.developpement-durable.gouv.fr'
     ];
 
+    const suggestionUrl = 'suggestionUrl'; //type/value
+    const suggestionId = 'suggestionId';
+
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(event)
     {
@@ -1781,6 +1784,16 @@ function sendMessageToAriane (data) {
             const datas_accepted = 'isBNumEmbedded';
             if (event.data === datas_accepted) {
                 sendMessageToAriane({'bNumEmbedded': true, 'isDarkTheme': new Roundcube_Mel_Color().isDarkMode()});
+            }
+        }
+        else if(rcmail.env.task === 'settings' && rcmail.env.action === 'plugin.mel_suggestion_box' && window.location.origin.includes(event.origin))
+        {
+            const datas_accepted = 'suggestion.app.url';
+            if (event.data === datas_accepted) {
+                $('#settings-suggest-frame')[0].contentWindow.postMessage({
+                    type:suggestionUrl,
+                    value:mel_metapage.Functions.url('settings', 'plugin.mel_suggestion_box', {_uid:suggestionId})
+                }, '*');
             }
         }
     }

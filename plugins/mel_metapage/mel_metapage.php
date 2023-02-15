@@ -502,6 +502,11 @@ class mel_metapage extends rcube_plugin
         {
             $this->add_hook("send_page", array($this, "parasite_calendar"));
         }
+
+        if ($this->rc->task === "settings" && $this->rc->action === "plugin.mel_suggestion_box") {
+            $this->include_script('js/actions/settings_events.js');
+            $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
+        }
     }
 
     /**

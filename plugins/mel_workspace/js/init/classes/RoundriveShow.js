@@ -400,6 +400,8 @@ class RoundriveShow
 
     async checkNews(onlyCheck = false)
     {
+        return;
+        /*
         if (!onlyCheck)
             $("#refresh-nc").find("span").css("display", "none").parent().addClass("disabled").attr("disabled", "disabled").append('<span class="spinner-grow spinner-grow-sm"></span>');
         const folders = this.tree.getFolders(this.wsp, {path:this.config.initFolder});
@@ -481,7 +483,7 @@ class RoundriveShow
 
 
         }
-
+*/
         
     }
 

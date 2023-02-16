@@ -4,15 +4,15 @@
 
         if (rcmail.env.task === "workspace" && (rcmail.env.action === "" || rcmail.env.action === "index"))
         {
-            try {
-                // if (rcmail.env.wsp_index === undefined)
-                //     rcmail.env.wsp_index = {};
-                // rcmail.env.wsp_index["wsp_doc"] = WSPNotification.documents();
-                // rcmail.env.wsp_index.wsp_doc.update();
-                side_notification.wsp_documents(null, true);
-            } catch (error) {
-                console.error("###[WSPNotification.documents().update(true)]", error);
-            }
+            // try {
+            //     // if (rcmail.env.wsp_index === undefined)
+            //     //     rcmail.env.wsp_index = {};
+            //     // rcmail.env.wsp_index["wsp_doc"] = WSPNotification.documents();
+            //     // rcmail.env.wsp_index.wsp_doc.update();
+            //     side_notification.wsp_documents(null, true);
+            // } catch (error) {
+            //     console.error("###[WSPNotification.documents().update(true)]", error);
+            // }
 
             //debugger;
             side_notification.wsp_mail(null, true);

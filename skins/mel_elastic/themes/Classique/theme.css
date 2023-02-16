@@ -4,6 +4,16 @@
 /** ANIMATIONS **/
 /** LOADER **/
 /** WIDTH **/
+/**
+ * Roundcube Webmail styles for the Elastic skin
+ *
+ * Copyright (c) The Roundcube Dev Team
+ *
+ * The contents are subject to the Creative Commons Attribution-ShareAlike
+ * License. It is allowed to copy, distribute, transmit and to adapt the work
+ * by keeping credits to the original authors in the README.md file.
+ * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+ */
 html.theme-classique:root {
   --layout-list-background-color: #f3f2f1;
   --mail-layout-sidebar-background-color: #f3f2f1;
@@ -19,6 +29,7 @@ html.theme-classique:root {
   --calendar-toolbar-roundcube-color: var(--theme-base-text-color);
   --calendar-toolbar-roundcube-hover-background-color: #edebe9;
   --calendar-toolbar-roundcube-hover-color: var(--calendar-toolbar-roundcube-color);
+  --onboarding-image: url('../../skins/mel_elastic/themes/Classique/images/Computer_classic.png');
 }
 html.theme-classique #layout-list {
   color: var(--main-text-color) !important;
@@ -438,9 +449,6 @@ html.theme-classique #melplusmails:hover {
 }
 html.theme-classique #melplusmails:focus {
   color: var(--secondary-text-color);
-}
-html.theme-classique .onboarding-image {
-  background-image: url('images/Computer_classic.png');
 }
 html.theme-classique body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   background-color: #edebe9 !important;

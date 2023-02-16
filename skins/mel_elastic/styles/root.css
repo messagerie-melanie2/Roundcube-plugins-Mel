@@ -4,6 +4,16 @@
 /** ANIMATIONS **/
 /** LOADER **/
 /** WIDTH **/
+/**
+ * Roundcube Webmail styles for the Elastic skin
+ *
+ * Copyright (c) The Roundcube Dev Team
+ *
+ * The contents are subject to the Creative Commons Attribution-ShareAlike
+ * License. It is allowed to copy, distribute, transmit and to adapt the work
+ * by keeping credits to the original authors in the README.md file.
+ * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+ */
 :root {
   /** COLOR **/
   --invisible: transparent;
@@ -32,6 +42,7 @@
   --loader-height: 200px;
   --loader-background-position: 65% 57%;
   --loader-mask: conic-gradient(from 90deg at 50% 50%, #ffffff 0%, rgba(140, 140, 140, 0) 51%, rgba(0, 0, 0, 0) 100%);
+  --onboarding-image: url("../images/bnumloader.svg");
   /** TEXT COLOR **/
   --main-text-color: #363A5B;
   --secondary-text-color: #FFFFFF;

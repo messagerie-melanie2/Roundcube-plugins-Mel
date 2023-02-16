@@ -1109,18 +1109,34 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
         }
 
+        $event['invite-self'] = false;
+
         switch ($action) {
         //PAMELA
         case "invite-self":
             if ($action === "invite-self")
             {
+                //Récupération de l'évènement
+                $eventToEdit = $this->driver->get_event($event);
                 //Récupération des infos de l'utilisateurs
                 $user = driver_mel::gi()->getUser();
 
                 //Ajouts des infos de l'utilisateur dans l'évènement
-                if (isset($event['attendees']) && is_array($event['attendees']))
+                if (isset($eventToEdit['attendees']) && is_array($eventToEdit['attendees']))
                 {
-                    $event['attendees'][] = [
+                    foreach ($eventToEdit['attendees'] as $key => $a) {
+                        if ($a['role'] !== 'ORGANIZER')
+                        {
+                            if ($eventToEdit['attendees'][$key]['email'] === $user->email) {
+                                unset($eventToEdit['attendees'][$key]);
+                                continue;
+                            }
+                            $eventToEdit['attendees'][$key]['skip_notify'] = 'true';
+                            $eventToEdit['attendees'][$key]['noreply'] = '1';
+                        }
+                    } 
+
+                    $eventToEdit['attendees'][] = [
                         'email' => $user->email,
                         'name' => $user->fullname,
                         'role' => 'REQ-PARTICIPANT',
@@ -1129,12 +1145,35 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'noreply' => '1'
                     ];
                     //Changement du calendrier
-                    $event['calendar'] = driver_mel::mceToRcId($user->uid);
+                    $eventToEdit['calendar'] = driver_mel::mceToRcId($user->uid);
                 }
+
+                //Si l'évènement est réccurent
+                if (isset($eventToEdit['recurrence_date'])) {
+                    if ($event['_invitation'] === 'all') {
+
+                    }
+                    else {
+                        $eventToEdit['_savemode'] = 'current';
+                    }
+                }
+
+                $event = $eventToEdit;
+                unset($eventToEdit);
+
+                if ($success = $this->driver->edit_event($event)) {
+                    $this->cleanup_event($event);
+                    $this->event_save_success($event, $old, $action, $success);
+                }
+
+                $reload = $success && (!empty($event['recurrence']) || !empty($event['_savemode']) || !empty($event['_fromcalendar'])) ? 2 : 1;
+
+                
             }
+            break;
         case "new":
             // create UID for new event
-            if ($action === "new") $event['uid'] = $this->generate_uid();
+            $event['uid'] = $this->generate_uid();
             if (!$this->write_preprocess($event, $action)) {
                 $got_msg = true;
             }
@@ -1154,7 +1193,6 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             if (!isset($event['attendees']) || !is_array($event['attendees']))
             {
-                // $organizer = rcube_utils::get_input_value('_organizer', rcube_utils::INPUT_POST);
                 $organizer = driver_mel::gi()->getUser();
                 $event['attendees'] = [ ];
 

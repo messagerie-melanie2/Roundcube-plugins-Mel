@@ -210,7 +210,9 @@ $labels['itipcomment'] = 'Commentaire d’invitation ou de notification';
 $labels['itipcommenttitle'] = 'Ce commentaire sera inséré dans le message d\'invitation ou de notification envoyé aux participants';
 $labels['notanattendee'] = 'Vous n\'êtes pas dans la liste des participants à cet événement';
 $labels['eventcancelled'] = 'L\'événement a été annulé';
-$labels['saveincalendar'] = 'enregistrer sous';
+// PAMELA - Mode assistantes
+$labels['saveincalendar'] = 'Choix du calendrier : ';
+$labels['isattendee'] = '(invité)';
 $labels['updatemycopy'] = 'Mise à jour dans mon agenda';
 $labels['savetocalendar'] = 'Sauvegarder dans l\'agenda';
 $labels['openpreview'] = 'Consulter l\'agenda';

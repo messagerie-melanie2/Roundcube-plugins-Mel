@@ -609,6 +609,32 @@ abstract class driver_mel {
   public function mceToRcId($mceId) {
     return str_replace(['.', '@', '%'], ['_-P-_', '_-A-_', '_-C-_'], $mceId);
   }
+
+  /**
+   * Retourne l'identité associé au dossier IMAP (pour les BALP par exemple)
+   * 
+   * @param string $mbox
+   * @return array Identité
+   */
+  public function getIdentityFromMbox($mbox) {
+    if (strpos($mbox, $this->BALP_LABEL) === 0) {
+      $delimiter = rcmail::get_instance()->get_storage()->delimiter;
+      foreach (rcmail::get_instance()->user->list_identities() as $id) {
+        $uid = $id['uid'];
+        if (strpos($uid, $this->objectShareDelimiter()) !== false) {
+          $uid = explode($this->objectShareDelimiter(), $uid, 2)[1];
+        }
+        if (strpos($mbox, $this->BALP_LABEL . $delimiter . $uid) === 0) {
+          $identity = $id;
+          break;
+        }
+      }
+    }
+    if (!isset($identity)) {
+      $identity = rcmail::get_instance()->user->list_emails(true);
+    }
+    return $identity;
+  }
   
   /**
    * Retourne le label des balp dans l'arborescence de fichiers IMAP

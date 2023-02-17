@@ -298,7 +298,8 @@ class calendar extends rcube_plugin
         $calendar   = !empty($calendars[$default_id]) ? $calendars[$default_id] : null;
         $first      = null;
 
-        if (!$calendar || $sensitivity) {
+        // PAMELA - Fix if calendar not empty no need to search more
+        if (!$calendar && $sensitivity) {
             foreach ($calendars as $cal) {
                 if ($sensitivity && !empty($cal['subtype']) && $cal['subtype'] == $sensitivity) {
                     $calendar = $cal;
@@ -307,7 +308,8 @@ class calendar extends rcube_plugin
                 if (!empty($cal['default']) && $cal['editable']) {
                     $calendar = $cal;
                 }
-                if ($cal['editable']) {
+                // PAMELA - Fix first ?
+                if ($cal['editable'] && !isset($first)) {
                     $first = $cal;
                 }
             }
@@ -3110,18 +3112,31 @@ $("#rcmfd_new_category").keypress(function(event) {
     /**
      * Find an event in user calendars
      */
-    protected function find_event($event, &$mode)
+    protected function find_event($event, &$mode, $calid = null)
     {
         $this->load_driver();
 
-        // We search for writeable calendars in personal namespace by default
-        $mode   = calendar_driver::FILTER_WRITEABLE | calendar_driver::FILTER_PERSONAL;
-        $result = $this->driver->get_event($event, $mode);
-        // ... now check shared folders if not found
-        if (!$result) {
-            $result = $this->driver->get_event($event, calendar_driver::FILTER_WRITEABLE | calendar_driver::FILTER_SHARED);
-            if ($result) {
-                $mode |= calendar_driver::FILTER_SHARED;
+        // PAMELA - Mode assistantes
+        if (isset($calid)) {
+            // We search for writeable calendars in personal namespace by default
+            $mode   = calendar_driver::FILTER_WRITEABLE | calendar_driver::FILTER_PERSONAL | calendar_driver::FILTER_SHARED;
+            $event['calendar'] = $calid;
+            $result = $this->driver->get_event($event, $mode);
+        }
+        else {
+            // We search for writeable calendars in personal namespace by default
+            $mode   = calendar_driver::FILTER_WRITEABLE | calendar_driver::FILTER_PERSONAL;
+            $result = $this->driver->get_event($event, $mode);
+            // ... now check shared folders if not found
+            if (!$result) {
+                $result = $this->driver->get_event($event, calendar_driver::FILTER_WRITEABLE | calendar_driver::FILTER_SHARED);
+                if ($result) {
+                    $mode |= calendar_driver::FILTER_SHARED;
+                }
+                else {
+                    // PAMELA - Si rien trouvé on propose tous les calendriers en écriture
+                    $mode   = calendar_driver::FILTER_WRITEABLE;
+                }
             }
         }
 
@@ -3134,14 +3149,28 @@ $("#rcmfd_new_category").keypress(function(event) {
     function event_itip_status()
     {
         $data = rcube_utils::get_input_value('data', rcube_utils::INPUT_POST, true);
+        // PAMELA - Mode assistantes
+        $calid = rcube_utils::get_input_value('calid', rcube_utils::INPUT_POST);
 
         $this->load_driver();
 
+        // PAMELA - Mode assistantes
+        if ($data['method'] == 'REQUEST' && !isset($calid)) {
+            $default_calendar   = $this->get_default_calendar($data['sensitivity'], $this->driver->list_calendars(calendar_driver::FILTER_PERSONAL));
+            $calid = $default_calendar['id'];
+        }
+
         // find local copy of the referenced event (in personal namespace)
-        $existing  = $this->find_event($data, $mode);
+        // PAMELA - Mode assistantes
+        $existing  = $this->find_event($data, $mode, $calid);
         $is_shared = $mode & calendar_driver::FILTER_SHARED;
         $itip      = $this->load_itip();
-        $response  = $itip->get_itip_status($data, $existing);
+        $emails = null;
+        if (isset($calid)) {
+            $calendars = $this->driver->list_calendars($mode);
+            $emails = [strtolower($calendars[$calid]['owner_email'])];
+        }
+        $response  = $itip->get_itip_status($data, $existing, $emails);
 
         // get a list of writeable calendars to save new events to
         if (
@@ -3149,19 +3178,33 @@ $("#rcmfd_new_category").keypress(function(event) {
             && empty($data['nosave'])
             && ($response['action'] == 'rsvp' || $response['action'] == 'import')
         ) {
-            $calendars       = $this->driver->list_calendars($mode);
+            if (!isset($calendars)) {
+                $calendars = $this->driver->list_calendars($mode);
+            }
             $calendar_select = new html_select([
                 'name'       => 'calendar',
                 'id'         => 'itip-saveto',
                 'is_escaped' => true,
+                // PAMELA - Mode assistantes
+                'onchange'   => "rcube_libcalendaring.refetch_itip_object_status(" . rcube_output::json_serialize($data) . ", " . rcube_output::json_serialize($response) . ", this.value)",
                 'class'      => 'form-control custom-select'
             ]);
 
-            $calendar_select->add('--', '');
+            // PAMELA - Mode assistantes
+            // $calendar_select->add('--', '');
             $numcals = 0;
             foreach ($calendars as $calendar) {
                 if (!empty($calendar['editable'])) {
-                    $calendar_select->add($calendar['name'], $calendar['id']);
+                    // PAMELA - Mode assistantes - est-ce qu'on est invité ?
+                    $invite = false;
+                    foreach ($data['attendees'] as $attendee) {
+                        if (strtolower($attendee['role']) != 'organizer' 
+                                && strtolower($attendee['email']) == strtolower($calendar['owner_email'])) {
+                            $invite = true;
+                            break;
+                        }
+                    }
+                    $calendar_select->add($calendar['editname'] . ($invite ? ' ' . $this->gettext('isattendee') : ''), $calendar['id']);
                     $numcals++;
                 }
             }
@@ -3171,11 +3214,20 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         if (!empty($calendar_select)) {
-            $default_calendar   = $this->get_default_calendar($data['sensitivity'], $calendars);
+            // PAMELA - Mode assistantes
+            if (!isset($calid)) {
+                $default_calendar   = $this->get_default_calendar($data['sensitivity'], $calendars);
+                $calid = $default_calendar['id'];
+            }
+            
             $response['select'] = html::span('folder-select', $this->gettext('saveincalendar')
                 . '&nbsp;'
-                . $calendar_select->show($is_shared ? $existing['calendar'] : $default_calendar['id'])
+                // PAMELA - Mode assistantes
+                . $calendar_select->show($calid)
             );
+
+            // PAMELA - Mode assistantes
+            $response['html'] = str_replace('%%calendar%%', $calendars[$calid]['editname'], $response['html']);
         }
         else if (!empty($data['nosave'])) {
             $response['select'] = html::tag('input', ['type' => 'hidden', 'name' => 'calendar', 'id' => 'itip-saveto', 'value' => '']);
@@ -3188,8 +3240,14 @@ $("#rcmfd_new_category").keypress(function(event) {
             $day_end     = new Datetime(gmdate('Y-m-d 23:59', $data['date']), $this->lib->timezone);
 
             // get events on that day from the user's personal calendars
-            $calendars = $this->driver->list_calendars(calendar_driver::FILTER_PERSONAL);
-            $events    = $this->driver->load_events($day_start->format('U'), $day_end->format('U'), null, array_keys($calendars));
+            // PAMELA - Mode assistantes
+            if (isset($calid)) {
+                $events    = $this->driver->load_events($day_start->format('U'), $day_end->format('U'), null, [$calid]);
+            }
+            else {
+                $calendars = $this->driver->list_calendars(calendar_driver::FILTER_PERSONAL);
+                $events    = $this->driver->load_events($day_start->format('U'), $day_end->format('U'), null, array_keys($calendars));
+            }
 
             usort($events, function($a, $b) { return $a['start'] > $b['start'] ? 1 : -1; });
 
@@ -3205,20 +3263,24 @@ $("#rcmfd_new_category").keypress(function(event) {
                 }
 
                 if ($event['start'] < $event_start) {
-                    $before[] = $this->mail_agenda_event_row($event);
+                    $before[] = $this->mail_agenda_event_row($event, 'event-row-before');
                 }
                 else {
-                    $after[] = $this->mail_agenda_event_row($event);
+                    $after[] = $this->mail_agenda_event_row($event, 'event-row-after');
                 }
             }
 
             $response['append'] = [
                 'selector' => '.calendar-agenda-preview',
                 'replacements' => [
-                    '%before%' => !empty($before) ? join("\n", array_slice($before,  -3)) : html::div('event-row no-event', $this->gettext('noearlierevents')),
-                    '%after%'  => !empty($after)  ? join("\n", array_slice($after, 0, 3)) : html::div('event-row no-event', $this->gettext('nolaterevents')),
+                    '%before%' => !empty($before) ? join("\n", array_slice($before,  -3)) : html::div('event-row event-row-before no-event', $this->gettext('noearlierevents')),
+                    '%after%'  => !empty($after)  ? join("\n", array_slice($after, 0, 3)) : html::div('event-row event-row-after no-event', $this->gettext('nolaterevents')),
                 ],
             ];
+        }
+        else if (isset($calid)) {
+            // PAMELA - Mode assistantes
+            $response['html'] = str_replace('%%calendar%%', $calendars[$calid]['editname'], $response['html']);
         }
 
         $this->rc->output->command('plugin.update_itip_object_status', $response);
@@ -3591,7 +3653,15 @@ $("#rcmfd_new_category").keypress(function(event) {
             // update my attendee status according to submitted method
             if (!empty($status)) {
                 $organizer = null;
-                $emails = $this->get_user_emails();
+
+                // PAMELA - Gestion des assistantes
+                if (isset($calendar['owner_email'])) {
+                    $emails = [strtolower($calendar['owner_email'])];
+                }
+                else {
+                    $emails = $this->get_user_emails();
+                }
+                
                 foreach ($event['attendees'] as $i => $attendee) {
                     if ($attendee['role'] == 'ORGANIZER') {
                         $organizer = $attendee;
@@ -3603,6 +3673,17 @@ $("#rcmfd_new_category").keypress(function(event) {
                         }
 
                         $metadata['attendee'] = $attendee['email'];
+                        // PAMELA - Mode assistantes
+                        if (strtolower($attendee['email']) == strtolower($calendar['owner_email'])) {
+                            $metadata['attendee_name'] = $calendar['owner_name'];
+                        }
+                        else if (isset($attendee['name'])) {
+                            $metadata['attendee_name'] = $attendee['name'];
+                        }
+                        else {
+                            $metadata['attendee_name'] = $attendee['email'];
+                        }
+                        
                         $metadata['rsvp']     = $attendee['role'] != 'NON-PARTICIPANT';
 
                         $reply_sender   = $attendee['email'];
@@ -3612,7 +3693,17 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                 // add attendee with this user's default identity if not listed
                 if (!$reply_sender) {
-                    $sender_identity = $this->rc->user->list_emails(true);
+                    // PAMELA - Gestion des assistantes
+                    if (isset($calendar['owner_email'])) {
+                        $sender_identity = [
+                            'name'  => $calendar['owner_name'],
+                            'email' => $calendar['owner_email'],
+                        ];
+                    }
+                    else {
+                        $sender_identity = $this->rc->user->list_emails(true);
+                    }
+                    
                     $event['attendees'][] = [
                         'name'   => $sender_identity['name'],
                         'email'  => $sender_identity['email'],
@@ -3620,13 +3711,16 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'status' => strtoupper($status),
                     ];
                     $metadata['attendee'] = $sender_identity['email'];
+                    // PAMELA - Mode assistantes
+                    $metadata['attendee_name'] = $sender_identity['name'];
                 }
             }
 
             // save to calendar
             if ($calendar && !empty($calendar['editable'])) {
                 // check for existing event with the same UID
-                $existing = $this->find_event($event, $mode);
+                // PAMELA - Mode assistantes
+                $existing = $this->find_event($event, $mode, $calendar['id']);
 
                 // we'll create a new copy if user decided to change the calendar
                 if ($existing && $cal_id && $calendar && $calendar['id'] != $existing['calendar']) {
@@ -3868,9 +3962,16 @@ $("#rcmfd_new_category").keypress(function(event) {
         ) {
             $event['comment'] = $comment;
             $itip = $this->load_itip();
-            $itip->set_sender_email($reply_sender);
-
-            if ($itip->send_itip_message($event, 'REPLY', $organizer, 'itipsubject' . $status, 'itipmailbody' . $status)) {
+            // PAMELA - Trouver le sender depuis le $mbox
+            if (isset($mbox)) {
+                $sender_identity = driver_mel::gi()->getIdentityFromMbox($mbox);
+                $itip->set_sender($sender_identity);
+            }
+            else {
+                $itip->set_sender_email($reply_sender);
+            }
+            
+            if ($itip->send_itip_message($event, 'REPLY', $organizer, 'itipsubject' . $status, 'itipmailbody' . $status, null, null, $metadata['attendee_name'])) {
                 $mailto = $organizer['name'] ? $organizer['name'] : $organizer['email'];
                 $msg    = $this->gettext(['name' => 'sentresponseto', 'vars' => ['mailto' => $mailto]]);
                 $this->rc->output->command('display_message', $msg, 'confirmation');

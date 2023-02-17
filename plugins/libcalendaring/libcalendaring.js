@@ -1492,7 +1492,46 @@ rcube_libcalendaring.fetch_itip_object_status = function(p)
 {
   p.mbox = rcmail.env.mailbox;
   p.message_uid = rcmail.env.uid;
-  rcmail.http_post(p.task + '/itip-status', { data: p });
+  // PAMELA - Mode assistantes
+  if (p.calendar) {
+    rcmail.http_post(p.task + '/itip-status', { data: p, calid: p.calendar });
+  }
+  else {
+    rcmail.http_post(p.task + '/itip-status', { data: p });
+  }
+};
+
+/**
+ * PAMELA - Mode assistantes
+ */
+rcube_libcalendaring.refetch_itip_object_status = function(p, resp, calid)
+{
+  p.mbox = rcmail.env.mailbox;
+  p.message_uid = rcmail.env.uid;
+  $('#loading-'+resp.id).show();
+  $('.calendar-agenda-preview').hide();
+  $(".calendar-agenda-preview .event-row-before").replaceWith('%before%');
+  $(".calendar-agenda-preview .event-row-after").replaceWith('%after%');
+  rcmail.http_post(p.task + '/itip-status', { data: p, calid: calid });
+};
+
+/**
+ * PAMELA - Mode assistantes
+ */
+rcube_libcalendaring.remove_label_from_itip_mail = function()
+{
+    var rc = rcmail.is_framed() ? parent.rcmail : rcmail;
+
+    // Add rdvtraite label if plugin mel_labels exist
+    if (typeof rc.mel_label_toggle === "function") {
+        var label = '_-t-_rdvtraite';
+        // Check in rdvtraite isnt already unset
+		if (tb_labels_for_message && jQuery.inArray(label, tb_labels_for_message) !== -1) {
+            rc.mel_label_toggle(label);
+            // Refresh le mail
+            location.reload();
+        }
+    }
 };
 
 /**
@@ -1513,6 +1552,12 @@ rcube_libcalendaring.update_itip_object_status = function(p)
     $('#loading-'+p.id).hide().after(p.html);
   }
 
+  // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée
+  if (tb_labels_for_message && jQuery.inArray('_-t-_rdvtraite', tb_labels_for_message) !== -1) {
+    $('#label-'+p.id).show()
+    return;
+  }
+
   // enable/disable rsvp buttons
   if (p.action == 'rsvp') {
     $('#rsvp-'+p.id+' input.button').prop('disabled', false)
@@ -1520,16 +1565,13 @@ rcube_libcalendaring.update_itip_object_status = function(p)
     rcmail.enable_command('attachment-save-calendar', true);
   }
 
-  //PAMELA - On cache le bouton de mise a jour si l'évènement est déjà supprimer
+  // PAMELA - On cache le bouton de mise a jour si l'évènement est déjà supprimer
   if (p.cancelled) {
     $('#rsvp-'+p.id+' input.button.cancel').hide();
   }
 
-  // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée
-  if (!tb_labels_for_message || jQuery.inArray('_-t-_rdvtraite', tb_labels_for_message) === -1) {
-    // show rsvp/import buttons (with calendar selector)
-    $('#'+p.action+'-'+p.id).show().find('input.button').last().after(p.select);
-  }
+  // show rsvp/import buttons (with calendar selector)
+  $('#'+p.action+'-'+p.id).show().find('input.button').last().after(p.select);
 
   // highlight date if date change detected
   if (p.rescheduled)

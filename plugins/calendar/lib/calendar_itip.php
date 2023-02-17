@@ -40,10 +40,12 @@ class calendar_itip extends libcalendaring_itip
 
     /**
      * Handler for calendar/itip-status requests
+     * 
+     * PAMELA - Mode assistantes $emails
      */
-    public function get_itip_status($event, $existing = null)
+    public function get_itip_status($event, $existing = null, $emails = null)
     {
-        $status = parent::get_itip_status($event, $existing);
+        $status = parent::get_itip_status($event, $existing, $emails);
 
         // don't ask for deleting events when declining
         if ($this->rc->config->get('kolab_invitation_calendars')) {

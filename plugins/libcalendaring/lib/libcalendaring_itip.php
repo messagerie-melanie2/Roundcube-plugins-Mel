@@ -51,6 +51,15 @@ class libcalendaring_itip
         $this->plugin->add_hook('smtp_connect', array($this, 'smtp_connect_hook'));
     }
 
+    /**
+     * PAMELA - Set identity
+     */
+    public function set_sender($identity)
+    {
+        if (!empty($identity))
+            $this->sender = $identity;
+    }
+
     public function set_sender_email($email)
     {
         if (!empty($email))
@@ -94,9 +103,10 @@ class libcalendaring_itip
      * @param string  Mail body text label
      * @param object  Mail_mime object with message data
      * @param boolean Request RSVP
+     * @param string  PAMELA attendee name
      * @return boolean True on success, false on failure
      */
-    public function send_itip_message($event, $method, $recipient, $subject, $bodytext, $message = null, $rsvp = true)
+    public function send_itip_message($event, $method, $recipient, $subject, $bodytext, $message = null, $rsvp = true, $attendee_name = null)
     {
         if (!$this->sender['name']) {
             $this->sender['name'] = $this->sender['email'];
@@ -115,7 +125,8 @@ class libcalendaring_itip
             'name' => $subject,
             'vars' => array(
                 'title' => $event['title'],
-                'name' => $this->sender['name'],
+                // PAMELA - Mode assisantes
+                'name' => isset($attendee_name) ? $attendee_name : $this->sender['name'],
             )
         ));
 
@@ -165,7 +176,8 @@ class libcalendaring_itip
                     'title'       => $event['title'],
                     'date'        => $this->lib->event_date_text($event, true) . $recurrence_info,
                     'attendees'   => join(",\n ", $attendees_list),
-                    'sender'      => $this->sender['name'],
+                    // PAMELA - Mode assistantes
+                    'sender'      => isset($attendee_name) ? $attendee_name : $this->sender['name'],
                     // 0006234: Ajouter une ligne "Organisateur :" dans le msg réponse d'un invité
                     'organizer'   => $organizer,
                     'description' => isset($event['description']) ? $event['description'] : '',
@@ -399,8 +411,10 @@ class libcalendaring_itip
 
     /**
      * Handler for calendar/itip-status requests
+     * 
+     * PAMELA - Mode assistantes $emails
      */
-    public function get_itip_status($event, $existing = null)
+    public function get_itip_status($event, $existing = null, $emails = null)
     {
         $action = $event['rsvp'] ? 'rsvp' : '';
         $status = $event['fallback'];
@@ -423,7 +437,10 @@ class libcalendaring_itip
 
             if ($existing) {
                 $rsvp   = $event['rsvp'];
-                $emails = $this->lib->get_user_emails();
+                // PAMELA - Mode assistantes
+                if (!isset($emails)) {
+                    $emails = $this->lib->get_user_emails();
+                }
 
                 foreach ($existing['attendees'] as $attendee) {
                     if ($attendee['email'] && in_array(strtolower($attendee['email']), $emails)) {
@@ -443,15 +460,21 @@ class libcalendaring_itip
                 $action = 'import';
             }
             else if (in_array($status_lc, $this->rsvp_status)) {
-                $status_text = $this->gettext(($latest ? 'youhave' : 'youhavepreviously') . $status_lc);
+                // PAMELA - Mode assistante
+                if ($existing) {
+                    $status_text = $this->gettext(($latest ? 'youhave' : 'youhavepreviously') . $status_lc);
+                }
+                else {
+                    $status_text = $this->gettext('acceptinvitation');
+                }
+                
 
                 if ($existing && ($existing['sequence'] > $event['sequence']
                     || (!isset($event['sequence']) && $existing['changed'] && $existing['changed'] > $event['changed']))
                 ) {
+                    // PAMELA - Mode assistantes
                     $action = '';  // nothing to do here, outdated invitation
-                    if ($status_lc == 'needs-action') {
-                        $status_text = $this->gettext('outdatedinvitation');
-                    }
+                    $status_text = $this->gettext('outdatedinvitation');
                 }
                 else if (!$existing && !$rsvp) {
                     $action = 'import';
@@ -464,7 +487,8 @@ class libcalendaring_itip
                         // FIXME: This is probably to simplistic, or maybe we should just check
                         //        attendee's RSVP flag in the new event?
                         $rescheduled = !empty($diff['start']) || !empty($diff['end']);
-                        unset($diff['start'], $diff['end']);
+                        // PAMELA - Mode assistantes
+                        unset($diff['start'], $diff['end'], $diff['attendees']);
                     }
 
                     if ($rescheduled) {
@@ -477,7 +501,8 @@ class libcalendaring_itip
                             $latest = empty($diff);
                         }
 
-                        $action = !$latest ? 'update' : '';
+                        // PAMELA - Mode assistantes
+                        $action = 'rsvp';
                     }
                 }
 
@@ -664,6 +689,8 @@ class libcalendaring_itip
             'method'   => $method,
             'task'     => $task,
             'mime_id'  => $mime_id,
+            // PAMELA - Mode assistantes
+            'attendees' => $event['attendees'],
         );
 
         // create buttons to be activated from async request checking existence of this event in local calendars
@@ -874,6 +901,16 @@ class libcalendaring_itip
         if (!empty($import_button)) {
             $buttons[] = html::div(array('id' => 'import-'.$dom_id, 'style' => 'display:none'), $import_button);
         }
+
+        // PAMELA - Ajouter le bouton étiquette
+        $label_button = html::div('', $this->gettext('removelabelinfo')) . 
+            html::tag('input', array(
+            'type'    => 'button',
+            'class'   => 'button',
+            'onclick' => "rcube_libcalendaring.remove_label_from_itip_mail()",
+            'value'   => $this->gettext('removelabel'),
+        ));
+        $buttons[] = html::div(array('id' => 'label-'.$dom_id, 'style' => 'display:none'), $label_button);
 
         // pass some metadata about the event and trigger the asynchronous status check
         $metadata['fallback'] = $rsvp_status;

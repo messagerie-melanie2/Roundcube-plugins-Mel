@@ -528,7 +528,9 @@ function rcube_calendar_ui(settings) {
       for (var j = 0; j < num_attendees; j++) {
         data = event.attendees[j];
         if (data.email) {
-          if (data.role != 'ORGANIZER' && settings.identity.emails.indexOf(';' + data.email) >= 0) {
+          // PAMELA - Mode assistantes
+          // if (data.role != 'ORGANIZER' && settings.identity.emails.indexOf(';' + data.email) >= 0) {
+          if (data.role != 'ORGANIZER' && calendar.owner_email.toLowerCase() == data.email.toLowerCase()) {
             mystatus = (data.status || 'UNKNOWN').toLowerCase();
             if (data.status == 'NEEDS-ACTION' || data.status == 'TENTATIVE' || data.rsvp)
               rsvp = mystatus;

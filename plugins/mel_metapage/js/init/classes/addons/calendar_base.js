@@ -2806,7 +2806,7 @@ $(document).ready(() => {
 
     rcube_calendar.number_waiting_events = function (events = [], get_number = true)
     {
-        const user = top.rcmail.env.email.toUpperCase();
+        const user = (top ?? window).rcmail.env.email?.toUpperCase?.();
         let numbers = (get_number ? 0 : []);
 
         for (const key in events) {

@@ -35,104 +35,107 @@
             }
         };
 
-        function mel_calendar_updated(force = 'random') {
-            parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
+        async function mel_calendar_updated(force = CONST_CALENDAR_UPDATED_DEFAULT) {
+            const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
+            const isTop = window === top;
+            const url = mel_metapage.Functions.url(PLUGIN_MEL_METAPAGE, ACTION_MEL_METAPAGE_CALENDAR_LOAD_EVENT, {
+                force,
+                source:mceToRcId(rcmail.env.username),
+                start:dateNow(new Date()),
+                end:dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 7)),
+                last:moment(mel_metapage.Storage.get(mel_metapage.Storage.last_calendar_update)).unix()
+            });
 
-            if (parent.rcmail.env.ev_calendar_url === undefined)
-                parent.rcmail.env.ev_calendar_url = ev_calendar_url;
+            let rc = isTop ? rcmail : top.rcmail;
 
-            return $.ajax({ // fonction permettant de faire de l'ajax
-                type: "GET", // methode de transmission des données au fichier php
-                url: parent.rcmail.env.ev_calendar_url + `&source=${mceToRcId(rcmail.env.username)}` + '&start=' + dateNow(new Date()) + '&end=' + dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 7)), // url du fichier php
-                success: function(data) {
-                    try {
-                        let events = [];
-                        data = JSON.parse(data);
-                        let element;
-                        let now = moment().startOf('day');
+            rc.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
 
-                        const parse = window.cal !== null && window.cal !== undefined && window.cal.parseISO8601 ? window.cal.parseISO8601 : (item) => item;
+            await mel_metapage.Functions.get(url, {}, 
+                (datas) => {
+                    const {forced, events, encoded} = JSON.parse(datas);
+                    const isForcedRefresh = forced === true;
+                    const haveNewDatas = (encoded && (events !== EMPTY_STRING && events !== EMPTY_ARRAY_STRING)) || (!encoded && 0 !== events.length);
+                    let loadedEvents;
 
-                        for (let index = 0; index < data.length; ++index) {
-                            element = data[index];
-
-                            if (element.status === "CANCELLED")
-                                continue;
-
-                            if (element.allDay)
-                                element.order = 0;
-                            else
-                                element.order = 1;
-
-                            if (moment(parse(element.end)) < now)
-                                continue;
-
-                            if (element.allDay) {
-                                element.end = moment(parse(element.end)).startOf("day");
-                                if (element.end.format("YYYY-MM-DD HH:mm:ss") == now.format("YYYY-MM-DD HH:mm:ss") && moment(element.start).startOf("day").format("YYYY-MM-DD HH:mm:ss") != element.end.format("YYYY-MM-DD HH:mm:ss"))
-                                    continue;
-                                else
-                                    element.end = element.end.format();
-                            }
-
-                            events.push(element);
-
-                        }
-
-                        mel_metapage.Storage.set("all_events", Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray());
-                        data = null;
-                        let ids = [];
-
-                        for (let index = 0; index < events.length; index++) {
-                            const element = events[index];
-                            //console.log(mceToRcId(rcmail.env.username) !== element._id, rcmail.env.username, mceToRcId(rcmail.env.username), element._id, element)
-                            if (mceToRcId(rcmail.env.username) !== element.calendar)
-                                ids.push(element);
-                            else {
-                                if (element._instance !== undefined) {
-
-                                    for (let it = 0; it < events.length; it++) {
-                                        const event = events[it];
-
-                                        if (event.uid === element.uid && event._instance === undefined)
-                                            ids.push(event);
-                                    }
-                                }
+                    if (isForcedRefresh) loadedEvents = []
+                    else if (haveNewDatas) loadedEvents = mel_metapage.Storage.get(mel_metapage.Storage.calendar_all_events, []);
+                    
+                    if (haveNewDatas || isForcedRefresh) {
+                        if (haveNewDatas) {
+                            let index;
+                            for (const current of generator_selected_events(encoded ? JSON.parse(events) : events)) {
+                                index = getEventIndex(current.id, loadedEvents);
+    
+                                if (NO_INDEX === index) loadedEvents.push(current);
+                                else loadedEvents[index] = current;
                             }
                         }
 
-                        events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
-                        const today = Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray();
-                        try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
-                        update_badge(Enumerable.from(today).where(x => x.free_busy !== "free" && x.free_busy !== 'telework').count(), mel_metapage.Ids.menu.badge.calendar);
-
-                        mel_metapage.Storage.set(mel_metapage.Storage.calendar, today);
-                        mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
-
-                        const byDays = Enumerable.from(events).orderBy(x => moment(x.start) - moment()).groupBy(x => moment(x.start).format('DD/MM/YYYY')).toJsonDictionnary(x => x.key(), x => x.getSource());
-                        mel_metapage.Storage.set(mel_metapage.Storage.calendar_by_days, byDays);
+                        //Set
+                        const all_events = Enumerable.from(loadedEvents).where(x => x !== null).orderBy(x => x.order).thenBy(x => moment(x.start)).where(x => moment(x.start) >= moment().startOf(CONST_DATE_START_OF_DAY));
+                        const today = all_events.where(x => moment(x.start) >= moment().startOf(CONST_DATE_START_OF_DAY) && moment(x.start) <= moment().endOf(CONST_DATE_END_OF_DAY));
+                        const byDays = !haveNewDatas && isForcedRefresh ? {} : all_events.orderBy(x => moment(x.start) - moment()).groupBy(x => moment(x.start).format(CONST_DATE_FORMAT_BNUM)).toJsonDictionnary(x => x.key(), x => x.getSource());
                         
+                        try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar);
+                        update_badge(today.where(x => x.free_busy !== CONST_EVENT_DISPO_FREE && x.free_busy !== CONST_EVENT_DISPO_TELEWORK).count(), mel_metapage.Ids.menu.badge.calendar);
+
+                        mel_metapage.Storage.set(mel_metapage.Storage.calendar_all_events, all_events.toArray());
+                        mel_metapage.Storage.set(mel_metapage.Storage.calendar, today.toArray());
+                        mel_metapage.Storage.set(mel_metapage.Storage.calendar_by_days, byDays);
+
                         try {
                             mel_metapage.Storage.set(mel_metapage.Storage.calendars_number_wainting, rcube_calendar.number_waiting_events(byDays));
                         } catch (error) {
                             console.warn('calendar byday', error);                                    
                         }
-
-                        parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
-
-                    } catch (ex) {
-                        console.error(ex);
-                        //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                     }
-                },
-                error: function(xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-                    console.error(xhr, ajaxOptions, thrownError);
-                    //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
-                },
-            }).always(() => {
-                // rcmail.set_busy(false);
-                // rcmail.clear_messages();
-            });
+
+                    mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment());
+                    parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
+                    
+                }, (a, b, c) => {
+
+                }
+            );
+        }
+
+        function getEventIndex(id, events) {
+            for (let index = 0, len = events.length; index < len; ++index) {
+                if (events[index].id === id) return index;                
+            }
+
+            return NO_INDEX;
+        }
+
+        function *generator_selected_events(events) {
+            const now = moment().startOf(CONST_DATE_START_OF_DAY);
+            const parse = window?.cal?.parseISO8601 ?? ((item) => item);
+            const user_id = mceToRcId(rcmail.env.username);
+
+            for (let index = 0, element, len = events.length; index < len; ++index) {
+                element = events[index];
+
+                if (user_id !== element.calendar || CONST_EVENT_ATTENDEE_STATUS_CANCELLED === element.status) continue;
+
+                element.order = element.allDay ? 0 : 1;
+
+                if (STRING === typeof element.end) element.end = moment(parse(element.end));
+                if (STRING === typeof element.start) element.start = moment(parse(element.start));
+
+                if (element.end < now) continue;
+
+                if (element.allDay) {
+                    element.end = element.end.startOf(CONST_DATE_START_OF_DAY);
+
+                    if (element.end.format(CONST_DATE_FORMAT_EN) === now.format(CONST_DATE_FORMAT_EN) 
+                    && element.start.startOf(CONST_DATE_START_OF_DAY).format(CONST_DATE_FORMAT_EN) !== element.end.format(CONST_DATE_FORMAT_EN)) {
+                        continue;
+                    }
+                    else element.end = element.end.format();
+                }
+
+                yield element;
+            }
         }
 
         $(document).ready(() => {
@@ -167,11 +170,11 @@
 
             //Definition des functions
             parent.rcmail.mel_metapage_fn = {
-                calendar_updated(args) {
-                    if (!!parent.rcmail.mel_metapage_fn.started) return async () => false;
+                async calendar_updated(args) {
+                    if (!!parent.rcmail.mel_metapage_fn.started) false;
                     else parent.rcmail.mel_metapage_fn.started = true;
                     
-                    return mel_calendar_updated(args?.force ?? 'random').then(() => parent.rcmail.mel_metapage_fn.started = false);
+                    await mel_calendar_updated(args?.force ?? 'random').then(() => parent.rcmail.mel_metapage_fn.started = false);
                 },
                 tasks_updated: function() {
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
@@ -417,11 +420,10 @@
                     }
 
                     parent.rcmail.mel_metapage_fn.wsp_updated();
-                    parent.rcmail.mel_metapage_fn.calendar_updated().always(() => {
-                        parent.rcmail.mel_metapage_fn.tasks_updated();
-                        parent.rcmail.mel_metapage_fn.mail_updated(true);
-                        parent.rcmail.mel_metapage_fn.weather();
-                    });
+                    parent.rcmail.mel_metapage_fn.calendar_updated();
+                    parent.rcmail.mel_metapage_fn.tasks_updated();
+                    parent.rcmail.mel_metapage_fn.mail_updated(true);
+                    parent.rcmail.mel_metapage_fn.weather();
 
                     refreshWorkspaceCloudNotification();
                     rcmail.triggerEvent("mel_metapage_refresh");

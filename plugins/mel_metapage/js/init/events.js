@@ -73,15 +73,26 @@ if (rcmail && window.mel_metapage)
         if (rcmail.env.task === 'bureau')
         {
             mel_item_in_update('#tab-for-agenda-content .icon-mel-calendar', 'icon-mel-calendar', 'spinner-grow');
+        }
+    });
+
+    rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.before, () => {
+        if (rcmail.env.task === 'bureau')
+        {
             mel_item_in_update('#tab-for-tasks-contents .icon-mel-task', 'icon-mel-task', 'spinner-grow');
         }
-
     });
 
     rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
         if (rcmail.env.task === 'bureau')
         {
             mel_item_in_update('#tab-for-agenda-content .spinner-grow', 'icon-mel-calendar', 'spinner-grow', false);
+        }
+    });
+
+    rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, () => {
+        if (rcmail.env.task === 'bureau')
+        {
             mel_item_in_update('#tab-for-tasks-contents .spinner-grow', 'icon-mel-task', 'spinner-grow', false);
         }
     });

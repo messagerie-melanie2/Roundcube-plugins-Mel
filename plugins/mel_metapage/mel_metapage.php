@@ -161,6 +161,8 @@ class mel_metapage extends rcube_plugin
         $this->add_texts('localization/', true);
         $this->load_config();
         $this->require_plugin('mel_helper');
+
+        $this->include_script('js/init/constants.js');
  
         if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe' && $this->rc->task !== "login")
         {
@@ -214,7 +216,7 @@ class mel_metapage extends rcube_plugin
                 case 'compose':
                     $this->include_edited_editor();
                     $this->include_script('js/init/classes.js');
-                    $this->include_script('js/init/constants.js');
+                    $this->include_script('js/init/mel_metapage_utils.js');
 
                     if ($_COOKIE['current_model_id'] !== null)
                     {
@@ -335,7 +337,7 @@ class mel_metapage extends rcube_plugin
         else
         {
             $this->include_script('js/init/classes.js');
-            $this->include_script('js/init/constants.js');
+            $this->include_script('js/init/mel_metapage_utils.js');
         }
         //m2_get_account
         $this->add_hook("m2_get_account", array($this, "m2_gestion_cache"));
@@ -526,7 +528,7 @@ class mel_metapage extends rcube_plugin
         $this->get__init_js_from_folder("updates");
         $this->get__init_js_from_folder("classes");
         $this->include_script('js/init/classes.js');
-        $this->include_script('js/init/constants.js');
+        $this->include_script('js/init/mel_metapage_utils.js');
         $this->include_script('js/init/events.js');
         $this->include_script('js/init/commands.js');
         $this->load_config_js();
@@ -898,7 +900,7 @@ class mel_metapage extends rcube_plugin
         $source = rcube_utils::get_input_value('_source', rcube_utils::INPUT_GET);
         $url = "?_task=addressbook&_framed=1&_cid=".$id."&_action=show&_source=".$source;
         $this->rc->output->set_env("contact_url", $url);
-        $this->include_script('js/init/constants.js');
+        $this->include_script('js/init/mel_metapage_utils.js');
         $this->include_script('js/init/commands.js');
         $this->include_script('js/actions/set_iframe_contact.js');
         $this->rc->output->send("mel_metapage.contact");

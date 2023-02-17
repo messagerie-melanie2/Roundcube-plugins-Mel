@@ -71,6 +71,8 @@
                             }
                         }
 
+                        console.log(`${moment().format(CONST_DATE_FORMAT_BNUM_COMPLETE)}[mel_calendar_updated]Events :`, loadedEvents);
+
                         //Set
                         const all_events = Enumerable.from(loadedEvents).where(x => x !== null).orderBy(x => x.order).thenBy(x => moment(x.start)).where(x => moment(x.start) >= moment().startOf(CONST_DATE_START_OF_DAY));
                         const today = all_events.where(x => moment(x.start) >= moment().startOf(CONST_DATE_START_OF_DAY) && moment(x.start) <= moment().endOf(CONST_DATE_END_OF_DAY));
@@ -78,8 +80,10 @@
                         
                         try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar);
                         update_badge(today.where(x => x.free_busy !== CONST_EVENT_DISPO_FREE && x.free_busy !== CONST_EVENT_DISPO_TELEWORK).count(), mel_metapage.Ids.menu.badge.calendar);
-
-                        mel_metapage.Storage.set(mel_metapage.Storage.calendar_all_events, all_events.toArray());
+                        const debug_aae = all_events.toArray();
+                        console.log(`${moment().format(CONST_DATE_FORMAT_BNUM_COMPLETE)}[mel_calendar_updated]Traitement :`, Enumerable.from(loadedEvents).where(x => x !== null).orderBy(x => x.order).thenBy(x => moment(x.start)).select(x => x.start).toArray());
+                        console.log(`${moment().format(CONST_DATE_FORMAT_BNUM_COMPLETE)}[mel_calendar_updated]Résultat :`, debug_aae);
+                        mel_metapage.Storage.set(mel_metapage.Storage.calendar_all_events, debug_aae);
                         mel_metapage.Storage.set(mel_metapage.Storage.calendar, today.toArray());
                         mel_metapage.Storage.set(mel_metapage.Storage.calendar_by_days, byDays);
 
@@ -97,6 +101,8 @@
 
                 }
             );
+
+            console.log(`${moment().format(CONST_DATE_FORMAT_BNUM_COMPLETE)}[mel_calendar_updated]Fin`);
         }
 
         function getEventIndex(id, events) {

@@ -2655,3 +2655,32 @@ html.dark-mode #visio-right-pannel-util {
 .loader-div.loaded {
   display: none;
 }
+#theme-panel .theme-pannel-tab-pictures {
+  text-align: center;
+}
+#theme-panel .picture {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  border-radius: 15px;
+  margin: 0 15px;
+  transition: all 0.1s ease-in;
+}
+#theme-panel .picture.barup-background-color {
+  border: solid thin var(--primary-border-color);
+}
+html.dark-mode #theme-panel .picture.barup-background-color {
+  --primary-border-color: #E1C58F;
+}
+#theme-panel .picture.barup-background-color:hover,
+#theme-panel .picture.barup-background-color.selected {
+  background-color: var(--secondary-nav-background-color);
+}
+#theme-panel .picture:hover {
+  border-radius: 100%;
+}
+#theme-panel .picture.selected {
+  border-radius: 15px;
+  background-blend-mode: color-dodge;
+  border: solid thick #484D7A;
+}

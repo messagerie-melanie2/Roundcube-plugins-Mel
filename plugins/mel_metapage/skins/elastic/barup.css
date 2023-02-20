@@ -1,11 +1,15 @@
 .barup
 {
-    background-color: #F0F0F0;
     height:60px;
     width: 100%;
     position: absolute;
     left:60px;
     z-index: 80;
+}
+
+.barup,
+.barup-background-color {
+    background: var(--secondary-nav-background-color);
 }
 
 html.touch .barup
@@ -640,3 +644,20 @@ html.layout-large .show-normal-and-inf.important{
 	font-size: 14px;
 }
 
+html.barup-picture .barup #button-help{
+    background-color: white;
+}
+
+html.barup-picture .barup #button-help:hover{
+    background-color: var(--tierciary-bckg-color);
+}
+
+html.barup-picture .barup > .wrapper > .user{
+    background-color: #363A5B80;
+    border-left: solid thick #363A5B;
+}
+
+html.dark-mode.barup-picture .barup > .wrapper > .user{
+    background-color: #323F4B80!important;
+    border-left: solid thick #323F4B;
+}

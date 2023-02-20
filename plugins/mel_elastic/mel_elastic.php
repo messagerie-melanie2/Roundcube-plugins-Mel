@@ -42,6 +42,7 @@ class mel_elastic extends rcube_plugin
     function init()
     {
         include_once __DIR__.'/classes/html_table_bnum.php';
+        include_once __DIR__.'/program/backgrounds.php';
         $this->skinPath = self::SkinPath();
         $this->rc = rcmail::get_instance();
         if ($this->rc->config->get('skin') == 'mel_elastic')
@@ -50,12 +51,14 @@ class mel_elastic extends rcube_plugin
             $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->add_hook('ready', array($this, 'set_theme'));
             $this->register_action('update_theme', array($this, 'update_theme'));
+            $this->register_action('update_theme_picture', array($this, 'update_theme_picture'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->rc->output->set_env('mel_themes', $this->mep_themes());
+            $this->rc->output->set_env('mel_themes_pictures', Background::from_path($this->skinPath.'/images/backgrounds/backgrounds.json'));
             $this->load_folders();
             $this->add_texts('localization/', true);
             //$this->add_hook('messages_list', [$this, 'mail_messages_list']);
@@ -63,6 +66,7 @@ class mel_elastic extends rcube_plugin
             '<div class="mel-add" onclick="¤¤¤">
                 <span style="position:relative">'.$this->gettext('add').'<span class="icofont-plus-circle plus"></span></span>
             </div>'
+
         );
         }
     }
@@ -262,6 +266,9 @@ class mel_elastic extends rcube_plugin
             if ($themes[$theme] !== null) $this->rc->output->set_env('current_theme', $this->get_current_theme());
         }
 
+        $picture = $this->rc->config->get('mel_elastic.picture.current', null);
+        if (isset($picture)) $this->rc->output->set_env('theme_selected_picture', $picture);
+
         foreach ($themes as $key => $value) {
             foreach ($value->styles as $file) {
                 $this->include_stylesheet($file);
@@ -276,6 +283,13 @@ class mel_elastic extends rcube_plugin
         $theme = rcube_utils::get_input_value('_t', rcube_utils::INPUT_POST);
         $this->rc->user->save_prefs(array('mel_elastic.current' => $theme));
         $this->unload_current_theme();
+        echo 'ok';
+        exit;
+    }
+
+    public function update_theme_picture(){
+        $picid = rcube_utils::get_input_value('_id', rcube_utils::INPUT_POST);
+        $this->rc->user->save_prefs(array('mel_elastic.picture.current' => $picid));
         echo 'ok';
         exit;
     }

@@ -4054,3 +4054,42 @@ a.rcmContactAddress {
         }
     }
 }
+
+#theme-panel {
+
+    .theme-pannel-tab-pictures {
+        text-align: center;
+    }
+
+    .picture {
+        display: inline-block;
+        width: 150px;
+        height: 150px;
+        border-radius: 15px; 
+        margin: 0 15px;
+        transition: all 0.1s ease-in;
+
+        &.barup-background-color {
+            border: solid thin var(--primary-border-color);
+
+            html.dark-mode &{
+                --primary-border-color:#E1C58F;
+            }
+
+            &:hover,
+            &.selected{
+                background-color: var(--secondary-nav-background-color);
+            }
+        }
+
+        &:hover {
+            border-radius: 100%;
+        }
+
+        &.selected {
+            border-radius: 15px;
+            background-blend-mode: color-dodge;
+            border: solid thick #484D7A;
+        }
+    }
+}

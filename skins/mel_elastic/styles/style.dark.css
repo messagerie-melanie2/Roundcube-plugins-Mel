@@ -85,9 +85,13 @@ html.dark-mode #layout-menu span > a:focus > span.inner
 
 html.dark-mode .search-container,
 html.dark-mode #barup-search,
-html.dark-mode div#user-picture,
-html.dark-mode .barup{
+html.dark-mode div#user-picture{
     background-color: #181C28;
+}
+
+html.dark-mode .barup,
+html.dark-mode .barup-background-color{
+    --secondary-nav-background-color:#181C28;
 }
 
 html.dark-mode .search-container
@@ -1257,4 +1261,14 @@ html.dark-mode .mel-selectable.selected {
 
 html.dark-mode optgroup {
     background: #2E2E2E;
+}
+
+html.dark-mode.barup-picture .barup button,
+html.dark-mode.barup-picture .barup #barup-search-input,
+html.dark-mode.barup-picture .barup .search .input-group-append span{
+    background-color: var(--secondary-nav-background-color);
+}
+
+html.dark-mode.barup-picture .barup #button-help {
+    background-color: var(--secondary-nav-background-color);
 }

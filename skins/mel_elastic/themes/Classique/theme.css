@@ -438,6 +438,10 @@ html.theme-classique .mel-selectable.selected {
   border-bottom: none!important;
   border-left: solid thick var(--tierciary-bckg-color);
 }
+html.theme-classique .mel-selectable.selected.picture {
+  border-bottom: solid thick #484D7A !important;
+  background-color: var(--invisible);
+}
 html.theme-classique #melplusmails {
   color: var(--theme-base-text-color);
   border-top: solid thin var(--invisible) !important;

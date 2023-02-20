@@ -7,12 +7,12 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     * Classe qui gÃ¨re une rÃ¨gle css. Elle pourra Ãªtre ajouter ou supprimer.
      */
     class Mel_CSS_Rule {
         /**
          * 
-         * @param {string} rule Règle css style "p{color:red;}"
+         * @param {string} rule RÃ¨gle css style "p{color:red;}"
          */
         constructor(rule)
         {
@@ -21,8 +21,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Intègre le style à la page web
-         * @returns {Mel_CSS_Rule} Chaînage
+         * IntÃ¨gre le style Ã  la page web
+         * @returns {Mel_CSS_Rule} ChaÃ®nage
          */
         set()
         {
@@ -32,7 +32,7 @@ $(document).ready(() => {
 
         /**
          * Supprime le style de la page web
-         * @returns {Mel_CSS_Rule} Chaînage
+         * @returns {Mel_CSS_Rule} ChaÃ®nage
          */
         delete()
         {
@@ -42,7 +42,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Retourne la règle css sous forme de string
+         * Retourne la rÃ¨gle css sous forme de string
          * @returns {string}
          */
         toString()
@@ -51,7 +51,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère la première feuille de style du document
+         * RÃ©cupÃ¨re la premiÃ¨re feuille de style du document
          * @returns {StyleSheetList}
          */
         static component()
@@ -60,7 +60,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère le prochain index de la feuille de style
+         * RÃ©cupÃ¨re le prochain index de la feuille de style
          * @returns {number}
          */
         static lastIndex()
@@ -70,14 +70,14 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
-     * Gère un sélécteur ainsi qu'une liste de modificateur css.
+     * Classe qui gÃ¨re une rÃ¨gle css. Elle pourra Ãªtre ajouter ou supprimer.
+     * GÃ¨re un sÃ©lÃ©cteur ainsi qu'une liste de modificateur css.
      */
     class Mel_CSS_Advanced_Rule extends Mel_CSS_Rule{
         /**
          * 
          * @param {string} selector Selector html (exemple: p.maclass)
-         * @param  {...string} rules Liste de règles html (exemple : color:red) sans les ';'
+         * @param  {...string} rules Liste de rÃ¨gles html (exemple : color:red) sans les ';'
          */
         constructor(selector, ...rules)
         {
@@ -86,8 +86,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Intègre le style à la page web
-         * @returns {Mel_CSS_Advanced_Rule} Chaînage
+         * IntÃ¨gre le style Ã  la page web
+         * @returns {Mel_CSS_Advanced_Rule} ChaÃ®nage
          */
         set()
         {
@@ -96,10 +96,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une règle à la liste des règles
-         * @param {string} rule Règle à ajouté (sans les ;)
-         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
-         * @returns Chaînage
+         * Ajoute une rÃ¨gle Ã  la liste des rÃ¨gles
+         * @param {string} rule RÃ¨gle Ã  ajoutÃ© (sans les ;)
+         * @param {boolean} force_set Si vrai, met Ã  jour la rÃ¨gle dans la page web
+         * @returns ChaÃ®nage
          */
         add(rule, force_set = true)
         {
@@ -120,10 +120,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Supprime une règle
-         * @param {number} index Index de la règle à supprimer 
-         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
-         * @returns Chaînage
+         * Supprime une rÃ¨gle
+         * @param {number} index Index de la rÃ¨gle Ã  supprimer 
+         * @param {boolean} force_set Si vrai, met Ã  jour la rÃ¨gle dans la page web
+         * @returns ChaÃ®nage
          */
         remove(index, force_set = true)
         {
@@ -132,11 +132,11 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jour une règle
-         * @param {number} index Index de la règle à modifier
-         * @param {string} new_rule Nouvelle règle
-         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
-         * @returns Chaînage
+         * Met Ã  jour une rÃ¨gle
+         * @param {number} index Index de la rÃ¨gle Ã  modifier
+         * @param {string} new_rule Nouvelle rÃ¨gle
+         * @param {boolean} force_set Si vrai, met Ã  jour la rÃ¨gle dans la page web
+         * @returns ChaÃ®nage
          */
         update(index, new_rule, force_set = true)
         {
@@ -145,8 +145,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère les règles
-         * @returns {string} Règles
+         * RÃ©cupÃ¨re les rÃ¨gles
+         * @returns {string} RÃ¨gles
          */
         rules()
         {
@@ -154,7 +154,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Retourne la règle css sous forme de string
+         * Retourne la rÃ¨gle css sous forme de string
          * @returns {string}
          */
         toString()
@@ -164,7 +164,7 @@ $(document).ready(() => {
     }
 
     /**
-     * Gère les différentes règles qu'on ajoute à cette classe.
+     * GÃ¨re les diffÃ©rentes rÃ¨gles qu'on ajoute Ã  cette classe.
      */
     class Mel_CSS_Style_Sheet {
         constructor()
@@ -173,25 +173,25 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une règle à la liste de règles
-         * @param {string} key Clé qui permettra de récupérer la règle ajouté
-         * @param {Mel_CSS_Rule} rule Règle qui sera ajouté
-         * @returns {Mel_CSS_Style_Sheet} Chaînage
+         * Ajoute une rÃ¨gle Ã  la liste de rÃ¨gles
+         * @param {string} key ClÃ© qui permettra de rÃ©cupÃ©rer la rÃ¨gle ajoutÃ©
+         * @param {Mel_CSS_Rule} rule RÃ¨gle qui sera ajoutÃ©
+         * @returns {Mel_CSS_Style_Sheet} ChaÃ®nage
          */
         _add(key, rule)
         {
             if (!this.ruleExist()) this.css[key] = rule.set();
             else {
-                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe déjà !`);
+                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe dÃ©jÃ  !`);
             }
             return this;
         }
 
         /**
-         * Ajoute une règle à la liste de règle
-         * @param {string} key Clé qui permettra de récupérer la règle ajouté
-         * @param {string} rule Règle qui sera ajouté (ex : p{color:red;}) 
-         * @returns Chaînage
+         * Ajoute une rÃ¨gle Ã  la liste de rÃ¨gle
+         * @param {string} key ClÃ© qui permettra de rÃ©cupÃ©rer la rÃ¨gle ajoutÃ©
+         * @param {string} rule RÃ¨gle qui sera ajoutÃ© (ex : p{color:red;}) 
+         * @returns ChaÃ®nage
          */
         add(key, rule)
         {
@@ -199,11 +199,11 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une règle à la liste des règles.
-         * @param {string} key  Clé qui permettra de récupérer la règle ajouté
-         * @param {string} selector Sélécteur html
-         * @param  {...any} rules Liste de règles (ex : 'color:red', 'background-color:blue')
-         * @returns Chaînage
+         * Ajoute une rÃ¨gle Ã  la liste des rÃ¨gles.
+         * @param {string} key  ClÃ© qui permettra de rÃ©cupÃ©rer la rÃ¨gle ajoutÃ©
+         * @param {string} selector SÃ©lÃ©cteur html
+         * @param  {...any} rules Liste de rÃ¨gles (ex : 'color:red', 'background-color:blue')
+         * @returns ChaÃ®nage
          */
         addAdvanced(key, selector, ...rules)
         {
@@ -211,9 +211,9 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute plusieurs règles
-         * @param  {...{key:string, rule:string}} rules Règles à ajouter
-         * @returns Chaînage
+         * Ajoute plusieurs rÃ¨gles
+         * @param  {...{key:string, rule:string}} rules RÃ¨gles Ã  ajouter
+         * @returns ChaÃ®nage
          */
         addRules(...rules)
         {
@@ -228,9 +228,9 @@ $(document).ready(() => {
         }
 
         /**
-         * Supprime une règle
+         * Supprime une rÃ¨gle
          * @param {string} key 
-         * @returns Chaînage
+         * @returns ChaÃ®nage
          */
         remove(key)
         {
@@ -256,7 +256,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Vérifie si une règle éxiste
+         * VÃ©rifie si une rÃ¨gle Ã©xiste
          * @param {string} key 
          * @returns 
          */
@@ -266,7 +266,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère les clés de la classe
+         * RÃ©cupÃ¨re les clÃ©s de la classe
          * @returns {string[]}
          */
         getKeys()
@@ -275,7 +275,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère la feuille de styme
+         * RÃ©cupÃ¨re la feuille de styme
          * @returns {string}
          */
         getStyleSheet()
@@ -284,8 +284,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Remise à zéro de la feuille de style
-         * @returns Chaînage
+         * Remise Ã  zÃ©ro de la feuille de style
+         * @returns ChaÃ®nage
          */
         reset()
         {
@@ -311,7 +311,7 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui sert à gérer les différentes interfaces
+     * Classe qui sert Ã  gÃ©rer les diffÃ©rentes interfaces
      */
     class Mel_Elastic {
         constructor() {
@@ -323,18 +323,21 @@ $(document).ready(() => {
         ////////////************* Inits and setups functions *************///////////
 
         /**
-         * Initialise les différentes variables et constantes de la classe.
-         * @returns {Mel_Elastic} Chaînage
+         * Initialise les diffÃ©rentes variables et constantes de la classe.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         init(){
+            const ID_THEME_CONTENT = 0;
+            const ID_PICTURES_CONTENT = 1;
             this.screen_type = null;
             this.css_rules = new Mel_CSS_Style_Sheet(); 
-            return this.init_const().init_theme().initResponsive();
+            const tabs = this.init_theme_tabs({});
+            return this.init_const().init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`)).init_theme_pictures({picturePannel:`#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`}).initResponsive();
         }
 
         /**
-         * Initialise les différentes constantes de la classe.
-         * @returns {Mel_Elastic} Chaînage
+         * Initialise les diffÃ©rentes constantes de la classe.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         init_const()
         {
@@ -342,7 +345,7 @@ $(document).ready(() => {
                 enumerable: false,
                 configurable: false,
                 writable: false,
-                value: '¤¤¤'
+                value: 'Â¤Â¤Â¤'
               });
 
               Object.defineProperty(this, 'SELECT_VALUE_REPLACE', {
@@ -491,9 +494,135 @@ $(document).ready(() => {
             return this._update_theme_color();
         }
 
+        init_theme_tabs({
+            tabs_div_selector='#theme-panel .title',
+            $themePannel=$('#theme-panel .contents'),
+            tabs=[{
+                display:'Thèmes',
+                id:'theme-pannel-tab-theme',
+                already:true
+            }, {
+                display:'Images',
+                id:'theme-pannel-tab-pictures',
+                already:false
+            }]})
+        {
+            let themeIndex = null;
+            let $tabs = $(tabs_div_selector).html('').addClass('mel-ui-tab-system');
+
+            for (let index = 0, len = tabs.length; index < len; ++index) {
+                const element = tabs[index];
+                $tabs.append(`<div id="${element.id}" class="tab-meltheme mel-tab mel-tabheader ${0 === index ? 'active' : (len-1 === index ? 'last' : '')}">${element.display}</div>`);
+
+                if ('theme-pannel-tab-theme' === element.id) themeIndex = index;
+            }
+
+            let $pannelParent = $themePannel.parent();
+            let $contents = $('<div></div>');
+            if (themeIndex !== null) {
+                let $divThemes = $('<div></div>').addClass(`${tabs[themeIndex].id} tab-meltheme mel-tab-content`).appendTo($contents);
+                $themePannel.appendTo($divThemes);
+            }
+
+            $contents.appendTo($pannelParent);
+
+            for (let index = 0, len = tabs.length; index < len; ++index) {
+                const element = tabs[index];
+                if (!element.already) {
+                    $('<div></div>').addClass(`${element.id} tab-meltheme mel-tab-content`).css('display', 'none').appendTo($contents);
+                }
+            }
+
+            return tabs;
+        }
+
+        init_theme_pictures({
+            picturePannel='#theme-panel .theme-pannel-tab-pictures',
+            picturesToIgnore = [],
+            picturesToAdd = []
+        }) {
+            this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
+
+            let $pannel = $(picturePannel);
+            const pictures = rcmail.env.mel_themes_pictures;
+            let $item;
+
+            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? 0:1)) {
+                $item = $('<div></div>').addClass('mel-selectable picture').data('picid', iterator.key);
+                if (true === iterator.value.isThemeColor) {
+                    $item.addClass('barup-background-color');
+                }
+                else $item.data('picpath', iterator.value.background).css('background-image', `url(${iterator.value.view})`).css('background-size', 'cover');
+
+                $item.click((e) => {
+                    e = $(e.currentTarget);
+                    $pannel.find('.selected').removeClass('selected');
+                    e.addClass('selected');
+                    const data = e.data('picpath');
+
+                    this.css_rules.remove('barup-background');
+                    
+                    if (!!data) {
+                        this._add_background(data);
+                        $('html').addClass('barup-picture');
+                    }
+                    else {
+                        $('html').removeClass('barup-picture');
+                    }
+
+                    this.set_theme_picture(e.data('picid'));
+                }).appendTo($pannel);
+
+                if (this.theme_selected_picture === null || iterator.key === this.theme_selected_picture) {
+                    $item.addClass('selected');
+
+                    if (this.theme_selected_picture === null || !iterator.value.background) {
+                        this.theme_selected_picture = iterator.key;
+                        this.css_rules.remove('barup-background');
+                    }
+                    else {
+                        this._add_background(iterator.value.background);
+                        $('html').addClass('barup-picture');
+                    }
+                }
+            }
+            return this;
+        }
+
+        _add_background(path) {
+            this.css_rules.addAdvanced('barup-background', '.barup',`background-image:url(${path.replace('./', '/')})!important`,
+            'background-size: cover !important',
+            'background-position: center !important'
+            );
+            return this;
+        }
+
+        async set_theme_picture(id) {
+            this.theme_selected_picture = id || null;
+
+            if (this.theme_selected_picture !== null)
+            {
+                await mel_metapage.Functions.post(
+                    mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme_picture'), {
+                        _id:id
+                    },
+                    (datas) => {
+                        const VALIDATION = 'ok';
+                        if (VALIDATION === datas) {
+                            rcmail.display_message('Image changée avec succès !', 'confirmation');
+                        }
+                    }
+                );
+            }
+        }
+
+        get_theme_picture() {
+            return this.theme_selected_picture;
+        }
+
         /**
-         * Différentes actions à faire après l'initialisation.
-         * @returns {Mel_Elastic} Chaînage
+         * DiffÃ©rentes actions Ã  faire aprÃ¨s l'initialisation.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup(){
 
@@ -510,13 +639,13 @@ $(document).ready(() => {
 
         /**
          * Met en place l'apparence et le fonctionnel de la barre de navigation principale
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_nav()
         {
             if (parent === window)
             {
-                //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
+                //La sidebar Ã©tant en position absolue, on dÃ©cale certaines divs pour que l'affichage soit correct.
                 const width = "60px";
 
                 if (!this.IS_EXTERNE && $("#layout-sidebar").length > 0)
@@ -527,7 +656,7 @@ $(document).ready(() => {
 
             if ($("#taskmenu").length > 0)
             {
-                //On met dans l'ordre les différents boutons de la barre de navigation principale
+                //On met dans l'ordre les diffÃ©rents boutons de la barre de navigation principale
                 let array = [];
 
                 $("#taskmenu").find("a").each((i,e) => {
@@ -566,7 +695,7 @@ $(document).ready(() => {
 
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
 
-                //On supprime le stockage si on y a pas accès.
+                //On supprime le stockage si on y a pas accÃ¨s.
                 if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();
             }
 
@@ -574,17 +703,17 @@ $(document).ready(() => {
         }
 
         /**
-         * Met en place les actions pour les tâches qui en ont besoins.
-         * @returns {Mel_Elastic} Chaînage
+         * Met en place les actions pour les tÃ¢ches qui en ont besoins.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_tasks()
         {
             try {
-                //Gérer le texte du bouton de login.
+                //GÃ©rer le texte du bouton de login.
                 if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
                     $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
 
-                //Revenir à la liste des mails sans rafraîchir la page.
+                //Revenir Ã  la liste des mails sans rafraÃ®chir la page.
                 if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
                 {
                     $(`<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
@@ -598,7 +727,7 @@ $(document).ready(() => {
             }
 
             try {
-                //Gérer le changement de mot de passe dans le login.
+                //GÃ©rer le changement de mot de passe dans le login.
                 $("#login-form p.formbuttons a").click(() => {
                       event.preventDefault();
                       window.location.href = window.location.href.replaceAll("/changepassword/index.php", "");
@@ -612,7 +741,7 @@ $(document).ready(() => {
 
         /**
          * Met en place les mails.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_mails()
         {
@@ -632,7 +761,7 @@ $(document).ready(() => {
                 height: 0;
                 margin: 0;"></p>`);
 
-                //Gérer la prévisu des mails.
+                //GÃ©rer la prÃ©visu des mails.
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
@@ -648,11 +777,11 @@ $(document).ready(() => {
                         delete rcmail.env.is_from_scroll;
                     else if ($("#layout-list").hasClass("initial") && show)
                     {
-                        //Mise en place du système
+                        //Mise en place du systÃ¨me
                         $("#layout-content").css("display", "").removeClass("hidden layout-hidden");
                         $("#layout-list").removeClass("initial");
 
-                        //On réduit la recherche au besoin
+                        //On rÃ©duit la recherche au besoin
                         $("#mailsearchlist").addClass("hoverable").on("mouseover focusin", () => {
                             if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").removeClass("hoverable");
@@ -681,7 +810,7 @@ $(document).ready(() => {
 
                         $('#layout-content .header .move.simplified').css('display', 'none');
 
-                        //Fermer la prévisu
+                        //Fermer la prÃ©visu
                         rcmail.register_command("close-mail-visu", () => {
                             $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
 
@@ -875,7 +1004,7 @@ $(document).ready(() => {
                     {
                         let _css = "";
 
-                        //Taille des icônes
+                        //Taille des icÃ´nes
                         if (mailConfig["mel-icon-size"] !== rcmail.gettext("normal", "mel_metapage"))
                         {
                             _css += `
@@ -1086,7 +1215,7 @@ $(document).ready(() => {
                     }
                 };
 
-                //Répondre
+                //RÃ©pondre
                 $("#toolbar-menu .reply").each((i,e) => {
                     testing(e, "reply");
                 });
@@ -1101,8 +1230,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Met en place la rédaction d'un mail.
-         * @returns {Mel_Elastic} Chaînage
+         * Met en place la rÃ©daction d'un mail.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_compose()
         {
@@ -1281,8 +1410,8 @@ $(document).ready(() => {
                     p['_extwin'] = 1;
                     const url = rcmail.url('mail/compose', p);
                     let config = {
-                        title:"Rédaction",
-                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe class="sr-only" title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
+                        title:"RÃ©daction",
+                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe class="sr-only" title="RÃ©daction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
                         onclose(popup) {
                             if (popup.box.close.data('force') == '1') return;
                             if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
@@ -1290,7 +1419,7 @@ $(document).ready(() => {
                                 popup.waiting_save = true;
                                 popup.box.close.addClass('disabled').attr('disabled', 'disabled');
                                 popup.box.minifier.addClass('disabled').attr('disabled', 'disabled');
-                                popup.box.title.find('h3').html(popup.box.title.find('h3').html().replace('Rédaction : ', 'Sauvegarde de : '))
+                                popup.box.title.find('h3').html(popup.box.title.find('h3').html().replace('RÃ©daction : ', 'Sauvegarde de : '))
                                 
                                 if (popup.box.minifier.find("span").hasClass(popup.settings.icon_minify))
                                     popup.minify();
@@ -1317,23 +1446,23 @@ $(document).ready(() => {
                             frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
 
                             frame_context.$('#compose-subject').on('input', (e) => {
-                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
+                                box.title.find('h3').html('RÃ©daction : ' + $(e.currentTarget).val());
                             }).on('change', (e) => {
-                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
+                                box.title.find('h3').html('RÃ©daction : ' + $(e.currentTarget).val());
                             });
 
                             box.content.find("#rotomecamelloader").css('display', 'none');
                             box.content.find("iframe").removeClass('sr-only');
                             const obj = frame_context.$('#compose-subject').val();
 
-                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+                            if ((obj ?? "") !== "") box.title.find('h3').html('RÃ©daction : ' + obj);
 
                             frame_context.rcmail.addEventListener('message_submited', async (args) => {
                                 if (args.draft !== true)
                                 {
                                     box.get.find('iframe').css("display", 'none');
                                     box.close.addClass('disabled').attr('disabled', 'disabled');
-                                    box.title.find('h3').html(box.title.find('h3').html().replace('Rédaction : ', 'Envoi de : '));
+                                    box.title.find('h3').html(box.title.find('h3').html().replace('RÃ©daction : ', 'Envoi de : '));
                                     box.content.find("#rotomecamelloader").css('display', '');
                                 }
                             });
@@ -1366,7 +1495,7 @@ $(document).ready(() => {
                                 rcmail.display_message("Impossible d'envoyer le mail !", 'error');
                                 box.close.removeClass('disabled').removeAttr('disabled');
                                 box.get.find('iframe').css("display", '');
-                                box.title.find('h3').html(box.title.find('h3').html().replace('Envoi de : ', 'Rédaction : '));
+                                box.title.find('h3').html(box.title.find('h3').html().replace('Envoi de : ', 'RÃ©daction : '));
                                 box.content.find("#rotomecamelloader").css('display', 'none');
                             });
 
@@ -1418,7 +1547,7 @@ $(document).ready(() => {
 
         /**
          * Met en place certaines actions pour les contacts
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_adressbook()
         {
@@ -1466,7 +1595,7 @@ $(document).ready(() => {
 
         /**
          * Met en place la barre de navigation pour les autres applis.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_other_apps(ignoreStart = false)
         {
@@ -1507,7 +1636,7 @@ $(document).ready(() => {
 
         /**
          * Met en place diverses choses qui concerne les choses invisibles.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_html()
         {
@@ -1554,7 +1683,7 @@ $(document).ready(() => {
                             for (let index = 0; index < size; ++index) {
                                 const element = events[index];
                                 $wel_items.append($(`
-                                <button title="Evènement ${element.title}, cliquez pour afficher l'évènement" class="waiting-event-button mel-button">
+                                <button title="EvÃ¨nement ${element.title}, cliquez pour afficher l'Ã©vÃ¨nement" class="waiting-event-button mel-button">
                                     <span class="waiting-event-title">${element.title}</span>
                                     <span class="waiting-event-horodate">${moment(element.start).format(format)} - ${moment(element.end).format(format)}</span>
                                 </button>
@@ -1581,7 +1710,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Renvoie vrai si les barre de défilements sont en mode automatique
+         * Renvoie vrai si les barre de dÃ©filements sont en mode automatique
          * @returns 
          */
         isScollBarAuto()
@@ -1645,8 +1774,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jours la page.
-         * @returns {Mel_Elastic} Chaînage
+         * Met Ã  jours la page.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         update()
         {
@@ -1658,8 +1787,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jours le système d'onglet
-         * @returns {Mel_Elastic} Chaînage
+         * Met Ã  jours le systÃ¨me d'onglet
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         update_tabs()
         {
@@ -1713,8 +1842,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jours le système de pagination.
-         * @returns {Mel_Elastic} Chaînage
+         * Met Ã  jours le systÃ¨me de pagination.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         update_pagination()
         {
@@ -1735,8 +1864,8 @@ $(document).ready(() => {
         ////////////************* Main functions *************///////////
 
         /**
-         * Gère les étoiles rouges.
-         * @returns {Mel_Elastic} Chaînage
+         * GÃ¨re les Ã©toiles rouges.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         redStars()
         {
@@ -1770,8 +1899,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Switch de thème (sombre/light)
-         * @returns {Mel_Elastic} Chaînage
+         * Switch de thÃ¨me (sombre/light)
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         switch_color()
         {
@@ -1780,7 +1909,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Retourne le thème en cours
+         * Retourne le thÃ¨me en cours
          * @returns {string} dark/light
          */
         color_mode()
@@ -1817,9 +1946,9 @@ $(document).ready(() => {
 
         ////////////************* Other functions *************///////////
         /**
-         * Récupère la classe principale d'un bouton de la barre de navigation
-         * @param {DomElement} button - Ne doit pas être du JQUERY
-         * @returns {string} - Classe principale ou "no-class-found" si aucune classe principale trouvé.
+         * RÃ©cupÃ¨re la classe principale d'un bouton de la barre de navigation
+         * @param {DomElement} button - Ne doit pas Ãªtre du JQUERY
+         * @returns {string} - Classe principale ou "no-class-found" si aucune classe principale trouvÃ©.
          */
         get_nav_button_main_class(button)
         {
@@ -1854,8 +1983,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Génère une couleur au hasard.
-         * @returns {string} Couleur héxadécimale
+         * GÃ©nÃ¨re une couleur au hasard.
+         * @returns {string} Couleur hÃ©xadÃ©cimale
          */
         getRandomColor() {
             var letters = '0123456789ABCDEF';
@@ -1867,10 +1996,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère la différence de 2 réctangles.
-         * @param {DOMRect} rect1 Rectangle à soustraire
+         * RÃ©cupÃ¨re la diffÃ©rence de 2 rÃ©ctangles.
+         * @param {DOMRect} rect1 Rectangle Ã  soustraire
          * @param {DOMRect} rect2 Rectangle de soustraction
-         * @returns {{top:number, left:number, right:number, bottom:number, rect1:DOMRect, rect2:DOMRect}} Résultats
+         * @returns {{top:number, left:number, right:number, bottom:number, rect1:DOMRect, rect2:DOMRect}} RÃ©sultats
          */
         getRect(rect1, rect2)
         {
@@ -1885,10 +2014,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère une url correcte
-         * @param {string} task Tâche que l'on souhaite
+         * RÃ©cupÃ¨re une url correcte
+         * @param {string} task TÃ¢che que l'on souhaite
          * @param {string} action Action que l'on souhaite
-         * @param {JSON} args Arguments supplémentaires
+         * @param {JSON} args Arguments supplÃ©mentaires
          * @returns {string} Url fonctionnel
          */
         url(task, action = "", args = null)
@@ -1922,7 +2051,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère une recherche de contact avec autocompletion.
+         * RÃ©cupÃ¨re une recherche de contact avec autocompletion.
          * @param {string} id Id de l'input 
          * @returns {string} html
          */
@@ -1946,9 +2075,9 @@ $(document).ready(() => {
 
         ////////////************* Select box functions *************///////////
         /**
-         * Créer une selectbox stylisé via un élément
-         * @param {JQUERY} event Jquery élément
-         * @returns {Mel_Elastic} Chaînage
+         * CrÃ©er une selectbox stylisÃ© via un Ã©lÃ©ment
+         * @param {JQUERY} event Jquery Ã©lÃ©ment
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         generateSelect(event)
         {
@@ -1962,14 +2091,14 @@ $(document).ready(() => {
             }
             
             //console.log("generateSelect", event.data("options"), typeof event.data("options"), event);
-            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
-            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
-            const options_title = typeof event.data("option-title") === "string" ? JSON.parse(event.data("option-title").includes("¤¤¤") ? event.data("option-title").replaceAll('¤¤¤', '"') : event.data("option-title")) : event.data("option-title");
-            const options_current_title = typeof event.data("option-title-current") === "string" ? JSON.parse(event.data("option-title-current").includes("¤¤¤") ? event.data("option-title-current").replaceAll('¤¤¤', '"') : event.data("option-title-current")) : event.data("option-title-current");
+            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("Â¤Â¤Â¤") ? event.data("options").replaceAll('Â¤Â¤Â¤', '"') : event.data("options")) : event.data("options");
+            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("Â¤Â¤Â¤") ? event.data("options_class").replaceAll('Â¤Â¤Â¤', '"') : event.data("options_class")) : event.data("options_class");
+            const options_title = typeof event.data("option-title") === "string" ? JSON.parse(event.data("option-title").includes("Â¤Â¤Â¤") ? event.data("option-title").replaceAll('Â¤Â¤Â¤', '"') : event.data("option-title")) : event.data("option-title");
+            const options_current_title = typeof event.data("option-title-current") === "string" ? JSON.parse(event.data("option-title-current").includes("Â¤Â¤Â¤") ? event.data("option-title-current").replaceAll('Â¤Â¤Â¤', '"') : event.data("option-title-current")) : event.data("option-title-current");
             const update = event.data("event");
             const is_icon = typeof event.data("is_icon") === "string" ? event.data("is_icon") === "true" : event.data("is_icon");
             const value = event.data("value");
-            const onchange = event.data("onchange");// = typeof event.data("on") === "string" ? JSON.parse(event.data("on").includes("¤¤¤") ? event.data("on").replaceAll('¤¤¤', '"') : event.data("on")) : event.data("on");
+            const onchange = event.data("onchange");// = typeof event.data("on") === "string" ? JSON.parse(event.data("on").includes("Â¤Â¤Â¤") ? event.data("on").replaceAll('Â¤Â¤Â¤', '"') : event.data("on")) : event.data("on");
             //Create selectbox
             if (event.parent().css("position") !== "relative")
                 event.parent().css("position", "relative");
@@ -2019,10 +2148,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jour la valeur du select
+         * Met Ã  jour la valeur du select
          * @param {string} value Nouvelle valeur
-         * @param {string} newTitle Nouveau titre associé
-         * @returns {Mel_Elastic} Chaînage
+         * @param {string} newTitle Nouveau titre associÃ©
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         updateSelectValue(value, newTitle = "")
         {
@@ -2074,13 +2203,13 @@ $(document).ready(() => {
         /**
          * Modifie la valeur d'un select
          * @param {string} new_value Nouvelle valeur
-         * @param {JQUERY} event Élément JQUERY
-         * @returns {Mel_Elastic} Chaînage
+         * @param {JQUERY} event Ã‰lÃ©ment JQUERY
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setValue(new_value, event)
         {
-            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
-            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
+            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("Â¤Â¤Â¤") ? event.data("options").replaceAll('Â¤Â¤Â¤', '"') : event.data("options")) : event.data("options");
+            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("Â¤Â¤Â¤") ? event.data("options_class").replaceAll('Â¤Â¤Â¤', '"') : event.data("options_class")) : event.data("options_class");
             const update = event.data("event");
             const is_icon = typeof event.data("is_icon") === "string" ? event.data("is_icon") === "true" : event.data("is_icon");
             const value = event.data("value");
@@ -2102,7 +2231,7 @@ $(document).ready(() => {
         /**
          * Change d'onglet
          * @param {DOMElement} event 
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         switchTab(event)
         {
@@ -2125,14 +2254,14 @@ $(document).ready(() => {
             if (namespace === null)
                 return this;
 
-            //Désactivation des autres tabs et objets
+            //DÃ©sactivation des autres tabs et objets
             $("."+namespace+".mel-tab").removeClass("active").attr("aria-selected", false).attr("tabindex", -1);
             $("."+namespace+".mel-tab-content").css("display", "none");
 
             //Activation de la tab
             $(event).addClass("active").attr("aria-selected", true).attr("tabindex", 0);
 
-            //activation des objets lié à la tab
+            //activation des objets liÃ© Ã  la tab
             $("." + id + "." + namespace).css("display", "");
             const onclick = $(event).data("onclick");
 
@@ -2155,9 +2284,9 @@ $(document).ready(() => {
         }
 
         /**
-         * Gère les différents onglets
-         * @param {JQUERY | DOMElement} $item Si null, gère la page entière 
-         * @returns {Mel_Elastic} Chaînage
+         * GÃ¨re les diffÃ©rents onglets
+         * @param {JQUERY | DOMElement} $item Si null, gÃ¨re la page entiÃ¨re 
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         gestionTabs($item = null)
         {
@@ -2258,7 +2387,7 @@ $(document).ready(() => {
 
         ////////////************* Pagination functions *************///////////
         /**
-         * Créer un html pour le nombre de la pagination
+         * CrÃ©er un html pour le nombre de la pagination
          * @param {number} number Nombre
          * @param {boolean} isClickable Si le nombre est clickable
          * @param {boolean} active Si le nombre est actif
@@ -2269,18 +2398,18 @@ $(document).ready(() => {
         };
 
         /**
-         * Créer une barre de pagination
+         * CrÃ©er une barre de pagination
          * @param {DomElement} e Element qui contiendra la pagination 
-         * @param {number} count Nombre d'éléments
-         * @param {number} current Elément courant
-         * @returns {Mel_Elastic} Chaînage
+         * @param {number} count Nombre d'Ã©lÃ©ments
+         * @param {number} current ElÃ©ment courant
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         set_pagination(e,count, current = null)
         {
             const _integer = this._integer;
             //console.log("count", count);
             count = Math.ceil(count/7.0);
-            e.html('<button class="pagination_prev pagination-button" onclick="MEL_ELASTIC_UI.pagination_prev(this)">Précédent</button>')
+            e.html('<button class="pagination_prev pagination-button" onclick="MEL_ELASTIC_UI.pagination_prev(this)">PrÃ©cÃ©dent</button>')
             e.append("<div class=pagination-elements></div>");
             let pagination_elements = e.find(".pagination-elements");
             for (let index = 0; index < count; ++index) {
@@ -2301,11 +2430,11 @@ $(document).ready(() => {
         }
 
         /**
-         * Change de page spécifiquement
-         * @param {JQUERY} e Elément cliqué 
+         * Change de page spÃ©cifiquement
+         * @param {JQUERY} e ElÃ©ment cliquÃ© 
          * @param {number} number Page
          * @param {boolean} doAction Si on effectue l'action ou non.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_page(e, number, doAction = true){
             const _integer = this._integer;
@@ -2382,15 +2511,15 @@ $(document).ready(() => {
             e.parent().data("current", number);
  
             if (doAction)
-                eval(e.parent().data("page").replaceAll("¤page¤", number));
+                eval(e.parent().data("page").replaceAll("Â¤pageÂ¤", number));
 
             return this;
         }
 
         /**
          * On affiche la page suivante
-         * @param {DOMElement} e Element cliqué
-         * @returns {Mel_Elastic} Chaînage
+         * @param {DOMElement} e Element cliquÃ©
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_next(e) {
             const count = $(e).parent().data("count");
@@ -2404,9 +2533,9 @@ $(document).ready(() => {
         }
 
         /**
-         * On affiche la page précédente
-         * @param {DOMElement} e Element cliqué
-         * @returns {Mel_Elastic} Chaînage
+         * On affiche la page prÃ©cÃ©dente
+         * @param {DOMElement} e Element cliquÃ©
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_prev(e) {
             const current = $(e).parent().data("current");
@@ -2599,19 +2728,19 @@ $(document).ready(() => {
             let $tab = null;
 
             //Gestion de l'onglet
-            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est à l'intérieur du corps
+            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est Ã  l'intÃ©rieur du corps
             {
                 tabName = item.$tabName[0].innerText;
                 item.$tabName.addClass(header_to_hide);
             }
             else tabName = item.$tabName; //Si c'est juste le nom
 
-            //Id généré depuis son nom
+            //Id gÃ©nÃ©rÃ© depuis son nom
             const tab_id = 'responsive-generated-' + tabName.replace(/[^0-9a-z]/gi, '').toLowerCase();
 
             let $tabList = item.$parentTabList.find(`.${tab_list}.${namespace}`);
 
-            //Création de la liste d'onglet si elle n'éxiste pas
+            //CrÃ©ation de la liste d'onglet si elle n'Ã©xiste pas
             if ($tabList.length === 0)
             {
                 $tabList = item.$parentTabList
@@ -2619,7 +2748,7 @@ $(document).ready(() => {
                 .find(`.${tab_list}.${namespace}`);
             }
 
-            //Ajout du bouton si il n'éxiste pas
+            //Ajout du bouton si il n'Ã©xiste pas
             $tab = $tabList.find(`#${tab_id}`);
             if ($tab.length === 0)
             {
@@ -2635,7 +2764,7 @@ $(document).ready(() => {
                 ).find(`#${tab_id}`);
             }
 
-            //Création du bouton de "désaffichage"
+            //CrÃ©ation du bouton de "dÃ©saffichage"
             if ($tabList.find(`.${hide_button}`).length === 0)
             {
                 $tabList.append(`<button class="${hide_button} ${namespace} hidden"></button>`);

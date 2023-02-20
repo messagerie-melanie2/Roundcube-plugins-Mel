@@ -1,0 +1,27 @@
+
+{
+    "no-background":{
+        "isThemeColor":true,
+        "isFirst":true
+    },
+    "image-a":{
+        "background":"nocturne.png",
+        "view":"nocturnes.jpg"
+    },
+    "abstract-1":{
+        "background":"abstract1.png",
+        "view":"abstract1.jpg"
+    },
+    "stars-1":{
+        "background":"stars1.jpg",
+        "view":"stars1.jpg"
+    },
+    "nature-1":{
+        "background":"nature1.jpg",
+        "view":"nature1.jpg"
+    },
+    "nature-2":{
+        "background":"nature2.jpg",
+        "view":"nature2.jpg"
+    }
+}

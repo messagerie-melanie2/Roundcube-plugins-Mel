@@ -4,6 +4,11 @@
         "isThemeColor":true,
         "isFirst":true
     },
+    "custom-background":{
+        "isThemeColor":true,
+        "customOrder":1,
+        "userprefid":"custom-2nd-nav-background"
+    },
     "image-a":{
         "background":"nocturne.png",
         "view":"nocturnes.jpg"

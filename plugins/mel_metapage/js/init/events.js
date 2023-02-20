@@ -338,6 +338,12 @@ if (rcmail && window.mel_metapage)
                 $("#barup-search-col").removeClass("col-6").removeClass("col-7").addClass("col-3");
             }
         }
+        
+        try {
+            MEL_ELASTIC_UI._resize_themes();
+        } catch (error) {
+            
+        }
 
         $("window").resize();
     });

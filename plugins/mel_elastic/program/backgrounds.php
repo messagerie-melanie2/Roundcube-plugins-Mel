@@ -7,11 +7,15 @@ class Background {
     private $isThemeColor;
     private $background;
     private $view;
+    private $customOrder;
+    private $userprefid;
     public function __construct($decoded){
         $this->isFirst = $decoded->isFirst;
         $this->isThemeColor = $decoded->isThemeColor;
         $this->background = $decoded->background;
         $this->view = $decoded->view;
+        $this->customOrder = $decoded->customOrder;
+        $this->userprefid = $decoded->userprefid;
     }
 
     public function get_background_path(){
@@ -27,8 +31,20 @@ class Background {
 
         if ($this->isFirst) $item['isFirst'] = $this->isFirst;
 
+        if (isset($this->customOrder)) $item['customOrder'] = $this->customOrder;
+
+        if (isset($this->userprefid)) {
+            $item['userprefid'] = $this->userprefid;
+            $pref = rcmail::get_instance()->config->get($this->userprefid, null);
+
+            if (isset($pref)) {
+                $item['background'] = $pref;
+                $this->isThemeColor = false;
+            }
+        };
+
         if ($this->isThemeColor) $item['isThemeColor'] = $this->isThemeColor;
-        else {
+        else if (!isset($item['background'])){
             $item['background'] = $this->get_background_path();
             $item['view'] = $this->get_view_path();
         }

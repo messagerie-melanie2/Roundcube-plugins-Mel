@@ -56,7 +56,12 @@ $(document).ready(() => {
          */
         static component()
         {
-            return document.styleSheets[0];
+            if (!Mel_CSS_Rule.component._instance) {
+                let style = document.createElement("style");
+                document.head.appendChild(style);
+                Mel_CSS_Rule.component._instance = style.sheet;
+            }
+            return Mel_CSS_Rule.component._instance;
         }
 
         /**
@@ -318,6 +323,14 @@ $(document).ready(() => {
             this.init()
             .setup()
             .update();
+
+            $('#theme-panel #theme-pannel-tab-pictures').on('click', () => {
+                this._resize_themes();
+            });
+
+            $('#user-up-popup').click(() => {
+                this._resize_themes();
+            })
         }
 
         ////////////************* Inits and setups functions *************///////////
@@ -400,6 +413,8 @@ $(document).ready(() => {
 
         init_theme($panel = $('#theme-panel .contents'), $force = false, callback_click = null, callback_add = null)
         {
+            if  (0 === $panel.length) return this;
+
             let additionnalThemes = callback_add  ?? [];
 
             let tlength = 0;
@@ -510,6 +525,8 @@ $(document).ready(() => {
             let themeIndex = null;
             let $tabs = $(tabs_div_selector).html('').addClass('mel-ui-tab-system');
 
+            if (0 === $tabs.length) return this;
+
             for (let index = 0, len = tabs.length; index < len; ++index) {
                 const element = tabs[index];
                 $tabs.append(`<div id="${element.id}" class="tab-meltheme mel-tab mel-tabheader ${0 === index ? 'active' : (len-1 === index ? 'last' : '')}">${element.display}</div>`);
@@ -518,7 +535,7 @@ $(document).ready(() => {
             }
 
             let $pannelParent = $themePannel.parent();
-            let $contents = $('<div></div>');
+            let $contents = $('<div class="themescontents"></div>');
             if (themeIndex !== null) {
                 let $divThemes = $('<div></div>').addClass(`${tabs[themeIndex].id} tab-meltheme mel-tab-content`).appendTo($contents);
                 $themePannel.appendTo($divThemes);
@@ -541,29 +558,81 @@ $(document).ready(() => {
             picturesToIgnore = [],
             picturesToAdd = []
         }) {
+            let $pannel = $(picturePannel);
+
+            if (0 === $pannel.length) return this;
+
             this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
 
-            let $pannel = $(picturePannel);
+            let $mainrow = $('<div class="row"></div>').appendTo($pannel);
             const pictures = rcmail.env.mel_themes_pictures;
             let $item;
 
-            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? 0:1)) {
-                $item = $('<div></div>').addClass('mel-selectable picture').data('picid', iterator.key);
+            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder ?? Number.POSITIVE_INFINITY))) {
+                $item = $('<div class="col-6"></div>').appendTo($mainrow);
+                $item = $('<div></div>').appendTo($item);
+
+                if (!!iterator.value.userprefid) {
+                    var $input = $(`<input data-prefid="${iterator.value.userprefid}" class="hidden" type="file" accept=".png,.jpg,.svg,.gif" />`).on('change', (ev) => {
+                        ev = $(ev.currentTarget)
+                        const prefid = ev.data('prefid');
+                        const file = ev[0].files[0];
+                        var reader = new FileReader();
+                        reader.onload =  (e) => {
+                          const picture =  e.target.result;
+                          this.update_custom_picture(picture, prefid);
+                          let $selectable = ev.parent().parent().find('.mel-selectable')
+                          .removeClass('barup-background-color')
+                          .css('background-image', `url(${picture})`)
+                          .data('picpath', picture)
+                          .data('iscustom', true);
+
+                          if ($selectable.data('picid') === this.get_theme_picture()) {
+                            this.css_rules.remove('barup-background');
+                            this._add_background(picture, true);
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    var $button = $('<button class="mel-button no-button-margin btn btn-secondary">Charger une image</button>').on('mouseover', (e) => {
+                        $(e.currentTarget).parent().addClass('hovered');
+                    })
+                    .on('mouseout', (e) => {
+                        $(e.currentTarget).parent().removeClass('hovered');
+                    })
+                    .click((e) => {
+                        $(e.currentTarget).parent().find('input').click();
+                    });
+                    $(`<div class="input-top-selectable mel-resize-ok half-resize"></div>`).append($input).append($button).appendTo($item);
+                    $item = $('<div></div>').addClass('half-resize').appendTo($item);
+                }
+
+                $item.addClass('mel-selectable picture mel-resize-ok').data('picid', iterator.key);
+
+                const isCustom = !!iterator.value.userprefid && !!iterator.value.background;
                 if (true === iterator.value.isThemeColor) {
                     $item.addClass('barup-background-color');
                 }
-                else $item.data('picpath', iterator.value.background).css('background-image', `url(${iterator.value.view})`).css('background-size', 'cover');
+                else {
+                    $item.data('picpath', iterator.value.background).css('background-image', `url(${isCustom ? iterator.value.background : iterator.value.view})`).css('background-size', 'cover');
+                    if (isCustom) $item.data('iscustom', true);
+                } 
 
                 $item.click((e) => {
                     e = $(e.currentTarget);
                     $pannel.find('.selected').removeClass('selected');
                     e.addClass('selected');
                     const data = e.data('picpath');
+                    const isCustom = e.data('iscustom');
 
-                    this.css_rules.remove('barup-background');
+                    try {
+                        this.css_rules.remove('barup-background');
+                    } catch (error) {
+                        
+                    }
                     
                     if (!!data) {
-                        this._add_background(data);
+                        this._add_background(data, isCustom);
                         $('html').addClass('barup-picture');
                     }
                     else {
@@ -571,7 +640,7 @@ $(document).ready(() => {
                     }
 
                     this.set_theme_picture(e.data('picid'));
-                }).appendTo($pannel);
+                });
 
                 if (this.theme_selected_picture === null || iterator.key === this.theme_selected_picture) {
                     $item.addClass('selected');
@@ -581,7 +650,7 @@ $(document).ready(() => {
                         this.css_rules.remove('barup-background');
                     }
                     else {
-                        this._add_background(iterator.value.background);
+                        this._add_background(iterator.value.background, isCustom);
                         $('html').addClass('barup-picture');
                     }
                 }
@@ -589,12 +658,59 @@ $(document).ready(() => {
             return this;
         }
 
-        _add_background(path) {
-            this.css_rules.addAdvanced('barup-background', '.barup',`background-image:url(${path.replace('./', '/')})!important`,
+        _resize_themes() {
+            let times = [];
+            $('#theme-panel .theme-pannel-tab-pictures .mel-resize-ok').each(async (i, e) => {
+                e = $(e);
+                if (0 === e.width()) {
+                    await new Promise((ok, nok) => {
+                        const interval = setInterval(() => {
+                                if (0 !== e.width()) {
+                                    clearInterval(interval);
+                                    ok();
+                                }
+                                else if (!times[i] || times[i] <= 10) {
+                                    if (!times[i] && 0 !== times[i]) times[i] = 0;
+                                    else ++times[i];
+                                }
+                                else {
+                                    clearInterval(interval);
+                                    ok('too many times');
+                                }
+                        }, 10);
+                    });
+                }
+
+                if (e.hasClass('half-resize')) e.css('height', `${e.width() / 2}px`);
+                else e.css('height', `${e.width()}px`);
+            });
+
+            const size = $('#theme-panel .container').height() + $('#groupoptions-user .container.menu').height() + 60 + 30;
+            $('#theme-panel .themescontents').css('max-height', `${window.innerHeight - size}px`);
+
+        }
+
+        _add_background(path, isRule) {
+            this.css_rules.addAdvanced('barup-background', '.barup',`background-image:url(${isRule ? path : (window.location.origin + window.location.pathname + path.replace('./', '/')).replaceAll('://', '¤').replaceAll('//', '/').replaceAll('¤', '://')})!important`,
             'background-size: cover !important',
             'background-position: center !important'
             );
             return this;
+        }
+
+        async update_custom_picture(datas, pref) {
+            await mel_metapage.Functions.post(
+                mel_metapage.Functions.url('mel_metapage', 'plugin.update_custom_picture'), {
+                    _datas:datas,
+                    _prefid:pref
+                },
+                (datas) => {
+                    const VALIDATION = 'ok';
+                    if (VALIDATION === datas) {
+                        rcmail.display_message('Image chargée avec succès !', 'confirmation');
+                    }
+                }
+            );
         }
 
         async set_theme_picture(id) {

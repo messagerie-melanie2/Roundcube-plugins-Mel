@@ -126,7 +126,11 @@
                 element.order = element.allDay ? 0 : 1;
 
                 if (STRING === typeof element.end) element.end = moment(parse(element.end));
+                else if (!!element.end.date && STRING === typeof element.end.date) element.end = moment(element.end.date);
+
                 if (STRING === typeof element.start) element.start = moment(parse(element.start));
+                else if (!!element.start.date && STRING === typeof element.start.date) element.start = moment(element.start.date);
+
 
                 if (element.end < now) continue;
 

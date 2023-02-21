@@ -17,7 +17,11 @@ $(document).ready(() => {
         constructor(rule)
         {
             this.rule = rule;
-            this.id = null;
+            this.styleRule = null;
+        }
+
+        id() {
+            return Enumerable.from(Mel_CSS_Rule.component().cssRules).select((x, i) => [x, i]).where(x => x[0] === this.styleRule).firstOrDefault()[1];
         }
 
         /**
@@ -26,7 +30,8 @@ $(document).ready(() => {
          */
         set()
         {
-            this.id = Mel_CSS_Rule.component().insertRule(rule, Mel_CSS_Rule.lastIndex());
+            let id = Mel_CSS_Rule.component().insertRule(rule, Mel_CSS_Rule.lastIndex());
+            this.styleRule = Mel_CSS_Rule.component().cssRules[id];
             return this;
         }
 
@@ -36,8 +41,8 @@ $(document).ready(() => {
          */
         delete()
         {
-            Mel_CSS_Rule.component().deleteRule(this.id);
-            this.id = null;
+            let id = this.id();
+            if (id === 0 || !!id) Mel_CSS_Rule.component().deleteRule(id);
             return this;
         }
 
@@ -96,7 +101,8 @@ $(document).ready(() => {
          */
         set()
         {
-            this.id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
+            let id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
+            this.styleRule = Mel_CSS_Rule.component().cssRules[id];
             return this;
         }
 
@@ -114,7 +120,8 @@ $(document).ready(() => {
 
         _update_rule(force_set = true)
         {
-            if (!!this.id)
+            let id = this.id();
+            if (id === 0 || !!id)
             {
                 this.delete();
 
@@ -174,6 +181,9 @@ $(document).ready(() => {
     class Mel_CSS_Style_Sheet {
         constructor()
         {
+            /**
+             * @type {{[string]:Mel_CSS_Rule}}
+             */
             this.css = {};
         }
 
@@ -185,7 +195,7 @@ $(document).ready(() => {
          */
         _add(key, rule)
         {
-            if (!this.ruleExist()) this.css[key] = rule.set();
+            if (!this.ruleExist(key)) this.css[key] = rule.set();
             else {
                 throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe dÃ©jÃ  !`);
             }

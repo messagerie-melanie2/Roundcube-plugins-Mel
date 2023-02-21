@@ -427,10 +427,29 @@ html.touch .show-row-touch {
     transition: all 0.1s ease-in;
 }
 
+html.barup-picture #touchmelmenu {
+    background-color: #363A5B80;
+    border-right: solid thick #363A5B;
+    color: white;
+}
+
+html.dark-mode.barup-picture #touchmelmenu {
+    background-color: #323F4B80;
+    border-right: solid thick #323F4B;
+    color: white;
+}
+
+html.barup-picture #touchmelmenu:hover,
 #touchmelmenu:hover
 {
     color:white;
     background-color: #484D7A;
+}
+
+
+html.dark-mode.barup-picture #touchmelmenu:hover {
+    background-color: #2E2E2E;
+    color: #E1C58F;
 }
 
 html.layout-normal .no-wrap-normal{

@@ -413,8 +413,6 @@ $(document).ready(() => {
 
         init_theme($panel = $('#theme-panel .contents'), $force = false, callback_click = null, callback_add = null)
         {
-            if  (0 === $panel.length) return this;
-
             let additionnalThemes = callback_add  ?? [];
 
             let tlength = 0;
@@ -438,7 +436,7 @@ $(document).ready(() => {
                 
                 this.themes = themes || this.themes;
 
-                for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).toArray()) {
+                for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes)) {
                     const key = iterator.key;
                         ++tlength;
                         if (this.themes[key]?.css_path)
@@ -525,7 +523,7 @@ $(document).ready(() => {
             let themeIndex = null;
             let $tabs = $(tabs_div_selector).html('').addClass('mel-ui-tab-system');
 
-            if (0 === $tabs.length) return this;
+            if (0 === $tabs.length) return tabs;
 
             for (let index = 0, len = tabs.length; index < len; ++index) {
                 const element = tabs[index];
@@ -584,6 +582,7 @@ $(document).ready(() => {
                           let $selectable = ev.parent().parent().find('.mel-selectable')
                           .removeClass('barup-background-color')
                           .css('background-image', `url(${picture})`)
+                          .css('background-size', 'cover')
                           .data('picpath', picture)
                           .data('iscustom', true);
 
@@ -2940,7 +2939,7 @@ $(document).ready(() => {
                 try {
                         e.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
                 } catch (error) {
-                    
+
                 }
             });
 
@@ -2961,6 +2960,7 @@ $(document).ready(() => {
 
     }
 
+try {
     /**
      * Contient les fonctions de la classe Mel_Elastic
      */
@@ -2977,36 +2977,8 @@ $(document).ready(() => {
             $(selector).css('display', 'none');
         }
     };
+} catch (error) {
+    console.error('### [BNUM]MEL_ELASTIC_UI : ', error);
+}
 
 });
-
-
-// function tab($item)
-// {
-//     const tab = $item.attr('id');
-//     let other_tabs = $item.parent().parent().find('a');
-
-//     $item.on('show.bs.tab');    
-
-//     let id;
-//     for (let iterator of other_tabs) {
-//         id = iterator.attr('id');
-//         if (id !== tab) {
-//             iterator.removeClass('active');
-//             $(`.tab-pane[aria-labelledby="${id}"]'`).removeClass('active');
-//             iterator.on('hide.bs.tab');
-//         }
-//         else {
-//             iterator.addClass('active');
-//             $(`.tab-pane[aria-labelledby="${id}"]'`).addClass('active');
-//         }
-
-//     }
-
-//     $item.on('shown.bs.tab');   
-// }
-
-// $('#myTab a').on('click', function (e) {
-//     e.preventDefault()
-//     tab($(e.currentTarget));
-// })

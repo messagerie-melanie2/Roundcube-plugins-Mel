@@ -119,7 +119,22 @@ function rcube_libcalendaring(settings)
      */
     this.is_attendee = function(event, role, email)
     {
-        var i, emails = email ? ';' + email.toLowerCase() : settings.identity.emails;
+        // PAMELA - Mode assistantes
+        var i, emails;
+        if (!email && this.calendars[event.calendar] && this.calendars[event.calendar]['owner_email']) {
+            email = this.calendars[event.calendar]['owner_email'].toLowerCase();
+
+            // Si c'est l'agenda de l'utilisateur connecté
+            if (settings.identity.emails.indexOf(';' + email) >= 0) {
+                emails = settings.identity.emails;
+            }
+            else {
+                emails = ';' + email;
+            }
+        }
+        else {
+            emails = email ? ';' + email.toLowerCase() : settings.identity.emails;
+        }
 
         for (i=0; event.attendees && i < event.attendees.length; i++) {
             if ((!role || event.attendees[i].role == role) && event.attendees[i].email && emails.indexOf(';'+event.attendees[i].email.toLowerCase()) >= 0) {
@@ -135,7 +150,14 @@ function rcube_libcalendaring(settings)
      */
     this.is_organizer = function(event, email)
     {
-        return this.is_attendee(event, 'ORGANIZER', email) || !event.id;
+        // PAMELA - Mode assistantes
+        if (event['organizer_calendar'] == event['calendar']) {
+            return this.get_organizer(event);
+        }
+        else {
+            return false;
+        }
+        // return this.is_attendee(event, 'ORGANIZER', email) || !event.id;
     };
 
     /**
@@ -1510,8 +1532,12 @@ rcube_libcalendaring.refetch_itip_object_status = function(p, resp, calid)
   p.message_uid = rcmail.env.uid;
   $('#loading-'+resp.id).show();
   $('.calendar-agenda-preview').hide();
+
+  $(".calendar-agenda-preview .event-row-before").not(':first').remove();
   $(".calendar-agenda-preview .event-row-before").replaceWith('%before%');
+  $(".calendar-agenda-preview .event-row-after").not(':first').remove();
   $(".calendar-agenda-preview .event-row-after").replaceWith('%after%');
+    
   rcmail.http_post(p.task + '/itip-status', { data: p, calid: calid });
 };
 

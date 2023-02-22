@@ -2275,7 +2275,7 @@ class mel_driver extends calendar_driver {
 
         // Attendees
         $attendees = $event->attendees;
-        if (isset($attendees) && is_array($attendees) && ! empty($attendees)) {
+        if (isset($attendees) && is_array($attendees) && ! empty($attendees)) {          
           $_attendees = [];
           $organizer = $event->organizer;
           if (isset($organizer)) {
@@ -2289,7 +2289,12 @@ class mel_driver extends calendar_driver {
               $_event_organizer['internal'] = true;
             }
             $_attendees[] = $_event_organizer;
+            // Organizer calendar
+            $_event['organizer_calendar'] = driver_mel::gi()->mceToRcId($organizer->calendar);
           }
+
+          // Récupérer les informations sur le propriétaire de l'agenda
+          $calendar_owner = driver_mel::gi()->getUser($this->calendars[$event->calendar]->owner);
           
           foreach ($attendees as $attendee) {
             $_event_attendee = [];
@@ -2309,6 +2314,11 @@ class mel_driver extends calendar_driver {
               $_event_attendee['skip_notify'] = false;
             }
             $_attendees[] = $_event_attendee;
+
+            // Est-ce qu'il s'agit du participant courant ?
+            if (strtolower($calendar_owner->email) == strtolower($attendee->email)) {
+              $_event['attendee_partstart'] = $_event_attendee['status'];
+            }
           }
           $_event['attendees'] = $_attendees;
         }

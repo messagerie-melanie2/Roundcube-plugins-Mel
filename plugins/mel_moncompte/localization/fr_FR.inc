@@ -104,6 +104,7 @@ $labels['configuration'] = 'Configuration';
 $labels['use_as_default'] = 'Utiliser par défaut';
 $labels['synchronise_on_mobile'] = 'Synchroniser sur votre mobile';
 $labels['show_in_roundcube'] = 'Afficher dans le webmail roundcube';
+$labels['invitation'] = 'Utiliser ce calendrier dans les invitations';
 
 $labels['options'] = 'Options';
 

@@ -895,13 +895,12 @@ html.layout-phone #datepicker-onoff {
   font-size: 12px !important;
 }
 .fc-event.cal-event-status-cancelled {
-  opacity: 0.5 !important;
+  color: var(--calendar-toolbar-roundcube-color) !important;
 }
 .fc-event.cal-event-status-cancelled div {
   text-decoration: line-through;
 }
 .fc-event.cal-event-status-cancelled .fc-title {
-  font-weight: normal;
   opacity: 1;
   text-decoration: line-through;
 }
@@ -909,13 +908,27 @@ html.layout-phone #datepicker-onoff {
   opacity: 0.5 !important;
 }
 .fc-event.cal-event-status-tentative .fc-title {
-  font-weight: normal;
   opacity: 1;
   font-style: italic;
 }
-.fc-event.cal-event-status-free .fc-title {
-  font-weight: normal;
-  opacity: 1;
+.fc-event.cal-event-status-free {
+  color: var(--calendar-toolbar-roundcube-color) !important;
+}
+.fc-event.cal-event-status-telework {
+  color: var(--calendar-toolbar-roundcube-color) !important;
+}
+.fc-event.cal-event-status-telework .fc-title {
+  font-style: italic;
+}
+.fc-event.cal-event-partstat-declined .fc-time span {
+  opacity: 0.7;
+  text-decoration: line-through;
+  font-style: italic;
+}
+.fc-event.cal-event-partstat-tentative .fc-time span {
+  font-style: italic;
+}
+.fc-event.cal-event-partstat-needs-action .fc-time span {
   font-style: italic;
 }
 .fc .fc-event .fc-title {

@@ -24,12 +24,14 @@
  */
 class libcalendaring_itip
 {
-    //pamela
+    // PAMELA
     public $last_message;
     protected $rc;
     protected $lib;
     protected $plugin;
     protected $sender;
+    // PAMELA - Mode assistantes
+    protected $attendee_email;
     protected $domain;
     protected $itip_send = false;
     protected $rsvp_actions = array('accepted','tentative','declined','delegated');
@@ -58,6 +60,14 @@ class libcalendaring_itip
     {
         if (!empty($identity))
             $this->sender = $identity;
+    }
+
+    /**
+     * PAMELA - Set attendee email
+     */
+    public function set_attendee_email($attendee_email)
+    {
+        $this->attendee_email = $attendee_email;
     }
 
     public function set_sender_email($email)
@@ -249,7 +259,9 @@ class libcalendaring_itip
     public function compose_itip_message($event, $method, $rsvp = true)
     {
         $from     = rcube_utils::idn_to_ascii($this->sender['email']);
-        $from_utf = rcube_utils::idn_to_utf8($from);
+        // PAMELA - Mode assistante
+        $attendee_from = rcube_utils::idn_to_ascii($this->attendee_email);
+        $attendee_from_utf = rcube_utils::idn_to_utf8($attendee_from);
         $sender   = format_email_recipient($from, $this->sender['name']);
 
         // truncate list attendees down to the recipient of the iTip Reply.
@@ -261,7 +273,7 @@ class libcalendaring_itip
                 if ($attendee['role'] == 'ORGANIZER') {
                     $reply_attendees[] = $attendee;
                 }
-                else if (strcasecmp($attendee['email'], $from) == 0 || strcasecmp($attendee['email'], $from_utf) == 0) {
+                else if (strcasecmp($attendee['email'], $attendee_from) == 0 || strcasecmp($attendee['email'], $attendee_from_utf) == 0) {
                     $replying_attendee = $attendee;
                     if ($attendee['status'] != 'DELEGATED') {
                         unset($replying_attendee['rsvp']);  // unset the RSVP attribute
@@ -269,9 +281,9 @@ class libcalendaring_itip
                 }
                 // include attendees relevant for delegation (RFC 5546, Section 4.2.5)
                 else if ((!empty($attendee['delegated-to']) &&
-                            (strcasecmp($attendee['delegated-to'], $from) == 0 || strcasecmp($attendee['delegated-to'], $from_utf) == 0)) ||
+                            (strcasecmp($attendee['delegated-to'], $attendee_from) == 0 || strcasecmp($attendee['delegated-to'], $attendee_from_utf) == 0)) ||
                          (!empty($attendee['delegated-from']) &&
-                            (strcasecmp($attendee['delegated-from'], $from) == 0 || strcasecmp($attendee['delegated-from'], $from_utf) == 0))) {
+                            (strcasecmp($attendee['delegated-from'], $attendee_from) == 0 || strcasecmp($attendee['delegated-from'], $attendee_from_utf) == 0))) {
                     $reply_attendees[] = $attendee;
                 }
             }
@@ -308,10 +320,10 @@ class libcalendaring_itip
             foreach ((array)$event['attendees'] as $idx => $attendee) {
                 if ($attendee['role'] == 'ORGANIZER'
                     && $attendee['email']
-                    && strcasecmp($attendee['email'], $from) != 0
-                    && strcasecmp($attendee['email'], $from_utf) != 0
+                    && strcasecmp($attendee['email'], $attendee_from) != 0
+                    && strcasecmp($attendee['email'], $attendee_from_utf) != 0
                 ) {
-                    $attendee['sent-by'] = 'mailto:' . $from_utf;
+                    $attendee['sent-by'] = 'mailto:' . $attendee_from_utf;
                     $event['organizer'] = $event['attendees'][$idx] = $attendee;
                     break;
                 }
@@ -481,7 +493,7 @@ class libcalendaring_itip
                 }
                 else {
                     if ($latest) {
-                        $diff = $this->get_itip_diff($event, $existing);
+                        $diff = $this->get_itip_diff($event, $existing, $emails);
 
                         // Detect re-scheduling
                         // FIXME: This is probably to simplistic, or maybe we should just check
@@ -596,7 +608,12 @@ class libcalendaring_itip
         );
     }
 
-    protected function get_itip_diff($event, $existing)
+    /**
+     * PAMELA - Mode assistantes
+     * 
+     * Ajout du emails
+     */
+    protected function get_itip_diff($event, $existing, $emails = null)
     {
         if (empty($event) || empty($existing) || empty($event['message_uid']) || empty($event['mime_id'])) {
             return;
@@ -622,7 +639,10 @@ class libcalendaring_itip
             $status             = array();
             $itip_attendees     = array();
             $existing_attendees = array();
-            $emails             = $this->lib->get_user_emails();
+            // PAMELA - Mode assistantes
+            if (!isset($emails)) {
+                $emails         = $this->lib->get_user_emails();
+            }
 
             // Compare list of attendees (ignoring current user status)
             foreach ((array) $existing['attendees'] as $idx => $attendee) {
@@ -702,14 +722,15 @@ class libcalendaring_itip
 
             foreach ($event['attendees'] as $attendee) {
                 if (!empty($attendee['email']) && $attendee['role'] != 'ORGANIZER') {
-                    if (empty($event['_sender']) || self::compare_email($attendee['email'], $event['_sender'], $event['_sender_utf'])) {
+                    // PAMELA - Mode assistantes
+                    // if (empty($event['_sender']) || self::compare_email($attendee['email'], $event['_sender'], $event['_sender_utf'])) {
                         $metadata['attendee'] = $attendee['email'];
                         $rsvp_status = strtoupper($attendee['status']);
                         if ($attendee['delegated-to']) {
                             $metadata['delegated-to'] = $attendee['delegated-to'];
                         }
                         break;
-                    }
+                    // }
                 }
             }
 

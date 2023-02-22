@@ -1436,14 +1436,13 @@ body {
     font-size: 12px !important;
 
     &.cal-event-status-cancelled{
-        opacity: 0.5 !important;
+        color: var(--calendar-toolbar-roundcube-color) !important;
 
         div{
             text-decoration: line-through;
         }
 
         .fc-title{
-            font-weight: normal;
             opacity: 1;
             text-decoration: line-through;
         }
@@ -1453,16 +1452,39 @@ body {
         opacity: 0.5 !important;
 
         .fc-title{
-            font-weight: normal;
             opacity: 1;
             font-style: italic;
         }
     }
 
     &.cal-event-status-free{
+        color: var(--calendar-toolbar-roundcube-color) !important;
+    }
+
+    &.cal-event-status-telework{
+        color: var(--calendar-toolbar-roundcube-color) !important;
+
         .fc-title{
-            font-weight: normal;
-            opacity: 1;
+            font-style: italic;
+        }
+    }
+
+    &.cal-event-partstat-declined{
+        .fc-time span{
+            opacity: 0.7;
+            text-decoration: line-through;
+            font-style: italic;
+        }
+    }
+
+    &.cal-event-partstat-tentative{
+        .fc-time span{
+            font-style: italic;
+        }
+    }
+
+    &.cal-event-partstat-needs-action{
+        .fc-time span{
             font-style: italic;
         }
     }

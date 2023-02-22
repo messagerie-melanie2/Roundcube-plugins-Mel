@@ -531,7 +531,7 @@ $(document).ready(() => {
             }]})
         {
             let themeIndex = null;
-            let $tabs = $(tabs_div_selector).html('').addClass('mel-ui-tab-system');
+            let $tabs = $(tabs_div_selector).html('');//.addClass('mel-ui-tab-system');
 
             if (0 === $tabs.length) return tabs;
 

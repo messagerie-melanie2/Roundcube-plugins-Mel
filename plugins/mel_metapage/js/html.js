@@ -467,6 +467,7 @@ class mel_html{
 		this.attribs = attribs;
 		this.content = content;
 		this.onclick = new MelEvent();
+		this.onkeydown = new MelEvent();
 	}
 
 	generate(additionnal_attribs = {})
@@ -488,7 +489,7 @@ class mel_html{
 
 		let $html = $(`<${this.tag} ${(!multi_balise ? '/' : '')}>${(multi_balise ? `</${this.tag}>` : '')}`);
 
-		for (const iterator of Enumerable.from(this.attribs).concat(additionnal_attribs)) {
+		for (const iterator of Enumerable.from(this.attribs).concat(additionnal_attribs).where(x => x === 0 || !!(x || null))) {
 			switch (iterator.key) {
 				case 'class':
 					$html.addClass(iterator.value);
@@ -810,3 +811,266 @@ Object.defineProperty(mel_button, 'html_base_class_danger', {
 	writable: false,
 	value:'btn-danger'
 });
+
+class mel_tab extends mel_button{
+	constructor(namespace, id, attribs={}, text) {
+		super(attribs, text);
+		this._init()._setup(id);
+	}
+
+	_init() {
+		this.namespace = EMPTY_STRING;
+		this.id = EMPTY_STRING;
+		/**
+		 * @type {mel_tabpanel}
+		 */
+		this.control = null;
+		return this;
+	}
+
+	_setup(namespace, id){
+		this.id = id;
+		this.namespace = namespace;
+		return this;
+	}
+
+	generate(attribs={}) {
+		attribs['id'] = id;
+		attribs['tabindex'] = -1;
+		attribs['aria-controls'] = this.control?.attribs?.['id'];
+		attribs['role'] = 'tab';
+		attribs['type'] = 'button';
+		attribs['aria-selected'] = attribs?.['aria-selected'] ?? false;
+		attribs['class'] = this.namespace + ' mel-html-tab';
+		attribs['data-tabnamespace'] = this.namespace;
+
+		this.onclick.push((e) => {
+			e = $(e.currentTarget);
+			MelAsync.forof($(`button.mel-html-tab.${e.data('tabnamespace')}`), async (iterator) => {
+				$(iterator).removeClass('selected').attr('aria-selected', false);
+			}, false).then(() => {
+				e.addClass('selected').attr('aria-selected', true);
+			});
+			
+			MelAsync.forof($(`mel-html-tabpanel.mel-html-tab.${e.data('tabnamespace')}`), async (iterator) => {
+				$(iterator).css('display', 'none');
+			}, false).then(() => {
+				$(`mel-html-tabpanel.mel-html-tab.${e.data('tabnamespace')}.${this.id}`);
+			});
+		});
+
+		this.onkeydown.push((event) => {
+			let tabs = $(`button.mel-html-tab.${e.data('tabnamespace')}`);
+			const key = event.keyCode;
+
+			let direction = 0;
+			switch (key) {
+				case this.keys.left:
+					direction = -1;
+					break;
+				case this.keys.right:
+					direction = 1;
+					break;
+
+				case this.keys.home:
+					$(tabs[0]).focus().click();
+					break;
+				case this.keys.end:
+					$(tabs[tabs.length-1]).focus().click();
+					break;
+			
+				default:
+					break;
+			}
+
+			if (direction !== 0)
+			{
+				for (let index = 0; index < tabs.length; ++index) {
+					const element = $(tabs[index]);
+					
+					if (element.hasClass("selected") || element.hasClass("active"))
+					{
+						let id;
+						if (index + direction < 0)
+							id = tabs.length - 1;
+						else if (index + direction >= tabs.length)
+							id = 0;
+						else
+							id = index + direction;
+
+						$(tabs[id]).focus().click();
+
+						break;
+					}
+				}
+			}
+		});
+
+		return super.generate(attribs);
+	}
+
+	select(selected) {
+		attribs['aria-selected'] = selected;
+		return this;
+	}
+
+	setControl(controler) {
+		this.control = controler;
+		return this;
+	}
+
+}
+class mel_tablist extends mel_html {
+	constructor(namespace, id, {
+		attribs={},
+		tabs=[],
+		label=EMPTY_STRING
+	}) {
+		super('div', attribs);
+		this._init()._setup(namespace, id, {tabs, label});
+	}
+
+	_init() {
+		/**
+		 * @type {mel_tab[]}
+		 */
+		this.tabs = [];
+		this.id = EMPTY_STRING;
+		this.label = EMPTY_STRING;
+		this.namespace = EMPTY_STRING;
+		return this;
+	}
+
+	_setup(namespace, id, {tabs=[], label=EMPTY_STRING})
+	{
+		this.id = id;
+		this.tabs = tabs;
+		this.label = label;
+		this.namespace = namespace;
+		return this;
+	}
+
+	generate(attribs={}){
+		attribs['role'] = 'tablist';
+		let $tablist = super.generate(attribs);
+
+		for (let index = 0, len = this.tabs.length; index < len; ++index) {
+			this.tabs[index].generate().appendTo($tablist);
+		}
+
+		new mel_html('label', {for:this.id, class:'sr-only'}).generate().appendTo($tablist);
+
+		return $tablist;
+	}
+
+	/**
+	 * 
+	 * @returns {mel_tab}
+	 */
+	getSelectedTab() {
+		return Enumerable.from(this.tabs).where(x => x.attribs['aria-selected'] === true).firstOrDefault();
+	}
+
+	/**
+	 * 
+	 * @param {mel_tab} tab 
+	 */
+	addTab(tab) {
+		this.tabs.push(tab.setControl(this.pannel));
+		return this;
+	}
+}
+
+class mel_tabpanel extends mel_html {
+	constructor(namespace, tab, {attribs={}, contents=EMPTY_STRING, jquery_content = null}) {
+		super('div', attribs, contents);
+		this._init()._setup(tab, {jquery_content});
+	}
+
+	_init() {
+		this.namespace = EMPTY_STRING;
+		/**
+		 * @type {mel_tab}
+		 */
+		this.tab = null;
+		/**
+		 * @type {mel_html[]}
+		 */
+		this.pannels = [];
+		this.jcontent = null;
+		return this;
+	}
+
+	_setup(namespace, tab, {jquery_content = null}) {
+		this.tab = tab;
+		this.jcontent = jquery_content;
+		this.namespace = namespace;
+		return this;
+	}
+
+	generate(attribs={}){
+		attribs['aria-labelledby'] = this.tab.id;
+		attribs['tabindex'] = 0;
+		attribs['class'] = `${this.tab.id} ${this.namespace} mel-html-tabpanel`;
+		let $generated = super.generate(attribs);
+
+		if (!!this.jcontent) this.jcontent.appendTo($generated);
+
+		return $generated;
+	}
+}
+
+class mel_tabs {
+	constructor(id, label, {attribs={}, tablist_attribs={}}) {
+		super('div', attribs);
+		this._init()._setup(id, label, {tablist_attribs});
+	}
+
+	_init() {
+		/**
+		 * @type {mel_tablist}
+		 */
+		this.tabs = null;
+		/**
+		 * @type {mel_tabpanel[]}
+		 */
+		this.contents = null;
+		return this;
+	}
+
+	_setup(id, label, {tablist_attribs={}}) {
+		this.tabs = new mel_tablist(id, {label, attribs:tablist_attribs})
+		this.contents = [];
+		return this;
+	}
+
+	add(id, tabtext, pannel, selectedTab = false) {
+		let tab = new mel_tab(id, {}, tabtext);
+		let pannel = new mel_tabpanel(tab, {jquery_content:pannel});
+		this.tabs.addTab(tab.select(selectedTab).setControl(pannel));																																																					
+		this.contents.push(pannel);
+		tab = (pannel = null, null);
+		return this;
+	}
+
+	generate({attribs={}, tablist_attribs={}}) {
+		let $generated = super.generate(attribs);
+		this.tabs.generate(tablist_attribs).appendTo($generated);
+
+		const selected_tab = this.tabs.getSelectedTab();
+		
+		for (let index = 0, len = this.contents.length, content; index < len; ++index) {
+			const element = this.contents[index];
+			content = this.contents.generate();
+
+			if (!!selected_tab && selected_tab.id === element.tab.id) content.css('display', '');
+			else content.css('display', 'none');
+
+			content.appendTo($generated);
+		}
+
+		return $generated;
+
+	}
+
+}

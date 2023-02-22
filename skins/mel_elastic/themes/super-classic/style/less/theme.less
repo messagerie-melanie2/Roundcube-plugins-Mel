@@ -1,40 +1,70 @@
 html.theme-super-classique {
-    .onboarding-image {
-        background-image: url('../images/Computer_classic.png');
-    }
-
-    .mel-selectable {
-        &.selected{
-            --tierciary-bckg-color:#0EAF9C;
-        }
-    }
-
-    .barup {
-        background: url('../images/bailey-zindel-NRQV-hBF10M-unsplash.jpg');
-        background-size: cover;
-        background-position-y: center;
-
-        #button-help{
-            background-color:#F0F0F0;
-
-            &:hover{
-                background-color: var(--tierciary-bckg-color);
+  .popover {
+    .menu {
+      li {
+        a[aria-haspopup] {
+          &:hover {            
+            &::after {
+              color: var(--main-text-color) !important;
             }
+          }
         }
+        a:not(.disabled) {
+          color: var(--main-text-color) !important;
+        }
+      }
     }
+  }
 
-    #theme-switch-button {
-        .icon-mel-painting {
-            &::before{
-                content: "\efb3";
-                font-family: 'icofont';
+  .mel-selectable {
+    &.selected {
+      --tierciary-bckg-color: #0EAF9C;
+    }
+  }
+
+  .barup {
+    background: url('../images/bailey-zindel-NRQV-hBF10M-unsplash.jpg');
+    background-size: cover;
+    background-position-y: center;
+
+    #button-help {
+      background-color: var(--main-layout-hover-background-color);
+
+      &:hover {
+        background-color: var(--tierciary-bckg-color);
+      }
+    }
+  }
+
+  #theme-switch-button {
+    .icon-mel-painting {
+      &::before {
+        content: "\efb3";
+        font-family: 'icofont';
+      }
+    }
+  }
+
+  .loader {
+    &-base {
+      animation-direction: initial;
+    }
+  }
+
+  .task-mail {
+    #layout-sidebar {
+      .scroller {
+        scrollbar-color: auto;
+
+        >.listing {
+          li.selected {
+            a {
+              border-bottom: solid thin var(--invisible) !important;
             }
+          }
         }
+      }
     }
+  }
 
-    .loader {
-        &-base {
-            animation-direction:initial;
-        }
-    }
 }

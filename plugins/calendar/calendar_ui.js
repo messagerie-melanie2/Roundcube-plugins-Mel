@@ -81,7 +81,7 @@ function rcube_calendar_ui(settings) {
     dayNamesShort: settings.days_short,
     weekNumbers: settings.show_weekno > 0,
     // PAMELA - Mode assistantes
-    slotEventOverlap: true,
+    slotEventOverlap: false,
     // MANTIS 0006486: Bug du numéro de semaine dans le fullcalendar de l'agenda
     weekNumberCalculation: 'ISO',
     weekNumberTitle: rcmail.gettext('weekshort', 'calendar') + ' ',

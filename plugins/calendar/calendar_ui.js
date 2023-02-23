@@ -231,7 +231,7 @@ function rcube_calendar_ui(settings) {
         if (event.alarms || (event.valarms && event.valarms.length))
           time_element.append('<i class="fc-icon-alarms"></i>');
         // PAMELA - Mode assistantes
-        if (event.attendee_partstart)
+        if (event.attendee_partstart && ['accepted', 'tentative'].indexOf(String(event.attendee_partstart).toLowerCase()) === -1)
           time_element.append('<i class="fc-icon-' + String(event.attendee_partstart).toLowerCase() + '"></i>');
       }
       if (event.status) {
@@ -2553,8 +2553,7 @@ function rcube_calendar_ui(settings) {
       }
 
       // PAMELA - Mode assistantes
-      let event = me.selected_event;
-      let calendar = event.calendar && me.calendars[event.calendar] ? me.calendars[event.calendar] : { editable: false, rights: 'lrs' };
+      let calendar = me.selected_event.calendar && me.calendars[me.selected_event.calendar] ? me.calendars[me.selected_event.calendar] : { editable: false, rights: 'lrs' };
 
       // update attendee status
       attendees = [];

@@ -1447,6 +1447,13 @@ class mel_driver extends calendar_driver {
           if (isset($event_attendee['status'])) {
             $attendee->response = mel_mapping::rc_to_m2_attendee_status($event_attendee['status']);
           }
+          // delegated attendee
+          if (isset($event_attendee['delegated-from'])) {
+            $attendee->delegated_from = $event_attendee['delegated-from'];
+          }
+          if (isset($event_attendee['delegated-to'])) {
+            $attendee->delegated_to = $event_attendee['delegated-to'];
+          }
           $_attendees[] = $attendee;
         }
       }
@@ -2312,6 +2319,13 @@ class mel_driver extends calendar_driver {
             }
             else {
               $_event_attendee['skip_notify'] = false;
+            }
+            // Delegation
+            if (isset($attendee->delegated_from)) {
+              $_event_attendee['delegated-from'] = $attendee->delegated_from;
+            }
+            if (isset($attendee->delegated_to)) {
+              $_event_attendee['delegated-to'] = $attendee->delegated_to;
             }
             $_attendees[] = $_event_attendee;
 

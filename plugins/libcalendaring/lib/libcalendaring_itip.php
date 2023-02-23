@@ -369,7 +369,7 @@ class libcalendaring_itip
      * @param array List with indexes of new/updated attendees
      * @return boolean True on success, False on failure
      */
-    public function delegate_to(&$event, $delegate, $rsvp = false, &$attendees = array())
+    public function delegate_to(&$event, $delegate, $rsvp = false, &$attendees = array(), $emails = null)
     {
         if (is_string($delegate)) {
             $delegates = rcube_mime::decode_address_list($delegate, 1, false);
@@ -378,7 +378,10 @@ class libcalendaring_itip
             }
         }
 
-        $emails = $this->lib->get_user_emails();
+        // PAMELA - Mode assistantes
+        if (!isset($emails)) {
+            $emails = $this->lib->get_user_emails();
+        }
         $me     = $this->rc->user->list_emails(true);
 
         // find/create the delegate attendee
@@ -397,7 +400,8 @@ class libcalendaring_itip
               $event['attendees'][$i]['role'] = 'NON-PARTICIPANT';
               $event['attendees'][$i]['rsvp'] = $rsvp;
 
-              $me['email'] = $attendee['email'];
+              // PAMELA - Mode assistante
+              //   $me['email'] = $attendee['email'];
               $delegate_attendee['role'] = $attendee['role'];
           }
           // the disired delegatee is already listed as an attendee

@@ -1402,10 +1402,16 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             // send invitation to delegatee + add it as attendee
             if ($status == 'delegated' && !empty($event['to'])) {
-                $itip = $this->load_itip();
-                if ($itip->delegate_to($ev, $event['to'], !empty($event['rsvp']), $attendees)) {
-                    $this->rc->output->show_message('calendar.itipsendsuccess', 'confirmation');
-                    $noreply = false;
+                // PAMELA - Mode assistantes
+                $calendars = $this->driver->list_calendars(calendar_driver::FILTER_WRITEABLE);
+                if (isset($calendars[$event['calendar']])) {
+                    $calendar = $calendars[$event['calendar']];
+
+                    $itip = $this->load_itip();
+                    if ($itip->delegate_to($ev, $event['to'], !empty($event['rsvp']), $attendees, $this->get_user_emails($calendar))) {
+                        $this->rc->output->show_message('calendar.itipsendsuccess', 'confirmation');
+                        $noreply = false;
+                    }
                 }
             }
 
@@ -3724,7 +3730,11 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                 $event['comment'] = $comment;
 
-                if ($itip->delegate_to($event, $delegate, !empty($rsvpme))) {
+                // PAMELA - Mode assistantes
+                $calendars = $this->driver->list_calendars(calendar_driver::FILTER_WRITEABLE);
+                $calendar = isset($calendars[$event['calendar']]) ? $calendars[$event['calendar']] : null;
+
+                if ($itip->delegate_to($event, $delegate, !empty($rsvpme), null, $this->get_user_emails($calendar))) {
                     $this->rc->output->show_message('calendar.itipsendsuccess', 'confirmation');
                 }
                 else {
@@ -4347,7 +4357,7 @@ $("#rcmfd_new_category").keypress(function(event) {
     {
         // PAMELA - Mode assistantes
         if (isset($calendar) && isset($calendar['owner_email'])) {
-            return [$calendar['owner_email']];
+            return [strtolower($calendar['owner_email'])];
         }
         else {
             return $this->lib->get_user_emails();

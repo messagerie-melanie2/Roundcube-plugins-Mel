@@ -1319,7 +1319,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                 // PAMELA - Mode assistantes
                 $mode = calendar_driver::FILTER_PERSONAL
                     | calendar_driver::FILTER_SHARED
-                    | calendar_driver::FILTER_WRITEABLE;
+                    | calendar_driver::FILTER_WRITEABLE
+                    | calendar_driver::FILTER_INVITATION;
 
                 $calendars      = $this->driver->list_calendars($mode);
                 $calendar       = isset($calendars[$event['calendar']]) ? $calendars[$event['calendar']] : null;
@@ -1432,7 +1433,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                 // PAMELA - Mode assistantes
                 $mode = calendar_driver::FILTER_PERSONAL
                     | calendar_driver::FILTER_SHARED
-                    | calendar_driver::FILTER_WRITEABLE;
+                    | calendar_driver::FILTER_WRITEABLE
+                    | calendar_driver::FILTER_INVITATION;
 
                 $calendars      = $this->driver->list_calendars($mode);
                 $calendar       = isset($calendars[$event['calendar']]) ? $calendars[$event['calendar']] : null;
@@ -2616,7 +2618,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             // PAMELA - Mode assistantes
             $mode = calendar_driver::FILTER_PERSONAL
                 | calendar_driver::FILTER_SHARED
-                | calendar_driver::FILTER_WRITEABLE;
+                | calendar_driver::FILTER_WRITEABLE
+                | calendar_driver::FILTER_INVITATION;
 
             $calendars = $this->driver->list_calendars($mode);
             $calendar  = isset($calendars[$event['calendar']]) ? $calendars[$event['calendar']] : null;
@@ -2704,7 +2707,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         // PAMELA - Mode assistantes
         $mode = calendar_driver::FILTER_PERSONAL
             | calendar_driver::FILTER_SHARED
-            | calendar_driver::FILTER_WRITEABLE;
+            | calendar_driver::FILTER_WRITEABLE
+            | calendar_driver::FILTER_INVITATION;
 
         $calendars = $this->driver->list_calendars($mode);
         $calendar  = isset($calendars[$event['calendar']]) ? $calendars[$event['calendar']] : null;
@@ -3206,7 +3210,10 @@ $("#rcmfd_new_category").keypress(function(event) {
         // PAMELA - Mode assistantes
         if (isset($calid)) {
             // We search for writeable calendars in personal namespace by default
-            $mode   = calendar_driver::FILTER_WRITEABLE | calendar_driver::FILTER_PERSONAL | calendar_driver::FILTER_SHARED;
+            $mode   = calendar_driver::FILTER_WRITEABLE 
+                        | calendar_driver::FILTER_PERSONAL 
+                        | calendar_driver::FILTER_SHARED
+                        | calendar_driver::FILTER_INVITATION;
             $event['calendar'] = $calid;
             $result = $this->driver->get_event($event, $mode);
         }
@@ -3247,7 +3254,10 @@ $("#rcmfd_new_category").keypress(function(event) {
         $this->load_driver();
 
         // PAMELA - Mode assistantes
-        $calendars = $this->driver->list_calendars(calendar_driver::FILTER_WRITEABLE);
+        $calendars = $this->driver->list_calendars(calendar_driver::FILTER_PERSONAL
+                                                    | calendar_driver::FILTER_SHARED
+                                                    | calendar_driver::FILTER_WRITEABLE
+                                                    | calendar_driver::FILTER_INVITATION);
         $search_organizer = $data['method'] == 'REPLY';
 
         // PAMELA - Mode assistantes
@@ -3503,7 +3513,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                             // PAMELA - Mode assistantes
                             $mode = calendar_driver::FILTER_PERSONAL
                                 | calendar_driver::FILTER_SHARED
-                                | calendar_driver::FILTER_WRITEABLE;
+                                | calendar_driver::FILTER_WRITEABLE
+                                | calendar_driver::FILTER_INVITATION;
 
                             $calendars = $this->driver->list_calendars($mode);
                             $cal       = isset($calendars[$existing['calendar']]) ? $calendars[$existing['calendar']] : null;
@@ -3734,7 +3745,9 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $calendars = $this->driver->list_calendars(calendar_driver::FILTER_WRITEABLE);
                 $calendar = isset($calendars[$event['calendar']]) ? $calendars[$event['calendar']] : null;
 
-                if ($itip->delegate_to($event, $delegate, !empty($rsvpme), null, $this->get_user_emails($calendar))) {
+                $attendees = [];
+
+                if ($itip->delegate_to($event, $delegate, !empty($rsvpme), $attendees, $this->get_user_emails($calendar))) {
                     $this->rc->output->show_message('calendar.itipsendsuccess', 'confirmation');
                 }
                 else {
@@ -3747,9 +3760,11 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $event['free_busy'] = 'free';
             }
 
+            // PAMELA - Mode assistantes
             $mode = calendar_driver::FILTER_PERSONAL
                 | calendar_driver::FILTER_SHARED
-                | calendar_driver::FILTER_WRITEABLE;
+                | calendar_driver::FILTER_WRITEABLE
+                | calendar_driver::FILTER_INVITATION;
 
             // find writeable calendar to store event
             $cal_id    = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);

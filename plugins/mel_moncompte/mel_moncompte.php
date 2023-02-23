@@ -190,12 +190,14 @@ class mel_moncompte extends rcube_plugin {
       $this->rc->output->set_env('enable_messtatistiques_mobile', $this->rc->config->get('enable_messtatistiques_mobile', true));
 
       // http post actions
-      $this->register_action('plugin.hide_resource_roundcube', array($this,'hide_resource_roundcube'));
-      $this->register_action('plugin.show_resource_roundcube', array($this,'show_resource_roundcube'));
-      $this->register_action('plugin.sort_resource_roundcube', array($this,'sort_resource_roundcube'));
-      $this->register_action('plugin.synchro_on_mobile', array($this,'synchro_on_mobile'));
-      $this->register_action('plugin.no_synchro_on_mobile', array($this,'no_synchro_on_mobile'));
-      $this->register_action('plugin.set_default_resource', array($this,'set_default_resource'));
+      $this->register_action('plugin.hide_resource_roundcube',  array($this,'hide_resource_roundcube'));
+      $this->register_action('plugin.show_resource_roundcube',  array($this,'show_resource_roundcube'));
+      $this->register_action('plugin.sort_resource_roundcube',  array($this,'sort_resource_roundcube'));
+      $this->register_action('plugin.synchro_on_mobile',        array($this,'synchro_on_mobile'));
+      $this->register_action('plugin.no_synchro_on_mobile',     array($this,'no_synchro_on_mobile'));
+      $this->register_action('plugin.invitation',               array($this,'invitation'));
+      $this->register_action('plugin.no_invitation',            array($this,'no_invitation'));
+      $this->register_action('plugin.set_default_resource',     array($this,'set_default_resource'));
 
       // register actions
       $this->register_action('plugin.mel_resources_bal', array($this,'resources_bal_init'));
@@ -356,6 +358,7 @@ class mel_moncompte extends rcube_plugin {
           // Chargement des preferences de l'utilisateur
           $value = $user->getCalendarPreference('synchro_mobile');
           $synchro_mobile = isset($value) ? unserialize($value) : [];
+          $no_invitation = $this->rc->config->get('no_invitation_calendars', []);
 
           $default_calendar = $user->getDefaultCalendar();
           $acl = ($calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -367,6 +370,7 @@ class mel_moncompte extends rcube_plugin {
           $this->rc->output->set_env("resource_acl", $acl);
           $this->rc->output->set_env("resource_owner", $calendar->owner);
           $this->rc->output->set_env("resource_default", $default_calendar->id == $calendar->id);
+          $this->rc->output->set_env("resource_invitation", !isset($no_invitation[$calendar->id]));
           if (count($synchro_mobile) == 0) {
             // Si on n'a pas de ressource définie, utilise celle par défaut
             $this->rc->output->set_env("resource_synchro_mobile", $is_default);
@@ -709,6 +713,48 @@ class mel_moncompte extends rcube_plugin {
       unset($hidden[$mbox]);
       if ($this->rc->user->save_prefs(array($conf_name => $hidden)))
         $this->rc->output->show_message('mel_moncompte.show_resource_confirm', 'confirmation');
+      else
+        $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+    else {
+      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Utiliser le calendrier dans les invitations
+   */
+  public function invitation() {
+    $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
+
+    if (isset($mbox)) {
+      $conf_name = 'no_invitation_calendars';
+      // Récupération des préférences de l'utilisateur
+      $no_invitation = $this->rc->config->get($conf_name, []);
+      unset($no_invitation[$mbox]);
+      if ($this->rc->user->save_prefs(array($conf_name => $no_invitation)))
+        $this->rc->output->show_message('mel_moncompte.invitation_confirm', 'confirmation');
+      else
+        $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+    else {
+      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Ne pas utiliser le calendrier dans les invitations
+   */
+  public function no_invitation() {
+    $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
+
+    if (isset($mbox)) {
+      $conf_name = 'no_invitation_calendars';
+      // Récupération des préférences de l'utilisateur
+      $no_invitation = $this->rc->config->get($conf_name, []);
+      $no_invitation[$mbox] = 1;
+      if ($this->rc->user->save_prefs(array($conf_name => $no_invitation)))
+        $this->rc->output->show_message('mel_moncompte.no_invitation_confirm', 'confirmation');
       else
         $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
     }

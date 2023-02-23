@@ -183,6 +183,7 @@ class mel_driver extends calendar_driver {
       $filter_writeable = ($filter & self::FILTER_WRITEABLE) !== 0;
       $filter_active = ($filter & self::FILTER_ACTIVE) !== 0;
       $filter_personal = ($filter & self::FILTER_PERSONAL) !== 0;
+      $filter_invitation = ($filter & self::FILTER_INVITATION) !== 0;
 
       // Récupération des préférences de l'utilisateur
       $hidden_calendars = $this->rc->config->get('hidden_calendars', []);
@@ -190,6 +191,7 @@ class mel_driver extends calendar_driver {
       $color_calendars = $this->rc->config->get('color_calendars', null);
       $active_calendars = $this->rc->config->get('active_calendars', null);
       $alarm_calendars = $this->rc->config->get('alarm_calendars', null);
+      $no_invitation_calendars = $this->rc->config->get('no_invitation_calendars', null);
       $save_prefs = false;
 
       // attempt to create a default calendar for this user
@@ -225,6 +227,7 @@ class mel_driver extends calendar_driver {
 
         $cal_is_shared = $cal->owner != $this->user->uid;
         $cal_is_writable = $cal->asRight(\LibMelanie\Config\ConfigMelanie::WRITE);
+        $cal_is_invitation = !isset($no_invitation_calendars[$cal->id]);
         if (
             isset($hidden_calendars[$cal->id])
             // Filtrer les calendriers non actifs
@@ -235,6 +238,8 @@ class mel_driver extends calendar_driver {
             || ($filter_personal && $cal_is_shared && !$filter_shared)
             // Filtrer les calendriers sans droit d'écriture
             || ($filter_writeable && !$cal_is_writable)
+            // Filtrer les calendriers dans les invitations
+            || ($filter_invitation && !$cal_is_invitation)
             ) {
           continue;
         }

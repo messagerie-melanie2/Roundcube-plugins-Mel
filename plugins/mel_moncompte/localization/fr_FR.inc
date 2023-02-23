@@ -84,6 +84,8 @@ $labels['modify_error'] = 'Erreur lors de la modification';
 $labels['hide_resource_confirm'] = 'Ressource masquée dans le webmail';
 $labels['show_resource_confirm'] = 'Ressource affichée dans le webmail';
 $labels['sort_resource_confirm'] = 'La ressource a bien été triée';
+$labels['invitation_confirm'] = 'Ce calendrier sera utilisé dans la gestion des invitations';
+$labels['no_invitation_confirm'] = 'Ce calendrier ne sera plus utilisé dans la gestion des invitations';
 
 $labels['synchro_mobile_confirm'] = 'Ressource ajoutée pour la synchronisation mobile';
 $labels['no_synchro_mobile_confirm'] = 'Ressource supprimée de la synchronisation mobile';

@@ -468,6 +468,8 @@ class mel_html{
 		this.content = content;
 		this.onclick = new MelEvent();
 		this.onkeydown = new MelEvent();
+		this.onmouseover = new MelEvent();
+		this.onmouseout = new MelEvent();
 		this.aftergenerate = new MelEvent();
 	}
 
@@ -493,7 +495,7 @@ class mel_html{
 		for (const iterator of Enumerable.from(this.attribs).concat(additionnal_attribs).where(x => 0 === x || !!(x || null))) {
 			switch (iterator.key) {
 				case CONST_ATTRIB_CLASS:
-					$html.addClass(iterator.value);
+					$html.addClass(Array.isArray(iterator.value) ? iterator.value.join(' ') : iterator.value);
 					break;
 				case mel_html.EVENT_ON:
 					for (const key in iterator.value) {
@@ -503,6 +505,8 @@ class mel_html{
 						}
 					}
 					break;
+				case 'style':
+					iterator.value = this._getStyle();
 				default:
 					$html.attr(iterator.key, iterator.value);
 					break;
@@ -515,11 +519,64 @@ class mel_html{
 			this.onclick.call(event);
 		});
 
+		if (this.onkeydown.haveEvents()) generated.on('keydown', (event) => {
+			this.onkeydown.call(event);
+		});
+
+		if (this.onmouseover.haveEvents()) generated.on('mouseover', (event) => {
+			this.onmouseover.call(event);
+		});
+
+		if (this.onmouseout.haveEvents()) generated.on('mouseout', (event) => {
+			this.onmouseout.call(event);
+		});
+
 		if (this.aftergenerate.count() > 0) {
 			this.aftergenerate.call(generated);
 		}
 
 		return generated;
+	}
+
+	addClass(classes) {
+		if (!this.attribs) this.attribs = {};
+		if (!(this.attribs[CONST_ATTRIB_CLASS] || null)) this.attribs[CONST_ATTRIB_CLASS] = [];
+		else if (STRING === typeof this.attribs[CONST_ATTRIB_CLASS]) this.attribs[CONST_ATTRIB_CLASS] = [this.attribs[CONST_ATTRIB_CLASS]];
+
+		this.attribs[CONST_ATTRIB_CLASS].push(classes);
+		return this;
+	}
+
+	css(key, value) {
+		if (!this.attribs) this.attribs = {};
+		if (!(this.attribs['style'] || null)) this.attribs['style'] = {};
+		else if (STRING === typeof this.attribs['style']) {
+			const splited = this.attribs['style'].split(CONST_CSS_SEPARATOR);
+			this.attribs['style'] = {};
+			for (let index = 0, len = splited.length; index < len; ++index) {
+				const element = splited[index].split(CONST_CSS_ASSIGN);
+				this.attribs['style'][element[0]] = element[1];
+			}
+		}
+
+		this.attribs['style'][key] = value;
+		return this;
+	}
+
+	_getStyle() {
+		if (!this.attribs['style'] || STRING === typeof this.attribs['style']) return this.attribs['style'] || EMPTY_STRING;
+		else {
+			let array = [];
+			for (let keys = Object.keys(this.attribs['style']), index = 0, len = keys.length; index < len; ++index) {
+				const key = keys[index];
+				const value = this.attribs['style'][key];
+				array.push([key, value].join(CONST_CSS_ASSIGN));
+			}
+
+			array = array.join(CONST_CSS_SEPARATOR);
+
+			return (EMPTY_STRING === array ? EMPTY_STRING : (array + CONST_CSS_SEPARATOR));
+		}
 	}
 
 	create($parent, additionnal_attribs = [])
@@ -561,6 +618,8 @@ class mel_html2 extends mel_html {
 
 	addContent(mel_html) {
 		this.jcontents.push(mel_html);
+		mel_html.parent = this;
+		return this;
 	}
 
 	_generateContent($html) {
@@ -571,6 +630,11 @@ class mel_html2 extends mel_html {
 
 		return $html;
 	} 
+
+	appendTo(mel_html2) {
+		mel_html2.addContent(this);
+		return this;
+	}
 
 	count() {
 		return this.jcontents.length;
@@ -874,18 +938,44 @@ class mel_button extends mel_html {
 	}
 }
 
-Object.defineProperty(mel_button, 'html_base_class', {
-	enumerable: false,
-	configurable: false,
-	writable: false,
-	value:new MelEnum({
-		base:CONST_CLASS_BUTTON_MEL,
-		bootstrap:new MelEnum({
-			base:CONST_CLASS_BUTTON_BASE,
-			state:CONST_CLASS_BUTTON_SECONDARY
-		}, false)
-	}, false)
-});
+{
+	let item = {};
+	let bootstrap = {};
+	Object.defineProperty(item, 'base', {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value:CONST_CLASS_BUTTON_MEL
+	});
+
+	Object.defineProperty(bootstrap, 'base', {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value:CONST_CLASS_BUTTON_BASE
+	});
+
+	Object.defineProperty(bootstrap, 'state', {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value:CONST_CLASS_BUTTON_SECONDARY
+	});
+
+	Object.defineProperty(item, 'bootstrap', {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value:bootstrap
+	});
+
+	Object.defineProperty(mel_button, 'html_base_class', {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value:item
+	});
+}
 
 Object.defineProperty(mel_button, 'html_base_class_no_margin', {
 	enumerable: false,

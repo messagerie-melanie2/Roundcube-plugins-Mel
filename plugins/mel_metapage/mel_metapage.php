@@ -163,6 +163,8 @@ class mel_metapage extends rcube_plugin
         $this->require_plugin('mel_helper');
 
         $this->include_script('js/init/constants.js');
+        $this->include_script('js/always_load/mel_event.js');
+        $this->include_script('js/html.js');
  
         if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe' && $this->rc->task !== "login")
         {
@@ -990,7 +992,7 @@ class mel_metapage extends rcube_plugin
         $files = scandir(__DIR__."/js");
         $size = count($files);
         for ($i=0; $i < $size; ++$i) { 
-            if (strpos($files[$i], ".js") !== false)
+            if (strpos($files[$i], ".js") !== false && strpos($files[$i], "html.js") === false)
             $this->include_script('js/'.$files[$i]);
         }
         //if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))

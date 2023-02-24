@@ -1,14 +1,27 @@
 $(document).ready(() => {
 
     const CONST_CLASS_THEME_BADGE_SELECTED = 'green-badge';
+    const CONST_THEME_CLASSE_CAN_RESIZE = 'mel-resize-ok';
     const CONST_SELECTOR_THEME_BADGE_SELECTED = `${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_THEME_BADGE_SELECTED}`;
     const CONST_THEME_PANEL_ID = 'theme-panel';
     const CONST_THEME_PANEL_CONTENTS_CLASS = 'contents';
     const CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID} ${CONST_JQUERY_SELECTOR_CLASS}${CONST_THEME_PANEL_CONTENTS_CLASS}`;
+    const CONST_SELECTOR_THEME_PANEL_TAB_DIV = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID} ${CONST_JQUERY_SELECTOR_CLASS}title`;
     const CONST_THEME_BUTTON_ID = 'theme-switch-button';
     const CONST_THEME_ICON_PREFIX = 'icon-theme-';
     const CONST_CLASS_MEL_RESIZE_OK = 'mel-resize-ok';
     const CONST_FORMAT_THEME_TITLE = '%1?/( -?(%1?&&%2?||!%1?)? )/%2?';
+    const CONST_TAB_THEME_ID = 'theme-pannel-tab-theme';
+    const CONST_TAB_PICTURE_ID = 'theme-pannel-tab-pictures';
+    const CONST_TABS_LIST = [{
+                                display:'Thèmes',
+                                id:CONST_TAB_THEME_ID,
+                                already:true
+                            }, {
+                                display:'Images',
+                                id:CONST_TAB_PICTURE_ID,
+                                already:false
+                            }]
 
     try {
         Enumerable.from([]);
@@ -530,7 +543,6 @@ $(document).ready(() => {
          */
         init_theme($panel = $(CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT), $force = false, callback_click = null, callback_add = null)
         {
-            //debugger;
             //CONSTANTES
             const THEME_BUTTON_CLASS_ACTIVE = 'activated';
             const THEME_BUTTON_ICON_INACTIVE = CONST_ICON_PAINTING;
@@ -573,54 +585,56 @@ $(document).ready(() => {
                 rcmail.env.mel_themes = null; //Ne plus le rendre disponible via rcmail.env.mel_themes pour éviter les doublons
                 this.themes = themes || this.themes;
 
-                /**
-                 * Thème traité
-                 * @type {mel_html}
-                 */
-                let html_theme;
-                /**
-                 * Thème selectionné ou non
-                 * @type {boolean}
-                 */
-                let is_selected;
-                for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes)) {
-                    is_selected =  iterator.value.id === this.theme;
-                    //Création du "bouton" du thème
-                    html_theme = new mel_html(CONST_HTML_DIV, 
-                    {
-                        class:`${CONST_THEME_ICON_PREFIX}${iterator.value.id} ${CONST_CLASS_SELECTABLE} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY_WITH_BORDER} ${CONST_CLASS_MEL_RESIZE_OK} ${is_selected ? CONST_CLASS_SELECTED : EMPTY_STRING}`,
-                        style:`${CONST_CSS_BACKGROUND}${CONST_CSS_ASSIGN}${CONST_CSS_BACKGROUND_URL}(${iterator.value.icon})${CONST_CSS_SEPARATOR}${STYLE_THEME_BUTTON}`,
-                        title:`${iterator.value.displayed}${!!iterator.value.desc ? `- ${iterator.value.desc}` : EMPTY_STRING}`,
-                        role:CONST_ATTRIB_ROLE_BUTTON,
-                        'tab-index':0,
-                        'data-name':iterator.value.id,
-                        'aria-pressed':iterator.value.id === this.theme
+                if (0 !== $panel.length) {
+                    /**
+                     * Thème traité
+                     * @type {mel_html}
+                     */
+                    let html_theme;
+                    /**
+                     * Thème selectionné ou non
+                     * @type {boolean}
+                     */
+                    let is_selected;
+                    for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes)) {
+                        is_selected =  iterator.value.id === this.theme;
+                        //Création du "bouton" du thème
+                        html_theme = new mel_html(CONST_HTML_DIV, 
+                        {
+                            class:`${CONST_THEME_ICON_PREFIX}${iterator.value.id} ${CONST_CLASS_SELECTABLE} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY_WITH_BORDER} ${CONST_CLASS_MEL_RESIZE_OK} ${is_selected ? CONST_CLASS_SELECTED : EMPTY_STRING}`,
+                            style:`${CONST_CSS_BACKGROUND}${CONST_CSS_ASSIGN}${CONST_CSS_BACKGROUND_URL}(${iterator.value.icon})${CONST_CSS_SEPARATOR}${STYLE_THEME_BUTTON}`,
+                            title:`${iterator.value.displayed}${!!iterator.value.desc ? `- ${iterator.value.desc}` : EMPTY_STRING}`,
+                            role:CONST_ATTRIB_ROLE_BUTTON,
+                            'tab-index':0,
+                            'data-name':iterator.value.id,
+                            'aria-pressed':iterator.value.id === this.theme
+                        });
+                        //Action à faire au clique
+                        html_theme.onclick.push((e) => {
+                            let dosomething = callback_click ? callback_click(e) : true;
+                            if (!dosomething) return;
+
+                            e = $(e.currentTarget);
+                            $panel.find(CONST_SELECTOR_THEME_BADGE_SELECTED).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                            $panel.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`).removeClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, false);
+                            e.addClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, true);
+
+                            this.onthemeclick(e.parent());
+
+                            this.update_theme(e.data('name'));
+                            this._update_theme_color();
+                        });
+                        //Ajouter à la DIV des thèmes, le bouton de thème dans une div "col-6"
+                        html.addContent(
+                            new mel_html2(CONST_HTML_DIV, {attribs:{class:THEME_MAIN_CLASS_COL, style:STYLE_THEME_BUTTON_PARENT}, contents:[html_theme]})
+                        );
+                    }
+
+                    //Après la génération de la liste des thèmes, appliquer les effets visuels sur le thème selectionné.
+                    html.aftergenerate.push((generated) => {
+                        if (0 !== $panel.length) this.onthemeclick(generated.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTED}`).parent());
                     });
-                    //Action à faire au clique
-                    html_theme.onclick.push((e) => {
-                        let dosomething = callback_click ? callback_click(e) : true;
-                        if (!dosomething) return;
-
-                        e = $(e.currentTarget);
-                        $panel.find(CONST_SELECTOR_THEME_BADGE_SELECTED).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
-                        $panel.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`).removeClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, false);
-                        e.addClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, true);
-
-                        this.onthemeclick(e.parent());
-
-                        this.update_theme(e.data('name'));
-                        this._update_theme_color();
-                    });
-                    //Ajouter à la DIV des thèmes, le bouton de thème dans une div "col-6"
-                    html.addContent(
-                        new mel_html2(CONST_HTML_DIV, {attribs:{class:THEME_MAIN_CLASS_COL, style:STYLE_THEME_BUTTON_PARENT}, contents:[html_theme]})
-                    );
                 }
-
-                //Après la génération de la liste des thèmes, appliquer les effets visuels sur le thème selectionné.
-                html.aftergenerate.push((generated) => {
-                    this.onthemeclick(generated.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTED}`).parent());
-                });
             }
 
             let $theme_button = $(`${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_BUTTON_ID}`);
@@ -649,7 +663,7 @@ $(document).ready(() => {
                     });
                   }
 
-                    html.create($panel);
+                  if (0 !== $panel.length) html.create($panel);
 
                 }
                 else {
@@ -662,40 +676,43 @@ $(document).ready(() => {
         }
 
         init_theme_tabs({
-            tabs_div_selector='#theme-panel .title',
-            $themePannel=$('#theme-panel .contents'),
-            tabs=[{
-                display:'Thèmes',
-                id:'theme-pannel-tab-theme',
-                already:true
-            }, {
-                display:'Images',
-                id:'theme-pannel-tab-pictures',
-                already:false
-            }]})
+            tabs_div_selector=CONST_SELECTOR_THEME_PANEL_TAB_DIV,
+            $themePannel=$(CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT),
+            tabs=CONST_TABS_LIST})
         {
+            const CLASS_TAB = 'mel-tab';
+            const NAMESPACE = 'tab-meltheme';
+            const CLASS_TAB_HEADER = 'mel-tabheader';
+            const CLASS_TAB_CONTENT = 'mel-tab-content';
+            const TAB_ACTIVE = 'active';
+            const TAB_LAST = 'last';
+            const CLASS_CONTENTS = 'themescontents';
+
             let themeIndex = null;
-            let $tabs = $(tabs_div_selector).html(EMPTY_STRING);//.addClass('mel-ui-tab-system');
+            let $tabs = $(tabs_div_selector).html(EMPTY_STRING);
 
             if (0 === $tabs.length) return tabs;
 
             for (let index = 0, len = tabs.length; index < len; ++index) {
+                //On génère les onglets
                 const element = tabs[index];
                 new mel_html(CONST_HTML_DIV, {
                     id:element.id,
-                    class:`tab-meltheme mel-tab mel-tabheader ${0 === index ? 'active' : (len-1 === index ? 'last' : '')}`
+                    class:`${NAMESPACE} ${CLASS_TAB} ${CLASS_TAB_HEADER} ${0 === index ? TAB_ACTIVE : (len - 1 === index ? TAB_LAST : EMPTY_STRING)}`
                 }, element.display).create($tabs);
 
-                if ('theme-pannel-tab-theme' === element.id) themeIndex = index;
+                if (CONST_TAB_THEME_ID === element.id) themeIndex = index;
             }
 
             let $pannelParent = $themePannel.parent();
-            let $contents = new mel_html2('div', {
-                class:'themescontents'
+            let $contents = new mel_html2(CONST_HTML_DIV, {
+                class:CLASS_CONTENTS
             });
+
+            //Passer les thèmes dans le panel des thèmes
             if (themeIndex !== null) {
-                let $divThemes = new mel_html('div', {
-                    class:`${tabs[themeIndex].id} tab-meltheme mel-tab-content`
+                let $divThemes = new mel_html(CONST_HTML_DIV, {
+                    class:`${tabs[themeIndex].id} ${NAMESPACE} ${CLASS_TAB_CONTENT}`
                 });
                 $contents.addContent($divThemes);
                 $divThemes.aftergenerate.push(($generated) => {
@@ -703,11 +720,12 @@ $(document).ready(() => {
                 });
             }
 
+            //Ajout des onglets et apnneaux supplémentaires
             for (let index = 0, len = tabs.length; index < len; ++index) {
                 const element = tabs[index];
                 if (!element.already) {
-                    $contents.addContent(new mel_html('div', {
-                        class:`${element.id} tab-meltheme mel-tab-content`,
+                    $contents.addContent(new mel_html(CONST_HTML_DIV, {
+                        class:`${element.id} ${NAMESPACE} ${CLASS_TAB_CONTENT}`,
                         style:`${CONST_CSS_DISPLAY}${CONST_CSS_ASSIGN}${CONST_CSS_NONE}${CONST_CSS_SEPARATOR}`
                     }));
                 }
@@ -723,142 +741,178 @@ $(document).ready(() => {
             picturesToIgnore = [],
             picturesToAdd = []
         }) {
+            const CLASS_PARENT_DIV = `${CONST_CLASS_COL}-6`; 
+            const CLASS_PARENT_HOVER = 'hovered';
+            const CUSTOM_THEME_CLASSES = 'input-top-selectable mel-resize-ok half-resize';
+            const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture';
+            const CUSTOM_THEME_CLASSES_PIC = 'half-resize';
+            const INPUT_CLASS = 'hidden';
+            const INPUT_ACCEPT = ['.png', '.jpg', '.svg', '.gif'].join(',');
+            const THEME_ATTRIB_DATA_USER_PREF_ID = 'prefid';
+            const THEME_ATTRIB_DATA_PATH = 'picpath';
+            const THEME_ATTRIB_DATA_ID = 'picid';
+            const THEME_ATTRIB_DATA_IS_CUSTOM = 'iscustom';
+            const THEME_DEFAULT_CLASS = 'barup-background-color';
+            const THEME_CLASSES = 'mel-selectable picture mel-resize-ok';
+            const RULE_KEY = 'barup-background';
+            const DATA_PIC_ID = `${CONST_ATTRIB_DATA}-${THEME_ATTRIB_DATA_ID}`;
+            const DATA_PIC_PATH = `${CONST_ATTRIB_DATA}-${THEME_ATTRIB_DATA_PATH}`;
+            const DATA_IS_CUSTOM = `${CONST_ATTRIB_DATA}-${THEME_ATTRIB_DATA_IS_CUSTOM}`;
+            const CONST_SELECTOR_SELECTED = `${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTED}`;
+            const STYLE = 'padding:0 5px;';
             let $pannel = $(picturePannel);
 
             if (0 === $pannel.length) return this;
-
-            this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
-
-            let $mainrow = new mel_html2('div', {
-                attribs:{
-                    class:CONST_CLASS_ROW
-                }
-            });//$('<div class="row"></div>').css('padding', '0 5px').appendTo($pannel);
             const pictures = rcmail.env.mel_themes_pictures;
             let $item;
+            /**
+             * Contient la liste des images
+             * @type {mel_html2}
+             */
+            let $mainrow = new mel_html2(CONST_HTML_DIV, {
+                attribs:{
+                    class:CONST_CLASS_ROW,
+                    style:STYLE
+                }
+            });
+            this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
 
             for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder ?? Number.POSITIVE_INFINITY))) {
-                $item = $('<div class="col-6"></div>').css('padding', '0 5px').appendTo($mainrow);
-                $item = $('<div></div>').appendTo($item);
+                //Div de position
+                $item = new mel_html2(CONST_HTML_DIV, {
+                    attribs:{
+                        class:CLASS_PARENT_DIV,
+                        style:STYLE
+                    }
+                }).appendTo($mainrow);
+                //Vrai DIV
+                $item = new mel_html2(CONST_HTML_DIV, {}).appendTo($item);
 
+                //Si c'est on peux choisir une image custom
                 if (!!iterator.value.userprefid) {
-                    var $input = $(`<input data-prefid="${iterator.value.userprefid}" class="hidden" type="file" accept=".png,.jpg,.svg,.gif" />`).on('change', (ev) => {
+                    /**
+                     * Input caché
+                     * @type {mel_input}
+                     */
+                    var $input = new mel_input({
+                        class:INPUT_CLASS,
+                        type:CONST_ATTRIB_TYPE_FILE,
+                        accept:INPUT_ACCEPT
+                    });
+                    //MAJ de l'image
+                    $input.onchange.push((ev) => {
                         ev = $(ev.currentTarget)
-                        const prefid = ev.data('prefid');
+                        const prefid = ev.data(THEME_ATTRIB_DATA_USER_PREF_ID);
                         const file = ev[0].files[0];
                         var reader = new FileReader();
                         reader.onload =  (e) => {
                           const picture =  e.target.result;
                           this.update_custom_picture(picture, prefid);
-                          let $selectable = ev.parent().parent().find('.mel-selectable')
-                          .removeClass('barup-background-color')
-                          .css('background-image', `url(${picture})`)
-                          .css('background-size', 'cover')
-                          .data('picpath', picture)
-                          .data('iscustom', true);
+                          let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
+                          .removeClass(THEME_DEFAULT_CLASS)
+                          .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
+                          .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
+                          .data(THEME_ATTRIB_DATA_PATH, picture)
+                          .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
 
-                          if ($selectable.data('picid') === this.get_theme_picture()) {
-                            this.css_rules.remove('barup-background');
+                          if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
+                            this.css_rules.remove(RULE_KEY);
                             this._add_background(picture, true);
                           }
                         };
                         reader.readAsDataURL(file);
                     });
-                    var $button = $('<button class="mel-button no-button-margin btn btn-secondary">Charger une image</button>').on('mouseover', (e) => {
-                        $(e.currentTarget).parent().addClass('hovered');
-                    })
-                    .on('mouseout', (e) => {
-                        $(e.currentTarget).parent().removeClass('hovered');
-                    })
-                    .click((e) => {
-                        $(e.currentTarget).parent().find('input').click();
+                    //Bouton qui sert à cliquer sur l'input
+                    var $button = new mel_button({}, 'Charger une image');
+                    $button.onmouseover.push((e) => {
+                        $(e.currentTarget).parent().addClass(CLASS_PARENT_HOVER);
                     });
-                    $(`<div class="input-top-selectable mel-resize-ok half-resize"></div>`).append($input).append($button).appendTo($item);
-                    $item = $('<div></div>').addClass('half-resize').appendTo($item.addClass('div-custom-picture').css('display', 'flex'));
+                    $button.onmouseout.push((e) => {
+                        $(e.currentTarget).parent().removeClass(CLASS_PARENT_HOVER);
+                    });
+                    $button.onclick.push((e) => {
+                        $(e.currentTarget).parent().find(CONST_HTML_INPUT).click();
+                    });
+                    //Mise en forme
+                    $item.addContent(new mel_html2(CONST_HTML_DIV, {
+                        attribs:{
+                            class:CUSTOM_THEME_CLASSES
+                        },
+                        contents:[$input, $button]
+                    }));
+                    $item.css(CONST_CSS_DISPLAY, CONST_CSS_DISPLAY_FLEX).attribs[CONST_ATTRIB_CLASS] = ($item.attribs[CONST_ATTRIB_CLASS] || EMPTY_STRING) + ` ${CUSTOM_THEME_PARENT_DIV_CLASS}`;
+                    $item = new mel_html2(CONST_HTML_DIV, {
+                        attribs:{
+                            style:`${CONST_CSS_DISPLAY}${CONST_CSS_ASSIGN}${CONST_CSS_DISPLAY_FLEX}`
+                        }
+                    }).addClass(CUSTOM_THEME_CLASSES_PIC).appendTo($item);
                 }
 
-                $item.addClass('mel-selectable picture mel-resize-ok').data('picid', iterator.key);
+                //Ajout des classes et du fonctionnement des boutons
+                $item.addClass(THEME_CLASSES);
+                $item.attribs[DATA_PIC_ID] = iterator.key;
 
                 const isCustom = !!iterator.value.userprefid && !!iterator.value.background;
                 if (true === iterator.value.isThemeColor) {
-                    $item.addClass('barup-background-color');
+                    $item.addClass(THEME_DEFAULT_CLASS);
                 }
                 else {
-                    $item.data('picpath', iterator.value.background).css('background-image', `url(${isCustom ? iterator.value.background : iterator.value.view})`).css('background-size', 'cover').css('background-position', 'center');
-                    if (isCustom) $item.data('iscustom', true);
+                    $item.attribs[DATA_PIC_PATH] = iterator.value.background;
+                    $item.css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${isCustom ? iterator.value.background : iterator.value.view})`).css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER).css(CONST_CSS_BACKGROUND_POSITION, CONST_CSS_BACKGROUND_POSITION_CENTER);
+                    if (isCustom) $item.attribs[DATA_IS_CUSTOM] = true;
                 } 
 
-                $item.click((e) => {
+                $item.onclick.push((e) => {
                     e = $(e.currentTarget);
-                    $pannel.find('.green-badge').css('display', 'none');
-                    $pannel.find('.selected').removeClass('selected');
-                    e.addClass('selected');
-                    const data = e.data('picpath');
-                    const isCustom = e.data('iscustom');
+                    $pannel.find(CONST_SELECTOR_THEME_BADGE_SELECTED).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                    $pannel.find(CONST_SELECTOR_SELECTED).removeClass(CONST_CLASS_SELECTED);
+                    e.addClass(CONST_CLASS_SELECTED);
+                    const data = e.data(THEME_ATTRIB_DATA_PATH);
+                    const isCustom = e.data(THEME_ATTRIB_DATA_IS_CUSTOM);
 
                     try {
-                        this.css_rules.remove('barup-background');
+                        this.css_rules.remove(RULE_KEY);
                     } catch (error) {
                         
                     }
                     
                     if (!!data) {
                         this._add_background(data, isCustom);
-                        $('html').addClass('barup-picture');
+                        $(CONST_HTML_HTML).addClass(CONST_CLASS_HTML_HAS_PICTURE);
                     }
                     else {
-                        $('html').removeClass('barup-picture');
+                        $(CONST_HTML_HTML).removeClass(CONST_CLASS_HTML_HAS_PICTURE);
                     }
 
                     this.onthemeclick(e.parent());
 
-                    this.set_theme_picture(e.data('picid'));
+                    this.set_theme_picture(e.data(THEME_ATTRIB_DATA_ID));
                 });
 
+                //Effectuer les actions de séléction si il s'agit du thèmes en cours
                 if (this.theme_selected_picture === null || iterator.key === this.theme_selected_picture) {
-                    $item.addClass('selected');
-                    this.onthemeclick($item.parent());
+                    $item.addClass(CONST_CLASS_SELECTED);
+                    $item.parent.aftergenerate.push(($generated) => {
+                        this.onthemeclick($generated)
+                    });
 
                     if (this.theme_selected_picture === null || !iterator.value.background) {
                         this.theme_selected_picture = iterator.key;
-                        this.css_rules.remove('barup-background');
+                        this.css_rules.remove(RULE_KEY);
                     }
                     else {
                         this._add_background(iterator.value.background, isCustom);
-                        $('html').addClass('barup-picture');
+                        $(CONST_HTML_HTML).addClass(CONST_CLASS_HTML_HAS_PICTURE);
                     }
                 }
-            }
+            }//FIN FOR
+
+            $mainrow.create($pannel);
+
             return this;
         }
 
         _resize_themes() {
-            let times = [];
-            // $('#theme-panel .mel-resize-ok').each(async (i, e) => {
-            //     e = $(e);
-            //     if (0 === e.width()) {
-            //         await new Promise((ok, nok) => {
-            //             const interval = setInterval(() => {
-            //                     if (0 !== e.width()) {
-            //                         clearInterval(interval);
-            //                         ok();
-            //                     }
-            //                     else if (!times[i] || times[i] <= 10) {
-            //                         if (!times[i] && 0 !== times[i]) times[i] = 0;
-            //                         else ++times[i];
-            //                     }
-            //                     else {
-            //                         clearInterval(interval);
-            //                         ok('too many times');
-            //                     }
-            //             }, 10);
-            //         });
-            //     }
-
-            //     if (e.hasClass('half-resize')) e.css('height', `${(e.hasClass('selected') ? (e.hasClass('mel-selectable') ? 13 : 12) : (e.hasClass('mel-selectable') ? -2 : 0) ) + e.width() * 2*0.75 - 1}px`);
-            //     else e.css('height', `${e.width()*0.75}px`);
-            // });
-
             const size = $('#theme-panel .container').height() + $('#groupoptions-user .container.menu').height() + 60 + 30;
             $('#theme-panel .themescontents').css('max-height', `${window.innerHeight - size}px`);
 

@@ -357,6 +357,8 @@ if (window.rcmail) {
           rcmail.enable_command('set_default_resource', true);
           rcmail.enable_command('hide_resource_in_roundcube', true);
           rcmail.enable_command('show_resource_in_roundcube', true);
+          rcmail.enable_command('invitation', true);
+          rcmail.enable_command('no_invitation', true);
           rcmail.enable_command('synchro_on_mobile', true);
           rcmail.enable_command('no_synchro_on_mobile', true);
           rcmail.enable_command('plugin.mel_moncompte_add_resource', true)
@@ -774,6 +776,26 @@ rcube_webmail.prototype.show_resource_in_roundcube = function(mbox, type) {
     this.http_post('plugin.show_resource_roundcube', {
       _mbox : mbox,
       _type : type
+    }, lock);
+  }
+};
+
+rcube_webmail.prototype.invitation = function(mbox) {
+  if (mbox) {
+    var lock = this
+        .display_message(rcmail.gettext('mel_moncompte.wait'), 'loading');
+    this.http_post('plugin.invitation', {
+      _mbox : mbox
+    }, lock);
+  }
+};
+
+rcube_webmail.prototype.no_invitation = function(mbox) {
+  if (mbox) {
+    var lock = this
+        .display_message(rcmail.gettext('mel_moncompte.wait'), 'loading');
+    this.http_post('plugin.no_invitation', {
+      _mbox : mbox
     }, lock);
   }
 };

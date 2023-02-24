@@ -336,6 +336,15 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
 }
+.task-calendar .fc .fc-time i.fc-icon-needs-action:before {
+  content: "\f059";
+}
+.task-calendar .fc .fc-time i.fc-icon-declined:before {
+  content: "\f05e";
+}
+.task-calendar .fc .fc-time i.fc-icon-delegated:before {
+  content: "\f064";
+}
 .task-calendar .fc-unthemed th {
   border-color: var(--calendar-table-border) !important;
 }

@@ -783,13 +783,14 @@ if (rcmail && window.mel_metapage)
 
             html = `${html.slice(0, html.length-2)} </div>`;
 
-            //Affichage du status
+            // Affichage du status
             try {
-                const me = Enumerable.from(event.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).first();
-                if (me.status !== undefined)
+                // PAMELA - Mode assistantes
+                const me = Enumerable.from(event.attendees).where(x => x.email === datas.calendar.owner_email.toLowerCase()).first();
+                if (datas.calendar.editable && me.status !== undefined)
                 {
-                    html += `<div class=row style="margin-top:15px"><div class=col-4><span style="margin-right:11px" class="mel-cal-icon attendee ${me.status === undefined ? me.role.toLowerCase() : me.status.toLowerCase()}"></span><span style=vertical-align:text-top><b>Ma réponse</b> : ${rcmail.gettext(`status${me.status.toLowerCase()}`, "libcalendaring")}</span>
-                    ${me.status === "NEEDS-ACTION" || isInvited ? "" : '<button id="event-status-editor" class="btn btn-secondary dark-no-border-default mel-button" style="margin-top:0;margin-left:5px"><span class="icon-mel-pencil"></span></button>'}
+                    html += `<div class="row" id="event-dialog-invited-row" style="margin-top:15px"><div class=col-4><span style="margin-right:11px" class="mel-cal-icon attendee ${me.status === undefined ? me.role.toLowerCase() : me.status.toLowerCase()}"></span><span style=vertical-align:text-top><b>${rcmail.gettext(`answer`, "calendar")}</b> : ${rcmail.gettext(`status${me.status.toLowerCase()}`, "libcalendaring")}</span>
+                    ${me.status === "NEEDS-ACTION" || isInvited ? "" : '<button id="event-status-editor" class="btn btn-secondary dark-no-border-default mel-button" style="margin-top:0;margin-left:5px;padding:10px;line-height:0"><span class="icon-mel-pencil"></span></button>'}
                     </div>
                     </div>`;
                 }
@@ -1046,25 +1047,25 @@ if (rcmail && window.mel_metapage)
         {
             $('#noreply-event-rsvp')?.attr('id', 'noreply-event-rsvp-old');
             let a = $(`
-                <div id="event-rsvp-cloned">
+                <div id="event-rsvp-cloned" class="row" style="margin-top:10px;margin-left:-5px">
                     <div class="rsvp-buttons itip-buttons">
-                        <input type="button" class="button btn btn-secondary" rel="accepted" value="Accepter">
-                        <input type="button" class="button btn btn-secondary" rel="tentative" value="Peut-être">
-                        <input type="button" class="button btn btn-secondary" rel="declined" value="Refuser">
-                        <input type="button" class="button btn btn-secondary" rel="delegated" value="Déléguer">
-                        <div class="itip-reply-controls">
+                        <input type="button" class="button btn btn-secondary" rel="accepted" value="${rcmail.gettext(`itipaccepted`, "libcalendaring")}">
+                        <input type="button" class="button btn btn-secondary" rel="tentative" value="${rcmail.gettext(`itiptentative`, "libcalendaring")}">
+                        <input type="button" class="button btn btn-secondary" rel="declined" value="${rcmail.gettext(`itipdeclined`, "libcalendaring")}">
+                        <input type="button" class="button btn btn-secondary" rel="delegated" value="${rcmail.gettext(`itipdelegated`, "libcalendaring")}">
+                        <div class="itip-reply-controls" style="margin-top:5px">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" id="noreply-event-rsvp" value="1" class="pretty-checkbox form-check-input custom-control-input">
-                                <label class="custom-control-label" for="noreply-event-rsvp" title=""> Ne pas envoyer de réponse</label>
+                                <label class="custom-control-label" for="noreply-event-rsvp" title="">${rcmail.gettext(`itipsuppressreply`, "libcalendaring")}</label>
                             </div>
-                            <a href="#toggle" class="reply-comment-toggle" onclick="$(this).hide().parent().find('textarea').show().focus()">Saisissez votre réponse</a>
+                            <div><a href="#toggle" class="reply-comment-toggle" onclick="$(this).parent().hide().parent().find('textarea').show().focus()">${rcmail.gettext(`itipeditresponse`, "libcalendaring")}</a></div>
                             <div class="itip-reply-comment">
-                                <textarea id="reply-comment-event-rsvp" name="_comment" cols="40" rows="4" class="form-control" style="display:none" placeholder="Commentaire d’invitation ou de notification"></textarea>
+                                <textarea id="reply-comment-event-rsvp" name="_comment" cols="40" rows="4" class="form-control" style="display:none" placeholder="${rcmail.gettext(`itipcomment`, "libcalendaring")}"></textarea>
                                 </div>
                             </div>
                         </div>
                 </div>
-            `).appendTo($("#parenthtmlcalendar"))
+            `).insertAfter("#event-dialog-invited-row")
             .find('input[rel=accepted]')
             .click((e) => {
                 if (event.recurrence !== undefined) window.event_can_close = false;
@@ -1092,12 +1093,14 @@ if (rcmail && window.mel_metapage)
             .click((e) => {
                 if (event.recurrence !== undefined) window.event_can_close = false;
                 ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
-            })
-            ;
+            });
+            // Disable current response
+            const me = Enumerable.from(event.attendees).where(x => x.email === datas.calendar.owner_email.toLowerCase()).first();
+            $("#event-rsvp-cloned input[rel=" + me.status + "]").prop("disabled", true);
             return a;
         }
 
-        //Gestion des invitations
+        // Gestion des invitations
         if (isInvited)
         {
             invited();

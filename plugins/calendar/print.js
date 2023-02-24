@@ -162,7 +162,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         }
       }
 
-      //PAMELA - Show status cancelled
+      // PAMELA - Show status cancelled
       if (event.status === "CANCELLED")
       {
         element.addClass('cal-event-status-cancelled');

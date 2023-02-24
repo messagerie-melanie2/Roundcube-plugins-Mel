@@ -107,8 +107,9 @@ $(document).ready(() => {
         if (window.location.href.includes(rcmail.env.mel_metapage_const.value))
             config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
 
-        //console.log("config", config, MEL_ELASTIC_UI.url('workspace','workspace', config));
-        window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);// + '&_uid=' + uid + (parent !== window ? '&_from=iframe' : '');
+        MEL_ELASTIC_UI.create_loader('onworkspacegoloader', true, false).create($('#layout-content').html(EMPTY_STRING));
+
+        window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);
     }, true);
     
     new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);

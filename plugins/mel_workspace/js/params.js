@@ -506,7 +506,8 @@
 
         set_body_loading()
         {
-            return $(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
+            $('#layout-content').removeClass('mwsp');
+            return $(".body").html(MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)).css("display", "grid").css("justify-content", "center");
         }
 
         leave()

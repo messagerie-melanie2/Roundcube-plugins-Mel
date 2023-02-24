@@ -134,6 +134,9 @@ class BnumAPIController extends OCSController {
 					// Entites
 					if (strpos($directory->getName(), $entitiesLabel) === 0) {
 						$name = str_replace($entitiesLabel, '', $directory->getName());
+						if (strpos($name, ',') !== false) {
+							$name = substr($name, strrpos($name, ',') + 1);
+						}
 					}
 					// Workspaces
 					else if (strpos($directory->getName(), $workspacesLabel) === 0) {
@@ -172,7 +175,7 @@ class BnumAPIController extends OCSController {
 					// Dossier à retourner en API
 					$folders[] = [
 						'id' => $directory->getId(),
-						'path' => $directory->getPath(),
+						'path' => '',
 						'type' => $directory->getType(),
 						'displayName' => $directory->getName(),
 						'name' => $directory->getName(),

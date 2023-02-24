@@ -2721,12 +2721,27 @@ $(document).ready(() => {
             return this;
         }
 
-        create_loader(id, absoluteCentered = true) {
-            let $loading = $('<div class="loader-base"><div class="loader-looping"></div></div>');
+        create_loader(id, absoluteCentered = true, generate = true) {
+            let loading = new mel_html2(CONST_HTML_DIV, {
+                attribs:{
+                    class:'loader-base'
+                },
+                contents:[new mel_html(CONST_HTML_DIV, {class:'loader-looping'})]
+            });
 
-            if (absoluteCentered) $loading = $('<div class="absolute-center"></div>').append($loading);
+            if (absoluteCentered) {
+                loading = new mel_html2(CONST_HTML_DIV, {
+                    attribs:{class:CONST_CLASS_ABSOLUTE_CENTER},
+                    contents:[loading]
+                });
+            }
 
-            return $(`<div id="${id}"></div>`).append($loading);
+            loading = new mel_html2(CONST_HTML_DIV, {
+                attribs:{id},
+                contents:[loading]
+            });
+
+            return generate ? loading.generate() : loading;
         }
 
         ////////////************* Pagination functions *************///////////

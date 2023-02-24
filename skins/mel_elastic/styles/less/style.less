@@ -1436,7 +1436,7 @@ body {
     font-size: 12px !important;
 
     &.cal-event-status-cancelled{
-        color: var(--calendar-toolbar-roundcube-color) !important;
+        color: var(--main-text-color) !important;
 
         div{
             text-decoration: line-through;
@@ -1463,11 +1463,11 @@ body {
     }
 
     &.cal-event-status-free{
-        color: var(--calendar-toolbar-roundcube-color) !important;
+        color: var(--main-text-color) !important;
     }
 
     &.cal-event-status-telework{
-        color: var(--calendar-toolbar-roundcube-color) !important;
+        color: var(--main-text-color) !important;
 
         .fc-title{
             font-style: italic;
@@ -1517,6 +1517,12 @@ body {
             font-style: italic;
         }
     }
+}
+
+html.dark-mode .fc-event.cal-event-status-cancelled,
+html.dark-mode .fc-event.cal-event-status-free,
+html.dark-mode .fc-event.cal-event-status-telework {
+    color: #c7dfff !important;
 }
 
 .fc {

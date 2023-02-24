@@ -1627,7 +1627,8 @@ function rcube_calendar_ui(settings) {
         slotstart = date2unixtime(freebusy_ui.start),
         slotsize = freebusy_ui.interval * 60,
         slotnum = freebusy_ui.interval > 60 ? 1 : (60 / freebusy_ui.interval),
-        cells = table.children('thead').find('td'),
+        // PAMELA - Fix accessibility
+        cells = table.children('thead').find('tr.times th'),
         cell_width = cells.first().get(0).offsetWidth,
         h_margin = table.parents('table').data('h-margin'),
         v_margin = table.parents('table').data('v-margin'),

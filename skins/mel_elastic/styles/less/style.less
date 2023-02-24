@@ -1468,36 +1468,83 @@ body {
     font-size: 12px !important;
 
     &.cal-event-status-cancelled{
-        opacity: 0.5 !important;
+        color: var(--main-text-color) !important;
 
         div{
             text-decoration: line-through;
         }
 
         .fc-title{
-            font-weight: normal;
             opacity: 1;
             text-decoration: line-through;
         }
     }
 
     &.cal-event-status-tentative{
-        opacity: 0.5 !important;
+        opacity: 0.6 !important;
 
         .fc-title{
-            font-weight: normal;
             opacity: 1;
             font-style: italic;
         }
+
+        .fc-time,
+        .fc-time::before,
+        .fc-time span{
+            font-style: italic;
+            font-weight: normal;
+        }
     }
 
+    &.cal-event-status-telework,
     &.cal-event-status-free{
-        .fc-title{
-            font-weight: normal;
-            opacity: 1;
+        color: var(--main-text-color) !important;
+    }
+
+    &.cal-event-status-confirmed{
+        .fc-time::before,
+        .fc-time span{
+            font-weight: bold;
+        }
+    }
+
+    &.cal-event-partstat-declined{
+        .fc-time::before,
+        .fc-time span{
+            opacity: 0.7;
+            text-decoration: line-through;
             font-style: italic;
         }
     }
+
+    &.cal-event-partstat-delegated{
+        .fc-time::before,
+        .fc-time span{
+            opacity: 0.7;
+            text-decoration: line-through;
+            font-style: italic;
+        }
+    }
+
+    &.cal-event-partstat-tentative{
+        .fc-time::before,
+        .fc-time span{
+            font-style: italic;
+        }
+    }
+
+    &.cal-event-partstat-needs-action{
+        .fc-time::before,
+        .fc-time span{
+            font-style: italic;
+        }
+    }
+}
+
+html.dark-mode .fc-event.cal-event-status-cancelled,
+html.dark-mode .fc-event.cal-event-status-free,
+html.dark-mode .fc-event.cal-event-status-telework {
+    color: #c7dfff !important;
 }
 
 .fc {
@@ -1511,6 +1558,11 @@ body {
             opacity: 0 !important;
         }
     }
+    .fc-time i{
+        float: left;
+        margin-left: 0 !important;
+        margin-right: .25rem;
+    }
 }
 
 .fc-event-location {
@@ -1522,7 +1574,7 @@ body {
 }
 
 .fc-time-grid-event {
-	opacity: 0.8;
+	opacity: 0.9;
 
     .fc-time {
         text-align: center;

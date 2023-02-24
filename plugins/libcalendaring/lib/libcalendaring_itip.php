@@ -24,12 +24,14 @@
  */
 class libcalendaring_itip
 {
-    //pamela
+    // PAMELA
     public $last_message;
     protected $rc;
     protected $lib;
     protected $plugin;
     protected $sender;
+    // PAMELA - Mode assistantes
+    protected $attendee_email;
     protected $domain;
     protected $itip_send = false;
     protected $rsvp_actions = array('accepted','tentative','declined','delegated');
@@ -49,6 +51,23 @@ class libcalendaring_itip
         $this->sender = $hook['identity'];
 
         $this->plugin->add_hook('smtp_connect', array($this, 'smtp_connect_hook'));
+    }
+
+    /**
+     * PAMELA - Set identity
+     */
+    public function set_sender($identity)
+    {
+        if (!empty($identity))
+            $this->sender = $identity;
+    }
+
+    /**
+     * PAMELA - Set attendee email
+     */
+    public function set_attendee_email($attendee_email)
+    {
+        $this->attendee_email = $attendee_email;
     }
 
     public function set_sender_email($email)
@@ -94,9 +113,10 @@ class libcalendaring_itip
      * @param string  Mail body text label
      * @param object  Mail_mime object with message data
      * @param boolean Request RSVP
+     * @param string  PAMELA attendee name
      * @return boolean True on success, false on failure
      */
-    public function send_itip_message($event, $method, $recipient, $subject, $bodytext, $message = null, $rsvp = true)
+    public function send_itip_message($event, $method, $recipient, $subject, $bodytext, $message = null, $rsvp = true, $attendee_name = null)
     {
         if (!$this->sender['name']) {
             $this->sender['name'] = $this->sender['email'];
@@ -115,7 +135,8 @@ class libcalendaring_itip
             'name' => $subject,
             'vars' => array(
                 'title' => $event['title'],
-                'name' => $this->sender['name'],
+                // PAMELA - Mode assisantes
+                'name' => isset($attendee_name) ? $attendee_name : $this->sender['name'],
             )
         ));
 
@@ -165,7 +186,8 @@ class libcalendaring_itip
                     'title'       => $event['title'],
                     'date'        => $this->lib->event_date_text($event, true) . $recurrence_info,
                     'attendees'   => join(",\n ", $attendees_list),
-                    'sender'      => $this->sender['name'],
+                    // PAMELA - Mode assistantes
+                    'sender'      => isset($attendee_name) ? $attendee_name : $this->sender['name'],
                     // 0006234: Ajouter une ligne "Organisateur :" dans le msg réponse d'un invité
                     'organizer'   => $organizer,
                     'description' => isset($event['description']) ? $event['description'] : '',
@@ -237,7 +259,9 @@ class libcalendaring_itip
     public function compose_itip_message($event, $method, $rsvp = true)
     {
         $from     = rcube_utils::idn_to_ascii($this->sender['email']);
-        $from_utf = rcube_utils::idn_to_utf8($from);
+        // PAMELA - Mode assistante
+        $attendee_from = rcube_utils::idn_to_ascii($this->attendee_email);
+        $attendee_from_utf = rcube_utils::idn_to_utf8($attendee_from);
         $sender   = format_email_recipient($from, $this->sender['name']);
 
         // truncate list attendees down to the recipient of the iTip Reply.
@@ -249,7 +273,7 @@ class libcalendaring_itip
                 if ($attendee['role'] == 'ORGANIZER') {
                     $reply_attendees[] = $attendee;
                 }
-                else if (strcasecmp($attendee['email'], $from) == 0 || strcasecmp($attendee['email'], $from_utf) == 0) {
+                else if (strcasecmp($attendee['email'], $attendee_from) == 0 || strcasecmp($attendee['email'], $attendee_from_utf) == 0) {
                     $replying_attendee = $attendee;
                     if ($attendee['status'] != 'DELEGATED') {
                         unset($replying_attendee['rsvp']);  // unset the RSVP attribute
@@ -257,9 +281,9 @@ class libcalendaring_itip
                 }
                 // include attendees relevant for delegation (RFC 5546, Section 4.2.5)
                 else if ((!empty($attendee['delegated-to']) &&
-                            (strcasecmp($attendee['delegated-to'], $from) == 0 || strcasecmp($attendee['delegated-to'], $from_utf) == 0)) ||
+                            (strcasecmp($attendee['delegated-to'], $attendee_from) == 0 || strcasecmp($attendee['delegated-to'], $attendee_from_utf) == 0)) ||
                          (!empty($attendee['delegated-from']) &&
-                            (strcasecmp($attendee['delegated-from'], $from) == 0 || strcasecmp($attendee['delegated-from'], $from_utf) == 0))) {
+                            (strcasecmp($attendee['delegated-from'], $attendee_from) == 0 || strcasecmp($attendee['delegated-from'], $attendee_from_utf) == 0))) {
                     $reply_attendees[] = $attendee;
                 }
             }
@@ -296,10 +320,10 @@ class libcalendaring_itip
             foreach ((array)$event['attendees'] as $idx => $attendee) {
                 if ($attendee['role'] == 'ORGANIZER'
                     && $attendee['email']
-                    && strcasecmp($attendee['email'], $from) != 0
-                    && strcasecmp($attendee['email'], $from_utf) != 0
+                    && strcasecmp($attendee['email'], $attendee_from) != 0
+                    && strcasecmp($attendee['email'], $attendee_from_utf) != 0
                 ) {
-                    $attendee['sent-by'] = 'mailto:' . $from_utf;
+                    $attendee['sent-by'] = 'mailto:' . $attendee_from_utf;
                     $event['organizer'] = $event['attendees'][$idx] = $attendee;
                     break;
                 }
@@ -345,7 +369,7 @@ class libcalendaring_itip
      * @param array List with indexes of new/updated attendees
      * @return boolean True on success, False on failure
      */
-    public function delegate_to(&$event, $delegate, $rsvp = false, &$attendees = array())
+    public function delegate_to(&$event, $delegate, $rsvp = false, &$attendees = array(), $emails = null)
     {
         if (is_string($delegate)) {
             $delegates = rcube_mime::decode_address_list($delegate, 1, false);
@@ -354,7 +378,10 @@ class libcalendaring_itip
             }
         }
 
-        $emails = $this->lib->get_user_emails();
+        // PAMELA - Mode assistantes
+        if (!isset($emails)) {
+            $emails = $this->lib->get_user_emails();
+        }
         $me     = $this->rc->user->list_emails(true);
 
         // find/create the delegate attendee
@@ -373,7 +400,8 @@ class libcalendaring_itip
               $event['attendees'][$i]['role'] = 'NON-PARTICIPANT';
               $event['attendees'][$i]['rsvp'] = $rsvp;
 
-              $me['email'] = $attendee['email'];
+              // PAMELA - Mode assistante
+              //   $me['email'] = $attendee['email'];
               $delegate_attendee['role'] = $attendee['role'];
           }
           // the disired delegatee is already listed as an attendee
@@ -399,8 +427,10 @@ class libcalendaring_itip
 
     /**
      * Handler for calendar/itip-status requests
+     * 
+     * PAMELA - Mode assistantes $emails
      */
-    public function get_itip_status($event, $existing = null)
+    public function get_itip_status($event, $existing = null, $emails = null)
     {
         $action = $event['rsvp'] ? 'rsvp' : '';
         $status = $event['fallback'];
@@ -423,7 +453,10 @@ class libcalendaring_itip
 
             if ($existing) {
                 $rsvp   = $event['rsvp'];
-                $emails = $this->lib->get_user_emails();
+                // PAMELA - Mode assistantes
+                if (!isset($emails)) {
+                    $emails = $this->lib->get_user_emails();
+                }
 
                 foreach ($existing['attendees'] as $attendee) {
                     if ($attendee['email'] && in_array(strtolower($attendee['email']), $emails)) {
@@ -443,28 +476,35 @@ class libcalendaring_itip
                 $action = 'import';
             }
             else if (in_array($status_lc, $this->rsvp_status)) {
-                $status_text = $this->gettext(($latest ? 'youhave' : 'youhavepreviously') . $status_lc);
+                // PAMELA - Mode assistante
+                if ($existing) {
+                    $status_text = $this->gettext(($latest ? 'youhave' : 'youhavepreviously') . $status_lc);
+                }
+                else {
+                    $status_text = $this->gettext('acceptinvitation');
+                }
+                
 
                 if ($existing && ($existing['sequence'] > $event['sequence']
                     || (!isset($event['sequence']) && $existing['changed'] && $existing['changed'] > $event['changed']))
                 ) {
+                    // PAMELA - Mode assistantes
                     $action = '';  // nothing to do here, outdated invitation
-                    if ($status_lc == 'needs-action') {
-                        $status_text = $this->gettext('outdatedinvitation');
-                    }
+                    $status_text = $this->gettext('outdatedinvitation');
                 }
                 else if (!$existing && !$rsvp) {
                     $action = 'import';
                 }
                 else {
                     if ($latest) {
-                        $diff = $this->get_itip_diff($event, $existing);
+                        $diff = $this->get_itip_diff($event, $existing, $emails);
 
                         // Detect re-scheduling
                         // FIXME: This is probably to simplistic, or maybe we should just check
                         //        attendee's RSVP flag in the new event?
                         $rescheduled = !empty($diff['start']) || !empty($diff['end']);
-                        unset($diff['start'], $diff['end']);
+                        // PAMELA - Mode assistantes
+                        unset($diff['start'], $diff['end'], $diff['attendees']);
                     }
 
                     if ($rescheduled) {
@@ -477,7 +517,8 @@ class libcalendaring_itip
                             $latest = empty($diff);
                         }
 
-                        $action = !$latest ? 'update' : '';
+                        // PAMELA - Mode assistantes
+                        $action = 'rsvp';
                     }
                 }
 
@@ -571,7 +612,12 @@ class libcalendaring_itip
         );
     }
 
-    protected function get_itip_diff($event, $existing)
+    /**
+     * PAMELA - Mode assistantes
+     * 
+     * Ajout du emails
+     */
+    protected function get_itip_diff($event, $existing, $emails = null)
     {
         if (empty($event) || empty($existing) || empty($event['message_uid']) || empty($event['mime_id'])) {
             return;
@@ -597,7 +643,10 @@ class libcalendaring_itip
             $status             = array();
             $itip_attendees     = array();
             $existing_attendees = array();
-            $emails             = $this->lib->get_user_emails();
+            // PAMELA - Mode assistantes
+            if (!isset($emails)) {
+                $emails         = $this->lib->get_user_emails();
+            }
 
             // Compare list of attendees (ignoring current user status)
             foreach ((array) $existing['attendees'] as $idx => $attendee) {
@@ -664,6 +713,8 @@ class libcalendaring_itip
             'method'   => $method,
             'task'     => $task,
             'mime_id'  => $mime_id,
+            // PAMELA - Mode assistantes
+            'attendees' => $event['attendees'],
         );
 
         // create buttons to be activated from async request checking existence of this event in local calendars
@@ -675,14 +726,15 @@ class libcalendaring_itip
 
             foreach ($event['attendees'] as $attendee) {
                 if (!empty($attendee['email']) && $attendee['role'] != 'ORGANIZER') {
-                    if (empty($event['_sender']) || self::compare_email($attendee['email'], $event['_sender'], $event['_sender_utf'])) {
+                    // PAMELA - Mode assistantes
+                    // if (empty($event['_sender']) || self::compare_email($attendee['email'], $event['_sender'], $event['_sender_utf'])) {
                         $metadata['attendee'] = $attendee['email'];
                         $rsvp_status = strtoupper($attendee['status']);
                         if ($attendee['delegated-to']) {
                             $metadata['delegated-to'] = $attendee['delegated-to'];
                         }
                         break;
-                    }
+                    // }
                 }
             }
 
@@ -874,6 +926,16 @@ class libcalendaring_itip
         if (!empty($import_button)) {
             $buttons[] = html::div(array('id' => 'import-'.$dom_id, 'style' => 'display:none'), $import_button);
         }
+
+        // PAMELA - Ajouter le bouton étiquette
+        $label_button = html::div('', $this->gettext('removelabelinfo')) . 
+            html::tag('input', array(
+            'type'    => 'button',
+            'class'   => 'button',
+            'onclick' => "rcube_libcalendaring.remove_label_from_itip_mail()",
+            'value'   => $this->gettext('removelabel'),
+        ));
+        $buttons[] = html::div(array('id' => 'label-'.$dom_id, 'style' => 'display:none'), $label_button);
 
         // pass some metadata about the event and trigger the asynchronous status check
         $metadata['fallback'] = $rsvp_status;

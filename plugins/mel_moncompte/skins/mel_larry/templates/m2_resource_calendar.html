@@ -85,6 +85,21 @@
 					'calendar')"></td>
 				<roundcube:endif />
 			</tr>
+			<tr>
+				<td class="title"><label for="rcmfd_invitation"><roundcube:label
+							name="mel_moncompte.invitation" /></label></td>
+				<roundcube:if condition="env:resource_invitation == true" />
+				<td><input name="_invitation"
+					id="rcmfd_invitation" checked="checked" type="checkbox"
+					onclick="rcmail.command(this.checked ? 'invitation' : 'no_invitation','<roundcube:var name="env:resource_id" />',
+					'calendar')"></td>
+				<roundcube:else />
+				<td><input name="_invitation"
+					id="rcmfd_invitation" type="checkbox"
+					onclick="rcmail.command(this.checked ? 'invitation' : 'no_invitation','<roundcube:var name="env:resource_id" />',
+					'calendar')"></td>
+				<roundcube:endif />
+			</tr>
 		</table>
 		<br>
 		<br>

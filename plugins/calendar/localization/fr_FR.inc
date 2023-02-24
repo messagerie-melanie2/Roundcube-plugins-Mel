@@ -67,7 +67,7 @@ $labels['print'] = 'Imprimer';
 $labels['printtitle'] = 'Imprimer les agendas';
 $labels['title'] = 'Résumé';
 $labels['description'] = 'Description';
-//PAMELLA
+// PAMELA
 $labels['all-day'] = 'Journée';
 $labels['export'] = 'Exporter';
 $labels['exporttitle'] = 'Exporter vers iCalendar';
@@ -161,7 +161,7 @@ $labels['attendee'] = 'Participant';
 $labels['role'] = 'Rôle';
 $labels['availability'] = 'Dispo.';
 $labels['confirmstate'] = 'Statut';
-//PAMELA
+// PAMELA
 $labels['addattendee'] = 'Ajouter';
 $labels['roleorganizer'] = 'Organisateur';
 $labels['rolerequired'] = 'Requis';
@@ -210,7 +210,10 @@ $labels['itipcomment'] = 'Commentaire d’invitation ou de notification';
 $labels['itipcommenttitle'] = 'Ce commentaire sera inséré dans le message d\'invitation ou de notification envoyé aux participants';
 $labels['notanattendee'] = 'Vous n\'êtes pas dans la liste des participants à cet événement';
 $labels['eventcancelled'] = 'L\'événement a été annulé';
-$labels['saveincalendar'] = 'enregistrer sous';
+// PAMELA - Mode assistantes
+$labels['answer'] = 'Réponse';
+$labels['saveincalendar'] = 'Choix du calendrier : ';
+$labels['isattendee'] = '(invité)';
 $labels['updatemycopy'] = 'Mise à jour dans mon agenda';
 $labels['savetocalendar'] = 'Sauvegarder dans l\'agenda';
 $labels['openpreview'] = 'Consulter l\'agenda';

@@ -80,6 +80,8 @@ function rcube_calendar_ui(settings) {
     dayNames: settings.days,
     dayNamesShort: settings.days_short,
     weekNumbers: settings.show_weekno > 0,
+    // PAMELA - Mode assistantes
+    slotEventOverlap: false,
     // MANTIS 0006486: Bug du numéro de semaine dans le fullcalendar de l'agenda
     weekNumberCalculation: 'ISO',
     weekNumberTitle: rcmail.gettext('weekshort', 'calendar') + ' ',
@@ -211,7 +213,7 @@ function rcube_calendar_ui(settings) {
         var prefix = event.sensitivity && event.sensitivity != 'public' ? String(sensitivitylabels[event.sensitivity]).toUpperCase() + ': ' : '';
         element.attr('title', prefix + event.title);
       }
-      if (view.name != 'month') {
+      // if (view.name != 'month') {
         if (view.name == 'list') {
           var loc = $('<td>').attr('class', 'fc-event-location');
           if (event.location)
@@ -221,16 +223,32 @@ function rcube_calendar_ui(settings) {
         else if (event.location) {
           element.find('div.fc-title').after($('<div class="fc-event-location">').html('@&nbsp;' + Q(event.location)));
         }
-        var time_element = element.find('div.fc-time');
+        // PAMELA
+        var time_element;
+        if (event.allDay)
+          time_element = element.find('.fc-content');
+        else
+          time_element = element.find('.fc-time');
+
         if (event.sensitivity && event.sensitivity != 'public')
-          time_element.append('<i class="fc-icon-sensitive"></i>');
+          time_element.prepend('<i class="fc-icon-sensitive"></i>');
         if (event.recurrence)
-          time_element.append('<i class="fc-icon-recurring"></i>');
+          time_element.prepend('<i class="fc-icon-recurring"></i>');
         if (event.alarms || (event.valarms && event.valarms.length))
-          time_element.append('<i class="fc-icon-alarms"></i>');
-      }
+          time_element.prepend('<i class="fc-icon-alarms"></i>');
+        // PAMELA - Mode assistantes
+        if (event.attendee_partstart && ['accepted', 'tentative'].indexOf(String(event.attendee_partstart).toLowerCase()) === -1)
+          time_element.prepend('<i class="fc-icon-' + String(event.attendee_partstart).toLowerCase() + '"></i>');
+        else if (String(event.status).toLowerCase() == 'telework') {
+          time_element.prepend('<i class="fc-icon-' + String(event.status).toLowerCase() + '"></i>');
+        }
+      // }
       if (event.status) {
         element.addClass('cal-event-status-' + String(event.status).toLowerCase());
+      }
+      // PAMELA - Mode assistantes
+      if (event.attendee_partstart) {
+        element.addClass('cal-event-partstat-' + String(event.attendee_partstart).toLowerCase());
       }
 
       rcmail.triggerEvent('calendar.renderEvent.after', { eventDatas, element, view })
@@ -348,6 +366,16 @@ function rcube_calendar_ui(settings) {
       return date.getHours() >= settings['work_start'] && date.getHours() < settings['work_end'];
   };
 
+  // PAMELA - Mode assistantes
+  var hexToRgb = function(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
   var set_event_colors = function (element, event, mode) {
     var bg_color = '', border_color = '',
       cat = String(event.categories),
@@ -376,6 +404,17 @@ function rcube_calendar_ui(settings) {
       'background-color': bg_color,
       'color': me.text_color(bg_color)
     };
+
+    // PAMELA - Mode assistantes
+    if (['free', 'cancelled', 'telework'].indexOf(String(event.status).toLowerCase()) !== -1) {
+      const rgb = hexToRgb(css['background-color']);
+      css['background-color'] = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, .3)`;
+      delete css['color'];
+    }
+    else if (['tentative'].indexOf(String(event.status).toLowerCase()) !== -1) {
+      const rgb = hexToRgb(css['background-color']);
+      css['background-color'] = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, .7)`;
+    }
 
     if (String(css['border-color']).match(/^#?f+$/i))
       delete css['border-color'];
@@ -419,7 +458,7 @@ function rcube_calendar_ui(settings) {
   // event details dialog (show only)
   var event_show_dialog = function (event, ev, temp) {
 
-    //PAMELLA
+    // PAMELA
     if (!temp)
       me.selected_event = event;
 
@@ -528,7 +567,9 @@ function rcube_calendar_ui(settings) {
       for (var j = 0; j < num_attendees; j++) {
         data = event.attendees[j];
         if (data.email) {
-          if (data.role != 'ORGANIZER' && settings.identity.emails.indexOf(';' + data.email) >= 0) {
+          // PAMELA - Mode assistantes
+          // if (data.role != 'ORGANIZER' && settings.identity.emails.indexOf(';' + data.email) >= 0) {
+          if (data.role != 'ORGANIZER' && calendar.owner_email.toLowerCase() == String(data.email).toLowerCase()) {
             mystatus = (data.status || 'UNKNOWN').toLowerCase();
             if (data.status == 'NEEDS-ACTION' || data.status == 'TENTATIVE' || data.rsvp)
               rsvp = mystatus;
@@ -596,13 +637,14 @@ function rcube_calendar_ui(settings) {
       }
     }
 
-    //PAMELLA
+    // PAMELA
     if (rcmail.env.calendar_custom_dialog === true) {
       return rcmail.triggerEvent("calendar.event_show_dialog.custom", {
         showed: Object.assign({}, event),
         ev: ev,
         temp: temp,
         object: me,
+        calendar: calendar,
         show_rsvp: show_rsvp === undefined ? false : show_rsvp,
         functions: {
           event_edit_dialog: event_edit_dialog
@@ -1598,7 +1640,8 @@ function rcube_calendar_ui(settings) {
         slotstart = date2unixtime(freebusy_ui.start),
         slotsize = freebusy_ui.interval * 60,
         slotnum = freebusy_ui.interval > 60 ? 1 : (60 / freebusy_ui.interval),
-        cells = table.children('thead').find('td'),
+        // PAMELA - Fix accessibility
+        cells = table.children('thead').find('tr.times th'),
         cell_width = cells.first().get(0).offsetWidth,
         h_margin = table.parents('table').data('h-margin'),
         v_margin = table.parents('table').data('v-margin'),
@@ -2014,7 +2057,7 @@ function rcube_calendar_ui(settings) {
         name = item.replace(email, '').replace(/^["\s<>]+/, '').replace(/["\s<>]+$/, '');
       }
       if (email) {
-        //Pamela 
+        // PAMELA 
         add_attendee($.extend({ email: email.toLowerCase(), name: name }, params));
         success = true;
       }
@@ -2176,7 +2219,8 @@ function rcube_calendar_ui(settings) {
   // remove an attendee from the list
   var remove_attendee = function (elem, id) {
     $(elem).closest('tr').remove();
-    event_attendees = $.grep(event_attendees, function (data) { return (data.name != id && data.email != id) });
+    // PAMELA - Mode assistantes
+    event_attendees = $.grep(event_attendees, function (data) { return (data.name != id && data.email != id || data.role == 'ORGANIZER') });
   };
 
   // open a dialog to display detailed free-busy information and to find free slots
@@ -2522,11 +2566,16 @@ function rcube_calendar_ui(settings) {
         return;
       }
 
+      // PAMELA - Mode assistantes
+      let calendar = me.selected_event.calendar && me.calendars[me.selected_event.calendar] ? me.calendars[me.selected_event.calendar] : { editable: false, rights: 'lrs' };
+
       // update attendee status
       attendees = [];
       for (var data, i = 0; i < me.selected_event.attendees.length; i++) {
         data = me.selected_event.attendees[i];
-        if (settings.identity.emails.indexOf(';' + String(data.email).toLowerCase()) >= 0) {
+        // PAMELA - Mode assistantes
+        // if (settings.identity.emails.indexOf(';' + String(data.email).toLowerCase()) >= 0) {
+        if (calendar.owner_email.toLowerCase() == String(data.email).toLowerCase()) {
           data.status = response.toUpperCase();
           data.rsvp = 0;  // unset RSVP flag
 
@@ -2545,7 +2594,9 @@ function rcube_calendar_ui(settings) {
           attendees.push(i)
         }
         else if (response != 'DELEGATED' && data['delegated-from'] &&
-          settings.identity.emails.indexOf(';' + String(data['delegated-from']).toLowerCase()) >= 0) {
+          // PAMELA - Mode assisantes
+          // settings.identity.emails.indexOf(';' + String(data['delegated-from']).toLowerCase()) >= 0) {
+          calendar.owner_email.toLowerCase() == String(data['delegated-from']).toLowerCase()) {
           delete data['delegated-from'];
         }
 
@@ -4348,13 +4399,13 @@ function rcube_calendar_ui(settings) {
         fc.fullCalendar('gotoDate', d)
         fc.fullCalendar('select', d, d);
         setTimeout(function () { pretty_select($('select', minical)); }, 25);
-        //PAMELLA
+        // PAMELA
         rcmail.triggerEvent("calendar.datepicker.onSelect", { date: dateText, inst: inst });
       },
       onChangeMonthYear: function (year, month, inst) {
         minical.data('year', year).data('month', month);
         setTimeout(function () { pretty_select($('select', minical)); }, 25);
-        //PAMELLA
+        // PAMELA
         rcmail.triggerEvent("calendar.datepicker.onChangeMonthYear", { year: year, month: month, inst: inst });
       },
       beforeShowDay: function (date) {
@@ -4365,7 +4416,7 @@ function rcube_calendar_ui(settings) {
           dt = moment(date).format('YYYYMMDD'),
           active = view.start && view.start.format('YYYYMMDD') <= dt && view.end.format('YYYYMMDD') > dt;
 
-        //Pamella
+        // PAMELA
         rcmail.triggerEvent("calendar.datepicker.beforeShowDay", { date: date });
         return [true, (active ? 'ui-datepicker-activerange ui-datepicker-active-' + view.name : ''), ''];
       }
@@ -4478,6 +4529,9 @@ function rcube_calendar_ui(settings) {
       if (email && icon.length) {
         icon.attr('data-email', email);
         check_freebusy_status(icon, email, me.selected_event);
+
+        // PAMELA - Mode assistantes
+        event_attendees[0].email = email;
       }
     });
 

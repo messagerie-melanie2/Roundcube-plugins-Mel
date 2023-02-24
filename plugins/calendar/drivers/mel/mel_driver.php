@@ -177,12 +177,21 @@ class mel_driver extends calendar_driver {
       if (!isset($this->calendars)) {
         $this->_read_calendars($calid);
       }
+      // Initialiser la conf à partir du filtre
+      $filter_all = ($filter & self::FILTER_ALL) !== 0;
+      $filter_shared = ($filter & self::FILTER_SHARED) !== 0;
+      $filter_writeable = ($filter & self::FILTER_WRITEABLE) !== 0;
+      $filter_active = ($filter & self::FILTER_ACTIVE) !== 0;
+      $filter_personal = ($filter & self::FILTER_PERSONAL) !== 0;
+      $filter_invitation = ($filter & self::FILTER_INVITATION) !== 0;
+
       // Récupération des préférences de l'utilisateur
       $hidden_calendars = $this->rc->config->get('hidden_calendars', []);
       $sort_calendars = $this->rc->config->get('sort_agendas', []);
       $color_calendars = $this->rc->config->get('color_calendars', null);
       $active_calendars = $this->rc->config->get('active_calendars', null);
       $alarm_calendars = $this->rc->config->get('alarm_calendars', null);
+      $no_invitation_calendars = $this->rc->config->get('no_invitation_calendars', null);
       $save_prefs = false;
 
       // attempt to create a default calendar for this user
@@ -205,10 +214,33 @@ class mel_driver extends calendar_driver {
       $calendars = [];
       $haveActive = false;
       foreach ($this->calendars as $id => $cal) {
-        if (isset($hidden_calendars[$cal->id])
-            && ! ($filter & self::FILTER_ALL)
-            && (count($hidden_calendars) < count($this->calendars)
-                || $this->user->uid != $cal->id)) {
+
+        // Gestion des calendriers actifs
+        if (is_array($active_calendars)) {
+          $cal_is_active = isset($active_calendars[$cal->id]);
+        }
+        else if ($cal->id == $this->user->uid) {
+          $save_prefs = true;
+          $cal_is_active = true;
+          $active_calendars = [ $cal->id => 1 ];
+        }
+
+        $cal_is_shared = $cal->owner != $this->user->uid;
+        $cal_is_writable = $cal->asRight(\LibMelanie\Config\ConfigMelanie::WRITE);
+        $cal_is_invitation = !isset($no_invitation_calendars[$cal->id]);
+        if (
+            isset($hidden_calendars[$cal->id])
+            // Filtrer les calendriers non actifs
+            || ($filter_active && !$cal_is_active)
+            // Filtrer les calendriers non partagés
+            || ($filter_shared && !$cal_is_shared && !$filter_personal)
+            // Filtrer les calendriers non personnel
+            || ($filter_personal && $cal_is_shared && !$filter_shared)
+            // Filtrer les calendriers sans droit d'écriture
+            || ($filter_writeable && !$cal_is_writable)
+            // Filtrer les calendriers dans les invitations
+            || ($filter_invitation && !$cal_is_invitation)
+            ) {
           continue;
         }
         $rcId = driver_mel::gi()->mceToRcId($cal->id);
@@ -234,17 +266,10 @@ class mel_driver extends calendar_driver {
           }
           $color_calendars[$cal->id] = $color;
         }
-        // Gestion des calendriers actifs
-        if (is_array($active_calendars)) {
-          $active = isset($active_calendars[$cal->id]);
-        }
-        else if ($cal->id == $this->user->uid) {
-          $save_prefs = true;
-          $active = true;
-          $active_calendars = [ $cal->id => 1 ];
-        }
 
-        if ($active === true && $haveActive === false) $haveActive = true;
+        if ($cal_is_active === true && $haveActive === false) {
+          $haveActive = true;
+        } 
 
         // Gestion des alarmes dans les calendriers
         if (is_array($alarm_calendars)) {
@@ -254,10 +279,6 @@ class mel_driver extends calendar_driver {
           $alarm = true;
           $alarm_calendars = [ $cal->id => 1 ];
         }
-        // Se limiter aux calendriers actifs
-        // Se limiter aux calendriers perso
-        if (($filter & self::FILTER_ACTIVE) && ! $active || ($filter & self::FILTER_PERSONAL) && $cal->owner != $this->user->uid)
-          continue;
         // Gestion des droits du calendrier
         if ($cal->id == $this->user->uid) {
           $rights = 'lrswiktev';
@@ -265,7 +286,7 @@ class mel_driver extends calendar_driver {
         else if ($cal->owner == $this->user->uid) {
           $rights = 'lrswikxteav';
         }
-        else if ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
+        else if ($cal_is_writable) {
           $rights = 'lrswt';
         }
         else if ($cal->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
@@ -280,6 +301,10 @@ class mel_driver extends calendar_driver {
           $calendar_name = explode(' (', $calendar_name[0], 2);
           $calendar_name = $calendar_name[0];
         }
+
+        // Récupérer les informations sur le propriétaire de l'agenda
+        $cal_owner = driver_mel::gi()->getUser($cal->owner);
+
         // formatte le calendrier pour le driver
         $calendar = array(
             'id'          => $rcId,
@@ -287,17 +312,18 @@ class mel_driver extends calendar_driver {
             'name'        => $cal->name,
             'listname'    => $calendar_name,
             'editname'    => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name,
-            'title'       => ($this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name) . ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? "" : " 🔒"),
+            'title'       => ($this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name) . ($cal_is_writable ? "" : " 🔒"),
             'color'       => $color,
             'showalarms'  => $alarm ? 1 : 0,
             'default'     => $default_calendar->id == $cal->id,
-            'active'      => $active,
-            'owner'       => $cal->owner,
+            'active'      => $cal_is_active,
+            'owner'       => $cal_owner->uid,
+            'owner_email' => $cal_owner->email,
+            'owner_name'  => $cal_owner->fullname,
             'children'    => false, // TODO: determine if that folder indeed has child folders
-            'caldavurl'   => '',
             'history'     => false,
             'virtual'     => false,
-            'editable'    => $cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
+            'editable'    => $cal_is_writable,
             'deletable'   => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
             'rights'      => $rights,
             'group'       => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
@@ -381,7 +407,7 @@ class mel_driver extends calendar_driver {
         $prefs = $this->rc->config->get('birthday_calendar', array('color' => '87CEFA'));
 
         $id = self::BIRTHDAY_CALENDAR_ID;
-        if (!$active || !in_array($id, $hidden_calendars)) {
+        if (!$cal_is_active || !in_array($id, $hidden_calendars)) {
           $calendars[$id] = array('id' => $id, 'name' => $this->cal->gettext('birthdays'), 'listname' => $this->cal->gettext('birthdays'), 'color' => $prefs['color'], 'showalarms' => (bool)$this->rc->config->get('calendar_birthdays_alarm_type'), 'active' => isset($active_calendars[$id]), 'group' => 'x-birthdays', 'editable' => false, 'default' => false, 'children' => false);
         }
       }
@@ -414,8 +440,7 @@ class mel_driver extends calendar_driver {
         }
       }
 
-      if ($haveActive === false)
-      {
+      if ($haveActive === false) {
         $firstId = driver_mel::gi()->getUser()->uid;
         $calendars[$firstId]["active"] = true;
 
@@ -796,7 +821,7 @@ class mel_driver extends calendar_driver {
         $_event->uid = str_replace('/', '', $_event->uid);
 
         // Gérer la sequence
-        $_event->sequence = 0;
+        $_event->sequence = isset($event['sequence']) ? $event['sequence'] : 0;
       }
       if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
         $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
@@ -839,7 +864,10 @@ class mel_driver extends calendar_driver {
         $exceptions[$recid] = $this->_write_postprocess($_exception, $event, true);
 
         // Gérer la sequence
-        if (is_int($_exception->sequence)) {
+        if (isset($event['sequence'])) {
+          $_exception->sequence = $event['sequence'];
+        }
+        else if (is_int($_exception->sequence)) {
           $_exception->sequence = $_exception->sequence + 1;
         }
         else {
@@ -867,7 +895,10 @@ class mel_driver extends calendar_driver {
           $_event = $this->_write_postprocess($_event, $event, false);
 
           // Gérer la sequence
-          if (is_int($_event->sequence)) {
+          if (isset($event['sequence'])) {
+            $_event->sequence = $event['sequence'];
+          }
+          else if (is_int($_event->sequence)) {
             $_event->sequence = $_event->sequence + 1;
           }
           else {
@@ -881,7 +912,10 @@ class mel_driver extends calendar_driver {
           $_event->recurrence->count = null;
 
           // Gérer la sequence
-          if (is_int($_event->sequence)) {
+          if (isset($event['sequence'])) {
+            $_event->sequence = $event['sequence'];
+          }
+          else if (is_int($_event->sequence)) {
             $_event->sequence = $_event->sequence + 1;
           }
           else {
@@ -893,7 +927,6 @@ class mel_driver extends calendar_driver {
           $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $event, true);
-          $_event->sequence = 0;
           $_event->uid = $this->cal->generate_uid();
         }
         $result = $_event->uid;
@@ -904,7 +937,7 @@ class mel_driver extends calendar_driver {
         $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, true);
-        $_event->sequence = 0;
+        $_event->sequence = isset($event['sequence']) ? $event['sequence'] : 0;
         $_event->uid = $this->cal->generate_uid();
         $result = $_event->uid;
       }
@@ -921,7 +954,10 @@ class mel_driver extends calendar_driver {
         $_event = $this->_write_postprocess($_event, $event, $new);
 
         // Gérer la sequence
-        if (is_int($_event->sequence)) {
+        if (isset($event['sequence'])) {
+          $_event->sequence = $event['sequence'];
+        }
+        else if (is_int($_event->sequence)) {
           $_event->sequence = $_event->sequence + 1;
         }
         else {
@@ -1139,7 +1175,10 @@ class mel_driver extends calendar_driver {
           $_exception = $this->_write_postprocess($_exception, $e, true);
 
           // Gérer la sequence
-          if (is_int($_exception->sequence)) {
+          if (isset($event['sequence'])) {
+            $_exception->sequence = $event['sequence'];
+          }
+          else if (is_int($_exception->sequence)) {
             $_exception->sequence = $_exception->sequence + 1;
           }
           else {
@@ -1167,7 +1206,10 @@ class mel_driver extends calendar_driver {
           $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
 
           // Gérer la sequence
-          if (is_int($_event->sequence)) {
+          if (isset($event['sequence'])) {
+            $_event->sequence = $event['sequence'];
+          }
+          else if (is_int($_event->sequence)) {
             $_event->sequence = $_event->sequence + 1;
           }
           else {
@@ -1179,7 +1221,6 @@ class mel_driver extends calendar_driver {
           $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
-          $_event->sequence = 0;
           $_event->uid = $e['uid'];
           $result = $_event->uid;
         }
@@ -1199,7 +1240,10 @@ class mel_driver extends calendar_driver {
         else if (isset($event['_savemode']) && $event['_savemode'] == 'all') {
           $exceptions = $_event->exceptions;
           // Gérer la sequence
-          if (is_int($_event->sequence)) {
+          if (isset($event['sequence'])) {
+            $_event->sequence = $event['sequence'];
+          }
+          else if (is_int($_event->sequence)) {
             $_event->sequence = $_event->sequence + 1;
           }
           else {
@@ -1238,7 +1282,10 @@ class mel_driver extends calendar_driver {
           $_event = $this->_write_postprocess($_event, $event, false, true);
 
           // Gérer la sequence
-          if (is_int($_event->sequence)) {
+          if (isset($event['sequence'])) {
+            $_event->sequence = $event['sequence'];
+          }
+          else if (is_int($_event->sequence)) {
             $_event->sequence = $_event->sequence + 1;
           }
           else {
@@ -1311,12 +1358,6 @@ class mel_driver extends calendar_driver {
         $_event->end = $event['end'];
       }
     }
-
-    // Gérer la sequence
-    // Ignorer la sequence
-    // if (isset($event['sequence'])) {
-    //   $_event->sequence = $event['sequence'];
-    // }
 
     if ($new) {
       $_event->owner = $this->user->uid;
@@ -1411,10 +1452,17 @@ class mel_driver extends calendar_driver {
           if (isset($event_attendee['status'])) {
             $attendee->response = mel_mapping::rc_to_m2_attendee_status($event_attendee['status']);
           }
+          // delegated attendee
+          if (isset($event_attendee['delegated-from'])) {
+            $attendee->delegated_from = $event_attendee['delegated-from'];
+          }
+          if (isset($event_attendee['delegated-to'])) {
+            $attendee->delegated_to = $event_attendee['delegated-to'];
+          }
           $_attendees[] = $attendee;
         }
       }
-      if (!isset($event['_method']) || $event['_method'] != 'REQUEST' || $event['calendar'] != $_event->organizer->calendar) {
+      if (!isset($event['_method']) || $event['_method'] != 'REQUEST' || $event['calendar'] != $_event->organizer->calendar || $_event->organizer->extern) {
         $_event->attendees = $_attendees;
       }
     }
@@ -1626,10 +1674,18 @@ class mel_driver extends calendar_driver {
     if ($this->rc->task != 'calendar' && $this->rc->task != 'mail') {
       return false;
     }
+
+    // Initialiser la conf à partir du filtre
+    $filter_all = ($scope & self::FILTER_ALL) !== 0;
+    $filter_shared = ($scope & self::FILTER_SHARED) !== 0;
+    $filter_writeable = ($scope & self::FILTER_WRITEABLE) !== 0;
+    $filter_active = ($scope & self::FILTER_ACTIVE) !== 0;
+    $filter_personal = ($scope & self::FILTER_PERSONAL) !== 0;
+
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::get_event()");
     if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::get_event(writeable = $writeable, active = $active, personal = $personal) : " . var_export($event, true));
+      mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::get_event(shared = $filter_shared, writeable = $filter_writeable, active = $filter_active, personal = $filter_personal) : " . var_export($event, true));
 
     try {
       // get event from the address books birthday calendar
@@ -1649,10 +1705,6 @@ class mel_driver extends calendar_driver {
 
       if (isset($event['calendar'])) {
         $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
-      }
-
-      if (!isset($event['calendar'])) {
-        $event['calendar'] = $this->user->uid;
       }
 
       if (isset($event['calendar']) && isset($this->calendars[$event['calendar']])) {
@@ -1760,26 +1812,45 @@ class mel_driver extends calendar_driver {
         }
       }
       else {
-        $calendars = $this->calendars;
-        if ($active) {
-          foreach ($calendars as $idx => $cal) {
-            if (! $cal['active']) {
-              unset($calendars[$idx]);
-            }
+        $calendars = [];
+        $hidden_calendars = $this->rc->config->get('hidden_calendars', []);
+        $active_calendars = $this->rc->config->get('active_calendars', null);
+        foreach ($this->calendars as $cal) {
+          $cal_is_shared = $cal->owner != $this->user->uid;
+          $cal_is_writable = $cal->asRight(\LibMelanie\Config\ConfigMelanie::WRITE);
+          if (
+              isset($hidden_calendars[$cal->id])
+              // Filtrer les calendriers non actifs
+              || ($filter_active && !isset($active_calendars[$cal->id]))
+              // Filtrer les calendriers non partagés
+              || ($filter_shared && !$cal_is_shared && !$filter_personal)
+              // Filtrer les calendriers non personnel
+              || ($filter_personal && $cal_is_shared && !$filter_shared)
+              // Filtrer les calendriers sans droit d'écriture
+              || ($filter_writeable && !$cal_is_writable)
+              ) {
+            continue;
           }
+
+          $calendars[] = $cal->id;
         }
-        foreach ($calendars as $cal) {
-          $_event = driver_mel::gi()->event([$this->user, $cal]);
-          if (isset($event['uid'])) {
-            $_event->uid = $event['uid'];
-          }
-          elseif (isset($event['id'])) {
-            $_event->uid = $this->get_uid_from_id($event['id']);
-          }
-          else {
-            return false;
-          }
-          if ($_event->load()) {
+
+        $_event = driver_mel::gi()->event([$this->user]);
+        if (isset($event['uid'])) {
+          $_event->uid = $event['uid'];
+        }
+        elseif (isset($event['id'])) {
+          $_event->uid = $this->get_uid_from_id($event['id']);
+        }
+        else {
+          return false;
+        }
+        $_event->calendar = $calendars;
+
+        $_events = $_event->getList();
+
+        if (is_array($_events)) {
+          foreach($_events as $_event) {
             $event = $this->_read_postprocess($_event);
 
             if (isset($_comment)) {
@@ -1789,11 +1860,13 @@ class mel_driver extends calendar_driver {
               $event['_identity'] = $_identity;
             }
 
-            $attachments = ( array ) $this->list_attachments($_event);
+            $attachments = (array)$this->list_attachments($_event);
             if (count($attachments) > 0) {
               $event['attachments'] = $attachments;
             }
-            $event["alarm_dismissed"] = false;
+            // Pourquoi ?
+            // $event["alarm_dismissed"] = false;
+            
             return $event;
           }
         }
@@ -2214,7 +2287,7 @@ class mel_driver extends calendar_driver {
 
         // Attendees
         $attendees = $event->attendees;
-        if (isset($attendees) && is_array($attendees) && ! empty($attendees)) {
+        if (isset($attendees) && is_array($attendees) && ! empty($attendees)) {          
           $_attendees = [];
           $organizer = $event->organizer;
           if (isset($organizer)) {
@@ -2228,7 +2301,12 @@ class mel_driver extends calendar_driver {
               $_event_organizer['internal'] = true;
             }
             $_attendees[] = $_event_organizer;
+            // Organizer calendar
+            $_event['organizer_calendar'] = driver_mel::gi()->mceToRcId($organizer->calendar);
           }
+
+          // Récupérer les informations sur le propriétaire de l'agenda
+          $calendar_owner = driver_mel::gi()->getUser($this->calendars[$event->calendar]->owner);
           
           foreach ($attendees as $attendee) {
             $_event_attendee = [];
@@ -2247,7 +2325,19 @@ class mel_driver extends calendar_driver {
             else {
               $_event_attendee['skip_notify'] = false;
             }
+            // Delegation
+            if (isset($attendee->delegated_from)) {
+              $_event_attendee['delegated-from'] = $attendee->delegated_from;
+            }
+            if (isset($attendee->delegated_to)) {
+              $_event_attendee['delegated-to'] = $attendee->delegated_to;
+            }
             $_attendees[] = $_event_attendee;
+
+            // Est-ce qu'il s'agit du participant courant ?
+            if (strtolower($calendar_owner->email) == strtolower($attendee->email)) {
+              $_event['attendee_partstart'] = $_event_attendee['status'];
+            }
           }
           $_event['attendees'] = $_attendees;
         }

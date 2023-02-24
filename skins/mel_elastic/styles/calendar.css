@@ -336,6 +336,28 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
 }
+.task-calendar .fc .fc-content i.fc-icon-needs-action:before,
+.task-calendar .fc .fc-time i.fc-icon-needs-action:before {
+  content: "\f059";
+  font-style: normal;
+}
+.task-calendar .fc .fc-content i.fc-icon-declined:before,
+.task-calendar .fc .fc-time i.fc-icon-declined:before {
+  content: "\f05e";
+  font-style: normal;
+}
+.task-calendar .fc .fc-content i.fc-icon-delegated:before,
+.task-calendar .fc .fc-time i.fc-icon-delegated:before {
+  content: "\f064";
+  font-style: normal;
+}
+.task-calendar .fc .fc-content i.fc-icon-telework:before,
+.task-calendar .fc .fc-time i.fc-icon-telework:before {
+  content: "\e918";
+  font-family: "DWP";
+  font-weight: normal;
+  font-style: normal;
+}
 .task-calendar .fc-unthemed th {
   border-color: var(--calendar-table-border) !important;
 }

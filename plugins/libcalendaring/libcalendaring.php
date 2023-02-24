@@ -1390,11 +1390,18 @@ class libcalendaring extends rcube_plugin
      * @param array &$new   New object data
      * @param array $old    Old object data
      * @param bool  $status New status of the current user
+     * 
+     * PAMELA - Mode assistantes
+     * @param array $emails
      */
-    public function merge_attendees(&$new, $old, $status = null)
+    public function merge_attendees(&$new, $old, $status = null, $emails = null)
     {
         if (empty($status)) {
-            $emails    = $this->get_user_emails();
+            // PAMELA - Mode assistantes
+            if (!isset($emails)) {
+                $emails    = $this->get_user_emails();
+            }
+            
             $delegates = array();
             $attendees = array();
 

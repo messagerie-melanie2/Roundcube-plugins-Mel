@@ -1427,7 +1427,7 @@ $(document).ready(() => {
                             new Windows_Like_PopUp(top.$("body"), 
                             {
                                 title:"Ouverture d'un mail...",
-                                content:`<center><div class='spinner-border'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
+                                content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
                                 afterCreatingContent($html, box, popup) {
                                     box.content.find("iframe").on('load', () => {
                                         let $iframe = box.content.find("iframe");
@@ -1440,7 +1440,7 @@ $(document).ready(() => {
                                         };
 
                                         box.title.find('h3').html(title);
-                                        box.content.find(".spinner-border").remove();
+                                        box.content.find('#rotomecamelloader').remove();
                                         $iframe.css('display', '');
                                         $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
                                         $iframe[0].contentWindow.rcmail.env.is_in_popup_mail = true;
@@ -1460,10 +1460,10 @@ $(document).ready(() => {
                                         }
                                     });
 
-                                    let spinner = box.content.find(".spinner-border").css("width", '30%');
-                                    let spinner_size = Math.round(spinner.width());
-                                    spinner.css("width", `${spinner_size}px`)
-                                    .css('height', `${spinner_size}px`).css('margin', '15px');
+                                    // let spinner = box.content.find(".spinner-border").css("width", '30%');
+                                    // let spinner_size = Math.round(spinner.width());
+                                    // spinner.css("width", `${spinner_size}px`)
+                                    // .css('height', `${spinner_size}px`).css('margin', '15px');
                                     
                                 },
                                 width:"calc(100% - 60px)",

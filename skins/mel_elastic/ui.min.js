@@ -1,5 +1,15 @@
 $(document).ready(() => {
 
+    const CONST_CLASS_THEME_BADGE_SELECTED = 'green-badge';
+    const CONST_SELECTOR_THEME_BADGE_SELECTED = `${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_THEME_BADGE_SELECTED}`;
+    const CONST_THEME_PANEL_ID = 'theme-panel';
+    const CONST_THEME_PANEL_CONTENTS_CLASS = 'contents';
+    const CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID} ${CONST_JQUERY_SELECTOR_CLASS}${CONST_THEME_PANEL_CONTENTS_CLASS}`;
+    const CONST_THEME_BUTTON_ID = 'theme-switch-button';
+    const CONST_THEME_ICON_PREFIX = 'icon-theme-';
+    const CONST_CLASS_MEL_RESIZE_OK = 'mel-resize-ok';
+    const CONST_FORMAT_THEME_TITLE = '%1?/( -?(%1?&&%2?||!%1?)? )/%2?';
+
     try {
         Enumerable.from([]);
     } catch (error) {
@@ -7,12 +17,12 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui gÃ¨re une rÃ¨gle css. Elle pourra Ãªtre ajouter ou supprimer.
+     * Classe qui gère une règle css. Elle pourra Ãªtre ajouter ou supprimer.
      */
     class Mel_CSS_Rule {
         /**
          * 
-         * @param {string} rule RÃ¨gle css style "p{color:red;}"
+         * @param {string} rule Règle css style "p{color:red;}"
          */
         constructor(rule)
         {
@@ -25,7 +35,7 @@ $(document).ready(() => {
         }
 
         /**
-         * IntÃ¨gre le style Ã  la page web
+         * Intègre le style Ã  la page web
          * @returns {Mel_CSS_Rule} ChaÃ®nage
          */
         set()
@@ -47,7 +57,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Retourne la rÃ¨gle css sous forme de string
+         * Retourne la règle css sous forme de string
          * @returns {string}
          */
         toString()
@@ -56,7 +66,7 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re la premiÃ¨re feuille de style du document
+         * Récupère la première feuille de style du document
          * @returns {StyleSheetList}
          */
         static component()
@@ -70,7 +80,7 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re le prochain index de la feuille de style
+         * Récupère le prochain index de la feuille de style
          * @returns {number}
          */
         static lastIndex()
@@ -80,14 +90,14 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui gÃ¨re une rÃ¨gle css. Elle pourra Ãªtre ajouter ou supprimer.
-     * GÃ¨re un sÃ©lÃ©cteur ainsi qu'une liste de modificateur css.
+     * Classe qui gère une règle css. Elle pourra Ãªtre ajouter ou supprimer.
+     * Gère un sélécteur ainsi qu'une liste de modificateur css.
      */
     class Mel_CSS_Advanced_Rule extends Mel_CSS_Rule{
         /**
          * 
          * @param {string} selector Selector html (exemple: p.maclass)
-         * @param  {...string} rules Liste de rÃ¨gles html (exemple : color:red) sans les ';'
+         * @param  {...string} rules Liste de règles html (exemple : color:red) sans les ';'
          */
         constructor(selector, ...rules)
         {
@@ -96,7 +106,7 @@ $(document).ready(() => {
         }
 
         /**
-         * IntÃ¨gre le style Ã  la page web
+         * Intègre le style Ã  la page web
          * @returns {Mel_CSS_Advanced_Rule} ChaÃ®nage
          */
         set()
@@ -107,9 +117,9 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une rÃ¨gle Ã  la liste des rÃ¨gles
-         * @param {string} rule RÃ¨gle Ã  ajoutÃ© (sans les ;)
-         * @param {boolean} force_set Si vrai, met Ã  jour la rÃ¨gle dans la page web
+         * Ajoute une règle Ã  la liste des règles
+         * @param {string} rule Règle Ã  ajouté (sans les ;)
+         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
          * @returns ChaÃ®nage
          */
         add(rule, force_set = true)
@@ -132,9 +142,9 @@ $(document).ready(() => {
         }
 
         /**
-         * Supprime une rÃ¨gle
-         * @param {number} index Index de la rÃ¨gle Ã  supprimer 
-         * @param {boolean} force_set Si vrai, met Ã  jour la rÃ¨gle dans la page web
+         * Supprime une règle
+         * @param {number} index Index de la règle Ã  supprimer 
+         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
          * @returns ChaÃ®nage
          */
         remove(index, force_set = true)
@@ -144,10 +154,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Met Ã  jour une rÃ¨gle
-         * @param {number} index Index de la rÃ¨gle Ã  modifier
-         * @param {string} new_rule Nouvelle rÃ¨gle
-         * @param {boolean} force_set Si vrai, met Ã  jour la rÃ¨gle dans la page web
+         * Met Ã  jour une règle
+         * @param {number} index Index de la règle Ã  modifier
+         * @param {string} new_rule Nouvelle règle
+         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
          * @returns ChaÃ®nage
          */
         update(index, new_rule, force_set = true)
@@ -157,8 +167,8 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re les rÃ¨gles
-         * @returns {string} RÃ¨gles
+         * Récupère les règles
+         * @returns {string} Règles
          */
         rules()
         {
@@ -166,7 +176,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Retourne la rÃ¨gle css sous forme de string
+         * Retourne la règle css sous forme de string
          * @returns {string}
          */
         toString()
@@ -176,7 +186,7 @@ $(document).ready(() => {
     }
 
     /**
-     * GÃ¨re les diffÃ©rentes rÃ¨gles qu'on ajoute Ã  cette classe.
+     * Gère les différentes règles qu'on ajoute Ã  cette classe.
      */
     class Mel_CSS_Style_Sheet {
         constructor()
@@ -188,24 +198,24 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une rÃ¨gle Ã  la liste de rÃ¨gles
-         * @param {string} key ClÃ© qui permettra de rÃ©cupÃ©rer la rÃ¨gle ajoutÃ©
-         * @param {Mel_CSS_Rule} rule RÃ¨gle qui sera ajoutÃ©
+         * Ajoute une règle Ã  la liste de règles
+         * @param {string} key Clé qui permettra de récupérer la règle ajouté
+         * @param {Mel_CSS_Rule} rule Règle qui sera ajouté
          * @returns {Mel_CSS_Style_Sheet} ChaÃ®nage
          */
         _add(key, rule)
         {
             if (!this.ruleExist(key)) this.css[key] = rule.set();
             else {
-                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe dÃ©jÃ  !`);
+                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe déjÃ  !`);
             }
             return this;
         }
 
         /**
-         * Ajoute une rÃ¨gle Ã  la liste de rÃ¨gle
-         * @param {string} key ClÃ© qui permettra de rÃ©cupÃ©rer la rÃ¨gle ajoutÃ©
-         * @param {string} rule RÃ¨gle qui sera ajoutÃ© (ex : p{color:red;}) 
+         * Ajoute une règle Ã  la liste de règle
+         * @param {string} key Clé qui permettra de récupérer la règle ajouté
+         * @param {string} rule Règle qui sera ajouté (ex : p{color:red;}) 
          * @returns ChaÃ®nage
          */
         add(key, rule)
@@ -214,10 +224,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une rÃ¨gle Ã  la liste des rÃ¨gles.
-         * @param {string} key  ClÃ© qui permettra de rÃ©cupÃ©rer la rÃ¨gle ajoutÃ©
-         * @param {string} selector SÃ©lÃ©cteur html
-         * @param  {...any} rules Liste de rÃ¨gles (ex : 'color:red', 'background-color:blue')
+         * Ajoute une règle Ã  la liste des règles.
+         * @param {string} key  Clé qui permettra de récupérer la règle ajouté
+         * @param {string} selector Sélécteur html
+         * @param  {...any} rules Liste de règles (ex : 'color:red', 'background-color:blue')
          * @returns ChaÃ®nage
          */
         addAdvanced(key, selector, ...rules)
@@ -226,8 +236,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute plusieurs rÃ¨gles
-         * @param  {...{key:string, rule:string}} rules RÃ¨gles Ã  ajouter
+         * Ajoute plusieurs règles
+         * @param  {...{key:string, rule:string}} rules Règles Ã  ajouter
          * @returns ChaÃ®nage
          */
         addRules(...rules)
@@ -243,7 +253,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Supprime une rÃ¨gle
+         * Supprime une règle
          * @param {string} key 
          * @returns ChaÃ®nage
          */
@@ -271,7 +281,7 @@ $(document).ready(() => {
         }
 
         /**
-         * VÃ©rifie si une rÃ¨gle Ã©xiste
+         * Vérifie si une règle éxiste
          * @param {string} key 
          * @returns 
          */
@@ -281,7 +291,7 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re les clÃ©s de la classe
+         * Récupère les clés de la classe
          * @returns {string[]}
          */
         getKeys()
@@ -290,7 +300,7 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re la feuille de styme
+         * Récupère la feuille de styme
          * @returns {string}
          */
         getStyleSheet()
@@ -299,7 +309,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Remise Ã  zÃ©ro de la feuille de style
+         * Remise Ã  zéro de la feuille de style
          * @returns ChaÃ®nage
          */
         reset()
@@ -326,7 +336,7 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui sert Ã  gÃ©rer les diffÃ©rentes interfaces
+     * Classe qui sert Ã  gérer les différentes interfaces
      */
     class Mel_Elastic {
         constructor() {
@@ -338,7 +348,7 @@ $(document).ready(() => {
                 this._resize_themes();
             });
 
-            $('#user-up-popup').click(() => {
+            $('.tab-meltheme.mel-tab.mel-tabheader').click(() => {
                 this._resize_themes();
             })
         }
@@ -346,7 +356,7 @@ $(document).ready(() => {
         ////////////************* Inits and setups functions *************///////////
 
         /**
-         * Initialise les diffÃ©rentes variables et constantes de la classe.
+         * Initialise les différentes variables et constantes de la classe.
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         init(){
@@ -359,7 +369,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Initialise les diffÃ©rentes constantes de la classe.
+         * Initialise les différentes constantes de la classe.
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         init_const()
@@ -421,96 +431,230 @@ $(document).ready(() => {
               return this;
         }
 
-        init_theme($panel = $('#theme-panel .contents'), $force = false, callback_click = null, callback_add = null)
+        onthemeclick($parent) {
+            let $green = $parent.find(CONST_SELECTOR_THEME_BADGE_SELECTED);
+
+            if (0 === $green.length) {
+                new mel_html2(CONST_HTML_DIV, {
+                    attribs:{class:CONST_CLASS_THEME_BADGE_SELECTED},
+                    contents:[
+                        new mel_html(CONST_HTML_SPAN, {class:`${CONST_ICON_CHECK} ${CONST_CLASS_ABSOLUTE_CENTER}`})
+                    ]
+                }).create($parent.css(CONST_CSS_POSITION, CONST_CSS_POSITION_RELATIVE));
+            }else $green.css(CONST_CSS_DISPLAY, EMPTY_STRING);
+        }
+
+        format_text(format, ...values) {
+            for (let index = 0, len = values.length, trueIndex = index + 1, exist, formatted = {index:EMPTY_STRING, conditional_index:EMPTY_STRING, conditional_item:EMPTY_STRING}; index < len; ++index, ++trueIndex) {
+                const element = values[index];
+                formatted.index = `%${trueIndex}`;
+                formatted.conditional_index = `${formatted.index}?`;
+                formatted.conditional_item = `(${formatted.conditional_index})`;
+                exist = 0 === element || !!element;
+
+                if (format.includes(formatted.conditional_item)) {
+                    for (let iterator of this._find_conditionnal_text(format, formatted.conditional_item)) {
+                        format = format.replace(iterator.get(), exist ? iterator.getFormated() : EMPTY_STRING);
+                    }
+                }
+                else if (format.includes(formatted.conditional_index)) {
+                    format = format.replaceAll(formatted.conditional_index, (exist ? element : EMPTY_STRING));
+                }
+                else format = format.replaceAll(formatted.index, element);
+            }
+
+            return format;
+        }
+
+        * _find_conditionnal_text(format, conditionnal) {
+            let splited = format.split(conditionnal);
+            let text = [];
+            for (let index = 0, len = splited.length; index < len; ++index) {
+                const element = splited[index];
+                if (element.includes('/('))  text.push(element.split('/(')[1]);
+                else if (element.includes(')/')) {
+                    text.push(element.split(')/')[0]);
+
+                    yield {
+                        format:conditionnal,
+                        array:text,
+                        joined:EMPTY_STRING,
+                        get() {
+                            if (EMPTY_STRING === this.joined) this.joined = this.array.join(this.format);
+                            return this.joined;
+                        },
+                        getFormated() {
+                            return this.get().replace('/(', EMPTY_STRING).replace('/)', EMPTY_STRING).replace(this.format, EMPTY_STRING);
+                        }
+                    }
+
+                    text.length = 0;
+                }
+            }
+
+            splited = (text = null, null);
+        }
+
+        /**
+         * TODO FINIR
+         * @param {*} format 
+         * @param {*} values 
+         */
+        _format_replace_conditions(format, values) {
+            const regex = /\?\(([^)]+)\)\?/gm;
+            
+            if (regex.test(format)) {
+                let matches = format.match(regex);
+
+                for (let index = 0, len = matches.length, element, break_first_loop = false; index < len; ++index) {
+                    element = matches[index].replace('?(', EMPTY_STRING).replace(')?', '');
+                    for (let j = 0, values_len = values.length; j < values_len; ++j) {
+                        const value = values[j];
+                        const index_condition = `%${j + 1}?`;
+                        
+                        
+                    }
+
+                    if (break_first_loop) break;
+                }
+            }
+        }
+
+        /**
+         * Initialise la liste des thèles
+         * @param {$} $panel 
+         * @param {boolean} $force 
+         * @param {Function} callback_click 
+         * @param {Function[]} callback_add 
+         * @returns Chaîne
+         */
+        init_theme($panel = $(CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT), $force = false, callback_click = null, callback_add = null)
         {
+            //debugger;
+            //CONSTANTES
+            const THEME_BUTTON_CLASS_ACTIVE = 'activated';
+            const THEME_BUTTON_ICON_INACTIVE = CONST_ICON_PAINTING;
+            const THEME_BUTTON_ICON_ACTIVE = CONST_ICON_UNDO;
+            const THEME_BUTTON_SELECTOR_ICON_INACTIVE = `${CONST_JQUERY_SELECTOR_CLASS}${CONST_ICON_PAINTING}`;
+            const THEME_BUTTON_SELECTOR_ICON_ACTIVE = `${CONST_JQUERY_SELECTOR_CLASS}${CONST_ICON_UNDO}`;
+            const STYLE_MAIN_DIV_THEME = 'margin:0;padding:0 5px;';
+            const STYLE_THEME_BUTTON = 'margin:0;margin-bottom:5px;';
+            const STYLE_THEME_BUTTON_PARENT = 'padding:0 5px;';
+            const THEME_CLASS_COL_NUMBER = 6;
+            const THEME_MAIN_CLASS_COL = `${CONST_CLASS_COL}-${THEME_CLASS_COL_NUMBER}`;
+            const SELECTOR_NOTIFICATION_PANEL = `${CONST_JQUERY_SELECTOR_ID}notifications-panel`;
+            const SELECTOR_THEME_PANEL = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID}`;
+            /**
+             * Thèmes additionnels, générer par le javascript
+             * @type {Function[]}
+             */
             let additionnalThemes = callback_add  ?? [];
+            /**
+             * Div html qui contient la liste des thèmes
+             * @type {mel_html2}
+             */
+            let html = new mel_html2(CONST_HTML_DIV, {attribs:{class:CONST_CLASS_ROW, style:STYLE_MAIN_DIV_THEME}});
+            this.theme = rcmail.env.current_theme || CONST_THEME_DEFAULT_ID;
 
-            let tlength = 0;
-            let html = '';
-            this.theme = rcmail.env.current_theme || 'default';
-
+            //Si il y a un thème courant, on l'applique à la page
             if (!!rcmail.env.current_theme) {
-                //$('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
-                let $html = $('html');
+                let $html = mel_html.select_html();
                 let current = rcmail.env.mel_themes[rcmail.env.current_theme];
 
-                do {
+                do { //Gestion du multi-thème
                     $html.addClass(current.class);
                     current = rcmail.env.mel_themes[current.parent];
                 } while (!!current);
             }
 
+            //Si il y a des thèmes ou que l'on souhaite forcer une génération de thème
             if (!!rcmail.env.mel_themes || $force) {
                 const themes = rcmail.env.mel_themes;
-                rcmail.env.mel_themes = null;
-                
+                rcmail.env.mel_themes = null; //Ne plus le rendre disponible via rcmail.env.mel_themes pour éviter les doublons
                 this.themes = themes || this.themes;
 
+                /**
+                 * Thème traité
+                 * @type {mel_html}
+                 */
+                let html_theme;
+                /**
+                 * Thème selectionné ou non
+                 * @type {boolean}
+                 */
+                let is_selected;
                 for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes)) {
-                    const key = iterator.key;
-                        ++tlength;
-                        if (this.themes[key]?.css_path)
-                          this.themes[key].css_path = 'unavailable';                        
-
-                        if (this.themes[key]?.path)  
-                          this.themes[key].path = 'unavailable';                        
-
-                        html += `
-                        <div title="${iterator.value.displayed} ${!!iterator.value.desc ? `- ${iterator.value.desc}` : ''}" class="row mel-selectable ${iterator.value.id === this.theme ? 'selected' : ''}" data-name="${iterator.value.id}" role="button" aria-pressed="${iterator.value.id === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
-                            <div class="col-4">
-                                <img src="${iterator.value.icon}" style="width:100%;" />
-                            </div>
-                            <div class="col-8" style="display:flex;">
-                                <span style="display: block;
-                                align-self: center;">${iterator.value.displayed}</span>
-                            </div>
-                        </div>
-                        `;
-                }
-            }
-
-            let $theme_button = $('#theme-switch-button');
-            if (top === window && $theme_button.length > 0)
-            {
-                if (tlength > 1)
-                {
-                  if (!this.theme_button_activated)
-                  {
-                      this.theme_button_activated = true;
-                    $theme_button.click(($e) => {
-                        $e = $($e.currentTarget);
-
-                        if (!$e.hasClass('activated'))
-                        {
-                            $e.addClass('activated').find('.icon-mel-painting').removeClass('icon-mel-painting').addClass('icon-mel-undo');
-                            $('#notifications-panel').css('display', 'none');
-                            $('#theme-panel').css('display', '');
-                        }
-                        else {
-                            $e.removeClass('activated').find('.icon-mel-undo').addClass('icon-mel-painting').removeClass('icon-mel-undo');
-                            $('#notifications-panel').css('display', '');
-                            $('#theme-panel').css('display', 'none');
-                        }
+                    is_selected =  iterator.value.id === this.theme;
+                    //Création du "bouton" du thème
+                    html_theme = new mel_html(CONST_HTML_DIV, 
+                    {
+                        class:`${CONST_THEME_ICON_PREFIX}${iterator.value.id} ${CONST_CLASS_SELECTABLE} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY_WITH_BORDER} ${CONST_CLASS_MEL_RESIZE_OK} ${is_selected ? CONST_CLASS_SELECTED : EMPTY_STRING}`,
+                        style:`${CONST_CSS_BACKGROUND}${CONST_CSS_ASSIGN}${CONST_CSS_BACKGROUND_URL}(${iterator.value.icon})${CONST_CSS_SEPARATOR}${STYLE_THEME_BUTTON}`,
+                        title:`${iterator.value.displayed}${!!iterator.value.desc ? `- ${iterator.value.desc}` : EMPTY_STRING}`,
+                        role:CONST_ATTRIB_ROLE_BUTTON,
+                        'tab-index':0,
+                        'data-name':iterator.value.id,
+                        'aria-pressed':iterator.value.id === this.theme
                     });
-                  }
-
-                    $panel.html(html).find('.mel-selectable').click((e) => {
+                    //Action à faire au clique
+                    html_theme.onclick.push((e) => {
                         let dosomething = callback_click ? callback_click(e) : true;
                         if (!dosomething) return;
 
                         e = $(e.currentTarget);
-                        $panel.find('.mel-selectable').removeClass('selected');
-                        e.addClass('selected');
+                        $panel.find(CONST_SELECTOR_THEME_BADGE_SELECTED).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                        $panel.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`).removeClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, false);
+                        e.addClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, true);
+
+                        this.onthemeclick(e.parent());
 
                         this.update_theme(e.data('name'));
-                        
-
                         this._update_theme_color();
                     });
+                    //Ajouter à la DIV des thèmes, le bouton de thème dans une div "col-6"
+                    html.addContent(
+                        new mel_html2(CONST_HTML_DIV, {attribs:{class:THEME_MAIN_CLASS_COL, style:STYLE_THEME_BUTTON_PARENT}, contents:[html_theme]})
+                    );
+                }
+
+                //Après la génération de la liste des thèmes, appliquer les effets visuels sur le thème selectionné.
+                html.aftergenerate.push((generated) => {
+                    this.onthemeclick(generated.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTED}`).parent());
+                });
+            }
+
+            let $theme_button = $(`${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_BUTTON_ID}`);
+            if (top === window && $theme_button.length > 0) //Si on est en Top & que le bouton de thème existe
+            {
+                if (html.count() > 1) //Si il y + d'un thème, on active les propriétés du bouton
+                {
+                  if (!this.theme_button_activated)
+                  {
+                    this.theme_button_activated = true;
+                    $theme_button.click(($e) => {
+                        $e = $($e.currentTarget);
+
+                        if (!$e.hasClass(THEME_BUTTON_CLASS_ACTIVE))
+                        {
+                            $e.addClass(THEME_BUTTON_CLASS_ACTIVE).find(THEME_BUTTON_SELECTOR_ICON_INACTIVE).removeClass(THEME_BUTTON_ICON_INACTIVE).addClass(THEME_BUTTON_ICON_ACTIVE);
+                            $(SELECTOR_NOTIFICATION_PANEL).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                            $(SELECTOR_THEME_PANEL).css(CONST_CSS_DISPLAY, EMPTY_STRING);
+                            this._resize_themes();
+                        }
+                        else {
+                            $e.removeClass(THEME_BUTTON_CLASS_ACTIVE).find(THEME_BUTTON_SELECTOR_ICON_ACTIVE).addClass(THEME_BUTTON_ICON_INACTIVE).removeClass(THEME_BUTTON_ICON_ACTIVE);
+                            $(SELECTOR_NOTIFICATION_PANEL).css(CONST_CSS_DISPLAY, EMPTY_STRING);
+                            $(SELECTOR_THEME_PANEL).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                        }
+                    });
+                  }
+
+                    html.create($panel);
 
                 }
                 else {
-                    $theme_button.addClass('disabled').attr('disabled', 'disabled');
+                    //Sinon, on le désactive
+                    $theme_button.addClass(CONST_ATTRIB_DISABLED).attr(CONST_ATTRIB_DISABLED, CONST_ATTRIB_DISABLED);
                 }
             }
 
@@ -572,12 +716,12 @@ $(document).ready(() => {
 
             this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
 
-            let $mainrow = $('<div class="row"></div>').appendTo($pannel);
+            let $mainrow = $('<div class="row"></div>').css('padding', '0 5px').appendTo($pannel);
             const pictures = rcmail.env.mel_themes_pictures;
             let $item;
 
             for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder ?? Number.POSITIVE_INFINITY))) {
-                $item = $('<div class="col-6"></div>').appendTo($mainrow);
+                $item = $('<div class="col-6"></div>').css('padding', '0 5px').appendTo($mainrow);
                 $item = $('<div></div>').appendTo($item);
 
                 if (!!iterator.value.userprefid) {
@@ -613,7 +757,7 @@ $(document).ready(() => {
                         $(e.currentTarget).parent().find('input').click();
                     });
                     $(`<div class="input-top-selectable mel-resize-ok half-resize"></div>`).append($input).append($button).appendTo($item);
-                    $item = $('<div></div>').addClass('half-resize').appendTo($item);
+                    $item = $('<div></div>').addClass('half-resize').appendTo($item.addClass('div-custom-picture').css('display', 'flex'));
                 }
 
                 $item.addClass('mel-selectable picture mel-resize-ok').data('picid', iterator.key);
@@ -623,12 +767,13 @@ $(document).ready(() => {
                     $item.addClass('barup-background-color');
                 }
                 else {
-                    $item.data('picpath', iterator.value.background).css('background-image', `url(${isCustom ? iterator.value.background : iterator.value.view})`).css('background-size', 'cover');
+                    $item.data('picpath', iterator.value.background).css('background-image', `url(${isCustom ? iterator.value.background : iterator.value.view})`).css('background-size', 'cover').css('background-position', 'center');
                     if (isCustom) $item.data('iscustom', true);
                 } 
 
                 $item.click((e) => {
                     e = $(e.currentTarget);
+                    $pannel.find('.green-badge').css('display', 'none');
                     $pannel.find('.selected').removeClass('selected');
                     e.addClass('selected');
                     const data = e.data('picpath');
@@ -648,11 +793,14 @@ $(document).ready(() => {
                         $('html').removeClass('barup-picture');
                     }
 
+                    this.onthemeclick(e.parent());
+
                     this.set_theme_picture(e.data('picid'));
                 });
 
                 if (this.theme_selected_picture === null || iterator.key === this.theme_selected_picture) {
                     $item.addClass('selected');
+                    this.onthemeclick($item.parent());
 
                     if (this.theme_selected_picture === null || !iterator.value.background) {
                         this.theme_selected_picture = iterator.key;
@@ -669,30 +817,30 @@ $(document).ready(() => {
 
         _resize_themes() {
             let times = [];
-            $('#theme-panel .theme-pannel-tab-pictures .mel-resize-ok').each(async (i, e) => {
-                e = $(e);
-                if (0 === e.width()) {
-                    await new Promise((ok, nok) => {
-                        const interval = setInterval(() => {
-                                if (0 !== e.width()) {
-                                    clearInterval(interval);
-                                    ok();
-                                }
-                                else if (!times[i] || times[i] <= 10) {
-                                    if (!times[i] && 0 !== times[i]) times[i] = 0;
-                                    else ++times[i];
-                                }
-                                else {
-                                    clearInterval(interval);
-                                    ok('too many times');
-                                }
-                        }, 10);
-                    });
-                }
+            // $('#theme-panel .mel-resize-ok').each(async (i, e) => {
+            //     e = $(e);
+            //     if (0 === e.width()) {
+            //         await new Promise((ok, nok) => {
+            //             const interval = setInterval(() => {
+            //                     if (0 !== e.width()) {
+            //                         clearInterval(interval);
+            //                         ok();
+            //                     }
+            //                     else if (!times[i] || times[i] <= 10) {
+            //                         if (!times[i] && 0 !== times[i]) times[i] = 0;
+            //                         else ++times[i];
+            //                     }
+            //                     else {
+            //                         clearInterval(interval);
+            //                         ok('too many times');
+            //                     }
+            //             }, 10);
+            //         });
+            //     }
 
-                if (e.hasClass('half-resize')) e.css('height', `${e.width() / 2}px`);
-                else e.css('height', `${e.width()}px`);
-            });
+            //     if (e.hasClass('half-resize')) e.css('height', `${(e.hasClass('selected') ? (e.hasClass('mel-selectable') ? 13 : 12) : (e.hasClass('mel-selectable') ? -2 : 0) ) + e.width() * 2*0.75 - 1}px`);
+            //     else e.css('height', `${e.width()*0.75}px`);
+            // });
 
             const size = $('#theme-panel .container').height() + $('#groupoptions-user .container.menu').height() + 60 + 30;
             $('#theme-panel .themescontents').css('max-height', `${window.innerHeight - size}px`);
@@ -746,7 +894,7 @@ $(document).ready(() => {
         }
 
         /**
-         * DiffÃ©rentes actions Ã  faire aprÃ¨s l'initialisation.
+         * Différentes actions Ã  faire après l'initialisation.
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup(){
@@ -770,7 +918,7 @@ $(document).ready(() => {
         {
             if (parent === window)
             {
-                //La sidebar Ã©tant en position absolue, on dÃ©cale certaines divs pour que l'affichage soit correct.
+                //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
                 const width = "60px";
 
                 if (!this.IS_EXTERNE && $("#layout-sidebar").length > 0)
@@ -781,7 +929,7 @@ $(document).ready(() => {
 
             if ($("#taskmenu").length > 0)
             {
-                //On met dans l'ordre les diffÃ©rents boutons de la barre de navigation principale
+                //On met dans l'ordre les différents boutons de la barre de navigation principale
                 let array = [];
 
                 $("#taskmenu").find("a").each((i,e) => {
@@ -820,7 +968,7 @@ $(document).ready(() => {
 
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
 
-                //On supprime le stockage si on y a pas accÃ¨s.
+                //On supprime le stockage si on y a pas accès.
                 if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();
             }
 
@@ -834,7 +982,7 @@ $(document).ready(() => {
         setup_tasks()
         {
             try {
-                //GÃ©rer le texte du bouton de login.
+                //Gérer le texte du bouton de login.
                 if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
                     $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
 
@@ -852,7 +1000,7 @@ $(document).ready(() => {
             }
 
             try {
-                //GÃ©rer le changement de mot de passe dans le login.
+                //Gérer le changement de mot de passe dans le login.
                 $("#login-form p.formbuttons a").click(() => {
                       event.preventDefault();
                       window.location.href = window.location.href.replaceAll("/changepassword/index.php", "");
@@ -886,7 +1034,7 @@ $(document).ready(() => {
                 height: 0;
                 margin: 0;"></p>`);
 
-                //GÃ©rer la prÃ©visu des mails.
+                //Gérer la prévisu des mails.
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
@@ -902,11 +1050,11 @@ $(document).ready(() => {
                         delete rcmail.env.is_from_scroll;
                     else if ($("#layout-list").hasClass("initial") && show)
                     {
-                        //Mise en place du systÃ¨me
+                        //Mise en place du système
                         $("#layout-content").css("display", "").removeClass("hidden layout-hidden");
                         $("#layout-list").removeClass("initial");
 
-                        //On rÃ©duit la recherche au besoin
+                        //On réduit la recherche au besoin
                         $("#mailsearchlist").addClass("hoverable").on("mouseover focusin", () => {
                             if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").removeClass("hoverable");
@@ -935,7 +1083,7 @@ $(document).ready(() => {
 
                         $('#layout-content .header .move.simplified').css('display', 'none');
 
-                        //Fermer la prÃ©visu
+                        //Fermer la prévisu
                         rcmail.register_command("close-mail-visu", () => {
                             $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
 
@@ -1340,7 +1488,7 @@ $(document).ready(() => {
                     }
                 };
 
-                //RÃ©pondre
+                //Répondre
                 $("#toolbar-menu .reply").each((i,e) => {
                     testing(e, "reply");
                 });
@@ -1355,7 +1503,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Met en place la rÃ©daction d'un mail.
+         * Met en place la rédaction d'un mail.
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_compose()
@@ -1535,8 +1683,8 @@ $(document).ready(() => {
                     p['_extwin'] = 1;
                     const url = rcmail.url('mail/compose', p);
                     let config = {
-                        title:"RÃ©daction",
-                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe class="sr-only" title="RÃ©daction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
+                        title:"Rédaction",
+                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe class="sr-only" title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
                         onclose(popup) {
                             if (popup.box.close.data('force') == '1') return;
                             if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
@@ -1544,7 +1692,7 @@ $(document).ready(() => {
                                 popup.waiting_save = true;
                                 popup.box.close.addClass('disabled').attr('disabled', 'disabled');
                                 popup.box.minifier.addClass('disabled').attr('disabled', 'disabled');
-                                popup.box.title.find('h3').html(popup.box.title.find('h3').html().replace('RÃ©daction : ', 'Sauvegarde de : '))
+                                popup.box.title.find('h3').html(popup.box.title.find('h3').html().replace('Rédaction : ', 'Sauvegarde de : '))
                                 
                                 if (popup.box.minifier.find("span").hasClass(popup.settings.icon_minify))
                                     popup.minify();
@@ -1571,23 +1719,23 @@ $(document).ready(() => {
                             frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
 
                             frame_context.$('#compose-subject').on('input', (e) => {
-                                box.title.find('h3').html('RÃ©daction : ' + $(e.currentTarget).val());
+                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
                             }).on('change', (e) => {
-                                box.title.find('h3').html('RÃ©daction : ' + $(e.currentTarget).val());
+                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
                             });
 
                             box.content.find("#rotomecamelloader").css('display', 'none');
                             box.content.find("iframe").removeClass('sr-only');
                             const obj = frame_context.$('#compose-subject').val();
 
-                            if ((obj ?? "") !== "") box.title.find('h3').html('RÃ©daction : ' + obj);
+                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
 
                             frame_context.rcmail.addEventListener('message_submited', async (args) => {
                                 if (args.draft !== true)
                                 {
                                     box.get.find('iframe').css("display", 'none');
                                     box.close.addClass('disabled').attr('disabled', 'disabled');
-                                    box.title.find('h3').html(box.title.find('h3').html().replace('RÃ©daction : ', 'Envoi de : '));
+                                    box.title.find('h3').html(box.title.find('h3').html().replace('Rédaction : ', 'Envoi de : '));
                                     box.content.find("#rotomecamelloader").css('display', '');
                                 }
                             });
@@ -1620,7 +1768,7 @@ $(document).ready(() => {
                                 rcmail.display_message("Impossible d'envoyer le mail !", 'error');
                                 box.close.removeClass('disabled').removeAttr('disabled');
                                 box.get.find('iframe').css("display", '');
-                                box.title.find('h3').html(box.title.find('h3').html().replace('Envoi de : ', 'RÃ©daction : '));
+                                box.title.find('h3').html(box.title.find('h3').html().replace('Envoi de : ', 'Rédaction : '));
                                 box.content.find("#rotomecamelloader").css('display', 'none');
                             });
 
@@ -1808,7 +1956,7 @@ $(document).ready(() => {
                             for (let index = 0; index < size; ++index) {
                                 const element = events[index];
                                 $wel_items.append($(`
-                                <button title="EvÃ¨nement ${element.title}, cliquez pour afficher l'Ã©vÃ¨nement" class="waiting-event-button mel-button">
+                                <button title="Evènement ${element.title}, cliquez pour afficher l'évènement" class="waiting-event-button mel-button">
                                     <span class="waiting-event-title">${element.title}</span>
                                     <span class="waiting-event-horodate">${moment(element.start).format(format)} - ${moment(element.end).format(format)}</span>
                                 </button>
@@ -1835,7 +1983,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Renvoie vrai si les barre de dÃ©filements sont en mode automatique
+         * Renvoie vrai si les barre de défilements sont en mode automatique
          * @returns 
          */
         isScollBarAuto()
@@ -1912,7 +2060,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Met Ã  jours le systÃ¨me d'onglet
+         * Met Ã  jours le système d'onglet
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         update_tabs()
@@ -1967,7 +2115,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Met Ã  jours le systÃ¨me de pagination.
+         * Met Ã  jours le système de pagination.
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         update_pagination()
@@ -1989,7 +2137,7 @@ $(document).ready(() => {
         ////////////************* Main functions *************///////////
 
         /**
-         * GÃ¨re les Ã©toiles rouges.
+         * Gère les étoiles rouges.
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         redStars()
@@ -2024,7 +2172,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Switch de thÃ¨me (sombre/light)
+         * Switch de thème (sombre/light)
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         switch_color()
@@ -2034,7 +2182,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Retourne le thÃ¨me en cours
+         * Retourne le thème en cours
          * @returns {string} dark/light
          */
         color_mode()
@@ -2071,9 +2219,9 @@ $(document).ready(() => {
 
         ////////////************* Other functions *************///////////
         /**
-         * RÃ©cupÃ¨re la classe principale d'un bouton de la barre de navigation
+         * Récupère la classe principale d'un bouton de la barre de navigation
          * @param {DomElement} button - Ne doit pas Ãªtre du JQUERY
-         * @returns {string} - Classe principale ou "no-class-found" si aucune classe principale trouvÃ©.
+         * @returns {string} - Classe principale ou "no-class-found" si aucune classe principale trouvé.
          */
         get_nav_button_main_class(button)
         {
@@ -2108,8 +2256,8 @@ $(document).ready(() => {
         }
 
         /**
-         * GÃ©nÃ¨re une couleur au hasard.
-         * @returns {string} Couleur hÃ©xadÃ©cimale
+         * Génère une couleur au hasard.
+         * @returns {string} Couleur héxadécimale
          */
         getRandomColor() {
             var letters = '0123456789ABCDEF';
@@ -2121,10 +2269,10 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re la diffÃ©rence de 2 rÃ©ctangles.
+         * Récupère la différence de 2 réctangles.
          * @param {DOMRect} rect1 Rectangle Ã  soustraire
          * @param {DOMRect} rect2 Rectangle de soustraction
-         * @returns {{top:number, left:number, right:number, bottom:number, rect1:DOMRect, rect2:DOMRect}} RÃ©sultats
+         * @returns {{top:number, left:number, right:number, bottom:number, rect1:DOMRect, rect2:DOMRect}} Résultats
          */
         getRect(rect1, rect2)
         {
@@ -2139,10 +2287,10 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re une url correcte
+         * Récupère une url correcte
          * @param {string} task TÃ¢che que l'on souhaite
          * @param {string} action Action que l'on souhaite
-         * @param {JSON} args Arguments supplÃ©mentaires
+         * @param {JSON} args Arguments supplémentaires
          * @returns {string} Url fonctionnel
          */
         url(task, action = "", args = null)
@@ -2176,7 +2324,7 @@ $(document).ready(() => {
         }
 
         /**
-         * RÃ©cupÃ¨re une recherche de contact avec autocompletion.
+         * Récupère une recherche de contact avec autocompletion.
          * @param {string} id Id de l'input 
          * @returns {string} html
          */
@@ -2200,8 +2348,8 @@ $(document).ready(() => {
 
         ////////////************* Select box functions *************///////////
         /**
-         * CrÃ©er une selectbox stylisÃ© via un Ã©lÃ©ment
-         * @param {JQUERY} event Jquery Ã©lÃ©ment
+         * Créer une selectbox stylisé via un élément
+         * @param {JQUERY} event Jquery élément
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         generateSelect(event)
@@ -2275,7 +2423,7 @@ $(document).ready(() => {
         /**
          * Met Ã  jour la valeur du select
          * @param {string} value Nouvelle valeur
-         * @param {string} newTitle Nouveau titre associÃ©
+         * @param {string} newTitle Nouveau titre associé
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         updateSelectValue(value, newTitle = "")
@@ -2328,7 +2476,7 @@ $(document).ready(() => {
         /**
          * Modifie la valeur d'un select
          * @param {string} new_value Nouvelle valeur
-         * @param {JQUERY} event Ã‰lÃ©ment JQUERY
+         * @param {JQUERY} event Ã‰lément JQUERY
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         setValue(new_value, event)
@@ -2379,14 +2527,14 @@ $(document).ready(() => {
             if (namespace === null)
                 return this;
 
-            //DÃ©sactivation des autres tabs et objets
+            //Désactivation des autres tabs et objets
             $("."+namespace+".mel-tab").removeClass("active").attr("aria-selected", false).attr("tabindex", -1);
             $("."+namespace+".mel-tab-content").css("display", "none");
 
             //Activation de la tab
             $(event).addClass("active").attr("aria-selected", true).attr("tabindex", 0);
 
-            //activation des objets liÃ© Ã  la tab
+            //activation des objets lié Ã  la tab
             $("." + id + "." + namespace).css("display", "");
             const onclick = $(event).data("onclick");
 
@@ -2409,8 +2557,8 @@ $(document).ready(() => {
         }
 
         /**
-         * GÃ¨re les diffÃ©rents onglets
-         * @param {JQUERY | DOMElement} $item Si null, gÃ¨re la page entiÃ¨re 
+         * Gère les différents onglets
+         * @param {JQUERY | DOMElement} $item Si null, gère la page entière 
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         gestionTabs($item = null)
@@ -2512,7 +2660,7 @@ $(document).ready(() => {
 
         ////////////************* Pagination functions *************///////////
         /**
-         * CrÃ©er un html pour le nombre de la pagination
+         * Créer un html pour le nombre de la pagination
          * @param {number} number Nombre
          * @param {boolean} isClickable Si le nombre est clickable
          * @param {boolean} active Si le nombre est actif
@@ -2523,10 +2671,10 @@ $(document).ready(() => {
         };
 
         /**
-         * CrÃ©er une barre de pagination
+         * Créer une barre de pagination
          * @param {DomElement} e Element qui contiendra la pagination 
-         * @param {number} count Nombre d'Ã©lÃ©ments
-         * @param {number} current ElÃ©ment courant
+         * @param {number} count Nombre d'éléments
+         * @param {number} current Elément courant
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         set_pagination(e,count, current = null)
@@ -2534,7 +2682,7 @@ $(document).ready(() => {
             const _integer = this._integer;
             //console.log("count", count);
             count = Math.ceil(count/7.0);
-            e.html('<button class="pagination_prev pagination-button" onclick="MEL_ELASTIC_UI.pagination_prev(this)">PrÃ©cÃ©dent</button>')
+            e.html('<button class="pagination_prev pagination-button" onclick="MEL_ELASTIC_UI.pagination_prev(this)">Précédent</button>')
             e.append("<div class=pagination-elements></div>");
             let pagination_elements = e.find(".pagination-elements");
             for (let index = 0; index < count; ++index) {
@@ -2555,8 +2703,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Change de page spÃ©cifiquement
-         * @param {JQUERY} e ElÃ©ment cliquÃ© 
+         * Change de page spécifiquement
+         * @param {JQUERY} e Elément cliqué 
          * @param {number} number Page
          * @param {boolean} doAction Si on effectue l'action ou non.
          * @returns {Mel_Elastic} ChaÃ®nage
@@ -2643,7 +2791,7 @@ $(document).ready(() => {
 
         /**
          * On affiche la page suivante
-         * @param {DOMElement} e Element cliquÃ©
+         * @param {DOMElement} e Element cliqué
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_next(e) {
@@ -2658,8 +2806,8 @@ $(document).ready(() => {
         }
 
         /**
-         * On affiche la page prÃ©cÃ©dente
-         * @param {DOMElement} e Element cliquÃ©
+         * On affiche la page précédente
+         * @param {DOMElement} e Element cliqué
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_prev(e) {
@@ -2853,19 +3001,19 @@ $(document).ready(() => {
             let $tab = null;
 
             //Gestion de l'onglet
-            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est Ã  l'intÃ©rieur du corps
+            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est Ã  l'intérieur du corps
             {
                 tabName = item.$tabName[0].innerText;
                 item.$tabName.addClass(header_to_hide);
             }
             else tabName = item.$tabName; //Si c'est juste le nom
 
-            //Id gÃ©nÃ©rÃ© depuis son nom
+            //Id généré depuis son nom
             const tab_id = 'responsive-generated-' + tabName.replace(/[^0-9a-z]/gi, '').toLowerCase();
 
             let $tabList = item.$parentTabList.find(`.${tab_list}.${namespace}`);
 
-            //CrÃ©ation de la liste d'onglet si elle n'Ã©xiste pas
+            //Création de la liste d'onglet si elle n'éxiste pas
             if ($tabList.length === 0)
             {
                 $tabList = item.$parentTabList
@@ -2873,7 +3021,7 @@ $(document).ready(() => {
                 .find(`.${tab_list}.${namespace}`);
             }
 
-            //Ajout du bouton si il n'Ã©xiste pas
+            //Ajout du bouton si il n'éxiste pas
             $tab = $tabList.find(`#${tab_id}`);
             if ($tab.length === 0)
             {
@@ -2889,7 +3037,7 @@ $(document).ready(() => {
                 ).find(`#${tab_id}`);
             }
 
-            //CrÃ©ation du bouton de "dÃ©saffichage"
+            //Création du bouton de "désaffichage"
             if ($tabList.find(`.${hide_button}`).length === 0)
             {
                 $tabList.append(`<button class="${hide_button} ${namespace} hidden"></button>`);

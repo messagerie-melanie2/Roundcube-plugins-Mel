@@ -350,6 +350,7 @@ ul.treelist{
 }
 
 .mel-selectable{
+    &:extend(#theme-panel .picture);
     cursor: pointer;
 
     &:hover{
@@ -364,6 +365,37 @@ ul.treelist{
 
     &.with-separator{
         border-bottom: solid thin #A3A7BC;
+    }
+
+    &.picture-only {
+        background-size: cover!important;
+
+        &:hover {
+            &:extend(#theme-panel .picture:hover);
+        }
+
+        &.selected{
+            &:extend(#theme-panel .picture.selected);
+
+            html.dark-mode &{
+                &:extend(html.dark-mode #theme-panel .picture.selected);
+                border:none;
+            }
+        }
+
+        &.with-border{
+            box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
+
+            &:hover {
+                box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
+            }
+
+            &.selected {
+                &:hover {
+                    &:extend(.mel-selectable.picture-only.selected);
+                }
+            }
+        }
     }
 }
 
@@ -4059,7 +4091,8 @@ a.rcmContactAddress {
 
     .theme-pannel-tab-pictures {
         text-align: center;
-        margin-right: 30px;
+        // margin-right: 30px;
+        margin: 0 15px;
     }
 
     .themescontents{
@@ -4070,9 +4103,9 @@ a.rcmContactAddress {
     .picture {
         display: inline-block;
         width: 100%;
-        height: 150px;
-        border-radius: 15px; 
-        margin: 0 15px;
+        height: 121px;
+        border-radius: 10px; 
+        // margin: 0 15px;
         transition: all 0.1s ease-in;
 
         &.barup-background-color {
@@ -4095,10 +4128,10 @@ a.rcmContactAddress {
         &.selected {
             border-radius: 15px;
             background-blend-mode: color-dodge;
-            border: solid thick #484D7A;
+            // border: solid thick #484D7A;
 
             html.dark-mode &{
-                border: solid thick #E1C58F;
+                border:none!important;//border: solid thick #E1C58F;
             }
         }
     }
@@ -4107,16 +4140,18 @@ a.rcmContactAddress {
         &:extend(#theme-panel .picture);
         &:extend(#theme-panel .picture.barup-background-color);
 
-        border-bottom: none;
-        border-bottom-left-radius: 0;
+        border-right: none;
         border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        width: 50%;
+        margin:0;
 
         button {
             width: 100%;
             height: 100%;
             border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            border-bottom-left-radius: 0;
+            border-top-right-radius: 0;
+            border-bottom-left-radius: 15px;
             border-bottom-right-radius: 0;
             border: none;
             --main-bckg-color: var(--invisible);
@@ -4124,20 +4159,21 @@ a.rcmContactAddress {
 
             &:hover{
                 border-top-left-radius: 100%;
-                border-top-right-radius: 100%;
+                border-bottom-left-radius: 100%;
             }
         }
 
         &.hovered {
             &:extend(#theme-panel .picture:hover);
-            border-bottom-left-radius: 0;
+            border-top-right-radius: 0;
             border-bottom-right-radius: 0;
         }
 
         &+.picture.half-resize{
-            border-top: none;
+            border-bottom-left-radius: 0;
             border-top-left-radius: 0;
-            border-top-right-radius: 0;
+            width: 50%;
+            margin: 0;
 
             &.barup-background-color {
                 border-top:solid thin var(--primary-border-color);
@@ -4147,5 +4183,34 @@ a.rcmContactAddress {
         html.dark-mode &{
             &:extend(html.dark-mode #theme-panel .picture.barup-background-color);
         }
+    }
+}
+
+.green-badge {
+	position: absolute;
+	top: 0;
+	right: 5px;
+	background-color: #484D7AC7;
+	border-radius: 10px;
+	width: calc(100% - 10px);
+	height: 121px;
+	text-align: center;
+	line-height: 26px;
+	color: white;
+
+    html.dark-mode &{
+        background-color: #2E2E2EC7;
+        color:#E1C58F;
+    }
+
+    span {
+        font-size: xx-large;
+    }
+
+    .div-custom-picture & {
+        right: 0;
+        width: 50%;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
     }
 }

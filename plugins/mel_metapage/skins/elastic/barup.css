@@ -672,11 +672,11 @@ html.barup-picture .barup #button-help:hover{
 }
 
 html.barup-picture .barup > .wrapper > .user{
-    background-color: #363A5B80;
+    background-color: #363A5BB8;
     border-left: solid thick #363A5B;
 }
 
 html.dark-mode.barup-picture .barup > .wrapper > .user{
-    background-color: #323F4B80!important;
+    background-color: #323F4BDB !important;
     border-left: solid thick #323F4B;
 }

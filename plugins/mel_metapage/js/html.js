@@ -468,6 +468,7 @@ class mel_html{
 		this.content = content;
 		this.onclick = new MelEvent();
 		this.onkeydown = new MelEvent();
+		this.aftergenerate = new MelEvent();
 	}
 
 	generate(additionnal_attribs = {})
@@ -475,9 +476,9 @@ class mel_html{
 		let multi_balise = true;
 
 		switch (this.tag) {
-			case 'img':
-			case 'input':
-			case 'br':
+			case CONST_HTML_IMG:
+			case CONST_HTML_INPUT:
+			case CONST_HTML_BR:
 				multi_balise = false;
 				break;
 		
@@ -485,16 +486,16 @@ class mel_html{
 				break;
 		}
 
-		if (multi_balise && !!this.attribs['NO_MULTI_BALISE']) multi_balise = false;
+		if (multi_balise && !!this.attribs[mel_html.ATTRIB_NO_MULTI_BALISE]) multi_balise = false;
 
-		let $html = $(`<${this.tag} ${(!multi_balise ? '/' : '')}>${(multi_balise ? `</${this.tag}>` : '')}`);
+		let $html = $(`${CONST_BALISE_START}${this.tag} ${(!multi_balise ? CONST_BALISE_CLOSE_END : CONST_BALISE_END)}${(multi_balise ? `${CONST_BALISE_CLOSE_START}${this.tag}${CONST_BALISE_END}` : EMPTY_STRING)}`);
 
-		for (const iterator of Enumerable.from(this.attribs).concat(additionnal_attribs).where(x => x === 0 || !!(x || null))) {
+		for (const iterator of Enumerable.from(this.attribs).concat(additionnal_attribs).where(x => 0 === x || !!(x || null))) {
 			switch (iterator.key) {
-				case 'class':
+				case CONST_ATTRIB_CLASS:
 					$html.addClass(iterator.value);
 					break;
-				case 'on':
+				case mel_html.EVENT_ON:
 					for (const key in iterator.value) {
 						if (Object.hasOwnProperty.call(iterator.value, key)) {
 							const element = iterator.value[key];
@@ -510,9 +511,13 @@ class mel_html{
 
 		let generated = this._generateContent($html, this.content);
 
-		if (this.onclick.haveEvents()) generated.on('click', (event) => {
+		if (this.onclick.haveEvents()) generated.on(CONST_EVENT_ACTION_CLICK, (event) => {
 			this.onclick.call(event);
 		});
+
+		if (this.aftergenerate.count() > 0) {
+			this.aftergenerate.call(generated);
+		}
 
 		return generated;
 	}
@@ -527,28 +532,73 @@ class mel_html{
 	}
 }
 
+Object.defineProperty(mel_html, 'EVENT_ON', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_EVENT_ON
+});
+
+Object.defineProperty(mel_html, 'ATTRIB_NO_MULTI_BALISE', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_ATTRIB_NO_MULTI_BALISE
+});
+
+Object.defineProperty(mel_html, 'select_html', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:() => $(CONST_HTML_HTML)
+});
+
+class mel_html2 extends mel_html {
+	constructor(tag, {attribs={}, contents=[]}) {
+		super(tag, attribs, EMPTY_STRING);
+		this.jcontents = contents;
+	}
+
+	addContent(mel_html) {
+		this.jcontents.push(mel_html);
+	}
+
+	_generateContent($html) {
+		for (let index = 0, len = this.jcontents.length; index < len; ++index) {
+			const element = this.jcontents[index];
+			element.create($html);
+		}
+
+		return $html;
+	} 
+
+	count() {
+		return this.jcontents.length;
+	}
+}
+
 class mel_option extends mel_html{
 	constructor(value, text, attribs = [])
 	{
-		super('select', attribs, text);
-		this.attribs['value'] = value;
+		super(CONST_HTML_SELECT, attribs, text);
+		this.attribs[CONST_ATTRIB_VALUE] = value;
 	}
 }
 
 class amel_form_item extends mel_html {
-	constructor(tag, attribs = {}, content = '')
+	constructor(tag, attribs = {}, content = EMPTY_STRING)
 	{
 		super(tag, attribs, content);
 
-		if (!this.attribs['class']) {
-			this.attribs['class'] = 'form-control input-mel';
+		if (!this.attribs[CONST_ATTRIB_VALUE]) {
+			this.attribs[CONST_ATTRIB_VALUE] = `${amel_form_item.CLASS_FORM_BASE} ${amel_form_item.CLASS_FORM_MEL}`;
 		}
-		else if (!this.attribs['class'].includes('form-control'))
+		else if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_BASE))
 		{
-			this.attribs['class'] += ' form-control';
+			this.attribs[CONST_ATTRIB_CLASS] += ` ${amel_form_item.CLASS_FORM_BASE}`;
 		}
 		
-		if (!this.attribs['class'].includes('input-mel')) this.attribs['class'] += ' input-mel';
+		if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_MEL)) this.attribs[CONST_ATTRIB_CLASS] += ` ${amel_form_item.CLASS_FORM_MEL}`;
 
 		this.onfocusout = new MelEvent();
 		this.onfocus = new MelEvent();
@@ -557,8 +607,8 @@ class amel_form_item extends mel_html {
 	}
 
 	toFloatingLabel(label) {
-		let $label = new mel_html('div', {class:'form-floating'}, this.generate({required:'required'})).generate();
-		return $label.append(new mel_html('label', {for:this.attribs['id']}, label).generate());
+		let $label = new mel_html(CONST_HTML_DIV, {class:amel_form_item.CLASS_FORM_FLOATING}, this.generate({required:CONST_ATTRIB_REQUIRED})).generate();
+		return $label.append(new mel_html(CONST_HTML_LABEL, {for:this.attribs[CONST_ATTRIB_ID]}, label).generate());
 	}
 
 	generate(value, additionnal_attribs = {})
@@ -566,25 +616,25 @@ class amel_form_item extends mel_html {
 		let generated = super.generate(additionnal_attribs).val(value);
 
 		if (this.onfocus.haveEvents()) {
-			generated.on('focus', (event) => {
+			generated.on(CONST_EVENT_ACTION_FOCUS, (event) => {
 				this.onfocus.call(event);
 			});
 		}
 
 		if (this.onfocusout.haveEvents()) {
-			generated.on('blur', (event) => {
+			generated.on(CONST_EVENT_ACTION_BLUR, (event) => {
 				this.onfocusout.call(event);
 			});
 		}
 
 		if (this.oninput.haveEvents()) {
-			generated.on('input', (event) => {
+			generated.on(CONST_EVENT_ACTION_INPUT, (event) => {
 				this.oninput.call(event);
 			});
 		}
 		
 		if (this.onchange.haveEvents()) {
-			generated.on('change', (event) => {
+			generated.on(CONST_EVENT_ACTION_CHANGE, (event) => {
 				this.onchange.call(event);
 			});
 		}
@@ -593,10 +643,45 @@ class amel_form_item extends mel_html {
 	}
 }
 
+Object.defineProperty(amel_form_item, 'CLASS_FORM_BASE', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_CLASS_INPUT_FORM_BASE
+});
+
+Object.defineProperty(amel_form_item, 'CLASS_FORM_MEL', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_CLASS_INPUT_FORM_MEL
+});
+
+Object.defineProperty(amel_form_item, 'CLASS_FORM_FLOATING', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_CLASS_INPUT_FORM_FLOATING
+});
+
+Object.defineProperty(amel_form_item, 'CLASS_FORM_FLOATING_FOCUS', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_CLASS_INPUT_FORM_FLOATING_FOCUS
+});
+
+Object.defineProperty(amel_form_item, 'CLASS_INPUT_FORM_FLOATING_NOT_EMPTY', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_CLASS_INPUT_FORM_FLOATING_NOT_EMPTY
+});
+
 class mel_select extends amel_form_item{
 	constructor(attribs = {}, options = [])
 	{
-		super('select', attribs, options);
+		super(CONST_HTML_SELECT, attribs, options);
 	}
 
 	_generateContent($html, content) {
@@ -612,25 +697,25 @@ class mel_input extends amel_form_item
 {
 	constructor(attribs = {})
 	{
-		super('input', attribs, '');
+		super(CONST_HTML_INPUT, attribs, EMPTY_STRING);
 	}
 
 	static togglePasswordShowed(element) {
-		const INPUT_DATA = 'for';
+		const INPUT_DATA = CONST_ATTRIB_FOR;
 		const IS_SHOWED_DATA = 'isShowed';
 		const DATA_VALID = 'yes';
 		const DATA_INVALID = 'no';
-		const ATTR = 'type';
-		const ATTR_PASSWORD = 'password';
-		const ATTR_TEXT = 'text';
+		const ATTR = CONST_ATTRIB_TYPE;
+		const ATTR_PASSWORD = CONST_ATTRIB_TYPE_PASSWORD;
+		const ATTR_TEXT = CONST_ATTRIB_TYPE_TEXT;
 		element = $(element);
-		let $input = $(`#${element.data(INPUT_DATA)}`);
+		let $input = $(`${CONST_JQUERY_SELECTOR_ID}${element.data(INPUT_DATA)}`);
 	
-		if ($input.length === 0) $input = top.$(`#${element.data(INPUT_DATA)}`);
+		if (0 === $input.length) $input = top.$(`${CONST_JQUERY_SELECTOR_ID}${element.data(INPUT_DATA)}`);
 
-		if ($input.length > 0)
+		if (0 < $input.length)
 		{
-			if ($input.data(IS_SHOWED_DATA) === DATA_VALID) {
+			if (DATA_VALID === $input.data(IS_SHOWED_DATA)) {
 				$input.attr(ATTR, ATTR_PASSWORD);
 				$input.data(IS_SHOWED_DATA, DATA_INVALID);
 			}
@@ -644,12 +729,12 @@ class mel_input extends amel_form_item
 	}
 
 	static floatingSetFocusClass(element, isOut = false) {
-		const DIV = 'for';
-		const CLASS = 'floating-focus';
+		const DIV = CONST_ATTRIB_FOR;
+		const CLASS = amel_form_item.CLASS_FORM_FLOATING_FOCUS;
 		element = $(element);
-		let $div = $(`#${element.data(DIV)}`);
+		let $div = $(`${CONST_JQUERY_SELECTOR_ID}${element.data(DIV)}`);
 		
-		if ($div.length === 0) $div = top.$(`#${element.data(DIV)}`);
+		if (0 === $div.length) $div = top.$(`${CONST_JQUERY_SELECTOR_ID}${element.data(DIV)}`);
 
 		if ($div.length > 0) {
 			if (isOut) {
@@ -662,15 +747,15 @@ class mel_input extends amel_form_item
 	}
 
 	static floatingSetInput(element) {
-		const DIV = 'for';
-		const CLASS = 'floating-not-empty';
+		const DIV = CONST_ATTRIB_FOR;
+		const CLASS = amel_form_item.CLASS_INPUT_FORM_FLOATING_NOT_EMPTY;
 		element = $(element);
-		let $div = $(`#${element.data(DIV)}`);
+		let $div = $(`${CONST_JQUERY_SELECTOR_ID}${element.data(DIV)}`);
 
-		if ($div.length === 0) $div = top.$(`#${element.data(DIV)}`);
+		if ($div.length === 0) $div = top.$(`${CONST_JQUERY_SELECTOR_ID}${element.data(DIV)}`);
 
 		if ($div.length > 0) {
-			if (element.val() !== '') $div.addClass(CLASS);
+			if (EMPTY_STRING !== element.val()) $div.addClass(CLASS);
 			else $div.removeClass(CLASS);
 		}
 	}
@@ -680,14 +765,14 @@ class mel_password extends mel_input {
 	constructor(attribs = {})
 	{
 		super(attribs);
-		this.attribs['type'] = 'password';
+		this.attribs[CONST_ATTRIB_TYPE] = CONST_ATTRIB_TYPE_PASSWORD;
 	}
 }
 
 mel_input.togglePasswordShowed.updateButton = function ($event) {
 	const DATA_SHOW = 'icon-show';
 	const DATA_HIDE = 'icon-hide';
-	const BALISE = 'span';
+	const BALISE = CONST_HTML_SPAN;
 	
 	const icon_show = $event.data(DATA_SHOW);
 	
@@ -767,14 +852,25 @@ class mel_password_with_button extends mel_password{
 	}
 }
 
-mel_password_with_button.password_show_button = 'icon-mel-eye';
-mel_password_with_button.password_hide_button = 'icon-mel-eye-crossed';
+Object.defineProperty(mel_password_with_button, 'password_show_button', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_ICON_EYE
+});
+
+Object.defineProperty(mel_password_with_button, 'password_hide_button', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:CONST_ICON_EYE_CROSSED
+});
 
 class mel_button extends mel_html {
-	constructor(attribs = {}, content = '')
+	constructor(attribs = {}, content = EMPTY_STRING)
 	{
-		super('button', attribs, content);
-		this.attribs['class'] = 'mel-button btn btn-secondary no-button-margin'
+		super(CONST_HTML_BUTTON, attribs, content);
+		this.attribs[CONST_ATTRIB_CLASS] = `${mel_button.html_base_class.base} ${mel_button.html_base_class_no_margin} ${mel_button.html_base_class.bootstrap.base} ${mel_button.html_base_class.bootstrap.state}`;//'mel-button btn btn-secondary no-button-margin'
 	}
 }
 
@@ -783,10 +879,10 @@ Object.defineProperty(mel_button, 'html_base_class', {
 	configurable: false,
 	writable: false,
 	value:new MelEnum({
-		base:'mel-button',
-		boostrap:new MelEnum({
-			base:'btn',
-			state:'btn-secondary'
+		base:CONST_CLASS_BUTTON_MEL,
+		bootstrap:new MelEnum({
+			base:CONST_CLASS_BUTTON_BASE,
+			state:CONST_CLASS_BUTTON_SECONDARY
 		}, false)
 	}, false)
 });
@@ -795,21 +891,21 @@ Object.defineProperty(mel_button, 'html_base_class_no_margin', {
 	enumerable: false,
 	configurable: false,
 	writable: false,
-	value:'no-button-margin'
+	value:CONST_CLASS_BUTTON_MEL_NO_MARGIN
 });
 
 Object.defineProperty(mel_button, 'html_base_class_success', {
 	enumerable: false,
 	configurable: false,
 	writable: false,
-	value:'btn-success'
+	value:CONST_CLASS_BUTTON_SUCCESS
 });
 
 Object.defineProperty(mel_button, 'html_base_class_danger', {
 	enumerable: false,
 	configurable: false,
 	writable: false,
-	value:'btn-danger'
+	value:CONST_CLASS_BUTTON_DANGER
 });
 
 class mel_tab extends mel_button{
@@ -1020,7 +1116,7 @@ class mel_tabpanel extends mel_html {
 	}
 }
 
-class mel_tabs {
+class mel_tabs extends mel_html {
 	constructor(id, label, {attribs={}, tablist_attribs={}}) {
 		super('div', attribs);
 		this._init()._setup(id, label, {tablist_attribs});
@@ -1046,10 +1142,10 @@ class mel_tabs {
 
 	add(id, tabtext, pannel, selectedTab = false) {
 		let tab = new mel_tab(id, {}, tabtext);
-		let pannel = new mel_tabpanel(tab, {jquery_content:pannel});
-		this.tabs.addTab(tab.select(selectedTab).setControl(pannel));																																																					
-		this.contents.push(pannel);
-		tab = (pannel = null, null);
+		let mel_pannel = new mel_tabpanel(tab, {jquery_content:pannel});
+		this.tabs.addTab(tab.select(selectedTab).setControl(mel_pannel));																																																					
+		this.contents.push(mel_pannel);
+		tab = (mel_pannel = null, null);
 		return this;
 	}
 

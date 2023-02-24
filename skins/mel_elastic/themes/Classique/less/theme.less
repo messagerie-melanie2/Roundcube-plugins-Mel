@@ -677,12 +677,26 @@ html
                 color: var(--main-text-color);
                 border-bottom-color: var(--tierciary-bckg-color);
             }
-        
+
+            &.picture-only {
+                &:hover{
+                    border:none;
+                }
+            }
+
             &.selected{
                 background-color: #edebe9;
                 color: var(--main-text-color);
                 border-bottom:none!important;
                 border-left: solid thick var(--tierciary-bckg-color);
+                
+                &.picture-only {
+                    border:none;
+
+                    &:hover {
+                        border:none;
+                    }
+                }
 
                 &.picture {
                     border-bottom: solid thick #484D7A!important;

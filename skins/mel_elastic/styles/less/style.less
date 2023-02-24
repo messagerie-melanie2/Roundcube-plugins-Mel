@@ -1449,34 +1449,24 @@ body {
     }
 
     &.cal-event-status-tentative{
-        opacity: 0.5 !important;
+        opacity: 0.6 !important;
 
         .fc-title{
             opacity: 1;
             font-style: italic;
         }
 
+        .fc-time,
         .fc-time::before,
         .fc-time span{
             font-style: italic;
+            font-weight: normal;
         }
     }
 
+    &.cal-event-status-telework,
     &.cal-event-status-free{
         color: var(--main-text-color) !important;
-    }
-
-    &.cal-event-status-telework{
-        color: var(--main-text-color) !important;
-
-        .fc-title{
-            font-style: italic;
-        }
-
-        .fc-time::before,
-        .fc-time span{
-            font-style: italic;
-        }
     }
 
     &.cal-event-status-confirmed{
@@ -1536,6 +1526,11 @@ html.dark-mode .fc-event.cal-event-status-telework {
             opacity: 0 !important;
         }
     }
+    .fc-time i{
+        float: left;
+        margin-left: 0 !important;
+        margin-right: .25rem;
+    }
 }
 
 .fc-event-location {
@@ -1547,7 +1542,7 @@ html.dark-mode .fc-event.cal-event-status-telework {
 }
 
 .fc-time-grid-event {
-	opacity: 0.8;
+	opacity: 0.9;
 
     .fc-time {
         text-align: center;

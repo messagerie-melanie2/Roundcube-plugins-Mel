@@ -213,7 +213,7 @@ function rcube_calendar_ui(settings) {
         var prefix = event.sensitivity && event.sensitivity != 'public' ? String(sensitivitylabels[event.sensitivity]).toUpperCase() + ': ' : '';
         element.attr('title', prefix + event.title);
       }
-      if (view.name != 'month') {
+      // if (view.name != 'month') {
         if (view.name == 'list') {
           var loc = $('<td>').attr('class', 'fc-event-location');
           if (event.location)
@@ -223,17 +223,26 @@ function rcube_calendar_ui(settings) {
         else if (event.location) {
           element.find('div.fc-title').after($('<div class="fc-event-location">').html('@&nbsp;' + Q(event.location)));
         }
-        var time_element = element.find('div.fc-time');
+        // PAMELA
+        var time_element;
+        if (event.allDay)
+          time_element = element.find('.fc-content');
+        else
+          time_element = element.find('.fc-time');
+
         if (event.sensitivity && event.sensitivity != 'public')
-          time_element.append('<i class="fc-icon-sensitive"></i>');
+          time_element.prepend('<i class="fc-icon-sensitive"></i>');
         if (event.recurrence)
-          time_element.append('<i class="fc-icon-recurring"></i>');
+          time_element.prepend('<i class="fc-icon-recurring"></i>');
         if (event.alarms || (event.valarms && event.valarms.length))
-          time_element.append('<i class="fc-icon-alarms"></i>');
+          time_element.prepend('<i class="fc-icon-alarms"></i>');
         // PAMELA - Mode assistantes
         if (event.attendee_partstart && ['accepted', 'tentative'].indexOf(String(event.attendee_partstart).toLowerCase()) === -1)
-          time_element.append('<i class="fc-icon-' + String(event.attendee_partstart).toLowerCase() + '"></i>');
-      }
+          time_element.prepend('<i class="fc-icon-' + String(event.attendee_partstart).toLowerCase() + '"></i>');
+        else if (String(event.status).toLowerCase() == 'telework') {
+          time_element.prepend('<i class="fc-icon-' + String(event.status).toLowerCase() + '"></i>');
+        }
+      // }
       if (event.status) {
         element.addClass('cal-event-status-' + String(event.status).toLowerCase());
       }
@@ -401,6 +410,10 @@ function rcube_calendar_ui(settings) {
       const rgb = hexToRgb(css['background-color']);
       css['background-color'] = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, .3)`;
       delete css['color'];
+    }
+    else if (['tentative'].indexOf(String(event.status).toLowerCase()) !== -1) {
+      const rgb = hexToRgb(css['background-color']);
+      css['background-color'] = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, .7)`;
     }
 
     if (String(css['border-color']).match(/^#?f+$/i))

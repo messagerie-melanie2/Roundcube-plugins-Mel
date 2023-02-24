@@ -905,28 +905,21 @@ html.layout-phone #datepicker-onoff {
   text-decoration: line-through;
 }
 .fc-event.cal-event-status-tentative {
-  opacity: 0.5 !important;
+  opacity: 0.6 !important;
 }
 .fc-event.cal-event-status-tentative .fc-title {
   opacity: 1;
   font-style: italic;
 }
+.fc-event.cal-event-status-tentative .fc-time,
 .fc-event.cal-event-status-tentative .fc-time::before,
 .fc-event.cal-event-status-tentative .fc-time span {
   font-style: italic;
+  font-weight: normal;
 }
+.fc-event.cal-event-status-telework,
 .fc-event.cal-event-status-free {
   color: var(--main-text-color) !important;
-}
-.fc-event.cal-event-status-telework {
-  color: var(--main-text-color) !important;
-}
-.fc-event.cal-event-status-telework .fc-title {
-  font-style: italic;
-}
-.fc-event.cal-event-status-telework .fc-time::before,
-.fc-event.cal-event-status-telework .fc-time span {
-  font-style: italic;
 }
 .fc-event.cal-event-status-confirmed .fc-time::before,
 .fc-event.cal-event-status-confirmed .fc-time span {
@@ -964,6 +957,11 @@ html.dark-mode .fc-event.cal-event-status-telework {
 .fc .fc-event .fc-bg {
   opacity: 0 !important;
 }
+.fc .fc-time i {
+  float: left;
+  margin-left: 0 !important;
+  margin-right: 0.25rem;
+}
 .fc-event-location {
   padding: 1px 3px;
 }
@@ -971,7 +969,7 @@ html.dark-mode .fc-event.cal-event-status-telework {
   height: 0 !important;
 }
 .fc-time-grid-event {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 .fc-time-grid-event .fc-time {
   text-align: center;

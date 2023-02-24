@@ -675,32 +675,45 @@ $(document).ready(() => {
             }]})
         {
             let themeIndex = null;
-            let $tabs = $(tabs_div_selector).html('');//.addClass('mel-ui-tab-system');
+            let $tabs = $(tabs_div_selector).html(EMPTY_STRING);//.addClass('mel-ui-tab-system');
 
             if (0 === $tabs.length) return tabs;
 
             for (let index = 0, len = tabs.length; index < len; ++index) {
                 const element = tabs[index];
-                $tabs.append(`<div id="${element.id}" class="tab-meltheme mel-tab mel-tabheader ${0 === index ? 'active' : (len-1 === index ? 'last' : '')}">${element.display}</div>`);
+                new mel_html(CONST_HTML_DIV, {
+                    id:element.id,
+                    class:`tab-meltheme mel-tab mel-tabheader ${0 === index ? 'active' : (len-1 === index ? 'last' : '')}`
+                }, element.display).create($tabs);
 
                 if ('theme-pannel-tab-theme' === element.id) themeIndex = index;
             }
 
             let $pannelParent = $themePannel.parent();
-            let $contents = $('<div class="themescontents"></div>');
+            let $contents = new mel_html2('div', {
+                class:'themescontents'
+            });
             if (themeIndex !== null) {
-                let $divThemes = $('<div></div>').addClass(`${tabs[themeIndex].id} tab-meltheme mel-tab-content`).appendTo($contents);
-                $themePannel.appendTo($divThemes);
+                let $divThemes = new mel_html('div', {
+                    class:`${tabs[themeIndex].id} tab-meltheme mel-tab-content`
+                });
+                $contents.addContent($divThemes);
+                $divThemes.aftergenerate.push(($generated) => {
+                    $themePannel.appendTo($generated);
+                });
             }
-
-            $contents.appendTo($pannelParent);
 
             for (let index = 0, len = tabs.length; index < len; ++index) {
                 const element = tabs[index];
                 if (!element.already) {
-                    $('<div></div>').addClass(`${element.id} tab-meltheme mel-tab-content`).css('display', 'none').appendTo($contents);
+                    $contents.addContent(new mel_html('div', {
+                        class:`${element.id} tab-meltheme mel-tab-content`,
+                        style:`${CONST_CSS_DISPLAY}${CONST_CSS_ASSIGN}${CONST_CSS_NONE}${CONST_CSS_SEPARATOR}`
+                    }));
                 }
             }
+
+            $contents.create($pannelParent);
 
             return tabs;
         }
@@ -716,7 +729,11 @@ $(document).ready(() => {
 
             this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
 
-            let $mainrow = $('<div class="row"></div>').css('padding', '0 5px').appendTo($pannel);
+            let $mainrow = new mel_html2('div', {
+                attribs:{
+                    class:CONST_CLASS_ROW
+                }
+            });//$('<div class="row"></div>').css('padding', '0 5px').appendTo($pannel);
             const pictures = rcmail.env.mel_themes_pictures;
             let $item;
 

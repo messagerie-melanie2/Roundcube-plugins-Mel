@@ -49,3 +49,16 @@ html.theme-super-classique #layout-menu:hover a.menu-last-frame:hover > span.inn
 html.theme-super-classique .menu.toolbar a.menu-last-frame::before {
   color: var(--roundbadge-bckg-color);
 }
+html.theme-super-classique nav.otherapps {
+  background-color: var(--main-layout-taskbar-background-color);
+}
+html.theme-super-classique #otherapps a {
+  color: var(--main-text-color) !important;
+}
+html.theme-super-classique #otherapps a:hover {
+  background-color: #fff !important;
+  color: var(--main-text-color) !important;
+}
+html.theme-super-classique #otherapps a:hover span {
+  background-color: #fff !important;
+}

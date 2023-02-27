@@ -3260,7 +3260,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                                                     | calendar_driver::FILTER_INVITATION);
         $search_organizer = $data['method'] == 'REPLY';
 
-        // PAMELA - Mode assistantes
+        // PAMELA - Mode assistantes - Retrouver le calid
         if (!isset($calid)) {
             switch($data['method']) {
                 case 'REQUEST':
@@ -3277,7 +3277,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                     }
                     if (isset($organizer)) {
                         foreach ($calendars as $calendar) {
-                            if (strtolower($calendar['owner_email']) == strtolower($organizer['email'])) {
+                            if ($calendar['principal'] &&
+                                    strtolower($calendar['owner_email']) == strtolower($organizer['email'])) {
                                 $calid = $calendar['id'];
                             }
                         }

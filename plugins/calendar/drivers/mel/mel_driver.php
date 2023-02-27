@@ -325,6 +325,7 @@ class mel_driver extends calendar_driver {
             'virtual'     => false,
             'editable'    => $cal_is_writable,
             'deletable'   => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
+            'principal'   => $cal->owner == $cal->id,
             'rights'      => $rights,
             'group'       => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
             'class'       => 'user',

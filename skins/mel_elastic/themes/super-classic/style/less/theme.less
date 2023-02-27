@@ -1,14 +1,26 @@
 html.theme-super-classique {
+  .menu {
+    a:not(.disabled) {
+      &:focus {
+        color: var(--main-text-color) !important;
+      }
+      &:hover {
+        color: var(--main-text-color) !important;
+      }
+    }
+  }
+
   .popover {
     .menu {
       li {
         a[aria-haspopup] {
-          &:hover {            
+          &:hover {
             &::after {
               color: var(--main-text-color) !important;
             }
           }
         }
+
         a:not(.disabled) {
           color: var(--main-text-color) !important;
         }

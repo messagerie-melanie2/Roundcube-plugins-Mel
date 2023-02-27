@@ -37,39 +37,41 @@
 		</div>
 		<a class="button icon toolbar-menu-button" href="#list-menu"><span class="inner"><roundcube:label name="menu" /></span></a>
 	</div>
-	<roundcube:object name="plugin.searchform" id="searchform" wrapper="searchbar menu form-control input-mel mel-input fake-input mel-search-margin "
-		label="tasksearchform" label-domain="tasklist" buttontitle="tasklist.findtasks" ariatag="h2" />
-	<div class="hidden pagenav pagenav-list menu" onclick="UI.switch_nav_list(this)">
-		<a class="button icon expand"><span class="inner"></span></a>
-		<span id="taskselector-name" class="pagenav-text"><roundcube:label name="tasklist.all" /></span>
-	</div>
-	<div id="taskselector-content" class="navlist scroller" aria-labelledby="aria-label-taskselector">
-		<h2 class="voice" id="aria-label-taskselector"><roundcube:label name="tasklist.arialabeltaskselector" /></h2>
-		<ul id="taskselector" class="listing" role="listbox" aria-controls="tasklist" aria-label="Filtrer les tâches">
-			<li class="all selected" role="option" aria-checked="true" aria-labelledby="aria-radio-all"><a href="#all" id="aria-radio-all"><roundcube:label name="tasklist.all" /></a></li>
-			<li class="overdue inactive" role="option" aria-checked="false" aria-labelledby="aria-radio-overdue"><a href="#overdue" id="aria-radio-overdue"><roundcube:label name="tasklist.overdue" /><span class="count"></span></a></li>
-			<li class="today" role="option" aria-checked="false" aria-labelledby="aria-radio-today"><a href="#today" id="aria-radio-today"><roundcube:label name="tasklist.today" /><span class="count"></span></a></li>
-			<li class="tomorrow" role="option" aria-checked="false" aria-labelledby="aria-radio-tomorrow"><a href="#tomorrow" id="aria-radio-tomorrow"><roundcube:label name="tasklist.tomorrow" /><span class="count"></span></a></li>
-			<roundcube:if condition="env:tasklist_driver != 'kolab'" />
-			<li class="week" role="option" aria-checked="false" aria-labelledby="aria-radio-week"><a href="#week" id="aria-radio-week"><roundcube:label name="tasklist.next7days" /></a></li>
-			<roundcube:endif />
-			<li class="later" role="option" aria-checked="false" aria-labelledby="aria-radio-later"><a href="#later" id="aria-radio-later"><roundcube:label name="tasklist.later" /><span class="count"></span></a></li>
-			<li class="nodate" role="option" aria-checked="false" aria-labelledby="aria-radio-nodate"><a href="#nodate" id="aria-radio-nodate"><roundcube:label name="tasklist.nodate" ucfirst="true" /></a></li>
-			<li class="flagged" role="option" aria-checked="false" aria-labelledby="aria-radio-flagged"><a href="#flagged" id="aria-radio-flagged"><roundcube:label name="tasklist.flagged" /></a></li>
-			<roundcube:if condition="env:tasklist_driver == 'kolab'" />
-			<li class="mytasks" role="option" aria-checked="false" aria-labelledby="aria-radio-mytasks"><a href="#mytasks" id="aria-radio-mytasks" title="<roundcube:label name='tasklist.mytaskstitle'/>"><roundcube:label name="tasklist.mytasks" /></a></li>
-			<li class="assigned" role="option" aria-checked="false" aria-labelledby="aria-radio-assigned"><a href="#assigned" id="aria-radio-assigned" title="<roundcube:label name='tasklist.assignedtitle'/>"><roundcube:label name="tasklist.assigned" /></a></li>
-			<roundcube:endif />
-			<li class="complete" role="option" aria-checked="false" aria-labelledby="aria-radio-complete"><a href="#complete" id="aria-radio-complete"><roundcube:label name="tasklist.complete" /><span class="count"></span></a></li>
-		</ul>
-	</div>
-	<separate></separate>
-	<div class="scroller">
-		<h2 id="aria-label-taskslist" class="voice"><roundcube:label name="tasklist.navtitle" /></h2>
-		<roundcube:object name="plugin.tasks" id="tasklist" role="tree"
-			class="listing inverted" role="listbox" data-list="tasklist"
-			data-label-msg="listempty" data-label-ext="listusebutton" data-create-command="newtask" />
-	</div>
+  <div id="layout-list-content">
+    <roundcube:object name="plugin.searchform" id="searchform" wrapper="searchbar menu form-control input-mel mel-input fake-input mel-search-margin "
+      label="tasksearchform" label-domain="tasklist" buttontitle="tasklist.findtasks" ariatag="h2" />
+    <div class="hidden pagenav pagenav-list menu" onclick="UI.switch_nav_list(this)">
+      <a class="button icon expand"><span class="inner"></span></a>
+      <span id="taskselector-name" class="pagenav-text"><roundcube:label name="tasklist.all" /></span>
+    </div>
+    <div id="taskselector-content" class="navlist scroller" aria-labelledby="aria-label-taskselector">
+      <h2 class="voice" id="aria-label-taskselector"><roundcube:label name="tasklist.arialabeltaskselector" /></h2>
+      <ul id="taskselector" class="listing" role="listbox" aria-controls="tasklist" aria-label="Filtrer les tâches">
+        <li class="all selected" role="option" aria-checked="true" aria-labelledby="aria-radio-all"><a href="#all" id="aria-radio-all"><roundcube:label name="tasklist.all" /></a></li>
+        <li class="overdue inactive" role="option" aria-checked="false" aria-labelledby="aria-radio-overdue"><a href="#overdue" id="aria-radio-overdue"><roundcube:label name="tasklist.overdue" /><span class="count"></span></a></li>
+        <li class="today" role="option" aria-checked="false" aria-labelledby="aria-radio-today"><a href="#today" id="aria-radio-today"><roundcube:label name="tasklist.today" /><span class="count"></span></a></li>
+        <li class="tomorrow" role="option" aria-checked="false" aria-labelledby="aria-radio-tomorrow"><a href="#tomorrow" id="aria-radio-tomorrow"><roundcube:label name="tasklist.tomorrow" /><span class="count"></span></a></li>
+        <roundcube:if condition="env:tasklist_driver != 'kolab'" />
+        <li class="week" role="option" aria-checked="false" aria-labelledby="aria-radio-week"><a href="#week" id="aria-radio-week"><roundcube:label name="tasklist.next7days" /></a></li>
+        <roundcube:endif />
+        <li class="later" role="option" aria-checked="false" aria-labelledby="aria-radio-later"><a href="#later" id="aria-radio-later"><roundcube:label name="tasklist.later" /><span class="count"></span></a></li>
+        <li class="nodate" role="option" aria-checked="false" aria-labelledby="aria-radio-nodate"><a href="#nodate" id="aria-radio-nodate"><roundcube:label name="tasklist.nodate" ucfirst="true" /></a></li>
+        <li class="flagged" role="option" aria-checked="false" aria-labelledby="aria-radio-flagged"><a href="#flagged" id="aria-radio-flagged"><roundcube:label name="tasklist.flagged" /></a></li>
+        <roundcube:if condition="env:tasklist_driver == 'kolab'" />
+        <li class="mytasks" role="option" aria-checked="false" aria-labelledby="aria-radio-mytasks"><a href="#mytasks" id="aria-radio-mytasks" title="<roundcube:label name='tasklist.mytaskstitle'/>"><roundcube:label name="tasklist.mytasks" /></a></li>
+        <li class="assigned" role="option" aria-checked="false" aria-labelledby="aria-radio-assigned"><a href="#assigned" id="aria-radio-assigned" title="<roundcube:label name='tasklist.assignedtitle'/>"><roundcube:label name="tasklist.assigned" /></a></li>
+        <roundcube:endif />
+        <li class="complete" role="option" aria-checked="false" aria-labelledby="aria-radio-complete"><a href="#complete" id="aria-radio-complete"><roundcube:label name="tasklist.complete" /><span class="count"></span></a></li>
+      </ul>
+    </div>
+    <separate></separate>
+    <div class="scroller">
+      <h2 id="aria-label-taskslist" class="voice"><roundcube:label name="tasklist.navtitle" /></h2>
+      <roundcube:object name="plugin.tasks" id="tasklist" role="tree"
+        class="listing inverted" role="listbox" data-list="tasklist"
+        data-label-msg="listempty" data-label-ext="listusebutton" data-create-command="newtask" />
+    </div>
+  </div>
 </div>
 
 <!-- task details frame -->

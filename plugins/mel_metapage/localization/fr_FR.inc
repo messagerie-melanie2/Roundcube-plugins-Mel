@@ -343,3 +343,5 @@ $labels['visio_unlocked'] = 'La visioconférence a été dévérouiller !';
 $labels['custom_calendar_notification_option'] = 'Notif.';
 $labels['custom_calendar_notification_ok_desc'] = "L'utilisateur sera notifié par mail.";
 $labels['custom_calendar_notification_nok_desc'] = "L'utilisateur ne sera pas notifié par mail.";
+
+$labels['mel_logo_desc'] = "Ministères Transition Écologique, Cohésion des Territoires, Mer - Liberté, Égalité, Fraternité";

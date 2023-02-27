@@ -603,7 +603,7 @@ $(document).ready(() => {
                         {
                             class:`${CONST_THEME_ICON_PREFIX}${iterator.value.id} ${CONST_CLASS_SELECTABLE} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY_WITH_BORDER} ${CONST_CLASS_MEL_RESIZE_OK} ${is_selected ? CONST_CLASS_SELECTED : EMPTY_STRING}`,
                             style:`${CONST_CSS_BACKGROUND}${CONST_CSS_ASSIGN}${CONST_CSS_BACKGROUND_URL}(${iterator.value.icon})${CONST_CSS_SEPARATOR}${STYLE_THEME_BUTTON}`,
-                            title:`${iterator.value.displayed}${!!iterator.value.desc ? `- ${iterator.value.desc}` : EMPTY_STRING}`,
+                            title:`${iterator.value.displayed}${!!iterator.value.desc ? ` - ${iterator.value.desc}` : EMPTY_STRING}`,
                             role:CONST_ATTRIB_ROLE_BUTTON,
                             'tab-index':0,
                             'data-name':iterator.value.id,
@@ -1037,7 +1037,10 @@ $(document).ready(() => {
                     li.appendTo($("#taskmenu ul"));
                 });
 
-                $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
+                let $taskMenu = $("#taskmenu .menu-last-frame").attr("tabIndex", "-1");
+
+                //TODO: Rendre ça paramètrable
+                $taskMenu.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE)
 
                 //On supprime le stockage si on y a pas accès.
                 if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();

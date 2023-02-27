@@ -391,7 +391,7 @@ $(document).ready(() => {
                 enumerable: false,
                 configurable: false,
                 writable: false,
-                value: 'Â¤Â¤Â¤'
+                value: '¤¤¤'
               });
 
               Object.defineProperty(this, 'SELECT_VALUE_REPLACE', {
@@ -2438,14 +2438,14 @@ $(document).ready(() => {
             }
             
             //console.log("generateSelect", event.data("options"), typeof event.data("options"), event);
-            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("Â¤Â¤Â¤") ? event.data("options").replaceAll('Â¤Â¤Â¤', '"') : event.data("options")) : event.data("options");
-            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("Â¤Â¤Â¤") ? event.data("options_class").replaceAll('Â¤Â¤Â¤', '"') : event.data("options_class")) : event.data("options_class");
-            const options_title = typeof event.data("option-title") === "string" ? JSON.parse(event.data("option-title").includes("Â¤Â¤Â¤") ? event.data("option-title").replaceAll('Â¤Â¤Â¤', '"') : event.data("option-title")) : event.data("option-title");
-            const options_current_title = typeof event.data("option-title-current") === "string" ? JSON.parse(event.data("option-title-current").includes("Â¤Â¤Â¤") ? event.data("option-title-current").replaceAll('Â¤Â¤Â¤', '"') : event.data("option-title-current")) : event.data("option-title-current");
+            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
+            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
+            const options_title = typeof event.data("option-title") === "string" ? JSON.parse(event.data("option-title").includes("¤¤¤") ? event.data("option-title").replaceAll('¤¤¤', '"') : event.data("option-title")) : event.data("option-title");
+            const options_current_title = typeof event.data("option-title-current") === "string" ? JSON.parse(event.data("option-title-current").includes("¤¤¤") ? event.data("option-title-current").replaceAll('¤¤¤', '"') : event.data("option-title-current")) : event.data("option-title-current");
             const update = event.data("event");
             const is_icon = typeof event.data("is_icon") === "string" ? event.data("is_icon") === "true" : event.data("is_icon");
             const value = event.data("value");
-            const onchange = event.data("onchange");// = typeof event.data("on") === "string" ? JSON.parse(event.data("on").includes("Â¤Â¤Â¤") ? event.data("on").replaceAll('Â¤Â¤Â¤', '"') : event.data("on")) : event.data("on");
+            const onchange = event.data("onchange");// = typeof event.data("on") === "string" ? JSON.parse(event.data("on").includes("¤¤¤") ? event.data("on").replaceAll('¤¤¤', '"') : event.data("on")) : event.data("on");
             //Create selectbox
             if (event.parent().css("position") !== "relative")
                 event.parent().css("position", "relative");
@@ -2555,8 +2555,8 @@ $(document).ready(() => {
          */
         setValue(new_value, event)
         {
-            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("Â¤Â¤Â¤") ? event.data("options").replaceAll('Â¤Â¤Â¤', '"') : event.data("options")) : event.data("options");
-            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("Â¤Â¤Â¤") ? event.data("options_class").replaceAll('Â¤Â¤Â¤', '"') : event.data("options_class")) : event.data("options_class");
+            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
+            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
             const update = event.data("event");
             const is_icon = typeof event.data("is_icon") === "string" ? event.data("is_icon") === "true" : event.data("is_icon");
             const value = event.data("value");

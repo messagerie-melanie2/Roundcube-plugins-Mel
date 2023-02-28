@@ -106,25 +106,30 @@ class BnumAPIController extends OCSController {
 			$_folders = $folderManager->getFoldersForUser($this->userSession->getUser());
 			$entitiesLabel = 'entite-';
 			$workspacesLabel = 'dossiers-';
+			$sharedFolderLabel = 'Partagés avec vous';
 
 			if ($personal == 'true') {
 				// Dossier à retourner en API
 				$folders[] = [
-					'id' => $userFolder->getId(),
-					'path' => $userFolder->getPath(),
-					'type' => $userFolder->getType(),
-					'displayName' => $userFolder->getName(),
-					'name' => $userFolder->getName(),
-					'mimetype' => $userFolder->getMimetype(),
-					'permissions' => $userFolder->getPermissions(),
-					'size' => $userFolder->getSize(),
-					'etag' => $userFolder->getEtag(),
-					'mtime' => $userFolder->getMTime() * 1000,
+					'id' 			=> $userFolder->getId(),
+					'path' 			=> $userFolder->getPath(),
+					'type' 			=> $userFolder->getType(),
+					'displayName' 	=> $userFolder->getName(),
+					'name' 			=> $userFolder->getName(),
+					'freeSpace' 	=> $userFolder->getFreeSpace(),
+					'mimetype' 		=> $userFolder->getMimetype(),
+					'permissions' 	=> $userFolder->getPermissions(),
+					'mountType'		=> $userFolder->getMountPoint()->getMountType(),
+					'size' 			=> $userFolder->getSize(),
+					'etag' 			=> $userFolder->getEtag(),
+					'mtime' 		=> $userFolder->getMTime() * 1000,
 				];
 			}
 			
 			foreach ($userFolder->getDirectoryListing() as $directory) {
 				$isGroupFolder = $directory->getMountPoint() instanceof \OCA\GroupFolders\Mount\GroupMountPoint;
+				$isShared = $directory->getMountPoint() instanceof \OCA\Files_Sharing\SharedMount 
+							|| $directory->getName() == $sharedFolderLabel;
 				if ($personal == 'false' && $isGroupFolder) {
 					if ($entities == 'true' && strpos($directory->getName(), $entitiesLabel) !== 0
 							|| $entities == 'false' && strpos($directory->getName(), $workspacesLabel) !== 0) {
@@ -156,34 +161,35 @@ class BnumAPIController extends OCSController {
 
 					// Dossier à retourner en API
 					$folders[] = [
-						'id' => '-' . $directory->getName(),
-						'path' => '',
-						'type' => $directory->getType(),
-						'displayName' => $name,
-						'name' => $directory->getName(),
-						'mimetype' => $directory->getMimetype(),
-						'permissions' => $directory->getPermissions(),
-						'quota' => $quota,
-						'size' => $directory->getSize(),
-						'mtime' => $directory->getMTime() * 1000,
+						'id' 			=> '-' . $directory->getName(),
+						'path' 			=> '',
+						'type' 			=> $directory->getType(),
+						'displayName' 	=> $name,
+						'name' 			=> $directory->getName(),
+						'mimetype' 		=> $directory->getMimetype(),
+						'permissions' 	=> $directory->getPermissions(),
+						'quota' 		=> $quota,
+						'size' 			=> $directory->getSize(),
+						'mtime' 		=> $directory->getMTime() * 1000,
 					];
 				}
-				else if ($personal == 'true' && !$isGroupFolder) {
+				else if ($personal == 'true' && !$isGroupFolder && !$isShared && $directory->getName() != 'Partagés avec vous') {
 					if ($directory->getName() == 'Partagés avec vous') {
 						continue;
 					}
 					// Dossier à retourner en API
 					$folders[] = [
-						'id' => $directory->getId(),
-						'path' => '',
-						'type' => $directory->getType(),
-						'displayName' => $directory->getName(),
-						'name' => $directory->getName(),
-						'mimetype' => $directory->getMimetype(),
-						'permissions' => $directory->getPermissions(),
-						'size' => $directory->getSize(),
-						'etag' => $directory->getEtag(),
-						'mtime' => $directory->getMTime() * 1000,
+						'id' 			=> $directory->getId(),
+						'path' 			=> '',
+						'type' 			=> $directory->getType(),
+						'displayName' 	=> $directory->getName(),
+						'name' 			=> $directory->getName(),
+						'mimetype' 		=> $directory->getMimetype(),
+						'mountType'		=> $userFolder->getMountPoint()->getMountType(),
+						'permissions' 	=> $directory->getPermissions(),
+						'size' 			=> $directory->getSize(),
+						'etag' 			=> $directory->getEtag(),
+						'mtime' 		=> $directory->getMTime() * 1000,
 					];
 				}
 			}

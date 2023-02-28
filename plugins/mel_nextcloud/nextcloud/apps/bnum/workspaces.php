@@ -34,6 +34,4 @@ $tmpl = new OCP\Template('bnum', 'simplelist', '');
 // gridview not available for ie
 $tmpl->assign('showgridview', $showgridview);
 
-OCP\Util::addScript('bnum', 'dist/bnumfilelist');
-
 $tmpl->printPage();

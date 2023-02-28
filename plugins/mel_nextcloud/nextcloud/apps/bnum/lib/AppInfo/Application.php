@@ -50,17 +50,12 @@ class Application extends App implements IBootstrap {
     public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
 
-		// $container = $this->getContainer();
+		$container = $this->getContainer();
 
 		// /** @var IEventDispatcher $dispatcher */
-		// $dispatcher = $container->query(IEventDispatcher::class);
+		$dispatcher = $container->query(IEventDispatcher::class);
 
-		// $dispatcher->addServiceListener(LoadAdditionalScriptsEvent::class, LoadAdditionalListener::class);
-
-		/**
-		 * Always add bnum script
-		 */
-		Util::addScript(self::APP_ID, 'dist/bnum');
+		$dispatcher->addServiceListener(LoadAdditionalScriptsEvent::class, LoadAdditionalListener::class);
 	}
 
     public function register(IRegistrationContext $context): void {
@@ -80,6 +75,9 @@ class Application extends App implements IBootstrap {
 		if (isset($user)) {
 			$userFolder = $rootFolder->getUserFolder($user->getUID());
 
+			$sharedFolderLabel = 'Partagés avec vous';
+
+			// Personal folders params
 			$personalFoldersSublist = [];
 			$personalFoldersNavBarPosition = 6;
 			$personalFoldersNavBarPositionPosition = $personalFoldersNavBarPosition;
@@ -105,6 +103,8 @@ class Application extends App implements IBootstrap {
 				$link = $urlGenerator->linkToRoute('files.view.index', ['dir' => $dir, 'view' => 'files']);
 
 				$isGroupFolder = $directory->getMountPoint() instanceof \OCA\GroupFolders\Mount\GroupMountPoint;
+				$isShared = $directory->getMountPoint() instanceof \OCA\Files_Sharing\SharedMount 
+							|| $directory->getName() == $sharedFolderLabel;
 				if ($isGroupFolder) {
 					if (strpos($directory->getName(), $entitiesLabel) !== 0 && strpos($directory->getName(), $workspacesLabel) !== 0) {
 						continue;
@@ -129,7 +129,7 @@ class Application extends App implements IBootstrap {
 						$order = $workspacesNavBarPositionPosition;
 					}
 				}
-				else if ($directory->getType() != 'dir' || $directory->getName() == 'Partagés avec vous') {
+				else if ($isShared || $directory->getType() != 'dir') {
 					continue;
 				}
 				else {

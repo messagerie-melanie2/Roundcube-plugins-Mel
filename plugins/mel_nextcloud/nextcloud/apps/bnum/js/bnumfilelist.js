@@ -54,7 +54,7 @@
 				}
 				if (options && options.personal) {
 					this._personal = true
-					// this._renderNewButton();
+					this._allowSelection = true
 				}
 			},
 
@@ -133,24 +133,6 @@
 			updateRow: function($tr, fileInfo, options) {
 			// no-op, suppress re-rendering
 				return $tr
-			},
-
-			_renderNewButton: function() {
-				// if an upload button (legacy) already exists or no actions container exist, skip
-				var $actionsContainer = this.$el.find('#controls .actions');
-				if (!$actionsContainer.length || this.$el.find('.button.upload').length) {
-					return;
-				}
-				var $newButton = $(OCA.Files.Templates['template_addbutton']({
-					addText: t('files', 'New'),
-					iconClass: 'icon-add'
-				}));
-	
-				$actionsContainer.prepend($newButton);
-				$newButton.tooltip({'placement': 'bottom'});
-	
-				$newButton.click(_.bind(this._onClickNewButton, this));
-				this._newButton = $newButton;
 			},
 
 			reload: function() {
@@ -242,10 +224,12 @@
 					// first entry is the root
 					this.dirInfo = result.shift();
 					this.breadcrumb.setDirectoryInfo(this.dirInfo);
-
+					
 					if (this.dirInfo.permissions) {
 						this._updateDirectoryPermissions();
 					}
+					this.$el.find('#free_space').val(this.dirInfo.freeSpace);
+					this.$el.find('#controls .breadcrumb .crumbhome span.icon-shared').hide();
 				}
 
 				result.sort(this._sortComparator);

@@ -91,18 +91,38 @@ OCA.Bnum.App = {
 				id: 'personalfiles',
 				entities: false,
 				personal: true,
+				enableUpload: true,
 				fileActions: this._createFileActions(),
 				config: OCA.Files.App.getFilesConfig(),
 				// The file list is created when a "show" event is handled, so
 				// it should be marked as "shown" like it would have been done
 				// if handling the event with the file list already created.
 				shown: true,
+				dragOptions: dragOptions,
+				folderDropOptions: folderDropOptions,
+				multiSelectMenu: [
+					{
+							name: 'copyMove',
+							displayName:  t('files', 'Move or copy'),
+							iconClass: 'icon-external',
+					},
+					{
+							name: 'download',
+							displayName:  t('files', 'Download'),
+							iconClass: 'icon-download',
+					},
+					{
+							name: 'delete',
+							displayName: t('files', 'Delete'),
+							iconClass: 'icon-delete',
+					}
+				]
 			}
 		)
 
 		this._extendFileList(this._personalFileList)
 		this._personalFileList.appName = t('bnum', 'Fichiers personnels')
-		this._personalFileList.$el.find('#emptycontent').html('<div class="icon-shared"></div>'
+		this._personalFileList.$el.find('#emptycontent').html('<div class="icon-folder"></div>'
 			+ '<h2>' + t('bnum', 'Pas de fichier personnel.') + '</h2>'
 			+ '<p>' + t('bnum', 'Créez un fichier ou un dossier personnel via le bouton (+) ci-dessus.') + '</p>')
 		return this._personalFileList

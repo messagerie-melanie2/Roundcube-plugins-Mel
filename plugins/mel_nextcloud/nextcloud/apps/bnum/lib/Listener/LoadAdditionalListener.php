@@ -38,7 +38,9 @@ class LoadAdditionalListener implements IEventListener {
 			return;
 		}
 
-		// Util::addScript(Application::APP_ID, 'dist/bnumfilelist');
-		// Util::addStyle(Application::APP_ID, 'bnum');
+		/**
+		 * Always add bnum script
+		 */
+		Util::addScript(Application::APP_ID, 'merged-index', 'files');
 	}
 }

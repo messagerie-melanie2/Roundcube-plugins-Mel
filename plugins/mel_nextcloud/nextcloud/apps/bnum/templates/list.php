@@ -1,3 +1,25 @@
+<div id="controls">
+		<div class="actions creatable hidden">
+			<div id="uploadprogresswrapper">
+			</div>
+		</div>
+		<div id="file_action_panel"></div>
+		<div class="notCreatable notPublic hidden">
+			<div class="icon-alert-outline"></div>
+			<?php p($l->t('You don’t have permission to upload or create files here'))?>
+		</div>
+	<?php /* Note: the template attributes are here only for the public page. These are normally loaded
+			 through ajax instead (updateStorageStatistics).
+	*/ ?>
+	<input type="hidden" name="permissions" value="" id="permissions">
+	<input type="hidden" id="free_space" value="<?php isset($_['freeSpace']) ? p($_['freeSpace']) : '' ?>">
+	<?php if (isset($_['dirToken'])):?>
+	<input type="hidden" id="publicUploadRequestToken" name="requesttoken" value="<?php p($_['requesttoken']) ?>" />
+	<input type="hidden" id="dirToken" name="dirToken" value="<?php p($_['dirToken']) ?>" />
+	<?php endif;?>
+	<input type="hidden" class="max_human_file_size"
+		   value="(max <?php isset($_['uploadMaxHumanFilesize']) ? p($_['uploadMaxHumanFilesize']) : ''; ?>)">
+</div>
 <div id="filelist-header"></div>
 
 <div id="emptycontent" class="hidden">

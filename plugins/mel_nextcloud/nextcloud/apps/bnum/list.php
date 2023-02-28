@@ -36,6 +36,4 @@ $tmpl = new OCP\Template('bnum', 'list', '');
 $tmpl->assign('showgridview', $showgridview);
 $tmpl->assign('publicUploadEnabled', $publicUploadEnabled);
 
-OCP\Util::addScript('bnum', 'dist/bnumfilelist');
-
 $tmpl->printPage();

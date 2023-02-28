@@ -1,4 +1,3 @@
-
 function html_helper(option, html, optional_classes = "", attribs = null){
 
 	if (!!attribs)
@@ -654,10 +653,13 @@ class amel_form_item extends mel_html {
 	{
 		super(tag, attribs, content);
 
+		if (!this.attribs[CONST_ATTRIB_CLASS]) this.attribs[CONST_ATTRIB_CLASS] = EMPTY_STRING;
+
 		if (!this.attribs[CONST_ATTRIB_VALUE]) {
 			this.attribs[CONST_ATTRIB_VALUE] = `${amel_form_item.CLASS_FORM_BASE} ${amel_form_item.CLASS_FORM_MEL}`;
 		}
-		else if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_BASE))
+		
+		if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_BASE))
 		{
 			this.attribs[CONST_ATTRIB_CLASS] += ` ${amel_form_item.CLASS_FORM_BASE}`;
 		}

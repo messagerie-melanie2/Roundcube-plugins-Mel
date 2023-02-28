@@ -25,23 +25,23 @@
 	 */
 	var FileList = function($el, options) {
 		this.initialize($el, options)
-	}
+	};
 	FileList.prototype = _.extend({}, OCA.Files.FileList.prototype,
-		/** @lends OCA.Bnum.FileList.prototype */ {
+			/** @lends OCA.Bnum.FileList.prototype */ {
 			appName: 'Bnum',
 
-		/**
-		 * Whether the list shows the files shared with the user (true) or
-		 * the files that the user shared with others (false).
-		 */
+			/**
+			 * Whether the list shows the files shared with the user (true) or
+			 * the files that the user shared with others (false).
+			 */
 			_entities: true,
 			_personal: false,
 			_clientSideSort: true,
 			_allowSelection: false,
 
-		/**
-		 * @private
-		 */
+			/**
+			 * @private
+			 */
 			initialize: function($el, options) {
 				OCA.Files.FileList.prototype.initialize.apply(this, arguments)
 				if (this.initialized) {
@@ -86,12 +86,12 @@
 				return $tr
 			},
 
-		/**
-		 * Set whether the list should contain outgoing shares
-		 * or incoming shares.
-		 *
-		 * @param state true for incoming shares, false otherwise
-		 */
+			/**
+			 * Set whether the list should contain outgoing shares
+			 * or incoming shares.
+			 *
+			 * @param state true for incoming shares, false otherwise
+			 */
 			setSharedWithUser: function(state) {
 				this._sharedWithUser = !!state
 			},
@@ -263,7 +263,7 @@
 					.value()
 				return files
 			},
-		})
+		});
 
 	/**
 	 * Share info attributes.
@@ -303,5 +303,5 @@
 	 * passing to HTML data attributes with jQuery)
 	 */
 
-	OCA.Bnum.FileList = FileList
-})()
+	OCA.Bnum.FileList = FileList;
+})();

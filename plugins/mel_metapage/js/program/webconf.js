@@ -3310,7 +3310,7 @@ var MasterWebconfBar = (() => {
                         } 
                         
                     });
-                    button.attribs[ATTR_CLASS] = button.attribs[ATTR_CLASS].replace(mel_button.html_base_class.boostrap.state, EMPTY_STRING);
+                    button.attribs[ATTR_CLASS] = button.attribs[ATTR_CLASS].replace(mel_button.html_base_class.bootstrap.state, EMPTY_STRING);
                     button.generate({class:mel_button.html_base_class_success}).appendTo($html);
 
                     //Bouton supprimer
@@ -3326,7 +3326,7 @@ var MasterWebconfBar = (() => {
                         this.right_pannel.close();
                         rcmail.display_message(text, MESSAGE_CONFIRMATION);
                     });
-                    removePassword.attribs[ATTR_CLASS] = button.attribs[ATTR_CLASS].replace(mel_button.html_base_class.boostrap.state, EMPTY_STRING);
+                    removePassword.attribs[ATTR_CLASS] = button.attribs[ATTR_CLASS].replace(mel_button.html_base_class.bootstrap.state, EMPTY_STRING);
                     removePassword.generate({class:`${mel_button.html_base_class_danger} ${CLASS_FLOAT_RIGHT}`}).appendTo($html);
     
                     //Mise en place du contenu

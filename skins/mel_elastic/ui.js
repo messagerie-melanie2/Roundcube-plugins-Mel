@@ -797,7 +797,8 @@ $(document).ready(() => {
                     var $input = new mel_input({
                         class:INPUT_CLASS,
                         type:CONST_ATTRIB_TYPE_FILE,
-                        accept:INPUT_ACCEPT
+                        accept:INPUT_ACCEPT,
+                        'data-prefid':iterator.value.userprefid
                     });
                     //MAJ de l'image
                     $input.onchange.push((ev) => {

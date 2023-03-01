@@ -341,19 +341,19 @@ table.messagelist:not(.withselection) tr.unread > td.selection + td {
   border-left: 2px solid var(--primary-border-color) !important;
 }
 table.messagelist:not(.threaded) tbody tr:nth-child(2n) td {
-  background-color: var(--default-background-lighter);
+  /* background-color: var(--default-background-lighter); */
 }
 table.messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
-  background-color: var(--default-background-lighter);
+  /* background-color: var(--default-background-lighter); */
 }
 table.messagelist:not(.threaded) tbody tr.unread td {
-  background-color: var(--default-background);
+  /* background-color: var(--default-background); */
 }
 table.messagelist:not(.threaded) tbody tr.unread.selected td {
-  background-color: var(--secondary-bckg-color);
+  /* background-color: var(--secondary-bckg-color); */
 }
 table.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
-  background-color: var(--secondary-bckg-color);
+  /* background-color: var(--secondary-bckg-color); */
 }
 #mailsearchlist {
   position: absolute;

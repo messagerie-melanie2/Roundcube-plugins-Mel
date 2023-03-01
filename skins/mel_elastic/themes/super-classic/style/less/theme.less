@@ -31,14 +31,18 @@ html.theme-super-classique {
   .mel-selectable {
     &.selected {
       --tierciary-bckg-color: #0EAF9C;
+
+      &.picture {
+        border-bottom: none !important;
+      }
+    }
+
+    &.picture {
+      --tierciary-bckg-color: var(--invisible);
     }
   }
 
   .barup {
-    background: url('../images/bailey-zindel-NRQV-hBF10M-unsplash.jpg');
-    background-size: cover;
-    background-position-y: center;
-
     #button-help {
       background-color: var(--main-layout-hover-background-color);
 
@@ -48,14 +52,14 @@ html.theme-super-classique {
     }
   }
 
-  #theme-switch-button {
-    .icon-mel-painting {
-      &::before {
-        content: "\efb3";
-        font-family: 'icofont';
-      }
-    }
-  }
+  // #theme-switch-button {
+  //   .icon-mel-painting {
+  //     &::before {
+  //       content: "\efb3";
+  //       font-family: 'icofont';
+  //     }
+  //   }
+  // }
 
   .loader {
     &-base {

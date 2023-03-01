@@ -33,5 +33,10 @@
         "background":"nature2.jpg",
         "view":"nature2.jpg",
         "tags":["nature", "plantes", "eau", "flou", "jour"]
+    },
+    "nature-3":{
+        "background":"nature3.png",
+        "view":"nature3.jpg",
+        "tags":["nature", "plantes", "eau", "montagnes", "jour"]
     }
 }

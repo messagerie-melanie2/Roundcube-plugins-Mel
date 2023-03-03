@@ -1040,8 +1040,7 @@ $(document).ready(() => {
 
                 let $taskMenu = $("#taskmenu .menu-last-frame").attr("tabIndex", "-1");
 
-                //TODO: Rendre ça paramètrable
-                $taskMenu.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE)
+                if (true !== rcmail.env.menu_last_frame_enabled) $taskMenu.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
 
                 //On supprime le stockage si on y a pas accès.
                 if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();

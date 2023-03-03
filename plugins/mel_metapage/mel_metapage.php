@@ -309,6 +309,10 @@ class mel_metapage extends rcube_plugin
             "value" => self::FROM_VALUE    
         ]);
 
+        
+        $showBackIcon = 'param-show-back-icon';
+        $this->rc->output->set_env("menu_last_frame_enabled", $this->rc->config->get($showBackIcon, false));
+
         if (rcube_utils::get_input_value('_accept_back', rcube_utils::INPUT_GET) === "true" || rcube_utils::get_input_value('_accept_back', rcube_utils::INPUT_GET) === true)
             $this->rc->output->set_env("accept_back", true);
 
@@ -1974,6 +1978,16 @@ class mel_metapage extends rcube_plugin
                     'content' => $check->show(($config[$key]['enabled'] ?? $value['enabled']) ? 1 : 0),
                 ];
             }
+
+            $args['blocks']['second_nav']['name'] = 'Autre options';
+
+            $showBackIcon = 'param-show-back-icon';
+            $haveBackIcon = $settings = $this->rc->config->get($showBackIcon, false);
+            $check = new html_checkbox(['name' => $showBackIcon, 'id' => $showBackIcon, 'value' => 1]);
+            $args['blocks']['second_nav']['options'][$showBackIcon] = [
+                'title'   => html::label($showBackIcon, rcube::Q($this->gettext($showBackIcon))),
+                'content' => $check->show($haveBackIcon ? 1 : 0),
+            ];
         }
         else if ($args['section'] == 'bnum-experimental')
         {
@@ -2156,6 +2170,13 @@ class mel_metapage extends rcube_plugin
         }
 
         $args['prefs']["navigation_apps"] = $config;
+
+        $showBackIcon = 'param-show-back-icon';
+        $haveBackIcon = $this->rc->config->get($showBackIcon, false);
+        $haveBackIcon = rcube_utils::get_input_value($showBackIcon, rcube_utils::INPUT_POST) ?? false;
+        $haveBackIcon = '1' === $haveBackIcon;
+        $args['prefs'][$showBackIcon] = $haveBackIcon;
+        $this->rc->output->set_env("menu_last_frame_enabled", $haveBackIcon);
     }
     else if ($args['section'] == 'bnum-experimental')
     {

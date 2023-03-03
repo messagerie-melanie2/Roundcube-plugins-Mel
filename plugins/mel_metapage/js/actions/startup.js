@@ -805,6 +805,8 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
 function m_mp_ChangeLasteFrameInfo(force = false)
 {
+    if (true !== rcmail.env.menu_last_frame_enabled) return;
+
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     const isUndefined = rcmail.env.last_frame_class === undefined || rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
 
@@ -843,13 +845,13 @@ function m_mp_ChangeLasteFrameInfo(force = false)
 
             if ($(selector).length === 0) selector = "#taskmenu ." + mm_st_ClassContract(rcmail.env.last_frame_class);
            
-            m_mp_CreateOrUpdateIcon(selector);
             $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
+            m_mp_CreateOrUpdateIcon(selector);
         }
         else
         {
-            m_mp_CreateOrUpdateIcon(null, "");
             $(".menu-last-frame").addClass("disabled").attr("disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+            m_mp_CreateOrUpdateIcon(null, "");
         }
     } catch (error) {
         
@@ -893,6 +895,8 @@ function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
         content = default_content;
         font = "DWP";
     }
+
+    if (MEL_ELASTIC_UI.css_rules.ruleExist(css_key)) MEL_ELASTIC_UI.css_rules.remove(css_key);
 
     MEL_ELASTIC_UI.css_rules.addAdvanced(css_key, '.menu-last-frame-item:before', 
     `content:"\\${content}"`,

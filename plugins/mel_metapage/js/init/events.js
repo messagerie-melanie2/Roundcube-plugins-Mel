@@ -267,6 +267,30 @@ if (rcmail && window.mel_metapage)
                     );
                 }
             }
+
+            if (rcmail.env.menu_last_frame_enabled !== top.rcmail.env.menu_last_frame_enabled) {
+                top.rcmail.env.menu_last_frame_enabled = rcmail.env.menu_last_frame_enabled;
+                let $item = top.$("#taskmenu .menu-last-frame");
+                if (true === rcmail.env.menu_last_frame_enabled) {
+                    const css_key = 'm_mp_CreateOrUpdateIcon';
+
+                    $item
+                    .addClass('disabled')
+                    .attr('aria-disabled', true)
+                    .parent()
+                    .css(CONST_CSS_DISPLAY, 'block')
+                    .find('.menu-last-frame-inner-down').html(EMPTY_STRING);
+                    $item.find('.menu-last-frame-item').remove();
+
+                    top.rcmail.env.last_frame_class = 'settings';
+                    top.rcmail.env.last_frame_name =  "Configuration du bureau numérique";
+
+                    if (0 !== (mel_metapage.Frames.lastFrames?.length ?? 0)) mel_metapage.Frames.lastFrames.length = 0;
+
+                    MEL_ELASTIC_UI.css_rules.remove(css_key);
+                }
+                else $item.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+            }
         }
 
         if (rcmail.env.keep_login === true)

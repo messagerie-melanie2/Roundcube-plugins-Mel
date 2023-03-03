@@ -706,7 +706,9 @@ $(document).ready(() => {
 
             let $pannelParent = $themePannel.parent();
             let $contents = new mel_html2(CONST_HTML_DIV, {
-                class:CLASS_CONTENTS
+                attribs:{
+                    class:CLASS_CONTENTS
+                }
             });
 
             //Passer les thèmes dans le panel des thèmes

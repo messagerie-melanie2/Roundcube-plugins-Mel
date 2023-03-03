@@ -2808,3 +2808,17 @@ html.dark-mode .green-badge {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+.tiny-rocket-chat.inbarup {
+  position: sticky;
+  height: 100%;
+  width: 100%;
+  border-radius: 15px;
+  z-index: 0;
+  white-space: nowrap;
+  font-size: var(--rocket-chat-barup-font-size);
+}
+.tiny-rocket-chat.inbarup .tiny-rocket-chat-icon {
+  position: initial;
+  font-size: var(--rocket-chat-barup-font-size);
+  margin-left: var(--rocket-chat-barup-margin-left);
+}

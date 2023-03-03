@@ -542,20 +542,20 @@
 
                         $("#barup-search-input").attr("placeholder", "Recherche globale...");
 
-                        $(".tiny-rocket-chat").appendTo("#chatCore")
-                            .css("position", "sticky")
-                            .css("height", "100%")
-                            .css("width", "100%")
-                            // .css("min-width", "125px")
-                            .css("border-radius", "15px")
-                            .css("z-index", 0)
-                            .css("white-space", "nowrap")
+                        $(".tiny-rocket-chat").appendTo("#chatCore").addClass('inbarup')
+                            // .css("position", "sticky")
+                            // .css("height", "100%")
+                            // .css("width", "100%")
+                            // // .css("min-width", "125px")
+                            // .css("border-radius", "15px")
+                            // .css("z-index", 0)
+                            // .css("white-space", "nowrap")
                             .prepend("<span class=disc>Discussion</span>")
-                            .css("font-size", "1vw")
-                            .find(".tiny-rocket-chat-icon")
-                            .css("position", "initial")
-                            .css("font-size", "1vw")
-                            .css("margin-left", "0.5vw"); //.css("position", "sticky").appendTo($(".barup"));
+                            // .css("font-size", "1vw")
+                            // .find(".tiny-rocket-chat-icon")
+                            // .css("position", "initial")
+                            // .css("font-size", "1vw")
+                            // .css("margin-left", "0.5vw"); //.css("position", "sticky").appendTo($(".barup"));
                     }
                 } else {
                     $(".tiny-rocket-chat").addClass("layout-hidden");
@@ -578,18 +578,18 @@
 
                     $("#barup-search-input").attr("placeholder", "Recherche globale...");
 
-                    $(".tiny-rocket-chat").appendTo("#layout")
-                        .css("position", "absolute")
-                        .css("height", "")
-                        .css("width", "")
-                        .css("min-width", "")
-                        .css("border-radius", "")
-                        .css("z-index", 999)
-                        .css("white-space", "")
+                    $(".tiny-rocket-chat").removeClass('inbarup').appendTo("#layout")
+                        // .css("position", "absolute")
+                        // .css("height", "")
+                        // .css("width", "")
+                        // .css("min-width", "")
+                        // .css("border-radius", "")
+                        // .css("z-index", 999)
+                        // .css("white-space", "")
                         .find(".tiny-rocket-chat-icon")
-                        .css("position", "")
-                        .css("font-size", "")
-                        .css("margin-left", "")
+                        // .css("position", "")
+                        // .css("font-size", "")
+                        // .css("margin-left", "")
                         .parent()
                         .find(".disc")
                         .remove();

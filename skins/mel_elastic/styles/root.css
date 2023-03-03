@@ -43,6 +43,8 @@
   --loader-background-position: 65% 57%;
   --loader-mask: conic-gradient(from 90deg at 50% 50%, #ffffff 0%, rgba(140, 140, 140, 0) 51%, rgba(0, 0, 0, 0) 100%);
   --onboarding-image: url("../images/bnumloader.svg");
+  --rocket-chat-barup-font-size: 1vw;
+  --rocket-chat-barup-margin-left: 0.5vw;
   /** TEXT COLOR **/
   --main-text-color: #363A5B;
   --secondary-text-color: #FFFFFF;
@@ -217,6 +219,11 @@
   --calendar-list-item-switch-tick-stroke: 1px var(--calendar-list-item-switch-tick-stroke-color);
   --calendar-widget-header-background-color: var(--alternate-bckg-color-2);
   --calendar-widget-header-text-color: var(--secondary-text-color);
+}
+@media screen and (min-width: 1578px) {
+  :root {
+    --rocket-chat-barup-font-size: 16px;
+  }
 }
 .dark-mode:root {
   --tierciary-bckg-color: #323F4B;

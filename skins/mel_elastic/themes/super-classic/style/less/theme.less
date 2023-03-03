@@ -52,21 +52,6 @@ html.theme-super-classique {
     }
   }
 
-  // #theme-switch-button {
-  //   .icon-mel-painting {
-  //     &::before {
-  //       content: "\efb3";
-  //       font-family: 'icofont';
-  //     }
-  //   }
-  // }
-
-  // .loader {
-  //   &-base {
-  //     animation-direction: initial;
-  //   }
-  // }
-
   .task-mail {
     #layout-sidebar {
       .scroller {
@@ -79,6 +64,16 @@ html.theme-super-classique {
             }
           }
         }
+      }
+    }
+  }
+
+  #frame-buttons-history {
+    .history-button {
+      --secondary-text-color:var(--main-text-color);
+
+      &:hover {
+        --secondary-text-color:white;
       }
     }
   }

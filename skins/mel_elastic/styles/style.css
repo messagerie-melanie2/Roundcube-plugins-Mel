@@ -1841,41 +1841,31 @@ body.task-tasks .searchbar form::after {
 /** ONGLETS **/
 ._mel-tab {
   cursor: pointer;
-  padding: 0 15px;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
+  border-bottom: 2px solid var(--invisible);
 }
 ._mel-tabheader {
   font-size: larger;
   white-space: nowrap;
   border-color: transparent!important;
-  border-right-style: solid!important;
-  border-width: 1px!important;
-  border-right-color: var(--tab-header-right-border-color) !important;
   border-radius: 0px!important;
 }
 ._mel-tab-state {
   color: var(--mel-tab-text-color) !important;
-  text-decoration: underline;
+  border-bottom: 2px solid var(--mel-tab-text-color) !important;
 }
 .mel-tabheader {
   font-size: larger;
   white-space: nowrap;
   border-color: transparent!important;
-  border-right-style: solid!important;
-  border-width: 1px!important;
-  border-right-color: var(--tab-header-right-border-color) !important;
   border-radius: 0px!important;
-}
-.mel-tabheader.last {
-  border: none!important;
 }
 .mel-responsive-tabheader {
   font-size: larger;
   white-space: nowrap;
   border-color: transparent!important;
-  border-right-style: solid!important;
-  border-width: 1px!important;
-  border-right-color: var(--tab-header-right-border-color) !important;
   border-radius: 0px!important;
 }
 .mel-responsive-tabheader.last {
@@ -1883,43 +1873,50 @@ body.task-tasks .searchbar form::after {
 }
 .mel-tab {
   cursor: pointer;
-  padding: 0 15px;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
+  border-bottom: 2px solid var(--invisible);
 }
 .mel-tab:hover {
-  color: var(--mel-tab-text-color) !important;
-  text-decoration: underline;
+  background-color: #eaeaea !important;
+  border-bottom-color: var(--invisible) !important;
 }
 .mel-tab.active {
   color: var(--mel-tab-text-color) !important;
-  text-decoration: underline;
+  border-bottom: 2px solid var(--mel-tab-text-color) !important;
   cursor: initial;
 }
 button.btn.mel-tab {
   background-color: var(--invisible) !important;
   color: var(--main-text-color) !important;
 }
-button.btn.mel-tab:hover,
+button.btn.mel-tab:hover {
+  background-color: #eaeaea !important;
+  border-bottom-color: var(--invisible) !important;
+}
 button.btn.mel-tab:active,
 button.btn.mel-tab.active {
   color: var(--mel-tab-text-color) !important;
-  text-decoration: underline;
+  border-bottom: 2px solid var(--mel-tab-text-color) !important;
 }
 .mel-responsive-tab {
   cursor: pointer;
-  padding: 0 15px;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
+  border-bottom: 2px solid var(--invisible);
   background-color: var(--invisible) !important;
   color: var(--main-text-color) !important;
 }
 .mel-responsive-tab:hover {
   color: var(--mel-tab-text-color) !important;
-  text-decoration: underline;
+  border-bottom: 2px solid var(--mel-tab-text-color) !important;
 }
 .mel-responsive-tab.active,
 .mel-responsive-tab.selected {
   color: var(--mel-tab-text-color) !important;
-  text-decoration: underline;
+  border-bottom: 2px solid var(--mel-tab-text-color) !important;
   cursor: initial;
 }
 button.btn.mel-responsive-tab {

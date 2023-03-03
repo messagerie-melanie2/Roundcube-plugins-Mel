@@ -846,19 +846,13 @@ html.dark-mode #eventedit li.nav-item a
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
 html.dark-mode .mel-tab.mel-tabheader{
     color:#E1C58F!important;
-	border-color: #E1C58F!important;
-    border-left: solid thin!important;
-    border-bottom: solid thin!important;
-    border-top: none!important;
-    border-right: none!important;
-    border-top-left-radius: 0!important;
     text-decoration: none!important;
 }
 
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
 html.dark-mode .mel-tab.mel-tabheader.last
 {
-    margin-left:5px;
+    /* margin-left:5px; */
 }
 
 html.dark-mode #eventedit li.nav-item a:hover
@@ -876,15 +870,14 @@ html.dark-mode #eventedit li.nav-item a.active
 {
     background-color: #E1C58F;
     color:#2E2E2E;
-	border-color: #2E2E2E;
+	  border-color: #2E2E2E;
 }
 
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab.selected,
 html.dark-mode .mel-tab.mel-tabheader.active
 {
-    background-color: #E1C58F!important;
-    color:#2E2E2E!important;
-	border-color: #2E2E2E!important;
+    color:#E1C58F!important;
+    border-bottom-color: #E1C58F !important;
 }
 
 html.dark-mode .btn-secondary:focus,

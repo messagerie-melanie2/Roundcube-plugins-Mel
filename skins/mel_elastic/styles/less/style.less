@@ -2942,31 +2942,28 @@ tr.elementmoveup > td{
 
 ._mel-tab{
     cursor: pointer;
-    padding: 0 15px;
+    padding: 1rem 1.4rem;
     display: inline-block;
+    margin: 0 15px;
+    border-bottom: 2px solid var(--invisible);
 }
 
 ._mel-tabheader{
     font-size: larger;
     white-space: nowrap;
     border-color:transparent!important;
-    border-right-style: solid!important;
-    border-width: 1px!important;
-    border-right-color: var(--tab-header-right-border-color)!important;
+ 
     border-radius: 0px!important;
 }
 
 ._mel-tab-state{
-    color:var(--mel-tab-text-color)!important;
-    text-decoration: underline;
+    color: var(--mel-tab-text-color) !important;
+    border-bottom: 2px solid var(--mel-tab-text-color) !important;
 }
 
 .mel-tabheader {
     ._mel-tabheader();
 
-    &.last{
-        border: none!important;
-    }
 }
 
 .mel-responsive-tabheader{
@@ -2981,7 +2978,8 @@ tr.elementmoveup > td{
     ._mel-tab();
 
     &:hover{
-        ._mel-tab-state();
+      background-color: #eaeaea !important;
+      border-bottom-color: var(--invisible) !important;
     }
 
     &.active{
@@ -2993,14 +2991,15 @@ tr.elementmoveup > td{
         .mel-invisible-background();
         color:var(--main-text-color)!important;       
         
-        &:hover,
+        &:hover {
+           background-color: #eaeaea !important;
+          border-bottom-color: var(--invisible) !important;
+        }
         &:active,
         &.active {
             ._mel-tab-state();
         }
-        
     }
-
 }
 
 .mel-responsive-tab{

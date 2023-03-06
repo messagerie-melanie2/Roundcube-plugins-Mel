@@ -23,6 +23,11 @@ html.theme-super-classique {
                 border-radius: 5px !important;
               }
             }
+            &.mailbox {
+              .unreadcount {
+                top: 5px;
+              }
+            }
           }
 
           li.selected {
@@ -66,15 +71,45 @@ html.theme-super-classique {
         margin-top: 0px;
 
         #messagelist {
-          tr.selected {
-            background-color: transparent;
-          }
+          tr {
+            &.selected {
+              background-color: transparent;
 
-          tr.focused {
-            td {
-              border-left: none !important;
+              .subject {
+                color: var(--main-text-color) !important;
+              }
+
+              > td.selection {
+                + td {
+                  border-left: 2px solid var(--primary-border-color) !important;
+                }
+              }
+            }
+
+            &.unread {
+              background-color: transparent;
+
+              > td.selection {
+                + td {
+                  border-left-color: var(--invisible) !important;
+                }
+              }
+            }
+
+            &.focused {
+              td {
+                border-left: none !important;
+              }
+            }
+
+            &.message:hover:not(.selected) {
+              td {
+
+                background-color: var(--main-layout-hover-background-color) !important;
+              }
             }
           }
+
         }
       }
     }

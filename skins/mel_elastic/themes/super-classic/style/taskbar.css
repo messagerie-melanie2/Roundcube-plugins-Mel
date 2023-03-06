@@ -3,6 +3,7 @@ html.theme-super-classique #layout-menu {
 }
 html.theme-super-classique #layout-menu #taskmenu a {
   color: var(--main-text-color) !important;
+  height: 60px !important;
 }
 html.theme-super-classique #layout-menu #taskmenu a:hover,
 html.theme-super-classique #layout-menu #taskmenu a:hover > span.inner,
@@ -36,6 +37,7 @@ html.theme-super-classique #layout-menu:hover #taskmenu a.selected {
 html.theme-super-classique #layout-menu:hover a > span.inner {
   width: 140px;
   padding-right: 20px;
+  height: 60px;
 }
 html.theme-super-classique #layout-menu:hover a.wsp:hover > span.inner {
   padding-bottom: 0;
@@ -48,6 +50,9 @@ html.theme-super-classique #layout-menu:hover a.menu-last-frame:hover > span.inn
 }
 html.theme-super-classique .menu.toolbar a.menu-last-frame::before {
   color: var(--roundbadge-bckg-color);
+}
+html.theme-super-classique .menu.toolbar li {
+  height: 60px;
 }
 html.theme-super-classique nav.otherapps {
   background-color: var(--main-layout-taskbar-background-color);

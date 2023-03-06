@@ -3,10 +3,11 @@ html.theme-super-classique {
   #layout-menu {
     background-color: var(--main-layout-taskbar-background-color);
     // border-right: solid thin #2C3054;
-
+   
     #taskmenu {
       a {
         color: var(--main-text-color) !important;
+        height: 60px !important;
 
         &:hover {
           background-color: var(--mail-layout-sidebar-background-color) !important;
@@ -69,6 +70,7 @@ html.theme-super-classique {
           &.inner {
             width: 140px;
             padding-right: 20px;
+            height: 60px;
           }
         }
       }
@@ -101,8 +103,13 @@ html.theme-super-classique {
     }
   }
 
-  .menu.toolbar a.menu-last-frame::before {
-    color: var(--roundbadge-bckg-color);
+  .menu.toolbar {
+    a.menu-last-frame::before {
+      color: var(--roundbadge-bckg-color);
+    }
+    li {
+      height: 60px;
+    }
   }
 
   nav.otherapps {

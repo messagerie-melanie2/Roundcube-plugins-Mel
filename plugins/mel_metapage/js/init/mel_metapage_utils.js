@@ -578,6 +578,20 @@ const mel_metapage = {
             
         },
 
+        get_from_url(url) {
+            const URL_VARIABLE = '/?';
+            const URL_SEPARATOR = '&';
+            url = url.split(URL_VARIABLE)[1].split(URL_SEPARATOR);
+            let datas = {};
+
+            for (let index = 0, len = url.length; index < len; ++index) {
+                const element = url[index].split('=');
+                datas[element[0]] = element[1];
+            }
+
+            return datas;
+        },
+
         /**
          * Récupère une URL conforme.
          * @param {string} task Tâche 

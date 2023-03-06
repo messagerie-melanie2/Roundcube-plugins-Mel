@@ -135,6 +135,8 @@ rcmail.addEventListener('init', () => {
         mm_st_ChangeClicks("#otherapps");
 
         rcmail.env.current_task = rcmail.env.task;
+
+        rcmail.triggerEvent('frames.setup.after');
     });
 });
 

@@ -350,6 +350,15 @@ class mel_metapage extends rcube_plugin
         
         if ($this->rc->task !== "login" && $this->rc->task !== "logout" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
         {
+            if ($this->rc->task !== 'bnum' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe') {
+                $this->rc->output->redirect([
+                    '_task' => 'bnum',
+                    '_action' => '',
+                    '_initial_request' => $_SERVER["REQUEST_URI"],
+                    '_initial_task' => $this->rc->task
+                ]);
+                return;
+            }
 
             $this->rc->output->set_env("plugin.mel_metapage", true);
             $this->rc->output->set_env("username", $this->rc->user->get_username());
@@ -375,6 +384,8 @@ class mel_metapage extends rcube_plugin
                 $this->register_task("custom_page");
             else if ($this->rc->task === "rotomecatest")
                 $this->register_task("rotomecatest");
+            else if ($this->rc->task === "bnum")
+                $this->register_task("bnum");
             else
                 $this->register_task("mel_metapage");               
 
@@ -392,6 +403,11 @@ class mel_metapage extends rcube_plugin
             if ($this->rc->task === "rotomecatest")
             {
                 $this->register_action('index', array($this, 'debug_and_test'));
+            }
+
+            if ($this->rc->task === "bnum")
+            {
+                $this->register_action('index', array($this, 'bnum_page'));
             }
 
             //$this->rc->output->set_env('navigation_apps', $this->rc->config->get('navigation_apps', null));
@@ -2673,6 +2689,19 @@ class mel_metapage extends rcube_plugin
         }
 
         return $ts;
+    }
+
+    public function bnum_page() {
+        $request = rcube_utils::get_input_value('_initial_request', rcube_utils::INPUT_GET) ?: null;
+        $init_task = rcube_utils::get_input_value('_initial_task', rcube_utils::INPUT_GET) ?: null;
+        if (isset($request)) {
+            $this->rc->output->set_env("bnum.redirect", $request);
+        }
+
+        if (isset($init_task)) {
+            $this->rc->output->set_env("bnum.init_task", $init_task);
+        }
+        $this->rc->output->send('mel_metapage.empty');
     }
 
 }

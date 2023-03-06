@@ -34,7 +34,7 @@ class mel_elastic extends rcube_plugin
     /**
      * Liste des fichiers css à charger.
      */
-    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css"];
+    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css"];
 
     private $loaded_theme;
     private $themes;

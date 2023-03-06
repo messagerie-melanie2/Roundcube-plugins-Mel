@@ -121,9 +121,10 @@ html.layout-phone #taskmenu a
 
 .menu.toolbar a.mail:before
 {
-    content:"\e91e";
-    font-family: "DWP"!important;
-    font-weight: normal;
+  content:"\e158";
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 30px;
+  font-weight: normal;
 }
 
 
@@ -135,9 +136,10 @@ html.layout-phone #taskmenu a
 .menu.toolbar a.button-calendar:before,
 .menu.toolbar a.calendar:before
 {
-    content:"\e901";
-    font-family: "DWP"!important;
-    font-weight: normal;
+  content:"\ebcc";
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 30px;
+  font-weight: normal;
 }
 
 .button-rocket_chat {
@@ -167,8 +169,9 @@ html.layout-phone #taskmenu a
 
 .menu.toolbar  a.tasklist::before
 {
-    content:"\e932";
-    font-family: "DWP"!important;
+    content:"\e834";
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
     font-weight: normal;
 }
 
@@ -182,8 +185,9 @@ html.layout-phone #taskmenu a
 
 .menu.toolbar  a.contacts::before
 {
-    content:"\e937";
-    font-family: "DWP"!important;
+    content:"\e7fd";
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
     font-weight: normal;
 }
 
@@ -208,8 +212,9 @@ html.layout-phone #taskmenu a
 
 .menu.toolbar  a.settings::before
 {
-    content:"\e925";
-    font-family: "DWP"!important;
+    content:"\e8b8" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
     font-weight: normal;
 }
 
@@ -261,8 +266,9 @@ html.touch span.menu-last-frame-item {
 
 .menu.toolbar a.wsp.icon-mel-workplace:before
 {
-    content:"\e93a";
-    font-family: "DWP"!important;
+    content:"\e1a0" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
     font-weight: normal;
 }
 
@@ -275,38 +281,45 @@ html.touch span.menu-last-frame-item {
 
 a.useful_links.icon-mel-link::before
 {
-    content:"\e91c";
-    font-family: "DWP"!important;
+    content:"\e157";
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
     font-weight: normal;
 }
 
 .menu.toolbar a.home.icon-mel-home:before
 {
-    content:"\e918";
-    font-family: "DWP"!important;
-    font-weight: normal;
+  content:"\e88a";
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 30px;
+  font-weight: normal;
+  font-variation-settings:
+  'FILL' 1,
 }
 
 .menu.toolbar a.mel.icon-mel-sondage:before,
 #otherapps a.icon-mel-sondage:before
 {
-    content:"\e930";
-    font-family: "DWP"!important;
-    font-weight: inherit;
+    content:"\e6b1" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
+    font-weight: normal;
 }
 
 .menu.toolbar a.icon-mel-message:before
 {
-    content:"\e920";
-    font-family: "DWP"!important;
-    font-weight: inherit;
+    content:"\e0bf";
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
+    font-weight: normal;
 }
 
 .menu.toolbar a.icon-mel-folder:before
 {
-    content:"\e915";
-    font-family: "DWP"!important;
-    font-weight: inherit;
+    content:"\e2c8" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
+    font-weight: normal;
 }
 
 .menu.toolbar a.news.icofont-newspaper:before
@@ -323,14 +336,17 @@ a.menu-small.icofont-navigation-menu:before
 
 a.icon-mel-trello:before
 {
-    content:"\e94c";
-    font-family: "DWP"!important;
+    content:"\eb7f";
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
+    font-weight: normal;
 }
 
 a.icon-mel-newspaper:before
 {
-    content:"\e91a";
-    font-family: "DWP"!important;
+    content:"\ef42";
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 30px;
     font-weight: normal;
 }
 

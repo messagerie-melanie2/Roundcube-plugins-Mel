@@ -1,7 +1,7 @@
 <?php
 $labels = array();
-$labels['task'] = 'Bureau numérique';
-$labels['title'] = 'Bureau numérique de l\'agent';
+$labels['task'] = 'Accueil';
+$labels['title'] = 'Page d\'accueil de Mél web';
 
 $labels['manageresourcesportail'] = "Liste des vignettes dans le portail ETN";
 $labels['applications_list'] = "Liste des vignettes";

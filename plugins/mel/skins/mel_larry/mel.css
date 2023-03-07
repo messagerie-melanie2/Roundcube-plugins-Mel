@@ -185,6 +185,79 @@
 	text-overflow: ellipsis;
 }
 
+#login-form .box-right .login_div.advertise_bnum {
+	padding: 15px;
+	border-radius: 0;
+	border: none;
+}
+
+#login-form .box-right .advertise_bnum > div.table {
+	display: table;
+}
+
+#login-form .box-right .advertise_bnum > div .label {
+	display: table-cell;
+	text-align: left;
+	padding-left: 15px;
+	vertical-align: middle;
+}
+
+#login-form .box-right .advertise_bnum > div .icon {
+	display: table-cell;
+	width: 30px;
+	font-size: 30px;
+	vertical-align: middle;
+}
+
+#login-form .box-right .advertise_bnum > div.buttons {
+	text-align: center;
+	padding-top: 10px;
+}
+
+#login-form .box-right .advertise_bnum a.button {
+	text-indent: 0;
+	width: 119px;
+	height: 32px;
+	line-height: 32px;
+	border-radius: 4px;
+	background-color: #244691;
+	font-size: 12px;
+	font-weight: 700;
+	color: #fff;
+}
+
+div.fr-alert {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	margin-left: 10px;
+	color: var(--main-text-color);
+	background: var(--main-content-bg-color);
+	z-index: 1000;
+	max-width: 700px;
+}
+
+div.fr-alert p {
+	font-size: 1rem;
+	line-height: 1.5rem;
+	margin: var(--text-spacing);
+}
+
+div.fr-alert a {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+div.fr-alert .fr-btn--close {
+	border: none;
+	cursor: pointer;
+	color: var(--main-text-color);
+}
+
+div.fr-alert .fr-btn--close:hover {
+	background-color: var(--listitem-bg-color);
+}
+
 .login_div .img {
 	display: none;
 }
@@ -196,3 +269,61 @@
 .ui-dialog .ui-dialog-title {
 	white-space: normal !important;
 }
+
+.dialog_advertise_bnum h2,
+.dialog_advertise_bnum .img {
+	text-align: center;
+}
+
+.dialog_advertise_bnum h2 {
+	font-size: 20px;
+	margin: 30px;
+}
+
+.dialog_advertise_bnum dl {
+	padding: 0 10px;
+}
+
+.dialog_advertise_bnum dt {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.dialog_advertise_bnum dd {
+	display: table;
+}
+
+.dialog_advertise_bnum dd span {
+	display: table-cell;
+	font-size: 14px;
+	min-width: 40px;
+	vertical-align: middle;
+	height: 50px;
+}
+
+button.button_advertise_bnum,
+button.button_advertise_bnum:hover,
+button.button_advertise_bnum:focus {
+	border-radius: 30px;
+	font-weight: 600;
+	border: none;
+}
+
+button.button_advertise_bnum.goto {
+	background-color: #5C5CFF;
+	color: #fff;
+}
+
+button.button_advertise_bnum.goto:hover {
+	background-color: #4c4cbb;
+}
+
+button.button_advertise_bnum.stay {
+	background-color: #F0F0FF;
+	color: #5C5CFF;
+}
+
+button.button_advertise_bnum.stay:hover {
+	background-color: #e1e1ec;
+}
+

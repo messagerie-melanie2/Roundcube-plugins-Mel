@@ -111,6 +111,14 @@ if (window.rcmail) {
     if (rcmail.env['plugin.show_password_change']) {
       show_password_change(this);
     }
+
+    if (rcmail.env['plugin.advertise_popup_bnum'] && window == window.top) {
+      show_advertise_popup_bnum(this);
+    }
+
+    if (rcmail.env['plugin.advertise_baner_bnum'] && window == window.top) {
+      show_advertise_baner_bnum(this);
+    }
     
     // Switch to default task commande
     rcmail.register_command('switch-to-default-task', function() {
@@ -443,6 +451,72 @@ function show_password_change()
     height: 500,
     rcmail: rcmail
   }).width(680);
+}
+
+/**
+ * Show advertise_bnum page as jquery UI dialog
+ */
+function show_advertise_popup_bnum()
+{
+  let div = document.createElement('div');
+  div.className = 'dialog_advertise_bnum';
+  div.innerHTML = rcmail.get_label('mel.bnum advertise dialog');
+  document.querySelector('body').appendChild(div);
+  
+  var buttons = [
+    {
+      text: rcmail.gettext('go to bnum', 'mel'),
+      "class": 'button_advertise_bnum goto',
+      click: function() {                     
+        window.location = rcmail.env['plugin.bnum_url'];
+      }
+    },
+    {
+      text: rcmail.gettext('stay on melweb', 'mel'),
+      "class": 'button_advertise_bnum stay',
+      click: function() {                     
+        rcmail.http_post('plugin.hide_bnum_popup_advertise');
+        $('.dialog_advertise_bnum').dialog('close');
+      }
+    }
+  ];
+  
+  $('.dialog_advertise_bnum').dialog({
+    modal: true,
+    resizable: false,
+    closeOnEscape: true,
+    title: rcmail.env.passwordchange_title,
+    buttons: buttons,
+    width: 420,
+    height: 535,
+    rcmail: rcmail
+  }).width(400);
+}
+
+/**
+ * Show advertise_bnum page as a DSFR alert
+ */
+function show_advertise_baner_bnum()
+{
+  // Création du div principal de la bannière
+  let div = document.createElement('div');
+  div.className = 'fr-alert fr-alert--info';
+  div.innerHTML = rcmail.env.advertise_baner_bnum_content;
+
+  // Ajout du bouton de fermeture de la bannière
+  let button = document.createElement('button');
+  button.className = 'fr-btn--close fr-btn';
+  button.title = rcmail.get_label('mel.hide message');
+  button.innerText = rcmail.get_label('mel.hide message');
+  button.addEventListener("click", (e) => {
+    const alert = e.target.parentNode;
+    rcmail.http_post('plugin.hide_bnum_baner_advertise');
+    alert.parentNode.removeChild(alert);
+  });
+  div.appendChild(button);
+
+  // Ajout du div à la page
+  document.querySelector('body').appendChild(div);
 }
 
 if (rcmail

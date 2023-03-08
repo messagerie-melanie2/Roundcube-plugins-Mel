@@ -107,15 +107,15 @@ function Start(uid, hasAriane, datas) {
         rcmail.command('workspace.survey.create');
     });
 
-    if (!parent.$("body").hasClass("task-workspace")) parent.$(".mwsp-style").remove();
+    if (!top.$("body").hasClass("task-workspace")) top.$(".mwsp-style").remove();
     
-    if (style !== undefined && style !== null && style !== '') if (!parent.$("body").hasClass("task-workspace")) parent.$("body").prepend(`<div class="mwsp-style">${style}</div>`);
+    if (style !== undefined && style !== null && style !== '') if (!top.$("body").hasClass("task-workspace")) top.$("body").prepend(`<div class="mwsp-style">${style}</div>`);
 
     //Gérer la barre de navigation avec ariane
-    if (parent.wsp_cf_d !== true)
+    if (top.wsp_cf_d !== true)
     {
         try {
-            parent.metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id, actions)=> {
+            top.metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id, actions)=> {
                 if (changepage)
                 {
                     if (eClass === "workspace")
@@ -132,7 +132,7 @@ function Start(uid, hasAriane, datas) {
                 }
             });
 
-            parent.$(".tiny-rocket-chat").click(async () => {
+            top.$(".tiny-rocket-chat").click(async () => {
                 //ariane-card
                 let $ariane = $(".ariane-card");
 
@@ -148,7 +148,7 @@ function Start(uid, hasAriane, datas) {
         } catch (error) {
             console.error(error);
         }
-        parent.wsp_cf_d = true;
+        top.wsp_cf_d = true;
     }
 
     setup_wsp_colors();
@@ -164,9 +164,9 @@ function Start(uid, hasAriane, datas) {
         _uid:uid
     }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
     //A faire si webconf
-    if (parent.webconf_master_bar !== undefined)
+    if (top.webconf_master_bar !== undefined)
     {
-        parent.webconf_master_bar.minify_toolbar();
+        top.webconf_master_bar.minify_toolbar();
 
         if (!$("html").hasClass("framed"))
             $(".wsp-toolbar.melw-wsp").addClass('webconfstarted');
@@ -196,7 +196,7 @@ function Middle(uid, hasAriane, datas) {
 
     try {
         if (rcmail.env.current_workspace_services.mail)
-            parent.rcmail.mel_metapage_fn.mail_wsp_updated();
+            top.rcmail.mel_metapage_fn.mail_wsp_updated();
 
     } catch (error) {
         
@@ -215,10 +215,10 @@ function Middle(uid, hasAriane, datas) {
     }
 
     UpdateCalendar();
-    parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
+    top.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
 
     UpdateTasks();
-    parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
+    top.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
 
     if (rcmail.env.current_workspace_file === undefined && rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
     {
@@ -227,7 +227,7 @@ function Middle(uid, hasAriane, datas) {
             const val = wsp_contract(rcmail.env.current_workspace_page);
             if (val === "ariane")
                 setTimeout(async () => {
-                    await wait(() => parent.rcmail.busy);
+                    await wait(() => top.rcmail.busy);
                     $(`.wsp-ariane`).click();
                 }, 100);
             else
@@ -283,7 +283,7 @@ async function End(uid, hasAriane, datas) {
     if (rcmail.env.current_workspace_file !== undefined && rcmail.env.current_workspace_services.doc)
     {
         let it = 0;
-        if (parent.$(".stockage-frame").length == 0)
+        if (top.$(".stockage-frame").length == 0)
             promises.push(wait(() => rcmail.busy).then(() => mel_metapage.Functions.change_frame("stockage", false, true).then(() => {
                 rcmail.set_busy(false);
                 rcmail.clear_messages();
@@ -355,7 +355,7 @@ var UpdateAriane = (channel, store, unread) => {
 function click_on_menu(page)
 {
     setTimeout(async () => {
-        await wait(() => parent.rcmail.busy);
+        await wait(() => top.rcmail.busy);
         $(`.wsp-${wsp_contract(page)}`).click();
     }, 100);
 }
@@ -410,7 +410,7 @@ function UpdateCalendar()
     Update(mel_metapage.Storage.calendar, UpdateSomething, null, null, "wsp-agenda", (data) => {
         if (data === null || data === undefined)
         {
-            parent.postMessage({
+            top.postMessage({
                 message:"update_calendar"
             });
             return null;
@@ -476,7 +476,7 @@ function UpdateTasks()
     Update(mel_metapage.Storage.other_tasks, UpdateSomething, null, null, "wsp-tasks", (data) => {
         if (data === null || data === undefined)
         {
-            parent.postMessage({
+            top.postMessage({
                 message:"update_tasks"
             });
             return null;
@@ -864,7 +864,7 @@ function showMail($id)
         _uid:$id
     };
 
-    if (parent.$("iframe.mail-frame").length > 0)
+    if (top.$("iframe.mail-frame").length > 0)
     {
         config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.key.value;
         workspaces.sync.PostToParent({
@@ -875,10 +875,10 @@ function showMail($id)
         });
         mel_metapage.Functions.change_frame("mail");
     }
-    else if (parent.$(".mail-frame").length > 0)
+    else if (top.$(".mail-frame").length > 0)
     {
         rcmail.set_busy(true, "loading");
-        parent.location.href = mel_metapage.Functions.url("mail", "show", config).replaceAll(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
+        top.location.href = mel_metapage.Functions.url("mail", "show", config).replaceAll(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
     }
     else {
         config["_action"] = "show";

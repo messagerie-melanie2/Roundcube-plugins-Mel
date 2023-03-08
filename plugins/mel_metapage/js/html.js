@@ -586,6 +586,10 @@ class mel_html{
 	_generateContent($html, content) {
 		return $html.html(content);
 	}
+
+	static div(attribs = {}, content = '') {
+		return new mel_html(CONST_HTML_DIV, attribs, content);
+	}
 }
 
 Object.defineProperty(mel_html, 'EVENT_ON', {
@@ -1261,4 +1265,22 @@ class mel_tabs extends mel_html {
 
 	}
 
+}
+
+class mel_iframe extends mel_html {
+	constructor(src, attribs = {}) {
+		super('iframe', attribs);
+		this.src = src;
+		this.onload = new MelEvent();
+	}
+
+	generate(extra_attribs = {}) {
+		if (Array.isArray(extra_attribs)) extra_attribs = {};
+
+		extra_attribs[mel_html.ATTRIB_NO_MULTI_BALISE] = true;
+		extra_attribs.src = this.src;
+		return super.generate(extra_attribs).on('load', (e) => {
+			this.onload.call(e);
+		});
+	}
 }

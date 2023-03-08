@@ -57,9 +57,14 @@ class MelEvent {
     }
 
     call(...args) {
-        for (const key in this.events) {
-            if (Object.hasOwnProperty.call(this.events, key)) {
-                const element = this.events[key];
+        const keys = Object.keys(this.events);
+
+        if (0 !== keys.length)
+        {
+            for (let index = 0, len = keys.length; index < len; ++index) {
+                const key = keys[index];
+                const element = this.events[key]
+    
                 if (!!element) element(...args);
             }
         }

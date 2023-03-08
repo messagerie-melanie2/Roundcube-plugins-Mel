@@ -123,7 +123,6 @@ html.layout-phone #taskmenu a
 {
   content:"\e158";
   font-family: 'Material Symbols Outlined' !important;
-  font-size: 30px;
   font-weight: normal;
 }
 
@@ -138,7 +137,6 @@ html.layout-phone #taskmenu a
 {
   content:"\ebcc";
   font-family: 'Material Symbols Outlined' !important;
-  font-size: 30px;
   font-weight: normal;
 }
 
@@ -171,7 +169,6 @@ html.layout-phone #taskmenu a
 {
     content:"\e834";
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -187,7 +184,6 @@ html.layout-phone #taskmenu a
 {
     content:"\e7fd";
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -214,7 +210,6 @@ html.layout-phone #taskmenu a
 {
     content:"\e8b8" !important;
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -268,7 +263,6 @@ html.touch span.menu-last-frame-item {
 {
     content:"\e1a0" !important;
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -283,7 +277,6 @@ a.useful_links.icon-mel-link::before
 {
     content:"\e157";
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -291,18 +284,25 @@ a.useful_links.icon-mel-link::before
 {
   content:"\e88a";
   font-family: 'Material Symbols Outlined' !important;
-  font-size: 30px;
+  font-size: 36px !important;
   font-weight: normal;
-  font-variation-settings:
-  'FILL' 1,
+}
+
+.menu.toolbar a.selected:before,
+.menu.toolbar a:hover:before
+{
+  font-variation-settings: 'FILL' 1;
+}
+#layout-menu .menu.toolbar a:before
+{
+  font-size: 32px;
 }
 
 .menu.toolbar a.mel.icon-mel-sondage:before,
 #otherapps a.icon-mel-sondage:before
 {
-    content:"\e6b1" !important;
+    content:"\e653" !important;
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -310,7 +310,6 @@ a.useful_links.icon-mel-link::before
 {
     content:"\e0bf";
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -318,7 +317,6 @@ a.useful_links.icon-mel-link::before
 {
     content:"\e2c8" !important;
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -338,7 +336,6 @@ a.icon-mel-trello:before
 {
     content:"\eb7f";
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 
@@ -346,7 +343,6 @@ a.icon-mel-newspaper:before
 {
     content:"\ef42";
     font-family: 'Material Symbols Outlined' !important;
-    font-size: 30px;
     font-weight: normal;
 }
 

@@ -588,7 +588,7 @@ class mel_workspace extends rcube_plugin
 
     function show_calendar()
     {
-        $this->include_script('js/workspace_calendare_page.js');
+        $this->include_script('js/workspace_calendar_page.js');
         $this->include_script('../calendar/lib/js/fullcalendar.js');
         $this->rc->output->send('mel_workspace.calendar');
     }

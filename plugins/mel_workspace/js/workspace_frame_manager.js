@@ -5,13 +5,17 @@
         return;
     }
 
-    if (rcmail.env.action === 'workspace') return;
+    if (rcmail.env.action === ACTION_WORKSPACE_WORKSPACE) return;
 
     const SIDE_DIV_MAIN_NAME = 'side-workspaces';
     const SIDE_WORKSPACES_SELECTOR = `${CONST_JQUERY_SELECTOR_ID}${SIDE_DIV_MAIN_NAME}`;
     const MAIN_FRAME_NAME = 'workspace-frame';
     const SIDE_FRAMES_NAME = 'side-workspace-';
+    const MAX_FRAME_PROPR = 'MAX_FRAMES';
     const MAX_FRAMES = 2;
+    const INDEX_NOT_EXIST = -1;
+    const STYLE_FRAME = 'position:absolute;width:100%;height:100%;';
+    const LAYOUT = `${CONST_JQUERY_SELECTOR_ID}${LAYOUT_MAIN_ID}`;
 
     class workspace_frame {
         constructor(id, workspace) {
@@ -39,7 +43,7 @@
 
         show() {
             if (!this._active) {
-                this.get().css('display', '');
+                this.get().css(CONST_CSS_DISPLAY, EMPTY_STRING);
                 this._active = true;
             }
 
@@ -48,7 +52,7 @@
 
         hide() {
             if (this._active) {
-                this.get().css('display', 'none');
+                this.get().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
                 this._active = false;
             }
 
@@ -67,7 +71,7 @@
             let attribs = {
                 id:this._id,
                 class:this._id,
-                style:'position:absolute;width:100%;height:100%;'
+                style:STYLE_FRAME
             };
             let iframe = new mel_iframe(this.get_url(), attribs);//new mel_html('iframe', attribs);
             iframe.onload.push((e) => {
@@ -78,7 +82,7 @@
         }
 
         get_url() {
-            return mel_metapage.Functions.url('workspace', 'workspace', {
+            return mel_metapage.Functions.url(PLUGIN_WORKSPACE, ACTION_WORKSPACE_WORKSPACE, {
                 _uid:this._workspace
             });
         }
@@ -94,7 +98,7 @@
              * @type {workspace_frame[]}
              */
             this._frames = [];
-            this._current_frame = -1;
+            this._current_frame = INDEX_NOT_EXIST;
             this._last_memory = null;
 
             this.ongobefore = new MelEvent();
@@ -117,7 +121,7 @@
         }
 
         goToList() {
-            this._current_frame = -1;
+            this._current_frame = INDEX_NOT_EXIST;
             this.hideFrames().showListFrame();
             return this;
         }
@@ -149,14 +153,14 @@
         }
 
         hideListFrame() {
-            $('#layout').css('display', 'none');
-            workspace_frame_manager.get_side_workspace().css('display', '');
+            $(LAYOUT).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+            workspace_frame_manager.get_side_workspace().css(CONST_CSS_DISPLAY, EMPTY_STRING);
             return this;
         }
 
         showListFrame() {
-            $('#layout').css('display', '');
-            workspace_frame_manager.get_side_workspace().css('display', 'none');
+            $(LAYOUT).css(CONST_CSS_DISPLAY, EMPTY_STRING);
+            workspace_frame_manager.get_side_workspace().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
             return this;
         }
 
@@ -166,7 +170,7 @@
         }
 
         getActiveFrame() {
-            if (-1 !== this._current_frame) {
+            if (INDEX_NOT_EXIST !== this._current_frame) {
                 return this._frames[this._current_frame];
             }
 
@@ -210,7 +214,7 @@
             return mel_html.div({
                 id:SIDE_DIV_MAIN_NAME,
                 class:SIDE_DIV_MAIN_NAME,
-                style:'position:absolute;width:100%;height:100%;'
+                style:STYLE_FRAME
             }).create($parent);
         }
 
@@ -223,7 +227,7 @@
         }
     }
 
-    Object.defineProperty(workspace_frame_manager, 'MAX_FRAMES', {
+    Object.defineProperty(workspace_frame_manager, MAX_FRAME_PROPR, {
         enumerable: false,
         configurable: false,
         writable: false,
@@ -232,7 +236,7 @@
 
     window.workspace_frame_manager = new workspace_frame_manager();
     
-    Object.defineProperty(window.workspace_frame_manager, 'MAX_FRAMES', {
+    Object.defineProperty(window.workspace_frame_manager, MAX_FRAME_PROPR, {
         enumerable: false,
         configurable: false,
         writable: false,

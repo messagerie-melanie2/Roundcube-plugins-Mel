@@ -343,6 +343,7 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->add_handlers(array(
             'joined'    => array($this, 'show_joined'),
         ));
+        $this->include_script('js/workspace_frame_manager.js');
         $this->rc->output->set_pagetitle("Mes espaces de travail");
         $this->rc->output->send('mel_workspace.workspaces');
     }
@@ -396,6 +397,9 @@ class mel_workspace extends rcube_plugin
     function show_actions()
     {
         $event = rcube_utils::get_input_value('_event', rcube_utils::INPUT_GPC);
+
+        $this->include_script('js/workspace_frame_manager.js');
+
         switch ($event) {
             case 'list_public':
                 $this->rc->output->add_handlers(array(
@@ -569,6 +573,8 @@ class mel_workspace extends rcube_plugin
 
 
         $this->include_stylesheet($this->local_skin_path().'/links.css');
+
+        $this->include_script('js/workspace_frame_manager.js');
 
         $this->rc->output->set_env("current_workspace_page", rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC));
         $this->rc->output->set_env("current_settings", json_decode($this->currentWorkspace->settings));

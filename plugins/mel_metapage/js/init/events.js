@@ -189,6 +189,17 @@ if (rcmail && window.mel_metapage)
         mel_metapage.Storage.remove(mel_metapage.Storage.last_calendar_update);
     });
 
+    rcmail.addEventListener('frames.setup.after', () => {
+        if (top === window && 'bnum' === rcmail.env.task) {
+            let base_url = rcmail.env['bnum.redirect'];
+
+            if ('/' === base_url) base_url += `?task=${rcmail.env['bnum.init_task']}`;
+
+            const urls = mel_metapage.Functions.get_from_url(base_url);
+            mel_metapage.Functions.change_frame(top.mm_st_ClassContract(rcmail.env['bnum.init_task']), true, true, urls);
+        }
+    });
+
     //Initialisation
     rcmail.addEventListener("init", () => {
         $('[data-popup]').each((i,e) => {

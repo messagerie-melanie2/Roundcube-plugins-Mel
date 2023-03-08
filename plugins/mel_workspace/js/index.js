@@ -95,21 +95,25 @@ $(document).ready(() => {
 
     }
 
+    let events_already_created = false;
     rcmail.register_command("workspaces.go", (uid) => {
-        rcmail.set_busy(true, 'loading');
-        let config = {
-            _uid:uid
-        };
+        //debugger;
+        if (!!window.workspace_frame_manager) {
+            if (!events_already_created) {
+                events_already_created = true;
+                workspace_frame_manager.oncreatebefore.push(() => {
+                    top.rcmail.set_busy(true);
+                    top.$('#bnum-loading-div').removeClass('loaded');
+                });
 
-        if (rcmail.env.action === "action")
-            config["_last_location"] = encodeURIComponent(window.location.href);
+                workspace_frame_manager.oncreated.push(() => {
+                    top.$('#bnum-loading-div').addClass('loaded');
+                    top.rcmail.set_busy(false);
+                });
+            }
 
-        if (window.location.href.includes(rcmail.env.mel_metapage_const.value))
-            config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-
-        MEL_ELASTIC_UI.create_loader('onworkspacegoloader', true, false).create($('#layout-content').html(EMPTY_STRING));
-
-        window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);
+            workspace_frame_manager.go(uid);
+        }
     }, true);
     
     new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);

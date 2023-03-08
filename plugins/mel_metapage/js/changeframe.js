@@ -306,7 +306,10 @@ async function ChangeToolbar(_class, event, otherDatas = null)
     const uid = $(event).data("uid");
 
     if(rcmail.busy)
-        return;
+    {
+        rcmail.clear_messages();
+        rcmail.set_busy(false);
+    }
 
     $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");;
     $(event).addClass("active");
@@ -897,10 +900,13 @@ async function ChangePage(_class)
 
     if (frame.length >= 1 )//&& Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
     {
-        const context = frame[0].contentWindow;
-        context.ChangeToolbarPage(_class);
-        context.rcmail.set_busy(false);
-        context.rcmail.clear_messages();
+        const base_context = frame[0].contentWindow;
+        if (!!base_context.workspace_frame_manager) {
+            const context = base_context.workspace_frame_manager.getActiveFrame().get()[0].contentWindow;
+            context.ChangeToolbarPage(_class);
+            context.rcmail.set_busy(false);
+            context.rcmail.clear_messages();
+        }
     }
     else
         ChangeToolbarPage(_class);
@@ -983,12 +989,19 @@ async function ChangeToolbarPage(_class)
             break;
         case "back":
             rcmail.set_busy(false);
-            _$(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
-            rcmail.command("workspace.go");
 
             if (parent.webconf_master_bar !== undefined)
             {
                 parent.webconf_master_bar.update_toolbar_position(true);
+            }
+
+            if (!window.workspace_frame_manager) {
+                _$(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
+                rcmail.command("workspace.go");
+            }
+            else {
+                await ChangeToolbarPage('home');
+                workspace_frame_manager.goToList();
             }
 
         break;

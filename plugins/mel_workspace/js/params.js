@@ -641,11 +641,11 @@
 
         async update_home()
         {
-            let $querry = parent.$('iframe.bureau-frame');
+            let $querry = top.$('iframe.bureau-frame');
 
             if ($querry.length > 0)
                 $querry[0].contentWindow.location.reload();
-            else if (parent.$('.bureau-frame').length > 0)
+            else if (top.$('.bureau-frame').length > 0)
             {
                 // await mel_metapage.Functions.get(
                 //     mel_metapage.Functions.url('bureau', 'get_html_workspaces'),
@@ -656,7 +656,7 @@
                 //         parent.ariane = parent.ariane_reinit();
                 //     }
                 // )
-                parent.$('.bureau-frame').remove();
+                top.$('.bureau-frame').remove();
             }
 
             return this;
@@ -688,7 +688,7 @@
 
         compose()
         {
-            parent.rcmail.open_compose_step({to:rcmail.env.current_workspace_email});
+            top.rcmail.open_compose_step({to:rcmail.env.current_workspace_email});
         }
 
         async create_webconf(needParameters = false)
@@ -697,11 +697,11 @@
             {
                 const conf = this.generate_webconf();
                 const key = `${conf.letters}${rcmail.env.current_workspace_uid.replaceAll("-", "").toUpperCase()}${conf.numbers}`;
-                await parent.webconf_helper.go(key, rcmail.env.current_workspace_uid, null);
-                await parent.webconf_helper.notify(key, rcmail.env.current_workspace_uid);
+                await top.webconf_helper.go(key, rcmail.env.current_workspace_uid, null);
+                await top.webconf_helper.notify(key, rcmail.env.current_workspace_uid);
             }
             else
-                await parent.webconf_helper.go("", rcmail.env.current_workspace_uid, null, true, [1]);  
+                await top.webconf_helper.go("", rcmail.env.current_workspace_uid, null, true, [1]);  
         }
 
         generate_webconf()
@@ -730,7 +730,7 @@
                 _uid:this.uid
             }).always(() => {
                 this.busy(false);
-                parent.rcmail.command('refreshFrame');
+                top.rcmail.command('refreshFrame');
             });
         }
 

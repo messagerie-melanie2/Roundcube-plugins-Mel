@@ -55,7 +55,9 @@ if (rcmail && window.mel_metapage)
         else if (top.rcmail.mel_metapage_fn !== undefined && top.rcmail.mel_metapage_fn.calendar_updated !== undefined)
             navigator = top;
 
-        navigator.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+        navigator.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get, {
+            force:true
+        });
     });
 
     //Après la mise à jours du calendrier

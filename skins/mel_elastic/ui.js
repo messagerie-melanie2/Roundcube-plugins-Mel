@@ -1106,6 +1106,8 @@ $(document).ready(() => {
 
             if (rcmail.env.task === "mail")
             {
+                $('.header-content a.headers').remove();
+
                 $(".task-mail #quotadisplay").prepend(`<span id='stockage-space-text'>Espace de stockage</span><p style="flex-basis: 100%;
                 height: 0;
                 margin: 0;"></p>`);

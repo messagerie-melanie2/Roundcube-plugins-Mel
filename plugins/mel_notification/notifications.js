@@ -948,7 +948,7 @@ function m_mp_NotificationGetElement(notification, isPanel = true) {
                         action.class ? action.class + ' action' : 'action',
                         action.text ?? rcmail.get_label('mel_notification.Action'),
                         action.title ?? rcmail.get_label('mel_notification.Action title'),
-                        action.command ? (e) => { rcmail.command(action.command, action.params ?? '', e); e.stopPropagation(); } : (e) => { e.stopPropagation(); },
+                        action.command ? (e) => { rcmail.command(action.command, action.params ?? '', e); e.stopPropagation(); } : (action.click ? (e) => {action.click(e); e.stopPropagation();} : (e) => { e.stopPropagation(); }),
                         action.newtab ?? false
                     )
                 );

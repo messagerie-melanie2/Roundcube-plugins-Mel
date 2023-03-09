@@ -803,7 +803,7 @@ function rcube_libcalendaring(settings)
             records.push($('<div>').addClass('alarm-item').html(html).append(actions));
 
             // PAMELA - Display alarm notification
-            top.rcmail.triggerEvent('plugin.push_notification', {
+            let notif_config = {
                 uid: 'calendar-' + alarm.id,
                 title: Q(alarm.title),
                 content: Q(this.event_date_text(alarm)),
@@ -811,8 +811,23 @@ function rcube_libcalendaring(settings)
                 created: Math.floor(Date.now() / 1000),
                 modified: Math.floor(Date.now() / 1000),
                 isread: false,
-                local: true,
-            });
+                local: true
+            };
+
+            if (typeof mel_metapage !== "undefined")
+            {
+                var webconfkey = mel_metapage.Functions.webconf_url(alarm.location);
+                if (!!webconfkey) {
+                    notif_config['action'] = [{
+                        command:'start_webconf',
+                        text:rcmail.gettext('join_visio', 'libcalendaring'),
+                        title:rcmail.gettext('join_visio', 'libcalendaring'),
+                        params: {current:alarm}
+                    }];
+                }
+            }
+
+            top.rcmail.triggerEvent('plugin.push_notification', notif_config);
         }
 
         if (audio_alarms.length)

@@ -140,6 +140,14 @@ if (rcmail)
                 window.location.href = mel_metapage.Functions.url("mail", null, {_nocache:true});
             }, true);
 
+            rcmail.register_command("start_webconf", (args) => {
+
+                if (top !== window) return top.rcmail.command("start_webconf", args);
+
+                let datas = WebconfLink.create(args.current);
+                window.webconf_helper.go(datas.key, datas.wsp, datas.ariane);
+            }, true);
+
             rcmail.register_command("event-compose", () => {
                 const event = ui_cal.selected_event;
                 const title = `${event.title} - ${moment(event.start).format('DD/MM/YYYY HH:mm')}`;

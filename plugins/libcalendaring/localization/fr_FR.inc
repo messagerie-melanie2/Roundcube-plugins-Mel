@@ -174,3 +174,5 @@ $labels['expandattendeegrouperror'] = 'Impossible de substituer ce groupe, il co
 $labels['expandattendeegroupsizelimit'] = 'Ce groupe contient trop de membres pour être substitué.';
 $labels["for"] = "pour";
 $labels['ntimes'] = '$n fois';
+// PAMELA - Visios
+$labels['join_visio'] = 'Rejoindre la visioconférence';

@@ -2286,7 +2286,8 @@ class mel_workspace extends rcube_plugin
 
     function generate_html($only_epingle = false, $only_archived = false)
     {
-        $html = "";
+        $parsed = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
+        $html = [];
         $this->load_workspaces();
         foreach ($this->workspaces as $key => $value) {
             if (!self::is_epingle($value->uid, $this->rc) && $only_epingle)
@@ -2305,16 +2306,18 @@ class mel_workspace extends rcube_plugin
                     continue;
             }
             
-            $html .= $this->create_block($value, $only_epingle);
+            $html[] = $this->create_block($value, $only_epingle, $parsed);
         } 
+
+        $html = implode('', $html);
         return $html;
     }
 
-    function create_block($workspace, $epingle = false)
+    function create_block($workspace, $epingle = false, $html = null)
     {
         $username = driver_mel::gi()->getUser($workspace->creator)->name;
 
-        $html = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
+        $html = $html ?? $this->rc->output->parse("mel_workspace.wsp_block", false, false);
         $is_epingle = self::is_epingle($workspace->uid, $this->rc);
         $color = $this->get_setting($workspace, "color");
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid.($epingle ? "-epingle" : "") , $html);
@@ -2337,7 +2340,7 @@ class mel_workspace extends rcube_plugin
         else
             $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span style=color:".$this->get_badge_text_color($workspace).">".substr($workspace->title, 0, 3)."</span></div>", $html);
         
-            if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
+        if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else
             $html = str_replace("<workspace-#/>", "", $html);
@@ -2347,22 +2350,21 @@ class mel_workspace extends rcube_plugin
 
         if ($workspace->shares !== null)
         {
-            //"https://ariane.din.developpement-durable.gouv.fr/avatar/$uid"
             $it = 0;
-            $html_tmp = "";
-
+            $html_tmp = [];
+            $rc_url = $this->rc->config->get('rocket_chat_url');
             foreach ($workspace->shares as $s)
             {
                 if ($it == 2)
                 {
-                    $html_tmp.='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
+                    $html_tmp[] ='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img alt="'.$s->user.'" src="'.$this->rc->config->get('rocket_chat_url')."avatar/".$s->user.'" /></div>';
+                $html_tmp[] = '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img alt="'.$s->user.'" src="'.$rc_url."avatar/".$s->user.'" /></div>';
                 ++$it;
             }
 
-            $html = str_replace("<workspace-users/>", $html_tmp, $html);
+            $html = str_replace("<workspace-users/>", implode('', $html_tmp), $html);
         }
         else
             $html = str_replace("<workspace-users/>", "", $html);
@@ -2378,24 +2380,24 @@ class mel_workspace extends rcube_plugin
         $html = $this->get_tasks($workspace, $html);
 
         $services = $this->get_worskpace_services($workspace);
-        $tmp_html = "";
+        $tmp_html = [];
 
         foreach ($services as $key => $value) {
             if ($value)
             {
                 switch ($key) {
                     case self::CHANNEL:
-                        $tmp_html .= '<div class="wsp-notif-block" style=display:none;><span data-channel="'.$this->get_object($workspace, self::CHANNEL)->name.'" class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
+                        $tmp_html[] = '<div class="wsp-notif-block" style=display:none;><span data-channel="'.$this->get_object($workspace, self::CHANNEL)->name.'" class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
                         break;
                     
                     default:
-                        $tmp_html .= '<div class="wsp-notif-block" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
+                        $tmp_html[] = '<div class="wsp-notif-block" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
                     break;
                 }
             }
         }
 
-        $html = str_replace("<workspace-notifications/>", $tmp_html, $html);
+        $html = str_replace("<workspace-notifications/>", implode('', $tmp_html), $html);
 
         return $html;
     }

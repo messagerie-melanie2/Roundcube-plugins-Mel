@@ -260,4 +260,10 @@ class mel_helper extends rcube_plugin
         return $user->cerbere;
     }
 
+    public static function create_stopwatch()
+    {
+        include_once "lib/Stopwatch.php";
+        return new Stopwatch();
+    }
+
 }

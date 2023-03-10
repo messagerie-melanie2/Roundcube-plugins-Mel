@@ -77,9 +77,9 @@ class rizomo extends rcube_plugin
 
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->rc->config->get('rizomo_url', ''), 'rizomo');
         // Ajoute le bouton en fonction de la skin
-        $need_button = true;
+        $need_button = 'taskbar';
         if (class_exists("mel_metapage")) {
-          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_rizomo');
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_rizomo') ? $need_button : 'otherappsbar';
         }
 
         if ($need_button)
@@ -92,7 +92,7 @@ class rizomo extends rcube_plugin
                 'label'	=> 'rizomo.rizomo',
                 'title' => 'rizomo.rizomo_title',
                 'type'       => 'link'
-            ), "taskbar");
+            ), $need_button);
         }
         
         // Si tache = rizomo, on charge l'onglet

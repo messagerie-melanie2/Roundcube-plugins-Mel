@@ -49,16 +49,24 @@ class calendar_ui
         }
 
         // add taskbar button
-        $this->cal->add_button([
-                'command'    => 'calendar',
-                'class'      => 'button-calendar',
-                'classsel'   => 'button-calendar button-selected',
-                'innerclass' => 'button-inner',
-                'label'      => 'calendar.calendar',
-                'type'       => 'link'
+        $need_button = 'taskbar';
+        if (class_exists("mel_metapage")) {
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_calendar') ? $need_button : 'otherappsbar';
+        }
+
+        if ($need_button) {
+          $this->cal->add_button(
+            [
+              'command'    => 'calendar',
+              'class'      => 'button-calendar calendar',
+              'classsel'   => 'button-calendar button-selected',
+              'innerclass' => 'button-inner',
+              'label'      => 'calendar.calendar',
+              'type'       => 'link'
             ],
-            'taskbar'
-        );
+            $need_button
+          );
+        }
 
         // load basic client script
         if ($this->rc->action != 'print') {

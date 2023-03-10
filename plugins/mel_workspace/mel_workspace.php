@@ -86,13 +86,6 @@ class mel_workspace extends rcube_plugin
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
 
         // Ajoute le bouton en fonction de la skin
-        $need_button = 'taskbar';
-        if (class_exists("mel_metapage")) {
-          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_workspace') ? $need_button : 'otherappsbar';
-        }
-    
-        if ($need_button)
-        {
         $this->add_button(array(
             'command' => "workspace",
             'class'	=> 'button-wsp icon-mel-workplace',
@@ -102,8 +95,7 @@ class mel_workspace extends rcube_plugin
             'title' => 'my_workspaces',
             'type'       => 'link',
             'domain' => "mel_workspace"
-        ), $need_button);
-      }
+        ), "taskbar");
 
         $this->registerListeners();
     }

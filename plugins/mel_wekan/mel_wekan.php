@@ -45,9 +45,9 @@ class mel_wekan extends rcube_plugin
         $this->load_lib();
         $this->wekanApi = new mel_wekan_api($this->rc, $this);
 
-        $need_button = 'taskbar';
+        $need_button = true;
         if (class_exists("mel_metapage")) {
-          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban') ? $need_button : 'otherappsbar';
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban');
         }
 
         if ($need_button)
@@ -60,7 +60,7 @@ class mel_wekan extends rcube_plugin
                 'label'	=> 'mel_wekan.kanban',
                 'title' => 'mel_wekan.kanban',
                 'type'       => 'link'
-            ), $need_button);
+            ), "taskbar");
         }
 
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));

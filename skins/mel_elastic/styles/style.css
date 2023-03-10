@@ -1397,15 +1397,6 @@ body.task-settings .scroller > .listing li:hover {
   color: var(--roundbadge-menu-bckg-color);
   left: -13px;
 }
-
-#otherapps .roundbadge.menu {
-  top: 5px !important;
-  left: 20px !important;
-  font-size: 8px !important;
-  padding-right: 1px;
-  display: block;
-}
-
 .layout-phone .roundbadge.menu {
   top: 32px;
   left: -20px;

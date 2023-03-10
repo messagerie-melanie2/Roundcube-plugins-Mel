@@ -44,24 +44,15 @@ class tasklist_ui
             return;
         }
 
-
         // add taskbar button
-        $need_button = 'taskbar';
-        if (class_exists("mel_metapage")) {
-          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_tasks') ? $need_button : 'otherappsbar';
-        }
-
-        if ($need_button)
-        {
         $this->plugin->add_button(array(
             'command'    => 'tasks',
-            'class'      => 'button-tasklist tasklist',
+            'class'      => 'button-tasklist',
             'classsel'   => 'button-tasklist button-selected',
             'innerclass' => 'button-inner',
             'label'      => 'tasklist.navtitle',
             'type'       => 'link'
-        ), $need_button);
-      }
+        ), 'taskbar');
 
         $this->plugin->include_stylesheet($this->plugin->local_skin_path() . '/tasklist.css');
 

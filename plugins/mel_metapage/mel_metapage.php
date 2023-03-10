@@ -297,6 +297,9 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env("mel_metapage_mail_configs", $config);
         $this->rc->output->set_env("mel_metapage_audio_url", $this->rc->config->get("audio_event_url", 'https://audio.mtes.fr/'));
 
+        $config = $this->rc->config->get('navigation_apps', null) ?? $this->rc->config->get('template_navigation_apps', null);
+        $this->rc->output->set_env("navigation_apps", $config);
+
         $calendar_space = "mel-calendar-space";
 
         $config = $this->rc->config->get('mel_calendar_configuration', [
@@ -2170,6 +2173,7 @@ class mel_metapage extends rcube_plugin
         }
 
         $args['prefs']["navigation_apps"] = $config;
+        $this->rc->output->set_env("navigation_apps", $config);
 
         $showBackIcon = 'param-show-back-icon';
         $haveBackIcon = $this->rc->config->get($showBackIcon, false);

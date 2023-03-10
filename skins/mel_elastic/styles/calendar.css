@@ -806,7 +806,14 @@ body.quickview-active .fc .fc-scroller {
   background: none !important;
 }
 #edit-attendees-table .invite {
-  display: none;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 #edit-attendees-table .notified span::before {
   line-height: 2;

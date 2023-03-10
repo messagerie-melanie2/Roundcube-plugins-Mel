@@ -323,6 +323,8 @@ $labels['app_ul'] = 'Mes liens utiles';
 $labels['app_kanban'] = 'Kanban';
 $labels['app_survey'] = 'Sondage';
 $labels['app_rizomo'] = 'Outils SNAP';
+$labels['app_calendar'] = 'Mon agenda';
+$labels['app_workspace'] = 'Mes espaces de travail';
 
 $labels['to_comment'] = 'Commenter';
 

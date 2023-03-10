@@ -165,7 +165,7 @@ html.layout-phone #taskmenu a
     order:10;
 }
 
-.menu.toolbar  a.tasklist::before
+.menu.toolbar a.tasklist::before
 {
     content:"\e834";
     font-family: 'Material Symbols Outlined' !important;
@@ -268,9 +268,10 @@ html.touch span.menu-last-frame-item {
 
 .menu.toolbar a.more-options.icon-mel-dots:before
 {
-    content:"\e90c";
-    font-family: "DWP"!important;
+    content:"\e5d3";
+    font-family: "Material Symbols Outlined" !important;
     font-weight: normal;
+    font-variation-settings: 'wght' 400;
 }
 
 a.useful_links.icon-mel-link::before
@@ -293,7 +294,9 @@ a.useful_links.icon-mel-link::before
 {
   font-variation-settings: 'FILL' 1;
 }
-#layout-menu .menu.toolbar a:before
+
+#layout-menu .menu.toolbar a:before,
+#otherapps a:before
 {
   font-size: 32px;
 }

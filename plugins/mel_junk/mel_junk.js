@@ -120,9 +120,15 @@ function mel_junk_box(prop, item, event) {
 
 // mel junk action
 function mel_junk_send(prop, item, event) {
-  var junk_folder = prop.find('#mel_junk_folder_clone').is(':checked');
-  var send_admin = prop.find('#mel_junk_send_admin_clone').is(':checked');
-
+    if ($('#mel_junk-box.popupmenu').is(':visible')) {
+      var junk_folder = prop.find('#mel_junk_folder_clone').is(':checked');
+      var send_admin = prop.find('#mel_junk_send_admin_clone').is(':checked');
+    }
+    else {
+      // Si le popup est masqué c'est une action directe
+      var send_admin = true;
+      var junk_folder = true;
+    }
     // Send message to administrator ? (bounce)
     if (send_admin) {      
         // Récupère les uid de messages sélectionnés

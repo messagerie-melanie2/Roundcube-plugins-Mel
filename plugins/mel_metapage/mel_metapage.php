@@ -2621,7 +2621,8 @@ class mel_metapage extends rcube_plugin
 
     public function debug_and_test()
     {
-        $this->include_script('js/program/webconf_video_manager.js');
+        //$this->include_script('js/program/webconf_video_manager.js');
+        $this->include_script('js/actions/test.js');
         $this->rc->output->send('mel_metapage.test');
     }
 

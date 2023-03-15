@@ -116,6 +116,8 @@ class rocket_chat extends rcube_plugin {
             $this,
             'get_log'
           ));
+          $this->register_action('get_status', [$this, 'get_status']);
+          $this->register_action('set_status', [$this, 'set_status']);
           $this->register_action('logout', array(
             $this,
             'logout'
@@ -762,5 +764,21 @@ EOF;
       $infos = $this->get_rc_client()->room_info($room_name, false);
       $infos["content"] = json_decode($infos["content"]);
       return $infos;
+    }
+
+    public function get_status() {
+      $infos = $this->get_rc_client()->get_user_status();
+      $infos["content"] = json_decode($infos["content"]);
+      echo json_encode($infos);
+      exit;
+    }
+
+    public function set_status(){
+      $status = rcube_utils::get_input_value('_st', rcube_utils::INPUT_POST);
+      $msg = rcube_utils::get_input_value('_msg', rcube_utils::INPUT_POST);
+
+      $return = $this->get_rc_client()->set_user_status($status, $msg);
+      echo json_encode($return);
+      exit;
     }
 }

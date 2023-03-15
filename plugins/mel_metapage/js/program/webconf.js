@@ -359,19 +359,38 @@ class WebconfChat{
         }
     }
 
+    async save_status() {
+        this.save_status.current = await this.getStatus();
+        return this.save_status.current;
+    }
+
+    ignore_last_status() {
+        this.save_status.current = null;
+    }
+
+    async recover_last_status() {
+        if (!!this.save_status?.current?.status){
+            await top.ariane.set_status(this.save_status.current.status, this.save_status.current.message);
+            top.ariane.update_status(this.save_status.current.status);
+            this.save_status.current = null;
+        }
+    }
+
+    async getStatus() {
+        return await top.ariane.get_status();
+    }
+
     /**
      *  Change le status sur ariane
      * @param {string} status busy/online/offline
      */
-    async setStatus(status) {
+    async setStatus(status, message = EMPTY_STRING, save_status = true) {
+        if (save_status) await this.save_status();        
         //Change le status dans le chat
-        this.$frame_chat[0].contentWindow.postMessage({
-            externalCommand: 'set-user-status',
-            status: status
-          }, '*');
+        await top.ariane.set_status(status, message);
 
-          //Change le status dans le bnum
-          top.ariane.update_status(status);
+        //Change le status dans le bnum
+        top.ariane.update_status(status);
     }
 
     /**
@@ -1604,7 +1623,15 @@ class Webconf{
     startChat() {
         this.chat.onloading = () => {
             this.screen_manager.updateMode();
-            this.chat.setStatus('busy');
+
+            try {
+                const status = this.chat.save_status();
+
+                if (status.status !== 'online') this.chat.setStatus('busy', 'Je suis en visioconférence', false);
+                else this.chat.ignore_last_status();
+            } catch (error) {
+                
+            }
         };
         this.chat.$frame_chat[0].src = rcmail.env.rocket_chat_url + this.chat.get_room();
 
@@ -4372,7 +4399,13 @@ $(document).ready(() => {
         top.$('html').addClass(class_to_add_to_top);
     }, () => {
         console.log('on dispose starting...');
-        window[var_visio].chat.setStatus('online');
+
+        try {
+            window[var_visio].chat.recover_last_status();
+        } catch (error) {
+            
+        }
+
         top[var_top_webconf_started] = undefined;
         top[var_global_screen_manager] = undefined;
 

@@ -1740,6 +1740,15 @@ $(document).ready(() => {
                 EventUserNotified.Instance().update();
             });
 
+            $('#edit-attendees-donotify').click((e) => {
+                if (e.currentTarget.checked) {
+                    $('.notified').css('display', '');
+                }
+                else {
+                    $('.notified').css('display', 'none');
+                }
+            });
+
             //ok
             $("#eventedit").data("callbacks", "ok");
 
@@ -1944,7 +1953,7 @@ $(document).ready(() => {
                 $("#edit-attendees-donotify").addClass("custom-control-input");
             }
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
-            $('#edit-attendees-notify').css('display', 'none');
+            //$('#edit-attendees-notify').css('display', 'none');
             update_location();
         }, 10);
 

@@ -878,7 +878,9 @@ class mel_driver extends calendar_driver {
         $_event->exceptions = $exceptions;
         $_event->modified = time();
 
-        $result = $_event->uid;
+        if ($new) {
+          $result = $_event->uid;
+        }
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'future') {
         // Positionnement de la recurrence_id et de l'uid

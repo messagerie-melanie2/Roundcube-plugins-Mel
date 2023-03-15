@@ -154,7 +154,7 @@ html.dark-mode #groupoptions-user {
 
 .menu a.more-options:not(.disabled):focus {
     background-color: transparent !important;
-    color: #363A5B !important;
+    /* color: #363A5B !important; */
 }
 
 

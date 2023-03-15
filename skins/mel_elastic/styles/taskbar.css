@@ -172,6 +172,20 @@ html.layout-phone #taskmenu a
     font-weight: normal;
 }
 
+#otherapps.menu.toolbar a.icon-mel-custom_taskbar::before
+{
+    content:"\e99b";
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+}
+
+#otherapps.menu.toolbar a.icon-mel-custom_taskbar
+{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
 .button-mel_sondage {
     order:14;
 }
@@ -301,6 +315,13 @@ a.useful_links.icon-mel-link::before
 }
 
 .menu.toolbar a.mel.icon-mel-sondage:before,
+#otherapps a.icon-mel-sondage:before
+{
+    content:"\e653" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+}
+
 #otherapps a.icon-mel-sondage:before
 {
     content:"\e653" !important;

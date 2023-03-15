@@ -37,6 +37,10 @@ if (rcmail)
         rcmail.register_command("open_suggestion", () => {
           mel_metapage.Functions.change_page("settings",'plugin.mel_suggestion_box')
         }, true);
+        
+        rcmail.register_command("custom_taskbar", () => {
+          mel_metapage.Functions.change_page("settings",'', {'edit-prefs':'general','_open_section':'navigation'})
+        }, true);
 
         rcmail.register_command("change_page", (args) => {
           const task = args.task;

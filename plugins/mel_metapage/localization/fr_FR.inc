@@ -353,3 +353,5 @@ $labels['custom_calendar_notification_nok_desc'] = "L'utilisateur ne sera pas no
 
 $labels['mel_logo_desc'] = "Ministères Transition Écologique, Cohésion des Territoires, Mer - Liberté, Égalité, Fraternité";
 $labels['param-show-back-icon'] = 'Afficher le bouton "Revenir à" ?';
+
+$labels["custom_taskbar"] = "Personnaliser";

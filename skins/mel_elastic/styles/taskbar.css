@@ -268,9 +268,10 @@ html.touch span.menu-last-frame-item {
 
 .menu.toolbar a.more-options.icon-mel-dots:before
 {
-    content:"\e90c";
-    font-family: "DWP"!important;
+    content:"\e5d3";
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
+    font-variation-settings: 'wght' 600;
 }
 
 a.useful_links.icon-mel-link::before

@@ -27,7 +27,7 @@ html.theme-super-classique {
 
             &:hover>a {
               background-color: var(--main-layout-hover-background-color) !important;
-              border-radius: 5px;
+              border-radius: var(--main-layout-element-border-radius);
             }
 
             >a {
@@ -36,12 +36,12 @@ html.theme-super-classique {
               &:focus {
                 border-left: 2px solid var(--invisible) !important;
                 background-color: var(--main-layout-hover-background-color) !important;
-                border-radius: 5px;
+                border-radius: var(--main-layout-element-border-radius);
               }
             }
 
             &.selected {
-              border-radius: 5px;
+              border-radius: var(--main-layout-element-border-radius);
 
               >a {
                 background-color: #edebe9 !important;
@@ -56,12 +56,12 @@ html.theme-super-classique {
 
             &:hover {
               background-color: var(--main-layout-hover-background-color) !important;
-              border-radius: 5px;
+              border-radius: var(--main-layout-element-border-radius);
             }
 
             &[aria-describedby] {
               background-color: var(--main-layout-hover-background-color) !important;
-              border-radius: 5px;
+              border-radius: var(--main-layout-element-border-radius);
             }
           }
         }
@@ -79,7 +79,7 @@ html.theme-super-classique {
       } 
       .header {
         background: var(--main-layout-content-background-color) !important;
-        border-radius: 15px !important;
+        border-radius: var(--main-layout-panel-border-radius) !important;
         margin: 10px 0px;
         box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
 
@@ -105,11 +105,11 @@ html.theme-super-classique {
             &.selected {
               border-left: none !important;
               
-              border-radius: 5px;
+              border-radius: var(--main-layout-element-border-radius);
             }
             &:hover {
               border-bottom-color: var(--invisible) !important;
-              border-radius: 5px;
+              border-radius: var(--main-layout-element-border-radius);
             }
           }
         }
@@ -132,13 +132,13 @@ html.theme-super-classique {
                   border-bottom: none !important;
 
                   &:hover {
-                    border-radius: 5px;
+                    border-radius: var(--main-layout-element-border-radius);
                   }
 
                   &:focus {
                     border-left: 2px solid var(--invisible) !important;
                     background-color: var(--main-layout-hover-background-color) !important;
-                    border-radius: 5px;
+                    border-radius: var(--main-layout-element-border-radius);
                   }
                 }
               }
@@ -150,7 +150,7 @@ html.theme-super-classique {
                   >td.selection+td {
                     border-left: 2px solid var(--invisible) !important;
                     background-color: var(--main-layout-hover-background-color) !important;
-                    border-radius: 5px;
+                    border-radius: var(--main-layout-element-border-radius);
                   }
                 }
               }

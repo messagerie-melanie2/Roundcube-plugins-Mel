@@ -294,7 +294,8 @@ a.useful_links.icon-mel-link::before
 {
   font-variation-settings: 'FILL' 1;
 }
-#layout-menu .menu.toolbar a:before
+#layout-menu .menu.toolbar a:before,
+#otherapps.menu.toolbar a:before
 {
   font-size: 32px;
 }

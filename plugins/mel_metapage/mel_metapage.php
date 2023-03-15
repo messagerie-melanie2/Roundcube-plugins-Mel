@@ -350,7 +350,7 @@ class mel_metapage extends rcube_plugin
         
         if ($this->rc->task !== "login" && $this->rc->task !== "logout" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
         {
-            if ($this->rc->task !== 'bnum' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe') {
+            if ($this->rc->task !== 'bnum' && $this->rc->task !== 'chat' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe') {
                 $this->rc->output->redirect([
                     '_task' => 'bnum',
                     '_action' => '',

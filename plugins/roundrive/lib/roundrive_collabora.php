@@ -39,9 +39,9 @@ class roundrive_collabora
         //$this->params["Authorization"] = 'Basic '. base64_encode($this->params["rc_user"].":".$this->params["rc_pwd"]);
     }
 
-    public function create_text_document($path, $name)
+    public function create_text_document($path, $name, $model)
     {
-        return $this->create_document($path, $name, "odt");
+        return $this->create_model_document($path, $name, "odt", $model);
     }
 
     public function create_spreadsheet_document($path, $name)
@@ -58,6 +58,13 @@ class roundrive_collabora
     {
         $dir = __DIR__;
         $doc = fopen("$dir/../files/empty.$ext", 'r');
+        return $this->filesystem->putStream("$path/$name.$ext", $doc);
+    }
+
+    private function create_model_document($path, $name, $ext, $model)
+    {
+        $dir = __DIR__;
+        $doc = fopen("$dir/../files/$model.$ext", 'r');
         return $this->filesystem->putStream("$path/$name.$ext", $doc);
     }
 

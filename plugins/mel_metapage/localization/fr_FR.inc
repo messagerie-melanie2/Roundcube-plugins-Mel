@@ -44,6 +44,11 @@ $labels["text_office_document"] = "Document office";
 $labels["worksheet"] = "Feuille de calcul";
 $labels["presentation"] = "Présentation";
 
+$labels["empty"] = "Document vide";
+$labels["mtect"] = "Mtect";
+$labels["mtect_mte_mer"] = "Mtect mte mer";
+$labels["transport"] = "Transports";
+
 $labels["new_n"] = "Nouveau";
 $labels["new_f"] = "Nouvelle";
 

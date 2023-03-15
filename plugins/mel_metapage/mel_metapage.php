@@ -1052,6 +1052,7 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env('mel_metapage_ariane_button_config', $this->rc->config->get("pop_up_ariane"));
         $this->rc->output->set_env('REPLACED_SEARCH', ASearch::REPLACED_SEARCH);
         $this->rc->output->set_env('mel_metapage_templates_doc', $this->rc->config->get('documents_types'));
+        $this->rc->output->set_env('mel_metapage_templates_models', $this->rc->config->get('documents_models'));
         $this->rc->output->set_env('mel_metapage_templates_services', $this->rc->config->get('workspace_services'));
 
         $icons_files = scandir(__DIR__."/skins/elastic/pictures/dwp_icons");

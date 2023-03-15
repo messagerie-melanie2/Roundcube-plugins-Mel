@@ -1770,6 +1770,13 @@ function m_mp_UpdateCreateDoc(json) {
         $("#" + mel_metapage.Ids.create.doc_input_ext).removeClass("disabled").removeAttr("disabled");
     else
         $("#" + mel_metapage.Ids.create.doc_input_ext).addClass("disabled").attr("disabled", "disabled");
+
+    if (json.name == "text_office_document") {
+      $("#office-models-inputs").show();
+    }
+    else {
+      $("#office-models-inputs").hide();
+    }
 }
 
 function m_mp_CreateDocRetour() {

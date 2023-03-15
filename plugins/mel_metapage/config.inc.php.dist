@@ -75,3 +75,9 @@ $config["documents_types"] = [
     ["name" => "Feuille de calcul", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
     ["name" => "Document texte", "icon" => "pp", "default_ext" => "odp", "type" => "presentation"]
 ];
+$config["documents_models"] = [
+  ["name" => "empty", "default_ext" => "odt", "type" => "empty"],
+  ["name" => "mtect", "default_ext" => "odt", "type" => "mtect"],
+  ["name" => "mtect_mte_mer", "default_ext" => "odt", "type" => "mtect_mte_mer"],
+  ["name" => "transport", "default_ext" => "odt", "type" => "transport"]
+];

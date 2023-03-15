@@ -20,10 +20,12 @@ RoundriveCreate.prototype.init = function()
 
     this.inputs={
         name:$("#generated-document-input-mel-metapage"),
-        folder:$("#roundrive-folder-input")
+        folder:$("#roundrive-folder-input"),
+        models:$("#office-models"),
     };
 
     this.create_buttons();
+    this.fill_select_models();
 }
 
 /**
@@ -44,8 +46,18 @@ RoundriveCreate.prototype.create_buttons = function()
         e = $(e);
         this.buttons[e.data("doc")] = e;
     });
+}
 
+/**
+ * Ajoute les options pour les modèles pour les documents de type office
+ */
+RoundriveCreate.prototype.fill_select_models = function()
+{
+  for (let index = 0; index < rcmail.env.mel_metapage_templates_models.length; index++) {
+    const element = rcmail.env.mel_metapage_templates_models[index];
 
+    $("#office-models").append(new Option(rcmail.gettext("mel_metapage." + element.name),element.name));
+  }
 }
 
 /**
@@ -87,7 +99,8 @@ RoundriveCreate.prototype.create_document = function(goFunc = null)
     const values = {
         type:this.buttons.parent.find("button.active").data("doc"),
         folder:this.inputs.folder.val(),
-        name:this.inputs.name.val()
+        name:this.inputs.name.val(),
+        model:this.inputs.models.val()
     };
 
     let $return = RoundriveCreate.CompletedPromise();
@@ -124,7 +137,8 @@ RoundriveCreate.prototype.create_document = function(goFunc = null)
             {
                 _type:values.type,
                 _name:values.name,
-                _folder:values.folder
+                _folder:values.folder,
+                _model:values.model
             },
             (datas) => {
                 datas = JSON.parse(datas);

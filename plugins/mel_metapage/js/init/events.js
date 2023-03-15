@@ -305,7 +305,7 @@ if (rcmail && window.mel_metapage)
                 else $item.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
             }
 
-            if (rcmail.env.navigation_apps !== top.rcmail.env.navigation_apps) {
+            if (JSON.stringify(rcmail.env.navigation_apps) !== JSON.stringify(top.rcmail.env.navigation_apps)) {
               if (confirm('Voulez vous actualiser pour voir apparaître ces changements ?'))
               {
                 top.location.reload();

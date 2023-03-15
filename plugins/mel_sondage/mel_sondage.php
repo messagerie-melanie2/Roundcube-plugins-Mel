@@ -57,9 +57,11 @@ class mel_sondage extends rcube_plugin
         
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($sondage_url, 'sondage');
         // Ajoute le bouton en fonction de la skin
-        $need_button = true;
+        
+        $need_button = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+
         if (class_exists("mel_metapage")) {
-          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_survey');
+          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_survey') ? $need_button : 'otherappsbar';
         }
 
         if ($need_button)
@@ -73,7 +75,6 @@ class mel_sondage extends rcube_plugin
                     'label'	=> 'mel_sondage.task',
                 ), 'taskbar_mobile');
             } else {
-                $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
                 $this->add_button(array(
                     'command' => 'sondage',
                     'class'	=> 'button-mel_sondage icon-mel-sondage sondage',
@@ -82,7 +83,7 @@ class mel_sondage extends rcube_plugin
                     'label'	=> 'mel_sondage.task',
                     'title' => 'mel_sondage.sondages_title',
                     'type'       => 'link'
-                ), "taskbar");
+                ), $need_button);
             }
         }
 

@@ -66,9 +66,9 @@ class rocket_chat extends rcube_plugin {
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
           // Ajoute le bouton en fonction de la skin
-          $need_button = true;
+          $need_button = 'taskbar';
           if (class_exists("mel_metapage")) {
-            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('chat');
+            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('chat') ? $need_button : 'otherappsbar';;
           }
 
           if ($need_button) {
@@ -88,7 +88,7 @@ class rocket_chat extends rcube_plugin {
                   'innerclass' => 'button-inner',
                   'label' => 'rocket_chat.task',
                   'type'=> 'link'
-              ), 'taskbar');
+              ), $need_button);
             }
           }
 

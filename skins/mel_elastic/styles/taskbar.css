@@ -165,7 +165,7 @@ html.layout-phone #taskmenu a
     order:10;
 }
 
-.menu.toolbar  a.tasklist::before
+.menu.toolbar a.tasklist::before
 {
     content:"\e932";
     font-family: "DWP"!important;

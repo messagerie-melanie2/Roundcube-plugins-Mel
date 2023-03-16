@@ -1045,7 +1045,11 @@ class mel_news extends rcube_plugin {
 
     if ($proxy !== null) $proxy = [CURLOPT_PROXY => $proxy];
 
-    $fetched = mel_helper::load_helper($this->rc)->fetch("", $config["verify_peer"], $config["verify_host"])->_get_url($url."/spip.php?page=backend-actu",
+    if(substr($url, -1) === "/") $url = substr($url, 0, -1);
+    
+    $url .= "/spip.php?page=backend-actu";
+
+    $fetched = mel_helper::load_helper($this->rc)->fetch("", $config["verify_peer"], $config["verify_host"])->_get_url($url,
       null,
       null, 
       $proxy

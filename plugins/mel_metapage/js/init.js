@@ -123,6 +123,7 @@
 
                 if (user_id !== element.calendar || CONST_EVENT_ATTENDEE_STATUS_CANCELLED === element.status) continue;
 
+                if (element.allday !== undefined && element.allday !== null && (element.allDay === undefined || element.allDay === null)) element.allDay = element.allday;
                 element.order = element.allDay ? 0 : 1;
 
                 if (STRING === typeof element.end) element.end = moment(parse(element.end));

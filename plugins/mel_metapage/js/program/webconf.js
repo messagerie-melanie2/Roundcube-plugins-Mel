@@ -2199,7 +2199,7 @@ class MasterWebconfBarItem {
      * @returns Chaîne
      */
     _setup($item, action, toggle) {
-        this.$item = $item;
+        this.$item = $item.data('actionsvisioset', true);
         this.action = action;
 
         if (toggle) this.$item.click(() => {
@@ -2777,6 +2777,7 @@ var MasterWebconfBar = (() => {
             for (var iterator of Enumerable.from(_$('.wsp-toolbar.webconf-toolbar button')).concat(more_actions.$buttons)) {
                 iterator = _$(iterator);
                  if (!!iterator.data('witem')) {
+                    if (!!iterator.data('actionsvisioset')) iterator.off('click');
                     this.items[iterator.data('witem')] = new MasterWebconfBarItem(iterator, {
                         caller:this,
                         func:iterator.data('function')
@@ -2897,16 +2898,16 @@ var MasterWebconfBar = (() => {
         _toggle_mic_or_cam(state, item, on, off, listener_func)
         {
             const FOR = item;
-            const class_on = `.${on}`;
-            const class_off = `.${off}`;
+            // const class_on = `.${on}`;
+            // const class_off = `.${off}`;
 
             if (!!this.items && this.items[FOR]) //Ne rien faire si il n'y a pas les items demandés
             {
                 if (state) {
-                    this.items[FOR].$item.find(class_off).removeClass(off).addClass(on);
+                    this.items[FOR].$item.find('.icon-item').html(on);//.find(class_off).removeClass(off).addClass(on);
                 }
                 else {
-                    this.items[FOR].$item.find(class_on).removeClass(on).addClass(off);
+                    this.items[FOR].$item.find('.icon-item').html(off);//.find(class_on).removeClass(on).addClass(off);
                 }
 
                 if (!this.ignore_send) { //On active le micro ou la caméra ou inversement
@@ -2924,7 +2925,7 @@ var MasterWebconfBar = (() => {
          */
         toggle_mic(state)
         {
-            return this._toggle_mic_or_cam(state, 'mic', 'icon-mel-micro', 'icon-mel-micro-off', 'toggle_micro');
+            return this._toggle_mic_or_cam(state, 'mic', 'mic', 'mic_off', 'toggle_micro');
         }
 
         /**
@@ -2934,7 +2935,7 @@ var MasterWebconfBar = (() => {
          */
         toggle_cam(state)
         {
-            return this._toggle_mic_or_cam(state, 'cam', 'icon-mel-camera', 'icon-mel-camera-off', 'toggle_video');
+            return this._toggle_mic_or_cam(state, 'cam', 'videocam', 'videocam_off', 'toggle_video');
         }
 
         /**

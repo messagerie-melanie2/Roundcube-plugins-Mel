@@ -204,6 +204,11 @@ bottom: 21px; */
     margin-top: 7px!important;
 }
 
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active > .icon-item,
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item:hover > .icon-item {
+    font-variation-settings: 'FILL' 1;
+}
+
 .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select {
     cursor: pointer;
     position: absolute;

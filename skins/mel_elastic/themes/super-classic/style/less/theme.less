@@ -88,4 +88,47 @@ html.theme-super-classique {
     }
   }
 
+  #listview-float-right {
+    top: 60px;
+    padding-top: 5px;
+    border-radius: 15px;
+    border: none;
+    background-color: white;
+    color:var(--main-text-color);
+
+    #list-contacts {
+
+      .scroller {
+        top: 47px;
+        // background: var(--main-bckg-color);
+
+        &.nosearch {
+          &:extend(html.theme-super-classique #listview-float-right #list-contacts .scroller);
+        }
+
+        #annuaire-list{
+          li {
+
+            .description {
+              color: var(--main-text-color);
+            }
+
+            &:hover{
+              --secondary-bckg-color: var(--main-bckg-color);
+              color:var(--secondary-text-color);
+              --main-text-color:var(--secondary-text-color);
+              --listbox-text-color:var(--secondary-text-color);
+            }
+
+            &[aria-expanded="true"] {
+              &:extend(html.theme-super-classique #listview-float-right #list-contacts .scroller #annuaire-list li:hover);
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+
 }

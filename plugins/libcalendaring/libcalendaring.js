@@ -121,7 +121,7 @@ function rcube_libcalendaring(settings)
     {
         // PAMELA - Mode assistantes
         var i, emails;
-        if (!email && this.calendars[event.calendar] && this.calendars[event.calendar]['owner_email']) {
+        if (!email && !!this.calendars && this.calendars[event.calendar] && this.calendars[event.calendar]['owner_email']) {
             email = this.calendars[event.calendar]['owner_email'].toLowerCase();
 
             // Si c'est l'agenda de l'utilisateur connecté

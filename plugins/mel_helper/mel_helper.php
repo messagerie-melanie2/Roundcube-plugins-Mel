@@ -266,4 +266,62 @@ class mel_helper extends rcube_plugin
         return new Stopwatch();
     }
 
+    public static function last_login($userid) {
+        $user     = rcube_user::query($userid, driver_mel::gi($userid)->getUser()->server_host);
+
+        if (isset($user)) return $user->data['last_login'];
+        else return null;
+    }
+
+    public static function send_mail($subject, $mailbody, $from, $recipient) {
+        $rc = rcmail::get_instance();
+        $message = new Mail_mime("\r\n");
+        $message->setParam('text_encoding', 'quoted-printable');
+        $message->setParam('head_encoding', 'quoted-printable');
+        $message->setParam('head_charset', RCUBE_CHARSET);
+        $message->setParam('text_charset', RCUBE_CHARSET);
+        $message->setParam('html_charset', RCUBE_CHARSET);
+
+        // compose common headers array
+        $headers = array(
+            'From' => $from,
+            'Date' => $rc->user_date(),
+            'Message-ID' => $rc->gen_message_id(),
+            'X-Sender' => $from,
+            'Content-type' => 'text/plain; charset=UTF-8'
+        );
+        if ($agent = $rc->config->get('useragent')) {
+            $headers['User-Agent'] = $agent;
+        }
+
+        $mailto = rcube_utils::idn_to_ascii($recipient['email']);
+        $headers['To'] = format_email_recipient($mailto, $recipient['name']);
+        $headers['Subject'] = $subject;
+        $message->headers($headers);
+        $message->setHTMLBody($mailbody);
+        $sent = rcmail::get_instance()->deliver_message($message, $headers['X-Sender'], $mailto, $smtp_error);
+
+        return $sent;
+    }
+
+    public static function check_date_past($date_string, $nb_jours) {
+        // Convertir la date en un objet DateTime
+        $date = new DateTime($date_string);
+        
+        // Ajouter le nombre de jours spécifié à la date
+        $date->add(new DateInterval("P{$nb_jours}D"));
+        
+        // Récupérer la date et l'heure actuelles
+        $maintenant = new DateTime();
+        
+        // Comparer la date actuelle avec la date calculée
+        return $maintenant >= $date;
+    }
+
+    public static function include_mail_body()
+    {
+        include_once "lib/mel_mail.php";
+    }
+    
+
 }

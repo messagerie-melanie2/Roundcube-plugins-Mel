@@ -495,6 +495,8 @@ class mel_workspace extends rcube_plugin
         $this->currentWorkspace->uid = $workspace_id;
         $this->currentWorkspace->load();
 
+        $this->test_notify_mail($this->currentWorkspace);
+
         $this->rc->output->set_env('wsp_one_admin', self::is_one_admin($this->currentWorkspace));
 
         
@@ -1873,14 +1875,15 @@ class mel_workspace extends rcube_plugin
 
                     if (class_exists("mel_notification"))
                     {
-                        mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
-                            [
-                                'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
-                                'text' => $this->gettext("mel_workspace.open"),
-                                'title' => $this->gettext("mel_workspace.click_for_open"),
-                                'command' => "event.click"
-                            ]
-                        ], $tmp_user);
+                        // mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
+                        //     [
+                        //         'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
+                        //         'text' => $this->gettext("mel_workspace.open"),
+                        //         'title' => $this->gettext("mel_workspace.click_for_open"),
+                        //         'command' => "event.click"
+                        //     ]
+                        // ], $tmp_user);
+                        $this->_notify_user($tmp_user, $workspace, $tmp_user);
                     }           
                 }
             }
@@ -1908,6 +1911,80 @@ class mel_workspace extends rcube_plugin
             echo json_encode($th);
             exit;
         }
+    }
+
+    private function _notify_user($userid, $workspace, $tmp_user = null) {
+        $canNotify = true;
+        $user_last_login = mel_helper::last_login($userid);
+        
+        if (class_exists("mel_notification") && isset($user_last_login)) {
+            if (mel_helper::check_date_past($user_last_login, 15)) $canNotify = false;
+        } else $canNotify = false;
+
+        if ($canNotify) {
+            mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
+                [
+                    'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
+                    'text' => $this->gettext("mel_workspace.open"),
+                    'title' => $this->gettext("mel_workspace.click_for_open"),
+                    'command' => "event.click"
+                ]
+            ], $tmp_user);
+        }
+        else {
+            mel_helper::include_mail_body();
+            include_once 'lib/wsp_mail_body.php';
+            $email = $this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
+
+            $bodymail = new WspMailBody('mel_workspace.email');
+
+            $bodymail->user_name = driver_mel::gi()->getUser()->name;
+            $bodymail->user_email = driver_mel::gi()->getUser()->email;
+            $bodymail->wsp_name = $workspace->title;
+            $bodymail->wsp_creator = $workspace->creator;
+            $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Créer le' : 'Mise à jour';
+            $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
+            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png');
+            $bodymail->bnum_base__url = 'http://mtes.fr/2';
+            $bodymail->url = 'https://mel.din.developpement-durable.gouv.fr/bureau/?_task=workspace&_action=workspace&_uid='.$workspace->uid;
+
+            $div = ['<div style="display:flex">'];
+            $shares = $workspace->shares;
+
+            $i = 0;
+            foreach ($shares as $user) {
+                if ($i++ < 2) {
+                    $image = MailBody::load_image($this->rc->config->get('rocket_chat_url').'avatar/'.$user->user_uid);
+
+                    if (MailBody::image_loaded()) $div[] = "<img src=\"$image\" style=\"width:36px;height:36px;border-radius:100%;margin-left:-15px;border: solid thick white;\" />";
+                    else $div[] = "<div style=\"text-align: center;line-height: 25px;display:inline-block;width:36px;height:36px;border-radius:100%;background-color:#7DD0C2;margin-left:-15px;border: solid thick white;\"><span>".substr(driver_mel::gi()->getUser($user->user_uid)->name, 0, 2)."</span></div>";
+                }
+                else {
+                    $i = count($shares) - 2;
+
+                    if ($i > 99) $i = ">99";
+                    else $i = "+$i";
+
+                    $div[] = "<div style=\"text-align: center;line-height: 25px;display:inline-block;width:36px;height:36px;border-radius:100%;background-color:#7DD0C2;margin-left:-15px;border: solid thick white;\"><span>$i</span></div>";
+                    
+                    break;
+                }
+            }
+
+            $div[] = '</div>';
+
+            $bodymail->wsp_shares_rounded = implode('', $div);
+
+            $subject = $bodymail->subject();
+            $message = $bodymail->body();
+
+
+            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name]);
+        }
+    }
+
+    public function test_notify_mail($workspace) {
+        $this->_notify_user(driver_mel::gi()->getUser()->uid, $workspace);
     }
 
     function create_services(&$workspace,$services, $users = null, $update_wsp = true, $fromUpdateApp = false, $default_values = null)

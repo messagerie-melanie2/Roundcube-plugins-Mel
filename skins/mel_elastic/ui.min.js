@@ -3202,6 +3202,8 @@ $(document).ready(() => {
                 );
             }
 
+            rcmail.triggerEvent('theme.changed', theme);
+
             return this;
         }
 

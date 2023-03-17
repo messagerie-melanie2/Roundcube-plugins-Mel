@@ -51,6 +51,13 @@ if (rcmail.env.task === "tasks")
                 
                 if (e.hasClass('down-icon')) e.removeClass('down-icon').addClass('up-icon');
                 else e.addClass('down-icon').removeClass('up-icon');
+                setTimeout(() => {
+                    try {
+                        _rm_update_task_size();
+                    } catch (error) {
+                        
+                    }
+                }, 500);
             })
         ).append(
             $(`<a href="#" class="button search-icon" style="pointer-events:none" title="Rechercher" role="button"></a>`).click((e) => {

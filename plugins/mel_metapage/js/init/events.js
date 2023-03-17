@@ -176,6 +176,13 @@ if (rcmail && window.mel_metapage)
         }
     });
 
+    
+    rcmail.addEventListener('responseafter', function(props) {
+        if ('tasks' === rcmail.env.task && props.response && props.response.action=='fetch') {
+            _rm_update_task_size();
+        }
+    });
+
     rcmail.addEventListener('set_unread', function(props) {
          if (props.mbox === "INBOX")
          {
@@ -350,11 +357,53 @@ if (rcmail && window.mel_metapage)
 
     })
 
+    function _rm_get_margin_height($item) {
+        return parseInt($item.css('margin-top').replace('px', '')) + parseInt($item.css('margin-bottom').replace('px', ''));
+    }
+
+    function _rm_update_theme_size() {
+        let size = window.innerHeight;
+        const array = [$('#layout-list .header'), $('#layout-list .searchbar'), $('#taskselector-content'), $('#layout-list-content separate').first()];
+
+        for (let index = 0, len = array.length; index < len; ++index) {
+            const element = array[index];
+            size -= (element.height() + _rm_get_margin_height(element));
+        }
+
+        return size;
+    }
+
+    function _rm_update_task_size() { 
+        const size = _rm_update_theme_size();
+        $('#layout-list .scroller').css('max-height', 
+        `${size}px`
+        );
+
+        const othersize = $('#layout-list .header').height() + _rm_get_margin_height($('#layout-list .header')) + $('#layout-list-content').height() + _rm_get_margin_height($('#layout-list-content'));
+        if (othersize < window.innerHeight)
+{
+        $('#layout-list .scroller').css('max-height', 
+        `${size + (window.innerHeight - othersize)}px`
+        );}
+    }
+
+    rcmail.addEventListener('theme.changed', () => {
+        if (rcmail.env.task === 'tasks') {
+            _rm_update_task_size();
+        }
+    })
+
     //Lorsqu'il y a un redimentionnement.
     rcmail.addEventListener("skin-resize", (datas)    => {
 
         if ($("html").hasClass("framed"))
+        {
+            if (rcmail.env.task === 'tasks') {
+                _rm_update_task_size();
+            }
+
             return;
+        }
 
         if ($("html").hasClass("touch") && $("html").hasClass("layout-normal"))
         {

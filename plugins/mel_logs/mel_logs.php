@@ -129,7 +129,8 @@ class mel_logs extends rcube_plugin
 	public function login_after($args)
 	{
 		$method = isset($_SESSION['auth_type']) ? $_SESSION['auth_type'] : "password";
-	    $this->log(self::INFO, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.")");
+		$eidas = $_SESSION['eidas'];
+	    $this->log(self::INFO, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.") - $eidas");
 	    return $args;
 	}
 	/**

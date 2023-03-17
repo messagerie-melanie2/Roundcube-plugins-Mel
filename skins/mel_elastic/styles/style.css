@@ -1388,14 +1388,14 @@ body.task-settings .scroller > .listing li:hover {
   content: "\eed8" !important;
 }
 .roundbadge.menu {
-  top: -5px;
+  top: -12px;
   position: absolute;
   height: 15px;
   width: 15px;
   line-height: 16px;
   font-size: 8px;
   color: var(--roundbadge-menu-bckg-color);
-  left: -10px;
+  left: -13px;
 }
 .layout-phone .roundbadge.menu {
   top: 32px;

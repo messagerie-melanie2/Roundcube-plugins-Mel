@@ -1902,6 +1902,9 @@ function sendMessageToAriane (data) {
             if (event.data === datas_accepted) {
                 sendMessageToAriane({'bNumEmbedded': true, 'isDarkTheme': new Roundcube_Mel_Color().isDarkMode()});
             }
+            if (event.data && event.data.webconfRoom) {
+                window.webconf_helper.go(key = event.data.webconfRoom, wsp = null, ariane = event.data.arianeRoom)
+            }
         }
         else if(rcmail.env.task === 'settings' && rcmail.env.action === 'plugin.mel_suggestion_box' && window.location.origin.includes(event.origin))
         {

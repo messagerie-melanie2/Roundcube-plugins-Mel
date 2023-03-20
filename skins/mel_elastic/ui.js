@@ -1952,11 +1952,17 @@ $(document).ready(() => {
         {
             if (!ignoreStart)
             {
+                const CLASS_FOR_LI_PREFIX = 'li-';
                 //Enrobe les "a" par des "li".
-                $("#listotherapps").find("a").each((i,e) => {
-                    let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
-                    $(e).addClass("mel-focus").appendTo(tmp);
-                });
+                let tmp;
+                let $querryotherapp = $("#listotherapps");
+                for (let e of $("#listotherapps a")) {
+                    tmp = new mel_html('li', {
+                        style:'width:100%',
+                        class:Enumerable.from(e.classList).where(x => x.includes(CLASS_FOR_LI_PREFIX)).select(x => x.replace(CLASS_FOR_LI_PREFIX, EMPTY_STRING)).toArray()
+                    });
+                    $(e).addClass('mel-focus').appendTo(tmp.create($querryotherapp));
+                }
             }
 
             //Gestion de la barre.

@@ -179,7 +179,7 @@ html.layout-phone #taskmenu a
     font-weight: normal;
 }
 
-#otherapps.menu.toolbar a.icon-mel-custom_taskbar
+#otherapps.menu.toolbar li.bottom-icon
 {
     position: absolute;
     bottom: 0;

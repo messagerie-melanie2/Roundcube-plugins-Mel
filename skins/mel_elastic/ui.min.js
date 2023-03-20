@@ -1301,52 +1301,54 @@ $(document).ready(() => {
                             $("#toolbar-list-menu").removeClass("hidden")
                             .removeAttr("aria-hidden");
                         }
-
-                        if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
-                        {
-                            rcmail.env.search_initialized = true;
-                            $("#mailsearchlist").addClass("hoverable").click((e) => {
-                                
-                                //console.log("e", $("#mailsearchlist").hasClass("stopclick"));
-                                if ($("#mailsearchlist").hasClass("stopclick"))
-                                {
-                                    $("#mailsearchlist").removeClass("stopclick")
-
-                                    if (!$("#mailsearchlist").hasClass("hoverable"))
+//test debug
+                        setTimeout(() => {
+                            if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
+                            {
+                                rcmail.env.search_initialized = true;
+                                $("#mailsearchlist").addClass("hoverable").click((e) => {
+                                    
+                                    //console.log("e", $("#mailsearchlist").hasClass("stopclick"));
+                                    if ($("#mailsearchlist").hasClass("stopclick"))
                                     {
-                                        $("#mailsearchlist").addClass("hoverable")
-                                        return;
-                                    }
-                                }
-
-                                if (window.innerWidth < 410)
-                                {
-                                    $("#mailsearchlist").removeClass("hoverable");
-                                    $("#mailsearchlist input").focus();
-                                }
-                            }).find("input").on("focusout", (e) => {
-                                if (window.innerWidth < 410)
-                                {
-                                    let parent = e.relatedTarget === null ? null : $(e.relatedTarget);//e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
-                                    while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
-                                    {
-                                        //console.log("parent", parent);
-                                        parent = parent.parent();
-                                    }
-
-                                    if (parent === null || parent.hasClass("icon-mel-search") || parent[0].nodeName === "BODY")
-                                    {
-                                        if (!!parent && parent.hasClass("icon-mel-search"))
-                                            $("#mailsearchlist").addClass("stopclick");
-                                        else {
-                                            $("#mailsearchlist").addClass("hoverable");
+                                        $("#mailsearchlist").removeClass("stopclick")
+    
+                                        if (!$("#mailsearchlist").hasClass("hoverable"))
+                                        {
+                                            $("#mailsearchlist").addClass("hoverable")
+                                            return;
                                         }
-                                        document.activeElement.blur();
                                     }
-                                }
-                            });
-
-                        }
+    
+                                    if (window.innerWidth < 410)
+                                    {
+                                        $("#mailsearchlist").removeClass("hoverable");
+                                        $("#mailsearchlist input").focus();
+                                    }
+                                }).find("input").on("focusout", (e) => {
+                                    if (window.innerWidth < 410)
+                                    {
+                                        let parent = e.relatedTarget === null ? null : $(e.relatedTarget);//e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
+                                        while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
+                                        {
+                                            //console.log("parent", parent);
+                                            parent = parent.parent();
+                                        }
+    
+                                        if (parent === null || parent.hasClass("icon-mel-search") || parent[0].nodeName === "BODY")
+                                        {
+                                            if (!!parent && parent.hasClass("icon-mel-search"))
+                                                $("#mailsearchlist").addClass("stopclick");
+                                            else {
+                                                $("#mailsearchlist").addClass("hoverable");
+                                            }
+                                            document.activeElement.blur();
+                                        }
+                                    }
+                                });
+    
+                            }
+                        }, 150);
                     });
                     test.observe($("#layout-list")[0]);
 

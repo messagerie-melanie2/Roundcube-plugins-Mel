@@ -4289,3 +4289,13 @@ a.rcmContactAddress {
         position: absolute;
     }
 }
+
+.material-symbols-outlined {
+    &.fill-on-hover:hover {
+        font-variation-settings: 'FILL' 1;
+    }
+
+    .fill-on-hover:hover &{
+        &:extend(.material-symbols-outlined.fill-on-hover:hover);
+    }
+}

@@ -1985,11 +1985,6 @@ $(document).ready(() => {
                 }
             });
 
-            // rcmail.addEventListener('plugin.message_send_error', ($args) =>
-            // {
-            //     top.rcmail.command('message_send_error', $args);
-            // });
-
             return this;
         }
 

@@ -181,9 +181,10 @@ html.layout-phone #taskmenu a
 
 #otherapps.menu.toolbar li.bottom-icon
 {
-    position: absolute;
+    position: fixed;
     bottom: 0;
-    left: 0;
+    background-color: var(--main-layout-taskbar-background-color);
+    width: var(--otherapp-size) !important;
 }
 
 .button-mel_sondage {

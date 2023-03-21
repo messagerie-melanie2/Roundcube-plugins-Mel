@@ -1957,28 +1957,33 @@ $(document).ready(() => {
                 const CLASS_FOR_LI_PREFIX = 'li-';
                 //Enrobe les "a" par des "li".
                 let tmp;
-                let $querryotherapp = $("#listotherapps");
-                for (let e of $("#listotherapps a")) {
+                for (let e of $("#otherapps a")) {
                     tmp = new mel_html('li', {
                         style:'width:100%',
                         class:Enumerable.from(e.classList).where(x => x.includes(CLASS_FOR_LI_PREFIX)).select(x => x.replace(CLASS_FOR_LI_PREFIX, EMPTY_STRING)).toArray()
                     });
-                    $(e).addClass('mel-focus').appendTo(tmp.create($querryotherapp));
+                    $(e).addClass('mel-focus').appendTo(tmp.create($(e).parent()));
                 }
             }
 
             //Gestion de la barre.
-            $("#listotherapps").find("a").on('focusout', (e) => {
-
+            $("#otherapps").find("a").on('focusout', (e) => {
                 $("#menu-overlay").remove();
-                if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
+                let $parent = $(e.relatedTarget);
+
+                if ($parent.length > 0) {
+                    while(!$parent.hasClass("otherapps") && $parent.length > 0 && $parent[0].nodeName !== 'BODY') {
+                        $parent = $parent.parent();
+                    }
+                }
+
+                if (!$parent.hasClass("otherapps"))
                 {
                     if (!$(e.relatedTarget).hasClass("more-options") && $("#otherapps").css("display") !== "none")
                     {
                         $("a.more-options").click();
                         if ($("html").hasClass("touch"))
                         {
-
                             $("#touchmelmenu").click();
                         }
                     }

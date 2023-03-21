@@ -494,7 +494,7 @@
             rcmail.register_command("more_options", (e) => {
                 let otherapp = $("#otherapps");
                 if (otherapp.css("display") === "none") {
-                    otherapp.css("display", "");
+                    otherapp.css("display", "flex");
                     otherapp.find("a").first().focus();
                     $("#taskmenu a.more-options").addClass("selected");
 
@@ -638,7 +638,7 @@
                         else {
                             const tmp = $(items[it]).clone();
                             $(items[it]).addClass("hiddedli").css("display", "none");
-                            $("#otherapps ul").append(tmp.addClass("resized"));
+                            $("#otherapps #listotherapps").append(tmp.addClass("resized"));
                         }
                     }
                     setTimeout(() => {

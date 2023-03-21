@@ -703,7 +703,7 @@ class mel_metapage extends rcube_plugin
           'innerclass' => 'button-inner',
           'label'      => 'mel_metapage.custom_taskbar',
           'type'       => 'link'
-      ), "settings-otherappsbar");
+      ), "settingsotherappsbar");
 
         // MANTIS 0006453: Simplifier le déplacement de mails dans un autre dossier IMAP
         if ($this->rc->task == 'mail')

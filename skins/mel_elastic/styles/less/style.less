@@ -2279,18 +2279,24 @@ body{
     }
 
     &.menu{
-        top: -5px;
+        top: -15px;
         position: absolute;
         height: 15px;
         width: 15px;
         line-height: 16px;
         font-size: 8px;
         color: var(--roundbadge-menu-bckg-color);
-        left: -10px;
+        left: -12px;
 
         @{layout-phone} &{
             top: 32px;
             left: -20px;
+        }
+
+        #otherapps &{
+            top:-5px;
+            left:5px;
+            margin:0;
         }
     }
 

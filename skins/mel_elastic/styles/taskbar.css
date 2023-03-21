@@ -179,12 +179,13 @@ html.layout-phone #taskmenu a
     font-weight: normal;
 }
 
-#otherapps.menu.toolbar li.bottom-icon
+#otherapp-down
 {
-    position: fixed;
+    /* position: fixed;
     bottom: 0;
-    background-color: var(--main-layout-taskbar-background-color);
+    background-color: var(--main-layout-taskbar-background-color); */
     width: var(--otherapp-size) !important;
+    margin: 0;
 }
 
 .button-mel_sondage {
@@ -580,8 +581,8 @@ nav.otherapps
     left: 60px;
     background-color: #2C3054;
     z-index: 999999;
-    overflow-y: auto;
-    overflow-x: hidden;
+    /* overflow-y: auto;
+    overflow-x: hidden; */
 }
 
 #otherapps a::before
@@ -596,6 +597,7 @@ nav.otherapps
     width:100%!important;
     max-width:100%!important;
     display: flex;
+    position: relative;
 }
 
 #otherapps a span {
@@ -660,4 +662,19 @@ li#menu-small-li
 	max-width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+#otherapps a sup {
+	position: absolute;
+	top: 17px;
+	left: 35px;
+}
+
+#otherapps a sup .roundbadge {
+    font-size: smaller;
+    display:block;
+}
+
+#otherapps a:hover sup .roundbadge{
+    background-color: var(--roundbadge-bckg-color)!important;
 }

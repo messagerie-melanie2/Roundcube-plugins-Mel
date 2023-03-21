@@ -1126,6 +1126,7 @@ $(document).ready(() => {
                         delete rcmail.env.is_from_scroll;
                     else if ($("#layout-list").hasClass("initial") && show)
                     {
+                        console.log('hoverable', JSON.stringify($("#layout-list")[0].classList), show);
                         //Mise en place du système
                         $("#layout-content").css("display", "").removeClass("hidden layout-hidden");
                         $("#layout-list").removeClass("initial");
@@ -1161,6 +1162,7 @@ $(document).ready(() => {
 
                         //Fermer la prévisu
                         rcmail.register_command("close-mail-visu", () => {
+                            console.log('close-mail-visu');
                             $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
 
                             $("#layout-content").css("display", "none").addClass("hidden layout-hidden");
@@ -1176,6 +1178,7 @@ $(document).ready(() => {
                     }   
                     else if ($("#layout-list").hasClass("full") && show)
                     {
+                        console.log('hoverable 2', JSON.stringify($("#layout-list")[0].classList), show);
                         //Afficher ou fermer
                         $("#layout-content").css("display", "").removeClass("hidden").removeClass("layout-hidden");
                         $("#layout-list").removeClass("full");
@@ -1299,54 +1302,53 @@ $(document).ready(() => {
                             $("#toolbar-list-menu").removeClass("hidden")
                             .removeAttr("aria-hidden");
                         }
-//test debug
-                        setTimeout(() => {
-                            if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
-                            {
-                                rcmail.env.search_initialized = true;
-                                $("#mailsearchlist").addClass("hoverable").click((e) => {
-                                    
-                                    //console.log("e", $("#mailsearchlist").hasClass("stopclick"));
-                                    if ($("#mailsearchlist").hasClass("stopclick"))
+
+                        if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
+                        {
+                            console.log('hoverable observer', rcmail.env.search_initialized, window.innerWidth);
+                            rcmail.env.search_initialized = true;
+                            $("#mailsearchlist").addClass("hoverable").click((e) => {
+                                
+                                //console.log("e", $("#mailsearchlist").hasClass("stopclick"));
+                                if ($("#mailsearchlist").hasClass("stopclick"))
+                                {
+                                    $("#mailsearchlist").removeClass("stopclick")
+
+                                    if (!$("#mailsearchlist").hasClass("hoverable"))
                                     {
-                                        $("#mailsearchlist").removeClass("stopclick")
-    
-                                        if (!$("#mailsearchlist").hasClass("hoverable"))
-                                        {
-                                            $("#mailsearchlist").addClass("hoverable")
-                                            return;
-                                        }
+                                        $("#mailsearchlist").addClass("hoverable")
+                                        return;
                                     }
-    
-                                    if (window.innerWidth < 410)
+                                }
+
+                                if (window.innerWidth < 410)
+                                {
+                                    $("#mailsearchlist").removeClass("hoverable");
+                                    $("#mailsearchlist input").focus();
+                                }
+                            }).find("input").on("focusout", (e) => {
+                                if (window.innerWidth < 410)
+                                {
+                                    console.log('hoverable observer', e, window.innerWidth);
+                                    let parent = e.relatedTarget === null ? null : $(e.relatedTarget);//e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
+                                    while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
                                     {
-                                        $("#mailsearchlist").removeClass("hoverable");
-                                        $("#mailsearchlist input").focus();
+                                        parent = parent.parent();
                                     }
-                                }).find("input").on("focusout", (e) => {
-                                    if (window.innerWidth < 410)
+
+                                    if (parent === null || parent.hasClass("icon-mel-search") || parent[0].nodeName === "BODY")
                                     {
-                                        let parent = e.relatedTarget === null ? null : $(e.relatedTarget);//e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
-                                        while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
-                                        {
-                                            //console.log("parent", parent);
-                                            parent = parent.parent();
+                                        if (!!parent && parent.hasClass("icon-mel-search"))
+                                            $("#mailsearchlist").addClass("stopclick");
+                                        else {
+                                            $("#mailsearchlist").addClass("hoverable");
                                         }
-    
-                                        if (parent === null || parent.hasClass("icon-mel-search") || parent[0].nodeName === "BODY")
-                                        {
-                                            if (!!parent && parent.hasClass("icon-mel-search"))
-                                                $("#mailsearchlist").addClass("stopclick");
-                                            else {
-                                                $("#mailsearchlist").addClass("hoverable");
-                                            }
-                                            document.activeElement.blur();
-                                        }
+                                        document.activeElement.blur();
                                     }
-                                });
-    
-                            }
-                        }, 150);
+                                }
+                            });
+
+                        }
                     });
                     test.observe($("#layout-list")[0]);
 

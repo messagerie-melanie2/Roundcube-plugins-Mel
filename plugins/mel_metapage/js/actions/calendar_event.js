@@ -121,27 +121,30 @@ $(document).ready(
           $("#datepicker-onoff").click();
       }, 1);
 
-      parent.metapage_frames.addEvent("open.after", async (eClass, changepage, isAriane, querry, id, actions) => {
+      if (!!parent && typeof parent?.metapage_frames !== 'undefined' && !!parent?.mel_metapage?.addEvent)
+      {
+        parent.metapage_frames.addEvent("open.after", async (eClass, changepage, isAriane, querry, id, actions) => {
 
-        if (eClass === "calendar") {
-          querry = $(`iframe#${id}`);
-          if (querry.length > 0) {
-            try {
-              querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
-            } catch (error) {
-
+          if (eClass === "calendar") {
+            querry = $(`iframe#${id}`);
+            if (querry.length > 0) {
+              try {
+                querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
+              } catch (error) {
+  
+              }
+            }
+            else {
+              try {
+                $('#calendar').fullCalendar('rerenderEvents');
+              } catch (error) {
+  
+              }
             }
           }
-          else {
-            try {
-              $('#calendar').fullCalendar('rerenderEvents');
-            } catch (error) {
-
-            }
-          }
-        }
-
-      });
+  
+        });
+      }
 
     });
   }

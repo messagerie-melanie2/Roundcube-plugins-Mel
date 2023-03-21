@@ -183,6 +183,8 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
                 return;
             if (a.includes("button"))
                 return;
+            if (a.includes("li-"))
+                return;
             cClass = a;
         });
         switch (cClass) {
@@ -228,6 +230,8 @@ function mm_st_getNavClass(element)
         if (a.includes("icon-mel-"))
             return;
         if (a.includes("button"))
+            return;
+        if (a.includes("li-"))
             return;
         cClass = a;
     });

@@ -1303,7 +1303,7 @@ $(document).ready(() => {
                             .removeAttr("aria-hidden");
                         }
 
-                        if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
+                        if (rcmail.env.search_initialized !== true && window.innerWidth < 410  && window.innerWidth > 0)
                         {
                             console.log('hoverable observer', rcmail.env.search_initialized, window.innerWidth);
                             rcmail.env.search_initialized = true;

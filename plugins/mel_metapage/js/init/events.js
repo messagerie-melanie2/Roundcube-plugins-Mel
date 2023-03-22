@@ -724,6 +724,15 @@ if (rcmail && window.mel_metapage)
         }
     });
 
+    rcmail.addEventListener('beforeswitch-task', function(prop) {
+        if (prop === 'logout') {
+            let $querry = $('iframe.wekan-frame');
+            if ($querry.length > 0) {
+                $querry[0].contentWindow.$('#wekan-iframe').contentWindow.Meteor.logout();
+            }
+        }
+    });
+
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
         if (datas.showed.start.format === undefined) datas.showed.start = moment(datas.showed.start);

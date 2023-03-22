@@ -678,3 +678,7 @@ li#menu-small-li
 #otherapps a:hover sup .roundbadge{
     background-color: var(--roundbadge-bckg-color)!important;
 }
+
+.menu-last-frame:hover .menu-last-frame-item::before{
+    font-variation-settings: 'FILL' 1;
+}

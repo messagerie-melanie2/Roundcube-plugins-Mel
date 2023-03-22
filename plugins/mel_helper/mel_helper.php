@@ -267,7 +267,7 @@ class mel_helper extends rcube_plugin
     }
 
     public static function last_login($userid) {
-        $user     = rcube_user::query($userid, driver_mel::gi($userid)->getUser()->server_host);
+        $user     = rcube_user::query($userid, driver_mel::gi()->getUser($userid)->server_host);
 
         if (isset($user)) return $user->data['last_login'];
         else return null;

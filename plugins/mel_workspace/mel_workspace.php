@@ -495,20 +495,7 @@ class mel_workspace extends rcube_plugin
         $this->currentWorkspace->uid = $workspace_id;
         $this->currentWorkspace->load();
 
-        $this->test_notify_mail($this->currentWorkspace);
-
         $this->rc->output->set_env('wsp_one_admin', self::is_one_admin($this->currentWorkspace));
-
-        
-        // try {
-        //     if (self::is_in_workspace($this->currentWorkspace) && $this->services_action_errors($this->currentWorkspace))
-        //     {
-        //         $this->currentWorkspace->save();        
-        //         $this->currentWorkspace->load();
-        //     }
-        // } catch (\Throwable $th) {
-        //     //throw $th;
-        // }
 
         $this->rc->output->add_handlers(array(
             'wsp-style'    => array($this, 'set_wsp_style'),

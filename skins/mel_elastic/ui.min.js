@@ -53,7 +53,7 @@ $(document).ready(() => {
          */
         set()
         {
-            let id = Mel_CSS_Rule.component().insertRule(rule, Mel_CSS_Rule.lastIndex());
+            let id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
             this.styleRule = Mel_CSS_Rule.component().cssRules[id];
             return this;
         }
@@ -1405,6 +1405,11 @@ $(document).ready(() => {
                             #messagelist tr.message td {
                                 padding-top: 0;
                                 padding-bottom:0;
+                            }
+
+                            table.messagelist tr.message td.flags span.attachment,
+                            table.messagelist td.subject span.subject {
+                                margin-top: -10px;
                             }
                             
                             `;

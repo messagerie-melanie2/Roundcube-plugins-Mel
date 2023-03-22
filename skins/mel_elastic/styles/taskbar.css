@@ -184,7 +184,7 @@ html.layout-phone #taskmenu a
     /* position: fixed;
     bottom: 0;
     background-color: var(--main-layout-taskbar-background-color); */
-    width: var(--otherapp-size) !important;
+    /* width: var(--otherapp-size) !important; */
     margin: 0;
 }
 

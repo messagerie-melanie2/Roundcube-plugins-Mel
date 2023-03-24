@@ -2655,14 +2655,15 @@ class mel_workspace extends rcube_plugin
 
                 if (class_exists("mel_notification"))
                 {
-                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
-                        [
-                            'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
-                            'text' => $this->gettext("mel_workspace.open"),
-                            'title' => $this->gettext("mel_workspace.click_for_open"),
-                            'command' => "event.click"
-                        ]
-                    ], $users[$i]);
+                    // mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
+                    //     [
+                    //         'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
+                    //         'text' => $this->gettext("mel_workspace.open"),
+                    //         'title' => $this->gettext("mel_workspace.click_for_open"),
+                    //         'command' => "event.click"
+                    //     ]
+                    // ], $users[$i]);
+                    $this->_notify_user($users[$i], $workspace, $users[$i]);
                 }
             }                           
         }

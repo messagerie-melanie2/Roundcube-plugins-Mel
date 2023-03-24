@@ -92,7 +92,7 @@ html.theme-super-classique {
 
               > td.selection {
                 + td {
-                  border-left: 2px solid var(--primary-border-color) !important;
+                  border-left: 2px solid var(--selected-mail-border-color) !important;
                 }
               }
             }
@@ -105,6 +105,14 @@ html.theme-super-classique {
                   border-left-color: var(--invisible) !important;
                 }
               }
+
+              &.selected {
+                > td.selection {
+                  + td {
+                    border-left-color: var(--selected-mail-border-color) !important;
+                  }
+                }
+              }
             }
 
             &.focused {
@@ -113,10 +121,21 @@ html.theme-super-classique {
               }
             }
 
-            &.message:hover:not(.selected) {
-              td {
+            &.message{
+              &:hover:not(.selected) {
+                td {
+  
+                  background-color: var(--main-layout-hover-background-color) !important;
+                }
+              }
 
-                background-color: var(--main-layout-hover-background-color) !important;
+              &.contextRow.context-source{
+                --secondary-text-color:var(--main-text-color);
+                font-style:italic;
+                * {
+                  --secondary-text-color:var(--main-text-color);
+                  font-style:italic;
+                }
               }
             }
           }

@@ -4466,7 +4466,8 @@ $("#rcmfd_new_category").keypress(function(event) {
       }
     }
 
-    return rcube_utils::resolve_url($url);
+    $base_path = explode('?', $this->rc->url($param, true, true));
+    return $base_path[0] . $url;
   }
 
 

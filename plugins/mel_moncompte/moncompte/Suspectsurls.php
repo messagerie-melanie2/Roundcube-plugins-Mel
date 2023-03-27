@@ -23,7 +23,11 @@ class SuspectsUrls extends Moncompteobject
 {
     private static $plugin;
     public static function isEnabled() {
-        return mel::is_internal() || (class_exists('mel_doubleauth') && mel_doubleauth::is_double_auth_enable());
+        return mel::is_internal() 
+                || mel::is_auth_strong()
+                // Fix : si le plugin mel_doubleauth n'est pas activé
+                || !class_exists('mel_doubleauth') 
+                || mel_doubleauth::is_double_auth_enable();
 	}
 
     /**

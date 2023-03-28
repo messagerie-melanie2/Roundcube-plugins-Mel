@@ -3169,6 +3169,7 @@ function rcube_calendar_ui(settings) {
     setTimeout(() => {
       var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
       rcmail.http_post('calendar', { action: 'toggle_appointment', c: { id: calendar.id, checked: $('.ui-dialog #check_appointment').prop('checked') } }, lock);
+      appointment_save_func();
       return true;
     }, 200);
   };
@@ -3476,6 +3477,7 @@ function rcube_calendar_ui(settings) {
   this.appointment = function (calendar) {
     let dialog = $('#appointmentbox').clone(true).removeClass('uidialog');
     let form = dialog.find('#appointmentpropform');
+    rcmail.env.appointment_form = form;
 
     //On initialise le datetimepicker sur tous les jours de la semaines
     for (let i = 1; i < 8; i++) {
@@ -3618,119 +3620,126 @@ function rcube_calendar_ui(settings) {
     }
 
     save_func = function () {
-      let appointment = {};
-
-      appointment.check_user_select_time = form.find('#check_user_select_time').prop('checked');
-
-      if (!appointment.check_user_select_time) {
-        appointment.time_select = form.find('#time_select').val();
-
-        if (appointment.time_select == 'custom') {
-          appointment.custom_time_select = form.find('#custom_time_select').val();
-          appointment.time_select = form.find('#custom_time_input').val();
-        }
-      }
-
-      let error_message = "Ce champs est obligatoire";
-      let error = false;
-      for (let e of form.find('input[required]')) {
-        if (!($(e).val() || null)) {
-          form.find(`#${e.id}`).addClass('is-invalid');
-          form.find(`#${e.id.split('_')[0]}_error`).text(error_message);
-          error = true;
-        }
-        else {
-          form.find(`#${e.id}`).removeClass('is-invalid');
-          form.find(`#${e.id.split('_')[0]}_error`).text("");
-        }
-      }
-      if (error) {
-        return;
-      }
-
-      appointment.range = {};
-
-
-      for (let i = 1; i < 8; i++) {
-        let inputs_val = [""];
-
-        if (form.find('#day_check_' + i).prop('checked')) {
-
-          let inputs = form.find('#appointment_range_' + i).find('input');
-          inputs_val = [];
-          inputs.each((index, input) => {
-            inputs_val.push(input.value)
-          })
-        }
-
-        //le dimanche doit être 0 pour fullcalendar
-        if (i == 7) {
-          appointment.range[0] = inputs_val;
-        }
-        else {
-          appointment.range[i] = inputs_val;
-        }
-      }
-
-      appointment.time_before_select = form.find('#time_before_select').val();
-      appointment.time_after_select = form.find('#time_after_select').val();
-
-      let appointment_reason = [];
-      let inputs_reason = form.find('#appointment_reason').find('input');
-      inputs_reason.each((index, input) => {
-        appointment_reason.push(input.value)
-      })
-      appointment.reason = appointment_reason;
-
-      appointment.custom_reason = form.find('#custom_reason').prop('checked');
-
-      select_place = form.find('#place').find('input:checkbox');
-
-      let place = [];
-      select_place.each((index, input) => {
-        if ($(input).prop('checked')) {
-          let id = input.id;
-          switch (id) {
-            case 'address':
-              place.push({ "type": id, value: form.find('#address_input').val(), text: form.find('#adress_text').text() })
-              break;
-            case 'phone':
-              form.find('#phone_fields').find('input').each((index, input) => {
-                if ($(input).prop('checked')) {
-                  if (input.id == "organizer_call") {
-                    place.push({ "type": input.id, value: true, text: form.find('#phone_text').text() })
-                  }
-                  if (input.id == "attendee_call") {
-                    place.push({ "type": input.id, value: form.find('#phone_input').val(), text: form.find('#phone_text').text() })
-                  }
-                }
-
-              })
-              break;
-            case 'webconf':
-              place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text(), phone: form.find('#webconf_phone').val(), pin: form.find('#webconf_phone_pin').val() })
-              break;
-
-            default:
-              break;
-          }
-        }
-      });
-
-      appointment.place = place;
-      appointment.url = form.find('#appointment_url').val();
-
-      appointment.enabled = form.find('#check_appointment').prop('checked');
-      
-      rcmail.env.user_appointment_pref = JSON.stringify(appointment);
-
-      var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
-      rcmail.http_post('calendar', { action: "appointment", c: appointment }, lock);
+      appointment_save_func()
     };
 
     rcmail.simple_dialog(dialog, rcmail.gettext('configureappointment', 'calendar'), save_func, {
       cancel_button: 'close'
     });
+  };
+
+  function appointment_save_func() {
+    let appointment = {};
+    let form = rcmail.env.appointment_form;
+
+    appointment.check_user_select_time = form.find('#check_user_select_time').prop('checked');
+
+    if (!appointment.check_user_select_time) {
+      appointment.time_select = form.find('#time_select').val();
+
+      if (appointment.time_select == 'custom') {
+        appointment.custom_time_select = form.find('#custom_time_select').val();
+        appointment.time_select = form.find('#custom_time_input').val();
+      }
+    }
+
+    let error_message = "Ce champs est obligatoire";
+    let error = false;
+    for (let e of form.find('input[required]')) {
+      if (!($(e).val() || null)) {
+        if (!$(e).is(':hidden')) {    
+          form.find(`#${e.id}`).addClass('is-invalid');
+          form.find(`#${e.id.split('_')[0]}_error`).text(error_message);
+          error = true;
+        }
+      }
+      else {
+        form.find(`#${e.id}`).removeClass('is-invalid');
+        form.find(`#${e.id.split('_')[0]}_error`).text("");
+      }
+    }
+    if (error) {
+      return;
+    }
+
+    appointment.range = {};
+
+
+    for (let i = 1; i < 8; i++) {
+      let inputs_val = [""];
+
+      if (form.find('#day_check_' + i).prop('checked')) {
+
+        let inputs = form.find('#appointment_range_' + i).find('input');
+        inputs_val = [];
+        inputs.each((index, input) => {
+          inputs_val.push(input.value)
+        })
+      }
+
+      //le dimanche doit être 0 pour fullcalendar
+      if (i == 7) {
+        appointment.range[0] = inputs_val;
+      }
+      else {
+        appointment.range[i] = inputs_val;
+      }
+    }
+
+    appointment.time_before_select = form.find('#time_before_select').val();
+    appointment.time_after_select = form.find('#time_after_select').val();
+
+    let appointment_reason = [];
+    let inputs_reason = form.find('#appointment_reason').find('input');
+    inputs_reason.each((index, input) => {
+      appointment_reason.push(input.value)
+    })
+    appointment.reason = appointment_reason;
+
+    appointment.custom_reason = form.find('#custom_reason').prop('checked');
+
+    select_place = form.find('#place').find('input:checkbox');
+
+    let place = [];
+    select_place.each((index, input) => {
+      if ($(input).prop('checked')) {
+        let id = input.id;
+        switch (id) {
+          case 'address':
+            place.push({ "type": id, value: form.find('#address_input').val(), text: form.find('#adress_text').text() })
+            break;
+          case 'phone':
+            form.find('#phone_fields').find('input').each((index, input) => {
+              if ($(input).prop('checked')) {
+                if (input.id == "organizer_call") {
+                  place.push({ "type": input.id, value: true, text: form.find('#phone_text').text() })
+                }
+                if (input.id == "attendee_call") {
+                  place.push({ "type": input.id, value: form.find('#phone_input').val(), text: form.find('#phone_text').text() })
+                }
+              }
+
+            })
+            break;
+          case 'webconf':
+            place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text(), phone: form.find('#webconf_phone').val(), pin: form.find('#webconf_phone_pin').val() })
+            break;
+
+          default:
+            break;
+        }
+      }
+    });
+
+    appointment.place = place;
+    appointment.url = form.find('#appointment_url').val();
+
+    appointment.enabled = form.find('#check_appointment').prop('checked');
+    
+    rcmail.env.user_appointment_pref = JSON.stringify(appointment);
+
+    var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
+    rcmail.http_post('calendar', { action: "appointment", c: appointment }, lock);
   };
 
   // show free-busy URL in a dialog box

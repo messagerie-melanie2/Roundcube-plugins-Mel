@@ -3496,7 +3496,9 @@ function rcube_calendar_ui(settings) {
 
 
     let user_pref = JSON.parse(rcmail.env.user_appointment_pref);
-    if (user_pref) {
+
+    let pref_enabled = user_pref.enabled === "true" || user_pref.enabled === true ? true : false;
+    if (user_pref && pref_enabled) {
 
       form.find('#check_appointment').prop('checked', user_pref)
       form.find('#appointment_url').val(user_pref.url);
@@ -3718,6 +3720,8 @@ function rcube_calendar_ui(settings) {
       appointment.place = place;
       appointment.url = form.find('#appointment_url').val();
 
+      appointment.enabled = form.find('#check_appointment').prop('checked');
+      
       rcmail.env.user_appointment_pref = JSON.stringify(appointment);
 
       var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');

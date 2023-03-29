@@ -2,7 +2,18 @@
 /** FONTS **/
 /* CONTENT */
 /** ANIMATIONS **/
+/** LOADER **/
 /** WIDTH **/
+/**
+ * Roundcube Webmail styles for the Elastic skin
+ *
+ * Copyright (c) The Roundcube Dev Team
+ *
+ * The contents are subject to the Creative Commons Attribution-ShareAlike
+ * License. It is allowed to copy, distribute, transmit and to adapt the work
+ * by keeping credits to the original authors in the README.md file.
+ * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+ */
 .task-mail #layout-sidebar {
   border-right-color: var(--layout-border);
   border-right-style: solid;
@@ -122,6 +133,22 @@ html body table.messagelist tr.message td.labels {
   background-color: var(--invisible) !important;
   border: none!important;
   padding-top: 0px!important;
+}
+table.messagelist tr.message td.subject span.priority {
+  height: 0;
+}
+table.messagelist tr.message td.subject span.priority span.prio1,
+table.messagelist tr.message td.subject span.priority span.prio2 {
+  display: block;
+  font-size: 22px;
+  margin-top: -33px;
+  margin-left: -3px;
+}
+table.messagelist tr.message td.subject span.priority span.prio1::before,
+table.messagelist tr.message td.subject span.priority span.prio2::before {
+  content: "\e645";
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
 }
 table.messagelist tr.message:hover {
   box-shadow: 0px 2px 2px var(--message-hover-shadow);
@@ -341,19 +368,19 @@ table.messagelist:not(.withselection) tr.unread > td.selection + td {
   border-left: 2px solid var(--primary-border-color) !important;
 }
 table.messagelist:not(.threaded) tbody tr:nth-child(2n) td {
-  /* background-color: var(--default-background-lighter); */
+  background-color: var(--default-background-lighter);
 }
 table.messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
-  /* background-color: var(--default-background-lighter); */
+  background-color: var(--default-background-lighter);
 }
 table.messagelist:not(.threaded) tbody tr.unread td {
-  /* background-color: var(--default-background); */
+  background-color: var(--default-background);
 }
 table.messagelist:not(.threaded) tbody tr.unread.selected td {
-  /* background-color: var(--secondary-bckg-color); */
+  background-color: var(--secondary-bckg-color);
 }
 table.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
-  /* background-color: var(--secondary-bckg-color); */
+  background-color: var(--secondary-bckg-color);
 }
 #mailsearchlist {
   position: absolute;

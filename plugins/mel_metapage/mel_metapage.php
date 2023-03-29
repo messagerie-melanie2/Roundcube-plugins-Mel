@@ -210,7 +210,7 @@ class mel_metapage extends rcube_plugin
         {
             $this->add_hook('mel_config_suspect_url', [$this,'check_message_is_suspect_custom']);
             $this->add_hook('mel_config_bloqued_url', [$this,'check_message_is_bloqued_custom']);
-            // $this->add_hook("messages_list", [$this, 'hook_messages_list']);
+            $this->add_hook("messages_list", [$this, 'hook_messages_list']);
             $this->add_hook('message_part_body_after', [$this, 'hook_message_part_get']);
             $this->add_hook('message_objects', [$this, 'hook_message_objects']);
             $model_mbox = $this->rc->config->get('models_mbox');

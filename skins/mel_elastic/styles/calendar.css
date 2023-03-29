@@ -505,6 +505,11 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   font-family: DWP!important;
   font-weight: normal!important;
 }
+.menu a.appointment::before {
+  content: "\e901" !important;
+  font-family: DWP!important;
+  font-weight: normal!important;
+}
 .menu a.settings::before {
   content: "\e925" !important;
   font-family: DWP!important;

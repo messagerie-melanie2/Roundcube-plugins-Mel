@@ -4,6 +4,7 @@ let appointment_duration = 0;
 let owner_name = window.atob(params.get('_name'));
 let response = null;
 let calendar = null;
+let disabled_days = [];
 let event_not_loaded = true;
 moment.locale('fr');
 
@@ -39,6 +40,8 @@ function run() {
         return;
       }
 
+      get_disabled_days(response);
+      
       show_appointment_duration(response);
 
       add_appointment_place(response);
@@ -48,6 +51,17 @@ function run() {
       display_calendar(response)
     })
     .catch(err => console.error(err))
+}
+
+function get_disabled_days(response) {
+  let empty = response.range.map(f =>
+    Object.keys(f).filter(k => !("" + f[k]).trim()))
+    .map((f, i) => ({ id: i, f: f.join(',') }))
+    .filter(f => f.f)
+
+  empty.forEach(element => {
+    disabled_days.push(element.id)
+  });
 }
 
 function show_appointment_duration(response) {
@@ -194,6 +208,7 @@ function showModal(start, end) {
     step: 15,
     value: start ? start : roundTimeQuarterHour(new Date()),
     allowTimes,
+    disabledWeekDays: disabled_days,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
@@ -205,6 +220,7 @@ function showModal(start, end) {
     step: 15,
     value: end ? end : roundTimeQuarterHour(new Date()).addMinutes(appointment_duration),
     allowTimes,
+    disabledWeekDays: disabled_days,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)

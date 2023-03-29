@@ -831,8 +831,10 @@ table.messagelist{
 
 .mailboxlist()
 {
-    margin: 20px 0;
-    margin-bottom: -10px;
+    margin-top: var(--settings-mail-folder-margin-top);//var(--settings-mail-folder-margin-top) var(--settings-base-mail-folder-margin-bottom);
+    margin-bottom: var(--settings-mail-folder-margin-bottom);
+    margin-left: var(--settings-mail-folder-margin-left);
+    margin-right: var(--settings-mail-folder-margin-right);
     padding-right: 0;
 }
 
@@ -907,6 +909,12 @@ table.messagelist{
                     }
 
                     &:first-of-type{
+
+                        --settings-mail-folder-margin-top:var(--settings-mail-first-folder-margin-top);
+                        --settings-mail-folder-margin-left:var(--settings-mail-first-folder-margin-left);
+                        --settings-mail-folder-margin-right:var(--settings-mail-first-folder-margin-right);
+                        --settings-mail-folder-margin-bottom:var(--settings-mail-first-folder-margin-bottom);
+
                         .unreadcount{
                             right: 15px;
                         }
@@ -957,12 +965,23 @@ table.messagelist{
         }
 
         li {
+
+            margin-top: var(--settings-mail-subfolder-margin-top);
+            margin-bottom: var(--settings-mail-subfolder-margin-bottom);
+            margin-left: var(--settings-mail-subfolder-margin-left);
+            margin-right: var(--settings-mail-subfolder-margin-right);
+
             &.mailbox{
                 &.boite{
                     .mailboxlist();
 
                     &[aria-expanded="true"]{
                         border:none;
+
+                        --settings-mail-folder-margin-top:var(--settings-mail-opened-folder-margin-top)!important;
+                        --settings-mail-folder-margin-left:var(--settings-mail-opened-folder-margin-left)!important;
+                        --settings-mail-folder-margin-right:var(--settings-mail-opened-folder-margin-right)!important;
+                        --settings-mail-folder-margin-bottom:var(--settings-mail-opened-folder-margin-bottom)!important;
                     }
                 }
             }

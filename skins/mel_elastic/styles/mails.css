@@ -474,8 +474,10 @@ html body.task-mail #layout > div > .footer.small {
 #folderlist-content ul#mailboxlist > li.mailbox.virtual.junk,
 #folderlist-content ul#mailboxlist > li.mailbox.virtual.trash,
 #folderlist-content ul#mailboxlist > li.mailbox.virtual.inbox {
-  margin: 20px 0;
-  margin-bottom: -10px;
+  margin-top: var(--settings-mail-folder-margin-top);
+  margin-bottom: var(--settings-mail-folder-margin-bottom);
+  margin-left: var(--settings-mail-folder-margin-left);
+  margin-right: var(--settings-mail-folder-margin-right);
   padding-right: 0;
 }
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type {
@@ -495,6 +497,12 @@ html body.task-mail #layout > div > .footer.small {
 }
 #folderlist-content ul#mailboxlist > li ~ li {
   padding-right: 0;
+}
+#folderlist-content ul#mailboxlist > li:first-of-type {
+  --settings-mail-folder-margin-top: var(--settings-mail-first-folder-margin-top);
+  --settings-mail-folder-margin-left: var(--settings-mail-first-folder-margin-left);
+  --settings-mail-folder-margin-right: var(--settings-mail-first-folder-margin-right);
+  --settings-mail-folder-margin-bottom: var(--settings-mail-first-folder-margin-bottom);
 }
 #folderlist-content ul#mailboxlist > li:first-of-type .unreadcount {
   right: 15px;
@@ -517,13 +525,25 @@ html body.task-mail #layout > div > .footer.small {
 #folderlist-content ul li.mailbox.selected a {
   background-color: var(--secondary-bckg-color);
 }
+#folderlist-content li {
+  margin-top: var(--settings-mail-subfolder-margin-top);
+  margin-bottom: var(--settings-mail-subfolder-margin-bottom);
+  margin-left: var(--settings-mail-subfolder-margin-left);
+  margin-right: var(--settings-mail-subfolder-margin-right);
+}
 #folderlist-content li.mailbox.boite {
-  margin: 20px 0;
-  margin-bottom: -10px;
+  margin-top: var(--settings-mail-folder-margin-top);
+  margin-bottom: var(--settings-mail-folder-margin-bottom);
+  margin-left: var(--settings-mail-folder-margin-left);
+  margin-right: var(--settings-mail-folder-margin-right);
   padding-right: 0;
 }
 #folderlist-content li.mailbox.boite[aria-expanded="true"] {
   border: none;
+  --settings-mail-folder-margin-top: var(--settings-mail-opened-folder-margin-top)!important;
+  --settings-mail-folder-margin-left: var(--settings-mail-opened-folder-margin-left)!important;
+  --settings-mail-folder-margin-right: var(--settings-mail-opened-folder-margin-right)!important;
+  --settings-mail-folder-margin-bottom: var(--settings-mail-opened-folder-margin-bottom)!important;
 }
 #rcm_labellist {
   overflow: auto;

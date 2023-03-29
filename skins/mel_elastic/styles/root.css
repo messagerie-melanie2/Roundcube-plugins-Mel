@@ -46,6 +46,26 @@
   --rocket-chat-barup-font-size: 1vw;
   --rocket-chat-barup-margin-left: 0.5vw;
   --otherapp-size: 183px;
+  --settings-base-mail-folder-margin-top: 20px;
+  --settings-base-mail-folder-margin-bottom: -10px;
+  --settings-base-mail-folder-margin-left: 0;
+  --settings-base-mail-folder-margin-right: 0;
+  --settings-mail-folder-margin-top: var(--settings-base-mail-folder-margin-top);
+  --settings-mail-folder-margin-bottom: var(--settings-base-mail-folder-margin-bottom);
+  --settings-mail-folder-margin-left: var(--settings-base-mail-folder-margin-left);
+  --settings-mail-folder-margin-right: var(--settings-base-mail-folder-margin-right);
+  --settings-mail-first-folder-margin-top: var(--settings-base-mail-folder-margin-top);
+  --settings-mail-first-folder-margin-bottom: var(--settings-base-mail-folder-margin-bottom);
+  --settings-mail-first-folder-margin-left: var(--settings-base-mail-folder-margin-left);
+  --settings-mail-first-folder-margin-right: var(--settings-base-mail-folder-margin-right);
+  --settings-mail-opened-folder-margin-top: var(--settings-base-mail-folder-margin-top);
+  --settings-mail-opened-folder-margin-bottom: var(--settings-base-mail-folder-margin-bottom);
+  --settings-mail-opened-folder-margin-left: var(--settings-base-mail-folder-margin-left);
+  --settings-mail-opened-folder-margin-right: var(--settings-base-mail-folder-margin-right);
+  --settings-mail-subfolder-margin-top: 0;
+  --settings-mail-subfolder-margin-bottom: 0;
+  --settings-mail-subfolder-margin-left: 0;
+  --settings-mail-subfolder-margin-right: 0;
   /** TEXT COLOR **/
   --main-text-color: #363A5B;
   --secondary-text-color: #FFFFFF;

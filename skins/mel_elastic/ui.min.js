@@ -1376,7 +1376,9 @@ $(document).ready(() => {
                             _css += `
                             
                             #folderlist-content li {
-                                margin-top: 10px;
+                                --settings-mail-folder-margin-top: 30px;
+                                --settings-mail-subfolder-margin-top: 5px;
+                                --settings-mail-opened-folder-margin-top: 30px;
                             }
                             
                             `;
@@ -1384,7 +1386,12 @@ $(document).ready(() => {
                             _css += `
                                 
                             #folderlist-content li {
-                                margin-top: -5px;
+                                --settings-mail-folder-margin-top: 0px;
+                                --settings-mail-subfolder-margin-top: -5px;
+                            }
+
+                            #folderlist-content li.mailbox.boite[aria-expanded="true"]{
+                                --settings-mail-opened-folder-margin-bottom: 20px;
                             }
                             
                             `;

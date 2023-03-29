@@ -1390,8 +1390,40 @@ $(document).ready(() => {
                                 --settings-mail-subfolder-margin-top: -5px;
                             }
 
+                            #folderlist-content .unified li {
+                                --settings-mail-folder-margin-top: 5px;
+                                --settings-mail-subfolder-margin-top: 0px;
+                            }
+
                             #folderlist-content li.mailbox.boite[aria-expanded="true"]{
                                 --settings-mail-opened-folder-margin-bottom: 20px;
+                                /*--settings-mail-opened-folder-margin-top: 0px;*/
+                            }
+
+                            #folderlist-content .unified li.mailbox.boite[aria-expanded="true"]{
+                                --settings-mail-opened-folder-margin-top: 5px!important;
+                            }
+
+                            #folderlist-content .unified li.mailbox[aria-expanded="true"]{
+                                --settings-mail-folder-margin-bottom: 20px!important;
+                                --settings-mail-folder-margin-top: 5px!important;
+                            }
+
+                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type{
+                                border: none;
+                                margin-top: 0;
+                                padding-top: 0;
+                            }
+
+                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,
+                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
+                                top:0;
+                            }
+
+                            
+
+                            #mailboxlist li ul:first-of-type {
+                                padding-left: 1.5em;
                             }
                             
                             `;

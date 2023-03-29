@@ -172,7 +172,7 @@ class mel_workspace extends rcube_plugin
 
         $service = $this->check_services($service, $workspace);
 
-        if ($service === null || !$service) {
+        if ($service === null || !$service || $service['state'] === 'invalid') {
             $return['state'] = 'invalid';
             $return['service_state'] = $service;
         }
@@ -1862,14 +1862,6 @@ class mel_workspace extends rcube_plugin
 
                     if (class_exists("mel_notification"))
                     {
-                        // mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
-                        //     [
-                        //         'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
-                        //         'text' => $this->gettext("mel_workspace.open"),
-                        //         'title' => $this->gettext("mel_workspace.click_for_open"),
-                        //         'command' => "event.click"
-                        //     ]
-                        // ], $tmp_user);
                         $this->_notify_user($tmp_user, $workspace, $tmp_user);
                     }           
                 }
@@ -1878,7 +1870,6 @@ class mel_workspace extends rcube_plugin
             $workspace->shares = $shares;
 
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création des services...");
-            //if ($datas['service_params'] === '') $datas['service_params'] = null;
 
             $datas["services"] = $this->create_services($workspace, $datas["services"], null, true, false, $datas['service_params']);
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Sauvegarde...");
@@ -2024,28 +2015,32 @@ class mel_workspace extends rcube_plugin
         return $services;
     }
 
-    function create_tasklist(&$workspace,$services, $users, $update_wsp, $default_value)
+    function create_tasklist(&$workspace, $services, $users, $update_wsp, $default_value)
     {
         $tasks = self::TASKS;
         if (array_search($tasks, $services) === false)
             return $services;
 
         include_once "../mel_moncompte/ressources/tasks.php";
-        $tasklist = $this->get_object($workspace,$tasks);
+        $tasklist = $this->get_object($workspace, $tasks);
 
         if ($tasklist !== null) //Si la liste de tâche existe déjà
         {
-            $mel = new M2tasks(null, $tasklist);
-            if ($mel != null)
+            $mel = new M2taskswsp($tasklist);
+            if ($mel->getTaskslist() !== null)
             {
                 foreach ($users as $s)
                 {
                     $mel->setAcl($s, ["w"]);
                 }
             }
+            else {
+                $this->remove_object($workspace, $tasks);
+                return $this->create_tasklist($workspace, $services, $users, $update_wsp, $default_value);
+            }
         }
         else {//Sinon
-            $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
+            $mel = new M2taskswsp($workspace->uid);
 
             if (!$update_wsp || $mel->createTaskslist($workspace->title))
             {
@@ -2257,6 +2252,17 @@ class mel_workspace extends rcube_plugin
             $workspace->objects->$key = $object;
         }
         $workspace->objects = json_encode($workspace->objects);
+    }
+
+    function remove_object(&$workspace, $key) {
+        if ($workspace->objects !== null)
+        {
+            $workspace->objects = json_decode($workspace->objects);
+
+            if (isset($workspace->objects->$key)) unset($workspace->objects->$key);
+
+            $workspace->objects = json_encode($workspace->objects);
+        }
     }
 
     public function get_object(&$workspace, $key)
@@ -2655,14 +2661,6 @@ class mel_workspace extends rcube_plugin
 
                 if (class_exists("mel_notification"))
                 {
-                    // mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
-                    //     [
-                    //         'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
-                    //         'text' => $this->gettext("mel_workspace.open"),
-                    //         'title' => $this->gettext("mel_workspace.click_for_open"),
-                    //         'command' => "event.click"
-                    //     ]
-                    // ], $users[$i]);
                     $this->_notify_user($users[$i], $workspace, $users[$i]);
                 }
             }                           
@@ -2736,24 +2734,8 @@ class mel_workspace extends rcube_plugin
 
                     if ($tasklist !== null)
                     {
-                        $mel = new M2tasks(null, $tasklist);
-                        $tasklist = $mel->getTaskslist();
-
-                        if ($user === $tasklist->owner)
-                        {
-                            if (self::nb_admin($workspace) > 1)
-                            {
-                                //$tasklist->owner = self::get_other_admin($workspace, $user);
-                                $mel->deleteAcl($user);
-                            }
-                            else
-                            {
-                                $mel->deleteTaskslist();
-                                $this->save_object($workspace, self::TASKS, null);
-                            }
-                        }
-                        else
-                            $mel->deleteAcl($user);
+                        $mel = new M2taskswsp($tasklist);
+                        $mel->deleteAcl($user);
                     }
                     break;
                 case self::AGENDA:
@@ -2934,6 +2916,13 @@ class mel_workspace extends rcube_plugin
                     if ($wekan->updated !== true) $this->wekan()->delete_board($wekan->id);
                 }
 
+                if ($services[self::TASKS]) {
+                    $mel = new M2taskswsp($workspace->uid);
+                    $tasklist = $mel->getTaskslist();
+                    $mel->deleteTaskslist();
+
+                }
+
                 if ($services[self::CHANNEL])
                 {
                     $can = true;
@@ -2951,7 +2940,7 @@ class mel_workspace extends rcube_plugin
                 }
 
             } catch (\Throwable $th) {
-                //throw $th;
+                throw $th;
             }
 
             $workspace->delete();
@@ -3229,7 +3218,7 @@ class mel_workspace extends rcube_plugin
                     // $tasklist = $mel->getTaskslist();
                     
                     // $value = $tasklist !== null;
-                    $value = $this->check_tasks($this->get_object($workspace,self::TASKS));
+                    $value = $this->check_tasks($workspace);
                 }
                 else
                     $value = true;
@@ -3269,12 +3258,24 @@ class mel_workspace extends rcube_plugin
         return $value;
     }
 
-    function check_tasks($task_id)
+    function check_tasks($workspace)
     {
-        $mel = new M2tasks(null, $task_id);
+        $mel = new M2taskswsp($this->get_object($workspace, self::TASKS));
         $tasklist = $mel->getTaskslist();
-        
-        return $tasklist !== null;
+
+        return $tasklist !== null ? ($this->check_user_task($workspace, $mel) ? true : [
+            'state' => 'invalid',
+            'text' => 'La liste des tâches existe mais vous n\'êtes pas dedans, nous allons vous ajouter....',
+            'ok_text' => 'Vous avez été ajouter avec succès !',
+            'nok_text' => 'Un problème est survenu...',
+            'custom_args' => 'need_add_user'
+        ] ) : false;
+    }
+
+    function check_user_task($workspace, &$tasklist = null) {
+        $mel = $tasklist ?? new M2taskswsp($this->get_object($workspace, self::TASKS));
+
+        return $mel->getAcl(driver_mel::gi()->getUser());
     }
 
     function check_wekan($board_id)
@@ -3372,24 +3373,33 @@ class mel_workspace extends rcube_plugin
                             break;
         
                         case self::TASKS:
-
-                            if (self::is_admin($workspace))
+                            if ($value === 'need_add_user')
                             {
-                                $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
-            
+                                $mel = new M2taskswsp($this->get_object($workspace, self::TASKS));
+
+                                if ($mel->getTaskslist() !== null) {
+                                    $mel->setAcl(driver_mel::gi()->getUser()->uid, ["w"]);
+                                }
+
+                                $needUpdate = false;
+                            }
+                            else {
+                                $mel = new M2taskswsp($workspace->uid);
+        
                                 if ($mel->createTaskslist($workspace->title))
                                 {
+                                    $users = $workspace->shares;
                                     foreach ($users as $s)
                                     {
-                                        $mel->setAcl($s, ["w"]);
+                                        $mel->setAcl($s->user, ["w"]);
                                     }
             
                                     $taskslist = $mel->getTaskslist();
                                     $this->save_object($workspace, self::TASKS, $taskslist->id);
                                 }
-
                                 $needUpdate = true;
                             }
+
 
                             break;
 

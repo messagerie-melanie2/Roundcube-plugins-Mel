@@ -60,10 +60,15 @@ class M2tasks {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
     if (isset($user) && !empty($user)) {
-      $user = driver_mel::gi()->rcToMceId($user);
-      $this->user = driver_mel::gi()->getUser($user);
-      if (isset($this->user) && $this->user->is_objectshare) {
-        $this->user = $this->user->objectshare->mailbox;
+      if (is_object($user)) {
+        $this->user = $user;
+      }
+      else {
+        $user = driver_mel::gi()->rcToMceId($user);
+        $this->user = driver_mel::gi()->getUser($user);
+        if (isset($this->user) && $this->user->is_objectshare) {
+          $this->user = $this->user->objectshare->mailbox;
+        }
       }
     }
     try {
@@ -318,9 +323,9 @@ class M2tasks {
    * Suppression de la liste de tâches
    */
   public function deleteTaskslist() {
-    if (isset($this->taskslist) && isset($this->user) && $this->taskslist->owner == $this->user->uid && $this->taskslist->id != $this->user->uid) {
+    if ($this->_deleteCondiction()) {
       // Parcour les tâches pour les supprimer
-      $tasks = $this->taskslist->getAllContacts();
+      $tasks = $this->taskslist->getAllTasks();
       foreach ($tasks as $task) {
         $task->delete();
       }
@@ -328,6 +333,10 @@ class M2tasks {
       return $this->taskslist->delete();
     }
     return false;
+  }
+
+  protected function _deleteCondiction() {
+    return isset($this->taskslist) && isset($this->user) && $this->taskslist->owner == $this->user->uid && $this->taskslist->id != $this->user->uid;
   }
 
   /**
@@ -510,5 +519,51 @@ class M2tasksgroup extends M2tasks {
     $attrib['border'] = 'border:0';
 
     return $this->rc->output->frame($attrib);
+  }
+}
+
+class M2taskswsp extends M2tasks{
+  public function __construct($id){
+    // Chargement de l'instance rcmail
+    $this->rc = rcmail::get_instance();
+    $this->user = new stdClass();
+    $this->user->uid = $id;
+    $this->mbox = $id;
+    $this->taskslist = driver_mel::gi()->taskslist();
+    $this->taskslist->id = $id;
+
+    if (!$this->taskslist->load()) $this->taskslist = null;
+  }
+
+    /**
+   * Récupération de l'acl
+   *
+   * @return array
+   */
+  public function getAcl($user) {
+    if (!isset($this->taskslist)) return false;
+    else if ($this->taskslist->owner === $user->uid) return true;
+
+    try {
+      $_share = driver_mel::gi()->share([$this->taskslist]);
+      $_share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
+      $acl = array();
+      foreach ($_share->getList() as $share) {
+        if ($share->name === $user->uid && $share->asRight(LibMelanie\Config\ConfigMelanie::WRITE))
+          return true;
+      }
+      return false;
+    }
+    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::getAcl() Melanie2DatabaseException");
+      return false;
+    }
+    catch (\Exception $ex) {
+      return false;
+    }
+  }
+
+  protected function _deleteCondiction() {
+    return isset($this->taskslist) && isset($this->user) && $this->taskslist->owner == $this->user->uid && $this->taskslist->id == $this->user->uid;
   }
 }

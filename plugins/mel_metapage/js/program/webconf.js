@@ -3166,6 +3166,26 @@ var MasterWebconfBar = (() => {
             mel_metapage.Functions.copy(this.webconfManager.get_url(true));
         }
 
+        aprilfool() {
+            let af = new mel_html('div', {class:'aprilfool absolute-center'});
+            af = af.create(parent.$('body'));
+
+            var audio = new Audio(window.location.origin + window.location.pathname + '/skins/mel_elastic/images/aprilfools.mp3');
+            audio.addEventListener('ended', () => {
+                af.remove();
+                af = null;
+                audio = null;
+            });
+            audio.play();
+
+            this.listener.webconf.jitsii.executeCommand(ListenerWebConfBar.visio_commands.sendChatMessage,
+                'C\'est l\'heure des coco pops !',
+                EMPTY_STRING,
+                true
+            );
+
+        }
+
         /**
          * Copie de la presse papier les infos pour rejoindre la visio par téléphone
          */

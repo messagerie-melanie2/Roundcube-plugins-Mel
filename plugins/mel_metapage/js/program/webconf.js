@@ -2777,6 +2777,12 @@ var MasterWebconfBar = (() => {
             for (var iterator of Enumerable.from(_$('.wsp-toolbar.webconf-toolbar button')).concat(more_actions.$buttons)) {
                 iterator = _$(iterator);
                  if (!!iterator.data('witem')) {
+
+                    if (!!iterator.data('aprilfool') && !(moment() > moment().startOf('year').add(2, 'month').add(29, 'day') && moment() < moment().startOf('year').add(3, 'month').add(4, 'day'))) {
+                        iterator.css('display', 'none');
+                        continue;
+                    };  
+
                     if (!!iterator.data('actionsvisioset')) iterator.off('click');
                     this.items[iterator.data('witem')] = new MasterWebconfBarItem(iterator, {
                         caller:this,
@@ -3167,23 +3173,43 @@ var MasterWebconfBar = (() => {
         }
 
         aprilfool() {
-            let af = new mel_html('div', {class:'aprilfool absolute-center'});
-            af = af.create(parent.$('body'));
+            if (!this.aprilfool.started) {
+                this.aprilfool.started = true;
+                let af = new mel_html('div', {class:'aprilfool absolute-center'});
+                af = af.create(parent.$('body')).click(() => {
+                    audio.pause();
+                });
+    
+                var audio = new Audio(window.location.origin + window.location.pathname + '/skins/mel_elastic/images/aprilfools.mp3');
+                audio.addEventListener('ended', () => {
+                    this.aprilfool.started = false;
+                    af.remove();
+                    af = null;
+                    audio = null;
+                });
 
-            var audio = new Audio(window.location.origin + window.location.pathname + '/skins/mel_elastic/images/aprilfools.mp3');
-            audio.addEventListener('ended', () => {
-                af.remove();
-                af = null;
-                audio = null;
-            });
-            audio.play();
+                audio.onpause = () => {
+                    this.aprilfool.started = false;
+                    af.remove();
+                    af = null;
+                    audio = null;
+                };
 
-            this.listener.webconf.jitsii.executeCommand(ListenerWebConfBar.visio_commands.sendChatMessage,
-                'C\'est l\'heure des coco pops !',
-                EMPTY_STRING,
-                true
-            );
+                audio.play();
+    
+                this.listener.webconf.jitsii.executeCommand(ListenerWebConfBar.visio_commands.sendChatMessage,
+                    'C\'est l\'heure des coco pops !',
+                    EMPTY_STRING,
+                    true
+                );
 
+                top.MEL_ELASTIC_UI.css_rules.addAdvanced('aprilfool', '.barup', `
+                 background-color:#482c01!important;
+                 background-image:none!important;
+                `);
+
+            }
+            else alert("Un coco pops, ça se savoure, donc un seul à la fois !");
         }
 
         /**

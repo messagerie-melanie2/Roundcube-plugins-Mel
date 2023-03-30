@@ -124,7 +124,7 @@ class mel_helper extends rcube_plugin
 
     public static function why_stockage_not_active()
     {
-        if (self::stockage_active()) self::ST_ACTIVE;
+        if (self::stockage_active()) return self::ST_ACTIVE;
         else if (
             !mel::is_internal() 
         &&  !mel::is_auth_strong()

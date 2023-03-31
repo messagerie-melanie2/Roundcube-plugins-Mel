@@ -551,11 +551,13 @@ class mtes_driver_mel extends mce_driver_mel
     $membersList = [];
     $membersEmail = [];
     foreach ($members as $member) {
-      $user = $this->getUser($member);
-      if (isset($user)) {
-        $membersList[] = $user;
+      if (isset($member)) {
+        $user = $this->getUser(null, true, false, null, $member);
+        if (isset($user)) {
+          $membersList[] = $user;
+        }
+        $membersEmail[] = $member;
       }
-      $membersEmail[] = $member;
     }
     $group->members_email = $membersEmail;
     $group->members = $membersList;

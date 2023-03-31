@@ -3174,34 +3174,40 @@ var MasterWebconfBar = (() => {
 
         aprilfool() {
             if (!this.aprilfool.started) {
-                this.aprilfool.started = true;
-                let af = new mel_html('div', {class:'aprilfool absolute-center'});
-                af = af.create(parent.$('body')).click(() => {
-                    audio.pause();
-                });
+
+                if (confirm('Une piste audio va être lancé, assurez vous d\'avoir des écouteurs ou d\'être chez vous.'))
+                {
+                    this.aprilfool.started = true;
+                    let af = new mel_html('div', {class:'aprilfool absolute-center'});
+                    af = af.create(parent.$('body')).click(() => {
+                        audio.pause();
+                    });
+        
+                    var audio = new Audio(window.location.origin + window.location.pathname + '/skins/mel_elastic/images/aprilfools.mp3');
+                    audio.addEventListener('ended', () => {
+                        this.aprilfool.started = false;
+                        af.remove();
+                        af = null;
+                        audio = null;
+                    });
     
-                var audio = new Audio(window.location.origin + window.location.pathname + '/skins/mel_elastic/images/aprilfools.mp3');
-                audio.addEventListener('ended', () => {
-                    this.aprilfool.started = false;
-                    af.remove();
-                    af = null;
-                    audio = null;
-                });
-
-                audio.onpause = () => {
-                    this.aprilfool.started = false;
-                    af.remove();
-                    af = null;
-                    audio = null;
-                };
-
-                audio.play();
+                    audio.onpause = () => {
+                        this.aprilfool.started = false;
+                        af.remove();
+                        af = null;
+                        audio = null;
+                    };
+    
+                    audio.play();                    
+                }
     
                 this.listener.webconf.jitsii.executeCommand(ListenerWebConfBar.visio_commands.sendChatMessage,
                     'C\'est l\'heure des coco pops !',
                     EMPTY_STRING,
                     true
                 );
+
+                top.rcmail.display_message('Vous avez envoyer : C\'est l\'heure des coco pops !');
 
                 top.MEL_ELASTIC_UI.css_rules.addAdvanced('aprilfool', '.barup', `
                  background-color:#482c01!important;

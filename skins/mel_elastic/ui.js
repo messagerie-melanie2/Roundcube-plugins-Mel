@@ -649,12 +649,14 @@ $(document).ready(() => {
                         if (!$e.hasClass(THEME_BUTTON_CLASS_ACTIVE))
                         {
                             $e.addClass(THEME_BUTTON_CLASS_ACTIVE).html(THEME_BUTTON_ICON_ACTIVE);
+                            $e.attr({"title" : rcmail.gettext("back_to_notifications", "mel_metapage")});
                             $(SELECTOR_NOTIFICATION_PANEL).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
                             $(SELECTOR_THEME_PANEL).css(CONST_CSS_DISPLAY, EMPTY_STRING);
                             this._resize_themes();
                         }
                         else {
                             $e.removeClass(THEME_BUTTON_CLASS_ACTIVE).html(THEME_BUTTON_ICON_INACTIVE);
+                            $e.attr({"title" : rcmail.gettext("change_theme", "mel_metapage")});
                             $(SELECTOR_NOTIFICATION_PANEL).css(CONST_CSS_DISPLAY, EMPTY_STRING);
                             $(SELECTOR_THEME_PANEL).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
                         }

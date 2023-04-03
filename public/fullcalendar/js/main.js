@@ -200,15 +200,17 @@ function getMaxBusinessHour(response) {
 }
 
 function showModal(start, end) {
-  let allowTimes = generateAllowTimes(start);
-
+  let selectedValue = checkToday(roundTimeQuarterHour(new Date()));
+  let allowTimes = generateAllowTimes(start ? start : selectedValue);
   $("#eventModal").modal('show');
   $('#event-time-start').datetimepicker({
     datepicker: start ? false : true,
     step: 15,
-    value: start ? start : roundTimeQuarterHour(new Date()),
+    value: start ? start : selectedValue,
     allowTimes,
     disabledWeekDays: disabled_days,
+    disabledDates: allDayEvents,
+    formatDate:'d.m.Y',
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
@@ -218,9 +220,11 @@ function showModal(start, end) {
   $('#event-time-end').datetimepicker({
     datepicker: start ? false : true,
     step: 15,
-    value: end ? end : roundTimeQuarterHour(new Date()).addMinutes(appointment_duration),
+    value: end ? end : selectedValue.addMinutes(appointment_duration),
     allowTimes,
     disabledWeekDays: disabled_days,
+    disabledDates: allDayEvents,
+    formatDate:'d.m.Y',
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
@@ -235,7 +239,17 @@ function showModal(start, end) {
   else {
     $('#event-time-end').prop("disabled", true);
   }
+}
 
+function checkToday(selectedValue) {
+  if (allDayEvents.includes(moment(new Date).format('DD.MM.y')) || disabled_days.includes(parseInt(moment(selectedValue).format('d')))) {
+    selectedValue = moment(selectedValue).add(1, 'day').toDate();
+    
+    if (allDayEvents.includes(moment(selectedValue).format('DD.MM.y')) || disabled_days.includes(parseInt(moment(selectedValue).format('d')))) {
+      selectedValue = checkToday(selectedValue);
+    }
+  }
+  return selectedValue;
 }
 
 function generateAllowTimes(start = new Date()) {

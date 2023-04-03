@@ -449,7 +449,7 @@ $(document).ready(() => {
 
             if (0 === $green.length) {
                 new mel_html2(CONST_HTML_DIV, {
-                    attribs:{class:CONST_CLASS_THEME_BADGE_SELECTED},
+                    attribs:{class:CONST_CLASS_THEME_BADGE_SELECTED, title: $parent.children().attr('title')},
                     contents:[
                         new mel_html(CONST_HTML_SPAN, {class:`${CONST_ICON_CHECK} ${CONST_CLASS_ABSOLUTE_CENTER}`})
                     ]

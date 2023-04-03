@@ -88,6 +88,7 @@ $labels["webconf_mic_help"] = "Active ou désactive le micro";
 $labels["webconf_vid_help"] = "Active ou désactive la caméra";
 $labels["webconf_tile_help"] = "Active ou désactive le mode de vue \"Tuile\"";
 $labels["webconf_round_help"] = "Affiche ou cache la barre d'outil";
+$labels["webconf_participate_help"] = "Lever/baisser la main";
 
 $labels["saloon"] = "Salon";
 $labels["webconf_saloon_name_error"] = "Le nom du salon doit faire au moins 10 caractères avec au moins 3 chiffres. Alphanumérique seulement.";
@@ -211,7 +212,7 @@ $labels["webconf_bckg_help"] = "Utiliser une image comme arrière-plan.";
 
 $labels["more"] = "Plus";
 $labels["toggle_chat"] = "Afficher/Fermer le chat interne";
-$labels["webconf_tile_help"] = "Affiche ou ferme le chat qui sert à communiquer avec les personnes externe au BNum";
+$labels["webconf_tile_help_old"] = "Affiche ou ferme le chat qui sert à communiquer avec les personnes externe au BNum";
 $labels["change_theme"] = "Changer de thème";
 $labels["back_to_notifications"] = "Retour aux notifications";
 

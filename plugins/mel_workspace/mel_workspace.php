@@ -1491,7 +1491,11 @@ class mel_workspace extends rcube_plugin
         $html .= '<div class="wsp-block">';
 
         foreach ($shares as $key => $value) {
-            $html .= html::div(["class" => "row"], 
+            $tmp = driver_mel::gi()->getUser($value->user)->name;
+            
+            if (isset($tmp))
+            {
+                $html .= html::div(["class" => "row"], 
                 html::div(["class" => "col-2"],
                     html::div(["class" => "dwp-round", "style" => "background-color:transparent"],
                         html::tag("img", ["src" => $this->rc->config->get('rocket_chat_url')."avatar/".$value->user])
@@ -1500,9 +1504,10 @@ class mel_workspace extends rcube_plugin
                 html::div(["class" => "col-10"],
                     html::tag("span", ["class" => "name"], driver_mel::gi()->getUser($value->user)->name.(self::is_admin($this->currentWorkspace, $value->user) ? html::tag("span", ["class" => "plus icofont-crown"]) : "")).
                     "<br/>".
-                    html::tag("span", ["class" => "email"], driver_mel::gi()->getUser($value->user)->email)
+                    html::tag("span", ["class" => "email"], driver_mel::gi()->getUser($value->user)->email ?? 'Adresse inconnue')
                 )
             );
+            }
         }
 
         $html .= "</div></div>";
@@ -3104,7 +3109,12 @@ class mel_workspace extends rcube_plugin
         $user = driver_mel::gi()->getUser()->uid;
         foreach ($shares as $key => $value) {
             if ($value->user !== $user)
-                $array[] = driver_mel::gi()->getUser($value->user)->email;
+            {
+                $tmp = driver_mel::gi()->getUser($value->user)->email;
+
+                if (isset($tmp)) $array[] = $tmp;
+            }
+                
         }
         echo json_encode($array);
         exit;
@@ -3658,7 +3668,9 @@ class mel_workspace extends rcube_plugin
         $shares = $workspace->shares;
 
         foreach ($shares as $key => $value) {
-            $mails[] = driver_mel::gi()->getUser($key)->email;
+            $tmp = driver_mel::gi()->getUser($key)->email;
+
+            if (isset($tmp)) $mails[] = $tmp;
         }
 
         return $mails;

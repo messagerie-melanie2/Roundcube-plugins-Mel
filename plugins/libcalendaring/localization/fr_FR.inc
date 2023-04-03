@@ -156,8 +156,8 @@ $labels['cancelledinvitation'] = 'Cette invitation est annulée dans votre calen
 // PAMELA - Mode assistantes
 $labels['removelabelinfo'] = 'Cette invitation a déjà été traitée précédemment.';
 $labels['removelabel'] = 'Modifier la réponse';
-$labels['importtocalendar'] = 'Enregistrer dans mon calendrier';
-$labels['removefromcalendar'] = 'Supprimer de mon calendrier';
+$labels['importtocalendar'] = 'Enregistrer dans mon agenda';
+$labels['removefromcalendar'] = 'Supprimer de mon agenda';
 $labels['updatemycopy'] = 'Mise à jour de ma copie';
 $labels['openpreview'] = 'Ouvrir la prévisualisation';
 $labels['deleteobjectconfirm'] = 'Voulez-vous vraiment supprimer cet objet ?';

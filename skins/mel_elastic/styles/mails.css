@@ -141,7 +141,7 @@ table.messagelist tr.message td.subject span.priority span.prio1,
 table.messagelist tr.message td.subject span.priority span.prio2 {
   display: block;
   font-size: 22px;
-  margin-top: -33px;
+  margin-top: -31px;
   margin-left: -3px;
 }
 table.messagelist tr.message td.subject span.priority span.prio1::before,
@@ -149,6 +149,8 @@ table.messagelist tr.message td.subject span.priority span.prio2::before {
   content: "\e645";
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal;
+  color: red;
+  font-variation-settings: 'wght' 300;
 }
 table.messagelist tr.message:hover {
   box-shadow: 0px 2px 2px var(--message-hover-shadow);

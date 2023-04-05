@@ -178,14 +178,25 @@ const mel_metapage = {
             return (val ?? this.unexist) !== this.unexist;
         },
         /**
+         * 
+         * @returns {MelDataStore}
+         */
+        _getDataStore() {
+            if (!this._getDataStore.datastoreobject) this._getDataStore.datastoreobject = new MelDataStore('bnum', {});
+
+            return this._getDataStore.datastoreobject;
+        },
+        /**
          * Récupère une donnée depuis le stockage local.
          * @param {string} key Clé de la donnée à récupérer.
          */
         get(key, _default = null) {
+            let self = mel_metapage.Storage;
             try {
-                return JSON.parse(window.localStorage.getItem(key)) ?? _default;
+                return self._getDataStore().get(key) ?? _default;
             } catch (error) {
-                return this.unexist;
+                console.error(error);
+                return self.unexist;
             }
         },
         /**
@@ -195,7 +206,7 @@ const mel_metapage = {
          */
         set(key, item, stringify = true)
         {
-            window.localStorage.setItem(key, stringify ? JSON.stringify(item) : item);
+            this._getDataStore().set(key, item);
             this.setStoreChange(key, item);
         },
         /**
@@ -203,7 +214,7 @@ const mel_metapage = {
          * @param {string} key Clé de la donnée à supprimer.
          */
         remove(key){
-            window.localStorage.removeItem(key);
+            this._getDataStore().remove(key);
             this.setStoreChange(key, undefined);
         },
         setStoreChange(key, item)
@@ -217,6 +228,9 @@ const mel_metapage = {
                     
                 }
             });
+        },
+        getAppStorageSize() {
+            return this._getDataStore().getSize();
         },
         check(storage = null)
         {
@@ -1328,6 +1342,14 @@ const mel_metapage = {
             );
 
             return data;
+        },
+
+        calculateObjectSizeInMo(obj) {
+            const jsonString = JSON.stringify(obj);
+            const blob = new Blob([jsonString]);
+            const sizeInBytes = blob.size;
+            const sizeInMb = sizeInBytes / (1024 * 1024);
+            return sizeInMb;
         },
 
         colors:{

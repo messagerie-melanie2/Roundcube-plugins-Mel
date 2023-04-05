@@ -182,9 +182,11 @@ const mel_metapage = {
          * @returns {MelDataStore}
          */
         _getDataStore() {
-            if (!this._getDataStore.datastoreobject) this._getDataStore.datastoreobject = new MelDataStore('bnum', {});
+            let self = top.mel_metapage.Storage;
 
-            return this._getDataStore.datastoreobject;
+            if (!self._getDataStore.datastoreobject) self._getDataStore.datastoreobject = new MelDataStore('bnum', {});
+
+            return self._getDataStore.datastoreobject;
         },
         /**
          * Récupère une donnée depuis le stockage local.

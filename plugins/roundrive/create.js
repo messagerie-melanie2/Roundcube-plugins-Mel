@@ -21,11 +21,10 @@ RoundriveCreate.prototype.init = function()
     this.inputs={
         name:$("#generated-document-input-mel-metapage"),
         folder:$("#roundrive-folder-input"),
-        models:$("#office-models"),
+        models:$("#models-input"),
     };
 
     this.create_buttons();
-    this.fill_select_models();
 }
 
 /**
@@ -48,17 +47,6 @@ RoundriveCreate.prototype.create_buttons = function()
     });
 }
 
-/**
- * Ajoute les options pour les modèles pour les documents de type office
- */
-RoundriveCreate.prototype.fill_select_models = function()
-{
-  for (let index = 0; index < rcmail.env.mel_metapage_templates_models.length; index++) {
-    const element = rcmail.env.mel_metapage_templates_models[index];
-
-    $("#office-models").append(new Option(rcmail.gettext("mel_metapage." + element.name),element.name));
-  }
-}
 
 /**
  * Selectionne un dossier.

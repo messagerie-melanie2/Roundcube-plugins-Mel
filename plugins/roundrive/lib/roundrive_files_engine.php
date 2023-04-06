@@ -1228,6 +1228,8 @@ class roundrive_files_engine
         $path = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
         $model = rcube_utils::get_input_value('_model', rcube_utils::INPUT_POST);
 
+        if (empty($model)) $model = "empty";
+
         $path = str_replace($this->plugin->gettext('files'), '/', $path);
         $path = $this->encoderawpath($path);
 
@@ -1280,10 +1282,8 @@ class roundrive_files_engine
             $func = $handler[1];
             if ($handler[1] === "put")
                 $return["success"] = $handler[0]->$func("$path/$name.$ext", "");
-            else if ($handler[1] === "create_text_document")
-                $return["success"] = $handler[0]->$func($path, $name, $model);
             else
-                $return["success"] = $handler[0]->$func($path, $name);
+                $return["success"] = $handler[0]->$func($path, $name, $model);
 
         }
 

@@ -1770,20 +1770,30 @@ function m_mp_UpdateCreateDoc(json) {
         $("#" + mel_metapage.Ids.create.doc_input_ext).removeClass("disabled").removeAttr("disabled");
     else
         $("#" + mel_metapage.Ids.create.doc_input_ext).addClass("disabled").attr("disabled", "disabled");
+    
+    show_models_input(json.name)
+    
+}
 
-    if (json.name == "text_office_document") {
-      $("#office-models-inputs").show();
+function show_models_input(name) {
+  const models_name = Object.keys(rcmail.env.mel_metapage_templates_models)
+  let $querry = $('#models-input').html('');
+
+  if (models_name.includes(name)) { 
+    $("#models-inputs-group").show();
+
+    for (let i = 0; i < rcmail.env.mel_metapage_templates_models[name].length; i++) {
+      const element = rcmail.env.mel_metapage_templates_models[name][i];
+      $querry.append(new Option(rcmail.gettext("mel_metapage." + element.name),element.name));
     }
-    else {
-      $("#office-models-inputs").hide();
-    }
+   }
+  else $("#models-inputs-group").hide()
 }
 
 function m_mp_CreateDocRetour() {
     create_popUp = undefined;
     m_mp_Create();
 }
-
 
 async function m_mp_CreateDoc() {
     let configModifier = function(type, value, path, modifiers = null) {

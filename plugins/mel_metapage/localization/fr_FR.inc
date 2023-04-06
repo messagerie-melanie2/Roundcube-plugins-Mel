@@ -49,6 +49,11 @@ $labels["mtect"] = "Mtect";
 $labels["mtect_mte_mer"] = "Mtect mte mer";
 $labels["transport"] = "Transports";
 
+$labels["mte_ppt_marianne"] = "MTE";
+$labels["mtect_ppt_marianne"] = "MTECT";
+$labels["secmer_ppt_marianne"] = "SECMER";
+$labels["mct_presentation_arial_16_9"] = "MCT présentation arial 16/9";
+
 $labels["new_n"] = "Nouveau";
 $labels["new_f"] = "Nouvelle";
 

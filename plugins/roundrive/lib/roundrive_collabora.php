@@ -41,27 +41,20 @@ class roundrive_collabora
 
     public function create_text_document($path, $name, $model)
     {
-        return $this->create_model_document($path, $name, "odt", $model);
+        return $this->create_document($path, $name, "odt", $model);
     }
 
-    public function create_spreadsheet_document($path, $name)
+    public function create_spreadsheet_document($path, $name, $model)
     {
-        return $this->create_document($path, $name, "ods");
+        return $this->create_document($path, $name, "ods", $model);
     }
 
-    public function create_powerpoint_document($path, $name)
+    public function create_powerpoint_document($path, $name, $model)
     {
-        return $this->create_document($path, $name, "odp");
+        return $this->create_document($path, $name, "odp", $model);
     }
 
-    private function create_document($path, $name, $ext)
-    {
-        $dir = __DIR__;
-        $doc = fopen("$dir/../files/empty.$ext", 'r');
-        return $this->filesystem->putStream("$path/$name.$ext", $doc);
-    }
-
-    private function create_model_document($path, $name, $ext, $model)
+    private function create_document($path, $name, $ext, $model)
     {
         $dir = __DIR__;
         $doc = fopen("$dir/../files/$model.$ext", 'r');

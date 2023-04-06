@@ -143,19 +143,23 @@
   content: "\e911";
 }
 .icon-mel-file-empty:before {
-  content: "\e93c";
+  content: "\eb12";
+  font-family: "Icofont" !important;
 }
 .icon-mel-file-pdf:before {
   content: "\e912";
 }
 .icon-mel-file-word:before {
-  content: "\e913";
+  content: "\eb0e";
+  font-family: "Icofont" !important;
 }
 .icon-mel-file-excel:before {
-  content: "\e914";
+  content: "\eb27";
+  font-family: "Icofont" !important;
 }
 .icon-mel-file-ppt:before {
-  content: "\e942";
+  content: "\eb22";
+  font-family: "Icofont" !important;
 }
 .icon-mel-folder:before {
   content: "\e915";
@@ -356,3 +360,6 @@
 .icon-mel-painting:before {
   content: "\e968";
 }
+/* .icon-mel-file-file:before {
+  content: "\eb12";
+} */

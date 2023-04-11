@@ -2836,3 +2836,24 @@ html.dark-mode .green-badge {
   width: 500px;
   height: 300px;
 }
+.mel-toolbar {
+  position: absolute;
+}
+.mel-toolbar .toolbar-buttons {
+  display: flex;
+  height: 100%;
+}
+.mel-toolbar .toolbar-buttons .mel-button {
+  flex: 1;
+  --main-bckg-color: var(--invisible);
+  --mel-button-border-color: var(--invisible);
+  border-radius: 0;
+}
+.mel-toolbar .toolbar-buttons .mel-button span {
+  display: block;
+}
+.mel-toolbar .toolbar-buttons .v-separate {
+  width: 1px;
+  background: white;
+  margin: 10px 0;
+}

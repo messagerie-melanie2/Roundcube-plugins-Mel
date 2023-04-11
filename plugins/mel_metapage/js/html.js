@@ -940,7 +940,7 @@ class mel_button extends mel_html {
 	constructor(attribs = {}, content = EMPTY_STRING)
 	{
 		super(CONST_HTML_BUTTON, attribs, content);
-		this.attribs[CONST_ATTRIB_CLASS] = `${mel_button.html_base_class.base} ${mel_button.html_base_class_no_margin} ${mel_button.html_base_class.bootstrap.base} ${mel_button.html_base_class.bootstrap.state}`;//'mel-button btn btn-secondary no-button-margin'
+		this.attribs[CONST_ATTRIB_CLASS] = mel_button.html_base_class_full;//'mel-button btn btn-secondary no-button-margin'
 	}
 }
 
@@ -1002,6 +1002,13 @@ Object.defineProperty(mel_button, 'html_base_class_danger', {
 	configurable: false,
 	writable: false,
 	value:CONST_CLASS_BUTTON_DANGER
+});
+
+Object.defineProperty(mel_button, 'html_base_class_full', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:`${mel_button.html_base_class.base} ${mel_button.html_base_class_no_margin} ${mel_button.html_base_class.bootstrap.base} ${mel_button.html_base_class.bootstrap.state}`
 });
 
 class mel_tab extends mel_button{

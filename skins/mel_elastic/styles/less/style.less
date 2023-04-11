@@ -4311,3 +4311,31 @@ a.rcmContactAddress {
     width:500px;
     height:300px;
 }
+
+.mel-toolbar {
+    position:absolute;
+
+    .toolbar-buttons {
+        display: flex;
+        height:100%; 
+
+        .mel-button {
+            flex:1;
+            // --secondary-text-color:white;
+            --main-bckg-color: var(--invisible);
+            --mel-button-border-color: var(--invisible);
+            border-radius: 0;
+
+            span {
+                display: block;
+            }
+        }
+
+        .v-separate{
+            width: 1px;
+            background: white;
+            margin: 10px 0;
+        }
+    }
+
+}

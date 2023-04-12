@@ -940,10 +940,11 @@ async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-has
     const val = $(inputSelector).val();
     if (val.length > 0) {
         let querry = $(containerSelector).css("display", "");
+        querry.parent().attr('data-visible', true);
         querry.html("<center><span class=spinner-border></span></center>");
 
         if (mel_promise.isCancelled()) return;
-        await mel_metapage.Functions.get(
+        let ajax = mel_metapage.Functions.get(
             mel_metapage.Functions.url("workspace", "hashtag"), {
                 _hashtag: val
             }, (datas) => {
@@ -975,6 +976,13 @@ async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-has
         ).always(() => {
             rcmail.triggerEvent("onHashtagChange", { input: inputSelector, container: containerSelector });
         });
+
+        mel_promise.onAbort = () => {
+            ajax.abort();
+        };
+
+        await ajax;
+
     } else
         $(containerSelector).css("display", "none");
 
@@ -1010,7 +1018,7 @@ async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-has
 
 function m_mp_hashtag_select(e, inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
     $(inputSelector).val($(e).find("text").html());
-    $(containerSelector).css("display", "none");
+    $(containerSelector).css("display", "none").parent().attr('data-visible', false);;
 }
 
 function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
@@ -1027,7 +1035,7 @@ function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
                 } else
                     target = target.parentElement;
             }
-            querry.css("display", "none");
+            querry.css("display", "none").parent().attr('data-visible', false);
         }
     } catch (error) {}
 }

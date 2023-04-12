@@ -71,10 +71,12 @@ class Mel_Promise {
                 if (isAbortablePromise) //Si c'est une promesse
                 {
                     _callback().then((datas) => {
+                        clearInterval(check_stop);
                         res(datas);
                     }, (error) => {
+                        clearInterval(check_stop);
                         rej(error);
-                    })
+                    });
                 }
                 else { 
                     //Si la function est asynchrone
@@ -89,14 +91,15 @@ class Mel_Promise {
                     }
                     else { //Si c'est une fonction + classique
                         const val = _callback(...args);
+                        clearInterval(check_stop);
                         res(val);
                     }
 
                 }
             } catch (error) {
+                console.error('[mel_promise]', error);
                 rej(error);
             }
-            clearInterval(check_stop);
         }).then((d) => {
             //Passage en résolu
             resolved = true;

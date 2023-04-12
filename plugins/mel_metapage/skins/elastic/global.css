@@ -311,6 +311,7 @@ bottom: 21px; */
 .list-of-all-hashtag-param {
     position: absolute;
     z-index: 99;
+    margin-top: 0px;
 }
 
 .btn.metapage-wsp-button {
@@ -409,4 +410,9 @@ html.touch .task-mail.action-compose #layout-content {
     position: absolute;
     top: 5px;
     right: 0;
+}
+
+[data-visible="true"] #spaceHashtag {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
 }

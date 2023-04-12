@@ -409,7 +409,7 @@ class mel_driver extends calendar_driver {
 
         $id = self::BIRTHDAY_CALENDAR_ID;
         if (!$cal_is_active || !in_array($id, $hidden_calendars)) {
-          $calendars[$id] = array('id' => $id, 'name' => $this->cal->gettext('birthdays'), 'listname' => $this->cal->gettext('birthdays'), 'color' => $prefs['color'], 'showalarms' => (bool)$this->rc->config->get('calendar_birthdays_alarm_type'), 'active' => isset($active_calendars[$id]), 'group' => 'x-birthdays', 'editable' => false, 'default' => false, 'children' => false);
+          $calendars[$id] = array('id' => $id, 'title' => $this->cal->gettext('birthdays'), 'name' => $this->cal->gettext('birthdays'), 'listname' => $this->cal->gettext('birthdays'), 'color' => $prefs['color'], 'showalarms' => (bool)$this->rc->config->get('calendar_birthdays_alarm_type'), 'active' => isset($active_calendars[$id]), 'group' => 'x-birthdays', 'editable' => false, 'default' => false, 'children' => false);
         }
       }
       // Trier les calendriers

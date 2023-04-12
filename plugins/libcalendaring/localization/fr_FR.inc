@@ -176,3 +176,4 @@ $labels["for"] = "pour";
 $labels['ntimes'] = '$n fois';
 // PAMELA - Visios
 $labels['join_visio'] = 'Rejoindre la visioconférence';
+$labels['__bdays__'] = $labels['birthdays'] ?? 'Anniversaires';

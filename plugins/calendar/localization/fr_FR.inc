@@ -349,4 +349,5 @@ $labels['activateappointment'] = 'Activer la prise de rendez-vous';
 $labels['appointmentreason'] = 'Motif de rendez-vous';
 $labels['letusercustomreason'] = 'Laisser la possibilité à l\'utilisateur de choisir un motif personnalisé';
 $labels['see_direct_page'] = 'Voir la page de direct';
+$labels['__bdays__'] = $labels['birthdays'];
 ?>

@@ -150,6 +150,21 @@ function send_with_francetransfert(event) {
   }
 }
 
+function francetransfert_get_compose_message_text() {
+  var msg;
+
+  if (window.tinyMCE && (ed = tinyMCE.get(rcmail.env.composebody))) {
+    msg = ed.getContent({ format: 'text' });
+    msg = msg.replace(/<blockquote[^>]*>(.|[\r\n])*<\/blockquote>/gmi, '');
+  }
+  else {
+    msg = $('#' + rcmail.env.composebody).val();
+    msg = msg.replace(/^>.*$/gmi, '');
+  }
+
+  return msg;
+};
+
 /**
  * Envoi du message via le service France Transfert (appel Ajax)
  */
@@ -166,7 +181,7 @@ function send_francetransfert_message() {
     _bcc: $('#_bcc').val(),
     _draft_id: $('input[name=\'_draft_saveid\']').val(),
     _subject: $('#compose-subject').val(),
-    _message: $('#composebody').val(),
+    _message: francetransfert_get_compose_message_text(),
   });
 
   window.timer = setInterval(() => {

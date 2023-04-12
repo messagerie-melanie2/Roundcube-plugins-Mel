@@ -376,6 +376,7 @@ $(document).ready(() => {
             const ID_THEME_CONTENT = 0;
             const ID_PICTURES_CONTENT = 1;
             this.screen_type = null;
+            this._show_main_menu = rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin;
             this.css_rules = new Mel_CSS_Style_Sheet(); 
             const tabs = this.init_theme_tabs({});
             return this.init_const().init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`)).init_theme_pictures({picturePannel:`#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`}).initResponsive();
@@ -1001,51 +1002,57 @@ $(document).ready(() => {
                     $("#layout-content").css("margin-left", width);
             }
 
-            if ($("#taskmenu").length > 0)
+            let $taskmenu = $("#taskmenu");
+            if ($taskmenu.length > 0)
             {
-                //On met dans l'ordre les différents boutons de la barre de navigation principale
-                let array = [];
+                if (this._show_main_menu) {
+                    $('#layout-menu').remove();
+                }
+                else {
+                    //On met dans l'ordre les différents boutons de la barre de navigation principale
+                    let array = [];
 
-                $("#taskmenu").find("a").each((i,e) => {
-                e = $(e);
+                    $taskmenu.find("a").each((i,e) => {
+                    e = $(e);
 
-                if (e.parent().hasClass("special-buttons"))
-                    return;
+                    if (e.parent().hasClass("special-buttons"))
+                        return;
 
-                const order = e.css("order");
-                const tmp = e.removeAttr("title")[0].outerHTML;
-                e.remove();
-                e = null;
-                array.push({
-                    order:order,
-                    item:$(tmp).keypress((event) => {
+                    const order = e.css("order");
+                    const tmp = e.removeAttr("title")[0].outerHTML;
+                    e.remove();
+                    e = null;
+                    array.push({
+                        order:order,
+                        item:$(tmp).keypress((event) => {
 
-                        if (event.originalEvent.keyCode === 32)
-                            $(event.currentTarget).click();
+                            if (event.originalEvent.keyCode === 32)
+                                $(event.currentTarget).click();
 
-                    })
-                });
+                        })
+                    });
 
-                });
+                    });
 
-                $("#taskmenu").append('<ul class="list-unstyled"></ul>');
+                    $taskmenu.append('<ul class="list-unstyled"></ul>');
 
-                Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
-                    let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
-                    e = e.item;
-                    if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
-                    li.css("display", "none");
+                    Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
+                        let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
+                        e = e.item;
+                        if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
+                        li.css("display", "none");
 
-                    e.appendTo(li);
-                    li.appendTo($("#taskmenu ul"));
-                });
+                        e.appendTo(li);
+                        li.appendTo($("#taskmenu ul"));
+                    });
 
-                let $taskMenu = $("#taskmenu .menu-last-frame").attr("tabIndex", "-1");
+                    let $taskMenu = $("#taskmenu .menu-last-frame").attr("tabIndex", "-1");
 
-                if (true !== rcmail.env.menu_last_frame_enabled) $taskMenu.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                    if (true !== rcmail.env.menu_last_frame_enabled) $taskMenu.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
 
-                //On supprime le stockage si on y a pas accès.
-                if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();
+                    //On supprime le stockage si on y a pas accès.
+                    if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();
+                }
             }
 
             return this;

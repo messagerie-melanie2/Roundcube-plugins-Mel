@@ -1203,7 +1203,8 @@ const mel_metapage = {
                 return rcmail.env.have_0_quota ?? false;
             },
             is_stockage_active() {
-                return rcmail.env.why_is_not_active.value === rcmail.env.why_is_not_active.consts.ST_ACTIVE;
+                const DEFAULT = false;
+                return !!rcmail?.env?.why_is_not_active?.value ? rcmail.env.why_is_not_active.value === rcmail.env.why_is_not_active.consts.ST_ACTIVE : DEFAULT;
             },
             canDriveActions() {
                 return !this.have_0_quota() && this.is_stockage_active();

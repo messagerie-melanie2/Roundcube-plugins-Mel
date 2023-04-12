@@ -162,6 +162,8 @@ class mel_metapage extends rcube_plugin
         $this->load_config();
         $this->require_plugin('mel_helper');
 
+        $this->rc->output->set_env('mel_metapage_is_from_iframe', rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC) === 'iframe');
+
         $this->include_script('js/init/constants.js');
         $this->include_script('js/always_load/mel_event.js');
         $this->include_script('js/html.js');
@@ -329,8 +331,8 @@ class mel_metapage extends rcube_plugin
 
         self::add_url_spied($this->rc->config->get("web_conf"), 'webconf');
 
-        if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
-        || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
+        if ((rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
+        || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1") && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe')
         {
             $this->include_internal_and_external_buttons();
             $this->include_stylesheet($this->local_skin_path().'/modal.css');

@@ -745,8 +745,10 @@ function rcube_libcalendaring(settings)
 
         for (i=0; i < alarms.length; i++) {
             alarm = alarms[i];
-            alarm.start = this.parseISO8601(alarm.start);
-            alarm.end = this.parseISO8601(alarm.end);
+
+            // PAMELA - 0007596: Dans les rappels d'évènement, l'heure affichée du rendez-vous est décalée d'une heure
+            alarm.start = moment(alarm.start);
+            alarm.end = moment(alarm.end);
 
             if (alarm.action == 'AUDIO') {
                 audio_alarms.push(alarm);

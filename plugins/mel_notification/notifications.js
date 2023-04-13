@@ -379,7 +379,7 @@ function m_mp_ShowDesktopNotification(notification) {
                 tag: "mel_notification",
                 icon: rcmail.assets_path(icon)
             });
-            n.onclick = () => { this.close(); };
+            n.onclick = () => { window.focus(); };
             setTimeout(() => { n.close(); }, timeout * 1000);
         }
         else {

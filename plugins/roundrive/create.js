@@ -113,8 +113,15 @@ RoundriveCreate.prototype.create_document = function(goFunc = null)
     else
         this.inputs.name.removeClass("error");
 
-        if (values.folder === "")
-            values.folder = rcmail.gettext("files", "roundrive");
+        if (values.folder === "") values.folder = rcmail.gettext("files", "roundrive");
+
+    const fullpath = `${values.folder}/${values.name}`;
+    if (fullpath.length >= 255) {
+        console.error('La taille du chemin dépasse 255 char !', fullpath);
+        mel_metapage.Functions.call('rcmail.display_message("Impossible de mettre le fichier ici !", "error")');
+        this.inputs.name.addClass("error");
+        $continue = false;
+    }
 
     if ($continue)
     {

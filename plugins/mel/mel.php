@@ -259,6 +259,10 @@ class mel extends rcube_plugin
       $passwordchange_title = '';
       if (
         !isset($_SESSION['plugin.show_password_change'])
+        && $this->rc->task != 'login'
+        && $this->rc->task != 'logout'
+        && $this->rc->task != 'bnum'
+        && $_GET['_is_from'] == 'iframe'
         && !$this->rc->output->get_env('ismobile')
         && driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title)
       ) {

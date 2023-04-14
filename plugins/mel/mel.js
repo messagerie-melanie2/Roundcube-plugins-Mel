@@ -259,19 +259,10 @@ rcube_webmail.prototype.switch_to_default_task = function() {
 */
 function show_password_change()
 {
-  if (rcmail.is_framed()) {
-    var frame = $('<iframe>').attr('id', 'changepasswordframe')
+  var frame = $('<iframe>').attr('id', 'changepasswordframe')
     .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=changepassword&_framed=1')
     .attr('frameborder', '0')
-    .appendTo(parent.document.body);
-  }
-  else {
-    var frame = $('<iframe>').attr('id', 'changepasswordframe')
-    .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=changepassword&_framed=1')
-    .attr('frameborder', '0')
-    .appendTo(document.body);
-  }
-  
+    .appendTo(top.document.body);  
   
   var h = Math.floor($(window).height() * 0.75);
   var buttons = {};

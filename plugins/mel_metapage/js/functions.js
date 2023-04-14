@@ -1351,7 +1351,7 @@ function m_mp_on_open_select_calendar_contacts(node, node_id, fieldId)
 {
     console.log(node, fieldId);
 
-    if (node.email === rcmail.env.email)
+    if (!!node.email && !!rcmail.env.email && node.email === rcmail.env.email)
     {
         rcmail.display_message('Vous êtes déjà l\'organisateur !', 'error');
         $('#rcmrow' + node_id).removeClass('added');
@@ -1368,15 +1368,22 @@ function m_mp_on_open_select_calendar_contacts(node, node_id, fieldId)
             }
         });
 
-        if (can)
-        {
-            $(`#edit-attendee-add`).click();
-            $('#compose-contact-close-modal').click();
+        if (node.classes.includes('list')){
+            rcmail.display_message('Chargement de la liste...');
         }
         else {
-            rcmail.display_message('Vous avez déjà ajouté cet utilisateur !', 'error');
-            $('#rcmrow' + node_id).removeClass('added');
+            if (can)
+            {
+                $(`#edit-attendee-add`).click();
+                $('#compose-contact-close-modal').click();
+            }
+            else {
+                rcmail.display_message('Vous avez déjà ajouté cet utilisateur !', 'error');
+                $('#rcmrow' + node_id).removeClass('added');
+            }
         }
+
+
     }
 
 

@@ -285,11 +285,19 @@ textarea.input-mel{
 	margin: 0 30px;
 }
 
-.iframe #eventedit .alarms-input .edit-alarm-type {
+#eventedit .have-options #edit-alarm-item {
 	border-bottom-right-radius: 0;
-	border-top-right-radius: 0;
-	height: 100%;
+	border-top-right-radius: 0;  
+
 }
+
+#eventedit #edit-alarm-item {
+   /* border-bottom-right-radius: 60px;
+   border-top-right-radius: 60px;  */
+   height: 100%;
+}
+
+
 
 .iframe #eventedit .alarms-input .input-group-text {
 	border-color: #F0F0F0;
@@ -335,8 +343,8 @@ textarea.input-mel{
 .iframe #eventedit .edit-alarm-offset:focus,
 .iframe #eventedit .edit-alarm-related:focus
 {
-	border-color: #F0F0F0;
-	background-color: #F0F0F0;
+	/* border-color: #F0F0F0;
+	background-color: #F0F0F0; */
 	box-shadow: 0 0 0 .2rem #C8CDFC59;
 }
 

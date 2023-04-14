@@ -1503,6 +1503,15 @@ $(document).ready(() => {
                 onChangeDateTime.minTime = min_time;
             }
         };
+
+        const onAlertChange = function onalertChange(){
+            let $edit_alarms = $('#edit-alarms');
+            if ($('#edit-alarm-item').val() === EMPTY_STRING) {
+                $edit_alarms.removeClass('have-options');
+            }
+            else $edit_alarms.addClass('have-options');
+        }
+
         const format = "DD/MM/YYYY HH:mm";
         const have_created_callback = $("#eventedit").data("callbacks") === "ok";
         //Création des actions
@@ -1686,7 +1695,7 @@ $(document).ready(() => {
             });
             //Update visu
             $("#edit-recurrence-frequency").addClass("input-mel");
-            $("#edit-alarm-item").addClass("input-mel");
+            $("#edit-alarm-item").addClass("input-mel").on('change', () => onAlertChange());
             $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
@@ -1955,6 +1964,7 @@ $(document).ready(() => {
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
             //$('#edit-attendees-notify').css('display', 'none');
             update_location();
+            onAlertChange();
         }, 10);
 
         //Suppression text

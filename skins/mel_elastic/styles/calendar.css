@@ -823,3 +823,6 @@ body.quickview-active .fc .fc-scroller {
 #edit-attendees-table .notified span::before {
   line-height: 2;
 }
+#edit-alarms .edit-alarm-buttons.input-group-append {
+  display: none;
+}

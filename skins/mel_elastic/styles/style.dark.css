@@ -373,7 +373,8 @@ html.dark-mode .ui.alert.boxinformation.calendar-invitebox i.icon::before
 }
 
 html.dark-mode .messagelist span.threads > div,
-html.dark-mode body div#layout-list .messagelist td.subject a
+html.dark-mode body div#layout-list .messagelist td.subject a,
+html.dark-mode body div#layout-list .messagelist td.subject span.priority
 {
     color:#c7dfff;
 }

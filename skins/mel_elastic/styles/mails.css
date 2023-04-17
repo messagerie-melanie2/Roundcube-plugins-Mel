@@ -245,6 +245,9 @@ table.messagelist tr.message.suspect .msgicon.status.unread::before {
 table.messagelist td.subject span.date {
   color: var(--main-text-color);
 }
+table.messagelist td.subject span.priority {
+  color: var(--main-text-color);
+}
 table.messagelist td.subject span.fromto {
   color: var(--mail-unread-icon-color);
   padding-left: 0!important;
@@ -312,7 +315,8 @@ table.messagelist span.attachment span::before {
   font-family: DWP !important;
   font-weight: normal !important;
 }
-table.messagelist .selected .subject {
+table.messagelist .selected .subject,
+table.messagelist .selected .priority {
   color: var(--secondary-text-color) !important;
 }
 table.messagelist .selected td.subject span.msgicon::before,

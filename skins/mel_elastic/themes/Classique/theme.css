@@ -276,6 +276,7 @@ html.theme-classique .task-mail table.messagelist .selected td.subject span.msgi
 html.theme-classique .task-mail table.messagelist .selected td.subject span.date,
 html.theme-classique .task-mail table.messagelist .selected td.subject span.fromto,
 html.theme-classique .task-mail table.messagelist .selected td.subject span.subject a,
+html.theme-classique .task-mail table.messagelist .selected td.subject span.priority,
 html.theme-classique .task-mail table.messagelist .selected span.threads > div,
 html.theme-classique .task-mail table.messagelist tr.message.selected:hover td.subject span.msgicon.status::before {
   color: var(--main-text-color) !important;

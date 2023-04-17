@@ -442,7 +442,7 @@ class calendar extends rcube_plugin
 
             $p['blocks']['view']['options']['timeslots'] = [
                 'title' => html::label($field_id, rcube::Q($this->gettext('timeslots'))),
-                'content' => $select->show(strval($timeslots)),
+                'content' => $select->show($timeslots),
             ];
         }
 

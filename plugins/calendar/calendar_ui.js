@@ -4644,23 +4644,35 @@ function rcube_calendar_ui(settings) {
       if (sel == 'all' || me.selected_event._old_sel == 'all') {
         var event = me.selected_event;
 
+        if (!event.instance_start)
+          event.instance_start = event.start;
+        if (!event.instance_end)
+          event.instance_end = event.end;
+
         if (sel == 'all' && event.master_start) {
           var end = 'toDate' in event.master_end ? event.master_end : moment(event.master_end);
           var start = 'toDate' in event.master_start ? event.master_start : moment(event.master_start);
           var duration = Math.round((end.format('x') - start.format('x')) / 1000);
         }
         else {
-          var start = event.start;
-          var end = event.end;
+          var end = 'toDate' in event.instance_end ? event.instance_end : moment(event.instance_end);
+          var start = 'toDate' in event.instance_start ? event.instance_start : moment(event.instance_start);
           var duration = Math.round((end.format('x') - start.format('x')) / 1000);
         }
 
         $('#edit-startdate').val($.fullCalendar.formatDate(start, me.settings['date_format'])).data('duration', duration);
-        $('#edit-starttime').val($.fullCalendar.formatDate(start, me.settings['time_format']));
-        $(".input-mel-datetime .input-mel.start").val($('#edit-startdate').val() + " " + $('#edit-starttime').val());
         $('#edit-enddate').val($.fullCalendar.formatDate(end, me.settings['date_format']));
-        $('#edit-endtime').val($.fullCalendar.formatDate(end, me.settings['time_format']));
-        $(".input-mel-datetime .input-mel.end").val($('#edit-enddate').val() + " " + $('#edit-endtime').val());
+
+        if (event.allDay) {
+          $(".input-mel-datetime .input-mel.start").val($('#edit-startdate').val());
+          $(".input-mel-datetime .input-mel.end").val($('#edit-enddate').val());
+        }
+        else {
+          $('#edit-starttime').val($.fullCalendar.formatDate(start, me.settings['time_format']));
+          $(".input-mel-datetime .input-mel.start").val($('#edit-startdate').val() + " " + $('#edit-starttime').val());
+          $('#edit-endtime').val($.fullCalendar.formatDate(end, me.settings['time_format']));
+          $(".input-mel-datetime .input-mel.end").val($('#edit-enddate').val() + " " + $('#edit-endtime').val());
+        }
       }
       me.selected_event._old_sel = sel;
 

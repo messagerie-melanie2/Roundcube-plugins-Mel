@@ -430,6 +430,10 @@ table.messagelist{
                 &.date{
                     color: var(--main-text-color);
                 }
+                
+                &.priority {
+                  color: var(--main-text-color);
+                }
 
                 &.fromto{
                     color: var(--mail-unread-icon-color);
@@ -541,7 +545,8 @@ table.messagelist{
     }
 
     .selected {
-        .subject{
+        .subject,
+        .priority{
             color:var(--secondary-text-color)!important;
         }
 
@@ -639,7 +644,7 @@ table.messagelist{
                 &.subject{
                     span{
                         &.fromto,
-                        &.date{
+                        &.date,{
                             color: var(--secondary-text-color);
                         }
                     }

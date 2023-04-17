@@ -2,6 +2,59 @@
  * Script d'indexation pour l'aide Bnum
  */
 var urlPart = 'co/index.txt';
+var ignoreWords = [
+    'comment',
+    'pourquoi',
+    'quoi',
+    'entre',
+    'section',
+    'cette',
+    'global',
+    'autour',
+    'actions',
+    'lorsque',
+    'mode',
+];
+var synonyms = [
+    ['calendriers', 'agendas'],
+    ['documents', 'fichiers'],
+    ['pegase', 'sondages'],
+    ['canal', 'salon'],
+    ['visio-conferences', 'webconferences', 'visios'],
+    ['route', 'roadmap'],
+    ['annuaires', 'carnet d\'adresses'],
+];
+var plurials = {
+    'calendrier':   'calendriers',
+    'agenda':       'agendas',
+    'document':     'documents',
+    'fichier':      'fichiers',
+    'drive':        'drives',
+    'dossier':      'dossiers',
+    'filtre':       'filtres',
+    'ressource':    'ressources',
+    'suggestion':   'suggestions',
+    'sondage':      'sondages',
+    'discussion':   'discussions',
+    'parametrage':  'parametrages',
+    'espace':       'espaces',
+    'reunion':      'reunions',
+    'message':      'messages',
+    'notification': 'notifications',
+    'signature':    'signatures',
+    'annuaire':     'annuaires',
+    'webconference':    'webconferences',
+    'visio-conference': 'visio-conferences',
+}
+var infitifs = {
+    'partage':      'partager',
+    'accede':       'acceder',
+    'synchronise':  'synchroniser',
+    'gere':         'gerer',
+    'supprime':     'supprimer',
+    'archive':      'archiver',
+    'parametre':    'parametrer',
+};
 
 window.addEventListener('load', (event) => {
     // Ajout de l'url
@@ -10,6 +63,7 @@ window.addEventListener('load', (event) => {
             launchIndexation(document.getElementById('url').value);
         }
     };
+    document.getElementById('result').value = '';
 });
 
 /**
@@ -47,7 +101,7 @@ function analyzeData(result) {
             let exclude = JSON.parse(line);
             for (const filter of exclude.filters) {
                 if (filter.type == 'ignoreWords') {
-                    window.ignoreWords = filter.words;
+                    window.ignoreWordsDokiel = filter.words;
                     break;
                 }
             }
@@ -121,7 +175,7 @@ function indexPages() {
     }
 
     document.getElementById('message').innerHTML += '<br>Indexation terminée<br>';
-    document.getElementById('result').innerText = JSON.stringify(window.indexation);
+    document.getElementById('result').value = JSON.stringify(window.indexation, undefined, 4);
 }
 
 /**
@@ -136,23 +190,20 @@ function indexPage(key, page) {
 
     document.getElementById('message').innerHTML += '<br>Indexation de la page ' + title +'<br>';
 
-    const sections = page.querySelectorAll('section');
+    const sections = page.querySelectorAll('section, div.block, div.infoblock');
     for (const section of sections) {
         if (section.querySelector('h2')) {
+
+            const section_descriptions = section.querySelectorAll('p.txt_p');
                        
             const item = {
                 title: title + ' - ' + section.querySelector('h2').innerText.replace(regEx, ''),
-                description: '',
+                description: section_descriptions[0] ? section_descriptions[0].innerText : '',
                 keywords: getKeywords(title + ' ' + section.querySelector('h2').innerText.replace(regEx, '')),
                 help_name: "En savoir plus...",
                 help_url: getUrl(window.pages[key], section),
                 help_title: "Ouvrez l'aide pour en découvrir plus sur " + title
             };
-
-            const section_descriptions = section.querySelectorAll('p.txt_p');
-            if (section_descriptions[0]) {
-                item.description = section_descriptions[0].innerText;
-            }
 
             document.getElementById('message').innerHTML += 'Section ' + item.title + ' / Description ' + item.description.length + '<br>';
             window.indexation.push(item);
@@ -170,16 +221,94 @@ function getKeywords(text) {
     let keywords = [];
     text = text.split(' ');
     for (let index = 0; index < text.length; index++) {
-        const word = text[index].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-        if (word.length > 3 
-                && !window.ignoreWords[word] 
-                && keywords.indexOf(word) === -1
-                && keywords.indexOf(word+'s') === -1
-                && keywords.indexOf(word+'r') === -1) {
-            keywords.push(word);
+        const wordsToAdd = getWords(text[index]);
+        if (wordsToAdd) {
+            for (const wordToAdd of wordsToAdd) {
+                if (keywords.indexOf(wordToAdd) === -1) {
+                    keywords.push(wordToAdd);
+                }
+            }
         }
     }
     return keywords;
+}
+
+/**
+ * Traitement du mot
+ * 
+ * @param {*} word 
+ */
+function getWords(word) {
+    word = cleanWord(word).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    if (word.length > 3 
+            && !window.ignoreWordsDokiel[word] 
+            && window.ignoreWords.indexOf(word) === -1) {
+        word = getPlurial(word);
+        word = getInfitif(word);
+        return getSynonyms(word);
+    }
+    else {
+        return false;
+    }
+}
+
+/**
+ * Nettoyage du mot des caractères non prévus
+ * 
+ * @param {*} word 
+ * @returns 
+ */
+function cleanWord(word) {
+    return word.replace(/d\'/g, '')
+                .replace(/l\'/g, '')
+                .replace(/qu\'/g, '')
+                .replace("?", "")
+                .trim();
+}
+
+/**
+ * Récupère le pluriel du mot s'il existe
+ * 
+ * @param {*} word 
+ * @returns 
+ */
+function getPlurial(word) {
+    if (window.plurials[word]) {
+        return window.plurials[word];
+    }
+    else {
+        return word;
+    }
+}
+
+/**
+ * Récupère l'infinitif du mot s'il existe
+ * 
+ * @param {*} word 
+ * @returns 
+ */
+function getInfitif(word) {
+    if (window.infitifs[word]) {
+        return window.infitifs[word];
+    }
+    else {
+        return word;
+    }
+}
+
+/**
+ * Récupère les synonymes d'un mot
+ * 
+ * @param {*} word 
+ * @returns 
+ */
+function getSynonyms(word) {
+    for (const syn of window.synonyms) {
+        if (syn.indexOf(word) !== -1) {
+            return syn;
+        }
+    }
+    return [word];
 }
 
 /**

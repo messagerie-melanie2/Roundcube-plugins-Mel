@@ -22,7 +22,16 @@ rcube_webmail.prototype.help_search = function(event, object) {
         }
         handle = setTimeout(function() {
             document.getElementById("noresulthelp").style.display = "block";
-            var values = object.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ');
+            var values = object.value.normalize("NFD")
+                                .replace(/[\u0300-\u036f]/g, "")
+                                .toLowerCase()
+                                .replace(/d\'/g, '')
+                                .replace(/l\'/g, '')
+                                .replace(/qu\'/g, '')
+                                .replace("?", "")
+                                .trim()
+                                .split(' ');
+                                
             for (const word in _index) {
                 for (const value of values) {
                     if (value.length > 3) {

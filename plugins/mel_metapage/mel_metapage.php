@@ -485,21 +485,14 @@ class mel_metapage extends rcube_plugin
                 'full' => driver_mel::gi()->getUser()->fullname
             ]);
 
+            $this->include_script('js/actions/startup.js');
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE)
             {
-                $this->include_script('js/actions/startup.js');
-                // $this->rc->output->add_handlers(array(
-                //     'searchform'          => array($this->rc->output, 'search_form'),
-                //     "addressbooks" => [$this, 'override_rcmail_addressbook_list'],
-                //     "addresslist" => [$this, 'override_rcmail_contacts_list']
-                // ));
-                // $this->rc->output->add_gui_object('contactslist', "contacts-table");
-                // $this->rc->output->add_gui_object('addressbookslist', "directorylist");
-
-                // $this->rc->output->include_script('list.js');
+                //$this->include_script('js/actions/startup.js');
             }
             else
             {
+               // $this->include_script('js/actions/startup.js');
                 $this->rc->output->set_env("melframed", true);
                 try {
                     $this->rc->output->set_env("mmp_modal",$this->rc->output->parse("mel_metapage.mel_modal", false, false));

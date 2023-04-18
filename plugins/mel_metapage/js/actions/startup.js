@@ -1,5 +1,6 @@
 const mm_frame = "mm-frame";
 rcmail.addEventListener('init', () => {
+    if (window !== top || rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin) return;
     $(document).ready(function() {
         $("#layout-list").addClass(rcmail.env.task + "-frame");
         $("#layout-list").addClass(mm_frame);

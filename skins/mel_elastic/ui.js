@@ -376,7 +376,7 @@ $(document).ready(() => {
             const ID_THEME_CONTENT = 0;
             const ID_PICTURES_CONTENT = 1;
             this.screen_type = null;
-            this._show_main_menu = rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin;
+            this._hide_main_menu = rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin;
             this.css_rules = new Mel_CSS_Style_Sheet(); 
             const tabs = this.init_theme_tabs({});
             return this.init_const().init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`)).init_theme_pictures({picturePannel:`#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`}).initResponsive();
@@ -1005,7 +1005,7 @@ $(document).ready(() => {
             let $taskmenu = $("#taskmenu");
             if ($taskmenu.length > 0)
             {
-                if (this._show_main_menu) {
+                if (this._hide_main_menu) {
                     $('#layout-menu').remove();
                 }
                 else {

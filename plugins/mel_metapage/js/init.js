@@ -617,13 +617,14 @@
                 }
                 let isHidden = false;
 
-                //console.log("scrooll", $("#taskmenu")[0].scrollHeight, window.innerHeight, $("#taskmenu")[0].scrollHeight > window.innerHeight);
-                if ($("#layout-menu").hasClass("hidden")) {
-                    $("#layout-menu").css("opacity", "0").removeClass("hidden");
+                let $querry = $("#layout-menu");
+                if ($querry.length > 0 && $querry.hasClass("hidden")) {
+                    $querry.css("opacity", "0").removeClass("hidden");
                     isHidden = true;
                 }
 
-                if ($("#taskmenu")[0].scrollHeight > window.innerHeight) {
+                $querry = $("#taskmenu");
+                if ($querry.length > 0 && $querry[0].scrollHeight > window.innerHeight) {
                     let items = $("#taskmenu li");
                     let it = items.length;
 
@@ -650,24 +651,32 @@
 
                 if (check) {
                     setTimeout(() => {
-                        if ($("#otherapps .selected").length === 0)
-                            $(".more-options").removeClass("selected");
-                        else
-                            $(".more-options").addClass("selected");
+                        let $querry = $(".more-options");
+                        if ($querry.length > 0)
+                        {
+                            if ($("#otherapps .selected").length === 0) $querry.removeClass("selected");
+                            else $querry.addClass("selected");
+                        }
+                        $querry = null;
                     }, 10);
                 }
 
-                if (isHidden) {
-                    $("#layout-menu").css("opacity", "").addClass("hidden");
+                $querry = $("#layout-menu");
+                if (isHidden && $querry.length > 0) {
+                    $querry.css("opacity", "").addClass("hidden");
                     let $html = $("html");
                     if (($html.hasClass("layout-normal") && !$html.hasClass("touch")) || $html.hasClass("layout-large"))
-                        $("#layout-menu").css("opacity", "").removeClass("hidden");
+                    {
+                        $querry.css("opacity", "").removeClass("hidden");
+                    }
                 }
 
-                if ($("#otherapps #listotherapps").children().length === 0)
-                    $("#taskmenu .more-options").parent().css("display", "none");
-                else
-                    $("#taskmenu .more-options").parent().css("display", "block");
+                $querry = $("#taskmenu .more-options");
+                if ($querry.length > 0)
+                {
+                    if ($("#otherapps #listotherapps").children().length === 0) $querry.parent().css("display", "none");
+                    else $querry.parent().css("display", "block");
+                }
 
                 MEL_ELASTIC_UI.setup_other_apps(true);
 
@@ -901,7 +910,7 @@
 })();
 
 $(document).ready(() => {
-    if (parent != window) {
+    if (parent != window || MEL_ELASTIC_UI._hide_main_menu) {
         rcmail.addEventListener("init", function() {
             //$(".mm-frame").css("margin-top", "0");
             if ($("html.iframe").length > 0)

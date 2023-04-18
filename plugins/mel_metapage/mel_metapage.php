@@ -358,6 +358,7 @@ class mel_metapage extends rcube_plugin
             $courielleur = rcube_utils::get_input_value('_courrielleur', rcube_utils::INPUT_GET) ?? true;
             if ($courielleur === '') $courielleur = true;
             else if ($courielleur !== true) $courielleur = false;
+            $from_cour = rcube_utils::get_input_value('_redirected_from_courrielleur', rcube_utils::INPUT_GET); 
             if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->rc->task !== 'bnum' && $this->rc->task !== 'chat' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe' && $courielleur) {
                 $this->rc->output->redirect([
                     '_task' => 'bnum',
@@ -367,19 +368,19 @@ class mel_metapage extends rcube_plugin
                 ]);
                 return;
             }
-            else if (!$courielleur) {
-                $courielleur = str_ireplace('://', '¤¤', $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'&_is_from=iframe');
+            else if (!$courielleur && !isset($from_cour) ) {
+                $courielleur = str_ireplace('://', '¤¤', $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'&_is_from=iframe&_redirected_from_courrielleur=1');
                 $courielleur = str_ireplace('//', '/', $courielleur);
                 $courielleur = str_ireplace('¤¤', '://', $courielleur);
-                $courielleur = str_ireplace('_courrielleur', '_redirected_from_courrielleur', $courielleur);
+                //$courielleur = str_ireplace('_courrielleur', '_redirected_from_courrielleur', $courielleur);
                 $this->rc->output->header('Location: ' . $courielleur);
                 exit;
             }
 
-            $courielleur = rcube_utils::get_input_value('_redirected_from_courrielleur', rcube_utils::INPUT_GET);
-            if (isset($courielleur))             $this->rc->output->set_env("_courielleur", $courielleur);
+            if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);
 
             unset($courielleur);
+            unset($from_cour);
 
             $this->rc->output->set_env("plugin.mel_metapage", true);
             $this->rc->output->set_env("username", $this->rc->user->get_username());

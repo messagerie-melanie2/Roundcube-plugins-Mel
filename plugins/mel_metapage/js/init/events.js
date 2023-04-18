@@ -1614,6 +1614,8 @@ if (rcmail && window.mel_metapage)
 //Gestion des liens internes
 $(document).ready(() => {
 
+    if (!!rcmail.env._courielleur) return;
+
     /**
      * Liste des exceptions
      */

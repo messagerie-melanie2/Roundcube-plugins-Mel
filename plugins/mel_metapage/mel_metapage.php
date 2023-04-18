@@ -369,9 +369,11 @@ class mel_metapage extends rcube_plugin
                 return;
             }
             else if (!$courielleur && !isset($from_cour) ) {
-                $courielleur = str_ireplace('://', '¤¤', $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'&_is_from=iframe&_redirected_from_courrielleur=1');
+                $courielleur = str_ireplace('://', '¤¤', $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'&_redirected_from_courrielleur=1');
                 $courielleur = str_ireplace('//', '/', $courielleur);
                 $courielleur = str_ireplace('¤¤', '://', $courielleur);
+
+                if (strpos($courielleur, '&_is_from=iframe') === false) $courielleur .= '&_is_from=iframe';
                 //$courielleur = str_ireplace('_courrielleur', '_redirected_from_courrielleur', $courielleur);
                 $this->rc->output->header('Location: ' . $courielleur);
                 exit;
@@ -485,10 +487,10 @@ class mel_metapage extends rcube_plugin
                 'full' => driver_mel::gi()->getUser()->fullname
             ]);
 
-            $this->include_script('js/actions/startup.js');
+//            $this->include_script('js/actions/startup.js');
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE)
             {
-                //$this->include_script('js/actions/startup.js');
+                $this->include_script('js/actions/startup.js');
             }
             else
             {

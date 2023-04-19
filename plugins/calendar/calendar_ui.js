@@ -846,7 +846,7 @@ function rcube_calendar_ui(settings) {
     $('#edit-alarms')[(calendar.alarms ? 'show' : 'hide')]();
 
     // check categories drop-down: add value if not exists
-    if (event.categories && !categories.find("option[value='" + event.categories + "']").length) {
+    if (event.categories && !categories.find(`option[value="${event.categories}"]`).length) {
       $('<option>').attr('value', event.categories).text(event.categories).appendTo(categories).prop('selected', true);
     }
 

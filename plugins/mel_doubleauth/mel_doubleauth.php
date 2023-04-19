@@ -655,6 +655,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __checkCode($code)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__checkCode()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_checkCode', true);
@@ -671,9 +672,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->validateOTP($this->rc->user->get_username(), $code);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__checkCode() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__checkCode : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__checkCode() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -686,6 +688,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __isActivated()
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__isActivated()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_isActivated', true);
@@ -702,9 +705,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->isActivated($this->rc->user->get_username());
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__isActivated() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__get2FAconfig : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__isActivated() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -717,6 +721,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __addUser()
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addUser()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_addUser', true);
@@ -735,9 +740,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->addUser($this->rc->user->get_username());
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addUser() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__addUser : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__addUser() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -751,6 +757,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __removeUser()
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_removeUser', true);
@@ -768,9 +775,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->removeUser($this->rc->user->get_username());
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__removeUser : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__removeUser() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -788,6 +796,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __ValidateCookie($username, $code, $date_validitee, $application)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__ValidateCookie($username, $date_validitee, $application)");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_ValidateCookie', true);
@@ -804,9 +813,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->validateCookie($username, $code, $date_validitee, $application);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__ValidateCookie() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__ValidateCookie : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__ValidateCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -824,6 +834,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __addCookie($username, $code, $expiration, $application)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addCookie($username, $expiration, $application)");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_addCookie', true);
@@ -842,9 +853,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->addCookie($username, $code, intval($expiration), $application, $_SERVER['HTTP_USER_AGENT']);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addCookie() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__addCookie : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__addCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -862,6 +874,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __modifyCookie($username, $code, $expiration, $application)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__modifyCookie($username, $expiration, $application)");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_modifyCookie', true);
@@ -880,9 +893,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->modifyCookie($username, $code, intval($expiration), $application, $_SERVER['HTTP_USER_AGENT']);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__modifyCookie() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__modifyCookie : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__modifyCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;

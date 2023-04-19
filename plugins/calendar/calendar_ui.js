@@ -3169,7 +3169,6 @@ function rcube_calendar_ui(settings) {
     setTimeout(() => {
       var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
       rcmail.http_post('calendar', { action: 'toggle_appointment', c: { id: calendar.id, checked: $('.ui-dialog #check_appointment').prop('checked') } }, lock);
-      appointment_save_func();
       return true;
     }, 200);
   };
@@ -3189,6 +3188,7 @@ function rcube_calendar_ui(settings) {
       $(".ui-dialog #check_appointment").prop("checked", false);
       this.calendars[calendar].appointment_url = url;
     }
+    appointment_save_func();   
   };
 
   this.calendar_delete = function (calendar) {

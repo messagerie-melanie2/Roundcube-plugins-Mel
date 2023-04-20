@@ -631,7 +631,7 @@ if (rcmail && window.mel_metapage)
         const current_task = top.rcmail.env.current_task;
         const current_title = top.document.title;
 
-        let temp= null;
+        let temp = null;
         let numbers = 0;
         switch (config) {
             case 'all':
@@ -640,7 +640,7 @@ if (rcmail && window.mel_metapage)
 
                 if (!!temp)
                 {
-                    numbers = Enumerable.from(temp.unreads).sum(x => typeof x.value === "string" ? parseInt(x.value) : x.value);
+                    numbers = Enumerable.from(temp?.unreads ?? []).sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
 
                     if (numbers === 0 && temp._some_unreads === true)
                     {
@@ -659,7 +659,7 @@ if (rcmail && window.mel_metapage)
                 switch (current_task) {
                     case 'discussion':
                         temp = get('ariane_datas');
-                        numbers = Enumerable.from(temp.unreads).sum(x => typeof x.value === "string" ? parseInt(x.value) : x.value);
+                        numbers = Enumerable.from(temp?.unreads ?? []).sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
 
                         if (numbers === 0 && temp._some_unreads === true) numbers = '•';
                         break;

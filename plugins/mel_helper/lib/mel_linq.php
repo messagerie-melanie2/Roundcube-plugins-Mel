@@ -450,6 +450,9 @@ class MelOrder extends Mel_Enumerable {
 
     function _fusion($A, $B)
     {
+        $A = array_values($A);
+        $B = array_values($B);
+
         if (count($A) === 0) return $B;
         if (count($B) === 0) return $A;
 

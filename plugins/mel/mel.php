@@ -252,7 +252,8 @@ class mel extends rcube_plugin {
       if ($this->rc->config->get('advertise_bnum_baner', false) 
           && $this->rc->task != 'login' 
           && $this->rc->task != 'logout'
-          && empty($_REQUEST['_framed'])) {
+          && empty($_REQUEST['_framed'])
+          && $this->rc->output->get_env('plugin.advertise_popup_bnum') !== true) {
         $hide_bnum_advertise_baner_time = $this->rc->config->get('hide_bnum_advertise_baner_time', 0);
         $advertise_bnum_baner_delay = $this->rc->config->get('advertise_bnum_baner_delay', 0);
         if ($hide_bnum_advertise_baner_time + $advertise_bnum_baner_delay < time()

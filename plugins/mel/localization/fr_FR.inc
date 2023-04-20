@@ -138,15 +138,9 @@ $labels['bnum advertise login'] = "Plus besoin de jongler avec tous les outils !
 $labels['bnum advertise login button'] = 'Découvrir';
 $labels['bnum advertise login button title'] = 'Ouvrir le Bureau numérique';
 $labels['go to bnum'] = "Ouvrir le Bureau numérique";
-$labels['stay on melweb'] = "Rester sur Mél web";
+$labels['stay on melweb'] = "Rester sur Mélweb";
 $labels['hide message'] = "Masquer ce message";
 $labels['bnum advertise dialog'] = "
-<div class=\"img\"><img src=\"/lab/plugins/mel/skins/mel_larry/images/Computer_default.png?v=72e9.1264\" width=\"150\"></div>
-<h2>Découvrez la future version de Mél web : le Bureau numérique</h2>
-<dl>
-<dt>Ses avantages</dt>
-<dd><span><img src=\"https://mel.din.developpement-durable.gouv.fr/lab-bnum//plugins/mel_onboarding/images/checkmark.png?v=72e9.1264\" width=\"30\"></span><span>Vos données Mél web déjà présentes</span></dd>
-<dd><span><img src=\"https://mel.din.developpement-durable.gouv.fr/lab-bnum//plugins/mel_onboarding/images/checkmark.png?v=72e9.1264\" width=\"30\"></span><span>Une interface repensée et simplifiée pour vous</span></dd>
-<dd><span><img src=\"https://mel.din.developpement-durable.gouv.fr/lab-bnum//plugins/mel_onboarding/images/checkmark.png?v=72e9.1264\" width=\"30\"></span><span>Des fonctions collaboratives en plus</span></dd>
-</dl>
+<div class=\"img\"><img src=\"/plugins/mel/skins/mel_larry/images/BNUM_General.gif?v=72e9.1264\" width=\"500\"></div>
+<center><h3>Le 15 mai, Mélweb évolue et devient le Bureau numérique.<br>Retrouver tous les outils que vous connaissez, accessibles sur une seule page web !</h3><center>
 ";

@@ -485,12 +485,12 @@ function show_advertise_popup_bnum()
     modal: true,
     resizable: false,
     closeOnEscape: true,
-    title: rcmail.env.passwordchange_title,
+    dialogClass: "ui_dialog_advertise_bnum",
     buttons: buttons,
-    width: 420,
-    height: 535,
+    width: 670,
+    height: 460,
     rcmail: rcmail
-  }).width(400);
+  }).width(650);
 }
 
 /**

@@ -327,3 +327,8 @@ button.button_advertise_bnum.stay:hover {
 	background-color: #e1e1ec;
 }
 
+.ui_dialog_advertise_bnum .ui-dialog-buttonpane .ui-dialog-buttonset {
+	float: none !important;
+	text-align: center;
+}
+

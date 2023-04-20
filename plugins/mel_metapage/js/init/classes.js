@@ -966,9 +966,15 @@ class MelDataStore {
                 localStorage.setItem(this.name, JSON.stringify(this.store));
                 if (!this._inQueue(id)) this._pushToQueue(id);
             } catch (e) {
-                console.warn('/!\\', e, this.getSize(), self);
-                self._removeOldestValue()
-                .set(id, val);
+
+                if (Object.keys(self.store).length <= 1) {
+                    console.error(`###[MelDataStore]Impossible d'ajouter ${id} au stockage local`, self.getSize(), e, self, val);
+                }
+                else {
+                    console.warn('/!\\[MelDataStore]', e, this.getSize(), self, val);
+                    self._removeOldestValue()
+                    .set(id, val);
+                }
             }
         } else {
             this.store[id] = val;
@@ -1003,7 +1009,7 @@ class MelDataStore {
      * @returns {string} Taille en mo et en nb de char
      */
     getSize() {
-        return `${mel_metapage.Functions.calculateObjectSizeInMo(this.store)} mo | ${localStorage.getItem(this.name)?.length ?? 0} charactères`;
+        return `${mel_metapage.Functions.calculateObjectSizeInMo(this.store)} mo | ${localStorage.getItem(this.store)?.length ?? 0} charactères`;
     }
 }
 

@@ -33,6 +33,8 @@ class mel_metapage extends rcube_plugin
      */
     public $task = '.*';
 
+    private $idendity_cache;
+
     public const SPIED_TASK_DRIVE = "drive";
     public const SPIED_TASK_CHAT = "chat";
     public const SPIED_TASK_KANBAN = "kanban";
@@ -2731,6 +2733,128 @@ class mel_metapage extends rcube_plugin
             $this->rc->output->set_env("bnum.init_task", $init_task);
         }
         $this->rc->output->send('mel_metapage.empty');
+    }
+
+    public function get_folder_email_from_id($id) {
+        //$id = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
+        // Récupération de la boite a restaurer
+        $mbox = driver_mel::gi()->getUser($id, false);
+        // if ($mbox->is_objectshare) {
+        //   $mbox = $mbox->objectshare->mailbox;
+        //   $id = $mbox->uid;
+        // }
+        $folders = [];
+        $imap = $this->rc->get_storage();
+        
+        // Si c'est la boite de l'utilisateur connecté
+        if ($id == $this->rc->get_user_name()) {
+          $host = $this->rc->user->get_username('domain');
+        }
+        else {
+          // Récupération de la configuration de la boite pour l'affichage
+          $host = driver_mel::gi()->getRoutage($mbox, 'restore_bal');
+        }
+        if (driver_mel::gi()->isSsl($host)) {
+          $res = $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
+        }
+        else {
+          $res = $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
+        }
+    
+        // Récupération des folders
+        if ($res) {
+          $folders = $imap->list_folders_direct();
+        }
+        // else {
+        //   return 'Folders error';
+        // }
+
+        return $folders;
+    }
+
+    public function refactor_email_folders_from_id($id, $folders) {
+        //Initialisation
+        $len;
+        $order;
+        $maxOrder;
+        $init = $folders;
+        $balp_label = driver_mel::gi()->getBalpLabel();
+        $delimiter = $_SESSION['imap_delimiter'];
+        $bal = explode('.-.', $id)[1] ?? $id;
+        $folders = mel_helper::Enumerable($folders)->where(function ($k, $v) use($balp_label) {
+            return strpos($v, $balp_label) !== false;
+        });
+        $have_balp_labels = $folders->any();
+
+        //Actions
+        if (!$have_balp_labels) {
+            $folders = mel_helper::Enumerable($init);
+        }
+
+        unset($init);
+        $folders = $folders->select(function ($key, $value) use ($balp_label, $delimiter, $bal, $len, $order, &$maxOrder){
+            if (!isset($maxOrder)) $maxOrder = 0;
+
+            if ($value === $balp_label.$delimiter.$bal || $value === 'INBOX')
+            {
+                $key = 'INBOX';
+                $value = 'Courrier entrant';
+                $order = 0; 
+            }
+            else {
+                $value = str_ireplace($balp_label.$delimiter.$bal.$delimiter, '', $value);
+
+                if (strpos($value, $delimiter) === false) {
+                    $key = $value;
+                    $order = $maxOrder + 1;
+                }
+                else {
+                    if (strpos($value ,'INBOX'.$delimiter) !== false) $order = 0;
+                    else $order = $maxOrder + 1;
+
+                    $value = explode($delimiter, $value);
+                    $len = count($value);
+                    $key = $value[$len - 1];
+                    if ($len - 1 === 1) $value = "| $key";
+                    else $value = implode(mel_helper::Enumerable(range(1, $len - 2))->select(function($k, $v) {return '=';})->toArray())."> | $key";
+                }
+
+            }
+
+            if (strpos($value, '&nbsp;') !== false) {
+                $value = explode(';', $value);
+                $len = count($value) - 1;
+                $value[$len] = rcube_charset::convert($value[$len], 'UTF7-IMAP');
+                $value = implode(';', $value);
+            }
+            else $value = rcube_charset::convert($value, 'UTF7-IMAP');
+            
+            if ($maxOrder < $order) $maxOrder = $order;
+
+            return ['key' => $key, 'value' => $value, 'order' => $order];
+        })->orderBy(function ($key, $value) {return $value['order'];});
+
+        //Retour
+        $folders = $folders->toDictionnary(function ($key, $value) {return $value['key'];}, function ($key, $value) {return $value['value'];});
+        return $folders;
+    }
+
+    public function get_user_identity_from_uid($uid = null) {
+        $uid = $uid ?? driver_mel::gi()->getUser()->uid;
+
+        if (!isset($this->idendity_cache) || !isset($this->idendity_cache[$uid])) {
+            $identities = $this->rc->user->list_identities();
+            if (isset($identities))
+            {
+                $selected = mel_helper::Enumerable($identities)->where(function ($k, $v) use($uid) {
+                    return $v['uid'] === $uid;
+                })->firstOrDefault($identities[0]);
+                $this->idendity_cache = array_merge($this->idendity_cache ?? [], [$uid => $selected]);
+            }
+            else return null;
+        }
+
+        return $this->idendity_cache[$uid];
     }
 
 }

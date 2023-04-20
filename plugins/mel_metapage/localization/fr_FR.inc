@@ -362,3 +362,4 @@ $labels['mel_logo_desc'] = "Ministères Transition Écologique, Cohésion des Te
 $labels['param-show-back-icon'] = 'Afficher le bouton "Revenir à" ?';
 
 $labels["custom_taskbar"] = "Personnaliser";
+$labels['sended_folder'] = 'Dossier des mails envoyés';

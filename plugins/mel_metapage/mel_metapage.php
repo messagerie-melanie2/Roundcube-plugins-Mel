@@ -842,7 +842,7 @@ class mel_metapage extends rcube_plugin
                 {
                     $wsp = $this->rc->plugins->get_plugin("mel_workspace");
                     $wsp->load_workspaces();
-                    $workpaces = $wsp->workspaces;
+                    $workpaces = mel_helper::Enumerable($wsp->workspaces)->orderBy(function ($k, $v) { return $v->title; });
                     $html = '<select id=wsp-event-all-cal-mm class="form-control input-mel">';
                     $html .= "<option value=\"#none\">".$this->gettext('none')."</option>";
                     foreach ($workpaces as $key => $value) {
@@ -855,6 +855,7 @@ class mel_metapage extends rcube_plugin
                 {
                     $values = driver_mel::gi()->getUser($username)->getDefaultPreference("categories");
                     $values = (isset($values) ? explode("|" ,$values) : []);
+                    sort($values);
 
                     $html = '<select id=categories-event-all-cal-mm class="form-control input-mel">';
                     $html .= "<option value=\"#none\">".$this->rc->gettext("nothing", "mel_metapage")."</option>";

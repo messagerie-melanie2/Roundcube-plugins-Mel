@@ -927,15 +927,30 @@ function m_mp_affiche_hashtag_if_exists(containerSelector = '#list-of-all-hashta
     if (querry.find("button").length > 0) querry.css("display", "");
 }
 
-function m_mp_get_all_hashtag_input(inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
-    if (!!m_mp_get_all_hashtag_input.current)
-    {
-        if (m_mp_get_all_hashtag_input.current.isPending()) m_mp_get_all_hashtag_input.current.abort();
-    }
+async function m_mp_get_all_hashtag_input(inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
+    const Mel_Promise = (await loadJsModule('mel_metapage', 'mel_promise'))?.Mel_Promise;
 
-    m_mp_get_all_hashtag_input.current = new Mel_Promise(m_mp_get_all_hashtag, inputSelector, containerSelector); //m_mp_get_all_hashtag(inputSelector, containerSelector);
+    if (!!Mel_Promise) {
+        if (!!m_mp_get_all_hashtag_input.current)
+        {
+            if (m_mp_get_all_hashtag_input.current.isPending()) m_mp_get_all_hashtag_input.current.abort();
+        }
+    
+        m_mp_get_all_hashtag_input.current = new Mel_Promise(m_mp_get_all_hashtag, inputSelector, containerSelector);
+    }
+    else {
+        console.error('###[m_mp_get_all_hashtag_input]Le module "Mel_Promise" n\'est pas chargé !', Mel_Promise, inputSelector, containerSelector);
+        rcmail.display_message('Impossible de récupérer les thèmes, le module "Mel_Promise" n\'est pas chargé.', 'error');
+    }
 }
 
+/**
+ * 
+ * @param {Mel_Promise} mel_promise 
+ * @param {*} inputSelector 
+ * @param {*} containerSelector 
+ * @returns 
+ */
 async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
     const val = $(inputSelector).val();
     if (val.length > 0) {
@@ -944,33 +959,35 @@ async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-has
         querry.html("<center><span class=spinner-border></span></center>");
 
         if (mel_promise.isCancelled()) return;
-        let ajax = mel_metapage.Functions.get(
-            mel_metapage.Functions.url("workspace", "hashtag"), {
-                _hashtag: val
-            }, (datas) => {
-                try {
-                    if (mel_promise.isCancelled()) return;
 
-                    datas = JSON.parse(datas);
-                    if (datas.length > 0) {
-                        html = "<div class=btn-group-vertical style=width:100%>";
-
-                        for (let index = 0; index < datas.length; ++index) {
-                            const element = datas[index];
-                            html += `<button onclick="m_mp_hashtag_select(this, '${inputSelector}', '${containerSelector}')" class="btn-block metapage-wsp-button btn btn-primary"><span class=icon-mel-pin style=margin-right:15px></span><text>${element}</text></button>`;
+        await mel_promise.create_ajax_get_request(
+            {
+                url:mel_metapage.Functions.url("workspace", "hashtag"),
+                success:(datas) => {
+                    try {
+                        if (mel_promise.isCancelled()) return;
+    
+                        datas = JSON.parse(datas);
+                        if (datas.length > 0) {
+                            html = "<div class=btn-group-vertical style=width:100%>";
+    
+                            for (let index = 0; index < datas.length; ++index) {
+                                const element = datas[index];
+                                html += `<button onclick="m_mp_hashtag_select(this, '${inputSelector}', '${containerSelector}')" class="btn-block metapage-wsp-button btn btn-primary"><span class=icon-mel-pin style=margin-right:15px></span><text>${element}</text></button>`;
+                            }
+    
+                            html += "</div>";
+                            if (mel_promise.isCancelled()) return;
+                            querry.html(html);
+                        } else
+                        {
+                            if (mel_promise.isCancelled()) return;
+                            querry.html(`La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`);
                         }
-
-                        html += "</div>";
-                        if (mel_promise.isCancelled()) return;
-                        querry.html(html);
-                    } else
-                    {
-                        if (mel_promise.isCancelled()) return;
-                        querry.html(`La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`);
+    
+                    } catch (error) {
+    
                     }
-
-                } catch (error) {
-
                 }
             }
         ).always(() => {
@@ -1011,8 +1028,8 @@ async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-has
     };
 
     if (mel_promise.isCancelled()) return;
-    if (!mel_metapage.Functions.handlerExist($("body"), clickFunction))
-        $("body").click(clickFunction);
+
+    if (!mel_metapage.Functions.handlerExist($("body"), clickFunction)) $("body").click(clickFunction);
 
 }
 

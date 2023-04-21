@@ -5,8 +5,10 @@ class MelEvent {
     }
 
     push(event) {
-        this.events[this._generateKey()] = event;
+        const key = this._generateKey();
+        this.events[key] = event;
         ++this._count;
+        return key;
     }
 
     add(key, event) {

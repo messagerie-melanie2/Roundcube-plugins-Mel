@@ -2421,6 +2421,8 @@ class mel_driver extends calendar_driver {
         $e['id'] = driver_mel::gi()->mceToRcId($_exception->calendar) . self::CALENDAR_SEPARATOR . $_exception->uid . '@DATE-' . strtotime($_exception->recurrence_id);
         $e['recurrence_id'] = $_exception->uid;
         $e['recurrence'] = $recurrence;
+        // Supprimer les exceptions dans les exceptions
+        unset($e['recurrence']['EXCEPTIONS']);
         $e['_instance'] = $_exception->recurrence_id;
         $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;

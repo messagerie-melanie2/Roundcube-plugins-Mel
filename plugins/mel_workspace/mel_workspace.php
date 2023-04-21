@@ -509,9 +509,9 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->add_handlers(array(
             'wsp-title'    => array($this, 'get_title'),
         ));
-        // $this->rc->output->add_handlers(array(
-        //     'wsp-toolbar'    => array($this, 'get_toolbar'),
-        // ));
+        $this->rc->output->add_handlers(array(
+            'wsp-toolbar'    => array($this, 'get_toolbar'),
+        ));
         $this->rc->output->add_handlers(array(
             'wsp-desc'    => array($this, 'get_description')//,
             //'wsp-endate' => [$this, 'get_end_date']

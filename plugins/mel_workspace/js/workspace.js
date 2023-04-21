@@ -63,7 +63,7 @@ async function WSPReady()
  */
 function Start(uid, hasAriane, datas) {
 
-    SetupToolbar();
+    //SetupToolbar();
 
     //Gérer la barre de navigation
     const style = rcmail.env.current_bar_colors;

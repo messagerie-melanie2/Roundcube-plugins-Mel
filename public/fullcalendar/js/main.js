@@ -4,9 +4,12 @@ let appointment_duration = 0;
 let owner_name = window.atob(params.get('_name'));
 let response = null;
 let calendar = null;
+let current_datetimepicker_month = null;
+let datetimepicker_fullcalendar = null;
 let disabled_days = [];
 let event_not_loaded = true;
 moment.locale('fr');
+$.datetimepicker.setLocale('fr');
 
 document.addEventListener('DOMContentLoaded', function () {
   display_calendar_name();
@@ -41,7 +44,7 @@ function run() {
       }
 
       get_disabled_days(response);
-      
+
       show_appointment_duration(response);
 
       add_appointment_place(response);
@@ -49,6 +52,8 @@ function run() {
       add_appointment_reason(response)
 
       display_calendar(response)
+
+      display_datetime_fullcalendar(response);
     })
     .catch(err => console.error(err))
 }
@@ -133,7 +138,7 @@ function display_calendar(response) {
         $('#loader').hide();
         $('#loaded-calendar').css("visibility", "visible");
         setTimeout(() => {
-          generateTimeGap(response)
+          generateTimeGap(response, calendar)
         }, 10);
       }
     },
@@ -154,6 +159,37 @@ function display_calendar(response) {
     businessHours: generateBusinessHours(response),
   });
   calendar.render();
+}
+
+
+function display_datetime_fullcalendar(response) {
+  var datetime_calendar = document.getElementById('datetimepicker_calendar');
+  datetimepicker_fullcalendar = new FullCalendar.Calendar(datetime_calendar, {
+    locale: 'fr',
+    initialView: "dayGridMonth",
+    allDaySlot: false,
+    lazyFetching: false,
+    selectable: true,
+    selectMirror: true,
+    forceEventDuration: true,
+    selectOverlap: false,
+    events: {
+      url: url.href.replace('fullcalendar', 'freebusy'),
+      format: 'ics',
+      display: 'background'
+    },
+    loading: function (loading) {
+      if (!loading) {
+        $('#loader').hide();
+        $('#loaded-calendar').css("visibility", "visible");
+        setTimeout(() => {
+          generateTimeGap(response, datetimepicker_fullcalendar)
+        }, 10);
+      }
+    },
+    businessHours: generateBusinessHours(response),
+  });
+  datetimepicker_fullcalendar.render();
 }
 
 // BusinessHours
@@ -210,11 +246,19 @@ function showModal(start, end) {
     allowTimes,
     disabledWeekDays: disabled_days,
     disabledDates: allDayEvents,
-    formatDate:'d.m.Y',
+    formatDate: 'd.m.Y',
+    closeOnDateSelect: false,
+    todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
       })
+    },
+    onChangeMonth: function (date) {
+      onChangeDateTimeMonth(date)
+    },
+    onShow: function (date) {
+      datetimepicker_fullcalendar.gotoDate(date);
     }
   });
   $('#event-time-end').datetimepicker({
@@ -224,11 +268,19 @@ function showModal(start, end) {
     allowTimes,
     disabledWeekDays: disabled_days,
     disabledDates: allDayEvents,
-    formatDate:'d.m.Y',
+    formatDate: 'd.m.Y',
+    closeOnDateSelect: false,
+    todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
       })
+    },
+    onChangeMonth: function (date) {
+      onChangeDateTimeMonth(date)
+    },
+    onShow: function (date) {
+      datetimepicker_fullcalendar.gotoDate(date);
     }
   });
 
@@ -244,12 +296,25 @@ function showModal(start, end) {
 function checkToday(selectedValue) {
   if (allDayEvents.includes(moment(new Date).format('DD.MM.y')) || disabled_days.includes(parseInt(moment(selectedValue).format('d')))) {
     selectedValue = moment(selectedValue).add(1, 'day').toDate();
-    
+
     if (allDayEvents.includes(moment(selectedValue).format('DD.MM.y')) || disabled_days.includes(parseInt(moment(selectedValue).format('d')))) {
       selectedValue = checkToday(selectedValue);
     }
   }
   return selectedValue;
+}
+
+/*
+* Change la date du fullcalendar caché lorsque la valeur change dans le datetimepicker
+*/
+function onChangeDateTimeMonth(date) {
+  if (!current_datetimepicker_month) current_datetimepicker_month = moment(new Date());
+  let new_date = moment(date);
+
+  if (current_datetimepicker_month.isBefore(new_date)) datetimepicker_fullcalendar.next();
+  else  datetimepicker_fullcalendar.prev();
+
+    current_datetimepicker_month = new_date;
 }
 
 function generateAllowTimes(start = new Date()) {
@@ -286,7 +351,7 @@ function generateAllowTimes(start = new Date()) {
     }
   })
 
-  calendar.getEvents().forEach((value) => {
+  datetimepicker_fullcalendar.getEvents().forEach((value) => {
     //On vérifie si un rendez-vous existe aujourd'hui
     if (moment(value.start).startOf('day').toString() == moment(start).startOf('day').toString()) {
       //On enlève les plages horaires qui déborderait sur un rendez-vous déjà existant (temps - durée rdv)

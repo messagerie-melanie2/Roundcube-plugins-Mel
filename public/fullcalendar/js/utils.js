@@ -45,7 +45,7 @@ function custom_input_trigger() {
   }
 }
 
-function generateTimeGap(response) {
+function generateTimeGap(response, calendar) {
   calendar.getEvents().forEach((event) => {
 
     if (event.allDay) {

@@ -76,6 +76,9 @@ class mel_sharedmailboxes extends rcube_plugin {
 
         $this->add_hook('mel_move_message',     array($this, 'move_message'));
         $this->add_hook('mel_copy_message',     array($this, 'copy_message'));
+
+        $this->add_hook('identity_form', [$this, 'identity_form']);
+        $this->add_hook('identity_update', [$this, 'identity_update']);
         
         if ($this->rc->task == 'mail' && empty($this->rc->action)) {
             $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
@@ -416,6 +419,13 @@ class mel_sharedmailboxes extends rcube_plugin {
      */
     public function refresh_store_target_selection() {
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GET);
+        $userid = $_REQUEST['_account'];
+
+        if (isset($userid) && strpos($userid, '%') !== false) $userid = explode('%', $userid)[0];
+
+        $config = $this->rc->config->get('sended_folder', [])[$userid ?? driver_mel::gi()->getUser()->uid];
+
+        //unset($userid);
 
         $this->get_account = mel::get_account();
         $this->mel->set_account($this->get_account);
@@ -432,9 +442,15 @@ class mel_sharedmailboxes extends rcube_plugin {
                 'folder_rights' => 'w',
         )));
 
+        $default_value = $config ?? $this->rc->config->get('sent_mbox');
+
+        if (isset($userid) && isset($config)) {
+            $default_value = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'].$default_value;
+        }
+
         $result = array(
                 'action' => 'plugin.refresh_store_target_selection',
-                'select_html' => $select->show($this->rc->config->get('sent_mbox'), $attrib),
+                'select_html' => $select->show($default_value, $attrib),
                 'unlock' => $unlock,
         );
         echo json_encode($result);
@@ -1242,6 +1258,62 @@ class mel_sharedmailboxes extends rcube_plugin {
         if (!$found) {
             $args['abort'] = true;
         }
+        return $args;
+    }
+
+    public function identity_form($args)
+    {
+        //Boite partag&AOk-e/balpartagee.test-pne-messagerie
+        $form = $args['form'];
+        $record = $args['record'];
+        $id = $record['uid'];
+        $default = $record['sended_folder'] ?? $this->rc->config->get('sended_folder', [])[$id] ?? $this->rc->config->get('sent_mbox');
+        $mel_metapage = $this->rc->plugins->get_plugin('mel_metapage');
+
+        $folders = $mel_metapage->get_folder_email_from_id($id);
+        $have_folders = count($folders) > 0;
+
+        if ($have_folders) {
+            $folders = $mel_metapage->refactor_email_folders_from_id($id, $folders);
+            $inbox = $this->gettext('inbox');
+            $folders = mel_helper::Enumerable($folders)->toDictionnary(
+                function ($k, $v) {
+                    return $k;
+                },
+                function ($k, $v) use ($inbox) {
+                    return $v === 'INBOX' ? $inbox : $v;
+                }
+            );
+        }
+
+        $form['addressing']['content']['sended_folder'] = [
+            'type' => 'select',
+            'options' => $folders,
+            'label' => $this->gettext('mel_metapage.sended_folder')
+        ];
+
+        if ($have_folders) $record['sended_folder'] = $default;
+        else {
+            $form['addressing']['content']['sended_folder']['disabled'] = true;
+            $form['addressing']['content']['sended_folder']['class'] = 'disabled';
+        } 
+
+        $args['form'] = $form;
+        $args['record'] = $record;
+
+        return $args;
+    }
+
+    public function identity_update($args) {
+        $record = $args['record'] ?? [];
+        $record['sended_folder'] = $record['sended_folder'] ?? $_REQUEST['_sended_folder'];
+
+        if (isset($record['sended_folder'])) {
+            $sended = $this->rc->config->get('sended_folder', []);
+            $sended[$record['uid']] = $record['sended_folder'];
+            $this->rc->user->save_prefs(['sended_folder' => $sended]);
+        }
+
         return $args;
     }
 

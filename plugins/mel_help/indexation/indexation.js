@@ -14,6 +14,7 @@ var ignoreWords = [
     'actions',
     'lorsque',
     'mode',
+    'cœur',
 ];
 var synonyms = [
     ['calendriers', 'agendas'],
@@ -186,20 +187,32 @@ function indexPages() {
  */
 function indexPage(key, page) {
     const regEx = new RegExp("⚓", "g");
-    const title = page.querySelector('main h1').innerText.replace(regEx, '');
+    const titlePage = page.querySelector('main h1').innerText.replace(regEx, '');
 
-    document.getElementById('message').innerHTML += '<br>Indexation de la page ' + title +'<br>';
+    document.getElementById('message').innerHTML += '<br>Indexation de la page ' + titlePage +'<br>';
 
-    const sections = page.querySelectorAll('section, div.block, div.infoblock');
+    const sections = page.querySelectorAll('section, div.infoblock');
     for (const section of sections) {
         if (section.querySelector('h2')) {
 
+            let titleSelector = 'h2';
+
+            if (section.classList.contains("concept")) {
+                titleSelector = 'h2 span.blockTitle';
+            }
+
+            let title = section.querySelector(titleSelector).innerText.replace(regEx, '');
+
+            if (titlePage != title) {
+                title = titlePage + " - " + title;
+            }
+
             const section_descriptions = section.querySelectorAll('p.txt_p');
-                       
+
             const item = {
-                title: title + ' - ' + section.querySelector('h2').innerText.replace(regEx, ''),
+                title: title,
                 description: section_descriptions[0] ? section_descriptions[0].innerText : '',
-                keywords: getKeywords(title + ' ' + section.querySelector('h2').innerText.replace(regEx, '')),
+                keywords: getKeywords(title),
                 help_name: "En savoir plus...",
                 help_url: getUrl(window.pages[key], section),
                 help_title: "Ouvrez l'aide pour en découvrir plus sur " + title
@@ -259,9 +272,10 @@ function getWords(word) {
  * @returns 
  */
 function cleanWord(word) {
-    return word.replace(/d\'/g, '')
-                .replace(/l\'/g, '')
-                .replace(/qu\'/g, '')
+    return word.replace(/d\'/gi, '')
+                .replace(/l\'/gi, '')
+                .replace(/qu\'/gi, '')
+                .replace(/\"/g, '')
                 .replace("?", "")
                 .trim();
 }

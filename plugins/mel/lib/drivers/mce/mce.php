@@ -126,6 +126,7 @@ class mce_driver_mel extends driver_mel {
         $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
       }
       else {
+        $infos->load(['server_host']);
         $hostname = $infos->server_host;
       }
     }

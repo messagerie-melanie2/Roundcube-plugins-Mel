@@ -2737,13 +2737,8 @@ class mel_metapage extends rcube_plugin
     }
 
     public function get_folder_email_from_id($id) {
-        //$id = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
         // Récupération de la boite a restaurer
-        $mbox = driver_mel::gi()->getUser($id, false);
-        // if ($mbox->is_objectshare) {
-        //   $mbox = $mbox->objectshare->mailbox;
-        //   $id = $mbox->uid;
-        // }
+        $mbox = driver_mel::gi()->getUser($id);
         $folders = [];
         $imap = $this->rc->get_storage();
         
@@ -2761,14 +2756,11 @@ class mel_metapage extends rcube_plugin
         else {
           $res = $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
         }
-    
+
         // Récupération des folders
         if ($res) {
           $folders = $imap->list_folders_direct();
         }
-        // else {
-        //   return 'Folders error';
-        // }
 
         return $folders;
     }

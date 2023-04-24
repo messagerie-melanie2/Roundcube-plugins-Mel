@@ -164,6 +164,9 @@ class mtes_driver_mel extends mce_driver_mel
         }
       }
     } else {
+      if ($infos->is_objectshare) {
+        $infos = $infos->objectshare->mailbox;
+      }
       $infos->load(['server_host']);
       $hostname = $infos->server_host;
     }

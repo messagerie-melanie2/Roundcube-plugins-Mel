@@ -6592,15 +6592,6 @@ iframe[class*=" fr-ratio"] {
   color: var(--text-title-grey);
 }
 
-h6,
-h5,
-h4,
-h3,
-h2,
-h1 {
-  color: var(--text-title-grey);
-}
-
 /* ¯¯¯¯¯¯¯¯¯ *\
   SCHEME
 \* ˍˍˍˍˍˍˍˍˍ */
@@ -22394,15 +22385,6 @@ a.fr-share__link:not([href]) {
   .fr-display-md,
   .fr-display-lg,
   .fr-display-xl {
-    color: #161616;
-  }
-
-  h6,
-  h5,
-  h4,
-  h3,
-  h2,
-  h1 {
     color: #161616;
   }
 

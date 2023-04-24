@@ -11,22 +11,58 @@
 </div>
 
 <div class="barup">
-    <div id="barup-wrapper-row" class="wrapper row">
-        <div id="barup-buttons" class="col-6">
+    <div id="barup-wrapper-row" class="wrapper">
+        <div id="barup-buttons" style=" display: inline;">
             <a id=touchmelmenu class="button icon-mel-menu task-menu-button show-touch" href="#menu"><span class="inner sr-only"><roundcube:label name='menu' /></span></a>
             <button id="button-create" class="hide-touch mel-button margin-right-15 no-button-margin mel-focus mel-before-remover" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
                 <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus plus"></span>
             </button>
-            <button id="button-help" class="hide-touch mel-button bckg no-button-margin  mel-before-remover mel-focus" onclick="m_mp_Help()" title="<roundcube:label name='mel_metapage.help_help' />">
+            <button id="button-shortcut" class="hide-touch mel-button no-button-margin mel-focus mel-before-remover my_favorites" onclick="m_mp_shortcuts()" title="<roundcube:label name='mel_metapage.shortcuts_help' />">
+                <span class="icon-mel-favorite "></span>
+            </button>
+            <!-- <button id="button-help" class="hide-touch mel-button bckg no-button-margin  mel-before-remover mel-focus" onclick="m_mp_Help()" title="<roundcube:label name='mel_metapage.help_help' />">
                 <roundcube:label name="mel_metapage.support" /><span class="icon-mel-help plus"></span>
-            </button>
-            <v_separate class="hide-touch"></v_separate>
-            <button id="button-shortcut" class="hide-touch my_favorites mel-focus mel-hoverable-icon mel-yellow" onclick="m_mp_shortcuts()" title="<roundcube:label name='mel_metapage.shortcuts_help' />">
-                <span style="position:relative"><roundcube:label name="mel_metapage.my_favorites" /><span class="icon-mel-favorite mel_metapage_favourite"></span></span>
-            </button>
+            </button> -->
         </div>
         <!-- <div class="col-lg-0"></div> -->
-        <div id="barup-search-col" role="search" class="col-3">
+        <!-- <div style="> -->
+
+
+      <div id="barup-right-buttons">
+
+          <div class="user" id="barup-user" style="padding:0;float: right;">
+            <user/>
+        </div>
+
+        <button id="button-search" style="float: right;margin-top: 14px;"
+          class="btn-circle" onclick="open_research()"
+          title="<roundcube:label name='mel_metapage.to_search' />">
+          <span class="icon-mel-search""></span>
+        </button>
+
+        <button id="button-shortcut" style="float: right;"
+          class="no-button-margin barup-icon-button mel-focus mel-before-remover mel-button" onclick=""
+          title="<roundcube:label name='mel_metapage.shortcuts_help' />">
+          <span class="material-symbols-outlined">
+            notifications
+          </span>
+        </button>
+        <button id="button-settings" style="float: right;"
+          class="no-button-margin barup-icon-button mel-focus mel-before-remover mel-button" onclick="m_mp_ToggleGroupOptionsUser(this);"
+          title="<roundcube:label name='mel_metapage.settings_help' />">
+          <span class="material-symbols-outlined">
+            settings
+          </span>
+        </button>
+        <button id="button-help" style="float: right;"
+          class="no-button-margin barup-icon-button mel-focus mel-before-remover ml-3 mel-button" onclick="m_mp_Help()"
+          title="<roundcube:label name='mel_metapage.help_help' />">
+          <span class="material-symbols-outlined">
+            help
+          </span>
+        </button>
+
+        <div id="barup-search-col" role="search" style="float: right;">
             <div class="search" >
                 <div class="input-group">
                     <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
@@ -37,9 +73,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-3 user" id="barup-user" style="padding:0">
-            <user/>
-        </div>
+       
+    </div>
     </div>
     <div id="barup-search" class="hidden barup-search">
         <div class="search-container"></div>

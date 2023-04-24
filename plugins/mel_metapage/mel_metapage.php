@@ -434,6 +434,7 @@ class mel_metapage extends rcube_plugin
 
             if ($this->rc->task === "bnum")
             {
+                $this->include_script('js/secondary-nav.js');
                 $this->register_action('index', array($this, 'bnum_page'));
             }
 

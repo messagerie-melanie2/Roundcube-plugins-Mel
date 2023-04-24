@@ -231,7 +231,7 @@ $labels["new-mail-from"] = "Nouveau message aux mêmes destinataires";
 
 $labels['calendar'] = 'Agenda';
 
-$labels['globalsearch'] = 'Recherche globale';
+$labels['globalsearch'] = 'Rechercher un mail, un contact, une réunion';
 $labels['search_mail_max'] = 'Nombre de résultats max depuis les mails';
 $labels['search_on_all_bal'] = 'Rechercher dans toutes les boîtes partagées ?';
 $labels['search_on_all_bali_folders'] = 'Rechercher dans tous les sous dossiers de la bali ?';

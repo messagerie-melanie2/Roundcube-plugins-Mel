@@ -7,13 +7,17 @@ class BaseIcon {
     }
 
     _update() {
-        this._$item.addClass(this._icon);
+        this._$item?.addClass?.(this._icon);
         return this;
     }
 
     update_icon(new_icon) {
         this._$item.removeClass(this._icon).addClass(new_icon);
         return this;
+    }
+
+    get() {
+        return new mel_html('span', {class:this._icon});
     }
 }
 
@@ -27,12 +31,18 @@ class MaterialIcon extends BaseIcon {
 
     _update() {
         super._update();
-        this._$item.html(this._name);
+        this._$item?.html?.(this._name);
         return this;
     }
 
     update_icon(new_name) {
         this._name = new_name;
         return this._update();
+    }
+
+    get() {
+        let get = super.get();
+        get.content = this._name;
+        return get;
     }
 }

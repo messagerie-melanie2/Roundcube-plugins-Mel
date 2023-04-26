@@ -27,6 +27,29 @@
         modules[key] = null;
     }
 
+    async function runModule(plugin) {
+        const module = getMainModule(await loadJsModule(plugin, 'main'));
+        const Main = (await loadJsModule('mel_metapage', 'main'))?.['Main'];
+        Main.call();
+        return module;
+    }
+
+    function getMainModule(modules) {
+        if (!!modules['main']) return new modules['main']();
+        else {
+            for (const key in modules) {
+                if (Object.hasOwnProperty.call(modules, key)) {
+                    return new modules[key]();        
+                }
+            }
+        }
+
+        return null;
+    }
+
     window.loadJsModule = loadJsModule;
     window.unloadModule = unloadModule;
+    window.runModule = runModule;
+
+
 })();

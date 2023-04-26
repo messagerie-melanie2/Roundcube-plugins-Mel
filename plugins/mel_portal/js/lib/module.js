@@ -1,0 +1,142 @@
+export { BaseModule }
+import { MaterialIcon } from "../../../mel_metapage/js/lib/icons";
+import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
+import { ModuleLoader } from "./module_loader";
+
+const Icon = MaterialIcon;
+class BaseModule {
+    constructor(load_module = true) {
+        if (load_module) {
+            ModuleLoader.addModule(() => {
+                const module = this.constructor;
+                const load_module = false;
+                new module(load_module);  
+            });
+        }
+        else {
+            this.start();
+            this.end(); 
+        }
+    }
+
+    start() {
+        if (!!this.module_id()) this.set_icon();
+    }
+    end() {}
+
+    rcmail(top = false) {
+        return top ? window.top.rcmail : window.rcmail;
+    }
+
+    add_event_listener(key, callback, {top = false}) {
+        this.rcmail(top).addEventListener(key, callback);
+    }
+
+    trigger_event(key, args, {top = false}){
+        this.rcmail(top).triggerEvent(key, args);
+    }
+
+    get_env(key) {
+        return rcmail.env[key] ?? top?.rcmail?.env?.[key];
+    }
+
+    async change_frame(frame, {
+        action = null,
+        params = {},
+        update = true,
+        force_update = false
+    }) {
+        await mel_metapage.Functions.change_page(frame, action, params, update, force_update);
+    }
+
+    url(task, {action = EMPTY_STRING, params = null})
+    {
+        return mel_metapage.Functions.url(task, action, params);
+    }
+
+    http_call({url, on_success = () => {}, on_error = (...args) => {console.error('###[http_call]', ...args)}, params = null, type = 'POST'}){
+        return new Mel_Ajax({
+            type,
+            url,
+            success:on_success,
+            failed:on_error,
+            datas:params
+        });
+    }
+
+    http_internal_call({task, action, on_success = () => {}, on_error = (...args) => {console.error('###[http_internal_call]', ...args)}, params = null, type = 'POST'}){
+        return this.http_call({
+            type,
+            on_error,
+            on_success, 
+            params,
+            url:this.url(task, action, (type === 'GET' ? params : null))
+        })
+    }
+
+    http_internal_post({task, action, on_success = () => {}, on_error = (...args) => {console.error('###[http_internal_post]', ...args)}, params = null})
+    {
+        return this.http_internal_call({
+            task,
+            action,
+            on_success,
+            on_error,
+            params,
+            type:'POST'
+        })
+    }
+
+    http_internal_get({task, action, on_success = () => {}, on_error = (...args) => {console.error('###[http_internal_post]', ...args)}, params = null})
+    {
+        return this.http_internal_call({
+            task,
+            action,
+            on_success,
+            on_error,
+            params,
+            type:'GET'
+        })
+    }
+
+    save(key, contents) {
+        mel_metapage.Storage.set(key, contents);
+        return this;
+    }
+
+    load(key, default_value = null) {
+        return mel_metapage.Storage.get(key, default_value);
+    }
+
+    get_skin() {
+        return window.MEL_ELASTIC_UI;
+    }
+
+    select(selector) {
+        return $(selector);
+    }
+
+    select_module(module_id = null) {
+        return this.select(`.module_${module_id ?? this.module_id()}`);
+    }
+
+    select_module_title(module_id = null) {
+        return this.select_module(module_id).find('.melv2-card-title');
+    }
+
+    select_module_icon(module_id = null) {
+        return this.select_module(module_id).find('.melv2-card-icon');
+    }
+
+    select_module_content(module_id = null) {
+        return this.select_module(module_id).find('.melv2-card-contents');
+    }
+
+    set_icon() {
+        let $icon = this.select_module_icon();
+        if ($icon.length > 0) {
+            $icon = new Icon($icon.data('melv2-icon'), $icon);
+        }
+    }
+
+    module_id() {return null;}
+}

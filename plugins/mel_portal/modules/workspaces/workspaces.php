@@ -47,7 +47,8 @@ class Workspaces extends Module
     // $workspace->shares = $shares;
 
     // $res = $workspace->save();
-    $this->edit_row_size(3);
+    $this->edit_row_size(12);
+    $this->edit_order(5);
 
     // $it = 0;
     // foreach ($this->workspaces as $key => $value) {

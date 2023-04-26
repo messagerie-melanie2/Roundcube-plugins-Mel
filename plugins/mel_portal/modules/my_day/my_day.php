@@ -35,7 +35,10 @@ class My_day extends Module
     {
         $this->config[$this::CALENDAR_EVENT_URL] = "?_task=calendar&_action=load_events";
         $this->config[$this::CALENDAR_REMOVE_EVENT_URL] = "?_task=calendar&_action=event";
-        $this->edit_row_size(1);
+        $this->edit_row_size(4);
+        $this->edit_order(1);
+        $this->set_name('Prochains évènements');
+        $this->set_icon('today');
     }
 
     /**
@@ -43,41 +46,41 @@ class My_day extends Module
      */
     function generate_html()
     {
-        $notes_is_enabled = $this->notes_is_enabled();
-        $array = [];
+    //     $notes_is_enabled = $this->notes_is_enabled();
+    //     $array = [];
         
-        //tab agenda
-        $agenda = array("name" => $this->text('agenda'), 
-        "id" => "agenda",
-        "tab-id" => "tab-for-agenda-content",
-        "deco" => html::tag('span', array("class" => 'icon-mel-calendar marginright'),
-        html::tag("sup", array(),
-        html::tag("span", array("id" => "agendanew", "class" => "hidden roundbadge setalign lightgreen")))
-    ),
-        );
+    //     //tab agenda
+    //     $agenda = array("name" => $this->text('agenda'), 
+    //     "id" => "agenda",
+    //     "tab-id" => "tab-for-agenda-content",
+    //     "deco" => html::tag('span', array("class" => 'icon-mel-calendar marginright'),
+    //     html::tag("sup", array(),
+    //     html::tag("span", array("id" => "agendanew", "class" => "hidden roundbadge setalign lightgreen")))
+    // ),
+    //     );
 
-        $array[] = $agenda;
-        $tasks = array("name" => $this->text('tasks'), 
-                "id" => "tasks",
-                "tab-id" => "tab-for-tasks-contents",
-            "deco" => html::tag('span', array("class" => 'icon-mel-task marginright'),
-            html::tag("sup", array(),
-            html::tag("span", array("id" => "tasksnew", "class" => "hidden roundbadge setalign lightgreen")))
-            ));
-        $array[] = $tasks;
+    //     $array[] = $agenda;
+    //     $tasks = array("name" => $this->text('tasks'), 
+    //             "id" => "tasks",
+    //             "tab-id" => "tab-for-tasks-contents",
+    //         "deco" => html::tag('span', array("class" => 'icon-mel-task marginright'),
+    //         html::tag("sup", array(),
+    //         html::tag("span", array("id" => "tasksnew", "class" => "hidden roundbadge setalign lightgreen")))
+    //         ));
+    //     $array[] = $tasks;
 
-        if ($notes_is_enabled) {
-            $notes = [
-                "name" => $this->text('notes'), 
-                'id' => 'notes',
-                'tab-id' => 'tab-for-notes-contents',
-                'deco' => html::tag('span', array("class" => 'icon-mel-notes marginright'))
-            ];
+    //     if ($notes_is_enabled) {
+    //         $notes = [
+    //             "name" => $this->text('notes'), 
+    //             'id' => 'notes',
+    //             'tab-id' => 'tab-for-notes-contents',
+    //             'deco' => html::tag('span', array("class" => 'icon-mel-notes marginright'))
+    //         ];
 
-            $array[] = $notes;
-        }
+    //         $array[] = $notes;
+    //     }
 
-        return $this->html_square_tab($array, $this->text($notes_is_enabled ? "my_day_and_notes" : "my_day"), "myday");
+        return '';//$this->html_square_tab($array, $this->text($notes_is_enabled ? "my_day_and_notes" : "my_day"), "myday");
     }
 
     /**
@@ -87,7 +90,7 @@ class My_day extends Module
     {
         $this->rc->output->set_env('ev_calendar_url', $this->config[$this::CALENDAR_EVENT_URL]);
         $this->rc->output->set_env('ev_remove_calendar_url', $this->config[$this::CALENDAR_REMOVE_EVENT_URL]);
-        $this->rc->output->set_env('notes_enabled', $this->notes_is_enabled());
+        //$this->rc->output->set_env('notes_enabled', $this->notes_is_enabled());
     }
 
     /**
@@ -95,7 +98,7 @@ class My_day extends Module
      */
     function include_js()
     {
-        $this->plugin->include_script($this->folder().'/my_day/js/my_day.js');
+        //$this->plugin->include_script($this->folder().'/my_day/js/my_day.js');
     }
 
     function get_notes()
@@ -109,7 +112,7 @@ class My_day extends Module
     {
         if (!isset($this->notes_enabled)) $this->notes_enabled = $this->rc->config->get('notes-in-my-day-enabled', true);
 
-        return $this->notes_enabled;
+        return false;//$this->notes_enabled;
     }
 
     function have_notes()

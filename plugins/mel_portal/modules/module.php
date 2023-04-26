@@ -1,4 +1,5 @@
 <?php
+include_once 'module_action.php';
 /**
 * Class for php modules
 *
@@ -18,6 +19,17 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 class Module implements iModule {
+    public const DEFAULT_ORDER = 9999;
+    public const NO_NAME = null;
+    public const NO_ICON = null;
+    public const HTML_CARD_CLASS = 'melv2-card';
+    public const HTML_CARD_CONTENTS_CLASS = 'melv2-card-contents';
+    public const HTML_CARD_PRE_CONTENTS_CLASS = 'melv2-card-pre';
+    public const HTML_CARD_TITLE_CLASS = 'melv2-card-title';
+    public const HTML_CARD_ICON_CLASS = 'melv2-card-icon';
+    public const HTML_CARD_ICON_DATAS = 'data-melv2-icon';
+
+
     /**
      * @var rcmail The one and only instance
      */
@@ -48,6 +60,13 @@ class Module implements iModule {
      * Taille du module.
      */
     private $row_size;
+
+    private $_order;
+    private $actions;
+    private $have_custom_style;
+    private $name;
+    private $icon;
+    private $custom_attribs;
     /**
      * Constructeur avec identifiant du module
      */
@@ -57,6 +76,7 @@ class Module implements iModule {
         $this->id = $id;
         $this->config = array();
         $this->identifier = $identifier;
+        $this->actions = [];
     }
 
     /**
@@ -99,12 +119,61 @@ class Module implements iModule {
         $this->row_size = $size;
     }
 
+    public function edit_order($order) {
+        $this->_order = $order;
+    }
+
+    public function order() {
+        return $this->_order ?? self::DEFAULT_ORDER;
+    }
+
+    public function use_custom_style(){
+        return $this->have_custom_style ?? false;
+    }
+    public function set_use_custom_style($use)
+    {
+        $this->have_custom_style = $use;
+    }
+    public function set_name($new_name){
+        $this->name = $new_name;
+    }
+    public function set_icon($new_icon) {
+        $this->icon = $new_icon;
+    }
+
     /**
      * Génération du html pour l'item
      */
     public function item_html()
     {
-        return $this->generate_html();
+        $html = $this->generate_html();
+        if (!$this->use_custom_style())
+        {
+            $have_name = $this->name !== self::NO_NAME;
+            $have_icon = $this->icon !== self::NO_ICON;
+            $have_pre_content = $have_icon || $have_name;
+
+            if ($have_pre_content) {
+                unset($have_pre_content);
+                $div_contents = [];
+                
+                if ($have_icon) {
+                    unset($have_icon);
+                    $div_contents[] = html::span(['class' => self::HTML_CARD_ICON_CLASS, self::HTML_CARD_ICON_DATAS => $this->icon], '');
+                }
+
+                if ($have_name){
+                    unset($have_name);
+                    $div_contents[] = html::a(['class' => self::HTML_CARD_TITLE_CLASS], $this->name);
+                }
+
+                $html = html::div(['class' => self::HTML_CARD_PRE_CONTENTS_CLASS], implode('', $div_contents)).html::div(['class' => self::HTML_CARD_CONTENTS_CLASS], $html);
+            }
+
+            $html = $this->html_square(['class' => self::HTML_CARD_CLASS], $html);
+        }
+
+        return $html;
     }
 
     /**
@@ -170,7 +239,9 @@ class Module implements iModule {
      */
     public function load_actions()
     {
-        $actions = $this->register_actions();
+        $actions = $this->register_actions() ?? [];
+        $actions = array_merge($actions, $this->action ?? []);
+
         if ($actions != null)
         {
             $size = count($actions);
@@ -197,20 +268,28 @@ class Module implements iModule {
     protected function include_css(){}
     protected function register_actions(){}
 
+    protected function register_action($action_name, $object, $func_name) {
+        $this->action[] = new Module_Action($action_name, $object, $func_name);
+    }
+
     /**
      * Carré en html
      */
-    function html_square($title = "",$idSquare = null, $idContent = null, $content = "", $classContent='')
+    protected function html_square($attribs = [], $contents = '')
     {
-        $arraySquare = array("class" => 'square_div');
-        if ($idSquare != null)
-            $arraySquare["id"] = $idSquare;
-        $arrayContent = array("class" => "contents ".$classContent);
-        if ($idContent != null)
-            $arrayContent["id"] = $idContent;
+        //if ($this->custom_attribs !== null) $attribs = array_merge($attribs, $this->custom_attribs);
+        $config = $this->custom_attribs ?? [];//['class' => 'melv2-card'];
+
+        if (isset($attribs['class'])){
+            $config['class'] = ' '.$attribs['class'];
+            unset($attribs['class']);
+        }
+
+        if (count($attribs) > 0) $config = array_merge($config, $attribs);
+
         return html::div(
-            $arraySquare,
-            (($title == "") ? "" : html::tag("h2",array(), $title)).html::div($arrayContent, $content));
+            $config,
+            $contents);
     }
 
     /**
@@ -254,24 +333,7 @@ class Module implements iModule {
     {
         $dir = __DIR__;
         include_once "$dir/../program/html_helper/HTMLTab.php";
-        // $count = count($array);
-        // $html_tabs = "";
-        // $html_contents = "";
-        // for ($i=0; $i < $count; ++$i) { 
-        //     $html_tabs = $html_tabs.$this->html_tab($array[$i]["name"], $array[$i]["id"], $i==0, $array[$i]["deco"]);
-        //     $html_tabs = substr($html_tabs, 0, strlen($html_tabs)-1);
-        //     $html_contents = $html_contents.$this->html_tab_content($array[$i]["id"], $i!=0);
-        // }
-        // return html::div(
-        //     array("class" => "square_tab", "id" => $id),
-        //     html::p(array(), $title).html::div(
-        //         array("class" => "tabs"),
-        //         $html_tabs
-        //     ).html::div(
-        //         array("class" => "tabs-contents"),
-        //         html::div(array("class" => "middlew"), $html_contents)
-        //     )
-        // );
+
         $tabs = new HTMLDivTab(null, [
             aHTMLElement::ARG_CLASSES => ["tabs"],
         ]);

@@ -1,4 +1,5 @@
 <?php
+include_once 'bnum_plugin.php';
 /**
  * Plugin Mél Métapage
  *
@@ -168,7 +169,7 @@ class mel_metapage extends rcube_plugin
 
         $this->include_script('js/init/constants.js');
         $this->include_script('js/always_load/mel_event.js');
-        $this->include_script('js/always_load/load_module.js');
+        // $this->include_script('js/always_load/load_module.js');
         $this->include_script('js/html.js');
  
         if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe' && $this->rc->task !== "login")

@@ -11,7 +11,13 @@
     async function loadJsModule(plugin, name) {
         const key = getKey(plugin, name);
         if (!modules[key]) {
-            modules[key] = await import(`../../../${plugin}/js/lib/${name}`);
+            console.info('Load module', key);
+            try {
+                modules[key] = await import(`../../../${plugin}/js/lib/${name}`);
+            } catch (error) {
+                console.error(`###[loadJsModule]Impossible de charger le module ${key}`, error);
+                throw error;
+            }
         }
 
         if (!!modules[key]?.timeout) clearTimeout(modules[key].timeout);

@@ -20,11 +20,6 @@
 class mel_portal extends bnum_plugin
 {
     /**
-     * Contient l'instance de rcmail
-     * @var rcmail
-     */
-    private $rc;
-    /**
      * Contient le nom de la tâhce pour pouvoir entrer dans ce plugin.
      */
     public $taskName;
@@ -62,7 +57,7 @@ class mel_portal extends bnum_plugin
     {
         $this->setup();
         $this->include_depedencies();
-        if ($this->rc->task == $this->taskName)
+        if ($this->rc()->task === $this->taskName)
         {
             $this->load_modules_actions();
             $this->portal();
@@ -74,9 +69,6 @@ class mel_portal extends bnum_plugin
      */
     function setup()
     {
-
-        // Récupération de l'instance de rcmail
-        $this->rc = rcmail::get_instance();
         $this->load_config();
         $this->setup_config();
         $this->add_texts('localization/', true);
@@ -100,8 +92,8 @@ class mel_portal extends bnum_plugin
      */
     function setup_config()
     {
-        $config = $this->rc->config->all();
-        $this->taskName = $this->rc->config->get('task_name', 'bureau');//$config['task_name'];
+        $config = $this->rc()->config->all();
+        $this->taskName = $this->rc()->config->get('task_name', 'bureau');//$config['task_name'];
         $this->templateName = $config['template_name'];
         $this->sidebarName = $config['sidebar_name'];
         $this->cssName = $config['css_name'];
@@ -130,10 +122,10 @@ class mel_portal extends bnum_plugin
             //     $object = new $classname($config[$i], $this, $i);
             //     $modules[$object];
             //     // $object->init();
-            //     // $confModule = $this->rc->config->get($config[$pageName]["modules"][$i]);
+            //     // $confModule = $this->rc()->config->get($config[$pageName]["modules"][$i]);
 
             //     // if ($confModule !== null) //Si il existe une config, on fait quelque chose.
-            //     //     $object->set_config($confModule, $this->rc->config->get($config[$pageName]["modules"][$i]."_classes"));
+            //     //     $object->set_config($confModule, $this->rc()->config->get($config[$pageName]["modules"][$i]."_classes"));
             //     // if ($existing[$config[$pageName]["modules"][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
             //     // {
             //     //     $object->include_module();
@@ -156,9 +148,9 @@ class mel_portal extends bnum_plugin
                 return $classname;
             })->orderBy(function ($k, $v) {return $v->order();})
             ->select(function ($k, $object) use(&$confModule, &$existing) {
-                //$confModule = $this->rc->config->get($config[$pageName]["modules"][$i]);
+                //$confModule = $this->rc()->config->get($config[$pageName]["modules"][$i]);
 
-                //if ($confModule !== null) $object->set_config($confModule, $this->rc->config->get($config[$pageName]["modules"][$i]."_classes"));
+                //if ($confModule !== null) $object->set_config($confModule, $this->rc()->config->get($config[$pageName]["modules"][$i]."_classes"));
                 $confModule = get_class($object);
                 if ($existing[$confModule] !== true) //Ca ne sert à rien de charger le module plusieurs fois.
                 {
@@ -245,7 +237,7 @@ class mel_portal extends bnum_plugin
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/'.$this->cssName);
-        if ($this->rc->config->get('skin') != 'mel_elastic')
+        if ($this->rc()->config->get('skin') != 'mel_elastic')
           $this->include_stylesheet($this->local_skin_path().'/icofont.min.css');
     }
 
@@ -272,8 +264,8 @@ class mel_portal extends bnum_plugin
      */
     function setup_env_js_vars()
     {
-        // $this->rc->output->set_env('ev_calendar_url', $this->rc->config->get('calendar_url'));
-        // $this->rc->output->set_env('ev_remove_calendar_url', $this->rc->config->get('delete_calendar_url'));
+        // $this->rc()->output->set_env('ev_calendar_url', $this->rc()->config->get('calendar_url'));
+        // $this->rc()->output->set_env('ev_remove_calendar_url', $this->rc()->config->get('delete_calendar_url'));
     }
 
     /**
@@ -281,11 +273,11 @@ class mel_portal extends bnum_plugin
      */
     function generate_html()
     {
-        $this->rc->output->add_handlers(array(
+        $this->rc()->output->add_handlers(array(
             'modules'    => array($this, 'creates_modules'),
             'maintenancetext' => [$this, 'maintenancetext']
         ));
-        $this->rc->output->send('mel_portal.'.$this->templateName);
+        $this->rc()->output->send('mel_portal.'.$this->templateName);
     }
 
     /**
@@ -313,7 +305,7 @@ class mel_portal extends bnum_plugin
     function maintenancetext()
     {
         $this->require_plugin('mel_helper');
-        return mel_helper::get_maintenance_text($this->rc);
+        return mel_helper::get_maintenance_text($this->rc());
     }
 
     /**

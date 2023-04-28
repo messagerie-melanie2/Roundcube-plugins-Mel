@@ -45,4 +45,12 @@ abstract class bnum_plugin extends rcube_plugin
             return $fn;
         }
     }
+
+    protected function rc() {
+        return rcmail::get_instance();
+    }
+
+    protected function storage() {
+        return $this->rc()->get_storage();
+    }
 }

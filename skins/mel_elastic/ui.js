@@ -309,7 +309,7 @@ $(document).ready(() => {
          */
         getKeys()
         {
-            return Enumerable?.from(this.css)?.select(x => x.key)?.toArray() ?? [];
+            return Enumerable.from(this.css).select(x => x.key).toArray() || [];
         }
 
         /**
@@ -318,7 +318,7 @@ $(document).ready(() => {
          */
         getStyleSheet()
         {
-            return Enumerable?.from(this.css)?.select(x => x.value)?.toArray()?.join('\r\n') ?? '';
+            return Enumerable.from(this.css).select(x => x.value).toArray().join('\r\n') || '';
         }
 
         /**
@@ -559,7 +559,7 @@ $(document).ready(() => {
              * Thèmes additionnels, générer par le javascript
              * @type {Function[]}
              */
-            let additionnalThemes = callback_add  ?? [];
+            let additionnalThemes = callback_add || [];
             /**
              * Div html qui contient la liste des thèmes
              * @type {mel_html2}
@@ -778,9 +778,9 @@ $(document).ready(() => {
                     style:STYLE
                 }
             });
-            this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
+            this.theme_selected_picture = rcmail.env.theme_selected_picture || null;
 
-            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder ?? Number.POSITIVE_INFINITY))) {
+            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder || Number.POSITIVE_INFINITY))) {
                 //Div de position
                 $item = new mel_html2(CONST_HTML_DIV, {
                     attribs:{
@@ -1036,7 +1036,7 @@ $(document).ready(() => {
 
                     $taskmenu.append('<ul class="list-unstyled"></ul>');
 
-                    Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
+                    Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
                         let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
                         e = e.item;
                         if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
@@ -1612,7 +1612,7 @@ $(document).ready(() => {
                 };
 
                 let testing = (e, _class) => {
-                    const array = Enumerable?.from(e.classList)?.toArray() ?? [];
+                    const array = Enumerable.from(e.classList).toArray() || [];
                     const count = array.length;
                     if (count === 1) action($(e), _class);
                     else if (count === 2 && array.includes(_class) && (array.includes("disabled") || array.includes("active")))
@@ -1680,7 +1680,7 @@ $(document).ready(() => {
                         
                         if (storage.includes(field))
                         {
-                            storage = Enumerable?.from(storage)?.where(x => x !== field)?.toArray() ?? [];
+                            storage = Enumerable.from(storage).where(x => x !== field).toArray() || [];
                             mel_metapage.Storage.set(key, storage);
                         }
                     });
@@ -1861,7 +1861,7 @@ $(document).ready(() => {
                             box.content.find("iframe").removeClass('sr-only');
                             const obj = frame_context.$('#compose-subject').val();
 
-                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+                            if ((obj || "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
 
                             frame_context.rcmail.addEventListener('message_submited', async (args) => {
                                 if (args.draft !== true)
@@ -1925,7 +1925,7 @@ $(document).ready(() => {
                         fullscreen:true
                     };
             
-                    const popup_class = window.Windows_Like_PopUp ?? top.Windows_Like_PopUp;
+                    const popup_class = window.Windows_Like_PopUp || top.Windows_Like_PopUp;
                     return new popup_class(top.$("body"), config);
                 }
             };
@@ -3057,7 +3057,7 @@ $(document).ready(() => {
                         $(e).data('selector-tab'),
                         $(e).data('is-default-tab'),
                         $(e).data('parent-tabs'),
-                        namespace ?? $(e).parent().data('namespace') ?? 'no-namespace'
+                        namespace || $(e).parent().data('namespace') || 'no-namespace'
                     );
 
                     if (!!$tab && $tab.length > 0 && i === size) $tab.addClass('last');
@@ -3077,7 +3077,7 @@ $(document).ready(() => {
 
                 if (datas === small) datas = phone;
 
-                if (this.screen_type !== (datas ?? this.screen_type))
+                if (this.screen_type !== (datas || this.screen_type))
                 {
                     if ((this.screen_type !== phone && this.screen_type !== small) && (datas === phone || datas === small)) //On passe en mode phone
                     {
@@ -3113,7 +3113,7 @@ $(document).ready(() => {
                         }
                     }
 
-                    this.screen_type = datas ?? this.screen_type;
+                    this.screen_type = datas || this.screen_type;
                 }
             });
 

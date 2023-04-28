@@ -391,7 +391,7 @@ class mel_metapage extends rcube_plugin
             //$this->include_depedencies();
 
             $this->mm_include_plugin();
-            $this->rc->get_storage();
+            //$this->rc->get_storage();
             if ($this->rc->task === "webconf")
                 $this->register_task("webconf");
             else if ($this->rc->task === 'search')
@@ -1113,17 +1113,10 @@ class mel_metapage extends rcube_plugin
      */
     public function get_unread_mail_count()
     {
-        // $msgs = $this->rc->storage->list_messages();
-        // $size = count($msgs);
-        // $retour = 0;
-        // for ($i=0; $i < $size; ++$i) { 
-        //     if (/*count($msgs[$i]) == 0 || */$msgs[$i]->flags["SEEN"] === null || !$msgs[$i]->flags["SEEN"] )
-        //         ++$retour;
-        // }
         $value;
         $mbox_name = 'INBOX';
 
-        $value = $this->rc->storage->count($mbox_name, 'UNSEEN', true);
+        $value = $this->rc->get_storage()->count($mbox_name, 'UNSEEN', true);
         if (!is_array($_SESSION['unseen_count'])) {
             $_SESSION['unseen_count'] = array();
         }
@@ -1143,7 +1136,7 @@ class mel_metapage extends rcube_plugin
 
         $datas = [];
 
-        $msgs = $this->rc->storage->list_messages();
+        $msgs = $this->rc->get_storage()->list_messages();
         $msize = count($msgs);
 
         $search = "ALL UNSEEN ";
@@ -1184,7 +1177,7 @@ class mel_metapage extends rcube_plugin
         if ($search !== "ALL UNSEEN ")
         {
 
-            $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival")->get();
+            $tmp = $this->rc->get_storage()->search(null, $search, RCUBE_CHARSET, "arrival")->get();
 
             foreach ($tmp as $key => $value) {
             $result = $this->mail_where($value, $msgs, $msize);
@@ -1245,7 +1238,7 @@ class mel_metapage extends rcube_plugin
         $folder = ($folder ?? rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET)) ?? 'INBOX';
 
         $isInbox = $folder === 'INBOX';
-        $this->rc->storage->set_folder($folder);
+        $this->rc->get_storage()->set_folder($folder);
 
         $folders;
 
@@ -1255,7 +1248,7 @@ class mel_metapage extends rcube_plugin
         {
             $search_on_all_bali_folders = 'search_on_all_bali_folders';
             $search_on_all_bali_folders_config = $this->rc->config->get($search_on_all_bali_folders, true);
-            $folders = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
+            $folders = $this->rc->get_storage()->list_folders_subscribed('', '*', 'mail');
 
             if (!$search_on_all_bali_folders_config)
             {
@@ -1293,29 +1286,15 @@ class mel_metapage extends rcube_plugin
             $folders = $folder;
         }
 
-        $this->rc->storage->set_pagesize($max_size_page);
+        $this->rc->get_storage()->set_pagesize($max_size_page);
 
-        $search = $this->rc->storage->search($folders, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
-        $msgs = $this->rc->storage->list_messages($folder);
+        $search = $this->rc->get_storage()->search($folders, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
+        $msgs = $this->rc->get_storage()->list_messages($folder);
 
         foreach ($msgs as $key => $value) {
             $retour[] = $value;
         }
 
-        // $msgs = $this->rc->storage->list_messages();
-        // $tmp = $this->rc->storage->search(null, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
-        // $array = $tmp->get();
-        // $size = count($array);
-        // $index = null;
-        // $retour = [];
-        // $it = 0;
-        // for ($i=$size; $i >= 0; --$i) { 
-        //     $index = $this->mail_where($array[$i], $msgs);
-        //     if ($index !== false)
-        //         $retour[$it++] = $msgs[$index];
-        //     // if (count($retour) >= 5)
-        //     //     break;
-        // }
         $datas = SearchResultMail::create_from_array($retour, $this)->get_array($this->gettext("mails")."/$folder");
         if ($called)
         {
@@ -2324,7 +2303,7 @@ class mel_metapage extends rcube_plugin
 
     public function hook_message_objects($args)
     {
-        $message = $this->rc->storage->get_body($args['message']->uid);
+        $message = $this->rc->get_storage()->get_body($args['message']->uid);
 
         if (isset($message))
         {
@@ -2536,10 +2515,10 @@ class mel_metapage extends rcube_plugin
         $comment = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
         $user_mail = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST) ?? null;
 
-        $this->rc->storage->set_folder($folder);
+        $this->rc->get_storage()->set_folder($folder);
 
-        $headers_old = $this->rc->storage->get_message_headers($message_uid, $folder);
-        $test = $this->rc->storage->get_raw_body($message_uid);
+        $headers_old = $this->rc->get_storage()->get_message_headers($message_uid, $folder);
+        $test = $this->rc->get_storage()->get_raw_body($message_uid);
         if (strpos($test, 'X-Suivimel') !== false)
         {
             $test = explode('X-Suivimel', $test);
@@ -2582,7 +2561,7 @@ class mel_metapage extends rcube_plugin
 
             $this->rc->imap->set_flag($datas, "~commente", $folder);
             $this->rc->imap->set_flag($datas, 'SEEN', $folder);
-            $this->rc->storage->delete_message($message_uid, $folder);
+            $this->rc->get_storage()->delete_message($message_uid, $folder);
 
             echo $datas;
         }

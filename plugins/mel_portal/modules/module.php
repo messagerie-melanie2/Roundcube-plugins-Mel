@@ -164,7 +164,7 @@ class Module implements iModule {
 
                 if ($have_name){
                     unset($have_name);
-                    $div_contents[] = html::a(['class' => self::HTML_CARD_TITLE_CLASS], $this->name);
+                    $div_contents[] = '<h2>'.html::a(['class' => self::HTML_CARD_TITLE_CLASS], $this->name).'</h2>';
                 }
 
                 $html = html::div(['class' => self::HTML_CARD_PRE_CONTENTS_CLASS], implode('', $div_contents)).html::div(['class' => self::HTML_CARD_CONTENTS_CLASS], $html);

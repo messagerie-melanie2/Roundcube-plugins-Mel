@@ -1101,6 +1101,7 @@ const mel_metapage = {
          */
         ajax(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)}, type = "POST")
         {
+            console.log('ajax', url, datas, success, error, type);
             let config = { // fonction permettant de faire de l'ajax
                 type: type, // methode de transmission des données au fichier php
                 url: url,//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php

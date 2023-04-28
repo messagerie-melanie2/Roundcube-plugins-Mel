@@ -45,7 +45,7 @@ class VisioLocation extends BaseLocation {
     }
 
     side_action() {
-        return window.webconf_helper.go_to_webconf(this.key, this.wsp, this.ariane);
+        return window.webconf_helper.go(this.key, this.wsp, this.ariane);
     }
 }
 

@@ -33,7 +33,7 @@ class BaseModule {
     }
 
     trigger_event(key, args, {top = false}){
-        this.rcmail(top).triggerEvent(key, args);
+        return this.rcmail(top).triggerEvent(key, args);
     }
 
     get_env(key) {

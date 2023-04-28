@@ -29,6 +29,10 @@ export class html_events extends mel_html2 {
             },
         });
 
+        this.onaction = new MelEvent()
+    }
+
+    _before_generate() {
         this._create_content();
         this.addClass('melv2-event');
     }
@@ -37,8 +41,18 @@ export class html_events extends mel_html2 {
         const html_date = new mel_html('div', {class:'melv2-event-date'}, this._date_format());
         const html_hour = new mel_html2('div', {attribs:{class:'melv2-event-hour'}, contents:this._create_range_hour()});
         const html_infos = new mel_html2('div', {attribs:{class:'melv2-event-content'}, contents:this._create_event()});
-        const html_clickable = new mel_html2('div', {attribs:{class:'melv2-event-clickable'}, contents:[html_date, html_hour, html_infos]});
+        const html_separator = new mel_html('div', {class:'melv2-event-separator'});
         const html_side = new mel_html2('div', {attribs:{class:'melv2-event-side'}, contents:this._create_side_click()});
+        let html_clickable = new mel_html2('div', {attribs:{class:'melv2-event-clickable'}, contents:[html_date, html_hour, html_separator, html_infos]});
+        html_clickable.onclick.push(() => {
+            this.onaction.call();
+        });
+        html_clickable.onmouseover.push((event) => {
+            $(event.currentTarget).parent().addClass('hovered');
+        });
+        html_clickable.onmouseout.push((event) => {
+            $(event.currentTarget).parent().removeClass('hovered');
+        });
 
         this._cache.clear();
         this.addContent(html_clickable);
@@ -80,7 +94,7 @@ export class html_events extends mel_html2 {
             for (const location of locations) {
                 if (!!location.key || !!location.audio) {
                     icon = !!location.key ? 'videocam' : 'call';
-                    html = new mel_html2('button', {attribs:{class:'melv2-event-button'}, contents:[new MaterialIcon(icon, null).get()]});
+                    html = new mel_html2('button', {attribs:{class:`melv2-event-button ${mel_button.html_base_class_full}`}, contents:[new MaterialIcon(icon, null).get()]});
                     html.onclick.push(location.side_action.bind(location));
                     htmls.push(html);
                     html = null;
@@ -95,8 +109,8 @@ export class html_events extends mel_html2 {
         const event = this.event;
         let title = mel_metapage.Functions.updateRichText(event.title);
 
-        if (event.free_busy === "free") title = '(libre)${title}';
-        else if (event.free_busy === "telework") title = '(télétravail)${title}';
+        if (event.free_busy === 'free') title = `(libre)${title}`;
+        else if (event.free_busy === 'telework') title = `(télétravail)${title}`;
         
         if (event.attendees !== undefined && event.attendees.length > 0)
         {
@@ -144,7 +158,7 @@ export class html_events extends mel_html2 {
         if (location.has()) {
             if (location.has_visio() || location.has_audio()) {
                 if (location.has_locations()) {
-                    desc = location.locations[0];
+                    desc = location.locations[0].location;
 
                     if (location.locations.length > 1) desc += '...';
                 }
@@ -181,7 +195,7 @@ export class html_events extends mel_html2 {
         add_today = true
     }) {
         const now = moment();
-        const is_date_not_today = date.startOf('day').format() !== now.startOf('day').format();
+        const is_date_not_today = moment(date).startOf('day').format() !== now.startOf('day').format();
         let hour = EMPTY_STRING;
 
         const is_today = add_today ? this._is_today() : true;

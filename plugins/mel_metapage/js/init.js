@@ -74,8 +74,9 @@
                         //console.log(`${moment().format(CONST_DATE_FORMAT_BNUM_COMPLETE)}[mel_calendar_updated]Events :`, loadedEvents);
 
                         //Set
-                        const all_events = Enumerable.from(loadedEvents).where(x => x !== null).orderBy(x => x.order).thenBy(x => moment(x.start)).where(x => moment(x.start) >= moment().startOf(CONST_DATE_START_OF_DAY));
-                        const today = all_events.where(x => moment(x.start) >= moment().startOf(CONST_DATE_START_OF_DAY) && moment(x.start) <= moment().endOf(CONST_DATE_END_OF_DAY));
+                        const all_events = Enumerable.from(loadedEvents).where(x => x !== null).orderBy(x => x.order).thenBy(x => moment(x.start)).where(x => (moment(x.start) >= moment().startOf(CONST_DATE_START_OF_DAY)) ||
+                        (moment(x.start) <= moment() && moment() <= moment(x.end)));
+                        const today = all_events.where(x => moment(x.start) <= moment() && moment() <= moment(x.end));
                         const byDays = !haveNewDatas && isForcedRefresh ? {} : events_remove_moment(all_events.orderBy(x => moment(x.start) - moment())).groupBy(x => moment(x.start).format(CONST_DATE_FORMAT_BNUM)).toJsonDictionnary(x => x.key(), x => x.getSource());
                         
                         try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar);

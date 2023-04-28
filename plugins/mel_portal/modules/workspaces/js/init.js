@@ -1,4 +1,5 @@
 (() => {
+    return;
     function getUnread(channel)
     {
         $.ajax({ // fonction permettant de faire de l'ajax
@@ -227,6 +228,7 @@ function update_tasks()
 
 
 $(document).ready(() => {
+    return;
     $('.wsp-focusable-link').each((i,e) => {
         $(e).on("keydown", (event) => {
             if (event.type === "keydown")

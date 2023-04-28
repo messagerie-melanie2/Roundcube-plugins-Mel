@@ -472,8 +472,12 @@ class mel_html{
 		this.aftergenerate = new MelEvent();
 	}
 
+	_before_generate() {}
+
 	generate(additionnal_attribs = {})
 	{
+		this._before_generate();
+
 		let multi_balise = true;
 
 		switch (this.tag) {

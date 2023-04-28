@@ -61,6 +61,7 @@ class Workspaces extends Module
 
   function generate_html()
   {
+    return '';
     $html = "";
     $it = 0;
     $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);

@@ -17,7 +17,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-class mel_portal extends rcube_plugin
+class mel_portal extends bnum_plugin
 {
     /**
      * Contient l'instance de rcmail
@@ -254,7 +254,8 @@ class mel_portal extends rcube_plugin
      */
     function include_js()
     {
-        $this->include_script('js/main.js');
+        //$this->include_script('js/main.js');
+        $this->load_script_module();
     }
 
     /**

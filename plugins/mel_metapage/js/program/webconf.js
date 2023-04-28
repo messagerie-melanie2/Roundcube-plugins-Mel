@@ -370,8 +370,14 @@ class WebconfChat{
 
     async recover_last_status() {
         if (!!this.save_status?.current?.status){
-            await top.ariane.set_status(this.save_status.current.status, this.save_status.current.message);
-            top.ariane.update_status(this.save_status.current.status);
+            //await top.ariane.set_status(this.save_status.current.status, this.save_status.current.message);
+            await this.setStatus(this.save_status.current.status, this.save_status.current.message, false);
+
+            if (this.save_status.current.status !== (await this.getStatus()).status) {
+                await this.setStatus('online');
+            }
+
+            top.ariane.update_status((await this.getStatus()).status);
             this.save_status.current = null;
         }
     }
@@ -3455,6 +3461,7 @@ var MasterWebconfBar = (() => {
          */
         async hangup()
         {
+            this.webconfManager.chat.recover_last_status();
             //Déplace le "plus d'actions" pour pouvoir le réutiliser plus tard
             this._$more_actions.addClass('hidden').appendTo('body');
 
@@ -4453,11 +4460,11 @@ $(document).ready(() => {
     }, () => {
         console.log('on dispose starting...');
 
-        try {
-            window[var_visio].chat.recover_last_status();
-        } catch (error) {
+        // try {
+        //     window[var_visio].chat.recover_last_status();
+        // } catch (error) {
             
-        }
+        // }
 
         top[var_top_webconf_started] = undefined;
         top[var_global_screen_manager] = undefined;

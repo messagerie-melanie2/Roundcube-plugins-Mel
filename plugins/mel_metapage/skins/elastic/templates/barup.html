@@ -40,22 +40,27 @@
           <span class="icon-mel-search""></span>
         </button>
 
-        <button id="button-shortcut" style="float: right;"
-          class="no-button-margin barup-icon-button mel-focus mel-before-remover mel-button" onclick=""
-          title="<roundcube:label name='mel_metapage.shortcuts_help' />">
-          <span class="material-symbols-outlined">
-            notifications
-          </span>
-        </button>
+        <div id="notification-dropdown" class="dropdown" style="float: right;">
+          <button id="button-notifications" style="float: right;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            class="transparent-icon-button barup-icons-button" onclick=""
+            title="<roundcube:label name='mel_metapage.notifications_help' />">
+            <span id="notifications-icon" class="material-symbols-outlined">
+              notifications
+            </span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right p-2" aria-labelledby="button-notifications">
+             <div id="notifications-panel"></div>
+          </div>
+        </div>
         <button id="button-settings" style="float: right;"
-          class="no-button-margin barup-icon-button mel-focus mel-before-remover mel-button" onclick="m_mp_ToggleGroupOptionsUser(this);"
+          class="transparent-icon-button barup-icons-button" onclick="m_mp_ToggleGroupOptionsUser(this);"
           title="<roundcube:label name='mel_metapage.settings_help' />">
           <span class="material-symbols-outlined">
             settings
           </span>
         </button>
         <button id="button-help" style="float: right;"
-          class="no-button-margin barup-icon-button mel-focus mel-before-remover ml-3 mel-button" onclick="m_mp_Help()"
+          class="transparent-icon-button barup-icons-button ml-3" onclick="m_mp_Help()"
           title="<roundcube:label name='mel_metapage.help_help' />">
           <span class="material-symbols-outlined">
             help

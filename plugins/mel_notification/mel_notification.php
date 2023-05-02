@@ -148,9 +148,9 @@ class mel_notification extends rcube_plugin
 
     public function test()
     {
-        $a = $this->notify("webconf", "Rotomeca à lancer un test !", "Ceci est un test de notification lancer par rotomeca !", null);
-        echo json_encode($a);
-        exit;
+        $this->notify("suggestion", "GOUBIER Arnaud a ajouté une nouvelle suggestion", "Ceci est un test de notification lancer par rotomeca !", null);
+        // echo json_encode($a);
+        // exit;
     }
 
     public function test_mail()

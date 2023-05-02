@@ -566,6 +566,17 @@ class mel_html{
 		return this;
 	}
 
+	setAttr(key, value) {
+		if (!this.attribs) this.attribs = {};
+
+		this.attribs[key] = value;
+		return this;
+	}
+
+	setId(id) {
+		return this.setAttr('id', id);
+	}
+
 	_getStyle() {
 		if (!this.attribs['style'] || STRING === typeof this.attribs['style']) return this.attribs['style'] || EMPTY_STRING;
 		else {

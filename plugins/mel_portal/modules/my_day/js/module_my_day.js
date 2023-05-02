@@ -43,7 +43,7 @@ class ModuleMyDay extends BaseModule{
             this.add_event_listener(LISTENER_KEY, () => {
                 this.clear_timeout().generate();
             }, {top:true});
-            Top.add(TOP_KEY);
+            Top.add(TOP_KEY, true);
         }
         return this;
     }

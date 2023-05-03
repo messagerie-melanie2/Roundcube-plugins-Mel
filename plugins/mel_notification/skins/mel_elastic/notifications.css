@@ -1,11 +1,12 @@
 #notificationstack {
-    position: fixed;
-    right: 15px;
-    top: 60px;
-    z-index: 10000;
-    min-width: 300px;
-    width: 20%;
+  position: fixed;
+  right: 15px;
+  top: 60px;
+  z-index: 10000;
+  min-width: 300px;
+  width: 20%;
 }
+
 /* 
 #notifications-panel {
     border-top: 1px solid rgba(46, 46, 46, 0.5);
@@ -92,13 +93,14 @@ html.layout-phone #notificationstack {
 }
 */
 #notificationstack a.dropdown-item {
-    width: 100%;
-    margin-top: 10px;
-    padding: 5px 10px;
-    background-color: #fff;
-    cursor: pointer;
-    box-shadow: 0 24px 54px rgba(0, 0, 0, .15), 0 4.5px 13.5px rgba(0, 0, 0, .08);
+  width: 100%;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #fff;
+  cursor: pointer;
+  box-shadow: 0 24px 54px rgba(0, 0, 0, .15), 0 4.5px 13.5px rgba(0, 0, 0, .08);
 }
+
 /*
 #notifications-panel article.hidden {
     display: none;
@@ -316,26 +318,30 @@ html.dark-mode #notificationstack article span.category {
 } */
 
 #notificationunread.active {
-    height: 14px;
-    width: 14px;
-    background-color: rgb(170, 51, 51);
-    border-radius: 100%;
-    /* border: 1px solid #7c7c85; */
-    top: 10px;
-    left: 25px;
-    position: absolute;
-    color: #fff;
-    font-size: 11px;
-    text-align: center;
-    line-height: initial;
-    font-family: monospace;
-} 
+  height: 14px;
+  width: 14px;
+  background-color: rgb(170, 51, 51);
+  border-radius: 100%;
+  /* border: 1px solid #7c7c85; */
+  top: 10px;
+  left: 25px;
+  position: absolute;
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+  line-height: initial;
+  font-family: monospace;
+}
 
 
 .notification-category {
   font-weight: bold;
   margin-bottom: 3px;
   color: #272E58;
+}
+
+html.dark-mode .notification-category {
+  color: #96b9e7;
 }
 
 .notification-icon {
@@ -350,11 +356,19 @@ html.dark-mode #notificationstack article span.category {
   margin-right: 1rem;
 }
 
+html.dark-mode .notification-icon {
+  color: #96b9e7;
+}
+
 .notification-title {
   line-height: normal;
   white-space: normal;
   margin-bottom: 0;
   color: #272E58;
+}
+
+html.dark-mode .notification-title {
+  color: #96b9e7;
 }
 
 .notification-button-icon {
@@ -365,6 +379,11 @@ html.dark-mode #notificationstack article span.category {
   margin-left: auto;
 }
 
-.notification-button-icon:hover {
+html.dark-mode .notification-button-icon {
+  color: #96b9e7;
+}
+
+.notification-button-icon:hover,
+html.dark-mode .notification-button-icon:hover {
   color: red;
 }

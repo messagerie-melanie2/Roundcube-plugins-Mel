@@ -377,13 +377,13 @@ class WebconfChat{
                 await this.setStatus('online');
             }
 
-            top.ariane.update_status((await this.getStatus()).status);
+            this._navigator()?.ariane?.update_status?.((await this.getStatus()).status);
             this.save_status.current = null;
         }
     }
 
     async getStatus() {
-        return await top.ariane.get_status();
+        return await this._navigator()?.ariane?.get_status?.() ?? {status:'online', message:'Disponible'};
     }
 
     /**
@@ -393,10 +393,14 @@ class WebconfChat{
     async setStatus(status, message = EMPTY_STRING, save_status = true) {
         if (save_status) await this.save_status();        
         //Change le status dans le chat
-        await top.ariane.set_status(status, message);
+        await this._navigator()?.ariane?.set_status?.(status, message);
 
         //Change le status dans le bnum
-        top.ariane.update_status(status);
+        this._navigator()?.ariane?.update_status?.(status);
+    }
+
+    _navigator() {
+        return top ?? window;
     }
 
     /**
@@ -3461,7 +3465,8 @@ var MasterWebconfBar = (() => {
          */
         async hangup()
         {
-            this.webconfManager.chat.recover_last_status();
+            //this.webconfManager.chat.recover_last_status();
+            (top ?? window)[var_visio].chat.recover_last_status();
             //Déplace le "plus d'actions" pour pouvoir le réutiliser plus tard
             this._$more_actions.addClass('hidden').appendTo('body');
 

@@ -550,6 +550,15 @@ class mel_html{
 		return this;
 	}
 
+	hasClass(html_class){
+		if (!!this.attribs && !!this.attribs[CONST_ATTRIB_CLASS]) {
+			if (STRING === typeof this.attribs[CONST_ATTRIB_CLASS]) return html_class === this.attribs[CONST_ATTRIB_CLASS];
+			else return this.attribs[CONST_ATTRIB_CLASS].includes(html_class);
+		}
+
+		return false;
+	}
+
 	css(key, value) {
 		if (!this.attribs) this.attribs = {};
 		if (!(this.attribs['style'] || null)) this.attribs['style'] = {};
@@ -631,7 +640,22 @@ Object.defineProperty(mel_html, 'select_html', {
 class mel_html2 extends mel_html {
 	constructor(tag, {attribs={}, contents=[]}) {
 		super(tag, attribs, EMPTY_STRING);
+		this._init()._setup(contents);
+	}
+
+	_init() {
+		this.jcontents = [];
+		return this;
+	}
+
+	_setup(contents = []) {
+		if (!Array.isArray(contents)) {
+			if ('string' === typeof contents) contents = [new mel_html('span', {}, contents)];
+			else contents = [contents];
+		}
+
 		this.jcontents = contents;
+		return this;
 	}
 
 	addContent(mel_html) {
@@ -656,6 +680,26 @@ class mel_html2 extends mel_html {
 
 	count() {
 		return this.jcontents.length;
+	}
+
+	find_by_id(id) {
+		return Enumerable.from(this.jcontents).where(x => x.attribs['id'] === id).firstOrDefault();
+	}
+
+	find_by_class(html_class) {
+		return Enumerable.from(this.jcontents).where(x => x.hasClass(html_class));
+	}
+
+	first() {
+		return this.jcontents[0];
+	}
+
+	firstOrDefault(_default = null) {
+		try {
+			return this.first();
+		} catch (error) {
+			return _default;
+		}
 	}
 }
 

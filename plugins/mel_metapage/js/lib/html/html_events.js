@@ -1,6 +1,6 @@
 import { BaseStorage } from "../classes/base_storage";
 import { MaterialIcon } from "../icons";
-import { EventLocation } from "./event_location";
+import { EventLocation } from "../calendar/event_location";
 
 export class html_events extends mel_html2 {
     constructor(event, attribs = {}) {
@@ -156,21 +156,19 @@ export class html_events extends mel_html2 {
         const location = this._cache.get('location');
 
         if (location.has()) {
-            if (location.has_visio() || location.has_audio()) {
-                if (location.has_locations()) {
-                    desc = location.locations[0].location;
+            if (location.has_locations()) {
+                desc = location.locations[0].location;
 
-                    if (location.locations.length > 1) desc += '...';
-                }
-                else {
-                    desc = [];
-                    if (location.has_audio()) desc.push('Audio');
-                    
-                    if (location.has_visio()) desc.push(desc.length > 0 ? 'Visio' : 'Visio-conférence');
-
-                    desc = desc.join(' & ');
-                } 
+                if (location.locations.length > 1) desc += '...';
             }
+            else {
+                desc = [];
+                if (location.has_audio()) desc.push('Audio');
+                
+                if (location.has_visio()) desc.push(desc.length > 0 ? 'Visio' : 'Visio-conférence');
+
+                desc = desc.join(' & ');
+            } 
         }
 
         return desc;

@@ -1,12 +1,13 @@
 export { ModuleMail }
 import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage";
 import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
-import { mail_html } from "../../../../mel_metapage/js/lib/mails/html_mail";
+import { html_ul } from "../../../../mel_metapage/js/lib/html/html";
+import { mail_html } from "../../../../mel_metapage/js/lib/html/html_mail";
 import { MailBaseModel } from "../../../../mel_metapage/js/lib/mails/mail_base_model";
 import { Top } from "../../../../mel_metapage/js/lib/top";
 import { BaseModule } from "../../../js/lib/module"
 
-const MODULE_ID = 'mails';
+const MODULE_ID = 'Mails';
 class ModuleMail extends BaseModule{
     constructor(load_module = true) {
         super(load_module);
@@ -31,10 +32,10 @@ class ModuleMail extends BaseModule{
                 configurable: true
             },
         });
-        this.trigger_event('portal.mails.before', {module:this});
-        this.show_last_mails().then(() => {
+        this.trigger_event('portal.mails.before', {module:this}, {top:true});
+        this.show_last_mails({}).then(() => {
             loaded = true;
-            this.trigger_event('portal.mails.after', {module:this});
+            this.trigger_event('portal.mails.after', {module:this}, {top:true});
         });
     }
 
@@ -43,11 +44,15 @@ class ModuleMail extends BaseModule{
 
         let $contents = this.select_module_content().html('');
 
+        let ul = new html_ul({attribs:{class:'melv2-email-ul ignore-bullet'}});
+
         for (let index = 0, html_element; index < ModuleMail.MAX; ++index) {
-            html_element = new mail_html(null).setId(`melv2-email-id-${index}`);
-            html_element.create($contents).css('display', 'none');
+            html_element = new mail_html(null).setId(`melv2-email-id-${index}`).css('display', 'none');
+            html_element.appendTo(ul.li({attribs:{class:'melv2-email-li'}}));
             this.html_elements.push(html_element);
         }
+
+        ul.create($contents);
 
         return this;
     }
@@ -68,16 +73,19 @@ class ModuleMail extends BaseModule{
         mails = null,
         force_refresh = false
     }) {
-        if (force_refresh) this.mail_loader.force_refresh();
+        if (force_refresh) this.mail_loader?.force_refresh?.();
 
         if (!mails) mails = await this.mail_loader.load_mails();
 
-        for (let index = 0, len = mails.length; index < len; ++index) {
-            const mail = mails[index];
-            
-            if (!!this.html_elements[index]) this.html_elements[index].mail = mail;
+        if ((mails ?? []).length > 0)
+        {
+            for (let index = 0, len = mails.length; index < len; ++index) {
+                const mail = mails[index];
+                
+                if (!!this.html_elements[index]) this.html_elements[index].mail = mail;
+            }
         }
-
+        
         return this;
     }
 
@@ -95,7 +103,7 @@ ModuleMail.MAX = 3;
 
 class MailLoaderBase extends BaseModule {
     constructor() {
-        super();
+        super(false);
     }
 
     start() {
@@ -136,14 +144,26 @@ class MailLoaderStockage extends MailLoaderBase{
     }
 
     _get() {
-        const KEY = 'mails';
-        const raw_datas = this.load(KEY);
-        
         let datas = null;
 
-        if (!!raw_datas) datas = MailBaseModel.import_from_array(raw_datas);
+        if (!this.need_refresh())
+        {
+            const KEY = 'mails';
+            const raw_datas = this.load(KEY);
+    
+            if (!!raw_datas) datas = MailBaseModel.import_from_array(raw_datas);
+        }
 
         return datas;
+    }
+
+    need_refresh() {
+        const LAST_UPDATE_KEY = 'last_update_date';
+        const LAST_UPDATE_DATE_DEFAULT_VALUE = false;
+        const LAST_UPDATE_DATE = this.load(LAST_UPDATE_KEY, LAST_UPDATE_DATE_DEFAULT_VALUE);
+        const IS_NEXT_DAY = !LAST_UPDATE_DATE || moment(LAST_UPDATE_DATE).startOf('day') !== moment().startOf('day');
+
+        return IS_NEXT_DAY;
     }
 }
 
@@ -156,14 +176,18 @@ class MailLoaderDataBase extends MailLoaderBase {
         let mails = [];
         await this.http_internal_get(
             {
-                task:'mel_portal',
+                task:'bureau',
                 action:'mails_get',
-                on_success:(datas) => {
-                    if ('string' === typeof datas) datas = JSON.parse(datas);
+                on_success:function (datas) {
+                    try {
+                        if ('string' === typeof datas) datas = JSON.parse(datas);
+                    } catch (error) {
+                        this.on_error(error);
+                    }
 
                     mails = MailBaseModel.import_from_array(datas);
                 },
-                on_error:(...args) => {
+                on_error:function (...args) {
                     BnumLog.fatal('get_last_mails', 'Impossible de récupérer les mails !', ...args);
                 }
             }
@@ -181,7 +205,7 @@ class MailLoader extends MailLoaderBase {
     start() {
         super.start();
         this.loaders = [];
-        this.addLoader(new MailLoaderStockage())
+        this/*.addLoader(new MailLoaderStockage())*/
             .addLoader(new MailLoaderDataBase());
     }
 

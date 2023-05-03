@@ -462,7 +462,8 @@ a.button.icon:not(.disabled):focus {
   color: var(--secondary-text-color);
 }
 .mel-animated,
-.melv2-event-clickable {
+.melv2-event-clickable,
+.melv2-mail-left {
   transition: all 0.1s ease-in;
 }
 .hidden-item-mt {
@@ -2860,11 +2861,8 @@ html.dark-mode .green-badge {
 }
 .melv2-card {
   border-radius: 15px;
-  box-shadow: 0px 2px 1px #0006;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
   padding: 5px;
-  height: 247px;
-  max-height: 247px;
-  overflow: auto;
 }
 .melv2-card-pre {
   margin-top: 10px;
@@ -2882,7 +2880,14 @@ a.melv2-card-title {
   margin-right: 5px;
   align-self: center;
 }
-.melv2-event {
+.melv2-card .contents,
+.melv2-card-contents {
+  height: 250px;
+  max-height: 250px;
+  overflow: auto;
+}
+.melv2-event,
+.melv2-mail {
   background-color: #F8F9FA;
   border-radius: 10px;
   display: flex;
@@ -2890,26 +2895,31 @@ a.melv2-card-title {
   padding: 5px;
   padding-left: 10px;
 }
-.melv2-event-clickable {
+.melv2-event-clickable,
+.melv2-mail-left {
   display: flex;
   flex-wrap: wrap;
   width: 75%;
+  border-radius: 15px;
 }
 .melv2-event-clickable:hover {
   background-color: var(--tierciary-bckg-color);
   color: var(--secondary-text-color);
   cursor: pointer;
-  border-radius: 15px;
   padding: 5px;
 }
-.melv2-event-date {
+.melv2-event-date,
+.melv2-mail-from,
+.melv2-mail-date {
   flex-basis: 100%;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 5px;
 }
 .melv2-event-hour p,
-.melv2-event-content p {
+.melv2-event-content p,
+.melv2-mail-subject,
+.melv2-mail-date-left {
   margin-bottom: 0;
   padding-right: 10px;
   font-size: 12px;
@@ -2931,10 +2941,13 @@ a.melv2-card-title {
   margin-left: 10px;
   max-width: 75%;
 }
-.melv2-event-content p {
+.melv2-event-content p,
+.melv2-mail-subject,
+.melv2-mail-date-left {
   text-overflow: ellipsis;
   max-width: 100%;
   overflow: hidden;
+  white-space: nowrap;
 }
 .melv2-event-content p.melv2-event-content-top {
   font-size: 14px;
@@ -2961,4 +2974,37 @@ a.melv2-card-title {
   border-bottom-right-radius: 50px;
   border-top-right-radius: 50px;
   border-right: none;
+}
+.melv2-mail {
+  padding: 15px;
+  margin: 3px 10px;
+}
+.melv2-mail-left {
+  display: block;
+}
+.melv2-mail-right {
+  width: 25%;
+  display: flex;
+  align-content: space-between;
+}
+.melv2-mail-date {
+  text-align: end;
+}
+.melv2-mail-date.melv2-mail-old {
+  width: 100%;
+  align-self: center;
+}
+.melv2-mail-date.melv2-mail-old div {
+  display: inline-block;
+}
+.melv2-mail-from {
+  font-size: 14px;
+}
+.melv2-mail-subject {
+  font-size: 11px;
+}
+.melv2-mail-date-left {
+  font-weight: normal;
+  overflow: unset;
+  font-size: 11px;
 }

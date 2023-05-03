@@ -1,12 +1,12 @@
 export { ModuleMyDay };
-import { html_events } from "../../../../mel_metapage/js/lib/calendar/html_events";
+import { html_events } from "../../../../mel_metapage/js/lib/html/html_events";
 import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage";
 import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
 import { Top } from "../../../../mel_metapage/js/lib/top";
 import { BaseModule } from "../../../js/lib/module";
 
 const TOP_KEY = 'my_day_listeners';
-const LISTENER_KEY = mel_metapage.EventListeners.calendar_updated.get;
+const LISTENER_KEY = mel_metapage.EventListeners.calendar_updated.after;
 const MODULE_ID = 'My_day';
 const MAX_SIZE = 3;
 class ModuleMyDay extends BaseModule{
@@ -74,7 +74,7 @@ class ModuleMyDay extends BaseModule{
                 ul.addContent(new mel_html2('li', {contents:[new html_events(event)]}));
             }
 
-            BnumLog.info('generate', 'timeout lunched');
+            BnumLog.info('MyDay/generate', 'timeout lunched');
             const timeout_id = setTimeout(() => {
                 this.ontimeout();
             }, next_end_date - moment());
@@ -97,19 +97,20 @@ class ModuleMyDay extends BaseModule{
         clearTimeout(timeout);
         
         this._timeouts.clear();
+        BnumLog.info('MyDay/clear_timeout', 'timeout cleared');
         return this;
     }
 
     async ontimeout() {
-        BnumLog.info('generate', 'timeout touched');
+        BnumLog.info('MyDay/ontimeout', 'timeout touched');
         this.clear_timeout().generate();
 
         if (this.select_module_content().find('ul').children().length < 3) {
-            BnumLog.info('generate', 'No children founds');
+            BnumLog.info('MyDay/ontimeout', 'No children founds');
             const backup_storage = this.check_storage_datas();
             await this.trigger_event(mel_metapage.EventListeners.calendar_updated.get, {force:true}, {top:true});
             const storage = this.check_storage_datas();
-            BnumLog.debug('generate', 'Need Reaload?', backup_storage !== storage);
+            BnumLog.debug('MyDay/ontimeout', 'Need Reaload?', backup_storage != storage, storage, backup_storage);
 
             if (backup_storage !== storage) this.ontimeout();
         }

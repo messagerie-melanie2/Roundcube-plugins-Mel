@@ -4342,12 +4342,8 @@ a.rcmContactAddress {
 
 .melv2-card {
 	border-radius: 15px;
-	box-shadow: 0px 2px 1px #0006;
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 	padding: 5px;
-	height: 247px;
-
-    max-height: 247px;
-    overflow: auto;
 }
 
 .melv2-card-pre {
@@ -4370,6 +4366,13 @@ a.rcmContactAddress {
 	align-self: center;
 }
 
+.melv2-card .contents,
+.melv2-card-contents {
+    height: 250px;
+    max-height: 250px;
+    overflow: auto;
+}
+
 .melv2-event {
     background-color: #F8F9FA;
     border-radius: 10px;
@@ -4384,12 +4387,12 @@ a.rcmContactAddress {
     display: flex;
     flex-wrap: wrap;
     width: 75%;
+    border-radius: 15px;
 
     &:hover {
         background-color: var(--tierciary-bckg-color);
         color: var(--secondary-text-color);
         cursor: pointer;
-        border-radius: 15px;
         padding: 5px;
     }
 }
@@ -4433,6 +4436,7 @@ a.rcmContactAddress {
         text-overflow: ellipsis;
         max-width: 100%;
         overflow: hidden;
+        white-space: nowrap;
 
         &.melv2-event-content-top {
             font-size: 14px;
@@ -4463,4 +4467,54 @@ a.rcmContactAddress {
             border-right: none;
         }
     }
+}
+
+.melv2-mail {
+    &:extend(.melv2-event);
+    padding: 15px;
+    margin: 3px 10px;
+}
+
+.melv2-mail-left {
+    &:extend(.melv2-event-clickable);
+    display: block;
+}
+
+.melv2-mail-right {
+	width: 25%;
+	display: flex;
+	align-content: space-between;
+}
+
+.melv2-mail-date{
+    text-align: end;
+    &.melv2-mail-old {
+        width: 100%;
+        align-self: center;
+
+        div {
+            display: inline-block;
+        }
+    }
+}
+
+.melv2-mail-from {
+    &:extend(.melv2-event-date);
+    font-size: 14px;
+}
+
+.melv2-mail-subject {
+    &:extend(.melv2-event-content p);
+    font-size: 11px;
+}
+
+.melv2-mail-date {
+    &:extend(.melv2-event-date);
+}
+
+.melv2-mail-date-left {
+    &:extend(.melv2-event-content p);
+    font-weight: normal;
+    overflow: unset;
+    font-size: 11px;
 }

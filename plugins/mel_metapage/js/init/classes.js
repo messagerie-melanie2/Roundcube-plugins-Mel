@@ -886,7 +886,6 @@ class MelDataStore {
      * @returns Chaîne
      */
     _setup(name, config) {
-
         if (!name) {
             throw new Error('MelDataStore object should have a name');
         }
@@ -899,7 +898,7 @@ class MelDataStore {
         if (!this.config?.localcache) this.config.localcache = true;
         
         if (this.config.localcache) {
-            let tmp = JSON.parse(localStorage.getItem(this.name));
+            const tmp = JSON.parse(localStorage.getItem(this.name));
 
             if (tmp) this.store = tmp;
             

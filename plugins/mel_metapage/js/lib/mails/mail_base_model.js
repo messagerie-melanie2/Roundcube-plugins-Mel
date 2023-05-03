@@ -51,7 +51,7 @@ export class MailBaseModel {
     }
 
     static import(mail_base) {
-        return new MailModel({
+        return new MailBaseModel({
             subject:mail_base.subject,
             date:mail_base.date,
             from:mail_base.from,

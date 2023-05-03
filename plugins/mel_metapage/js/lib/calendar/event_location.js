@@ -142,7 +142,7 @@ class EventLocation extends BaseLocation {
     }
 
     has() {
-        return this.has_visio() && this.has_audio() && this.has_locations();
+        return this.has_visio() || this.has_audio() || this.has_locations();
     }
 
     *[Symbol.iterator]() {

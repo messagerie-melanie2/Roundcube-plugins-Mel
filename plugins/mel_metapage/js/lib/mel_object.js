@@ -54,8 +54,8 @@ class MelObject {
             type,
             on_error,
             on_success, 
-            params,
-            url:this.url(task, action, (type === 'GET' ? params : null))
+            params:(type === 'GET' ? null : params),
+            url:this.url(task, {action:action, params:(type === 'GET' ? params : null)})
         })
     }
 

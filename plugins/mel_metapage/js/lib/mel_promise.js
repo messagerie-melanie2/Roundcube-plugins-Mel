@@ -194,12 +194,12 @@ class Mel_Promise {
                 else { 
                     //Si la function est asynchrone
                     if (isAsync(_callback)) {
-                        waiting_promise = _callback(this, ...args);
+                        waiting_promise = this.build_call_back(_callback, this, ...args);
                     }
                     else { //Si c'est une fonction + classique
                         res_func = res;
                         rej_func = rej;
-                        const val = _callback(this, ...args);
+                        const val = this.build_call_back(_callback, this, ...args);
                         if (!!val?.then) waiting_promise = val;
                         else {
                             if (resolving) 
@@ -264,6 +264,10 @@ class Mel_Promise {
         yield this;
         yield* this.all_child_generator();
     }
+
+    build_call_back(callback, current, ...args) {
+        return callback(current, ...args);
+    }
 }
 
 class Mel_Ajax extends Mel_Promise{
@@ -273,5 +277,9 @@ class Mel_Ajax extends Mel_Promise{
         if (!!datas) parameters['data'] = datas;
 
         super($.ajax, parameters);
+    }
+
+    build_call_back(callback, current, ...args) {
+        return callback(...args, current);
     }
 }

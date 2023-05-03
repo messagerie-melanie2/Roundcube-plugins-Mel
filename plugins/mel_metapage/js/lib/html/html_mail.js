@@ -1,4 +1,4 @@
-import { MailBaseModel } from "./mail_base_model";
+import { MailBaseModel } from "../mails/mail_base_model";
 
 export class mail_html extends mel_html2{
     /**
@@ -37,9 +37,12 @@ export class mail_html extends mel_html2{
 
         if (have_id) {
             const have_mail = !!this.mail;
-            let $element = $(`#${id}`).css('display', EMPTY_STRING);
+            let $element = $(`#${id}`);
 
-            if (have_mail) $element.outerHTML = this.generate()[0].outerHTML;
+            if (have_mail) {
+                $element[0].outerHTML = this.generate()[0].outerHTML;
+                $(`#${id}`).css('display', EMPTY_STRING);
+            }
             else $element.css('display', 'none');
         }
 
@@ -64,8 +67,8 @@ export class mail_html extends mel_html2{
             contents:[date]
         });
 
-        this.addContent(left);
-        this.addContent(right);
+        this.jcontents[0] = left;
+        this.jcontents[1] = right;
     }
 
     _generate_div({text, base_class}) {
@@ -73,17 +76,17 @@ export class mail_html extends mel_html2{
     }
 
     _generate_from() {
-        const from = this.mail?.from ?? '';
+        const from = this.mail?.from ?? EMPTY_STRING;
         const base_class = 'from';
 
-        this._generate_div({text: from, base_class: base_class});
+        return this._generate_div({text: from, base_class: base_class});
     }
 
     _generate_subject() {
-        const subject = this.mail?.subject ??;
+        const subject = this.mail?.subject ?? EMPTY_STRING;
         const base_class = 'subject';
 
-        this._generate_div({text: subject, base_class: base_class});
+        return this._generate_div({text: subject, base_class: base_class});
     }
 
     _generate_date() {
@@ -93,11 +96,19 @@ export class mail_html extends mel_html2{
 
         let date = EMPTY_STRING;
 
-        if (moment(base_date).startOf('day') === moment(now).startOf('day')) date = new mel_html('span', {class:base_class},  moment(base_date).format('HH:mm'));
+        if (moment(base_date).startOf('day').format() === moment(now).startOf('day').format()) date = new mel_html('span', {class:base_class},  moment(base_date).format('HH:mm'));
         else {
             date = moment(base_date);
 
-            const left_date = mel_html.div({class:`${base_class}-left`}, date.format('DD/MM -'));
+            let left_date;
+            const ellapsed_days =  ~~((moment() - moment(base_date))/ 1000 / 3600 / 24);
+            if (ellapsed_days < 7) {
+                date.locale('fr');
+                left_date = mel_html.div({class:`${base_class}-left`}, (rcube_calendar.mel_metapage_misc.GetDateFr(date.format('dddd')).slice(0,3) + ' -'));
+            }
+            else if (moment(base_date).startOf('year').format() !== moment(now).startOf('year').format()) left_date = mel_html.div({class:`${base_class}-left`}, date.format('DD/MM/YYYY -'));
+            else left_date = mel_html.div({class:`${base_class}-left`}, date.format('DD/MM -'));
+
             const right_date = mel_html.div({class:`${base_class}-right`}, date.format('HH:mm'));
 
             date = new mel_html2('div', {attribs:{class:base_class}, contents:[left_date, right_date]});

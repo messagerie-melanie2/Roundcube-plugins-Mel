@@ -744,13 +744,7 @@ html.layout-phone #barup-right-buttons {
   color: #272E58;
 }
 
-.notification-icon {
-  background: #272E58;
-  border-radius: 9px;
-  padding: 7px;
-  color: white;
-  font-size: 34px;
-}
+
 
 #barup-right-buttons .dropdown-item:active {
   background-color: #e7e7e7;

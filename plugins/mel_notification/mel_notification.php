@@ -144,11 +144,18 @@ class mel_notification extends rcube_plugin
             $this->add_hook('preferences_list',             [$this, 'preferences_list']);
             $this->add_hook('preferences_save',             [$this, 'preferences_save']);
         }
+        // $this->test();
     }
 
     public function test()
     {
-        $this->notify("suggestion", "GOUBIER Arnaud a ajouté une nouvelle suggestion", "Ceci est un test de notification lancer par rotomeca !", null);
+        $this->notify("suggestion", "GOUBIER Arnaud a ajouté une nouvelle suggestion", "Ceci est un test de notification lancer par rotomeca !", 
+          [
+              'href' => "./?_task=workspace&_action=workspace&_uid=",
+              'text' => $this->gettext("mel_workspace.open"),
+              'title' => $this->gettext("mel_workspace.click_for_open"),
+              'command' => "event.click"
+          ]);
         // echo json_encode($a);
         // exit;
     }

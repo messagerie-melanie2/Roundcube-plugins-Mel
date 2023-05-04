@@ -210,7 +210,17 @@ class MelObject {
      * @returns {Mel_CSS_Style_Sheet}
      */
     get_custom_rules() {
-        return window.MEL_ELASTIC_UI.css_rules;
+        return this.get_skin().css_rules;
+    }
+
+    /**
+     * Génère un loader du bnum
+     * @param {string} id id du loader 
+     * @param {boolean} absoluteCentered Centrer verticalement et horizontalement ?
+     * @returns {mel_html}
+     */
+    generate_loader(id, absoluteCentered = true) {
+        return this.get_skin().create_loader(id, absoluteCentered, false);
     }
 
     /**

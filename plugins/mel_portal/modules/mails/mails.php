@@ -17,7 +17,7 @@ class Mails extends Module
 
     private function _get_lasts_email($how_many) {
         $this->rc->storage->set_pagesize($how_many);
-        $msgs = $this->rc->storage->list_messages('INBOX');
+        $msgs = $this->rc->storage->list_messages('INBOX', null, 'date');
         $msgs = mel_helper::Enumerable($msgs)->select(function ($k, $v) {return new Mail($v);})->toArray();
 
         return $msgs;

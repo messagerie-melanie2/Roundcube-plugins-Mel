@@ -42,7 +42,10 @@ class ModuleMail extends BaseModule{
     _init() {
         this.html_elements = [];
 
-        let $contents = this.select_module_content().html('');
+        let $contents = this.select_module_content().html(EMPTY_STRING);
+
+        const loader = this.generate_loader('melv2-email-loader');
+        mel_html2.div({attribs:{class:'melv2-email-undefined-content'}, contents:loader}).create($contents);
 
         let ul = new html_ul({attribs:{class:'melv2-email-ul ignore-bullet'}});
 
@@ -77,6 +80,8 @@ class ModuleMail extends BaseModule{
 
         if (!mails) mails = await this.mail_loader.load_mails();
 
+        let $un_contents = this.select_undefined_contents().html(EMPTY_STRING);
+
         if ((mails ?? []).length > 0)
         {
             for (let index = 0, len = mails.length; index < len; ++index) {
@@ -84,6 +89,11 @@ class ModuleMail extends BaseModule{
                 
                 if (!!this.html_elements[index]) this.html_elements[index].mail = mail;
             }
+
+            $un_contents.css('display', 'none');
+        }
+        else {
+            mel_html2.div({attribs:{class:'melv2-mail', contents:"Vous n'avez pas de mails !"}}).create($un_contents.css('display', EMPTY_STRING));
         }
         
         return this;
@@ -96,6 +106,10 @@ class ModuleMail extends BaseModule{
         else id = MODULE_ID;
 
         return id;
+    }
+
+    select_undefined_contents() {
+        return this.select_module().find('.melv2-email-undefined-content');
     }
 }
 

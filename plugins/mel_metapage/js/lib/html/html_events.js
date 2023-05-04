@@ -2,7 +2,29 @@ import { BaseStorage } from "../classes/base_storage";
 import { MaterialIcon } from "../icons";
 import { EventLocation } from "../calendar/event_location";
 
+/**
+ * Représente un évènement du calendrier.
+ * 
+ * Liste des classes html pré-définie : 
+ * - melv2-event => Classe de l'élément
+ * - melv2-event-date
+ * - melv2-event-hour
+ *   - melv2-event-hour-top
+ *   - melv2-event-hour-bottom 
+ * - melv2-event-content
+ *   - melv2-event-content-top
+ *   - melv2-event-content-bottom
+ * - melv2-event-separator
+ * - melv2-event-side
+ * - melv2-event-clickable
+ * - melv2-event-button
+ */
 export class html_events extends mel_html2 {
+    /**
+     * Constructeur de la classe
+     * @param {*} event Evènement qui sera utiliser pour génrer le html 
+     * @param {*} attribs Attributs de l'élément
+     */
     constructor(event, attribs = {}) {
         super(CONST_HTML_DIV, {attribs});
         this._cache = new BaseStorage();
@@ -34,7 +56,8 @@ export class html_events extends mel_html2 {
 
     _before_generate() {
         this._create_content();
-        this.addClass('melv2-event');
+
+        if (!this.hasClass('melv2-event')) this.addClass('melv2-event');
     }
 
     _create_content() {
@@ -55,8 +78,9 @@ export class html_events extends mel_html2 {
         });
 
         this._cache.clear();
-        this.addContent(html_clickable);
-        this.addContent(html_side);
+        this.jcontents[0] = html_clickable;
+        this.jcontents[1] = html_side;
+        return this;
     }
 
     _create_range_hour() {
@@ -221,4 +245,19 @@ export class html_events extends mel_html2 {
         else if (this._is_tomorrow()) return 'Demain';
         else return this.date.format('DD/MM/YYYY');
     }
+
+    /**
+	 * Ajoute un élément enfant
+	 * @param {mel_html} mel_html Elément à ajouter
+	 * @returns Chaînage
+	 */
+	addContent(mel_html) {
+        if (this.count() < 2) {
+            this.jcontents[0] = null;
+            this.jcontents[1] = null;
+        }
+
+		super.addContent(mel_html);
+        return this;
+	}
 }

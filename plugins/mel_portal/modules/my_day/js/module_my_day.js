@@ -104,16 +104,6 @@ class ModuleMyDay extends BaseModule{
     async ontimeout() {
         BnumLog.info('MyDay/ontimeout', 'timeout touched');
         this.clear_timeout().generate();
-
-        if (this.select_module_content().find('ul').children().length < 3) {
-            BnumLog.info('MyDay/ontimeout', 'No children founds');
-            const backup_storage = this.check_storage_datas();
-            await this.trigger_event(mel_metapage.EventListeners.calendar_updated.get, {force:true}, {top:true});
-            const storage = this.check_storage_datas();
-            BnumLog.debug('MyDay/ontimeout', 'Need Reaload?', backup_storage != storage, storage, backup_storage);
-
-            if (backup_storage !== storage) this.ontimeout();
-        }
     }
 
     module_id() {

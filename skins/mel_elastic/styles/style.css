@@ -39,7 +39,7 @@
   float: none;
 }
 .restore-font {
-  font-family: Marianne, Roboto, sans-serif;
+  font-family: Roboto, sans-serif;
 }
 .mel-max-width-500 {
   max-width: 500px;
@@ -80,7 +80,7 @@
 }
 /** BODY **/
 body {
-  font-family: Marianne, Roboto, sans-serif;
+  font-family: Roboto, sans-serif;
   color: var(--main-text-color);
 }
 body > #layout > div.sidebar ul .treelist li.context-source:not(.selected) > a {
@@ -102,7 +102,7 @@ optgroup,
 select,
 textarea,
 .popover {
-  font-family: Marianne, Roboto, sans-serif;
+  font-family: Roboto, sans-serif;
 }
 a,
 .falselink {
@@ -2999,6 +2999,10 @@ a.melv2-card-title {
 }
 .melv2-mail-from {
   font-size: 14px;
+  overflow: hidden;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .melv2-mail-subject {
   font-size: 11px;

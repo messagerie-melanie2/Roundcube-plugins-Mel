@@ -126,11 +126,27 @@ export class mail_html extends mel_html2{
         return date;
     }
 
-    _action_on_click() {
-        const config = {
-            params:{_uid:this.mail.uid},
-            force_update:true
+    async _action_on_click() {
+        const page_manager = MelObject.Empty();
+        const uid = this.mail.uid;
+        let have_frame = page_manager.have_frame('mail');
+
+        let config = {
+            force_update:false,
+            update:false
         };
-        MelObject.Empty().change_frame('mail', config);
+
+        if (!have_frame) config.params = {_uid:uid}
+        else if (page_manager.select_frame('mail')[0].contentWindow.rcmail.env.mailbox !== 'INBOX') {
+            config.force_update = true;
+            config.update = true;
+            have_frame = false;
+        }
+        
+        await page_manager.change_frame('mail', config);
+
+        if (have_frame) {
+            page_manager.select_frame('mail')[0].contentWindow.rcmail.message_list.select(uid); 
+        }
     }
 }

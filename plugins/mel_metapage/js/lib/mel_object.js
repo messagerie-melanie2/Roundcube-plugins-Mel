@@ -270,4 +270,8 @@ class MelObject {
     cookie_remove(key) {
         return Cookie.remove_cookie(key);
     }
+
+    static Empty() {
+        return new MelObject();
+    }
 }

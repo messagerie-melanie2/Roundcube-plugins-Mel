@@ -40,7 +40,7 @@ export class html_events extends mel_html2 {
             },
             date:{
                 get: function() {
-                    return date;
+                    return date.format ? date : moment(date);
                 },
                 configurable: true
             },

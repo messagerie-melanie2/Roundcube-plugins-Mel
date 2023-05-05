@@ -124,7 +124,7 @@ class Module implements iModule {
     }
 
     public function order() {
-        return $this->_order ?? self::DEFAULT_ORDER;
+        return $this->config->get('module_orders', [])[$this->id] ?? $this->_order ?? self::DEFAULT_ORDER;
     }
 
     public function use_custom_style(){

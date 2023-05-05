@@ -338,6 +338,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
             metapage_frames.triggerEvent("onload", eClass, changepage, isAriane, querry, id, actions);
             //Actions à faire une fois que l'évènement "onload" est fini.
             metapage_frames.triggerEvent("onload.after", eClass, changepage, isAriane, querry, id);
+
+            (top ?? window).rcmail.triggerEvent('frame_loaded', {eClass, changepage, isAriane, querry, id, first_load:true});
         });
 
         if (changepage) //Action à faire après avoir créer la frame, si on change de page.
@@ -362,6 +364,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
 
         //Action à faire avant de terminer la fonction.
         metapage_frames.triggerEvent("after", eClass, changepage, isAriane, querry, id);
+
+        (top ?? window).rcmail.triggerEvent('frame_loaded', {eClass, changepage, isAriane, querry, id, first_load:false});
 
         return id;
     }

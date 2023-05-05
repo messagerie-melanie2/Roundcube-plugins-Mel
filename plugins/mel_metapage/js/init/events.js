@@ -213,6 +213,33 @@ if (rcmail && window.mel_metapage)
         }
     });
 
+    if (rcmail.env.task === 'calendar' && !(top ?? parent ?? window).calendar_listener_added) {
+      (top ?? parent ?? window).rcmail.addEventListener('frame_loaded', (args) => {
+          const {eClass:frame_name, changepage, isAriane, querry:frame, id, first_load} = args;
+          
+          if ('calendar' === frame_name) { 
+              let it = 0;
+              const timeout = 5 * 100; //5 secondes
+              const interval = setInterval(() => {
+                  let $querry = $('#calendar');
+
+                  if ($querry.length > 0) {
+                      it = null;
+                      clearInterval(interval);
+                      $querry.fullCalendar('updateViewSize', true);
+                  }
+                  else if (it >= timeout) {
+                      it = null;
+                      clearInterval(interval);
+                  }
+
+                  ++it;
+              }, 100);
+          }
+      });
+      (top ?? parent ?? window).calendar_listener_added = true;
+  }
+
     //Initialisation
     rcmail.addEventListener("init", () => {
         $('[data-popup]').each((i,e) => {

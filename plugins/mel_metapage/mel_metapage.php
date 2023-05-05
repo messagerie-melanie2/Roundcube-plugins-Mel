@@ -18,7 +18,7 @@ include_once 'bnum_plugin.php';
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-class mel_metapage extends rcube_plugin
+class mel_metapage extends bnum_plugin
 {
     public const FROM_KEY = "_is_from";
     public const FROM_VALUE = "iframe";
@@ -426,6 +426,10 @@ class mel_metapage extends rcube_plugin
             if ($this->rc->task === "calendar")
             {
                 $this->rc->output->set_env("calendar_custom_dialog", true);
+
+                if ($this->rc->action === '' || $this->rc->action === 'index') {
+                    $this->load_script_module('main', '/js/lib/calendar/');
+                }
             }
 
             if ($this->rc->task === "rotomecatest")

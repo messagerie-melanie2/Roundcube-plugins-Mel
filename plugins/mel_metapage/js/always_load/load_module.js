@@ -29,9 +29,8 @@
         return modules[key];
     }
 
-    function unloadModule(plugin, name) {
-        unloadModuleFromKey(getKey(plugin, name));
-        
+    function unloadModule(plugin, name, path) {
+        unloadModuleFromKey(getKey(plugin, name, path));
     }
 
     function unloadModuleFromKey(key) {
@@ -42,7 +41,7 @@
     }
 
     async function runModule(plugin, name = 'main', path = BASE_PATH) {
-        promises[getKey(plugin, name)] = loadJsModule(plugin, name, path);
+        promises[getKey(plugin, name, path)] = loadJsModule(plugin, name, path);
         const module = getMainModule(await promises[getKey(plugin, name, path)]);
         // const Main = (await loadJsModule('mel_metapage', 'main'))?.['Main'];
         // Main.call();

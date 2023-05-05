@@ -1,6 +1,7 @@
 export { MelObject };
 import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
 import { Cookie } from "./classes/cookies";
+import { Top } from "./top";
 
 /**
  * @abstract
@@ -32,7 +33,7 @@ class MelObject {
      * @returns {rcube_webmail}
      */
     rcmail(top = false) {
-        return (top && !!window.top?.rcmail) ? window.top.rcmail : window.rcmail;
+        return (top && !!Top.top()?.rcmail) ? Top.top().rcmail : window.rcmail;
     }
 
     /**
@@ -41,19 +42,49 @@ class MelObject {
      * @param {function} callback Fonction qui sera appelée
      * @param {{top:boolean}} param2 Si on doit récupérer rcmail sur frame principale ou non
      */
-    add_event_listener(key, callback, {top = false}) {
-        this.rcmail(top).addEventListener(key, callback);
+    add_event_listener(key, callback, {top = false, condition = true}) {
+
+        let can_call = false;
+        
+        if (top && !Top.has(`event_listener_${key}`))
+        {
+            if (typeof condition === 'function' ? condition() : condition) {
+                can_call = true;
+                Top.add(`event_listener_${key}`, true);
+            }
+        }
+        else if (!top) can_call = true;
+
+        if (can_call) this.rcmail(top).addEventListener(key, callback);
     }
 
     /**
      * Trigger un écouteur
      * @param {string} key Clé qui appelera tout les écouteurs lié à cette clé
      * @param {*} args  Arguments qui sera donnée aux écouteurs
-     * @param {{top:boolean}} param2 Si on doit récupérer rcmail sur frame principale ou non
+     * @param {Object} options Options
+     * @param {boolean} options.top Si on doit récupérer rcmail sur frame principale ou non
      * @returns 
      */
     trigger_event(key, args, {top = false}){
         return this.rcmail(top).triggerEvent(key, args);
+    }
+
+    /**
+     * Action à faire lorsqu'une frame est chargée
+     * @param {function} callback Function à éffectuer
+     * @param {Object} options Options de la fonction
+     * @param {string} options.frame any pour toute n'importe quelle frame, sinon mettre le nom de la frame
+     * @param {function | null} options.condition Condition custom pour charger la frame
+     */
+    on_frame_loaded(callback, {frame = 'any', condition = null}) {
+        const top = true;
+        this.add_event_listener('frame_loaded', callback, {
+            top,
+            condition:() => {
+                return condition?.() ?? ('any' === frame || this.rcmail().env.task === frame);
+            }
+        });
     }
 
     /**

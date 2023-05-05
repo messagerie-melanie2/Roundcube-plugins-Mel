@@ -1,4 +1,4 @@
-export { Mel_Promise, Mel_Ajax }
+export { Mel_Promise, Mel_Ajax, WaitSomething }
 /**
  * Ajoute des fonctionnalités aux promesses déjà existantes.
  * Pour que les fonctions asynchrones soient complètement compatible, le premier argument doit être la promesse elle même.
@@ -281,5 +281,30 @@ class Mel_Ajax extends Mel_Promise{
 
     build_call_back(callback, current, ...args) {
         return callback(...args, current);
+    }
+}
+
+class WaitSomething extends Mel_Promise {
+    constructor(whatIWait, timeout = 5) {
+        let promise = new Mel_Promise((current) => {
+            current.start_resolving();
+            let it = 0;
+            const interval = setInterval(() => {
+                if (whatIWait()) {
+                    it = null;
+                    clearInterval(interval);
+                    current.resolve({resolved:true});
+                }
+                else if (it >= timeout * 10) {
+                    it = null;
+                    clearInterval(interval);
+                    current.resolve({resolved:false, msg:`timeout : ${timeout * 10}ms`});
+                }
+
+                ++it;
+            }, 100);
+        });
+
+        super(promise);
     }
 }

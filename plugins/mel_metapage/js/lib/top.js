@@ -19,11 +19,16 @@ class TopStorage {
     }
 }
 
-(top ?? window).TopStorage = (top ?? window)?.TopStorage ?? new TopStorage();
+(top ?? parent ?? window).TopStorage = (top ?? window)?.TopStorage ?? new TopStorage();
 
 class Top{
+
+    static top() {
+        return top ?? parent ?? window;
+    }
+
     static _navigator() {
-        return window !== top ? (top ?? window) : window;
+        return window !== top ? this.top() : window;
     }
 
     static _TopStorage() {

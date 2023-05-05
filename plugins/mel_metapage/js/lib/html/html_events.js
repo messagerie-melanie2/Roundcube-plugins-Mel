@@ -1,6 +1,7 @@
 import { BaseStorage } from "../classes/base_storage";
 import { MaterialIcon } from "../icons";
 import { EventLocation } from "../calendar/event_location";
+import { MelObject } from "../mel_object";
 
 /**
  * Représente un évènement du calendrier.
@@ -57,7 +58,12 @@ export class html_events extends mel_html2 {
     _before_generate() {
         this._create_content();
 
-        if (!this.hasClass('melv2-event')) this.addClass('melv2-event');
+        if (!this.hasClass('melv2-event')) {
+            this.addClass('melv2-event');
+            this.onaction.add('events', () => {
+                this._on_action_click();
+            });
+        }
     }
 
     _create_content() {
@@ -260,4 +266,23 @@ export class html_events extends mel_html2 {
 		super.addContent(mel_html);
         return this;
 	}
+
+    async _on_action_click() {
+        const FRAME = 'calendar';
+        const page_manager = MelObject.Empty();
+
+        let config = {
+            force_update:true,
+            update:true,
+            params:{
+                source:this.event.calendar,
+                date:this.date.toDate().getTime()/1000.0
+            }
+        };
+        
+        await page_manager.change_frame(FRAME, config);
+
+        page_manager.select_frame(FRAME)[0].contentWindow.ui_cal.event_show_dialog(this.event);
+        
+    }
 }

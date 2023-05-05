@@ -102,6 +102,8 @@ class mel extends rcube_plugin {
 
     // Command
     $this->register_action('plugin.set_current_page',       array($this, 'set_current_page'));
+    $this->register_action('plugin.hide_bnum_popup_advertise',    array($this, 'hide_bnum_popup_advertise'));
+    $this->register_action('plugin.hide_bnum_baner_advertise',    array($this, 'hide_bnum_baner_advertise'));
 
     // Chargement de l'account passé en Get
     if ($this->rc->task != 'mail') {
@@ -142,6 +144,9 @@ class mel extends rcube_plugin {
     $this->add_texts('localization/', true);
     $this->include_script('mel.js');
     $this->include_stylesheet($this->local_skin_path() . '/mel.css');
+
+    // Ajout du thème dsfr
+    $this->include_stylesheet($this->local_skin_path() . '/dsfr.css');
 
     // Charge la configuration
     $this->load_config();
@@ -230,6 +235,34 @@ class mel extends rcube_plugin {
         $this->rc->output->set_env('passwordchange_title', $passwordchange_title);
         $this->rc->output->set_env('plugin.show_password_change', true);
       }
+      // Message de pub en popup vers le Bnum
+      if ($this->rc->config->get('advertise_bnum_popup', false) 
+          && $this->rc->task != 'login' 
+          && $this->rc->task != 'logout'
+          && empty($_REQUEST['_framed'])) {
+        $hide_bnum_advertise_popup_time = $this->rc->config->get('hide_bnum_advertise_popup_time', 0);
+        $advertise_bnum_popup_delay = $this->rc->config->get('advertise_bnum_popup_delay', 0);
+        if ($hide_bnum_advertise_popup_time + $advertise_bnum_popup_delay < time()
+            || $this->rc->config->get('advertise_bnum_popup_version', 0) > $this->rc->config->get('advertise_bnum_popup_user_version', 0)) {
+          $this->rc->output->set_env('plugin.advertise_popup_bnum', true);
+          $this->rc->output->set_env('plugin.bnum_url', $this->rc->config->get('bnum_url', "/bureau"));
+        }
+      }
+      // Message de pub en bannière vers le Bnum
+      if ($this->rc->config->get('advertise_bnum_baner', false) 
+          && $this->rc->task != 'login' 
+          && $this->rc->task != 'logout'
+          && empty($_REQUEST['_framed'])
+          && $this->rc->output->get_env('plugin.advertise_popup_bnum') !== true) {
+        $hide_bnum_advertise_baner_time = $this->rc->config->get('hide_bnum_advertise_baner_time', 0);
+        $advertise_bnum_baner_delay = $this->rc->config->get('advertise_bnum_baner_delay', 0);
+        if ($hide_bnum_advertise_baner_time + $advertise_bnum_baner_delay < time()
+            || $this->rc->config->get('advertise_bnum_baner_version', 0) > $this->rc->config->get('advertise_bnum_baner_user_version', 0)) {
+          $this->rc->output->set_env('plugin.advertise_baner_bnum', true);
+          $this->rc->output->set_env('advertise_baner_bnum_content', $this->rc->config->get('advertise_bnum_baner_content', ''));
+          $this->rc->output->set_env('plugin.bnum_url', $this->rc->config->get('bnum_url', "/bureau"));
+        }
+      }
     }
     $this->ui_initialized = true;
   }
@@ -265,7 +298,35 @@ class mel extends rcube_plugin {
   public function set_current_page() {
     $_SESSION['page'] = 1;
     $result = array(
-            'action' => 'plugin.set_current_page'
+      'action' => 'plugin.set_current_page'
+    );
+    echo json_encode($result);
+    exit();
+  }
+  /**
+   * RAZ de la pub en popup vers le Bnum
+   */
+  public function hide_bnum_popup_advertise() {
+    $this->rc->user->save_prefs([
+      'hide_bnum_advertise_popup_time'    => time(),
+      'advertise_bnum_popup_user_version' => $this->rc->config->get('advertise_bnum_popup_version', 0)
+    ]);
+    $result = array(
+      'action' => 'plugin.hide_bnum_popup_advertise'
+    );
+    echo json_encode($result);
+    exit();
+  }
+  /**
+   * RAZ de la pub en bannière vers le Bnum
+   */
+  public function hide_bnum_baner_advertise() {
+    $this->rc->user->save_prefs([
+      'hide_bnum_advertise_baner_time'    => time(),
+      'advertise_bnum_popup_user_version' => $this->rc->config->get('advertise_bnum_popup_version', 0)
+    ]);
+    $result = array(
+      'action' => 'plugin.hide_bnum_baner_advertise'
     );
     echo json_encode($result);
     exit();
@@ -744,6 +805,18 @@ class mel extends rcube_plugin {
                 'type' => 'submit',
                 'value' => $this->rc->gettext('login')
         )));
+        // Message de pub vers le Bnum
+        if ($this->rc->config->get('advertise_bnum_login', false)) {
+          $args['content'] .= html::div('advertise_bnum login_div', 
+            html::div('table', 
+              html::div('icon', "✨") .
+              html::span('label', $this->gettext('bnum advertise login'))) . 
+            html::div('buttons', html::a([
+                  "href" => $this->rc->config->get('bnum_url', "/bureau/?_from=melweb_login"),
+                  'title' => $this->gettext('bnum advertise login button title'),
+                  "class" => "button"
+            ], $this->gettext('bnum advertise login button'))));
+        }
         if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
           $args['content'] .= html::div(array(), html::a(array(
                   "href" => "./changepassword/index.php"

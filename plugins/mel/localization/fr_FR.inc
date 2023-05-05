@@ -86,7 +86,7 @@ $labels['mel_use_subscribed_folders'] = 'Utiliser les abonnements pour les dossi
 $labels['mel_use_infinite_scroll'] = 'Utiliser le scroll infini pour parcourir les messages';
 $labels['mel_default_task'] = 'Page d\'accueil après la connexion';
 
-$labels['portail'] = 'Bureau numérique';
+$labels['portail'] = 'Accueil';
 $labels['calendar'] = 'Agenda';
 $labels['discussion'] = 'Discussion';
 $labels['sondage'] = 'Sondage';
@@ -125,7 +125,7 @@ $labels['Or you can clic here to relogin'] = "Ou vous pouvez cliquer ici pour vo
 
 $labels['no bal'] = "Pas de BALI ? Cliquez-ici pour changer votre mot de passe";
 
-$labels['portail_title'] = 'Ouvrez votre bureau numérique';
+$labels['portail_title'] = 'Ouvrez votre page d\'accueil de Mél web';
 $labels['help_title'] = 'Ouvrez la page d\'assistance dédiée à Mél';
 
 $labels['mel_mailboxes_display'] = 'Mode d\'affichage des dossiers';
@@ -133,3 +133,14 @@ $labels['default_pref_text'] = "Par défaut";
 $labels['subfolders_pref_text'] = "Regrouper les dossiers";
 $labels['unified_pref_text'] = "Dossiers unifiés";
 $labels['subfolders'] = 'Dossiers';
+
+$labels['bnum advertise login'] = "Plus besoin de jongler avec tous les outils ! Retrouvez votre courriel mais aussi votre agenda, vos tchats, vos groupes de travail et le stockage sur une seule page web : le Bureau numérique.";
+$labels['bnum advertise login button'] = 'Découvrir';
+$labels['bnum advertise login button title'] = 'Ouvrir le Bureau numérique';
+$labels['go to bnum'] = "Ouvrir le Bureau numérique";
+$labels['stay on melweb'] = "Rester sur Mélweb";
+$labels['hide message'] = "Masquer ce message";
+$labels['bnum advertise dialog'] = "
+<div class=\"img\"><img src=\"/plugins/mel/skins/mel_larry/images/BNUM_General.gif?v=72e9.1264\" width=\"500\"></div>
+<center><h3>Le 15 mai, Mélweb évolue et devient le Bureau numérique.<br>Retrouver tous les outils que vous connaissez, accessibles sur une seule page web !</h3><center>
+";

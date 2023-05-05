@@ -1475,7 +1475,7 @@ table.propform td.title {
 
 #login-form .footerbox {
     position: absolute;
-	top: 376px;
+	top: 393px;
 	font-size: 10px;
 }
 
@@ -1516,7 +1516,7 @@ table.propform td.title {
 
 #login-form p.formbuttons {
     margin-top: 1em;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
 }
 
 #login-form input.button {

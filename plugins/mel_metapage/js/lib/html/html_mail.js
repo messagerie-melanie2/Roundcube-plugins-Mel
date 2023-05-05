@@ -55,7 +55,7 @@ export class mail_html extends mel_html2{
 
         if (!this.hasClass('melv2-mail')) {
             this.addClass('melv2-mail');
-            this.onclick.push(() => {
+            this.onclick.add('mail',() => {
                 this._action_on_click();
             })
         }

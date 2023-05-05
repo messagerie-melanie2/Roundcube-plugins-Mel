@@ -81,6 +81,26 @@ class MelObject {
     }
 
     /**
+     * Vérifie si une frame est déjà chargée ou non
+     * @param {string} frame Nom de la frame
+     * @returns {boolean}
+     */
+    have_frame(frame) {
+        return this.select_frame(frame).length > 0;
+    }
+
+    /**
+     * Selectionne une frame
+     * @param {string} frame Nom de la frame
+     * @returns {$}
+     */
+    select_frame(frame) {
+        const $ = (top ?? window).$;
+
+        return $(`.${frame}-frame`);
+    }
+
+    /**
      * Récupère une url à partir d'une tâche et d'une action
      * @param {string} task Nom de la tâche
      * @param {{action:string, params:Object|null}} param1 action => Nom de l'action ('index' si non renseigné), params => Autres paramètres

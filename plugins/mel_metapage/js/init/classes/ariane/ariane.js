@@ -53,7 +53,7 @@
 
         update_status(status)
         {
-            let querry = $("#user-dispo");
+            let querry = $(".ariane-user-dispo");
             querry.removeClass("logout")
             .removeClass("ok")
             .removeClass("busy")

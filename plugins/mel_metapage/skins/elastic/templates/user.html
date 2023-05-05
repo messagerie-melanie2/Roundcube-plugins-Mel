@@ -3,7 +3,90 @@
         <roundcube:label name='mel_metapage.user_help' />
     </p>
 </a>
-<div id="user-up-panel">
+
+
+<div id="user-up-panel" class="dropdown">
+  <button id="button-user"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+    class="transparent-icon-button barup-icons-button" onclick=""
+    title="<roundcube:label name='mel_metapage.user_help' />">
+    <div class="user-child" comment="Parent ariane, photo + dispo">
+      <div id="user-picture" comment="photo utilisateur"></div>
+      <div id="user-dispo" class="ariane-user-dispo logout" comment="Disponibilitée"></div>
+  </div>
+  </button>
+  <div class="dropdown-menu user-dropdown-menu dropdown-menu-right p-2" aria-labelledby="button-notifications">
+    <div class="notifications-header border-radius-md px-2 mb-2">
+      <div class="d-flex pt-1 pb-2 align-items-center">
+        <div class="change_avatar_picture" title="Modifier votre avatar">
+        <a href="javascript:void(0)" class="a_underline" onclick="rcmail.command('change_avatar')">
+                      
+          <div id="user-big-picture" comment="photo utilisateur"></div>
+          <span class="material-symbols-outlined change-avatar">
+            videocam
+          </span>
+      </a>
+      </div>
+        <!-- <a id="user-big-picture" comment="photo utilisateur" href="javascript:void(0)" onclick="rcmail.command('change_avatar')"></a> -->
+        <div class="group-name">
+          <div class="d-flex align-items-center">
+            <span id="user-menu-dispo-icon" class="ariane-user-dispo mr-2 logout" comment="Disponibilitée"></span>
+            <span class="user-menu-name">GOUBIER Arnaud</span>
+          </div>
+          <div class="user-menu-info">Disponible</div>
+        </div>
+      </div>
+    </div>
+    <div class="user-menu-items">
+      <div class="user-menu-state">
+      <div class="user-menu-items-title">Statut</div>
+      <a class="dropdown-item d-flex align-items-center">
+        <span id="user-menu-dispo-icon" class="ariane-user-icon ok" comment="Disponible"></span>
+        <span class="user-menu-item">Disponible</span>
+      </a>
+      <a class="dropdown-item d-flex align-items-center">
+        <span id="user-menu-dispo-icon" class="ariane-user-icon nothere" comment="Absent"></span>
+        <span class="user-menu-item">Absent</span>
+      </a>
+      <a class="dropdown-item d-flex align-items-center">
+        <span id="user-menu-dispo-icon" class="ariane-user-icon busy" comment="Ne pas déranger"></span>
+        <span class="user-menu-item">Ne pas déranger</span>
+      </a>
+      <a class="dropdown-item d-flex align-items-center">
+        <span id="user-menu-dispo-icon" class="ariane-user-icon logout" comment="Hors ligne"></span>
+        <span class="user-menu-item">Hors ligne</span>
+      </a>
+      <!-- <a class="dropdown-item d-flex align-items-center">
+        <span class="material-symbols-outlined user-dropdown-icon">
+          sentiment_satisfied
+        </span>
+        <span class="user-menu-item">Statut personnalisé...</span>
+      </a> -->
+    </div>
+    <div class="user-menu-separator"></div>
+    <div class="user-menu-controls">
+      <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="dropdown-item d-flex align-items-center dropdown-color" />
+      <roundcube:button type="link" command="logout" title="logout" label="logout" class="dropdown-item d-flex align-items-center dropdown-color" />
+      <!-- <a class="dropdown-item d-flex align-items-center">
+        <span class="material-symbols-outlined user-dropdown-icon">
+          person
+        </span>
+        <span class="user-menu-item">Mon compte</span>
+      </a>
+      <a class="dropdown-item d-flex align-items-center">
+        <span class="material-symbols-outlined user-dropdown-icon">
+          logout
+        </span>
+        <span class="user-menu-item">Déconnexion</span>
+      </a> -->
+    </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- <div id="user-up-panel" class="dropdown">
     <div class="user-child">
         <div style="margin: 0;">
             <div class="col-12" role="button" title="<roundcube:label name='mel_metapage.user_help' />" href="#" aria-haspopup="true" aria-owns="groupoptions-user" data-original-title="" tabindex=-1 id="user-up-popup" onclick="m_mp_ToggleGroupOptionsUser(this);"
@@ -26,7 +109,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <div id="groupoptions-user" style="z-index: 1000;">
     <!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
     <div class="container menu" role="menu" aria-labelledby="user-up-panel">

@@ -777,13 +777,20 @@ html.dark-mode #barup-right-buttons .notifications-header {
 }
 
 #barup-right-buttons .dropdown-menu {
-  width: 400px;
   border: none;
   box-shadow: 0 24px 54px rgba(0, 0, 0, .15), 0 4.5px 13.5px rgba(0, 0, 0, .08);
 }
 
+#barup-right-buttons .notification-dropdown-menu {
+  width: 400px;
+}
+
+#barup-right-buttons .user-dropdown-menu {
+  width: 250px;
+}
+
 html.dark-mode #barup-right-buttons .dropdown-menu {
- background-color: #1F2933;
+ background-color: #25323E;
  border: thin #E1C58F;
 }
 
@@ -813,8 +820,6 @@ html.dark-mode #barup-right-buttons .dropdown-menu {
 }
 #barup-right-buttons .dropdown-menu::before {
   border-bottom: 9px solid rgba(0, 0, 0, 0.2);
-  border-left: 9px solid rgba(0, 0, 0, 0);
-  border-right: 9px solid rgba(0, 0, 0, 0);
   content: "";
   display: inline-block;
   right: 13px;
@@ -836,7 +841,7 @@ html.dark-mode #barup-right-buttons .dropdown-menu {
 }
 
 html.dark-mode #barup-right-buttons .dropdown-menu::after {
-  border-bottom: 8px solid #1f2933;
+  border-bottom: 8px solid #25323E;
 }
 
 @media screen and (max-width: 480px) {
@@ -885,9 +890,14 @@ html.dark-mode .barup-icons-button:hover {
     'wght' 300;
 }
 
-#notifications-panel .content a {
+#notifications-panel .content a,
+.user-dropdown-menu .user-menu-items a {
   cursor: pointer;
 } 
+
+.tiny-rocket-chat.inbarup span.disc {
+  font-size: 14px;
+}
 
 /* #notifications-panel .content a.unread {
   background-color: #f0f0f0;

@@ -550,7 +550,7 @@
 
                         $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
 
-                        $("#barup-search-input").attr("placeholder", "Recherche globale...");
+                        $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
                         $(".tiny-rocket-chat").appendTo("#chatCore").addClass('inbarup')
                             // .css("position", "sticky")
@@ -586,7 +586,7 @@
 
                     // $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
 
-                    $("#barup-search-input").attr("placeholder", "Recherche globale...");
+                    $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
                     $(".tiny-rocket-chat").removeClass('inbarup').appendTo("#layout")
                         // .css("position", "absolute")

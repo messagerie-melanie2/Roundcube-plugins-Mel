@@ -10,24 +10,20 @@ div.user-child {
 } */
 
 div#user-picture {
-    background-color: aliceblue;
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-    margin-top: 2px;
-    /* padding-top: 5px; */
-    position: absolute;
-    top: 3px;
-    left: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  margin-top: -14px;
 }
+
 
 div#user-big-picture {
     background-color: #9e9e9e;
     color: white;
     /* border: 1px solid #777; */
-    width: 88px;
-    height: 88px;
-    border-radius: 100%;
+    width: 38px;
+    height: 38px;
+    border-radius: .25rem;
     transition: .3s ease;
     overflow: hidden;
 }
@@ -42,7 +38,7 @@ div#user-big-picture img {
 }
 
 .change_avatar_picture:hover #user-big-picture {
-    opacity: 0.4;
+    opacity: 0.3;
 }
 
 .change_avatar_picture:hover .change-avatar {
@@ -53,23 +49,36 @@ div#user-big-picture img {
     transition: .3s ease;
     opacity: 0;
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 32px;
+    left: 34px;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     font-size: 25px;
 }
 
-div#user-dispo {
+.ariane-user-dispo,
+.ariane-user-icon {
     height: 14px;
     width: 14px;
     background-color: black;
     border-radius: 100%;
     border-style: solid;
-    border-color: #484D7A;
-    bottom: 5px;
-    left: 41px;
-    position: absolute;
+    border-color: #262C56;
+    border-width: 2px;  
+}
+
+#user-dispo.ariane-user-dispo {
+  bottom: 14px;
+  left: 41px;
+  position: absolute;
+}
+
+#user-menu-dispo-icon.ariane-user-icon,
+#user-menu-dispo-icon.ariane-user-dispo {
+  height: 12px;
+  width: 12px;
+  border-width: 0;
+  margin-right: 1rem;
 }
 
 div#user-welcome {
@@ -213,19 +222,23 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
     color: #FDCF42 !important
 }
 
-#user-dispo.ok {
+.ariane-user-dispo.ok,
+.ariane-user-icon.ok {
     background-color: #2DE0A5;
 }
 
-#user-dispo.busy {
+.ariane-user-dispo.busy,
+.ariane-user-icon.busy {
     background-color: #F5455C;
 }
 
-#user-dispo.nothere {
+.ariane-user-dispo.nothere,
+.ariane-user-icon.nothere {
     background-color: #F3BE08;
 }
 
-#user-dispo.logout {
+.ariane-user-dispo.logout,
+.ariane-user-icon.logout {
     background-color: black;
 }
 
@@ -251,4 +264,50 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
 
 .no-image.big-avatar {
   font-size: 50px;
+}
+
+html.dark-mode .user-dropdown-menu,
+html.dark-mode .dropdown-color {
+  color: #96b9e7;
+}
+
+.user-dropdown-menu,
+.dropdown-color {
+  color: #272E58;
+}
+
+#user-up-panel .user-menu-disponibility {
+color: #858585;
+font-weight: 400;
+}
+
+#user-up-panel .user-menu-separator {
+  border-bottom: 1px solid #0000000c;
+  margin: .25rem 0;
+}
+
+#user-up-panel .user-menu-name {
+  font-weight: bold;
+  padding-bottom: 1px;
+}
+
+#user-up-panel .user-menu-info {
+  color: #9ea2a8;
+}
+
+html.dark-mode #user-up-panel .user-menu-state {
+  border-color: #96b9e71c;
+}
+
+#user-up-panel .group-name {
+  margin-left: 10px;
+}
+
+#user-up-panel .user-menu-items-title {
+  font-weight: bold;
+}
+
+#user-up-panel .user-dropdown-icon {
+  margin-left: -5px;
+  margin-right: 7px;
 }

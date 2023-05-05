@@ -1,19 +1,20 @@
 (() => {
+    const BASE_PATH = '/js/lib/';
     const UNLOAD_TIME_MS = 60 * 5 * 1000;
 
     let modules = {};
     let promises = {};
 
-    function getKey(plugin, name) {
-        return plugin+'/'+name;
+    function getKey(plugin, name, extra = EMPTY_STRING) {
+        return plugin + '/' + name + (BASE_PATH === extra ? EMPTY_STRING : extra);
     }
 
-    async function loadJsModule(plugin, name) {
-        const key = getKey(plugin, name);
+    async function loadJsModule(plugin, name, path = BASE_PATH) {
+        const key = getKey(plugin, name, path);
         if (!modules[key]) {
             console.info('Load module', key);
             try {
-                modules[key] = await import(`../../../${plugin}/js/lib/${name}`);
+                modules[key] = await import(`../../../${plugin}${path}${name}`);
             } catch (error) {
                 console.error(`###[loadJsModule]Impossible de charger le module ${key}`, error);
                 throw error;
@@ -40,9 +41,9 @@
         delete promises[key];
     }
 
-    async function runModule(plugin, name = 'main') {
-        promises[getKey(plugin, name)] = loadJsModule(plugin, name);
-        const module = getMainModule(await promises[getKey(plugin, name)]);
+    async function runModule(plugin, name = 'main', path = BASE_PATH) {
+        promises[getKey(plugin, name)] = loadJsModule(plugin, name, path);
+        const module = getMainModule(await promises[getKey(plugin, name, path)]);
         // const Main = (await loadJsModule('mel_metapage', 'main'))?.['Main'];
         // Main.call();
         return module;

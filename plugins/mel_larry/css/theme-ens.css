@@ -1,19 +1,160 @@
+#toplogo {
+	width: 15%;
+	max-height: 80%;
+	max-width: 140px;
+}
+
+#topnav .topright {
+	margin-left: 100px !important;
+}
+
+#taskbar a.button-mail span.button-inner{
+	background: url(../images/ens/mail.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+#taskbar a.button-selected.button-mail span.button-inner, #taskbar a.button-mail:hover span.button-inner{
+	background: url(../images/ens/mail_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-addressbook span.button-inner{
+	background: url(../images/ens/contacts.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+#taskbar a.button-selected.button-addressbook span.button-inner, #taskbar a.button-addressbook:hover span.button-inner{
+	background: url(../images/ens/contacts_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-calendar span.button-inner{
+	background: url(../images/ens/calendar.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+#taskbar a.button-selected.button-calendar span.button-inner, #taskbar a.button-calendar:hover span.button-inner{
+	background: url(../images/ens/calendar_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-mel_sondage span.button-inner{
+	background: url(../images/ens/poll.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+#taskbar a.button-selected.button-mel_sondage span.button-inner, #taskbar a.button-mel_sondage:hover span.button-inner{
+	background: url(../images/ens/poll_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-tasklist  span.button-inner{
+	background: url(../images/ens/task.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+#taskbar a.button-selected.button-tasklist  span.button-inner, #taskbar a.button-tasklist:hover span.button-inner{
+	background: url(../images/ens/task_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar .button-logout{
+	display:block;
+    position: absolute;
+    right: 13px;
+}
+
+#taskbar a.button-help {
+    position: relative !important;
+	right: auto !important;
+}
+
+#taskbar a.button-settings {
+    position: relative !important;
+	right: auto !important;
+}
+
+#taskbar a.button-help span.button-inner{
+	background: url(../images/ens/help.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-selected.button-help  span.button-inner, #taskbar a.button-help:hover span.button-inner{
+	background: url(../images/ens/help_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-settings span.button-inner{
+	background: url(../images/ens/settings.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-selected.button-settings span.button-inner, #taskbar a.button-settings:hover span.button-inner{
+	background: url(../images/ens/settings_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-selected.button-logout  span.button-inner, #taskbar a.button-logout:hover span.button-inner{
+	background: url(../images/ens/logout_orange.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#taskbar a.button-logout span.button-inner{
+	background: url(../images/ens/logout.svg) center 15px no-repeat !important;
+	background-size: 30px !important;
+}
+
+#tasklistsbox a.add{
+	background: url(../images/ens/add.png?v=e784.5000) center center no-repeat !important;
+}
+
+#calendars a.add{
+	background: url(../images/ens/add.png?v=e784.5000) center center no-repeat !important;
+}
+
+#directorylistbox a.add{
+	background: url(../images/ens/add.png?v=e784.5000) center center no-repeat !important;
+}
+
+#login-form .box-left .productname{
+	background: url(../images/ens/white_ens_logo.png) center right no-repeat !important;
+}
+
+#login-form td.title{
+	white-space: inherit !important;
+	text-align: center !important;
+}
+
+.productioninformation{
+	display: none;
+}
+
+#login-form .box-inner{
+	height: fit-content !important;
+}
+
+#login-form .box-left .productname{
+	left: auto !important;
+	background-size: contain !important;
+	min-width: 13%;
+	top: 26% !important;
+}
+
+#loginfooter{
+	display: none;
+}
+
 :root {
-	--global-text-color: #000;
+	--global-text-color: #333;
 	--global-bg-color: #fff;
-	--global-action-color: #f50059;
+	--global-action-color: #fe5400;
 	--global-border-color: #d0d0d0;
 	--global-selected-bg-color: #dee9f6;
 	  	
 	--main-text-color: var(--global-text-color);
-  	--main-bg-color: #eaeaea;
+  	--main-bg-color: #ccc;
   	--main-border-color: var(--global-border-color);
 	--main-sepratator-color: #e4e4e4;
 
 	--login-form-text-color: #2e3436;
 	--login-a-text-color: var(--global-text-color);
 	--login-title-text-color: var(--global-text-color);
-	--login-form-bg-color: rgba(0,0,0,0.05);
+	--login-form-bg-color: #fff;
 	--login-form-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
 	--login-left-bg-color: var(--global-bg-color);
 	--login-footer-text-color: var(--global-text-color);
@@ -105,7 +246,7 @@
   	--buttons-text-color: var(--global-text-color);
   	--buttons-bg-color: var(--global-bg-color);
   	--buttons-border-color: #d5d5d5;
-	--buttons-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+	--buttons-box-shadow: 0 2px 0 0 #d45129;
 	--buttons-focus-bg-color: #e0e0e0;
 	--buttons-focus-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
   	
@@ -196,8 +337,8 @@
   	--jquery-buttons-focus-text-color: #2b2b2b;
 	--jquery-buttons-focus-bg-color: #ededed;
 	
-	--image-logo: url(../images/login-logo.png?v=e784.5000);
-	
+	--image-logo: url(../images/ens/white_ens_logo.png?v=e784.5000);
+
 	--image-gototree: url("images/goto.png?v=e784.5000");
 	--image-carnet: url("images/carnet.png?v=e784.5000");
 	--image-calendar: url("images/calendars.png?v=e784.5000");
@@ -238,7 +379,7 @@
 	--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre.png?v=e784.5000");
 	--image-send-remise_differee: url("../images/envoyer/envoi-differe.png?v=e784.5000");
 
-	--image-background: url("../images/background.png?v=e784.5000");
+	--image-background: url();
 	--image-icons: url("../images/icons.png?v=e784.5000");
 	--image-plus: url("../images/plus-01.png?v=e784.5000");
 

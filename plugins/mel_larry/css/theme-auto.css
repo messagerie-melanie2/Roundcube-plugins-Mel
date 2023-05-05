@@ -196,6 +196,8 @@
   	--jquery-buttons-focus-text-color: #2b2b2b;
 	--jquery-buttons-focus-bg-color: #ededed;
 	
+	--image-logo: url(../images/login-logo.png?v=e784.5000);
+
 	--image-gototree: url("images/goto.png?v=e784.5000");
 	--image-carnet: url("images/carnet.png?v=e784.5000");
 	--image-calendar: url("images/calendars.png?v=e784.5000");

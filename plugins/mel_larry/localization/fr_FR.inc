@@ -60,3 +60,5 @@ $labels['themes_title_dark'] = 'Sombre';
 $labels['themes_description_dark'] = 'Un thème sombre basé sur des nuances de gris foncé.';
 $labels['themes_title_sunset'] = 'Sunset by JP';
 $labels['themes_description_sunset'] = 'Un thème sombre basé sur des nuances de gris.';
+$labels['themes_title_ens'] = 'ENS';
+$labels['themes_description_ens'] = 'thème de l\'ENS.';

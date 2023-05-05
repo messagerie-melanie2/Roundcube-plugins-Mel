@@ -1492,7 +1492,7 @@ table.propform td.title {
 #login-form .box-left .productname {
     position: absolute;
     top: 44px;
-    background: url(../images/login-logo.png?v=e784.5000) center right no-repeat;
+    background: var(--image-logo) center right no-repeat;
     height: 130px;
     padding-right: 115px;
     left: 100px;

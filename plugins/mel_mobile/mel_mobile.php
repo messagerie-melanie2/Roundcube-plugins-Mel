@@ -346,6 +346,9 @@ class mel_mobile extends rcube_plugin {
       case 'list_cols' :
         $args['result'] = array('status','from','date','subject','attachment','flag','mobile_text','mobile_class','labels');
         break;
+      case 'use_subscriptions' :
+        $args['result'] = false;
+        break;
       case 'dont_override' :
         if (! is_array($args['result']))
           $args['result'] = array();

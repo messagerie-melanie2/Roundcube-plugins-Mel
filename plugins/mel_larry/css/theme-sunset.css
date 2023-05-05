@@ -206,7 +206,9 @@ html {
     --jquery-tabs-active-bg-color: #1e1e1e;
     --jquery-buttons-text-color: var(--global-text-color);
     --jquery-buttons-focus-text-color: var(--global-text-color);
-    --jquery-buttons-focus-bg-color: #373737
+    --jquery-buttons-focus-bg-color: #373737;
+
+    --image-logo: url(../images/login-logo.png?v=e784.5000);
 
     --image-gototree: url("images/goto-dark.png?v=e784.5000");
     --image-carnet: url("images/carnet-dark.png?v=e784.5000");

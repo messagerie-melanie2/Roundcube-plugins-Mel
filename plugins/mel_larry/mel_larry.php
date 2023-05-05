@@ -39,7 +39,7 @@ class mel_larry extends rcube_plugin
    *
    * @var array
    */
-  const THEMES = ['auto', 'light', 'dark', 'sunset'];
+  const THEMES = ['auto', 'light', 'dark', 'sunset', 'ens'];
   /**
    * Themes colors css file for Roundcube
    * @var string

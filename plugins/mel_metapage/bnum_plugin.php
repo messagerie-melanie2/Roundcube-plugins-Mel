@@ -1,16 +1,17 @@
 <?php
 abstract class bnum_plugin extends rcube_plugin
 {
+    public const BASE_MODULE_PATH = '/js/lib/';
+    public const BASE_MODULE_NAME = 'main';
     private static $module_loaded = false;
 
     abstract function init();
 
-    protected function load_script_module($name = null) {
+    protected function load_script_module($name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH) {
         $this->setup_module();
-        $args = "'$this->ID'";
 
-        if (isset($name)) $args .= ", '$name'";
-
+        $args = "'$this->ID', '$name', '$path'";
+        
         $this->api->output->add_script("runModule($args)", 'docready');
     }
 

@@ -1,4 +1,5 @@
 import { MailBaseModel } from "../mails/mail_base_model";
+import { MelObject } from "../mel_object";
 
 export class mail_html extends mel_html2{
     /**
@@ -41,7 +42,7 @@ export class mail_html extends mel_html2{
 
             if (have_mail) {
                 $element[0].outerHTML = this.generate()[0].outerHTML;
-                $(`#${id}`).css('display', EMPTY_STRING);
+                this.bind_events($(`#${id}`)).css('display', EMPTY_STRING);
             }
             else $element.css('display', 'none');
         }
@@ -51,7 +52,14 @@ export class mail_html extends mel_html2{
 
     _before_generate() {
         this._create_content();
-        this.addClass('melv2-mail');
+
+        if (!this.hasClass('melv2-mail')) {
+            this.addClass('melv2-mail');
+            this.onclick.push(() => {
+                this._action_on_click();
+            })
+        }
+
     }
 
     _create_content() {
@@ -116,5 +124,13 @@ export class mail_html extends mel_html2{
         }
 
         return date;
+    }
+
+    _action_on_click() {
+        const config = {
+            params:{_uid:this.mail.uid},
+            force_update:true
+        };
+        MelObject.Empty().change_frame('mail', config);
     }
 }

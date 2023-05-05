@@ -463,6 +463,7 @@ a.button.icon:not(.disabled):focus {
 }
 .mel-animated,
 .melv2-event-clickable,
+.melv2-mail,
 .melv2-mail-left {
   transition: all 0.1s ease-in;
 }
@@ -2978,6 +2979,11 @@ a.melv2-card-title {
 .melv2-mail {
   padding: 15px;
   margin: 3px 10px;
+}
+.melv2-mail:hover {
+  background-color: var(--tierciary-bckg-color);
+  color: var(--secondary-text-color);
+  cursor: pointer;
 }
 .melv2-mail-left {
   display: block;

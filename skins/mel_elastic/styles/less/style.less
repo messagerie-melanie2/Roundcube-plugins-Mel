@@ -4471,8 +4471,15 @@ a.rcmContactAddress {
 
 .melv2-mail {
     &:extend(.melv2-event);
+    &:extend(.mel-animated);
     padding: 15px;
     margin: 3px 10px;
+
+    &:hover {
+        background-color: var(--tierciary-bckg-color);
+        color: var(--secondary-text-color);
+        cursor: pointer;
+    }
 }
 
 .melv2-mail-left {

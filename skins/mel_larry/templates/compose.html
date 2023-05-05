@@ -1,7 +1,6 @@
 <roundcube:object name="doctype" value="html5" />
 <html>
 <head>
-<title><roundcube:object name="pagetitle" /></title>
 <roundcube:include file="/includes/links.html" />
 <roundcube:if condition="config:enable_spellcheck" />
 <link rel="stylesheet" type="text/css" href="/googiespell.css" />
@@ -37,7 +36,7 @@
 
 <div id="mainscreencontent">
 
-<div id="composeview-float-right">
+<div id="composeview-left">
 
 <!-- inline address book -->
 <div id="compose-contacts" class="uibox listbox contactslist" role="region" aria-labelledby="aria-label-composecontacts">
@@ -48,10 +47,11 @@
 		<div class="searchbox">
 			<label for="contactsearchbox" class="voice"><roundcube:label name="arialabelcontactsearchbox" /></label>
 			<roundcube:object name="searchform" id="contactsearchbox" />
-			<a id="searchmenulink" href="#" class="iconbutton searchicon"> </a>
-			<roundcube:button command="reset-search" class="iconbutton reset" title="resetsearch" content=" " />
+			<a id="searchmenulink" class="iconbutton searchicon"> </a>
+			<roundcube:button command="reset-search" type="link" class="iconbutton reset" title="resetsearch" content=" " />
 		</div>
 	</div>
+	<roundcube:object name="addressbooks" id="directorylist" class="treelist listing" summary="ariasummarycomposecontacts" />
 	<div class="scroller withfooter" tabindex="-1">
 		<roundcube:object name="annuaire_list" id="annuaire-list" class="treelist listing iconized" noheader="true" role="listbox" />
 	</div>
@@ -65,13 +65,18 @@
 
 <!-- message headers -->
 <div id="composeheaders" role="region" aria-labelledby="aria-label-composeheaders">
+<roundcube:object name="composeObjects" id="compose-objects" class="boxcontent" style="padding-bottom:0" />
 <h2 id="aria-label-composeheaders" class="voice"><roundcube:label name="arialabelmessageheaders" /></h2>
+
+<a href="#options" id="composeoptionstoggle" class="moreheaderstoggle" title="<roundcube:label name='togglecomposeoptions' />" aria-expanded="false"><span class="iconlink"></span></a>
+
 <table class="headers-table compose-headers">
 <tbody>
 	<tr>
 		<td class="title"><label for="_from"><roundcube:label name="from" /></label></td>
 		<td class="editfield">
 			<roundcube:object name="composeHeaders" part="from" form="form" id="_from" tabindex="1" />
+			<a href="#identities" onclick="return rcmail.command('switch-task', 'settings/identities')" class="iconlink edit" tabindex="0"><roundcube:label name="editidents" /></a>
 		</td>
 	</tr><tr>
 		<td class="title top"><label for="_to"><roundcube:label name="to" /></label></td>
@@ -127,6 +132,10 @@
 </tbody>
 </table>
 
+<div id="composebuttons" class="formbuttons">
+	<roundcube:button command="extwin" type="link" class="button extwin" classSel="button extwin pressed" innerClass="icon" title="openinextwin" label="openinextwin" condition="!env:extwin" />
+</div>
+
 <!-- (collapsible) message options -->
 <div id="composeoptions" role="region" aria-labelledby="aria-label-composeoptions">
 	<h2 id="aria-label-composeoptions" class="voice"><roundcube:label name="arialabelcomposeoptions" /></h2>
@@ -166,10 +175,11 @@
 		<label for="composebody" class="voice"><roundcube:label name="arialabelmessagebody" /></label>
 		<roundcube:object name="composeBody" id="composebody" form="form" cols="70" rows="20" tabindex="1" />
 	</div>
-	<div id="compose-attachments" class="rightcol hide" role="region" aria-labelledby="aria-label-composeattachments">
+	<div id="compose-attachments" class="rightcol" role="region" aria-labelledby="aria-label-composeattachments">
 		<h2 id="aria-label-composeattachments" class="voice"><roundcube:label name="attachments" /></h2>
-		<div style="text-align:center; margin-bottom:10px">
+		<div class="upload-form" style="text-align:center; margin-bottom:10px">
             <roundcube:object name="composeAttachmentForm" mode="hint" />
+			<a class="button" tabindex="1" href="#" onclick="rcmail.upload_input('uploadform')"><roundcube:label name="addattachment" /></a>
 		</div>
 		<roundcube:object name="composeAttachmentList" id="attachment-list" class="attachmentslist" tabindex="1" />
 		<roundcube:object name="fileDropArea" id="compose-attachments" />
@@ -209,10 +219,10 @@
 	<h3 id="aria-label-responsesmenu" class="voice"><roundcube:label name="arialabelresponsesmenu" /></h3>
 	<ul class="toolbarmenu" id="textresponsesmenu" role="menu" aria-labelledby="aria-label-responsesmenu">
 		<li role="separator" class="separator" id=""><label><roundcube:label name="insertresponse" /></label></li>
-		<roundcube:object name="responseslist" id="responseslist" tagname="ul" itemclass="active" />
+		<roundcube:object name="responseslist" id="responseslist" tagname="ul" itemclass="active" list-placeholder="noresponsesavailable" />
 		<li role="separator" class="separator"><label><roundcube:label name="manageresponses" /></label></li>
 		<roundcube:button command="save-response" type="link-menuitem" label="newresponse" classAct="active" unselectable="on" />
-		<roundcube:button command="responses" type="link-menuitem" label="editresponses" classAct="active" />
+		<roundcube:button name="responses" type="link-menuitem" label="editresponses" class="active" onclick="return rcmail.command('switch-task', 'settings/responses')" />
 	</ul>
 </div>
 
@@ -222,6 +232,13 @@
 		<roundcube:button command="download-attachment" id="attachmenudownload" type="link-menuitem" label="download" class="icon" classAct="icon active" innerclass="icon download" />
 		<roundcube:button command="rename-attachment" id="attachmenurename" type="link-menuitem" label="rename" class="icon" classAct="icon active" innerclass="icon rename" />
 		<roundcube:container name="attachmentmenu" id="attachmentoptionsmenu" />
+	</ul>
+</div>
+
+<div id="encryptionmenu" class="popupmenu" aria-hidden="true">
+	<ul class="toolbarmenu" role="menu">
+		<roundcube:button command="compose-encrypted" type="link-menuitem" label="encryptmessage" classAct="active" />
+		<roundcube:button command="compose-encrypted-signed" type="link-menuitem" label="encryptandsign" classAct="active" />
 	</ul>
 </div>
 

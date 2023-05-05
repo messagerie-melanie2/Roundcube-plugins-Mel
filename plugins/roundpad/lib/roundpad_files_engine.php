@@ -105,6 +105,7 @@ class roundpad_files_engine
                 'class'      => 'button-pads',
                 'classsel'   => 'button-pads button-selected',
                 'innerclass' => 'button-inner',
+                'type'       => 'link',
                 'label'      => 'roundpad.files',
                 'title'      => 'roundpad.document_title',
                 ), 'taskbar_mel');

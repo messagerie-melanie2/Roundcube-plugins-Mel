@@ -536,28 +536,38 @@ class mel_html{
 		}
 
 		let generated = this._generateContent($html, this.content);
-
-		if (this.onclick.haveEvents()) generated.on(CONST_EVENT_ACTION_CLICK, (event) => {
-			this.onclick.call(event);
-		});
-
-		if (this.onkeydown.haveEvents()) generated.on('keydown', (event) => {
-			this.onkeydown.call(event);
-		});
-
-		if (this.onmouseover.haveEvents()) generated.on('mouseover', (event) => {
-			this.onmouseover.call(event);
-		});
-
-		if (this.onmouseout.haveEvents()) generated.on('mouseout', (event) => {
-			this.onmouseout.call(event);
-		});
+		generated = this.bind_events(generated);
 
 		if (this.aftergenerate.count() > 0) {
 			this.aftergenerate.call(generated);
 		}
 
 		return generated;
+	}
+
+	/**
+	 * Ajoute les évènements de l'objet à un élement jquery
+	 * @param {$} $element 
+	 * @returns {$} Elément avec les actions
+	 */
+	bind_events($element) {
+		if (this.onclick.haveEvents()) $element.on(CONST_EVENT_ACTION_CLICK, (event) => {
+			this.onclick.call(event);
+		});
+
+		if (this.onkeydown.haveEvents()) $element.on('keydown', (event) => {
+			this.onkeydown.call(event);
+		});
+
+		if (this.onmouseover.haveEvents()) $element.on('mouseover', (event) => {
+			this.onmouseover.call(event);
+		});
+
+		if (this.onmouseout.haveEvents()) $element.on('mouseout', (event) => {
+			this.onmouseout.call(event);
+		});
+
+		return $element;
 	}
 
 	/**

@@ -15,7 +15,7 @@ export class BnumLog {
     }
 
     static debug(function_name, ...args) {
-        const PREPEND_TEXT = '- gdb -';
+        const PREPEND_TEXT = '- dbg -';
         this._log(BnumLog.LogLevels.debug ,console.debug, PREPEND_TEXT, function_name, ...args);
     }
 

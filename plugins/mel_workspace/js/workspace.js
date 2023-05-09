@@ -726,7 +726,7 @@ function UpdateFrameAriane()
         arrow.removeClass(right).addClass(down).parent().attr("title", rcmail.gettext("close_ariane", "mel_workspace"));
         $(".ariane-frame").attr("aria-expanded", "true").find("iframe").css("display", "").parent().css("display", "");
         setTimeout(() => {
-            rcmail.triggerEvent("init_ariane", "wsp-disc-id");
+            rcmail.triggerEvent("init_rocket_chat", "wsp-disc-id");
         }, 100);
     }
     else

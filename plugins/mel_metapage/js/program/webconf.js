@@ -239,7 +239,7 @@ class WebconfChat{
                     if (!!this.onloading) this.onloading(this);
                 }
 
-                rcmail.triggerEvent("init_ariane", "mm-ariane");
+                rcmail.triggerEvent("init_rocket_chat", "mm-ariane");
             });
             this.$loaging = $loading_chat.css('width', '');
             this.room = room;

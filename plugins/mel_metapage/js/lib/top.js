@@ -42,6 +42,10 @@ class Top{
         return this;
     }
 
+    static get(key) {
+        return this._TopStorage().datas[key];
+    } 
+
     static remove(key) {
         this._TopStorage().remove(key);
         return this;

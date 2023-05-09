@@ -338,6 +338,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
             metapage_frames.triggerEvent("onload", eClass, changepage, isAriane, querry, id, actions);
             //Actions à faire une fois que l'évènement "onload" est fini.
             metapage_frames.triggerEvent("onload.after", eClass, changepage, isAriane, querry, id);
+
+            (top ?? parent ?? window).rcmail.triggerEvent('frame_loaded', {eClass, changepage, isAriane, querry, id, first_load:true});
         });
 
         if (changepage) //Action à faire après avoir créer la frame, si on change de page.
@@ -356,6 +358,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
         //Ouverture d'une frame.
         metapage_frames.triggerEvent("open", eClass, changepage, isAriane, querry, id, actions);
         metapage_frames.triggerEvent("open.after", eClass, changepage, isAriane, querry, id);
+
+        (top ?? parent ?? window).rcmail.triggerEvent('frame_loaded', {eClass, changepage, isAriane, querry, id, first_load:false});
 
         if (changepage)//Action à faire après avoir ouvert la frame, si on change de page.
             metapage_frames.triggerEvent("changepage.after", eClass, changepage, isAriane, querry, id);
@@ -601,7 +605,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (args["iframe.src"] !== undefined)
         src = args["iframe.src"];
     else if (eClass === "discussion")
-        src = rcmail.env.rocket_chat_url + "home";
+        src = empty;//rcmail.env.rocket_chat_url + "home";
     else
     {
         let task;
@@ -687,11 +691,11 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
 
-    if (eClass === "discussion")
-    {
-        rcmail.triggerEvent("init_ariane", id);
-        window.ariane.goLastRoom($("#"+id));
-    }
+    // if (eClass === "discussion")
+    // {
+    //     rcmail.triggerEvent("init_rocket_chat", id);
+    //     window.ariane.goLastRoom($("#"+id));
+    // }
 
     if (changepage)
     {

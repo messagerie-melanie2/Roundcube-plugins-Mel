@@ -3466,7 +3466,7 @@ var MasterWebconfBar = (() => {
         async hangup()
         {
             //this.webconfManager.chat.recover_last_status();
-            (top ?? window)[var_visio].chat.recover_last_status();
+            window[var_visio]?.chat?.recover_last_status?.();
             //Déplace le "plus d'actions" pour pouvoir le réutiliser plus tard
             this._$more_actions.addClass('hidden').appendTo('body');
 

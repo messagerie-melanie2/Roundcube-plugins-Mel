@@ -6,12 +6,22 @@ export class ModuleLayout extends BaseModule {
     }
 
     start() {
-
+        this._create_hello();
     }
 
-    select_layout_content() {
-        return this.select('#layout-content');
+    select_contents() {
+        return this.select('#layout-content #contents');
     }
 
-    _create_hello() {}
+    get_name() {
+        return this.rcmail().env.current_user.name; 
+    }
+
+    get_hello() {
+        return `Bonjour ${this.get_name()},`;
+    }
+
+    _create_hello() {
+        this.select_contents().prepend($('<h2></h2>').html(this.get_hello()));
+    }
 }

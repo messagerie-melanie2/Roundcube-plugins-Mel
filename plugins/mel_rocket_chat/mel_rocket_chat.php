@@ -7,7 +7,7 @@ class mel_rocket_chat extends bnum_plugin {
     public $task = '.*';
 
     function init() {
-        if ($this->rc()->task === 'chat') {
+        if ($this->rc()->task === 'bnum' || $this->rc()->task === 'chat') {
             $this->setup();
         }
     }

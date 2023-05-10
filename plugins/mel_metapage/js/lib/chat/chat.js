@@ -9,14 +9,8 @@ class Chat extends MelObject {
         let raw = this.load('tchat') ?? this.load('ariane') ?? {};
         raw.lastRoom = Room.from_event(raw.lastRoom);
         raw.unreads = Unreads.from_local(raw.unreads);
-        const save = () => {
-            const onupdate = raw.unreads.onupdate;
-            raw.unreads.onupdate = null;
-            this.save('tchat', raw);
-            raw.unreads.onupdate = onupdate;
-        };
         raw.unreads.onupdate.push(() => {
-            save();
+            this.save_state();
         });
 
         Object.defineProperties(this, {
@@ -25,8 +19,11 @@ class Chat extends MelObject {
                     return raw?.lastRoom ?? new InvalidRoom();
                 },
                 set: (value) => {
-                    raw.lastRoom = this.connectors.room?.connect?.(value);// ?? Room.from_event(value);
-                    save();
+                    const tmp_room = this.connectors.room?.connect?.(value);
+                    if (JSON.stringify(raw?.lastRoom) !== JSON.stringify(tmp_room)) {
+                        raw.lastRoom = tmp_room;
+                        this.save_state();
+                    }
                 },
                 configurable: true
             },
@@ -35,8 +32,11 @@ class Chat extends MelObject {
                     return raw?.status ?? EMPTY_STRING;
                 },
                 set: (value) => {
-                    raw.status = value;
-                    save();
+                    const tmp_status = this.connectors.status?.connect?.(value) ?? value;
+                    if (raw?.status !== tmp_status) {
+                        raw.status = tmp_status;
+                        this.save_state();
+                    }
                 },
                 configurable: true
             },
@@ -143,6 +143,15 @@ class Chat extends MelObject {
         );
     }
     
+    save_state() {
+        const tmp = {
+            lastRoom:this.lastRoom.save(),
+            unreads:this.unreads.save(),
+            status:this.status
+        };
+        this.save('tchat', tmp);
+    }
+
 }
 
 var ChatSingleton = {};
@@ -172,7 +181,7 @@ class Room {
         else {
             let isPublic = null;
 
-            if (!!event.public) isPublic = event.public;
+            if (!!event.public || event.public === false) isPublic = event.public;
             else {
                 switch (event.t) {
                     case "c":
@@ -189,6 +198,13 @@ class Room {
             return new Room(event.name, isPublic);
         }
     }
+
+    save() {
+        return {
+            name:this.name,
+            public:this.public 
+        };
+    }
 }
 
 export class InvalidRoom extends Room {
@@ -198,6 +214,10 @@ export class InvalidRoom extends Room {
 
     isValid() {
         return false;
+    }
+
+    save() {
+        return null;
     }
 }
 
@@ -210,19 +230,18 @@ export class Unreads {
     }
 
     update(key, value) {
-        this.datas[key] = value;
-        if (!this.connector) this.datas[key] = value;
-        else {
-            const datas = this.connector.connect(key, value);
-            this.datas[datas.key] = datas.value;
+        const current_value = !this.connector ? value : this.connector.connect(key, value)?.value;
+
+        if (this.datas[key] !== current_value ) {
+            this.datas[key] = current_value;
+            this.onupdate.call();
         }
-        this.onupdate.call();
         return this;
     }
 
     updateAll(value) {
         if (!this.connector) this.datas = value;
-        else this.datas = this.connector.connect(value).datas;
+        else this.datas = this.connector.connect(value).datas ?? value;
         this.onupdate.call();
         return this;
     }
@@ -232,9 +251,15 @@ export class Unreads {
     }
 
     setHaveUnreads(val) {
-        if (!this.connector) this._unreads = val;
-        else this._unreads = this.connector.connect(val)._unreads;
+        const value = !this.connector ? val : this.connector.connect(null, val).unreads;
+
+        if (value !== this._unreads) {
+            this._unreads = value;
+            this.onupdate.call();
+        }
+
         this.onupdate.call();
+        
         return this;
     }
 
@@ -268,6 +293,13 @@ export class Unreads {
         return Enumerable.from(this).where(x => x.value !== true && x.value !== false && x.value > 0).count();
     }
 
+    save() {
+        return {
+            datas:this.datas,
+            _unreads:this._unreads
+        };
+    }
+
     *[Symbol.iterator]() {
         for (const key in this.datas) {
             if (Object.hasOwnProperty.call(this.datas, key)) {
@@ -283,4 +315,6 @@ export class Unreads {
         u._unreads = value?._unreads ?? false;
         return u;
     } 
+
+
 }

@@ -1,5 +1,4 @@
 (() => {
-    return;
     function getUnread(channel)
     {
         $.ajax({ // fonction permettant de faire de l'ajax

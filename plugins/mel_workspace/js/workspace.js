@@ -208,12 +208,22 @@ function Middle(uid, hasAriane, datas) {
     {
         //console.log("c");
         let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
-        //console.log("Init()", datas, channel, datas[channel]);
-        UpdateAriane(channel, false, (datas[channel] === undefined ? 0 : datas[channel]));
+        // //console.log("Init()", datas, channel, datas[channel]);
+        // UpdateAriane(channel, false, (datas[channel] === undefined ? 0 : datas[channel]));
 
-        rcmail.addEventListener(`storage.change.${mel_metapage.Storage.ariane}`, (items) => {
-            UpdateAriane(channel, false, window.new_ariane(items).getChannel(channel));
-        });
+        // rcmail.addEventListener(`storage.change.${mel_metapage.Storage.ariane}`, (items) => {
+        //     UpdateAriane(channel, false, window.new_ariane(items).getChannel(channel));
+        // });
+        (async () => {
+            const manager = await ChatHelper.Manager();
+            const managerCallback = await ChatHelper.ManagerCallback();
+            UpdateAriane(channel, false, manager.chat().unreads?.[channel] ?? 0);
+            manager.on_mentions_update.add(`WSP-CHAT-${channel}`, managerCallback.create((helper, key, value, unread) => {
+                if (key === channel) {
+                    UpdateAriane(channel, false, value ?? 0);
+                }
+            }));
+        })()
     }
 
     UpdateCalendar();

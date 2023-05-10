@@ -54,15 +54,15 @@ export class ChatManager extends MelObject {
 
     updateUnreads(have) {
         this.chat().unreads.setHaveUnreads(have);
-        this.on_update.call('unreads', have);
-        this.on_unreads_update.call(have);
+        this.on_update.call('unreads', have, this.chat().unreads);
+        this.on_unreads_update.call(have, this.chat().unreads);
         return this;
     }
 
     updateMention(key, value) {
         this.chat().unreads.update(key, value);
-        this.on_update.call('mentions', key, value);
-        this.on_mentions_update.call(key, value);
+        this.on_update.call('mentions', key, value, this.chat().unreads);
+        this.on_mentions_update.call(key, value, this.chat().unreads);
         return this;
     }
 

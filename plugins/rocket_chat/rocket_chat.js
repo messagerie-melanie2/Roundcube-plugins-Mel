@@ -124,7 +124,7 @@ if (window.rcmail) {
 		if (e.data.eventName === undefined)
 			return;
 
-		 console.log('chat',e.data.eventName,e.data);
+		 //console.info('chat',e.data.eventName,e.data);
 		// console.trace();
 
 		if (e.data.eventName == 'login-error') {
@@ -132,14 +132,16 @@ if (window.rcmail) {
 			console.error(`###[Rocket.Chat]${e.data.response}`, e);
 			rcmail.triggerEvent('rocket.chat.event.login-error', {datas:e});
 		}
-		else if (rcmail.env.rocket_chat_channel && e.data.eventName == 'startup' && e.data.data === true) {
+		else if ( e.data.eventName == 'startup' && e.data.data === true) {
 			const do_base_action = rcmail.triggerEvent('rocket.chat.event.startup', {do_base_action:true, datas:e})?.do_base_action ?? true;
 			if (do_base_action)
 			{
-				window.document.getElementById(window.chat_id).contentWindow.postMessage({
-					externalCommand: 'go',
-					path: rcmail.env.rocket_chat_channel
-				}, rcmail.env.rocket_chat_url);
+				if (rcmail.env.rocket_chat_channel) {
+					window.document.getElementById(window.chat_id).contentWindow.postMessage({
+						externalCommand: 'go',
+						path: rcmail.env.rocket_chat_channel
+					}, rcmail.env.rocket_chat_url);
+				}
 			}
 		}
 		else if (e.data.eventName == 'unread-changed') {

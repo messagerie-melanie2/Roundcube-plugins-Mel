@@ -15,7 +15,7 @@ abstract class bnum_plugin extends rcube_plugin
         $this->api->output->add_script("runModule($args)", 'docready');
     }
 
-    private function setup_module() {
+    protected function setup_module() {
         if (!self::$module_loaded) {
             $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js');
             self::$module_loaded = true;

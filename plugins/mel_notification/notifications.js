@@ -362,7 +362,7 @@ function m_mp_ShowNotification(notification) {
  */
 function m_mp_ShowDesktopNotification(notification) {
     if (m_mp_NotificationSettings('desktop_notification', notification)) {
-        let timeout = rcmail.env.notifications_show_duration || 10
+        let timeout = rcmail.env.notifications_desktop_duration || 10
             icon = rcmail.env.notifications_icons[notification.category] ?? rcmail.env.notifications_icons['default'];
 
         // Si l'utilisateur a permis les notifications
@@ -825,7 +825,7 @@ function m_mp_NotificationGetDate(created) {
                         .replace(/%h/, hour);
     }
     else { // Sinon on affiche la date
-        text = title;
+        text = ` - ${title}`;
     }
 
     // Return time and title
@@ -839,7 +839,7 @@ class html_notification extends mel_html2 {
   constructor (notification, isPanel) {
     super('a', { attribs: { id: 'notif' + notification.uid.replace(/\W/g,'_'), class: `dropdown-item p-2 mb-2 rounded ${notification.isread ? '' : 'unread'}` } });
 
-    let _icon = new mel_html('span', { class: 'material-symbols-outlined notification-icon' }, rcmail.env.notifications_icons[notification.category] ?? notification.category );
+    let _icon = new mel_html('span', { class: 'material-symbols-outlined notification-icon' }, rcmail.env.notifications_material_icons[notification.category] ?? notification.category );
 
     let _category = new mel_html2('h6', { attribs: { class: 'notification-category' }, contents: [new mel_html('span', {}, rcmail.env.notifications_categories[notification.category] ?? notification.category)] });
 

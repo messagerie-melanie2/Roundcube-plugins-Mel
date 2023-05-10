@@ -242,6 +242,11 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
     background-color: black;
 }
 
+.ariane-user-icon.logout {
+  background-color: white;
+  border: 2px solid #a4a7ad !important;
+}
+
 #user-picture {
     -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
     mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
@@ -286,6 +291,10 @@ font-weight: 400;
   margin: .25rem 0;
 }
 
+html.dark-mode #user-up-panel .user-menu-separator  {
+  border-color: #96b9e71c;
+}
+
 #user-up-panel .user-menu-name {
   font-weight: bold;
   padding-bottom: 1px;
@@ -310,4 +319,54 @@ html.dark-mode #user-up-panel .user-menu-state {
 #user-up-panel .user-dropdown-icon {
   margin-left: -5px;
   margin-right: 7px;
+}
+
+.icon-button {
+  padding-left: 47px;
+}
+
+.icon-button::before {
+  font-family: "Material Symbols Outlined";
+  font-variation-settings: 'wght' 300;
+  font-size: 21px;
+  position: absolute;
+  left: 24px;
+}
+
+.icon-smile::before {
+  content: "\e813";
+}
+.icon-account::before {
+  content: "\e7fd";
+}
+.icon-logout::before {
+  content: "\e9ba";
+}
+
+.icon-dropdown {
+  font-variation-settings: 'FILL' 1, 'GRAD' 100, 'wght' 400;
+  font-size: 14px;
+  margin-right: 14px;
+  margin-left: -1px;
+}
+
+.icon-dropdown.icon-schedule {
+  color: #f3be08;
+}
+.icon-dropdown.icon-disturb {
+  color: #f5455c;
+}
+
+.large-icon-dropdown {
+  margin-left: -4px;
+  font-size: 21px;
+  font-variation-settings: 'wght' 300;
+  margin-right: 9px;
+}
+
+#custom_status_input {
+  flex: 3;
+}
+#custom_status_dropdown {
+  flex: 1;
 }

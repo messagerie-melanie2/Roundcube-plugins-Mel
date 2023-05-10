@@ -365,3 +365,10 @@ $labels['param-show-back-icon'] = 'Afficher le bouton "Revenir à" ?';
 
 $labels["custom_taskbar"] = "Personnaliser";
 $labels['sended_folder'] = 'Dossier des mails envoyés';
+
+$labels['ok'] = 'Disponible';
+$labels['nothere'] = 'Absent';
+$labels['busy'] = 'Ne pas déranger';
+$labels['logout'] = 'Hors ligne';
+$labels['custom_status'] = 'Statut personnalisé...';
+$labels['change_status'] = 'Modifier le statut';

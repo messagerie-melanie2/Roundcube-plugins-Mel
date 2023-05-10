@@ -1,6 +1,7 @@
 import { Unreads } from "../../../mel_metapage/js/lib/chat/chat";
 import { ChatCallback, ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager";
 import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
+import { IExt } from "./IExt";
 import { RocketChatRoomConnector } from "./connectors/room_connector";
 import { RocketChatStatusConnector } from "./connectors/status_connector";
 import { RocketChatUnreadConnector } from "./connectors/unread_connector";
@@ -143,6 +144,8 @@ export class MelRocketChat extends MelObject {
             class_to_remove,
             status
         }, {});
+
+        IExt.call_status(status, class_to_remove);
     }
 
     /**
@@ -164,5 +167,7 @@ export class MelRocketChat extends MelObject {
                 $querry.css("font-size", "6px");
             } else $querry.html(size);
         }
+
+        IExt.call_unread(unread);
     }
 }

@@ -14,6 +14,9 @@ $.datetimepicker.setLocale('fr');
 document.addEventListener('DOMContentLoaded', function () {
   display_calendar_name();
   run();
+  setInterval(() => {
+    run_refresh();
+  }, 600000);
 });
 
 function display_calendar_name() {
@@ -51,9 +54,39 @@ function run() {
 
       add_appointment_reason(response)
 
-      display_calendar(response)
+      display_calendar(response);
 
       display_datetime_fullcalendar(response);
+    })
+    .catch(err => console.error(err))
+}
+
+function run_refresh() {
+  const options = { method: 'GET', headers: { Accept: 'application/json' } };
+
+  fetch(url.href.replace('fullcalendar/', 'fullcalendar/calendar.php/', options))
+    .then(response => response.json())
+    .then(data => {
+      response = data;
+
+      if (response.error) {
+        $('#error_message').text(response.error);
+        $('#error_message').show();
+        $('#show-calendar').hide();
+        return;
+      }
+
+      get_disabled_days(response);
+
+      show_appointment_duration(response);
+
+      add_appointment_place(response);
+
+      add_appointment_reason(response);
+
+      calendar.refetchEvents();
+
+      datetimepicker_fullcalendar.refetchEvents();
     })
     .catch(err => console.error(err))
 }
@@ -118,7 +151,6 @@ function display_calendar(response) {
     firstDay: 1,
     initialView: "timeGridWeek",
     allDaySlot: false,
-    lazyFetching: false,
     selectable: true,
     slotDuration: "00:15",
     slotMinTime: getMinBusinessHour(response),

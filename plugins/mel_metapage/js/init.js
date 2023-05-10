@@ -741,6 +741,8 @@
                     ".tasklist", mel_metapage.Ids.menu.badge.tasks, true);
                 init_badge(local_storage.mails.unread_count, mel_metapage.Storage.mail, rcmail.mel_metapage_fn.mail_updated,
                     ".mail", mel_metapage.Ids.menu.badge.mail, true, true);
+                init_badge(0, null, null,
+                    ".rocket", mel_metapage.Ids.menu.badge.ariane, false, true);
             }
 
 

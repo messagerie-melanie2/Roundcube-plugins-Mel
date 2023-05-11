@@ -2,6 +2,12 @@ import { MelObject } from "../mel_object";
 import { Top } from "../top";
 import { Chat, _Chat } from "./chat";
 
+/**
+ * @static
+ * @extends MelObject
+ * @classdesc
+ * Gère les actions et affichages lié au Chat
+ */
 export class ChatManager extends MelObject {
     constructor() {
         super();
@@ -21,10 +27,17 @@ export class ChatManager extends MelObject {
         return this;
     }
 
+    /**
+     * Récupère la frame de chat
+     * @returns {$}
+     */
     get_frame() {
         return this.select_frame('discussion');
     }
 
+    /**
+     * Si la room en mémoire est valide, change le canal de chat
+     */
     goLastRoom()
     {
         const lastRoom = this.chat().lastRoom;
@@ -82,7 +95,7 @@ export class ChatManager extends MelObject {
     }
 
     /**
-     * 
+     * Récupère l'instance du chat
      * @returns { _Chat }
      */
     chat() {
@@ -90,7 +103,8 @@ export class ChatManager extends MelObject {
     }
 
     /**
-     * 
+     * @static
+     * Récupère l'instance du manager
      * @returns {ChatManager}
      */
     static Instance() {
@@ -119,13 +133,18 @@ export class ChatCallback extends MelObject {
     }
 
     /**
-     * 
+     * Récupère l'instance du chat
      * @returns { _Chat }
      */
     chat() {
-        return Chat.Instance();
+        return ChatManager.Instance().chat();
     }
 
+    /**
+     * Créer un callback avec des fonctions d'aide.
+     * @param {(helper:ChatCallback, ...args) => {}} callback Helper permet de donner les fonctions utile de MelObject
+     * @returns 
+     */
     static create(callback) {
         return new ChatCallback(callback);
     }

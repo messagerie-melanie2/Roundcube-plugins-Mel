@@ -63,6 +63,7 @@ class Chat extends MelObject {
          */
         this.status = EMPTY_STRING
         /**
+         * Liste des mentions
          * @type {Unreads}
          */
         this.unreads = null;

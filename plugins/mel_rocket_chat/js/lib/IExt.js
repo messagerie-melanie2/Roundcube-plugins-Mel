@@ -1,6 +1,17 @@
 import { Unreads } from "../../../mel_metapage/js/lib/chat/chat";
 import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
 
+/**
+ * @abstract
+ * @extends MelObject
+ * Classe parente pour les extentions.
+ * 
+ * Vous devez faire hériter vos extensions de cette classe puis utiliser les fonctions add_status_callback ou add_unread_callback 
+ * si vous voulez ajouter des actions à éffectuer lorsque le status ou les non-lus sont mis à jours.
+ * 
+ * Les extentions sont appelé avant MelRocketChat 
+ * @author Tommy Delphin
+ */
 export class IExt extends MelObject {
     constructor() {
         super();

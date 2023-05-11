@@ -40,10 +40,11 @@ class ChatHelper {
         {
           text: 'Enregistrer',
           class: 'btn btn-primary border-0 text-light',
-          click: function () {
+          click: async function () {
+            const manager = await ChatHelper.Manager();
             var message = document.getElementById('custom_status_input').value;
             var status = document.getElementById('custom_status_dropdown').value;
-            ariane.set_update_status(status, message)
+            manager.setStatus(status, message);
             $(this).dialog('destroy');
           }
         }]

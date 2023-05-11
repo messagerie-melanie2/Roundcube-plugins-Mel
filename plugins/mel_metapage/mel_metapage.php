@@ -383,6 +383,10 @@ class mel_metapage extends bnum_plugin
                 exit;
             }
 
+            if ($this->rc->task === 'bnum') {
+                $this->setup_module();
+            }
+
             if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);
 
             unset($courielleur);

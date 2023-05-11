@@ -7,6 +7,7 @@ class Headlines extends Module
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[Headlines->init] Initialisation....");
         $this->edit_row_size(4);
         $this->edit_order(3);
+        $this->set_icon('feed');
         //$this->load_config();
     }
 
@@ -21,9 +22,10 @@ class Headlines extends Module
 
         if (isset($news[0]) && isset($news[0]->id))
         {
-            $html .= html::div(['class' => 'mel-header-to-hidden'],
+            $this->set_name('Information '.$news[0]->service);
+            $html .= /*html::div(['class' => 'mel-header-to-hidden'],
                 html::tag('h2', ['class' => 'display-inline-block'], $this->text("headline")).html_helper::mel_button(['style' => 'float:right', 'onclick' => 'mel_metapage.Functions.change_frame(\'news\')'], 'Voir tout', 'icon-mel-arrow-right')
-            ).html::div(
+            ).*/html::div(
                 array("class" => "--row --row-dwp--under"),
                 html::div(
                     array("class" => "--col-dwp--under --under-col-first --col "),

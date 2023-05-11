@@ -37,27 +37,27 @@
     <div class="user-menu-items">
       <div class="user-menu-state">
       <div class="user-menu-items-title">Statut</div>
-      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Chat().then((chat) =>  chat.set_status_to_server('online'))">
+      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Manager().then((chat) =>  chat.setStatus('online'))">
         <span id="user-menu-dispo-icon" class="ariane-user-icon ok" comment="Disponible"></span>
         <span class="user-menu-item"> <roundcube:label name='mel_metapage.ok' /></span>
       </a>
-      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Chat().then((chat) =>  chat.set_status_to_server('away'))">
+      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Manager().then((chat) =>  chat.setStatus('away'))">
         <span class="material-symbols-outlined icon-dropdown icon-schedule">
           schedule
         </span>
         <span class="user-menu-item"> <roundcube:label name='mel_metapage.nothere' /></span>
       </a>
-      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Chat().then((chat) =>  chat.set_status_to_server('busy'))">
+      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Manager().then((chat) =>  chat.setStatus('busy'))">
         <span class="material-symbols-outlined icon-dropdown icon-disturb">
           do_not_disturb_on
         </span>
         <span class="user-menu-item"> <roundcube:label name='mel_metapage.busy' /></span>
       </a>
-      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Chat().then((chat) =>  chat.set_status_to_server('offline'))">
+      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.Manager().then((chat) =>  chat.setStatus('offline'))">
         <span id="user-menu-dispo-icon" class="ariane-user-icon logout" comment="Hors ligne"></span>
         <span class="user-menu-item"> <roundcube:label name='mel_metapage.logout' /></span>
       </a>
-      <a class="dropdown-item d-flex align-items-center" onclick="ariane.set_custom_status()">
+      <a class="dropdown-item d-flex align-items-center" onclick="ChatHelper.OpenCustomStatusModal()">
         <span class="material-symbols-outlined large-icon-dropdown">
           sentiment_satisfied
         </span>

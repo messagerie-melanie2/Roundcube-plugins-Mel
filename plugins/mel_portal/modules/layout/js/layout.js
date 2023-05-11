@@ -22,6 +22,9 @@ export class ModuleLayout extends BaseModule {
     }
 
     _create_hello() {
-        this.select_contents().prepend($('<h2></h2>').html(this.get_hello()));
+        let $html = new mel_html('h2', {class:'melv2-hello'}, this.get_hello()).generate();
+        this.select_contents().prepend($html);
+        $html = null;
+        return this;
     }
 }

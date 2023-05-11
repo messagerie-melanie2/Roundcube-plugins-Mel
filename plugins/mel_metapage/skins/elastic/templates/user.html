@@ -10,7 +10,7 @@
     title="<roundcube:label name='mel_metapage.user_help' />">
     <div class="user-child" comment="Parent ariane, photo + dispo">
       <div id="user-picture" comment="photo utilisateur"></div>
-      <div id="user-dispo" class="ariane-user-dispo logout" comment="Disponibilitée"></div>
+      <div id="user-dispo" class="chat-user-dispo logout" comment="Disponibilitée"></div>
   </div>
   </button>
   <div class="dropdown-menu user-dropdown-menu dropdown-menu-right p-2" aria-labelledby="button-notifications">
@@ -38,7 +38,7 @@
       <div class="user-menu-state">
       <div class="user-menu-items-title">Statut</div>
       <a class="dropdown-item d-flex align-items-center" onclick="ariane.set_update_status('online')">
-        <span id="user-menu-dispo-icon" class="chat-user-icon ok" comment="Disponible"></span>
+        <span id="user-menu-dispo-icon" class="ariane-user-icon ok" comment="Disponible"></span>
         <span class="user-menu-item"> <roundcube:label name='mel_metapage.ok' /></span>
       </a>
       <a class="dropdown-item d-flex align-items-center" onclick="ariane.set_update_status('away')">

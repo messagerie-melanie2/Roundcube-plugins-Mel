@@ -17,13 +17,8 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-class mel_portal extends rcube_plugin
+class mel_portal extends bnum_plugin
 {
-    /**
-     * Contient l'instance de rcmail
-     * @var rcmail
-     */
-    private $rc;
     /**
      * Contient le nom de la tâhce pour pouvoir entrer dans ce plugin.
      */
@@ -62,7 +57,7 @@ class mel_portal extends rcube_plugin
     {
         $this->setup();
         $this->include_depedencies();
-        if ($this->rc->task == $this->taskName)
+        if ($this->rc()->task === $this->taskName)
         {
             $this->load_modules_actions();
             $this->portal();
@@ -74,9 +69,6 @@ class mel_portal extends rcube_plugin
      */
     function setup()
     {
-
-        // Récupération de l'instance de rcmail
-        $this->rc = rcmail::get_instance();
         $this->load_config();
         $this->setup_config();
         $this->add_texts('localization/', true);
@@ -100,8 +92,8 @@ class mel_portal extends rcube_plugin
      */
     function setup_config()
     {
-        $config = $this->rc->config->all();
-        $this->taskName = $this->rc->config->get('task_name', 'bureau');//$config['task_name'];
+        $config = $this->rc()->config->all();
+        $this->taskName = $this->rc()->config->get('task_name', 'bureau');//$config['task_name'];
         $this->templateName = $config['template_name'];
         $this->sidebarName = $config['sidebar_name'];
         $this->cssName = $config['css_name'];
@@ -112,62 +104,68 @@ class mel_portal extends rcube_plugin
      */
     function load_modules($pageName = 'dashboard')
     {
-      // Ajout de l'interface
-      include_once 'modules/imodule.php';
-      include_once 'modules/module.php';
+        try {
+            // Ajout de l'interface
+            include_once 'modules/imodule.php';
+            include_once 'modules/module.php';
 
-      // Recuperation de la configuration
-      $config = $this->rc->config->get('user_interface_config');
-      $this->rc->output->set_pagetitle($config[$pageName]["title"]);
-      $size = count($config[$pageName]["modules"]);
-      $existing = array();
-      for ($i=0; $i < $size; ++$i) { 
-          try {
-              mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_portal->load_modules] Chargement du module ".$config[$pageName]["modules"][$i]."....");
-              include_once 'modules/'.$config[$pageName]["modules"][$i]."/".$config[$pageName]["modules"][$i].".php";
-              $classname = ucfirst($config[$pageName]["modules"][$i]);
-              $object = new $classname($config[$pageName]["modules"][$i], $this, $i);
-              $object->init();
-              $confModule = $this->rc->config->get($config[$pageName]["modules"][$i]);
-              if ($confModule !== null) //Si il existe une config, on fait quelque chose.
-                $object->set_config($confModule, $this->rc->config->get($config[$pageName]["modules"][$i]."_classes"));
-              if ($existing[$config[$pageName]["modules"][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
-              {
-                $object->include_module();
-                $existing[$config[$pageName]["modules"][$i]] = true;
-              }
-              //Ajout du module.
-              $this->add_module($config[$pageName]["modules"][$i], $object->item_html(), $object->row_size());
-          } catch (\Throwable $th) { //$th->getMessage()
-              mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules] Un erreur est survenue pour le module ".$config[$pageName]["modules"][$i]." !");
-              mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getTraceAsString());
-              mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getMessage());
-            }
-      }
-    }
+            // Recuperation de la configuration
+            $config = scandir(getcwd()."/plugins/mel_portal/modules"); 
+            $size = count($config);
+            $existing = [];
+            //$modules = [];
+            // for ($i=0; $i < $size; ++$i) { 
+            //     if (strpos($config[$i], '.php') !== false || $config[$i] === "." || $config[$i] == "..") continue;
 
-    /**
-     * Charge le module du menu de gauche.
-     * [Obsolete]
-     */
-    function load_menu($current_page)
-    {
-        //mel_portal_sectionslist
-        $module = $this->rc->config->get('left_menu_module');
-        // Ajout de l'interface
-        include_once 'modules/imodule.php';
-        include_once 'modules/module.php';
-        include_once 'modules/'.$module."/".$module.".php";
-        $classname = ucfirst($module);
-        $object = new $classname($module, $this);
-        $object->init();
-        $object->include_module();
-        $object->set_user_config($this->rc->config->get('user_menu_config'));
-        $object->set_current_menu($current_page);
-        $this->left_menu = $object->item_html();
-        $this->rc->output->add_handlers(array(
-            'mel_portal_sectionslist'    => array($this, 'create_left_menu'),
-        ));
+            //     include_once 'modules/'.$config[$i]."/".$config[$i].".php";
+            //     $classname = ucfirst($config[$i]);
+            //     $object = new $classname($config[$i], $this, $i);
+            //     $modules[$object];
+            //     // $object->init();
+            //     // $confModule = $this->rc()->config->get($config[$pageName]["modules"][$i]);
+
+            //     // if ($confModule !== null) //Si il existe une config, on fait quelque chose.
+            //     //     $object->set_config($confModule, $this->rc()->config->get($config[$pageName]["modules"][$i]."_classes"));
+            //     // if ($existing[$config[$pageName]["modules"][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
+            //     // {
+            //     //     $object->include_module();
+            //     //     $existing[$config[$pageName]["modules"][$i]] = true;
+            //     // }
+
+            //     // //Ajout du module.
+            //     // $this->add_module($config[$pageName]["modules"][$i], $object->item_html(), $object->row_size());
+            // }
+
+            $classname = '';
+            $confModule = null;
+            mel_helper::Enumerable($config)->where(function($k, $v) {
+                return strpos($v, '.php') === false && $v !== "." && $v !== "..";
+            })->select(function ($k, $v) use (&$classname) {
+                include_once "modules/$v/$v.php";
+                $classname = ucfirst($v);
+                $classname = new $classname($v, $this, $k);
+                $classname->init();
+                return $classname;
+            })->orderBy(function ($k, $v) {return $v->order();})
+            ->select(function ($k, $object) use(&$confModule, &$existing) {
+                //$confModule = $this->rc()->config->get($config[$pageName]["modules"][$i]);
+
+                //if ($confModule !== null) $object->set_config($confModule, $this->rc()->config->get($config[$pageName]["modules"][$i]."_classes"));
+                $confModule = get_class($object);
+                if ($existing[$confModule] !== true) //Ca ne sert à rien de charger le module plusieurs fois.
+                {
+                    $object->include_module();
+                    $existing[$confModule] = true;
+                }
+
+                //Ajout du module.
+                $this->add_module($confModule, $object->item_html(), $object->row_size());
+            })->toArray();
+        } catch (\Throwable $th) {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules] Un erreur est survenue pour le module ".$config[$pageName]["modules"][$i]." !");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getTraceAsString());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getMessage());
+        }
     }
 
     /**
@@ -182,7 +180,7 @@ class mel_portal extends rcube_plugin
       $this->include_js();
       $this->setup_env_js_vars();
       $this->load_modules($current_page);
-      $this->load_menu($current_page);
+//      $this->load_menu($current_page);
       $this->generate_html();
     }
 
@@ -239,7 +237,7 @@ class mel_portal extends rcube_plugin
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/'.$this->cssName);
-        if ($this->rc->config->get('skin') != 'mel_elastic')
+        if ($this->rc()->config->get('skin') != 'mel_elastic')
           $this->include_stylesheet($this->local_skin_path().'/icofont.min.css');
     }
 
@@ -248,7 +246,8 @@ class mel_portal extends rcube_plugin
      */
     function include_js()
     {
-        $this->include_script('js/main.js');
+        //$this->include_script('js/main.js');
+        $this->load_script_module();
     }
 
     /**
@@ -265,8 +264,8 @@ class mel_portal extends rcube_plugin
      */
     function setup_env_js_vars()
     {
-        // $this->rc->output->set_env('ev_calendar_url', $this->rc->config->get('calendar_url'));
-        // $this->rc->output->set_env('ev_remove_calendar_url', $this->rc->config->get('delete_calendar_url'));
+        // $this->rc()->output->set_env('ev_calendar_url', $this->rc()->config->get('calendar_url'));
+        // $this->rc()->output->set_env('ev_remove_calendar_url', $this->rc()->config->get('delete_calendar_url'));
     }
 
     /**
@@ -274,22 +273,22 @@ class mel_portal extends rcube_plugin
      */
     function generate_html()
     {
-        $this->rc->output->add_handlers(array(
+        $this->rc()->output->add_handlers(array(
             'modules'    => array($this, 'creates_modules'),
             'maintenancetext' => [$this, 'maintenancetext']
         ));
-        $this->rc->output->send('mel_portal.'.$this->templateName);
+        $this->rc()->output->send('mel_portal.'.$this->templateName);
     }
 
     /**
      * Récupère le html d'un module.
      */
-    function add_module($name,$html,$size)
+    function add_module($name, $html, $size)
     {
-        if ($this->modules_html == null)
-            $this->modules_html = "";
-        $this->modules_html = $this->modules_html.html::div(array("class" => "--col-dwp --col-dwp-".$size),
-            html::div(array("class" => $name." module_parent"), $html)
+        if ($this->modules_html == null) $this->modules_html = [];
+
+        $this->modules_html[] = html::div(array("class" => "col-md-".$size),
+            html::div(array("class" => "module_$name module_parent"), $html)
         );
     }
 
@@ -298,7 +297,7 @@ class mel_portal extends rcube_plugin
      */
     function creates_modules()
     {
-        $tmp = $this->modules_html;
+        $tmp = implode('', $this->modules_html);
         $this->modules_html = null;
         return html::div(array("class" => "row"), $tmp);
     }
@@ -306,7 +305,7 @@ class mel_portal extends rcube_plugin
     function maintenancetext()
     {
         $this->require_plugin('mel_helper');
-        return mel_helper::get_maintenance_text($this->rc);
+        return mel_helper::get_maintenance_text($this->rc());
     }
 
     /**

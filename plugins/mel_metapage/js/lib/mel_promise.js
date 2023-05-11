@@ -1,4 +1,4 @@
-export { Mel_Promise, Mel_Ajax }
+export { Mel_Promise, Mel_Ajax, WaitSomething }
 /**
  * Ajoute des fonctionnalités aux promesses déjà existantes.
  * Pour que les fonctions asynchrones soient complètement compatible, le premier argument doit être la promesse elle même.
@@ -106,21 +106,22 @@ class Mel_Promise {
             return _create_promises(promiseCreator, {callback, onAbort}, ...args);
         };
 
-        this.create_ajax_request = ({type, url, success, failed, onAbort = () => {}}) => {
+        this.create_ajax_request = ({type, url, success, failed, onAbort = () => {}, datas = null}) => {
             const promiseCreator = () => {
-                return new Mel_Ajax({type, url, success, failed});
+                return new Mel_Ajax({type, url, success, failed, datas});
             };
             return _create_promises(promiseCreator, {callback, onAbort});
         };
 
-        this.create_ajax_post_request = ({url, success, failed, onAbort = () => {}}) => {
+        this.create_ajax_post_request = ({url, success, failed, onAbort = () => {}, datas = null}) => {
             return this.create_ajax_request({
                 type:"POST",
                 url, 
                 success,
                 failed,
-                onAbort
-            })
+                onAbort,
+                datas
+            });
         };
 
         this.create_ajax_get_request = ({url, success, failed, onAbort = () => {}}) => {
@@ -130,7 +131,7 @@ class Mel_Promise {
                 success,
                 failed,
                 onAbort
-            })
+            });
         };
 
         this.await_all_childs = () => {
@@ -193,12 +194,12 @@ class Mel_Promise {
                 else { 
                     //Si la function est asynchrone
                     if (isAsync(_callback)) {
-                        waiting_promise = _callback(this, ...args);
+                        waiting_promise = this.build_call_back(_callback, this, ...args);
                     }
                     else { //Si c'est une fonction + classique
                         res_func = res;
                         rej_func = rej;
-                        const val = _callback(this, ...args);
+                        const val = this.build_call_back(_callback, this, ...args);
                         if (!!val?.then) waiting_promise = val;
                         else {
                             if (resolving) 
@@ -263,10 +264,47 @@ class Mel_Promise {
         yield this;
         yield* this.all_child_generator();
     }
+
+    build_call_back(callback, current, ...args) {
+        return callback(current, ...args);
+    }
 }
 
 class Mel_Ajax extends Mel_Promise{
-    constructor({type, url, success, failed}) {
-        super($.ajax, {type, url, success, failed});
+    constructor({type, url, success, failed, datas = null}) {
+        let parameters = {type, url, success, failed};
+
+        if (!!datas) parameters['data'] = datas;
+
+        super($.ajax, parameters);
+    }
+
+    build_call_back(callback, current, ...args) {
+        return callback(...args, current);
+    }
+}
+
+class WaitSomething extends Mel_Promise {
+    constructor(whatIWait, timeout = 5) {
+        let promise = new Mel_Promise((current) => {
+            current.start_resolving();
+            let it = 0;
+            const interval = setInterval(() => {
+                if (whatIWait()) {
+                    it = null;
+                    clearInterval(interval);
+                    current.resolve({resolved:true});
+                }
+                else if (it >= timeout * 10) {
+                    it = null;
+                    clearInterval(interval);
+                    current.resolve({resolved:false, msg:`timeout : ${timeout * 10}ms`});
+                }
+
+                ++it;
+            }, 100);
+        });
+
+        super(promise);
     }
 }

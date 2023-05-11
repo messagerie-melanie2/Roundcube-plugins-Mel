@@ -1,3 +1,26 @@
+class ChatHelper {
+    static async _Module() {
+        return await loadJsModule('mel_metapage', 'chatManager', '/js/lib/chat/');
+    }
+
+    static async Manager() {
+        return (await this._Module()).ChatManager.Instance();
+    }
+
+    static async ManagerCallback() {
+        return (await this._Module()).ChatCallback;
+    }
+
+    static async Chat() {
+        return (await this.Manager()).chat();
+    }
+
+    static async Top() {
+        return (await loadJsModule('mel_metapage', 'Top')).Top;
+    }
+}
+
+
 (async () => {
     const delay = ms => new Promise(res => setTimeout(res, ms));
     const isAsync = myFunction => myFunction.constructor.name === "AsyncFunction";
@@ -262,8 +285,8 @@
     }
 
 
-    window.ariane_reinit = () => {return new Ariane(true);};
-    window.new_ariane = (ariane) => new Ariane(false, ariane);
-    window.ariane = new Ariane(true);
+    // window.ariane_reinit = () => {return new Ariane(true);};
+    // window.new_ariane = (ariane) => new Ariane(false, ariane);
+    // window.ariane = new Ariane(true);
 
 })();

@@ -19,7 +19,7 @@ use LibMelanie\Api\Defaut\Workspaces\Share;
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-class mel_workspace extends rcube_plugin
+class mel_workspace extends bnum_plugin
 {
     /**
      * @var string
@@ -352,6 +352,7 @@ class mel_workspace extends rcube_plugin
             'joined'    => array($this, 'show_joined'),
         ));
         $this->include_script('js/workspace_frame_manager.js');
+        $this->load_script_module('index', '/js/mel_lib/');
         $this->rc->output->set_pagetitle("Mes espaces de travail");
         $this->rc->output->send('mel_workspace.workspaces');
     }
@@ -578,6 +579,8 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->set_env("current_objects", json_decode($this->currentWorkspacespace->objects));
 
         $this->rc->output->set_env("corrected_wsp", true);
+
+        $this->setup_module();
 
         $this->rc->output->set_pagetitle("Espace de travail \"".$this->currentWorkspace->title."\"");
         $this->rc->output->send('mel_workspace.workspace');
@@ -1745,6 +1748,7 @@ class mel_workspace extends rcube_plugin
         $count = count($this->folders);
 
         for ($it=0; $it < $count; ++$it) { 
+            if ($this->folders[$it] === 'mel_lib') continue;
             $files = scandir(__DIR__."/js/".$this->folders[$it]);
             $size = count($files);
 
@@ -2470,7 +2474,7 @@ class mel_workspace extends rcube_plugin
             {
                 switch ($key) {
                     case self::CHANNEL:
-                        $tmp_html[] = '<div class="wsp-notif-block" style=display:none;><span data-channel="'.$this->get_object($workspace, self::CHANNEL)->name.'" class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
+                        $tmp_html[] = '<div class="wsp-notif-block wsp-chat-notif-block" style=display:none;><span data-channel="'.$this->get_object($workspace, self::CHANNEL)->name.'" class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="material-symbols-outlined ariane-icon">forum</div>';
                         break;
                     
                     default:

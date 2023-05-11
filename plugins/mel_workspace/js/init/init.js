@@ -131,4 +131,5 @@ $(document).ready(() => {
     });
 
     $(".eye").css("display", "none");
+    
 });

@@ -109,6 +109,8 @@ $(document).ready(() => {
     }, true);
     
     new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
+    
+    //window.runModule?.('mel_workspace', 'index', '/js/mel_lib/');
 });
 
 function load_archives(e)

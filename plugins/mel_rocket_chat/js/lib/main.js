@@ -117,7 +117,7 @@ export class MelRocketChat extends MelObject {
         const busy = 'busy';
         const offline = 'logout';
         const class_to_remove = [online, away, busy, offline];
-        let querry = helper.top_select('.chat-status');
+        let querry = helper.top_select('.chat-user-dispo');
         
         for (const class1 of class_to_remove) {
             querry.removeClass(class1);

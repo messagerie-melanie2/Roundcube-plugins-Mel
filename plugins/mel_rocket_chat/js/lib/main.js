@@ -108,6 +108,8 @@ export class MelRocketChat extends MelObject {
 
         if (!datas.eventName && !!datas.data.eventName) datas = datas.data;
 
+        if (!!datas.data?.id) datas.data = datas.data.id;
+
         ChatManager.Instance().updateStatus(datas.data);
         return args;
     }

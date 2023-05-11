@@ -56,7 +56,7 @@ div#user-big-picture img {
     font-size: 25px;
 }
 
-.ariane-user-dispo,
+.chat-user-dispo,
 .ariane-user-icon {
     height: 14px;
     width: 14px;
@@ -67,14 +67,14 @@ div#user-big-picture img {
     border-width: 2px;  
 }
 
-#user-dispo.ariane-user-dispo {
+#user-dispo.chat-user-dispo {
   bottom: 14px;
   left: 41px;
   position: absolute;
 }
 
 #user-menu-dispo-icon.ariane-user-icon,
-#user-menu-dispo-icon.ariane-user-dispo {
+#user-menu-dispo-icon.chat-user-dispo {
   height: 12px;
   width: 12px;
   border-width: 0;
@@ -222,22 +222,22 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
     color: #FDCF42 !important
 }
 
-.ariane-user-dispo.ok,
+.chat-user-dispo.ok,
 .ariane-user-icon.ok {
     background-color: #2DE0A5;
 }
 
-.ariane-user-dispo.busy,
+.chat-user-dispo.busy,
 .ariane-user-icon.busy {
     background-color: #F5455C;
 }
 
-.ariane-user-dispo.nothere,
+.chat-user-dispo.nothere,
 .ariane-user-icon.nothere {
     background-color: #F3BE08;
 }
 
-.ariane-user-dispo.logout,
+.chat-user-dispo.logout,
 .ariane-user-icon.logout {
     background-color: black;
 }

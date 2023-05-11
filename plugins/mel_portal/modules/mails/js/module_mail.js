@@ -90,7 +90,7 @@ class ModuleMail extends BaseModule{
             $un_contents.css('display', 'none');
         }
         else {
-            mel_html2.div({attribs:{class:'melv2-mail', contents:"Vous n'avez pas de mails !"}}).create($un_contents.css('display', EMPTY_STRING));
+            mel_html2.div({attribs:{class:'melv2-mail'}, contents:"Vous n'avez pas de mails !"}).create($un_contents.css('display', EMPTY_STRING));
         }
         
         return this;

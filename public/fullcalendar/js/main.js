@@ -84,9 +84,7 @@ function run_refresh() {
 
       add_appointment_reason(response);
 
-      calendar.refetchEvents();
-
-      datetimepicker_fullcalendar.refetchEvents();
+      refresh_calendars();
     })
     .catch(err => console.error(err))
 }
@@ -141,6 +139,11 @@ function add_appointment_reason(response) {
       $('#event-description-input').show();
     }
   }
+}
+
+function refresh_calendars() {
+  calendar.refetchEvents();
+  datetimepicker_fullcalendar.refetchEvents();
 }
 
 function display_calendar(response) {
@@ -471,6 +474,7 @@ function user_form_submit(e) {
       $('#waitingToast').toast('hide');
       $('#successToast').toast('show');
       display_confirm_modal(event)
+      refresh_calendars();
     })
     .catch(err => {
       console.log(err);

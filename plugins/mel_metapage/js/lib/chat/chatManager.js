@@ -79,6 +79,17 @@ export class ChatManager extends MelObject {
         return this;
     }
 
+    /**
+     * Envoie le nouveau status au serveur
+     * @param {string} status 
+     * @param {string} message
+     * @returns {Promise} 
+     */
+    async setStatus(status, message) {
+        await this.chat().set_status_to_server(status, message);
+        this.updateStatus(status);
+    }
+
     setStatusConnector(connector) {
         this.chat().setStatusConnector(connector);
         return this;

@@ -37,6 +37,7 @@
 
         async function mel_calendar_updated(force = CONST_CALENDAR_UPDATED_DEFAULT) {
             const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
+            const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
             const isTop = window === top;
             const url = mel_metapage.Functions.url(PLUGIN_MEL_METAPAGE, ACTION_MEL_METAPAGE_CALENDAR_LOAD_EVENT, {
                 force,
@@ -49,6 +50,7 @@
             let rc = isTop ? rcmail : top.rcmail;
 
             rc.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
+            MelObject.trigger_event(mel_metapage.EventListeners.calendar_updated.before);
 
             await mel_metapage.Functions.get(url, {}, 
                 (datas) => {
@@ -97,6 +99,7 @@
 
                     mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment());
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
+                    MelObject.trigger_event(mel_metapage.EventListeners.calendar_updated.after);
                     
                 }, (a, b, c) => {
 
@@ -198,10 +201,12 @@
                     
                     await mel_calendar_updated(args?.force ?? 'random').then(() => parent.rcmail.mel_metapage_fn.started = false);
                 },
-                tasks_updated: function() {
+                tasks_updated: async function() {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.tasks_updated.before);
 
-                    return $.ajax({ // fonction permettant de faire de l'ajax
+                    await $.ajax({ // fonction permettant de faire de l'ajax
                         type: "POST", // methode de transmission des données au fichier php
                         url: '?_task=tasks&_action=fetch&filter=0&_remote=1&_unlock=true&_=1613118450180', //rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                         success: function(data) {
@@ -243,6 +248,7 @@
                                 update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
                                 mel_metapage.Storage.set(mel_metapage.Storage.last_task_update, moment().startOf('day'))
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
+                                MelObject.trigger_event(mel_metapage.EventListeners.tasks_updated.after);
                             } catch (ex) {
                                 console.error(ex, data);
                                 //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
@@ -257,8 +263,10 @@
                         // rcmail.clear_messages();
                     });
                 },
-                mail_updated: function(isFromRefresh = false, new_count = null) {
+                mail_updated: async function(isFromRefresh = false, new_count = null) {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.mails_updated.before);
 
                     mel_metapage.Storage.remove(mel_metapage.Storage.mail);
 
@@ -299,6 +307,7 @@
                                 try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                                 update_badge(data, mel_metapage.Ids.menu.badge.mail);
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
+                                MelObject.trigger_event(mel_metapage.EventListeners.mails_updated.after);
                                 // if ($(".mail-frame").length > 0)
                                 //     Title.update($(".mail-frame")[0].id);
                             } catch (ex) {
@@ -333,9 +342,11 @@
                         }
                     );
                 },
-                wsp_updated()
+                async wsp_updated()
                 {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.workspaces_updated.before);
                     mel_metapage.Storage.remove(mel_metapage.Storage.title_workspaces);
 
                     return mel_metapage.Functions.get(
@@ -344,6 +355,7 @@
                         (datas) => {
                             mel_metapage.Storage.set(mel_metapage.Storage.title_workspaces, datas, false);
                             parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.after, datas);
+                            MelObject.trigger_event(mel_metapage.EventListeners.workspaces_updated.after, datas);
                         }
                     )
                 },
@@ -441,14 +453,20 @@
 
                     }
 
-                    parent.rcmail.mel_metapage_fn.wsp_updated();
-                    parent.rcmail.mel_metapage_fn.calendar_updated();
-                    parent.rcmail.mel_metapage_fn.tasks_updated();
-                    parent.rcmail.mel_metapage_fn.mail_updated(true);
-                    parent.rcmail.mel_metapage_fn.weather();
+                    let promises = 
+                    [parent.rcmail.mel_metapage_fn.wsp_updated(),
+                    parent.rcmail.mel_metapage_fn.calendar_updated(),
+                    parent.rcmail.mel_metapage_fn.tasks_updated(),
+                    parent.rcmail.mel_metapage_fn.mail_updated(true)];
+                    //parent.rcmail.mel_metapage_fn.weather();
 
                     refreshWorkspaceCloudNotification();
                     rcmail.triggerEvent("mel_metapage_refresh");
+
+                    Promise.allSettled(promises).then(async () => {
+                       const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
+                       MelObject.triggerEvent('mel_metapage_refresh');
+                    })
                 }
             };
 

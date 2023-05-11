@@ -1,7 +1,44 @@
 export { MelObject };
 import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
+import { BaseStorage } from "./classes/base_storage";
+import { BnumLog } from "./classes/bnum_log";
 import { Cookie } from "./classes/cookies";
 import { Top } from "./top";
+
+
+class MelEventManager extends BaseStorage {
+    constructor() {
+        super();
+
+        const super_add = this.add;
+        this.add = function add(listener_key, callback, callback_key = null) {
+            BnumLog.info('Listener added', listener_key, callback_key);
+            if (!this.has(listener_key)) super_add(listener_key, new MelEvent());
+    
+            if (!callback_key) this.get(listener_key).add(callback_key, callback);
+            else this.get(listener_key).push(callback);
+            return this;
+        }
+    }
+
+
+
+    call(listener_key, ...args) {
+        BnumLog.info('Trigger Called', listener_key);
+        if (this.has(listener_key)) {
+            this.get(listener_key).call(...args);
+        }
+        return this;
+    }
+
+    remove_callback(listener_key, callback_key) {
+        if (this.has(listener_key) && this.get(listener_key).has(callback_key)) {
+            this.get(listener_key).remove(callback_key);
+        }
+
+        return this;
+    }
+}
 
 /**
  * @abstract
@@ -15,6 +52,21 @@ class MelObject {
      * @param  {...any} args Arguments de la classe
      */
     constructor(...args) {
+        /**
+         * @type {MelEventManager}
+         */
+        this._listener = null;
+        Object.defineProperties(this, {
+            _listener: {
+                get: function() {
+                    const KEY = 'MEL_OBJECT_LISTENER';
+                    if (!Top.has(KEY)) Top.add(KEY, new MelEventManager());
+
+                    return Top.get(KEY);
+                },
+                configurable: true
+            }
+        });
         this.main(...args);
     }
 
@@ -42,32 +94,20 @@ class MelObject {
      * @param {function} callback Fonction qui sera appelée
      * @param {{top:boolean}} param2 Si on doit récupérer rcmail sur frame principale ou non
      */
-    add_event_listener(key, callback, {top = false, condition = true}) {
+    add_event_listener(key, callback, {callback_key = null, condition = true}) {
+        let can_call = typeof condition === 'function' ? condition() : condition;
 
-        let can_call = false;
-        
-        if (top && !Top.has(`event_listener_${key}`))
-        {
-            if (typeof condition === 'function' ? condition() : condition) {
-                can_call = true;
-                Top.add(`event_listener_${key}`, true);
-            }
-        }
-        else if (!top) can_call = true;
-
-        if (can_call) this.rcmail(top).addEventListener(key, callback);
+        if (can_call) this._listener.add(key, callback, callback_key);
     }
 
     /**
      * Trigger un écouteur
      * @param {string} key Clé qui appelera tout les écouteurs lié à cette clé
      * @param {*} args  Arguments qui sera donnée aux écouteurs
-     * @param {Object} options Options
-     * @param {boolean} options.top Si on doit récupérer rcmail sur frame principale ou non
      * @returns 
      */
-    trigger_event(key, args, {top = false}){
-        return this.rcmail(top).triggerEvent(key, args);
+    trigger_event(key, args){
+        return this._listener.call(key, args);
     }
 
     /**
@@ -77,10 +117,9 @@ class MelObject {
      * @param {string} options.frame any pour toute n'importe quelle frame, sinon mettre le nom de la frame
      * @param {function | null} options.condition Condition custom pour charger la frame
      */
-    on_frame_loaded(callback, {frame = 'any', condition = null}) {
-        const top = true;
+    on_frame_loaded(callback, {callback_key = null, frame = 'any', condition = null}) {
         this.add_event_listener('frame_loaded', callback, {
-            top,
+            callback_key,
             condition:() => {
                 return condition?.() ?? ('any' === frame || this.rcmail().env.task === frame);
             }
@@ -326,3 +365,4 @@ class MelObject {
         return new MelObject();
     }
 }
+

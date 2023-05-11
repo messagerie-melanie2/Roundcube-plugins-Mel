@@ -16,7 +16,7 @@ export class MelCalendar extends MelObject {
     _add_on_load() {
         this.on_frame_loaded(async (...args) => {
             this._rerender_on_load(...args);
-        }, {frame:'calendar'});
+        }, {frame:'calendar', callback_key:'MelCalendar/_add_on_load/on_frame_loaded'});
         return this;
     }
 

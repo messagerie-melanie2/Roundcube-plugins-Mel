@@ -2,7 +2,6 @@ export { ModuleMyDay };
 import { html_events } from "../../../../mel_metapage/js/lib/html/html_events";
 import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage";
 import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
-import { Top } from "../../../../mel_metapage/js/lib/top";
 import { BaseModule } from "../../../js/lib/module";
 
 const TOP_KEY = 'my_day_listeners';
@@ -39,12 +38,10 @@ class ModuleMyDay extends BaseModule{
     }
 
     set_listeners() {
-        if (!Top.has(TOP_KEY)) {
-            this.add_event_listener(LISTENER_KEY, () => {
-                this.clear_timeout().generate();
-            }, {top:true});
-            Top.add(TOP_KEY, true);
-        }
+        this.add_event_listener(LISTENER_KEY, () => {
+            this.clear_timeout().generate();
+        }, {callback_key:TOP_KEY});
+
         return this;
     }
 

@@ -21,7 +21,7 @@
             }
         }
 
-        if (!!modules[key]?.timeout) clearTimeout(modules[key].timeout);
+        if (!!modules[key] && !!modules[key].timeout) clearTimeout(modules[key].timeout);
 
         modules[key].timeout = setTimeout((key) => {
             unloadModuleFromKey(key);
@@ -34,10 +34,12 @@
     }
 
     function unloadModuleFromKey(key) {
-        console.info('unload module : ', key);
-        clearTimeout(modules[key].timeout);
-        modules[key] = null;
-        delete promises[key];
+        if (!!modules[key]) {
+            console.info('unload module : ', key);
+            clearTimeout(modules[key].timeout);
+            modules[key] = null;
+            delete promises[key];
+        }
     }
 
     async function runModule(plugin, name = 'main', path = BASE_PATH) {

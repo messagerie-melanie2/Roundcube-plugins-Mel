@@ -35,10 +35,10 @@ export class MelRocketChat extends MelObject {
     }
 
     _set_listeners() {
-        this.add_event_listener('rocket.chat.event.unread-changed', (args) => this.unread_change(args), {});
-        this.add_event_listener('rocket.chat.event.room-opened', (args) => this.room_opened(args), {});
-        this.add_event_listener('rocket.chat.event.status-changed', (args) => this.status_changed(args), {});
-        this.add_event_listener('rocket.chat.event.startup', function (args) {
+        this.rcmail().addEventListener('rocket.chat.event.unread-changed', (args) => this.unread_change(args), {});
+        this.rcmail().addEventListener('rocket.chat.event.room-opened', (args) => this.room_opened(args), {});
+        this.rcmail().addEventListener('rocket.chat.event.status-changed', (args) => this.status_changed(args), {});
+        this.rcmail().addEventListener('rocket.chat.event.startup', function (args) {
             ChatManager.Instance().goLastRoom();
         }, {});
         
@@ -67,10 +67,16 @@ export class MelRocketChat extends MelObject {
     }
 
     _start() {
-        const helper = new ChatCallback(null);
-        this.on_status_updated(helper, ChatManager.Instance().chat().status);
-        this.on_unread_updated(helper, ChatManager.Instance().chat().unreads);
+        if (this.launch_at_startup()) {
+            const helper = new ChatCallback(null);
+            this.on_status_updated(helper, ChatManager.Instance().chat().status);
+            this.on_unread_updated(helper, ChatManager.Instance().chat().unreads);
+        }
         return this;
+    }
+
+    launch_at_startup() {
+        return rcmail?.env?.launch_chat_frame_at_startup ?? false;
     }
 
     unread_change(args) {

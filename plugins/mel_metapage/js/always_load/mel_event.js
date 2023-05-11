@@ -17,6 +17,10 @@ class MelEvent {
         this.events[key] = event;
     }
 
+    has(key) {
+        return !!this.events[key];
+    }
+
     remove(key) {
         this.events[key] = null;
 

@@ -4,7 +4,6 @@ import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
 import { html_ul } from "../../../../mel_metapage/js/lib/html/html";
 import { mail_html } from "../../../../mel_metapage/js/lib/html/html_mail";
 import { MailBaseModel } from "../../../../mel_metapage/js/lib/mails/mail_base_model";
-import { Top } from "../../../../mel_metapage/js/lib/top";
 import { BaseModule } from "../../../js/lib/module"
 
 const MODULE_ID = 'Mails';
@@ -62,12 +61,10 @@ class ModuleMail extends BaseModule{
 
     _set_listeners() {
         const KEY = 'portal_mails_listeners';
-        if (!Top.has(KEY)){
-            this.add_event_listener('mel_metapage_refresh', () => {
-                this.show_last_mails({force_refresh:true});
-            }, {top:true});
-            Top.add(KEY, true);
-        }
+
+        this.add_event_listener('mel_metapage_refresh', () => {
+            this.show_last_mails({force_refresh:true});
+        }, {callback_key:KEY});
 
         return this;
     }

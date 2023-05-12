@@ -32,6 +32,12 @@ if (!$data['user']) {
 }
 
 $user_prefs = $data['user']->getCalendarPreference("appointment_properties");
+
 header('Content-Type: application/json; charset=utf-8');
+header("Expires: ".gmdate("D, d M Y H:i:s")." GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+header("Cache-Control: private, no-cache, no-store, must-revalidate, post-check=0, pre-check=0");
+header("Pragma: no-cache");
+
 echo $user_prefs;
 exit;

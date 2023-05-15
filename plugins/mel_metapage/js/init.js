@@ -465,7 +465,7 @@
 
                     Promise.allSettled(promises).then(async () => {
                        const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
-                       MelObject.triggerEvent('mel_metapage_refresh');
+                       MelObject.trigger_event('mel_metapage_refresh');
                     })
                 }
             };

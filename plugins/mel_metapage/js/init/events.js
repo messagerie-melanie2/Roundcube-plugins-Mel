@@ -181,6 +181,9 @@ if (rcmail && window.mel_metapage)
         if ('tasks' === rcmail.env.task && props.response && props.response.action=='fetch') {
             _rm_update_task_size();
         }
+        else if (props.response && props.response.action === 'refresh') {
+            loadJsModule('mel_metapage', 'mel_object').then((loaded_module) => loaded_module.MelObject.Empty().trigger_event('on_frame_refresh', {rc:rcmail, context:window}))
+        }
     });
 
     rcmail.addEventListener('set_unread', function(props) {

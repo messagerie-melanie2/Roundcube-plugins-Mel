@@ -127,6 +127,30 @@ class MelObject {
     }
 
     /**
+     * Ajoute une action à faire lors du refresh du bnum
+     * @param {Function} callback Fonction à appeller
+     * @param {Object} options Options de la fonction
+     * @param {string | null} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
+     */
+    on_refresh(callback, {callback_key = null}) {
+        this.add_event_listener('mel_metapage_refresh', callback, {
+            callback_key
+        });
+    }
+
+    on_frame_refresh(callback, frame, {callback_key = null}){
+        this.add_event_listener('on_frame_refresh', (args) => {
+            const {rc} = args;
+
+            if (frame === rc.env.task) {
+                callback();
+            }
+        }, {
+            callback_key
+        });
+    }
+
+    /**
      * Récupère une variable d'environnement de roundcube
      * @param {string} key Nom de la variable
      * @returns 

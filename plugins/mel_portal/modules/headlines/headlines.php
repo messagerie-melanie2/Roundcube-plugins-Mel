@@ -93,4 +93,14 @@ class Headlines extends Module
         return $current['news'];
     }
 
+    function action_get_last_news() {
+        $last_news = $this->get_last_news();
+        echo json_encode($last_news);
+        exit;
+    }
+
+    public function register_actions() {
+        $this->register_action('get_last_new', $this, 'action_get_last_news');
+        return null;
+    }
 }

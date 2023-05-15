@@ -642,6 +642,10 @@ class mel_html{
 		return this.setAttr('id', id);
 	}
 
+	toString() {
+		return this.generate()[0].outerHTML;
+	}
+
 	_getStyle() {
 		if (!this.attribs['style'] || STRING === typeof this.attribs['style']) return this.attribs['style'] || EMPTY_STRING;
 		else {

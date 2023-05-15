@@ -62,9 +62,9 @@ class ModuleMail extends BaseModule{
     _set_listeners() {
         const KEY = 'portal_mails_listeners';
 
-        this.add_event_listener('mel_metapage_refresh', () => {
+        this.on_frame_refresh(() => {
             this.show_last_mails({force_refresh:true});
-        }, {callback_key:KEY});
+        }, 'bureau', {callback_key:KEY});
 
         return this;
     }

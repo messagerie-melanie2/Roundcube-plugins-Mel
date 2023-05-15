@@ -90,6 +90,23 @@ export class ChatManager extends MelObject {
         this.updateStatus(status);
     }
 
+    /**
+     * Récupère le message depuis le serveur
+     * @param {Object} options Options par défaut de la fonciton
+     * @param {boolean} options.from_server_if_empty Faire un check serveur si le message est vide
+     * @returns {Promise<string>}
+     */
+    async getChatStatusMessage({from_server_if_empty = true}) {
+        let message = this.chat().message_status;
+
+        if (from_server_if_empty && !(message || false)) {
+            await this.chat().get_status_from_server();
+            message = this.chat().message_status;
+        }
+
+        return message;
+    }
+
     setStatusConnector(connector) {
         this.chat().setStatusConnector(connector);
         return this;

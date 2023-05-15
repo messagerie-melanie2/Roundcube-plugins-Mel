@@ -40,6 +40,17 @@ class Chat extends MelObject {
                 },
                 configurable: true
             },
+            message_status: {
+                get: function() {
+                    return raw?.message ?? EMPTY_STRING;
+                },
+                set: (value) => {
+                    if (raw?.message !== value) {
+                        raw.message = value;
+                        this.save_state();
+                    }
+                },
+            },
             unreads: {
                 get: function() {
                     return raw.unreads;
@@ -67,6 +78,12 @@ class Chat extends MelObject {
          * @type {Unreads}
          */
         this.unreads = null;
+
+        /**
+         * Message en cours d'ariane
+         * @type {String}
+         */
+        this.message_status = EMPTY_STRING;
 
         this.connectors = {
             status:null,
@@ -124,6 +141,7 @@ class Chat extends MelObject {
                 status_datas.message = datas.content.message || '';
 
                 this.status = status_datas.status;
+                this.message_status = status_datas.message;
             }
         );
     
@@ -140,6 +158,7 @@ class Chat extends MelObject {
             (datas) => {
                 //if ("string" === typeof datas) datas = JSON.parse(datas);
                 this.status = status;
+                this.message_status = message;
             }
         );
     }
@@ -148,7 +167,8 @@ class Chat extends MelObject {
         const tmp = {
             lastRoom:this.lastRoom.save(),
             unreads:this.unreads.save(),
-            status:this.status
+            status:this.status,
+            message:this.message_status
         };
         this.save('tchat', tmp);
     }

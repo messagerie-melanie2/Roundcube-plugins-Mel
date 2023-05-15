@@ -45,6 +45,7 @@ class ChatHelper {
             var message = document.getElementById('custom_status_input').value;
             var status = document.getElementById('custom_status_dropdown').value;
             manager.setStatus(status, message);
+            $('.user-menu-info').text(message);
             $(this).dialog('destroy');
           }
         }]

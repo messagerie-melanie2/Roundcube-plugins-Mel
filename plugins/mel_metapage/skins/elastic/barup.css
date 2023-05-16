@@ -588,14 +588,6 @@ html.layout-large .show-normal-and-inf.important {
   display: none !important;
 }
 
-#theme-panel {
-  border-top: 1px solid rgba(46, 46, 46, 0.5);
-}
-
-#theme-panel .container {
-  padding: 5px 15px;
-}
-
 #theme-panel .container .title {
   margin-bottom: 10px;
   font-size: 14px;
@@ -671,6 +663,14 @@ html.dark-mode .barup-icon-button:focus .barup-icon-button.btn-secondary:active,
   box-shadow: none;
   outline: none !important;
 }
+
+.active-material-icon {
+  font-variation-settings: 'FILL' 1;
+}
+.inactive-material-icon {
+  font-variation-settings: 'FILL' 0;
+}
+
 .settings-icon {
   width: 60px;
   text-align: center;

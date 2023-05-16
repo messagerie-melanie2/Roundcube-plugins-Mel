@@ -8,17 +8,7 @@
         "isThemeColor":true,
         "customOrder":1,
         "userprefid":"custom-2nd-nav-background"
-    },
-    "image-a":{
-        "background":"nocturne.png",
-        "view":"nocturnes.jpg",
-        "tags":["montagnes", "nature", "blanc", "jour"]
-    },
-    "abstract-1":{
-        "background":"abstract1.png",
-        "view":"abstract1.jpg",
-        "tags":["abstrait", "rouge", "bleu", "noir"]
-    },
+    },   
     "stars-1":{
         "background":"stars1.jpg",
         "view":"stars1.jpg",

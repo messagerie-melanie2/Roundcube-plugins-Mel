@@ -2315,7 +2315,7 @@ iframe.mwsp.discussion-frame {
   border-color: var(--alternate-primary-border-color);
   background-color: var(--alternate-bckg-color);
   position: relative;
-  margin-top: 15px;
+  margin-top: 0;
 }
 .theme-mode-switch.btn.btn-primary.btn-block::before {
   content: "\ee66";
@@ -2709,10 +2709,6 @@ html.dark-mode #visio-right-pannel-util {
 .loader-div.loaded {
   display: none;
 }
-#theme-panel .theme-pannel-tab-pictures {
-  text-align: center;
-  margin: 0 15px;
-}
 #theme-panel .themescontents {
   overflow-y: auto;
   overflow-x: hidden;
@@ -2722,13 +2718,12 @@ html.dark-mode #visio-right-pannel-util {
 #theme-panel .input-top-selectable {
   display: inline-block;
   width: 100%;
-  height: 121px;
-  border-radius: 10px;
+  aspect-ratio: 1.6 / 1;
+  border-bottom: none;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   transition: all 0.1s ease-in;
-}
-#theme-panel .picture.barup-background-color,
-#theme-panel .input-top-selectable {
-  border: solid thin var(--primary-border-color);
 }
 html.dark-mode #theme-panel .picture.barup-background-color,
 html.dark-mode #theme-panel .input-top-selectable {
@@ -2741,12 +2736,13 @@ html.dark-mode #theme-panel .input-top-selectable {
 #theme-panel .picture:hover,
 .mel-selectable.picture-only:hover,
 #theme-panel .input-top-selectable.hovered {
-  border-radius: 100%;
+  box-shadow: none;
 }
 #theme-panel .picture.selected,
 .mel-selectable.picture-only.selected,
 .mel-selectable.picture-only.with-border.selected:hover {
-  border-radius: 15px;
+  border-bottom: solid thin var(--invisible) !important;
+  border-left: none !important;
   background-blend-mode: color-dodge;
 }
 html.dark-mode #theme-panel .picture.selected,
@@ -2763,17 +2759,13 @@ html.dark-mode .mel-selectable.picture-only.selected {
 #theme-panel .input-top-selectable button {
   width: 100%;
   height: 100%;
-  border-top-left-radius: 15px;
+  border-top-left-radius: 5px;
   border-top-right-radius: 0;
-  border-bottom-left-radius: 15px;
+  border-bottom-left-radius: 5px;
   border-bottom-right-radius: 0;
   border: none;
   --main-bckg-color: var(--invisible);
   --secondary-text-color: var(--main-text-color);
-}
-#theme-panel .input-top-selectable button:hover {
-  border-top-left-radius: 100%;
-  border-bottom-left-radius: 100%;
 }
 #theme-panel .input-top-selectable.hovered {
   border-top-right-radius: 0;
@@ -2784,6 +2776,7 @@ html.dark-mode .mel-selectable.picture-only.selected {
   border-top-left-radius: 0;
   width: 50%;
   margin: 0;
+  aspect-ratio: 0.8/1;
 }
 #theme-panel .input-top-selectable + .picture.half-resize.barup-background-color {
   border-top: solid thin var(--primary-border-color);
@@ -2793,9 +2786,9 @@ html.dark-mode .mel-selectable.picture-only.selected {
   top: 0;
   right: 5px;
   background-color: #484D7AC7;
-  border-radius: 10px;
+  border-radius: 5px;
   width: calc(100% - 10px);
-  height: 121px;
+  aspect-ratio: 1.6 / 1;
   text-align: center;
   line-height: 26px;
   color: white;
@@ -2812,6 +2805,7 @@ html.dark-mode .green-badge {
   width: 50%;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  aspect-ratio: 0.8/1;
 }
 .tiny-rocket-chat.inbarup {
   position: sticky;

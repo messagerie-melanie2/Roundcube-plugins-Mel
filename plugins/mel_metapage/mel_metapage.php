@@ -792,6 +792,9 @@ class mel_metapage extends bnum_plugin
 
             if (strpos($args["content"],'<user/>') !== false)
                 $args["content"] = str_replace("<user/>", $this->rc->output->parse("mel_metapage.user", false, false), $args["content"]);
+           
+            if (strpos($args["content"],'<option/>') !== false)
+                $args["content"] = str_replace("<option/>", $this->rc->output->parse("mel_metapage.option", false, false), $args["content"]);
 
             $args["content"] = $this->add_html($args["content"]);
         }
@@ -1029,6 +1032,7 @@ class mel_metapage extends bnum_plugin
         $this->include_stylesheet($this->local_skin_path().'/modal.css');
         $this->include_stylesheet($this->local_skin_path().'/global.css');
         $this->include_stylesheet($this->local_skin_path().'/user.css');
+        $this->include_stylesheet($this->local_skin_path().'/option.css');
     }
 
     function load_config_js()

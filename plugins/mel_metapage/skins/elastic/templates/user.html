@@ -1,11 +1,11 @@
 <a id=user-up-panel-a class="sr-only sr-only-focusable" href=# style="position: absolute;top:-1000px;">
-    <p class="sr-only">
-        <roundcube:label name='mel_metapage.user_help' />
-    </p>
+  <p class="sr-only">
+    <roundcube:label name='mel_metapage.user_help' />
+  </p>
 </a>
 
 <div id="user-up-panel" class="dropdown">
-  <button id="button-user"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+  <button id="button-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
     class="transparent-icon-button barup-icons-button" onclick=""
     title="<roundcube:label name='mel_metapage.user_help' />">
     <div class="user-child" comment="Parent ariane, photo + dispo">
@@ -17,14 +17,14 @@
     <div class="notifications-header border-radius-md px-2 mb-2">
       <div class="d-flex pt-1 pb-2 align-items-center">
         <div class="change_avatar_picture" title="Modifier votre avatar">
-        <a href="javascript:void(0)" class="a_underline" onclick="rcmail.command('change_avatar')">
-                      
-          <div id="user-big-picture" comment="photo utilisateur"></div>
-          <span class="material-symbols-outlined change-avatar">
-            videocam
-          </span>
-      </a>
-      </div>
+          <a href="javascript:void(0)" class="a_underline" onclick="rcmail.command('change_avatar')">
+
+            <div id="user-big-picture" comment="photo utilisateur"></div>
+            <span class="material-symbols-outlined change-avatar">
+              videocam
+            </span>
+          </a>
+        </div>
         <div class="group-name">
           <div class="d-flex align-items-center">
             <span id="user-menu-dispo-icon" class="chat-user-dispo mr-2 logout" comment="Disponibilitée"></span>
@@ -69,84 +69,6 @@
       <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="dropdown-item d-flex align-items-center dropdown-color icon-button icon-account" />
       <roundcube:button type="link" command="logout" title="logout" label="logout" class="dropdown-item d-flex align-items-center dropdown-color icon-button icon-logout" />
     </div>
-
     </div>
   </div>
-</div>
-
-<div id="groupoptions-user" style="z-index: 1000;">
-    <!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
-    <div class="container menu" role="menu" aria-labelledby="user-up-panel">
-        <div class="row text-left mb-2">
-            <div class="col-sm-7 col-lg-8 d-flex align-items-center" title='<roundcube:var name="env:service" />'>
-                <div style="overflow:hidden;text-overflow:ellipsis;">
-                    <roundcube:var name="env:service" />
-                </div>
-            </div>
-            <div class="col-sm-5 col-lg-4 text-center pr-0">
-                <roundcube:button type="link" command="logout" label="logout" class="transparent-button user-logout" />
-            </div>
-        </div>
-        <div class="row text-left" id="user-informations">
-            <div class="col-sm-4">
-                <div class="change_avatar_picture" title="Modifier votre avatar">
-                    <a href="javascript:void(0)" class="a_underline" onclick="rcmail.command('change_avatar')">
-                      
-                        <div id="user-big-picture" class="mx-auto d-block" comment="photo utilisateur"></div>
-                        <span class="icon-mel-camera change-avatar"></span>
-                    </a>
-                </div>
-            </div>
-            <div class="col-sm-8 pt-1">
-                <h5 class="mb-0">
-                    <roundcube:var name="env:firstname" />
-                    <roundcube:var name="env:lastname" />
-                </h5>
-                <p class="mb-1">
-                    <a id="mail-user-gp" style="display: block;" href='mailto:<roundcube:var name="env:email" />' title='<roundcube:var name="env:email" />'>
-                    <roundcube:var name="env:email" />
-                    </a>
-                </p>
-                <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="a_underline my_account" />
-            </div>
-        </div>
-        <div class="row justify-content-between">
-            <div class="col-4 d-flex justify-content-center">
-                <div class="row">
-                    <div class="col-6">
-                        <button id="theme-switch-button" title="Changer de thème" class="btn btn-secondary mel-button material-symbols-outlined fill-on-hover" style="border-radius: 5px;font-size:1.5rem;">palette</button>
-                    </div>
-                    <div class="col-6">
-                        <button title="<roundcube:label name='mel_metapage.change_theme' />" class="mel-focus theme-mode-switch btn btn-primary btn-block" onclick="MEL_ELASTIC_UI.switch_color()"></button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4">
-                <a href="javascript:void(0)" class="transparent-button mel-animated more-options" data-popup="groupoptions-user-submenu" tabindex=-1 id="user-up-popup-dots" data-popup-pos="left"><span class="icon-mel-dots "></span></a>
-            </div>
-
-        </div>
-        <div id="groupoptions-user-submenu" class="popupmenu" aria-hidden="false">
-            <ul class=" menu listing " role="menu " aria-labelledby="user-up-panel ">
-                <li role="menuitem "><a title="<roundcube:label name='mel_metapage.refresh' />" class="refresh refresh-current-thing active disabled " id="rcmbtn131 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
-            'refreshFrame', '',this,event) "><roundcube:label name='mel_metapage.refresh' /></a></li>
-
-                <li role="menuitem "><a title="<roundcube:label name='mel_metapage.hide_chat_popup_button' />" class="settings active toggleChatCommand hide-touch " id="rcmbtn132 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
-            'toggleChat', '',this,event) "><roundcube:label name='mel_metapage.hide_chat_popup_button' /></a></li>
-            </ul>
-        </div>
-    </div>
-    <!-- <div id="notifications-panel"></div> -->
-    <div id="theme-panel" style="display: none;">
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <div class="title">Thèmes</div>
-                </div>
-            </div>
-        </div>
-        <div class="contents">
-
-        </div>
-    </div>
 </div>

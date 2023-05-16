@@ -276,7 +276,6 @@ function bureau_intro(intro) {
  * Fermer l'onboarding
  */
 rcube_webmail.prototype.onboarding_close = function (popup = false) {
-
   if (popup) {
     let buttons = [{
       text: rcmail.gettext('hide all help', 'mel_onboarding'),

@@ -24,11 +24,11 @@ export class MelCalendar extends MelObject {
         const {eClass:frame_name, changepage, isAriane, querry:frame, id, first_load} = args;
             
         if ('calendar' === frame_name) { 
-            await this.rerender();
+            await MelCalendar.rerender();
         }
     }
 
-    async rerender() {
+    static async rerender() {
         BnumLog.info('MelCalendar/rerender', 'Wainting #calendar....');
         let resolved = (await new WaitSomething(() => this.select('#calendar').length > 0)).resolved;
 

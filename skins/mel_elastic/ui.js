@@ -3250,7 +3250,7 @@ $(document).ready(() => {
 
             $('iframe.mm-frame').each((i, e) => {
                 try {
-                        e.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
+                    if (!$(e).hasClass('discussion-frame')) e.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
                 } catch (error) {
 
                 }

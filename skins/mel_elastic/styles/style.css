@@ -2890,6 +2890,9 @@ a.melv2-card-title {
   padding: 5px;
   padding-left: 10px;
 }
+.melv2-event[data-ignore-date="true"] {
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+}
 .melv2-event-clickable,
 .melv2-mail-left {
   display: flex;
@@ -2931,6 +2934,9 @@ a.melv2-card-title {
   border-radius: 100px;
   height: calc(100% - 30.2px);
   margin-top: 3px;
+}
+[data-ignore-date="true"] .melv2-event-separator {
+  height: unset;
 }
 .melv2-event-content {
   margin-left: 10px;

@@ -10,7 +10,8 @@ export class MelCalendar extends MelObject {
     main() {
         super.main();
         BnumLog.info('MelCalendar/main', 'Starting calendar module');
-        this._add_on_load().rerender();
+        this._add_on_load();
+        MelCalendar.rerender();
     }
 
     _add_on_load() {

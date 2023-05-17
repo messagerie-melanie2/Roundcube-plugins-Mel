@@ -22,7 +22,6 @@ div#user-welcome {
   background-color: #FFF;
   width: 21.8%;
   min-width: 350px;
-  padding: 0 15px;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
 }
 
@@ -103,6 +102,12 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
   color: #ff5552 !important;
 }
 
+.scroll-content {
+  overflow-y: scroll;
+  height: calc(100% - 46px);
+  padding: 0 15px;
+}
+
 
 .menu a.logout-color:not(.disabled):focus,
 .menu a.logout-color:not(.disabled):hover {
@@ -129,20 +134,21 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
 .themescontents {
   min-height: 250px;
 }
+
 .options {
   font-weight: 400;
   font-size: 16px;
 }
 
 .bottom-option {
-  position: absolute;
+  position: fixed;
+  right: 0;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
   border-top: 1px solid rgba(0, 0, 0, 0.2);
   padding: 12px 0;
+  min-width: 350px;
   background: white;
+  width: calc(25% - 60px);
 }
 
 html.dark-mode .bottom-option {

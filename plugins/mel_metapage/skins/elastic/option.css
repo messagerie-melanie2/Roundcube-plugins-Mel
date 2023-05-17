@@ -172,6 +172,10 @@ html.dark-mode .bottom-option a:hover {
   top: -7px;
 }
 
+html.dark-mode #groupoptions-user::after {
+  border-bottom: 8px solid #181c28;
+}
+
 @media screen and (max-width: 770px) {
 
   #groupoptions-user::after {

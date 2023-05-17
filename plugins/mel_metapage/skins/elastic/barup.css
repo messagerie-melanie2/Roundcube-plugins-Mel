@@ -727,6 +727,18 @@ html.dark-mode #button-search.btn.btn-secondary {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(39, 46, 88, 1) 100%);
 }
 
+#barup-right-buttons button {
+  color: #272E58;
+}
+
+html.dark-mode #barup-right-buttons button {
+  color: #E1C58F;
+}
+
+.barup-picture #barup-right-buttons button {
+  color: #fff;
+}
+
 html.layout-small #barup-right-buttons,
 html.layout-phone #barup-right-buttons {
   padding: 0 75px;

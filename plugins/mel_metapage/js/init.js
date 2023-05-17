@@ -196,10 +196,18 @@
             //Definition des functions
             parent.rcmail.mel_metapage_fn = {
                 async calendar_updated(args) {
-                    if (!!parent.rcmail.mel_metapage_fn.started) false;
+                    if (!!parent.rcmail.mel_metapage_fn.started) return false;
                     else parent.rcmail.mel_metapage_fn.started = true;
                     
-                    await mel_calendar_updated(args?.force ?? 'random').then(() => parent.rcmail.mel_metapage_fn.started = false);
+                    //const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
+                    const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
+                    const loaded_datas = await Loader.update_agenda_local_datas(args?.force ?? 'random');
+                    //const start_of_day = moment().startOf('day');
+
+                    // try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar);
+                    // update_badge(Enumerable.from(loaded_datas).where(x => x.free_busy !== CONST_EVENT_DISPO_FREE && x.free_busy !== CONST_EVENT_DISPO_TELEWORK && Loader.is_date_okay(moment(x.start), moment(x.end), start_of_day)).count(), mel_metapage.Ids.menu.badge.calendar);
+                    
+                    parent.rcmail.mel_metapage_fn.started = false
                 },
                 tasks_updated: async function() {
                     const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();

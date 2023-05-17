@@ -67,11 +67,17 @@ export class html_events extends mel_html2 {
     }
 
     _create_content() {
-        const html_date = new mel_html('div', {class:'melv2-event-date'}, this._date_format());
         const html_hour = new mel_html2('div', {attribs:{class:'melv2-event-hour'}, contents:this._create_range_hour()});
         const html_infos = new mel_html2('div', {attribs:{class:'melv2-event-content'}, contents:this._create_event()});
         const html_separator = new mel_html('div', {class:'melv2-event-separator'});
         const html_side = new mel_html2('div', {attribs:{class:'melv2-event-side'}, contents:this._create_side_click()});
+
+        let html_date = new mel_html('div', {class:'melv2-event-date'}, this._date_format());
+
+        if (this.attribs['data-ignore-date']) {
+            html_date.css('display', 'none');
+        }
+
         let html_clickable = new mel_html2('div', {attribs:{class:'melv2-event-clickable'}, contents:[html_date, html_hour, html_separator, html_infos]});
         html_clickable.onclick.push(() => {
             this.onaction.call();

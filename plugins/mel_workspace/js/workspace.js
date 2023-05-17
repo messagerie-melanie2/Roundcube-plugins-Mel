@@ -414,7 +414,7 @@ function UpdateSomething(data,_class, editor = null)
     }
 }
 
-function UpdateCalendar()
+async function UpdateCalendar()
 {
     const uid = rcmail.env.current_workspace_uid;
     let array;
@@ -443,11 +443,11 @@ function UpdateCalendar()
         const id = "wsp-block-" + agenda;
         let querry = $("#" + id).find(".block-body");
         if (array.length === 0)
-            setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
+            await setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
         else
         {
             const count = Enumerable.from(array).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
-            setup_calendar(array, querry);
+            await setup_calendar(array, querry);
             UpdateSomething(count, "wsp-agenda-icon");
             $(".wsp-agenda-icon").find(".roundbadge").addClass("edited");
         }
@@ -458,9 +458,9 @@ function UpdateCalendar()
  * Affiche les évènements.
  * @param {array} datas Données des évènements.
  */
-function setup_calendar(datas, querry, _date = moment())
+async function setup_calendar(datas, querry, _date = moment())
 {
-    let html = html_helper.Calendars({
+    let html = await html_helper.Calendars({
         datas:datas,
         _date:_date,
         get_only_body:true,

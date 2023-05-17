@@ -297,7 +297,7 @@ class MelObject {
      * @returns Chaînage
      */
     save(key, contents) {
-        mel_metapage.Storage.set(key, contents);
+        mel_metapage.Storage.set(key, JSON.stringify(contents));
         return this;
     }
 
@@ -308,7 +308,7 @@ class MelObject {
      * @returns 
      */
     load(key, default_value = null) {
-        return mel_metapage.Storage.get(key, default_value);
+        return JSON.parse(mel_metapage.Storage.get(key)) ?? default_value;
     }
 
     /**

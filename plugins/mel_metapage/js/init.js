@@ -759,10 +759,10 @@
             // //add
             if (parent === window) //Si on est pas dans une frame
             {
-                init_badge(local_storage.calendar, mel_metapage.Storage.calendar, () => rcmail.mel_metapage_fn.calendar_updated({force:true}),
-                    ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
-                        return Enumerable.from(storage).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
-                    });
+                // init_badge(local_storage.calendar, mel_metapage.Storage.calendar, () => rcmail.mel_metapage_fn.calendar_updated({force:true}),
+                //     ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
+                //         return Enumerable.from(storage).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
+                //     });
                 init_badge(local_storage.tasks, mel_metapage.Storage.tasks, rcmail.mel_metapage_fn.tasks_updated,
                     ".tasklist", mel_metapage.Ids.menu.badge.tasks, true);
                 init_badge(local_storage.mails.unread_count, mel_metapage.Storage.mail, rcmail.mel_metapage_fn.mail_updated,

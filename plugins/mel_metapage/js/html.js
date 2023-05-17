@@ -174,37 +174,43 @@ html_helper.CalendarsAsync = async function(config = {
 	next_when_empty_today_function:null,
 }, e = null, e_number = null, _date = moment())
 {
-	if (moment().format() === _date.format())
-    	var storage = await mel_metapage.Storage.check(mel_metapage.Storage.calendar).wait();
-	else
-		var storage = await rcube_calendar.block_change_date(null, 0, null, _date);
+	const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
+	let storage = Loader.get_next_events_day(_date); 
 
-	if (html_helper.cals_updates === undefined)
-	{
-		html_helper.cals_updates = new Mel_Update(mel_metapage.EventListeners.calendar_updated.after, "calendars.update", async () => {
-			$('.html-calendar').each(async (i,e) => {
-				e = $(e);
-				let config = html_helper.JSON.parse(e.data('config'));
-				const date = moment(e.data('date'));
+	const KEY = 'HTML_CALENDAR_TOP_FUNCTION';
+	const Top = (await loadJsModule('mel_metapage', 'top')).Top;
 
-				if (config.add_create)
-					delete config.add_create;
+	if (!Top.has(KEY)) {
+		Top.add(KEY, true);
 
-				if (config.add_day_navigation)
-				{
-					if ( moment(e.find(".mm-agenda-date").data("current-date")).startOf("day").format() === date.startOf("day").format())
-						e[0].outerHTML = await html_helper.CalendarsAsync(config, null, null, date);
+		Loader.add_event_listener(mel_metapage.EventListeners.calendar_updated.after, function() {
+
+			Loader.select('iframe.mm-frame').each((index, element) => {
+				if (!$(element).hasClass('discussion-frame')) {
+					element.contentWindow.$('.html-calendar').each(async (i, calendar) => {
+						calendar = $(calendar);
+
+						let config = html_helper.JSON.parse(calendar.data('config'));
+						const date = moment(calendar.data('date'));
+
+						if (config.add_create) delete config.add_create;
+
+						if (!(config.add_day_navigation && moment(calendar.find(".mm-agenda-date").data("current-date")).startOf("day").format() !== date.startOf("day").format())) {
+							e[0].outerHTML = await html_helper.CalendarsAsync(config, null, null, date);
+						}
+					});
 				}
-				else
-					e[0].outerHTML = await html_helper.CalendarsAsync(config, null, null, date);
 			});
-		});
+
+		}, { callback_key:KEY});
 	}
-	
-    return html_helper.Calendars({datas:storage, config:config, e:e, e_number:e_number, _date:_date});
+
+	if (moment().format() === _date.format()) storage.where(x => moment(x.end) > moment());
+
+    return await html_helper.Calendars({datas:storage.toArray(), config:config, e:e, e_number:e_number, _date:_date});
 }
 
-html_helper.Calendars = function({datas, config = {
+html_helper.Calendars = async function ({datas, config = {
     add_day_navigation:false,
     add_create:false,
 	create_function:null,
@@ -212,33 +218,10 @@ html_helper.Calendars = function({datas, config = {
 	next_when_empty_today_function:null
 }, e = null, e_number = null, _date = moment(), get_only_body = false} = {})
 {
-	const classes = {
-		organizer:"icofont-royal royal",
-		tick:"icofont-check lightgreen",
-		waiting:"icofont-hour-glass clear",
-		declined:"icofont-close danger"
-	}
-	const set_style = (event) => {
-		const now = {
-			now:_date,
-			start:moment(_date).startOf('day'),
-			end:moment(_date).endOf('day')
-		}
-		const date = {
-			start:moment(event.start),
-			end:moment(event.end)
-		}
-		if (date.start < now.start || date.end > now.end)
-			return {
-				start:date.start.format("DD/MM/YYYY HH:mm"),
-				end:date.end.format("DD/MM/YYYY HH:mm"),
-			}
-		else
-			return {
-				start:date.start.format("HH:mm"),
-				end:date.end.format("HH:mm"),
-			}
-	};
+	const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
+	const html_events = (await loadJsModule('mel_metapage', 'html_events', '/js/lib/html/')).html_events;
+	const html_li = (await loadJsModule('mel_metapage', 'html', '/js/lib/html/')).html_li;
+
 	let html = ''
 	if (!get_only_body)
 		html += '<div class="html-calendar" data-config="'+html_helper.JSON.stringify(config)+'"  data-date="'+_date.format()+'">';
@@ -256,11 +239,7 @@ html_helper.Calendars = function({datas, config = {
     }
 	if (!get_only_body)
     	html += '<ul class="block-body ignore-bullet">';
-	let style;
-	let link;
-	let text;
-	let title;
-	let bool;
+
 	//let icon;
 	if (typeof datas === "string")
 		html += "<div>" + datas + "</div>";
@@ -268,106 +247,19 @@ html_helper.Calendars = function({datas, config = {
 
 		if (datas.length > 0)
 		{
+			let li;
 			for (let index = 0; index < datas.length; index++) {
 				const element = datas[index];
 
-			if (element.status === "CANCELLED")
-				continue;
-
-			title = mel_metapage.Functions.updateRichText(element.title);
-
-			if (element.free_busy === "free")
-				title += ' (libre)';
-			else if (element.free_busy === "telework")
-				title += ' (télétravail)';
-
-			if (element.attendees !== undefined && element.attendees.length > 0)
-			{
-				bool = false;
-				const item = Enumerable.from(element.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).firstOrDefault(null);
-				if (item !== null)
-				{
-					try {
-						switch (item.status) {
-							case "NEEDS-ACTION":
-								title += ` (En attente)`;
-								break;
-	
-							case "ACCEPTED":
-								title += ` (Accepté)`;
-								break;
-	
-							case "TENTATIVE":
-								title += ` (Peut-être)`;
-								break;
-	
-							case "CANCELLED":
-								bool = true;
-								break;
-						
-							default:
-								break;
-						}
-					} catch (error) {
-						
-					}
-				}
-
-				if (bool)
-					continue;
-
+				li = new html_li({});
+				new html_events(element, {'data-ignore-date':true}).appendTo(li);
+				html += li.toString();
 			}
-
-				html += "<li>";
-				html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
-
-				if (element.allDay)
-					text = rcmail.gettext("Journée entière");
-				else
-				{
-					const style_date = set_style(element);
-					text = `${style_date.start} - ${style_date.end}`;
-				}
-
-
-
-				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(element)}"><span class="element-title default-text bold element-block">${text}</span><span class="element-desc secondary-text element-block">${title}</span></a></div>`;
-
-				if (rcube_calendar.is_desc_webconf(element.location))//element.location.includes("@visio") || element.location.includes("#visio") || element.location.includes(rcmail.env["webconf.base_url"]))
-				{
-					style = "";
-					if (element.location.includes("@visio"))
-						link = `target="_blank" href="${element.location.replace("@visio:", "")}"`;
-					else {
-						var tmp_link = WebconfLink.create(element);
-						link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;	
-					}
-					// else if (element.location.includes("#visio"))
-					// {
-					// 	var tmp_link = new WebconfLink(element.location);
-					// 	link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
-					// }
-					// else
-					// {
-					// 	const categoryExist = element.categories !== undefined && element.categories !== null && element.categories.length > 0;
-					// 	const isWsp = categoryExist && element.categories[0].includes("ws#");
-					// 	const ariane = isWsp ? "null" : "'@home'";
-					// 	const wsp = isWsp ? `'${element.categories[0].replace("ws#", "")}'` : "null";
-					// 	link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(element.location)}', ${wsp}, ${ariane})"`;
-					// }
-				}
-				else
-					style = "display:none;";
-		
-				html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"><span class="sr-only">Webconf</span></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
-
-				html += "</div>";
-				html += "</li>";
-			}
+			li = null;
 		}
 		else 
 		{
-			const raw_storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
+			const raw_storage = Loader.load_all_events();
 			const storage = Enumerable.from(config.next_when_empty_today_function !== null && typeof config.next_when_empty_today_function === "function" ? config.next_when_empty_today_function(raw_storage) : raw_storage);
 			const storage_count = storage.count();
 			if (storage_count > 0)

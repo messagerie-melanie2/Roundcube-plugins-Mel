@@ -1,6 +1,8 @@
 export {loader as CalendarLoader};
-    import { MainNav } from "../classes/main_nav";
+import { MainNav } from "../classes/main_nav";
 import { MelObject } from "../mel_object";
+
+const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
 class CalendarLoader extends MelObject{
     constructor() {
         super();
@@ -8,6 +10,16 @@ class CalendarLoader extends MelObject{
 
     main() {
         super.main();
+
+        const now = moment();
+        MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
+               .update_badge(this.get_next_events_day(now, {}).count(), mel_metapage.Ids.menu.badge.calendar);
+
+        if (this.load(mel_metapage.Storage.last_calendar_update) !== moment().format(CONST_DATE_FORMAT_BNUM) || 
+            null === this.load(mel_metapage.Storage.calendar_all_events)) {
+            const force_refresh = true;
+            this.update_agenda_local_datas(force_refresh);
+        }
     }
 
     is_date_okay(start, end, day) {
@@ -17,10 +29,10 @@ class CalendarLoader extends MelObject{
     get_date_splitted(start, end, day) {
         const o_start = start;
         const o_end = end;
-        const start_of_day = day.startOf('day');
-        const end_of_day = day.endOf('day');
+        const start_of_day = moment(day).startOf('day');
+        const end_of_day = moment(day).endOf('day');
         if (start < start_of_day) start = start_of_day;
-        if (end < end_of_day) end = end_of_day;
+        if (end > end_of_day) end = end_of_day;
 
         return new SplittedDate(start, end, o_start, o_end, day);
     }
@@ -84,7 +96,6 @@ class CalendarLoader extends MelObject{
     }
 
     _on_success(datas, ...args) {
-        const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
         const {forced, events, encoded} = JSON.parse(datas);
         const [isTop] = args;
         const isForcedRefresh = true === forced;

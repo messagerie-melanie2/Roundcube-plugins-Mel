@@ -308,7 +308,11 @@ class MelObject {
      * @returns 
      */
     load(key, default_value = null) {
-        return JSON.parse(mel_metapage.Storage.get(key)) ?? default_value;
+        try {
+            return JSON.parse(mel_metapage.Storage.get(key)) ?? default_value;
+        } catch (error) {
+            return default_value;
+        }
     }
 
     /**

@@ -1,4 +1,6 @@
 const mm_frame = "mm-frame";
+const IS_FROM = '_is_from';
+const IS_FROM_VALUE = 'iframe';
 rcmail.addEventListener('init', () => {
     if (window !== top || rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin) return;
     $(document).ready(function() {
@@ -488,7 +490,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
 
     $(".a-frame").css("display", "none");
     const url = rcmail.get_task_url((isAriane ? "chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 
-    window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+    window.history.replaceState({}, document.title, url.replace(`${IS_FROM}=${IS_FROM_VALUE}`, ""));
     
     let arianeIsOpen = mel_metapage.PopUp.ariane === undefined || mel_metapage.PopUp.ariane === null ? false : mel_metapage.PopUp.ariane.is_show;
     
@@ -592,7 +594,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         args = {};
 
     if (rcmail.env.mel_metapage_const !== undefined)
-        args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+        args[IS_FROM] = IS_FROM_VALUE;
 
     if (eClass === "addressbook" && (args["_action"] === undefined || args["_action"] === null))
     {
@@ -619,7 +621,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
             task = mm_st_CommandContract(eClass);
 
         //Vérification frame
-        if (args[rcmail.env.mel_metapage_const.key] === undefined || args[frameArg.key] === undefined)
+        if (args[IS_FROM] === undefined || args[frameArg.key] === undefined)
             args[frameArg.key] = frameArg.value;
 
         src = mel_metapage.Functions.url(task, "", args);

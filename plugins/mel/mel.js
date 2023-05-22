@@ -17,12 +17,12 @@ $(document).on({
   }
 }, "#rcmchangeuserbutton"); //pass the element as an argument to .on
 
-
 if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
     // Initialisation de la liste des pages chargées
     page_loading = {};
     current_page_scroll = 1;
+
     if (rcmail.env['plugin.show_password_change']) {
       show_password_change(this);
     }
@@ -259,12 +259,15 @@ rcube_webmail.prototype.switch_to_default_task = function() {
 */
 function show_password_change()
 {
-  var frame = $('<iframe>').attr('id', 'changepasswordframe')
+  const navigator = (top ?? parent ?? window);
+  if (0 === navigator.$('#changepasswordframe').length)
+  {
+    var frame = navigator.$('<iframe>').attr('id', 'changepasswordframe')
     .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=changepassword&_framed=1')
     .attr('frameborder', '0')
-    .appendTo(top.document.body);  
+    .appendTo(navigator.document.body);  
   
-  var h = Math.floor($(window).height() * 0.75);
+  //var h = Math.floor($(window).height() * 0.75);
   var buttons = {};
   
   frame.dialog({
@@ -280,6 +283,7 @@ function show_password_change()
     height: 500,
     rcmail: rcmail
   }).width(680);
+  }
 }
 
 if (rcmail

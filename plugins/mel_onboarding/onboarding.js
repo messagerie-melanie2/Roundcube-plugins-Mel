@@ -144,62 +144,62 @@ function startIntro(task, assistance = false) {
       }
     }
   }).onafterchange(function () {
-    $('.introjs-tooltipbuttons').hide();
+    current_window.$('.introjs-tooltipbuttons').hide();
 
     setTimeout(() => {
       if (this._introItems[this._currentStep].hideButtons) {
-        $('.introjs-tooltipbuttons').hide();
+        current_window.$('.introjs-tooltipbuttons').hide();
 
-        $('#accueil').focus();
+        current_window.$('#accueil').focus();
 
-        $('#custom-next-button').on('click', function () {
+        current_window.$('#custom-next-button').on('click', function () {
           intro.nextStep();
         })
-        $('#custom-previous-button').on('click', function () {
+        current_window.$('#custom-previous-button').on('click', function () {
           intro.previousStep();
         })
 
-        $('#custom-done-button').on('click', function () {
+        current_window.$('#custom-done-button').on('click', function () {
           intro.exit();
           send_notification();
         })
       }
       else {
-        $('.introjs-tooltipbuttons').show();
+        current_window.$('.introjs-tooltipbuttons').show();
       }
 
-      if ($('#theme_select').length) {
+      if (current_window.$('#theme_select').length) {
         for (const key in MEL_ELASTIC_UI.themes) {
           if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
             const theme = MEL_ELASTIC_UI.themes[key];
             let value = theme.id;
             let text = theme.displayed;//theme.name == 'default' ? 'Par défaut' : theme.name;
-            $('#theme_select').append(new Option(text, value))
+            current_window.$('#theme_select').append(new Option(text, value))
           }
         }
 
         //On ajoute le thème sombre manuellement
-        $('#theme_select').append(new Option("Sombre", "Sombre"))
+        current_window.$('#theme_select').append(new Option("Sombre", "Sombre"))
 
         if (MEL_ELASTIC_UI.color_mode() == 'dark') {
-          $('#theme_select option[value="Sombre"]').prop('selected', true);
+          current_window.$('#theme_select option[value="Sombre"]').prop('selected', true);
         }
         else {
-          $('#theme_select option[value="' + MEL_ELASTIC_UI.get_current_theme() + '"]').prop('selected', true);
+          current_window.$('#theme_select option[value="' + MEL_ELASTIC_UI.get_current_theme() + '"]').prop('selected', true);
         }
       }
 
-      $('#theme_select').on('change', function (e) {
+      current_window.$('#theme_select').on('change', function (e) {
         if (MEL_ELASTIC_UI.color_mode() != 'dark' && e.currentTarget.value == 'Sombre') {
-          MEL_ELASTIC_UI.switch_color();
+          current_window.MEL_ELASTIC_UI.switch_color();
         }
         else {
           if (MEL_ELASTIC_UI.color_mode() == 'dark' && e.currentTarget.value != 'Sombre') {
-            MEL_ELASTIC_UI.switch_color();
+            current_window.MEL_ELASTIC_UI.switch_color();
           }
-          MEL_ELASTIC_UI.update_theme(e.currentTarget.value);
-          $('#theme-panel .contents').find('.mel-selectable').removeClass('selected');
-          $('#theme-panel .contents').find(`[data-name='${e.currentTarget.value}']`).addClass('selected');
+          current_window.MEL_ELASTIC_UI.update_theme(e.currentTarget.value);
+          current_window.$('#theme-panel .contents').find('.mel-selectable').removeClass('selected');
+          current_window.$('#theme-panel .contents').find(`[data-name='${e.currentTarget.value}']`).addClass('selected');
         }
       })
 
@@ -240,20 +240,22 @@ function bureau_intro(intro) {
     nextLabel: window.current_onboarding.nextLabel,
     prevLabel: window.current_onboarding.prevLabel,
     doneLabel: window.current_onboarding.doneLabel,
-    steps: [steps[0], steps[1], steps[2],
+    steps: [steps[0], steps[1], steps[2], steps[3], steps[4],
     {
       "title": "Ma journée",
       "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
       "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
       "tooltipClass": "iframed big-width-intro",
-      "highlightClass": "iframed"
+      "highlightClass": "iframed",
+      "position": "right"
     },
     {
       "title": "Informations",
       "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
       "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
       "tooltipClass": "iframed big-width-intro",
-      "highlightClass": "iframed"
+      "highlightClass": "iframed",
+      "position": "left"
     },
     {
       "title": "Mes espaces de travail",
@@ -261,13 +263,13 @@ function bureau_intro(intro) {
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
       "tooltipClass": "iframed big-width-intro",
       "highlightClass": "iframed",
-      "tooltipPosition": "top"
+      "position": "top"
     },
     {
       "title": "Discussion ",
       "element": ".tiny-rocket-chat",
       "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
-      "tooltipPosition": "top"
+      "position": "top"
     }
     ]
   })

@@ -137,6 +137,9 @@ class roundcube_auth extends rcube_plugin
         $this->add_hook('authenticate', array($this, 'authenticate'));
         $this->add_hook('login_after', array($this, 'login_after'));
 
+        // Add OIDC/CAS login button
+        $this->add_hook('template_object_loginform',  array($this, 'loginform'));
+
         // Get variables from config
         if($this->kerb_enabled = $rcmail->config->get('auth_kerb_enabled'))
         {
@@ -153,6 +156,25 @@ class roundcube_auth extends rcube_plugin
 
         // JS link
         $this->include_script('roundcube_auth.js');
+    }
+
+    function loginform($args)
+    {
+        // Get Roundcube instance
+        $rcmail = rcmail::get_instance();
+
+        if($rcmail->config->get('auth_oidc_link_enabled', false))
+        {
+            $name = $rcmail->config->get('auth_oidc_link_name', 'OpenIDConnect');
+
+            $oidcbutton = "<p class='formbuttons'><input id='rcmlogin_oidc' class='button mainaction' type='submit' value='Connexion via $name'></p>";
+            $oidclink = "<p class='formbuttons'><a href='?oidc=1'>Connexion via $name </a></p>";
+
+            // Add the login link
+            $args['content'] = $args['content'] . $oidcbutton . $oidclink;
+        }
+
+        return $args;
     }
 
     /**

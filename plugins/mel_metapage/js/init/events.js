@@ -208,7 +208,7 @@ if (rcmail && window.mel_metapage)
                 const urls = mel_metapage.Functions.get_from_url(base_url);
                 mel_metapage.Functions.change_frame(top.mm_st_ClassContract(rcmail.env['bnum.init_task']), true, true, urls);
             } catch (error) {
-                mel_metapage.Functions.change_frame('bureau', true, true, urls);
+                mel_metapage.Functions.change_frame('bureau', true, true);
             }
         }
     });

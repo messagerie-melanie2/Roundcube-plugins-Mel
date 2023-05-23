@@ -14,7 +14,7 @@ class ModuleMail extends BaseModule{
 
     start() {
         super.start();
-        this._init()._set_listeners();
+        this._init();
         let loaded = false;
         let mail_loader = new MailLoader();
         Object.defineProperties(this, {
@@ -34,7 +34,7 @@ class ModuleMail extends BaseModule{
         this.trigger_event('portal.mails.before', {module:this}, {top:true});
         this.show_last_mails({}).then(() => {
             loaded = true;
-            this.trigger_event('portal.mails.after', {module:this}, {top:true});
+            this._set_listeners().trigger_event('portal.mails.after', {module:this}, {top:true});
         });
     }
 

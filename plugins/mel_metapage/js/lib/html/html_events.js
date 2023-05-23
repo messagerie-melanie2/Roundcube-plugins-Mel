@@ -228,13 +228,17 @@ export class html_events extends mel_html2 {
         date, 
         add_today = true
     }) {
-        const now = moment();
-        const is_date_not_today = moment(date).startOf('day').format() !== now.startOf('day').format();
         let hour = EMPTY_STRING;
-
-        const is_today = add_today ? this._is_today() : true;
-        if (is_today && is_date_not_today) hour = date.format('DD/MM');
+        if (!this.attribs['data-ignore-date']) {
+            const now = moment();
+            const is_date_not_today = moment(date).startOf('day').format() !== now.startOf('day').format();
+    
+            const is_today = add_today ? this._is_today() : true;
+            if (is_today && is_date_not_today) hour = date.format('DD/MM');
+            else hour = date.format('HH:mm');
+        }
         else hour = date.format('HH:mm');
+
         
         return hour;
     }

@@ -175,7 +175,7 @@ html_helper.CalendarsAsync = async function(config = {
 }, e = null, e_number = null, _date = moment())
 {
 	const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
-	let storage = Loader.get_next_events_day(_date); 
+	let storage = Loader.get_next_events_day(_date, {}); 
 
 	const KEY = 'HTML_CALENDAR_TOP_FUNCTION';
 	const Top = (await loadJsModule('mel_metapage', 'top')).Top;

@@ -2894,6 +2894,7 @@ a.melv2-card-title {
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
   margin-left: 0;
   margin-right: 0;
+  margin-bottom: 5px;
 }
 .melv2-event-clickable,
 .melv2-mail-left {

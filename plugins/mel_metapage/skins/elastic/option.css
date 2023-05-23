@@ -188,3 +188,11 @@ html.dark-mode #groupoptions-user::after {
     content: none;
   }
 }
+
+.upload-icon {
+  color: var(--main-text-color);
+}
+
+html.dark-mode .upload-icon {
+  color: #E1C58F;
+}

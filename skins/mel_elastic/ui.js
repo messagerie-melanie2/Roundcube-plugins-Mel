@@ -827,7 +827,7 @@ $(document).ready(() => {
                         reader.readAsDataURL(file);
                     });
                     //Bouton qui sert à cliquer sur l'input
-                    var $icon = new mel_html('span', {class:'material-symbols-outlined'}, 'upload')
+                    var $icon = new mel_html('span', {class:'material-symbols-outlined upload-icon'}, 'upload')
                     var $button = new mel_button({}, $icon.toString());
                     $button.onmouseover.push((e) => {
                         $(e.currentTarget).parent().addClass(CLASS_PARENT_HOVER);

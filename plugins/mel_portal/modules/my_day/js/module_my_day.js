@@ -31,7 +31,8 @@ class ModuleMyDay extends BaseModule{
     }
 
     set_title_action(){
-        this.select_module_title().attr('href', '#').click(() => {
+        const URL = this.url('calendar', {});
+        this.select_module_title().attr('href', URL).click(() => {
             this.change_frame('calendar', {update: false, force_update: false});
         });
         return this;

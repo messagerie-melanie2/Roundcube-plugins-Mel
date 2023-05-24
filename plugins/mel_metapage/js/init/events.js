@@ -227,6 +227,7 @@ if (rcmail && window.mel_metapage)
                       it = null;
                       clearInterval(interval);
                       $querry.fullCalendar('updateViewSize', true);
+                      $querry.fullCalendar('rerenderEvents', true);
                   }
                   else if (it >= timeout) {
                       it = null;

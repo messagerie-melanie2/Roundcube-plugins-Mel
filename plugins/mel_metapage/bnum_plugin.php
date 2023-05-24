@@ -54,4 +54,12 @@ abstract class bnum_plugin extends rcube_plugin
     protected function storage() {
         return $this->rc()->get_storage();
     }
+
+    protected function is_from_iframe() {
+        return rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe';
+    }
+
+    protected function change_location($url) {
+        $this->rc->output->header('Location: ' . $url);
+    }
 }

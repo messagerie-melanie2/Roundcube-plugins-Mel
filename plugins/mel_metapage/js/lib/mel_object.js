@@ -1,7 +1,6 @@
 export { MelObject };
 import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
 import { BaseStorage } from "./classes/base_storage";
-import { BnumLog } from "./classes/bnum_log";
 import { Cookie } from "./classes/cookies";
 import { Top } from "./top";
 
@@ -12,7 +11,6 @@ class MelEventManager extends BaseStorage {
 
         const super_add = this.add;
         this.add = function add(listener_key, callback, callback_key = null) {
-            BnumLog.info('Listener added', listener_key, callback_key);
             if (!this.has(listener_key)) super_add(listener_key, new MelEvent());
     
             if (!callback_key) this.get(listener_key).add(callback_key, callback);
@@ -24,7 +22,6 @@ class MelEventManager extends BaseStorage {
 
 
     call(listener_key, ...args) {
-        BnumLog.info('Trigger Called', listener_key);
         if (this.has(listener_key)) {
             this.get(listener_key).call(...args);
         }

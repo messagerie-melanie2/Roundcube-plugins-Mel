@@ -205,7 +205,7 @@ html_helper.CalendarsAsync = async function(config = {
 		}, { callback_key:KEY});
 	}
 
-	if (moment().format() === _date.format()) storage.where(x => moment(x.end) > moment());
+	if (moment().startOf('day').format() === moment(_date).startOf('day').format()) storage.where(x => moment(x.end) > moment());
 
     return await html_helper.Calendars({datas:storage.toArray(), config:config, e:e, e_number:e_number, _date:_date});
 }

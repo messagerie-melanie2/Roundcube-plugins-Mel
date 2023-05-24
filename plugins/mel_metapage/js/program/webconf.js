@@ -2774,6 +2774,9 @@ var MasterWebconfBar = (() => {
              * @type {boolean}
              */
             const isff = MasterWebconfBar.isFirefox();
+
+            if (_$('.wsp-toolbar.webconf-toolbar').length > 0) _$('.wsp-toolbar.webconf-toolbar').remove();
+
             _$("body").append(rawbar); //Ajoute la barre au body
 
             //Boucle sur tout les boutons, et leurs assigne leurs fonctionnements

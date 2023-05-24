@@ -4,12 +4,25 @@ import { BaseStorage } from "./classes/base_storage";
 import { Cookie } from "./classes/cookies";
 import { Top } from "./top";
 
-
+/* La classe MelEventManager étend BaseStorage et permet d'ajouter, d'appeler et de supprimer des
+rappels pour des clés d'écoute spécifiques. */
 class MelEventManager extends BaseStorage {
     constructor() {
         super();
 
         const super_add = this.add;
+
+        /**
+         * La fonction ajoute un rappel à un écouteur dans un objet MelEvent.
+         * @param listener_key - Il s'agit d'une clé qui identifie un auditeur spécifique. Il est utilisé pour
+         * récupérer l'objet MelEvent associé à l'écouteur.
+         * @param callback - La fonction qui sera exécutée lorsque l'événement est déclenché.
+         * @param callback_key - Le paramètre callback_key est un paramètre facultatif qui représente un
+         * identifiant unique pour la fonction de rappel ajoutée à l'objet MelEvent. S'il n'est pas fourni, la
+         * fonction générera une clé unique pour le rappel.
+         * @returns l'objet courant (`this`) après avoir ajouté le rappel à l'objet MelEvent associé à la clé
+         * d'écouteur donnée.
+         */
         this.add = function add(listener_key, callback, callback_key = null) {
             if (!this.has(listener_key)) super_add(listener_key, new MelEvent());
     
@@ -20,7 +33,18 @@ class MelEventManager extends BaseStorage {
     }
 
 
-
+    /**
+     * La fonction "call" vérifie si une clé d'écoute existe et l'appelle avec des arguments si c'est le
+     * cas.
+     * @param listener_key - Le paramètre listener_key est une clé utilisée pour identifier une fonction
+     * d'écouteur spécifique dans une collection de fonctions d'écouteur. Il est utilisé pour récupérer la
+     * fonction d'écouteur de la collection et l'appeler avec les arguments fournis.
+     * @param args - args est un paramètre de repos qui permet à la fonction d'accepter n'importe quel
+     * nombre d'arguments sous forme de tableau. Dans ce cas, la fonction est conçue pour recevoir
+     * n'importe quel nombre d'arguments après le paramètre listener_key, qui sera transmis à la fonction
+     * de rappel lors de son appel.
+     * @returns L'objet `this` est renvoyé.
+     */
     call(listener_key, ...args) {
         if (this.has(listener_key)) {
             this.get(listener_key).call(...args);
@@ -28,6 +52,15 @@ class MelEventManager extends BaseStorage {
         return this;
     }
 
+    /**
+     * Cette fonction supprime un rappel d'un écouteur dans un objet JavaScript.
+     * @param listener_key - Clé utilisée pour identifier l'écouteur dans l'objet Map.
+     * @param callback_key - Le paramètre `callback_key` est un identifiant unique pour une fonction de
+     * rappel spécifique qui a été ajoutée à un écouteur. Il est utilisé pour supprimer la fonction de
+     * rappel correspondante de la liste des rappels de l'écouteur.
+     * @returns La méthode `remove_callback` renvoie l'instance de l'objet sur lequel elle a été appelée
+     * (`this`).
+     */
     remove_callback(listener_key, callback_key) {
         if (this.has(listener_key) && this.get(listener_key).has(callback_key)) {
             this.get(listener_key).remove(callback_key);

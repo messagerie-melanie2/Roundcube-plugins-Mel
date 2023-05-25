@@ -1634,14 +1634,14 @@ class Webconf{
         this.chat.onloading = () => {
             this.screen_manager.updateMode();
 
-            try {
-                const status = this.chat.save_status();
+            // try {
+            //     const status = this.chat.save_status();
 
-                if (status.status !== 'online') this.chat.setStatus('busy', 'Je suis en visioconférence', false);
-                else this.chat.ignore_last_status();
-            } catch (error) {
+            //     if (status.status !== 'online') this.chat.setStatus('busy', 'Je suis en visioconférence', false);
+            //     else this.chat.ignore_last_status();
+            // } catch (error) {
                 
-            }
+            // }
         };
         this.chat.$frame_chat[0].src = rcmail.env.rocket_chat_url + this.chat.get_room();
 
@@ -2774,6 +2774,9 @@ var MasterWebconfBar = (() => {
              * @type {boolean}
              */
             const isff = MasterWebconfBar.isFirefox();
+
+            if (_$('.wsp-toolbar.webconf-toolbar').length > 0) _$('.wsp-toolbar.webconf-toolbar').remove();
+
             _$("body").append(rawbar); //Ajoute la barre au body
 
             //Boucle sur tout les boutons, et leurs assigne leurs fonctionnements
@@ -3466,7 +3469,7 @@ var MasterWebconfBar = (() => {
         async hangup()
         {
             //this.webconfManager.chat.recover_last_status();
-            (top ?? window)[var_visio].chat.recover_last_status();
+            //window[var_visio]?.chat?.recover_last_status?.();
             //Déplace le "plus d'actions" pour pouvoir le réutiliser plus tard
             this._$more_actions.addClass('hidden').appendTo('body');
 

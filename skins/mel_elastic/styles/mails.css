@@ -734,6 +734,9 @@ ul ul li.mailbox:hover > a:first-of-type {
   background-color: var(--secondary-bckg-color);
   border-radius: 5px;
 }
+ul ul li.mailbox.droptarget {
+  background-color: var(--drag-n-drop-bckg-color) !important;
+}
 ul ul li.mailbox.droptarget:hover > a:first-of-type {
   background-color: var(--drag-n-drop-bckg-color) !important;
 }

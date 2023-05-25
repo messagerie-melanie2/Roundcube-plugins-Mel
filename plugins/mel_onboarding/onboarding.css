@@ -344,3 +344,7 @@ html.dark-mode .onboarding-image {
 .wsp-toolbar-padding {
   padding-bottom: 12px !important;
 }
+
+#accueil:focus-visible {
+  outline: none;
+}

@@ -23,7 +23,7 @@ class CalendarLoader extends MelObject{
     }
 
     is_date_okay(start, end, day) {
-        return (start <= day && day <= end) || start >= day && day <= end;
+        return (start <= day && day <= end) || (start >= day && moment(start).startOf('day').format() === moment(day).startOf('day').format() && day <= end);
     }
 
     get_date_splitted(start, end, day) {
@@ -46,13 +46,13 @@ class CalendarLoader extends MelObject{
         if (0 !== events.length) {
             let spd;
             return_datas = Enumerable.from(events).where(x => this.is_date_okay(moment(x.start), moment(x.end), day))
-            .select(x => {
+            /*.select(x => {
                 spd = this.get_date_splitted(moment(x.start), moment(x.end), day);
                 x.start = spd.start;
                 x.end = spd.end;
 
                 return x;
-            }).toArray();
+            })*/.toArray();
         }
 
         return return_datas;

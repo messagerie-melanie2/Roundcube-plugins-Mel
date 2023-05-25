@@ -2262,6 +2262,13 @@ async function m_mp_shortcuts() {
 
         html += "</div>";
         shortcuts.add_app("items", html);
+
+        if (!!html_helper.Calendars.$jquery_array) {
+            const $jquery_array = html_helper.Calendars.$jquery_array;
+            html_helper.Calendars.$jquery_array = undefined;
+            shortcuts.item.find('.shorcut-calendar ul').html($jquery_array);
+        }
+
         window.shortcuts = shortcuts;
 
         //debugger;

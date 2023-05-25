@@ -31,7 +31,8 @@ export class MelCalendar extends MelObject {
 
     static async rerender() {
         BnumLog.info('MelCalendar/rerender', 'Wainting #calendar....');
-        let resolved = (await new WaitSomething(() => this.select('#calendar').length > 0)).resolved;
+        const helper = MelObject.Empty();
+        let resolved = (await new WaitSomething(() => helper.select('#calendar').length > 0)).resolved;
 
         if (resolved) {
             BnumLog.info('MelCalendar/rerender', '#calendar found !');

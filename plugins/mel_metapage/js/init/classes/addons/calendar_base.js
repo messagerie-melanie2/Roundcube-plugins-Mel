@@ -2562,6 +2562,18 @@ $(document).ready(() => {
             const html = await html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
             rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).html(html);
             jquery_element.data("current-date", date.format());
+
+            if (!!html_helper.Calendars.$jquery_array) {
+                const $jquery_array = html_helper.Calendars.$jquery_array;
+
+                html_helper.Calendars.$jquery_array = undefined;
+
+                let $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).find('ul');
+
+                if ($ul.length === 0) $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element);
+
+                $ul.html($jquery_array);
+            }
          }
 
          rcmail.set_busy(false);

@@ -247,14 +247,18 @@ html_helper.Calendars = async function ({datas, config = {
 
 		if (datas.length > 0)
 		{
+			var $jquery_array = $('');
 			let li;
 			for (let index = 0; index < datas.length; index++) {
 				const element = datas[index];
 
 				li = new html_li({});
-				new html_events(element, {'data-ignore-date':true}).appendTo(li);
-				html += li.toString();
+				new html_events(element, {'data-ignore-date':true}, _date).appendTo(li);
+				li = li.generate();
+				$jquery_array = $.merge($jquery_array, li);
+				html += html_events.$_toString(li);
 			}
+			html_helper.Calendars.$jquery_array = $jquery_array;
 			li = null;
 		}
 		else 
@@ -295,8 +299,7 @@ html_helper.Calendars = async function ({datas, config = {
 		});
 	}
 
-    if (e !== null)
-	    e.html(html);
+    if (e !== null) e.html(html);
     if (e_number !== null)
     {
         if (datas.length > 0)
@@ -307,6 +310,11 @@ html_helper.Calendars = async function ({datas, config = {
         else
         e_number.addClass("hidden");
     }
+
+	if (!!e && !!$jquery_array) {
+		e.find('ul').html($jquery_array);
+	}
+
     return html;
 }
 

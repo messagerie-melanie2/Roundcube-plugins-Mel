@@ -490,24 +490,7 @@
 
             parent.rcmail.enable_command("my_account", true);
             parent.rcmail.register_command("my_account", () => {
-
-                if ($(".settings-frame").length > 1 && $("iframe.settings-frame").length === 0)
-                    window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-                else {
-
-                    if ($("iframe.settings-frame").length === 0) {
-                        mel_metapage.Functions.change_frame("settings", true, true, {
-                            _action: "plugin.mel_moncompte"
-                        });
-                    } else if ($("iframe.settings-frame").length === 1) {
-                        let config = {};
-                        config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-                        $("iframe.settings-frame")[0].src = mel_metapage.Functions.url("settings", "plugin.mel_moncompte", config);
-                        mel_metapage.Functions.change_frame("settings", true, false);
-                    } else window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-
-                    rcmail.triggerEvent('intercept.click.ok', {});
-                }
+                mel_metapage.Functions.change_page('settings', 'plugin.mel_moncompte', {}, true, true)
             });
 
 

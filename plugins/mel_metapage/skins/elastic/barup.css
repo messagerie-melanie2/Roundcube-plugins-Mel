@@ -736,7 +736,16 @@ html.dark-mode #barup-right-buttons button {
 }
 
 .barup-picture #barup-right-buttons button {
-  color: #fff;
+  --barup-buttons-text-color: var(--secondary-text-color);
+  color: var(--barup-buttons-text-color);
+}
+
+.barup-picture #barup-right-buttons .tiny-rocket-chat {
+  --barup-buttons-text-color: var(--main-text-color);
+}
+
+.barup-picture #barup-right-buttons .tiny-rocket-chat:hover {
+  --barup-buttons-text-color: var(--secondary-text-color);
 }
 
 html.layout-small #barup-right-buttons,

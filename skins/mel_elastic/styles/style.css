@@ -292,6 +292,7 @@ ul.treelist li.droptarget > a {
   top: 0px!important;
 }
 .mel-selectable {
+  border: solid thin var(--invisible);
   cursor: pointer;
 }
 .mel-selectable:hover {
@@ -315,7 +316,7 @@ html.dark-mode .mel-selectable.picture-only.selected {
   box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
 }
 .mel-selectable.picture-only.with-border:hover {
-  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  box-shadow: 0 -0.4px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
 }
 .popupmenu .listing li.selected {
   background-color: var(--secondary-bckg-color);
@@ -2719,7 +2720,7 @@ html.dark-mode #visio-right-pannel-util {
   display: inline-block;
   width: 100%;
   aspect-ratio: 1.6 / 1;
-  border-bottom: none;
+  border: solid thin var(--invisible);
   border-radius: 5px;
   margin-bottom: 5px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
@@ -2742,12 +2743,12 @@ html.dark-mode #theme-panel .input-top-selectable {
 .mel-selectable.picture-only.selected,
 .mel-selectable.picture-only.with-border.selected:hover {
   border-bottom: solid thin var(--invisible) !important;
-  border-left: none !important;
+  border-left: solid thin var(--invisible) !important;
   background-blend-mode: color-dodge;
 }
 html.dark-mode #theme-panel .picture.selected,
 html.dark-mode .mel-selectable.picture-only.selected {
-  border: none!important;
+  border: solid thin var(--invisible) !important;
 }
 #theme-panel .input-top-selectable {
   border-right: none;

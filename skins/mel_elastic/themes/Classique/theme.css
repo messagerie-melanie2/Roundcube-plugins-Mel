@@ -434,19 +434,19 @@ html.theme-classique .mel-selectable:hover {
   border-bottom-color: var(--tierciary-bckg-color);
 }
 html.theme-classique .mel-selectable.picture-only:hover {
-  border: none;
+  border: solid thin var(--invisible);
 }
 html.theme-classique .mel-selectable.selected {
   background-color: #edebe9;
   color: var(--main-text-color);
-  border-bottom: none!important;
+  border-bottom: solid thin var(--invisible) !important;
   border-left: solid thick var(--tierciary-bckg-color);
 }
 html.theme-classique .mel-selectable.selected.picture-only {
-  border: none;
+  border: solid thin var(--invisible);
 }
 html.theme-classique .mel-selectable.selected.picture-only:hover {
-  border: none;
+  border: solid thin var(--invisible);
 }
 html.theme-classique .mel-selectable.selected.picture {
   border-bottom: solid thick #484D7A !important;

@@ -351,6 +351,7 @@ ul.treelist{
 
 .mel-selectable{
     &:extend(#theme-panel .picture);
+    border: solid thin var(--invisible);
     cursor: pointer;
 
     &:hover{
@@ -387,7 +388,7 @@ ul.treelist{
             box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
 
             &:hover {
-                box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
+                box-shadow: 0 -0.4px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
             }
 
             &.selected {
@@ -4155,7 +4156,8 @@ a.rcmContactAddress {
         width: 100%;
         // height: 121px;
         aspect-ratio: 1.6 / 1;
-        border-bottom: none;
+
+        border: solid thin var(--invisible);
         border-radius: 5px; 
         margin-bottom: 5px;
         box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
@@ -4182,12 +4184,12 @@ a.rcmContactAddress {
 
         &.selected {
           border-bottom: solid thin var(--invisible) !important;
-          border-left: none !important;
+          border-left: solid thin var(--invisible) !important;
             background-blend-mode: color-dodge;
             // border: solid thick #484D7A;
 
             html.dark-mode &{
-                border:none!important;//border: solid thick #E1C58F;
+                border:solid thin var(--invisible)!important;//border: solid thick #E1C58F;
             }
         }
     }

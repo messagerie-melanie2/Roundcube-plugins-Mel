@@ -193,6 +193,7 @@ class MailLoaderDataBase extends MailLoaderBase {
 
     async load_mails() {
         let mails = [];
+        const self = this;
         await this.http_internal_get(
             {
                 task:'bureau',
@@ -201,18 +202,22 @@ class MailLoaderDataBase extends MailLoaderBase {
                     try {
                         if ('string' === typeof datas) datas = JSON.parse(datas);
                     } catch (error) {
-                        this.on_error(error);
+                        self._on_error(error);
                     }
 
                     mails = MailBaseModel.import_from_array(datas);
                 },
                 on_error:function (...args) {
-                    BnumLog.fatal('get_last_mails', 'Impossible de récupérer les mails !', ...args);
+                    self._on_error(...args);
                 }
             }
         );
 
         return mails;
+    }
+
+    _on_error(...args) {
+        BnumLog.fatal('get_last_mails', 'Impossible de récupérer les mails !', ...args);
     }
 }
 

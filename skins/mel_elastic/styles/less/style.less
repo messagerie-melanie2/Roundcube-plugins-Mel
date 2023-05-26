@@ -4367,7 +4367,7 @@ a.rcmContactAddress {
         color: var(--main-text-color);
 
         html.dark-mode &{
-            --main-text-color: #96b9e7;
+            --main-text-color: #c7dfff;
         }
     }
 }
@@ -4384,9 +4384,16 @@ a.rcmContactAddress {
     overflow: auto;
 }
 
+.melv2-color {
+    --mv2-item-background-color:#F8F9FA;
+    --mv2-item-text-color: var(--main-text-color);
+}
+
 .melv2-event {
+    &:extend(.melv2-color);
     &:extend(.mel-animated);
-    background-color: #F8F9FA;
+    background-color: var(--mv2-item-background-color);
+    color: var(--mv2-item-text-color);
     border-radius: 10px;
     display: flex;
     margin: 2.5px 10px;
@@ -4401,17 +4408,23 @@ a.rcmContactAddress {
     }
 
     &.hovered {
-        background-color: var(--tierciary-bckg-color);
-        color: var(--secondary-text-color);
+        --mv2-item-background-color: var(--tierciary-bckg-color);
+        --mv2-item-text-color: var(--secondary-text-color);
+        // background-color: var(--tierciary-bckg-color);
+        // color: var(--secondary-text-color);
         cursor: pointer;
     }
 
     html.dark-mode &{
-        background-color: #3e4c59;
+        --mv2-item-background-color: #3e4c59;
+        --mv2-item-text-color: #c7dfff;
+        // background-color: #3e4c59;
 
         &.hovered {
-            background-color: #2E2E2E;
-            color: #E1C58F;
+            --mv2-item-background-color: #2E2E2E;
+            // background-color: #2E2E2E;
+            --mv2-item-text-color:#E1C58F;
+            // color: #E1C58F;
         }
     }
 }
@@ -4506,17 +4519,20 @@ a.rcmContactAddress {
     margin: 3px 10px;
 
     &:hover {
-        background-color: var(--tierciary-bckg-color);
-        color: var(--secondary-text-color);
-        cursor: pointer;
+        // background-color: var(--tierciary-bckg-color);
+        // color: var(--secondary-text-color);
+        // cursor: pointer;
+        &:extend(.melv2-event.hovered);
     }
 
     html.dark-mode &{
-        background-color: #3e4c59;
+        // background-color: #3e4c59;
+        &:extend(html.dark-mode .melv2-event);
 
         &:hover {
-            background-color: #2E2E2E;
-            color: #E1C58F;
+            &:extend(html.dark-mode .melv2-event.hovered);
+            // background-color: #2E2E2E;
+            // color: #E1C58F;
         }
     }
 }

@@ -2876,7 +2876,7 @@ a.melv2-card-title {
   color: var(--main-text-color);
 }
 html.dark-mode a.melv2-card-title {
-  --main-text-color: #96b9e7;
+  --main-text-color: #c7dfff;
 }
 .melv2-card-icon {
   margin-right: 5px;
@@ -2888,9 +2888,16 @@ html.dark-mode a.melv2-card-title {
   max-height: 250px;
   overflow: auto;
 }
+.melv2-color,
 .melv2-event,
 .melv2-mail {
-  background-color: #F8F9FA;
+  --mv2-item-background-color: #F8F9FA;
+  --mv2-item-text-color: var(--main-text-color);
+}
+.melv2-event,
+.melv2-mail {
+  background-color: var(--mv2-item-background-color);
+  color: var(--mv2-item-text-color);
   border-radius: 10px;
   display: flex;
   margin: 2.5px 10px;
@@ -2903,17 +2910,21 @@ html.dark-mode a.melv2-card-title {
   margin-right: 0;
   margin-bottom: 5px;
 }
-.melv2-event.hovered {
-  background-color: var(--tierciary-bckg-color);
-  color: var(--secondary-text-color);
+.melv2-event.hovered,
+.melv2-mail:hover {
+  --mv2-item-background-color: var(--tierciary-bckg-color);
+  --mv2-item-text-color: var(--secondary-text-color);
   cursor: pointer;
 }
-html.dark-mode .melv2-event {
-  background-color: #3e4c59;
+html.dark-mode .melv2-event,
+html.dark-mode .melv2-mail {
+  --mv2-item-background-color: #3e4c59;
+  --mv2-item-text-color: #c7dfff;
 }
-html.dark-mode .melv2-event.hovered {
-  background-color: #2E2E2E;
-  color: #E1C58F;
+html.dark-mode .melv2-event.hovered,
+html.dark-mode .melv2-mail:hover {
+  --mv2-item-background-color: #2E2E2E;
+  --mv2-item-text-color: #E1C58F;
 }
 .melv2-event-clickable,
 .melv2-mail-left {
@@ -2995,18 +3006,6 @@ html.dark-mode .melv2-event.hovered {
 .melv2-mail {
   padding: 15px;
   margin: 3px 10px;
-}
-.melv2-mail:hover {
-  background-color: var(--tierciary-bckg-color);
-  color: var(--secondary-text-color);
-  cursor: pointer;
-}
-html.dark-mode .melv2-mail {
-  background-color: #3e4c59;
-}
-html.dark-mode .melv2-mail:hover {
-  background-color: #2E2E2E;
-  color: #E1C58F;
 }
 .melv2-mail-left {
   display: block;

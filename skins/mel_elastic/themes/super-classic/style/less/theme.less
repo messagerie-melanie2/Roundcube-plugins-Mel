@@ -129,6 +129,18 @@ html.theme-super-classique {
     }
   }
 
+  .melv2-event {
+    &.hovered {
+      --mv2-item-background-color: var(--main-layout-hover-background-color);
+      --mv2-item-text-color: var(--main-text-color);
+    }
+  }
+
+  .melv2-mail {
+    &:hover {
+      &:extend(html.theme-super-classique .melv2-event.hovered);
+    }
+  }
 
 
 }

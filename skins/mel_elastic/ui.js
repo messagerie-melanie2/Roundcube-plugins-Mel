@@ -348,6 +348,22 @@ $(document).ready(() => {
 
     }
 
+    class Mel_Elastic_Storage {
+        static save(key, item) {
+            localStorage.setItem(`${Mel_Elastic_Storage.KEY}_${key}`, JSON.stringify(item));
+        }
+
+        static load(key, _default = null) {
+            return JSON.parse(localStorage.getItem(`${Mel_Elastic_Storage.KEY}_${key}`)) ?? _default;
+        }
+
+        static remove(key) {
+            localStorage.removeItem(`${Mel_Elastic_Storage.KEY}_${key}`);
+        }
+    }
+
+    Mel_Elastic_Storage.KEY = 'MEL_ELASTIC';
+
     /**
      * Classe qui sert Ã  gérer les différentes interfaces
      */
@@ -1650,16 +1666,13 @@ $(document).ready(() => {
                     $("#headers-menu ul.menu a.recipient.active").each((i,e) => {
                         e = $(e);
                         e.click(() => {
-                            let storage = mel_metapage.Storage.get(key);
-                            
-                            if (storage === undefined || storage === null)
-                                storage = [];
+                            let storage = Mel_Elastic_Storage.load(key, []);
 
                             const field = e.data("target");
                             if (!storage.includes(field))
                             {
                                 storage.push(field);
-                                mel_metapage.Storage.set(key, storage);
+                                Mel_Elastic_Storage.save(key, storage);
                             }
                             
                         });
@@ -1676,17 +1689,19 @@ $(document).ready(() => {
                             $input = e.parent().parent().find("input");
 
                         const field = $input.attr("id").replace("_", "");
-                        let storage = mel_metapage.Storage.get(key);
+                        let storage = Mel_Elastic_Storage.load(key, []);
                         
                         if (storage.includes(field))
                         {
                             storage = Enumerable.from(storage).where(x => x !== field).toArray() || [];
-                            mel_metapage.Storage.set(key, storage);
+
+                            if (storage.length === 0) Mel_Elastic_Storage.remove(key);
+                            else Mel_Elastic_Storage.save(key, storage);
                         }
                     });
                 });
 
-                const storage = mel_metapage.Storage.get(key);
+                const storage = Mel_Elastic_Storage.load(key, []);
 
                 //Afficher les champs
                 if (storage !== null && storage.length > 0)

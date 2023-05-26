@@ -2829,6 +2829,10 @@ html.dark-mode .green-badge {
 .fill-on-hover:hover .material-symbols-outlined {
   font-variation-settings: 'FILL' 1;
 }
+.material-symbols-outlined.force-fill,
+.force-fill .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1;
+}
 .aprilfool {
   background-image: url(../images/aprilfools.png);
   width: 500px;

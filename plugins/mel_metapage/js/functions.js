@@ -2360,40 +2360,40 @@ function m_mp_NewTask() {
 }
 
 function open_task(id, config = {}) {
-    if (event !== undefined)
-        event.preventDefault();
+    if (event !== undefined) event.preventDefault();
 
     mel_metapage.Storage.set("task_to_open", id);
     mel_metapage.Functions.change_frame("tasklist", true, false, config);
 
-    if ($("iframe.tasks-frame").length > 0)
-        $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
-    else if ($(".tasks-frame").length > 0)
-        rcmail.triggerEvent("plugin.data_ready");
+    if ($("iframe.tasks-frame").length > 0) $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
+    else if ($(".tasks-frame").length > 0) rcmail.triggerEvent("plugin.data_ready");
 }
 
 /**
  * Permet d'afficher masquer la pop up user Bienvenue
  */
 function m_mp_ToggleGroupOptionsUser(opener) {
-    if ($("#groupoptions-user").is(":visible") == true) {
-        $("#groupoptions-user").hide();
-        $("#groupoptions-user").data('aria-hidden', 'true');
-        $("#groupoptions-user").data('opener', null);
-        // $('#menu-gu-black').remove();
-        $("#button-settings").css('font-variation-settings', "'FILL' 0")
+    let $goupoptions_user = $("#groupoptions-user");
+    let $button_settings = $("#button-settings");
+
+    if ($goupoptions_user.is(":visible") == true) {
+        $goupoptions_user.hide();
+        $goupoptions_user.data('aria-hidden', 'true');
+        $goupoptions_user.data('opener', null);
+        $button_settings.removeClass('force-fill');
         $(opener).data('aria-expanded', 'false');
         rcmail.triggerEvent('toggle-options-user', {show: false});
     }
     else {
-        //$("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
-        $("#groupoptions-user").show();
-        $("#groupoptions-user").data('opener', opener);
-        $("#groupoptions-user").data('aria-hidden', 'false');
-        // $('<div id="menu-gu-black"></div>').appendTo('#layout');
-        $("#button-settings").css('font-variation-settings', "'FILL' 1")
+        $goupoptions_user.show();
+        $goupoptions_user.data('opener', opener);
+        $goupoptions_user.data('aria-hidden', 'false');
+        $button_settings.addClass('force-fill');
         $(opener).data('aria-expanded', 'true');
         rcmail.menu_stack.push("groupoptions-user");
         rcmail.triggerEvent('toggle-options-user', {show: true});
     }
+
+    $goupoptions_user = null;
+    $button_settings = null;
 }

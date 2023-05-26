@@ -1,4 +1,4 @@
-export {BaseIcon as Icon, MaterialIcon}
+export {BaseIcon as Icon, MaterialIcon, MainIcon}
 class BaseIcon {
     constructor(icon_class, $item) {
         this._icon = icon_class;
@@ -46,3 +46,5 @@ class MaterialIcon extends BaseIcon {
         return get;
     }
 }
+
+const MainIcon = MaterialIcon;

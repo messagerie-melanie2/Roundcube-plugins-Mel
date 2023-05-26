@@ -4389,9 +4389,19 @@ a.rcmContactAddress {
 
 .melv2-card .contents,
 .melv2-card-contents {
-    height: 250px;
-    max-height: 250px;
+    height: 237px;
+    max-height: 237px;
     overflow: auto;
+
+    li {
+        &:first-child > div{
+            margin-top: 0;
+        }
+        
+        &:last-child > div{
+            margin-bottom: 0;
+        }
+    }
 }
 
 .melv2-color {
@@ -4406,7 +4416,7 @@ a.rcmContactAddress {
     color: var(--mv2-item-text-color);
     border-radius: 10px;
     display: flex;
-    margin: 2.5px 10px;
+    margin: 2.5px 13px;
     padding: 5px;
     padding-left: 10px;
 
@@ -4526,7 +4536,7 @@ a.rcmContactAddress {
     &:extend(.melv2-event);
     &:extend(.mel-animated);
     padding: 15px;
-    margin: 3px 10px;
+    margin: 3px 13px;
 
     &:hover {
         // background-color: var(--tierciary-bckg-color);

@@ -106,7 +106,7 @@
 table.messagelist{
     tr {
         &.unread{
-            background-color: var(--alternate-bckg-color);
+          background-color: var(--alternate-bckg-color);
 
             & > td {
                 &:first-child{
@@ -115,6 +115,8 @@ table.messagelist{
             }
 
             td {
+              background-color: var(--invisible);
+              
                 &.subject{
                     span{
                         &.date{
@@ -125,6 +127,10 @@ table.messagelist{
                         &.fromto{
                             font-weight: bold;
                             color:var(--main-text-color);
+                        }
+
+                        &.adr {
+                          font-weight: bold;
                         }
                         
                         &.msgicon{
@@ -671,22 +677,22 @@ table.messagelist{
     {
         tbody{
             tr{
+              &:nth-child(2n){
+                td {
+                    background-color: var(--default-background-lighter);
+                }
+            }
+
+            &.unread{
                 &:nth-child(2n){
                     td {
                         background-color: var(--default-background-lighter);
                     }
                 }
 
-                &.unread{
-                    &:nth-child(2n){
-                        td {
-                            background-color: var(--default-background-lighter);
-                        }
-                    }
-
-                    td {
-                        background-color: var(--default-background);
-                    }
+                td {
+                    background-color: var(--default-background);
+                }
 
                     &.selected{
                         td{

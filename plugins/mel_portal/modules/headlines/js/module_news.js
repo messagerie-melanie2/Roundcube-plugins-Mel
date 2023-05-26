@@ -1,4 +1,3 @@
-import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
 import { BaseModule } from "../../../js/lib/module";
 
 const MODULE_ID = 'Headlines';
@@ -20,7 +19,7 @@ export class ModuleNew extends BaseModule {
     }
 
     end() {
-        this.select_headlines_by().css('display', 'none');
+        this.set_title_action('news').select_headlines_by().css('display', 'none');
     }
 
     select_headlines_by() {

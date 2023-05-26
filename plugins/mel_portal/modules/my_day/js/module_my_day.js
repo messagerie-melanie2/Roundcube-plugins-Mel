@@ -15,8 +15,9 @@ class ModuleMyDay extends BaseModule{
 
     start() {
         super.start();
-        this._init().set_listeners();
-        this.set_title_action();
+        this._init()
+            .set_listeners()
+            .set_title_action('calendar');
     }
 
     end() {
@@ -27,14 +28,6 @@ class ModuleMyDay extends BaseModule{
     _init() {
         this.max_size = MAX_SIZE;
         this._timeouts = new BaseStorage();
-        return this;
-    }
-
-    set_title_action(){
-        const URL = this.url('calendar', {});
-        this.select_module_title().attr('href', URL).click(() => {
-            this.change_frame('calendar', {update: false, force_update: false});
-        });
         return this;
     }
 

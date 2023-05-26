@@ -14,7 +14,8 @@ class ModuleMail extends BaseModule{
 
     start() {
         super.start();
-        this._init().set_title_action();
+        this._init()
+            .set_title_action('mail');
         let loaded = false;
         let mail_loader = new MailLoader();
         Object.defineProperties(this, {
@@ -66,14 +67,6 @@ class ModuleMail extends BaseModule{
             this.show_last_mails({force_refresh:true});
         }, 'bureau', {callback_key:KEY});
 
-        return this;
-    }
-
-    set_title_action(){
-        const URL = this.url('mail', {});
-        this.select_module_title().attr('href', URL).click(() => {
-            this.change_frame('mail', {update: false, force_update: false});
-        });
         return this;
     }
 

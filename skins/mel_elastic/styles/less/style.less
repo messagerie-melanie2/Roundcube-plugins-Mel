@@ -3570,10 +3570,11 @@ html .menu a.selection::before {
         &.btn-primary{
             &.btn-block{
                 border-radius: 60px;
-                height: 30px;
-                width: 60px;
-                border-color: var(--alternate-primary-border-color);
-                background-color: var(--alternate-bckg-color);
+                height: 21px;
+                width: 43px;
+                // border-color: var(--alternate-primary-border-color);
+                border: none;
+                background-color: #e8e8e8;
                 position: relative;
                 margin-top: 0;
 
@@ -3582,23 +3583,25 @@ html .menu a.selection::before {
                     font-family: var(--secondary-icon-font);
                     margin: 0 !important;
                     position: absolute;
-                    top: 2px;
-                    left: 33px;
+                    top: 0px;
+                    left: 25px;
                     color: var(--alternate-primary-border-color)!important;
                     .mel-all-ease-in-animation();
+                    font-size: 14px;
                 }
 
                 &:after{
                     content: "";
-                    border: solid var(--alternate-primary-border-color) thin;
+                    // border: solid var(--alternate-primary-border-color) thin;
+                    border: none;
                     background-color: var(--default-background);
-                    width: 28px;
-                    height: 28px;
+                    width: 17px;
+                    height: 17px;
                     display: block;
                     border-radius: 100%;
                     position: absolute;
-                    top: 0;
-                    right: 31px;
+                    top: 2px;
+                    right: 23px;
                     .mel-all-ease-in-animation();
                 }
             }

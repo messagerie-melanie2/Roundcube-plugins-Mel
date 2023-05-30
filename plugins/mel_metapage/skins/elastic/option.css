@@ -196,3 +196,50 @@ html.dark-mode #groupoptions-user::after {
 html.dark-mode .upload-icon {
   color: #E1C58F;
 }
+
+.custom-switch .custom-control-label.option-switch {
+margin-right: 9px;
+}
+
+.custom-switch .custom-control-label.option-switch:before {
+  width: 42px;
+  height: 21px;
+  border-radius: 100px;
+}
+
+.custom-switch .custom-control-label.option-switch:after {
+  width: 17px;
+  height: 17px;
+}
+
+.custom-switch .custom-control-label.option-switch:after,
+.custom-switch .custom-control-label.option-switch:before {
+  margin: 0;
+}
+
+.custom-switch .custom-control-input:checked ~ .custom-control-label.option-switch:after {
+  transform: translateX(19px);
+}
+
+.no-click-focus:focus {
+  box-shadow: none;
+}
+
+html.dark-mode .no-click-focus:focus {
+  box-shadow: none;
+}
+
+.no-click-focus:focus-visible {
+  box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+}
+
+html.dark-mode .no-click-focus:focus-visible {
+  box-shadow: 0 0 0 .2rem #E1C58F69;
+}
+
+.custom-file-input.no-click-focus:focus ~ .custom-file-label.no-click-focus, .custom-switch.no-click-focus .custom-control-input.no-click-focus:focus ~ .custom-control-label.no-click-focus::before {
+  box-shadow: none;
+}
+.custom-file-input.no-click-focus:focus-visible ~ .custom-file-label.no-click-focus, .custom-switch.no-click-focus .custom-control-input.no-click-focus:focus-visible ~ .custom-control-label.no-click-focus::before {
+  box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+}

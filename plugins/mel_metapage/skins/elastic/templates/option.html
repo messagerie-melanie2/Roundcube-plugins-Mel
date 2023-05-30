@@ -5,7 +5,6 @@
   </span>
 </button>
 
-
 <div id="groupoptions-user" style="z-index: 1000;">
   <div class="scroll-content">
     <div class="container menu" role="menu" aria-labelledby="user-up-panel">
@@ -14,7 +13,7 @@
           <div class="option-menu-title">
             Paramètres
           </div>
-          <span class="material-symbols-outlined option-menu-close"  onclick="m_mp_ToggleGroupOptionsUser(this);">
+          <span class="material-symbols-outlined option-menu-close" onclick="m_mp_ToggleGroupOptionsUser(this);">
             close
           </span>
         </div>
@@ -33,8 +32,21 @@
           <div class="col-12 d-flex justify-content-between align-items-center mt-2">
             <div>Mode sombre</div>
             <button title="<roundcube:label name='mel_metapage.change_theme' />"
-              class="mel-focus theme-mode-switch btn btn-primary btn-block"
+              class="mel-focus theme-mode-switch btn btn-primary btn-block no-click-focus"
               onclick="MEL_ELASTIC_UI.switch_color()"></button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 d-flex justify-content-between align-items-center mt-2">
+            <div>
+              <roundcube:label name='mel_metapage.hide_chat_popup_button' />
+            </div>
+            <div class="custom-control custom-switch no-click-focus">
+              <input name="_hide_chat" id="rcmfd_hide_chat" value="1" type="checkbox"
+                class="form-check-input custom-control-input no-click-focus" onchange="return rcmail.command('toggleChat', '',this,event) ">
+              <label for="rcmfd_hide_chat" class="custom-control-label option-switch no-click-focus">
+              </label>
+            </div>
           </div>
         </div>
       </div>

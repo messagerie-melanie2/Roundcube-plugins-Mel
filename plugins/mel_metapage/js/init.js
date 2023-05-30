@@ -563,6 +563,8 @@
 
                         $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
+                        $('#rcmfd_hide_chat').prop("checked", false);
+
                         $(".tiny-rocket-chat").appendTo("#chatCore").addClass('inbarup')
                             // .css("position", "sticky")
                             // .css("height", "100%")
@@ -580,6 +582,7 @@
                     }
                 } else {
                     $(".tiny-rocket-chat").addClass("layout-hidden");
+                    $('#rcmfd_hide_chat').prop("checked", true)
                 }
             }
 

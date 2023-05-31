@@ -827,18 +827,27 @@ $(document).ready(() => {
                         var reader = new FileReader();
                         reader.onload =  (e) => {
                           const picture =  e.target.result;
-                          this.update_custom_picture(picture, prefid);
-                          let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
-                          .removeClass(THEME_DEFAULT_CLASS)
-                          .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
-                          .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
-                          .data(THEME_ATTRIB_DATA_PATH, picture)
-                          .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+                          const size = mel_metapage.Functions.calculateObjectSizeInMo(picture);
 
-                          if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
-                            this.css_rules.remove(RULE_KEY);
-                            this._add_background(picture, true);
+                          if (size < 2) {
+                            this.update_custom_picture(picture, prefid);
+                            let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
+                            .removeClass(THEME_DEFAULT_CLASS)
+                            .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
+                            .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
+                            .data(THEME_ATTRIB_DATA_PATH, picture)
+                            .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+  
+                            if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
+                              this.css_rules.remove(RULE_KEY);
+                              this._add_background(picture, true);
+                            }
                           }
+                          else {
+                            rcmail.display_message('Votre image est trop lourde !', 'error');
+                          }
+
+
                         };
                         reader.readAsDataURL(file);
                     });

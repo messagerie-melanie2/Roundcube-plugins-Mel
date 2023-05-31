@@ -370,7 +370,7 @@ class mel_metapage extends bnum_plugin
                     '_initial_request' => $_SERVER["REQUEST_URI"],
                     '_initial_task' => $this->rc->task
                 ]);
-                return;
+                exit;
             }
             else if (!$courielleur && !isset($from_cour) ) {
                 $courielleur = str_ireplace('://', '¤¤', $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'&_redirected_from_courrielleur=1');

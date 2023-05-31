@@ -1012,12 +1012,16 @@ $(document).ready(() => {
                 else {
                     //On met dans l'ordre les différents boutons de la barre de navigation principale
                     let array = [];
-
                     $taskmenu.find("a").each((i,e) => {
                     e = $(e);
 
                     if (e.parent().hasClass("special-buttons"))
                         return;
+
+                    if (e.hasClass('settings')) {
+                        e.css('display', 'none');
+                        return;
+                    }
 
                     const order = e.css("order");
                     const tmp = e.removeAttr("title")[0].outerHTML;

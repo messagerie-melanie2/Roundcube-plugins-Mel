@@ -104,6 +104,7 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
 
 .scroll-content {
   overflow-y: scroll;
+  overflow-x: hidden;
   height: calc(100% - 46px);
   padding: 0 15px;
 }
@@ -198,7 +199,7 @@ html.dark-mode .upload-icon {
 }
 
 .custom-switch .custom-control-label.option-switch {
-margin-right: 9px;
+  margin-right: 9px;
 }
 
 .custom-switch .custom-control-label.option-switch:before {
@@ -217,7 +218,7 @@ margin-right: 9px;
   margin: 0;
 }
 
-.custom-switch .custom-control-input:checked ~ .custom-control-label.option-switch:after {
+.custom-switch .custom-control-input:checked~.custom-control-label.option-switch:after {
   transform: translateX(19px);
 }
 
@@ -230,16 +231,33 @@ html.dark-mode .no-click-focus:focus {
 }
 
 .no-click-focus:focus-visible {
-  box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+  box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
 }
 
 html.dark-mode .no-click-focus:focus-visible {
   box-shadow: 0 0 0 .2rem #E1C58F69;
 }
 
-.custom-file-input.no-click-focus:focus ~ .custom-file-label.no-click-focus, .custom-switch.no-click-focus .custom-control-input.no-click-focus:focus ~ .custom-control-label.no-click-focus::before {
+.custom-file-input.no-click-focus:focus~.custom-file-label.no-click-focus,
+.custom-switch.no-click-focus .custom-control-input.no-click-focus:focus~.custom-control-label.no-click-focus::before {
   box-shadow: none;
 }
-.custom-file-input.no-click-focus:focus-visible ~ .custom-file-label.no-click-focus, .custom-switch.no-click-focus .custom-control-input.no-click-focus:focus-visible ~ .custom-control-label.no-click-focus::before {
-  box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+
+.custom-file-input.no-click-focus:focus-visible~.custom-file-label.no-click-focus,
+.custom-switch.no-click-focus .custom-control-input.no-click-focus:focus-visible~.custom-control-label.no-click-focus::before {
+  box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
+}
+
+.option-max-width {
+  max-width: 230px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html.touch .options .custom-switch .custom-control-label::before {
+  width: 42px;
+}
+
+html.touch .options .custom-switch .custom-control-label {
+  padding-left: 2.5rem;
 }

@@ -261,7 +261,7 @@ $labels['results_for'] = 'résultats pour';
 $labels['order_by'] = 'Trier par';
 $labels['desc'] = 'Le plus récent';
 $labels['asc'] = 'Le plus ancien';
-$labels['hide_chat_popup_button'] = 'Cacher la bulle de discussion instantée';
+$labels['hide_chat_popup_button'] = 'Bulle de discussion instantanée';
 $labels['to_participate'] = 'Participer';
 
 $labels['title_needed'] = 'Vous devez mettre un titre !';

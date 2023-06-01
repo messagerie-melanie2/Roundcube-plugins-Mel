@@ -250,7 +250,10 @@ class CalendarLoader extends MelObject{
                 && element.start.startOf(CONST_DATE_START_OF_DAY).format(CONST_DATE_FORMAT_EN) !== element.end.format(CONST_DATE_FORMAT_EN)) {
                     continue;
                 }
-                else element.end = element.end.format();
+                else {
+                    element.start = element.start.startOf(CONST_DATE_START_OF_DAY);
+                    //element.end = element.end.startOf(CONST_DATE_START_OF_DAY);
+                }
             }
 
             if (!!element?.recurrence?.EXCEPTIONS) element.recurrence.EXCEPTIONS = [];

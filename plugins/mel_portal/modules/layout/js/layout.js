@@ -1,3 +1,4 @@
+import { MelCurrentUser } from "../../../../mel_metapage/js/lib/classes/user";
 import { BaseModule } from "../../../js/lib/module";
 
 const KEY = 'user_name';
@@ -8,14 +9,6 @@ export class ModuleLayout extends BaseModule {
 
     start() {
         this._create_hello();
-
-        const user_name = this.load(KEY);
-
-        if (!user_name) {
-            const name = this.rcmail().env.current_user?.name;
-
-            if (!!name) this.save(KEY, name);
-        }
     }
 
     select_contents() {
@@ -23,7 +16,8 @@ export class ModuleLayout extends BaseModule {
     }
 
     get_name() {
-        return this.load(KEY) ?? this.rcmail().env.current_user.name; 
+        debugger;
+        return MelCurrentUser.name; 
     }
 
     get_hello() {

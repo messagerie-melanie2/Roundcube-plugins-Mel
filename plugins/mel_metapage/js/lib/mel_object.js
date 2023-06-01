@@ -1,5 +1,5 @@
-export { MelObject };
-import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
+export { MelObject, AsyncMelObject };
+import { Mel_Ajax, Mel_Promise, WaitSomething } from "../../../mel_metapage/js/lib/mel_promise";
 import { BaseStorage } from "./classes/base_storage";
 import { Cookie } from "./classes/cookies";
 import { Top } from "./top";
@@ -421,6 +421,47 @@ class MelObject {
 
     static Empty() {
         return new MelObject();
+    }
+}
+
+class AsyncMelObject extends MelObject {
+    constructor(...args) {
+        super(...args);
+    }
+
+    async main(...args) {
+        super.main(...args);
+
+        let loaded = false;
+
+        Object.defineProperties(this, {
+            loaded: {
+                get: function() {
+                    return loaded;
+                },
+                configurable: true
+            }
+        });
+
+        this.set_loaded = function (state) {
+            loaded = state;
+        };
+    }
+
+
+
+    async executor() {
+        if (!this.loaded) {
+            await new WaitSomething(() => this.loaded === true);
+        }
+        
+        return this;
+    }
+
+    then() {
+        const promise = this.executor()
+        const value = promise.then.apply(promise, arguments)
+        return new Mel_Promise(() => value);
     }
 }
 

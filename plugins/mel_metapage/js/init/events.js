@@ -650,12 +650,16 @@ if (rcmail && window.mel_metapage)
         if (window === top) m_mp_e_on_storage_change_notifications(datas.key);
     }, false);
 
-    function m_mp_e_on_storage_change_notifications(key)
+    async function m_mp_e_on_storage_change_notifications(key)
     {
         const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', true];
 
         if (!accepted_changes.includes(key)) return;
 
+        if (!window.loadJsModule) return;
+
+        const Chat = await ChatHelper.Chat();
+        const Calendar = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance ;
         const delimiter = ') ';
         const config = rcmail.env["mel_metapage.tab.notification_style"];
         const get = mel_metapage.Storage.get;
@@ -667,13 +671,13 @@ if (rcmail && window.mel_metapage)
         switch (config) {
             case 'all':
 
-                temp = get('ariane_datas');
+                //temp = ;
 
-                if (!!temp)
+                if (!!Chat)
                 {
-                    numbers = Enumerable.from(temp?.unreads ?? []).sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
+                    numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
 
-                    if (numbers === 0 && temp._some_unreads === true)
+                    if (numbers === 0 && Chat.unreads.haveUnreads() === true)
                     {
                         numbers = '•';
                         break;
@@ -682,21 +686,20 @@ if (rcmail && window.mel_metapage)
 
                 numbers += parseInt(get('mel_metapage.mail.count') ?? 0) +
                            (get('mel_metapage.tasks') ?? []).length +
-                           (get('mel_metapage.calendar') ?? []).length;
+                           Calendar.get_from_day(moment()).length;
 
                 break;
 
             case 'page':
                 switch (current_task) {
                     case 'discussion':
-                        temp = get('ariane_datas');
-                        numbers = Enumerable.from(temp?.unreads ?? []).sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
+                        numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
 
-                        if (numbers === 0 && temp._some_unreads === true) numbers = '•';
+                        if (numbers === 0 && Chat.unreads.haveUnreads() === true) numbers = '•';
                         break;
 
                     case 'calendar':
-                        numbers = (get('mel_metapage.calendar') ?? []).length;
+                        numbers = Calendar.get_from_day(moment()).length;
                         break;
 
                     case 'tasks':

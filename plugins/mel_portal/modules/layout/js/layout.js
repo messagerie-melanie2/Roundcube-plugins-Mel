@@ -16,11 +16,11 @@ export class ModuleLayout extends BaseModule {
     }
 
     get_name() {
-        return MelCurrentUser.name; 
+        return MelCurrentUser.name ?? MelCurrentUser.get_name_from_fullname(); 
     }
 
     get_hello() {
-        const name = this.get_name();
+        const name = this.get_name() ?? EMPTY_STRING;
         const extra_space = !!name ? ' ' : EMPTY_STRING;
         return `Bonjour${extra_space}${name},`;
     }

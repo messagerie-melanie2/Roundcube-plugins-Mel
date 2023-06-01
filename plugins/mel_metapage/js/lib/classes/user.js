@@ -127,6 +127,18 @@ class MelCurrentUser extends AMelObjectUser {
 
         return user_name;
     }
+
+    get_name_from_fullname() {
+        const fullname = this.fullname;
+        let name = null;
+
+        if (!!fullname) {
+            name = fullname.split(' - ');
+            name = name[0].split(' ')[1];
+        }
+
+        return name;
+    }
 }
 
 const current_user = new MelCurrentUser();

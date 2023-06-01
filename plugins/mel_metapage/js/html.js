@@ -269,7 +269,7 @@ html_helper.Calendars = async function ({datas, config = {
 			if (storage_count > 0)
 			{
 				const storage_first = storage.first();
-				const value = storage_first.value[0];
+				const value = !!storage_first.value && !!storage_first.value[0] ? storage_first.value[0] : storage_first;
 				const all_day = value.allDay ? "_all_day" : "";
 				html += `<li><span class="element-title element-no default-text bold element-block">${rcmail.gettext('mel_portal.no_event_today')}</span>
 				<a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(value)}">

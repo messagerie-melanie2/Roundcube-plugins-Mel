@@ -40,10 +40,10 @@ class ModuleMyDay extends BaseModule{
     }
 
     check_storage_datas() {
-        let storage = this.load('all_events');
+        let storage = this.load(mel_metapage.Storage.calendar_all_events);
         if (!storage) {
             this.trigger_event(mel_metapage.EventListeners.calendar_updated.get, {}, {top:true});
-            storage = this.load('all_events');
+            storage = this.load(mel_metapage.Storage.calendar_all_events);
         }
 
         return storage;

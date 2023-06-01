@@ -287,7 +287,7 @@ const mel_metapage = {
                     case mel_metapage.Storage.other_tasks:
                     case mel_metapage.Storage.tasks:
                         return update_element(storage, mel_metapage.Storage.last_task_update);
-                    case "all_events":
+                    case mel_metapage.Storage.calendar_all_events:
                     case mel_metapage.Storage.calendar:
                         return update_element(storage, mel_metapage.Storage.last_calendar_update);
                     default:

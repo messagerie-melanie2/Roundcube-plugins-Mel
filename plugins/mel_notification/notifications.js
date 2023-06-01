@@ -862,7 +862,8 @@ class html_notification extends mel_html2 {
         m_mp_NotificationsAction('del', [btoa(notification.uid)]);
       })
 
-      this.attribs['href'] = _action.href;
+      if (!!_action?.href) this.attribs['href'] = _action.href;
+      
       this.onclick.push(() => {
         _action.command ? (e) => { rcmail.command(_action.command, _action.params ?? '', e); e.stopPropagation(); } : (_action.click ? (e) => {_action.click(e); e.stopPropagation();} : (e) => { e.stopPropagation(); })
       })

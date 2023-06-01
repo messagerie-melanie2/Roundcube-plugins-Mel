@@ -383,7 +383,7 @@ class mel_metapage extends bnum_plugin
                 exit;
             }
 
-            if ($this->rc->task === 'bnum') {
+            if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf') {
                 $this->setup_module();
             }
 

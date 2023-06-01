@@ -1,5 +1,6 @@
 import { BaseModule } from "../../../js/lib/module";
 
+const KEY = 'user_name';
 export class ModuleLayout extends BaseModule {
     constructor(load_module = true) {
         super(load_module);
@@ -7,6 +8,14 @@ export class ModuleLayout extends BaseModule {
 
     start() {
         this._create_hello();
+
+        const user_name = this.load(KEY);
+
+        if (!user_name) {
+            const name = this.rcmail().env.current_user?.name;
+
+            if (!!name) this.save(KEY, name);
+        }
     }
 
     select_contents() {
@@ -14,11 +23,13 @@ export class ModuleLayout extends BaseModule {
     }
 
     get_name() {
-        return this.rcmail().env.current_user.name; 
+        return this.load(KEY) ?? this.rcmail().env.current_user.name; 
     }
 
     get_hello() {
-        return `Bonjour ${this.get_name()},`;
+        const name = this.get_name();
+        const extra_space = !!name ? ' ' : EMPTY_STRING;
+        return `Bonjour${extra_space}${name},`;
     }
 
     _create_hello() {

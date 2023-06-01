@@ -16,7 +16,6 @@ export class ModuleLayout extends BaseModule {
     }
 
     get_name() {
-        debugger;
         return MelCurrentUser.name; 
     }
 

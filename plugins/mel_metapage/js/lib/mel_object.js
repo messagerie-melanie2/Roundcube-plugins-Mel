@@ -1,5 +1,5 @@
-export { MelObject, AsyncMelObject };
-import { Mel_Ajax, Mel_Promise, WaitSomething } from "../../../mel_metapage/js/lib/mel_promise";
+export { MelObject };
+import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
 import { BaseStorage } from "./classes/base_storage";
 import { Cookie } from "./classes/cookies";
 import { Top } from "./top";
@@ -421,78 +421,6 @@ class MelObject {
 
     static Empty() {
         return new MelObject();
-    }
-}
-
-/**
- * Classe de base du framework bnum
- * 
- * Permet de lancer une initialisation asynchrone et await peux être utiliser sur cette classe.
- * @extends MelObject
- * @abstract
- * 
- */
-class AsyncMelObject extends MelObject {
-    /**
-     * Constructeur de la classe
-     * @param  {...any} args Arguments de la classe
-     */
-    constructor(...args) {
-        super(...args);
-    }
-
-    /**
-     * @async
-     * @abstract 
-     * Cette fonction est appelé dans le constructeur de AsyncMelObject.
-     * 
-     * Mettez vôtre code ici.
-     * @param  {...any} args Arguments de la fonction
-     */
-    async main(...args) {
-        super.main(...args);
-
-        let loaded = false;
-
-        /**
-         * Représente l'état de l'objet. 
-         * 
-         * Si il vaut `true`, alors, l'objet à fini son initialisation.
-         * @type {boolean}
-         */
-        this.loaded = false;
-        Object.defineProperties(this, {
-            loaded: {
-                get: function() {
-                    return loaded;
-                },
-                configurable: true
-            }
-        });
-
-        /**
-         * Définir si l'objet est chargée ou non.
-         * @param {boolean} state 
-         * @return Chaîne
-         */
-        this.set_loaded = function set_loaded(state) {
-            loaded = state;
-            return this
-        };
-    }
-
-    async executor() {
-        if (!this.loaded) {
-            await new WaitSomething(() => this.loaded === true);
-        }
-        
-        return this;
-    }
-
-    then() {
-        const promise = this.executor()
-        const value = promise.then.apply(promise, arguments)
-        return new Mel_Promise(() => value);
     }
 }
 

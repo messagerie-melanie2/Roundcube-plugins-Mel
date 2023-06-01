@@ -13,7 +13,7 @@ export class MetapageCalendarModule extends MetapageModule {
      * @async Actions principales
      */
     async main() {
-        await super.main();
+        super.main();
 
         this._init();
 
@@ -22,8 +22,6 @@ export class MetapageCalendarModule extends MetapageModule {
         await new WaitSomething(() => !!rcmail._events['plugin.display_alarms']);
 
         this.alarm_manager.generate(await CalendarLoader.Instance.force_load_all_events_from_storage());
-
-        this.set_loaded(true);
     }
 
     /**

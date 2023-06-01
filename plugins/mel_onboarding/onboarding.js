@@ -23,7 +23,7 @@ if (window.rcmail) {
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
         rcmail.show_current_page_onboarding(current_task, true);
-        window.parent.rcmail.env.hide_modal = 1;
+        parent.rcmail.env.hide_modal = 1;
       }
     });
     if (rcmail.env.action) {
@@ -40,13 +40,13 @@ if (window.rcmail) {
 //Ouvre l'onboarding depuis la fenêtre d'assistance
 rcube_webmail.prototype.current_page_onboarding = function (task) {
   window.help_popUp.close();
-  var iframe = window.parent.$('iframe.' + task + '-frame')[0];
+  var iframe = (parent ?? window).$('iframe.' + task + '-frame')[0];
   if (iframe) {
-    window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
+    (parent ?? window).document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
   } else {
-    window.parent.rcmail.show_current_page_onboarding(task, true);
-    window.parent.rcmail.env.hide_modal = 1;
-    // window.parent.rcmail.onboarding_close(true)
+    (parent ?? window).rcmail.show_current_page_onboarding(task, true);
+    (parent ?? window).rcmail.env.hide_modal = 1;
+    // (parent ?? window).rcmail.onboarding_close(true)
   }
 }
 
@@ -62,7 +62,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, assistanc
       json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
 
       json = replaceImages(json);
-
+// debugger
       window.current_onboarding = JSON.parse(json);
       current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
 
@@ -88,7 +88,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, assistanc
           }, 250);
         }
       } else if (rcmail.env.is_framed) {
-        window.parent = startIntro(task, assistance)
+        parent = startIntro(task, assistance)
       } else {
         startIntro(task, assistance);
       }
@@ -144,62 +144,62 @@ function startIntro(task, assistance = false) {
       }
     }
   }).onafterchange(function () {
-    $('.introjs-tooltipbuttons').hide();
+    current_window.$('.introjs-tooltipbuttons').hide();
 
     setTimeout(() => {
       if (this._introItems[this._currentStep].hideButtons) {
-        $('.introjs-tooltipbuttons').hide();
+        current_window.$('.introjs-tooltipbuttons').hide();
 
-        $('#accueil').focus();
+        current_window.$('#accueil').focus();
 
-        $('#custom-next-button').on('click', function () {
+        current_window.$('#custom-next-button').on('click', function () {
           intro.nextStep();
         })
-        $('#custom-previous-button').on('click', function () {
+        current_window.$('#custom-previous-button').on('click', function () {
           intro.previousStep();
         })
 
-        $('#custom-done-button').on('click', function () {
+        current_window.$('#custom-done-button').on('click', function () {
           intro.exit();
           send_notification();
         })
       }
       else {
-        $('.introjs-tooltipbuttons').show();
+        current_window.$('.introjs-tooltipbuttons').show();
       }
 
-      if ($('#theme_select').length) {
+      if (current_window.$('#theme_select').length) {
         for (const key in MEL_ELASTIC_UI.themes) {
           if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
             const theme = MEL_ELASTIC_UI.themes[key];
             let value = theme.id;
             let text = theme.displayed;//theme.name == 'default' ? 'Par défaut' : theme.name;
-            $('#theme_select').append(new Option(text, value))
+            current_window.$('#theme_select').append(new Option(text, value))
           }
         }
 
         //On ajoute le thème sombre manuellement
-        $('#theme_select').append(new Option("Sombre", "Sombre"))
+        current_window.$('#theme_select').append(new Option("Sombre", "Sombre"))
 
         if (MEL_ELASTIC_UI.color_mode() == 'dark') {
-          $('#theme_select option[value="Sombre"]').prop('selected', true);
+          current_window.$('#theme_select option[value="Sombre"]').prop('selected', true);
         }
         else {
-          $('#theme_select option[value="' + MEL_ELASTIC_UI.get_current_theme() + '"]').prop('selected', true);
+          current_window.$('#theme_select option[value="' + MEL_ELASTIC_UI.get_current_theme() + '"]').prop('selected', true);
         }
       }
 
-      $('#theme_select').on('change', function (e) {
+      current_window.$('#theme_select').on('change', function (e) {
         if (MEL_ELASTIC_UI.color_mode() != 'dark' && e.currentTarget.value == 'Sombre') {
-          MEL_ELASTIC_UI.switch_color();
+          current_window.MEL_ELASTIC_UI.switch_color();
         }
         else {
           if (MEL_ELASTIC_UI.color_mode() == 'dark' && e.currentTarget.value != 'Sombre') {
-            MEL_ELASTIC_UI.switch_color();
+            current_window.MEL_ELASTIC_UI.switch_color();
           }
-          MEL_ELASTIC_UI.update_theme(e.currentTarget.value);
-          $('#theme-panel .contents').find('.mel-selectable').removeClass('selected');
-          $('#theme-panel .contents').find(`[data-name='${e.currentTarget.value}']`).addClass('selected');
+          current_window.MEL_ELASTIC_UI.update_theme(e.currentTarget.value);
+          current_window.$('#theme-panel .contents').find('.mel-selectable').removeClass('selected');
+          current_window.$('#theme-panel .contents').find(`[data-name='${e.currentTarget.value}']`).addClass('selected');
         }
       })
 
@@ -216,7 +216,7 @@ function startIntro(task, assistance = false) {
     }, 400);
   }).onexit(function () {
     if (window.exit_main_intro) {
-      return window.parent.rcmail.onboarding_close()
+      return (parent ?? window).rcmail.onboarding_close()
     }
   }).start();
 
@@ -227,44 +227,49 @@ function startIntro(task, assistance = false) {
 }
 
 function bureau_intro(intro) {
-  var iframe = window.parent.$('iframe.bureau-frame')[0];
+  var iframe = (parent ?? window).$('iframe.bureau-frame')[0];
   let steps = window.current_onboarding.steps;
   intro.setOptions({
     scrollToElement: window.current_onboarding.scrollToElement,
     scrollTo: window.current_onboarding.scrollTo,
+    showBullets: window.current_onboarding.showBullets,
     disableInteraction: window.current_onboarding.disableInteraction,
     exitOnOverlayClick: window.current_onboarding.exitOnOverlayClick,
+    // exitOnEsc: true,
+    hidePrev: window.current_onboarding.hidePrev,
     nextLabel: window.current_onboarding.nextLabel,
     prevLabel: window.current_onboarding.prevLabel,
     doneLabel: window.current_onboarding.doneLabel,
-    steps: [steps[0], steps[1], steps[2],
+    steps: [steps[0], steps[1], steps[2], steps[3], steps[4],
     {
       "title": "Ma journée",
-      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
+      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
       "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
       "tooltipClass": "iframed big-width-intro",
-      "highlightClass": "iframed"
+      "highlightClass": "iframed",
+      "position": "right"
     },
     {
       "title": "Informations",
-      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
+      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
       "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
       "tooltipClass": "iframed big-width-intro",
-      "highlightClass": "iframed"
+      "highlightClass": "iframed",
+      "position": "left"
     },
     {
       "title": "Mes espaces de travail",
-      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".workspaces.module_parent"),
+      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".workspaces.module_parent"),
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
       "tooltipClass": "iframed big-width-intro",
       "highlightClass": "iframed",
-      "tooltipPosition": "top"
+      "position": "top"
     },
     {
       "title": "Discussion ",
       "element": ".tiny-rocket-chat",
       "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
-      "tooltipPosition": "top"
+      "position": "top"
     }
     ]
   })
@@ -305,10 +310,10 @@ rcube_webmail.prototype.onboarding_close = function (popup = false) {
 
     let title = rcmail.gettext('close help', 'mel_onboarding');
     // On n'ouvre pas la modal si l'onboarding est lancé depuis l'assistance
-    if (!window.parent.rcmail.env.hide_modal) {
-      window.parent.rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
+    if (!(parent ?? window).rcmail.env.hide_modal) {
+      (parent ?? window).rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
     }
-    delete window.parent.rcmail.env.hide_modal;
+    delete (parent ?? window).rcmail.env.hide_modal;
   }
   else { 
     rcmail.http_post('settings/plugin.set_onboarding', {
@@ -322,7 +327,7 @@ rcube_webmail.prototype.onboarding_close = function (popup = false) {
 
 function intro_hints(item, intro_main) {
   if (item.id === "navigation") {
-    window.parent.$('#layout-menu').addClass('force-open');
+    (parent ?? window).$('#layout-menu').addClass('force-open');
   }
 
   intro_main.setOptions({ exitOnEsc: false })
@@ -338,7 +343,7 @@ function intro_hints(item, intro_main) {
     tooltipClass: details.tooltipClass,
     hints: Object.values(details.hints)
   }).onhintclose(function () {
-    let nextStep = window.parent.$('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+    let nextStep = (parent ?? window).$('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
     if (nextStep.length && !nextStep.attr('class').includes('hidehint')) {
       intro.showHintDialog(parseInt(this._currentStep) + 1);
     }
@@ -355,8 +360,8 @@ function intro_hints(item, intro_main) {
     if (!item.passed_hints) {
       if (current_window.$(e.target).attr('class') === "introjs-overlay") {
         intro.hideHints();
-        if (window.parent.$('#layout-menu').hasClass('force-open')) {
-          window.parent.$('#layout-menu').removeClass('force-open');
+        if ((parent ?? window).$('#layout-menu').hasClass('force-open')) {
+          (parent ?? window).$('#layout-menu').removeClass('force-open');
         }
         current_window.$(".hide-hint").css('display', 'block');
         item.passed_hints = true;
@@ -367,8 +372,8 @@ function intro_hints(item, intro_main) {
   $(current_window.document).on('keyup', function (e) {
     if (e.key === "Escape") {
       intro.hideHints();
-      if (window.parent.$('#layout-menu').hasClass('force-open')) {
-        window.parent.$('#layout-menu').removeClass('force-open');
+      if ((parent ?? window).$('#layout-menu').hasClass('force-open')) {
+        (parent ?? window).$('#layout-menu').removeClass('force-open');
       }
       current_window.$(".hide-hint").css('display', 'block');
       item.passed_hints = true;
@@ -421,11 +426,11 @@ function intro_details_tour(item, intro_main) {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let currentStep = this._introItems[this._currentStep];
-        window.parent.$('#' + this._introItems[this._currentStep].id + '-details-open').on('click', { intro_details, currentStep, stepNumber: this._currentStep }, intro_details_popup)
+        (parent ?? window).$('#' + this._introItems[this._currentStep].id + '-details-open').on('click', { intro_details, currentStep, stepNumber: this._currentStep }, intro_details_popup)
       }
     }, 500);
   }).onbeforeexit(function () {
-    window.parent.$("#otherapps").css("display", "none");
+    (parent ?? window).$("#otherapps").css("display", "none");
   }).onexit(function () {
     if (window.exit_details_intro) {
       intro_main.goToStep(intro_main_step + 1);
@@ -446,17 +451,17 @@ function intro_details_popup(event) {
   //On déclenche l'évènement spécifique a l'item
   switch (event.data.currentStep.popup) {
     case "Create":
-      window.parent.m_mp_Create();
+      (parent ?? window).m_mp_Create();
       break;
     case "Help":
-      window.parent.m_mp_Help()
+      (parent ?? window).m_mp_Help()
       break;
     case "Shortcut":
-      window.parent.m_mp_shortcuts()
+      (parent ?? window).m_mp_shortcuts()
       break;
     case "User":
       setTimeout(() => {
-        window.parent.$("#groupoptions-user").show();
+        (parent ?? window).$("#groupoptions-user").show();
       }, 100);
       break;
     default:
@@ -465,7 +470,7 @@ function intro_details_popup(event) {
 
   let intro_details;
 
-  intro_details = window.parent.introJs();
+  intro_details = (parent ?? window).introJs();
   setTimeout(function () {
     if (event.data.currentStep.details.hints) {
       intro_popup_hint(event, intro_details);
@@ -488,16 +493,16 @@ function intro_popup_tour(event, intro_details) {
   intro_details.onexit(function () {
     switch (event.data.currentStep.popup) {
       case "Create":
-        window.parent.create_popUp.close();
+        (parent ?? window).create_popUp.close();
         break;
       case "Help":
-        window.parent.help_popUp.close();
+        (parent ?? window).help_popUp.close();
         break;
       case "Shortcut":
-        window.parent.$('.fullscreen-close').trigger("click");
+        (parent ?? window).$('.fullscreen-close').trigger("click");
         break;
       case "User":
-        window.parent.$("#groupoptions-user").hide();
+        (parent ?? window).$("#groupoptions-user").hide();
         break;
       default:
         break;

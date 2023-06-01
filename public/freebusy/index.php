@@ -156,6 +156,10 @@ utils::log("/freebusy $_user $calendar_name");
 // Header
 header('Content-type: text/calendar; charset=utf-8');
 header('Content-Disposition: attachment; filename='.$filename);
+header("Expires: ".gmdate("D, d M Y H:i:s")." GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+header("Cache-Control: private, no-cache, no-store, must-revalidate, post-check=0, pre-check=0");
+header("Pragma: no-cache");
 
 // The freebusy report is another VCALENDAR object, so we can serialize it as usual:
 echo $freebusy->serialize();

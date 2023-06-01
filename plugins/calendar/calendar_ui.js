@@ -3499,8 +3499,7 @@ function rcube_calendar_ui(settings) {
 
     let user_pref = JSON.parse(rcmail.env.user_appointment_pref);
 
-    let pref_enabled = user_pref.enabled === "true" || user_pref.enabled === true ? true : false;
-    if (user_pref && pref_enabled) {
+    if (user_pref && (user_pref.enabled === "true" || user_pref.enabled === true ? true : false)) {
 
       form.find('#check_appointment').prop('checked', user_pref)
       form.find('#appointment_url').val(user_pref.url);

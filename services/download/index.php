@@ -42,8 +42,6 @@ else {
 
 // Inclusion de l'ORM
 @include_once 'includes/libm2.php';
-// Inclusion de rcube_utils
-require_once $dir.'/program/lib/Roundcube/rcube_utils.php';
 // Inclusion des vendors (pour l'ORM)
 require_once $dir.'/vendor/autoload.php';
 
@@ -195,4 +193,100 @@ function get_address_ip() {
  */
 function is_internal() {
   return (!isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
+}
+
+/**
+ * Utility class providing common functions
+ *
+ * @package    Framework
+ * @subpackage Utils
+ */
+class rcube_utils
+{
+    // define constants for input reading
+    const INPUT_GET    = 1;
+    const INPUT_POST   = 2;
+    const INPUT_COOKIE = 4;
+    const INPUT_GP     = 3; // GET + POST
+    const INPUT_GPC    = 7; // GET + POST + COOKIE
+
+    /**
+     * Read input value and make sure it is a string.
+     *
+     * @param string $fname      Field name to read
+     * @param int    $source     Source to get value from (see self::INPUT_*)
+     * @param bool   $allow_html Allow HTML tags in field value
+     * @param string $charset    Charset to convert into
+     *
+     * @return string Request parameter value
+     * @see self::get_input_value()
+     */
+    public static function get_input_string($fname, $source, $allow_html = false, $charset = null)
+    {
+        $value = self::get_input_value($fname, $source, $allow_html, $charset);
+
+        return is_string($value) ? $value : '';
+    }
+
+    /**
+     * Read request parameter value and convert it for internal use
+     * Performs stripslashes() and charset conversion if necessary
+     *
+     * @param string $fname      Field name to read
+     * @param int    $source     Source to get value from (see self::INPUT_*)
+     * @param bool   $allow_html Allow HTML tags in field value
+     * @param string $charset    Charset to convert into
+     *
+     * @return string|array|null Request parameter value or NULL if not set
+     */
+    public static function get_input_value($fname, $source, $allow_html = false, $charset = null)
+    {
+        $value = null;
+
+        if (($source & self::INPUT_GET) && isset($_GET[$fname])) {
+            $value = $_GET[$fname];
+        }
+
+        if (($source & self::INPUT_POST) && isset($_POST[$fname])) {
+            $value = $_POST[$fname];
+        }
+
+        if (($source & self::INPUT_COOKIE) && isset($_COOKIE[$fname])) {
+            $value = $_COOKIE[$fname];
+        }
+
+        return self::parse_input_value($value, $allow_html, $charset);
+    }
+
+    /**
+     * Parse/validate input value. See self::get_input_value()
+     * Performs stripslashes() and charset conversion if necessary
+     *
+     * @param string $value      Input value
+     * @param bool   $allow_html Allow HTML tags in field value
+     * @param string $charset    Charset to convert into
+     *
+     * @return string Parsed value
+     */
+    public static function parse_input_value($value, $allow_html = false, $charset = null)
+    {
+        if (empty($value)) {
+            return $value;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $idx => $val) {
+                $value[$idx] = self::parse_input_value($val, $allow_html, $charset);
+            }
+
+            return $value;
+        }
+
+        // remove HTML tags if not allowed
+        if (!$allow_html) {
+            $value = strip_tags($value);
+        }
+
+        return $value;
+    }
 }

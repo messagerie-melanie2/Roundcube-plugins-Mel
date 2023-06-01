@@ -1263,7 +1263,6 @@ class mel_sharedmailboxes extends rcube_plugin {
 
     public function identity_form($args)
     {
-        //Boite partag&AOk-e/balpartagee.test-pne-messagerie
         $form = $args['form'];
         $record = $args['record'];
         $id = $record['uid'];

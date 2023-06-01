@@ -309,7 +309,7 @@ $(document).ready(() => {
          */
         getKeys()
         {
-            return Enumerable?.from(this.css)?.select(x => x.key)?.toArray() ?? [];
+            return Enumerable.from(this.css).select(x => x.key).toArray() || [];
         }
 
         /**
@@ -318,7 +318,7 @@ $(document).ready(() => {
          */
         getStyleSheet()
         {
-            return Enumerable?.from(this.css)?.select(x => x.value)?.toArray()?.join('\r\n') ?? '';
+            return Enumerable.from(this.css).select(x => x.value).toArray().join('\r\n') || '';
         }
 
         /**
@@ -347,6 +347,22 @@ $(document).ready(() => {
         }
 
     }
+
+    class Mel_Elastic_Storage {
+        static save(key, item) {
+            localStorage.setItem(`${Mel_Elastic_Storage.KEY}_${key}`, JSON.stringify(item));
+        }
+
+        static load(key, _default = null) {
+            return JSON.parse(localStorage.getItem(`${Mel_Elastic_Storage.KEY}_${key}`)) ?? _default;
+        }
+
+        static remove(key) {
+            localStorage.removeItem(`${Mel_Elastic_Storage.KEY}_${key}`);
+        }
+    }
+
+    Mel_Elastic_Storage.KEY = 'MEL_ELASTIC';
 
     /**
      * Classe qui sert Ã  gérer les différentes interfaces
@@ -559,7 +575,7 @@ $(document).ready(() => {
              * Thèmes additionnels, générer par le javascript
              * @type {Function[]}
              */
-            let additionnalThemes = callback_add  ?? [];
+            let additionnalThemes = callback_add || [];
             /**
              * Div html qui contient la liste des thèmes
              * @type {mel_html2}
@@ -778,9 +794,9 @@ $(document).ready(() => {
                     style:STYLE
                 }
             });
-            this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
+            this.theme_selected_picture = rcmail.env.theme_selected_picture || null;
 
-            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder ?? Number.POSITIVE_INFINITY))) {
+            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder || Number.POSITIVE_INFINITY))) {
                 //Div de position
                 $item = new mel_html2(CONST_HTML_DIV, {
                     attribs:{
@@ -811,18 +827,27 @@ $(document).ready(() => {
                         var reader = new FileReader();
                         reader.onload =  (e) => {
                           const picture =  e.target.result;
-                          this.update_custom_picture(picture, prefid);
-                          let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
-                          .removeClass(THEME_DEFAULT_CLASS)
-                          .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
-                          .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
-                          .data(THEME_ATTRIB_DATA_PATH, picture)
-                          .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+                          const size = mel_metapage.Functions.calculateObjectSizeInMo(picture);
 
-                          if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
-                            this.css_rules.remove(RULE_KEY);
-                            this._add_background(picture, true);
+                          if (size < 2) {
+                            this.update_custom_picture(picture, prefid);
+                            let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
+                            .removeClass(THEME_DEFAULT_CLASS)
+                            .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
+                            .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
+                            .data(THEME_ATTRIB_DATA_PATH, picture)
+                            .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+  
+                            if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
+                              this.css_rules.remove(RULE_KEY);
+                              this._add_background(picture, true);
+                            }
                           }
+                          else {
+                            rcmail.display_message('Votre image est trop lourde !', 'error');
+                          }
+
+
                         };
                         reader.readAsDataURL(file);
                     });
@@ -1041,7 +1066,7 @@ $(document).ready(() => {
 
                     $taskmenu.append('<ul class="list-unstyled"></ul>');
 
-                    Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
+                    Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
                         let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
                         e = e.item;
                         if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
@@ -1617,7 +1642,7 @@ $(document).ready(() => {
                 };
 
                 let testing = (e, _class) => {
-                    const array = Enumerable?.from(e.classList)?.toArray() ?? [];
+                    const array = Enumerable.from(e.classList).toArray() || [];
                     const count = array.length;
                     if (count === 1) action($(e), _class);
                     else if (count === 2 && array.includes(_class) && (array.includes("disabled") || array.includes("active")))
@@ -1655,16 +1680,13 @@ $(document).ready(() => {
                     $("#headers-menu ul.menu a.recipient.active").each((i,e) => {
                         e = $(e);
                         e.click(() => {
-                            let storage = mel_metapage.Storage.get(key);
-                            
-                            if (storage === undefined || storage === null)
-                                storage = [];
+                            let storage = Mel_Elastic_Storage.load(key, []);
 
                             const field = e.data("target");
                             if (!storage.includes(field))
                             {
                                 storage.push(field);
-                                mel_metapage.Storage.set(key, storage);
+                                Mel_Elastic_Storage.save(key, storage);
                             }
                             
                         });
@@ -1681,17 +1703,19 @@ $(document).ready(() => {
                             $input = e.parent().parent().find("input");
 
                         const field = $input.attr("id").replace("_", "");
-                        let storage = mel_metapage.Storage.get(key);
+                        let storage = Mel_Elastic_Storage.load(key, []);
                         
                         if (storage.includes(field))
                         {
-                            storage = Enumerable?.from(storage)?.where(x => x !== field)?.toArray() ?? [];
-                            mel_metapage.Storage.set(key, storage);
+                            storage = Enumerable.from(storage).where(x => x !== field).toArray() || [];
+
+                            if (storage.length === 0) Mel_Elastic_Storage.remove(key);
+                            else Mel_Elastic_Storage.save(key, storage);
                         }
                     });
                 });
 
-                const storage = mel_metapage.Storage.get(key);
+                const storage = Mel_Elastic_Storage.load(key, []);
 
                 //Afficher les champs
                 if (storage !== null && storage.length > 0)
@@ -1866,7 +1890,7 @@ $(document).ready(() => {
                             box.content.find("iframe").removeClass('sr-only');
                             const obj = frame_context.$('#compose-subject').val();
 
-                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+                            if ((obj || "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
 
                             frame_context.rcmail.addEventListener('message_submited', async (args) => {
                                 if (args.draft !== true)
@@ -1930,7 +1954,7 @@ $(document).ready(() => {
                         fullscreen:true
                     };
             
-                    const popup_class = window.Windows_Like_PopUp ?? top.Windows_Like_PopUp;
+                    const popup_class = window.Windows_Like_PopUp || top.Windows_Like_PopUp;
                     return new popup_class(top.$("body"), config);
                 }
             };
@@ -3062,7 +3086,7 @@ $(document).ready(() => {
                         $(e).data('selector-tab'),
                         $(e).data('is-default-tab'),
                         $(e).data('parent-tabs'),
-                        namespace ?? $(e).parent().data('namespace') ?? 'no-namespace'
+                        namespace || $(e).parent().data('namespace') || 'no-namespace'
                     );
 
                     if (!!$tab && $tab.length > 0 && i === size) $tab.addClass('last');
@@ -3082,7 +3106,7 @@ $(document).ready(() => {
 
                 if (datas === small) datas = phone;
 
-                if (this.screen_type !== (datas ?? this.screen_type))
+                if (this.screen_type !== (datas || this.screen_type))
                 {
                     if ((this.screen_type !== phone && this.screen_type !== small) && (datas === phone || datas === small)) //On passe en mode phone
                     {
@@ -3118,7 +3142,7 @@ $(document).ready(() => {
                         }
                     }
 
-                    this.screen_type = datas ?? this.screen_type;
+                    this.screen_type = datas || this.screen_type;
                 }
             });
 

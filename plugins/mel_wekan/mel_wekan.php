@@ -165,7 +165,12 @@ class mel_wekan extends rcube_plugin
                     $board["lists"][] = $this->create_list($content->_id, $value);
                 }
 
+                if (isset($content->defaultSwimlaneId)) {
+                    $a = $this->wekanApi->create_swimlane($content->_id, $title);
+                    $b = $this->wekanApi->delete_swimline($content->_id, $content->defaultSwimlaneId);
+                }
             }
+
         }
 
         return $board;

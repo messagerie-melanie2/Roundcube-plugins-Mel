@@ -159,6 +159,7 @@
             return events.select(x => {
                 if (typeof x.start !== 'string') x.start =  x.start.format();
                 if (typeof x.end !== 'string') x.end =  x.end.format();
+
                 return x;
             });
         }

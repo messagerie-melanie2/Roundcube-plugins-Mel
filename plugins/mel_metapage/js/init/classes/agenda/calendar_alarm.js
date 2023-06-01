@@ -134,6 +134,34 @@ Alarm.enums = {
     if (window !== parent)
         return;
 
+    class AlarmManager {
+        constructor() {
+            this.alarms = {};
+        }
+
+        push(event) {
+            this.alarms[event.uid] = event;
+            return this;
+        }
+
+        clear() {
+            this.alarms = {};
+            return this;
+        }
+
+        toArray() {
+            let array = [];
+            const keys = Object.keys(this.alarms);
+
+            for (let index = 0; index < keys.length; ++index) {
+                const key = keys[index];
+                array.push(this.alarms[key]);
+            }
+
+            return array;
+        }
+    }
+
     /**
      * Gère les alarmes de l'agenda
      */
@@ -155,7 +183,7 @@ Alarm.enums = {
         init()
         {
             this.timeouts = {};
-            this.showed_alarms = [];
+            this.showed_alarms = new AlarmManager();
         }
 
         /**
@@ -272,7 +300,7 @@ Alarm.enums = {
                     delete this.timeouts[key];
                 }
             }
-            this.showed_alarms = [];
+            this.showed_alarms.clear();
         }
 
         /**
@@ -287,7 +315,7 @@ Alarm.enums = {
             event.id = this.setCalId(event.id);//"cal:" + event.id;
             event.uid = this.setCalId(event.uid);//"cal:" + event.uid;
             this.showed_alarms.push(event);
-            rcmail.triggerEvent("plugin.display_alarms", this.showed_alarms);
+            rcmail.triggerEvent("plugin.display_alarms", this.showed_alarms.toArray());
             setTimeout(() => {
                 this.update_links();
             }, 100);
@@ -295,9 +323,10 @@ Alarm.enums = {
 
         setCalId(id)
         {
-            if (id.includes("@DATE"))
-                id = id.split("@DATE")[0];
-            return `cal:${id}`;
+            if (id.includes("@DATE")) id = id.split("@DATE")[0];
+
+            if (!id.includes('cal')) id = `cal:${id}`;
+            return id;
         }
 
         update_links()

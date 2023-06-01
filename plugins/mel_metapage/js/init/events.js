@@ -211,10 +211,38 @@ if (rcmail && window.mel_metapage)
                 const urls = mel_metapage.Functions.get_from_url(base_url);
                 mel_metapage.Functions.change_frame(top.mm_st_ClassContract(rcmail.env['bnum.init_task']), true, true, urls);
             } catch (error) {
-                mel_metapage.Functions.change_frame('bureau', true, true, urls);
+                mel_metapage.Functions.change_frame('bureau', true, true);
             }
         }
     });
+
+    if (rcmail.env.task === 'calendar' && !(top ?? parent ?? window).calendar_listener_added) {
+      (top ?? parent ?? window).rcmail.addEventListener('frame_loaded', (args) => {
+          const {eClass:frame_name, changepage, isAriane, querry:frame, id, first_load} = args;
+          
+          if ('calendar' === frame_name) { 
+              let it = 0;
+              const timeout = 5 * 100; //5 secondes
+              const interval = setInterval(() => {
+                  let $querry = $('#calendar');
+
+                  if ($querry.length > 0) {
+                      it = null;
+                      clearInterval(interval);
+                      $querry.fullCalendar('updateViewSize', true);
+                      $querry.fullCalendar('rerenderEvents', true);
+                  }
+                  else if (it >= timeout) {
+                      it = null;
+                      clearInterval(interval);
+                  }
+
+                  ++it;
+              }, 100);
+          }
+      });
+      (top ?? parent ?? window).calendar_listener_added = true;
+  }
 
     //Initialisation
     rcmail.addEventListener("init", () => {

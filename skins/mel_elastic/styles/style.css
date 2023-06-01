@@ -1763,7 +1763,12 @@ img.menu-image {
 html:not(.touch) .listing li > a:focus,
 html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
 html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
-  border-left: 2px solid #80D5C6 !important;
+  border-left: 2px solid var(--invisible) !important;
+  border-radius: 0;
+}
+html:not(.touch) .listing.focus tbody tr.focused.unread > td:first-child,
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused.unread > td.selection + td {
+  border-left: 2px solid var(--primary-border-color) !important;
   border-radius: 0;
 }
 td.mel-fit-content {

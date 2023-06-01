@@ -92,7 +92,7 @@ html.theme-super-classique {
 
               > td.selection {
                 + td {
-                  border-left: 2px solid var(--selected-mail-border-color) !important;
+                  border-left: 2px solid var(--invisible) !important;
                 }
               }
             }
@@ -102,22 +102,16 @@ html.theme-super-classique {
 
               > td.selection {
                 + td {
-                  border-left-color: var(--invisible) !important;
+                  // border-left-color: var(--invisible) !important;
                 }
               }
 
               &.selected {
                 > td.selection {
                   + td {
-                    border-left-color: var(--selected-mail-border-color) !important;
+                    border-left-color: var(--invisible) !important;
                   }
                 }
-              }
-            }
-
-            &.focused {
-              td {
-                border-left: none !important;
               }
             }
 
@@ -125,7 +119,7 @@ html.theme-super-classique {
               &:hover:not(.selected) {
                 td {
   
-                  background-color: var(--main-layout-hover-background-color) !important;
+                  // background-color: var(--main-layout-hover-background-color) !important;
                 }
               }
 

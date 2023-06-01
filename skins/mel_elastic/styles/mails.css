@@ -83,6 +83,9 @@ table.messagelist tr.unread {
 table.messagelist tr.unread > td:first-child {
   border-left: 2px solid var(--primary-border-color) !important;
 }
+table.messagelist tr.unread td {
+  background-color: var(--invisible);
+}
 table.messagelist tr.unread td.subject span.date {
   font-weight: bold;
   color: var(--main-text-color);
@@ -90,6 +93,9 @@ table.messagelist tr.unread td.subject span.date {
 table.messagelist tr.unread td.subject span.fromto {
   font-weight: bold;
   color: var(--main-text-color);
+}
+table.messagelist tr.unread td.subject span.adr {
+  font-weight: bold;
 }
 table.messagelist tr.unread td.subject span.msgicon::before {
   content: "\e94d" !important;
@@ -733,6 +739,9 @@ ul ul li.mailbox.select > a:first-of-type {
 ul ul li.mailbox:hover > a:first-of-type {
   background-color: var(--secondary-bckg-color);
   border-radius: 5px;
+}
+ul ul li.mailbox.droptarget {
+  background-color: var(--drag-n-drop-bckg-color) !important;
 }
 ul ul li.mailbox.droptarget:hover > a:first-of-type {
   background-color: var(--drag-n-drop-bckg-color) !important;

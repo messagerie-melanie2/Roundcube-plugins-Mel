@@ -68,7 +68,7 @@ class SearchPage extends Program
 
     public function folders_options()
     {
-        $folders = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
+        $folders = $this->rc->get_storage()->list_folders_subscribed('', '*', 'mail');
         $options = '<option value="all">Tous</option>';
 
         foreach ($folders as $key => $value) {

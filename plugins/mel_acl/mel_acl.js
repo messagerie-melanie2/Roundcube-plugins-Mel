@@ -44,7 +44,6 @@ if (window.rcmail) {
 }
 
 rcube_webmail.prototype.acl_on_close = function() {
-    debugger;
     const QUERRY = '#listview-float-right';
 
     let $querry = $(QUERRY);

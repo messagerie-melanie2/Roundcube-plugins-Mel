@@ -731,17 +731,17 @@
             if (local_storage.last_update.tasks.format() !== moment().startOf("day").format())
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
 
-            if (window.alarm_managment !== undefined) {
-                window.alarm_managment.clearTimeouts();
-                setTimeout(async() => {
-                    let it = 0;
-                    await wait(() => {
-                        return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
-                    });
-                    window.alarm_managment.generate(local_storage.calendar);
-                }, 100);
+            // if (window.alarm_managment !== undefined) {
+            //     window.alarm_managment.clearTimeouts();
+            //     setTimeout(async() => {
+            //         let it = 0;
+            //         await wait(() => {
+            //             return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
+            //         });
+            //         window.alarm_managment.generate(local_storage.calendar);
+            //     }, 100);
 
-            }
+            // }
 
             // //add
             if (parent === window) //Si on est pas dans une frame

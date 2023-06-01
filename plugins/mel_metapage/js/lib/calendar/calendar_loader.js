@@ -71,6 +71,18 @@ class CalendarLoader extends MelObject{
         return this.load(mel_metapage.Storage.calendar_all_events, []);
     }
 
+    async force_load_all_events_from_storage(){
+        let loaded = this.load(mel_metapage.Storage.calendar_all_events);
+
+        if (!loaded) {
+            const top = true;
+            await this.rcmail(top).triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+            loaded = this.load(mel_metapage.Storage.calendar_all_events);
+        }
+
+        return loaded;
+    }
+
     async update_agenda_local_datas(force = CONST_CALENDAR_UPDATED_DEFAULT) {
         const isTop = window === top;
         const url = mel_metapage.Functions.url(PLUGIN_MEL_METAPAGE, ACTION_MEL_METAPAGE_CALENDAR_LOAD_EVENT, {

@@ -1,7 +1,6 @@
 import { MelCurrentUser } from "../../../../mel_metapage/js/lib/classes/user";
 import { BaseModule } from "../../../js/lib/module";
 
-const KEY = 'user_name';
 export class ModuleLayout extends BaseModule {
     constructor(load_module = true) {
         super(load_module);

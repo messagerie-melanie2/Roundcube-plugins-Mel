@@ -2,7 +2,18 @@ export {loader as CalendarLoader};
 import { MainNav } from "../classes/main_nav";
 import { MelObject } from "../mel_object";
 
+/**
+ * Sélecteur de la pastille agenda de la navigation principale
+ * @type {string}
+ */
 const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
+
+/**
+ * @extends MelObject
+ * Classe qui gère le chargement de l'agenda côté serveur
+ * 
+ * Donne des fonctions utiles pour charger ces données.
+ */
 class CalendarLoader extends MelObject{
     constructor() {
         super();
@@ -22,10 +33,24 @@ class CalendarLoader extends MelObject{
         }
     }
 
+    /**
+     * Vérifie si un jour se trouve entre 2 dates
+     * @param {moment} start Date de début
+     * @param {moment} end Date de fin
+     * @param {moment} day Jour de test
+     * @returns {boolean}
+     */
     is_date_okay(start, end, day) {
         return (start <= day && day <= end) || (start >= day && moment(start).startOf('day').format() === moment(day).startOf('day').format() && day <= end);
     }
 
+    /**
+     * Coupe une date de début et une date de fin si celles-ci dépassent le début ou la fin de journée
+     * @param {moment} start Date de début
+     * @param {moment} end Date de fin
+     * @param {moment} day Jour de test
+     * @returns {SplittedDate} Nouvelles dates de début et de fin si besoin.
+     */
     get_date_splitted(start, end, day) {
         const o_start = start;
         const o_end = end;
@@ -37,6 +62,12 @@ class CalendarLoader extends MelObject{
         return new SplittedDate(start, end, o_start, o_end, day);
     }
 
+    /**
+     * Récupère les évènements d'une journée
+     * @param {moment} day Jour 
+     * @param {Array<Object> | null} loaded_events Si ce paramètre vaut null, les données seront chargés depuis le stockage local
+     * @returns {Array<Object>} Evènements
+     */
     get_from_day(day, loaded_events = null) {
         let return_datas = [];
         if (!day.toDate) day = moment(day).startOf('day');
@@ -44,20 +75,22 @@ class CalendarLoader extends MelObject{
         const events = loaded_events ?? this.load_all_events();
 
         if (0 !== events.length) {
-            let spd;
-            return_datas = Enumerable.from(events).where(x => this.is_date_okay(moment(x.start), moment(x.end), day))
-            /*.select(x => {
-                spd = this.get_date_splitted(moment(x.start), moment(x.end), day);
-                x.start = spd.start;
-                x.end = spd.end;
-
-                return x;
-            })*/.toArray();
+            return_datas = Enumerable.from(events).where(x => this.is_date_okay(moment(x.start), moment(x.end), day)).toArray();
         }
 
         return return_datas;
     } 
 
+    /**
+     * Récupère les prochains évènements d'une journée.
+     * 
+     * La date ne doit pas être une date inférieur à aujourd'hui.
+     * @param {moment} day Date de traitement
+     * @param {Object} options Options de cette fonction
+     * @param {boolean} options.enumerable Si on récupère un énumerable ou non
+     * @param {Array<Object> | null} options.loaded_events Si ce paramètre vaut null, les données seront chargés depuis le stockage local
+     * @returns {Generator | Array<Object>}
+     */
     get_next_events_day(day, {enumerable = true, loaded_events = null}) {
         const now = moment();
         let enum_var = Enumerable.from(this.get_from_day(day, loaded_events)).where(x => moment(x.end) > now 
@@ -67,22 +100,39 @@ class CalendarLoader extends MelObject{
         return enumerable ? enum_var : enum_var.toArray();
     }
 
+    /**
+     * Charge les évènements depuis le stockage local.
+     * @returns {Array<Object>} Evènements
+     */
     load_all_events(){
         return this.load(mel_metapage.Storage.calendar_all_events, []);
     }
 
+    /**
+     * Charge les évènements depuis le stockage local.
+     * 
+     * Si les évènements depuis le stockages local sont nuls, ils sont chargés depuis la base.
+     * @async
+     * @returns {Promise<Array<Object>>} Evènements
+     */
     async force_load_all_events_from_storage(){
         let loaded = this.load(mel_metapage.Storage.calendar_all_events);
 
         if (!loaded) {
             const top = true;
             await this.rcmail(top).triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-            loaded = this.load(mel_metapage.Storage.calendar_all_events);
+            loaded = this.load_all_events();
         }
 
         return loaded;
     }
 
+    /**
+     * Met à jours les données du stockage local depuis le serveur.
+     * @async
+     * @param {boolean} force Force la mise à jours des données depuis le serveur. Par défaut : `'random'`
+     * @returns {Promise<Array<Objet> | null>} Evènements
+     */
     async update_agenda_local_datas(force = CONST_CALENDAR_UPDATED_DEFAULT) {
         const isTop = window === top;
         const url = mel_metapage.Functions.url(PLUGIN_MEL_METAPAGE, ACTION_MEL_METAPAGE_CALENDAR_LOAD_EVENT, {
@@ -218,7 +268,18 @@ class CalendarLoader extends MelObject{
     }
 }
 
+/**
+ * Représente une date coupée.
+ */
 class SplittedDate {
+    /**
+     * Constructeur de la classe
+     * @param {moment} start Nouvelle date coupée
+     * @param {moment} end Nouvelle date coupée
+     * @param {moment} original_start Date original
+     * @param {moment} original_end Date original
+     * @param {moment} day Jour de traitement
+     */
     constructor(start, end, original_start, original_end, day) {
         this._init()._setup(start, end, original_start, original_end, day);
     }

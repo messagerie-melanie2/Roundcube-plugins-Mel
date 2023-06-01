@@ -424,16 +424,43 @@ class MelObject {
     }
 }
 
+/**
+ * Classe de base du framework bnum
+ * 
+ * Permet de lancer une initialisation asynchrone et await peux être utiliser sur cette classe.
+ * @extends MelObject
+ * @abstract
+ * 
+ */
 class AsyncMelObject extends MelObject {
+    /**
+     * Constructeur de la classe
+     * @param  {...any} args Arguments de la classe
+     */
     constructor(...args) {
         super(...args);
     }
 
+    /**
+     * @async
+     * @abstract 
+     * Cette fonction est appelé dans le constructeur de AsyncMelObject.
+     * 
+     * Mettez vôtre code ici.
+     * @param  {...any} args Arguments de la fonction
+     */
     async main(...args) {
         super.main(...args);
 
         let loaded = false;
 
+        /**
+         * Représente l'état de l'objet. 
+         * 
+         * Si il vaut `true`, alors, l'objet à fini son initialisation.
+         * @type {boolean}
+         */
+        this.loaded = false;
         Object.defineProperties(this, {
             loaded: {
                 get: function() {
@@ -443,12 +470,16 @@ class AsyncMelObject extends MelObject {
             }
         });
 
-        this.set_loaded = function (state) {
+        /**
+         * Définir si l'objet est chargée ou non.
+         * @param {boolean} state 
+         * @return Chaîne
+         */
+        this.set_loaded = function set_loaded(state) {
             loaded = state;
+            return this
         };
     }
-
-
 
     async executor() {
         if (!this.loaded) {

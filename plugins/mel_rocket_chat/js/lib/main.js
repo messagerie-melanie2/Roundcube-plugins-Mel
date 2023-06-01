@@ -67,11 +67,13 @@ export class MelRocketChat extends MelObject {
     }
 
     _start() {
+        const helper = new ChatCallback(null);
+        this.on_unread_updated(helper, ChatManager.Instance().chat().unreads);
+
         if (this.launch_at_startup()) {
-            const helper = new ChatCallback(null);
             this.on_status_updated(helper, ChatManager.Instance().chat().status);
-            this.on_unread_updated(helper, ChatManager.Instance().chat().unreads);
         }
+        
         return this;
     }
 

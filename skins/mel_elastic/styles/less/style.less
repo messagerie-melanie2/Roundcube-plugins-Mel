@@ -4504,3 +4504,326 @@ a.rcmContactAddress {
     }
   }
 }
+
+.mel-toolbar {
+    position:absolute;
+
+    .toolbar-buttons {
+        display: flex;
+        height:100%; 
+
+        .mel-button {
+            flex:1;
+            // --secondary-text-color:white;
+            --main-bckg-color: var(--invisible);
+            --mel-button-border-color: var(--invisible);
+            border-radius: 0;
+
+            span {
+                display: block;
+            }
+        }
+
+        .v-separate{
+            width: 1px;
+            background: white;
+            margin: 10px 0;
+        }
+    }
+
+}
+
+.melv2-card-shadow {
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.melv2-card {
+	border-radius: 15px;
+	// box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+    .melv2-card-shadow();
+	padding: 5px;
+
+    html.dark-mode &{
+        background-color: #323F4B;
+        box-shadow: none;
+    }
+}
+
+.melv2-card-pre {
+    margin-top: 10px;
+    margin-left:10px;
+    display: flex;
+}
+
+.melv2-card-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+
+    a&{
+        color: var(--main-text-color);
+
+        html.dark-mode &{
+            --main-text-color: #c7dfff;
+        }
+    }
+}
+
+.melv2-card-icon {
+	margin-right: 5px;
+	align-self: center;
+}
+
+.melv2-card .contents,
+.melv2-card-contents {
+    height: 237px;
+    max-height: 237px;
+    overflow: auto;
+
+    li {
+        &:first-child > div{
+            margin-top: 0;
+        }
+        
+        &:last-child > div{
+            margin-bottom: 0;
+        }
+    }
+}
+
+.module_Headlines {
+    .melv2-card-contents {
+        overflow: unset;
+    }
+}
+
+.module_Mails {
+    .melv2-card-contents {
+        &:extend(.module_Headlines .melv2-card-contents);
+    }
+}
+
+.module_My_day {
+    .melv2-card-contents {
+        &:extend(.module_Headlines .melv2-card-contents);
+    }
+}
+
+.melv2-color {
+    --mv2-item-background-color:#F8F9FA;
+    --mv2-item-text-color: var(--main-text-color);
+}
+
+.melv2-event {
+    &:extend(.melv2-color);
+    &:extend(.mel-animated);
+    background-color: var(--mv2-item-background-color);
+    color: var(--mv2-item-text-color);
+    border-radius: 10px;
+    display: flex;
+    margin: 2.5px 13px;
+    padding: 5px;
+    padding-left: 10px;
+
+    &[data-ignore-date="true"]{
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    &.hovered {
+        --mv2-item-background-color: var(--tierciary-bckg-color);
+        --mv2-item-text-color: var(--secondary-text-color);
+        // background-color: var(--tierciary-bckg-color);
+        // color: var(--secondary-text-color);
+        cursor: pointer;
+    }
+
+    html.dark-mode &{
+        --mv2-item-background-color: #3e4c59;
+        --mv2-item-text-color: #c7dfff;
+        // background-color: #3e4c59;
+
+        &.hovered {
+            --mv2-item-background-color: #2E2E2E;
+            // background-color: #2E2E2E;
+            --mv2-item-text-color:#E1C58F;
+            // color: #E1C58F;
+        }
+    }
+}
+
+.melv2-event-clickable {
+    display: flex;
+    flex-wrap: wrap;
+    width: 75%;
+    border-radius: 15px;
+}
+
+.melv2-event-date {
+	flex-basis: 100%;
+	font-size: 12px;
+	font-weight: 600;
+	margin-bottom: 5px;
+}
+
+.melv2-event-hour {
+    p {
+        margin-bottom: 0;
+        padding-right: 10px;
+        font-size: 12px;
+
+        &.melv2-event-hour-top {
+            margin-bottom: 4px;
+        }
+    }
+}
+
+.melv2-event-hour-top {
+    margin-bottom: 2px;
+}
+
+.melv2-event-separator {
+	width: 1px;
+	background-color: var(--main-text-color);
+	border-radius: 100px;
+    height: calc(100% - 30.2px);
+    margin-top: 3px;
+
+    [data-ignore-date="true"] &{
+        height: unset;
+    }
+}
+
+.melv2-event-content {
+    margin-left: 10px;
+    max-width: 75%;
+    p {
+        &:extend(.melv2-event-hour p);
+        text-overflow: ellipsis;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+
+        &.melv2-event-content-top {
+            font-size: 14px;
+            font-weight: 600;
+        }
+    }
+}
+
+.melv2-event-content-bottom {
+    font-weight: 300;
+}
+
+.melv2-event-side {
+    display: flex;
+    justify-content: center;
+    width: 25%;
+    .melv2-event-button{
+        border-radius: 0;
+        align-self: center;
+        height: fit-content;
+        border-right: solid thin white;
+        line-height: 0;
+        &:first-of-type {
+            border-bottom-left-radius: 50px;
+            border-top-left-radius: 50px;
+        }
+        &:last-of-type {
+            border-bottom-right-radius: 50px;
+            border-top-right-radius: 50px;
+            border-right: none;
+        }
+    }
+}
+
+.melv2-mail {
+    &:extend(.melv2-event);
+    &:extend(.mel-animated);
+    padding: 15px;
+    margin: 3px 13px;
+
+    &:hover {
+        // background-color: var(--tierciary-bckg-color);
+        // color: var(--secondary-text-color);
+        // cursor: pointer;
+        &:extend(.melv2-event.hovered);
+    }
+
+    html.dark-mode &{
+        // background-color: #3e4c59;
+        &:extend(html.dark-mode .melv2-event);
+
+        &:hover {
+            &:extend(html.dark-mode .melv2-event.hovered);
+            // background-color: #2E2E2E;
+            // color: #E1C58F;
+        }
+    }
+}
+
+.melv2-mail-left {
+    &:extend(.melv2-event-clickable);
+    display: block;
+}
+
+.melv2-mail-right {
+	width: 25%;
+	display: flex;
+	align-content: space-between;
+}
+
+.melv2-mail-date{
+    text-align: end;
+    &.melv2-mail-old {
+        width: 100%;
+        align-self: center;
+
+        div {
+            display: inline-block;
+        }
+    }
+}
+
+.melv2-mail-from {
+    &:extend(.melv2-event-date);
+    font-size: 14px;
+    overflow: hidden;
+    max-width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.melv2-mail-subject {
+    &:extend(.melv2-event-content p);
+    font-size: 11px;
+}
+
+.melv2-mail-date {
+    &:extend(.melv2-event-date);
+}
+
+.melv2-mail-date-left {
+    &:extend(.melv2-event-content p);
+    font-weight: normal;
+    overflow: unset;
+    font-size: 11px;
+}
+
+.melv2-hello {
+	font-weight: bold;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.mel-news {
+	font-family: Marianne,Roboto,sans-serif;
+}
+
+.module_Workspaces {
+    .workspace {
+        background-color: var(--default-background);
+        .melv2-card-shadow();
+    }
+}

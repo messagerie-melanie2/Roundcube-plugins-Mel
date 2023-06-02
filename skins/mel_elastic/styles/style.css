@@ -2873,6 +2873,9 @@ html.dark-mode .green-badge {
   content: "\e0dc";
 }
 .task-settings #layout-sidebar .listing.iconized li.resources > a::before {
+  content: "\e5cc";
+}
+.task-settings #layout-sidebar .listing.iconized li.resources._selected > a::before {
   content: "\e5cf";
 }
 .task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_bal > a::before {
@@ -2895,6 +2898,9 @@ html.dark-mode .green-badge {
   content: "\f02e";
 }
 .task-settings #layout-sidebar .listing.iconized li.mel.statistics > a::before {
+  content: "\e5cc";
+}
+.task-settings #layout-sidebar .listing.iconized li.mel.statistics._selected > a::before {
   content: "\e5cf";
 }
 .task-settings #layout-sidebar .listing.iconized li.mel.statistics.mobile > a::before {

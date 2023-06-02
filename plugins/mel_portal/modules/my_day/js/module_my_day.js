@@ -39,19 +39,20 @@ class ModuleMyDay extends BaseModule{
         return this;
     }
 
-    check_storage_datas() {
+    async check_storage_datas() {
         let storage = this.load(mel_metapage.Storage.calendar_all_events);
         if (!storage) {
-            this.trigger_event(mel_metapage.EventListeners.calendar_updated.get, {}, {top:true});
+            const top = true;
+            await this.rcmail(top).triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
             storage = this.load(mel_metapage.Storage.calendar_all_events);
         }
 
         return storage;
     }
 
-    generate() {
+    async generate() {
         const now = moment();
-        const events = Enumerable.from(this.check_storage_datas() ?? []).where(x => moment(x.end) > now).orderBy(x => moment(x.start)).take(this.max_size);
+        const events = Enumerable.from((await this.check_storage_datas()) ?? []).where(x => moment(x.end) > now).orderBy(x => moment(x.start)).take(this.max_size);
         let $contents = this.select_module_content().html(EMPTY_STRING);
 
         if (events.any()) {

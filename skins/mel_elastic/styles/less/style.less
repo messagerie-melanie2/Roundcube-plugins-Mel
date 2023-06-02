@@ -4362,9 +4362,14 @@ a.rcmContactAddress {
 
 }
 
+.melv2-card-shadow {
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
 .melv2-card {
 	border-radius: 15px;
-	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+	// box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+    .melv2-card-shadow();
 	padding: 5px;
 
     html.dark-mode &{
@@ -4421,6 +4426,12 @@ a.rcmContactAddress {
 }
 
 .module_Mails {
+    .melv2-card-contents {
+        &:extend(.module_Headlines .melv2-card-contents);
+    }
+}
+
+.module_My_day {
     .melv2-card-contents {
         &:extend(.module_Headlines .melv2-card-contents);
     }
@@ -4637,4 +4648,11 @@ a.rcmContactAddress {
 
 .mel-news {
 	font-family: Marianne,Roboto,sans-serif;
+}
+
+.module_Workspaces {
+    .workspace {
+        background-color: var(--default-background);
+        .melv2-card-shadow();
+    }
 }

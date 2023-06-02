@@ -313,7 +313,7 @@ const mel_metapage = {
          */
         mail:"mel_metapage.mail.count",
         wsp_mail:"mel_metapage.wsp.mails",
-        last_calendar_update:"mel_metapage.calendar.last_update",
+        last_calendar_update:"mel_metapage.calendar.last_update_2",
         last_task_update:"mel_metapage.tasks.last_update",
         ariane:"ariane_datas",
         wait_frame_loading:"mel_metapage.wait_frame_loading",

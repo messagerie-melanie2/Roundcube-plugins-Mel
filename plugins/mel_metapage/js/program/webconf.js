@@ -379,7 +379,7 @@ class WebconfChat{
     }
 
     async getStatus() {
-        return await ChatHelper.Chat().get_status_from_server();
+        return await (await ChatHelper.Chat()).get_status_from_server();
     }
 
     /**
@@ -1723,13 +1723,18 @@ class Webconf{
     {
         if (this._jwt === undefined)
         {
-            rcmail.http_get('webconf/jwt', {
-				_room : this.key,
-			}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
-            while (jwt_token === undefined) {
-                await delay(100);
-            }
-            this._jwt = jwt_token;
+            await mel_metapage.Functions.get(
+                mel_metapage.Functions.url('webconf', 'jwt', {_room : this.key}),
+                {},
+                (datas) => {
+
+                    if ('string' === typeof datas) datas = JSON.parse(datas);
+
+                    if (!!datas.jwt) {
+                        this._jwt = datas.jwt;
+                    }
+                }
+            )
         }
         return this._jwt;
     }
@@ -4266,13 +4271,13 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
  * Créer les différents listeners utile à la visio
  */
 function create_listeners() {
-    rcmail.addEventListener('responseafterjwt', function(evt) {
-        if (evt.response.id) {
-            jwt_token = evt.response.jwt;
-        }
-    });
+    // rcmail.addEventListener('responseafterjwt', function(evt) {
+    //     if (evt.response.id) {
+    //         jwt_token = evt.response.jwt;
+    //     }
+    // });
 
-    window.addEventListener('message', (e) => {
+    window.addEventListener('message', async (e) => {
 		if (e.data.eventName === undefined)
 			return;
 
@@ -4283,7 +4288,7 @@ function create_listeners() {
 				const value = e.data.data;
 				//top.ariane.update_status(value?.id ?? value);
 				rcmail.env.ariane_have_calls = true;
-                ChatHelper.Manager().updateStatus(value?.id ?? value);
+                (await ChatHelper.Manager()).updateStatus(value?.id ?? value);
 			}
 		//}
 	});

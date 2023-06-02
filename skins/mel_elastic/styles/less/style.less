@@ -615,22 +615,6 @@ body.task-tasks .listing li.selected:hover > div > a:first-child:hover {
 }
 
 li {
-    &#settingstabpluginmel_doubleauth{
-        &>a{
-            &::before{
-                content: var(--empty-content);
-            }
-        }
-    }
-
-    &#settingstabpluginmel_suggestion_box{
-        &>a{
-            &::before{
-                content: var(--empty-content);
-            }
-        }
-    }
-
     &.mel{
         &>a{
             &::before{
@@ -4317,4 +4301,191 @@ a.rcmContactAddress {
     background-image: url(../images/aprilfools.png);
     width:500px;
     height:300px;
+}
+
+
+//Settings icons
+.task-settings {
+  #layout-sidebar {
+    .listing.iconized {
+      li {
+        a::before {
+          font-family: 'Material Symbols Outlined' !important;
+          font-variation-settings: 'wght' 500, 'opsz' 40;
+          font-weight: normal !important;
+          font-size: 20px;
+          height: 1em;
+        }
+
+        a:hover {
+          &::before {
+            font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
+          }
+        }
+
+        &.preferences>a::before {
+          content: "\e429";
+        }
+
+        &.folders>a::before {
+          content: "\e2c7";
+        }
+
+        &.identities>a::before {
+          content: "\e7fd";
+        }
+
+        &.signatures.identities>a::before {
+          content: "\f74c";
+        }
+
+        &.nextcloud>a::before {
+          content: "\e2c8";
+        }
+
+        &.filter>a::before {
+          content: "\ef4f";
+        }
+
+        &.roadmap>a::before {
+          content: "\ef3b" !important;
+        }
+
+        &.news>a::before {
+          content: "\f009";
+        }
+
+        &.mel_doubleauth>a::before {
+          content: "\e0dc";
+        }
+
+        &.resources>a::before {
+          content: "\e5cf";
+        }
+
+        &#settingstabpluginmel_resources_bal>a::before {
+          content: "\e156";
+          height: 2em;
+        }
+
+        &#settingstabpluginmel_resources_agendas>a::before {
+          content: "\ebcc";
+          height: 2em;
+        }
+
+        &#settingstabpluginmel_resources_contacts>a::before {
+          content: "\e7fd";
+          height: 2em;
+        }
+
+        &#settingstabpluginmel_resources_tasks>a::before {
+          content: "\e834";
+          height: 2em;
+        }
+
+        &.moncompte>a::before {
+          content: "\f02e";
+        }
+
+        &.mel.statistics>a::before {
+          content: "\e5cf";
+        }
+
+        &.mel.statistics.mobile>a::before {
+          content: "\e325";
+          height: 2em;
+        }
+
+        &.mel_suggestion_box>a::before {
+          content: "\e175";
+        }
+      }
+    }
+  }
+}
+.task-settings {
+  #layout-list {
+    .listing.iconized.settings-default-icon {
+      tr {
+        td.section::before {
+          font-family: 'Material Symbols Outlined' !important;
+          font-variation-settings: 'wght' 500, 'opsz' 40;
+          font-weight: normal !important;
+          font-size: 20px;
+          height: 1em;
+        }
+
+        td.section:hover {
+          &::before {
+            font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
+          }
+        }
+
+        &.general>td.section::before {
+          content: "\e30c";
+        }
+
+        &.mailbox>td.section::before {
+          content: "\e158";
+        }
+
+        &.mailview>td.section::before {
+          content: "\e156";
+        }
+
+        &.compose>td.section::before {
+          content: "\e163";
+        }
+
+        &.addressbook>td.section::before {
+          content: "\f233";
+        }
+
+        &.server>td.section::before {
+          content: "\e875";
+        }
+
+        &.encryption>td.section::before {
+          content: "\e898";
+        }
+
+        &.globalsearch>td.section::before {
+          content: "\e8b6";
+        }
+
+        &.visio>td.section::before {
+          content: "\e04b";
+        }
+
+        &.chat>td.section::before {
+          content: "\e0b7";
+        }
+
+        &.navigation>td.section::before {
+          content: "\e5d2";
+        }
+
+        &.bnum-experimental>td.section::before {
+          content: "\ea4b";
+        }
+
+        &.labels>td.section::before {
+          content: "\e892";
+        }
+
+        &.notifications>td.section::before {
+          content: "\e7f4";
+        }
+
+        &.calendar>td.section::before {
+          content: "\ebcc";
+        }
+
+        
+        &.a_mel_news_flux>td.section::before {
+          content: "\e8b8";
+        }
+      }
+    }
+  }
 }

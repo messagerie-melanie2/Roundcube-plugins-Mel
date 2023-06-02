@@ -416,12 +416,6 @@ body.task-tasks .listing li.selected:hover > div > a:first-child:hover {
 .listing-info {
   color: var(--secondary-text-color);
 }
-li#settingstabpluginmel_doubleauth > a::before {
-  content: var(--empty-content);
-}
-li#settingstabpluginmel_suggestion_box > a::before {
-  content: var(--empty-content);
-}
 li.mel > a::before {
   content: var(--empty-content);
 }
@@ -2840,4 +2834,131 @@ html.dark-mode .green-badge {
   background-image: url(../images/aprilfools.png);
   width: 500px;
   height: 300px;
+}
+.task-settings #layout-sidebar .listing.iconized li a::before {
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'wght' 500, 'opsz' 40;
+  font-weight: normal !important;
+  font-size: 20px;
+  height: 1em;
+}
+.task-settings #layout-sidebar .listing.iconized li a:hover::before {
+  font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
+}
+.task-settings #layout-sidebar .listing.iconized li.preferences > a::before {
+  content: "\e429";
+}
+.task-settings #layout-sidebar .listing.iconized li.folders > a::before {
+  content: "\e2c7";
+}
+.task-settings #layout-sidebar .listing.iconized li.identities > a::before {
+  content: "\e7fd";
+}
+.task-settings #layout-sidebar .listing.iconized li.signatures.identities > a::before {
+  content: "\f74c";
+}
+.task-settings #layout-sidebar .listing.iconized li.nextcloud > a::before {
+  content: "\e2c8";
+}
+.task-settings #layout-sidebar .listing.iconized li.filter > a::before {
+  content: "\ef4f";
+}
+.task-settings #layout-sidebar .listing.iconized li.roadmap > a::before {
+  content: "\ef3b" !important;
+}
+.task-settings #layout-sidebar .listing.iconized li.news > a::before {
+  content: "\f009";
+}
+.task-settings #layout-sidebar .listing.iconized li.mel_doubleauth > a::before {
+  content: "\e0dc";
+}
+.task-settings #layout-sidebar .listing.iconized li.resources > a::before {
+  content: "\e5cf";
+}
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_bal > a::before {
+  content: "\e156";
+  height: 2em;
+}
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_agendas > a::before {
+  content: "\ebcc";
+  height: 2em;
+}
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_contacts > a::before {
+  content: "\e7fd";
+  height: 2em;
+}
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_tasks > a::before {
+  content: "\e834";
+  height: 2em;
+}
+.task-settings #layout-sidebar .listing.iconized li.moncompte > a::before {
+  content: "\f02e";
+}
+.task-settings #layout-sidebar .listing.iconized li.mel.statistics > a::before {
+  content: "\e5cf";
+}
+.task-settings #layout-sidebar .listing.iconized li.mel.statistics.mobile > a::before {
+  content: "\e325";
+  height: 2em;
+}
+.task-settings #layout-sidebar .listing.iconized li.mel_suggestion_box > a::before {
+  content: "\e175";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr td.section::before {
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'wght' 500, 'opsz' 40;
+  font-weight: normal !important;
+  font-size: 20px;
+  height: 1em;
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr td.section:hover::before {
+  font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.general > td.section::before {
+  content: "\e30c";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.mailbox > td.section::before {
+  content: "\e158";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.mailview > td.section::before {
+  content: "\e156";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.compose > td.section::before {
+  content: "\e163";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.addressbook > td.section::before {
+  content: "\f233";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.server > td.section::before {
+  content: "\e875";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.encryption > td.section::before {
+  content: "\e898";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.globalsearch > td.section::before {
+  content: "\e8b6";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.visio > td.section::before {
+  content: "\e04b";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.chat > td.section::before {
+  content: "\e0b7";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.navigation > td.section::before {
+  content: "\e5d2";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.bnum-experimental > td.section::before {
+  content: "\ea4b";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.labels > td.section::before {
+  content: "\e892";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.notifications > td.section::before {
+  content: "\e7f4";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.calendar > td.section::before {
+  content: "\ebcc";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.a_mel_news_flux > td.section::before {
+  content: "\e8b8";
 }

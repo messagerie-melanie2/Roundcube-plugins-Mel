@@ -720,7 +720,7 @@ const mel_metapage = {
             let contracted_task;
             let $querry;
 
-            if (window !== parent) return await parent.mel_metapage.Functions.change_page(task, action, params);
+            if (window !== parent) return await parent.mel_metapage.Functions.change_page(task, action, params, update, force);
 
             contracted_task = mm_st_ClassContract(task);
 

@@ -647,12 +647,12 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('storage.change', (datas) => {
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
 
-        if (window === top) m_mp_e_on_storage_change_notifications(datas.key);
+        m_mp_e_on_storage_change_notifications(datas.key);
     }, false);
 
     async function m_mp_e_on_storage_change_notifications(key)
     {
-        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', true];
+        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', 'tchat', true];
 
         if (!accepted_changes.includes(key)) return;
 

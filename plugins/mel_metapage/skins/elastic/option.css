@@ -270,9 +270,18 @@ html.touch .options .custom-switch .custom-control-label {
   color: var(--main-text-color) !important;
 }
 
+html.dark-mode .option-menu-button {
+  background-color: #323f4b !important;
+  color: var(--secondary-text-color) !important;
+}
+
 .option-menu-button:hover {
-  /* /* border: solid thin var(--invisible); */
   box-shadow:0 1.4px 1.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108) ;
   background-color: #fff;
-
 }
+
+html.dark-mode .option-menu-button:hover {
+  background-color: #2E2E2E !important;
+  color: #E1C58F !important;
+}
+

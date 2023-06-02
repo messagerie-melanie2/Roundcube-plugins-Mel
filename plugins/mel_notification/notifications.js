@@ -845,7 +845,6 @@ class html_notification extends mel_html2 {
 
     let _title = new mel_html('p', { class: 'notification-title' }, notification.title );
 
-
     const _action = this._getNotificationAction(notification);
 
     // Notification dans le menu
@@ -862,11 +861,18 @@ class html_notification extends mel_html2 {
         m_mp_NotificationsAction('del', [btoa(notification.uid)]);
       })
 
-      if (!!_action?.href) this.attribs['href'] = _action.href;
-      
-      this.onclick.push(() => {
-        _action.command ? (e) => { rcmail.command(_action.command, _action.params ?? '', e); e.stopPropagation(); } : (_action.click ? (e) => {_action.click(e); e.stopPropagation();} : (e) => { e.stopPropagation(); })
-      })
+      if (notification.action) {
+        for (const key in notification.action) {
+            if (Object.hasOwnProperty.call(notification.action, key)) {
+                const action = notification.action[key];
+                this.attribs['href'] = action.href ?? '#',
+                this.onclick.push((e) => {
+                   rcmail.command(action.command, action.params ?? '', e); e.stopPropagation();
+                })
+                this.attribs['title'] = rcmail.get_label('mel_notification.Action title');
+            }
+        }
+    }
 
       this.addContent(new mel_html2('div', { attribs: { class: 'd-flex py-1' }, contents:  [_icon,  new mel_html2('div', { attribs: { class: 'd-flex flex-column justify-content-center' }, contents:  [_category, _title]}), _button]}));
     }

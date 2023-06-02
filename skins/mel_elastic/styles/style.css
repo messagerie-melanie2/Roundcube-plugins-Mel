@@ -417,12 +417,6 @@ body.task-tasks .listing li.selected:hover > div > a:first-child:hover {
 .listing-info {
   color: var(--secondary-text-color);
 }
-li#settingstabpluginmel_doubleauth > a::before {
-  content: var(--empty-content);
-}
-li#settingstabpluginmel_suggestion_box > a::before {
-  content: var(--empty-content);
-}
 li.mel > a::before {
   content: var(--empty-content);
 }
@@ -462,10 +456,7 @@ a.button.icon:not(.disabled):focus {
   background-color: var(--tierciary-bckg-color);
   color: var(--secondary-text-color);
 }
-.mel-animated,
-.melv2-event,
-.melv2-mail,
-.melv2-mail {
+.mel-animated {
   transition: all 0.1s ease-in;
 }
 .hidden-item-mt {
@@ -2844,240 +2835,130 @@ html.dark-mode .green-badge {
   width: 500px;
   height: 300px;
 }
-.mel-toolbar {
-  position: absolute;
+.task-settings #layout-sidebar .listing.iconized li a::before {
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'wght' 500, 'opsz' 40;
+  font-weight: normal !important;
+  font-size: 20px;
+  height: 1em;
 }
-.mel-toolbar .toolbar-buttons {
-  display: flex;
-  height: 100%;
+.task-settings #layout-sidebar .listing.iconized li a:hover::before {
+  font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
 }
-.mel-toolbar .toolbar-buttons .mel-button {
-  flex: 1;
-  --main-bckg-color: var(--invisible);
-  --mel-button-border-color: var(--invisible);
-  border-radius: 0;
+.task-settings #layout-sidebar .listing.iconized li.preferences > a::before {
+  content: "\e429";
 }
-.mel-toolbar .toolbar-buttons .mel-button span {
-  display: block;
+.task-settings #layout-sidebar .listing.iconized li.folders > a::before {
+  content: "\e2c7";
 }
-.mel-toolbar .toolbar-buttons .v-separate {
-  width: 1px;
-  background: white;
-  margin: 10px 0;
+.task-settings #layout-sidebar .listing.iconized li.identities > a::before {
+  content: "\e7fd";
 }
-.melv2-card-shadow {
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+.task-settings #layout-sidebar .listing.iconized li.signatures.identities > a::before {
+  content: "\f74c";
 }
-.melv2-card {
-  border-radius: 15px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-  padding: 5px;
+.task-settings #layout-sidebar .listing.iconized li.nextcloud > a::before {
+  content: "\e2c8";
 }
-html.dark-mode .melv2-card {
-  background-color: #323F4B;
-  box-shadow: none;
+.task-settings #layout-sidebar .listing.iconized li.filter > a::before {
+  content: "\ef4f";
 }
-.melv2-card-pre {
-  margin-top: 10px;
-  margin-left: 10px;
-  display: flex;
+.task-settings #layout-sidebar .listing.iconized li.roadmap > a::before {
+  content: "\ef3b" !important;
 }
-.melv2-card-title {
-  font-size: 1.4rem;
-  font-weight: bold;
+.task-settings #layout-sidebar .listing.iconized li.news > a::before {
+  content: "\f009";
 }
-a.melv2-card-title {
-  color: var(--main-text-color);
+.task-settings #layout-sidebar .listing.iconized li.mel_doubleauth > a::before {
+  content: "\e0dc";
 }
-html.dark-mode a.melv2-card-title {
-  --main-text-color: #c7dfff;
+.task-settings #layout-sidebar .listing.iconized li.resources > a::before {
+  content: "\e5cf";
 }
-.melv2-card-icon {
-  margin-right: 5px;
-  align-self: center;
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_bal > a::before {
+  content: "\e156";
+  height: 2em;
 }
-.melv2-card .contents,
-.melv2-card-contents {
-  height: 237px;
-  max-height: 237px;
-  overflow: auto;
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_agendas > a::before {
+  content: "\ebcc";
+  height: 2em;
 }
-.melv2-card .contents li:first-child > div,
-.melv2-card-contents li:first-child > div {
-  margin-top: 0;
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_contacts > a::before {
+  content: "\e7fd";
+  height: 2em;
 }
-.melv2-card .contents li:last-child > div,
-.melv2-card-contents li:last-child > div {
-  margin-bottom: 0;
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_tasks > a::before {
+  content: "\e834";
+  height: 2em;
 }
-.module_Headlines .melv2-card-contents,
-.module_Mails .melv2-card-contents,
-.module_My_day .melv2-card-contents {
-  overflow: unset;
+.task-settings #layout-sidebar .listing.iconized li.moncompte > a::before {
+  content: "\f02e";
 }
-.melv2-color,
-.melv2-event,
-.melv2-mail {
-  --mv2-item-background-color: #F8F9FA;
-  --mv2-item-text-color: var(--main-text-color);
+.task-settings #layout-sidebar .listing.iconized li.mel.statistics > a::before {
+  content: "\e5cf";
 }
-.melv2-event,
-.melv2-mail {
-  background-color: var(--mv2-item-background-color);
-  color: var(--mv2-item-text-color);
-  border-radius: 10px;
-  display: flex;
-  margin: 2.5px 13px;
-  padding: 5px;
-  padding-left: 10px;
+.task-settings #layout-sidebar .listing.iconized li.mel.statistics.mobile > a::before {
+  content: "\e325";
+  height: 2em;
 }
-.melv2-event[data-ignore-date="true"] {
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
-  margin-left: 0;
-  margin-right: 0;
-  margin-bottom: 5px;
+.task-settings #layout-sidebar .listing.iconized li.mel_suggestion_box > a::before {
+  content: "\e175";
 }
-.melv2-event.hovered,
-.melv2-mail:hover {
-  --mv2-item-background-color: var(--tierciary-bckg-color);
-  --mv2-item-text-color: var(--secondary-text-color);
-  cursor: pointer;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr td.section::before {
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'wght' 500, 'opsz' 40;
+  font-weight: normal !important;
+  font-size: 20px;
+  height: 1em;
 }
-html.dark-mode .melv2-event,
-html.dark-mode .melv2-mail {
-  --mv2-item-background-color: #3e4c59;
-  --mv2-item-text-color: #c7dfff;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr td.section:hover::before {
+  font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
 }
-html.dark-mode .melv2-event.hovered,
-html.dark-mode .melv2-mail:hover {
-  --mv2-item-background-color: #2E2E2E;
-  --mv2-item-text-color: #E1C58F;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.general > td.section::before {
+  content: "\e30c";
 }
-.melv2-event-clickable,
-.melv2-mail-left {
-  display: flex;
-  flex-wrap: wrap;
-  width: 75%;
-  border-radius: 15px;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.mailbox > td.section::before {
+  content: "\e158";
 }
-.melv2-event-date,
-.melv2-mail-from,
-.melv2-mail-date {
-  flex-basis: 100%;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 5px;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.mailview > td.section::before {
+  content: "\e156";
 }
-.melv2-event-hour p,
-.melv2-event-content p,
-.melv2-mail-subject,
-.melv2-mail-date-left {
-  margin-bottom: 0;
-  padding-right: 10px;
-  font-size: 12px;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.compose > td.section::before {
+  content: "\e163";
 }
-.melv2-event-hour p.melv2-event-hour-top {
-  margin-bottom: 4px;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.addressbook > td.section::before {
+  content: "\f233";
 }
-.melv2-event-hour-top {
-  margin-bottom: 2px;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.server > td.section::before {
+  content: "\e875";
 }
-.melv2-event-separator {
-  width: 1px;
-  background-color: var(--main-text-color);
-  border-radius: 100px;
-  height: calc(100% - 30.2px);
-  margin-top: 3px;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.encryption > td.section::before {
+  content: "\e898";
 }
-[data-ignore-date="true"] .melv2-event-separator {
-  height: unset;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.globalsearch > td.section::before {
+  content: "\e8b6";
 }
-.melv2-event-content {
-  margin-left: 10px;
-  max-width: 75%;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.visio > td.section::before {
+  content: "\e04b";
 }
-.melv2-event-content p,
-.melv2-mail-subject,
-.melv2-mail-date-left {
-  text-overflow: ellipsis;
-  max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.chat > td.section::before {
+  content: "\e0b7";
 }
-.melv2-event-content p.melv2-event-content-top {
-  font-size: 14px;
-  font-weight: 600;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.navigation > td.section::before {
+  content: "\e5d2";
 }
-.melv2-event-content-bottom {
-  font-weight: 300;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.bnum-experimental > td.section::before {
+  content: "\ea4b";
 }
-.melv2-event-side {
-  display: flex;
-  justify-content: center;
-  width: 25%;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.labels > td.section::before {
+  content: "\e892";
 }
-.melv2-event-side .melv2-event-button {
-  border-radius: 0;
-  align-self: center;
-  height: fit-content;
-  border-right: solid thin white;
-  line-height: 0;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.notifications > td.section::before {
+  content: "\e7f4";
 }
-.melv2-event-side .melv2-event-button:first-of-type {
-  border-bottom-left-radius: 50px;
-  border-top-left-radius: 50px;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.calendar > td.section::before {
+  content: "\ebcc";
 }
-.melv2-event-side .melv2-event-button:last-of-type {
-  border-bottom-right-radius: 50px;
-  border-top-right-radius: 50px;
-  border-right: none;
-}
-.melv2-mail {
-  padding: 15px;
-  margin: 3px 13px;
-}
-.melv2-mail-left {
-  display: block;
-}
-.melv2-mail-right {
-  width: 25%;
-  display: flex;
-  align-content: space-between;
-}
-.melv2-mail-date {
-  text-align: end;
-}
-.melv2-mail-date.melv2-mail-old {
-  width: 100%;
-  align-self: center;
-}
-.melv2-mail-date.melv2-mail-old div {
-  display: inline-block;
-}
-.melv2-mail-from {
-  font-size: 14px;
-  overflow: hidden;
-  max-width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.melv2-mail-subject {
-  font-size: 11px;
-}
-.melv2-mail-date-left {
-  font-weight: normal;
-  overflow: unset;
-  font-size: 11px;
-}
-.melv2-hello {
-  font-weight: bold;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-.mel-news {
-  font-family: Marianne, Roboto, sans-serif;
-}
-.module_Workspaces .workspace {
-  background-color: var(--default-background);
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.a_mel_news_flux > td.section::before {
+  content: "\e8b8";
 }

@@ -290,7 +290,7 @@ if (window.rcmail) {
 
 			// Define Variables
 			var tabmel_doubleauth = $('<li>').attr('id',
-					'settingstabpluginmel_doubleauth').addClass('tablink');
+					'settingstabpluginmel_doubleauth').addClass('tablink mel_doubleauth');
 			var button = $('<a>').attr('href',
 					rcmail.env.comm_path + '&_action=plugin.mel_doubleauth').html(
 					rcmail.gettext('mel_doubleauth', 'mel_doubleauth')).appendTo(

@@ -37,7 +37,7 @@ html.theme-classique #layout-list {
   color: var(--main-text-color) !important;
 }
 html.theme-classique #layout-list .listing tbody td {
-  color: var(--main-text-color);
+  color: var(--main-text-color) !important;
   border-bottom: solid thin #f0f0f0;
 }
 html.theme-classique #layout-list .listing tbody td:hover {

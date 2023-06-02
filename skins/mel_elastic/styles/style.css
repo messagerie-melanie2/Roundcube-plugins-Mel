@@ -3008,6 +3008,8 @@ html.dark-mode .melv2-mail:hover {
 }
 .melv2-event-side {
   display: flex;
+  justify-content: center;
+  width: 25%;
 }
 .melv2-event-side .melv2-event-button {
   border-radius: 0;

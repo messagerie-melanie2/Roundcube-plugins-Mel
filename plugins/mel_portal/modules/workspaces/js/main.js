@@ -34,6 +34,14 @@ export class ModuleWorkspaces extends BaseModule {
             if (!!e) _on_mention_update(helper, channel, unreads.datas[channel] ?? 0);
         });
         channel = null;
+
+        this.select('#wsp-see-all').click(() => {
+            this.change_frame('workspace', {
+                update:false,
+                force_update:false
+            });
+        });
+
         return this;
     }
 

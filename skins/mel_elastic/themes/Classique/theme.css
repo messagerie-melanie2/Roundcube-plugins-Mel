@@ -41,14 +41,15 @@ html.theme-classique #layout-list .listing tbody td {
   border-bottom: solid thin #f0f0f0;
 }
 html.theme-classique #layout-list .listing tbody td:hover {
-  color: var(--main-text-color);
+  color: var(--main-text-color) !important;
   border-bottom: solid thin var(--tierciary-bckg-color);
+  background-color: #edebe9;
 }
 html.theme-classique #layout-list .listing tbody td.name {
   width: 100%;
 }
 html.theme-classique #layout-list .listing tr.selected td {
-  color: var(--main-text-color);
+  color: var(--secondary-text-color);
   border-bottom: unset!important;
 }
 body.task-settings.action-plugin-managesieve html.theme-classique #layout-list .menu.toolbar a {

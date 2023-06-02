@@ -95,7 +95,7 @@ class CalendarLoader extends MelObject{
         const now = moment();
         let enum_var = Enumerable.from(this.get_from_day(day, loaded_events)).where(x => moment(x.end) > now 
                                                                                          && x.free_busy !== CONST_EVENT_DISPO_FREE 
-                                                                                         && x.free_busy !== CONST_EVENT_DISPO_TELEWORK).orderBy(x => moment(x => x.start));
+                                                                                         && x.free_busy !== CONST_EVENT_DISPO_TELEWORK).orderBy(x => moment(x.start));
 
         return enumerable ? enum_var : enum_var.toArray();
     }

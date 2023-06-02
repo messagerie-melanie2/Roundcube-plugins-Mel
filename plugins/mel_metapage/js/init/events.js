@@ -666,7 +666,6 @@ if (rcmail && window.mel_metapage)
         const current_task = top.rcmail.env.current_task;
         const current_title = top.document.title;
 
-        let temp = null;
         let numbers = 0;
         switch (config) {
             case 'all':
@@ -686,7 +685,7 @@ if (rcmail && window.mel_metapage)
 
                 numbers += parseInt(get('mel_metapage.mail.count') ?? 0) +
                            (get('mel_metapage.tasks') ?? []).length +
-                           Calendar.get_from_day(moment()).length;
+                           Calendar.get_next_events_day(moment(), {enumerable:false}).length;
 
                 break;
 
@@ -699,7 +698,7 @@ if (rcmail && window.mel_metapage)
                         break;
 
                     case 'calendar':
-                        numbers = Calendar.get_from_day(moment()).length;
+                        numbers = Calendar.get_next_events_day(moment(), {enumerable:false}).length;
                         break;
 
                     case 'tasks':

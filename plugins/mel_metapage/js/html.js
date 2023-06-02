@@ -263,8 +263,9 @@ html_helper.Calendars = async function ({datas, config = {
 		}
 		else 
 		{
+			const now = moment();
 			const raw_storage = Loader.load_all_events();
-			const storage = Enumerable.from(config.next_when_empty_today_function !== null && typeof config.next_when_empty_today_function === "function" ? config.next_when_empty_today_function(raw_storage) : raw_storage);
+			const storage = Enumerable.from(config.next_when_empty_today_function !== null && typeof config.next_when_empty_today_function === "function" ? config.next_when_empty_today_function(raw_storage) : raw_storage).where(x => moment(x.start) > now);
 			const storage_count = storage.count();
 			if (storage_count > 0)
 			{
@@ -273,7 +274,7 @@ html_helper.Calendars = async function ({datas, config = {
 				const all_day = value.allDay ? "_all_day" : "";
 				html += `<li><span class="element-title element-no default-text bold element-block">${rcmail.gettext('mel_portal.no_event_today')}</span>
 				<a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(value)}">
-				<span class="element-title default-text bold element-block">${rcmail.gettext(`mel_portal.next_agenda_event${all_day}`).replace('{date}', storage_first.key).replace('{horaire}', moment(value.start).format('HH:mm'))}</span>
+				<span class="element-title default-text bold element-block">${rcmail.gettext(`mel_portal.next_agenda_event${all_day}`).replace('{date}', moment(value.start).format('DD/MM/YYYY')).replace('{horaire}', moment(value.start).format('HH:mm'))}</span>
 				<span class="element-desc secondary-text element-block">${value.title}</span>
 				</a>
 				</li>`;

@@ -51,7 +51,7 @@ class ModuleMyDay extends BaseModule{
 
     generate() {
         const now = moment();
-        const events = Enumerable.from(this.check_storage_datas() ?? []).where(x => moment(x.end) > now).take(this.max_size);
+        const events = Enumerable.from(this.check_storage_datas() ?? []).where(x => moment(x.end) > now).orderBy(x => moment(x.start)).take(this.max_size);
         let $contents = this.select_module_content().html(EMPTY_STRING);
 
         if (events.any()) {

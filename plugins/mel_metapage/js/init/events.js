@@ -767,7 +767,8 @@ if (rcmail && window.mel_metapage)
     });
 
     /*********AFFICHAGE D'UN EVENEMENT*************/
-    rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
+    rcmail.addEventListener("calendar.event_show_dialog.custom", async (datas)    => {
+        const Alarm = (await loadJsModule('mel_metapage', 'alarms', '/js/lib/calendar/')).Alarm;
         if (datas.showed.start.format === undefined) datas.showed.start = moment(datas.showed.start);
 
         if (datas.showed.end === null) datas.showed.end = moment(datas.showed.start)

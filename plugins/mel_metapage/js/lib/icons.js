@@ -16,8 +16,10 @@ class BaseIcon {
         return this;
     }
 
-    get() {
-        return new mel_html('span', {class:this._icon});
+    get(attribs = {}) {
+        let html = new mel_html('span', attribs);
+        html.addClass(this._icon);
+        return html;
     }
 }
 
@@ -40,8 +42,8 @@ class MaterialIcon extends BaseIcon {
         return this._update();
     }
 
-    get() {
-        let get = super.get();
+    get(attribs = {}) {
+        let get = super.get(attribs);
         get.content = this._name;
         return get;
     }

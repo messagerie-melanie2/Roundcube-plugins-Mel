@@ -3202,3 +3202,10 @@ html.dark-mode .melv2-mail:hover {
   background-color: var(--default-background);
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
 }
+button.melv2-sec-nav-correction {
+  padding: 0;
+  border-radius: 100%;
+  width: 35px;
+  height: 35px;
+  line-height: 1;
+}

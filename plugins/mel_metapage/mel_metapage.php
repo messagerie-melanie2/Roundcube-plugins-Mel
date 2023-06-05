@@ -385,6 +385,7 @@ class mel_metapage extends bnum_plugin
 
             if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf'  || $this->rc->task === 'search') {
                 $this->load_script_module('calendar', '/js/lib/metapages_actions/');
+                $this->load_script_module('notes', '/js/lib/metapages_actions/');
             }
 
             if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);

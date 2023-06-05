@@ -358,7 +358,7 @@ class mel_archivage extends rcube_plugin
     // Mode maildir par défaut
     $mode      = 'maildir';
     //$mode      = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST);
-    $temp_dir  = $rcmail->config->get('temp_dir');
+    $temp_dir  = $rcmail->config->get('temp_dir_shared', $rcmail->config->get('temp_dir'));
     $tmpfname  = tempnam($temp_dir, 'mel_archivage');
     $tempfiles = array($tmpfname);
     $folders   = count($messageset) > 1;

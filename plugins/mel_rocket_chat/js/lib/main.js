@@ -13,14 +13,18 @@ export class MelRocketChat extends MelObject {
 
     main() {
         super.main();
+
+        ChatManager.Instance().set_chat_url(rcmail.env.rocket_chat_url);
+        
         this._set_connectors()
             ._set_listeners()
             ._set_actions_listeners()
             ._start();
 
-        if (ChatManager.Instance().get_frame().length > 0 && ChatManager.Instance().get_frame().attr('src') === EMPTY_STRING) {
-            ChatManager.Instance().get_frame().attr('src', rcmail.env.rocket_chat_url);
-            const result = this.trigger_event('init_rocket_chat', ChatManager.Instance().get_frame().attr('id'), {});
+        let $frame = ChatManager.Instance().get_frame();
+        if ($frame.length > 0 &&  [EMPTY_STRING, (undefined + '')].includes($frame.attr('src'))) {
+            $frame.attr('src', rcmail.env.rocket_chat_url);
+            const result = this.rcmail().triggerEvent('init_rocket_chat', ChatManager.Instance().get_frame().attr('id'), {});
             if (!!result.then) result.then(() => ChatManager.Instance().goLastRoom());
 
         }
@@ -41,16 +45,21 @@ export class MelRocketChat extends MelObject {
         this.rcmail().addEventListener('rocket.chat.event.startup', function (args) {
             ChatManager.Instance().goLastRoom();
         }, {});
-        
+
         let loaded = false;
         this.on_frame_loaded((args) => {
             if (!loaded) {
                 const {eClass, changepage, isAriane, querry, id, first_load} = args;
 
                 if (first_load && isAriane) {
-                    ChatManager.Instance().get_frame().attr('src', rcmail.env.rocket_chat_url);
-                    this.trigger_event('init_rocket_chat',id, {});
-                    loaded = true;
+                    const result = this.rcmail().triggerEvent('init_rocket_chat', ChatManager.Instance().get_frame().attr('id'), {});
+                    if (!!result.then) {
+                        result.then(() => {
+                            ChatManager.Instance().goLastRoom();
+                            loaded = true;
+                        });
+                    }
+                    else loaded = true;
                 }
             }
         }, {});

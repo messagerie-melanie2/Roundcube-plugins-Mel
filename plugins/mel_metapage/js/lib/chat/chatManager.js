@@ -122,6 +122,11 @@ export class ChatManager extends MelObject {
         return this;
     }
 
+    set_chat_url(url) {
+        rcmail.env.chat_system_url = url;
+        return this;
+    }
+
     /**
      * Récupère l'instance du chat
      * @returns { _Chat }

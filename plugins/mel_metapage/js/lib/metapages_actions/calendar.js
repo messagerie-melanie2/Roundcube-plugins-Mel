@@ -24,7 +24,7 @@ export class MetapageCalendarModule extends MetapageModule {
         await new WaitSomething(() => !!rcmail._events['plugin.display_alarms']);
 
         let events = await this.calendarLoader().force_load_all_events_from_storage()
-        events = Enumrable.from(events).where(x => moment(x.start) > startOfDay).toArray();
+        events = Enumerable.from(events).where(x => moment(x.start) > startOfDay).toArray();
 
         this.alarm_manager.generate(events);
         events = null;

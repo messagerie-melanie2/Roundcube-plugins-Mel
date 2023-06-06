@@ -148,7 +148,16 @@ class MelObject {
      * @param {function | null} options.condition Condition custom pour charger la frame
      */
     on_frame_loaded(callback, {callback_key = null, frame = 'any', condition = null}) {
-        this.add_event_listener('frame_loaded', callback, {
+        const KEY = 'frame_loaded';
+        const SYSTEM_KEY = `[system]${KEY}`;
+        if (!this._listener.has(SYSTEM_KEY)){
+            this.rcmail().addEventListener(KEY, (args) => {
+                this.trigger_event(KEY, args);
+            });
+            this._listener.add(SYSTEM_KEY, true, SYSTEM_KEY);
+        }
+
+        this.add_event_listener(KEY, callback, {
             callback_key,
             condition:() => {
                 return condition?.() ?? ('any' === frame || this.rcmail().env.task === frame);

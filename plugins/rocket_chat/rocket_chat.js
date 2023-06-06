@@ -86,7 +86,7 @@ if (window.rcmail) {
 	} 
 
 	rcmail.addEventListener('init_rocket_chat', async function(evt) {
-		console.log('LOG ROCKET CHAT');
+		console.info('LOG ROCKET CHAT');
 		window.chat_id = evt === null ? "ariane_id" : evt;
 		
 			await logout((loggued) => {

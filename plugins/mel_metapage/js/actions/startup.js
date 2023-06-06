@@ -609,7 +609,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (args["iframe.src"] !== undefined)
         src = args["iframe.src"];
     else if (eClass === "discussion")
-        src = empty;//rcmail.env.rocket_chat_url + "home";
+        src = rcmail.env.chat_system_url;//empty;//rcmail.env.rocket_chat_url + "home";
     else
     {
         let task;
@@ -662,8 +662,7 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     try {
 
         if (changepage) $('#bnum-loading-div').addClass('loaded');
-        //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
-        let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
+        let querry_content = $("."+eClass+"-frame")[0].contentWindow;
         const _$ = querry_content.$;
 
         _$("#layout-menu").remove();

@@ -22,6 +22,8 @@ class CalendarLoader extends MelObject{
     main() {
         super.main();
 
+        this.timeout = null;
+
         const now = moment();
         MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
                .update_badge(this.get_next_events_day(now, {}).count(), mel_metapage.Ids.menu.badge.calendar);
@@ -186,17 +188,37 @@ class CalendarLoader extends MelObject{
             this.save(mel_metapage.Storage.calendar_all_events, all_events);
             this.save(mel_metapage.Storage.last_calendar_update, moment().format(CONST_DATE_FORMAT_BNUM));
 
+            const next_events = this.get_next_events_day(now, {loaded_events:all_events});
             MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
-                   .update_badge(this.get_next_events_day(now, {loaded_events:all_events}).count(), mel_metapage.Ids.menu.badge.calendar);
+                   .update_badge(next_events.count(), mel_metapage.Ids.menu.badge.calendar);
 
             this.rcmail(!isTop).triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
             this.trigger_event(mel_metapage.EventListeners.calendar_updated.after);
+
+            this._set_timeout(next_events);
 
             return all_events;
         }
     }
 
+    _set_timeout(next_events) {
+        if (['all', 'page'].includes(rcmail.env["mel_metapage.tab.notification_style"]) && next_events.any()) {
+            if (!!this.timeout) clearTimeout(this.timeout);
+        
+            this.timeout = setTimeout(() => {
+                const now = moment();
+                MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
+                .update_badge(next_events.count(), mel_metapage.Ids.menu.badge.calendar);
 
+                window?.update_notification_title?.();
+
+                next_events = this.get_next_events_day(now, {loaded_events:next_events.toArray()});
+                this.timeout = null;
+                this._set_timeout(next_events);
+
+            }, moment() - moment(next_events.first().end));
+        }
+    }
 
     _getEventIndex(id, events) {
         for (let index = 0, len = events.length; index < len; ++index) {

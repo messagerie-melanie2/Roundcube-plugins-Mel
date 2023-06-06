@@ -383,8 +383,9 @@ class mel_metapage extends bnum_plugin
                 exit;
             }
 
-            if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf'  || $this->rc->task === 'search') {
-                $this->load_script_module('calendar', '/js/lib/metapages_actions/');
+            if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf' || $this->rc->task === 'search') {
+                if ($this->rc->task === 'search' || $this->rc->task === 'webconf') $this->setup_module();
+                else $this->load_script_module('calendar', '/js/lib/metapages_actions/');
             }
 
             if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);

@@ -13,6 +13,8 @@ export class MetapageCalendarModule extends MetapageModule {
      * @async Actions principales
      */
     async main() {
+        const startOfDay = moment().startOf('day');
+
         super.main();
 
         this._init();
@@ -21,7 +23,11 @@ export class MetapageCalendarModule extends MetapageModule {
 
         await new WaitSomething(() => !!rcmail._events['plugin.display_alarms']);
 
-        this.alarm_manager.generate(await CalendarLoader.Instance.force_load_all_events_from_storage());
+        let events = await this.calendarLoader().force_load_all_events_from_storage()
+        events = Enumrable.from(events).where(x => moment(x.start) > startOfDay).toArray();
+
+        this.alarm_manager.generate(events);
+        events = null;
     }
 
     /**
@@ -33,6 +39,14 @@ export class MetapageCalendarModule extends MetapageModule {
         this.alarm_manager = new Calendar_Alarm();
 
         return this;
+    }
+
+    /**
+     * Récupère l'instance de Calendarloader
+     * @returns
+     */
+    calendarLoader() {
+        return CalendarLoader.Instance;
     }
 
 }

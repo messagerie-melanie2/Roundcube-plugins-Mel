@@ -609,7 +609,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (args["iframe.src"] !== undefined)
         src = args["iframe.src"];
     else if (eClass === "discussion")
-        src = rcmail.env.chat_system_url;//empty;//rcmail.env.rocket_chat_url + "home";
+        src = rcmail.env?.chat_system_url ?? '';//empty;//rcmail.env.rocket_chat_url + "home";
     else
     {
         let task;

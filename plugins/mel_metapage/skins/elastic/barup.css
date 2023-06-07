@@ -923,3 +923,13 @@ html.dark-mode .barup-icons-button:hover {
 /* #notifications-panel .content a.unread {
   background-color: #f0f0f0;
 }  */
+
+#button-notes {
+  background-color: #FDCF42;
+  border-color: #FDCF42;
+  color: var(--main-text-color);
+}
+
+#button-notes .material-symbols-outlined {
+	margin-top: 1.5px;
+}

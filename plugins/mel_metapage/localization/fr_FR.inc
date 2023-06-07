@@ -292,6 +292,7 @@ $labels['change_text_color'] = 'Changer la couleur du texte';
 
 $labels['quit_settings'] = 'Quitter les paramètres';
 
+$labels['move'] = 'Déplacer';
 $labels['move_up'] = 'Déplacer en haut';
 $labels['move_down'] = 'Déplacer en bas';
 

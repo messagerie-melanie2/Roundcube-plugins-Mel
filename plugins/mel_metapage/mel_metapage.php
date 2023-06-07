@@ -22,6 +22,7 @@ class mel_metapage extends bnum_plugin
 {
     public const FROM_KEY = "_is_from";
     public const FROM_VALUE = "iframe";
+    private const TASKS_SETUP_MODULE = ['webconf', 'search'];
 
     /**
      * Contient l'instance de rcmail
@@ -384,8 +385,8 @@ class mel_metapage extends bnum_plugin
             }
 
             if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf' || $this->rc->task === 'search') {
-                if ($this->rc->task === 'search' || $this->rc->task === 'webconf') $this->setup_module();
-                else $this->load_script_module('calendar', '/js/lib/metapages_actions/');
+                if (in_array($this->rc->task, self::TASKS_SETUP_MODULE)) $this->setup_module();
+                else $this->load_js_modules_actions();
             }
 
             if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);
@@ -562,6 +563,14 @@ class mel_metapage extends bnum_plugin
             $this->include_script('js/actions/settings_events.js');
             $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
         }
+    }
+
+    function load_js_modules_actions() {
+        $this->load_metapage_script_module('calendar');
+    }
+
+    protected function load_metapage_script_module($name) {
+        return $this->load_script_module($name, '/js/lib/metapages_actions/');
     }
 
     /**

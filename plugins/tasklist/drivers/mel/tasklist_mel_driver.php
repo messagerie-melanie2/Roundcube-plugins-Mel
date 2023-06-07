@@ -52,7 +52,15 @@ class tasklist_mel_driver extends tasklist_driver {
     // User Mél
     $this->user = driver_mel::gi()->getUser();
 
-    $this->_read_lists();
+    // Ne pas charger les tâches dans certaines tâches/actions
+    $nolisttasks = [
+      'mail/preview',
+      'mail/show',
+    ];
+
+    if (!in_array($this->rc->task."/".$this->rc->action, $nolisttasks)) {
+      $this->_read_lists();
+    }
   }
 
   /**

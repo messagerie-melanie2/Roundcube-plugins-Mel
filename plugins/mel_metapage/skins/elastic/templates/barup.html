@@ -29,54 +29,55 @@
 
 
       <div id="barup-right-buttons">
-
-        <div class="user" id="barup-user" style="padding:0;float: right;">
-          <user/>
-        </div>
-
-        <button id="button-search" style="float: right;margin-top: 14px;"
-          class="btn-circle" onclick="open_research()"
-          title="<roundcube:label name='mel_metapage.to_search' />">
-          <span class="icon-mel-search""></span>
+      
+        <div id="barup-search-col" role="search">
+          <div class="search" >
+              <div class="input-group">
+                  <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
+                  <input id="barup-search-input" value="<roundcube:object name="word_searched" />" type="text" onmousedown="" onclick="rcmail.command('mel.search.global.show', this)" title="<roundcube:label name='mel_metapage.global_search_title' />" onchange="rcmail.command('mel.search.global', this)" placeholder="<roundcube:label name='mel_metapage.globalsearch' />..." class="form-control mel-focus" />
+                  <div class="input-group-append">
+                      <span class="icofont-search input-group-text"></span>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+        <button id="button-help" class="transparent-icon-button barup-icons-button ml-3" onclick="m_mp_Help()"
+          title="<roundcube:label name='mel_metapage.help_help' />">
+          <span class="material-symbols-outlined">
+            help
+          </span>
         </button>
-
-        <div id="notification-dropdown" class="dropdown" style="float: right;">
-          <button id="button-notifications" style="float: right;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+      
+        <option/>
+      
+        <div id="notification-dropdown" class="dropdown">
+          <button id="button-notifications" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
             class="transparent-icon-button barup-icons-button" onclick=""
             title="<roundcube:label name='mel_metapage.notifications_help' />">
             <span id="notifications-icon" class="material-symbols-outlined">
               notifications
             </span>
           </button>
-          <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2" aria-labelledby="button-notifications">
-             <div id="notifications-panel"></div>
+          <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2"
+            aria-labelledby="button-notifications">
+            <div id="notifications-panel"></div>
           </div>
         </div>
-
-        <option/>
-
-        <button id="button-help" style="float: right;"
-          class="transparent-icon-button barup-icons-button ml-3" onclick="m_mp_Help()"
-          title="<roundcube:label name='mel_metapage.help_help' />">
-          <span class="material-symbols-outlined">
-            help
-          </span>
+      
+        <button id="button-search" style="margin-top: 14px;" class="btn-circle" onclick="open_research()"
+          title="<roundcube:label name='mel_metapage.to_search' />">
+          <span class="icon-mel-search""></span>
         </button>
+      
+              <div class=" user" id="barup-user" style="padding:0;">
+            <user/>
+      </div>
+      
+      </div>
+      </div>
 
-        <div id="barup-search-col" role="search" style="float: right;">
-            <div class="search" >
-                <div class="input-group">
-                    <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
-                    <input id="barup-search-input" value="<roundcube:object name="word_searched" />" type="text" onmousedown="" onclick="rcmail.command('mel.search.global.show', this)" title="<roundcube:label name='mel_metapage.global_search_title' />" onchange="rcmail.command('mel.search.global', this)" placeholder="<roundcube:label name='mel_metapage.globalsearch' />..." class="form-control mel-focus" />
-                    <div class="input-group-append">
-                        <span class="icofont-search input-group-text"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-       
-    </div>
-    </div>
+    
     <div id="barup-search" class="hidden barup-search">
         <div class="search-container"></div>
     </div> 

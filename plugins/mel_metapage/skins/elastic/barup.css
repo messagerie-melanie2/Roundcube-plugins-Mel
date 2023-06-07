@@ -759,7 +759,7 @@ html.dark-mode #barup-right-buttons button {
 
 html.layout-small #barup-right-buttons,
 html.layout-phone #barup-right-buttons {
-  padding: 0 75px;
+  padding-right: 80px;
 }
 
 #barup-search-input {

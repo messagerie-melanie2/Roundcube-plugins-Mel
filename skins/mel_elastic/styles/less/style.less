@@ -1852,7 +1852,7 @@ framed_item {
                 div{
                     &.treetoggle{
                         &:hover{
-                            text-shadow: 1px 3px 0px var(--text-shadow);
+                            // text-shadow: 1px 3px 0px var(--text-shadow);
                         }
                     }
                 }
@@ -3254,9 +3254,8 @@ a.roadmap::before
 }
 
 .menu a.move::before {
-	content: "\e915"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	content: "\e2c8"!important;
+  ._material-icon()!important;
 }
 
 .menu a.extwin::before {
@@ -3279,50 +3278,43 @@ a.roadmap::before
 }
 
 html .menu a.selection::before {
-	content: "\e932"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+    ._material-icon()!important;
+    content: '\e834'!important;
 }
 
 .menu a.select.page::before {
-	content: "\e91f"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	content: "\e5d2"!important;
+  ._material-icon()!important;
 }
 
 .menu a.unread::before, 
 .menu a.expand.unread::before, 
 .menu a.select.unread::before {
-	content: "\e91e"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	._material-icon()!important;
+    content: '\e158'!important;
 }
 
 .menu a.flag::before, 
 .menu a.select.flagged::before {
-	content: "\e957"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	._material-icon()!important;
+    content: '\e153'!important;
 }
 
 /***/
 .menu a.select.invert::before {
-	content: "\e932"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
-    color: var(--secondary-text-color);
-    text-shadow: 0px 0px 1px var(--text-shadow);
+  ._material-icon()!important;
+    content: '\e834'!important;
+    font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 
-.menu a.select.invert:hover:before {
-    color: var(--secondary-bckg-color);
-    text-shadow: 0px 0px 1px var(--default-background);
-}
+// .menu a.select.invert:hover:before {
+//     color: var(--secondary-bckg-color);
+//     text-shadow: 0px 0px 1px var(--default-background);
+// }
 
 .menu a.select.none::before {
-	content: "\e908"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	content: "\e5c9"!important;
+  ._material-icon()!important;
 }
 
 .menu a.logout::before {
@@ -3846,6 +3838,13 @@ a.rcmContactAddress {
 }
 
 /** END **/
+._material-icon() {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-variation-settings: 'wght' 300, 'opsz' 48;
+  font-size: 17px;
+  transform: scale(1.5);
+}
 
 .show-on-small
 {
@@ -3867,8 +3866,8 @@ a.rcmContactAddress {
 
 .menu a.ct-cm{
     &::before{
-        font-family: DWP!important;
-        content: '\e920'!important;
+        ._material-icon()!important;
+        content: '\e0bf'!important;
     }
 }
 

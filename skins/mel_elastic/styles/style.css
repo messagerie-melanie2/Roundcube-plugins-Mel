@@ -1152,9 +1152,6 @@ framed_item > .framed_item {
 .task-addressbook .button.options:hover {
   color: var(--secondary-text-color) !important;
 }
-.task-addressbook ul.treelist.iconized li div.treetoggle:hover {
-  text-shadow: 1px 3px 0px var(--text-shadow);
-}
 .searchgroup > centerspan {
   font-size: larger;
 }
@@ -2076,9 +2073,12 @@ a.roadmap::before {
   font-weight: normal!important;
 }
 .menu a.move::before {
-  content: "\e915" !important;
-  font-family: var(--main-icon-font) !important;
-  font-weight: normal!important;
+  content: "\e2c8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.extwin::before {
   content: "\e910" !important;
@@ -2097,44 +2097,57 @@ a.roadmap::before {
   font-weight: normal!important;
 }
 html .menu a.selection::before {
-  content: "\e932" !important;
-  font-family: var(--main-icon-font) !important;
-  font-weight: normal!important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  content: '\e834' !important;
 }
 .menu a.select.page::before {
-  content: "\e91f" !important;
-  font-family: var(--main-icon-font) !important;
-  font-weight: normal!important;
+  content: "\e5d2" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.unread::before,
 .menu a.expand.unread::before,
 .menu a.select.unread::before {
-  content: "\e91e" !important;
-  font-family: var(--main-icon-font) !important;
-  font-weight: normal!important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  content: '\e158' !important;
 }
 .menu a.flag::before,
 .menu a.select.flagged::before {
-  content: "\e957" !important;
-  font-family: var(--main-icon-font) !important;
-  font-weight: normal!important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  content: '\e153' !important;
 }
 /***/
 .menu a.select.invert::before {
-  content: "\e932" !important;
-  font-family: var(--main-icon-font) !important;
-  font-weight: normal!important;
-  color: var(--secondary-text-color);
-  text-shadow: 0px 0px 1px var(--text-shadow);
-}
-.menu a.select.invert:hover:before {
-  color: var(--secondary-bckg-color);
-  text-shadow: 0px 0px 1px var(--default-background);
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  content: '\e834' !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 .menu a.select.none::before {
-  content: "\e908" !important;
-  font-family: var(--main-icon-font) !important;
-  font-weight: normal!important;
+  content: "\e5c9" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.logout::before {
   content: "\e967" !important;
@@ -2512,8 +2525,12 @@ html.layout-small .hide-on-small {
   display: none;
 }
 .menu a.ct-cm::before {
-  font-family: DWP!important;
-  content: '\e920' !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  content: '\e0bf' !important;
 }
 .falselink {
   cursor: pointer;

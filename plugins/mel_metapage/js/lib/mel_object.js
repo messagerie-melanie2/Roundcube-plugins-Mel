@@ -23,10 +23,10 @@ class MelEventManager extends BaseStorage {
          * @returns l'objet courant (`this`) après avoir ajouté le rappel à l'objet MelEvent associé à la clé
          * d'écouteur donnée.
          */
-        this.add = function add(listener_key, callback, callback_key = null) {
-            if (!this.has(listener_key)) super_add(listener_key, new MelEvent());
+        this.add = (listener_key, callback, callback_key = null) => {
+            if (!this.has(listener_key)) super_add.call(this, listener_key, new MelEvent());
     
-            if (!callback_key) this.get(listener_key).add(callback_key, callback);
+            if (!!callback_key) this.get(listener_key).add(callback_key, callback);
             else this.get(listener_key).push(callback);
             return this;
         }
@@ -90,6 +90,7 @@ class MelObject {
             _listener: {
                 get: function() {
                     const KEY = 'MEL_OBJECT_LISTENER';
+
                     if (!Top.has(KEY)) Top.add(KEY, new MelEventManager());
 
                     return Top.get(KEY);

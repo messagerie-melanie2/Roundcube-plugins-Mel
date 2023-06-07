@@ -11,7 +11,7 @@ class Sticker
     public function __construct($uid ,$order, $title, $text, $color, $textcolor)
     {
         $this->uid = $uid;
-        $this->order = $order;
+        $this->order = intval($order);
         $this->title = $title;
         $this->text = $text;
         $this->color = $color;
@@ -81,6 +81,10 @@ class Notes extends Page
                 $this->save();
                 echo "break";
                 exit;
+                break;
+
+            case 'drag_move':
+                $this->drag_move($this->get_input_post("_uid"), $this->get_input_post("_order"));
                 break;
 
             case 'update':
@@ -169,10 +173,37 @@ class Notes extends Page
         $this->notes[$uid]["order"] = $newOrder;
     }
 
+    public function drag_move($uid, $new_order) {
+        $new_order = intval($new_order);
+        $old = mel_helper::Enumerable($this->notes)->where(function ($k, $v) use($new_order) {
+            return intval($v['order']) <= $new_order;
+        });
+        if ($old->any()) {
+           foreach ($old as $key => $value) {
+                $this->notes[$key]["order"] = intval($this->notes[$key]["order"]) - 1;
+           }
+        }
+
+        $this->notes[$uid]["order"] = $new_order;
+
+
+        $this->reorder_whithout_empty();
+    }
+
     public function update_height($uid, $newHeight)
     {
         if ($newHeight <= 0) unset($this->notes[$uid]["height"]);
         else $this->notes[$uid]["height"] = $newHeight;
+    }
+
+    private function reorder_whithout_empty() {
+        $enum = mel_helper::Enumerable($this->notes)->orderBy(function ($k, $v) {
+            return intval($v['order']);
+        });
+        $it = 0;
+        foreach ($enum as $key => $value) {
+            $this->notes[$value['uid']]['order'] = $it++;
+        }
     }
 
     private function force_reorder() {

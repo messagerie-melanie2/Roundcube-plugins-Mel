@@ -3683,6 +3683,9 @@ table{
 .mel-note {
     border-radius: 5px;
     margin-bottom: 15px;
+    max-width: 315px;
+    margin: 10px;
+    display: inline-block;
 
     .note-header{
         input{
@@ -3696,6 +3699,12 @@ table{
         textarea{
             border:none;
         }
+    }
+
+    &.eye-focus {
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
     }
 }
 
@@ -4834,4 +4843,59 @@ a.rcmContactAddress {
         background-color: var(--default-background);
         .melv2-card-shadow();
     }
+}
+
+button.melv2-sec-nav-correction{ 
+    padding: 0;
+    border-radius: 100%;
+    width: 35px;
+    height: 35px;
+    line-height: 1;  
+}
+
+.fullscreen-item {
+
+    .mel-button{
+        &.close-fs-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            border-radius: 100%;
+            /* background-color: var(--invisible); */
+            width: 35px;
+            height: 35px;
+            padding: 4px;
+        }
+    }
+}
+
+#app-notes_container {
+	display: flex;
+	margin-top: 110px;
+	justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mel-note.dragover.dragover-left::before {
+	height: 100%;
+	content: '';
+	width: 4px;
+	display: inline-block;
+	/* position: absolute; */
+	/* top: 0; */
+	background-color: black;
+	margin-left: -12px;
+	float: left;
+}
+
+.mel-note.dragover.dragover-right::before {
+	height: 100%;
+	content: '';
+	width: 4px;
+	display: inline-block;
+	/* position: absolute; */
+	/* top: 0; */
+	background-color: black;
+	margin-right: -12px;
+	float: right;
 }

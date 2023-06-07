@@ -567,6 +567,7 @@ class mel_metapage extends bnum_plugin
 
     function load_js_modules_actions() {
         $this->load_metapage_script_module('calendar');
+        $this->load_metapage_script_module('notes.js');
     }
 
     protected function load_metapage_script_module($name) {

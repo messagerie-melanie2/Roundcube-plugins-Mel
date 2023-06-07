@@ -49,7 +49,7 @@ class Notes extends Page
         $this->load();
         $this->set_env_var('mel_metapages_notes', $this->notes);
         $this->set_env_var('reorder-notes', $this->get_config('reorder-notes', false));
-        $this->include_js('notes.js');
+        //$this->include_js('notes.js');
         //$this->save_config(self::CONFIG, []);
     }
 

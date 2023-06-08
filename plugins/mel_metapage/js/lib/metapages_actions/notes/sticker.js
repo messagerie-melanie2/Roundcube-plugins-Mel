@@ -453,9 +453,9 @@ export class Sticker
             await this.post('update', {
                 _uid:this.uid,
                 _raw:this
-            });
+            }, true, false);
             rcmail.env.mel_metapages_notes[this.uid].text = this.text;
-            Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes)
+            //Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes)
         }
     }
 
@@ -466,15 +466,15 @@ export class Sticker
      * @param {boolean} doAction Si faux, la fonction de réussite ne sera pas appelé
      * @returns {Promise<any>} Appel ajax
      */
-    async post(action, params = {}, doAction = true)
+    async post(action, params = {}, doAction = true, lock = true)
     {
         //const on_eye = this.get_html().find('.icon-mel-eye-crossed').length > 0;
-        if (!!Sticker.lock) {
+        if (lock && !!Sticker.lock) {
             rcmail.display_message('Une action est déjà en cours !');
             return;
         }
 
-        Sticker.lock = rcmail.set_busy(true, 'loading');
+        if (lock) Sticker.lock = rcmail.set_busy(true, 'loading');
         params["_a"] = action;
         await Sticker.helper.http_internal_post({
             params,
@@ -498,8 +498,11 @@ export class Sticker
                 }
             }
         });
-        rcmail.set_busy(false, 'loading', Sticker.lock);
-        Sticker.lock = null;
+
+        if (lock) {
+            rcmail.set_busy(false, 'loading', Sticker.lock);
+            Sticker.lock = null;
+        }
     }
 
     /**

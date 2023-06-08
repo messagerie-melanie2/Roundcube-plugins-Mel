@@ -111,7 +111,6 @@ export class MetapageNotesModule extends MetapageModule {
                     const x = ev.clientX - rect.left;
                     const y = ev.clientY - rect.left;
 
-                    //console.log('dragover', rect, x, y, ($parent.width() / 2));
                     if (x >= ($parent.width() / 2)) $parent.addClass('dragover-right').removeClass('dragover-left');
                     else $parent.addClass('dragover-left').removeClass('dragover-right');
                 }
@@ -125,7 +124,6 @@ export class MetapageNotesModule extends MetapageModule {
 
         this._fullscreen.$apps[0].addEventListener('drop', (ev) => {
             ev.preventDefault();
-            console.log('drop', ev);
             const uid = ev.dataTransfer.getData("text/plain");
 
             let $target = $('.mel-note.dragover');
@@ -135,9 +133,8 @@ export class MetapageNotesModule extends MetapageModule {
                 if (sticker_target.uid !== uid) {
                     let order = +sticker_target.order;
 
-                    if ($target.hasClass('dragover-right')) order += 1;
-                    else order -= 1;
-    
+                    if ($target.hasClass('dragover-left')) order -= 1;
+
                     Sticker.fromHtml(uid).drop(uid, order);
                 }
             }
@@ -145,8 +142,6 @@ export class MetapageNotesModule extends MetapageModule {
             $('.mel-note.dragover').removeClass('dragover');
             $('.mel-note.dragover-right').removeClass('dragover-right');
             $('.mel-note.dragover-left').removeClass('dragover-left');
-            // var data = ev.dataTransfer.getData("text/html");
-            // ev.target.appendChild(document.getElementById(data));
         });
 
         return this;
@@ -157,12 +152,15 @@ export class MetapageNotesModule extends MetapageModule {
 
         this._fullscreen.clear();
 
+        let $app = new mel_html('div', {class:'app-notes'}).generate();
+        this._fullscreen.add('app-notes', $app);
+
         let stickers = [];
         let current_sticker;
         for (const iterator of Enumerable.from(this.notes).orderBy(x => x.value.order)) {
             const {key, value:note} = iterator;
             current_sticker = Sticker.from(note);
-            this._fullscreen.add(key, $(current_sticker.html()));
+            $app.append($(current_sticker.html()));
             stickers.push(current_sticker);
             current_sticker = null;
         }

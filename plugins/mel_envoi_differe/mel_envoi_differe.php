@@ -56,6 +56,7 @@ class mel_envoi_differe extends rcube_plugin
                 'id'       => 'mel_envoi_differe',
                 'classact' => 'mel_envoi_differe',
                 'inner'    => 'icofont-clock-time',
+                'innerclass'    => 'inner',
                 'title'    => 'buttontitle',
                 'domain'   => 'mel_envoi_differe'
             ), 'toolbar');

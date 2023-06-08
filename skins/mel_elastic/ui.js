@@ -1247,7 +1247,7 @@ $(document).ready(() => {
                     $(".btn.btn-primary.send").remove();
                     $("#toolbar-menu").prepend(`
                         <li role="menuitem">
-                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)">Envoyer</a>
+                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)"><span class="inner">Envoyer</span></a>
                         </li>
                     `);
                 }

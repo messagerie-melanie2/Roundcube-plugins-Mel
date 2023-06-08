@@ -305,8 +305,10 @@ a.useful_links.icon-mel-link::before
   font-weight: normal;
 }
 
-.menu.toolbar a.selected:before,
-.menu.toolbar a:hover:before
+.barup-right-buttons .menu.toolbar a.selected:before,
+.barup-right-buttons .menu.toolbar a:hover:before,
+#layout-menu .menu.toolbar a.selected:before,
+#layout-menu .menu.toolbar a:hover:before
 {
   font-variation-settings: 'FILL' 1;
 }

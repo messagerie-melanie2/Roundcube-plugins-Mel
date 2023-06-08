@@ -180,7 +180,7 @@ export class Calendar_Alarm extends MelObject
     {
         if (id.includes("@DATE")) id = id.split("@DATE")[0];
 
-        if (!id.includes('cal')) id = `cal:${id}`;
+        if (!id.includes('cal:')) id = `cal:${id}`;
         return id;
     }
 

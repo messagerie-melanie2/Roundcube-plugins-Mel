@@ -940,16 +940,25 @@ html.dark-mode .barup-icons-button:hover {
   background-color: #f0f0f0;
 }  */
 
+
+
+
 #button-notes {
-  background-color: #FDCF42;
-  border-color: #FDCF42;
-  color: var(--main-text-color);
+  --note-bckg-color: #FDCF42;
+  --note-text-color: var(--main-text-color);
+
+  --note-bckg-color-hover: var(--tierciary-bckg-color);
+  --note-text-color-hover: var(--secondary-text-color);
+
+  background-color: var(--note-bckg-color);
+  border-color: var(--note-bckg-color);
+  color: var(--note-text-color);
 }
 
 #button-notes:hover {
-  background-color: var(--tierciary-bckg-color);
-  border-color: var(--mel-button-border-color-alt);
-  color: var(--secondary-text-color);
+  background-color: var(--note-bckg-color-hover);
+  border-color: var(--note-bckg-color-hover);
+  color: var(--note-text-color-hover);
 }
 
 #button-notes .material-symbols-outlined {

@@ -946,6 +946,12 @@ html.dark-mode .barup-icons-button:hover {
   color: var(--main-text-color);
 }
 
+#button-notes:hover {
+  background-color: var(--tierciary-bckg-color);
+  border-color: var(--mel-button-border-color-alt);
+  color: var(--secondary-text-color);
+}
+
 #button-notes .material-symbols-outlined {
 	margin-top: 1.5px;
 }

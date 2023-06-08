@@ -3261,3 +3261,6 @@ button.melv2-sec-nav-correction {
   margin-right: -12px;
   float: right;
 }
+#button-notes.on-focus .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1;
+}

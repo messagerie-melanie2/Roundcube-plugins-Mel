@@ -45,6 +45,29 @@ export class MetapageNotesModule extends MetapageModule {
             }
             else this.toggle();
         });
+
+        this.select('#barup-wrapper-row').click((ev) => {
+            if (this.is_show()) {
+                
+                let $parent = $(ev.target);
+                
+                while ($parent.attr('id') !== 'button-notes' && $parent[0].nodeName !== 'BODY') {
+                    $parent = $parent.parent();
+                }
+
+                if ($parent.attr('id') !== 'button-notes') this.hide();
+            }
+        });
+
+        this.select('#layout-menu').click(() => {
+            if (this.is_show()) {
+                this.hide();
+            }
+        });
+    }
+
+    is_show() {
+        return this.state;
     }
 
     select_note_button() {
@@ -56,10 +79,12 @@ export class MetapageNotesModule extends MetapageModule {
 
         this._fullscreen.onclose.push(() => {
             this.state = false;
+            this.select_note_button().removeClass('on-focus');
         });
 
         this._fullscreen.onshow.push(() => {
             this.state = true;
+            this.select_note_button().addClass('on-focus');
         });
 
         this._fullscreen.$apps[0].addEventListener('dragover', (ev) => {

@@ -566,12 +566,14 @@ class mel_metapage extends bnum_plugin
     }
 
     function load_js_modules_actions() {
+        $save_in_memory = true;
+        //$not_save_in_memory = true;
+        $this->load_metapage_script_module('notes.js', $save_in_memory);
         $this->load_metapage_script_module('calendar');
-        $this->load_metapage_script_module('notes.js');
     }
 
-    protected function load_metapage_script_module($name) {
-        return $this->load_script_module($name, '/js/lib/metapages_actions/');
+    protected function load_metapage_script_module($name, $save_in_memory = false) {
+        return $this->load_script_module($name, '/js/lib/metapages_actions/', $save_in_memory);
     }
 
     /**

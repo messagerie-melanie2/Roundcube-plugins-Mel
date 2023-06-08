@@ -194,7 +194,10 @@ export class MetapageNotesModule extends MetapageModule {
     }
 
     show() {
-        this._fullscreen.show();
+        if (!this._fullscreen) {
+            this.select_note_button().click();
+        }
+        else this._fullscreen.show();
         return this;
     }
 

@@ -17,46 +17,23 @@ function get_action(text, icon, action) {
     }
 }
 
-function m_mp_create_note()
+async function m_mp_create_note()
 {
-    try {
-        window.create_note()
-    } catch (error1) {
-        console.warn("Impossible de créer des notes : ", error1, window.create_note);
-        try {
-            top.create_note();
-        } catch (error2) {
-            console.warn("Impossible de créer des notes : ", error2, top.create_note);
-            $(document).ready(async () => {
-                let it = 0;
+    if (window.create_popUp !== undefined) {
+        window.create_popUp.close();
+        window.create_popUp = undefined;
+    }
 
-                if (!window.create_note)
-                {
-                    await wait(() => {
-                        if (it++ >= 10) return false;
-        
-                        return !window.create_note;
-                    })
-                }
-    
-                if (it >= 10 && !window.create_note) 
-                {
-                    console.error("Impossible de créer une note, la page des notes n'a probablement pas été charger correctement.", error1, error2, window.create_note, window, '<====== Diverses infos');
-                    if (!m_mp_create_note.ac)
-                    {
-                        m_mp_create_note.ac = true;
-                        console.log("Tentative d'importation.....");
-                        var script = document.createElement('script');
-                        script.onload = function () {
-                            console.log('Tentative...');
-                            m_mp_create_note();
-                        };
-                        script.src = mel_metapage.Functions.url('').split('/?')[0] + '/plugins/mel_metapage/js/program/notes.min.js';
-                    }
-                }
-                else if (!!window.create_note) window.create_note();
-            });
-        }
+    const Sticker = (await loadJsModule('mel_metapage', 'sticker', '/js/lib/metapages_actions/notes/')).Sticker;
+
+    await Sticker.new();
+
+    let notes = await loadAction('mel_metapage', 'notes.js', '/js/lib/metapages_actions/');
+
+    if (!!notes) {
+        notes.show();
+
+        $('.mel-note').last().find("textarea")[0].focus();
     }
 }
 

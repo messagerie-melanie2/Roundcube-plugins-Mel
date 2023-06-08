@@ -541,6 +541,10 @@ export class Sticker
         return Sticker.fromHtml(id === undefined ? undefined : id.replace('note-', ''));
     }
 
+    static async new() {
+        await new Sticker("", -1, "", "").post_add()
+    }
+
 
 }  
 

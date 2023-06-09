@@ -165,22 +165,26 @@ export class Sticker
         $element.find('.takb').click(async () => {
             let $item = this.uid.includes('pin-') ? Sticker.fromHtml(this.uid.replace('pin-', '')).get_html() : [];
 
-            if ($item.length  > 0) {
-                    $item.find('.takb').click();
-            }else {
-                this.pin = !this.pin;
-                rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].pin = this.pin;
+            this.pin = !this.pin;
+            rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].pin = this.pin;
 
-                if (this.pin) $element.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', "'FILL' 1");
-                else $element.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', '');
-    
-                await this.post('pin', {
-                    _uid:this.uid.replace('pin-', ''),
-                    _pin:this.pin
-                });
-    
-                Sticker.helper.trigger_event('notes.apps.tak', this);
+            if (this.pin) 
+            {
+                $element.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', "'FILL' 1");
+                if ($item.length  > 0)  $item.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', "'FILL' 1");
             }
+            else {
+                $element.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', '');
+                if ($item.length  > 0) $item.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', '');
+            }
+
+            await this.post('pin', {
+                _uid:this.uid.replace('pin-', ''),
+                _pin:this.pin
+            });
+
+            Sticker.helper.trigger_event('notes.apps.tak', this);
+            
         })
 
         $element.find('button.eye').click((e) => {

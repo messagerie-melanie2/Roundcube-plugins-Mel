@@ -45,6 +45,8 @@ async function m_mp_create_note()
             });
 
             sticker.pin = true;
+            rcmail.env.mel_metapages_notes[sticker.uid].pin = true;
+
             sticker.after = () => {
                 sticker.uid = `pin-${sticker.uid}`;
                 sticker.get_html().find("textarea")[0].focus();

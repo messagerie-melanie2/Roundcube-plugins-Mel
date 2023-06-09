@@ -780,6 +780,11 @@ html.dark-mode .blue-color {
   color: #272E58;
 }
 
+html.dark-mode #barup-right-buttons .dropdown-item:active,
+html.dark-mode #barup-right-buttons .dropdown-item:focus {
+  background-color: #222a31;
+}
+
 html.dark-mode #barup-right-buttons .dropdown-item:hover {
   background-color: #323F4B;
 }

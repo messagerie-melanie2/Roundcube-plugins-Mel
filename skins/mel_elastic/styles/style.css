@@ -1846,9 +1846,7 @@ body.task-tasks .searchbar form::after {
 /** ONGLETS **/
 ._mel-tab {
   cursor: pointer;
-  padding: 1rem 1.4rem;
   display: inline-block;
-  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
 }
 ._mel-tabheader {
@@ -1878,9 +1876,7 @@ body.task-tasks .searchbar form::after {
 }
 .mel-tab {
   cursor: pointer;
-  padding: 1rem 1.4rem;
   display: inline-block;
-  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
 }
 .mel-tab:hover {
@@ -1907,9 +1903,7 @@ button.btn.mel-tab.active {
 }
 .mel-responsive-tab {
   cursor: pointer;
-  padding: 1rem 1.4rem;
   display: inline-block;
-  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
   background-color: var(--invisible) !important;
   color: var(--main-text-color) !important;
@@ -1930,6 +1924,8 @@ button.btn.mel-responsive-tab {
 }
 .responsiveTabList {
   margin-bottom: 15px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 .responsiveTabList button {
   white-space: break-spaces;
@@ -3147,7 +3143,7 @@ html.dark-mode .melv2-mail:hover {
 }
 .melv2-event-content {
   margin-left: 10px;
-  max-width: 75%;
+  max-width: calc(100% - 75px);
 }
 .melv2-event-content p,
 .melv2-mail-subject,

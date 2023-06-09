@@ -2940,9 +2940,9 @@ tr.elementmoveup > td{
 
 ._mel-tab{
     cursor: pointer;
-    padding: 1rem 1.4rem;
+    // padding: 1rem 1.4rem;
     display: inline-block;
-    margin: 0 15px;
+    // margin: 0 15px;
     border-bottom: 2px solid var(--invisible);
 }
 
@@ -3023,6 +3023,8 @@ tr.elementmoveup > td{
 
 .responsiveTabList{
     margin-bottom: 15px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
 
     button{
         white-space: break-spaces;
@@ -4715,7 +4717,8 @@ a.rcmContactAddress {
 
 .melv2-event-content {
     margin-left: 10px;
-    max-width: 75%;
+    max-width: calc(100% - 75px);
+    
     p {
         &:extend(.melv2-event-hour p);
         text-overflow: ellipsis;

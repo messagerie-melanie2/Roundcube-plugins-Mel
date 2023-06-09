@@ -42,6 +42,10 @@ export class MetapageNotesModule extends MetapageModule {
                     this._generate_notes();
                 }, {callback_key:'notes_modules'});
 
+                this.add_event_listener('notes.apps.updated.breaked', () => {
+                    this._generate_pined_notes();
+                }, {callback_key:'notes_modules'});
+
                 this._create_fullscreen_item()
                 ._generate_notes()
                 .show();
@@ -236,10 +240,12 @@ export class MetapageNotesModule extends MetapageModule {
 
         if (!!focused_sticker) focused_sticker.get_html().find('button.eye').click();
 
-        return this;
+        return this._generate_pined_notes();
     }
 
     _generate_pined_notes() {
+        $('.mel-note.pined').remove();
+
         let current_sticker;
         for (const iterator of Enumerable.from(this.notes).where(x => x.value.pin === true || x.value.pin === 'true')) {
             const {key, value:note} = iterator;

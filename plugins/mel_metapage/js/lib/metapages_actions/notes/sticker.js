@@ -493,7 +493,7 @@ export class Sticker
                 _uid:this.uid,
                 _raw:this
             }, true, false);
-            rcmail.env.mel_metapages_notes[this.uid].text = this.text;
+            rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text = this.text;
             //Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes)
         }
     }
@@ -516,6 +516,8 @@ export class Sticker
         if (lock) Sticker.lock = rcmail.set_busy(true, 'loading');
         params["_a"] = action;
 
+        const pin = params["_uid"].includes('pin-') || this.uid.includes('pin-');
+
         if (!!params["_uid"] && params["_uid"].includes('pin-')) params["_uid"] = params["_uid"].replace('pin-', '');
 
         await Sticker.helper.http_internal_post({
@@ -523,6 +525,7 @@ export class Sticker
             task:"mel_metapage",
             action:'notes',
             on_success:(datas) => {
+                debugger;
                 if (datas !== "break" && doAction)
                 {
                     rcmail.env.mel_metapages_notes = JSON.parse(datas);
@@ -536,8 +539,24 @@ export class Sticker
                     Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes)
                 }
                 else {
-                    rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text = this.text;
+                    rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text = this.text;   
+                    rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].title = this.title; 
+                    
+                    if (pin) {
+                            Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes);
+                    }
+                    else {    
+                        for (const key in this) {
+                            if (Object.hasOwnProperty.call(this, key)) {
+                                const element = this[key];
+                                rcmail.env.mel_metapages_notes[this.uid][key] = element;
+                            }
+                        }
+                        Sticker.helper.trigger_event('notes.apps.updated.breaked', rcmail.env.mel_metapages_notes)
+                    }
                 }
+
+
             }
         });
 

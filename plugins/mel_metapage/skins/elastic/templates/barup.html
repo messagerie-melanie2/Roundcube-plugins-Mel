@@ -36,7 +36,7 @@
 
 
       <div id="barup-right-buttons">
-      
+
         <div id="barup-search-col" role="search">
           <div class="search" >
               <div class="input-group">
@@ -47,8 +47,9 @@
                   </div>
               </div>
           </div>
-      </div>
+        </div>
       
+      <span class="hide-button-search">  
         <button id="button-help" class="transparent-icon-button barup-icons-button ml-3" onclick="m_mp_Help()"
           title="<roundcube:label name='mel_metapage.help_help' />">
           <span class="material-symbols-outlined">
@@ -71,29 +72,28 @@
             <div id="notifications-panel"></div>
           </div>
         </div>
+      </span>
       
         <button id="button-search" style="margin-top: 14px;" class="btn-circle" onclick="open_research()"
           title="<roundcube:label name='mel_metapage.to_search' />">
           <span class="icon-mel-search""></span>
         </button>
-      
-              <div class=" user" id="barup-user" style="padding:0;">
-            <user/>
-      </div>
-      
-      </div>
-      </div>
 
-    
-    <div id="barup-search" class="hidden barup-search">
-        <div class="search-container"></div>
-    </div> 
+        <div class=" user" id="barup-user" style="padding:0;">
+          <user/>
+        </div>
+    </div>
+  </div>
 
+  <div id="barup-search" class="hidden barup-search">
+    <div class="search-container"></div>
+  </div> 
 </div>
+
 <div id="barup-search-background" class="hidden">
-
 </div>
-<button title="<roundcube:label name='mel_metapage.ariane_help' />" class="tiny-rocket-chat hide-touch show-normal" style="    z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
+
+<button title="<roundcube:label name='mel_metapage.ariane_help' />" class="tiny-rocket-chat hide-touch show-normal" style="z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
     <span class="tiny-rocket-chat-icon icon-mel-message"><span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span></span>
 </button>
 

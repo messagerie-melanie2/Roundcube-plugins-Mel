@@ -624,7 +624,7 @@ html.layout-small #barup-search-col {
 
 html.layout-phone #barup-search-col {
   display: none;
-  width: 100%;
+  width: calc(100% - 60px);
   padding-left: 50px;
 }
 

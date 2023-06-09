@@ -102,24 +102,30 @@ export class MetapageNotesModule extends MetapageModule {
         }, {callback_key:'notes_modules'});
 
         this.rcmail().addEventListener('skin-resize', () => {
-            $('.mel-note.pined').each((i, e) => {
-                e = $(e);
-                const note = rcmail.env.mel_metapages_notes[$(e).attr('id').replace('pin-', '').replace('note-', '')];
-                const x = parseInt(note.pin_pos[0] ?? 0);
-                const wx = parseInt(note.pin_pos_init[0] ?? window.outerWidth);
-                const right = wx - x;
-                // console.log('resize#1',  right, '=>', wx);
-                // console.log('resize#2', window.outerWidth - right, '=>', window.outerWidth);
-
-                let calc = window.outerWidth - right;
-
-                if (calc < 60) calc = 60;
-
-                $(e).css('left', `${calc}px`);
-            });
+            this._on_resize();
         });
 
         this._generate_pined_notes();
+
+        if ($('.mel-note.pined').length > 0) {
+            this._on_resize();   
+        }
+    }
+
+    _on_resize() {
+        $('.mel-note.pined').each((i, e) => {
+            e = $(e);
+            const note = rcmail.env.mel_metapages_notes[$(e).attr('id').replace('pin-', '').replace('note-', '')];
+            const x = parseInt(note.pin_pos[0] ?? 0);
+            const wx = parseInt(note.pin_pos_init[0] ?? window.outerWidth);
+            const right = wx - x;
+
+            let calc = window.outerWidth - right;
+
+            if (calc < 60) calc = 60;
+
+            $(e).css('left', `${calc}px`);
+        });
     }
 
     is_show() {

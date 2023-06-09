@@ -75,7 +75,10 @@ export class MetapageNotesModule extends MetapageModule {
             if (taked.pin) {
                 if (this.is_show()) this.hide();
 
-                const pos = new Point(Random.intRange(75, (window.innerWidth - 315)), 60 + Random.intRange(0, (window.innerHeight / 4)));
+                const init_pos = rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos;
+                const x = init_pos?.[0] ?? Random.intRange(75, (window.innerWidth - 315));
+                const y = init_pos?.[1] ?? Random.intRange(60, (window.innerHeight / 4));
+                const pos = new Point(x, y);
 
                 taked = PinSticker.fromSticker(taked);
 

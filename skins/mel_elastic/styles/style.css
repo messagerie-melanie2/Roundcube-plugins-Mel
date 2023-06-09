@@ -1846,7 +1846,9 @@ body.task-tasks .searchbar form::after {
 /** ONGLETS **/
 ._mel-tab {
   cursor: pointer;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
 }
 ._mel-tabheader {
@@ -1876,7 +1878,9 @@ body.task-tasks .searchbar form::after {
 }
 .mel-tab {
   cursor: pointer;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
 }
 .mel-tab:hover {
@@ -1903,8 +1907,12 @@ button.btn.mel-tab.active {
 }
 .mel-responsive-tab {
   cursor: pointer;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
+  margin: 0;
+  padding: 0;
   background-color: var(--invisible) !important;
   color: var(--main-text-color) !important;
 }
@@ -1925,7 +1933,7 @@ button.btn.mel-responsive-tab {
 .responsiveTabList {
   margin-bottom: 15px;
   flex-wrap: nowrap;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 .responsiveTabList button {
   white-space: break-spaces;

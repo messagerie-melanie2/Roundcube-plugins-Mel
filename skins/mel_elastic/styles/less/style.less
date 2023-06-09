@@ -2838,7 +2838,6 @@ tr.elementmoveup > td{
         color:var(--secondary-text-color);
     }
 }
-
 #sections-table{
     tr {
         td {
@@ -2940,9 +2939,9 @@ tr.elementmoveup > td{
 
 ._mel-tab{
     cursor: pointer;
-    // padding: 1rem 1.4rem;
+    padding: 1rem 1.4rem;
     display: inline-block;
-    // margin: 0 15px;
+    margin: 0 15px;
     border-bottom: 2px solid var(--invisible);
 }
 
@@ -3002,6 +3001,8 @@ tr.elementmoveup > td{
 
 .mel-responsive-tab{
     ._mel-tab();
+    margin: 0;
+    padding: 0;
     .mel-invisible-background();
     color:var(--main-text-color)!important;
 
@@ -3024,7 +3025,7 @@ tr.elementmoveup > td{
 .responsiveTabList{
     margin-bottom: 15px;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: space-around;
 
     button{
         white-space: break-spaces;

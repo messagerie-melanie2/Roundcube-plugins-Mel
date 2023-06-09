@@ -1043,10 +1043,10 @@ $(document).ready(() => {
                     if (e.parent().hasClass("special-buttons"))
                         return;
 
-                    if (e.hasClass('settings')) {
-                        e.css('display', 'none');
-                        return;
-                    }
+                    // if (e.hasClass('settings')) {
+                    //     e.css('display', 'none');
+                    //     return;
+                    // }
 
                     const order = e.css("order");
                     const tmp = e.removeAttr("title")[0].outerHTML;

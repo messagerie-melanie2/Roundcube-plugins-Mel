@@ -1,5 +1,8 @@
 import { MelFullScreenItem } from "../classes/fullscreen";
+import { Random } from "../classes/random";
+import { Point } from "../mel_maths";
 import { MetapageModule } from "./metapage_module";
+import { PinSticker } from "./notes/pined_sticker";
 import { Sticker, default_note_uid } from "./notes/sticker";
 
 export class MetapageNotesModule extends MetapageModule {
@@ -64,6 +67,59 @@ export class MetapageNotesModule extends MetapageModule {
                 this.hide();
             }
         });
+
+        this.add_event_listener('notes.apps.tak', async (taked) => {
+            const after = taked.after;
+            taked.uid = taked.uid.replace('pin-', '')
+
+            if (taked.pin) {
+                if (this.is_show()) this.hide();
+
+                const pos = new Point(Random.intRange(75, (window.innerWidth - 315)), 60 + Random.intRange(0, (window.innerHeight / 4)));
+
+                taked = PinSticker.fromSticker(taked);
+
+                taked.generate({pos}).appendTo($('body'));
+                taked.set_handlers();
+
+                await taked.post('pin_move', {
+                    _uid:taked.uid.replace('pin-', ''),
+                    _x:pos.x,
+                    _y:pos.y,
+                    _initX:window.outerWidth
+                }, true);
+                rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
+                rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
+            }else {
+                taked = PinSticker.fromSticker(taked);
+                taked.get_html().remove();
+            }
+
+            if (!!after) {
+                after();
+            }
+
+        }, {callback_key:'notes_modules'});
+
+        this.rcmail().addEventListener('skin-resize', () => {
+            $('.mel-note.pined').each((i, e) => {
+                e = $(e);
+                const note = rcmail.env.mel_metapages_notes[$(e).attr('id').replace('pin-', '').replace('note-', '')];
+                const x = parseInt(note.pin_pos[0] ?? 0);
+                const wx = parseInt(note.pin_pos_init[0] ?? window.outerWidth);
+                const right = wx - x;
+                // console.log('resize#1',  right, '=>', wx);
+                // console.log('resize#2', window.outerWidth - right, '=>', window.outerWidth);
+
+                let calc = window.outerWidth - right;
+
+                if (calc < 60) calc = 60;
+
+                $(e).css('left', `${calc}px`);
+            });
+        });
+
+        this._generate_pined_notes();
     }
 
     is_show() {
@@ -157,7 +213,7 @@ export class MetapageNotesModule extends MetapageModule {
 
         let stickers = [];
         let current_sticker;
-        for (const iterator of Enumerable.from(this.notes).orderBy(x => x.value.order)) {
+        for (const iterator of Enumerable.from(this.notes).where(x => !!x.value.uid).orderBy(x => x.value.order)) {
             const {key, value:note} = iterator;
             current_sticker = Sticker.from(note);
             $app.append($(current_sticker.html()));
@@ -170,6 +226,19 @@ export class MetapageNotesModule extends MetapageModule {
         }
 
         if (!!focused_sticker) focused_sticker.get_html().find('button.eye').click();
+
+        return this;
+    }
+
+    _generate_pined_notes() {
+        let current_sticker;
+        for (const iterator of Enumerable.from(this.notes).where(x => x.value.pin === true || x.value.pin === 'true')) {
+            const {key, value:note} = iterator;
+            current_sticker = Sticker.from(note);
+            current_sticker = PinSticker.fromSticker(current_sticker);
+            current_sticker.generate({pos:new Point(parseInt(note.pin_pos?.[0] ?? 60), parseInt(note.pin_pos?.[1] ?? 60))}).appendTo($('body'));
+            current_sticker.set_handlers();
+        }
 
         return this;
     }

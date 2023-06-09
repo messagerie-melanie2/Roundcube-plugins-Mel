@@ -54,7 +54,7 @@ export class Sticker
      * @param {string} color Couleur de la note 
      * @param {string} text_color Couleur du texte de la note
      */
-    constructor(uid, order, title, text, color = base_color, text_color = base_text_color)
+    constructor(uid, order, title, text, color = base_color, text_color = base_text_color, tak = false)
     {
         this.uid = uid;
         this.order = +(order);
@@ -62,6 +62,9 @@ export class Sticker
         this.text = text;
         this.color = color;
         this.textcolor = text_color;
+        this.pin = tak;
+
+        if (typeof this.pin === 'string') this.pin = this.pin === 'true';
     }
 
     /**
@@ -75,7 +78,8 @@ export class Sticker
             <div class="note-header">
                 <table>
                 <tr>
-                    <td><button title="${rcmail.gettext('new_n', plugin_text)}" class="${MaterialSymbolHtml.get_class_fill_on_hover()} mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="material-symbols-outlined">add_circle</span></button></td>
+                    <!-- <td><button title="${rcmail.gettext('new_n', plugin_text)}" class="${MaterialSymbolHtml.get_class_fill_on_hover()} mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="material-symbols-outlined">add_circle</span></button></td> -->
+                    <td><button title="${'Afficher sur le Bnum'}" class="${MaterialSymbolHtml.get_class_fill_on_hover()} mel-button no-button-margin bckg true takb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="material-symbols-outlined">push_pin</span></button></td>
                     <td style="width:100%"><input title="Titre de la note" class="change mel-focus" type=text style="width:100%;background-color:${this.color};color:${this.textcolor}" value="${this.title}" /></td>
                     <td><button title="Se concentrer sur cette note" class="mel-button no-button-margin bckg true eye ${MaterialSymbolHtml.get_class_fill_on_hover()}" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="material-symbols-outlined">visibility</span></button></td>
                     <td><button title="${rcmail.gettext('settings', plugin_text)}" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="material-symbols-outlined">more_horiz</span></button></td>
@@ -155,6 +159,29 @@ export class Sticker
             rcmail.clear_messages();
             rcmail.display_message(rcmail.gettext('note_created_success', plugin_text), "confirmation");
         });
+
+        if (this.pin) $element.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', "'FILL' 1");
+
+        $element.find('.takb').click(async () => {
+            let $item = this.uid.includes('pin-') ? Sticker.fromHtml(this.uid.replace('pin-', '')).get_html() : [];
+
+            if ($item.length  > 0) {
+                    $item.find('.takb').click();
+            }else {
+                this.pin = !this.pin;
+                rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].pin = this.pin;
+
+                if (this.pin) $element.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', "'FILL' 1");
+                else $element.find('.takb').find('.material-symbols-outlined').css('font-variation-settings', '');
+    
+                await this.post('pin', {
+                    _uid:this.uid.replace('pin-', ''),
+                    _pin:this.pin
+                });
+    
+                Sticker.helper.trigger_event('notes.apps.tak', this);
+            }
+        })
 
         $element.find('button.eye').click((e) => {
             e = $(e.currentTarget);
@@ -265,10 +292,10 @@ export class Sticker
         });
         
         let hasDown = Sticker.findByOrder(this.order + 1).uid !== undefined;
-        let hasUp = Sticker.findByOrder(this.order - 1).uid !== undefined;
+
 
         //Handler pour le bouton "descendre"
-        if (true || hasDown)
+        if ($element.find('.downb').length > 0)
         {
             $element.find('.downb').attr('draggable', true)[0].addEventListener("dragstart", (ev) => {
                 if (!!Sticker.lock) {
@@ -286,7 +313,6 @@ export class Sticker
                 console.log('drag&drop', ev);
             });
         }
-        else $element.find('.downb').addClass("disabled").attr("disabled", "disabled");
 
         // //Handler pour le bouton "monter"
         // if (hasUp)
@@ -336,7 +362,7 @@ export class Sticker
      * @returns id & data-order
      */
     get_datas(){
-        return ` id="note-${this.uid}" data-order="${this.order}" `;
+        return ` id="note-${this.uid}" data-order="${this.order}"  data-pin="${this.pin}"`;
     }
 
     /**
@@ -419,7 +445,7 @@ export class Sticker
      * Supprime la note
      * @returns {Promise<any>|null} Ajax
      */
-    post_delete()
+    async post_delete()
     {
         if (this.uid === default_note_uid) return;
 
@@ -428,7 +454,16 @@ export class Sticker
             this.get_html().find('.eye').click();
         }
 
-        return this.post('del', {_uid:this.uid});
+        await this.post('pin', {
+            _uid:this.uid,
+            _pin:false
+        });
+
+        this.pin = false;
+
+        Sticker.helper.trigger_event('notes.apps.tak', this);
+
+        return await this.post('del', {_uid:this.uid});
     }
 
     post_height_updated(newHeight)
@@ -476,6 +511,9 @@ export class Sticker
 
         if (lock) Sticker.lock = rcmail.set_busy(true, 'loading');
         params["_a"] = action;
+
+        if (!!params["_uid"] && params["_uid"].includes('pin-')) params["_uid"] = params["_uid"].replace('pin-', '');
+
         await Sticker.helper.http_internal_post({
             params,
             task:"mel_metapage",
@@ -494,7 +532,7 @@ export class Sticker
                     Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes)
                 }
                 else {
-                    rcmail.env.mel_metapages_notes[this.uid].text = this.text;
+                    rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text = this.text;
                 }
             }
         });
@@ -512,7 +550,7 @@ export class Sticker
      */
     static from(element)
     {
-        let s = new Sticker(element.uid, element.order, element.title, element.text, element.color, element.textcolor);
+        let s = new Sticker(element.uid, element.order, element.title, element.text, element.color, element.textcolor, (element.pin ?? false));
         
         if (!!element.height) s.height = element.height;
 
@@ -527,7 +565,7 @@ export class Sticker
     static fromHtml(uid)
     {
         let $element = $(`.mel-note#note-${uid}`);
-        return new Sticker(uid, $element.data("order"), $element.find("input").val(), $element.find("textarea").val(), $element.css("background-color"), $element.css("color"));
+        return new Sticker(uid, $element.data("order"), $element.find("input").val(), $element.find("textarea").val(), $element.css("background-color"), $element.css("color"), $element.data("pin"));
     }
 
     /**

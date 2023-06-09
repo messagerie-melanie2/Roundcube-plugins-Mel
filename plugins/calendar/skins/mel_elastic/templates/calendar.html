@@ -527,14 +527,34 @@
 <div id="appointmentbox" class="popupmenu" style="min-height: 450px;">
   <form id="appointmentpropform" action="#" method="POST">
 
-    <div id="activate_appointment" class="mt-1 mb-4">
+    <div id="activate_appointment" class="mt-1">
       <label class="switch mr-1" onchange="rcmail.command('toggle-appointment')"">
         <input type='checkbox' id='check_appointment'>
         <span class=" slider round"></span>
       </label>
       <roundcube:label name='calendar.activateappointment' />
-      <input type="hidden" id="appointment_url">
     </div>
+
+    <div class="row my-3">
+      <div class="col-7">
+        <div class="input-group">
+          <input type="text" id="appointment_url" class="form-control appointment_url" readonly>
+          <div class="input-group-append">
+            <input type="button" id="button_calfreebusyurl" class="btn btn-secondary"
+              value="<roundcube:label name='calendar.copied_url_default' />"
+              title="<roundcube:label name='calendar.copied_url_title' />" onclick="copy_calendar_url('appointment_url')" />
+          </div>
+        </div>
+      </div>
+      <div class="col-5">
+        <button type="button" id="button_fullcalendarurl" class="btn btn-secondary"
+          title="<roundcube:label name='calendar.see_direct_page' />" onclick="open_external_calendar()">
+          <roundcube:label name='calendar.see_direct_page' />
+          <span class="ml-2 icon-mel-external"></span>
+        </button>
+      </div>
+    </div>
+    
     <!-- Nav tabs -->
     <span id="appointment_configuration">
 
@@ -1029,11 +1049,6 @@
       </div>
     </span>
   </form>
-  <button type="button" id="button_fullcalendarurl" class="btn btn-secondary"
-    title="<roundcube:label name='calendar.see_direct_page' />" onclick="open_external_calendar()">
-    <roundcube:label name='calendar.see_direct_page' />
-    <span class="ml-2 icon-mel-external"></span>
-  </button>
 </div>
 
 <div id="fburlbox" class="popupmenu">

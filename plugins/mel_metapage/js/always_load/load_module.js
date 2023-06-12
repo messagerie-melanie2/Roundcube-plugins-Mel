@@ -4,6 +4,7 @@
 
     let actions = {};
     let modules = {};
+    let timeouts = {};
     let promises = {};
 
     function getKey(plugin, name, extra = EMPTY_STRING) {
@@ -22,9 +23,9 @@
             }
         }
 
-        if (!!modules[key] && !!modules[key].timeout) clearTimeout(modules[key].timeout);
+        if (!!timeouts[key] && !!timeouts[key]) clearTimeout(timeouts[key]);
 
-        modules[key].timeout = setTimeout((key) => {
+        timeouts[key] = setTimeout((key) => {
             unloadModuleFromKey(key);
         }, UNLOAD_TIME_MS, key);
         return modules[key];
@@ -37,7 +38,10 @@
     function unloadModuleFromKey(key) {
         if (!!modules[key]) {
             console.info('unload module : ', key);
-            clearTimeout(modules[key].timeout);
+            if (!!timeouts[key]) {
+                clearTimeout(timeouts[key]);
+                timeouts[key] = null;
+            }
             modules[key] = null;
             delete promises[key];
         }

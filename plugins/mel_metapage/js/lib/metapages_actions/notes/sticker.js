@@ -516,7 +516,7 @@ export class Sticker
         if (lock) Sticker.lock = rcmail.set_busy(true, 'loading');
         params["_a"] = action;
 
-        const pin = params["_uid"].includes('pin-') || this.uid.includes('pin-');
+        const pin = !!params["_uid"] && (params["_uid"].includes('pin-') || this.uid.includes('pin-'));
 
         if (!!params["_uid"] && params["_uid"].includes('pin-')) params["_uid"] = params["_uid"].replace('pin-', '');
 
@@ -525,7 +525,6 @@ export class Sticker
             task:"mel_metapage",
             action:'notes',
             on_success:(datas) => {
-                debugger;
                 if (datas !== "break" && doAction)
                 {
                     rcmail.env.mel_metapages_notes = JSON.parse(datas);

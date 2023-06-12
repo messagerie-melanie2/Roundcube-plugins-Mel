@@ -62,7 +62,7 @@ export class PinSticker extends Sticker {
 
         let droped;
         let init_pos;
-        let $move = $element.find('.moveb').attr('draggable', true);
+        let $move = $element.find('.moveb').attr('draggable', true).removeClass('disabled').removeAttr('disabled');
         $move[0].addEventListener("dragstart", (ev) => {
             if (!!Sticker.lock) {
                 ev.preventDefault();

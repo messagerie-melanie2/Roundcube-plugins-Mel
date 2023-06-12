@@ -80,6 +80,7 @@ export class MetapageNotesModule extends MetapageModule {
                 if (this.is_show()) this.hide();
 
                 const init_pos = rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos;
+                const has_pos = !!init_pos?.[0] && !!init_pos?.[1];
                 const x = init_pos?.[0] ?? Random.intRange(75, (window.innerWidth - 315));
                 const y = init_pos?.[1] ?? Random.intRange(60, (window.innerHeight / 4));
                 const pos = new Point(x, y);
@@ -89,14 +90,18 @@ export class MetapageNotesModule extends MetapageModule {
                 taked.generate({pos}).appendTo($('body'));
                 taked.set_handlers();
 
-                await taked.post('pin_move', {
-                    _uid:taked.uid.replace('pin-', ''),
-                    _x:pos.x,
-                    _y:pos.y,
-                    _initX:window.outerWidth
-                }, true);
-                rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
-                rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
+                if (!has_pos)
+                {
+                    await taked.post('pin_move', {
+                        _uid:taked.uid.replace('pin-', ''),
+                        _x:pos.x,
+                        _y:pos.y,
+                        _initX:window.outerWidth
+                    }, true);
+                    rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
+                    rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
+                }
+
             }else {
                 taked = PinSticker.fromSticker(taked);
                 taked.get_html().remove();
@@ -224,6 +229,8 @@ export class MetapageNotesModule extends MetapageModule {
         let $app = new mel_html('div', {class:'app-notes'}).generate();
         this._fullscreen.add('app-notes', $app);
 
+        let len;
+        let it = 0;
         let stickers = [];
         let current_sticker;
         for (const iterator of Enumerable.from(this.notes).where(x => !!x.value.uid).orderBy(x => x.value.order)) {
@@ -232,10 +239,15 @@ export class MetapageNotesModule extends MetapageModule {
             $app.append($(current_sticker.html()));
             stickers.push(current_sticker);
             current_sticker = null;
+            ++it;
         }
 
-        for (let index = 0, len = stickers.length; index < len; ++index) {
-            stickers[index].set_handlers();
+        if (it <= 1) {
+            $app.find('.downb').addClass('disabled').attr('disabled', 'disabled');
+        }
+
+        for (it = 0, len = stickers.length; it < len; ++it) {
+            stickers[it].set_handlers();
         }
 
         if (!!focused_sticker) focused_sticker.get_html().find('button.eye').click();

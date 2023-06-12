@@ -79,27 +79,30 @@ export class MetapageNotesModule extends MetapageModule {
             if (taked.pin) {
                 if (this.is_show()) this.hide();
 
-                const init_pos = rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos;
-                const has_pos = !!init_pos?.[0] && !!init_pos?.[1];
-                const x = init_pos?.[0] ?? Random.intRange(75, (window.innerWidth - 315));
-                const y = init_pos?.[1] ?? Random.intRange(60, (window.innerHeight / 4));
-                const pos = new Point(x, y);
-
-                taked = PinSticker.fromSticker(taked);
-
-                taked.generate({pos}).appendTo($('body'));
-                taked.set_handlers();
-
-                if (!has_pos)
+                if (0 === $(`#note-pin-${taked.uid.replace('pin-', '').replace('note-', '')}`).length)
                 {
-                    await taked.post('pin_move', {
-                        _uid:taked.uid.replace('pin-', ''),
-                        _x:pos.x,
-                        _y:pos.y,
-                        _initX:window.outerWidth
-                    }, true);
-                    rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
-                    rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
+                    const init_pos = rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos;
+                    const has_pos = !!init_pos?.[0] && !!init_pos?.[1];
+                    const x = init_pos?.[0] ?? Random.intRange(75, (window.innerWidth - 315));
+                    const y = init_pos?.[1] ?? Random.intRange(60, (window.innerHeight / 4));
+                    const pos = new Point(x, y);
+
+                    taked = PinSticker.fromSticker(taked);
+
+                    taked.generate({pos}).appendTo($('body'));
+                    taked.set_handlers();
+
+                    if (!has_pos)
+                    {
+                        await taked.post('pin_move', {
+                            _uid:taked.uid.replace('pin-', ''),
+                            _x:pos.x,
+                            _y:pos.y,
+                            _initX:window.outerWidth
+                        }, true);
+                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
+                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
+                    }
                 }
 
             }else {

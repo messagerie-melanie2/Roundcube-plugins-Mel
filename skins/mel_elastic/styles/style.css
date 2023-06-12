@@ -3261,7 +3261,7 @@ button.melv2-sec-nav-correction {
   justify-content: center;
   flex-wrap: wrap;
 }
-.mel-note.dragover.dragover-left::before {
+.mel-note.dragover::before {
   height: 158px;
   content: '';
   width: 4px;
@@ -3269,21 +3269,18 @@ button.melv2-sec-nav-correction {
   position: absolute;
   top: 50%;
   background-color: black;
-  margin-left: -12px;
-  left: 0;
   transform: translateY(-50%);
 }
+html.dark-mode .mel-note.dragover::before {
+  background-color: white;
+}
+.mel-note.dragover.dragover-left::before {
+  margin-left: -12px;
+  left: 0;
+}
 .mel-note.dragover.dragover-right::before {
-  height: 158px;
-  content: '';
-  width: 4px;
-  display: block;
-  position: absolute;
-  top: 50%;
-  background-color: black;
   margin-right: -12px;
   right: 0;
-  transform: translateY(-50%);
 }
 #button-notes.on-focus .material-symbols-outlined {
   font-variation-settings: 'FILL' 1;

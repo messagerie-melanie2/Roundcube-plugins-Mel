@@ -4881,30 +4881,34 @@ button.melv2-sec-nav-correction{
     flex-wrap: wrap;
 }
 
-.mel-note.dragover.dragover-left::before {
-	height: 158px;
-	content: '';
-	width: 4px;
-	display: block;
-	position: absolute;
-	top: 50%;
-	background-color: black;
-	margin-left: -12px;
-	left: 0;
-	transform: translateY(-50%);
-}
+.mel-note {
+    &.dragover {
+        &::before{
+            height: 158px;
+            content: '';
+            width: 4px;
+            display: block;
+            position: absolute;
+            top: 50%;
+            background-color: black;
+            transform: translateY(-50%);
 
-.mel-note.dragover.dragover-right::before {
-	height: 158px;
-	content: '';
-	width: 4px;
-	display: block;
-	position: absolute;
-	top: 50%;
-	background-color: black;
-	margin-right: -12px;
-	right: 0;
-	transform: translateY(-50%);
+            html.dark-mode &{
+                background-color: white;
+            }
+        }
+
+        &.dragover-left::before{
+            margin-left: -12px;
+            left: 0;
+
+        }
+
+        &.dragover-right::before{
+            margin-right: -12px;
+            right: 0;
+        }
+    }
 }
 
 #button-notes{

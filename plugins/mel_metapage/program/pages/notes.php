@@ -7,15 +7,17 @@ class Sticker
     private $text;
     private $color;
     private $textcolor;
+    private $pin;
 
-    public function __construct($uid ,$order, $title, $text, $color, $textcolor)
+    public function __construct($uid ,$order, $title, $text, $color, $textcolor, $pin = false)
     {
         $this->uid = $uid;
-        $this->order = $order;
+        $this->order = intval($order);
         $this->title = $title;
         $this->text = $text;
         $this->color = $color;
         $this->textcolor = $textcolor;
+        $this->pin = $pin ?? false;
     }
 
     public function uid()
@@ -30,7 +32,8 @@ class Sticker
             "title" => $this->title,
             "text" => $this->text,
             "color" => $this->color,
-            "textcolor" => $this->textcolor
+            "textcolor" => $this->textcolor,
+            'pin' => $this->pin
         ];
     }
 }
@@ -49,7 +52,7 @@ class Notes extends Page
         $this->load();
         $this->set_env_var('mel_metapages_notes', $this->notes);
         $this->set_env_var('reorder-notes', $this->get_config('reorder-notes', false));
-        $this->include_js('notes.js');
+        //$this->include_js('notes.js');
         //$this->save_config(self::CONFIG, []);
     }
 
@@ -83,9 +86,26 @@ class Notes extends Page
                 exit;
                 break;
 
+            case 'drag_move':
+                $this->drag_move($this->get_input_post("_uid"), $this->get_input_post("_order"));
+                break;
+
             case 'update':
                 $raw = $this->get_input_post("_raw");
                 $this->update($this->get_input_post("_uid") ,$raw["title"], $raw["text"], $raw["color"], $raw["textcolor"]);
+                $this->save();
+                echo "break";
+                exit;
+
+            case 'pin':
+                $this->notes[$this->get_input_post("_uid")]['pin'] = $this->get_input_post("_pin");
+                $this->save();
+                echo "break";
+                exit;
+
+            case 'pin_move':
+                $this->notes[$this->get_input_post("_uid")]['pin_pos'] = [$this->get_input_post("_x"), $this->get_input_post("_y")];
+                $this->notes[$this->get_input_post("_uid")]['pin_pos_init'] = [$this->get_input_post("_initX")];
                 $this->save();
                 echo "break";
                 exit;
@@ -169,10 +189,37 @@ class Notes extends Page
         $this->notes[$uid]["order"] = $newOrder;
     }
 
+    public function drag_move($uid, $new_order) {
+        $new_order = intval($new_order);
+        $old = mel_helper::Enumerable($this->notes)->where(function ($k, $v) use($new_order) {
+            return intval($v['order']) <= $new_order;
+        });
+        if ($old->any()) {
+           foreach ($old as $key => $value) {
+                $this->notes[$key]["order"] = intval($this->notes[$key]["order"]) - 1;
+           }
+        }
+
+        $this->notes[$uid]["order"] = $new_order;
+
+
+        $this->reorder_whithout_empty();
+    }
+
     public function update_height($uid, $newHeight)
     {
         if ($newHeight <= 0) unset($this->notes[$uid]["height"]);
         else $this->notes[$uid]["height"] = $newHeight;
+    }
+
+    private function reorder_whithout_empty() {
+        $enum = mel_helper::Enumerable($this->notes)->orderBy(function ($k, $v) {
+            return intval($v['order']);
+        });
+        $it = 0;
+        foreach ($enum as $key => $value) {
+            $this->notes[$value['uid']]['order'] = $it++;
+        }
     }
 
     private function force_reorder() {

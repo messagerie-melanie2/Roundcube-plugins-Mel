@@ -14,3 +14,8 @@ $labels['courrielleur_title_page'] = 'Ariane doit maintenant être utilisée dan
 $labels['courrielleur_text_page_1'] = 'Pour une utilisation optimale d\'Ariane, il est nécessaire d\'ouvrir Ariane depuis Mél web.';
 $labels['courrielleur_text_page_2'] = 'Les capacités d\'affichage de votre version du courrielleur sont incompatibles avec Ariane.';
 $labels['courrielleur_text_page_3'] = 'Pour ouvrir Ariane, copier/coller le lien suivant dans votre navigateur : https://mel.din.developpement-durable.gouv.fr/?_task=discussion';
+
+$labels['away'] = 'Absent';
+$labels['busy'] = 'Ne pas déranger';
+$labels['online'] = 'Disponible';
+$labels['offline'] = 'Invisible';

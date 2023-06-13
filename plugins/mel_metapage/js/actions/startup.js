@@ -609,7 +609,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (args["iframe.src"] !== undefined)
         src = args["iframe.src"];
     else if (eClass === "discussion")
-        src = empty;//rcmail.env.rocket_chat_url + "home";
+        src = rcmail.env?.chat_system_url ?? '';//empty;//rcmail.env.rocket_chat_url + "home";
     else
     {
         let task;
@@ -660,9 +660,9 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
     try {
-        $('#bnum-loading-div').addClass('loaded');
-        //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
-        let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
+
+        if (changepage) $('#bnum-loading-div').addClass('loaded');
+        let querry_content = $("."+eClass+"-frame")[0].contentWindow;
         const _$ = querry_content.$;
 
         _$("#layout-menu").remove();
@@ -686,20 +686,14 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     rcmail.clear_messages();
     rcmail.env.frame_created = true;
 
-    if (changepage && $("#"+id).data("loaded") != "true")
-        $("#"+id).css("display", "");
+    if (changepage && $("#"+id).data("loaded") != "true") $("#"+id).css("display", "");
 
-    if ($("#"+id).data("loaded") != "true")
-        $("#"+id).data("loaded", "true");
+    if ($("#"+id).data("loaded") != "true") $("#"+id).data("loaded", "true");
     
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
+    {
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
-
-    // if (eClass === "discussion")
-    // {
-    //     rcmail.triggerEvent("init_rocket_chat", id);
-    //     window.ariane.goLastRoom($("#"+id));
-    // }
+    }
 
     if (changepage)
     {

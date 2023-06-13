@@ -22,6 +22,7 @@ class mel_metapage extends bnum_plugin
 {
     public const FROM_KEY = "_is_from";
     public const FROM_VALUE = "iframe";
+    private const TASKS_SETUP_MODULE = ['webconf', 'search'];
 
     /**
      * Contient l'instance de rcmail
@@ -370,7 +371,7 @@ class mel_metapage extends bnum_plugin
                     '_initial_request' => $_SERVER["REQUEST_URI"],
                     '_initial_task' => $this->rc->task
                 ]);
-                return;
+                exit;
             }
             else if (!$courielleur && !isset($from_cour) ) {
                 $courielleur = str_ireplace('://', '¤¤', $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'&_redirected_from_courrielleur=1');
@@ -381,6 +382,11 @@ class mel_metapage extends bnum_plugin
                 //$courielleur = str_ireplace('_courrielleur', '_redirected_from_courrielleur', $courielleur);
                 $this->rc->output->header('Location: ' . $courielleur);
                 exit;
+            }
+
+            if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf' || $this->rc->task === 'search') {
+                if (in_array($this->rc->task, self::TASKS_SETUP_MODULE)) $this->setup_module();
+                else $this->load_js_modules_actions();
             }
 
             if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);
@@ -557,6 +563,17 @@ class mel_metapage extends bnum_plugin
             $this->include_script('js/actions/settings_events.js');
             $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
         }
+    }
+
+    function load_js_modules_actions() {
+        $save_in_memory = true;
+        //$not_save_in_memory = true;
+        $this->load_metapage_script_module('notes.js', $save_in_memory);
+        $this->load_metapage_script_module('calendar');
+    }
+
+    protected function load_metapage_script_module($name, $save_in_memory = false) {
+        return $this->load_script_module($name, '/js/lib/metapages_actions/', $save_in_memory);
     }
 
     /**
@@ -788,6 +805,9 @@ class mel_metapage extends bnum_plugin
 
             if (strpos($args["content"],'<user/>') !== false)
                 $args["content"] = str_replace("<user/>", $this->rc->output->parse("mel_metapage.user", false, false), $args["content"]);
+           
+            if (strpos($args["content"],'<option/>') !== false)
+                $args["content"] = str_replace("<option/>", $this->rc->output->parse("mel_metapage.option", false, false), $args["content"]);
 
             $args["content"] = $this->add_html($args["content"]);
         }
@@ -1025,6 +1045,7 @@ class mel_metapage extends bnum_plugin
         $this->include_stylesheet($this->local_skin_path().'/modal.css');
         $this->include_stylesheet($this->local_skin_path().'/global.css');
         $this->include_stylesheet($this->local_skin_path().'/user.css');
+        $this->include_stylesheet($this->local_skin_path().'/option.css');
     }
 
     function load_config_js()
@@ -2535,25 +2556,24 @@ class mel_metapage extends bnum_plugin
         }
         else 
         {
-            $test = explode('Subject: ', $test);
-            $added = false;
-            $val = '';
-            foreach ($test as $key => $value) {
-                if ($value !== $test[0] && $value[(strlen($value) - 1)] === "\n" && !$added) 
-                {
-                    $val .= 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ".$value;
-                    $added = true;
-                }
-                else $val .= 'Subject: '.$value;
-            }
-            $test = $val;
+            // $test = explode('Subject: ', $test);
+            // $added = false;
+            // $val = '';
+            // foreach ($test as $key => $value) {
+            //     if ($value !== $test[0] && $value[(strlen($value) - 1)] === "\n" && !$added) 
+            //     {
+            //         $val .= 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ".$value;
+            //         $added = true;
+            //     }
+            //     else $val .= $value;
+            // }
+            // $test = $val;
 
-            if ($added === false)
-            {
-                $test = false;
-            }
-
-            //$test = $test[0].'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject:".$test[1];
+            // if ($added === false)
+            // {
+            //     $test = false;
+            // }
+                $test = str_replace('Subject: ', 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ", $test);
         }
 
         $datas = $this->rc->imap->save_message($folder, $test, '', false, [], $headers_old->date);

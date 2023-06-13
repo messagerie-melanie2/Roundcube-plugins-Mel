@@ -1,7 +1,73 @@
 export { MelObject };
 import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
+import { BaseStorage } from "./classes/base_storage";
 import { Cookie } from "./classes/cookies";
 import { Top } from "./top";
+
+/* La classe MelEventManager étend BaseStorage et permet d'ajouter, d'appeler et de supprimer des
+rappels pour des clés d'écoute spécifiques. */
+class MelEventManager extends BaseStorage {
+    constructor() {
+        super();
+
+        const super_add = this.add;
+
+        /**
+         * La fonction ajoute un rappel à un écouteur dans un objet MelEvent.
+         * @param listener_key - Il s'agit d'une clé qui identifie un auditeur spécifique. Il est utilisé pour
+         * récupérer l'objet MelEvent associé à l'écouteur.
+         * @param callback - La fonction qui sera exécutée lorsque l'événement est déclenché.
+         * @param callback_key - Le paramètre callback_key est un paramètre facultatif qui représente un
+         * identifiant unique pour la fonction de rappel ajoutée à l'objet MelEvent. S'il n'est pas fourni, la
+         * fonction générera une clé unique pour le rappel.
+         * @returns l'objet courant (`this`) après avoir ajouté le rappel à l'objet MelEvent associé à la clé
+         * d'écouteur donnée.
+         */
+        this.add = (listener_key, callback, callback_key = null) => {
+            if (!this.has(listener_key)) super_add.call(this, listener_key, new MelEvent());
+    
+            if (!!callback_key) this.get(listener_key).add(callback_key, callback);
+            else this.get(listener_key).push(callback);
+            return this;
+        }
+    }
+
+
+    /**
+     * La fonction "call" vérifie si une clé d'écoute existe et l'appelle avec des arguments si c'est le
+     * cas.
+     * @param listener_key - Le paramètre listener_key est une clé utilisée pour identifier une fonction
+     * d'écouteur spécifique dans une collection de fonctions d'écouteur. Il est utilisé pour récupérer la
+     * fonction d'écouteur de la collection et l'appeler avec les arguments fournis.
+     * @param args - args est un paramètre de repos qui permet à la fonction d'accepter n'importe quel
+     * nombre d'arguments sous forme de tableau. Dans ce cas, la fonction est conçue pour recevoir
+     * n'importe quel nombre d'arguments après le paramètre listener_key, qui sera transmis à la fonction
+     * de rappel lors de son appel.
+     * @returns L'objet `this` est renvoyé.
+     */
+    call(listener_key, ...args) {
+        if (this.has(listener_key)) {
+            return this.get(listener_key).call(...args);
+        }
+    }
+
+    /**
+     * Cette fonction supprime un rappel d'un écouteur dans un objet JavaScript.
+     * @param listener_key - Clé utilisée pour identifier l'écouteur dans l'objet Map.
+     * @param callback_key - Le paramètre `callback_key` est un identifiant unique pour une fonction de
+     * rappel spécifique qui a été ajoutée à un écouteur. Il est utilisé pour supprimer la fonction de
+     * rappel correspondante de la liste des rappels de l'écouteur.
+     * @returns La méthode `remove_callback` renvoie l'instance de l'objet sur lequel elle a été appelée
+     * (`this`).
+     */
+    remove_callback(listener_key, callback_key) {
+        if (this.has(listener_key) && this.get(listener_key).has(callback_key)) {
+            this.get(listener_key).remove(callback_key);
+        }
+
+        return this;
+    }
+}
 
 /**
  * @abstract
@@ -15,6 +81,22 @@ class MelObject {
      * @param  {...any} args Arguments de la classe
      */
     constructor(...args) {
+        /**
+         * @type {MelEventManager}
+         */
+        this._listener = null;
+        Object.defineProperties(this, {
+            _listener: {
+                get: function() {
+                    const KEY = 'MEL_OBJECT_LISTENER';
+
+                    if (!Top.has(KEY)) Top.add(KEY, new MelEventManager());
+
+                    return Top.get(KEY);
+                },
+                configurable: true
+            }
+        });
         this.main(...args);
     }
 
@@ -42,32 +124,20 @@ class MelObject {
      * @param {function} callback Fonction qui sera appelée
      * @param {{top:boolean}} param2 Si on doit récupérer rcmail sur frame principale ou non
      */
-    add_event_listener(key, callback, {top = false, condition = true}) {
+    add_event_listener(key, callback, {callback_key = null, condition = true}) {
+        let can_call = typeof condition === 'function' ? condition() : condition;
 
-        let can_call = false;
-        
-        if (top && !Top.has(`event_listener_${key}`))
-        {
-            if (typeof condition === 'function' ? condition() : condition) {
-                can_call = true;
-                Top.add(`event_listener_${key}`, true);
-            }
-        }
-        else if (!top) can_call = true;
-
-        if (can_call) this.rcmail(top).addEventListener(key, callback);
+        if (can_call) this._listener.add(key, callback, callback_key);
     }
 
     /**
      * Trigger un écouteur
      * @param {string} key Clé qui appelera tout les écouteurs lié à cette clé
      * @param {*} args  Arguments qui sera donnée aux écouteurs
-     * @param {Object} options Options
-     * @param {boolean} options.top Si on doit récupérer rcmail sur frame principale ou non
      * @returns 
      */
-    trigger_event(key, args, {top = false}){
-        return this.rcmail(top).triggerEvent(key, args);
+    trigger_event(key, args){
+        return this._listener.call(key, args);
     }
 
     /**
@@ -77,13 +147,45 @@ class MelObject {
      * @param {string} options.frame any pour toute n'importe quelle frame, sinon mettre le nom de la frame
      * @param {function | null} options.condition Condition custom pour charger la frame
      */
-    on_frame_loaded(callback, {frame = 'any', condition = null}) {
-        const top = true;
-        this.add_event_listener('frame_loaded', callback, {
-            top,
+    on_frame_loaded(callback, {callback_key = null, frame = 'any', condition = null}) {
+        const KEY = 'frame_loaded';
+        const SYSTEM_KEY = `[system]${KEY}`;
+        if (!this._listener.has(SYSTEM_KEY)){
+            this.rcmail().addEventListener(KEY, (args) => {
+                this.trigger_event(KEY, args);
+            });
+            this._listener.add(SYSTEM_KEY, true, SYSTEM_KEY);
+        }
+
+        this.add_event_listener(KEY, callback, {
+            callback_key,
             condition:() => {
                 return condition?.() ?? ('any' === frame || this.rcmail().env.task === frame);
             }
+        });
+    }
+
+    /**
+     * Ajoute une action à faire lors du refresh du bnum
+     * @param {Function} callback Fonction à appeller
+     * @param {Object} options Options de la fonction
+     * @param {string | null} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
+     */
+    on_refresh(callback, {callback_key = null}) {
+        this.add_event_listener('mel_metapage_refresh', callback, {
+            callback_key
+        });
+    }
+
+    on_frame_refresh(callback, frame, {callback_key = null}){
+        this.add_event_listener('on_frame_refresh', (args) => {
+            const {rc} = args;
+
+            if (frame === rc.env.task) {
+                callback();
+            }
+        }, {
+            callback_key
         });
     }
 
@@ -234,7 +336,7 @@ class MelObject {
      * @returns Chaînage
      */
     save(key, contents) {
-        mel_metapage.Storage.set(key, contents);
+        mel_metapage.Storage.set(key, JSON.stringify(contents));
         return this;
     }
 
@@ -245,7 +347,11 @@ class MelObject {
      * @returns 
      */
     load(key, default_value = null) {
-        return mel_metapage.Storage.get(key, default_value);
+        try {
+            return JSON.parse(mel_metapage.Storage.get(key)) ?? default_value;
+        } catch (error) {
+            return default_value;
+        }
     }
 
     /**
@@ -326,3 +432,4 @@ class MelObject {
         return new MelObject();
     }
 }
+

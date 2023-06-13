@@ -4,7 +4,6 @@ import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
 import { html_ul } from "../../../../mel_metapage/js/lib/html/html";
 import { mail_html } from "../../../../mel_metapage/js/lib/html/html_mail";
 import { MailBaseModel } from "../../../../mel_metapage/js/lib/mails/mail_base_model";
-import { Top } from "../../../../mel_metapage/js/lib/top";
 import { BaseModule } from "../../../js/lib/module"
 
 const MODULE_ID = 'Mails';
@@ -15,7 +14,8 @@ class ModuleMail extends BaseModule{
 
     start() {
         super.start();
-        this._init()._set_listeners();
+        this._init()
+            .set_title_action('mail');
         let loaded = false;
         let mail_loader = new MailLoader();
         Object.defineProperties(this, {
@@ -35,7 +35,7 @@ class ModuleMail extends BaseModule{
         this.trigger_event('portal.mails.before', {module:this}, {top:true});
         this.show_last_mails({}).then(() => {
             loaded = true;
-            this.trigger_event('portal.mails.after', {module:this}, {top:true});
+            this._set_listeners().trigger_event('portal.mails.after', {module:this}, {top:true});
         });
     }
 
@@ -62,12 +62,10 @@ class ModuleMail extends BaseModule{
 
     _set_listeners() {
         const KEY = 'portal_mails_listeners';
-        if (!Top.has(KEY)){
-            this.add_event_listener('mel_metapage_refresh', () => {
-                this.show_last_mails({force_refresh:true});
-            }, {top:true});
-            Top.add(KEY, true);
-        }
+
+        this.on_frame_refresh(() => {
+            this.show_last_mails({force_refresh:true});
+        }, 'bureau', {callback_key:KEY});
 
         return this;
     }
@@ -93,7 +91,7 @@ class ModuleMail extends BaseModule{
             $un_contents.css('display', 'none');
         }
         else {
-            mel_html2.div({attribs:{class:'melv2-mail', contents:"Vous n'avez pas de mails !"}}).create($un_contents.css('display', EMPTY_STRING));
+            mel_html2.div({attribs:{class:'melv2-mail'}, contents:"Vous n'avez pas de mails !"}).create($un_contents.css('display', EMPTY_STRING));
         }
         
         return this;
@@ -188,6 +186,7 @@ class MailLoaderDataBase extends MailLoaderBase {
 
     async load_mails() {
         let mails = [];
+        const self = this;
         await this.http_internal_get(
             {
                 task:'bureau',
@@ -196,18 +195,22 @@ class MailLoaderDataBase extends MailLoaderBase {
                     try {
                         if ('string' === typeof datas) datas = JSON.parse(datas);
                     } catch (error) {
-                        this.on_error(error);
+                        self._on_error(error);
                     }
 
                     mails = MailBaseModel.import_from_array(datas);
                 },
                 on_error:function (...args) {
-                    BnumLog.fatal('get_last_mails', 'Impossible de récupérer les mails !', ...args);
+                    self._on_error(...args);
                 }
             }
         );
 
         return mails;
+    }
+
+    _on_error(...args) {
+        BnumLog.fatal('get_last_mails', 'Impossible de récupérer les mails !', ...args);
     }
 }
 

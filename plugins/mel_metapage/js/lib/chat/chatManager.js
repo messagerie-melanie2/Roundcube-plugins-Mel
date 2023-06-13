@@ -79,6 +79,34 @@ export class ChatManager extends MelObject {
         return this;
     }
 
+    /**
+     * Envoie le nouveau status au serveur
+     * @param {string} status 
+     * @param {string} message
+     * @returns {Promise} 
+     */
+    async setStatus(status, message) {
+        await this.chat().set_status_to_server(status, message);
+        this.updateStatus(status);
+    }
+
+    /**
+     * Récupère le message depuis le serveur
+     * @param {Object} options Options par défaut de la fonciton
+     * @param {boolean} options.from_server_if_empty Faire un check serveur si le message est vide
+     * @returns {Promise<string>}
+     */
+    async getChatStatusMessage({from_server_if_empty = true}) {
+        let message = this.chat().message_status;
+
+        if (from_server_if_empty && !(message || false)) {
+            await this.chat().get_status_from_server();
+            message = this.chat().message_status;
+        }
+
+        return message;
+    }
+
     setStatusConnector(connector) {
         this.chat().setStatusConnector(connector);
         return this;
@@ -91,6 +119,11 @@ export class ChatManager extends MelObject {
 
     setRoomConnector(connector) {
         this.chat().setRoomConnector(connector);
+        return this;
+    }
+
+    set_chat_url(url) {
+        rcmail.env.chat_system_url = url;
         return this;
     }
 

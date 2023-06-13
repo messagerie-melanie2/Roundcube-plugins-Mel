@@ -306,3 +306,22 @@ html.layout-phone .--row
 	width: 100%;
 	bottom: 2rem;
 } */
+
+.module_Headlines .contents {
+  --alternate-bckg-color: transparent;
+
+}
+
+.module_Headlines .square-contents {
+  padding: 15px;
+}
+
+.module_Headlines .square-contents {
+  padding-top: 0;
+}
+
+
+.module_Headlines .square_div.mel-news .contents {
+  height: 100%!important;
+}
+ 

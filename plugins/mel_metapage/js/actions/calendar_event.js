@@ -81,7 +81,7 @@ $(document).ready(
 
       });
 
-      if (!!window.mel_metapage) {
+      if (!!window.mel_metapage && rcmail.env.task === 'calendar') {
         top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get);
         top.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
           calendar_waiting_number();

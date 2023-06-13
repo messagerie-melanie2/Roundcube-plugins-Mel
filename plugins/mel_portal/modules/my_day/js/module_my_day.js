@@ -2,7 +2,6 @@ export { ModuleMyDay };
 import { html_events } from "../../../../mel_metapage/js/lib/html/html_events";
 import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage";
 import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
-import { Top } from "../../../../mel_metapage/js/lib/top";
 import { BaseModule } from "../../../js/lib/module";
 
 const TOP_KEY = 'my_day_listeners';
@@ -16,8 +15,9 @@ class ModuleMyDay extends BaseModule{
 
     start() {
         super.start();
-        this._init().set_listeners();
-        this.set_title_action();
+        this._init()
+            .set_listeners()
+            .set_title_action('calendar');
     }
 
     end() {
@@ -31,36 +31,28 @@ class ModuleMyDay extends BaseModule{
         return this;
     }
 
-    set_title_action(){
-        this.select_module_title().attr('href', '#').click(() => {
-            this.change_frame('calendar', {update: false, force_update: false});
-        });
-        return this;
-    }
-
     set_listeners() {
-        if (!Top.has(TOP_KEY)) {
-            this.add_event_listener(LISTENER_KEY, () => {
-                this.clear_timeout().generate();
-            }, {top:true});
-            Top.add(TOP_KEY, true);
-        }
+        this.add_event_listener(LISTENER_KEY, () => {
+            this.clear_timeout().generate();
+        }, {callback_key:TOP_KEY});
+
         return this;
     }
 
-    check_storage_datas() {
-        let storage = this.load('all_events');
+    async check_storage_datas() {
+        let storage = this.load(mel_metapage.Storage.calendar_all_events);
         if (!storage) {
-            this.trigger_event(mel_metapage.EventListeners.calendar_updated.get, {}, {top:true});
-            storage = this.load('all_events');
+            const top = true;
+            await this.rcmail(top).triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+            storage = this.load(mel_metapage.Storage.calendar_all_events);
         }
 
         return storage;
     }
 
-    generate() {
+    async generate() {
         const now = moment();
-        const events = Enumerable.from(this.check_storage_datas() ?? []).where(x => moment(x.end) > now).take(this.max_size);
+        const events = Enumerable.from((await this.check_storage_datas()) ?? []).where(x => moment(x.end) > now).orderBy(x => moment(x.start)).take(this.max_size);
         let $contents = this.select_module_content().html(EMPTY_STRING);
 
         if (events.any()) {

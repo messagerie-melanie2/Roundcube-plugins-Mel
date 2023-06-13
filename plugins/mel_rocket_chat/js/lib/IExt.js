@@ -1,4 +1,5 @@
 import { Unreads } from "../../../mel_metapage/js/lib/chat/chat";
+import { ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager";
 import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
 
 /**
@@ -47,6 +48,22 @@ export class IExt extends MelObject {
         _on_unread_updated.add(key, callback);
 
         return key;
+    }
+
+    /**
+     * Récupère le chat manager
+     * @returns {ChatManager}
+     */
+    manager() {
+        return ChatManager.Instance();
+    }
+
+    /**
+     * Récupère le chat pour accéder aux données de chat
+     * @returns {Chat}
+     */
+    chat() {
+        return this.manager().chat();
     }
 
     static call_status(status, classes_to_remove) {

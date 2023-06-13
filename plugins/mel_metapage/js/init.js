@@ -37,6 +37,7 @@
 
         async function mel_calendar_updated(force = CONST_CALENDAR_UPDATED_DEFAULT) {
             const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
+            const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
             const isTop = window === top;
             const url = mel_metapage.Functions.url(PLUGIN_MEL_METAPAGE, ACTION_MEL_METAPAGE_CALENDAR_LOAD_EVENT, {
                 force,
@@ -49,6 +50,7 @@
             let rc = isTop ? rcmail : top.rcmail;
 
             rc.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
+            MelObject.trigger_event(mel_metapage.EventListeners.calendar_updated.before);
 
             await mel_metapage.Functions.get(url, {}, 
                 (datas) => {
@@ -97,6 +99,7 @@
 
                     mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment());
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
+                    MelObject.trigger_event(mel_metapage.EventListeners.calendar_updated.after);
                     
                 }, (a, b, c) => {
 
@@ -194,15 +197,25 @@
             //Definition des functions
             parent.rcmail.mel_metapage_fn = {
                 async calendar_updated(args) {
-                    if (!!parent.rcmail.mel_metapage_fn.started) false;
+                    if (!!parent.rcmail.mel_metapage_fn.started) return false;
                     else parent.rcmail.mel_metapage_fn.started = true;
                     
-                    await mel_calendar_updated(args?.force ?? 'random').then(() => parent.rcmail.mel_metapage_fn.started = false);
-                },
-                tasks_updated: function() {
-                    parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
+                    //const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
+                    const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
+                    const loaded_datas = await Loader.update_agenda_local_datas(args?.force ?? 'random');
+                    //const start_of_day = moment().startOf('day');
 
-                    return $.ajax({ // fonction permettant de faire de l'ajax
+                    // try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar);
+                    // update_badge(Enumerable.from(loaded_datas).where(x => x.free_busy !== CONST_EVENT_DISPO_FREE && x.free_busy !== CONST_EVENT_DISPO_TELEWORK && Loader.is_date_okay(moment(x.start), moment(x.end), start_of_day)).count(), mel_metapage.Ids.menu.badge.calendar);
+                    
+                    parent.rcmail.mel_metapage_fn.started = false
+                },
+                tasks_updated: async function() {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
+                    parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.tasks_updated.before);
+
+                    await $.ajax({ // fonction permettant de faire de l'ajax
                         type: "POST", // methode de transmission des données au fichier php
                         url: '?_task=tasks&_action=fetch&filter=0&_remote=1&_unlock=true&_=1613118450180', //rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                         success: function(data) {
@@ -244,6 +257,7 @@
                                 update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
                                 mel_metapage.Storage.set(mel_metapage.Storage.last_task_update, moment().startOf('day'))
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
+                                MelObject.trigger_event(mel_metapage.EventListeners.tasks_updated.after);
                             } catch (ex) {
                                 console.error(ex, data);
                                 //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
@@ -258,8 +272,10 @@
                         // rcmail.clear_messages();
                     });
                 },
-                mail_updated: function(isFromRefresh = false, new_count = null) {
+                mail_updated: async function(isFromRefresh = false, new_count = null) {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.mails_updated.before);
 
                     mel_metapage.Storage.remove(mel_metapage.Storage.mail);
 
@@ -300,6 +316,7 @@
                                 try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                                 update_badge(data, mel_metapage.Ids.menu.badge.mail);
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
+                                MelObject.trigger_event(mel_metapage.EventListeners.mails_updated.after);
                                 // if ($(".mail-frame").length > 0)
                                 //     Title.update($(".mail-frame")[0].id);
                             } catch (ex) {
@@ -334,9 +351,11 @@
                         }
                     );
                 },
-                wsp_updated()
+                async wsp_updated()
                 {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.workspaces_updated.before);
                     mel_metapage.Storage.remove(mel_metapage.Storage.title_workspaces);
 
                     return mel_metapage.Functions.get(
@@ -345,6 +364,7 @@
                         (datas) => {
                             mel_metapage.Storage.set(mel_metapage.Storage.title_workspaces, datas, false);
                             parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.after, datas);
+                            MelObject.trigger_event(mel_metapage.EventListeners.workspaces_updated.after, datas);
                         }
                     )
                 },
@@ -442,14 +462,20 @@
 
                     }
 
-                    parent.rcmail.mel_metapage_fn.wsp_updated();
-                    parent.rcmail.mel_metapage_fn.calendar_updated();
-                    parent.rcmail.mel_metapage_fn.tasks_updated();
-                    parent.rcmail.mel_metapage_fn.mail_updated(true);
-                    parent.rcmail.mel_metapage_fn.weather();
+                    let promises = 
+                    [parent.rcmail.mel_metapage_fn.wsp_updated(),
+                    parent.rcmail.mel_metapage_fn.calendar_updated(),
+                    parent.rcmail.mel_metapage_fn.tasks_updated(),
+                    parent.rcmail.mel_metapage_fn.mail_updated(true)];
+                    //parent.rcmail.mel_metapage_fn.weather();
 
                     refreshWorkspaceCloudNotification();
                     rcmail.triggerEvent("mel_metapage_refresh");
+
+                    Promise.allSettled(promises).then(async () => {
+                       const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
+                       MelObject.trigger_event('mel_metapage_refresh');
+                    })
                 }
             };
 
@@ -465,24 +491,7 @@
 
             parent.rcmail.enable_command("my_account", true);
             parent.rcmail.register_command("my_account", () => {
-
-                if ($(".settings-frame").length > 1 && $("iframe.settings-frame").length === 0)
-                    window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-                else {
-
-                    if ($("iframe.settings-frame").length === 0) {
-                        mel_metapage.Functions.change_frame("settings", true, true, {
-                            _action: "plugin.mel_moncompte"
-                        });
-                    } else if ($("iframe.settings-frame").length === 1) {
-                        let config = {};
-                        config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-                        $("iframe.settings-frame")[0].src = mel_metapage.Functions.url("settings", "plugin.mel_moncompte", config);
-                        mel_metapage.Functions.change_frame("settings", true, false);
-                    } else window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-
-                    rcmail.triggerEvent('intercept.click.ok', {});
-                }
+                mel_metapage.Functions.change_page('settings', 'plugin.mel_moncompte', {}, true, true)
             });
 
 
@@ -553,7 +562,9 @@
 
                         $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
 
-                        $("#barup-search-input").attr("placeholder", "Recherche globale...");
+                        $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
+
+                        $('#rcmfd_hide_chat').prop("checked", true);
 
                         $(".tiny-rocket-chat").appendTo("#chatCore").addClass('inbarup')
                             // .css("position", "sticky")
@@ -572,6 +583,7 @@
                     }
                 } else {
                     $(".tiny-rocket-chat").addClass("layout-hidden");
+                    $('#rcmfd_hide_chat').prop("checked", false)
                 }
             }
 
@@ -589,7 +601,7 @@
 
                     // $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
 
-                    $("#barup-search-input").attr("placeholder", "Recherche globale...");
+                    $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
                     $(".tiny-rocket-chat").removeClass('inbarup').appendTo("#layout")
                         // .css("position", "absolute")
@@ -719,25 +731,25 @@
             if (local_storage.last_update.tasks.format() !== moment().startOf("day").format())
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
 
-            if (window.alarm_managment !== undefined) {
-                window.alarm_managment.clearTimeouts();
-                setTimeout(async() => {
-                    let it = 0;
-                    await wait(() => {
-                        return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
-                    });
-                    window.alarm_managment.generate(local_storage.calendar);
-                }, 100);
+            // if (window.alarm_managment !== undefined) {
+            //     window.alarm_managment.clearTimeouts();
+            //     setTimeout(async() => {
+            //         let it = 0;
+            //         await wait(() => {
+            //             return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
+            //         });
+            //         window.alarm_managment.generate(local_storage.calendar);
+            //     }, 100);
 
-            }
+            // }
 
             // //add
             if (parent === window) //Si on est pas dans une frame
             {
-                init_badge(local_storage.calendar, mel_metapage.Storage.calendar, () => rcmail.mel_metapage_fn.calendar_updated({force:true}),
-                    ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
-                        return Enumerable.from(storage).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
-                    });
+                // init_badge(local_storage.calendar, mel_metapage.Storage.calendar, () => rcmail.mel_metapage_fn.calendar_updated({force:true}),
+                //     ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
+                //         return Enumerable.from(storage).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
+                //     });
                 init_badge(local_storage.tasks, mel_metapage.Storage.tasks, rcmail.mel_metapage_fn.tasks_updated,
                     ".tasklist", mel_metapage.Ids.menu.badge.tasks, true);
                 init_badge(local_storage.mails.unread_count, mel_metapage.Storage.mail, rcmail.mel_metapage_fn.mail_updated,

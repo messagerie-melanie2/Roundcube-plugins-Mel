@@ -2551,15 +2551,29 @@ $(document).ready(() => {
          date = date.add(add, "d").startOf("day");
          rcube_calendar.mel_metapage_misc.SetCalendarDate(jquery_element, date);
 
-         const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
+         //const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
 
-         const array = (storage !== null && storage[date.format('DD/MM/YYYY')] !== undefined ? storage[date.format('DD/MM/YYYY')] : await rcube_calendar.block_change_date(jquery_element, add, where, date));
+         const array = await rcube_calendar.block_change_date(jquery_element, add, where, date);
+
+
 
          if (array !== false)
          {
-            const html = html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
+            const html = await html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
             rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).html(html);
             jquery_element.data("current-date", date.format());
+
+            if (!!html_helper.Calendars.$jquery_array) {
+                const $jquery_array = html_helper.Calendars.$jquery_array;
+
+                html_helper.Calendars.$jquery_array = undefined;
+
+                let $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).find('ul');
+
+                if ($ul.length === 0) $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element);
+
+                $ul.html($jquery_array);
+            }
          }
 
          rcmail.set_busy(false);

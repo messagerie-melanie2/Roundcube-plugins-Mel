@@ -653,7 +653,7 @@ $(document).ready(() => {
             }
 
             let $theme_button = $(`${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_BUTTON_ID}`);
-            if (top === window && $theme_button.length > 0) //Si on est en Top & que le bouton de thème existe
+            if (top === window) //Si on est en Top & que le bouton de thème existe
             {
                 if (html.count() > 1) //Si il y + d'un thème, on active les propriétés du bouton
                 {
@@ -760,7 +760,7 @@ $(document).ready(() => {
             picturesToIgnore = [],
             picturesToAdd = []
         }) {
-            const CLASS_PARENT_DIV = `${CONST_CLASS_COL}-6`; 
+            const CLASS_PARENT_DIV = `${CONST_CLASS_COL}-4`; 
             const CLASS_PARENT_HOVER = 'hovered';
             const CUSTOM_THEME_CLASSES = 'input-top-selectable mel-resize-ok half-resize';
             const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture';
@@ -852,7 +852,8 @@ $(document).ready(() => {
                         reader.readAsDataURL(file);
                     });
                     //Bouton qui sert à cliquer sur l'input
-                    var $button = new mel_button({}, 'Charger une image');
+                    var $icon = new mel_html('span', {class:'material-symbols-outlined upload-icon'}, 'upload')
+                    var $button = new mel_button({}, $icon.toString());
                     $button.onmouseover.push((e) => {
                         $(e.currentTarget).parent().addClass(CLASS_PARENT_HOVER);
                     });
@@ -1036,12 +1037,16 @@ $(document).ready(() => {
                 else {
                     //On met dans l'ordre les différents boutons de la barre de navigation principale
                     let array = [];
-
                     $taskmenu.find("a").each((i,e) => {
                     e = $(e);
 
                     if (e.parent().hasClass("special-buttons"))
                         return;
+
+                    // if (e.hasClass('settings')) {
+                    //     e.css('display', 'none');
+                    //     return;
+                    // }
 
                     const order = e.css("order");
                     const tmp = e.removeAttr("title")[0].outerHTML;
@@ -3273,7 +3278,7 @@ $(document).ready(() => {
 
             $('iframe.mm-frame').each((i, e) => {
                 try {
-                        e.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
+                    if (!$(e).hasClass('discussion-frame')) e.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
                 } catch (error) {
 
                 }

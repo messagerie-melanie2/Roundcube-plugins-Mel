@@ -181,6 +181,9 @@ if (rcmail && window.mel_metapage)
         if ('tasks' === rcmail.env.task && props.response && props.response.action=='fetch') {
             _rm_update_task_size();
         }
+        else if (props.response && props.response.action === 'refresh') {
+            loadJsModule('mel_metapage', 'mel_object').then((loaded_module) => loaded_module.MelObject.Empty().trigger_event('on_frame_refresh', {rc:rcmail, context:window}))
+        }
     });
 
     rcmail.addEventListener('set_unread', function(props) {
@@ -644,33 +647,36 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('storage.change', (datas) => {
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
 
-        if (window === top) m_mp_e_on_storage_change_notifications(datas.key);
+        m_mp_e_on_storage_change_notifications(datas.key);
     }, false);
 
-    function m_mp_e_on_storage_change_notifications(key)
+    async function m_mp_e_on_storage_change_notifications(key)
     {
-        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', true];
+        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', 'tchat', true];
 
         if (!accepted_changes.includes(key)) return;
 
+        if (!window.loadJsModule) return;
+
+        const Chat = await ChatHelper.Chat();
+        const Calendar = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance ;
         const delimiter = ') ';
         const config = rcmail.env["mel_metapage.tab.notification_style"];
         const get = mel_metapage.Storage.get;
         const current_task = top.rcmail.env.current_task;
         const current_title = top.document.title;
 
-        let temp = null;
         let numbers = 0;
         switch (config) {
             case 'all':
 
-                temp = get('ariane_datas');
+                //temp = ;
 
-                if (!!temp)
+                if (!!Chat)
                 {
-                    numbers = Enumerable.from(temp?.unreads ?? []).sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
+                    numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
 
-                    if (numbers === 0 && temp._some_unreads === true)
+                    if (numbers === 0 && Chat.unreads.haveUnreads() === true)
                     {
                         numbers = '•';
                         break;
@@ -679,21 +685,20 @@ if (rcmail && window.mel_metapage)
 
                 numbers += parseInt(get('mel_metapage.mail.count') ?? 0) +
                            (get('mel_metapage.tasks') ?? []).length +
-                           (get('mel_metapage.calendar') ?? []).length;
+                           Calendar.get_next_events_day(moment(), {enumerable:false}).length;
 
                 break;
 
             case 'page':
                 switch (current_task) {
                     case 'discussion':
-                        temp = get('ariane_datas');
-                        numbers = Enumerable.from(temp?.unreads ?? []).sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
+                        numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
 
-                        if (numbers === 0 && temp._some_unreads === true) numbers = '•';
+                        if (numbers === 0 && Chat.unreads.haveUnreads() === true) numbers = '•';
                         break;
 
                     case 'calendar':
-                        numbers = (get('mel_metapage.calendar') ?? []).length;
+                        numbers = Calendar.get_next_events_day(moment(), {enumerable:false}).length;
                         break;
 
                     case 'tasks':
@@ -762,7 +767,8 @@ if (rcmail && window.mel_metapage)
     });
 
     /*********AFFICHAGE D'UN EVENEMENT*************/
-    rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
+    rcmail.addEventListener("calendar.event_show_dialog.custom", async (datas)    => {
+        const Alarm = (await loadJsModule('mel_metapage', 'alarms', '/js/lib/calendar/')).Alarm;
         if (datas.showed.start.format === undefined) datas.showed.start = moment(datas.showed.start);
 
         if (datas.showed.end === null) datas.showed.end = moment(datas.showed.start)

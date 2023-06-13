@@ -17,46 +17,46 @@ function get_action(text, icon, action) {
     }
 }
 
-function m_mp_create_note()
+async function m_mp_create_note()
 {
-    try {
-        window.create_note()
-    } catch (error1) {
-        console.warn("Impossible de créer des notes : ", error1, window.create_note);
-        try {
-            top.create_note();
-        } catch (error2) {
-            console.warn("Impossible de créer des notes : ", error2, top.create_note);
-            $(document).ready(async () => {
-                let it = 0;
+    if (window.create_popUp !== undefined) {
+        window.create_popUp.close();
+        window.create_popUp = undefined;
+    }
 
-                if (!window.create_note)
-                {
-                    await wait(() => {
-                        if (it++ >= 10) return false;
-        
-                        return !window.create_note;
-                    })
-                }
-    
-                if (it >= 10 && !window.create_note) 
-                {
-                    console.error("Impossible de créer une note, la page des notes n'a probablement pas été charger correctement.", error1, error2, window.create_note, window, '<====== Diverses infos');
-                    if (!m_mp_create_note.ac)
-                    {
-                        m_mp_create_note.ac = true;
-                        console.log("Tentative d'importation.....");
-                        var script = document.createElement('script');
-                        script.onload = function () {
-                            console.log('Tentative...');
-                            m_mp_create_note();
-                        };
-                        script.src = mel_metapage.Functions.url('').split('/?')[0] + '/plugins/mel_metapage/js/program/notes.min.js';
-                    }
-                }
-                else if (!!window.create_note) window.create_note();
+    const init = Object.keys(rcmail.env.mel_metapages_notes);
+
+    const Sticker = (await loadJsModule('mel_metapage', 'sticker', '/js/lib/metapages_actions/notes/')).Sticker;
+
+    await Sticker.new();
+
+    let notes = await loadAction('mel_metapage', 'notes.js', '/js/lib/metapages_actions/');
+
+    if (!!notes) {
+
+        const new_note = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !init.includes(x.key)).firstOrDefault();
+
+        if (!!new_note) {
+            let sticker = Sticker.from(new_note.value);
+
+            await sticker.post('pin', {
+                _uid:sticker.uid,
+                _pin:true
             });
+
+            sticker.pin = true;
+            rcmail.env.mel_metapages_notes[sticker.uid].pin = true;
+
+            sticker.after = () => {
+                sticker.uid = `pin-${sticker.uid}`;
+                sticker.get_html().find("textarea")[0].focus();
+            };
+
+            Sticker.helper.trigger_event('notes.apps.tak', sticker);
         }
+        //notes.select_note_button().click();
+
+        //$('.mel-note').last().find("textarea")[0].focus();
     }
 }
 
@@ -2262,6 +2262,13 @@ async function m_mp_shortcuts() {
 
         html += "</div>";
         shortcuts.add_app("items", html);
+
+        if (!!html_helper.Calendars.$jquery_array) {
+            const $jquery_array = html_helper.Calendars.$jquery_array;
+            html_helper.Calendars.$jquery_array = undefined;
+            shortcuts.item.find('.shorcut-calendar ul').html($jquery_array);
+        }
+
         window.shortcuts = shortcuts;
 
         //debugger;
@@ -2353,38 +2360,40 @@ function m_mp_NewTask() {
 }
 
 function open_task(id, config = {}) {
-    if (event !== undefined)
-        event.preventDefault();
+    if (event !== undefined) event.preventDefault();
 
     mel_metapage.Storage.set("task_to_open", id);
     mel_metapage.Functions.change_frame("tasklist", true, false, config);
 
-    if ($("iframe.tasks-frame").length > 0)
-        $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
-    else if ($(".tasks-frame").length > 0)
-        rcmail.triggerEvent("plugin.data_ready");
+    if ($("iframe.tasks-frame").length > 0) $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
+    else if ($(".tasks-frame").length > 0) rcmail.triggerEvent("plugin.data_ready");
 }
 
 /**
  * Permet d'afficher masquer la pop up user Bienvenue
  */
 function m_mp_ToggleGroupOptionsUser(opener) {
-    if ($("#groupoptions-user").is(":visible") == true) {
-        $("#groupoptions-user").hide();
-        $("#groupoptions-user").data('aria-hidden', 'true');
-        $("#groupoptions-user").data('opener', null);
-        $('#menu-gu-black').remove();
+    let $goupoptions_user = $("#groupoptions-user");
+    let $button_settings = $("#button-settings");
+
+    if ($goupoptions_user.is(":visible") == true) {
+        $goupoptions_user.hide();
+        $goupoptions_user.data('aria-hidden', 'true');
+        $goupoptions_user.data('opener', null);
+        $button_settings.removeClass('force-fill');
         $(opener).data('aria-expanded', 'false');
         rcmail.triggerEvent('toggle-options-user', {show: false});
     }
     else {
-        //$("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
-        $("#groupoptions-user").show();
-        $("#groupoptions-user").data('opener', opener);
-        $("#groupoptions-user").data('aria-hidden', 'false');
-        $('<div id="menu-gu-black"></div>').appendTo('#layout');
+        $goupoptions_user.show();
+        $goupoptions_user.data('opener', opener);
+        $goupoptions_user.data('aria-hidden', 'false');
+        $button_settings.addClass('force-fill');
         $(opener).data('aria-expanded', 'true');
         rcmail.menu_stack.push("groupoptions-user");
         rcmail.triggerEvent('toggle-options-user', {show: true});
     }
+
+    $goupoptions_user = null;
+    $button_settings = null;
 }

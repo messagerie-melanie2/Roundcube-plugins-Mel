@@ -8,21 +8,16 @@
         "isThemeColor":true,
         "customOrder":1,
         "userprefid":"custom-2nd-nav-background"
-    },
-    "image-a":{
-        "background":"nocturne.png",
-        "view":"nocturnes.jpg",
-        "tags":["montagnes", "nature", "blanc", "jour"]
-    },
-    "abstract-1":{
-        "background":"abstract1.png",
-        "view":"abstract1.jpg",
-        "tags":["abstrait", "rouge", "bleu", "noir"]
-    },
+    },   
     "stars-1":{
         "background":"stars1.jpg",
         "view":"stars1.jpg",
         "tags":["ciel", "etoiles", "nature", "blanc", "noir", "nuit"]
+    },
+    "nature-4":{
+        "background":"nature4.jpg",
+        "view":"nature4.jpg",
+        "tags":["ciel", "orange", "vert", "soleil", "jour", "fleurs"]
     },
     "nature-1":{
         "background":"nature1.jpg",
@@ -38,5 +33,15 @@
         "background":"nature3.png",
         "view":"nature3.jpg",
         "tags":["nature", "plantes", "eau", "montagnes", "jour"]
+    },
+    "bridge-1":{
+        "background":"bridge1.jpg",
+        "view":"bridge1.jpg",
+        "tags":["nature", "pont", "eau", "couché de soleil", "jour"]
+    },
+    "abstract-2":{
+        "background":"abstract2.jpg",
+        "view":"abstract2.jpg",
+        "tags":["abstrait", "bleu", "gris", "fleurs", "pointillés"]
     }
 }

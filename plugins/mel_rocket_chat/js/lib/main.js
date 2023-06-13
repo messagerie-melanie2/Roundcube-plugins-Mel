@@ -13,14 +13,18 @@ export class MelRocketChat extends MelObject {
 
     main() {
         super.main();
+
+        ChatManager.Instance().set_chat_url(rcmail.env.rocket_chat_url);
+        
         this._set_connectors()
             ._set_listeners()
             ._set_actions_listeners()
             ._start();
 
-        if (ChatManager.Instance().get_frame().length > 0 && ChatManager.Instance().get_frame().attr('src') === EMPTY_STRING) {
-            ChatManager.Instance().get_frame().attr('src', rcmail.env.rocket_chat_url);
-            const result = this.trigger_event('init_rocket_chat', ChatManager.Instance().get_frame().attr('id'), {});
+        let $frame = ChatManager.Instance().get_frame();
+        if ($frame.length > 0 &&  [EMPTY_STRING, (undefined + '')].includes($frame.attr('src'))) {
+            $frame.attr('src', rcmail.env.rocket_chat_url);
+            const result = this.rcmail().triggerEvent('init_rocket_chat', ChatManager.Instance().get_frame().attr('id'), {});
             if (!!result.then) result.then(() => ChatManager.Instance().goLastRoom());
 
         }
@@ -35,22 +39,27 @@ export class MelRocketChat extends MelObject {
     }
 
     _set_listeners() {
-        this.add_event_listener('rocket.chat.event.unread-changed', (args) => this.unread_change(args), {});
-        this.add_event_listener('rocket.chat.event.room-opened', (args) => this.room_opened(args), {});
-        this.add_event_listener('rocket.chat.event.status-changed', (args) => this.status_changed(args), {});
-        this.add_event_listener('rocket.chat.event.startup', function (args) {
+        this.rcmail().addEventListener('rocket.chat.event.unread-changed', (args) => this.unread_change(args), {});
+        this.rcmail().addEventListener('rocket.chat.event.room-opened', (args) => this.room_opened(args), {});
+        this.rcmail().addEventListener('rocket.chat.event.status-changed', (args) => this.status_changed(args), {});
+        this.rcmail().addEventListener('rocket.chat.event.startup', function (args) {
             ChatManager.Instance().goLastRoom();
         }, {});
-        
+
         let loaded = false;
         this.on_frame_loaded((args) => {
             if (!loaded) {
                 const {eClass, changepage, isAriane, querry, id, first_load} = args;
 
                 if (first_load && isAriane) {
-                    ChatManager.Instance().get_frame().attr('src', rcmail.env.rocket_chat_url);
-                    this.trigger_event('init_rocket_chat',id, {});
-                    loaded = true;
+                    const result = this.rcmail().triggerEvent('init_rocket_chat', ChatManager.Instance().get_frame().attr('id'), {});
+                    if (!!result.then) {
+                        result.then(() => {
+                            ChatManager.Instance().goLastRoom();
+                            loaded = true;
+                        });
+                    }
+                    else loaded = true;
                 }
             }
         }, {});
@@ -68,9 +77,17 @@ export class MelRocketChat extends MelObject {
 
     _start() {
         const helper = new ChatCallback(null);
-        this.on_status_updated(helper, ChatManager.Instance().chat().status);
         this.on_unread_updated(helper, ChatManager.Instance().chat().unreads);
+
+        if (this.launch_at_startup()) {
+            this.on_status_updated(helper, ChatManager.Instance().chat().status);
+        }
+        
         return this;
+    }
+
+    launch_at_startup() {
+        return rcmail?.env?.launch_chat_frame_at_startup ?? false;
     }
 
     unread_change(args) {
@@ -102,6 +119,8 @@ export class MelRocketChat extends MelObject {
 
         if (!datas.eventName && !!datas.data.eventName) datas = datas.data;
 
+        if (!!datas.data?.id) datas.data = datas.data.id;
+
         ChatManager.Instance().updateStatus(datas.data);
         return args;
     }
@@ -117,7 +136,7 @@ export class MelRocketChat extends MelObject {
         const busy = 'busy';
         const offline = 'logout';
         const class_to_remove = [online, away, busy, offline];
-        let querry = helper.top_select('.chat-status');
+        let querry = helper.top_select('.chat-user-dispo');
         
         for (const class1 of class_to_remove) {
             querry.removeClass(class1);

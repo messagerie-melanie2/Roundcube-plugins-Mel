@@ -17,9 +17,16 @@
             <button id="button-create" class="hide-touch mel-button margin-right-15 no-button-margin mel-focus mel-before-remover" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
                 <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus plus"></span>
             </button>
-            <button id="button-shortcut" class="hide-touch mel-button no-button-margin mel-focus mel-before-remover my_favorites" onclick="m_mp_shortcuts()" title="<roundcube:label name='mel_metapage.shortcuts_help' />">
-                <span class="icon-mel-favorite "></span>
+            <button id="button-notes" class="fill-on-hover melv2-sec-nav-correction hide-touch mel-button no-button-margin mel-focus mel-before-remover my_notes margin-right-15" title="Notes">
+                <span class="material-symbols-outlined">
+                    sticky_note_2
+                </span>
             </button>
+            <!-- <button id="button-shortcut" class="fill-on-hover melv2-sec-nav-correction hide-touch mel-button no-button-margin mel-focus mel-before-remover my_favorites" onclick="m_mp_shortcuts()" title="<roundcube:label name='mel_metapage.shortcuts_help' />">
+                <span class="material-symbols-outlined">
+                    star
+                </span>
+            </button> -->
             <!-- <button id="button-help" class="hide-touch mel-button bckg no-button-margin  mel-before-remover mel-focus" onclick="m_mp_Help()" title="<roundcube:label name='mel_metapage.help_help' />">
                 <roundcube:label name="mel_metapage.support" /><span class="icon-mel-help plus"></span>
             </button> -->
@@ -30,61 +37,63 @@
 
       <div id="barup-right-buttons">
 
-          <div class="user" id="barup-user" style="padding:0;float: right;">
-            <user/>
+        <div id="barup-search-col" role="search">
+          <div class="search" >
+              <div class="input-group">
+                  <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
+                  <input id="barup-search-input" value="<roundcube:object name="word_searched" />" type="text" onmousedown="" onclick="rcmail.command('mel.search.global.show', this)" title="<roundcube:label name='mel_metapage.global_search_title' />" onchange="rcmail.command('mel.search.global', this)" placeholder="<roundcube:label name='mel_metapage.globalsearch' />..." class="form-control mel-focus" />
+                  <div class="input-group-append">
+                      <span class="icofont-search input-group-text"></span>
+                  </div>
+              </div>
+          </div>
         </div>
-
-        <button id="button-search" style="float: right;margin-top: 14px;"
-          class="btn-circle" onclick="open_research()"
-          title="<roundcube:label name='mel_metapage.to_search' />">
-          <span class="icon-mel-search""></span>
-        </button>
-
-        <button id="button-shortcut" style="float: right;"
-          class="no-button-margin barup-icon-button mel-focus mel-before-remover mel-button" onclick=""
-          title="<roundcube:label name='mel_metapage.shortcuts_help' />">
-          <span class="material-symbols-outlined">
-            notifications
-          </span>
-        </button>
-        <button id="button-settings" style="float: right;"
-          class="no-button-margin barup-icon-button mel-focus mel-before-remover mel-button" onclick="m_mp_ToggleGroupOptionsUser(this);"
-          title="<roundcube:label name='mel_metapage.settings_help' />">
-          <span class="material-symbols-outlined">
-            settings
-          </span>
-        </button>
-        <button id="button-help" style="float: right;"
-          class="no-button-margin barup-icon-button mel-focus mel-before-remover ml-3 mel-button" onclick="m_mp_Help()"
+      
+      <span class="hide-button-search">  
+        <button id="button-help" class="transparent-icon-button barup-icons-button ml-3" onclick="m_mp_Help()"
           title="<roundcube:label name='mel_metapage.help_help' />">
           <span class="material-symbols-outlined">
             help
           </span>
         </button>
-
-        <div id="barup-search-col" role="search" style="float: right;">
-            <div class="search" >
-                <div class="input-group">
-                    <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
-                    <input id="barup-search-input" value="<roundcube:object name="word_searched" />" type="text" onmousedown="" onclick="rcmail.command('mel.search.global.show', this)" title="<roundcube:label name='mel_metapage.global_search_title' />" onchange="rcmail.command('mel.search.global', this)" placeholder="<roundcube:label name='mel_metapage.globalsearch' />..." class="form-control mel-focus" />
-                    <div class="input-group-append">
-                        <span class="icofont-search input-group-text"></span>
-                    </div>
-                </div>
-            </div>
+      
+        <option/>
+      
+        <div id="notification-dropdown" class="dropdown">
+          <button id="button-notifications" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            class="transparent-icon-button barup-icons-button" onclick=""
+            title="<roundcube:label name='mel_metapage.notifications_help' />">
+            <span id="notifications-icon" class="material-symbols-outlined">
+              notifications
+            </span>
+          </button>
+          <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2"
+            aria-labelledby="button-notifications">
+            <div id="notifications-panel"></div>
+          </div>
         </div>
-       
-    </div>
-    </div>
-    <div id="barup-search" class="hidden barup-search">
-        <div class="search-container"></div>
-    </div> 
+      </span>
+      
+        <button id="button-search" style="margin-top: 14px;" class="btn-circle" onclick="open_research()"
+          title="<roundcube:label name='mel_metapage.to_search' />">
+          <span class="icon-mel-search""></span>
+        </button>
 
+        <div class=" user" id="barup-user" style="padding:0;">
+          <user/>
+        </div>
+    </div>
+  </div>
+
+  <div id="barup-search" class="hidden barup-search">
+    <div class="search-container"></div>
+  </div> 
 </div>
+
 <div id="barup-search-background" class="hidden">
-
 </div>
-<button title="<roundcube:label name='mel_metapage.ariane_help' />" class="tiny-rocket-chat hide-touch show-normal" style="    z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
+
+<button title="<roundcube:label name='mel_metapage.ariane_help' />" class="tiny-rocket-chat hide-touch show-normal" style="z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
     <span class="tiny-rocket-chat-icon icon-mel-message"><span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span></span>
 </button>
 

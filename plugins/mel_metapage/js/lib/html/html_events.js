@@ -2,6 +2,7 @@ import { BaseStorage } from "../classes/base_storage";
 import { MaterialIcon } from "../icons";
 import { EventLocation } from "../calendar/event_location";
 import { MelObject } from "../mel_object";
+import { CalendarLoader } from "../calendar/calendar_loader";
 
 /**
  * Représente un évènement du calendrier.
@@ -26,7 +27,7 @@ export class html_events extends mel_html2 {
      * @param {*} event Evènement qui sera utiliser pour génrer le html 
      * @param {*} attribs Attributs de l'élément
      */
-    constructor(event, attribs = {}) {
+    constructor(event, attribs = {}, base_date = moment()) {
         super(CONST_HTML_DIV, {attribs});
         this._cache = new BaseStorage();
         const date = STRING === typeof event.start ? moment(event.start) : event.start;
@@ -40,13 +41,19 @@ export class html_events extends mel_html2 {
             },
             date:{
                 get: function() {
-                    return date.format ? date : moment(date);
+                    return moment(date);
                 },
                 configurable: true
             },
             end_date:{
                 get: function() {
                     return end_date;
+                },
+                configurable: true
+            },
+            base_date:{
+                get: function() {
+                    return moment(base_date);
                 },
                 configurable: true
             },
@@ -64,14 +71,22 @@ export class html_events extends mel_html2 {
                 this._on_action_click();
             });
         }
+
+        this.attribs['data-event-uid'] = this.event.uid;
     }
 
     _create_content() {
-        const html_date = new mel_html('div', {class:'melv2-event-date'}, this._date_format());
         const html_hour = new mel_html2('div', {attribs:{class:'melv2-event-hour'}, contents:this._create_range_hour()});
         const html_infos = new mel_html2('div', {attribs:{class:'melv2-event-content'}, contents:this._create_event()});
         const html_separator = new mel_html('div', {class:'melv2-event-separator'});
         const html_side = new mel_html2('div', {attribs:{class:'melv2-event-side'}, contents:this._create_side_click()});
+
+        let html_date = new mel_html('div', {class:'melv2-event-date'}, this._date_format());
+
+        if (this.attribs['data-ignore-date']) {
+            html_date.css('display', 'none');
+        }
+
         let html_clickable = new mel_html2('div', {attribs:{class:'melv2-event-clickable'}, contents:[html_date, html_hour, html_separator, html_infos]});
         html_clickable.onclick.push(() => {
             this.onaction.call();
@@ -211,8 +226,7 @@ export class html_events extends mel_html2 {
         return this.date.startOf('day').format() === moment().add(day_to_add, 'd').startOf('day').format();
     }
     _is_today() {
-        const now = moment();
-        return this.date <= now < this.end_date;
+        return CalendarLoader.Instance.is_date_okay(this.date, this.end_date, this.base_date);
     }
     _is_tomorrow() {
         return this._date_is({day_to_add:1});
@@ -222,14 +236,15 @@ export class html_events extends mel_html2 {
         date, 
         add_today = true
     }) {
-        const now = moment();
-        const is_date_not_today = moment(date).startOf('day').format() !== now.startOf('day').format();
         let hour = EMPTY_STRING;
 
-        const is_today = add_today ? this._is_today() : true;
+        const now = this.base_date;
+        const is_date_not_today = moment(date).startOf('day').format() !== now.startOf('day').format();
+
+        const is_today = this._is_today();
         if (is_today && is_date_not_today) hour = date.format('DD/MM');
         else hour = date.format('HH:mm');
-        
+
         return hour;
     }
 
@@ -268,6 +283,11 @@ export class html_events extends mel_html2 {
 	}
 
     async _on_action_click() {
+        const date = this.date.toDate().getTime()/1000.0;
+        await html_events._action_click(this.event.calendar, date, this.event);     
+    }
+
+    static async _action_click(source, date, event) {
         const FRAME = 'calendar';
         const page_manager = MelObject.Empty();
 
@@ -275,14 +295,17 @@ export class html_events extends mel_html2 {
             force_update:true,
             update:true,
             params:{
-                source:this.event.calendar,
-                date:this.date.toDate().getTime()/1000.0
+                source,
+                date
             }
         };
         
         await page_manager.change_frame(FRAME, config);
 
-        page_manager.select_frame(FRAME)[0].contentWindow.ui_cal.event_show_dialog(this.event);
-        
+        page_manager.select_frame(FRAME)[0].contentWindow.ui_cal.event_show_dialog(event);
+    }
+
+    static $_toString($element) {
+        return $element[0].outerHTML;
     }
 }

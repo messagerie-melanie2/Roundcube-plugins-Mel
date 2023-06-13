@@ -287,7 +287,7 @@ const mel_metapage = {
                     case mel_metapage.Storage.other_tasks:
                     case mel_metapage.Storage.tasks:
                         return update_element(storage, mel_metapage.Storage.last_task_update);
-                    case "all_events":
+                    case mel_metapage.Storage.calendar_all_events:
                     case mel_metapage.Storage.calendar:
                         return update_element(storage, mel_metapage.Storage.last_calendar_update);
                     default:
@@ -313,7 +313,7 @@ const mel_metapage = {
          */
         mail:"mel_metapage.mail.count",
         wsp_mail:"mel_metapage.wsp.mails",
-        last_calendar_update:"mel_metapage.calendar.last_update",
+        last_calendar_update:"mel_metapage.calendar.last_update_2",
         last_task_update:"mel_metapage.tasks.last_update",
         ariane:"ariane_datas",
         wait_frame_loading:"mel_metapage.wait_frame_loading",
@@ -720,7 +720,7 @@ const mel_metapage = {
             let contracted_task;
             let $querry;
 
-            if (window !== parent) return await parent.mel_metapage.Functions.change_page(task, action, params);
+            if (window !== parent) return await parent.mel_metapage.Functions.change_page(task, action, params, update, force);
 
             contracted_task = mm_st_ClassContract(task);
 

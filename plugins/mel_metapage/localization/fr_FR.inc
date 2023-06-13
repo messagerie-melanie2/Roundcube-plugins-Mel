@@ -79,7 +79,7 @@ $labels["create_help"] = "Ouvre la fenêtre de création (email, espaces de trav
 $labels["help_help"] = "Ouvre la fenêtre d'aide";
 $labels["shortcuts_help"] = "Affiche les raccourcis";
 $labels["welcome"] = "Bienvenue";
-$labels["user_help"] = "Bienvenue ! - Options de compte";
+$labels["user_help"] = "Options de compte";
 $labels["ariane_help"] = "Ouvre la fenêtre de discussion instantanée";
 $labels["webconf_enter_help"] = "Ouvre la visioconférence";
 $labels["webconf_close_help"] = "Ferme et ouvre la dernière page ouverte";
@@ -244,6 +244,8 @@ $labels['secondary_nav'] = 'Navigation Secondaire';
 $labels['main_contents'] = 'Contenu principal';
 
 $labels['to_search'] = 'Rechercher';
+$labels['notifications_help'] = 'Afficher les notifications';
+$labels['settings_help'] = 'Afficher les options';
 $labels['global_search_title'] = 'Recherche globale : recherche dans les contacts, les mails ansi que l\'agenda.';
 
 $labels['open_chat_popup'] = 'Ouvrir la discussion instantanée';
@@ -259,7 +261,7 @@ $labels['results_for'] = 'résultats pour';
 $labels['order_by'] = 'Trier par';
 $labels['desc'] = 'Le plus récent';
 $labels['asc'] = 'Le plus ancien';
-$labels['hide_chat_popup_button'] = 'Cacher la bulle de discussion instantée';
+$labels['hide_chat_popup_button'] = 'Bulle de discussion instantanée';
 $labels['to_participate'] = 'Participer';
 
 $labels['title_needed'] = 'Vous devez mettre un titre !';
@@ -290,6 +292,7 @@ $labels['change_text_color'] = 'Changer la couleur du texte';
 
 $labels['quit_settings'] = 'Quitter les paramètres';
 
+$labels['move'] = 'Déplacer';
 $labels['move_up'] = 'Déplacer en haut';
 $labels['move_down'] = 'Déplacer en bas';
 
@@ -363,3 +366,10 @@ $labels['param-show-back-icon'] = 'Afficher le bouton "Revenir à" ?';
 
 $labels["custom_taskbar"] = "Personnaliser";
 $labels['sended_folder'] = 'Dossier des mails envoyés';
+
+$labels['ok'] = 'Disponible';
+$labels['nothere'] = 'Absent';
+$labels['busy'] = 'Ne pas déranger';
+$labels['logout'] = 'Hors ligne';
+$labels['custom_status'] = 'Statut personnalisé...';
+$labels['change_status'] = 'Modifier le statut';

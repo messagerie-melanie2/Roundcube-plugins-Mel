@@ -409,8 +409,7 @@ if (rcmail)
                                 rcmail.command("chat.setupConfig");
 
                             $(".tiny-rocket-chat").removeClass("layout-hidden");
-
-                            $(".toggleChatCommand").html("Cacher la bulle de discussion");
+                            $('#rcmfd_hide_chat').prop("checked", true);
                         }
                         //On cache
                         else {
@@ -425,7 +424,7 @@ if (rcmail)
                             }
 
                             $(".tiny-rocket-chat").addClass("layout-hidden");
-                            $(".toggleChatCommand").html("Afficher la bulle de discussion");
+                            $('#rcmfd_hide_chat').prop("checked", false);
                         }
                     }
                 );

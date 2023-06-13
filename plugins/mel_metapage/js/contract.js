@@ -87,33 +87,78 @@ class SearchResultCalendar extends SearchResult
     constructor(cal)
     {
         super('icon-mel-calendar', null, {cal, date:cal.start});
-        //this.datas.date = cal.start;
-        //a.select(x => Enumerable.from(x.value.raw).where(w => w.key === 'datas').select(s => s.value.date).toArray()).toArray()
-
-        //const format = "DD/MM/YYYY HH:mm";
-        //super(moment(cal.start).format(format) + " - " + moment(cal.end).format(format) + " : " + cal.title, cal.description, "#");
-        //this.onclick = "SearchResultCalendar.CreateOrOpen('"+JSON.stringify(cal).replace(/"/g, "£¤£").replaceAll("'", "µ¤¤µ")+"')";//'mm_s_Calendar(`'+JSON.stringify(cal).replace(/"/g, "£¤£")+'`)';
-        //JSON.stringify(cal).replace(/"/g, "£¤£")
+        this.loaded = false;
+        this.is_$ = true;
+        this._setup();
     }   
+
+    async _setup() {
+        this.html = await this.GenerateHtml();
+        this.loaded = true;
+    }
     
-    _html()
+    async GenerateHtml()
+    {
+        let html = `
+            <div class="mel-block-list">
+                <div style="display:inline-block;vertical-align:top">
+                    <span class='icon ${this.icon || 'no-icon'}'></span>
+                </div>
+                ${await this._html()}
+            </div>
+        `;
+
+        html = $(html);
+
+        if (!!html_helper.Calendars.$jquery_array) {
+            const $jquery_array = html_helper.Calendars.$jquery_array;
+            html_helper.Calendars.$jquery_array = undefined;
+            html.find('ul').html($jquery_array);
+        }
+
+        return html;
+    }
+
+    async _html()
     {
         const cal = this.datas.cal;
         let html = super._html();
         html += `<div style='display:inline-block'>${rcube_calendar.mel_metapage_misc.GetDateFr(moment(cal.start).format("dddd D MMMM"))}</div>`;
-        html += html_helper.Calendars({
+        html += await html_helper.Calendars({
             datas:[cal],
             get_only_body:true
         });
         return html;
     };
+
+    async waiting_loaded() {
+        const s = 5;
+        let it = -1;
+
+        if (!this.loaded) {
+            await new Promise((ok, nok) => {
+                const interval = setInterval(() => {
+                    if (++it >= s * 10) {//5 secondes 
+                        clearInterval(interval);
+                        nok('Waiting too long')
+                    }
+                    else if (this.loaded === true) {
+                        clearInterval(interval);
+                        ok(this.loaded);
+                    }
+                }, 100);
+            });
+        }
+
+        return this.loaded;
+    }
 }
 
 /**
  * Convertit une liste d'évènement en résultat de recherche.
  * @param {array} cals Liste d'évènements.
  */
-SearchResultCalendar.from_array = function (cals)
+SearchResultCalendar.from_array = async function (cals)
 {
     retour = [];
     for (let index = 0; index < cals.length; ++index) {
@@ -123,6 +168,9 @@ SearchResultCalendar.from_array = function (cals)
 
         retour.push(new SearchResultCalendar(cals[index]));
     }
+
+    await Promise.allSettled(Enumerable.from(retour).select(x => x.waiting_loaded()).toArray());
+
     return {label:rcmail.gettext('agenda', 'mel_portal'), datas:retour};
 }
 

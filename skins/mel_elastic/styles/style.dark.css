@@ -1,6 +1,6 @@
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
 	border-color: #E1C58F;
-	background-color: #181C28;
+	background-color: #3e4c59;
 }
 
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
@@ -11,10 +11,10 @@ html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
 }
 
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::after {
-	border: solid #E1C58F thin;
+	/* border: solid #E1C58F thin; */
     background-color: #2E2E2E;
-	top: 0;
-	right: -1px;
+	top: 2px;
+	right: 3px;
 }
 
 /******** Navigation principale ********/
@@ -214,7 +214,10 @@ html.dark-mode .btn:focus
     color: #E1C58F!important;
 }
 
-html.dark-mode .custom-switch .custom-control-label::after,
+html.dark-mode .custom-switch .custom-control-label::after {
+  background-color: #E1C58F!important;
+}
+
 html.dark-mode #groupoptions-user .more-options:hover,
 html.dark-mode .roundbadge.icon-mel-videoconference:hover,
 html.dark-mode .tiny-webconf-menu.dwp-round:hover,
@@ -1000,7 +1003,7 @@ html.dark-mode .custom-switch .custom-control-label::before,
 html.dark-mode .mel-radio-1 span
 {
     border-color: #E1C58F;
-    background-color: black;
+    background-color: #3E4C59;
 }
 
 html.dark-mode .ui-slider .ui-slider-handle,
@@ -1018,7 +1021,7 @@ html.dark-mode .ui-slider .ui-slider-range,
 html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
 html.dark-mode  .mel-radio-1 input[type="checkbox"]:checked + label span
 {
-    background-color: #3e4c59;
+    background-color: #182633;
 }
 
 html.dark-mode #edit-attendees-table

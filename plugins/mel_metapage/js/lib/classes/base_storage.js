@@ -19,5 +19,14 @@ export class BaseStorage {
             return this;
         }
 
+        this[Symbol.iterator] = function *() {
+            for (const key in storage) {
+                if (Object.hasOwnProperty.call(storage, key)) {
+                    const value = storage[key];
+                    yield {key, value};
+                }
+            }
+        };
+
     }
 }

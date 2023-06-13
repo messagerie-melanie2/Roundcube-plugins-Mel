@@ -281,7 +281,6 @@ function bureau_intro(intro) {
  * Fermer l'onboarding
  */
 rcube_webmail.prototype.onboarding_close = function (popup = false) {
-debugger
   if (popup) {
     let buttons = [{
       text: rcmail.gettext('hide all help', 'mel_onboarding'),
@@ -541,7 +540,7 @@ function replaceImages(json) {
 function send_notification() {
   top.rcmail.triggerEvent('plugin.push_notification', {
     uid: 'help-' + Math.random(),
-    title: "Aide interactive",
+    title: "Retrouvez votre aide interactive sur le bouton 'Aide de la page'",
     content: "Retrouvez votre aide interactive sur le bouton 'Aide de la page'",
     category: 'onboarding',
     action: [

@@ -295,13 +295,12 @@ export class Sticker
             }
         });
         
-        let hasDown = Sticker.findByOrder(this.order + 1).uid !== undefined;
-
+        let $down = $element.find('.downb');
 
         //Handler pour le bouton "descendre"
-        if ($element.find('.downb').length > 0)
+        if ($down.length > 0)
         {
-            $element.find('.downb').attr('draggable', true)[0].addEventListener("dragstart", (ev) => {
+            $down.attr('draggable', true)[0].addEventListener("dragstart", (ev) => {
                 if (!!Sticker.lock) {
                     ev.preventDefault();
                     rcmail.display_message('Une action est déjà en cours !');
@@ -314,7 +313,13 @@ export class Sticker
                 ev.dataTransfer.setDragImage(img, 10, 10);
                 
                 ev.dataTransfer.setData("text/plain", this.uid);
-                console.log('drag&drop', ev);
+                //console.log('drag&drop', ev);
+            });
+
+            $down[0].addEventListener("dragend", (ev) => {
+                $('.mel-note.dragover').removeClass('dragover')
+                                       .removeClass('dragover-right')
+                                       .removeClass('dragover-left');
             });
         }
 

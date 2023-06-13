@@ -455,7 +455,10 @@ a.button.icon:not(.disabled):focus {
   background-color: var(--tierciary-bckg-color);
   color: var(--secondary-text-color);
 }
-.mel-animated {
+.mel-animated,
+.melv2-event-clickable,
+.melv2-mail,
+.melv2-mail-left {
   transition: all 0.1s ease-in;
 }
 .hidden-item-mt {
@@ -2984,4 +2987,186 @@ html.dark-mode .green-badge {
 }
 .task-settings #layout-list .listing.iconized.settings-default-icon tr.a_mel_news_flux > td.section::before {
   content: "\e8b8";
+}
+.mel-toolbar {
+  position: absolute;
+}
+.mel-toolbar .toolbar-buttons {
+  display: flex;
+  height: 100%;
+}
+.mel-toolbar .toolbar-buttons .mel-button {
+  flex: 1;
+  --main-bckg-color: var(--invisible);
+  --mel-button-border-color: var(--invisible);
+  border-radius: 0;
+}
+.mel-toolbar .toolbar-buttons .mel-button span {
+  display: block;
+}
+.mel-toolbar .toolbar-buttons .v-separate {
+  width: 1px;
+  background: white;
+  margin: 10px 0;
+}
+.melv2-card {
+  border-radius: 15px;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+}
+.melv2-card-pre {
+  margin-top: 10px;
+  margin-left: 10px;
+  display: flex;
+}
+.melv2-card-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+a.melv2-card-title {
+  color: var(--main-text-color);
+}
+.melv2-card-icon {
+  margin-right: 5px;
+  align-self: center;
+}
+.melv2-card .contents,
+.melv2-card-contents {
+  height: 250px;
+  max-height: 250px;
+  overflow: auto;
+}
+.melv2-event,
+.melv2-mail {
+  background-color: #F8F9FA;
+  border-radius: 10px;
+  display: flex;
+  margin: 2.5px 10px;
+  padding: 5px;
+  padding-left: 10px;
+}
+.melv2-event-clickable,
+.melv2-mail-left {
+  display: flex;
+  flex-wrap: wrap;
+  width: 75%;
+  border-radius: 15px;
+}
+.melv2-event-clickable:hover {
+  background-color: var(--tierciary-bckg-color);
+  color: var(--secondary-text-color);
+  cursor: pointer;
+  padding: 5px;
+}
+.melv2-event-date,
+.melv2-mail-from,
+.melv2-mail-date {
+  flex-basis: 100%;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.melv2-event-hour p,
+.melv2-event-content p,
+.melv2-mail-subject,
+.melv2-mail-date-left {
+  margin-bottom: 0;
+  padding-right: 10px;
+  font-size: 12px;
+}
+.melv2-event-hour p.melv2-event-hour-top {
+  margin-bottom: 4px;
+}
+.melv2-event-hour-top {
+  margin-bottom: 2px;
+}
+.melv2-event-separator {
+  width: 1px;
+  background-color: var(--main-text-color);
+  border-radius: 100px;
+  height: calc(100% - 30.2px);
+  margin-top: 3px;
+}
+.melv2-event-content {
+  margin-left: 10px;
+  max-width: 75%;
+}
+.melv2-event-content p,
+.melv2-mail-subject,
+.melv2-mail-date-left {
+  text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.melv2-event-content p.melv2-event-content-top {
+  font-size: 14px;
+  font-weight: 600;
+}
+.melv2-event-content-bottom {
+  font-weight: 300;
+}
+.melv2-event-side {
+  display: flex;
+}
+.melv2-event-side .melv2-event-button {
+  border-radius: 0;
+  align-self: center;
+  height: fit-content;
+  border-right: solid thin white;
+  line-height: 0;
+}
+.melv2-event-side .melv2-event-button:first-of-type {
+  border-bottom-left-radius: 50px;
+  border-top-left-radius: 50px;
+}
+.melv2-event-side .melv2-event-button:last-of-type {
+  border-bottom-right-radius: 50px;
+  border-top-right-radius: 50px;
+  border-right: none;
+}
+.melv2-mail {
+  padding: 15px;
+  margin: 3px 10px;
+}
+.melv2-mail:hover {
+  background-color: var(--tierciary-bckg-color);
+  color: var(--secondary-text-color);
+  cursor: pointer;
+}
+.melv2-mail-left {
+  display: block;
+}
+.melv2-mail-right {
+  width: 25%;
+  display: flex;
+  align-content: space-between;
+}
+.melv2-mail-date {
+  text-align: end;
+}
+.melv2-mail-date.melv2-mail-old {
+  width: 100%;
+  align-self: center;
+}
+.melv2-mail-date.melv2-mail-old div {
+  display: inline-block;
+}
+.melv2-mail-from {
+  font-size: 14px;
+  overflow: hidden;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.melv2-mail-subject {
+  font-size: 11px;
+}
+.melv2-mail-date-left {
+  font-weight: normal;
+  overflow: unset;
+  font-size: 11px;
+}
+.mel-news {
+  font-family: Marianne, Roboto, sans-serif;
 }

@@ -5,8 +5,10 @@ class MelEvent {
     }
 
     push(event) {
-        this.events[this._generateKey()] = event;
+        const key = this._generateKey();
+        this.events[key] = event;
         ++this._count;
+        return key;
     }
 
     add(key, event) {
@@ -65,17 +67,21 @@ class MelEvent {
                 const key = keys[index];
                 const element = this.events[key]
     
-                if (!!element) element(...args);
+                if (!!element) this._call_callback(element, ...args);
             }
         }
     }
+
+    _call_callback(callback, ...args) {
+        return callback(...args)
+    } 
 
     async asyncCall(...args) {
         let asyncs = [];
         for (const key in this.events) {
             if (Object.hasOwnProperty.call(this.events, key)) {
                 const element = this.events[key];
-                if (!!element) asyncs.push(element(...args));
+                if (!!element) asyncs.push(this._call_callback(element, ...args));
             }
         }
 

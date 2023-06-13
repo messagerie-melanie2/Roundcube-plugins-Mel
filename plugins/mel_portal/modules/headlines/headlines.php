@@ -5,7 +5,8 @@ class Headlines extends Module
     function init()
     {
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[Headlines->init] Initialisation....");
-        $this->edit_row_size(2);
+        $this->edit_row_size(4);
+        $this->edit_order(3);
         //$this->load_config();
     }
 

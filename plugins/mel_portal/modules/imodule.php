@@ -49,6 +49,10 @@ interface iModule
   public function item_html();
   public function row_size();
   public function edit_row_size($newSize);
+  public function edit_order($order);
+  public function order();
+  public function use_custom_style();
+  public function set_use_custom_style($use);
 //   /**
 //    * Merge les items
 //    */

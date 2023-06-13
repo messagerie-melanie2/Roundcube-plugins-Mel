@@ -437,32 +437,32 @@ if (rcmail && window.mel_metapage)
             return;
         }
 
-        if ($("html").hasClass("touch") && $("html").hasClass("layout-normal"))
-        {
-            $("#barup-buttons").removeClass("col-6").addClass("col-3");
-            $("#barup-search-col").removeClass("col-3").addClass("col-6").removeClass("col-7");
-            $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
-        }
-        else {
-            if ($("html").hasClass("touch") && rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
-            {
-                $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
-                $("#barup-buttons").removeClass("col-6").addClass("col-3");
-                $("#barup-search-col").removeClass("col-3").addClass("col-7");
+        // if ($("html").hasClass("touch") && $("html").hasClass("layout-normal"))
+        // {
+        //     $("#barup-buttons").removeClass("col-6").addClass("col-3");
+        //     $("#barup-search-col").removeClass("col-3").addClass("col-6").removeClass("col-7");
+        //     $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
+        // }
+        // else {
+        //     if ($("html").hasClass("touch") && rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+        //     {
+        //         $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
+        //         $("#barup-buttons").removeClass("col-6").addClass("col-3");
+        //         $("#barup-search-col").removeClass("col-3").addClass("col-7");
 
-            }
-            else if ($("html").hasClass("touch"))
-            {
-                $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
-                $("#barup-buttons").removeClass("col-6").addClass("col-3");
-                $("#barup-search-col").removeClass("col-3").addClass("col-7");
-            }
-            else {
-                $("#barup-buttons").removeClass("col-3").addClass("col-6");
-                $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
-                $("#barup-search-col").removeClass("col-6").removeClass("col-7").addClass("col-3");
-            }
-        }
+        //     }
+        //     else if ($("html").hasClass("touch"))
+        //     {
+        //         $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
+        //         $("#barup-buttons").removeClass("col-6").addClass("col-3");
+        //         $("#barup-search-col").removeClass("col-3").addClass("col-7");
+        //     }
+        //     else {
+        //         $("#barup-buttons").removeClass("col-3").addClass("col-6");
+        //         $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
+        //         $("#barup-search-col").removeClass("col-6").removeClass("col-7").addClass("col-3");
+        //     }
+        // }
         
         try {
             MEL_ELASTIC_UI._resize_themes();

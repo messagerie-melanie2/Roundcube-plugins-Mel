@@ -239,7 +239,7 @@ class WebconfChat{
                     if (!!this.onloading) this.onloading(this);
                 }
 
-                rcmail.triggerEvent("init_ariane", "mm-ariane");
+                rcmail.triggerEvent("init_rocket_chat", "mm-ariane");
             });
             this.$loaging = $loading_chat.css('width', '');
             this.room = room;
@@ -370,20 +370,16 @@ class WebconfChat{
 
     async recover_last_status() {
         if (!!this.save_status?.current?.status){
-            //await top.ariane.set_status(this.save_status.current.status, this.save_status.current.message);
-            await this.setStatus(this.save_status.current.status, this.save_status.current.message, false);
-
-            if (this.save_status.current.status !== (await this.getStatus()).status) {
-                await this.setStatus('online');
-            }
-
-            this._navigator()?.ariane?.update_status?.((await this.getStatus()).status);
+            //await ChatHelper.Chat().set_status_to_server(this.save_status.current.status, this.save_status.current.message);
+            const save_status = false;
+            await this.setStatus(this.save_status.current.status, this.save_status.current.message, save_status);
+            //top.ariane.update_status(this.save_status.current.status);
             this.save_status.current = null;
         }
     }
 
     async getStatus() {
-        return await this._navigator()?.ariane?.get_status?.() ?? {status:'online', message:'Disponible'};
+        return await ChatHelper.Chat().get_status_from_server();
     }
 
     /**
@@ -393,14 +389,10 @@ class WebconfChat{
     async setStatus(status, message = EMPTY_STRING, save_status = true) {
         if (save_status) await this.save_status();        
         //Change le status dans le chat
-        await this._navigator()?.ariane?.set_status?.(status, message);
+        await ChatHelper.Chat().set_status_to_server(status, message);
 
         //Change le status dans le bnum
-        this._navigator()?.ariane?.update_status?.(status);
-    }
-
-    _navigator() {
-        return top ?? window;
+        //top.ariane.update_status(status);
     }
 
     /**
@@ -4284,15 +4276,16 @@ function create_listeners() {
 		if (e.data.eventName === undefined)
 			return;
 
-		if (top.ariane !== undefined)
-		{
+		// if (top.ariane !== undefined)
+		// {
 			if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")
 			{
 				const value = e.data.data;
-				top.ariane.update_status(value?.id ?? value);
+				//top.ariane.update_status(value?.id ?? value);
 				rcmail.env.ariane_have_calls = true;
+                ChatHelper.Manager().updateStatus(value?.id ?? value);
 			}
-		}
+		//}
 	});
 }
 

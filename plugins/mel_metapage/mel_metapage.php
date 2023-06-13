@@ -1,4 +1,5 @@
 <?php
+include_once 'bnum_plugin.php';
 /**
  * Plugin Mél Métapage
  *
@@ -17,7 +18,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-class mel_metapage extends rcube_plugin
+class mel_metapage extends bnum_plugin
 {
     public const FROM_KEY = "_is_from";
     public const FROM_VALUE = "iframe";
@@ -168,6 +169,7 @@ class mel_metapage extends rcube_plugin
 
         $this->include_script('js/init/constants.js');
         $this->include_script('js/always_load/mel_event.js');
+        // $this->include_script('js/always_load/load_module.js');
         $this->include_script('js/html.js');
  
         if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe' && $this->rc->task !== "login")
@@ -424,6 +426,10 @@ class mel_metapage extends rcube_plugin
             if ($this->rc->task === "calendar")
             {
                 $this->rc->output->set_env("calendar_custom_dialog", true);
+
+                if ($this->rc->action === '' || $this->rc->action === 'index') {
+                    $this->load_script_module('main', '/js/lib/calendar/');
+                }
             }
 
             if ($this->rc->task === "rotomecatest")
@@ -433,6 +439,7 @@ class mel_metapage extends rcube_plugin
 
             if ($this->rc->task === "bnum")
             {
+                $this->include_script('js/secondary-nav.js');
                 $this->register_action('index', array($this, 'bnum_page'));
             }
 

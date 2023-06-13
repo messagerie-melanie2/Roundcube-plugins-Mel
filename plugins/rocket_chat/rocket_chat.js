@@ -1,4 +1,33 @@
 if (window.rcmail) {
+	function rc_url(task, action = "", args = null)
+	{
+		let url = task;
+		if (action !== null && action !== undefined && action !== "")
+			url += "&_action=" + action;
+
+		if (window.location.href.includes(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`) || window !== parent)
+		{
+			if (args === null || args === undefined)
+			{
+				args = {};
+				args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+			}
+			else if (args[rcmail.env.mel_metapage_const.key] === undefined)
+				args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+		}
+
+		if (args !== null)
+		{
+			for (const key in args) {
+				if (Object.hasOwnProperty.call(args, key)) {
+					const element = args[key];
+					url += "&" + key + "=" + element
+				}
+			}
+		}
+		return rcmail.get_task_url(url, window.location.origin + window.location.pathname)
+	}
+
 	if (rcmail.env.rocket_chat_domain) {
 		document.domain = rcmail.env.rocket_chat_domain;
 	}	
@@ -17,35 +46,23 @@ if (window.rcmail) {
 
 	});
 
-	
-	try {
-		metapage_frames.addEvent("open.after", (eClass, changepage, isAriane, querry, id, actions) => {
-			if (eClass === "discussion" && changepage)
-			{
-				//logout().always(() => {
-					rcmail.triggerEvent("init_ariane", id);
-				//});
-			}
-		});
-	} catch (error) {
-		
-	}
-
-	rcmail.register_command("login_ariane", login, true);
+	rcmail.register_command("login_chat", login, true);
 
 	function login()
 	{
 		//console.log("here");
 		return $.ajax({ // fonction permettant de faire de l'ajax
 			type: "GET", // methode de transmission des données au fichier php
-			url: MEL_ELASTIC_UI.url("discussion", "login"),//"/?_task=discussion&_action=login",
+			url: rc_url("discussion", "login"),//"/?_task=discussion&_action=login",
 			success: function (data) {
 				data = JSON.parse(data);
 				rcmail.env.rocket_chat_auth_token = data.token;
 				rcmail.env.rocket_chat_user_id = data.uid;
+				rcmail.triggerEvent('rocket.chat.onloggin', {token:data.token, uid:data.uid, error:false});
 			},
 			error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
 				console.error(xhr, ajaxOptions, thrownError);
+				rcmail.triggerEvent('rocket.chat.onloggin', {error:true});
 			},
 		});
 	} 
@@ -55,40 +72,41 @@ if (window.rcmail) {
 	{
 		return $.ajax({ // fonction permettant de faire de l'ajax
 			type: "GET", // methode de transmission des données au fichier php
-			url: MEL_ELASTIC_UI.url("chat", "logout"),//"/?_task=discussion&_action=login",
+			url: rc_url("chat", "logout"),//"/?_task=discussion&_action=login",
 			success: function (data) {
-				if (onSuccess !== null)
-					onSuccess(data === "loggued");
+				if (onSuccess !== null) onSuccess(data === "loggued");
+
+				rcmail.triggerEvent('rocket.chat.onloggout', {datas:data, error:false});
 			},
 			error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
 				console.error(xhr, ajaxOptions, thrownError);
+				rcmail.triggerEvent('rocket.chat.onloggout', {datas:{xhr, ajaxOptions, thrownError}, error:true});
 			},
 		});
 	} 
 
-	rcmail.addEventListener('init_ariane', async function(evt) {
-		window.ariane_id = evt === null ? "ariane_id" : evt;
+	rcmail.addEventListener('init_rocket_chat', async function(evt) {
+		console.log('LOG ROCKET CHAT');
+		window.chat_id = evt === null ? "ariane_id" : evt;
 		
 			await logout((loggued) => {
 				if (!loggued)
 					rcmail.env.rocket_chat_user_id = undefined;
 			});
-		if (rcmail.env.rocket_chat_auth_token === undefined || rcmail.env.rocket_chat_user_id === undefined)
-			await login();
+		if (rcmail.env.rocket_chat_auth_token === undefined || 
+			rcmail.env.rocket_chat_user_id === undefined) await login();
+
 		setTimeout(function() {
-			//console.error('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
 			try {
-				window.document.getElementById(ariane_id).contentWindow.postMessage({
+				window.document.getElementById(chat_id).contentWindow.postMessage({
 					externalCommand: 'login-with-token',
 					token: rcmail.env.rocket_chat_auth_token,
-					// userId: rcmail.env.rocket_chat_user_id
 				}, '*');
 			} catch (error) {
 				try {
-					parent.document.getElementById(ariane_id).contentWindow.postMessage({
+					parent.document.getElementById(chat_id).contentWindow.postMessage({
 						externalCommand: 'login-with-token',
 						token: rcmail.env.rocket_chat_auth_token,
-						// userId: rcmail.env.rocket_chat_user_id
 					}, '*');
 				} catch (error) {
 					console.error(error);
@@ -98,28 +116,6 @@ if (window.rcmail) {
 
 			
 		}, 50);
-		// window.document.getElementById(ariane_id).onload = function() {
-		// 	new Promise(async (a,b) => {
-
-		// });
-		// };
-
-				// // Récupération de l'url rocket
-				// if (rcmail.env.rocket_chat_gotourl) {
-				// 	var rocket_chat_url = rcmail.env.rocket_chat_gotourl;
-				//   }
-				//   else {
-				// 	var rocket_chat_url = sessionStorage.getItem('rocket_chat_url');
-				//   if (!rocket_chat_url) {
-				// 	rocket_chat_url = rcmail.env.rocket_chat_url;
-				//   }
-				//   }
-				//   if (navigator.appName == "Microsoft Internet Explorer"){
-				// 	  window.document.getElementById(ariane_id).src = rocket_chat_url;
-				// 	  window.document.getElementById(ariane_id).contentWindow.location.reload(true);
-				//   } else {
-				// 	  window.document.getElementById(ariane_id).src = rocket_chat_url;
-				//   }
 
 	});
 	
@@ -128,92 +124,54 @@ if (window.rcmail) {
 		if (e.data.eventName === undefined)
 			return;
 
+		 //console.info('chat',e.data.eventName,e.data);
+		// console.trace();
+
 		if (e.data.eventName == 'login-error') {
-			rcmail.display_message(e.data.response, 'error');
+			rcmail.display_message(`###[Rocket.Chat]${e.data.response}`, 'error');
+			console.error(`###[Rocket.Chat]${e.data.response}`, e);
+			rcmail.triggerEvent('rocket.chat.event.login-error', {datas:e});
 		}
-		else if (rcmail.env.rocket_chat_channel && e.data.eventName == 'startup' && e.data.data === true) {
-			window.document.getElementById(window.ariane_id).contentWindow.postMessage({
-				externalCommand: 'go',
-				path: rcmail.env.rocket_chat_channel
-			}, rcmail.env.rocket_chat_url);
+		else if ( e.data.eventName == 'startup' && e.data.data === true) {
+			const do_base_action = rcmail.triggerEvent('rocket.chat.event.startup', {do_base_action:true, datas:e})?.do_base_action ?? true;
+			if (do_base_action)
+			{
+				if (rcmail.env.rocket_chat_channel) {
+					window.document.getElementById(window.chat_id).contentWindow.postMessage({
+						externalCommand: 'go',
+						path: rcmail.env.rocket_chat_channel
+					}, rcmail.env.rocket_chat_url);
+				}
+			}
 		}
 		else if (e.data.eventName == 'unread-changed') {
-			var unread = e.data.data;
-			var title = rcmail.get_label('rocket_chat.task');
-			if (unread) {
-				title = '(' + unread + ') ' + title;
+			const unread = e.data.data;
+			const do_base_action = rcmail.triggerEvent('rocket.chat.event.unread-changed', {do_base_action:true, datas:e})?.do_base_action ?? true;
+			
+			if (do_base_action) {
+				let title = rcmail.get_label('rocket_chat.task');
+				if (unread) {
+					title = '(' + unread + ') ' + title;
+				}
+				localStorage.setItem('rocket_chat_title', title);
 			}
-			localStorage.setItem('rocket_chat_title', title);
-			// $('.button-rocket_chat .button-inner').text(title);
-			//document.title = title;
-			//refreshFavico();
-
-			// if (rcmail.env.ariane_is_logged !== true)
-			// {
-			// 	//Gère si l'on est connecté ou non.
-			// 	setTimeout(async () => {
-			// 		if (rcmail.env.ariane_have_calls !== true) //Si on a pas d'appels (changements de status/unreads)
-			// 		{
-			// 			rcmail.env.ariane_is_logged = false
-			// 			logout(() => {
-			// 				rcmail.triggerEvent("init_ariane", $(".discussion-frame")[0].id);
-			// 			})
-			// 			rcmail.env.ariane_interval_number = 0;
-			// 			rcmail.env.ariane_interval = setInterval(() => {
-			// 				if (rcmail.env.ariane_have_calls === true) //On est logué
-			// 				{
-			// 					rcmail.env.ariane_is_logged = true;
-			// 					clearInterval(rcmail.env.ariane_interval);
-			// 					delete rcmail.env.ariane_interval;
-			// 					delete rcmail.env.ariane_interval_number;
-			// 				}
-			// 				else
-			// 				{
-			// 					if (rcmail.env.ariane_interval_number++ >= 4) //On ne parvient pas à ce loguer.
-			// 					{
-			// 						console.warn("/!\\impossible de se connecter automatiquement !");
-			// 						rcmail.display_message("Impossible de se connecter automatiquement.", "error")
-			// 						rcmail.env.ariane_is_logged = true;
-			// 						clearInterval(rcmail.env.ariane_interval);
-			// 						delete rcmail.env.ariane_interval;
-			// 						delete rcmail.env.ariane_interval_number;
-			// 					}
-			// 				}
-			// 			}, 500);
-			// 			// rcmail.env.ariane_is_logged = true;
-			// 		}
-			// 		else
-			// 			rcmail.env.ariane_is_logged = true;
-			// 	}, 1111);
-			// }
-			//sessionStorage.setItem('rocket_chat_url', window.document.getElementById('rocket_chat_frame').contentWindow.location);
 		}
 
 		if (e.data.eventName === "room-opened")
-			window.ariane.setLastRoom(e.data.data, true);
-
-		if (parent.ariane !== undefined)
 		{
-			if (e.data.eventName === "unread-changed-by-subscription" ||  e.data.eventName == 'unread-changed')
-			{
-				if (e.data.eventName == 'unread-changed')
-				{
-					parent.ariane.update_unread_change(e);
-					parent.ariane.update_menu();
-				}
-				else
-				{
-					rcmail.env.ariane_have_calls = true;
-				}
-				parent.ariane.update_channel(e);
-			}
-			else if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")
-			{
-				const value = e.data.data;
-				parent.ariane.update_status(value?.id ?? value);
-				rcmail.env.ariane_have_calls = true;
-			}
+			rcmail.triggerEvent('rocket.chat.event.room-opened', {datas:e});
 		}
+
+
+		if (e.data.eventName === "unread-changed-by-subscription")
+		{
+			rcmail.triggerEvent('rocket.chat.event.unread-changed', {do_base_action:true, datas:e});
+		}
+		else if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")
+		{
+			rcmail.triggerEvent('rocket.chat.event.status-changed', {datas:e});
+		}
+		
 	});
 	
 	function refreshFavico() {

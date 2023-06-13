@@ -182,7 +182,7 @@ const mel_metapage = {
          * @returns {MelDataStore}
          */
         _getDataStore() {
-            let self = top.mel_metapage.Storage;
+            let self = (top ?? window).mel_metapage.Storage;
 
             if (!self._getDataStore.datastoreobject) self._getDataStore.datastoreobject = new MelDataStore('bnum', {});
 
@@ -221,9 +221,9 @@ const mel_metapage = {
         },
         setStoreChange(key, item)
         {
-            if (top.rcmail !== undefined) top.rcmail.triggerEvent('storage.change', {key, item});
+            if ((top ?? window).rcmail !== undefined) (top ?? window).rcmail.triggerEvent('storage.change', {key, item});
 
-            top.$('iframe.mm-frame').each((i,e) => {
+            (top ?? window).$('iframe.mm-frame').each((i,e) => {
                 try {
                     e.contentWindow.rcmail.triggerEvent('storage.change', {key, item});
                 } catch (error) {
@@ -670,7 +670,7 @@ const mel_metapage = {
          */
         async change_frame(frame, changepage = true, waiting = false, args = null, actions = [])
         {
-            if (changepage) top.rcmail.set_busy(true, 'loading');
+            if (changepage) (top ?? window).rcmail.set_busy(true, 'loading');
 
             // if (frame === "webconf")
             // {
@@ -681,8 +681,8 @@ const mel_metapage = {
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
 
-            top.rcmail.env.can_change_while_busy = true;
-            top.mm_st_OpenOrCreateFrame(frame, changepage, args, actions);
+            (top ?? window).rcmail.env.can_change_while_busy = true;
+            (top ?? window).mm_st_OpenOrCreateFrame(frame, changepage, args, actions);
             
             if (waiting)
             {
@@ -694,14 +694,14 @@ const mel_metapage = {
             // {
             //     if (initial_change_page)
             //     {
-            //         top.mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
+            //         (top ?? window).mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
             //     }
             //     //this.update_refresh_thing();
             // }
 
-            if (changepage && top.rcmail.busy) 
+            if (changepage && (top ?? window).rcmail.busy) 
             {
-                top.rcmail.set_busy(false);
+                (top ?? window).rcmail.set_busy(false);
                 rcmail.clear_messages();
             }
             
@@ -814,7 +814,7 @@ const mel_metapage = {
         get_current_title(current_task = null, _default = document.title){
             if (parent !== window) return parent.mel_metapage.Function.get_current_title(current_task, _default);
 
-            if (current_task === null) current_task = top.rcmail.env.current_task;
+            if (current_task === null) current_task = (top ?? window).rcmail.env.current_task;
 
             if (current_task === 'chat' || current_task === 'discussion')
             {
@@ -1273,8 +1273,8 @@ const mel_metapage = {
 
         update_refresh_thing()
         {
-            let current = top.$(".refresh-current-thing");
-            let action = window.webconf_helper.already() || top.rcmail.env.current_frame_name === "webconf";
+            let current = (top ?? window).$(".refresh-current-thing");
+            let action = window.webconf_helper.already() || (top ?? window).rcmail.env.current_frame_name === "webconf";
 
             if (action === true) current.addClass("disabled").attr("disabled", "disabled");
             else current.removeClass("disabled").removeAttr("disabled");

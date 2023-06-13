@@ -231,5 +231,6 @@ function check_workspace_integrity()
 }
 
 $(document).ready(() => {
+    return;
     check_workspace_integrity();
 });

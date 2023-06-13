@@ -47,7 +47,8 @@ class Workspaces extends Module
     // $workspace->shares = $shares;
 
     // $res = $workspace->save();
-    $this->edit_row_size(3);
+    $this->edit_row_size(12);
+    $this->edit_order(5);
 
     // $it = 0;
     // foreach ($this->workspaces as $key => $value) {
@@ -60,6 +61,7 @@ class Workspaces extends Module
 
   function generate_html()
   {
+    // return '';
     $html = "";
     $it = 0;
     $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
@@ -160,7 +162,7 @@ class Workspaces extends Module
             break;
 
           case mel_workspace::CHANNEL:
-            $tmp_html .= '<button data-channel="' . $ws->get_object($workspace, mel_workspace::CHANNEL)->name . '" onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';
+            $tmp_html .= '<button data-channel="' . $ws->get_object($workspace, mel_workspace::CHANNEL)->name . '" onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="material-symbols-outlined fill-on-hover ariane-icon">forum</button>';
             break;
           default:
             $tmp_html .= '<button onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" title="' . rcmail::get_instance()->gettext('button_title_' . $key, 'mel_portal') . '" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';

@@ -459,7 +459,16 @@ html_helper.Calendars.generate_link = function(event)
 	return link;
 }
 
+/**
+ * Classe qui permet de générer du html
+ */
 class mel_html{
+	/**
+	 * Constructeur de la classe
+	 * @param {string} tag Balise (exemple : div, li, ul etc...)
+	 * @param {Object} attribs Attributs de la balise 
+	 * @param {string} content Contenu de la balise
+	 */
 	constructor(tag, attribs = {}, content = '')
 	{
 		this.tag = tag.toLowerCase();
@@ -472,8 +481,22 @@ class mel_html{
 		this.aftergenerate = new MelEvent();
 	}
 
+	/**
+	 * Actions à faire avant de générer l'élément jquery
+	 * @abstract
+	 * @private Cette fonction est privée
+	 */
+	_before_generate() {}
+
+	/**
+	 * Récupère le jquery de ces données html
+	 * @param {Object} additionnal_attribs Attributs additionnels
+	 * @returns {$}
+	 */
 	generate(additionnal_attribs = {})
 	{
+		this._before_generate();
+
 		let multi_balise = true;
 
 		switch (this.tag) {
@@ -513,22 +536,7 @@ class mel_html{
 		}
 
 		let generated = this._generateContent($html, this.content);
-
-		if (this.onclick.haveEvents()) generated.on(CONST_EVENT_ACTION_CLICK, (event) => {
-			this.onclick.call(event);
-		});
-
-		if (this.onkeydown.haveEvents()) generated.on('keydown', (event) => {
-			this.onkeydown.call(event);
-		});
-
-		if (this.onmouseover.haveEvents()) generated.on('mouseover', (event) => {
-			this.onmouseover.call(event);
-		});
-
-		if (this.onmouseout.haveEvents()) generated.on('mouseout', (event) => {
-			this.onmouseout.call(event);
-		});
+		generated = this.bind_events(generated);
 
 		if (this.aftergenerate.count() > 0) {
 			this.aftergenerate.call(generated);
@@ -537,6 +545,36 @@ class mel_html{
 		return generated;
 	}
 
+	/**
+	 * Ajoute les évènements de l'objet à un élement jquery
+	 * @param {$} $element 
+	 * @returns {$} Elément avec les actions
+	 */
+	bind_events($element) {
+		if (this.onclick.haveEvents()) $element.on(CONST_EVENT_ACTION_CLICK, (event) => {
+			this.onclick.call(event);
+		});
+
+		if (this.onkeydown.haveEvents()) $element.on('keydown', (event) => {
+			this.onkeydown.call(event);
+		});
+
+		if (this.onmouseover.haveEvents()) $element.on('mouseover', (event) => {
+			this.onmouseover.call(event);
+		});
+
+		if (this.onmouseout.haveEvents()) $element.on('mouseout', (event) => {
+			this.onmouseout.call(event);
+		});
+
+		return $element;
+	}
+
+	/**
+	 * Ajoute une classe à la liste des classes de cet élément html
+	 * @param {string} classes Classe à ajouter
+	 * @returns Chaînage
+	 */
 	addClass(classes) {
 		if (!this.attribs) this.attribs = {};
 		if (!(this.attribs[CONST_ATTRIB_CLASS] || null)) this.attribs[CONST_ATTRIB_CLASS] = [];
@@ -546,6 +584,26 @@ class mel_html{
 		return this;
 	}
 
+	/**
+	 * Vérifie si l'élément possède une classe en particulier
+	 * @param {string} html_class Classe à vérifier
+	 * @returns {boolean}
+	 */
+	hasClass(html_class){
+		if (!!this.attribs && !!this.attribs[CONST_ATTRIB_CLASS]) {
+			if (STRING === typeof this.attribs[CONST_ATTRIB_CLASS]) return html_class === this.attribs[CONST_ATTRIB_CLASS];
+			else return this.attribs[CONST_ATTRIB_CLASS].includes(html_class);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Ajoute du css initial à l'élément
+	 * @param {string} key Propriété css (ex: display)
+	 * @param {string} value Valeur css (ex : none)
+	 * @returns Chaînage
+	 */
 	css(key, value) {
 		if (!this.attribs) this.attribs = {};
 		if (!(this.attribs['style'] || null)) this.attribs['style'] = {};
@@ -560,6 +618,28 @@ class mel_html{
 
 		this.attribs['style'][key] = value;
 		return this;
+	}
+
+	/**
+	 * Ajoute un attribut à l'élément
+	 * @param {string} key Nom de l'attribut 
+	 * @param {string | number | Boolean} value Valeur de l'attribut 
+	 * @returns Chaînage
+	 */
+	setAttr(key, value) {
+		if (!this.attribs) this.attribs = {};
+
+		this.attribs[key] = value;
+		return this;
+	}
+
+	/**
+	 * Met un id à l'élément
+	 * @param {string} id 
+	 * @returns Chaînage
+	 */
+	setId(id) {
+		return this.setAttr('id', id);
 	}
 
 	_getStyle() {
@@ -578,15 +658,36 @@ class mel_html{
 		}
 	}
 
+	/**
+	 * Génère un élément jquery à partir des données de cet élément.
+	 * 
+	 * L'ajoute ensuite à un élément parent.
+	 * @param {$} $parent Elément parent qui contiendra l'objet
+	 * @param {Object} additionnal_attribs Attributs additionnels
+	 * @returns {$}
+	 */
 	create($parent, additionnal_attribs = [])
 	{
 		return this.generate(additionnal_attribs).appendTo($parent);
 	}
 
+	/**
+	 * Ajoute le html à l'élément jquery générer
+	 * @param {$} $html Elément jquery 
+	 * @param {string} content html générer
+	 * @returns {$}
+	 * @private
+	 */
 	_generateContent($html, content) {
 		return $html.html(content);
 	}
 
+	/**
+	 * Récupère un mel_html div
+	 * @param {Object} attribs Attributs de l'élément
+	 * @param {string} content Contenue de l'élément
+	 * @returns {mel_html}
+	 */
 	static div(attribs = {}, content = '') {
 		return new mel_html(CONST_HTML_DIV, attribs, content);
 	}
@@ -613,12 +714,44 @@ Object.defineProperty(mel_html, 'select_html', {
 	value:() => $(CONST_HTML_HTML)
 });
 
+/**
+ * Classe qui permet de générer du html.
+ * 
+ * Accepte plusieurs mel_html enfants pour génrer son html
+ */
 class mel_html2 extends mel_html {
+	/**
+	 * Constructeur de la classe
+	 * @param {string} tag Balise de l'élément
+     * @param {Object} options - Les options du constructeur.
+     * @param {Object} options.attribs - Attributs de l'élément
+     * @param {[] | mel_html | string} options.contents - Eléments enfants
+	 */
 	constructor(tag, {attribs={}, contents=[]}) {
 		super(tag, attribs, EMPTY_STRING);
-		this.jcontents = contents;
+		this._init()._setup(contents);
 	}
 
+	_init() {
+		this.jcontents = [];
+		return this;
+	}
+
+	_setup(contents = []) {
+		if (!Array.isArray(contents)) {
+			if ('string' === typeof contents) contents = [new mel_html('span', {}, contents)];
+			else contents = [contents];
+		}
+
+		this.jcontents = contents;
+		return this;
+	}
+
+	/**
+	 * Ajoute un élément enfant
+	 * @param {mel_html} mel_html Elément à ajouter
+	 * @returns Chaînage
+	 */
 	addContent(mel_html) {
 		this.jcontents.push(mel_html);
 		mel_html.parent = this;
@@ -634,13 +767,72 @@ class mel_html2 extends mel_html {
 		return $html;
 	} 
 
+	/**
+	 * Ajoute cet élément à un html parent
+	 * @param {mel_html2} mel_html2 
+	 * @returns Chaînage
+	 */
 	appendTo(mel_html2) {
 		mel_html2.addContent(this);
 		return this;
 	}
 
+	/**
+	 * Taille des éléments enfants
+	 * @returns {number}
+	 */
 	count() {
 		return this.jcontents.length;
+	}
+
+	/**
+	 * Récupère un élément enfant par son id 
+	 * @param {string} id Id de l'élément à retrouver
+	 * @returns {mel_html | null}
+	 */
+	find_by_id(id) {
+		return Enumerable.from(this.jcontents).where(x => x.attribs['id'] === id).firstOrDefault();
+	}
+
+	/**
+	 * Récupère des éléments enfant par une classe 
+	 * @param {string} html_class Classe que l'on recherche
+	 * @returns {Enumerable<mel_html>}
+	 */
+	find_by_class(html_class) {
+		return Enumerable.from(this.jcontents).where(x => x.hasClass(html_class));
+	}
+
+	/**
+	 * Récupère le premier élément enfant
+	 * @returns {mel_html}
+	 */
+	first() {
+		return this.jcontents[0];
+	}
+
+	/**
+	 * Récupère le premier élément enfant ou une valeur par défaut
+	 * @param {* | null} _default Renvoyer si first n'éxiste pas
+	 * @returns {mel_html | * | null}
+	 */
+	firstOrDefault(_default = null) {
+		try {
+			return this.first();
+		} catch (error) {
+			return _default;
+		}
+	}
+
+	/**
+	 * Créer un mel_html2 qui représente une div
+     * @param {Object} options - Les options du constructeur.
+     * @param {Object} options.attribs - Attributs de l'élément
+     * @param {[] | mel_html | string} options.contents - Eléments enfants
+	 * @returns {mel_html2}
+	 */
+	static div({attribs={}, contents=[]}) {
+		return new mel_html2('div', {attribs, contents});
 	}
 }
 
@@ -940,7 +1132,7 @@ class mel_button extends mel_html {
 	constructor(attribs = {}, content = EMPTY_STRING)
 	{
 		super(CONST_HTML_BUTTON, attribs, content);
-		this.attribs[CONST_ATTRIB_CLASS] = `${mel_button.html_base_class.base} ${mel_button.html_base_class_no_margin} ${mel_button.html_base_class.bootstrap.base} ${mel_button.html_base_class.bootstrap.state}`;//'mel-button btn btn-secondary no-button-margin'
+		this.attribs[CONST_ATTRIB_CLASS] = mel_button.html_base_class_full;//'mel-button btn btn-secondary no-button-margin'
 	}
 }
 
@@ -1002,6 +1194,13 @@ Object.defineProperty(mel_button, 'html_base_class_danger', {
 	configurable: false,
 	writable: false,
 	value:CONST_CLASS_BUTTON_DANGER
+});
+
+Object.defineProperty(mel_button, 'html_base_class_full', {
+	enumerable: false,
+	configurable: false,
+	writable: false,
+	value:`${mel_button.html_base_class.base} ${mel_button.html_base_class_no_margin} ${mel_button.html_base_class.bootstrap.base} ${mel_button.html_base_class.bootstrap.state}`
 });
 
 class mel_tab extends mel_button{

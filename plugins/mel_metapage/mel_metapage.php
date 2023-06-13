@@ -2565,7 +2565,7 @@ class mel_metapage extends bnum_plugin
                     $val .= 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ".$value;
                     $added = true;
                 }
-                else $val .= 'Subject: '.$value;
+                else $val .= $value;
             }
             $test = $val;
 
@@ -2574,7 +2574,6 @@ class mel_metapage extends bnum_plugin
                 $test = false;
             }
 
-            //$test = $test[0].'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject:".$test[1];
         }
 
         $datas = $this->rc->imap->save_message($folder, $test, '', false, [], $headers_old->date);

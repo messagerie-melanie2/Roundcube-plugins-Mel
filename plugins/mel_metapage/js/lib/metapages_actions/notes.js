@@ -99,14 +99,14 @@ export class MetapageNotesModule extends MetapageModule {
 
                     if (!has_pos)
                     {
+                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
+                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
                         await taked.post('pin_move', {
                             _uid:taked.uid.replace('pin-', ''),
                             _x:pos.x,
                             _y:pos.y,
                             _initX:window.outerWidth
                         }, true);
-                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
-                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
                     }
                 }
 

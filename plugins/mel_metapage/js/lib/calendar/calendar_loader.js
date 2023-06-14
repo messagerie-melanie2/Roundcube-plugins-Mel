@@ -207,6 +207,7 @@ class CalendarLoader extends MelObject{
         
             this.timeout = setTimeout(() => {
                 const now = moment();
+
                 MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
                 .update_badge(next_events.count(), mel_metapage.Ids.menu.badge.calendar);
 
@@ -216,7 +217,7 @@ class CalendarLoader extends MelObject{
                 this.timeout = null;
                 this._set_timeout(next_events);
 
-            }, moment() - moment(next_events.first().end));
+            }, Math.abs(moment() - moment(next_events.first().end)));
         }
     }
 

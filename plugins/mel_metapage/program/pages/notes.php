@@ -71,7 +71,7 @@ class Notes extends Page
                 unset($this->notes['undefined']);
                 $save = true;
             }
-
+            
             if ($save) {
                 $this->save();
             }

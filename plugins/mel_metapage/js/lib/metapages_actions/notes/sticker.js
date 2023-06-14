@@ -525,6 +525,10 @@ export class Sticker
 
         if (!!params["_uid"] && params["_uid"].includes('pin-')) params["_uid"] = params["_uid"].replace('pin-', '');
 
+        if (action === 'pin') {
+            Sticker.helper.trigger_event('notes.apps.start-pin', true);
+        }
+
         await Sticker.helper.http_internal_post({
             params,
             task:"mel_metapage",

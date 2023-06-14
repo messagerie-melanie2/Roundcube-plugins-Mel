@@ -72,7 +72,12 @@ export class MetapageNotesModule extends MetapageModule {
             }
         });
 
+        this.add_event_listener('notes.apps.start-pin', (val) => {
+            this.begin_pin = true;
+        }, {callback_key:'notes_modules'});
+
         this.add_event_listener('notes.apps.tak', async (taked) => {
+            this.begin_pin = false;
             const after = taked.after;
             taked.uid = taked.uid.replace('pin-', '')
 
@@ -131,8 +136,8 @@ export class MetapageNotesModule extends MetapageModule {
         $('.mel-note.pined').each((i, e) => {
             e = $(e);
             const note = rcmail.env.mel_metapages_notes[$(e).attr('id').replace('pin-', '').replace('note-', '')];
-            const x = parseInt(note.pin_pos[0] ?? 0);
-            const wx = parseInt(note.pin_pos_init[0] ?? window.outerWidth);
+            const x = parseInt(note.pin_pos?.[0] ?? 0);
+            const wx = parseInt(note.pin_pos_init?.[0] ?? window.outerWidth);
             const right = wx - x;
 
             let calc = window.outerWidth - right;
@@ -259,6 +264,8 @@ export class MetapageNotesModule extends MetapageModule {
     }
 
     _generate_pined_notes() {
+        if (this.begin_pin) return;
+
         $('.mel-note.pined').remove();
 
         let current_sticker;

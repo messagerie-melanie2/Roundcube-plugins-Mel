@@ -71,6 +71,15 @@ class Notes extends Page
                 unset($this->notes['undefined']);
                 $save = true;
             }
+
+            $init_len = count($this->notes);
+            $this->notes = array_filter($this->notes, function ($note) {
+                return strpos($note, 'NOTE-') !== false;
+            }, ARRAY_FILTER_USE_KEY);
+
+            if (!$save && $init_len !== count($this->notes)) {
+                $save = true;
+            }
             
             if ($save) {
                 $this->save();

@@ -45,15 +45,37 @@ class Notes extends Page
 
     public function __construct($rc, $plugin) {
         parent::__construct($rc, $plugin, "notes", "");
-        $this->init();
+
+        if (($this->rc->task === 'bnum' && ($this->rc->action === '' || $this->rc->action === 'index')) || 
+        ($this->rc->task === 'mel_metapage' && $this->rc->action === 'notes')) $this->init();
     }  
 
     protected function before_init() {
         $this->load();
+        $this->action_undefined();
         $this->set_env_var('mel_metapages_notes', $this->notes);
         $this->set_env_var('reorder-notes', $this->get_config('reorder-notes', false));
         //$this->include_js('notes.js');
         //$this->save_config(self::CONFIG, []);
+    }
+
+    private function action_undefined() {
+        if (count($this->notes) > 0) {
+            $save = false;
+            if (array_key_exists('create', $this->notes)) {
+                unset($this->notes['create']);
+                $save = true;
+            }
+
+            if (array_key_exists('undefined', $this->notes)) {
+                unset($this->notes['undefined']);
+                $save = true;
+            }
+
+            if ($save) {
+                $this->save();
+            }
+        }
     }
 
     protected function set_handlers()

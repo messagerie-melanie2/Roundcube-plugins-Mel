@@ -184,7 +184,7 @@ const mel_metapage = {
         _getDataStore() {
             let self = (top ?? window).mel_metapage.Storage;
 
-            if (!self._getDataStore.datastoreobject) self._getDataStore.datastoreobject = new MelDataStore('bnum', {});
+            if (!self._getDataStore.datastoreobject) self._getDataStore.datastoreobject = new MelDataStore(`bnum.${rcmail.env.username}`, {});
 
             return self._getDataStore.datastoreobject;
         },

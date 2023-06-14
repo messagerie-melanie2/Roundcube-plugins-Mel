@@ -47,9 +47,8 @@ class MelEventManager extends BaseStorage {
      */
     call(listener_key, ...args) {
         if (this.has(listener_key)) {
-            this.get(listener_key).call(...args);
+            return this.get(listener_key).call(...args);
         }
-        return this;
     }
 
     /**

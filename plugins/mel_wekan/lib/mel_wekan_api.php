@@ -120,6 +120,8 @@ class mel_wekan_api extends amel_lib
         $fakeUser = !$argUser ? $this->get_config("wekan_admin_user") : $fakeUser;
         $get = $this->post(self::CALL_LOGIN, ["username" => $fakeUser["username"], "password" => $fakeUser["password"]], null, self::FETCH_HEADER);
 
+        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan_api/login]Url : '.$this->url.self::CALL_LOGIN);
+
         $key = !$argUser ? self::KEY_SESSION_AUTH : self::KEY_SESSION_AUTH.".".$fakeUser["username"];
 
         if ($get["httpCode"] == 200)
@@ -145,6 +147,8 @@ class mel_wekan_api extends amel_lib
 
         if (gettype($username) !== "string")
             return $username;
+
+        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan_api/create_token]Url : '.$this->url.self::CALL_CREATE_TOKEN."/$username");
 
         return $this->call(self::CALL_CREATE_TOKEN."/$username", null);
     }

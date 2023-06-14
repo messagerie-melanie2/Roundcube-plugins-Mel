@@ -7,8 +7,9 @@ class Sticker
     private $text;
     private $color;
     private $textcolor;
+    private $pin;
 
-    public function __construct($uid ,$order, $title, $text, $color, $textcolor)
+    public function __construct($uid ,$order, $title, $text, $color, $textcolor, $pin = false)
     {
         $this->uid = $uid;
         $this->order = intval($order);
@@ -16,6 +17,7 @@ class Sticker
         $this->text = $text;
         $this->color = $color;
         $this->textcolor = $textcolor;
+        $this->pin = $pin ?? false;
     }
 
     public function uid()
@@ -30,7 +32,8 @@ class Sticker
             "title" => $this->title,
             "text" => $this->text,
             "color" => $this->color,
-            "textcolor" => $this->textcolor
+            "textcolor" => $this->textcolor,
+            'pin' => $this->pin
         ];
     }
 }
@@ -42,15 +45,37 @@ class Notes extends Page
 
     public function __construct($rc, $plugin) {
         parent::__construct($rc, $plugin, "notes", "");
-        $this->init();
+
+        if (($this->rc->task === 'bnum' && ($this->rc->action === '' || $this->rc->action === 'index')) || 
+        ($this->rc->task === 'mel_metapage' && $this->rc->action === 'notes')) $this->init();
     }  
 
     protected function before_init() {
         $this->load();
+        $this->action_undefined();
         $this->set_env_var('mel_metapages_notes', $this->notes);
         $this->set_env_var('reorder-notes', $this->get_config('reorder-notes', false));
         //$this->include_js('notes.js');
         //$this->save_config(self::CONFIG, []);
+    }
+
+    private function action_undefined() {
+        if (count($this->notes) > 0) {
+            $save = false;
+            if (array_key_exists('create', $this->notes)) {
+                unset($this->notes['create']);
+                $save = true;
+            }
+
+            if (array_key_exists('undefined', $this->notes)) {
+                unset($this->notes['undefined']);
+                $save = true;
+            }
+
+            if ($save) {
+                $this->save();
+            }
+        }
     }
 
     protected function set_handlers()
@@ -90,6 +115,19 @@ class Notes extends Page
             case 'update':
                 $raw = $this->get_input_post("_raw");
                 $this->update($this->get_input_post("_uid") ,$raw["title"], $raw["text"], $raw["color"], $raw["textcolor"]);
+                $this->save();
+                echo "break";
+                exit;
+
+            case 'pin':
+                $this->notes[$this->get_input_post("_uid")]['pin'] = $this->get_input_post("_pin");
+                $this->save();
+                echo "break";
+                exit;
+
+            case 'pin_move':
+                $this->notes[$this->get_input_post("_uid")]['pin_pos'] = [$this->get_input_post("_x"), $this->get_input_post("_y")];
+                $this->notes[$this->get_input_post("_uid")]['pin_pos_init'] = [$this->get_input_post("_initX")];
                 $this->save();
                 echo "break";
                 exit;

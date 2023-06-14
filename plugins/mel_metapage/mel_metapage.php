@@ -2556,25 +2556,24 @@ class mel_metapage extends bnum_plugin
         }
         else 
         {
-            $test = explode('Subject: ', $test);
-            $added = false;
-            $val = '';
-            foreach ($test as $key => $value) {
-                if ($value !== $test[0] && $value[(strlen($value) - 1)] === "\n" && !$added) 
-                {
-                    $val .= 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ".$value;
-                    $added = true;
-                }
-                else $val .= 'Subject: '.$value;
-            }
-            $test = $val;
+            // $test = explode('Subject: ', $test);
+            // $added = false;
+            // $val = '';
+            // foreach ($test as $key => $value) {
+            //     if ($value !== $test[0] && $value[(strlen($value) - 1)] === "\n" && !$added) 
+            //     {
+            //         $val .= 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ".$value;
+            //         $added = true;
+            //     }
+            //     else $val .= $value;
+            // }
+            // $test = $val;
 
-            if ($added === false)
-            {
-                $test = false;
-            }
-
-            //$test = $test[0].'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject:".$test[1];
+            // if ($added === false)
+            // {
+            //     $test = false;
+            // }
+                $test = str_replace('Subject: ', 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ", $test);
         }
 
         $datas = $this->rc->imap->save_message($folder, $test, '', false, [], $headers_old->date);

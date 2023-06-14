@@ -1846,7 +1846,9 @@ body.task-tasks .searchbar form::after {
 /** ONGLETS **/
 ._mel-tab {
   cursor: pointer;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
 }
 ._mel-tabheader {
@@ -1876,7 +1878,9 @@ body.task-tasks .searchbar form::after {
 }
 .mel-tab {
   cursor: pointer;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
 }
 .mel-tab:hover {
@@ -1903,8 +1907,12 @@ button.btn.mel-tab.active {
 }
 .mel-responsive-tab {
   cursor: pointer;
+  padding: 1rem 1.4rem;
   display: inline-block;
+  margin: 0 15px;
   border-bottom: 2px solid var(--invisible);
+  margin: 0;
+  padding: 0;
   background-color: var(--invisible) !important;
   color: var(--main-text-color) !important;
 }
@@ -1925,7 +1933,7 @@ button.btn.mel-responsive-tab {
 .responsiveTabList {
   margin-bottom: 15px;
   flex-wrap: nowrap;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 .responsiveTabList button {
   white-space: break-spaces;
@@ -3253,7 +3261,7 @@ button.melv2-sec-nav-correction {
   justify-content: center;
   flex-wrap: wrap;
 }
-.mel-note.dragover.dragover-left::before {
+.mel-note.dragover::before {
   height: 158px;
   content: '';
   width: 4px;
@@ -3261,22 +3269,30 @@ button.melv2-sec-nav-correction {
   position: absolute;
   top: 50%;
   background-color: black;
-  margin-left: -12px;
-  left: 0;
   transform: translateY(-50%);
 }
+html.dark-mode .mel-note.dragover::before {
+  background-color: white;
+}
+.mel-note.dragover.dragover-left::before {
+  margin-left: -12px;
+  left: 0;
+}
 .mel-note.dragover.dragover-right::before {
-  height: 158px;
-  content: '';
-  width: 4px;
-  display: block;
-  position: absolute;
-  top: 50%;
-  background-color: black;
   margin-right: -12px;
   right: 0;
-  transform: translateY(-50%);
 }
 #button-notes.on-focus .material-symbols-outlined {
   font-variation-settings: 'FILL' 1;
+}
+.drag-zone {
+  position: absolute;
+  top: 60px;
+  left: 60px;
+  background-color: #0000006e;
+  z-index: 1;
+  width: calc(100% - 60px);
+  height: calc(100% - 60px);
+  border: solid 2px lightgreen;
+  /* box-shadow: -5px -10px -9px -15px white; */
 }

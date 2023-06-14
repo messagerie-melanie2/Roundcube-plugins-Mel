@@ -24,6 +24,8 @@ async function m_mp_create_note()
         window.create_popUp = undefined;
     }
 
+    const init = Object.keys(rcmail.env.mel_metapages_notes);
+
     const Sticker = (await loadJsModule('mel_metapage', 'sticker', '/js/lib/metapages_actions/notes/')).Sticker;
 
     await Sticker.new();
@@ -31,9 +33,30 @@ async function m_mp_create_note()
     let notes = await loadAction('mel_metapage', 'notes.js', '/js/lib/metapages_actions/');
 
     if (!!notes) {
-        notes.show();
 
-        $('.mel-note').last().find("textarea")[0].focus();
+        const new_note = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !init.includes(x.key)).firstOrDefault();
+
+        if (!!new_note) {
+            let sticker = Sticker.from(new_note.value);
+
+            await sticker.post('pin', {
+                _uid:sticker.uid,
+                _pin:true
+            });
+
+            sticker.pin = true;
+            rcmail.env.mel_metapages_notes[sticker.uid].pin = true;
+
+            sticker.after = () => {
+                sticker.uid = `pin-${sticker.uid}`;
+                sticker.get_html().find("textarea")[0].focus();
+            };
+
+            Sticker.helper.trigger_event('notes.apps.tak', sticker);
+        }
+        //notes.select_note_button().click();
+
+        //$('.mel-note').last().find("textarea")[0].focus();
     }
 }
 

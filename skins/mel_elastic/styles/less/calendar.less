@@ -409,12 +409,14 @@
 
             .custom-switch{
                 .custom-control-label{
+                  margin-right: 0px;
+                  
                     html@{touch} &{
                         padding-left: 2.5rem;
                     }
 
                     &::before{
-                        border-color: var(--calendar-list-item-switch-border-color)!important;
+                        border: 1px solid var(--calendar-list-item-switch-border-color)!important;
                         background-color: var(--calendar-list-item-switch-background-color)!important;
                         border-radius: 5px;
                         width: 16px;
@@ -435,7 +437,7 @@
                             &::after{
                                 background: none;
                                 top: 4px;
-                                left: -4px;
+                                left: -8px;
                                 content: "\ec4b";
                                 font-family: IcoFont;
                                 font-size: 8px;

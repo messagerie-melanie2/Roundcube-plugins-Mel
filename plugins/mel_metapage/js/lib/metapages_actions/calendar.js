@@ -1,7 +1,7 @@
-import { Calendar_Alarm } from "../calendar/calendar_alarm";
-import { CalendarLoader } from "../calendar/calendar_loader";
-import { WaitSomething } from "../mel_promise";
-import { MetapageModule } from "./metapage_module";
+import { Calendar_Alarm } from "../calendar/calendar_alarm.js";
+import { CalendarLoader } from "../calendar/calendar_loader.js";
+import { WaitSomething } from "../mel_promise.js";
+import { MetapageModule } from "./metapage_module.js";
 
 export class MetapageCalendarModule extends MetapageModule {
     constructor() {

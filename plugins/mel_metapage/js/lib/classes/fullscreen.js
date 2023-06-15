@@ -1,6 +1,6 @@
-import { MainIconHtml, MaterialSymbolHtml } from "../html/html_icon";
-import { MelObject } from "../mel_object";
-import { BaseStorage } from "./base_storage";
+import { MainIconHtml, MaterialSymbolHtml } from "../html/html_icon.js";
+import { MelObject } from "../mel_object.js";
+import { BaseStorage } from "./base_storage.js";
 
 export class MelFullScreenItem extends MelObject {
     constructor(id, parent_selector, {close_on_click = true}) {

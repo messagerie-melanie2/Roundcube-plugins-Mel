@@ -1,4 +1,4 @@
-import { BaseModule } from "../../../js/lib/module";
+import { BaseModule } from "../../../js/lib/module.js";
 
 const MODULE_ID = 'Headlines';
 export class ModuleNew extends BaseModule {

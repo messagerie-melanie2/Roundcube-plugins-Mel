@@ -1,5 +1,5 @@
-import { MelCurrentUser } from "../../../../mel_metapage/js/lib/classes/user";
-import { BaseModule } from "../../../js/lib/module";
+import { MelCurrentUser } from "../../../../mel_metapage/js/lib/classes/user.js";
+import { BaseModule } from "../../../js/lib/module.js";
 
 const EMPTY_STRING = '';
 export class ModuleLayout extends BaseModule {

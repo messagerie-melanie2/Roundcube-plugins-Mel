@@ -1,5 +1,5 @@
-import { Point } from "../../mel_maths";
-import { Sticker } from "./sticker";
+import { Point } from "../../mel_maths.js";
+import { Sticker } from "./sticker.js";
 
 export class PinSticker extends Sticker {
     constructor(uid, order, title, text, color, text_color, height = null) {

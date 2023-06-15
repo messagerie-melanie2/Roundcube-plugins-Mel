@@ -1,6 +1,6 @@
-import { MelObject } from "../mel_object";
-import { Top } from "../top";
-import { Chat, _Chat } from "./chat";
+import { MelObject } from "../mel_object.js";
+import { Top } from "../top.js";
+import { Chat, _Chat } from "./chat.js";
 
 /**
  * @static

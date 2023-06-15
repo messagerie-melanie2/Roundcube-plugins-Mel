@@ -1,10 +1,10 @@
-import { Unreads } from "../../../mel_metapage/js/lib/chat/chat";
-import { ChatCallback, ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager";
-import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
-import { IExt } from "./IExt";
-import { RocketChatRoomConnector } from "./connectors/room_connector";
-import { RocketChatStatusConnector } from "./connectors/status_connector";
-import { RocketChatUnreadConnector } from "./connectors/unread_connector";
+import { Unreads } from "../../../mel_metapage/js/lib/chat/chat.js";
+import { ChatCallback, ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager.js";
+import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js";
+import { IExt } from "./IExt.js";
+import { RocketChatRoomConnector } from "./connectors/room_connector.js";
+import { RocketChatStatusConnector } from "./connectors/status_connector.js";
+import { RocketChatUnreadConnector } from "./connectors/unread_connector.js";
 
 export class MelRocketChat extends MelObject {
     constructor() {

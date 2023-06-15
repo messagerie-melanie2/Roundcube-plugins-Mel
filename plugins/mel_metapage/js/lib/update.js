@@ -1,6 +1,6 @@
 export { Update };
-import { AMain } from "./main";
-import { Mel_Promise } from "./mel_promise";
+import { AMain } from "./main.js";
+import { Mel_Promise } from "./mel_promise.js";
 
 class Update extends AMain {
     constructor() {

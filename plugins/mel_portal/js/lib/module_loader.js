@@ -1,6 +1,7 @@
 import * as loader from "./loader.js";
+import { Mel_Promise } from "../../../mel_metapage/js/lib/mel_promise.js";
 export { ModuleLoader };
-import { Mel_Promise } from "../../../mel_metapage/js/lib/mel_promise";
+
 
 class ModuleLoader {
     constructor() {

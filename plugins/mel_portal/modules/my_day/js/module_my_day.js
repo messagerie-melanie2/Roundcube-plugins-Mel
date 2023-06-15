@@ -1,8 +1,8 @@
 export { ModuleMyDay };
-import { html_events } from "../../../../mel_metapage/js/lib/html/html_events";
-import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage";
-import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
-import { BaseModule } from "../../../js/lib/module";
+import { html_events } from "../../../../mel_metapage/js/lib/html/html_events.js";
+import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage.js";
+import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log.js";
+import { BaseModule } from "../../../js/lib/module.js";
 
 const TOP_KEY = 'my_day_listeners';
 const LISTENER_KEY = mel_metapage.EventListeners.calendar_updated.after;

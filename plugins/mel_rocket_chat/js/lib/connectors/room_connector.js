@@ -1,5 +1,5 @@
-import { Room } from "../../../../mel_metapage/js/lib/chat/chat";
-import { LastRoomConnector } from "../../../../mel_metapage/js/lib/chat/chatConnectors";
+import { Room } from "../../../../mel_metapage/js/lib/chat/chat.js";
+import { LastRoomConnector } from "../../../../mel_metapage/js/lib/chat/chatConnectors.js";
 
 export class RocketChatRoomConnector extends LastRoomConnector{
     connect_to_room(last_room) {

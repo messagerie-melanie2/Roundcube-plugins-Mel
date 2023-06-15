@@ -1,6 +1,6 @@
 export {loader as CalendarLoader};
-import { MainNav } from "../classes/main_nav";
-import { MelObject } from "../mel_object";
+import { MainNav } from "../classes/main_nav.js";
+import { MelObject } from "../mel_object.js";
 
 /**
  * Sélecteur de la pastille agenda de la navigation principale

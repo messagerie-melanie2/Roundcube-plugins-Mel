@@ -1,5 +1,5 @@
-import { MaterialSymbolHtml } from "../../html/html_icon";
-import { MelObject } from "../../mel_object";
+import { MaterialSymbolHtml } from "../../html/html_icon.js";
+import { MelObject } from "../../mel_object.js";
 
 /**
  * Plugin qui contient la localization pour rcmail.gettext

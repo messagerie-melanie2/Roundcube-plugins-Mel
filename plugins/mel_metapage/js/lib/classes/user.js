@@ -1,9 +1,9 @@
 export { MelUser, current_user as MelCurrentUser };
-import { MelObject } from "../mel_object";
+import { MelObject } from "../mel_object.js";
 
 class MelUser {
     constructor(name, lastname, fullname = null) {
-        this._init()._setup();
+        this._init()._setup(name, lastname, fullname);
     }
 
     _init() {

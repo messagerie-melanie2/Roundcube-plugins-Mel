@@ -1,7 +1,7 @@
 export { MelPortal };
-import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
-import { Mel_Promise } from "../../../mel_metapage/js/lib/mel_promise";
-import { ModuleLoader } from "./module_loader";
+import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js";
+import { Mel_Promise } from "../../../mel_metapage/js/lib/mel_promise.js";
+import { ModuleLoader } from "./module_loader.js";
 
 const INTERVAL = 100;
 class MelPortal extends MelObject {

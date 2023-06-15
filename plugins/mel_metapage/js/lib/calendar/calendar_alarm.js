@@ -1,6 +1,6 @@
-import { AlarmManager } from "./alarms_manager";
-import { Alarm } from "./alarms";
-import { MelObject } from "../mel_object";
+import { AlarmManager } from "./alarms_manager.js";
+import { Alarm } from "./alarms.js";
+import { MelObject } from "../mel_object.js";
 
 /**
  * Gère les alarmes de l'agenda

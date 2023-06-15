@@ -1,4 +1,4 @@
-import { UnreadsConnector } from "../../../../mel_metapage/js/lib/chat/chatConnectors";
+import { UnreadsConnector } from "../../../../mel_metapage/js/lib/chat/chatConnectors.js";
 
 export class RocketChatUnreadConnector extends UnreadsConnector {
     connect_to_unreads(key, value) {

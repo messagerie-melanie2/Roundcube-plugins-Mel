@@ -1,6 +1,6 @@
-import { BnumLog } from "../classes/bnum_log";
-import { MelObject } from "../mel_object";
-import { WaitSomething } from "../mel_promise";
+import { BnumLog } from "../classes/bnum_log.js";
+import { MelObject } from "../mel_object.js";
+import { WaitSomething } from "../mel_promise.js";
 
 export class MelCalendar extends MelObject {
     constructor() {

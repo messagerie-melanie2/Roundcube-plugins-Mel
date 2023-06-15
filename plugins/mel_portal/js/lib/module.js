@@ -1,7 +1,7 @@
 export { BaseModule }
-import { MainIcon } from "../../../mel_metapage/js/lib/icons";
-import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
-import { ModuleLoader } from "./module_loader";
+import { MainIcon } from "../../../mel_metapage/js/lib/icons.js";
+import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js";
+import { ModuleLoader } from "./module_loader.js";
 
 const Icon = MainIcon;
 class BaseModule extends MelObject {

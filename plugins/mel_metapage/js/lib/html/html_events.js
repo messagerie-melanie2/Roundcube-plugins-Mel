@@ -1,8 +1,8 @@
-import { BaseStorage } from "../classes/base_storage";
-import { MaterialIcon } from "../icons";
-import { EventLocation } from "../calendar/event_location";
-import { MelObject } from "../mel_object";
-import { CalendarLoader } from "../calendar/calendar_loader";
+import { BaseStorage } from "../classes/base_storage.js";
+import { MaterialIcon } from "../icons.js";
+import { EventLocation } from "../calendar/event_location.js";
+import { MelObject } from "../mel_object.js";
+import { CalendarLoader } from "../calendar/calendar_loader.js";
 
 /**
  * Représente un évènement du calendrier.

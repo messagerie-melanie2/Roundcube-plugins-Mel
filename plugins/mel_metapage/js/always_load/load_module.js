@@ -11,7 +11,15 @@
         return plugin + '/' + name + (BASE_PATH === extra ? EMPTY_STRING : extra);
     }
 
+    function add_js_to_name(name) {
+        if (!name.includes('.js')) name += '.js';
+
+        return name;
+    }
+
     async function loadJsModule(plugin, name, path = BASE_PATH) {
+        name = add_js_to_name(name);
+
         const key = getKey(plugin, name, path);
         if (!modules[key]) {
             console.info('Load module', key);
@@ -32,6 +40,7 @@
     }
 
     function unloadModule(plugin, name, path) {
+        name = add_js_to_name(name);
         unloadModuleFromKey(getKey(plugin, name, path));
     }
 
@@ -48,6 +57,7 @@
     }
 
     async function runModule(plugin, name = 'main', path = BASE_PATH, save_in_memory = false) {
+        name = add_js_to_name(name);
         const key = getKey(plugin, name, path);
         promises[key] = loadJsModule(plugin, name, path);
         const module = getMainModule(await promises[key]);
@@ -58,6 +68,7 @@
     }
 
     async function loadAction(plugin, name = 'main', path = BASE_PATH, waiting = 5) {
+        name = add_js_to_name(name);
         const key = getKey(plugin, name, path);
 
         if (!actions[key]) {

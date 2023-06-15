@@ -1,9 +1,9 @@
-import { MelFullScreenItem } from "../classes/fullscreen";
-import { Random } from "../classes/random";
-import { Point } from "../mel_maths";
-import { MetapageModule } from "./metapage_module";
-import { PinSticker } from "./notes/pined_sticker";
-import { Sticker, default_note_uid } from "./notes/sticker";
+import { MelFullScreenItem } from "../classes/fullscreen.js";
+import { Random } from "../classes/random.js";
+import { Point } from "../mel_maths.js";
+import { MetapageModule } from "./metapage_module.js";
+import { PinSticker } from "./notes/pined_sticker.js";
+import { Sticker, default_note_uid } from "./notes/sticker.js";
 
 export class MetapageNotesModule extends MetapageModule {
     constructor() {

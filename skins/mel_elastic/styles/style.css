@@ -1305,6 +1305,7 @@ body.task-settings .listing tbody td {
 }
 body.task-settings .listing tbody td:hover {
   background-color: var(--secondary-bckg-color);
+  color: var(--secondary-text-color);
 }
 body.task-settings .listing tbody .selected td {
   cursor: default;

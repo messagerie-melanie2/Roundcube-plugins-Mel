@@ -1151,7 +1151,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                 {
                     foreach ($event['attendees'] as $person) {
                         if ('ORGANIZER' === $person['role']){
-                            $canNotify = true;
+                            $canNotify = false;
                             $user = driver_mel::gi()->getUser();
                             $title = $event['title'];
                             $subject = "$user->name a rejoint votre évènement $title !";
@@ -1170,6 +1170,14 @@ $("#rcmfd_new_category").keypress(function(event) {
                                 $itip        = $this->load_itip();
                                 
                                 $itip->send_itip_message($event, 'REPLY', $recipient, $subject, 'eventupdatemailbody', null, false);
+
+                                $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [
+                                    'orga' => $email,
+                                    'attendees' => [$email],
+                                    'message' => $itip->last_message,
+                                    'event' => $event
+                                ]);
+                                
                             }
                             break;
                         }

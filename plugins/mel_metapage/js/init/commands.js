@@ -342,7 +342,7 @@ if (rcmail)
                 // Frame déjà ouverte
                 if (iframe.length > 0)
                 {
-                    iframe[0].contentWindow.$("body").html('<center><div title="Rechargement de la page" style="height: 20vw;width: 20vw;" class="spinner-grow"><span class="sr-only">Rechargement de la page...</span></div></center>')
+                    iframe[0].contentWindow.$("body").html(MEL_ELASTIC_UI.create_loader('refresh_loading'));
                     if (!iframe[0].contentWindow.location.href.includes("_is_from"))
                         iframe.src = iframe[0].contentWindow.location.href + (iframe[0].contentWindow.location.href[iframe[0].contentWindow.location.href.length - 1] === '&' ? '' : '&') + '_is_from=iframe';
                     else

@@ -1,5 +1,5 @@
 export {MetapageModule};
-import { MelObject } from "../mel_object";
+import { MelObject } from "../mel_object.js";
 
 /**
  * Classe de base pour les modules d'actiones de Mel_Metapage

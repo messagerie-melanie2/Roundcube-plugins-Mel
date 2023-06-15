@@ -1,4 +1,4 @@
-import { MelObject } from "../mel_object";
+import { MelObject } from "../mel_object.js";
 
 export class MainNav extends MelObject {
     constructor() {}

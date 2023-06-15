@@ -1,5 +1,5 @@
-import { ChatCallback, ChatManager } from "../../../../mel_metapage/js/lib/chat/chatManager";
-import { BaseModule } from "../../../js/lib/module";
+import { ChatCallback, ChatManager } from "../../../../mel_metapage/js/lib/chat/chatManager.js";
+import { BaseModule } from "../../../js/lib/module.js";
 
 const MODULE_ID = 'Workspaces';
 export class ModuleWorkspaces extends BaseModule {

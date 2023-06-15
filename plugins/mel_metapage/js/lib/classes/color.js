@@ -1,20 +1,55 @@
-import { Random } from "./random";
+import { Random } from "./random.js";
 
 export {Color, ColorRGBA, ColorFromVariable};
 
+/**
+ * Classe représentant une couleur rgb, les valeurs vont de 0 à 255.
+ */
 class Color {
+    /**
+     * Constructeur de la classe
+     * @param {number} r Rouge 
+     * @param {number} g Vert
+     * @param {number} b bleu 
+     * @returns 
+     */
     constructor(r, g, b) {
         return this._init()._setup(r, g, b);
     }
 
+    /**
+     * Initialise la classe
+     * @private
+     * @returns Chaînage
+     */
     _init() {
+        /**
+         * Composante rouge
+         * @type {number}
+         */
         this.r = Color.MIN;
+        /**
+         * Composante verte
+         * @type {number}
+         */
         this.g = Color.MIN;
+        /**
+         * Composante bleu
+         * @type {number}
+         */
         this.b = Color.MIN;
 
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @private
+     * @param {number} r Rouge 
+     * @param {number} g Vert
+     * @param {number} b bleu 
+     * @returns Chaînage
+     */
     _setup(r, g, b) {
         let _r = r;
         let _g = g;
@@ -52,6 +87,12 @@ class Color {
         return this;
     }
 
+    /**
+     * Met la valeur de la couleur dans la bonne fourchette (0-255)
+     * @private
+     * @param {number} color Couleur rouge, verte ou bleue
+     * @returns {number} Valeur inchangé, 0 ou 255
+     */
     _set_color_value(color) {
         if (color < Color.MIN) return Color.MIN;
         else if (color > Color.MAX) return Color.MAX;
@@ -59,10 +100,18 @@ class Color {
         return color;
     }
 
+    /**
+     * Renvoie la couleur sous format hexadécimal
+     * @returns {string}
+     */
     toHexa() {
         return "#" + componentToHex(this.r) + componentToHex(this.g) + componentToHex(this.b);
     }
 
+    /**
+     * Renvoie la couleur sous forme rgb 
+     * @returns {string} rgb(r, g, b)
+     */
     toRGB() {
         return `rgb(${this.r}, ${this.g}, ${this.b})`;
     }
@@ -73,6 +122,7 @@ class Color {
 
     /**
     * Change une valeur en hexadécimal
+    * @private
     * @param {number} c Valeur décimale
     * @returns Valeur hexadécimal
     */
@@ -139,18 +189,43 @@ Object.defineProperties(Color, {
     },
 });
 
+/**
+ * Classe représentant une couleur rgb avec de la transparence, les valeurs vont de 0 à 255, de 0 à 1 pour l'alpha
+ */
 class ColorRGBA extends Color {
+    /**
+     * Constructeur de la classe
+     * @param {number} r Rouge 
+     * @param {number} g Vert
+     * @param {number} b bleu 
+     * @param {number} a transparence
+     */
     constructor(r, g, b, a = ColorRGBA.MAX) {
         super(r, g, b);
         this.__init().__setup(a);
     }
 
+     /**
+     * Initialise la classe
+     * @private
+     * @returns Chaînage
+     */
     __init() {
+        /**
+         * Composante alpha (transparence)
+         * @type {number}
+         */
         this.a = ColorRGBA.MIN;
 
         return this;
     }
 
+    /**
+     * Assigne les variables de la classe
+     * @private
+     * @param {number} alpha transparence
+     * @returns Chaînage
+     */
     __setup(alpha) {
         let _a = alpha;
 
@@ -176,10 +251,18 @@ class ColorRGBA extends Color {
         return alpha;
     }
 
+    /**
+     * Renvoie la couleur sous format hexadécimal
+     * @returns {string}
+     */
     toHexa() {
        return super.toHexa() +this._componentToHex(~~(this.a * 255));
     }
 
+    /**
+     * Renvoie la couleur sous forme rgba
+     * @returns {string} rgb(r, g, b, a)
+     */
     toRGBA() {
         return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
     }

@@ -1,5 +1,5 @@
-import { Top } from "../../../../mel_metapage/js/lib/top";
-import { IExt } from "../IExt";
+import { Top } from "../../../../mel_metapage/js/lib/top.js";
+import { IExt } from "../IExt.js";
 
 let already = false;
 export class SecondaryNav extends IExt {

@@ -1,8 +1,8 @@
 export { MelObject };
-import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise";
-import { BaseStorage } from "./classes/base_storage";
-import { Cookie } from "./classes/cookies";
-import { Top } from "./top";
+import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise.js";
+import { BaseStorage } from "./classes/base_storage.js";
+import { Cookie } from "./classes/cookies.js";
+import { Top } from "./top.js";
 
 /* La classe MelEventManager étend BaseStorage et permet d'ajouter, d'appeler et de supprimer des
 rappels pour des clés d'écoute spécifiques. */

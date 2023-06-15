@@ -1,10 +1,11 @@
-import { Point } from "../../mel_maths";
-import { Sticker } from "./sticker";
+import { Point } from "../../mel_maths.js";
+import { Sticker } from "./sticker.js";
 
 export class PinSticker extends Sticker {
-    constructor(uid, order, title, text, color, text_color) {
+    constructor(uid, order, title, text, color, text_color, height = null) {
         super(`pin-${uid}`, order, title, text, color, text_color, true);
         this.pos = Point.Zero();
+        this.height = height;
     }
 
     generate({pos = null}) {
@@ -51,7 +52,7 @@ export class PinSticker extends Sticker {
      * @param {Sticker} sticker 
      */
     static fromSticker(sticker) {
-        return new PinSticker(sticker.uid, sticker.order, sticker.title, sticker.text, sticker.color, sticker.textcolor);
+        return new PinSticker(sticker.uid, sticker.order, sticker.title, sticker.text, sticker.color, sticker.textcolor, sticker.height);
     }
 
     set_handlers()

@@ -1,9 +1,9 @@
-import { MelFullScreenItem } from "../classes/fullscreen";
-import { Random } from "../classes/random";
-import { Point } from "../mel_maths";
-import { MetapageModule } from "./metapage_module";
-import { PinSticker } from "./notes/pined_sticker";
-import { Sticker, default_note_uid } from "./notes/sticker";
+import { MelFullScreenItem } from "../classes/fullscreen.js";
+import { Random } from "../classes/random.js";
+import { Point } from "../mel_maths.js";
+import { MetapageModule } from "./metapage_module.js";
+import { PinSticker } from "./notes/pined_sticker.js";
+import { Sticker, default_note_uid } from "./notes/sticker.js";
 
 export class MetapageNotesModule extends MetapageModule {
     constructor() {
@@ -72,7 +72,12 @@ export class MetapageNotesModule extends MetapageModule {
             }
         });
 
+        this.add_event_listener('notes.apps.start-pin', (val) => {
+            this.begin_pin = true;
+        }, {callback_key:'notes_modules'});
+
         this.add_event_listener('notes.apps.tak', async (taked) => {
+            this.begin_pin = false;
             const after = taked.after;
             taked.uid = taked.uid.replace('pin-', '')
 
@@ -94,14 +99,14 @@ export class MetapageNotesModule extends MetapageModule {
 
                     if (!has_pos)
                     {
+                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
+                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
                         await taked.post('pin_move', {
                             _uid:taked.uid.replace('pin-', ''),
                             _x:pos.x,
                             _y:pos.y,
                             _initX:window.outerWidth
                         }, true);
-                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos = [pos.x, pos.y];
-                        rcmail.env.mel_metapages_notes[taked.uid.replace('pin-', '').replace('note-', '')].pin_pos_init = [window.outerWidth, pos.y];
                     }
                 }
 
@@ -131,8 +136,8 @@ export class MetapageNotesModule extends MetapageModule {
         $('.mel-note.pined').each((i, e) => {
             e = $(e);
             const note = rcmail.env.mel_metapages_notes[$(e).attr('id').replace('pin-', '').replace('note-', '')];
-            const x = parseInt(note.pin_pos[0] ?? 0);
-            const wx = parseInt(note.pin_pos_init[0] ?? window.outerWidth);
+            const x = parseInt(note.pin_pos?.[0] ?? 0);
+            const wx = parseInt(note.pin_pos_init?.[0] ?? window.outerWidth);
             const right = wx - x;
 
             let calc = window.outerWidth - right;
@@ -259,6 +264,8 @@ export class MetapageNotesModule extends MetapageModule {
     }
 
     _generate_pined_notes() {
+        if (this.begin_pin) return;
+
         $('.mel-note.pined').remove();
 
         let current_sticker;

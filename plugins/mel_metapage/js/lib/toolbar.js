@@ -2,8 +2,8 @@
  * Module toolbar
  **********************************************************/
 export {ToolbarIcon, MaterialToolbarIcon, ToolbarItem, Toolbar, HideOrShowToolbar}
-import { Point, Rectangle } from "./mel_maths";
-import { MelConditionnalEvent } from "./mel_events";
+import { Point, Rectangle } from "./mel_maths.js";
+import { MelConditionnalEvent } from "./mel_events.js";
 
 class ToolbarIcon {
     constructor(icon) {

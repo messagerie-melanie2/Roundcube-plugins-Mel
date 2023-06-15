@@ -1,7 +1,7 @@
-import { Calendar_Alarm } from "../calendar/calendar_alarm";
-import { CalendarLoader } from "../calendar/calendar_loader";
-import { WaitSomething } from "../mel_promise";
-import { MetapageModule } from "./metapage_module";
+import { Calendar_Alarm } from "../calendar/calendar_alarm.js";
+import { CalendarLoader } from "../calendar/calendar_loader.js";
+import { WaitSomething } from "../mel_promise.js";
+import { MetapageModule } from "./metapage_module.js";
 
 export class MetapageCalendarModule extends MetapageModule {
     constructor() {
@@ -13,8 +13,6 @@ export class MetapageCalendarModule extends MetapageModule {
      * @async Actions principales
      */
     async main() {
-        const startOfDay = moment().startOf('day');
-
         super.main();
 
         this._init();
@@ -22,10 +20,11 @@ export class MetapageCalendarModule extends MetapageModule {
         this.alarm_manager.clearTimeouts();
 
         await new WaitSomething(() => !!rcmail._events['plugin.display_alarms']);
+        await this._generate_alarms();
 
-        const events = await this.calendarLoader().force_load_all_events_from_storage()
-
-        this.alarm_manager.generate(events);
+        this.calendarLoader().on_calendar_updated.add('MetapageCalendarModule', () => {
+            this._generate_alarms();
+        });
     }
 
     /**
@@ -37,6 +36,11 @@ export class MetapageCalendarModule extends MetapageModule {
         this.alarm_manager = new Calendar_Alarm();
 
         return this;
+    }
+
+    async _generate_alarms() {
+        const events = await this.calendarLoader().force_load_all_events_from_storage()
+        this.alarm_manager.generate(events);
     }
 
     /**

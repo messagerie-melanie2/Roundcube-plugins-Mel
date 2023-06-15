@@ -1,6 +1,6 @@
 export {loader as CalendarLoader};
-import { MainNav } from "../classes/main_nav";
-import { MelObject } from "../mel_object";
+import { MainNav } from "../classes/main_nav.js";
+import { MelObject } from "../mel_object.js";
 
 /**
  * Sélecteur de la pastille agenda de la navigation principale
@@ -23,6 +23,7 @@ class CalendarLoader extends MelObject{
         super.main();
 
         this.timeout = null;
+        this.on_calendar_updated = new MelEvent();
 
         const now = moment();
         MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
@@ -197,6 +198,8 @@ class CalendarLoader extends MelObject{
 
             this._set_timeout(next_events);
 
+            this.on_calendar_updated.call();
+
             return all_events;
         }
     }
@@ -207,6 +210,7 @@ class CalendarLoader extends MelObject{
         
             this.timeout = setTimeout(() => {
                 const now = moment();
+
                 MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
                 .update_badge(next_events.count(), mel_metapage.Ids.menu.badge.calendar);
 
@@ -216,7 +220,7 @@ class CalendarLoader extends MelObject{
                 this.timeout = null;
                 this._set_timeout(next_events);
 
-            }, moment() - moment(next_events.first().end));
+            }, Math.abs(moment() - moment(next_events.first().end)));
         }
     }
 

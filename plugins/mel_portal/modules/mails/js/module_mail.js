@@ -1,10 +1,10 @@
 export { ModuleMail }
-import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage";
-import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
-import { html_ul } from "../../../../mel_metapage/js/lib/html/html";
-import { mail_html } from "../../../../mel_metapage/js/lib/html/html_mail";
-import { MailBaseModel } from "../../../../mel_metapage/js/lib/mails/mail_base_model";
-import { BaseModule } from "../../../js/lib/module"
+import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage.js";
+import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log.js";
+import { html_ul } from "../../../../mel_metapage/js/lib/html/html.js";
+import { mail_html } from "../../../../mel_metapage/js/lib/html/html_mail.js";
+import { MailBaseModel } from "../../../../mel_metapage/js/lib/mails/mail_base_model.js";
+import { BaseModule } from "../../../js/lib/module.js"
 
 const MODULE_ID = 'Mails';
 class ModuleMail extends BaseModule{

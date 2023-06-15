@@ -1,5 +1,5 @@
 export {BaseIconHtml, MaterialSymbolHtml, MainIconHtml};
-import { Icon, MaterialIcon } from "../icons";
+import { Icon, MaterialIcon } from "../icons.js";
 
 class BaseIconHtml extends mel_html2 {
     constructor(icon_class, attribs = {}) {

@@ -47,7 +47,8 @@ class Notes extends Page
         parent::__construct($rc, $plugin, "notes", "");
 
         if (($this->rc->task === 'bnum' && ($this->rc->action === '' || $this->rc->action === 'index')) || 
-        ($this->rc->task === 'mel_metapage' && $this->rc->action === 'notes')) $this->init();
+        ($this->rc->task === 'mel_metapage' && $this->rc->action === 'notes') || 
+        ($this->rc->task === 'webconf' || $this->rc->task === 'chat')) $this->init();
     }  
 
     protected function before_init() {
@@ -55,8 +56,6 @@ class Notes extends Page
         $this->action_undefined();
         $this->set_env_var('mel_metapages_notes', $this->notes);
         $this->set_env_var('reorder-notes', $this->get_config('reorder-notes', false));
-        //$this->include_js('notes.js');
-        //$this->save_config(self::CONFIG, []);
     }
 
     private function action_undefined() {
@@ -72,6 +71,15 @@ class Notes extends Page
                 $save = true;
             }
 
+            $init_len = count($this->notes);
+            $this->notes = array_filter($this->notes, function ($note) {
+                return strpos($note, 'NOTE-') !== false;
+            }, ARRAY_FILTER_USE_KEY);
+
+            if (!$save && $init_len !== count($this->notes)) {
+                $save = true;
+            }
+            
             if ($save) {
                 $this->save();
             }

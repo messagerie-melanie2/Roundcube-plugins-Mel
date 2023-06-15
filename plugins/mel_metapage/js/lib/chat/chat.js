@@ -1,5 +1,5 @@
-import { MelObject } from "../mel_object";
-import { Top } from "../top";
+import { MelObject } from "../mel_object.js";
+import { Top } from "../top.js";
 export {ChatSingleton as Chat, Room, Chat as _Chat}
 
 class Chat extends MelObject {

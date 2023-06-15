@@ -874,7 +874,7 @@ class html_notification extends mel_html2 {
         }
     }
 
-      this.addContent(new mel_html2('div', { attribs: { class: 'd-flex py-1' }, contents:  [_icon,  new mel_html2('div', { attribs: { class: 'd-flex flex-column justify-content-center' }, contents:  [_category, _title]}), _button]}));
+      this.addContent(new mel_html2('div', { attribs: { class: 'd-flex py-1' }, contents:  [_icon,  new mel_html2('div', { attribs: { class: 'd-flex flex-column justify-content-center w-100' }, contents:  [_category, _title]}), _button]}));
     }
     // Notification en pop-up
     else {      

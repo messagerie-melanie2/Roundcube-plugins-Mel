@@ -1,5 +1,5 @@
-import { MaterialSymbolHtml } from "../../html/html_icon";
-import { MelObject } from "../../mel_object";
+import { MaterialSymbolHtml } from "../../html/html_icon.js";
+import { MelObject } from "../../mel_object.js";
 
 /**
  * Plugin qui contient la localization pour rcmail.gettext
@@ -524,6 +524,10 @@ export class Sticker
         const pin = !!params["_uid"] && (params["_uid"].includes('pin-') || this.uid.includes('pin-'));
 
         if (!!params["_uid"] && params["_uid"].includes('pin-')) params["_uid"] = params["_uid"].replace('pin-', '');
+
+        if (action === 'pin') {
+            Sticker.helper.trigger_event('notes.apps.start-pin', true);
+        }
 
         await Sticker.helper.http_internal_post({
             params,

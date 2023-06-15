@@ -1,5 +1,5 @@
-import { MelObject } from "../mel_object";
-import { InvalidRoom, Room, Unreads } from "./chat";
+import { MelObject } from "../mel_object.js";
+import { InvalidRoom, Room } from "./chat.js";
 
 export class BaseChatConnector extends MelObject {
     constructor() {

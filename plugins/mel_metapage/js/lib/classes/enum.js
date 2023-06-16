@@ -1,17 +1,6 @@
-export {RotomecaEnumerable as MelEnumerable};
+import { isArrayLike } from "../mel";
 
-function isArrayLike(item) {
-    return (
-        (!!item &&
-          typeof item === "object" &&
-          item.hasOwnProperty("length") && 
-          typeof item.length === "number" && 
-          item.length > 0 && 
-          (item.length - 1) in item
-        )
-    );
-}
-
+export {RotomecaEnumerable as MelEnumerable, RotomecaKeyValuePair as MelKeyValuePair};
 class RotomecaKeyValuePair {
     constructor(key, value)
     {

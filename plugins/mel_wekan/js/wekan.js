@@ -17,14 +17,13 @@ class Wekan{
                 try {
                     datas = JSON.parse(datas);
                     datas = JSON.parse(datas.content);
-                    const token = this.tokenName;
 
-                    //mel_metapage.Storage.set(token, datas.authToken, false);
-                    localStorage.setItem(token, datas.authToken);
+                    $("#wekan-iframe")[0].contentWindow.Meteor.loginWithToken(datas.authToken);
+                    $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
                 } catch (error) {
                 }
             }
-        ).then(e => JSON.parse(e).httpCode === 200 && localStorage.getItem(this.tokenName) !== null);
+        ).then(e => JSON.parse(e).httpCode === 200/* && localStorage.getItem(this.tokenName) !== null*/);
     }
 
     isLogged()
@@ -89,25 +88,19 @@ $(document).ready(async () => {
     if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
     {
 
-        $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
+        $("#wekan-iframe").on('load', async () => {
+            const wekan = window.wekan;
+            if (!wekan.isLogged())
+            {
+                if (await wekan.login())
+                {             
 
-        if (!wekan.isLogged())
-        {
-            if (await wekan.login())
-            {             
-                window.addEventListener('storage', (e) => {
-                    if (e.key === wekan.tokenId)
-                    {
-                        if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
-                        else $("#wekan-iframe")[0].contentWindow.location.reload();
-                    }
-                  });
-
-                  if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
+                }
+                else
+                    rcmail.display_message("Impossible de se connecter au kanban !", "error");
             }
-            else
-                rcmail.display_message("Impossible de se connecter au kanban !", "error");
-        }
+        });
+        $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
     }
 
 });

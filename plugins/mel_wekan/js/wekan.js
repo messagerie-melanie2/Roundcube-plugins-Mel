@@ -18,8 +18,10 @@ class Wekan{
                     datas = JSON.parse(datas);
                     datas = JSON.parse(datas.content);
 
-                    $("#wekan-iframe")[0].contentWindow.Meteor.loginWithToken(datas.authToken);
-                    $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
+                    setTimeout(() => {
+                        $("#wekan-iframe")[0].contentWindow.Meteor.loginWithToken(datas.authToken);
+                    }, 10);
+                    //$("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
                 } catch (error) {
                 }
             }
@@ -88,19 +90,43 @@ $(document).ready(async () => {
     if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
     {
 
-        $("#wekan-iframe").on('load', async () => {
-            const wekan = window.wekan;
-            if (!wekan.isLogged())
-            {
-                if (await wekan.login())
-                {             
-
-                }
-                else
-                    rcmail.display_message("Impossible de se connecter au kanban !", "error");
-            }
-        });
         $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
+        checkIframeLoaded($("#wekan-iframe")[0]);
+    }
+
+    function checkIframeLoaded(iframe) {
+        // Get a handle to the iframe element
+        var iframe = iframe;
+        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    
+        // Check if loading is complete
+        if (  iframeDoc.readyState  == 'complete' ) {
+            //iframe.contentWindow.alert("Hello");
+            iframe.contentWindow.onload = function(){
+                //alert("I am loaded");
+            };
+            // The loading is complete, call the function we want executed once the iframe is loaded
+            afterLoading();
+            return;
+        } 
+    
+        // If we are here, it is not loaded. Set things up so we check   the status again in 100 milliseconds
+        window.setTimeout(() => {
+            checkIframeLoaded(iframe);
+        }, 100);
+    }
+    
+    async function afterLoading(){
+        const wekan = window.wekan;
+        if (!wekan.isLogged())
+        {
+            if (await wekan.login())
+            {             
+
+            }
+            else
+                rcmail.display_message("Impossible de se connecter au kanban !", "error");
+        }
     }
 
 });

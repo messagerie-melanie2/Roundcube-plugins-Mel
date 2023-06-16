@@ -836,7 +836,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return RotomecaEnumerable.from(generator());
     }
 
     static cycle(item, ...args) {
@@ -851,7 +851,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return RotomecaEnumerable.from(generator());
     }
 
     static empty() {
@@ -861,14 +861,14 @@ class RotomecaEnumerable
     static range(start, count, step = 1) {
         let it = 0;
         const generator = function* () {
-            while(it++ >= count) {
+            while(it++ < count) {
                 yield start;
 
                 start += step;
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return RotomecaEnumerable.from(generator());
     }
 
     static rangeDown(start, count, step = 1) {
@@ -892,7 +892,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return RotomecaEnumerable.from(generator());
     }
 
     static random(min = 0, max = 1000)

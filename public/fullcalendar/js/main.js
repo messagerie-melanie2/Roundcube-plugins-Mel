@@ -283,12 +283,19 @@ function showModal(start, end) {
     allowTimes,
     disabledWeekDays: disabled_days,
     disabledDates: allDayEvents,
-    formatDate: 'd.m.Y',
+    // formatDate:'d/m/Y',
     closeOnDateSelect: false,
     todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
+      })
+    },
+    onSelectDate: function (date) {
+      let [hour, minute] = generateAllowTimes(date)[0].split(':');
+      let first_hour = moment(date).hours(parseInt(hour)).minutes(parseInt(minute));
+      this.setOptions({
+        value: first_hour.toDate(),
       })
     },
     onChangeMonth: function (date) {
@@ -305,12 +312,19 @@ function showModal(start, end) {
     allowTimes,
     disabledWeekDays: disabled_days,
     disabledDates: allDayEvents,
-    formatDate: 'd.m.Y',
+    // format:'d/m/Y h:m',
     closeOnDateSelect: false,
     todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
+      })
+    },
+    onSelectDate: function (date) {
+      let [hour, minute] = generateAllowTimes(date)[0].split(':');
+      let first_hour = moment(date).hours(parseInt(hour)).minutes(parseInt(minute));
+      this.setOptions({
+        value: first_hour.toDate(),
       })
     },
     onChangeMonth: function (date) {

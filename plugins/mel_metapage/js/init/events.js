@@ -1173,10 +1173,17 @@ if (rcmail && window.mel_metapage)
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
                     const ariane = null;
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
+                    const pass = querry.attr("href").includes('_pass=') ? querry.attr("href").split('_pass=')[1].split('&')[0].split(' (')[0] : null;
 
                     setTimeout(() => {
                         rcmail.set_busy(false);
-                        window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                        //window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                        window.webconf_helper.go_ex({
+                            key:mel_metapage.Functions.webconf_url(querry.attr("href")),
+                            ariane,
+                            wsp,
+                            pass
+                        });
                     }, 10);
                 });
 

@@ -829,3 +829,12 @@ body.quickview-active .fc .fc-scroller {
 #edit-alarms .edit-alarm-buttons.input-group-append {
   display: none;
 }
+.vabutton .mel-button {
+  padding: 15px;
+}
+.vabutton .mel-button .material-symbols-outlined {
+  position: absolute;
+  top: 49%;
+  left: 49%;
+  transform: translate(-50%, -50%);
+}

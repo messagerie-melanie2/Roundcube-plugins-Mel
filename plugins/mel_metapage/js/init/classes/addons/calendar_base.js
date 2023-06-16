@@ -237,11 +237,11 @@ $(document).ready(() => {
                 
                 if (this.$phoneNumber.val() !== '' && parentVal !== '')
                 {
-                    this.$phoneEnabled.css('display', '');
+                    this.$phoneEnabled.parent().css('display', '');
                     this.$phoneDatas.css('display', '');
                 }
                 else {
-                    this.$phoneEnabled.css('display', 'none');
+                    this.$phoneEnabled.parent().css('display', 'none');
                     this.$phoneDatas.css('display', 'none');
                 }
                 
@@ -249,7 +249,7 @@ $(document).ready(() => {
             }
             else 
             {
-                this.$phoneEnabled.css('display', 'none');
+                this.$phoneEnabled.parent().css('display', 'none');
                 this.$phoneDatas.css('display', 'none');
             }
 
@@ -366,6 +366,8 @@ $(document).ready(() => {
                         config["_wsp"] = this.$workspace.val();
 
                     const tmp = !this.visioPhone.enabled() ? '' : (await this.visioPhone.getValue());
+
+                    if (!!this.$visioState.data('pass')) config['_pass'] = this.$visioState.data('pass');
 
                     if (tmp === reload) val = tmp;
                     else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `${visio_phone_start}${tmp}${visio_phone_end}`);
@@ -734,11 +736,12 @@ $(document).ready(() => {
 
                         if (isRc) //Visio de l'état
                         {
-
+                            const has_pass = currentString.includes('_pass');
                             await init_function($haveWsp, $wsp, update_location, 0, {
                                 visio:{
                                     type:'integrated',
-                                    val:currentString.split("_key=")[1].split("&")[0]
+                                    val:currentString.split("_key=")[1].split("&")[0],
+                                    pass:has_pass ? currentString.split("_pass=")[1].split("&")[0] : null
                                 },
                                 type:'visio'
                             });
@@ -2073,6 +2076,70 @@ $(document).ready(() => {
         let $visioButton = $('<button type="button" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover btn btn-secondary"><span class="icofont-refresh"></span></button>').click(() => {
             $visioWebconfInput.val(mel_metapage.Functions.generateWebconfRoomName());
         }).appendTo($visioDiv.find('.vinput .vintegrated .vbutton'));
+        let visioButtonLock = new mel_html2('button', {
+            attribs:{
+                class:'mel-button lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                type:'button'
+            },
+            contents:new mel_html('span', {class:'material-symbols-outlined'}, 'lock_open')
+        });
+
+        visioButtonLock.onclick.push(() => {
+            $visioDiv.find('.delete-lock').remove();
+            let $material = $visioDiv.find('.material-symbols-outlined').first();
+
+            if ($material.text() !== 'done') {
+                $material.text('done');
+
+                const room = $visioWebconfInput.val();
+                $visioWebconfInput.css('border-top-left-radius', '60px')
+                                  .css('border-bottom-left-radius', '60px')
+                                  .attr('placeholder', 'Saisir le mot de passe de la visio')
+                                  .data('room', room)
+                                  .val($visioWebconfInput.data('pass') ?? EMPTY_STRING);
+                $visioButton.parent().css('display', 'none');
+            }
+            else {
+                const pass = $visioWebconfInput.val();
+                const room = $visioWebconfInput.data('room');
+                $visioWebconfInput.css('border-top-left-radius', '')
+                                  .css('border-bottom-left-radius', '')
+                                  .attr('placeholder', 'Saisir le nom du salon')
+                                  .data('pass', pass)
+                                  .removeData('room')
+                                  .val(room);
+
+                if (pass.length > 0) {
+                    $material.text('lock');
+
+                    let delete_lock = new mel_html2('button', {
+                        attribs:{
+                            class:'mel-button delete-lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                            type:'button'
+                        },
+                        contents:new mel_html('span', {class:'material-symbols-outlined'}, 'no_encryption')
+                    });
+
+                    delete_lock.onclick.push(() => {
+                        $material.text('lock_open');
+                        $visioWebconfInput.removeData('pass');
+                        $visioDiv.find('.delete-lock').remove();
+                    });
+
+                    delete_lock.create($visioDiv.find('.vinput .vintegrated .viinput .vabutton'));
+                }
+                else {
+                    $visioWebconfInput.removeData('pass');
+                    $material.text('lock_open');
+                }
+
+                $visioWebconfInput.change();
+
+                $visioButton.parent().css('display', '');
+            }
+
+        });
+
         let $visioPhoneDatas = $(`
         <div class='input-group visio-phone-datas'>
             <div class="input-group-prepend" style="max-width:50%">
@@ -2093,6 +2160,8 @@ $(document).ready(() => {
         
         let $divSelect = $('<div class="input-group">  <div class="input-group-prepend"></div></div>').appendTo($leftCol);
         let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
+
+        new mel_html2('div', {attribs:{class:'vabutton input-group-append'}, contents:visioButtonLock}).create($visioDiv.find('.vinput .vintegrated .viinput'));
 
         if (baseId !== 0)
         {
@@ -2144,6 +2213,30 @@ $(document).ready(() => {
                                 case 'integrated':
                                     $visioSelect.val('intregrated');
                                     $visioWebconfInput.val(element.val);
+
+                                    if (!!element.pass) {
+                                        const pass = element.pass.includes(' (') ? element.pass.split(' (')[0] : element.pass;
+                                        $visioWebconfInput.data('pass', pass);
+                                        $visioDiv.find('.material-symbols-outlined').text('lock');
+
+                                        let delete_lock = new mel_html2('button', {
+                                            attribs:{
+                                                class:'mel-button delete-lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                                                type:'button'
+                                            },
+                                            contents:new mel_html('span', {class:'material-symbols-outlined'}, 'no_encryption')
+                                        });
+                    
+                                        delete_lock.onclick.push(() => {
+                                            let $material = $visioDiv.find('.material-symbols-outlined').first();
+                                            $material.text('lock_open');
+                                            $visioWebconfInput.removeData('pass');
+                                            $visioDiv.find('.delete-lock').remove();
+                                        });
+                    
+                                        delete_lock.create($visioDiv.find('.vinput .vintegrated .viinput .vabutton'));
+                                    }
+
                                     break;
 
                                 case 'custom':
@@ -2179,7 +2272,7 @@ $(document).ready(() => {
 
         [$audioCode, $audioPhone, $visioSelect, $visioWebconfInput, $visioCustomInput, $placeInput, $optionSelect].forEach(item => {
             item.on('change', () => {
-                update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
+                if (!item.data('room')) update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
             });
         });
 

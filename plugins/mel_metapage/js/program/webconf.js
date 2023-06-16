@@ -1594,6 +1594,15 @@ class Webconf{
         await wait(() => window.JitsiMeetExternalAPI === undefined);
         console.log('Connexion...')
         this.jitsii = new JitsiMeetExternalAPI(domain, options);
+
+        let interval = setInterval(() => {
+            //console.log('interval2', window.listener, !!window.listener, interval);
+            if (!!window.listener) {
+                clearInterval(interval);
+                window.listener.start();
+            }
+        }, 10);
+
         this.$frame_webconf.find('iframe').css('display', 'none');
 
         this.$frame_webconf.find('.loading-visio-text').html('Chargement de la visioconférence...')
@@ -3885,8 +3894,8 @@ class ListenerWebConfBar {
             this.webconf.jitsii.addEventListener('passwordRequired', () =>
             {
                 setPassword = false;
-                if (this.webconf.webconf_page_creator.havePassword()) {
-                    const password = this.webconf.webconf_page_creator.$password_datas.val();
+                if (this.webconf.webconf_page_creator.havePassword() || rcmail.env["webconf.pass"]) {
+                    const password = rcmail.env["webconf.pass"] || this.webconf.webconf_page_creator.$password_datas.val();
                     this.webconf.jitsii.executeCommand('password', password);
                 }
                 else {
@@ -3895,11 +3904,11 @@ class ListenerWebConfBar {
             });
 
             this.webconf.jitsii.addEventListener('videoConferenceJoined', () => {
-                console.log('videoConferenceJoined');
-                console.log('videoConferenceJoined', this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
-                if (this.webconf.webconf_page_creator.havePassword() || erroredPassword){
-                    const password = this.webconf.webconf_page_creator.$password_datas.val();
-                    console.log('videoConferenceJoined 2 ', password, this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
+                console.info('videoConferenceJoined');
+                console.debug('videoConferenceJoined', this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
+                if (this.webconf.webconf_page_creator.havePassword() || erroredPassword || rcmail.env["webconf.pass"]){
+                    const password = rcmail.env["webconf.pass"] || this.webconf.webconf_page_creator.$password_datas.val();
+                    console.debug('videoConferenceJoined 2 ', password, this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
                     this.setPassword(erroredPassword ? ListenerWebConfBar.erronedPassword : password, setPassword);
                 }
             });
@@ -4238,6 +4247,25 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
         config:page_creator_config
     }, rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"], addittionnal, right_item_size, null, () => {
         onvisiostart();
+        // if (!!rcmail.env["webconf.pass"]) {
+        //     new Promise((ok, nok) => {
+        //         let it = 0;
+        //         const intervalp = setInterval(() => {
+        //             if (!!window.listener) {
+        //                 window.listener.setPassword(rcmail.env["webconf.pass"], true);
+        //                 clearInterval(intervalp);
+        //                 it = null;
+        //                 ok();
+        //             }
+        //             else if (it++ >= (10 * 100)) {
+        //                 clearInterval(intervalp);
+        //                 it = null;
+        //                 nok('listener not found');
+        //             }
+        //         }, 100); 
+
+        //     });
+        // }
         let interval1 = setInterval(() => {
             //console.log('interval1', top.masterbar, !!top.masterbar, interval1);
             if (!!top.masterbar) {
@@ -4245,14 +4273,6 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
                 top.masterbar.show();
                 top.masterbar.webconfManager.chat.hidden = window[webconf_var_name].chat.hidden;
                 top.masterbar.updateLogo().updateBarAtStartup();
-            }
-        }, 10);
-
-        let interval = setInterval(() => {
-            //console.log('interval2', window.listener, !!window.listener, interval);
-            if (!!window.listener) {
-                clearInterval(interval);
-                window.listener.start();
             }
         }, 10);
     });

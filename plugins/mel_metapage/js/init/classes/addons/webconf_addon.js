@@ -5,7 +5,7 @@
         return window.webconf_master_bar !== undefined || parent.webconf_master_bar !== undefined;
     }
 
-    async function go_to_webconf(key = null, wsp = null, ariane = null, show_config_popup = false, locks = null)
+    async function go_to_webconf(key = null, wsp = null, ariane = null, show_config_popup = false, locks = null, pass = null)
     {
         if (!webconf_is_active())
         {
@@ -37,6 +37,10 @@
                     config['_locks'] = locks;
                 }
 
+                if (!!pass) {
+                    config['_pass'] = pass;
+                }
+
                 config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
             } 
 
@@ -51,6 +55,17 @@
         else {
             rcmail.display_message(rcmail.gettext('webconf_already_running', 'mel_metapage'), "warning");
         }
+    }
+
+    async function go_to_webconf_ex({
+        key = null, 
+        wsp = null,
+        ariane = null,
+        show_config_popup = false,
+        locks = null,
+        pass = null
+    }) {
+        await go_to_webconf(key, wsp, ariane, show_config_popup, locks, pass);
     }
 
     async function notify(key, uid)
@@ -102,6 +117,7 @@
 
     window.webconf_helper = {
         go:go_to_webconf,
+        go_ex:go_to_webconf_ex,
         already:webconf_is_active,
         notify:notify,
         phone:{

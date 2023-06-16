@@ -258,13 +258,15 @@ function getMaxBusinessHour(response) {
   let max_ranges = [];
   response.range.forEach((range, index) => {
     if (range != "") {
-      let split_range = range[1].split(':');
-      let max_hour = parseInt(range[1]);
-      //On ajoute une heure si il y a des minutes (18h15 -> on affiche 19h)
-      if (split_range[1] != "00") {
-        max_hour++;
-      }
-      max_ranges.push(max_hour)
+      range.forEach((val) => {        
+        let split_range = val.split(':');
+        let max_hour = parseInt(split_range[0]);
+        //On ajoute une heure si il y a des minutes (18h15 -> on affiche 19h)
+        if (split_range[1] != "00") {
+          max_hour++;
+        }
+        max_ranges.push(max_hour)
+      })
     }
   })
   return Math.max(...max_ranges) + ':00';

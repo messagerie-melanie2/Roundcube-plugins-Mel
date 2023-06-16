@@ -680,6 +680,11 @@ class ObjectKeyEnumerable extends RotomecaGenerator {
     }
 }
 
+/**
+ * Classe principale des enumerations.
+ * 
+ * Permet d'avoir un comportement semblable à System.Linq du C#
+ */
 class RotomecaEnumerable
 {
     constructor(generator)
@@ -701,99 +706,217 @@ class RotomecaEnumerable
         return new RotomecaEnumerable([]);
     }
 
+    /**
+     * Récupère que les éléments dont callback retourne "vrai"
+     * @param {(item:any, index:number) => boolean} callback Fonction qui servira à tester les éléments
+     * @returns {RotomecaEnumerable}
+     */
     where(callback) {
         return new RotomecaEnumerable(this.generator().where(callback));
     }
 
+    /**
+     * Sélectionne une donnée à partir des éléments de l'énumération
+     * @param {(item:any, index:number) => any} selector 
+     * @returns {RotomecaEnumerable}
+     */
     select(selector) {
         return new RotomecaEnumerable(this.generator().select(selector));
     }
 
+    /**
+     * Groupe les données par clé et par valeur.
+     * @param {(item:any) => any} key_selector Génère les différentes clés
+     * @param {(item:any) => any | null} value_selector Génère les différentes valeurs, l'élément entier est pris si null
+     * @returns {RotomecaEnumerable}
+     */
     groupBy(key_selector, value_selector = null)
     {
         return new RotomecaEnumerable(this.generator().groupBy(key_selector, value_selector));
     }
 
+    /**
+     * Tri les données (croissant)
+     * @param {(item:any) => any} selector 
+     * @returns {RotomecaEnumerable}
+     */
     orderBy(selector) {
         return new RotomecaEnumerable(this.generator().orderBy(selector));
     }
 
+    /**
+     * Tri les données (décroissant)
+     * @param {(item:any) => any} selector 
+     * @returns {RotomecaEnumerable}
+     */
     orderByDescending(selector) {
         return new RotomecaEnumerable(this.generator().orderByDescending(selector));
     }
 
+    /**
+     * Tri les données (croissant), à utiliser après orderBy
+     * @param {(item:any) => any} selector 
+     * @returns {RotomecaEnumerable}
+     */
     then(selector) {
         return new RotomecaEnumerable(this.generator().then(selector));
     }
 
+    /**
+     * Tri les données (décroissant), à utiliser après orderBy
+     * @param {(item:any) => any} selector 
+     * @returns {RotomecaEnumerable}
+     */
     thenDescending(selector) {
         return new RotomecaEnumerable(this.generator().thenDescending(selector));
     }
+
+    /**
+     * Ajoute un objet à l'énumération
+     * @param {*} item 
+     * @returns {RotomecaEnumerable}
+     */
     add(item) {
         return new RotomecaEnumerable(this.generator().add(item));
     }
 
+    /**
+     * Ajoute un itérable à l'énumération
+     * @param {*[]} iterable 
+     * @returns {RotomecaEnumerable}
+     */
     aggregate(iterable) {
         return new RotomecaEnumerable(this.generator().aggregate(iterable));
     }
 
+    /**
+     * Supprime un objet à l'énumération si il est présent
+     * @param {*} item 
+     * @returns {RotomecaEnumerable}
+     */
     remove(item) {
         return new RotomecaEnumerable(this.generator().remove(item));
     }
 
+    /**
+     * Supprime un objet à un index de l'énumération si il est présent
+     * @param {number} index 
+     * @returns {RotomecaEnumerable}
+     */
     removeAt(index) {
         return new RotomecaEnumerable(this.generator().removeAt(index));
     }
 
+    /**
+     * Empèche d'avoir 2 valeurs identiques dans l'énumération
+     * @param {(item:any) => any | null} selector 
+     * @returns {RotomecaEnumerable}
+     */
     distinct(selector = null) {
         return new RotomecaEnumerable(this.generator().distinct(selector));
     }
 
+    /**
+     * Empèche d'avoir les valeurs du tableau dans l'énumération
+     * @param {any[]} array 
+     * @returns {RotomecaEnumerable}
+     */
     except(array){
         return new RotomecaEnumerable(this.generator().except(array));
     }
 
+    /**
+     * Empèche d'avoir les valeurs en commun du tableau dans l'énumération
+     * @param {any[]} array 
+     * @returns {RotomecaEnumerable}
+     */
     intersect(array) {
         return new RotomecaEnumerable(this.generator().intersect(array));
     }
 
+    /**
+     * Fusionne les 2 tableaux
+     * @param {any[]} array 
+     * @param {(item:any) => any | null} selector 
+     * @returns {RotomecaEnumerable}
+     */
     union(array, selector = null) {
         return new RotomecaEnumerable(this.generator().union(array, selector));
     }
 
+    /**
+     * Renvoie l'énumération à l'envers
+     * @returns {RotomecaEnumerable}
+     */
     reverse() {
         return new RotomecaEnumerable(this.generator().reverse());
     }
 
+    /**
+     * Prend les x premiers éléments
+     * @param {number} howMany x premiers éléments à prendre
+     * @returns {RotomecaEnumerable}
+     */
     take(howMany)
     {
         return new RotomecaEnumerable(this.generator().take(howMany));
     }
 
+    /**
+     * Retourne vrai si il y a au moins un élément dans l'énumération.
+     * @param {(item:any, index:number) => boolean | null} callback where
+     * @returns {boolean}
+     */
     any(callback = null)
     {
         return this.generator().any(callback);
     }
 
+    /**
+     * Retourne vrai si tout les éléments existent dans l'énumération.
+     * @param {(item:any, index:number) => boolean | null} callback where
+     * @returns {boolean}
+     */
     all(callback = null)
     {
         return this.generator().all(callback);
     } 
 
+    /**
+     * Retourne vrai si l'élément existe dans l'énumération.
+     * @param {*} item 
+     * @returns {boolean}
+     */
     contains(item) {
         return this.generator().contains(item);
     }
 
+    /**
+     * Retourne l premier élément dans l'énumération.
+     * @param {(item:any, index:number) => boolean | null} callback where
+     * @returns {*}
+     * @throws If empty
+     */
     first(callback = null)
     {
         return this.generator().first(callback);
     }
 
+    /**
+     * Retourne l premier élément dans l'énumération.
+     * @param {any | null} default_value Valeur par défaut si on ne trouve rien
+     * @param {(item:any, index:number) => boolean | null} callback where
+     * @returns {*}
+     */
     firstOrDefault(default_value = null, callback = null)
     {
         return this.generator().firstOrDefault(default_value, callback);
     }
 
+    /**
+     * Si il y a des tableaux dans les tableaux, transforme tout en un seul tableau
+     * @returns {RotomecaEnumerable}
+     */
     flat() {
         return new RotomecaEnumerable(this.generator().flat());
     }
@@ -804,15 +927,30 @@ class RotomecaEnumerable
         }
     }
 
+    /**
+     * Transforme en tableau
+     * @returns {*[]}
+     */
     toArray() {
         return this.generator().toArray();
     }
 
+    /**
+     * Convertit en objet
+     * @param {(item:any, index:number) => *} key_selector 
+     * @param {(item:any, index:number) => *} value_selector 
+     * @returns {{}} style {index1:value1 etc....}
+     */
     toJsonObject(key_selector, value_selector)
     {
         return this.generator().toJsonObject(key_selector, value_selector);
     }
 
+    /**
+     * Convertit un objet/un tableau en enumerable
+     * @param {Array | RotomecaGenerator | RotomecaEnumerable | {}} item Objet à convertir en enumerable
+     * @returns {RotomecaEnumerable}
+     */
     static from(item)
     {
         const is_array_like = isArrayLike(item);
@@ -825,6 +963,12 @@ class RotomecaEnumerable
         else return new RotomecaEnumerable(new RotomecaGenerator([item]));
     }
 
+    /**
+     * Récupère des éléments au hasard dans un tableau
+     * @param {Array | RotomecaGenerator | RotomecaEnumerable | {}} item 
+     * @param  {...any} args Autres objets qui seront pris au hasard
+     * @returns {RotomecaEnumerable}
+     */
     static choice(item, ...args) {
         item = RotomecaEnumerable.from(item).aggregate(args || []).toArray();
         const min = 0;
@@ -839,6 +983,12 @@ class RotomecaEnumerable
         return RotomecaEnumerable.from(generator());
     }
 
+    /**
+     * Génère les éléments sous forme d'un cycle.
+     * @param {Array | RotomecaGenerator | RotomecaEnumerable | {}} item Initialisateur
+     * @param  {...any} args Initialisateurs
+     * @returns {RotomecaEnumerable}
+     */
     static cycle(item, ...args) {
         item = RotomecaEnumerable.from(item).aggregate(args || []).toArray();
         let it = 0;
@@ -854,10 +1004,23 @@ class RotomecaEnumerable
         return RotomecaEnumerable.from(generator());
     }
 
+    /**
+     * Génère un énumérable vide
+     * @returns {RotomecaEnumerable}
+     */
     static empty() {
         return RotomecaEnumerable.from([]);
     }
 
+    /**
+     * Génère des valeurs commençant par "start", pendant "count" par pas de "step"
+     * 
+     * (ex: (0,5,2) => [0,2,4,6,8])
+     * @param {number} start Valeur de départ
+     * @param {number} count Pendant combien d'itérations ?
+     * @param {number} step pas
+     * @returns {RotomecaEnumerable}
+     */
     static range(start, count, step = 1) {
         let it = 0;
         const generator = function* () {
@@ -871,15 +1034,36 @@ class RotomecaEnumerable
         return RotomecaEnumerable.from(generator());
     }
 
+    /**
+     * Génère des valeurs commençant par "start", pendant "count" par pas de "step" (décroissant)
+     * 
+     * (ex: (0,5,2) => [0, -2, -4, -6, -8])
+     * @param {number} start Valeur de départ
+     * @param {number} count Pendant combien d'itérations ?
+     * @param {number} step pas
+     * @returns {RotomecaEnumerable}
+     */
     static rangeDown(start, count, step = 1) {
         return RotomecaEnumerable.range(start, count, -step);
     }
 
+    /**
+     * Génère des valeurs commençant par "start" indéfiniment par pas de "step"
+     * @param {number} start Valeur de départ
+     * @param {number} step pas
+     * @returns {RotomecaEnumerable}
+     */
     static toInfinity(start = 0, step = 1)
     {
         return RotomecaEnumerable.range(start, Number.POSITIVE_INFINITY, step);
     }
 
+    /**
+     * Génère des valeurs commençant par "start" indéfiniment par pas de "step" (décroissant)
+     * @param {number} start Valeur de départ
+     * @param {number} step pas
+     * @returns {RotomecaEnumerable}
+     */
     static toNegativeInfinity(start = 0, step = 1)
     {
         return RotomecaEnumerable.toInfinity(start, -step);
@@ -895,6 +1079,12 @@ class RotomecaEnumerable
         return RotomecaEnumerable.from(generator());
     }
 
+    /**
+     * Génère des nombres au hasard
+     * @param {number} min 
+     * @param {number} max 
+     * @returns 
+     */
     static random(min = 0, max = 1000)
     {
         return RotomecaEnumerable.generate(() => {
@@ -914,211 +1104,4 @@ class RotomecaEnumerable
         return RotomecaEnumerable.from(arr);
     }
 }
-
-
-// if (!Array.prototype.where)
-// {
-//     Object.defineProperty(Array.prototype, 'where', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(callback) {
-//             return RotomecaEnumerable.from(this).where(callback);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'select', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(selector) {
-//             return RotomecaEnumerable.from(this).select(selector);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'groupBy', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(key_selector, value_selector = null) {
-//             return RotomecaEnumerable.from(this).groupBy(key_selector, value_selector);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'orderBy', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(selector) {
-//             return RotomecaEnumerable.from(this).orderBy(selector);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'orderByDescending', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(selector) {
-//             return RotomecaEnumerable.from(this).orderByDescending(selector);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'reverse', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function() {
-//             return RotomecaEnumerable.from(this).reverse();
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'take', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(howMany) {
-//             return RotomecaEnumerable.from(this).take(howMany);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'add', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(item) {
-//             return RotomecaEnumerable.from(this).add(item);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'aggregate', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(iterable) {
-//             return RotomecaEnumerable.from(this).add(iterable);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'remove', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(item) {
-//             return RotomecaEnumerable.from(this).remove(item);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'removeAt', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(index) {
-//             return RotomecaEnumerable.from(this).removeAt(index);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'distinct', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(selector = null) {
-//             return RotomecaEnumerable.from(this).distinct(selector);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'except', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(array) {
-//             return RotomecaEnumerable.from(this).except(array);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'intersect', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(array) {
-//             return RotomecaEnumerable.from(this).intersect(array);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'union', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(array, callback = null) {
-//             return RotomecaEnumerable.from(this).union(array, callback);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'any', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(callback = null) {
-//             return RotomecaEnumerable.from(this).any(callback);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'all', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(callback = null) {
-//             return RotomecaEnumerable.from(this).all(callback);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'contains', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(item) {
-//             return RotomecaEnumerable.from(this).contains(item);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'first', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(callback = null) {
-//             return RotomecaEnumerable.from(this).first(callback);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'firstOrDefault', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(default_value = null, callback = null) {
-//             return RotomecaEnumerable.from(this).firstOrDefault(default_value, callback);
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'flat', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function() {
-//             return RotomecaEnumerable.from(this).flat();
-//         }
-//     });
-    
-//     Object.defineProperty(Array.prototype, 'toJsonObject', {
-//         enumerable: false,
-//         configurable: false,
-//         writable: false,
-//         value:function(key_selector, value_selector) {
-//             return RotomecaEnumerable.from(this).toJsonObject(key_selector, value_selector);
-//         }
-//     });
-// }
-
-
-
-
-
 

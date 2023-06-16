@@ -1,3 +1,4 @@
+import { MelEnumerable } from "../classes/enum.js";
 import { MelFullScreenItem } from "../classes/fullscreen.js";
 import { Random } from "../classes/random.js";
 import { Point } from "../mel_maths.js";
@@ -23,7 +24,7 @@ export class MetapageNotesModule extends MetapageModule {
                     let notes;
                     const raw_notes = this.get_env('mel_metapages_notes');
 
-                    if (!Enumerable.from(raw_notes ?? []).any())
+                    if (!MelEnumerable.from(raw_notes ?? []).any())
                     {
                         notes = {};
                         notes[default_note_uid] = new Sticker(default_note_uid, 0, "", "");
@@ -241,7 +242,7 @@ export class MetapageNotesModule extends MetapageModule {
         let it = 0;
         let stickers = [];
         let current_sticker;
-        for (const iterator of Enumerable.from(this.notes).where(x => !!x.value.uid).orderBy(x => x.value.order)) {
+        for (const iterator of MelEnumerable.from(this.notes).where(x => !!x.value.uid).orderBy(x => x.value.order)) {
             const {key, value:note} = iterator;
             current_sticker = Sticker.from(note);
             $app.append($(current_sticker.html()));
@@ -269,7 +270,7 @@ export class MetapageNotesModule extends MetapageModule {
         $('.mel-note.pined').remove();
 
         let current_sticker;
-        for (const iterator of Enumerable.from(this.notes).where(x => x.value.pin === true || x.value.pin === 'true')) {
+        for (const iterator of MelEnumerable.from(this.notes).where(x => x.value.pin === true || x.value.pin === 'true')) {
             const {key, value:note} = iterator;
             current_sticker = Sticker.from(note);
             current_sticker = PinSticker.fromSticker(current_sticker);

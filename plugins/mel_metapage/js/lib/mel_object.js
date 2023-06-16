@@ -2,6 +2,7 @@ export { MelObject };
 import { Mel_Ajax } from "../../../mel_metapage/js/lib/mel_promise.js";
 import { BaseStorage } from "./classes/base_storage.js";
 import { Cookie } from "./classes/cookies.js";
+import { isNullOrUndefined } from "./mel.js";
 import { Top } from "./top.js";
 
 /* La classe MelEventManager étend BaseStorage et permet d'ajouter, d'appeler et de supprimer des
@@ -426,6 +427,15 @@ class MelObject {
      */
     cookie_remove(key) {
         return Cookie.remove_cookie(key);
+    }
+
+    /**
+ * Renvoie vrai si la variable vaut `null` ou `undefined`.
+ * @param {*} item Variable à tester
+ * @returns {boolean}
+ */
+    isNullOrUndefined(item) {
+        return isNullOrUndefined(item);
     }
 
     static Empty() {

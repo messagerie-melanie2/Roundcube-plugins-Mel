@@ -17,15 +17,14 @@ class Wekan{
                 try {
                     datas = JSON.parse(datas);
                     datas = JSON.parse(datas.content);
+                    const token = this.tokenName;
 
-                    setTimeout(() => {
-                        $("#wekan-iframe")[0].contentWindow.Meteor.loginWithToken(datas.authToken);
-                    }, 10);
-                    //$("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
+                    //mel_metapage.Storage.set(token, datas.authToken, false);
+                    localStorage.setItem(token, datas.authToken);
                 } catch (error) {
                 }
             }
-        ).then(e => JSON.parse(e).httpCode === 200/* && localStorage.getItem(this.tokenName) !== null*/);
+        ).then(e => JSON.parse(e).httpCode === 200 && localStorage.getItem(this.tokenName) !== null);
     }
 
     isLogged()
@@ -91,38 +90,20 @@ $(document).ready(async () => {
     {
 
         $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined ? rcmail.env.wekan_startup_url : rcmail.env.wekan_base_url;
-        checkIframeLoaded($("#wekan-iframe")[0]);
-    }
 
-    function checkIframeLoaded(iframe) {
-        // Get a handle to the iframe element
-        var iframe = iframe;
-        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    
-        // Check if loading is complete
-        if (  iframeDoc.readyState  == 'complete' ) {
-            //iframe.contentWindow.alert("Hello");
-            iframe.contentWindow.onload = function(){
-                //alert("I am loaded");
-            };
-            // The loading is complete, call the function we want executed once the iframe is loaded
-            afterLoading();
-            return;
-        } 
-    
-        // If we are here, it is not loaded. Set things up so we check   the status again in 100 milliseconds
-        window.setTimeout(() => {
-            checkIframeLoaded(iframe);
-        }, 100);
-    }
-    
-    async function afterLoading(){
-        const wekan = window.wekan;
         if (!wekan.isLogged())
         {
             if (await wekan.login())
             {             
+                window.addEventListener('storage', (e) => {
+                    if (e.key === wekan.tokenId)
+                    {
+                        if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
+                        else $("#wekan-iframe")[0].contentWindow.location.reload();
+                    }
+                  });
 
+                  if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
             }
             else
                 rcmail.display_message("Impossible de se connecter au kanban !", "error");

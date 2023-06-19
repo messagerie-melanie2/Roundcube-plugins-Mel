@@ -93,13 +93,17 @@ html.theme-super-classique {
             &.selected {
               background-color: transparent;
 
+              td {
+                border-bottom: solid thin var(--invisible) !important;
+              }
+
               .subject {
                 color: var(--main-text-color) !important;
               }
 
               >td.selection {
                 +td {
-                  border-left: 2px solid var(--invisible) !important;
+                  border-left: 2px solid var(--main-text-color) !important;
                 }
               }
             }
@@ -109,14 +113,14 @@ html.theme-super-classique {
 
               >td.selection {
                 +td {
-                  // border-left-color: var(--invisible) !important;
+                  border-left-color: var(--invisible) !important;
                 }
               }
 
               &.selected {
                 >td.selection {
                   +td {
-                    border-left-color: var(--invisible) !important;
+                    border-left-color: var(--main-text-color) !important;
                   }
                 }
               }

@@ -109,7 +109,7 @@ class mel_wekan extends rcube_plugin
         mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan... Utilisteur courant ? $currentUser");
         $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->create_token(driver_mel::gi()->getUser()->uid);
 
-        mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Résultat ? $result");
+        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? '.json_encode($result));
 
         echo json_encode($result);
         exit;

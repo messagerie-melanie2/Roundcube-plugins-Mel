@@ -22,8 +22,8 @@ if (window.rcmail) {
     let current_task = rcmail.env.task;
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
-        rcmail.show_current_page_onboarding(current_task, true);
-        parent.rcmail.env.hide_modal = 1;
+        window.parent.rcmail.show_current_page_onboarding(current_task, true);
+        window.parent.rcmail.env.hide_modal = 1;
       }
     });
     if (rcmail.env.action) {
@@ -31,7 +31,7 @@ if (window.rcmail) {
     }
     if (rcmail.env.help_page_onboarding[current_task]) {
       if (!rcmail.env.onboarding) {
-        rcmail.show_current_page_onboarding(current_task);
+        window.parent.rcmail.show_current_page_onboarding(current_task);
       }
     }
   });
@@ -55,45 +55,48 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
  * Permet d'afficher l'onboarding de page courante en se basant sur la task
  */
 rcube_webmail.prototype.show_current_page_onboarding = function (task, assistance = false) {
-  let json_page = rcmail.env.help_page_onboarding[task];
-  fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
-    res.text().then((json) => {
-      json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + task + '.png')
-      json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
+  //On affiche pas l'onboarding sur mobile
+  if (!document.documentElement.className.includes('touch')) {
+    let json_page = rcmail.env.help_page_onboarding[task];
+    fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
+      res.text().then((json) => {
+        json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/thumbnail/' + task + '.png')
+        json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
 
-      json = replaceImages(json);
-// debugger
-      window.current_onboarding = JSON.parse(json);
-      current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
+        json = replaceImages(json);
+        // debugger
+        window.current_onboarding = JSON.parse(json);
+        current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
 
-      if (task == "mail") {
-        if (!assistance) {
-          rcmail.addEventListener('responsebefore', function (props) {
-            if (props.response && (props.response.action === 'list')) {
-              if (!launched_onboarding) {
-                rcmail.show_contentframe(true)
-                current_window.startIntro(task);
-                setTimeout(() => {
-                  rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
-                }, 250);
-                launched_onboarding = true;
+        if (task == "mail") {
+          if (!assistance) {
+            rcmail.addEventListener('responsebefore', function (props) {
+              if (props.response && (props.response.action === 'list')) {
+                if (!launched_onboarding) {
+                  rcmail.show_contentframe(true)
+                  current_window.startIntro(task);
+                  setTimeout(() => {
+                    rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+                  }, 250);
+                  launched_onboarding = true;
+                }
               }
-            }
-          });
+            });
+          } else {
+            rcmail.show_contentframe(true)
+            current_window.startIntro(task);
+            setTimeout(() => {
+              rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+            }, 250);
+          }
+        } else if (rcmail.env.is_framed) {
+          parent = startIntro(task, assistance)
         } else {
-          rcmail.show_contentframe(true)
-          current_window.startIntro(task);
-          setTimeout(() => {
-            rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
-          }, 250);
+          startIntro(task, assistance);
         }
-      } else if (rcmail.env.is_framed) {
-        parent = startIntro(task, assistance)
-      } else {
-        startIntro(task, assistance);
-      }
+      });
     });
-  });
+  }
 };
 
 function startIntro(task, assistance = false) {
@@ -101,7 +104,7 @@ function startIntro(task, assistance = false) {
   window.exit_details_intro = true;
   let intro = current_window.introJs();
 
-  if (task == "bureau" && rcmail.env.is_framed) {
+  if (task == "bureau") {
     intro = bureau_intro(intro);
   } else {
     intro.setOptions({
@@ -142,7 +145,7 @@ function startIntro(task, assistance = false) {
           intro.goToStepNumber(item.step + step);
         }, 10);
       }
-    }
+    }    
   }).onafterchange(function () {
     current_window.$('.introjs-tooltipbuttons').hide();
 
@@ -213,7 +216,13 @@ function startIntro(task, assistance = false) {
           }
         });
       }
+
     }, 400);
+
+    if (this._introItems[this._currentStep].framedIntro) {
+      $('.introjs-helperLayer').addClass('framed-intro');
+      $('.introjs-tooltipReferenceLayer').addClass('framed-intro');
+    }
   }).onexit(function () {
     if (window.exit_main_intro) {
       return (parent ?? window).rcmail.onboarding_close()
@@ -221,7 +230,9 @@ function startIntro(task, assistance = false) {
   }).start();
 
   if (assistance) {
-    intro.goToStep(4);
+    setTimeout(() => {
+      intro.goToStep(4);
+    }, 50);
   }
   addBulletTitle();
 }
@@ -242,34 +253,32 @@ function bureau_intro(intro) {
     doneLabel: window.current_onboarding.doneLabel,
     steps: [steps[0], steps[1], steps[2], steps[3], steps[4],
     {
-      "title": "Ma journée",
-      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
-      "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
-      "tooltipClass": "iframed big-width-intro",
-      "highlightClass": "iframed",
-      "position": "right"
+      "title": "Courrier récents",
+      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".module_Mails"),
+      "intro": "Ce module vous permet de visualiser vos 3 derniers mails de votre messagerie",
+      "tooltipClass": "width-intro-600",
+      "framedIntro": true,
+    },
+    {
+      "title": "Prochains évènements",
+      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".module_My_day"),
+      "intro": "Ce module vous permet de visualiser les rendez-vous de la journée. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
+      "tooltipClass": "width-intro-600",
+      "framedIntro": true,
     },
     {
       "title": "Informations",
-      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
+      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".module_Headlines"),
       "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
-      "tooltipClass": "iframed big-width-intro",
-      "highlightClass": "iframed",
-      "position": "left"
+      "tooltipClass": "width-intro-600",
+      "framedIntro": true,
     },
     {
       "title": "Mes espaces de travail",
-      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".workspaces.module_parent"),
+      "element": (parent ?? window).document.getElementById(iframe.id).contentWindow.document.querySelector(".module_Workspaces"),
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
-      "tooltipClass": "iframed big-width-intro",
-      "highlightClass": "iframed",
-      "position": "top"
-    },
-    {
-      "title": "Discussion ",
-      "element": ".tiny-rocket-chat",
-      "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
-      "position": "top"
+      "tooltipClass": "width-intro-600",
+      "framedIntro": true,
     }
     ]
   })

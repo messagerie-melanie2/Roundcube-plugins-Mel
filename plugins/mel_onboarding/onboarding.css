@@ -345,6 +345,11 @@ html.dark-mode .onboarding-image {
   padding-bottom: 12px !important;
 }
 
+.framed-intro {
+  margin-top: 60px;
+  margin-left: 60px;
+}
+
 #accueil:focus-visible {
   outline: none;
 }

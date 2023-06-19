@@ -1463,6 +1463,8 @@ function m_mp_Help() {
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
 
+    const isTouch = $("html").hasClass("touch");
+
     if (window.create_event === true && !!actions.event) {
         eval(actions.event.action);
         return;
@@ -1506,7 +1508,7 @@ function m_mp_Help() {
         let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
         let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, false) + '</li>'
         let helppage_current = "";
-        if (rcmail.env.help_page_onboarding[(m_mp_DecodeUrl().task).replace('#','')]) {
+        if (rcmail.env.help_page_onboarding[(m_mp_DecodeUrl().task).replace('#','')] && !isTouch) {
             helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
         }
 
@@ -1542,31 +1544,34 @@ function m_mp_Help() {
     }
 
     if (isSmall) {
-        if (!$("#groupoptions-createthings").hasClass("initialized")) {
-            for (const key in actions) {
-                if (Object.hasOwnProperty.call(actions, key)) {
-                    const element = actions[key];
-                    $("#ul-createthings").append(`
-                    <li role="menuitem">
-                        <a class="${element.icon}" role="button" href="#" onclick="${element.action}">
-                            <span class="restore-font">${element.text}</span>
-                        </a>
-                    </li>
-                    `);
-                }
+      if (!$("#groupoptions-createthings").hasClass("initialized")) {
+        for (const key in actions) {
+          if (Object.hasOwnProperty.call(actions, key)) {
+            //On cache l'onboarding sur mobile
+            if (key !== 'helppage_current') {
+              const element = actions[key];
+              $("#ul-createthings").append(`
+                  <li role="menuitem">
+                      <a class="${element.icon}" role="button" href="#" onclick="${element.action}">
+                          <span class="restore-font">${element.text}</span>
+                      </a>
+                  </li>
+              `);
             }
-
-            $("#groupoptions-createthings").addClass("initialized")
-
+          }
         }
-        window.help_popUp.close();
 
-        setTimeout(() => {
-            $("#open-created-popup").click();
-        }, 1);
+        $("#groupoptions-createthings").addClass("initialized")
+
+      }
+      window.help_popUp.close();
+
+      setTimeout(() => {
+        $("#open-created-popup").click();
+      }, 1);
 
     }
-}
+  }
 
 // Ancienne fonction d'aide
 // function m_mp_Help() {

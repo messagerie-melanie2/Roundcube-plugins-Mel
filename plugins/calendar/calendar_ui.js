@@ -230,12 +230,11 @@ function rcube_calendar_ui(settings) {
         else
           time_element = element.find('.fc-time');
 
-        if (event.sensitivity && event.sensitivity != 'public')
-          time_element.prepend('<i class="fc-icon-sensitive"></i>');
-        if (event.recurrence)
-          time_element.prepend('<i class="fc-icon-recurring"></i>');
-        if (event.alarms || (event.valarms && event.valarms.length))
-          time_element.prepend('<i class="fc-icon-alarms"></i>');
+        if (event.sensitivity && event.sensitivity != 'public') time_element.prepend('<i class="fc-icon-sensitive"></i>');
+        if (event.recurrence) time_element.prepend('<i class="fc-icon-recurring"></i>');
+        if (event.alarms || (event.valarms && event.valarms.length)) time_element.prepend('<i class="fc-icon-alarms"></i>');
+        // PAMELA - Agenda: trombone manquant sur les events pour signaler la présence d'une PJ
+        if (!!event.attachments && event.attachments.length > 0) time_element.prepend('<i class="fc-icon-pj"></i>')
         // PAMELA - Mode assistantes
         if (event.attendee_partstart && ['accepted', 'tentative'].indexOf(String(event.attendee_partstart).toLowerCase()) === -1)
           time_element.prepend('<i class="fc-icon-' + String(event.attendee_partstart).toLowerCase() + '"></i>');

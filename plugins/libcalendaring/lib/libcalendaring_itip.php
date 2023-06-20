@@ -323,7 +323,8 @@ class libcalendaring_itip
                     && strcasecmp($attendee['email'], $attendee_from) != 0
                     && strcasecmp($attendee['email'], $attendee_from_utf) != 0
                 ) {
-                    $attendee['sent-by'] = 'mailto:' . $attendee_from_utf;
+                    //PAMELA - MANTIS 0007625: Partager un événement met un mauvais Organizer
+                    //$attendee['sent-by'] = 'mailto:' . $attendee_from_utf;
                     $event['organizer'] = $event['attendees'][$idx] = $attendee;
                     break;
                 }

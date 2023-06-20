@@ -226,6 +226,10 @@ export class Calendar_Alarm extends MelObject
                         this.create_alarm(element, moment(element.alarm_dismissed*1000));
                 }
             }
+            else {
+              const uid = this.setCalId(element.uid);
+              if(this.showed_alarms.has(uid)) this.showed_alarms.remove(uid);
+            }
         }
     }
 

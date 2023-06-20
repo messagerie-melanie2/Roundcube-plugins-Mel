@@ -8,12 +8,12 @@ export class AlarmManager {
         return this;
     }
 
-    has(event) {
-        return !!this.alarms[event.uid]
+    has(uid) {
+      return !!this.alarms[uid]
     }
 
-    remove(event) {
-        delete this.alarms[event.uid];
+    remove(uid) {
+      delete this.alarms[uid];
     }
 
     clear() {

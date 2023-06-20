@@ -8,6 +8,10 @@ export class AlarmManager {
         return this;
     }
 
+    has(event) {
+        return !!this.alarms[event.uid]
+    }
+
     clear() {
         this.alarms = {};
         return this;
@@ -19,7 +23,7 @@ export class AlarmManager {
 
         for (let index = 0; index < keys.length; ++index) {
             const key = keys[index];
-            array.push(this.alarms[key]);
+            if (!!this.alarms[key]) array.push(this.alarms[key]);
         }
 
         return array;

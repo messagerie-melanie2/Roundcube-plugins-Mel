@@ -305,6 +305,9 @@ class mel_driver extends calendar_driver {
         // Récupérer les informations sur le propriétaire de l'agenda
         $cal_owner = driver_mel::gi()->getUser($cal->owner);
 
+        // Ajouter l'email du owner
+        $this->calendars[$id]->owner_email = $cal_owner->email;
+
         // formatte le calendrier pour le driver
         $calendar = array(
             'id'          => $rcId,
@@ -1997,6 +2000,7 @@ class mel_driver extends calendar_driver {
         if (! $freebusy && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
           continue;
         }
+        $_e->calendar_owner_email = $this->calendars[$_e->calendar]->owner_email;
         if ($_e->recurrence->type === LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR && ! $_e->deleted) {
           $_events[] = $this->_read_postprocess($_e, $freebusy);
         }

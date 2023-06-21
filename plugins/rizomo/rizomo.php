@@ -99,6 +99,11 @@ class rizomo extends rcube_plugin
         if ($this->rc->task == 'rizomo') {
             $this->register_action('index', array($this, 'action'));
             $this->rc->output->set_env('refresh_interval', 0);
+
+            if ($this->rc->config->get('rizomo_log-in_users', false)) {
+                // On lance l'authentification automatique des utilisateurs
+                $this->login();
+            }
         } 
         else if ($this->rc->task == 'settings' 
                 && in_array($this->rc->user->get_username(), $this->rc->config->get('rizomo_users', []))) {
@@ -230,6 +235,32 @@ class rizomo extends rcube_plugin
             $p['prefs']['rizomo_user_token'] = rcube_utils::get_input_value('_user_token', rcube_utils::INPUT_POST);
         }
         return $p;
+    }
+
+    /**
+     * Création et authentification d'un utilisateur sur Rizomo
+     */
+    protected function login() {
+        $user = driver_mel::gi()->getUser();
+        if ($user->load(['email', 'firstname', 'lastname'])) {
+            // Charge la lib cliente
+            require_once __DIR__ . '/lib/rizomoclient.php';
+            $rizomoClient = new RizomoClient();
+
+            $token = $rizomoClient->createUserToken($user->email);
+
+            // Si le retour a échoué c'est peut être parce que l'utilisateur n'existe pas
+            if ($token === false 
+                    && $rizomoClient->createUser($user->uid, $user->email, $user->firstname, $user->lastname)) {
+                // On crée l'utilisateur puis on retente de générer un token
+                $token = $rizomoClient->createUserToken($user->email);
+            }
+
+            // Si on a un token
+            if (is_string($token)) {
+                $this->rc->output->set_env('rizomo_user_token', $token);
+            }
+        }
     }
 }
             

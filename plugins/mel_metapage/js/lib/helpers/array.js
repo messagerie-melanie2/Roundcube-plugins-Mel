@@ -1,5 +1,5 @@
-import { MelEnumerable } from "../classes/enum";
-import { isArrayLike } from "../mel";
+import { MelEnumerable } from "../classes/enum.js";
+import { isArrayLike } from "../mel.js";
 export { MelArray }
 
 class MelArray extends Array {

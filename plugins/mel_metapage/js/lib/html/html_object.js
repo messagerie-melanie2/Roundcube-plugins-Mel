@@ -1,5 +1,5 @@
-import { Classes } from "../mel";
-import { MelObject } from "../mel_object";
+import { Classes } from "../mel.js";
+import { MelObject } from "../mel_object.js";
 
 export class mel_html_object extends Classes(mel_html2, MelObject) {
     constructor(tag, {attribs={}, contents=[], args=[]}) {

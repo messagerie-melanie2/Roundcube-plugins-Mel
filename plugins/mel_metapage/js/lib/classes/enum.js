@@ -1,4 +1,4 @@
-import { isArrayLike } from "../mel";
+import { isArrayLike } from "../mel.js";
 
 export {RotomecaEnumerable as MelEnumerable, RotomecaKeyValuePair as MelKeyValuePair};
 class RotomecaKeyValuePair {

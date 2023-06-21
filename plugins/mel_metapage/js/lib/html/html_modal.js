@@ -109,6 +109,12 @@ class modal_html extends mel_html2 {
         this.push_element(this._generate_desc());
     }
 
+    generate(attribs = {}) {
+        const $generated = super.generate(attribs);
+        this.clear_elements();
+        return $generated;
+    }
+
     _generateContent($html) {
         this._set_childs();
         return super._generateContent($html);
@@ -137,12 +143,6 @@ class modal_html extends mel_html2 {
         }
     }
 
-    create($parent, focusAfterClosed, focusFirst, additionnal_attribs = {}) {
-        let $generated = super.create($parent, additionnal_attribs);
-        new aria.Dialog($generated[0], focusAfterClosed, focusFirst);
-        return $generated;
-    }
-
     static _generateId({test = true}) {
         const base = MelEnumerable.from(MelArray.Alphabet()).aggregate(MelArray.Numbers);
         let id = null;
@@ -152,6 +152,10 @@ class modal_html extends mel_html2 {
         }
 
         return id;
+    }
+
+    static attach(dialog, focusAfterClosed, focusFirst) {
+        return new aria.Dialog(dialog, focusAfterClosed, focusFirst);
     }
 }
 

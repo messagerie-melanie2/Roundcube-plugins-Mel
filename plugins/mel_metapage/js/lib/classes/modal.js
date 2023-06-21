@@ -30,6 +30,33 @@ export class MelModal extends modal_html {
                 },
                 configurable: true
             },
+            title_content: {
+                get:function () {
+                    return _title_content;
+                },
+                set:(val) => {
+                    _title_content = val;
+                },
+                configurable: true
+            },
+            header_content: {
+                get:function () {
+                    return _header_content;
+                },
+                set:(val) => {
+                    _header_content = val;
+                },
+                configurable: true
+            },
+            body_content: {
+                get:function () {
+                    return _body_content;
+                },
+                set:(val) => {
+                    _body_content = val;
+                },
+                configurable: true
+            },
             footer_buttons: {
                 get:function () {
                     return (_footer_buttons === MelModal.default ? this._generate_default_footers() : (_footer_buttons || []));
@@ -65,6 +92,13 @@ export class MelModal extends modal_html {
         MelModal._modals[this.id] = this;
     }
 
+    _regenerate($parent) {
+        this.$modal.remove();
+        let $generated = this.create($parent);
+        this._initialized = false;
+        return this.$modal;
+    }
+
     _before_generate() {
         super._before_generate();
 
@@ -81,17 +115,25 @@ export class MelModal extends modal_html {
     }
 
     _generate_content() {
+        const header = this._generate_header();
+        const body = this._generate_body();
         const footer = this._generate_footer();
 
+        this.push_element(header);
+        this.push_element(body);
         this.push_element(footer);
     }
 
     _generate_header() {
+        return new mel_html2('div', {attribs:{class:'modal-header'}, contents:(MelModal.default === this.header_content ? this._generate_title() : this.header_content)});
+    }
 
+    _generate_title() {
+        return new mel_html('h2', {}, this.title_content);
     }
 
     _generate_body() {
-
+        return new mel_html2('div', {attribs:{class:'modal-body'}, contents:this.body_content || []});
     }
 
     _generate_footer() {
@@ -155,6 +197,13 @@ export class MelModal extends modal_html {
         this.select_aria_desc().text(new_desc);
     }
 
+    set_title(title) {
+        this.title = title;
+        this.title_content = title;
+
+        return this;
+    }
+
     show() {
         if (!this._initialized) {
             modal_html.attach(this.$modal[0], this.focus_when_exit, this.title_id);
@@ -192,6 +241,18 @@ export class MelModal extends modal_html {
 
     select_aria_desc() {
         return this.select_modal({}).find(`#${this.desc_id}`);
+    }
+
+    select_header() {
+        return this.select_modal({}).find('.modal-header');
+    }
+
+    select_title() {
+        return this.select_header().find('h2');
+    }
+
+    select_body() {
+        return this.select_modal({}).find('.modal-body');
     }
 
     select_footer() {

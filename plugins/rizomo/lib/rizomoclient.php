@@ -126,13 +126,17 @@ class RizomoClient {
     if (isset($result['httpCode']) 
         && $result['httpCode'] == 200) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "RizomoClient::createUserToken() result: " . var_export($result, true));
-      return $result['content'];
+      $json = json_decode($result['content'], true);
+      if ($json
+          && isset($json['response']['token'])) {
+        return $json['response']['token'];
+      }
     }
     else {
       // Si c'est false on peut considérer que l'utilisateur n'existe pas et donc qu'il faut le créer
       mel_logs::get_instance()->log(mel_logs::ERROR, "RizomoClient::createUserToken() Error result: " . var_export($result, true));
-      return false;
     }
+    return false;
   }
 
   /**

@@ -23,17 +23,17 @@ const api_notifications = '/notifications/me';
 // Affichage de la frame Rizomo
 if (window.rcmail && rcmail.env.task == 'rizomo') {
     setTimeout(() => {
-        console.log('Rizomo task if');
         const url = rcmail.env.rizomo_startup_url != null && rcmail.env.rizomo_startup_url !== undefined ? rcmail.env.rizomo_startup_url : rcmail.env.rizomo_gotourl;
         window.document.getElementById('rizomo_frame').src = url;
 
         if (rcmail.env.rizomo_user_token) {
             setTimeout(function() {
+                console.log('Rizomo login-with-token');
                 window.document.getElementById('rizomo_frame').contentWindow.postMessage({
                     event: 'login-with-token',
                     token: rcmail.env.rizomo_user_token,
                 }, '*');
-            }, 50);
+            }, 1000);
         }
 
         $("#wait_box").hide();

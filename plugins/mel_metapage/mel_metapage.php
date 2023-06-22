@@ -213,6 +213,14 @@ class mel_metapage extends bnum_plugin
             $this->include_script('js/actions/base_settings.js');
         }
 
+        if ($this->rc->task === 'mel_settings')
+        {
+            $this->register_task('mel_settings');
+            $this->add_hook('metapage.save.option',     array($this, 'hook_save_option'));
+            $this->register_action('load', array($this, 'load_option'));
+            $this->register_action('save', array($this, 'save_option'));
+        }
+
         if ($this->rc->task === "mail" )
         {
             $this->add_hook('mel_config_suspect_url', [$this,'check_message_is_suspect_custom']);
@@ -2854,6 +2862,89 @@ class mel_metapage extends bnum_plugin
         }
 
         return $this->idendity_cache[$uid];
+    }
+
+    public function load_option() {
+        $load_html = true;
+        $option = rcube_utils::get_input_value('_option', rcube_utils::INPUT_POST);
+
+        $plugin = $this->api->exec_hook('metapage.load.option.before', ['option' => $option]);
+
+        if (isset($plugin)) {
+            if (isset($plugin['option'])) {
+                if ('load_mode_php' === $plugin['option']) $load_html = false;
+                else $option = $plugin['option'];
+            }
+        }
+
+        $html = '';
+
+        if ($load_html) $html = $this->rc->output->parse("mel_metapage.options/$option", false, false);
+
+        $plugin = $this->api->exec_hook('metapage.load.option', ['option' => $option, 'html' => $html]);
+
+        if (isset($plugin)) {
+            if (isset($plugin['html'])) $html = $plugin['html'];
+        }
+
+        echo $html;
+        exit;
+    }
+
+    public function save_option() {
+        $option = rcube_utils::get_input_value('_option_name', rcube_utils::INPUT_POST);
+        $value = rcube_utils::get_input_value('_option_value', rcube_utils::INPUT_POST);
+
+        $plugin = $this->api->exec_hook('metapage.save.option', ['option' => $option, 'value' => $value]);
+        
+        if (isset($plugin)) {
+            if (isset($plugin['option'])) $option = $plugin['option'];
+            if (isset($plugin['value'])) $value = $plugin['value'];
+        }
+
+        $this->rc()->user->save_prefs([$option => $value]);
+
+        echo json_encode($value);
+        exit;
+    }
+
+    public function hook_save_option($args) {
+        $option = $args['option'];
+        $value = $args['value'];
+
+        $const_mel_options = ["mel-icon-size", 
+                   "mel-folder-space",
+                   "mel-message-space",
+                   "mel-3-columns",
+                   "mel-chat-placement",
+                    'mel-scrollbar-size'];
+
+        if (in_array($option, $const_mel_options)) {
+            $icon = "mel-icon-size";
+            $folder_space = "mel-folder-space";
+            $message_space = "mel-message-space";
+            $mel_column = "mel-3-columns";
+            $chat_placement = "mel-chat-placement";
+            $scrollbar_size = 'mel-scrollbar-size';
+            
+            $config = $this->rc->config->get('mel_mail_configuration', [
+                $icon => $this->gettext("normal", "mel_metapage"),
+                $folder_space => $this->gettext("normal", "mel_metapage"),
+                $message_space => $this->gettext("normal", "mel_metapage"),
+                $mel_column => $this->gettext("yes", "mel_metapage"),
+                $chat_placement => $this->gettext("down", "mel_metapage"),
+                $scrollbar_size => $this->gettext("default", "mel_metapage")
+            ]);
+
+            if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+            $config[$option] = $value;
+
+            $args['option'] = 'mel_mail_configuration';
+            $args['value'] = $config;
+        }
+
+        return $args;
     }
 
 }

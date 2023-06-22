@@ -2866,7 +2866,7 @@ class mel_metapage extends bnum_plugin
 
     public function load_option() {
         $load_html = true;
-        $option = rcube_utils::get_input_value('_option', rcube_utils::INPUT_POST);
+        $option = rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET);
 
         $plugin = $this->api->exec_hook('metapage.load.option.before', ['option' => $option]);
 

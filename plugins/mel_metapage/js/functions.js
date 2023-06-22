@@ -2410,3 +2410,14 @@ function m_mp_ToggleGroupOptionsUser(opener) {
     $goupoptions_user = null;
     $button_settings = null;
 }
+
+/**
+ * Permet de sauvegarder une option rapide
+ */
+function save_option(_option) {
+  mel_metapage.Functions.post(
+    mel_metapage.Functions.url('mel_settings','save'), 
+    {_option},
+    (data) => {console.log(data);}
+  )
+}

@@ -7,18 +7,32 @@
   </div>
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2">
-      <div class="option-max-width">
-        <div class="d-flex">
+        <div class="d-flex justify-content-center align-items-center">
           Courriel dans une nouvelle fenêtre
-          <span class="material-symbols-outlined options-help" title="Ouvre les courriel dans une nouvelle fenêtre">
+          <span class="material-symbols-outlined options-help ml-2" title="Ouvre les courriel dans une nouvelle fenêtre">
             help
           </span>
         </div>
-      </div>
       <div class="custom-control custom-switch no-click-focus">
-        <input name="message_extwin" id="rcmfd_message_extwin" type="checkbox"
+        <input name="_p_message_extwin_p_" id="rcmfd_message_extwin" type="checkbox" onchange="save_option('message_extwin')"
           class="form-check-input custom-control-input no-click-focus">
         <label for="rcmfd_message_extwin" class="custom-control-label option-switch no-click-focus">
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 d-flex justify-content-between align-items-center mt-2">
+        <div class="d-flex justify-content-center align-items-center">
+          Rédiger dans une nouvelle fenêtre
+          <span class="material-symbols-outlined options-help ml-2" title="Rédige les courriel dans une nouvelle fenêtre">
+            help
+          </span>
+        </div>
+      <div class="custom-control custom-switch no-click-focus">
+        <input name="_p_rcmfdcompose_extwin_p_" id="rcmfd_rcmfdcompose_extwin" type="checkbox" onchange="save_option('rcmfdcompose_extwin')"
+          class="form-check-input custom-control-input no-click-focus">
+        <label for="rcmfd_rcmfdcompose_extwin" class="custom-control-label option-switch no-click-focus">
         </label>
       </div>
     </div>

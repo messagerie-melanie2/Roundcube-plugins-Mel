@@ -295,10 +295,11 @@ html.dark-mode .option-menu-button:hover {
 }
 
 .options-help {
-  cursor: pointer;
+  cursor: help;
+  font-size: 22px;
 }
 
 .options-help:hover {
-  color: red;
+  color: var(--mel-tab-text-color);
 }
 

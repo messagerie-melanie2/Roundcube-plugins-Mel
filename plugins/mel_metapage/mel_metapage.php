@@ -217,6 +217,7 @@ class mel_metapage extends bnum_plugin
         {
             $this->register_task('mel_settings');
             $this->add_hook('metapage.save.option',     array($this, 'hook_save_option'));
+            $this->add_hook('metapage.load.option.param',     array($this, 'hook_load_option'));
             $this->register_action('load', array($this, 'load_option'));
             $this->register_action('save', array($this, 'save_option'));
         }
@@ -2865,6 +2866,7 @@ class mel_metapage extends bnum_plugin
     }
 
     public function load_option() {
+        $parameters_default_values = [];
         $load_html = true;
         $option = rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET);
 
@@ -2879,16 +2881,80 @@ class mel_metapage extends bnum_plugin
 
         $html = '';
 
-        if ($load_html) $html = $this->rc->output->parse("mel_metapage.options/$option", false, false);
+        if ($load_html) {
+            $html = $this->rc->output->parse("mel_metapage.options/$option", false, false);
 
-        $plugin = $this->api->exec_hook('metapage.load.option', ['option' => $option, 'html' => $html]);
+            if (preg_match_all('/name="([^"]*?)"/', $html, $matches)) {
+                foreach ($matches[1] as $param) {
+                    $param = str_replace('"', '', $param);
+                    $param = str_replace('name=', '', $param);
+                    $default_value = $this->rc->config->get($param);
+                    $plugin = $this->api->exec_hook('metapage.load.option.param', ['option' => $option, 'param' => $param, 'default' => $default_value]);
+
+                    if (isset($plugin)) {
+                        if (isset($plugin['param'])) $param = $plugin['param'];
+                        if (isset($plugin['default'])) $default_value = $plugin['default'];
+                    }
+
+                    $parameters_default_values[$param] = $default_value;
+                }
+
+                unset($default_value);
+            }
+        }
+
+        $plugin = $this->api->exec_hook('metapage.load.option', ['option' => $option, 'html' => $html, 'default_values' => $parameters_default_values]);
 
         if (isset($plugin)) {
             if (isset($plugin['html'])) $html = $plugin['html'];
+            if (isset($plugin['default_values'])) $parameters_default_values = $plugin['default_values'];
         }
 
-        echo $html;
+        echo json_encode([
+            'settings' => $parameters_default_values,
+            'html' => $html
+        ]);
         exit;
+    }
+
+    public function hook_load_option($args) {
+        $option = $args['option'];
+        $param = $args['param'];
+        $default_value = $args['default'];
+
+        $const_mel_options = ["mel-icon-size", 
+                                "mel-folder-space",
+                                "mel-message-space",
+                                "mel-3-columns",
+                                "mel-chat-placement",
+                                'mel-scrollbar-size'];
+
+        if (in_array($option, $const_mel_options)) {
+            $icon = "mel-icon-size";
+            $folder_space = "mel-folder-space";
+            $message_space = "mel-message-space";
+            $mel_column = "mel-3-columns";
+            $chat_placement = "mel-chat-placement";
+            $scrollbar_size = 'mel-scrollbar-size';
+            
+            $config = $this->rc->config->get('mel_mail_configuration', [
+                $icon => $this->gettext("normal", "mel_metapage"),
+                $folder_space => $this->gettext("normal", "mel_metapage"),
+                $message_space => $this->gettext("normal", "mel_metapage"),
+                $mel_column => $this->gettext("yes", "mel_metapage"),
+                $chat_placement => $this->gettext("down", "mel_metapage"),
+                $scrollbar_size => $this->gettext("default", "mel_metapage")
+            ]);
+
+            if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+            $default_value = $config[$param];
+        }
+
+        $args['param'] = $param;
+        $args['default'] = $default_value;
+
+        return $args;
     }
 
     public function save_option() {

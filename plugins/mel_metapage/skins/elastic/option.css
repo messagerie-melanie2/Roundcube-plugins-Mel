@@ -141,6 +141,15 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
   font-size: 16px;
 }
 
+.barup .options-custom {
+  font-size: 15px;
+}
+
+.barup .options-custom-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
 .bottom-option {
   position: fixed;
   right: 0;
@@ -283,5 +292,13 @@ html.dark-mode .option-menu-button {
 html.dark-mode .option-menu-button:hover {
   background-color: #2E2E2E !important;
   color: #E1C58F !important;
+}
+
+.options-help {
+  cursor: pointer;
+}
+
+.options-help:hover {
+  color: red;
 }
 

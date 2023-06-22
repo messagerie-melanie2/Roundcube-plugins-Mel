@@ -2397,6 +2397,14 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         $(opener).data('aria-expanded', 'true');
         rcmail.menu_stack.push("groupoptions-user");
         rcmail.triggerEvent('toggle-options-user', {show: true});
+
+        mel_metapage.Functions.get(
+          mel_metapage.Functions.url('mel_settings','load'), 
+          {_option: rcmail.env.current_frame_name},
+          (data) => {
+            console.log(data);
+          }
+        )
     }
 
     $goupoptions_user = null;

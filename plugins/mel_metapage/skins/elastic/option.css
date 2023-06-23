@@ -142,7 +142,7 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
 }
 
 .barup .options-custom {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .barup .options-custom-title {
@@ -303,3 +303,93 @@ html.dark-mode .option-menu-button:hover {
   color: var(--mel-tab-text-color);
 }
 
+.options-custom .custom-switch .custom-control-input:checked:disabled ~ .custom-control-label::before {
+  background-color: #cecece;
+}
+
+
+/* Custom radio button */
+.option_radio_wrapper{
+  display: inline-flex;
+  height: 100px;
+  width: 100%;
+  /* align-items: center;
+  justify-content: space-evenly; */
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.option_radio_wrapper .option{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-right: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0 10px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  transition: all 0.3s ease;
+}
+
+.option_radio_wrapper .option img{
+  width: 100%;
+}
+
+.option_radio_wrapper .option:last-child{
+  margin-right: 0;
+}
+
+.option_radio_wrapper input[type="radio"]{
+  display: none;
+}
+/* input[type="radio"][name="mel-message-space"]:checked ~ .option {
+  background: #484D7AC7;
+}
+input[type="radio"][name="mel-message-space"]:checked::before {
+  content: "\e876";
+  color: #fff;
+  font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 48;
+  font-family: 'Material Symbols Outlined';
+  font-size: 36px;
+  position: absolute; */
+/* } */
+
+.option_radio_wrapper .option span{
+  font-size: 20px;
+  color: #808080;
+}
+/* input[type="radio"][name="mel-message-space"]:checked ~ .option span { */
+  /* color: #484D7AC7;
+} */
+
+.option_radio_wrapper .switch-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #484D7AC7;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 5px;
+}
+
+.option_radio_wrapper .switch-overlay::before {
+  content: "\e876";
+  color: #fff;
+  font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 48;
+  font-family: 'Material Symbols Outlined';
+  font-size: 36px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.option_radio_wrapper input[type="radio"]:checked  ~ .option + .switch-overlay {
+  pointer-events: auto;
+  opacity: 1;
+}

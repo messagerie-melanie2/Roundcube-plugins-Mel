@@ -2390,6 +2390,7 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         rcmail.triggerEvent('toggle-options-user', {show: false});
     }
     else {
+      $('.options-custom').css('position', 'relative').css('min-height', '300px').html(window.MEL_ELASTIC_UI.create_loader("options-loader"));
         $goupoptions_user.show();
         $goupoptions_user.data('opener', opener);
         $goupoptions_user.data('aria-hidden', 'false');
@@ -2402,7 +2403,9 @@ function m_mp_ToggleGroupOptionsUser(opener) {
           mel_metapage.Functions.url('mel_settings','load'), 
           {_option: rcmail.env.current_frame_name},
           (data) => {
+            data = JSON.parse(data)
             console.log(data);
+            $('.options-custom').html(data.html);
           }
         )
     }
@@ -2414,10 +2417,25 @@ function m_mp_ToggleGroupOptionsUser(opener) {
 /**
  * Permet de sauvegarder une option rapide
  */
-function save_option(_option) {
+function save_option(_option_name, _option_value, element) {
+
+  const name = $(element).attr('name');
+
+  $(`[name="${name}"]`).attr('disabled', 'disabled')
+  const id = rcmail.set_busy(true, 'loading')
+  
   mel_metapage.Functions.post(
-    mel_metapage.Functions.url('mel_settings','save'), 
-    {_option},
-    (data) => {console.log(data);}
+    mel_metapage.Functions.url('mel_settings', 'save'),
+    { _option_name, _option_value },
+    (data) => {
+      console.log(data);
+      $(`[name="${name}"]`).removeAttr('disabled')
+      rcmail.set_busy(false, 'loading', id)
+      rcmail.display_message("Enregistré avec succès", 'confirmation')
+      let func = $(element).data('function');
+      if (!func) {
+        rcmail.command('refreshFrame')
+      }
+    }
   )
 }

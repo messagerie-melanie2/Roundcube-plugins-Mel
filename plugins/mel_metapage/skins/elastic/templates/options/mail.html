@@ -7,14 +7,15 @@
   </div>
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2">
-        <div class="d-flex justify-content-center align-items-center">
-          Courriel dans une nouvelle fenêtre
-          <span class="material-symbols-outlined options-help ml-2" title="Ouvre les courriel dans une nouvelle fenêtre">
-            help
-          </span>
-        </div>
+      <div class="d-flex justify-content-center align-items-center">
+        Courriel dans une nouvelle fenêtre
+        <span class="material-symbols-outlined options-help ml-2" title="Ouvre les courriel dans une nouvelle fenêtre">
+          help
+        </span>
+      </div>
       <div class="custom-control custom-switch no-click-focus">
-        <input name="message_extwin" id="rcmfd_message_extwin" type="checkbox" onchange="save_option('message_extwin')"
+        <input name="message_extwin" id="rcmfd_message_extwin" type="checkbox" data-function="melelastic.refresh_mail"
+          onchange="save_option('message_extwin', this.checked, this)"
           class="form-check-input custom-control-input no-click-focus">
         <label for="rcmfd_message_extwin" class="custom-control-label option-switch no-click-focus">
         </label>
@@ -23,17 +24,117 @@
   </div>
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2">
-        <div class="d-flex justify-content-center align-items-center">
-          Rédiger dans une nouvelle fenêtre
-          <span class="material-symbols-outlined options-help ml-2" title="Rédige les courriel dans une nouvelle fenêtre">
-            help
-          </span>
-        </div>
+      <div class="d-flex justify-content-center align-items-center">
+        Rédiger dans une nouvelle fenêtre
+      </div>
       <div class="custom-control custom-switch no-click-focus">
-        <input name="rcmfdcompose_extwin" id="rcmfd_rcmfdcompose_extwin" type="checkbox" onchange="save_option('rcmfdcompose_extwin')"
+        <input name="compose_extwin" id="rcmfd_rcmfdcompose_extwin" type="checkbox"
+          data-function="melelastic.refresh_mail" onchange="save_option('compose_extwin', this.checked, this)"
           class="form-check-input custom-control-input no-click-focus">
         <label for="rcmfd_rcmfdcompose_extwin" class="custom-control-label option-switch no-click-focus">
         </label>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-12">
+      <div class="options-custom-title">Espacement des messages</div>
+      <div class="option_radio_wrapper">
+        <div class="col-4 text-center pl-0 pr-2">
+          <input type="radio" name="mel-message-space" id="mel-message-space-larger"
+            onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.larger'), this)">
+          <label for="mel-message-space-larger" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/mails_large.svg" alt="Image espacement mails large">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.larger' />
+        </div>
+        <div class="col-4 text-center px-1">
+          <input type="radio" name="mel-message-space" id="mel-message-space-normal"
+            onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.normal'), this)">
+          <label for="mel-message-space-normal" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/mails_medium.svg" alt="Image espacement mails normal">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.normal' />
+        </div>
+        <div class="col-4 text-center pl-2 pr-0">
+          <input type="radio" name="mel-message-space" id="mel-message-space-smaller"
+            onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.smaller'), this)">
+          <label for="mel-message-space-smaller" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/mails_small.svg" alt="Image espacement mails petit">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.smaller' />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="options-custom-title">Espacement des dossiers</div>
+      <div class="option_radio_wrapper">
+        <div class="col-4 text-center pl-0 pr-2">
+          <input type="radio" name="mel-folder-space" id="mel-folder-space-larger"
+            onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.larger'), this)">
+          <label for="mel-folder-space-larger" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/folder_large.svg" alt="Image espacement dossiers large">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.larger' />
+        </div>
+        <div class="col-4 text-center px-1">
+          <input type="radio" name="mel-folder-space" id="mel-folder-space-normal"
+            onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.normal'), this)">
+          <label for="mel-folder-space-normal" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/folder_medium.svg" alt="Image espacement dossiers normal">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.normal' />
+        </div>
+        <div class="col-4 text-center pl-2 pr-0">
+          <input type="radio" name="mel-folder-space" id="mel-folder-space-smaller"
+            onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.smaller'), this)">
+          <label for="mel-folder-space-smaller" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/folder_small.svg" alt="Image espacement dossiers petit">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.smaller' />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="options-custom-title">Regroupement des dossiers</div>
+      <div class="option_radio_wrapper">
+        <div class="col-4 text-center pl-0 pr-2">
+          <input type="radio" name="mel_mailboxes_display" id="mel_mailboxes_display_default"
+            onclick="save_option('mel_mailboxes_display', 'default', this)">
+          <label for="mel_mailboxes_display_default" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/grouping_default.svg" alt="Image regroupement dossiers par défaut">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.default' />
+        </div>
+        <div class="col-4 text-center px-1">
+          <input type="radio" name="mel_mailboxes_display" id="mel_mailboxes_display_grouped"
+            onclick="save_option('mel_mailboxes_display', 'subfolders', this)">
+          <label for="mel_mailboxes_display_grouped" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/grouping_grouped.svg" alt="Image regroupement dossiers regroupés">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel.subfolders_pref_text' />
+        </div>
+        <div class="col-4 text-center pl-2 pr-0">
+          <input type="radio" name="mel_mailboxes_display" id="mel_mailboxes_display_unified"
+            onclick="save_option('mel_mailboxes_display', 'unified', this)">
+          <label for="mel_mailboxes_display_unified" class="option">
+            <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/grouping_unified.svg" alt="Image regroupement dossiers unifiés">
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel.unified_pref_text' />
+        </div>
       </div>
     </div>
   </div>

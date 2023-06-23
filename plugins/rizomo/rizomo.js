@@ -27,13 +27,15 @@ if (window.rcmail && rcmail.env.task == 'rizomo') {
         window.document.getElementById('rizomo_frame').src = url;
 
         if (rcmail.env.rizomo_user_token) {
-            setTimeout(function() {
-                console.log('Rizomo login-with-token');
-                window.document.getElementById('rizomo_frame').contentWindow.postMessage({
-                    event: 'login-with-token',
-                    token: rcmail.env.rizomo_user_token,
-                }, '*');
-            }, 1000);
+            window.document.getElementById('rizomo_frame').onload = function() {
+                setTimeout(function() {
+                    console.log('Rizomo login-with-token');
+                    window.document.getElementById('rizomo_frame').contentWindow.postMessage({
+                        event: 'login-with-token',
+                        token: rcmail.env.rizomo_user_token,
+                    }, '*');
+                }, 50);
+            };
         }
 
         $("#wait_box").hide();

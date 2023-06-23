@@ -2922,34 +2922,44 @@ class mel_metapage extends bnum_plugin
         $param = $args['param'];
         $default_value = $args['default'];
 
-        $const_mel_options = ["mel-icon-size", 
-                                "mel-folder-space",
-                                "mel-message-space",
-                                "mel-3-columns",
-                                "mel-chat-placement",
-                                'mel-scrollbar-size'];
-
-        if (in_array($option, $const_mel_options)) {
-            $icon = "mel-icon-size";
-            $folder_space = "mel-folder-space";
-            $message_space = "mel-message-space";
-            $mel_column = "mel-3-columns";
-            $chat_placement = "mel-chat-placement";
-            $scrollbar_size = 'mel-scrollbar-size';
+        switch ($variable) {
+            case 'mailboxes_display':
+                $default_value ??= 'default';
+                break;
             
-            $config = $this->rc->config->get('mel_mail_configuration', [
-                $icon => $this->gettext("normal", "mel_metapage"),
-                $folder_space => $this->gettext("normal", "mel_metapage"),
-                $message_space => $this->gettext("normal", "mel_metapage"),
-                $mel_column => $this->gettext("yes", "mel_metapage"),
-                $chat_placement => $this->gettext("down", "mel_metapage"),
-                $scrollbar_size => $this->gettext("default", "mel_metapage")
-            ]);
+            default:
+                $const_mel_options = ["mel-icon-size", 
+                    "mel-folder-space",
+                    "mel-message-space",
+                    "mel-3-columns",
+                    "mel-chat-placement",
+                    'mel-scrollbar-size'];
 
-            if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+                if (in_array($param, $const_mel_options)) {
+                    $icon = "mel-icon-size";
+                    $folder_space = "mel-folder-space";
+                    $message_space = "mel-message-space";
+                    $mel_column = "mel-3-columns";
+                    $chat_placement = "mel-chat-placement";
+                    $scrollbar_size = 'mel-scrollbar-size';
 
-            $default_value = $config[$param];
+                    $config = $this->rc->config->get('mel_mail_configuration', [
+                        $icon => $this->gettext("normal", "mel_metapage"),
+                        $folder_space => $this->gettext("normal", "mel_metapage"),
+                        $message_space => $this->gettext("normal", "mel_metapage"),
+                        $mel_column => $this->gettext("yes", "mel_metapage"),
+                        $chat_placement => $this->gettext("down", "mel_metapage"),
+                        $scrollbar_size => $this->gettext("default", "mel_metapage")
+                    ]);
+
+                    if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+                    $default_value = $config[$param];
+                }
+                break;
         }
+
+
 
         $args['param'] = $param;
         $args['default'] = $default_value;

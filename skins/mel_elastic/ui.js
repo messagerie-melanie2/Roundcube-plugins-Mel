@@ -1674,7 +1674,7 @@ $(document).ready(() => {
             //Si on se trouve au bon endroit.
             if (rcmail.env.task === "mail" && rcmail.env.action === "compose")
             {
-                const key = "bnum_last_fields";
+                const key = "bureau_num_last_fields";
                 //Sauvegarder le champs
                 $("a.input-group-text.icon.add").click(() => {
                     $("#headers-menu ul.menu a.recipient.active").each((i,e) => {

@@ -2922,9 +2922,9 @@ class mel_metapage extends bnum_plugin
         $param = $args['param'];
         $default_value = $args['default'];
 
-        switch ($variable) {
+        switch ($param) {
             case 'mailboxes_display':
-                $default_value ??= 'default';
+                $default_value = $default_value ?? 'default';
                 break;
             
             default:

@@ -1028,3 +1028,8 @@ function refreshListMembers(dn_list) {
   } 
 
 }
+
+$(document).ready(() => {
+  rcmail.set_busy(false);
+  parent.rcmail.set_busy(false);
+});

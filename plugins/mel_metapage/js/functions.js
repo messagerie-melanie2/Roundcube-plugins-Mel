@@ -2404,8 +2404,17 @@ function m_mp_ToggleGroupOptionsUser(opener) {
           {_option: rcmail.env.current_frame_name},
           (data) => {
             data = JSON.parse(data)
-            console.log(data);
             $('.options-custom').html(data.html);
+            for (const [key, value] of Object.entries(data.settings)) {
+              console.log(`${key}: ${value}`);
+              if (value === "true" || value === "false") {
+                $(`[name="${key}"]`).prop('checked', JSON.parse(value))
+              }
+              else {
+                console.log();
+                $(`[name="${key}"][data-value="${value}"]`).prop('checked', true)
+              }
+            }
           }
         )
     }
@@ -2428,7 +2437,6 @@ function save_option(_option_name, _option_value, element) {
     mel_metapage.Functions.url('mel_settings', 'save'),
     { _option_name, _option_value },
     (data) => {
-      console.log(data);
       $(`[name="${name}"]`).removeAttr('disabled')
       rcmail.set_busy(false, 'loading', id)
       rcmail.display_message("Enregistré avec succès", 'confirmation')

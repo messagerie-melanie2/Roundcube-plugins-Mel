@@ -763,7 +763,7 @@ $(document).ready(() => {
             const CLASS_PARENT_DIV = `${CONST_CLASS_COL}-4`; 
             const CLASS_PARENT_HOVER = 'hovered';
             const CUSTOM_THEME_CLASSES = 'input-top-selectable mel-resize-ok half-resize';
-            const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture';
+            const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture px-1';
             const CUSTOM_THEME_CLASSES_PIC = 'half-resize';
             const INPUT_CLASS = 'hidden';
             const INPUT_ACCEPT = ['.png', '.jpg', '.svg', '.gif'].join(',');
@@ -852,7 +852,7 @@ $(document).ready(() => {
                         reader.readAsDataURL(file);
                     });
                     //Bouton qui sert à cliquer sur l'input
-                    var $icon = new mel_html('span', {class:'material-symbols-outlined upload-icon'}, 'upload')
+                    var $icon = new mel_html('span', {class:'material-symbols-outlined color-icon'}, 'upload')
                     var $button = new mel_button({}, $icon.toString());
                     $button.onmouseover.push((e) => {
                         $(e.currentTarget).parent().addClass(CLASS_PARENT_HOVER);

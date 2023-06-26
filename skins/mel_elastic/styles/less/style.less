@@ -369,7 +369,10 @@ ul.treelist{
     }
 
     &.picture-only {
-        background-size: cover!important;
+        // background-size: cover!important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        width: 94%;
 
         &:hover {
             &:extend(#theme-panel .picture:hover);
@@ -4161,7 +4164,7 @@ a.rcmContactAddress {
 
     .picture {
         display: inline-block;
-        width: 94%;
+        width: 92%;
         // height: 121px;
         aspect-ratio: 1.6 / 1;
 
@@ -4267,7 +4270,7 @@ a.rcmContactAddress {
 	color: white;
 
     html.dark-mode &{
-        background-color: #2E2E2EC7;
+        // background-color: #2E2E2EC7;
         color:#E1C58F;
     }
 
@@ -4276,8 +4279,8 @@ a.rcmContactAddress {
     }
 
     .div-custom-picture & {
-        right: 0;
-        width: 50%;
+        right: 3px;
+        width: 47%;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         aspect-ratio: 0.8/1;

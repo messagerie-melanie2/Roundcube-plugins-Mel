@@ -307,7 +307,9 @@ ul.treelist li.droptarget > a {
   border-bottom: solid thin #A3A7BC;
 }
 .mel-selectable.picture-only {
-  background-size: cover!important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  width: 94%;
 }
 html.dark-mode .mel-selectable.picture-only.selected {
   border: none;
@@ -2749,7 +2751,7 @@ html.dark-mode #visio-right-pannel-util {
 .mel-selectable,
 #theme-panel .input-top-selectable {
   display: inline-block;
-  width: 94%;
+  width: 92%;
   aspect-ratio: 1.6 / 1;
   border: solid thin var(--invisible);
   border-radius: 5px;
@@ -2826,15 +2828,14 @@ html.dark-mode .mel-selectable.picture-only.selected {
   color: white;
 }
 html.dark-mode .green-badge {
-  background-color: #2E2E2EC7;
   color: #E1C58F;
 }
 .green-badge span {
   font-size: xx-large;
 }
 .div-custom-picture .green-badge {
-  right: 0;
-  width: 50%;
+  right: 3px;
+  width: 47%;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   aspect-ratio: 0.8/1;

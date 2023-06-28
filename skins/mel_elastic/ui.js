@@ -724,7 +724,8 @@ $(document).ready(() => {
             let $pannelParent = $themePannel.parent();
             let $contents = new mel_html2(CONST_HTML_DIV, {
                 attribs:{
-                    class:CLASS_CONTENTS
+                    class:CLASS_CONTENTS,
+                    tabindex:0
                 }
             });
 
@@ -2766,6 +2767,11 @@ $(document).ready(() => {
                     item.addClass("mel-ui-tab-system");
 
                 let tabs = item.find("button");
+
+                if (0 === tabs.length) {
+                    tabs = item.children();
+                    tabs.attr('tabindex', 0);
+                }
 
                 tabs.keydown( (event) => {
                     const key = event.keyCode;

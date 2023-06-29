@@ -200,10 +200,14 @@ $labels["up"] = "En haut";
 $labels["down"] = "En bas";
 
 $labels["mel-icon-size"] = "Mail - Taille des icônes en tête";
+$labels["mel-icon-size-nomail"] = "Taille des icônes en tête";
 $labels["mel-folder-space"] = "Mail - Espacement des dossiers";
+$labels["mel-folder-space-nomail"] = "Espacement des dossiers";
 $labels["mel-message-space"] = "Mail - Espacement des messages";
+$labels["mel-message-space-nomail"] = "Espacement des messages";
 $labels["mel-chat-placement"] = "Placement de la bulle";
 $labels["mel-calendar-space"] = "Espacement des agendas";
+$labels["mel-folder-grouping"] = "Regroupement des dossiers";
 
 $labels["hide_bubble"] = "Cacher la bulle de discussion";
 $labels["show_bubble"] = "Afficher la bulle de discussion";

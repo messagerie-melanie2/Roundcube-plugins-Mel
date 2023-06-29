@@ -1,14 +1,14 @@
 <div class="container">
   <div class="row mt-4">
     <div class="col-12">
-      <div class="options-custom-title">Ma messagerie Mèl</div>
+      <div class="options-custom-title"><roundcube:label name='mail' /></div>
       <hr>
     </div>
   </div>
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2">
       <div class="d-flex justify-content-center align-items-center">
-        Courriel dans une nouvelle fenêtre
+        <roundcube:label name='showinextwin_short' />
         <span class="material-symbols-outlined options-help ml-2" title="Ouvre les courriel dans une nouvelle fenêtre">
           help
         </span>
@@ -25,7 +25,7 @@
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2">
       <div class="d-flex justify-content-center align-items-center">
-        Rédiger dans une nouvelle fenêtre
+        <roundcube:label name='composeextwin' />
       </div>
       <div class="custom-control custom-switch no-click-focus">
         <input name="compose_extwin" id="rcmfd_rcmfdcompose_extwin" type="checkbox"
@@ -38,7 +38,7 @@
   </div>
   <div class="row mt-3">
     <div class="col-12">
-      <div class="options-custom-title">Espacement des messages</div>
+      <div class="options-custom-title"><roundcube:label name="mel_metapage.mel-message-space-nomail"/></div>
       <div class="option_radio_wrapper">
         <div class="col-4 text-center px-1">
           <input type="radio" name="mel-message-space" id="mel-message-space-larger" data-value="Plus grand"
@@ -72,7 +72,7 @@
   </div>
   <div class="row row-options">
     <div class="col-12">
-      <div class="options-custom-title">Espacement des dossiers</div>
+      <div class="options-custom-title"><roundcube:label name="mel_metapage.mel-folder-space-nomail"/></div>
       <div class="option_radio_wrapper">
         <div class="col-4 text-center px-1">
           <input type="radio" name="mel-folder-space" id="mel-folder-space-larger" data-value="Plus grand"
@@ -106,14 +106,13 @@
   </div>
   <div class="row row-options">
     <div class="col-12">
-      <div class="options-custom-title">Regroupement des dossiers</div>
+      <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-folder-grouping' /></div>
       <div class="option_radio_wrapper">
         <div class="col-4 text-center px-1">
           <input type="radio" name="mailboxes_display" id="mel_mailboxes_display-default" data-value="default"
             onclick="save_option('mailboxes_display', 'default', this)">
           <label for="mel_mailboxes_display-default" class="option">
             <div class="option-image grouping_default"></div>
-            <!-- <img src="./plugins/mel_metapage/skins/elastic/pictures/option_icons/grouping_default.svg" alt="Image regroupement dossiers par défaut"> -->
           </label>
           <div class="switch-overlay"></div>
           <roundcube:label name='mel_metapage.default' />
@@ -141,7 +140,7 @@
   </div>
   <div class="row row-options">
     <div class="col-12">
-      <div class="options-custom-title">Tailles des icônes en-têtes</div>
+      <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-icon-size-nomail' /></div>
       <div class="option_radio_wrapper">
         <div class="col-6 text-center px-1">
           <input type="radio" name="mel-icon-size" id="mel-icon-size-default" data-value="Normal"

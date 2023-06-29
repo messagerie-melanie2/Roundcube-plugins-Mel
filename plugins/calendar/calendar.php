@@ -482,7 +482,7 @@ class calendar extends rcube_plugin
             $field_id    = 'rcmfd_firsthour';
 
             $select_hours = new html_select(['name' => '_first_hour', 'id' => $field_id]);
-            for ($h = 0; $h < 24; $h++) {
+            for ($h = 0; $h < 24; ++$h) {
                 $select_hours->add(date($time_format, mktime($h, 0, 0)), $h);
             }
 

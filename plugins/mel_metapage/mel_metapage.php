@@ -218,6 +218,7 @@ class mel_metapage extends bnum_plugin
             $this->register_task('mel_settings');
             $this->add_hook('metapage.save.option',     array($this, 'hook_save_option'));
             $this->add_hook('metapage.load.option.param',     array($this, 'hook_load_option'));
+            $this->add_hook('metapage.load.option',     array($this, 'hook_generate_option'));
             $this->register_action('load', array($this, 'load_option'));
             $this->register_action('save', array($this, 'save_option'));
         }
@@ -3023,4 +3024,49 @@ class mel_metapage extends bnum_plugin
         return $args;
     }
 
+  public function hook_generate_option($args)
+  {
+    $pattern = '/%%(.*?)%%/';
+
+    preg_match_all($pattern, $args['html'], $matches);
+
+    foreach ($matches[1] as $match) {
+      $name = substr($match, 6, strlen($match) - 7);
+
+      switch ($name) {
+        case 'calendar_work_start':
+          $time_format = $this->rc->config->get('calendar_time_format', null);
+          $time_format = $this->rc->config->get('time_format', libcalendaring::to_php_date_format($time_format));
+          $work_start = $this->rc->config->get('calendar_work_start', 6);
+          $work_end   = $this->rc->config->get('calendar_work_end', 18);
+
+          $select_hours = new html_select(['id' => 'rcmfd_firsthour']);
+          for ($h = 0; $h < 24; ++$h) {
+            $select_hours->add(date($time_format, mktime($h, 0, 0)), $h);
+          }
+          $content = html::div(
+            'input-group',
+            $select_hours->show((int)$work_start, ['name' => 'calendar_work_start', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
+              . html::span('input-group-append input-group-prepend', html::span('input-group-text', ' &mdash; '))
+              . $select_hours->show((int)$work_end, ['name' => 'calendar_work_end', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
+          );
+          $args['html'] = str_replace('%%' . $match . '%%', $content, $args['html']);
+          break;
+        
+        case ('calendar_first_hour'):
+          $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'name' => 'calendar_first_hour','class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_first_hour", this.value, this)']);
+          for ($h = 0; $h < 24; ++$h) {
+            $select_hours->add(date('H:i', mktime($h, 0, 0)), $h);
+          }
+          $args['html'] = str_replace('%%' . $match . '%%', $select_hours->show(), $args['html']);
+          break;
+          
+        default:
+          break;
+
+            
+          }
+        }
+      return $args;
+  }
 }

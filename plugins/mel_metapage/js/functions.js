@@ -2404,15 +2404,33 @@ function m_mp_ToggleGroupOptionsUser(opener) {
           {_option: rcmail.env.current_frame_name},
           (data) => {
             data = JSON.parse(data)
+            console.log(data.settings);
             $('.options-custom').html(data.html);
             for (const [key, value] of Object.entries(data.settings)) {
-              console.log(`${key}: ${value}`);
-              if (value === "true" || value === "false") {
-                $(`[name="${key}"]`).prop('checked', JSON.parse(value))
-              }
-              else {
-                console.log();
-                $(`[name="${key}"][data-value="${value}"]`).prop('checked', true)
+              $input = $(`[name="${key}"]`);
+              switch ($input[0].nodeName) {
+                case "INPUT":
+                  switch ($input.attr('type')) {
+                    case 'checkbox':
+                      $input.prop('checked', JSON.parse(value));
+                      break;
+                    case 'radio':
+                      $input.filter(`[data-value="${value}"]`).prop('checked', true)
+                      break;
+                    case 'text':
+                      $input.val(value)
+                      break;
+                    default:
+                      break;
+                  }
+                  break;
+
+                case "SELECT":
+                  $input.val(value)
+                  break;
+              
+                default:
+                  throw 'error';
               }
             }
           }
@@ -2428,6 +2446,7 @@ function m_mp_ToggleGroupOptionsUser(opener) {
  */
 function save_option(_option_name, _option_value, element) {
 
+  console.log(element);
   const name = $(element).attr('name');
 
   $(`[name="${name}"]`).attr('disabled', 'disabled')

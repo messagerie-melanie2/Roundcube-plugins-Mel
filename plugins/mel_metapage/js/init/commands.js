@@ -2,6 +2,11 @@ if (rcmail)
 {
     (() => { //
 
+        async function load_helper() {
+            const loader = window?.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
+            return (await loader('mel_metapage', 'mel_object.js')).MelObject.Empty();
+        }
+
         function change_frame(frame, args = null) {
             
             let config = {
@@ -438,7 +443,7 @@ if (rcmail)
                 for (const iterator of top.$('iframe.mm-frame')) {
                     var $frame = $(iterator);
 
-                    if (!$frame.hasClass('discussion')) {
+                    if (!$frame.hasClass('discussion-frame')) {
                         $frame = null;
                         if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
                             iterator.contentWindow.MEL_ELASTIC_UI.update_mail_css({key, value});
@@ -448,6 +453,17 @@ if (rcmail)
                     if (!!$frame) $frame = null;
                 }
 
+
+            }, true);
+
+            rcmail.register_command('refresh_extwin', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env.compose_extwin = value;
+
+                let frame_mail = helper.select_frame('mail');
+                if (frame_mail.length > 0) frame_mail[0].contentWindow.rcmail.env.compose_extwin = value;
 
             }, true);
 

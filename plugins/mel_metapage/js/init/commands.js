@@ -430,6 +430,26 @@ if (rcmail)
                 );
             }, true);
 
+            rcmail.register_command('update_mail_css', (args) => {
+                const {key, value} = args;
+
+                MEL_ELASTIC_UI.update_mail_css_async({key, value});
+
+                for (const iterator of top.$('iframe.mm-frame')) {
+                    var $frame = $(iterator);
+
+                    if (!$frame.hasClass('discussion')) {
+                        $frame = null;
+                        if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                            iterator.contentWindow.MEL_ELASTIC_UI.update_mail_css({key, value});
+                        }
+                    }
+
+                    if (!!$frame) $frame = null;
+                }
+
+
+            }, true);
 
             if (rcmail.env.task === 'mail')
             {
@@ -508,20 +528,6 @@ if (rcmail)
                 }, true);
             }
 
-            // rcmail.drag_menu_action = function(action)
-            // {
-            //   var menu = this.gui_objects.dragmenu;
-            //   if (menu) {
-            //     //   if ($(menu).show)
-            //     //     $(menu).show();
-            //     //   else
-            //         $(menu).removeClass("hidden").css("display", "block");
-
-            //   }
-          
-            //   this.command(action, this.env.drag_target);
-            //   this.env.drag_target = null;
-            // };
 
     })(); //
 }

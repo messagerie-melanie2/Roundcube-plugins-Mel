@@ -2456,13 +2456,22 @@ function save_option(_option_name, _option_value, element) {
     mel_metapage.Functions.url('mel_settings', 'save'),
     { _option_name, _option_value },
     (data) => {
-      $(`[name="${name}"]`).removeAttr('disabled')
-      rcmail.set_busy(false, 'loading', id)
-      rcmail.display_message("Enregistré avec succès", 'confirmation')
-      let func = $(element).data('function');
-      if (!func) {
-        rcmail.command('refreshFrame')
-      }
+        const parsed_datas = JSON.parse(data);
+        const is_string = 'string' === typeof parsed_datas
+
+        $(`[name="${name}"]`).removeAttr('disabled')
+
+        rcmail.set_busy(false, 'loading', id)
+        rcmail.display_message("Enregistré avec succès", 'confirmation')
+
+        let func = $(element).data('function');
+        if (func) eval(`${func}({key:'${_option_name}', value:${is_string ? `'${parsed_datas}'` : data}})`);
+        else {
+            func = $(element).data('command');
+
+            if (!!func) rcmail.command(func, {key:_option_name, value:parsed_datas});
+            else rcmail.command('refreshFrame')
+        }
     }
   )
 }

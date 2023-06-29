@@ -1307,8 +1307,6 @@ $(document).ready(() => {
                         </li>
                     `).append($("#melplusmails").css("display", "")))
 
-                    const mailConfig = rcmail.env.mel_metapage_mail_configs;
-
                     let test = new ResizeObserver(() => {
                         let value = 0;
                         {
@@ -1392,117 +1390,7 @@ $(document).ready(() => {
                     test.observe($("#layout-list")[0]);
 
                     
-                    if (mailConfig !== null)
-                    {
-                        let _css = "";
-
-                        //Taille des icÃ´nes
-                        if (mailConfig["mel-icon-size"] !== rcmail.gettext("normal", "mel_metapage"))
-                        {
-                            _css += `
-                            #toolbar-menu li a,
-                            #messagelist-header a.refresh,
-                            #toolbar-list-menu li a {
-                                font-size: 0.9rem;
-                            }
-    
-                            
-                            `;
-                        }
-
-                        //Espacement des dossiers
-                        if (mailConfig["mel-folder-space"] === rcmail.gettext("larger", "mel_metapage"))
-                            _css += `
-                            
-                            #folderlist-content li {
-                                --settings-mail-folder-margin-top: 30px;
-                                --settings-mail-subfolder-margin-top: 5px;
-                                --settings-mail-opened-folder-margin-top: 30px;
-                            }
-                            
-                            `;
-                        else if (mailConfig["mel-folder-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                            _css += `
-                                
-                            #folderlist-content li {
-                                --settings-mail-folder-margin-top: 0px;
-                                --settings-mail-subfolder-margin-top: -5px;
-                            }
-
-                            #folderlist-content .unified li {
-                                --settings-mail-folder-margin-top: 5px;
-                                --settings-mail-subfolder-margin-top: 0px;
-                            }
-
-                            #folderlist-content li.mailbox.boite[aria-expanded="true"]{
-                                --settings-mail-opened-folder-margin-bottom: 20px;
-                                /*--settings-mail-opened-folder-margin-top: 0px;*/
-                            }
-
-                            #folderlist-content .unified li.mailbox.boite[aria-expanded="true"]{
-                                --settings-mail-opened-folder-margin-top: 5px!important;
-                            }
-
-                            #folderlist-content .unified li.mailbox[aria-expanded="true"]{
-                                --settings-mail-folder-margin-bottom: 20px!important;
-                                --settings-mail-folder-margin-top: 5px!important;
-                            }
-
-                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type{
-                                border: none;
-                                margin-top: 0;
-                                padding-top: 0;
-                            }
-
-                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,
-                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
-                                top:0;
-                            }
-
-                            
-
-                            #mailboxlist li ul:first-of-type {
-                                padding-left: 1.5em;
-                            }
-                            
-                            `;
-
-                        //Espacement des messages
-                        if (mailConfig["mel-message-space"] === rcmail.gettext("larger", "mel_metapage"))
-                            _css += `
-                            
-                            #messagelist tr.message td {
-                                padding-top: 1rem;
-                                padding-bottom: 1rem;
-                            }
-                            
-                            `;
-                        else if (mailConfig["mel-message-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                            _css += `
-                                
-                            #messagelist tr.message td {
-                                padding-top: 0;
-                                padding-bottom:0;
-                            }
-
-                            table.messagelist tr.message td.flags span.attachment,
-                            table.messagelist td.subject span.subject {
-                                margin-top: -10px;
-                            }
-                            
-                            `;
-
-
-                        var style=document.createElement('style');
-                        style.type='text/css';
-
-                        if(style.styleSheet){
-                            style.styleSheet.cssText = _css;
-                        }else{
-                            style.appendChild(document.createTextNode(_css));
-                        }
-                        document.getElementsByTagName('head')[0].appendChild(style);
-                    }
+                    this.update_mail_css({});
 
                     //message_extwin @Rotomeca
                     const alias_mel_rcmail_show_message = rcmail.show_message
@@ -2148,6 +2036,136 @@ $(document).ready(() => {
             }
 
             return this;
+        }
+
+        update_mail_css({
+            key = null,
+            value = null
+        }){
+            if (!!key && !!value && !!value[key] && rcmail.env.mel_metapage_mail_configs[key] !== value[key]) {
+                rcmail.env.mel_metapage_mail_configs[key] = value[key];
+            }
+
+            const mailConfig = rcmail.env.mel_metapage_mail_configs;
+
+            if (mailConfig !== null)
+            {
+                let _css = "";
+
+                //Taille des icÃ´nes
+                if (mailConfig["mel-icon-size"] !== rcmail.gettext("normal", "mel_metapage"))
+                {
+                    _css += `
+                    #toolbar-menu li a,
+                    #messagelist-header a.refresh,
+                    #toolbar-list-menu li a {
+                        font-size: 0.9rem;
+                    }
+
+                    
+                    `;
+                }
+
+                //Espacement des dossiers
+                if (mailConfig["mel-folder-space"] === rcmail.gettext("larger", "mel_metapage"))
+                    _css += `
+                    
+                    #folderlist-content li {
+                        --settings-mail-folder-margin-top: 30px;
+                        --settings-mail-subfolder-margin-top: 5px;
+                        --settings-mail-opened-folder-margin-top: 30px;
+                    }
+                    
+                    `;
+                else if (mailConfig["mel-folder-space"] === rcmail.gettext("smaller", "mel_metapage"))
+                    _css += `
+                        
+                    #folderlist-content li {
+                        --settings-mail-folder-margin-top: 0px;
+                        --settings-mail-subfolder-margin-top: -5px;
+                    }
+
+                    #folderlist-content .unified li {
+                        --settings-mail-folder-margin-top: 5px;
+                        --settings-mail-subfolder-margin-top: 0px;
+                    }
+
+                    #folderlist-content li.mailbox.boite[aria-expanded="true"]{
+                        --settings-mail-opened-folder-margin-bottom: 20px;
+                        /*--settings-mail-opened-folder-margin-top: 0px;*/
+                    }
+
+                    #folderlist-content .unified li.mailbox.boite[aria-expanded="true"]{
+                        --settings-mail-opened-folder-margin-top: 5px!important;
+                    }
+
+                    #folderlist-content .unified li.mailbox[aria-expanded="true"]{
+                        --settings-mail-folder-margin-bottom: 20px!important;
+                        --settings-mail-folder-margin-top: 5px!important;
+                    }
+
+                    #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type{
+                        border: none;
+                        margin-top: 0;
+                        padding-top: 0;
+                    }
+
+                    #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,
+                    #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
+                        top:0;
+                    }
+
+                    
+
+                    #mailboxlist li ul:first-of-type {
+                        padding-left: 1.5em;
+                    }
+                    
+                    `;
+
+                //Espacement des messages
+                if (mailConfig["mel-message-space"] === rcmail.gettext("larger", "mel_metapage"))
+                    _css += `
+                    
+                    #messagelist tr.message td {
+                        padding-top: 1rem;
+                        padding-bottom: 1rem;
+                    }
+                    
+                    `;
+                else if (mailConfig["mel-message-space"] === rcmail.gettext("smaller", "mel_metapage"))
+                    _css += `
+                        
+                    #messagelist tr.message td {
+                        padding-top: 0;
+                        padding-bottom:0;
+                    }
+
+                    table.messagelist tr.message td.flags span.attachment,
+                    table.messagelist td.subject span.subject {
+                        margin-top: -10px;
+                    }
+                    
+                    `;
+
+
+                var style=document.createElement('style');
+                style.type='text/css';
+
+                if(style.styleSheet){
+                    style.styleSheet.cssText = _css;
+                }else{
+                    style.appendChild(document.createTextNode(_css));
+                }
+                document.getElementsByTagName('head')[0].appendChild(style);
+            }
+        }
+
+        async update_mail_css_async({
+            key = null,
+            value = null
+        }) {
+            return this.update_mail_css({key, value});
         }
 
         /**

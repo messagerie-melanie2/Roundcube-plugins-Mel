@@ -75,7 +75,7 @@
       <div class="options-custom-title"><roundcube:label name="mel_metapage.mel-folder-space-nomail"/></div>
       <div class="option_radio_wrapper">
         <div class="col-4 text-center px-1">
-          <input type="radio" name="mel-folder-space" id="mel-folder-space-larger" data-value="Plus grand"
+          <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-larger" data-value="Plus grand"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.larger'), this)">
           <label for="mel-folder-space-larger" class="option">
             <div class="option-image folder_large"></div>
@@ -84,7 +84,7 @@
           <roundcube:label name='mel_metapage.larger' />
         </div>
         <div class="col-4 text-center px-1">
-          <input type="radio" name="mel-folder-space" id="mel-folder-space-normal" data-value="Normal"
+          <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-normal" data-value="Normal"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.normal'), this)">
           <label for="mel-folder-space-normal" class="option">
             <div class="option-image folder_medium"></div>
@@ -93,7 +93,7 @@
           <roundcube:label name='mel_metapage.normal' />
         </div>
         <div class="col-4 text-center px-1">
-          <input type="radio" name="mel-folder-space" id="mel-folder-space-smaller" data-value="Plus petit"
+          <input type="radio" data-command="update_mail_css" name="mel-folder-space" id="mel-folder-space-smaller" data-value="Plus petit"
             onclick="save_option('mel-folder-space', rcmail.gettext('mel_metapage.smaller'), this)">
           <label for="mel-folder-space-smaller" class="option">
             <div class="option-image folder_small"></div>

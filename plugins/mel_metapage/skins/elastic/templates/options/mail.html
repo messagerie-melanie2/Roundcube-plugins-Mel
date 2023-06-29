@@ -41,7 +41,7 @@
       <div class="options-custom-title"><roundcube:label name="mel_metapage.mel-message-space-nomail"/></div>
       <div class="option_radio_wrapper">
         <div class="col-4 text-center px-1">
-          <input type="radio" name="mel-message-space" id="mel-message-space-larger" data-value="Plus grand"
+          <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-larger" data-value="Plus grand"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.larger'), this)">
           <label for="mel-message-space-larger" class="option">
             <div class="option-image mails_large"></div>
@@ -50,7 +50,7 @@
           <roundcube:label name='mel_metapage.larger' />
         </div>
         <div class="col-4 text-center px-1">
-          <input type="radio" name="mel-message-space" id="mel-message-space-normal" data-value="Normal"
+          <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-normal" data-value="Normal"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.normal'), this)">
           <label for="mel-message-space-normal" class="option">
             <div class="option-image mails_medium"></div>
@@ -59,7 +59,7 @@
           <roundcube:label name='mel_metapage.normal' />
         </div>
         <div class="col-4 text-center px-1">
-          <input type="radio" name="mel-message-space" id="mel-message-space-smaller" data-value="Plus petit"
+          <input type="radio" data-command="update_mail_css" name="mel-message-space" id="mel-message-space-smaller" data-value="Plus petit"
             onclick="save_option('mel-message-space', rcmail.gettext('mel_metapage.smaller'), this)">
           <label for="mel-message-space-smaller" class="option">
             <div class="option-image mails_small"></div>
@@ -143,7 +143,7 @@
       <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-icon-size-nomail' /></div>
       <div class="option_radio_wrapper">
         <div class="col-6 text-center px-1">
-          <input type="radio" name="mel-icon-size" id="mel-icon-size-default" data-value="Normal"
+          <input type="radio" data-command="update_mail_css" name="mel-icon-size" id="mel-icon-size-default" data-value="Normal"
             onclick="save_option('mel-icon-size', rcmail.gettext('mel_metapage.normal'), this)">
           <label for="mel-icon-size-default" class="option">
             <span class="material-symbols-outlined icon-large color-icon">
@@ -154,7 +154,7 @@
           <roundcube:label name='mel_metapage.normal' />
         </div>
         <div class="col-6 text-center px-1">
-          <input type="radio" name="mel-icon-size" id="mel-icon-size-smaller" data-value="Plus petit"
+          <input type="radio" data-command="update_mail_css" name="mel-icon-size" id="mel-icon-size-smaller" data-value="Plus petit"
             onclick="save_option('mel-icon-size', rcmail.gettext('mel_metapage.smaller'), this)">
           <label for="mel-icon-size-smaller" class="option">
             <span class="material-symbols-outlined icon-small color-icon">

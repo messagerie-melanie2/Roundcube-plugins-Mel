@@ -100,6 +100,10 @@ $(document).ready(() => {
         {
             return Mel_CSS_Rule.component().cssRules.length
         }
+
+        static from_array(rules = []) {
+            return new Mel_CSS_Rule(rules.map(x => x.toString()).join(''));
+        }
     }
 
     /**
@@ -195,6 +199,45 @@ $(document).ready(() => {
         toString()
         {
             return `${this.selector}{${this.rule.join(';\r\n')}}`;
+        }
+
+    }
+
+    class Mel_CSS_Array_Rule extends Mel_CSS_Rule {
+        constructor(rules) {
+            super(rules);
+
+            this.ids = [];
+            this.styleRule = {};
+        }
+
+        set() {
+            for (let index = 0, len = this.rule.length, id; index < len; ++index) {
+                const element = this.rule[index];
+                id = Mel_CSS_Rule.component().insertRule(element.toString(), Mel_CSS_Rule.lastIndex());
+                this.ids.push(id);
+                this.styleRule[id] = Mel_CSS_Rule.component().cssRules[id];
+            }
+            return this;
+        }
+
+        rule_id(id) {
+            return Enumerable.from(Mel_CSS_Rule.component().cssRules).select((x, i) => [x, i]).where(x => x[0] === this.styleRule[id]).firstOrDefault()[1];
+        } 
+
+        delete()
+        {
+            for (const iterator of this.ids) {
+                Mel_CSS_Rule.component().deleteRule(this.rule_id(iterator));
+            }
+            this.ids.length = 0;
+            this.styleRule = null;
+            return this;
+        }
+
+        toString()
+        {
+            return this.rule.map(x => x.toString()).join(';\r\n');
         }
     }
 
@@ -2043,122 +2086,119 @@ $(document).ready(() => {
             key = null,
             value = null
         }){
+
             if (!!key && !!value && !!value[key] && rcmail.env.mel_metapage_mail_configs[key] !== value[key]) {
                 rcmail.env.mel_metapage_mail_configs[key] = value[key];
             }
+
+            if (rcmail.env.task !== 'mail') return;
 
             const mailConfig = rcmail.env.mel_metapage_mail_configs;
 
             if (mailConfig !== null)
             {
-                let _css = "";
+                let _css = [];
 
+                const mel_icon_size = 'mel-icon-size';
+                if (this.css_rules.ruleExist(mel_icon_size)) this.css_rules.remove(mel_icon_size);
+                
                 //Taille des icÃ´nes
-                if (mailConfig["mel-icon-size"] !== rcmail.gettext("normal", "mel_metapage"))
+                if (mailConfig[mel_icon_size] !== rcmail.gettext("normal", "mel_metapage"))
                 {
-                    _css += `
-                    #toolbar-menu li a,
-                    #messagelist-header a.refresh,
-                    #toolbar-list-menu li a {
-                        font-size: 0.9rem;
-                    }
-
-                    
-                    `;
+                    this.css_rules.addAdvanced(mel_icon_size, '#toolbar-menu li a,#messagelist-header a.refresh,#toolbar-list-menu li a', 'font-size: 0.9rem;');
                 }
 
+                const mel_folder_space = 'mel-folder-space';
+                if (this.css_rules.ruleExist(mel_folder_space)) this.css_rules.remove(mel_folder_space);
+                
                 //Espacement des dossiers
-                if (mailConfig["mel-folder-space"] === rcmail.gettext("larger", "mel_metapage"))
-                    _css += `
+                if (mailConfig[mel_folder_space] === rcmail.gettext("larger", "mel_metapage"))
+                    this.css_rules.addAdvanced(mel_folder_space, '#folderlist-content li',
+                        '--settings-mail-folder-margin-top: 30px;',
+                        '--settings-mail-subfolder-margin-top: 5px;',
+                        ' --settings-mail-opened-folder-margin-top: 30px;'
+                    )
+
+                else if (mailConfig[mel_folder_space] === rcmail.gettext("smaller", "mel_metapage"))
+                {
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content li', 
+                        '--settings-mail-folder-margin-top: 0px;',
+                        '--settings-mail-subfolder-margin-top: -5px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li', 
+                        '--settings-mail-folder-margin-top: 0px;',
+                        '--settings-mail-subfolder-margin-top: -5px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content li.mailbox.boite[aria-expanded="true"]', 
+                        '--settings-mail-opened-folder-margin-bottom: 20px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li.mailbox.boite[aria-expanded="true"]', 
+                        '--settings-mail-opened-folder-margin-top: 5px!important;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li.mailbox[aria-expanded="true"]', 
+                        '--settings-mail-folder-margin-bottom: 20px!important;',
+                        '--settings-mail-folder-margin-top: 5px!important;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type', 
+                        'border: none;',
+                        'margin-top: 0;',
+                        'padding-top: 0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount', 
+                        'top:0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#mailboxlist li ul:first-of-type', 
+                        'padding-left: 1.5em;'
+                    ));
+
+                    const rule = new Mel_CSS_Array_Rule(_css);
+
+                    this.css_rules._add(mel_folder_space, rule);
+                    _css = [];
+                }
                     
-                    #folderlist-content li {
-                        --settings-mail-folder-margin-top: 30px;
-                        --settings-mail-subfolder-margin-top: 5px;
-                        --settings-mail-opened-folder-margin-top: 30px;
-                    }
-                    
-                    `;
-                else if (mailConfig["mel-folder-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                    _css += `
-                        
-                    #folderlist-content li {
-                        --settings-mail-folder-margin-top: 0px;
-                        --settings-mail-subfolder-margin-top: -5px;
-                    }
-
-                    #folderlist-content .unified li {
-                        --settings-mail-folder-margin-top: 5px;
-                        --settings-mail-subfolder-margin-top: 0px;
-                    }
-
-                    #folderlist-content li.mailbox.boite[aria-expanded="true"]{
-                        --settings-mail-opened-folder-margin-bottom: 20px;
-                        /*--settings-mail-opened-folder-margin-top: 0px;*/
-                    }
-
-                    #folderlist-content .unified li.mailbox.boite[aria-expanded="true"]{
-                        --settings-mail-opened-folder-margin-top: 5px!important;
-                    }
-
-                    #folderlist-content .unified li.mailbox[aria-expanded="true"]{
-                        --settings-mail-folder-margin-bottom: 20px!important;
-                        --settings-mail-folder-margin-top: 5px!important;
-                    }
-
-                    #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type{
-                        border: none;
-                        margin-top: 0;
-                        padding-top: 0;
-                    }
-
-                    #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,
-                    #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
-                        top:0;
-                    }
-
-                    
-
-                    #mailboxlist li ul:first-of-type {
-                        padding-left: 1.5em;
-                    }
-                    
-                    `;
+                const mel_message_space = 'mel-message-space';
+                if (this.css_rules.ruleExist(mel_message_space)) this.css_rules.remove(mel_message_space);
 
                 //Espacement des messages
-                if (mailConfig["mel-message-space"] === rcmail.gettext("larger", "mel_metapage"))
-                    _css += `
-                    
-                    #messagelist tr.message td {
-                        padding-top: 1rem;
-                        padding-bottom: 1rem;
-                    }
-                    
-                    `;
-                else if (mailConfig["mel-message-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                    _css += `
-                        
-                    #messagelist tr.message td {
-                        padding-top: 0;
-                        padding-bottom:0;
-                    }
+                if (mailConfig[mel_message_space] === rcmail.gettext("larger", "mel_metapage"))
+                    this.css_rules.addAdvanced(mel_message_space, '#messagelist tr.message td', 'padding-top: 1rem;', 'padding-bottom: 1rem;');
+                else if (mailConfig[mel_message_space] === rcmail.gettext("smaller", "mel_metapage"))
+                {
+                    _css.push(new Mel_CSS_Advanced_Rule('#messagelist tr.message td', 
+                        'padding-top: 0;',
+                        'padding-bottom:0;'
+                    ));
 
-                    table.messagelist tr.message td.flags span.attachment,
-                    table.messagelist td.subject span.subject {
-                        margin-top: -10px;
-                    }
-                    
-                    `;
+                    _css.push(new Mel_CSS_Advanced_Rule('table.messagelist tr.message td.flags span.attachment,table.messagelist td.subject span.subject', 
+                        'margin-top: -10px;'
+                    ));
 
+                    const rule = new Mel_CSS_Array_Rule(_css);
 
-                var style=document.createElement('style');
-                style.type='text/css';
+                    this.css_rules._add(mel_message_space, rule);
 
-                if(style.styleSheet){
-                    style.styleSheet.cssText = _css;
-                }else{
-                    style.appendChild(document.createTextNode(_css));
+                    _css = [];
                 }
-                document.getElementsByTagName('head')[0].appendChild(style);
+
+
+
+                // var style=document.createElement('style');
+                // style.type='text/css';
+
+                // if(style.styleSheet){
+                //     style.styleSheet.cssText = _css;
+                // }else{
+                //     style.appendChild(document.createTextNode(_css));
+                // }
+                // document.getElementsByTagName('head')[0].appendChild(style);
             }
         }
 

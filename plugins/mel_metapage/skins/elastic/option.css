@@ -478,12 +478,35 @@ html.dark-mode .grouping_grouped {
   background-image: url('./pictures/option_icons/dark/grouping_grouped_dark.svg');
 }
 
-
 .grouping_unified { 
   background-image: url('./pictures/option_icons/grouping_unified.svg');
 }
 
 html.dark-mode .grouping_unified {
   background-image: url('./pictures/option_icons/dark/grouping_unified_dark.svg');
+}
+
+.scrollbar_default { 
+  background-image: url('./pictures/option_icons/scrollbar_default.svg');
+}
+
+html.dark-mode .scrollbar_default {
+  background-image: url('./pictures/option_icons/dark/scrollbar_default_dark.svg');
+}
+
+.scrollbar_normal { 
+  background-image: url('./pictures/option_icons/scrollbar_normal.svg');
+}
+
+html.dark-mode .scrollbar_normal {
+  background-image: url('./pictures/option_icons/dark/scrollbar_normal_dark.svg');
+}
+
+.scrollbar_large { 
+  background-image: url('./pictures/option_icons/scrollbar_large.svg');
+}
+
+html.dark-mode .scrollbar_large {
+  background-image: url('./pictures/option_icons/dark/scrollbar_large_dark.svg');
 }
 

@@ -430,18 +430,18 @@ function m_mp_step3_param(type)
                     <option value="default">Un kanban ayant le nom de l'espace sera créé</option>
                     <option value="custom_name">Choisissez le nom du nouveau kanban</option>
                     <option value="already_exist">Lié à un kanban éxistant</option>
-                </select> `);
+                </select> `).attr('title', 'Choisir la méthode de création du kanban');
 
                 if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);
 
                 let $custom_name_div = $(`
                     <div style=margin-top:15px>
-                        <h3 class="span-mel t2 first">Nom personalisé du nouveau kanban</h3>
+                        <h3 id="kanban-custom-name" class="span-mel t2 first">Nom personalisé du nouveau kanban</h3>
                     </div>
                 `).css('display', 'none');
 
                 let $custom_name_input = $(`
-                    <input class="form-control input-mel" value="${default_custom_value || wsp_title}" placeholder="Nom du kanban" maxlength=30 /> 
+                    <input aria-labelledby="kanban-custom-name" class="form-control input-mel" value="${default_custom_value || wsp_title}" placeholder="Nom du kanban" maxlength=30 /> 
                 `).on('input', () => {
                     m_mp_step3_param.datas[type].value = $custom_name_input.val();
                 }).appendTo($custom_name_div);
@@ -453,7 +453,7 @@ function m_mp_step3_param(type)
                 `).css('display', 'none');
 
                 let $linked_kanban_select = $(`
-                    <select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
+                    <select title="Lié à un kanban éxistant - Choisir un kanban parmis la liste" class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
                 `).on('change', () => {
                     m_mp_step3_param.datas[type].value = $linked_kanban_select.val();
                 }).appendTo($linked_kanban_div);

@@ -1,4 +1,4 @@
-import { isArrayLike } from "../mel";
+import { isArrayLike } from "../mel.js";
 
 export {RotomecaEnumerable as MelEnumerable, RotomecaKeyValuePair as MelKeyValuePair};
 class RotomecaKeyValuePair {
@@ -160,9 +160,15 @@ class RotomecaGenerator
     }
 
     *next() {
-        for (const iterator of this.iterable) {
+        let iterable;
+
+        if ('function' === typeof this.iterable && !!this.iterable.prototype.next) iterable = this.iterable();
+        else iterable = this.iterable;
+
+        for (const iterator of iterable) {
             yield iterator;
         }
+        
     }
 
     count() {
@@ -174,6 +180,10 @@ class RotomecaGenerator
         }
 
         return this.length;
+    }
+
+    join(separator = '') {
+        return this.toArray().join(separator);
     }
 
     toArray()
@@ -431,7 +441,13 @@ class RotomecaAggegateGenerator extends ARotomecaItemModifierGenerator
                 yield iterator;
             }
         }
+        else if ('function' === typeof this.item && !!this.item.prototype.next) {
+            for (const iterator of this.item()) {
+                yield iterator;
+            }
+        }
         else yield this.item;
+        
     }
 }
 
@@ -917,6 +933,15 @@ class RotomecaEnumerable
     }
 
     /**
+     * Change l'énumération en chaîne de charactères
+     * @param {string} separator 
+     * @returns {string}
+     */
+    join(separator = '') {
+        return this.generator().join(separator);
+    }
+
+    /**
      * Transforme en tableau
      * @returns {*[]}
      */
@@ -949,6 +974,7 @@ class RotomecaEnumerable
             return this.from(new ObjectKeyEnumerable(item));
         } 
         else if (is_array_like) return new RotomecaEnumerable(new RotomecaGenerator(Array.from(item)));
+        else if ('function' === typeof item && !!item.prototype.next) return new RotomecaEnumerable(new RotomecaGenerator(item));
         else return new RotomecaEnumerable(new RotomecaGenerator([item]));
     }
 
@@ -969,7 +995,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator());
+        return RotomecaEnumerable.from(generator);
     }
 
     /**
@@ -990,7 +1016,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator());
+        return RotomecaEnumerable.from(generator);
     }
 
     /**
@@ -1020,7 +1046,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator());
+        return RotomecaEnumerable.from(generator);
     }
 
     /**
@@ -1065,7 +1091,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator());
+        return RotomecaEnumerable.from(generator);
     }
 
     /**

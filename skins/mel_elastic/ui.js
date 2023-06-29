@@ -724,7 +724,8 @@ $(document).ready(() => {
             let $pannelParent = $themePannel.parent();
             let $contents = new mel_html2(CONST_HTML_DIV, {
                 attribs:{
-                    class:CLASS_CONTENTS
+                    class:CLASS_CONTENTS,
+                    tabindex:0
                 }
             });
 
@@ -1562,7 +1563,7 @@ $(document).ready(() => {
             //Si on se trouve au bon endroit.
             if (rcmail.env.task === "mail" && rcmail.env.action === "compose")
             {
-                const key = "bnum_last_fields";
+                const key = "bureau_num_last_fields";
                 //Sauvegarder le champs
                 $("a.input-group-text.icon.add").click(() => {
                     $("#headers-menu ul.menu a.recipient.active").each((i,e) => {
@@ -2784,6 +2785,11 @@ $(document).ready(() => {
                     item.addClass("mel-ui-tab-system");
 
                 let tabs = item.find("button");
+
+                if (0 === tabs.length) {
+                    tabs = item.children();
+                    tabs.attr('tabindex', 0);
+                }
 
                 tabs.keydown( (event) => {
                     const key = event.keyCode;

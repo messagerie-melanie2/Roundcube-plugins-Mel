@@ -199,6 +199,7 @@ class mel_metapage extends bnum_plugin
             return;
         }
 
+        $this->add_hook('logout_after', array($this, 'logout_after'));
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
@@ -3069,4 +3070,18 @@ class mel_metapage extends bnum_plugin
         }
       return $args;
   }
+    public function logout_after($args) {
+
+        foreach ($_COOKIE as $key => $value) {
+            if (strpos($key, 'id') !== false || strpos($key, 'ses') !== false || strpos($key, 'login') !== false) 
+            {
+                unset($_COOKIE[$key]); 
+                setcookie($key, '', -1, '/');
+            }
+        }
+
+        session_destroy();
+        return $args;
+    }
+
 }

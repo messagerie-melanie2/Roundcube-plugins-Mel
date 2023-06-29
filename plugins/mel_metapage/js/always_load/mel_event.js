@@ -101,4 +101,9 @@ class MelEvent {
 
         await Promise.allSettled(asyncs);
     }
+
+    clear() {
+        this.events = {};
+        this._count = 0;
+    }
 }

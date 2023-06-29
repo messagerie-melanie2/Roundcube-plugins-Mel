@@ -293,6 +293,9 @@ export class Sticker
                 rcmail.clear_messages();
                 rcmail.display_message(rcmail.gettext('note_created_success', plugin_text), "confirmation");
             }
+            else {
+                Sticker.helper.rcmail().display_message('Note sauvegardée avec succès !', 'confirmation');
+            }
         });
         
         let $down = $element.find('.downb');
@@ -545,6 +548,8 @@ export class Sticker
                     }
 
                     Sticker.helper.trigger_event('notes.apps.updated', rcmail.env.mel_metapages_notes)
+
+                    if (action !== 'get' && action !== 'add') Sticker.helper.rcmail().display_message('Note sauvegardée avec succès !', 'confirmation');
                 }
                 else {
                     rcmail.env.mel_metapages_notes[this.uid.replace('pin-', '')].text = this.text;   

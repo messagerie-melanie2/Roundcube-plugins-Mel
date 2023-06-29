@@ -38,13 +38,7 @@ class RizomoClient {
    *
    * @var string
    */
-  private $_user_agent = "Rizomo Client";
-  /**
-   * Vérification peer SSL
-   *
-   * @var boolean
-   */
-  private $_ssl_verify_peer = true;
+  private $_user_agent;
   
   /**
    * API user create
@@ -61,22 +55,14 @@ class RizomoClient {
   
   /**
    * Constructeur par défaut
-   *
-   * @param rcmail $rc
-   *          Instance rcmail
-   * @param string $rizomoUrl
-   *          URL vers l'instance Rizomo
    */
-  public function __construct($rc = null, $rizomoUrl = null) {
+  public function __construct() {
     if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RizomoClient::__construct($rizomoUrl)");
+      mel_logs::get_instance()->log(mel_logs::TRACE, "RizomoClient::__construct()");
 
-    if (isset($rc)) {
-      $this->rc = $rc;
-      $this->_api_url = $this->rc->config->get('rizomo_url_api');
-      $this->_user_agent = $this->rc->config->get('curl_user_agent');
-      $this->_ssl_verify_peer = $this->rc->config->get('curl_ssl_verifierpeer');
-    }
+    $this->rc = rcmail::get_instance();
+    $this->_api_url = $this->rc->config->get('rizomo_api_url');
+    $this->_user_agent = $this->rc->config->get('curl_rizomo_user_agent', "Rizomo Client");
   }
   
   /**
@@ -86,6 +72,7 @@ class RizomoClient {
    * @param string $email
    * @param string $password
    * @param string $name
+   * 
    * @return boolean
    */
   public function createUser($username, $email, $firstname, $lastname) {
@@ -121,7 +108,7 @@ class RizomoClient {
    *
    * @param string $email
    * 
-   * @return boolean
+   * @return boolean|string false si erreur, token sinon
    */
   public function createUserToken($email) {
     mel_logs::get_instance()->log(mel_logs::INFO, "RizomoClient::createUserToken($email)");
@@ -139,13 +126,17 @@ class RizomoClient {
     if (isset($result['httpCode']) 
         && $result['httpCode'] == 200) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "RizomoClient::createUserToken() result: " . var_export($result, true));
-      return true;
+      $json = json_decode($result['content'], true);
+      if ($json
+          && isset($json['response']['token'])) {
+        return $json['response']['token'];
+      }
     }
     else {
       // Si c'est false on peut considérer que l'utilisateur n'existe pas et donc qu'il faut le créer
       mel_logs::get_instance()->log(mel_logs::ERROR, "RizomoClient::createUserToken() Error result: " . var_export($result, true));
-      return false;
     }
+    return false;
   }
 
   /**
@@ -169,8 +160,22 @@ class RizomoClient {
         CURLOPT_USERAGENT => $this->_user_agent, // name of client
         CURLOPT_CONNECTTIMEOUT => 120, // time-out on connect
         CURLOPT_TIMEOUT => 120, // time-out on response
-        CURLOPT_SSL_VERIFYPEER => $this->_ssl_verify_peer
+        CURLOPT_SSL_VERIFYPEER  => $this->rc->config->get('curl_rizomo_ssl_verifierpeer', 0),
+        CURLOPT_SSL_VERIFYHOST  => $this->rc->config->get('curl_rizomo_ssl_verifierhost', 0),
     );
+
+    // CA File
+    $curl_cafile = $this->rc->config->get('curl_rizomo_cainfo', null);
+    if (isset($curl_cafile)) {
+      $options[CURLOPT_CAINFO] = $curl_cafile;
+      $options[CURLOPT_CAPATH] = $curl_cafile;
+    }
+
+    // HTTP Proxy
+    $curl_proxy = $this->rc->config->get('curl_rizomo_http_proxy', null);
+    if (isset($curl_proxy)) {
+      $options[CURLOPT_PROXY] = $curl_proxy;
+    }
 
     if (isset($headers)) {
       $options[CURLOPT_HTTPHEADER] = $headers;
@@ -234,7 +239,8 @@ class RizomoClient {
         CURLOPT_USERAGENT => $this->_user_agent, // name of client
         CURLOPT_CONNECTTIMEOUT => 120, // time-out on connect
         CURLOPT_TIMEOUT => 120, // time-out on response
-        CURLOPT_SSL_VERIFYPEER => $this->_ssl_verify_peer,
+        CURLOPT_SSL_VERIFYPEER  => $this->rc->config->get('curl_rizomo_ssl_verifierpeer', 0),
+        CURLOPT_SSL_VERIFYHOST  => $this->rc->config->get('curl_rizomo_ssl_verifierhost', 0),
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => $data_string,
         CURLOPT_HTTPHEADER => array(
@@ -242,6 +248,19 @@ class RizomoClient {
             'Content-Length: ' . strlen($data_string)
         )
     );
+
+    // CA File
+    $curl_cafile = $this->rc->config->get('curl_rizomo_cainfo', null);
+    if (isset($curl_cafile)) {
+      $options[CURLOPT_CAINFO] = $curl_cafile;
+      $options[CURLOPT_CAPATH] = $curl_cafile;
+    }
+
+    // HTTP Proxy
+    $curl_proxy = $this->rc->config->get('curl_rizomo_http_proxy', null);
+    if (isset($curl_proxy)) {
+      $options[CURLOPT_PROXY] = $curl_proxy;
+    }
 
     if (isset($headers)) {
       $options[CURLOPT_HTTPHEADER] = array_merge($options[CURLOPT_HTTPHEADER], $headers);

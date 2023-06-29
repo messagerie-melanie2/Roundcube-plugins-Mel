@@ -1513,6 +1513,8 @@ $(document).ready(() => {
                 $edit_alarms.removeClass('have-options');
             }
             else $edit_alarms.addClass('have-options');
+
+            $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte");
         }
 
         const format = "DD/MM/YYYY HH:mm";
@@ -1698,7 +1700,9 @@ $(document).ready(() => {
             });
             //Update visu
             $("#edit-recurrence-frequency").addClass("input-mel");
-            $("#edit-alarm-item").addClass("input-mel").on('change', () => onAlertChange());
+            $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte").addClass("input-mel").on('change', () => onAlertChange());
+            $(".edit-alarm-value").attr('title', "Alerte - Nombre de l'alerte");
+            $(".edit-alarm-offset").attr('title', "Alerte - Elle doit se déclencher quand ?");
             $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
@@ -2012,6 +2016,7 @@ $(document).ready(() => {
 
     window.rcube_calendar_ui._init_location = async function($haveWorkspace, $workspaceSelect, update_location, baseId = 0, _default = null)
     {
+        const VISIO_SELECT_TITLE = 'Par visioconférence';  
         const mainDivId = `em-locations-base-id-${baseId}`;
 
         if ($(`#${mainDivId}`).length > 0) return await rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
@@ -2072,7 +2077,7 @@ $(document).ready(() => {
                 </div>
             </div>
         </div>`).appendTo($rightCol);
-        let $visioSelect = $('<select class="form-control input-mel"></select>').appendTo($visioDiv.find('.vselect'));
+        let $visioSelect = $('<select class="form-control input-mel" title="Par visioconférence - "></select>').appendTo($visioDiv.find('.vselect'));
         let $visioButton = $('<button type="button" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover btn btn-secondary"><span class="icofont-refresh"></span></button>').click(() => {
             $visioWebconfInput.val(mel_metapage.Functions.generateWebconfRoomName());
         }).appendTo($visioDiv.find('.vinput .vintegrated .vbutton'));
@@ -2159,7 +2164,7 @@ $(document).ready(() => {
         <input type="text" id="presential-cal-location-${mainDivId}" class="form-control input-mel" placeholder="Nom du lieu" /></div>`).appendTo($rightCol);
         
         let $divSelect = $('<div class="input-group">  <div class="input-group-prepend"></div></div>').appendTo($leftCol);
-        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
+        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').attr('title', "Mode d'évènement - Type de localisation").appendTo($divSelect);
 
         new mel_html2('div', {attribs:{class:'vabutton input-group-append'}, contents:visioButtonLock}).create($visioDiv.find('.vinput .vintegrated .viinput'));
 
@@ -2192,7 +2197,11 @@ $(document).ready(() => {
         for (const key in visioTypeOptions) {
             if (Object.hasOwnProperty.call(visioTypeOptions, key)) {
                 const element = visioTypeOptions[key];
-                $visioSelect.append(`<option value=${key.replace('_selected', '')} ${(key.includes('_selected') ? 'selected' : '')}>${element}</option>`)
+                const selected = key.includes('_selected');
+                const true_key = selected ? key.replace('_selected', '') : key;
+                $visioSelect.append(`<option value=${true_key} ${(selected ? 'selected' : '')}>${element}</option>`)
+
+                if (selected) $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${element}`);
             }
         }
 
@@ -2209,6 +2218,8 @@ $(document).ready(() => {
                             break;
 
                         case 'visio':
+                            //visioTypeOptions
+                            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[element.type] ?? visioTypeOptions[`${value}_selected`])}`);
                             switch (element.type) {
                                 case 'integrated':
                                     $visioSelect.val('intregrated');
@@ -2327,10 +2338,13 @@ $(document).ready(() => {
         });
 
         $visioSelect.on('change', (e) => {
+            const value = $(e.currentTarget).val();
             let $integrated = $visioDiv.find('.vinput .vintegrated').css('display', 'none');
             let $custom = $visioDiv.find('.vinput .vcustom').css('display', 'none');
 
-            switch ($(e.currentTarget).val()) {
+            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[value] ?? visioTypeOptions[`${value}_selected`])}`);
+
+            switch (value) {
                 case 'intregrated':
                     $integrated.css('display', '');
                     break;

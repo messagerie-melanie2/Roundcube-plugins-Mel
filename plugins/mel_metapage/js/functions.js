@@ -2404,7 +2404,6 @@ function m_mp_ToggleGroupOptionsUser(opener) {
           {_option: rcmail.env.current_frame_name},
           (data) => {
             data = JSON.parse(data)
-            console.log(data.settings);
             $('.options-custom').html(data.html);
             for (const [key, value] of Object.entries(data.settings)) {
               $input = $(`[name="${key}"]`);
@@ -2445,8 +2444,6 @@ function m_mp_ToggleGroupOptionsUser(opener) {
  * Permet de sauvegarder une option rapide
  */
 function save_option(_option_name, _option_value, element) {
-
-  console.log(element);
   const name = $(element).attr('name');
 
   $(`[name="${name}"]`).attr('disabled', 'disabled')

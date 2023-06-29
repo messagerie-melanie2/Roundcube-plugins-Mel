@@ -687,7 +687,8 @@ html body.task-mail #layout > div > .footer.small {
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
-  font-size: 26px !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.prev::before {
   content: "\e5c4" !important;

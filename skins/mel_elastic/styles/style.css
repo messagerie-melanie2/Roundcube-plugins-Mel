@@ -2085,6 +2085,7 @@ a.roadmap::before {
 }
 .menu a.move::before {
   content: "\e2c8" !important;
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -2108,6 +2109,7 @@ a.roadmap::before {
   font-weight: normal!important;
 }
 html .menu a.selection::before {
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -2117,6 +2119,7 @@ html .menu a.selection::before {
 }
 .menu a.select.page::before {
   content: "\e5d2" !important;
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -2126,6 +2129,7 @@ html .menu a.selection::before {
 .menu a.unread::before,
 .menu a.expand.unread::before,
 .menu a.select.unread::before {
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -2135,6 +2139,7 @@ html .menu a.selection::before {
 }
 .menu a.flag::before,
 .menu a.select.flagged::before {
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -2144,6 +2149,7 @@ html .menu a.selection::before {
 }
 /***/
 .menu a.select.invert::before {
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -2154,6 +2160,7 @@ html .menu a.selection::before {
 }
 .menu a.select.none::before {
   content: "\e5c9" !important;
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;
@@ -2546,6 +2553,7 @@ html.layout-small .hide-on-small {
   display: none;
 }
 .menu a.ct-cm::before {
+  font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-variation-settings: 'wght' 300, 'opsz' 48 !important;

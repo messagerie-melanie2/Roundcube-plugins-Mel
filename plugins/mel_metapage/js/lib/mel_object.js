@@ -235,6 +235,20 @@ class MelObject {
     }
 
     /**
+     * Selectionne toutes les frames qui ne sont pas parmis les frames définie en arguments
+     * @param  {...any} frames Frames à écarter
+     * @returns {Generator}
+     */
+    * select_frame_except(...frames) {
+        const $ = (top ?? parent ?? window).$;
+
+        for (const frame of $('iframe.mm-frame')) {
+
+            if (!frames.find(x => frame.classList.contains(`${x}-frame`))) yield frame;
+        }
+    }
+
+    /**
      * Récupère une url à partir d'une tâche et d'une action
      * @param {string} task Nom de la tâche
      * @param {{action:string, params:Object|null}} param1 action => Nom de l'action ('index' si non renseigné), params => Autres paramètres
@@ -430,10 +444,10 @@ class MelObject {
     }
 
     /**
- * Renvoie vrai si la variable vaut `null` ou `undefined`.
- * @param {*} item Variable à tester
- * @returns {boolean}
- */
+     * Renvoie vrai si la variable vaut `null` ou `undefined`.
+     * @param {*} item Variable à tester
+     * @returns {boolean}
+     */
     isNullOrUndefined(item) {
         return isNullOrUndefined(item);
     }

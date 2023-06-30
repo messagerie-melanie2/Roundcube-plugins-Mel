@@ -2457,6 +2457,8 @@ function save_option(_option_name, _option_value, element) {
         const parsed_datas = JSON.parse(data);
         const is_string = 'string' === typeof parsed_datas
 
+        console.log('datas', parsed_datas, is_string);
+
         $(`[name="${name}"]`).removeAttr('disabled')
 
         rcmail.set_busy(false, 'loading', id)

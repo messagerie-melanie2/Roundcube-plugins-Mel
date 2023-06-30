@@ -1,0 +1,102 @@
+//compress:true
+:root{
+    --title-size: 40px;
+
+    html.lg-text&{
+        //--title-size: 40px;
+        --header-size: 2rem;
+        --sub-title-size: 1.4rem;
+        --message-from-size: 100%;
+        --message-subject-size: 90%;
+        --body-size: 1rem;
+        --secondary-text: 0.875rem;
+        --secondary-text-min: 0.8rem;
+        --terciary-text: 0.75rem;
+    }
+
+    html.sm-text&{
+        //--title-size: 40px;
+        --header-size: 24px;
+        --sub-title-size: 18px;
+        --h4-size:16px;
+        --body-size: 12px;
+        --message-subject-size: var(--body-size);
+        --secondary-text: 10px;
+        --secondary-text-min: 8px;
+        --terciary-text: 6px;
+    }
+
+}
+
+
+.text-title,
+h1
+{
+    font-size: var(--title-size);
+}
+
+.text-header,
+h2{
+    font-size: var(--header-size);
+}
+
+html.sm-text .btn.text-header{
+    &:extend(h2);
+}
+
+.sub-title,
+h3{
+    font-size: var(--sub-title-size);
+}
+
+.btn.sub-title,
+.mel-button.sub-title {
+    .html.sm-text &{
+        &:extend(h3);
+    }
+}
+
+.span-mel.t1{
+    .sub-title()!important;
+}
+
+h4 {
+    .html.sm-text &{
+        font-size: var(--h4-size);
+    }
+}
+
+.messagelist td.subject .fromto
+{
+    font-size: var(--message-from-size)!important;
+}
+
+.messagelist td.subject span.subject
+{
+    font-size: var(--message-subject-size)!important;
+}
+
+.default-text,
+body{
+    font-size: var(--body-size);
+}
+
+.btn,
+.mel-button {
+    html.sm-text &{
+        &:extend(body);
+    }
+}
+
+.secondary-text{
+    font-size:var(--secondary-text);
+}
+
+.secondary-text.min{
+    font-size:var(--secondary-text-min);
+}
+
+.terciary-text{
+    font-size: var(--terciary-text);
+}
+

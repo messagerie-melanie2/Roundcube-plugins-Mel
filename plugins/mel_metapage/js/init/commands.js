@@ -471,6 +471,40 @@ if (rcmail)
 
             }, true);
 
+            rcmail.register_command('set_font_size', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env['font-size'] = value;
+
+                MEL_ELASTIC_UI.set_font_size();
+
+
+                for (const iterator of helper.select_frame_except('discussion')) {
+                    if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                        iterator.contentWindow.rcmail.env['font-size'] = value;
+                        iterator.contentWindow.MEL_ELASTIC_UI.set_font_size();
+                    }
+                }
+            }, true);
+
+            rcmail.register_command('updateScollBarMode', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env.mel_metapage_mail_configs = value;
+
+                MEL_ELASTIC_UI.updateScollBarMode();
+
+
+                for (const iterator of helper.select_frame_except('discussion')) {
+                    if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                        iterator.contentWindow.rcmail.env.mel_metapage_mail_configs = value;
+                        iterator.contentWindow.MEL_ELASTIC_UI.updateScollBarMode();
+                    }
+                }
+            }, true);
+
             if ('calendar' === rcmail.env.task)
             {
                 rcmail.register_command('redraw_aganda', async settings => {

@@ -432,6 +432,7 @@ $(document).ready(() => {
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         init(){
+            this.set_font_size();
             const ID_THEME_CONTENT = 0;
             const ID_PICTURES_CONTENT = 1;
             this.screen_type = null;
@@ -2207,6 +2208,16 @@ $(document).ready(() => {
             value = null
         }) {
             return this.update_mail_css({key, value});
+        }
+
+        set_font_size() {
+            const size = `${rcmail.env['font-size']}-text`;
+            const other_size = `${size === 'sm' ? 'lg' : 'sm'}-text`;
+            let $html = $('html');
+
+            if (!$html.hasClass(size)) $html.removeClass(other_size).addClass(size);
+
+            return this;
         }
 
         /**

@@ -51,6 +51,7 @@ html.theme-classique #layout-list .listing tbody td.name {
 html.theme-classique #layout-list .listing tr.selected td {
   color: var(--secondary-text-color);
   border-bottom: unset!important;
+  background-color: #edebe9;
 }
 body.task-settings.action-plugin-managesieve html.theme-classique #layout-list .menu.toolbar a {
   color: var(--main-text-color) !important;

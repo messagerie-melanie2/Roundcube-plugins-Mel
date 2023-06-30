@@ -3101,6 +3101,26 @@ class mel_metapage extends bnum_plugin
           }
           $html = str_replace('%%' . $match . '%%', $select_hours->show(), $html);
           break;
+
+        // case ('default_addressbook'):
+          
+        //   $books = $this->rc->get_address_sources(true, true);
+
+        //   $field_id = 'rcmfd_default_addressbook';
+        //   $select   = new html_select([
+        //     'name'  => '_default_addressbook',
+        //     'id'    => $field_id,
+        //     'class' => 'custom-select'
+        //   ]);
+
+        //   if (!empty($books)) {
+        //     foreach ($books as $book) {
+        //       $select->add(html_entity_decode($book['name'], ENT_COMPAT, 'UTF-8'), $book['id']);
+        //     }
+        //   }
+        //   $html = str_replace('%%' . $match . '%%', $select->show(), $html);
+
+        //   break;
           
         default:
           break;

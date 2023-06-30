@@ -405,6 +405,8 @@ html.dark-mode .option_radio_wrapper .switch-overlay::before {
   height: 81%;
   background-repeat: no-repeat;
   background-position: center;
+  background-size: contain;
+  margin: 0 5px;
 } 
 
 .mails_large { 

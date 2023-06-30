@@ -1,1 +1,39 @@
-<p>Annuaire</p>
+<div class="container">
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="options-custom-title">
+        <roundcube:label name='contacts' />
+      </div>
+      <hr>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div>
+        <roundcube:label name="listnamedisplay" />
+      </div>
+      <select name="addressbook_name_listing" id="rcmfd_addressbook_name_listing"
+        onchange="save_option('addressbook_name_listing', this.value, this)"
+        class="custom-select form-control">
+        <option value="0">Nom d’affichage</option>
+        <option value="1">Prénom Nom de famille</option>
+        <option value="2">Nom de famille Prénom</option>
+        <option value="3">Nom de famille, Prénom</option>
+      </select>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-12">
+      <div>
+        <roundcube:label name="listsorting" />
+      </div>
+      <select name="addressbook_sort_col" id="rcmfd_addressbook_sort_col"
+        onchange="save_option('addressbook_sort_col', this.value, this)"
+        class="custom-select form-control">
+        <option value="name">Nom d’affichage</option>
+        <option value="firstname">Prénom</option>
+        <option value="surname">Nom de famille</option>
+      </select>
+    </div>
+  </div>
+</div>

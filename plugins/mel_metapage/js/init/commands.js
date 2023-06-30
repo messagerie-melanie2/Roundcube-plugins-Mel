@@ -2,8 +2,12 @@ if (rcmail)
 {
     (() => { //
 
+         function module_loader() {
+            return window?.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
+        }
+
         async function load_helper() {
-            const loader = window?.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
+            const loader = module_loader();
             return (await loader('mel_metapage', 'mel_object.js')).MelObject.Empty();
         }
 
@@ -466,6 +470,38 @@ if (rcmail)
                 if (frame_mail.length > 0) frame_mail[0].contentWindow.rcmail.env.compose_extwin = value;
 
             }, true);
+
+            if ('calendar' === rcmail.env.task)
+            {
+                rcmail.register_command('redraw_aganda', async settings => {
+                    const loader = module_loader();
+                    const helper = await load_helper();
+                    const MelCalendar = (await loader('mel_metapage', 'main.js', '/js/lib/calendar/')).MelCalendar;
+
+                    rcmail.env.calendar_settings = settings;
+                    await MelCalendar.rerender({
+                        helper_object:helper,
+                        action_list:[
+                            MelCalendar.create_action('destroy'),
+                        ]
+                    });
+
+                    cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+                    CalendarPageInit(false);
+                    cal_elastic_mod();
+
+                    await MelCalendar.rerender({helper_object:helper});
+
+                }, true);
+            }
+            else {
+                rcmail.register_command('redraw_aganda', async args => {
+                    const {key, value:settings} = args;
+                    const helper = await load_helper();
+
+                    helper.select_frame('calendar')[0].contentWindow.rcmail.command('redraw_aganda', settings);
+                }, true);
+            }
 
             if (rcmail.env.task === 'mail')
             {

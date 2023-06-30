@@ -4864,75 +4864,80 @@ window.rcmail && rcmail.addEventListener('init', function (evt) {
   $('#toolbar').show();
 
   // Elastic mods
-  if ($('#calendar').data('elastic-mode')) {
-    var selector = $('<div class="btn-group btn-group-toggle" role="group">').appendTo('.fc-header-toolbar > .fc-left'),
-      nav = $('<div class="btn-group btn-group-toggle" role="group">').appendTo('.fc-header-toolbar > .fc-right');
-
-    $('.fc-header-toolbar > .fc-left button').each(function () {
-      var new_btn, cl = 'btn btn-secondary', btn = $(this),
-        activate = function (button) {
-          selector.children('.active').removeClass('active');
-          $(button).addClass('active');
-        };
-
-      if (btn.is('.fc-state-active')) {
-        cl += ' active';
-      }
-
-      new_btn = $('<button>').attr({ 'class': cl, type: 'button' }).text(btn.text())
-        .appendTo(selector)
-        .on('click', function () {
-          activate(this);
-          btn.click();
-        });
-
-      if (window.MutationObserver) {
-        // handle button active state changes
-        new MutationObserver(function () { if (btn.is('.fc-state-active')) activate(new_btn); }).observe(this, { attributes: true });
-      }
-    });
-
-    $.each(['prev', 'today', 'next'], function () {
-      var btn = $('.fc-header-toolbar > .fc-right').find('.fc-' + this + '-button');
-      $('<button>').attr({ 'class': 'btn btn-secondary ' + this, type: 'button' })
-        .text(btn.text()).appendTo(nav).on('click', function () { btn.click(); });
-    });
-
-    $('#timezone-display').appendTo($('.fc-header-toolbar > .fc-center')).removeClass('hidden');
-    $('#agendaoptions').detach().insertAfter('.fc-header-toolbar');
-
-    $('.content-frame-navigation a.button.date').appendTo('#layout-content > .searchbar');
-
-    // Mobile header title
-    if (window.MutationObserver) {
-      var title = $('.fc-header-toolbar > .fc-center h2'),
-        mobile_header = $('#layout-content > .header > .header-title'),
-        callback = function () {
-          var text = title.text();
-          mobile_header.html('').append([
-            $('<span class="title">').text(text),
-            $('<span class="tz">').text($('#timezone-display').text())
-          ]);
-        };
-
-      // update the header when something changes on the calendar title
-      new MutationObserver(callback).observe(title[0], { childList: true, subtree: true });
-      // initialize the header
-      callback();
-    }
-
-    window.calendar_datepicker = function () {
-      $('#datepicker').dialog({
-        modal: true,
-        title: rcmail.gettext('calendar.selectdate'),
-        buttons: [{
-          text: rcmail.gettext('close', 'calendar'),
-          'class': 'cancel',
-          click: function () { $(this).dialog('close'); }
-        }],
-        width: 400,
-        height: 520
+  function elastic_mod() {
+    if ($('#calendar').data('elastic-mode')) {
+      var selector = $('<div class="btn-group btn-group-toggle" role="group">').appendTo('.fc-header-toolbar > .fc-left'),
+        nav = $('<div class="btn-group btn-group-toggle" role="group">').appendTo('.fc-header-toolbar > .fc-right');
+  
+      $('.fc-header-toolbar > .fc-left button').each(function () {
+        var new_btn, cl = 'btn btn-secondary', btn = $(this),
+          activate = function (button) {
+            selector.children('.active').removeClass('active');
+            $(button).addClass('active');
+          };
+  
+        if (btn.is('.fc-state-active')) {
+          cl += ' active';
+        }
+  
+        new_btn = $('<button>').attr({ 'class': cl, type: 'button' }).text(btn.text())
+          .appendTo(selector)
+          .on('click', function () {
+            activate(this);
+            btn.click();
+          });
+  
+        if (window.MutationObserver) {
+          // handle button active state changes
+          new MutationObserver(function () { if (btn.is('.fc-state-active')) activate(new_btn); }).observe(this, { attributes: true });
+        }
       });
+  
+      $.each(['prev', 'today', 'next'], function () {
+        var btn = $('.fc-header-toolbar > .fc-right').find('.fc-' + this + '-button');
+        $('<button>').attr({ 'class': 'btn btn-secondary ' + this, type: 'button' })
+          .text(btn.text()).appendTo(nav).on('click', function () { btn.click(); });
+      });
+  
+      $('#timezone-display').appendTo($('.fc-header-toolbar > .fc-center')).removeClass('hidden');
+      $('#agendaoptions').detach().insertAfter('.fc-header-toolbar');
+  
+      $('.content-frame-navigation a.button.date').appendTo('#layout-content > .searchbar');
+  
+      // Mobile header title
+      if (window.MutationObserver) {
+        var title = $('.fc-header-toolbar > .fc-center h2'),
+          mobile_header = $('#layout-content > .header > .header-title'),
+          callback = function () {
+            var text = title.text();
+            mobile_header.html('').append([
+              $('<span class="title">').text(text),
+              $('<span class="tz">').text($('#timezone-display').text())
+            ]);
+          };
+  
+        // update the header when something changes on the calendar title
+        new MutationObserver(callback).observe(title[0], { childList: true, subtree: true });
+        // initialize the header
+        callback();
+      }
+  
+      window.calendar_datepicker = function () {
+        $('#datepicker').dialog({
+          modal: true,
+          title: rcmail.gettext('calendar.selectdate'),
+          buttons: [{
+            text: rcmail.gettext('close', 'calendar'),
+            'class': 'cancel',
+            click: function () { $(this).dialog('close'); }
+          }],
+          width: 400,
+          height: 520
+        });
+      }
     }
   }
+
+  elastic_mod();
+  window.cal_elastic_mod = elastic_mod;
 });

@@ -8,7 +8,7 @@
   <div class="row">
     <div class="col-12">
       <div><roundcube:label name='calendar.default_view' /></div>
-      <select name="calendar_default_view" id="rcmfd_default_view" class="form-control"
+      <select data-no-action="true" name="calendar_default_view" id="rcmfd_default_view" class="form-control"
         onchange="save_option('calendar_default_view', this.value, this)">
         <optgroup label="<roundcube:label name='calendar.views-day'/>">
           <option value="timelineDay"><roundcube:label name='calendar.timelineday' /></option>
@@ -47,7 +47,7 @@
   <div class="row mt-3">
     <div class="col-12">
       <div><roundcube:label name='calendar.timeslots'/></div>
-      <select name="calendar_timeslots" id="rcmfd_timeslot" class="form-control custom-select pretty-select"
+      <select data-command="redraw_aganda" name="calendar_timeslots" id="rcmfd_timeslot" class="form-control custom-select pretty-select"
         onchange="save_option('calendar_timeslots', this.value, this)">
         <option value="1">1h</option>
         <option value="2">1/2h</option>

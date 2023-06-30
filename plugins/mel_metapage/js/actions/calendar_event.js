@@ -150,26 +150,28 @@ $(document).ready(
   }
 );
 
-function CalendarPageInit() {
-  DatePickerInit().then(() => {
-    $(".ui-datepicker-inline.ui-datepicker.ui-widget.ui-widget-content.ui-helper-clearfix.ui-corner-all").on("keyup", (event) => {
-      if ($.inArray(event.keyCode, [13, 33, 34, 35, 36, 37, 38, 39, 40]) != -1)
+function CalendarPageInit(init_date_picker = true) {
+  (init_date_picker ? DatePickerInit() : Promise.resolve()).then(() => {
+    if (init_date_picker)
+    {
+      $(".ui-datepicker-inline.ui-datepicker.ui-widget.ui-widget-content.ui-helper-clearfix.ui-corner-all").on("keyup", (event) => {
+        if ($.inArray(event.keyCode, [13, 33, 34, 35, 36, 37, 38, 39, 40]) != -1)
+          DatePickerInit();
+      });
+  
+      rcmail.addEventListener("calendar.datepicker.onChangeMonthYear", (a) => {
         DatePickerInit();
-    });
-
-    rcmail.addEventListener("calendar.datepicker.onChangeMonthYear", (a) => {
-      DatePickerInit();
-    });
-
-    rcmail.addEventListener("calendar.datepicker.onSelect", (a) => {
-      DatePickerInit();
-    });
-
-    rcmail.addEventListener("calendar.datepicker.beforeShowDay", (a) => {
-      DatePickerInit();
-    });
-
-
+      });
+  
+      rcmail.addEventListener("calendar.datepicker.onSelect", (a) => {
+        DatePickerInit();
+      });
+  
+      rcmail.addEventListener("calendar.datepicker.beforeShowDay", (a) => {
+        DatePickerInit();
+      });
+    }
+    
     const isSelected = (value) => {
       return $("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .active").html() === value ? "selected" : "";
     };

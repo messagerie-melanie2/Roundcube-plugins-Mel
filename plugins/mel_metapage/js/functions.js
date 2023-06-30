@@ -2444,7 +2444,8 @@ function m_mp_ToggleGroupOptionsUser(opener) {
  * Permet de sauvegarder une option rapide
  */
 function save_option(_option_name, _option_value, element) {
-  const name = $(element).attr('name');
+  element = $(element);
+  const name = element.attr('name');
 
   $(`[name="${name}"]`).attr('disabled', 'disabled')
   const id = rcmail.set_busy(true, 'loading')
@@ -2461,10 +2462,13 @@ function save_option(_option_name, _option_value, element) {
         rcmail.set_busy(false, 'loading', id)
         rcmail.display_message("Enregistré avec succès", 'confirmation')
 
-        let func = $(element).data('function');
+
+        if (!!(element.data('no-action') || false)) return;
+
+        let func = element.data('function');
         if (func) eval(`${func}({key:'${_option_name}', value:${is_string ? `'${parsed_datas}'` : data}})`);
         else {
-            func = $(element).data('command');
+            func = element.data('command');
 
             if (!!func) rcmail.command(func, {key:_option_name, value:parsed_datas});
             else rcmail.command('refreshFrame')

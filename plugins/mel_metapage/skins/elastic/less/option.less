@@ -373,6 +373,15 @@ font-size: 28px !important;
         transition: all 0.3s ease;
         background-color: var(--background-pannel);
 
+        .option-image {
+            transition: all 0.3s ease;
+            background-color: var(--default-background);
+
+            html.dark-mode &{
+                --default-background: #323f4b;
+            }
+        }
+
         &:hover{
             --background-pannel: var(--background-pannel-hover);
 
@@ -387,19 +396,23 @@ font-size: 28px !important;
                     --main-text-color:#E1C58F;
                 }
             }
-        }
 
-        .option-image {
-            transition: all 0.3s ease;
-            background-color: var(--default-background);
+            .option-image{
+                background-color: var(--background-pannel-hover);
+                background-blend-mode: overlay;
 
-            html.dark-mode &{
-                background-color: #323f4b;
+                html.dark-mode &{
+                    --background-pannel-hover:#2E2E2E;
+                }
+
             }
         }
 
         html.dark-mode &{
             --background-pannel: #323f4b;
+            &:hover {
+                --background-pannel: #2E2E2E;
+            }
         }
 
         img{
@@ -423,6 +436,13 @@ font-size: 28px !important;
             pointer-events: auto;
             opacity: 1;
         }
+    }
+}
+
+html.dark-mode {
+    #theme-panel .picture:hover, 
+    .mel-selectable.picture-only:hover{
+        --tierciary-bckg-color: #2E2E2E;
     }
 }
 

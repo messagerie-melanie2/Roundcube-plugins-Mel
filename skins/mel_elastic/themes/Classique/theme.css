@@ -32,7 +32,7 @@ html.theme-classique:root {
   --onboarding-image: url('../../skins/mel_elastic/themes/Classique/images/Computer_classic.png');
   --drag-n-drop-bckg-color: #edebe9;
   --drag-n-drop-color: var(--drag-n-drop-bckg-color);
-  --background-pannel-hover: var(--default-background)!important;
+  --background-pannel-hover: #7d7976!important;
   --button-color-hover: var(--main-text-color)!important;
 }
 html.theme-classique #layout-list {
@@ -443,7 +443,7 @@ html.theme-classique .mel-selectable:hover {
   border-bottom-color: var(--tierciary-bckg-color);
 }
 html.theme-classique .mel-selectable.picture-only:hover {
-  border: solid thin var(--invisible);
+  --tierciary-bckg-color: #7d7976;
 }
 html.theme-classique .mel-selectable.selected {
   background-color: #edebe9;
@@ -472,6 +472,9 @@ html.theme-classique #melplusmails:hover {
 }
 html.theme-classique #melplusmails:focus {
   color: var(--secondary-text-color);
+}
+#theme-panel .picture:hover {
+  --tierciary-bckg-color: #7d7976;
 }
 html.theme-classique body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   background-color: #edebe9 !important;

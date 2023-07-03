@@ -216,6 +216,27 @@ if (rcmail && window.mel_metapage)
         }
     });
 
+    rcmail.addEventListener('toggle-quick-options.after', (args) => {
+        const {hidden} = args;
+
+        if (!hidden && mel_metapage.Functions.isNavigator(mel_metapage.Symbols.navigator.firefox)) {
+            let $scollbar = $('#mel-scrollbar-size-large').parent();
+            let $parent = $scollbar.parent();
+
+            $parent.hide().children().removeClass('col-4').addClass('col-6');
+            $scollbar.remove();
+
+            $scollbar = null;
+
+            if ('Large' === rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size']) {
+                $('#mel-scrollbar-size-normal').prop('checked', true);
+            }
+
+            $parent.show();
+            $parent = null;
+        }
+    });
+
     if (rcmail.env.task === 'calendar' && !(top ?? parent ?? window).calendar_listener_added) {
       (top ?? parent ?? window).rcmail.addEventListener('frame_loaded', (args) => {
           const {eClass:frame_name, changepage, isAriane, querry:frame, id, first_load} = args;

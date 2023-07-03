@@ -32,6 +32,8 @@ html.theme-classique:root {
   --onboarding-image: url('../../skins/mel_elastic/themes/Classique/images/Computer_classic.png');
   --drag-n-drop-bckg-color: #edebe9;
   --drag-n-drop-color: var(--drag-n-drop-bckg-color);
+  --background-pannel-hover: var(--default-background)!important;
+  --button-color-hover: var(--main-text-color)!important;
 }
 html.theme-classique #layout-list {
   color: var(--main-text-color) !important;

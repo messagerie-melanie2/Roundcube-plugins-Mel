@@ -2377,9 +2377,10 @@ function open_task(id, config = {}) {
 /**
  * Permet d'afficher masquer la pop up user Bienvenue
  */
-function m_mp_ToggleGroupOptionsUser(opener) {
+async function m_mp_ToggleGroupOptionsUser(opener) {
     let $goupoptions_user = $("#groupoptions-user");
     let $button_settings = $("#button-settings");
+    const state = $goupoptions_user.is(":visible") == true;
 
     if ($goupoptions_user.is(":visible") == true) {
         $goupoptions_user.hide();
@@ -2399,7 +2400,7 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         rcmail.menu_stack.push("groupoptions-user");
         rcmail.triggerEvent('toggle-options-user', {show: true});
 
-        mel_metapage.Functions.get(
+        await mel_metapage.Functions.get(
           mel_metapage.Functions.url('mel_settings','load'), 
           {_option: rcmail.env.current_frame_name},
           (data) => {
@@ -2435,6 +2436,8 @@ function m_mp_ToggleGroupOptionsUser(opener) {
           }
         )
     }
+
+    rcmail.triggerEvent('toggle-quick-options.after', {hidden:state});
 
     $goupoptions_user = null;
     $button_settings = null;

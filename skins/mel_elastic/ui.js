@@ -2014,10 +2014,15 @@ $(document).ready(() => {
          */
         setup_html()
         {
+            const ff_check_parent = true;
             try {
                 $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
             } catch (error) {
                 
+            }
+
+            if ((ff_check_parent ? window === parent : true) && typeof InstallTrigger !== 'undefined') {
+                $('html').addClass('navigator-firefox');
             }
 
             return this;

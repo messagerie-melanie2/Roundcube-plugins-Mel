@@ -432,6 +432,7 @@ html.theme-classique .task-settings #layout-list .header a {
 }
 html.theme-classique .task-settings .listing tbody td:hover {
   --secondary-text-color: var(--main-text-color);
+  background-color: #edebe9;
 }
 html.theme-classique .mel-selectable {
   border-bottom: solid thin var(--invisible);

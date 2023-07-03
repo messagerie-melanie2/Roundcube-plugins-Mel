@@ -308,3 +308,4 @@ class WaitSomething extends Mel_Promise {
         super(promise);
     }
 }
+

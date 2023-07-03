@@ -1,4 +1,4 @@
-export {isNullOrUndefined, isArrayLike, Classes};
+export {isNullOrUndefined, isArrayLike, Classes, is_touch};
 
 /**
  * Renvoie vrai si la variable vaut `null` ou `undefined`.
@@ -50,4 +50,8 @@ var Classes = (baseClass, ...mixins) => {
       copyProps(base, mixin);
   });
   return base;
+}
+
+const is_touch = function(){
+    return $("html").hasClass("touch");
 }

@@ -105,7 +105,11 @@ class mel_wekan extends rcube_plugin
     public function login()
     {        
         $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
+
+        mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan... Utilisteur courant ? $currentUser");
         $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->create_token(driver_mel::gi()->getUser()->uid);
+
+        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? '.json_encode($result));
 
         echo json_encode($result);
         exit;
@@ -165,7 +169,12 @@ class mel_wekan extends rcube_plugin
                     $board["lists"][] = $this->create_list($content->_id, $value);
                 }
 
+                if (isset($content->defaultSwimlaneId)) {
+                    $a = $this->wekanApi->create_swimlane($content->_id, $title);
+                    $b = $this->wekanApi->delete_swimline($content->_id, $content->defaultSwimlaneId);
+                }
             }
+
         }
 
         return $board;

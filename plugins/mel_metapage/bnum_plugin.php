@@ -7,10 +7,10 @@ abstract class bnum_plugin extends rcube_plugin
 
     abstract function init();
 
-    protected function load_script_module($name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH) {
+    protected function load_script_module($name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false) {
         $this->setup_module();
 
-        $args = "'$this->ID', '$name', '$path'";
+        $args = "'$this->ID', '$name', '$path', $save_in_memory";
         
         $this->api->output->add_script("runModule($args)", 'docready');
     }

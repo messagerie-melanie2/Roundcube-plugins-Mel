@@ -8,7 +8,11 @@ function SynchroniseWorkspaces()
 
 SynchroniseWorkspaces.Post = function (w, data)
 {
-    w.postMessage(data);
+    try {
+        w.postMessage(data);
+    } catch (error) {
+        
+    }
 }
 
 SynchroniseWorkspaces.PostToParent = function (data)
@@ -20,7 +24,9 @@ SynchroniseWorkspaces.PostToParent = function (data)
 SynchroniseWorkspaces.PostToChilds = function (datas)
 {
     $("iframe.mm-frame").each((i,e) => {
-        ////console.error("SynchroniseWorkspaces.PostToChilds", e, datas);
+
+        if ($(e).hasClass('discussion-frame')) return;
+
         try {
             SynchroniseWorkspaces.Post(e.contentWindow, datas)
         } catch (error) {

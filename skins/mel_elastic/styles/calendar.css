@@ -232,11 +232,14 @@ html.layout-small .task-calendar .calendar-datepicker .ui-datepicker {
 .task-calendar .listing.notree li > div.calendar .custom-control {
   margin-right: -10px;
 }
+.task-calendar .listing .custom-switch .custom-control-label {
+  margin-right: 0px;
+}
 html.touch .task-calendar .listing .custom-switch .custom-control-label {
   padding-left: 2.5rem;
 }
 .task-calendar .listing .custom-switch .custom-control-label::before {
-  border-color: var(--calendar-list-item-switch-border-color) !important;
+  border: 1px solid var(--calendar-list-item-switch-border-color) !important;
   background-color: var(--calendar-list-item-switch-background-color) !important;
   border-radius: 5px;
   width: 16px;
@@ -251,7 +254,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
 .task-calendar .listing .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
   background: none;
   top: 4px;
-  left: -4px;
+  left: -8px;
   content: "\ec4b";
   font-family: IcoFont;
   font-size: 8px;
@@ -310,7 +313,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
   border-width: thin;
 }
 .task-calendar .fc .fc-nonbusiness {
-  background-color: #F0F0F0;
+  background-color: #C4C4C4;
 }
 .task-calendar .fc .fc-axis {
   color: #575A76 !important;
@@ -481,9 +484,12 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   white-space: nowrap;
 }
 .menu a.refresh::before {
-  content: "\e95b" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: "\e5d5" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.create::before {
   content: "\e929" !important;
@@ -491,9 +497,12 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   font-weight: normal!important;
 }
 .task-calendar #layout #layout-content > .header .menu a.create.button::before {
-  content: "\e901" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: "\ef85" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.edit::before {
   content: "\e95c" !important;
@@ -517,9 +526,12 @@ html.layout-phone .task-calendar select.mel-input.calendar {
 }
 .menu a.import::before,
 .menu a.upload::before {
-  content: "\e95f" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: "\f090" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.download::before,
 .menu a.download.eml::before,
@@ -532,14 +544,20 @@ html.layout-phone .task-calendar select.mel-input.calendar {
 .menu a.export::before,
 .menu a.export.all::before,
 .menu a.export.selection::before {
-  content: "\e90d" !important;
-  font-family: DWP!important;
-  font-weight: normal!important;
+  content: "\f09b" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.print::before {
-  content: "\e965";
-  font-weight: normal!important;
-  font-family: DWP!important;
+  content: "\e8ad" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.copy::before {
   content: "\e90a";
@@ -825,4 +843,13 @@ body.quickview-active .fc .fc-scroller {
 }
 #edit-alarms .edit-alarm-buttons.input-group-append {
   display: none;
+}
+.vabutton .mel-button {
+  padding: 15px;
+}
+.vabutton .mel-button .material-symbols-outlined {
+  position: absolute;
+  top: 49%;
+  left: 49%;
+  transform: translate(-50%, -50%);
 }

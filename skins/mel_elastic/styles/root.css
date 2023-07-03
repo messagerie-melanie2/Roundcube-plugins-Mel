@@ -20,6 +20,7 @@
   /** FONTS **/
   --main-icon-font: 'DWP';
   --secondary-icon-font: 'IcoFont';
+  --third-icon-font: 'Material Symbols Outlined';
   /* CONTENTS */
   --empty-content: ' ';
   /** BORDER **/
@@ -160,6 +161,7 @@
   --mail-unread-icon-color: #15193A;
   --mail-icon-hover-color: #779bd6;
   --mail-unread-icon-hover-color: #A8ACC0;
+  --drag-n-drop-bckg-color: var(--drag-n-drop-color);
   /* MORCEAUX */
   --mail-layout-sidebar-background-color: var(--tierciary-bckg-color);
   --calendar-layout-sidebar-background-color: var(--mail-layout-sidebar-background-color);

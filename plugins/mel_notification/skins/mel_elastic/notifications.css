@@ -101,6 +101,18 @@ html.layout-phone #notificationstack {
   box-shadow: 0 24px 54px rgba(0, 0, 0, .15), 0 4.5px 13.5px rgba(0, 0, 0, .08);
 }
 
+#notifications-panel a.dropdown-item.unread {
+  background-color: #f2f2f2;
+}
+
+html.dark-mode #notifications-panel a.dropdown-item.unread {
+  background-color: #2f3e4d;
+}
+
+html.dark-mode #notificationstack a.dropdown-item {
+  background-color: #25323e;
+}
+
 /*
 #notifications-panel article.hidden {
     display: none;

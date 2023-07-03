@@ -807,8 +807,7 @@ function rcube_libcalendaring(settings)
             // PAMELA - Display alarm notification
             let notif_config = {
                 uid: 'calendar-' + alarm.id,
-                title: Q(alarm.title),
-                content: Q(this.event_date_text(alarm)),
+                title: Q(alarm.title) + ' : ' + Q(this.event_date_text(alarm)),
                 category: 'agenda',
                 created: Math.floor(Date.now() / 1000),
                 modified: Math.floor(Date.now() / 1000),

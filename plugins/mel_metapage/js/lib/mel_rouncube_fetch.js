@@ -1,5 +1,5 @@
 export {MelRoundcubeFetch as MelRouncubeFetch};
-import { Mel_Promise } from "./mel_promise";
+import { Mel_Promise } from "./mel_promise.js";
 
 let fetches = {};
 class MelRoundcubeFetch {

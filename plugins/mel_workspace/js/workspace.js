@@ -417,36 +417,22 @@ function UpdateSomething(data,_class, editor = null)
 async function UpdateCalendar()
 {
     const uid = rcmail.env.current_workspace_uid;
-    let array;
-
-    Update(mel_metapage.Storage.calendar, UpdateSomething, null, null, "wsp-agenda", (data) => {
-        if (data === null || data === undefined)
-        {
-            top.postMessage({
-                message:"update_calendar"
-            });
-            return null;
-        }
-        const before = "ws#";
-        const id = before + uid;
-        let tmp = Enumerable.from(data).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id));
-        array = tmp.toArray();
-        tmp = tmp.where(x => x.free_busy !== "free" && x.free_busy !== "telework");
-        if (tmp.any())
-            return tmp.count();
-        else
-            return 0;
-    });
+    const before = "ws#";
+    const id = before + uid;
+    const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
+    let array = Loader.get_next_events_day(moment(), {})
+                  .where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id))
+                  .where(x => x.free_busy !== "free" && x.free_busy !== "telework")
+                  .toArray();
 
     {
         const agenda = rcmail.env.current_workspace_constantes.agenda;
         const id = "wsp-block-" + agenda;
         let querry = $("#" + id).find(".block-body");
-        if (array.length === 0)
-            await setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
+        if (array.length === 0) await setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
         else
         {
-            const count = Enumerable.from(array).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
+            const count = array.length;
             await setup_calendar(array, querry);
             UpdateSomething(count, "wsp-agenda-icon");
             $(".wsp-agenda-icon").find(".roundbadge").addClass("edited");
@@ -460,6 +446,7 @@ async function UpdateCalendar()
  */
 async function setup_calendar(datas, querry, _date = moment())
 {
+    debugger;
     let html = await html_helper.Calendars({
         datas:datas,
         _date:_date,
@@ -478,7 +465,12 @@ async function setup_calendar(datas, querry, _date = moment())
     });
 	querry.html(html);
 
-		
+    if (!!html_helper.Calendars.$jquery_array)
+    {
+        const $jquery_array = html_helper.Calendars.$jquery_array;
+        html_helper.Calendars.$jquery_array = undefined;
+        querry.find('ul').html($jquery_array);
+    }
 }
 
 function UpdateTasks()

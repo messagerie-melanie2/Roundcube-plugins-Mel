@@ -63,6 +63,7 @@ class MelEvent {
     }
 
     call(...args) {
+        let results = {};
         const keys = Object.keys(this.events);
 
         if (0 !== keys.length)
@@ -71,8 +72,17 @@ class MelEvent {
                 const key = keys[index];
                 const element = this.events[key]
     
-                if (!!element) this._call_callback(element, ...args);
+                if (!!element) results[key] = this._call_callback(element, ...args);
             }
+        }
+
+        switch (Object.keys(results)) {
+            case 0:
+                return null;
+            case 1:
+                return results[Object.keys(results)[0]];
+            default:
+                return results;
         }
     }
 
@@ -90,5 +100,10 @@ class MelEvent {
         }
 
         await Promise.allSettled(asyncs);
+    }
+
+    clear() {
+        this.events = {};
+        this._count = 0;
     }
 }

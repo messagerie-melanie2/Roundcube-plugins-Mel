@@ -3689,8 +3689,8 @@ class mel_workspace extends bnum_plugin
         include_once "program/search_result/search_result_mail.php";
         $input = "tommy.delphin@i-carre.net";//"tommy.delphin@i-carre.net";//$before.$uid.$after;
         $search = "ALL UNSEEN OR HEADER TO $input HEADER CC $input";
-        $msgs = $this->rc->storage->list_messages();
-        $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival");
+        $msgs = $this->rc->get_storage()->list_messages();
+        $tmp = $this->rc->get_storage()->search(null, $search, RCUBE_CHARSET, "arrival");
         //$this->rc->storage->search(null, "HEADER TO $input", RCUBE_CHARSET, "arrival");
         $array = $tmp->get();
 

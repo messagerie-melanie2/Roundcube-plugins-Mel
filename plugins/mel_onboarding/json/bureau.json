@@ -206,6 +206,18 @@
             "position": "bottom"
           },
           {
+            "title": "Notes",
+            "element": "#button-notes",
+            "intro": "Vous permet d'accéder à vos notes rapides",
+            "position": "bottom"
+          },
+          {
+            "title": "Recherche",
+            "element": ".search",
+            "intro": "Vous permet de recherchez dans vos emails, vos tâches et vos évènements",
+            "position": "bottom"
+          },
+          {
             "title": "Assistance",
             "element": "#button-help",
             "intro": "Le bouton \"Assistance\" ouvre le centre d'assistance du Bureau Numérique.<br><br>Vous pourrez chercher les réponses a vos questions, voir les différentes pages d'aide, lancer l'aide dynamique de la page ou encore contacter la communauté Mél.",
@@ -252,44 +264,10 @@
             }
           },
           {
-            "title": "Mes raccourcis",
-            "element": "#button-shortcut",
-            "popup": "Shortcut",
-            "intro": "\"Mes raccourcis\" vous permet d'afficher vos tâches et évènements du jour",
-            "button": "Démonstration",
-            "details": {
-              "tooltipClass": "index-maj",
-              "nextLabel": "Suivant",
-              "prevLabel": "Précédent",
-              "doneLabel": "Fermer",
-              "steps": [
-                {
-                  "title": "Mes tâches",
-                  "element": ".shortcut-task",
-                  "intro": "Contient la liste de toutes vos tâches à venir",
-                  "position": "bottom"
-                },
-                {
-                  "title": "Mes évènements",
-                  "element": ".shortcut-task.shorcut-calendar",
-                  "intro": "Permet de voir vos évènements du jour",
-                  "position": "right"
-                }
-              ]
-            },
-            "position": "bottom"
-          },
-          {
-            "title": "Recherche",
-            "element": ".search",
-            "intro": "Vous permet de recherchez dans vos emails, vos tâches et vos évènements",
-            "position": "bottom"
-          },
-          {
-            "title": "Mon compte",
-            "element": "#user-up-popup",
+            "title": "Options rapide",
+            "element": "#button-settings",
             "popup": "User",
-            "intro": "Le menu \"Bienvenue\" vous permet d'accéder à certaines options rapides (comme la déconnexion ou le changement d'avatar).",
+            "intro": "Le menu d'option rapide vous permet d'accéder aux options de la page en cours (comme le thème ou le rafraichissement de la page).",
             "button": "Afficher le menu",
             "details": {
               "nextLabel": "Suivant",
@@ -297,71 +275,71 @@
               "doneLabel": "Fermer",
               "steps": [
                 {
-                  "title": "Déconnexion",
-                  "element": ".user-logout",
-                  "intro": "Vous permet de vos déconnecter du bureau numérique",
+                  "title": "Changement de thème",
+                  "element": ".themescontents",
+                  "intro": "Vous permet de changer de thème instantanément",
                   "position": "left"
                 },
                 {
-                  "title": "Mes informations",
-                  "element": "#user-informations",
-                  "intro": "Affiche vos informations personnels",
+                  "title": "Images",
+                  "element": "#theme-pannel-tab-pictures",
+                  "intro": "Ouvre le menu pour changer l'image de la barre du haut ",
                   "position": "left"
                 },
                 {
-                  "title": "Changer d'avatar",
-                  "element": ".change_avatar_picture",
-                  "intro": "Ouvre les options pour changer votre avatar",
+                  "title": "Options",
+                  "element": ".options",
+                  "intro": "Options rapide relative à la page en cours",
                   "position": "left"
                 },
                 {
-                  "title": "Mon compte",
-                  "element": ".my_account",
-                  "intro": "Permet de modifier les informations liées à votre compte personnel (gestionnaire d'absence, changement de mot de passe, ...)",
+                  "title": "Toutes les options",
+                  "element": ".bottom-option",
+                  "intro": "Ouvre les options du Bureau Numérique",
                   "position": "left"
-                },
-                {
-                  "title": "Plus d'options",
-                  "element": ".more-options",
-                  "intro": "Ouvre un menu permettant de rafraichir la page en cours ou de cacher la bulle de discussion située en bas à droite de votre écran.",
-                  "position": "left"
-                },
-                {
-                  "title": "Changer de thème",
-                  "element": ".theme-mode-switch",
-                  "intro": "Permet de passer facilement du thème clair au thème sombre et vice versa",
-                  "position": "bottom"
                 }
               ]
             },
+            "position": "bottom"
+          },
+          {
+            "title": "Notifications",
+            "element": "#button-notifications",
+            "intro": "Vous permet d'accéder à vos dernières notifications",
+            "position": "bottom"
+          },
+          {
+            "title": "Mon compte",
+            "element": "#user-picture",
+            "intro": "Le menu de compte vous permet d'accéder à certaines options rapides (comme la déconnexion ou le changement d'avatar).",
             "position": "bottom"
           }
         ]
       }
     },
     {
-      "title": "Ma journée",
-      "element": "#myday",
-      "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
+      "title": "Courrier récents",
+      "element": ".module_Mails",
+      "intro": "Ce module vous permet de visualiser vos 3 derniers mails de votre messagerie",
+      "tooltipClass": "width-intro-600"
+    },
+    {
+      "title": "Prochains évènements",
+      "element": ".module_My_day",
+      "intro": "Ce module vous permet de visualiser les rendez-vous de la journée. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
       "tooltipClass": "width-intro-600"
     },
     {
       "title": "Informations",
-      "element": ".--row.--row-dwp--under",
+      "element": ".module_Headlines",
       "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
       "tooltipClass": "width-intro-600"
     },
     {
       "title": "Mes espaces de travail",
-      "element": ".workspaces.module_parent",
+      "element": ".module_Workspaces",
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
       "tooltipClass": "width-intro-600"
-    },
-    {
-      "title": "Discussion ",
-      "element": ".tiny-rocket-chat",
-      "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
-      "tooltipClass": "width-intro-300"
     }
   ]
 }

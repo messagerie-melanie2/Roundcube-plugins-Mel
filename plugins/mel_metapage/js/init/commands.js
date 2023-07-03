@@ -2,6 +2,15 @@ if (rcmail)
 {
     (() => { //
 
+         function module_loader() {
+            return window?.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
+        }
+
+        async function load_helper() {
+            const loader = module_loader();
+            return (await loader('mel_metapage', 'mel_object.js')).MelObject.Empty();
+        }
+
         function change_frame(frame, args = null) {
             
             let config = {
@@ -342,7 +351,7 @@ if (rcmail)
                 // Frame déjà ouverte
                 if (iframe.length > 0)
                 {
-                    iframe[0].contentWindow.$("body").html('<center><div title="Rechargement de la page" style="height: 20vw;width: 20vw;" class="spinner-grow"><span class="sr-only">Rechargement de la page...</span></div></center>')
+                    iframe[0].contentWindow.$("body").html(MEL_ELASTIC_UI.create_loader('refresh_loading'));
                     if (!iframe[0].contentWindow.location.href.includes("_is_from"))
                         iframe.src = iframe[0].contentWindow.location.href + (iframe[0].contentWindow.location.href[iframe[0].contentWindow.location.href.length - 1] === '&' ? '' : '&') + '_is_from=iframe';
                     else
@@ -409,8 +418,7 @@ if (rcmail)
                                 rcmail.command("chat.setupConfig");
 
                             $(".tiny-rocket-chat").removeClass("layout-hidden");
-
-                            $(".toggleChatCommand").html("Cacher la bulle de discussion");
+                            $('#rcmfd_hide_chat').prop("checked", true);
                         }
                         //On cache
                         else {
@@ -425,12 +433,109 @@ if (rcmail)
                             }
 
                             $(".tiny-rocket-chat").addClass("layout-hidden");
-                            $(".toggleChatCommand").html("Afficher la bulle de discussion");
+                            $('#rcmfd_hide_chat').prop("checked", false);
                         }
                     }
                 );
             }, true);
 
+            rcmail.register_command('update_mail_css', (args) => {
+                const {key, value} = args;
+
+                MEL_ELASTIC_UI.update_mail_css_async({key, value});
+
+                for (const iterator of top.$('iframe.mm-frame')) {
+                    var $frame = $(iterator);
+
+                    if (!$frame.hasClass('discussion-frame')) {
+                        $frame = null;
+                        if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                            iterator.contentWindow.MEL_ELASTIC_UI.update_mail_css({key, value});
+                        }
+                    }
+
+                    if (!!$frame) $frame = null;
+                }
+
+
+            }, true);
+
+            rcmail.register_command('refresh_extwin', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env.compose_extwin = value;
+
+                let frame_mail = helper.select_frame('mail');
+                if (frame_mail.length > 0) frame_mail[0].contentWindow.rcmail.env.compose_extwin = value;
+
+            }, true);
+
+            rcmail.register_command('set_font_size', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env['font-size'] = value;
+
+                MEL_ELASTIC_UI.set_font_size();
+
+
+                for (const iterator of helper.select_frame_except('discussion')) {
+                    if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                        iterator.contentWindow.rcmail.env['font-size'] = value;
+                        iterator.contentWindow.MEL_ELASTIC_UI.set_font_size();
+                    }
+                }
+            }, true);
+
+            rcmail.register_command('updateScollBarMode', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env.mel_metapage_mail_configs = value;
+
+                MEL_ELASTIC_UI.updateScollBarMode();
+
+
+                for (const iterator of helper.select_frame_except('discussion')) {
+                    if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                        iterator.contentWindow.rcmail.env.mel_metapage_mail_configs = value;
+                        iterator.contentWindow.MEL_ELASTIC_UI.updateScollBarMode();
+                    }
+                }
+            }, true);
+
+            if ('calendar' === rcmail.env.task)
+            {
+                rcmail.register_command('redraw_aganda', async settings => {
+                    const loader = module_loader();
+                    const helper = await load_helper();
+                    const MelCalendar = (await loader('mel_metapage', 'main.js', '/js/lib/calendar/')).MelCalendar;
+
+                    rcmail.env.calendar_settings = settings;
+                    await MelCalendar.rerender({
+                        helper_object:helper,
+                        action_list:[
+                            MelCalendar.create_action('destroy'),
+                        ]
+                    });
+
+                    cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+                    CalendarPageInit(false);
+                    cal_elastic_mod();
+
+                    await MelCalendar.rerender({helper_object:helper});
+
+                }, true);
+            }
+            else {
+                rcmail.register_command('redraw_aganda', async args => {
+                    const {key, value:settings} = args;
+                    const helper = await load_helper();
+
+                    helper.select_frame('calendar')[0].contentWindow.rcmail.command('redraw_aganda', settings);
+                }, true);
+            }
 
             if (rcmail.env.task === 'mail')
             {
@@ -509,20 +614,6 @@ if (rcmail)
                 }, true);
             }
 
-            // rcmail.drag_menu_action = function(action)
-            // {
-            //   var menu = this.gui_objects.dragmenu;
-            //   if (menu) {
-            //     //   if ($(menu).show)
-            //     //     $(menu).show();
-            //     //   else
-            //         $(menu).removeClass("hidden").css("display", "block");
-
-            //   }
-          
-            //   this.command(action, this.env.drag_target);
-            //   this.env.drag_target = null;
-            // };
 
     })(); //
 }

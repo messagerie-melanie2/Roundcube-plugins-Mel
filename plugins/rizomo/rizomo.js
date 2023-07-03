@@ -9,23 +9,35 @@ const api_notifications = '/notifications/me';
 
 // Initialise les notifications et lance le timeout
 // Pas de traitement si on est pas dans la metapage
-if (window.rcmail && window == top) {
-    console.log('Rizomo window top');
-    if (typeof m_mp_NotificationRun === "function") { 
-        // Notification plugin is enable
-        rcmail.addEventListener('responseafterrefresh', function(props) {
-            console.log('Rizomo response after refresh');
-            m_mp_RizomoRefreshNotifications();
-        });
-    }
-}
+// if (window.rcmail && window == top) {
+//     console.log('Rizomo window top');
+//     if (typeof m_mp_NotificationRun === "function") { 
+//         // Notification plugin is enable
+//         rcmail.addEventListener('responseafterrefresh', function(props) {
+//             console.log('Rizomo response after refresh');
+//             m_mp_RizomoRefreshNotifications();
+//         });
+//     }
+// }
 
 // Affichage de la frame Rizomo
 if (window.rcmail && rcmail.env.task == 'rizomo') {
     setTimeout(() => {
-        console.log('Rizomo task if');
         const url = rcmail.env.rizomo_startup_url != null && rcmail.env.rizomo_startup_url !== undefined ? rcmail.env.rizomo_startup_url : rcmail.env.rizomo_gotourl;
         window.document.getElementById('rizomo_frame').src = url;
+
+        if (rcmail.env.rizomo_user_token) {
+            window.document.getElementById('rizomo_frame').onload = function() {
+                setTimeout(function() {
+                    console.log('Rizomo login-with-token');
+                    window.document.getElementById('rizomo_frame').contentWindow.postMessage({
+                        event: 'login-with-token',
+                        token: rcmail.env.rizomo_user_token,
+                    }, '*');
+                }, 50);
+            };
+        }
+
         $("#wait_box").hide();
     }, 50);
 }

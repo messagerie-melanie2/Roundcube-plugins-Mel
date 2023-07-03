@@ -351,6 +351,7 @@ ul.treelist{
 
 .mel-selectable{
     &:extend(#theme-panel .picture);
+    border: solid thin var(--invisible);
     cursor: pointer;
 
     &:hover{
@@ -368,7 +369,10 @@ ul.treelist{
     }
 
     &.picture-only {
-        background-size: cover!important;
+        // background-size: cover!important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        width: 94%;
 
         &:hover {
             &:extend(#theme-panel .picture:hover);
@@ -387,7 +391,7 @@ ul.treelist{
             box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
 
             &:hover {
-                box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
+                box-shadow: 0 -0.4px 3.6px 0 rgba(0, 0, 0, .132), 0 .3px .9px 0 rgba(0, 0, 0, .108);
             }
 
             &.selected {
@@ -615,22 +619,6 @@ body.task-tasks .listing li.selected:hover > div > a:first-child:hover {
 }
 
 li {
-    &#settingstabpluginmel_doubleauth{
-        &>a{
-            &::before{
-                content: var(--empty-content);
-            }
-        }
-    }
-
-    &#settingstabpluginmel_suggestion_box{
-        &>a{
-            &::before{
-                content: var(--empty-content);
-            }
-        }
-    }
-
     &.mel{
         &>a{
             &::before{
@@ -1868,7 +1856,7 @@ framed_item {
                 div{
                     &.treetoggle{
                         &:hover{
-                            text-shadow: 1px 3px 0px var(--text-shadow);
+                            // text-shadow: 1px 3px 0px var(--text-shadow);
                         }
                     }
                 }
@@ -2162,6 +2150,7 @@ body{
 
                     &:hover{
                         background-color: var(--secondary-bckg-color);
+                        color: var(--secondary-text-color);
                     }
                 }
 
@@ -2813,9 +2802,16 @@ img {
 }
 
 /** ??? **/
-html:not(.touch) .listing li > a:focus, html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
+html:not(.touch) .listing li > a:focus,
+html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
 html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
-    border-left: 2px solid #80D5C6 !important;
+    border-left: 2px solid var(--invisible) !important;
+    border-radius: 0;
+}
+
+html:not(.touch) .listing.focus tbody tr.focused.unread > td:first-child,
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused.unread > td.selection + td {
+    border-left: 2px solid var(--primary-border-color) !important;
     border-radius: 0;
 }
 
@@ -2846,7 +2842,6 @@ tr.elementmoveup > td{
         color:var(--secondary-text-color);
     }
 }
-
 #sections-table{
     tr {
         td {
@@ -3010,6 +3005,8 @@ tr.elementmoveup > td{
 
 .mel-responsive-tab{
     ._mel-tab();
+    margin: 0;
+    padding: 0;
     .mel-invisible-background();
     color:var(--main-text-color)!important;
 
@@ -3031,6 +3028,8 @@ tr.elementmoveup > td{
 
 .responsiveTabList{
     margin-bottom: 15px;
+    flex-wrap: nowrap;
+    justify-content: space-around;
 
     button{
         white-space: break-spaces;
@@ -3263,9 +3262,8 @@ a.roadmap::before
 }
 
 .menu a.move::before {
-	content: "\e915"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	content: "\e2c8"!important;
+  ._material-icon()!important;
 }
 
 .menu a.extwin::before {
@@ -3288,50 +3286,43 @@ a.roadmap::before
 }
 
 html .menu a.selection::before {
-	content: "\e932"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+    ._material-icon()!important;
+    content: '\e834'!important;
 }
 
 .menu a.select.page::before {
-	content: "\e91f"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	content: "\e5d2"!important;
+  ._material-icon()!important;
 }
 
 .menu a.unread::before, 
 .menu a.expand.unread::before, 
 .menu a.select.unread::before {
-	content: "\e91e"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	._material-icon()!important;
+    content: '\e158'!important;
 }
 
 .menu a.flag::before, 
 .menu a.select.flagged::before {
-	content: "\e957"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	._material-icon()!important;
+    content: '\e153'!important;
 }
 
 /***/
 .menu a.select.invert::before {
-	content: "\e932"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
-    color: var(--secondary-text-color);
-    text-shadow: 0px 0px 1px var(--text-shadow);
+  ._material-icon()!important;
+    content: '\e834'!important;
+    font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 
-.menu a.select.invert:hover:before {
-    color: var(--secondary-bckg-color);
-    text-shadow: 0px 0px 1px var(--default-background);
-}
+// .menu a.select.invert:hover:before {
+//     color: var(--secondary-bckg-color);
+//     text-shadow: 0px 0px 1px var(--default-background);
+// }
 
 .menu a.select.none::before {
-	content: "\e908"!important;
-    font-family: var(--main-icon-font)!important;
-    font-weight: normal!important;
+	content: "\e5c9"!important;
+  ._material-icon()!important;
 }
 
 .menu a.logout::before {
@@ -3569,10 +3560,11 @@ html .menu a.selection::before {
         &.btn-primary{
             &.btn-block{
                 border-radius: 60px;
-                height: 30px;
-                width: 60px;
-                border-color: var(--alternate-primary-border-color);
-                background-color: var(--alternate-bckg-color);
+                height: 21px;
+                width: 43px;
+                // border-color: var(--alternate-primary-border-color);
+                border: none;
+                background-color: #e8e8e8;
                 position: relative;
                 margin-top: 0;
 
@@ -3581,23 +3573,25 @@ html .menu a.selection::before {
                     font-family: var(--secondary-icon-font);
                     margin: 0 !important;
                     position: absolute;
-                    top: 2px;
-                    left: 33px;
+                    top: 0px;
+                    left: 25px;
                     color: var(--alternate-primary-border-color)!important;
                     .mel-all-ease-in-animation();
+                    font-size: 14px;
                 }
 
                 &:after{
                     content: "";
-                    border: solid var(--alternate-primary-border-color) thin;
+                    // border: solid var(--alternate-primary-border-color) thin;
+                    border: none;
                     background-color: var(--default-background);
-                    width: 28px;
-                    height: 28px;
+                    width: 17px;
+                    height: 17px;
                     display: block;
                     border-radius: 100%;
                     position: absolute;
-                    top: 0;
-                    right: 31px;
+                    top: 2px;
+                    right: 23px;
                     .mel-all-ease-in-animation();
                 }
             }
@@ -3688,6 +3682,11 @@ table{
 .mel-note {
     border-radius: 5px;
     margin-bottom: 15px;
+    max-width: 315px;
+    margin: 10px;
+    // display: inline-block;
+    float: left;
+    position: relative;
 
     .note-header{
         input{
@@ -3701,6 +3700,12 @@ table{
         textarea{
             border:none;
         }
+    }
+
+    &.eye-focus {
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
     }
 }
 
@@ -3855,6 +3860,13 @@ a.rcmContactAddress {
 }
 
 /** END **/
+._material-icon() {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-variation-settings: 'wght' 300, 'opsz' 48;
+  font-size: 17px;
+  transform: scale(1.5);
+}
 
 .show-on-small
 {
@@ -3876,8 +3888,8 @@ a.rcmContactAddress {
 
 .menu a.ct-cm{
     &::before{
-        font-family: DWP!important;
-        content: '\e920'!important;
+        ._material-icon()!important;
+        content: '\e0bf'!important;
     }
 }
 
@@ -4152,10 +4164,11 @@ a.rcmContactAddress {
 
     .picture {
         display: inline-block;
-        width: 100%;
+        width: 92%;
         // height: 121px;
         aspect-ratio: 1.6 / 1;
-        border-bottom: none;
+
+        border: solid thin var(--invisible);
         border-radius: 5px; 
         margin-bottom: 5px;
         box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
@@ -4182,12 +4195,12 @@ a.rcmContactAddress {
 
         &.selected {
           border-bottom: solid thin var(--invisible) !important;
-          border-left: none !important;
+          border-left: solid thin var(--invisible) !important;
             background-blend-mode: color-dodge;
             // border: solid thick #484D7A;
 
             html.dark-mode &{
-                border:none!important;//border: solid thick #E1C58F;
+                border:solid thin var(--invisible)!important;//border: solid thick #E1C58F;
             }
         }
     }
@@ -4246,10 +4259,10 @@ a.rcmContactAddress {
 .green-badge {
 	position: absolute;
 	top: 0;
-	right: 5px;
+	right: 9px;
 	background-color: #484D7AC7;
 	border-radius: 5px;
-	width: calc(100% - 10px);
+	width: calc(100% - 19px);
 	// height: 121px;
   aspect-ratio: 1.6 / 1;
 	text-align: center;
@@ -4257,7 +4270,7 @@ a.rcmContactAddress {
 	color: white;
 
     html.dark-mode &{
-        background-color: #2E2E2EC7;
+        // background-color: #2E2E2EC7;
         color:#E1C58F;
     }
 
@@ -4266,8 +4279,8 @@ a.rcmContactAddress {
     }
 
     .div-custom-picture & {
-        right: 0;
-        width: 50%;
+        right: 3px;
+        width: 47%;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         aspect-ratio: 0.8/1;
@@ -4306,12 +4319,215 @@ a.rcmContactAddress {
     .fill-on-hover:hover &{
         &:extend(.material-symbols-outlined.fill-on-hover:hover);
     }
+
+    &.force-fill {
+        font-variation-settings: 'FILL' 1;
+    }
+
+    .force-fill &{
+        &:extend(.material-symbols-outlined.force-fill);
+    }
 }
 
 .aprilfool {
     background-image: url(../images/aprilfools.png);
     width:500px;
     height:300px;
+}
+
+
+//Settings icons
+.task-settings {
+  #layout-sidebar {
+    .listing.iconized {
+      li {
+        a::before {
+          font-family: 'Material Symbols Outlined' !important;
+          font-variation-settings: 'wght' 500, 'opsz' 40;
+          font-weight: normal !important;
+          font-size: 20px;
+          height: 1em;
+        }
+
+        a:hover {
+          &::before {
+            font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
+          }
+        }
+
+        &.preferences>a::before {
+          content: "\e429";
+        }
+
+        &.folders>a::before {
+          content: "\e2c7";
+        }
+
+        &.identities>a::before {
+          content: "\e7fd";
+        }
+
+        &.signatures.identities>a::before {
+          content: "\f74c";
+        }
+
+        &.nextcloud>a::before {
+          content: "\e2c8";
+        }
+
+        &.filter>a::before {
+          content: "\ef4f";
+        }
+
+        &.roadmap>a::before {
+          content: "\ef3b" !important;
+        }
+
+        &.news>a::before {
+          content: "\f009";
+        }
+
+        &.mel_doubleauth>a::before {
+          content: "\e0dc";
+        }
+
+        &.resources>a::before {
+          content: "\e5cc";
+        }
+
+        &.resources._selected>a::before {
+          content: "\e5cf";
+        }
+
+        &#settingstabpluginmel_resources_bal>a::before {
+          content: "\e156";
+          height: 2em;
+        }
+
+        &#settingstabpluginmel_resources_agendas>a::before {
+          content: "\ebcc";
+          height: 2em;
+        }
+
+        &#settingstabpluginmel_resources_contacts>a::before {
+          content: "\e7fd";
+          height: 2em;
+        }
+
+        &#settingstabpluginmel_resources_tasks>a::before {
+          content: "\e834";
+          height: 2em;
+        }
+
+        &.moncompte>a::before {
+          content: "\f02e";
+        }
+
+        &.mel.statistics>a::before {
+          content: "\e5cc";
+        }
+        
+        &.mel.statistics._selected>a::before {
+          content: "\e5cf";
+        }
+
+        &.mel.statistics.mobile>a::before {
+          content: "\e325";
+          height: 2em;
+        }
+
+        &.mel_suggestion_box>a::before {
+          content: "\e175";
+        }
+      }
+    }
+  }
+}
+.task-settings {
+  #layout-list {
+    .listing.iconized.settings-default-icon {
+      tr {
+        td.section::before {
+          font-family: 'Material Symbols Outlined' !important;
+          font-variation-settings: 'wght' 500, 'opsz' 40;
+          font-weight: normal !important;
+          font-size: 20px;
+          height: 1em;
+        }
+
+        td.section:hover {
+          &::before {
+            font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
+          }
+        }
+
+        &.general>td.section::before {
+          content: "\e30c";
+        }
+
+        &.mailbox>td.section::before {
+          content: "\e158";
+        }
+
+        &.mailview>td.section::before {
+          content: "\e156";
+        }
+
+        &.compose>td.section::before {
+          content: "\e163";
+        }
+
+        &.addressbook>td.section::before {
+          content: "\f233";
+        }
+
+        &.server>td.section::before {
+          content: "\e875";
+        }
+
+        &.encryption>td.section::before {
+          content: "\e898";
+        }
+
+        &.globalsearch>td.section::before {
+          content: "\e8b6";
+        }
+
+        &.visio>td.section::before {
+          content: "\e04b";
+        }
+
+        &.chat>td.section::before {
+          content: "\e0b7";
+        }
+
+        &.navigation>td.section::before {
+          content: "\e5d2";
+        }
+
+        &.bnum-experimental>td.section::before {
+          content: "\ea4b";
+        }
+
+        &.labels>td.section::before {
+          content: "\e892";
+        }
+
+        &.notifications>td.section::before {
+          content: "\e7f4";
+        }
+
+        &.calendar>td.section::before {
+          content: "\ebcc";
+        }
+
+        
+        &.a_mel_news_flux>td.section::before {
+          content: "\e8b8";
+        }
+      }
+    }
+  }
 }
 
 .mel-toolbar {
@@ -4342,10 +4558,20 @@ a.rcmContactAddress {
 
 }
 
+.melv2-card-shadow {
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
 .melv2-card {
 	border-radius: 15px;
-	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+	// box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+    .melv2-card-shadow();
 	padding: 5px;
+
+    html.dark-mode &{
+        background-color: #323F4B;
+        box-shadow: none;
+    }
 }
 
 .melv2-card-pre {
@@ -4360,6 +4586,10 @@ a.rcmContactAddress {
 
     a&{
         color: var(--main-text-color);
+
+        html.dark-mode &{
+            --main-text-color: #c7dfff;
+        }
     }
 }
 
@@ -4370,16 +4600,52 @@ a.rcmContactAddress {
 
 .melv2-card .contents,
 .melv2-card-contents {
-    height: 250px;
-    max-height: 250px;
+    height: 237px;
+    max-height: 237px;
     overflow: auto;
+
+    li {
+        &:first-child > div{
+            margin-top: 0;
+        }
+        
+        &:last-child > div{
+            margin-bottom: 0;
+        }
+    }
+}
+
+.module_Headlines {
+    .melv2-card-contents {
+        overflow: unset;
+    }
+}
+
+.module_Mails {
+    .melv2-card-contents {
+        &:extend(.module_Headlines .melv2-card-contents);
+    }
+}
+
+.module_My_day {
+    .melv2-card-contents {
+        &:extend(.module_Headlines .melv2-card-contents);
+    }
+}
+
+.melv2-color {
+    --mv2-item-background-color:#F8F9FA;
+    --mv2-item-text-color: var(--main-text-color);
 }
 
 .melv2-event {
-    background-color: #F8F9FA;
+    &:extend(.melv2-color);
+    &:extend(.mel-animated);
+    background-color: var(--mv2-item-background-color);
+    color: var(--mv2-item-text-color);
     border-radius: 10px;
     display: flex;
-    margin: 2.5px 10px;
+    margin: 2.5px 13px;
     padding: 5px;
     padding-left: 10px;
 
@@ -4389,21 +4655,34 @@ a.rcmContactAddress {
         margin-right: 0;
         margin-bottom: 5px;
     }
+
+    &.hovered {
+        --mv2-item-background-color: var(--tierciary-bckg-color);
+        --mv2-item-text-color: var(--secondary-text-color);
+        // background-color: var(--tierciary-bckg-color);
+        // color: var(--secondary-text-color);
+        cursor: pointer;
+    }
+
+    html.dark-mode &{
+        --mv2-item-background-color: #3e4c59;
+        --mv2-item-text-color: #c7dfff;
+        // background-color: #3e4c59;
+
+        &.hovered {
+            --mv2-item-background-color: #2E2E2E;
+            // background-color: #2E2E2E;
+            --mv2-item-text-color:#E1C58F;
+            // color: #E1C58F;
+        }
+    }
 }
 
 .melv2-event-clickable {
-    &:extend(.mel-animated);
     display: flex;
     flex-wrap: wrap;
     width: 75%;
     border-radius: 15px;
-
-    &:hover {
-        background-color: var(--tierciary-bckg-color);
-        color: var(--secondary-text-color);
-        cursor: pointer;
-        padding: 5px;
-    }
 }
 
 .melv2-event-date {
@@ -4443,7 +4722,8 @@ a.rcmContactAddress {
 
 .melv2-event-content {
     margin-left: 10px;
-    max-width: 75%;
+    max-width: calc(100% - 75px);
+    
     p {
         &:extend(.melv2-event-hour p);
         text-overflow: ellipsis;
@@ -4464,6 +4744,8 @@ a.rcmContactAddress {
 
 .melv2-event-side {
     display: flex;
+    justify-content: center;
+    width: 25%;
     .melv2-event-button{
         border-radius: 0;
         align-self: center;
@@ -4486,12 +4768,24 @@ a.rcmContactAddress {
     &:extend(.melv2-event);
     &:extend(.mel-animated);
     padding: 15px;
-    margin: 3px 10px;
+    margin: 3px 13px;
 
     &:hover {
-        background-color: var(--tierciary-bckg-color);
-        color: var(--secondary-text-color);
-        cursor: pointer;
+        // background-color: var(--tierciary-bckg-color);
+        // color: var(--secondary-text-color);
+        // cursor: pointer;
+        &:extend(.melv2-event.hovered);
+    }
+
+    html.dark-mode &{
+        // background-color: #3e4c59;
+        &:extend(html.dark-mode .melv2-event);
+
+        &:hover {
+            &:extend(html.dark-mode .melv2-event.hovered);
+            // background-color: #2E2E2E;
+            // color: #E1C58F;
+        }
     }
 }
 
@@ -4551,4 +4845,92 @@ a.rcmContactAddress {
 
 .mel-news {
 	font-family: Marianne,Roboto,sans-serif;
+}
+
+.module_Workspaces {
+    .workspace {
+        background-color: var(--default-background);
+        .melv2-card-shadow();
+    }
+}
+
+button.melv2-sec-nav-correction{ 
+    padding: 0;
+    border-radius: 100%;
+    width: 35px;
+    height: 35px;
+    line-height: 1;  
+}
+
+.fullscreen-item {
+
+    .mel-button{
+        &.close-fs-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            border-radius: 100%;
+            /* background-color: var(--invisible); */
+            width: 35px;
+            height: 35px;
+            padding: 4px;
+        }
+    }
+}
+
+#app-notes_container {
+	display: flex;
+	margin-top: 110px;
+	justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mel-note {
+    &.dragover {
+        &::before{
+            height: 158px;
+            content: '';
+            width: 4px;
+            display: block;
+            position: absolute;
+            top: 50%;
+            background-color: black;
+            transform: translateY(-50%);
+
+            html.dark-mode &{
+                background-color: white;
+            }
+        }
+
+        &.dragover-left::before{
+            margin-left: -12px;
+            left: 0;
+
+        }
+
+        &.dragover-right::before{
+            margin-right: -12px;
+            right: 0;
+        }
+    }
+}
+
+#button-notes{
+    &.on-focus{
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    }
+}
+
+.drag-zone {
+	position: absolute;
+	top: 60px;
+	left: 60px;
+	background-color: #0000006e;
+	z-index: 1;
+	width: calc(100% - 60px);
+	height: calc(100% - 60px);
+	border: solid 2px lightgreen;
+	/* box-shadow: -5px -10px -9px -15px white; */
 }

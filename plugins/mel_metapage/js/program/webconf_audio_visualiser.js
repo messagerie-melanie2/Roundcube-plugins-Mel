@@ -384,8 +384,10 @@ class MelAudioTesterManager
     if (!this.disposed) {
       this.disposed = true;
 
-      for (const iterator of this.audios) {
-        iterator.dispose();
+      for (const key in this.audios) {
+        if (Object.hasOwnProperty.call(this.audios, key)) {
+          this.audios[key]?.dispose?.();
+        }
       }
 
       this.audios = null;

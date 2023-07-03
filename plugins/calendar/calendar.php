@@ -482,7 +482,7 @@ class calendar extends rcube_plugin
             $field_id    = 'rcmfd_firsthour';
 
             $select_hours = new html_select(['name' => '_first_hour', 'id' => $field_id]);
-            for ($h = 0; $h < 24; $h++) {
+            for ($h = 0; $h < 24; ++$h) {
                 $select_hours->add(date($time_format, mktime($h, 0, 0)), $h);
             }
 
@@ -1146,6 +1146,43 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                 $this->cleanup_event($event);
                 $this->event_save_success($event, null, $action, true);
+
+                if ($action === "invite-self")
+                {
+                    foreach ($event['attendees'] as $person) {
+                        if ('ORGANIZER' === $person['role']){
+                            $canNotify = false;
+                            $user = driver_mel::gi()->getUser();
+                            $title = $event['title'];
+                            $subject = "$user->name a rejoint votre évènement $title !";
+                            $email = $person['email'];
+                            $user_last_login = mel_helper::last_login($user->uid);
+                            
+                            if (class_exists("mel_notification") && isset($user_last_login)) {
+                                if (mel_helper::check_date_past($user_last_login, 15)) $canNotify = false;
+                            } else $canNotify = false;
+                    
+                            if ($canNotify) {
+                                mel_notification::notify('agenda', $subject, 'test', null, driver_mel::gi()->getUser(null, true, false, null, $email)->uid);
+                            }
+                            else {    
+                                $recipient = ['email' => $email, 'name' => 'Organisateur - '.$person['name']];
+                                $itip        = $this->load_itip();
+                                
+                                $itip->send_itip_message($event, 'REPLY', $recipient, $subject, 'eventupdatemailbody', null, false);
+
+                                $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [
+                                    'orga' => $email,
+                                    'attendees' => [$email],
+                                    'message' => $itip->last_message,
+                                    'event' => $event
+                                ]);
+                                
+                            }
+                            break;
+                        }
+                    }
+                }
             }
 
             $reload = $success && !empty($event['recurrence']) ? 2 : 1;

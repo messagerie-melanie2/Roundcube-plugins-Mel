@@ -38,9 +38,6 @@ class mce_driver_mel extends driver_mel {
    * @return \LibMelanie\Api\Mce\User
    */
   public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null, $itemName = null) {
-    if (isset($email)) {
-      $email2 = $email;
-    }
     if (!isset($username) && !isset($dn) && !isset($email)) {
       $username = rcmail::get_instance()->user->get_username();
     }
@@ -55,25 +52,22 @@ class mce_driver_mel extends driver_mel {
       return $user;
     }
     if (!isset(self::$_users)) {
-      self::$_users = [];
+      self::$_users = \mel::getCache('users');
+      if (!isset(self::$_users)) {
+        self::$_users = [];
+      }
     }
     $keyCache = $username . (isset($itemName) ? $itemName : '');
     if (!isset(self::$_users[$keyCache])) {
-      $users = \mel::getCache('users');
-      if (isset($users) && isset($users[$keyCache]) && $users[$keyCache]->issetObjectMelanie()) {
-        self::$_users[$keyCache] = $users[$keyCache];
-        self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+      self::$_users[$keyCache] = $this->user([null, $itemName]);
+      self::$_users[$keyCache]->uid = $username;
+      if ($load && !self::$_users[$keyCache]->load()) {
+        self::$_users[$keyCache] = null;
       }
       else {
-        self::$_users[$keyCache] = $this->user([null, $itemName]);
-        self::$_users[$keyCache]->uid = $username;
-        if ($load && !self::$_users[$keyCache]->load()) {
-          self::$_users[$keyCache] = null;
-        }
-        else {
-          self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
-        }
+        self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
       }
+      \mel::setCache('users', self::$_users);
     }
     return self::$_users[$keyCache];
   }
@@ -126,6 +120,7 @@ class mce_driver_mel extends driver_mel {
         $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
       }
       else {
+        $infos->load(['server_host']);
         $hostname = $infos->server_host;
       }
     }

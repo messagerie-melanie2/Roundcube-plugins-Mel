@@ -537,13 +537,15 @@ input.input-mel.error {
 }
 
 .custom-switch .custom-control-label::before {
-	border-color: black;
-	background-color: #F0F0F0;
+	/* border-color: black; */
+	background-color: #e8e8e8;
+  border: none;
 }
 
 .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-	border-color: black;
+	/* border-color: black; */
 	background-color: #484D7A;
+  border: none;
 }
 
 .inverted .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
@@ -551,8 +553,17 @@ input.input-mel.error {
 }
 
 .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-	border-color: black;
+	/* border-color: black; */
 	background-color: #363A5B ;
+  border: none;
+}
+
+html.dark-mode  .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+  border: 1px solid;
+}
+
+html.dark-mode .custom-switch .custom-control-label::before {
+  border: 1px solid;
 }
 
 .inverted .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
@@ -563,14 +574,27 @@ input.input-mel.error {
 {
 	border-style: solid;
 	border-width: thin;
-	border-color: black;
+	/* border-color: black; */
+  border: none;
 	background-color:white;
-	left: 2px;
-	top: 0.3rem;
-	width: 15px;
-	height: 15px;
+	left: 5px;
+	top: 6px;
+	width: 12px;
+	height: 12px;
 }
 
+.custom-switch .custom-control-label::before {
+  left: 2px;
+  width: 32px;
+}
+
+.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+  transform: translateX(14px);
+}
+
+.custom-switch .custom-control-label {
+  margin-right: 6px;
+}
 .datetime input.input-mel.small-input
 {
 	width: 10em !important;

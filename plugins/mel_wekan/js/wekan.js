@@ -19,16 +19,17 @@ class Wekan{
                     datas = JSON.parse(datas.content);
                     const token = this.tokenName;
 
-                    mel_metapage.Storage.set(token, datas.authToken, false);
+                    //mel_metapage.Storage.set(token, datas.authToken, false);
+                    localStorage.setItem(token, datas.authToken);
                 } catch (error) {
                 }
             }
-        ).then(e => JSON.parse(e).httpCode === 200 && mel_metapage.Storage.get(this.tokenName) !== null);
+        ).then(e => JSON.parse(e).httpCode === 200 && localStorage.getItem(this.tokenName) !== null);
     }
 
     isLogged()
     {
-        return window.localStorage.getItem(this.tokenName) !== null;
+        return localStorage.getItem(this.tokenName) !== null;
     }
 
     create_board(title, isPublic, color = null)

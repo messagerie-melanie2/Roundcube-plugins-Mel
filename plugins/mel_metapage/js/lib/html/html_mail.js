@@ -1,5 +1,5 @@
-import { MailBaseModel } from "../mails/mail_base_model";
-import { MelObject } from "../mel_object";
+import { MailBaseModel } from "../mails/mail_base_model.js";
+import { MelObject } from "../mel_object.js";
 
 export class mail_html extends mel_html2{
     /**

@@ -100,6 +100,10 @@ $(document).ready(() => {
         {
             return Mel_CSS_Rule.component().cssRules.length
         }
+
+        static from_array(rules = []) {
+            return new Mel_CSS_Rule(rules.map(x => x.toString()).join(''));
+        }
     }
 
     /**
@@ -195,6 +199,45 @@ $(document).ready(() => {
         toString()
         {
             return `${this.selector}{${this.rule.join(';\r\n')}}`;
+        }
+
+    }
+
+    class Mel_CSS_Array_Rule extends Mel_CSS_Rule {
+        constructor(rules) {
+            super(rules);
+
+            this.ids = [];
+            this.styleRule = {};
+        }
+
+        set() {
+            for (let index = 0, len = this.rule.length, id; index < len; ++index) {
+                const element = this.rule[index];
+                id = Mel_CSS_Rule.component().insertRule(element.toString(), Mel_CSS_Rule.lastIndex());
+                this.ids.push(id);
+                this.styleRule[id] = Mel_CSS_Rule.component().cssRules[id];
+            }
+            return this;
+        }
+
+        rule_id(id) {
+            return Enumerable.from(Mel_CSS_Rule.component().cssRules).select((x, i) => [x, i]).where(x => x[0] === this.styleRule[id]).firstOrDefault()[1];
+        } 
+
+        delete()
+        {
+            for (const iterator of this.ids) {
+                Mel_CSS_Rule.component().deleteRule(this.rule_id(iterator));
+            }
+            this.ids.length = 0;
+            this.styleRule = null;
+            return this;
+        }
+
+        toString()
+        {
+            return this.rule.map(x => x.toString()).join(';\r\n');
         }
     }
 
@@ -309,7 +352,7 @@ $(document).ready(() => {
          */
         getKeys()
         {
-            return Enumerable?.from(this.css)?.select(x => x.key)?.toArray() ?? [];
+            return Enumerable.from(this.css).select(x => x.key).toArray() || [];
         }
 
         /**
@@ -318,7 +361,7 @@ $(document).ready(() => {
          */
         getStyleSheet()
         {
-            return Enumerable?.from(this.css)?.select(x => x.value)?.toArray()?.join('\r\n') ?? '';
+            return Enumerable.from(this.css).select(x => x.value).toArray().join('\r\n') || '';
         }
 
         /**
@@ -348,6 +391,22 @@ $(document).ready(() => {
 
     }
 
+    class Mel_Elastic_Storage {
+        static save(key, item) {
+            localStorage.setItem(`${Mel_Elastic_Storage.KEY}_${key}`, JSON.stringify(item));
+        }
+
+        static load(key, _default = null) {
+            return JSON.parse(localStorage.getItem(`${Mel_Elastic_Storage.KEY}_${key}`)) ?? _default;
+        }
+
+        static remove(key) {
+            localStorage.removeItem(`${Mel_Elastic_Storage.KEY}_${key}`);
+        }
+    }
+
+    Mel_Elastic_Storage.KEY = 'MEL_ELASTIC';
+
     /**
      * Classe qui sert Ã  gérer les différentes interfaces
      */
@@ -373,6 +432,7 @@ $(document).ready(() => {
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         init(){
+            this.set_font_size();
             const ID_THEME_CONTENT = 0;
             const ID_PICTURES_CONTENT = 1;
             this.screen_type = null;
@@ -559,7 +619,7 @@ $(document).ready(() => {
              * Thèmes additionnels, générer par le javascript
              * @type {Function[]}
              */
-            let additionnalThemes = callback_add  ?? [];
+            let additionnalThemes = callback_add || [];
             /**
              * Div html qui contient la liste des thèmes
              * @type {mel_html2}
@@ -708,7 +768,8 @@ $(document).ready(() => {
             let $pannelParent = $themePannel.parent();
             let $contents = new mel_html2(CONST_HTML_DIV, {
                 attribs:{
-                    class:CLASS_CONTENTS
+                    class:CLASS_CONTENTS,
+                    tabindex:0
                 }
             });
 
@@ -747,7 +808,7 @@ $(document).ready(() => {
             const CLASS_PARENT_DIV = `${CONST_CLASS_COL}-4`; 
             const CLASS_PARENT_HOVER = 'hovered';
             const CUSTOM_THEME_CLASSES = 'input-top-selectable mel-resize-ok half-resize';
-            const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture';
+            const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture px-1';
             const CUSTOM_THEME_CLASSES_PIC = 'half-resize';
             const INPUT_CLASS = 'hidden';
             const INPUT_ACCEPT = ['.png', '.jpg', '.svg', '.gif'].join(',');
@@ -778,9 +839,9 @@ $(document).ready(() => {
                     style:STYLE
                 }
             });
-            this.theme_selected_picture = rcmail.env.theme_selected_picture ?? null;
+            this.theme_selected_picture = rcmail.env.theme_selected_picture || null;
 
-            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder ?? Number.POSITIVE_INFINITY))) {
+            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder || Number.POSITIVE_INFINITY))) {
                 //Div de position
                 $item = new mel_html2(CONST_HTML_DIV, {
                     attribs:{
@@ -811,23 +872,32 @@ $(document).ready(() => {
                         var reader = new FileReader();
                         reader.onload =  (e) => {
                           const picture =  e.target.result;
-                          this.update_custom_picture(picture, prefid);
-                          let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
-                          .removeClass(THEME_DEFAULT_CLASS)
-                          .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
-                          .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
-                          .data(THEME_ATTRIB_DATA_PATH, picture)
-                          .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+                          const size = mel_metapage.Functions.calculateObjectSizeInMo(picture);
 
-                          if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
-                            this.css_rules.remove(RULE_KEY);
-                            this._add_background(picture, true);
+                          if (size < 2) {
+                            this.update_custom_picture(picture, prefid);
+                            let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
+                            .removeClass(THEME_DEFAULT_CLASS)
+                            .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
+                            .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
+                            .data(THEME_ATTRIB_DATA_PATH, picture)
+                            .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+  
+                            if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
+                              this.css_rules.remove(RULE_KEY);
+                              this._add_background(picture, true);
+                            }
                           }
+                          else {
+                            rcmail.display_message('Votre image est trop lourde !', 'error');
+                          }
+
+
                         };
                         reader.readAsDataURL(file);
                     });
                     //Bouton qui sert à cliquer sur l'input
-                    var $icon = new mel_html('span', {class:'material-symbols-outlined upload-icon'}, 'upload')
+                    var $icon = new mel_html('span', {class:'material-symbols-outlined color-icon'}, 'upload')
                     var $button = new mel_button({}, $icon.toString());
                     $button.onmouseover.push((e) => {
                         $(e.currentTarget).parent().addClass(CLASS_PARENT_HOVER);
@@ -1012,12 +1082,16 @@ $(document).ready(() => {
                 else {
                     //On met dans l'ordre les différents boutons de la barre de navigation principale
                     let array = [];
-
                     $taskmenu.find("a").each((i,e) => {
                     e = $(e);
 
                     if (e.parent().hasClass("special-buttons"))
                         return;
+
+                    // if (e.hasClass('settings')) {
+                    //     e.css('display', 'none');
+                    //     return;
+                    // }
 
                     const order = e.css("order");
                     const tmp = e.removeAttr("title")[0].outerHTML;
@@ -1037,7 +1111,7 @@ $(document).ready(() => {
 
                     $taskmenu.append('<ul class="list-unstyled"></ul>');
 
-                    Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
+                    Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
                         let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
                         e = e.item;
                         if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
@@ -1218,7 +1292,7 @@ $(document).ready(() => {
                     $(".btn.btn-primary.send").remove();
                     $("#toolbar-menu").prepend(`
                         <li role="menuitem">
-                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)">Envoyer</a>
+                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)"><span class="inner">Envoyer</span></a>
                         </li>
                     `);
                 }
@@ -1277,8 +1351,6 @@ $(document).ready(() => {
                         
                         </li>
                     `).append($("#melplusmails").css("display", "")))
-
-                    const mailConfig = rcmail.env.mel_metapage_mail_configs;
 
                     let test = new ResizeObserver(() => {
                         let value = 0;
@@ -1363,117 +1435,7 @@ $(document).ready(() => {
                     test.observe($("#layout-list")[0]);
 
                     
-                    if (mailConfig !== null)
-                    {
-                        let _css = "";
-
-                        //Taille des icÃ´nes
-                        if (mailConfig["mel-icon-size"] !== rcmail.gettext("normal", "mel_metapage"))
-                        {
-                            _css += `
-                            #toolbar-menu li a,
-                            #messagelist-header a.refresh,
-                            #toolbar-list-menu li a {
-                                font-size: 0.9rem;
-                            }
-    
-                            
-                            `;
-                        }
-
-                        //Espacement des dossiers
-                        if (mailConfig["mel-folder-space"] === rcmail.gettext("larger", "mel_metapage"))
-                            _css += `
-                            
-                            #folderlist-content li {
-                                --settings-mail-folder-margin-top: 30px;
-                                --settings-mail-subfolder-margin-top: 5px;
-                                --settings-mail-opened-folder-margin-top: 30px;
-                            }
-                            
-                            `;
-                        else if (mailConfig["mel-folder-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                            _css += `
-                                
-                            #folderlist-content li {
-                                --settings-mail-folder-margin-top: 0px;
-                                --settings-mail-subfolder-margin-top: -5px;
-                            }
-
-                            #folderlist-content .unified li {
-                                --settings-mail-folder-margin-top: 5px;
-                                --settings-mail-subfolder-margin-top: 0px;
-                            }
-
-                            #folderlist-content li.mailbox.boite[aria-expanded="true"]{
-                                --settings-mail-opened-folder-margin-bottom: 20px;
-                                /*--settings-mail-opened-folder-margin-top: 0px;*/
-                            }
-
-                            #folderlist-content .unified li.mailbox.boite[aria-expanded="true"]{
-                                --settings-mail-opened-folder-margin-top: 5px!important;
-                            }
-
-                            #folderlist-content .unified li.mailbox[aria-expanded="true"]{
-                                --settings-mail-folder-margin-bottom: 20px!important;
-                                --settings-mail-folder-margin-top: 5px!important;
-                            }
-
-                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type{
-                                border: none;
-                                margin-top: 0;
-                                padding-top: 0;
-                            }
-
-                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,
-                            #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
-                                top:0;
-                            }
-
-                            
-
-                            #mailboxlist li ul:first-of-type {
-                                padding-left: 1.5em;
-                            }
-                            
-                            `;
-
-                        //Espacement des messages
-                        if (mailConfig["mel-message-space"] === rcmail.gettext("larger", "mel_metapage"))
-                            _css += `
-                            
-                            #messagelist tr.message td {
-                                padding-top: 1rem;
-                                padding-bottom: 1rem;
-                            }
-                            
-                            `;
-                        else if (mailConfig["mel-message-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                            _css += `
-                                
-                            #messagelist tr.message td {
-                                padding-top: 0;
-                                padding-bottom:0;
-                            }
-
-                            table.messagelist tr.message td.flags span.attachment,
-                            table.messagelist td.subject span.subject {
-                                margin-top: -10px;
-                            }
-                            
-                            `;
-
-
-                        var style=document.createElement('style');
-                        style.type='text/css';
-
-                        if(style.styleSheet){
-                            style.styleSheet.cssText = _css;
-                        }else{
-                            style.appendChild(document.createTextNode(_css));
-                        }
-                        document.getElementsByTagName('head')[0].appendChild(style);
-                    }
+                    this.update_mail_css({});
 
                     //message_extwin @Rotomeca
                     const alias_mel_rcmail_show_message = rcmail.show_message
@@ -1613,7 +1575,7 @@ $(document).ready(() => {
                 };
 
                 let testing = (e, _class) => {
-                    const array = Enumerable?.from(e.classList)?.toArray() ?? [];
+                    const array = Enumerable.from(e.classList).toArray() || [];
                     const count = array.length;
                     if (count === 1) action($(e), _class);
                     else if (count === 2 && array.includes(_class) && (array.includes("disabled") || array.includes("active")))
@@ -1645,22 +1607,19 @@ $(document).ready(() => {
             //Si on se trouve au bon endroit.
             if (rcmail.env.task === "mail" && rcmail.env.action === "compose")
             {
-                const key = "bnum_last_fields";
+                const key = "bureau_num_last_fields";
                 //Sauvegarder le champs
                 $("a.input-group-text.icon.add").click(() => {
                     $("#headers-menu ul.menu a.recipient.active").each((i,e) => {
                         e = $(e);
                         e.click(() => {
-                            let storage = mel_metapage.Storage.get(key);
-                            
-                            if (storage === undefined || storage === null)
-                                storage = [];
+                            let storage = Mel_Elastic_Storage.load(key, []);
 
                             const field = e.data("target");
                             if (!storage.includes(field))
                             {
                                 storage.push(field);
-                                mel_metapage.Storage.set(key, storage);
+                                Mel_Elastic_Storage.save(key, storage);
                             }
                             
                         });
@@ -1677,17 +1636,19 @@ $(document).ready(() => {
                             $input = e.parent().parent().find("input");
 
                         const field = $input.attr("id").replace("_", "");
-                        let storage = mel_metapage.Storage.get(key);
+                        let storage = Mel_Elastic_Storage.load(key, []);
                         
                         if (storage.includes(field))
                         {
-                            storage = Enumerable?.from(storage)?.where(x => x !== field)?.toArray() ?? [];
-                            mel_metapage.Storage.set(key, storage);
+                            storage = Enumerable.from(storage).where(x => x !== field).toArray() || [];
+
+                            if (storage.length === 0) Mel_Elastic_Storage.remove(key);
+                            else Mel_Elastic_Storage.save(key, storage);
                         }
                     });
                 });
 
-                const storage = mel_metapage.Storage.get(key);
+                const storage = Mel_Elastic_Storage.load(key, []);
 
                 //Afficher les champs
                 if (storage !== null && storage.length > 0)
@@ -1862,7 +1823,7 @@ $(document).ready(() => {
                             box.content.find("iframe").removeClass('sr-only');
                             const obj = frame_context.$('#compose-subject').val();
 
-                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+                            if ((obj || "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
 
                             frame_context.rcmail.addEventListener('message_submited', async (args) => {
                                 if (args.draft !== true)
@@ -1926,7 +1887,7 @@ $(document).ready(() => {
                         fullscreen:true
                     };
             
-                    const popup_class = window.Windows_Like_PopUp ?? top.Windows_Like_PopUp;
+                    const popup_class = window.Windows_Like_PopUp || top.Windows_Like_PopUp;
                     return new popup_class(top.$("body"), config);
                 }
             };
@@ -2053,10 +2014,15 @@ $(document).ready(() => {
          */
         setup_html()
         {
+            const ff_check_parent = true;
             try {
                 $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
             } catch (error) {
                 
+            }
+
+            if ((ff_check_parent ? window === parent : true) && typeof InstallTrigger !== 'undefined') {
+                $('html').addClass('navigator-firefox');
             }
 
             return this;
@@ -2118,6 +2084,143 @@ $(document).ready(() => {
                     });
                 }
             }
+
+            return this;
+        }
+
+        update_mail_css({
+            key = null,
+            value = null
+        }){
+
+            if (!!key && !!value && !!value[key] && rcmail.env.mel_metapage_mail_configs[key] !== value[key]) {
+                rcmail.env.mel_metapage_mail_configs[key] = value[key];
+            }
+
+            if (rcmail.env.task !== 'mail') return;
+
+            const mailConfig = rcmail.env.mel_metapage_mail_configs;
+
+            if (mailConfig !== null)
+            {
+                let _css = [];
+
+                const mel_icon_size = 'mel-icon-size';
+                if (this.css_rules.ruleExist(mel_icon_size)) this.css_rules.remove(mel_icon_size);
+                
+                //Taille des icÃ´nes
+                if (mailConfig[mel_icon_size] !== rcmail.gettext("normal", "mel_metapage"))
+                {
+                    this.css_rules.addAdvanced(mel_icon_size, '#toolbar-menu li a,#messagelist-header a.refresh,#toolbar-list-menu li a', 'font-size: 0.9rem;');
+                }
+
+                const mel_folder_space = 'mel-folder-space';
+                if (this.css_rules.ruleExist(mel_folder_space)) this.css_rules.remove(mel_folder_space);
+                
+                //Espacement des dossiers
+                if (mailConfig[mel_folder_space] === rcmail.gettext("larger", "mel_metapage"))
+                    this.css_rules.addAdvanced(mel_folder_space, '#folderlist-content li',
+                        '--settings-mail-folder-margin-top: 30px;',
+                        '--settings-mail-subfolder-margin-top: 5px;',
+                        ' --settings-mail-opened-folder-margin-top: 30px;'
+                    )
+
+                else if (mailConfig[mel_folder_space] === rcmail.gettext("smaller", "mel_metapage"))
+                {
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content li', 
+                        '--settings-mail-folder-margin-top: 0px;',
+                        '--settings-mail-subfolder-margin-top: -5px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li', 
+                        '--settings-mail-folder-margin-top: 0px;',
+                        '--settings-mail-subfolder-margin-top: -5px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content li.mailbox.boite[aria-expanded="true"]', 
+                        '--settings-mail-opened-folder-margin-bottom: 20px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li.mailbox.boite[aria-expanded="true"]', 
+                        '--settings-mail-opened-folder-margin-top: 5px!important;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li.mailbox[aria-expanded="true"]', 
+                        '--settings-mail-folder-margin-bottom: 20px!important;',
+                        '--settings-mail-folder-margin-top: 5px!important;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type', 
+                        'border: none;',
+                        'margin-top: 0;',
+                        'padding-top: 0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount', 
+                        'top:0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#mailboxlist li ul:first-of-type', 
+                        'padding-left: 1.5em;'
+                    ));
+
+                    const rule = new Mel_CSS_Array_Rule(_css);
+
+                    this.css_rules._add(mel_folder_space, rule);
+                    _css = [];
+                }
+                    
+                const mel_message_space = 'mel-message-space';
+                if (this.css_rules.ruleExist(mel_message_space)) this.css_rules.remove(mel_message_space);
+
+                //Espacement des messages
+                if (mailConfig[mel_message_space] === rcmail.gettext("larger", "mel_metapage"))
+                    this.css_rules.addAdvanced(mel_message_space, '#messagelist tr.message td', 'padding-top: 1rem;', 'padding-bottom: 1rem;');
+                else if (mailConfig[mel_message_space] === rcmail.gettext("smaller", "mel_metapage"))
+                {
+                    _css.push(new Mel_CSS_Advanced_Rule('#messagelist tr.message td', 
+                        'padding-top: 0;',
+                        'padding-bottom:0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('table.messagelist tr.message td.flags span.attachment,table.messagelist td.subject span.subject', 
+                        'margin-top: -10px;'
+                    ));
+
+                    const rule = new Mel_CSS_Array_Rule(_css);
+
+                    this.css_rules._add(mel_message_space, rule);
+
+                    _css = [];
+                }
+
+
+
+                // var style=document.createElement('style');
+                // style.type='text/css';
+
+                // if(style.styleSheet){
+                //     style.styleSheet.cssText = _css;
+                // }else{
+                //     style.appendChild(document.createTextNode(_css));
+                // }
+                // document.getElementsByTagName('head')[0].appendChild(style);
+            }
+        }
+
+        async update_mail_css_async({
+            key = null,
+            value = null
+        }) {
+            return this.update_mail_css({key, value});
+        }
+
+        set_font_size() {
+            const size = `${rcmail.env['font-size']}-text`;
+            const other_size = `${size === 'sm' ? 'lg' : 'sm'}-text`;
+            let $html = $('html');
+
+            if (!$html.hasClass(size)) $html.removeClass(other_size).addClass(size);
 
             return this;
         }
@@ -2739,6 +2842,11 @@ $(document).ready(() => {
 
                 let tabs = item.find("button");
 
+                if (0 === tabs.length) {
+                    tabs = item.children();
+                    tabs.attr('tabindex', 0);
+                }
+
                 tabs.keydown( (event) => {
                     const key = event.keyCode;
 
@@ -3058,7 +3166,7 @@ $(document).ready(() => {
                         $(e).data('selector-tab'),
                         $(e).data('is-default-tab'),
                         $(e).data('parent-tabs'),
-                        namespace ?? $(e).parent().data('namespace') ?? 'no-namespace'
+                        namespace || $(e).parent().data('namespace') || 'no-namespace'
                     );
 
                     if (!!$tab && $tab.length > 0 && i === size) $tab.addClass('last');
@@ -3078,7 +3186,7 @@ $(document).ready(() => {
 
                 if (datas === small) datas = phone;
 
-                if (this.screen_type !== (datas ?? this.screen_type))
+                if (this.screen_type !== (datas || this.screen_type))
                 {
                     if ((this.screen_type !== phone && this.screen_type !== small) && (datas === phone || datas === small)) //On passe en mode phone
                     {
@@ -3114,7 +3222,7 @@ $(document).ready(() => {
                         }
                     }
 
-                    this.screen_type = datas ?? this.screen_type;
+                    this.screen_type = datas || this.screen_type;
                 }
             });
 

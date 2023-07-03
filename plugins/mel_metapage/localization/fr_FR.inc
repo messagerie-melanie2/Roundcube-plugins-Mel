@@ -79,7 +79,7 @@ $labels["create_help"] = "Ouvre la fenêtre de création (email, espaces de trav
 $labels["help_help"] = "Ouvre la fenêtre d'aide";
 $labels["shortcuts_help"] = "Affiche les raccourcis";
 $labels["welcome"] = "Bienvenue";
-$labels["user_help"] = "Bienvenue ! - Options de compte";
+$labels["user_help"] = "Options de compte";
 $labels["ariane_help"] = "Ouvre la fenêtre de discussion instantanée";
 $labels["webconf_enter_help"] = "Ouvre la visioconférence";
 $labels["webconf_close_help"] = "Ferme et ouvre la dernière page ouverte";
@@ -200,10 +200,14 @@ $labels["up"] = "En haut";
 $labels["down"] = "En bas";
 
 $labels["mel-icon-size"] = "Mail - Taille des icônes en tête";
+$labels["mel-icon-size-nomail"] = "Taille des icônes en tête";
 $labels["mel-folder-space"] = "Mail - Espacement des dossiers";
+$labels["mel-folder-space-nomail"] = "Espacement des dossiers";
 $labels["mel-message-space"] = "Mail - Espacement des messages";
+$labels["mel-message-space-nomail"] = "Espacement des messages";
 $labels["mel-chat-placement"] = "Placement de la bulle";
 $labels["mel-calendar-space"] = "Espacement des agendas";
+$labels["mel-folder-grouping"] = "Regroupement des dossiers";
 
 $labels["hide_bubble"] = "Cacher la bulle de discussion";
 $labels["show_bubble"] = "Afficher la bulle de discussion";
@@ -261,7 +265,7 @@ $labels['results_for'] = 'résultats pour';
 $labels['order_by'] = 'Trier par';
 $labels['desc'] = 'Le plus récent';
 $labels['asc'] = 'Le plus ancien';
-$labels['hide_chat_popup_button'] = 'Cacher la bulle de discussion instantée';
+$labels['hide_chat_popup_button'] = 'Bulle de discussion instantanée';
 $labels['to_participate'] = 'Participer';
 
 $labels['title_needed'] = 'Vous devez mettre un titre !';
@@ -292,6 +296,7 @@ $labels['change_text_color'] = 'Changer la couleur du texte';
 
 $labels['quit_settings'] = 'Quitter les paramètres';
 
+$labels['move'] = 'Déplacer';
 $labels['move_up'] = 'Déplacer en haut';
 $labels['move_down'] = 'Déplacer en bas';
 

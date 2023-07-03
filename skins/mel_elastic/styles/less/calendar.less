@@ -409,12 +409,14 @@
 
             .custom-switch{
                 .custom-control-label{
+                  margin-right: 0px;
+                  
                     html@{touch} &{
                         padding-left: 2.5rem;
                     }
 
                     &::before{
-                        border-color: var(--calendar-list-item-switch-border-color)!important;
+                        border: 1px solid var(--calendar-list-item-switch-border-color)!important;
                         background-color: var(--calendar-list-item-switch-background-color)!important;
                         border-radius: 5px;
                         width: 16px;
@@ -435,7 +437,7 @@
                             &::after{
                                 background: none;
                                 top: 4px;
-                                left: -4px;
+                                left: -8px;
                                 content: "\ec4b";
                                 font-family: IcoFont;
                                 font-size: 8px;
@@ -532,7 +534,7 @@
                 }
 
                 &-nonbusiness{
-                    background-color: #F0F0F0;
+                    background-color: #C4C4C4;
                 }
 
                 &-axis{
@@ -813,9 +815,8 @@
     a{
         &.refresh{
             &::before{
-                content: "\e95b"!important;
-                font-family: DWP!important;
-                font-weight: normal!important;
+              content: "\e5d5"!important;
+                ._material-icon-barup()!important;
             }
         }
 
@@ -829,9 +830,8 @@
             &.button{
                 &::before{
                     .task-calendar #layout #layout-content > .header &{
-                        content: "\e901"!important;
-                        font-family: DWP!important;
-                        font-weight: normal!important;
+                      content: "\ef85"!important;
+                      ._material-icon-barup()!important;
                     }
                 }
             }
@@ -871,9 +871,8 @@
 
         &.import{
             &::before{
-                content: "\e95f"!important;
-                font-family: DWP!important;
-                font-weight: normal!important;
+                content: "\f090"!important;
+                ._material-icon-barup()!important;
             }
         }
 
@@ -911,9 +910,8 @@
 
         &.export{
             &::before{
-                content: "\e90d"!important;
-                font-family: DWP!important;
-                font-weight: normal!important;
+                content: "\f09b"!important;
+                ._material-icon-barup()!important;
             }
 
             &.all{
@@ -931,9 +929,8 @@
 
         &.print{
             &::before {
-                content: "\e965";
-                font-weight: normal!important;
-                font-family:DWP!important;
+              content: "\e8ad"!important;
+              ._material-icon-barup()!important;
             }
         }
 
@@ -1320,5 +1317,16 @@ body.quickview-active {
         &.input-group-append {
             display:none;
         }
+    }
+}
+
+.vabutton .mel-button {
+    padding: 15px;
+
+    .material-symbols-outlined {
+        position: absolute;
+        top: 49%;
+        left: 49%;
+        transform: translate(-50%, -50%);
     }
 }

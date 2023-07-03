@@ -9,28 +9,29 @@ html.theme-super-classique {
 
       .scroller {
         >a:hover {
-            border-top: solid thin var(--invisible) !important;
-            border-radius: var(--main-layout-element-border-radius);
-          }
-        
+          border-top: solid thin var(--invisible) !important;
+          border-radius: var(--main-layout-element-border-radius);
+        }
+
 
         >.listing {
           li {
             a {
+
               // margin-top: 5px;
               &:hover {
                 border-bottom: solid thin var(--invisible) !important;
                 border-radius: 5px !important;
               }
             }
+
             &.mailbox {
               .unreadcount {
                 // top: 5px;
               }
             }
 
-            > ul li[aria-level="2"]:first-of-type 
-            {
+            >ul li[aria-level="2"]:first-of-type {
               .unreadcount {
                 // top: 15px !important;
               }
@@ -82,17 +83,27 @@ html.theme-super-classique {
         margin-top: 0px;
 
         #messagelist {
+          tbody {
+            td:hover {
+              background-color: var(--invisible);
+            }
+          }
+
           tr {
             &.selected {
               background-color: transparent;
+
+              td {
+                border-bottom: solid thin var(--invisible) !important;
+              }
 
               .subject {
                 color: var(--main-text-color) !important;
               }
 
-              > td.selection {
-                + td {
-                  border-left: 2px solid var(--selected-mail-border-color) !important;
+              >td.selection {
+                +td {
+                  border-left: 2px solid var(--main-text-color) !important;
                 }
               }
             }
@@ -100,41 +111,36 @@ html.theme-super-classique {
             &.unread {
               background-color: transparent;
 
-              > td.selection {
-                + td {
+              >td.selection {
+                +td {
                   border-left-color: var(--invisible) !important;
                 }
               }
 
               &.selected {
-                > td.selection {
-                  + td {
-                    border-left-color: var(--selected-mail-border-color) !important;
+                >td.selection {
+                  +td {
+                    border-left-color: var(--main-text-color) !important;
                   }
                 }
               }
             }
 
-            &.focused {
-              td {
-                border-left: none !important;
-              }
-            }
-
-            &.message{
-              &:hover:not(.selected) {
+            &.message {
+              &:hover {
                 td {
-  
+
                   background-color: var(--main-layout-hover-background-color) !important;
                 }
               }
 
-              &.contextRow.context-source{
-                --secondary-text-color:var(--main-text-color);
-                font-style:italic;
+              &.contextRow.context-source {
+                --secondary-text-color: var(--main-text-color);
+                font-style: italic;
+
                 * {
-                  --secondary-text-color:var(--main-text-color);
-                  font-style:italic;
+                  --secondary-text-color: var(--main-text-color);
+                  font-style: italic;
                 }
               }
             }

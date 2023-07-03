@@ -237,11 +237,11 @@ $(document).ready(() => {
                 
                 if (this.$phoneNumber.val() !== '' && parentVal !== '')
                 {
-                    this.$phoneEnabled.css('display', '');
+                    this.$phoneEnabled.parent().css('display', '');
                     this.$phoneDatas.css('display', '');
                 }
                 else {
-                    this.$phoneEnabled.css('display', 'none');
+                    this.$phoneEnabled.parent().css('display', 'none');
                     this.$phoneDatas.css('display', 'none');
                 }
                 
@@ -249,7 +249,7 @@ $(document).ready(() => {
             }
             else 
             {
-                this.$phoneEnabled.css('display', 'none');
+                this.$phoneEnabled.parent().css('display', 'none');
                 this.$phoneDatas.css('display', 'none');
             }
 
@@ -366,6 +366,8 @@ $(document).ready(() => {
                         config["_wsp"] = this.$workspace.val();
 
                     const tmp = !this.visioPhone.enabled() ? '' : (await this.visioPhone.getValue());
+
+                    if (!!this.$visioState.data('pass')) config['_pass'] = this.$visioState.data('pass');
 
                     if (tmp === reload) val = tmp;
                     else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `${visio_phone_start}${tmp}${visio_phone_end}`);
@@ -734,11 +736,12 @@ $(document).ready(() => {
 
                         if (isRc) //Visio de l'état
                         {
-
+                            const has_pass = currentString.includes('_pass');
                             await init_function($haveWsp, $wsp, update_location, 0, {
                                 visio:{
                                     type:'integrated',
-                                    val:currentString.split("_key=")[1].split("&")[0]
+                                    val:currentString.split("_key=")[1].split("&")[0],
+                                    pass:has_pass ? currentString.split("_pass=")[1].split("&")[0] : null
                                 },
                                 type:'visio'
                             });
@@ -1510,6 +1513,8 @@ $(document).ready(() => {
                 $edit_alarms.removeClass('have-options');
             }
             else $edit_alarms.addClass('have-options');
+
+            $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte");
         }
 
         const format = "DD/MM/YYYY HH:mm";
@@ -1695,7 +1700,9 @@ $(document).ready(() => {
             });
             //Update visu
             $("#edit-recurrence-frequency").addClass("input-mel");
-            $("#edit-alarm-item").addClass("input-mel").on('change', () => onAlertChange());
+            $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte").addClass("input-mel").on('change', () => onAlertChange());
+            $(".edit-alarm-value").attr('title', "Alerte - Nombre de l'alerte");
+            $(".edit-alarm-offset").attr('title', "Alerte - Elle doit se déclencher quand ?");
             $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
@@ -2009,6 +2016,7 @@ $(document).ready(() => {
 
     window.rcube_calendar_ui._init_location = async function($haveWorkspace, $workspaceSelect, update_location, baseId = 0, _default = null)
     {
+        const VISIO_SELECT_TITLE = 'Par visioconférence';  
         const mainDivId = `em-locations-base-id-${baseId}`;
 
         if ($(`#${mainDivId}`).length > 0) return await rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
@@ -2069,10 +2077,74 @@ $(document).ready(() => {
                 </div>
             </div>
         </div>`).appendTo($rightCol);
-        let $visioSelect = $('<select class="form-control input-mel"></select>').appendTo($visioDiv.find('.vselect'));
+        let $visioSelect = $('<select class="form-control input-mel" title="Par visioconférence - "></select>').appendTo($visioDiv.find('.vselect'));
         let $visioButton = $('<button type="button" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover btn btn-secondary"><span class="icofont-refresh"></span></button>').click(() => {
             $visioWebconfInput.val(mel_metapage.Functions.generateWebconfRoomName());
         }).appendTo($visioDiv.find('.vinput .vintegrated .vbutton'));
+        let visioButtonLock = new mel_html2('button', {
+            attribs:{
+                class:'mel-button lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                type:'button'
+            },
+            contents:new mel_html('span', {class:'material-symbols-outlined'}, 'lock_open')
+        });
+
+        visioButtonLock.onclick.push(() => {
+            $visioDiv.find('.delete-lock').remove();
+            let $material = $visioDiv.find('.material-symbols-outlined').first();
+
+            if ($material.text() !== 'done') {
+                $material.text('done');
+
+                const room = $visioWebconfInput.val();
+                $visioWebconfInput.css('border-top-left-radius', '60px')
+                                  .css('border-bottom-left-radius', '60px')
+                                  .attr('placeholder', 'Saisir le mot de passe de la visio')
+                                  .data('room', room)
+                                  .val($visioWebconfInput.data('pass') ?? EMPTY_STRING);
+                $visioButton.parent().css('display', 'none');
+            }
+            else {
+                const pass = $visioWebconfInput.val();
+                const room = $visioWebconfInput.data('room');
+                $visioWebconfInput.css('border-top-left-radius', '')
+                                  .css('border-bottom-left-radius', '')
+                                  .attr('placeholder', 'Saisir le nom du salon')
+                                  .data('pass', pass)
+                                  .removeData('room')
+                                  .val(room);
+
+                if (pass.length > 0) {
+                    $material.text('lock');
+
+                    let delete_lock = new mel_html2('button', {
+                        attribs:{
+                            class:'mel-button delete-lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                            type:'button'
+                        },
+                        contents:new mel_html('span', {class:'material-symbols-outlined'}, 'no_encryption')
+                    });
+
+                    delete_lock.onclick.push(() => {
+                        $material.text('lock_open');
+                        $visioWebconfInput.removeData('pass');
+                        $visioDiv.find('.delete-lock').remove();
+                    });
+
+                    delete_lock.create($visioDiv.find('.vinput .vintegrated .viinput .vabutton'));
+                }
+                else {
+                    $visioWebconfInput.removeData('pass');
+                    $material.text('lock_open');
+                }
+
+                $visioWebconfInput.change();
+
+                $visioButton.parent().css('display', '');
+            }
+
+        });
+
         let $visioPhoneDatas = $(`
         <div class='input-group visio-phone-datas'>
             <div class="input-group-prepend" style="max-width:50%">
@@ -2092,7 +2164,9 @@ $(document).ready(() => {
         <input type="text" id="presential-cal-location-${mainDivId}" class="form-control input-mel" placeholder="Nom du lieu" /></div>`).appendTo($rightCol);
         
         let $divSelect = $('<div class="input-group">  <div class="input-group-prepend"></div></div>').appendTo($leftCol);
-        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
+        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').attr('title', "Mode d'évènement - Type de localisation").appendTo($divSelect);
+
+        new mel_html2('div', {attribs:{class:'vabutton input-group-append'}, contents:visioButtonLock}).create($visioDiv.find('.vinput .vintegrated .viinput'));
 
         if (baseId !== 0)
         {
@@ -2123,7 +2197,11 @@ $(document).ready(() => {
         for (const key in visioTypeOptions) {
             if (Object.hasOwnProperty.call(visioTypeOptions, key)) {
                 const element = visioTypeOptions[key];
-                $visioSelect.append(`<option value=${key.replace('_selected', '')} ${(key.includes('_selected') ? 'selected' : '')}>${element}</option>`)
+                const selected = key.includes('_selected');
+                const true_key = selected ? key.replace('_selected', '') : key;
+                $visioSelect.append(`<option value=${true_key} ${(selected ? 'selected' : '')}>${element}</option>`)
+
+                if (selected) $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${element}`);
             }
         }
 
@@ -2140,10 +2218,36 @@ $(document).ready(() => {
                             break;
 
                         case 'visio':
+                            //visioTypeOptions
+                            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[element.type] ?? visioTypeOptions[`${value}_selected`])}`);
                             switch (element.type) {
                                 case 'integrated':
                                     $visioSelect.val('intregrated');
                                     $visioWebconfInput.val(element.val);
+
+                                    if (!!element.pass) {
+                                        const pass = element.pass.includes(' (') ? element.pass.split(' (')[0] : element.pass;
+                                        $visioWebconfInput.data('pass', pass);
+                                        $visioDiv.find('.material-symbols-outlined').text('lock');
+
+                                        let delete_lock = new mel_html2('button', {
+                                            attribs:{
+                                                class:'mel-button delete-lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                                                type:'button'
+                                            },
+                                            contents:new mel_html('span', {class:'material-symbols-outlined'}, 'no_encryption')
+                                        });
+                    
+                                        delete_lock.onclick.push(() => {
+                                            let $material = $visioDiv.find('.material-symbols-outlined').first();
+                                            $material.text('lock_open');
+                                            $visioWebconfInput.removeData('pass');
+                                            $visioDiv.find('.delete-lock').remove();
+                                        });
+                    
+                                        delete_lock.create($visioDiv.find('.vinput .vintegrated .viinput .vabutton'));
+                                    }
+
                                     break;
 
                                 case 'custom':
@@ -2179,7 +2283,7 @@ $(document).ready(() => {
 
         [$audioCode, $audioPhone, $visioSelect, $visioWebconfInput, $visioCustomInput, $placeInput, $optionSelect].forEach(item => {
             item.on('change', () => {
-                update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
+                if (!item.data('room')) update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
             });
         });
 
@@ -2234,10 +2338,13 @@ $(document).ready(() => {
         });
 
         $visioSelect.on('change', (e) => {
+            const value = $(e.currentTarget).val();
             let $integrated = $visioDiv.find('.vinput .vintegrated').css('display', 'none');
             let $custom = $visioDiv.find('.vinput .vcustom').css('display', 'none');
 
-            switch ($(e.currentTarget).val()) {
+            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[value] ?? visioTypeOptions[`${value}_selected`])}`);
+
+            switch (value) {
                 case 'intregrated':
                     $integrated.css('display', '');
                     break;
@@ -2562,6 +2669,18 @@ $(document).ready(() => {
             const html = await html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
             rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).html(html);
             jquery_element.data("current-date", date.format());
+
+            if (!!html_helper.Calendars.$jquery_array) {
+                const $jquery_array = html_helper.Calendars.$jquery_array;
+
+                html_helper.Calendars.$jquery_array = undefined;
+
+                let $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).find('ul');
+
+                if ($ul.length === 0) $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element);
+
+                $ul.html($jquery_array);
+            }
          }
 
          rcmail.set_busy(false);

@@ -1,6 +1,5 @@
-import { ChatManager } from "../../../../mel_metapage/js/lib/chat/chatManager";
-import { Top } from "../../../../mel_metapage/js/lib/top";
-import { IExt } from "../IExt";
+import { Top } from "../../../../mel_metapage/js/lib/top.js";
+import { IExt } from "../IExt.js";
 
 let already = false;
 export class SecondaryNav extends IExt {
@@ -41,7 +40,7 @@ export class SecondaryNav extends IExt {
   }
 
   async _on_shown_bs() {
-    const message = await ChatManager.Instance().getChatStatusMessage({}) || this.get_text(this.chat().status);
+    const message = await this.manager().getChatStatusMessage({}) || this.get_text(this.chat().status);
     this.select_menu_info().text(message);
   }
 

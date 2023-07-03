@@ -370,9 +370,10 @@ class mel_contacts extends rcube_plugin {
       }
       else {
         $addressbook->id = md5($prop['name'] . time() . $this->user->uid);
+        $addressbook->owner = $this->user->uid;
       }
 
-      if($addressbook->owner == $this->user->uid && $addressbook->id != $this->user->uid) {
+      if ($addressbook->owner == $this->user->uid && $addressbook->id != $this->user->uid) {
         $addressbook->name = $prop['name'];
         $ret = $addressbook->save();
       }

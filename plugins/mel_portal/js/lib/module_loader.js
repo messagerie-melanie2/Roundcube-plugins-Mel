@@ -1,6 +1,7 @@
-import * as loader from "./loader.js";
+import { Loader } from "./loader.js";
+import { Mel_Promise } from "../../../mel_metapage/js/lib/mel_promise.js";
 export { ModuleLoader };
-import { Mel_Promise } from "../../../mel_metapage/js/lib/mel_promise";
+
 
 class ModuleLoader {
     constructor() {
@@ -31,14 +32,9 @@ class ModuleLoader {
         }
         current = undefined;
         await Promise.allSettled(promises);
+        Loader.free();
         ModuleLoader._instance = undefined;
     }
 }
 
-{
-    const keys = Object.keys(loader);
-    for (let index = 0, len = keys.length, key = keys[index]; index < len; ++index, key = keys[index]) {
-        const module = loader[key];
-        new module();
-    }
-}
+Loader.load();

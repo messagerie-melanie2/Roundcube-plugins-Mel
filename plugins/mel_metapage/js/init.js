@@ -159,6 +159,7 @@
             return events.select(x => {
                 if (typeof x.start !== 'string') x.start =  x.start.format();
                 if (typeof x.end !== 'string') x.end =  x.end.format();
+
                 return x;
             });
         }
@@ -490,24 +491,7 @@
 
             parent.rcmail.enable_command("my_account", true);
             parent.rcmail.register_command("my_account", () => {
-
-                if ($(".settings-frame").length > 1 && $("iframe.settings-frame").length === 0)
-                    window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-                else {
-
-                    if ($("iframe.settings-frame").length === 0) {
-                        mel_metapage.Functions.change_frame("settings", true, true, {
-                            _action: "plugin.mel_moncompte"
-                        });
-                    } else if ($("iframe.settings-frame").length === 1) {
-                        let config = {};
-                        config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-                        $("iframe.settings-frame")[0].src = mel_metapage.Functions.url("settings", "plugin.mel_moncompte", config);
-                        mel_metapage.Functions.change_frame("settings", true, false);
-                    } else window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-
-                    rcmail.triggerEvent('intercept.click.ok', {});
-                }
+                mel_metapage.Functions.change_page('settings', 'plugin.mel_moncompte', {}, true, true)
             });
 
 
@@ -580,6 +564,8 @@
 
                         $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
+                        $('#rcmfd_hide_chat').prop("checked", true);
+
                         $(".tiny-rocket-chat").appendTo("#chatCore").addClass('inbarup')
                             // .css("position", "sticky")
                             // .css("height", "100%")
@@ -597,6 +583,7 @@
                     }
                 } else {
                     $(".tiny-rocket-chat").addClass("layout-hidden");
+                    $('#rcmfd_hide_chat').prop("checked", false)
                 }
             }
 
@@ -744,17 +731,17 @@
             if (local_storage.last_update.tasks.format() !== moment().startOf("day").format())
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
 
-            if (window.alarm_managment !== undefined) {
-                window.alarm_managment.clearTimeouts();
-                setTimeout(async() => {
-                    let it = 0;
-                    await wait(() => {
-                        return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
-                    });
-                    window.alarm_managment.generate(local_storage.calendar);
-                }, 100);
+            // if (window.alarm_managment !== undefined) {
+            //     window.alarm_managment.clearTimeouts();
+            //     setTimeout(async() => {
+            //         let it = 0;
+            //         await wait(() => {
+            //             return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
+            //         });
+            //         window.alarm_managment.generate(local_storage.calendar);
+            //     }, 100);
 
-            }
+            // }
 
             // //add
             if (parent === window) //Si on est pas dans une frame

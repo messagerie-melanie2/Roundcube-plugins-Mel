@@ -271,7 +271,6 @@ rcube_webmail.prototype.annuaire_export = function() {
 
 // Node select
 rcube_webmail.prototype.annuaire_node_select = function(node) {
-	debugger;
 	var node_id = node.id.split('-alias')[0];
 	if (rcmail.env.task == 'addressbook') {
 		this.enable_command('export', true);
@@ -388,7 +387,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 
 	}
 
-	const action = !!rcmail.env.annuaire_select_actions?.onselect ? rcmail.env.annuaire_select_actions.onselect : null;
+	const action = !!rcmail.env.annuaire_select_actions.onselect ? rcmail.env.annuaire_select_actions.onselect : null;
 	
 	if (!!action) 
 	{

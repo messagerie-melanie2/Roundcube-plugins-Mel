@@ -125,6 +125,11 @@ class Webconf extends Program
             $this->set_env_var("webconf.wsp", $wsp);
         }
 
+        $pass = $this->get_input("_pass");
+        if ($pass) {
+            $this->set_env_var("webconf.pass", $pass);
+        }
+
         $user = driver_mel::gi()->getUser();
         $this->set_env_var("webconf.user_datas", [
             "name" => $user->name,

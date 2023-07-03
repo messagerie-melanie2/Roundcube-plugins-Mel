@@ -1,6 +1,6 @@
-import { MelObject } from "../mel_object";
-import { Top } from "../top";
-import { Chat, _Chat } from "./chat";
+import { MelObject } from "../mel_object.js";
+import { Top } from "../top.js";
+import { Chat, _Chat } from "./chat.js";
 
 /**
  * @static
@@ -119,6 +119,11 @@ export class ChatManager extends MelObject {
 
     setRoomConnector(connector) {
         this.chat().setRoomConnector(connector);
+        return this;
+    }
+
+    set_chat_url(url) {
+        rcmail.env.chat_system_url = url;
         return this;
     }
 

@@ -1,7 +1,6 @@
 <roundcube:object name="doctype" value="html5" />
 <html>
 <head>
-<title><roundcube:object name="pagetitle" /></title>
 <roundcube:include file="/includes/links.html" />
 </head>
 <roundcube:if condition="env:extwin" /><body class="noscroll extwin"><roundcube:else /><body class="noscroll"><roundcube:endif />
@@ -29,9 +28,9 @@
 <div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
 <h2 id="aria-label-searchform" class="voice"><roundcube:label name="arialabelcontactsearchform" /></h2>
 <label for="quicksearchbox" class="voice"><roundcube:label name="arialabelquicksearchbox" /></label>
-<roundcube:button command="menu-open" prop="searchmenu" id="searchmenulink" class="iconbutton searchoptions" title="searchmod" label="options" aria-haspopup="true" aria-expanded="false" aria-owns="searchmenu-menu" />
+<roundcube:button command="menu-open" type="link" prop="searchmenu" id="searchmenulink" class="iconbutton searchoptions" title="searchmod" label="options" aria-haspopup="true" aria-expanded="false" aria-owns="searchmenu-menu" />
 <roundcube:object name="searchform" id="quicksearchbox" />
-<roundcube:button command="reset-search" id="searchreset" class="iconbutton reset" title="resetsearch" label="resetsearch" />
+<roundcube:button command="reset-search" type="link" id="searchreset" class="iconbutton reset" title="resetsearch" label="resetsearch" />
 
 <div id="searchmenu" class="popupmenu" data-editable="true">
 	<h3 id="aria-label-searchmenu" class="voice"><roundcube:label name="searchmod" /></h3>
@@ -42,6 +41,7 @@
 		<li role="menuitem"><label><input type="checkbox" name="s_mods[]" value="email" id="s_mod_email" onclick="UI.set_searchmod(this)" /> <span><roundcube:label name="email" /></span></label></li>
 		<li role="menuitem"><label><input type="checkbox" name="s_mods[]" value="*" id="s_mod_all" onclick="UI.set_searchmod(this)" /> <span><roundcube:label name="allfields" /></span></label></li>
 	</ul>
+	<div class="buttons"><a class="button" href="#" onclick="if (rcmail.command('search')) UI.show_popup('searchmenu',false)"><roundcube:label name="search" /></a></div>
 </div>
 </div>
 
@@ -99,7 +99,7 @@
 
 <div id="contacts-box" class="uibox">
 	<div class="iframebox">
-		<roundcube:object name="addressframe" id="contact-frame" style="width:100%; height:100%" frameborder="0" src="/watermark.html" title="contactproperties" />
+		<roundcube:object name="contentframe" id="contact-frame" style="width:100%; height:100%" frameborder="0" src="env:blankpage" title="contactproperties" />
 	</div>
 </div>
 
@@ -113,6 +113,24 @@
 	<ul class="toolbarmenu" role="menu">
 		<roundcube:button type="link-menuitem" command="move" onclick="return rcmail.drag_menu_action('move')" label="move" classAct="active" />
 		<roundcube:button type="link-menuitem" command="copy" onclick="return rcmail.drag_menu_action('copy')" label="copy" classAct="active" />
+	</ul>
+</div>
+
+<div id="contactmenu" class="popupmenu" aria-hidden="true">
+	<h3 id="aria-label-contactmenu" class="voice"><roundcube:label name="arialabelmorecontactactions" /></h3>
+	<ul id="contactmenu-menu" class="toolbarmenu iconized" role="menu" aria-labelledby="aria-label-contactmenu">
+		<roundcube:if condition="env:qrcode" />
+		<roundcube:button type="link-menuitem" command="qrcode" label="qrcode" class="icon" classAct="icon active" innerclass="icon qrcode" />
+		<roundcube:endif />
+		<roundcube:button type="link-menuitem" command="group-assign-selected" label="groupassign" class="icon" classAct="icon active" innerclass="icon assigngroup folder-selector-link" />
+		<roundcube:button type="link-menuitem" command="group-remove-selected" label="groupremove" class="icon" classAct="icon active" innerclass="icon removegroup" />
+		<roundcube:if condition="env:contact_move_enabled" />
+		<roundcube:button type="link-menuitem" command="move" label="moveto" class="icon" classAct="icon active" innerclass="icon move folder-selector-link" />
+		<roundcube:endif />
+		<roundcube:if condition="env:contact_copy_enabled" />
+		<roundcube:button type="link-menuitem" command="copy" label="copyto" class="icon" classAct="icon active" innerclass="icon copy folder-selector-link" />
+		<roundcube:endif />
+		<roundcube:container name="contactmenu" id="contactmenu-menu" />
 	</ul>
 </div>
 

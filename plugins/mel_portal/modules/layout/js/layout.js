@@ -1,5 +1,7 @@
-import { BaseModule } from "../../../js/lib/module";
+import { MelCurrentUser } from "../../../../mel_metapage/js/lib/classes/user.js";
+import { BaseModule } from "../../../js/lib/module.js";
 
+const EMPTY_STRING = '';
 export class ModuleLayout extends BaseModule {
     constructor(load_module = true) {
         super(load_module);
@@ -14,11 +16,25 @@ export class ModuleLayout extends BaseModule {
     }
 
     get_name() {
-        return this.rcmail().env.current_user.name; 
+        return MelCurrentUser.name ?? MelCurrentUser.get_name_from_fullname(); 
     }
 
     get_hello() {
-        return `Bonjour ${this.get_name()},`;
+        const name = this.get_name() ?? EMPTY_STRING;
+        let have_extra_space = true;
+
+        if (!name || name == 'null') {
+            have_extra_space = false;
+        }
+
+        const extra_space = have_extra_space ? ' ' : EMPTY_STRING;
+        const showed_name = have_extra_space ? name : EMPTY_STRING;
+
+        let text = `Bonjour${extra_space}${showed_name},`;
+
+        if (text === 'Bonjour null,') text = 'Bonjour,';
+
+        return text;
     }
 
     _create_hello() {

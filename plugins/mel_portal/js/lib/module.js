@@ -1,9 +1,9 @@
 export { BaseModule }
-import { MaterialIcon } from "../../../mel_metapage/js/lib/icons";
-import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
-import { ModuleLoader } from "./module_loader";
+import { MainIcon } from "../../../mel_metapage/js/lib/icons.js";
+import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js";
+import { ModuleLoader } from "./module_loader.js";
 
-const Icon = MaterialIcon;
+const Icon = MainIcon;
 class BaseModule extends MelObject {
     constructor(load_module = true) {
         super(load_module);
@@ -51,6 +51,14 @@ class BaseModule extends MelObject {
         if ($icon.length > 0) {
             $icon = new Icon($icon.data('melv2-icon'), $icon);
         }
+    }
+
+    set_title_action(frame){
+        const URL = this.url(frame, {}).replace('&_is_from=iframe', EMPTY_STRING);
+        this.select_module_title().attr('href', URL).click(() => {
+            this.change_frame(frame, {update: false, force_update: false});
+        });
+        return this;
     }
 
     module_id() {return null;}

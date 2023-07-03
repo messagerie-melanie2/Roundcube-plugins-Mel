@@ -211,10 +211,59 @@ if (rcmail && window.mel_metapage)
                 const urls = mel_metapage.Functions.get_from_url(base_url);
                 mel_metapage.Functions.change_frame(top.mm_st_ClassContract(rcmail.env['bnum.init_task']), true, true, urls);
             } catch (error) {
-                mel_metapage.Functions.change_frame('bureau', true, true, urls);
+                mel_metapage.Functions.change_frame('bureau', true, true);
             }
         }
     });
+
+    rcmail.addEventListener('toggle-quick-options.after', (args) => {
+        const {hidden} = args;
+
+        if (!hidden && mel_metapage.Functions.isNavigator(mel_metapage.Symbols.navigator.firefox)) {
+            let $scollbar = $('#mel-scrollbar-size-large').parent();
+            let $parent = $scollbar.parent();
+
+            $parent.hide().children().removeClass('col-4').addClass('col-6');
+            $scollbar.remove();
+
+            $scollbar = null;
+
+            if ('Large' === rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size']) {
+                $('#mel-scrollbar-size-normal').prop('checked', true);
+            }
+
+            $parent.show();
+            $parent = null;
+        }
+    });
+
+    if (rcmail.env.task === 'calendar' && !(top ?? parent ?? window).calendar_listener_added) {
+      (top ?? parent ?? window).rcmail.addEventListener('frame_loaded', (args) => {
+          const {eClass:frame_name, changepage, isAriane, querry:frame, id, first_load} = args;
+          
+          if ('calendar' === frame_name) { 
+              let it = 0;
+              const timeout = 5 * 100; //5 secondes
+              const interval = setInterval(() => {
+                  let $querry = $('#calendar');
+
+                  if ($querry.length > 0) {
+                      it = null;
+                      clearInterval(interval);
+                      $querry.fullCalendar('updateViewSize', true);
+                      $querry.fullCalendar('rerenderEvents', true);
+                  }
+                  else if (it >= timeout) {
+                      it = null;
+                      clearInterval(interval);
+                  }
+
+                  ++it;
+              }, 100);
+          }
+      });
+      (top ?? parent ?? window).calendar_listener_added = true;
+  }
 
     //Initialisation
     rcmail.addEventListener("init", () => {
@@ -619,33 +668,36 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('storage.change', (datas) => {
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
 
-        if (window === top) m_mp_e_on_storage_change_notifications(datas.key);
+        m_mp_e_on_storage_change_notifications(datas.key);
     }, false);
 
-    function m_mp_e_on_storage_change_notifications(key)
+    async function m_mp_e_on_storage_change_notifications(key)
     {
-        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', true];
+        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', 'tchat', true];
 
         if (!accepted_changes.includes(key)) return;
 
+        if (!window.loadJsModule) return;
+
+        const Chat = await ChatHelper.Chat();
+        const Calendar = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance ;
         const delimiter = ') ';
         const config = rcmail.env["mel_metapage.tab.notification_style"];
         const get = mel_metapage.Storage.get;
         const current_task = top.rcmail.env.current_task;
         const current_title = top.document.title;
 
-        let temp = null;
         let numbers = 0;
         switch (config) {
             case 'all':
 
-                temp = get('ariane_datas');
+                //temp = ;
 
-                if (!!temp)
+                if (!!Chat)
                 {
-                    numbers = Enumerable.from(temp?.unreads ?? []).sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
+                    numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
 
-                    if (numbers === 0 && temp._some_unreads === true)
+                    if (numbers === 0 && Chat.unreads.haveUnreads() === true)
                     {
                         numbers = '•';
                         break;
@@ -654,21 +706,20 @@ if (rcmail && window.mel_metapage)
 
                 numbers += parseInt(get('mel_metapage.mail.count') ?? 0) +
                            (get('mel_metapage.tasks') ?? []).length +
-                           (get('mel_metapage.calendar') ?? []).length;
+                           Calendar.get_next_events_day(moment(), {enumerable:false}).length;
 
                 break;
 
             case 'page':
                 switch (current_task) {
                     case 'discussion':
-                        temp = get('ariane_datas');
-                        numbers = Enumerable.from(temp?.unreads ?? []).sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
+                        numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
 
-                        if (numbers === 0 && temp._some_unreads === true) numbers = '•';
+                        if (numbers === 0 && Chat.unreads.haveUnreads() === true) numbers = '•';
                         break;
 
                     case 'calendar':
-                        numbers = (get('mel_metapage.calendar') ?? []).length;
+                        numbers = Calendar.get_next_events_day(moment(), {enumerable:false}).length;
                         break;
 
                     case 'tasks':
@@ -737,7 +788,8 @@ if (rcmail && window.mel_metapage)
     });
 
     /*********AFFICHAGE D'UN EVENEMENT*************/
-    rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
+    rcmail.addEventListener("calendar.event_show_dialog.custom", async (datas)    => {
+        const Alarm = (await loadJsModule('mel_metapage', 'alarms', '/js/lib/calendar/')).Alarm;
         if (datas.showed.start.format === undefined) datas.showed.start = moment(datas.showed.start);
 
         if (datas.showed.end === null) datas.showed.end = moment(datas.showed.start)
@@ -1142,10 +1194,17 @@ if (rcmail && window.mel_metapage)
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
                     const ariane = null;
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
+                    const pass = querry.attr("href").includes('_pass=') ? querry.attr("href").split('_pass=')[1].split('&')[0].split(' (')[0] : null;
 
                     setTimeout(() => {
                         rcmail.set_busy(false);
-                        window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                        //window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                        window.webconf_helper.go_ex({
+                            key:mel_metapage.Functions.webconf_url(querry.attr("href")),
+                            ariane,
+                            wsp,
+                            pass
+                        });
                     }, 10);
                 });
 

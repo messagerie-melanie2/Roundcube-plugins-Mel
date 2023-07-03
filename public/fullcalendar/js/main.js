@@ -14,6 +14,9 @@ $.datetimepicker.setLocale('fr');
 document.addEventListener('DOMContentLoaded', function () {
   display_calendar_name();
   run();
+  setInterval(() => {
+    run_refresh();
+  }, 600000);
 });
 
 function display_calendar_name() {
@@ -51,9 +54,37 @@ function run() {
 
       add_appointment_reason(response)
 
-      display_calendar(response)
+      display_calendar(response);
 
       display_datetime_fullcalendar(response);
+    })
+    .catch(err => console.error(err))
+}
+
+function run_refresh() {
+  const options = { method: 'GET', headers: { Accept: 'application/json' } };
+
+  fetch(url.href.replace('fullcalendar/', 'fullcalendar/calendar.php/', options))
+    .then(response => response.json())
+    .then(data => {
+      response = data;
+
+      if (response.error) {
+        $('#error_message').text(response.error);
+        $('#error_message').show();
+        $('#show-calendar').hide();
+        return;
+      }
+
+      get_disabled_days(response);
+
+      show_appointment_duration(response);
+
+      add_appointment_place(response);
+
+      add_appointment_reason(response);
+
+      refresh_calendars();
     })
     .catch(err => console.error(err))
 }
@@ -110,6 +141,11 @@ function add_appointment_reason(response) {
   }
 }
 
+function refresh_calendars() {
+  calendar.refetchEvents();
+  datetimepicker_fullcalendar.refetchEvents();
+}
+
 function display_calendar(response) {
   var calendarEl = document.getElementById('calendar');
   calendar = new FullCalendar.Calendar(calendarEl, {
@@ -118,7 +154,6 @@ function display_calendar(response) {
     firstDay: 1,
     initialView: "timeGridWeek",
     allDaySlot: false,
-    lazyFetching: false,
     selectable: true,
     slotDuration: "00:15",
     slotMinTime: getMinBusinessHour(response),
@@ -223,13 +258,15 @@ function getMaxBusinessHour(response) {
   let max_ranges = [];
   response.range.forEach((range, index) => {
     if (range != "") {
-      let split_range = range[1].split(':');
-      let max_hour = parseInt(range[1]);
-      //On ajoute une heure si il y a des minutes (18h15 -> on affiche 19h)
-      if (split_range[1] != "00") {
-        max_hour++;
-      }
-      max_ranges.push(max_hour)
+      range.forEach((val) => {        
+        let split_range = val.split(':');
+        let max_hour = parseInt(split_range[0]);
+        //On ajoute une heure si il y a des minutes (18h15 -> on affiche 19h)
+        if (split_range[1] != "00") {
+          max_hour++;
+        }
+        max_ranges.push(max_hour)
+      })
     }
   })
   return Math.max(...max_ranges) + ':00';
@@ -246,12 +283,19 @@ function showModal(start, end) {
     allowTimes,
     disabledWeekDays: disabled_days,
     disabledDates: allDayEvents,
-    formatDate: 'd.m.Y',
+    // formatDate:'d/m/Y',
     closeOnDateSelect: false,
     todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
+      })
+    },
+    onSelectDate: function (date) {
+      let [hour, minute] = generateAllowTimes(date)[0].split(':');
+      let first_hour = moment(date).hours(parseInt(hour)).minutes(parseInt(minute));
+      this.setOptions({
+        value: first_hour.toDate(),
       })
     },
     onChangeMonth: function (date) {
@@ -268,12 +312,19 @@ function showModal(start, end) {
     allowTimes,
     disabledWeekDays: disabled_days,
     disabledDates: allDayEvents,
-    formatDate: 'd.m.Y',
+    // format:'d/m/Y h:m',
     closeOnDateSelect: false,
     todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
+      })
+    },
+    onSelectDate: function (date) {
+      let [hour, minute] = generateAllowTimes(date)[0].split(':');
+      let first_hour = moment(date).hours(parseInt(hour)).minutes(parseInt(minute));
+      this.setOptions({
+        value: first_hour.toDate(),
       })
     },
     onChangeMonth: function (date) {
@@ -439,6 +490,7 @@ function user_form_submit(e) {
       $('#waitingToast').toast('hide');
       $('#successToast').toast('show');
       display_confirm_modal(event)
+      refresh_calendars();
     })
     .catch(err => {
       console.log(err);

@@ -69,12 +69,15 @@ function mm_s_Action(e)
         type: "GET", // methode de transmission des données au fichier php
         url: element.replace(replaced, val), // url du fichier php
         dataType: 'json',
-        success: function (data) {
+        success: async function (data) {
             try {
                 rcmail.env.mel_metapage_search.finished.push(null);
 
                 if (Array.isArray(data) && data.length > 0 && data[0].calendar !== undefined)
-                    data = SearchResultCalendar.from_array(data);
+                {
+                    data = await SearchResultCalendar.from_array(data);
+                }
+                    
 
                 if (data.datas !== undefined && data.datas.length > 0)
                 {

@@ -17,46 +17,46 @@ function get_action(text, icon, action) {
     }
 }
 
-function m_mp_create_note()
+async function m_mp_create_note()
 {
-    try {
-        window.create_note()
-    } catch (error1) {
-        console.warn("Impossible de créer des notes : ", error1, window.create_note);
-        try {
-            top.create_note();
-        } catch (error2) {
-            console.warn("Impossible de créer des notes : ", error2, top.create_note);
-            $(document).ready(async () => {
-                let it = 0;
+    if (window.create_popUp !== undefined) {
+        window.create_popUp.close();
+        window.create_popUp = undefined;
+    }
 
-                if (!window.create_note)
-                {
-                    await wait(() => {
-                        if (it++ >= 10) return false;
-        
-                        return !window.create_note;
-                    })
-                }
-    
-                if (it >= 10 && !window.create_note) 
-                {
-                    console.error("Impossible de créer une note, la page des notes n'a probablement pas été charger correctement.", error1, error2, window.create_note, window, '<====== Diverses infos');
-                    if (!m_mp_create_note.ac)
-                    {
-                        m_mp_create_note.ac = true;
-                        console.log("Tentative d'importation.....");
-                        var script = document.createElement('script');
-                        script.onload = function () {
-                            console.log('Tentative...');
-                            m_mp_create_note();
-                        };
-                        script.src = mel_metapage.Functions.url('').split('/?')[0] + '/plugins/mel_metapage/js/program/notes.min.js';
-                    }
-                }
-                else if (!!window.create_note) window.create_note();
+    const init = Object.keys(rcmail.env.mel_metapages_notes);
+
+    const Sticker = (await loadJsModule('mel_metapage', 'sticker', '/js/lib/metapages_actions/notes/')).Sticker;
+
+    await Sticker.new();
+
+    let notes = await loadAction('mel_metapage', 'notes.js', '/js/lib/metapages_actions/');
+
+    if (!!notes) {
+
+        const new_note = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !init.includes(x.key)).firstOrDefault();
+
+        if (!!new_note) {
+            let sticker = Sticker.from(new_note.value);
+
+            await sticker.post('pin', {
+                _uid:sticker.uid,
+                _pin:true
             });
+
+            sticker.pin = true;
+            rcmail.env.mel_metapages_notes[sticker.uid].pin = true;
+
+            sticker.after = () => {
+                sticker.uid = `pin-${sticker.uid}`;
+                sticker.get_html().find("textarea")[0].focus();
+            };
+
+            Sticker.helper.trigger_event('notes.apps.tak', sticker);
         }
+        //notes.select_note_button().click();
+
+        //$('.mel-note').last().find("textarea")[0].focus();
     }
 }
 
@@ -430,18 +430,18 @@ function m_mp_step3_param(type)
                     <option value="default">Un kanban ayant le nom de l'espace sera créé</option>
                     <option value="custom_name">Choisissez le nom du nouveau kanban</option>
                     <option value="already_exist">Lié à un kanban éxistant</option>
-                </select> `);
+                </select> `).attr('title', 'Choisir la méthode de création du kanban');
 
                 if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);
 
                 let $custom_name_div = $(`
                     <div style=margin-top:15px>
-                        <h3 class="span-mel t2 first">Nom personalisé du nouveau kanban</h3>
+                        <h3 id="kanban-custom-name" class="span-mel t2 first">Nom personalisé du nouveau kanban</h3>
                     </div>
                 `).css('display', 'none');
 
                 let $custom_name_input = $(`
-                    <input class="form-control input-mel" value="${default_custom_value || wsp_title}" placeholder="Nom du kanban" maxlength=30 /> 
+                    <input aria-labelledby="kanban-custom-name" class="form-control input-mel" value="${default_custom_value || wsp_title}" placeholder="Nom du kanban" maxlength=30 /> 
                 `).on('input', () => {
                     m_mp_step3_param.datas[type].value = $custom_name_input.val();
                 }).appendTo($custom_name_div);
@@ -453,7 +453,7 @@ function m_mp_step3_param(type)
                 `).css('display', 'none');
 
                 let $linked_kanban_select = $(`
-                    <select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
+                    <select title="Lié à un kanban éxistant - Choisir un kanban parmis la liste" class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
                 `).on('change', () => {
                     m_mp_step3_param.datas[type].value = $linked_kanban_select.val();
                 }).appendTo($linked_kanban_div);
@@ -1463,6 +1463,8 @@ function m_mp_Help() {
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
 
+    const isTouch = $("html").hasClass("touch");
+
     if (window.create_event === true && !!actions.event) {
         eval(actions.event.action);
         return;
@@ -1506,7 +1508,7 @@ function m_mp_Help() {
         let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
         let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, false) + '</li>'
         let helppage_current = "";
-        if (rcmail.env.help_page_onboarding[(m_mp_DecodeUrl().task).replace('#','')]) {
+        if (rcmail.env.help_page_onboarding[(m_mp_DecodeUrl().task).replace('#','')] && !isTouch) {
             helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
         }
 
@@ -1542,31 +1544,34 @@ function m_mp_Help() {
     }
 
     if (isSmall) {
-        if (!$("#groupoptions-createthings").hasClass("initialized")) {
-            for (const key in actions) {
-                if (Object.hasOwnProperty.call(actions, key)) {
-                    const element = actions[key];
-                    $("#ul-createthings").append(`
-                    <li role="menuitem">
-                        <a class="${element.icon}" role="button" href="#" onclick="${element.action}">
-                            <span class="restore-font">${element.text}</span>
-                        </a>
-                    </li>
-                    `);
-                }
+      if (!$("#groupoptions-createthings").hasClass("initialized")) {
+        for (const key in actions) {
+          if (Object.hasOwnProperty.call(actions, key)) {
+            //On cache l'onboarding sur mobile
+            if (key !== 'helppage_current') {
+              const element = actions[key];
+              $("#ul-createthings").append(`
+                  <li role="menuitem">
+                      <a class="${element.icon}" role="button" href="#" onclick="${element.action}">
+                          <span class="restore-font">${element.text}</span>
+                      </a>
+                  </li>
+              `);
             }
-
-            $("#groupoptions-createthings").addClass("initialized")
-
+          }
         }
-        window.help_popUp.close();
 
-        setTimeout(() => {
-            $("#open-created-popup").click();
-        }, 1);
+        $("#groupoptions-createthings").addClass("initialized")
+
+      }
+      window.help_popUp.close();
+
+      setTimeout(() => {
+        $("#open-created-popup").click();
+      }, 1);
 
     }
-}
+  }
 
 // Ancienne fonction d'aide
 // function m_mp_Help() {
@@ -2262,6 +2267,13 @@ async function m_mp_shortcuts() {
 
         html += "</div>";
         shortcuts.add_app("items", html);
+
+        if (!!html_helper.Calendars.$jquery_array) {
+            const $jquery_array = html_helper.Calendars.$jquery_array;
+            html_helper.Calendars.$jquery_array = undefined;
+            shortcuts.item.find('.shorcut-calendar ul').html($jquery_array);
+        }
+
         window.shortcuts = shortcuts;
 
         //debugger;
@@ -2353,40 +2365,119 @@ function m_mp_NewTask() {
 }
 
 function open_task(id, config = {}) {
-    if (event !== undefined)
-        event.preventDefault();
+    if (event !== undefined) event.preventDefault();
 
     mel_metapage.Storage.set("task_to_open", id);
     mel_metapage.Functions.change_frame("tasklist", true, false, config);
 
-    if ($("iframe.tasks-frame").length > 0)
-        $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
-    else if ($(".tasks-frame").length > 0)
-        rcmail.triggerEvent("plugin.data_ready");
+    if ($("iframe.tasks-frame").length > 0) $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
+    else if ($(".tasks-frame").length > 0) rcmail.triggerEvent("plugin.data_ready");
 }
 
 /**
  * Permet d'afficher masquer la pop up user Bienvenue
  */
-function m_mp_ToggleGroupOptionsUser(opener) {
-    if ($("#groupoptions-user").is(":visible") == true) {
-        $("#groupoptions-user").hide();
-        $("#groupoptions-user").data('aria-hidden', 'true');
-        $("#groupoptions-user").data('opener', null);
-        // $('#menu-gu-black').remove();
-        $("#button-settings").css('font-variation-settings', "'FILL' 0")
+async function m_mp_ToggleGroupOptionsUser(opener) {
+    let $goupoptions_user = $("#groupoptions-user");
+    let $button_settings = $("#button-settings");
+    const state = $goupoptions_user.is(":visible") == true;
+
+    if ($goupoptions_user.is(":visible") == true) {
+        $goupoptions_user.hide();
+        $goupoptions_user.data('aria-hidden', 'true');
+        $goupoptions_user.data('opener', null);
+        $button_settings.removeClass('force-fill');
         $(opener).data('aria-expanded', 'false');
         rcmail.triggerEvent('toggle-options-user', {show: false});
     }
     else {
-        //$("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
-        $("#groupoptions-user").show();
-        $("#groupoptions-user").data('opener', opener);
-        $("#groupoptions-user").data('aria-hidden', 'false');
-        // $('<div id="menu-gu-black"></div>').appendTo('#layout');
-        $("#button-settings").css('font-variation-settings', "'FILL' 1")
+      $('.options-custom').css('position', 'relative').css('min-height', '300px').html(window.MEL_ELASTIC_UI.create_loader("options-loader"));
+        $goupoptions_user.show();
+        $goupoptions_user.data('opener', opener);
+        $goupoptions_user.data('aria-hidden', 'false');
+        $button_settings.addClass('force-fill');
         $(opener).data('aria-expanded', 'true');
         rcmail.menu_stack.push("groupoptions-user");
         rcmail.triggerEvent('toggle-options-user', {show: true});
+
+        await mel_metapage.Functions.get(
+          mel_metapage.Functions.url('mel_settings','load'), 
+          {_option: rcmail.env.current_frame_name},
+          (data) => {
+            data = JSON.parse(data)
+            $('.options-custom').html(data.html);
+            for (const [key, value] of Object.entries(data.settings)) {
+              $input = $(`[name="${key}"]`);
+              switch ($input[0].nodeName) {
+                case "INPUT":
+                  switch ($input.attr('type')) {
+                    case 'checkbox':
+                      $input.prop('checked', JSON.parse(value));
+                      break;
+                    case 'radio':
+                      $input.filter(`[data-value="${value}"]`).prop('checked', true)
+                      break;
+                    case 'text':
+                      $input.val(value)
+                      break;
+                    default:
+                      break;
+                  }
+                  break;
+
+                case "SELECT":
+                  $input.val(value)
+                  break;
+              
+                default:
+                  throw 'error';
+              }
+            }
+          }
+        )
     }
+
+    rcmail.triggerEvent('toggle-quick-options.after', {hidden:state});
+
+    $goupoptions_user = null;
+    $button_settings = null;
+}
+
+/**
+ * Permet de sauvegarder une option rapide
+ */
+function save_option(_option_name, _option_value, element) {
+  element = $(element);
+  const name = element.attr('name');
+
+  $(`[name="${name}"]`).attr('disabled', 'disabled')
+  const id = rcmail.set_busy(true, 'loading')
+  
+  mel_metapage.Functions.post(
+    mel_metapage.Functions.url('mel_settings', 'save'),
+    { _option_name, _option_value },
+    (data) => {
+        const parsed_datas = JSON.parse(data);
+        const is_string = 'string' === typeof parsed_datas
+
+        console.log('datas', parsed_datas, is_string);
+
+        $(`[name="${name}"]`).removeAttr('disabled')
+
+        rcmail.set_busy(false, 'loading', id)
+        rcmail.display_message("Enregistré avec succès", 'confirmation')
+
+
+        if (!!(element.data('no-action') || false)) return;
+
+        let func = element.data('function');
+        if (func) eval(`${func}({key:'${_option_name}', value:${is_string ? `'${parsed_datas}'` : data}})`);
+        else {
+            func = element.data('command');
+
+            if (!!func) rcmail.command(func, {key:_option_name, value:parsed_datas});
+            else rcmail.command('refreshFrame')
+        }
+    }
+  )
 }

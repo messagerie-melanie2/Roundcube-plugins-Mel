@@ -1,6 +1,6 @@
-import { BnumLog } from "../classes/bnum_log";
-import { MelObject } from "../mel_object";
-import { WaitSomething } from "../mel_promise";
+import { BnumLog } from "../classes/bnum_log.js";
+import { MelObject } from "../mel_object.js";
+import { WaitSomething } from "../mel_promise.js";
 
 export class MelCalendar extends MelObject {
     constructor() {
@@ -11,7 +11,7 @@ export class MelCalendar extends MelObject {
         super.main();
         BnumLog.info('MelCalendar/main', 'Starting calendar module');
         this._add_on_load();
-        MelCalendar.rerender();
+        MelCalendar.rerender({helper_object:this});
     }
 
     _add_on_load() {
@@ -25,22 +25,54 @@ export class MelCalendar extends MelObject {
         const {eClass:frame_name, changepage, isAriane, querry:frame, id, first_load} = args;
             
         if ('calendar' === frame_name) { 
-            await MelCalendar.rerender();
+            await MelCalendar.rerender({helper_object:this});
         }
     }
 
-    static async rerender() {
+    static async rerender({
+        helper_object = null,
+        action_list = MelCalendar.initial_actions()
+    }) {
         BnumLog.info('MelCalendar/rerender', 'Wainting #calendar....');
-        let resolved = (await new WaitSomething(() => this.select('#calendar').length > 0)).resolved;
+        const helper = helper_object ?? MelObject.Empty();
+        let resolved = (await new WaitSomething(() => helper.select('#calendar').length > 0)).resolved;
 
         if (resolved) {
             BnumLog.info('MelCalendar/rerender', '#calendar found !');
             let $calendar = $('#calendar');
-            $calendar.fullCalendar('rerenderEvents');
-            $calendar.fullCalendar('updateViewSize', true); 
+
+            for (const iterator of action_list) {
+                $calendar.fullCalendar(iterator.action, ...iterator.args);
+            }
         }   
         else {
             BnumLog.warning('MelCalendar/rerender', '#calendar not found !')
         }  
+    }
+
+    static initial_actions() {
+        return [
+            new MelCalendarAction('rerenderEvents'),
+            new MelCalendarAction('updateViewSize', true)
+        ];
+    }
+
+    static create_action(action, ...args) {
+        return new MelCalendarAction(action, ...args);
+    }
+}
+
+export class MelCalendarAction {
+    constructor(action, ...args) {
+        Object.defineProperties(this, {
+            action: {
+                get: () => action,
+                configurable: true
+            },          
+            args: {
+                get: () => args,
+                configurable: true
+            },      
+        });
     }
 }

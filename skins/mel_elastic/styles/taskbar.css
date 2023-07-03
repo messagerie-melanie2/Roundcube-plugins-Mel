@@ -305,11 +305,20 @@ a.useful_links.icon-mel-link::before
   font-weight: normal;
 }
 
-.menu.toolbar a.selected:before,
-.menu.toolbar a:hover:before
+.barup-right-buttons .menu.toolbar a.selected:before,
+.barup-right-buttons .menu.toolbar a:hover:before,
+#layout-menu .menu.toolbar a.selected:before,
+#layout-menu .menu.toolbar a:hover:before
 {
   font-variation-settings: 'FILL' 1;
 }
+
+#layout-menu .menu.toolbar a.selected.icon-mel-dots:before,
+#layout-menu .menu.toolbar a.icon-mel-dots:hover:before
+{
+  font-variation-settings: 'FILL' 1, 'wght' 600;
+}
+
 #layout-menu .menu.toolbar a:before,
 #otherapps.menu.toolbar a:before
 {
@@ -604,7 +613,7 @@ nav.otherapps
 	/* position: absolute; */
 	/* left: 69px; */
 	/* margin-top: -16px; */
-	font-family: Marianne,Roboto,sans-serif;
+	font-family:  Roboto,sans-serif;
 	margin-left: 15px;
 	display: flex;
 	align-items: center;

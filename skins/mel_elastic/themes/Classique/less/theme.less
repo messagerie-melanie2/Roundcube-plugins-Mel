@@ -19,6 +19,10 @@ html.theme-classique:root{
     --calendar-toolbar-roundcube-hover-background-color: #edebe9;
     --calendar-toolbar-roundcube-hover-color: var(--calendar-toolbar-roundcube-color);
     --onboarding-image:url('../../skins/mel_elastic/themes/Classique/images/Computer_classic.png');
+    --drag-n-drop-bckg-color:#edebe9;
+    --drag-n-drop-color: var(--drag-n-drop-bckg-color);
+    --background-pannel-hover: var(--default-background)!important;
+    --button-color-hover: var(--main-text-color)!important;
 }
 
 .mixin-listing()
@@ -112,18 +116,13 @@ html
             .listing {
                 tbody{
                     td{
-                        color:var(--main-text-color);
+                        color:var(--main-text-color) !important;
                         border-bottom:solid thin #f0f0f0;
         
                         &:hover{
-                            //color:var(--secondary-text-color);
-        
-                            //.task-addressbook &{
-                                color:var(--main-text-color);
+                                color:var(--main-text-color) !important;
                                 border-bottom:solid thin var(--tierciary-bckg-color);
-                                background-color: #edebe9;
-                            //}
-        
+                                background-color: #edebe9;      
                         }
         
                         &.name{
@@ -135,12 +134,13 @@ html
         
                 tr {
                     &.selected {
+                      // background-color: var(--invisible);
                         td {
-                            //color:var(--secondary-text-color);
+                            color:var(--secondary-text-color);
         
                             //.task-addressbook &{
-                                color:var(--main-text-color);
-                                border-left:solid thick var(--tierciary-bckg-color)!important;
+                                // color:var(--main-text-color);
+                                // border-left:solid thick var(--tierciary-bckg-color)!important;
                                 border-bottom: unset!important;
                                 background-color: #edebe9;
                             //}
@@ -525,13 +525,17 @@ html
             table.messagelist tr.message.selected:hover td.subject span.msgicon.status::before{
                 color:var(--main-text-color)!important;
             }
+
+            table.messagelist tr.selected td {
+              background-color: #edebe9;
+            }
         
             #layout-list .listing tr.selected td.flags{
                 border:none!important;
             }
         
             #layout-list .listing tbody tr:hover td{
-                background-color: #edebe9;
+                // background-color: #edebe9;
                 border-bottom-color: transparent!important;
             }
         
@@ -669,6 +673,16 @@ html
                     }
                 }
             }
+
+            .listing {
+                tbody {
+                    td {
+                        &:hover {
+                            --secondary-text-color:var(--main-text-color);
+                        }
+                    }
+                }
+            }
         }
 
         .mel-selectable{
@@ -681,21 +695,21 @@ html
 
             &.picture-only {
                 &:hover{
-                    border:none;
+                    border:solid thin var(--invisible);;
                 }
             }
 
             &.selected{
                 background-color: #edebe9;
                 color: var(--main-text-color);
-                border-bottom:none!important;
+                border-bottom:solid thin var(--invisible)!important;
                 border-left: solid thick var(--tierciary-bckg-color);
                 
                 &.picture-only {
-                    border:none;
+                    border:solid thin var(--invisible);
 
                     &:hover {
-                        border:none;
+                        border:solid thin var(--invisible);
                     }
                 }
 

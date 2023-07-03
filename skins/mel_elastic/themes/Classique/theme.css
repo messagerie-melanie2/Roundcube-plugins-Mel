@@ -30,16 +30,20 @@ html.theme-classique:root {
   --calendar-toolbar-roundcube-hover-background-color: #edebe9;
   --calendar-toolbar-roundcube-hover-color: var(--calendar-toolbar-roundcube-color);
   --onboarding-image: url('../../skins/mel_elastic/themes/Classique/images/Computer_classic.png');
+  --drag-n-drop-bckg-color: #edebe9;
+  --drag-n-drop-color: var(--drag-n-drop-bckg-color);
+  --background-pannel-hover: var(--default-background)!important;
+  --button-color-hover: var(--main-text-color)!important;
 }
 html.theme-classique #layout-list {
   color: var(--main-text-color) !important;
 }
 html.theme-classique #layout-list .listing tbody td {
-  color: var(--main-text-color);
+  color: var(--main-text-color) !important;
   border-bottom: solid thin #f0f0f0;
 }
 html.theme-classique #layout-list .listing tbody td:hover {
-  color: var(--main-text-color);
+  color: var(--main-text-color) !important;
   border-bottom: solid thin var(--tierciary-bckg-color);
   background-color: #edebe9;
 }
@@ -47,8 +51,7 @@ html.theme-classique #layout-list .listing tbody td.name {
   width: 100%;
 }
 html.theme-classique #layout-list .listing tr.selected td {
-  color: var(--main-text-color);
-  border-left: solid thick var(--tierciary-bckg-color) !important;
+  color: var(--secondary-text-color);
   border-bottom: unset!important;
   background-color: #edebe9;
 }
@@ -281,11 +284,13 @@ html.theme-classique .task-mail table.messagelist .selected span.threads > div,
 html.theme-classique .task-mail table.messagelist tr.message.selected:hover td.subject span.msgicon.status::before {
   color: var(--main-text-color) !important;
 }
+html.theme-classique .task-mail table.messagelist tr.selected td {
+  background-color: #edebe9;
+}
 html.theme-classique .task-mail #layout-list .listing tr.selected td.flags {
   border: none!important;
 }
 html.theme-classique .task-mail #layout-list .listing tbody tr:hover td {
-  background-color: #edebe9;
   border-bottom-color: transparent!important;
 }
 html.theme-classique .task-mail #layout-list .listing tr.selected td.threads + .subject {
@@ -425,6 +430,9 @@ html.theme-classique .task-tasks .searchbar {
 html.theme-classique .task-settings #layout-list .header a {
   --secondary-text-color: var(--main-text-color);
 }
+html.theme-classique .task-settings .listing tbody td:hover {
+  --secondary-text-color: var(--main-text-color);
+}
 html.theme-classique .mel-selectable {
   border-bottom: solid thin var(--invisible);
 }
@@ -434,19 +442,19 @@ html.theme-classique .mel-selectable:hover {
   border-bottom-color: var(--tierciary-bckg-color);
 }
 html.theme-classique .mel-selectable.picture-only:hover {
-  border: none;
+  border: solid thin var(--invisible);
 }
 html.theme-classique .mel-selectable.selected {
   background-color: #edebe9;
   color: var(--main-text-color);
-  border-bottom: none!important;
+  border-bottom: solid thin var(--invisible) !important;
   border-left: solid thick var(--tierciary-bckg-color);
 }
 html.theme-classique .mel-selectable.selected.picture-only {
-  border: none;
+  border: solid thin var(--invisible);
 }
 html.theme-classique .mel-selectable.selected.picture-only:hover {
-  border: none;
+  border: solid thin var(--invisible);
 }
 html.theme-classique .mel-selectable.selected.picture {
   border-bottom: solid thick #484D7A !important;

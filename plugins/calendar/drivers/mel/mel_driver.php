@@ -166,7 +166,14 @@ class mel_driver extends calendar_driver {
    * @return array List of calendars
    */
   public function list_calendars($filter = 0, &$tree = null, $calid = null) {
-    if (/*$this->rc->task != 'calendar' && $this->rc->task != 'mel_metapage' && $this->rc->task != 'settings' &&*/ $this->rc->task === 'login') {
+    // Ne pas charger les calendriers dans certaines tâches/actions
+    $nolisttasks = [
+      'login/',
+      'addressbook/show',
+      'addressbook/photo',
+    ];
+
+    if (in_array($this->rc->task."/".$this->rc->action, $nolisttasks)) {
       return;
     }
     if (mel_logs::is(mel_logs::DEBUG))
@@ -304,6 +311,9 @@ class mel_driver extends calendar_driver {
 
         // Récupérer les informations sur le propriétaire de l'agenda
         $cal_owner = driver_mel::gi()->getUser($cal->owner);
+
+        // Ajouter l'email du owner
+        $this->calendars[$id]->owner_email = $cal_owner->email;
 
         // formatte le calendrier pour le driver
         $calendar = array(
@@ -1997,6 +2007,7 @@ class mel_driver extends calendar_driver {
         if (! $freebusy && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
           continue;
         }
+        $_e->calendar_owner_email = $this->calendars[$_e->calendar]->owner_email;
         if ($_e->recurrence->type === LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR && ! $_e->deleted) {
           $_events[] = $this->_read_postprocess($_e, $freebusy);
         }
@@ -2421,6 +2432,8 @@ class mel_driver extends calendar_driver {
         $e['id'] = driver_mel::gi()->mceToRcId($_exception->calendar) . self::CALENDAR_SEPARATOR . $_exception->uid . '@DATE-' . strtotime($_exception->recurrence_id);
         $e['recurrence_id'] = $_exception->uid;
         $e['recurrence'] = $recurrence;
+        // Supprimer les exceptions dans les exceptions
+        unset($e['recurrence']['EXCEPTIONS']);
         $e['_instance'] = $_exception->recurrence_id;
         $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;

@@ -1,10 +1,10 @@
 export { ModuleMail }
-import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage";
-import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log";
-import { html_ul } from "../../../../mel_metapage/js/lib/html/html";
-import { mail_html } from "../../../../mel_metapage/js/lib/html/html_mail";
-import { MailBaseModel } from "../../../../mel_metapage/js/lib/mails/mail_base_model";
-import { BaseModule } from "../../../js/lib/module"
+import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage.js";
+import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log.js";
+import { html_ul } from "../../../../mel_metapage/js/lib/html/html.js";
+import { mail_html } from "../../../../mel_metapage/js/lib/html/html_mail.js";
+import { MailBaseModel } from "../../../../mel_metapage/js/lib/mails/mail_base_model.js";
+import { BaseModule } from "../../../js/lib/module.js"
 
 const MODULE_ID = 'Mails';
 class ModuleMail extends BaseModule{
@@ -14,7 +14,8 @@ class ModuleMail extends BaseModule{
 
     start() {
         super.start();
-        this._init().set_title_action();
+        this._init()
+            .set_title_action('mail');
         let loaded = false;
         let mail_loader = new MailLoader();
         Object.defineProperties(this, {
@@ -66,14 +67,6 @@ class ModuleMail extends BaseModule{
             this.show_last_mails({force_refresh:true});
         }, 'bureau', {callback_key:KEY});
 
-        return this;
-    }
-
-    set_title_action(){
-        const URL = this.url('mail', {});
-        this.select_module_title().attr('href', URL).click(() => {
-            this.change_frame('mail', {update: false, force_update: false});
-        });
         return this;
     }
 
@@ -193,6 +186,7 @@ class MailLoaderDataBase extends MailLoaderBase {
 
     async load_mails() {
         let mails = [];
+        const self = this;
         await this.http_internal_get(
             {
                 task:'bureau',
@@ -201,18 +195,22 @@ class MailLoaderDataBase extends MailLoaderBase {
                     try {
                         if ('string' === typeof datas) datas = JSON.parse(datas);
                     } catch (error) {
-                        this.on_error(error);
+                        self._on_error(error);
                     }
 
                     mails = MailBaseModel.import_from_array(datas);
                 },
                 on_error:function (...args) {
-                    BnumLog.fatal('get_last_mails', 'Impossible de récupérer les mails !', ...args);
+                    self._on_error(...args);
                 }
             }
         );
 
         return mails;
+    }
+
+    _on_error(...args) {
+        BnumLog.fatal('get_last_mails', 'Impossible de récupérer les mails !', ...args);
     }
 }
 

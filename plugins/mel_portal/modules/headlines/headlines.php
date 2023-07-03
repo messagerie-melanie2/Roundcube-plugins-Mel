@@ -72,25 +72,13 @@ class Headlines extends Module
     }
 
     function get_last_news($plugin = null) {
-        include_once __DIR__."../../../mel_news/lib/news_datas.php";
-        $current = [
-            'news' => null,
-            'time' => null
-        ];
-        $news = $plugin ?? $this->rc->plugins->get_plugin("mel_news");
-        foreach ($news->generate_all_news() as $flux) {
-            if ($flux->is() === 'news') {
+        $dir = __DIR__;
+        include_once "$dir/../../../mel_news/lib/news_datas.php";
 
-                $time = ($flux->date === null ? $flux->datas === null ? new news_date(date("Y-m-d H:i:s"), date("Y-m-d H:i:s")) : new news_date($flux->datas->date, $flux->datas->date) : $flux->date)->toTime();
-                if (!isset($current['time']) || $time < $current['time']) {
-                    $current['news'] = $flux;
-                    $current['time'] = $time;
-                }
+        $tmp = driver_mel::gi()->getUser()->getUserLastNews();
+        $tmp = new news_datas($tmp);
 
-            }
-        }
-
-        return $current['news'];
+        return $tmp;
     }
 
     function action_get_last_news() {

@@ -83,6 +83,9 @@ table.messagelist tr.unread {
 table.messagelist tr.unread > td:first-child {
   border-left: 2px solid var(--primary-border-color) !important;
 }
+table.messagelist tr.unread td {
+  background-color: var(--invisible);
+}
 table.messagelist tr.unread td.subject span.date {
   font-weight: bold;
   color: var(--main-text-color);
@@ -90,6 +93,9 @@ table.messagelist tr.unread td.subject span.date {
 table.messagelist tr.unread td.subject span.fromto {
   font-weight: bold;
   color: var(--main-text-color);
+}
+table.messagelist tr.unread td.subject span.adr {
+  font-weight: bold;
 }
 table.messagelist tr.unread td.subject span.msgicon::before {
   content: "\e94d" !important;
@@ -401,12 +407,16 @@ html body.task-mail #mailsearchlist .searchbar a {
   font-weight: normal;
 }
 #mailsearchlist .searchbar a.options::before {
-  content: "\e907";
-  font-family: DWP;
+  content: "\e5cf";
+  font-family: 'Material Symbols Outlined';
   font-weight: normal;
+  font-variation-settings: 'wght' 300, 'opsz' 48;
+  font-size: 22px;
+  line-height: inherit;
+  transform: scale(1);
 }
 #mailsearchlist .searchbar.open a.options::before {
-  content: "\e906";
+  content: "\e5ce";
 }
 #mailsearchlist.hoverable {
   right: 20px;
@@ -440,8 +450,12 @@ html body.task-mail #layout > div > .footer.small {
   display: none!important;
 }
 #rcm_messagelist li .ct-tb::before {
-  font-family: 'DWP' !important;
-  content: "\e956";
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-variation-settings: 'wght' 300, 'opsz' 48;
+  font-size: 17px;
+  transform: scale(1.5);
+  content: "\e866";
 }
 #rcm_messagelist li .ct-tb::after {
   color: #737677;
@@ -557,108 +571,750 @@ html body.task-mail #layout > div > .footer.small {
 }
 /**ICONS**/
 .menu a#listmenulink.options::before {
-  content: "\e95d" !important;
-  font-family: DWP !important;
+  content: "\e429" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.compose::before {
-  content: "\e953" !important;
-  font-family: DWP !important;
+  content: "\e22b" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a.select::before {
+  content: "\f82f" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 .menu a.reply::before {
-  content: "\e92a" !important;
-  font-family: DWP !important;
+  content: "\e15e" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.reply-all::before,
 .menu a.reply.all::before,
 .menu a.reply.list::before {
-  content: "\e95a" !important;
-  font-family: DWP !important;
+  content: "\e15f" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.delete::before {
-  content: "\e934" !important;
-  font-family: DWP !important;
+  content: "\e872" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.more::before {
-  content: "\e90c" !important;
-  font-family: DWP !important;
+  content: "\e5d3" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 700, 'opsz' 48 !important;
 }
 .menu a.close-visu::before {
-  content: "\e908" !important;
-  font-family: DWP !important;
+  content: "\e5c9" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.forward::before {
-  content: "\e92a" !important;
-  font-family: DWP !important;
+  content: "\e154" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  -webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.forward.attachment::before,
 .menu a.forward.bounce::before,
 .menu a.forward.inline::before {
-  content: "\e92a" !important;
-  font-family: DWP !important;
+  content: "\e154" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  -webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .menu a.threads::before {
-  content: "\e920" !important;
-  font-family: DWP !important;
+  content: "\e0bf" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a.junk::before,
+.menu a.markasjunk::before,
+.menu a.junkadmin::before {
+  content: "\f16a" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a.markmessage::before {
+  content: "\f05b" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a.print::before {
+  content: "\e8ad" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a.prev::before {
+  content: "\e5c4" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a.next::before {
+  content: "\e5c8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a.send::before {
+  content: "\e163" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
+}
+.menu a.save.draft::before {
+  content: "\e161" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
+}
+.menu a.save.model::before {
+  content: "\eb60" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
+}
+.menu a.signature::before {
+  content: "\f74c" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a#mel_envoi_differe::before {
+  content: "\e8b5" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+.menu a#mel_envoi_differe#text {
+  font-size: 90%;
+}
+#message-menu .menu a.print::before {
+  content: "\e8ad" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.import::before {
+  content: "\f09b" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.download::before {
+  content: "\f090" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.edit::before {
+  content: "\e3c9" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.source::before {
+  content: "\f770" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.move::before {
+  content: "\e2c8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.copy::before {
+  content: "\e14d" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.extwin::before {
+  content: "\e89e" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.compose::before {
+  content: "\e22b" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.filterlink::before {
+  content: "\ef4f" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.calendarlink::before {
+  content: "\ebcc" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#message-menu .menu a.taskaddlink::before {
+  content: "\e834" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailto-menu .menu a.addressbook::before {
+  content: "\e7fd" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailto-menu .menu a.compose::before {
+  content: "\e22b" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#markmessage-menu .menu a.read::before {
+  content: "\e151" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#markmessage-menu .menu a.unread::before {
+  content: "\e158" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#markmessage-menu .menu a.flag::before {
+  content: "\e153" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
+}
+#markmessage-menu .menu a.unflag::before {
+  content: "\e153" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#markmessage-menu .menu a.junk::before {
+  content: "\f16a" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailboxoptions-menu .menu a.expunge::before {
+  content: "\f82e" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailboxoptions-menu .menu a.purge::before {
+  content: "\e28d" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailboxoptions-menu .menu a.read::before {
+  content: "\e151" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailboxoptions-menu .menu a.folders::before {
+  content: "\e2c7" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailboxoptions-menu .menu a.create::before {
+  content: "\e147" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailboxoptions-menu .menu a.settings::before {
+  content: "\e8b8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#mailboxoptions-menu .menu a.refresh::before {
+  content: "\e5d5" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_markmessage-menu .menu a.read::before {
+  content: "\e151" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_markmessage-menu .menu a.unread::before {
+  content: "\e158" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_markmessage-menu .menu a.flag::before {
+  content: "\e153" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1;
+}
+#rcm_markmessage-menu .menu a.unflag::before {
+  content: "\e153" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_markmessage-menu .menu a.junk::before {
+  content: "\f16a" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.print::before {
+  content: "\e8ad" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.download::before {
+  content: "\f090" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.edit::before {
+  content: "\e3c9" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.source::before {
+  content: "\f770" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.copy::before {
+  content: "\e14d" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.extwin::before {
+  content: "\e89e" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.compose::before {
+  content: "\e22b" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.filterlink::before {
+  content: "\ef4f" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.calendarlink::before {
+  content: "\ebcc" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_message-menu .menu a.taskaddlink::before {
+  content: "\e834" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.collapseall::before {
+  content: "\e5d6" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.expandall::before {
+  content: "\e5d7" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.openextwin::before {
+  content: "\e89e" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.expunge::before {
+  content: "\f82e" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.purge::before {
+  content: "\e28d" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.read::before {
+  content: "\e151" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.folders::before {
+  content: "\e2c8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.create::before {
+  content: "\e147" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.settings::before {
+  content: "\e8b8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
+}
+#rcm_folderlist .menu a.refresh::before {
+  content: "\e5d5" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 22px !important;
+  line-height: inherit !important;
+  transform: scale(1) !important;
 }
 a.button.icon.refresh::before {
-  content: "\e95b" !important;
-  font-family: DWP !important;
+  content: "\e5d5" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+}
+a.button.icon.toolbar-list-button::before {
+  content: "\e5d4" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 700, 'opsz' 48 !important;
+}
+a.button.icon.folders::before {
+  content: "\e2c8" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
+}
+@media screen and (max-width: 1250px) {
+  a.button.icon.refresh::before {
+    height: 58px;
+  }
+  a.button.icon.toolbar-list-button::before {
+    height: 58px;
+  }
+  a.button.icon.folders::before {
+    height: 58px;
+  }
 }
 button.btn.refresh::before {
-  content: "\e95b" !important;
-  font-family: DWP !important;
+  content: "\e5d5" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 .folderlist li a::before {
-  content: "\e951" !important;
-  font-family: DWP !important;
+  content: "\e2c7" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 26px !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48 !important;
 }
 .folderlist li.drafts a::before {
-  content: "\e95c" !important;
-  font-family: DWP !important;
-  font-weight: normal !important;
+  content: "\e3c9" !important;
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-variation-settings: 'wght' 300, 'opsz' 48;
+  font-size: 26px;
+  font-variation-settings: 'wght' 400, 'opsz' 48;
 }
 .folderlist li.trash a::before {
-  content: "\e934" !important;
-  font-family: DWP !important;
+  content: "\e872" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 26px !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48 !important;
 }
 .folderlist li.sent a::before {
-  content: "\e954" !important;
-  font-family: DWP !important;
+  content: "\e163" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 26px !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48 !important;
 }
 .folderlist li.inbox > a::before,
 .folderlist li.boite > a::before {
-  content: "\f01c" !important;
-  font-weight: 900!important;
-  font-family: 'Icons' !important;
+  content: "\e156" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 26px !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48 !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48, 'FILL' 1 !important;
 }
 .folderlist li.junk a::before {
-  content: "\f7e4" !important;
-  font-weight: 900!important;
-  font-family: Icons!important;
+  content: "\f16a" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 26px !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48 !important;
 }
 #tb_label_popuplink::before {
-  content: "\e956" !important;
-  font-family: DWP !important;
+  content: "\e866" !important;
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
 }
 /****/
 td.subject td.labels {
@@ -733,6 +1389,9 @@ ul ul li.mailbox.select > a:first-of-type {
 ul ul li.mailbox:hover > a:first-of-type {
   background-color: var(--secondary-bckg-color);
   border-radius: 5px;
+}
+ul ul li.mailbox.droptarget {
+  background-color: var(--drag-n-drop-bckg-color) !important;
 }
 ul ul li.mailbox.droptarget:hover > a:first-of-type {
   background-color: var(--drag-n-drop-bckg-color) !important;

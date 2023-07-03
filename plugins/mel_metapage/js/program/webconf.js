@@ -379,7 +379,7 @@ class WebconfChat{
     }
 
     async getStatus() {
-        return await ChatHelper.Chat().get_status_from_server();
+        return await (await ChatHelper.Chat()).get_status_from_server();
     }
 
     /**
@@ -1594,6 +1594,15 @@ class Webconf{
         await wait(() => window.JitsiMeetExternalAPI === undefined);
         console.log('Connexion...')
         this.jitsii = new JitsiMeetExternalAPI(domain, options);
+
+        let interval = setInterval(() => {
+            //console.log('interval2', window.listener, !!window.listener, interval);
+            if (!!window.listener) {
+                clearInterval(interval);
+                window.listener.start();
+            }
+        }, 10);
+
         this.$frame_webconf.find('iframe').css('display', 'none');
 
         this.$frame_webconf.find('.loading-visio-text').html('Chargement de la visioconférence...')
@@ -1626,14 +1635,14 @@ class Webconf{
         this.chat.onloading = () => {
             this.screen_manager.updateMode();
 
-            try {
-                const status = this.chat.save_status();
+            // try {
+            //     const status = this.chat.save_status();
 
-                if (status.status !== 'online') this.chat.setStatus('busy', 'Je suis en visioconférence', false);
-                else this.chat.ignore_last_status();
-            } catch (error) {
+            //     if (status.status !== 'online') this.chat.setStatus('busy', 'Je suis en visioconférence', false);
+            //     else this.chat.ignore_last_status();
+            // } catch (error) {
                 
-            }
+            // }
         };
         this.chat.$frame_chat[0].src = rcmail.env.rocket_chat_url + this.chat.get_room();
 
@@ -1723,13 +1732,18 @@ class Webconf{
     {
         if (this._jwt === undefined)
         {
-            rcmail.http_get('webconf/jwt', {
-				_room : this.key,
-			}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
-            while (jwt_token === undefined) {
-                await delay(100);
-            }
-            this._jwt = jwt_token;
+            await mel_metapage.Functions.get(
+                mel_metapage.Functions.url('webconf', 'jwt', {_room : this.key}),
+                {},
+                (datas) => {
+
+                    if ('string' === typeof datas) datas = JSON.parse(datas);
+
+                    if (!!datas.jwt) {
+                        this._jwt = datas.jwt;
+                    }
+                }
+            )
         }
         return this._jwt;
     }
@@ -2766,6 +2780,9 @@ var MasterWebconfBar = (() => {
              * @type {boolean}
              */
             const isff = MasterWebconfBar.isFirefox();
+
+            if (_$('.wsp-toolbar.webconf-toolbar').length > 0) _$('.wsp-toolbar.webconf-toolbar').remove();
+
             _$("body").append(rawbar); //Ajoute la barre au body
 
             //Boucle sur tout les boutons, et leurs assigne leurs fonctionnements
@@ -3457,6 +3474,8 @@ var MasterWebconfBar = (() => {
          */
         async hangup()
         {
+            //this.webconfManager.chat.recover_last_status();
+            //window[var_visio]?.chat?.recover_last_status?.();
             //Déplace le "plus d'actions" pour pouvoir le réutiliser plus tard
             this._$more_actions.addClass('hidden').appendTo('body');
 
@@ -3875,8 +3894,8 @@ class ListenerWebConfBar {
             this.webconf.jitsii.addEventListener('passwordRequired', () =>
             {
                 setPassword = false;
-                if (this.webconf.webconf_page_creator.havePassword()) {
-                    const password = this.webconf.webconf_page_creator.$password_datas.val();
+                if (this.webconf.webconf_page_creator.havePassword() || rcmail.env["webconf.pass"]) {
+                    const password = rcmail.env["webconf.pass"] || this.webconf.webconf_page_creator.$password_datas.val();
                     this.webconf.jitsii.executeCommand('password', password);
                 }
                 else {
@@ -3885,11 +3904,11 @@ class ListenerWebConfBar {
             });
 
             this.webconf.jitsii.addEventListener('videoConferenceJoined', () => {
-                console.log('videoConferenceJoined');
-                console.log('videoConferenceJoined', this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
-                if (this.webconf.webconf_page_creator.havePassword() || erroredPassword){
-                    const password = this.webconf.webconf_page_creator.$password_datas.val();
-                    console.log('videoConferenceJoined 2 ', password, this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
+                console.info('videoConferenceJoined');
+                console.debug('videoConferenceJoined', this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
+                if (this.webconf.webconf_page_creator.havePassword() || erroredPassword || rcmail.env["webconf.pass"]){
+                    const password = rcmail.env["webconf.pass"] || this.webconf.webconf_page_creator.$password_datas.val();
+                    console.debug('videoConferenceJoined 2 ', password, this.webconf.webconf_page_creator.havePassword(), erroredPassword, setPassword);
                     this.setPassword(erroredPassword ? ListenerWebConfBar.erronedPassword : password, setPassword);
                 }
             });
@@ -4228,6 +4247,25 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
         config:page_creator_config
     }, rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"], addittionnal, right_item_size, null, () => {
         onvisiostart();
+        // if (!!rcmail.env["webconf.pass"]) {
+        //     new Promise((ok, nok) => {
+        //         let it = 0;
+        //         const intervalp = setInterval(() => {
+        //             if (!!window.listener) {
+        //                 window.listener.setPassword(rcmail.env["webconf.pass"], true);
+        //                 clearInterval(intervalp);
+        //                 it = null;
+        //                 ok();
+        //             }
+        //             else if (it++ >= (10 * 100)) {
+        //                 clearInterval(intervalp);
+        //                 it = null;
+        //                 nok('listener not found');
+        //             }
+        //         }, 100); 
+
+        //     });
+        // }
         let interval1 = setInterval(() => {
             //console.log('interval1', top.masterbar, !!top.masterbar, interval1);
             if (!!top.masterbar) {
@@ -4235,14 +4273,6 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
                 top.masterbar.show();
                 top.masterbar.webconfManager.chat.hidden = window[webconf_var_name].chat.hidden;
                 top.masterbar.updateLogo().updateBarAtStartup();
-            }
-        }, 10);
-
-        let interval = setInterval(() => {
-            //console.log('interval2', window.listener, !!window.listener, interval);
-            if (!!window.listener) {
-                clearInterval(interval);
-                window.listener.start();
             }
         }, 10);
     });
@@ -4261,13 +4291,13 @@ function create_webconf(webconf_var_name, screen_manager_var_name, page_creator_
  * Créer les différents listeners utile à la visio
  */
 function create_listeners() {
-    rcmail.addEventListener('responseafterjwt', function(evt) {
-        if (evt.response.id) {
-            jwt_token = evt.response.jwt;
-        }
-    });
+    // rcmail.addEventListener('responseafterjwt', function(evt) {
+    //     if (evt.response.id) {
+    //         jwt_token = evt.response.jwt;
+    //     }
+    // });
 
-    window.addEventListener('message', (e) => {
+    window.addEventListener('message', async (e) => {
 		if (e.data.eventName === undefined)
 			return;
 
@@ -4278,7 +4308,7 @@ function create_listeners() {
 				const value = e.data.data;
 				//top.ariane.update_status(value?.id ?? value);
 				rcmail.env.ariane_have_calls = true;
-                ChatHelper.Manager().updateStatus(value?.id ?? value);
+                (await ChatHelper.Manager()).updateStatus(value?.id ?? value);
 			}
 		//}
 	});
@@ -4456,11 +4486,11 @@ $(document).ready(() => {
     }, () => {
         console.log('on dispose starting...');
 
-        try {
-            window[var_visio].chat.recover_last_status();
-        } catch (error) {
+        // try {
+        //     window[var_visio].chat.recover_last_status();
+        // } catch (error) {
             
-        }
+        // }
 
         top[var_top_webconf_started] = undefined;
         top[var_global_screen_manager] = undefined;

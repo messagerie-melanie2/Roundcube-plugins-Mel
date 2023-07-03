@@ -3364,6 +3364,17 @@ $(document).ready(() => {
                 }
             });
 
+            if ('settings' === rcmail.env.task) {
+                try {
+                    let $settings_frames = $('iframe');
+                    for (const iterator of $settings_frames) {
+                        iterator.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
+                    }
+                } catch (error) {
+                    
+                }
+            }
+
             if (post) {
                 mel_metapage.Functions.post(
                     mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),

@@ -4173,7 +4173,7 @@ a.rcmContactAddress {
         margin-bottom: 5px;
         box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
         // margin: 0 15px;
-        transition: all 0.1s ease-in;
+        // transition: all 0.1s ease-in;
 
         &.barup-background-color {
             // border: solid thin var(--primary-border-color);
@@ -4189,7 +4189,8 @@ a.rcmContactAddress {
         }
 
         &:hover {
-            // border-radius: 100%;
+            background-color: #484D7AC7 !important;
+            background-blend-mode: multiply !important;
             box-shadow: none;
         }
 
@@ -4224,11 +4225,15 @@ a.rcmContactAddress {
             border-bottom-right-radius: 0;
             border: none;
             --main-bckg-color: var(--invisible);
-            --secondary-text-color: var(--main-text-color);
+            // --secondary-text-color: var(--main-text-color);
 
             &:hover{
                 // border-top-left-radius: 100%;
                 // border-bottom-left-radius: 100%;
+                
+                .color-icon {
+                    --main-text-color: var(--secondary-text-color);
+                }
             }
         }
 

@@ -343,12 +343,13 @@ $(document).ready(() => {
 
         async getValue()
         {
+            const type = this.$type.val();
             let visio_val = EMPTY_STRING;
             let val = await super.getValue();
 
             //if (!!this.visioPhone) this.visioPhone.update();
             
-            switch (this.$type.val()) {
+            switch (type) {
                 case 'intregrated': //visio intégrée
                     visio_val = this.$visioState.val();
                     let config = {
@@ -379,6 +380,10 @@ $(document).ready(() => {
                 case 'custom':
                     visio_val = this.$visioCustom.val();
                     val += `@visio:${visio_val}`;
+
+                    this.visioPhone.$phoneNumber.hide();
+                    this.visioPhone.$phonePin.hide();
+                    this.visioPhone.$phoneDatas.hide();
                     break;
 
                 default:
@@ -389,6 +394,11 @@ $(document).ready(() => {
                 this._onValid();
             }
             else if (0 !== visio_val.length && !this.check()) this._onError();
+            else if (this.visioPhone.$phoneNumber.css('display') === 'none' && this.check() && 'intregrated' === type) {
+                this.visioPhone.$phoneNumber.show();
+                this.visioPhone.$phonePin.show();
+                this.visioPhone.$phoneDatas.show();
+            }
 
             return val;
         }
@@ -505,9 +515,16 @@ $(document).ready(() => {
             this.$visioCustom.parent().find('.required-text').remove();
             this.$visioState.parent().find('.required-text').remove();
 
-            this.visioPhone.$phoneNumber.show();
-            this.visioPhone.$phonePin.show();
-            this.visioPhone.$phoneDatas.show();
+            if (this.$type.val() === 'integrated') {
+                this.visioPhone.$phoneNumber.show();
+                this.visioPhone.$phonePin.show();
+                this.visioPhone.$phoneDatas.show();
+            }
+            else {
+                this.visioPhone.$phoneNumber.hide();
+                this.visioPhone.$phonePin.hide();
+                this.visioPhone.$phoneDatas.hide();
+            }
         }
     }
 

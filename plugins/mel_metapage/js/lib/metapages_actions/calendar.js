@@ -19,8 +19,12 @@ export class MetapageCalendarModule extends MetapageModule {
 
         this.alarm_manager.clearTimeouts();
 
-        await new WaitSomething(() => !!rcmail._events['plugin.display_alarms']);
-        await this._generate_alarms();
+        //Alarmes obsolètes
+        if (this.load(mel_metapage.Storage.last_calendar_update) === moment().format(CONST_DATE_FORMAT_BNUM))
+        {
+            await new WaitSomething(() => !!rcmail._events['plugin.display_alarms']);
+            await this._generate_alarms();
+        }
 
         this.calendarLoader().on_calendar_updated.add('MetapageCalendarModule', () => {
             this._generate_alarms();

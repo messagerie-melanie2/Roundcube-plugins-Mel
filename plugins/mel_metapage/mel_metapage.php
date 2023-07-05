@@ -407,6 +407,10 @@ class mel_metapage extends bnum_plugin
             unset($courielleur);
             unset($from_cour);
 
+            // if ('GET' == $_SERVER['REQUEST_METHOD']) {
+            //     $this->rc->output->set_env('loading_picture_mode',  $this->rc->config->get('picture-mode', true));
+            // }
+
             $this->rc->output->set_env("plugin.mel_metapage", true);
             $this->rc->output->set_env("username", $this->rc->user->get_username());
             //$this->include_depedencies();
@@ -3157,6 +3161,10 @@ class mel_metapage extends bnum_plugin
 
         echo json_encode($this->rc->config->get($option, $default));
         exit;
+    }
+
+    public function get_picture_mode() {
+        return $this->rc->config->get('picture-mode', true);
     }
 
 }

@@ -120,7 +120,14 @@ class Workspaces extends Module
           $html_tmp .= '<div class="dwp-circle dwp-user"><span>+' . (count($workspace->shares) - 2) . '</span></div>';
           break;
         }
-        $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
+        
+        if (!$this->rc->plugins->get_plugin('mel_metapage')->get_picture_mode())
+        {
+          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><span style=color:"'. $ws->get_badge_text_color($workspace) .">" . substr($s->user, 0, 2) . '</span></div>';
+        }
+        else {
+          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
+        }
         ++$it;
       }
       $html = str_replace("<workspace-users/>", $html_tmp, $html);

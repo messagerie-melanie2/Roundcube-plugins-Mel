@@ -343,14 +343,16 @@ $(document).ready(() => {
 
         async getValue()
         {
+            let visio_val = EMPTY_STRING;
             let val = await super.getValue();
 
             //if (!!this.visioPhone) this.visioPhone.update();
             
             switch (this.$type.val()) {
                 case 'intregrated': //visio intégrée
+                    visio_val = this.$visioState.val();
                     let config = {
-                        _key:this.$visioState.val()
+                        _key:visio_val
                     };
 
                     {
@@ -365,7 +367,7 @@ $(document).ready(() => {
                     if (this.$haveWorkspace[0].checked && this.$workspace.val() !== "#none")
                         config["_wsp"] = this.$workspace.val();
 
-                    const tmp = !this.visioPhone.enabled() ? '' : (await this.visioPhone.getValue());
+                    const tmp = !this.visioPhone.enabled() || !this.check() ? '' : (await this.visioPhone.getValue());
 
                     if (!!this.$visioState.data('pass')) config['_pass'] = this.$visioState.data('pass');
 
@@ -375,12 +377,18 @@ $(document).ready(() => {
                     break;
 
                 case 'custom':
-                    val += `@visio:${this.$visioCustom.val()}`;
+                    visio_val = this.$visioCustom.val();
+                    val += `@visio:${visio_val}`;
                     break;
 
                 default:
                     break;
             }
+
+            if (this.has_error() && this.check()) {
+                this._onValid();
+            }
+            else if (0 !== visio_val.length && !this.check()) this._onError();
 
             return val;
         }
@@ -458,15 +466,29 @@ $(document).ready(() => {
             return true;
         }
 
+        has_error() {
+            return this.$visioState.parent().find('.required-text').length > 0 || this.$visioState.parent().find('.required-text').length > 0;
+        }
+
         //<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>
         _onError() {
             super._onError();
             switch (this.$type.val()) {
                 case 'intregrated': //visio intégrée
                     {
+                        let $parent = this.$visioState.parent();
+                        let $required = $parent.find('.required-text');
+
+                        if ($required.length > 0) $required.remove();
+                        $required = null;
+
                         const val = this.$visioState.val();
                         const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
                         this.$visioState.parent().append(`<span class="required-text" style="color:red;display:block">*${text}</span>`);
+
+                        this.visioPhone.$phoneNumber.hide();
+                        this.visioPhone.$phonePin.hide();
+                        this.visioPhone.$phoneDatas.hide();
                     }
                     break;
 
@@ -482,6 +504,10 @@ $(document).ready(() => {
             super._onValid();
             this.$visioCustom.parent().find('.required-text').remove();
             this.$visioState.parent().find('.required-text').remove();
+
+            this.visioPhone.$phoneNumber.show();
+            this.visioPhone.$phonePin.show();
+            this.visioPhone.$phoneDatas.show();
         }
     }
 
@@ -1154,7 +1180,7 @@ $(document).ready(() => {
      * Sauvegarde l'évènement
      * @returns {boolean} Faux si il y a des champs invalides
      */
-    rcube_calendar_ui.save = function()
+    rcube_calendar_ui.save = async function()
     {
         let canContinue = true;
 
@@ -1270,6 +1296,13 @@ $(document).ready(() => {
         {
             $('li > a[href="#event-panel-detail"]').click();
             canContinue = false;
+        }
+
+        {
+            const location_from_js = await window.rcube_calendar_ui.edit._events.getValue();
+            if (canContinue && location_from_js !== $('#edit-location').val()) {
+                $('#edit-location').val(location_from_js);
+            }
         }
 
         if (canContinue && $('#edit-location').val() === reload)

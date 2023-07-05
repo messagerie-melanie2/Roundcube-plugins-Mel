@@ -132,6 +132,7 @@
     {
         const url = `${await voxify_url()}/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
         let phoneNumber = null;
+        window.disable_x_roundcube = true;
         await mel_metapage.Functions.get(
             url,
             {},
@@ -140,6 +141,7 @@
                 if (!!datas && datas.numbersEnabled && !!datas.numbers[indicator] && datas.numbers[indicator].length > 0) phoneNumber = datas.numbers[indicator][0];
             }
         );
+        window.disable_x_roundcube = false;
 
         return phoneNumber;
     }
@@ -148,6 +150,7 @@
     {
         const url = `${await voxify_url()}/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
         let phoneNumber = null;
+        window.disable_x_roundcube = true;
         await mel_metapage.Functions.get(
             url,
             {},
@@ -155,6 +158,7 @@
                 if (!!datas && !!datas.id ) phoneNumber = datas.id;
             }
         );
+        window.disable_x_roundcube = false;
 
         return phoneNumber;
     }

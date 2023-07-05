@@ -84,9 +84,53 @@
         );
     }
 
+    async function voxify_url() {
+        if (!!voxify_url.waiting) {
+            let it = 0;
+            await new Promise((ok, nok) => {
+                const interval = setInterval(() => {
+                    console.debug('Waiting voxify url...');
+                    if (!voxify_url.waiting) {
+                        clearInterval(interval);
+                        console.debug('Voxify url ok !');
+                        ok();
+                    }
+
+                    if (++it > 50) {
+                        voxify_url.waiting = false;
+                        console.debug('Voxify url not ok !');
+                    }
+                }, 100);
+            });
+        }
+
+        let navigator = (top ?? parent ?? window);
+
+        if (!navigator.voxify_url) {
+            voxify_url.waiting = true;
+            console.info('Starting get voxify url !');
+            await mel_metapage.Functions.get(
+                mel_metapage.Functions.url('mel_settings', 'get'),
+                {
+                    _option:'voxify_url',
+                    _default_value:'https://webconf.numerique.gouv.fr/voxapi'
+                },
+                (datas) => {
+                    console.info('Voxify url ok !');
+                    datas = JSON.parse(datas);
+                    navigator.voxify_url = datas;
+                }
+            );
+            console.info('Finishing get voxify url !');
+            voxify_url.waiting = false;
+        }
+
+        return navigator.voxify_url;
+    }
+
     async function getWebconfPhoneNumber(webconf)
     {
-        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        const url = `${await voxify_url()}/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
         let phoneNumber = null;
         await mel_metapage.Functions.get(
             url,
@@ -102,7 +146,7 @@
 
     async function getWebconfPhonePin(webconf)
     {
-        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        const url = `${await voxify_url()}/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
         let phoneNumber = null;
         await mel_metapage.Functions.get(
             url,

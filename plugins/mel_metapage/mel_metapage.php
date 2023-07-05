@@ -223,6 +223,7 @@ class mel_metapage extends bnum_plugin
             $this->add_hook('metapage.save.option.after', [$this, 'hook_save_option_after']);
             $this->register_action('load', array($this, 'load_option'));
             $this->register_action('save', array($this, 'save_option'));
+            $this->register_action('get', array($this, 'get_setting'));
         }
 
         if ($this->rc->task === "mail" )
@@ -3147,6 +3148,15 @@ class mel_metapage extends bnum_plugin
 
         session_destroy();
         return $args;
+    }
+
+
+    public function get_setting(){
+        $option = rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET);
+        $default = rcube_utils::get_input_value('_default_value', rcube_utils::INPUT_GET);
+
+        echo json_encode($this->rc->config->get($option, $default));
+        exit;
     }
 
 }

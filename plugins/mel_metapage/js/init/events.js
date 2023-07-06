@@ -503,10 +503,9 @@ if (rcmail && window.mel_metapage)
 
             if ($("html").hasClass("mwsp")) return args.eventDatas.categories !== undefined && args.eventDatas.categories[0] === `ws#${mel_metapage.Storage.get("current_wsp")}`;
 
-            if (args.eventDatas.allDay === true && args.eventDatas.sensitivity && args.eventDatas.sensitivity != 'public')
+            if (args.eventDatas.allDay === true)
             {
-                let $title = args.element.find('.fc-content');
-                $title.prepend('<i class="fc-icon-sensitive"></i>').addClass('sensible');
+                args.element.find('.fc-content').addClass('fc-time');
             }
             return true;
 

@@ -442,6 +442,9 @@ html.theme-classique .mel-selectable:hover {
   color: var(--main-text-color);
   border-bottom-color: var(--tierciary-bckg-color);
 }
+html.theme-classique .mel-selectable.picture-only {
+  border: none!important;
+}
 html.theme-classique .mel-selectable.picture-only:hover {
   --tierciary-bckg-color: #7d7976;
 }

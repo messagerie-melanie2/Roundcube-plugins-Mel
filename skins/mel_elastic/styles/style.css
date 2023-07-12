@@ -3310,3 +3310,8 @@ html.dark-mode .mel-note.dragover::before {
   border: solid 2px lightgreen;
   /* box-shadow: -5px -10px -9px -15px white; */
 }
+.elastic-contact-qr-button-code {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}

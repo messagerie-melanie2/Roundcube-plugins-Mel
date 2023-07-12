@@ -1,4 +1,5 @@
 <?php 
+include_once 'module/module_connector.php';
 class mel_rocket_chat extends bnum_plugin {
     /**
      *
@@ -6,10 +7,14 @@ class mel_rocket_chat extends bnum_plugin {
      */
     public $task = '.*';
 
+    private $module;
+
     function init() {
         if ($this->rc()->task === 'bnum' || $this->rc()->task === 'chat') {
             if ($this->rc()->action === '' || $this->rc()->action === 'index') $this->setup();
         }
+
+        $this->module = new ChatModuleConnector();
     }
 
     function setup() {

@@ -2170,8 +2170,8 @@ class mel_workspace extends bnum_plugin
                 case 'custom_name':
                     if (!isset($uid)) $uid = $this->generate_channel_id_via_uid($default_values['channel']['value']);
 
-                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                    $value = $rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
+                    $rocket = $this->get_ariane();//$this->rc->plugins->get_plugin('rocket_chat');
+                    $value = $rocket->create_channel_connector($uid, $users, $workspace->ispublic === 0 ? false : true);//$rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
                     break;
 
                 case 'already_exist':
@@ -2722,7 +2722,7 @@ class mel_workspace extends bnum_plugin
 
     function get_ariane()
     {
-        return $this->rc->plugins->get_plugin('rocket_chat');
+        return $this->rc->plugins->get_plugin('mel_metapage')->module_chat;
     }
 
     function delete_services_for_user(&$workspace, $user, $services_to_delete)

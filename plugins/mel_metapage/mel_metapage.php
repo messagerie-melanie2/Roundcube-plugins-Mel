@@ -35,6 +35,8 @@ class mel_metapage extends bnum_plugin
      */
     public $task = '.*';
 
+    public $module_chat;
+
     private $idendity_cache;
 
     public const SPIED_TASK_DRIVE = "drive";
@@ -43,6 +45,7 @@ class mel_metapage extends bnum_plugin
     public const SPIED_TASK_SONDAGE = "sondage";
     private static $urls_spies;
     private static $widgets;
+
 
     public static function add_url_spied($url, $task)
     {
@@ -165,6 +168,9 @@ class mel_metapage extends bnum_plugin
         $this->add_texts('localization/', true);
         $this->load_config();
         $this->require_plugin('mel_helper');
+
+        include_once __DIR__.'/program/modules/chat/chat_module.php';
+        $this-> module_chat = ChatModule::Start($this);
 
         $this->rc->output->set_env('mel_metapage_is_from_iframe', rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC) === 'iframe');
 
@@ -421,8 +427,8 @@ class mel_metapage extends bnum_plugin
                 $this->register_task("webconf");
             else if ($this->rc->task === 'search')
                 $this->register_task("search");
-            else if ($this->rc->task === "chat")
-                $this->register_task("chat");
+            // else if ($this->rc->task === "chat")
+            //     $this->register_task("chat");
             else if ($this->rc->task === "questionswebconf")
             {
                 $this->register_task("questionswebconf");
@@ -443,7 +449,7 @@ class mel_metapage extends bnum_plugin
             if ($this->rc->action === "chat" || $this->rc->task === "chat")
             {
                 $this->include_script('js/actions/ariane.js');
-                $this->register_action('logout', array($this, 'chat_logout'));
+                // $this->register_action('logout', array($this, 'chat_logout'));
             }
 
             if ($this->rc->task === "calendar")

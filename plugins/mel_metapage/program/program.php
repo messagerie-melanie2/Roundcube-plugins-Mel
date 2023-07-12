@@ -108,6 +108,12 @@ abstract class Program{
         $this->add_hook('preferences_save', $onSave);
     }
 
+    protected function input_to_bool($data) {
+        if (is_string($datas)) $data =  $data === 'true';
+
+        return $data;
+    }
+
     protected function create_pref_select($field_id, $current, $names, $values = null, $attrib = null)
     {
   

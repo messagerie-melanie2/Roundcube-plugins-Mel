@@ -679,13 +679,17 @@ EOF;
     public function get_channel_unread_count()
     {
       $channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
-
-      $rocketClient = $this->get_rc_client();
-      $results = $rocketClient->channel_count($channel);
+;
+      $results = $this->_get_channel_unread_count($channel);
 
       echo json_encode($results);
 
       exit;
+    }
+
+    public function _get_channel_unread_count($channel) {
+      $rocketClient = $this->get_rc_client();
+      return $rocketClient->channel_count($channel);
     }
 
     /**
@@ -705,12 +709,13 @@ EOF;
       return $rocketClient->get_all_moderator_joined($user ?? driver_mel::gi()->getUser()->uid);
     }
 
-    public function get_joined_action()
-    {
-      $user_id = rcube_utils::get_input_value('_user_id', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
-      $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
-      $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
-      $mode = (int) $mode;
+    public function _get_joined_action($user_id, $moderator_only, $mode) {
+      if (!isset($user_id)) $user_id = driver_mel::gi()->getUser()->uid;
+
+      if (!isset($moderator_only)) $moderator_only = false;
+
+      if (!isset($mode)) $mode = 0;
+      else $mode = (int) $mode;
 
       $list;
       try {
@@ -744,6 +749,17 @@ EOF;
         $list = [];
       }
 
+      return $list;
+    }
+
+    public function get_joined_action()
+    {
+      $user_id = rcube_utils::get_input_value('_user_id', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
+      $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
+      $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
+
+      $list = $this->_get_joined_action($user_id, $moderator_only, $mode);
+
       echo $list;
       exit;
 
@@ -767,18 +783,28 @@ EOF;
     }
 
     public function get_status() {
-      $infos = $this->get_rc_client()->get_user_status();
-      $infos["content"] = json_decode($infos["content"]);
+      $infos = $this->_get_status();
       echo json_encode($infos);
       exit;
+    }
+
+    public function _get_status() {
+      $infos = $this->get_rc_client()->get_user_status();
+      $infos["content"] = json_decode($infos["content"]);
+
+      return $infos;
     }
 
     public function set_status(){
       $status = rcube_utils::get_input_value('_st', rcube_utils::INPUT_POST);
       $msg = rcube_utils::get_input_value('_msg', rcube_utils::INPUT_POST);
 
-      $return = $this->get_rc_client()->set_user_status($status, $msg);
+      $return = $this->_set_status($status, $msg);
       echo json_encode($return);
       exit;
+    }
+
+    public function _set_status($status, $message) {
+      return $this->get_rc_client()->set_user_status($status, $message);
     }
 }

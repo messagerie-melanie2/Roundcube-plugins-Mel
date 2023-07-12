@@ -1496,7 +1496,7 @@ class mel_workspace extends bnum_plugin
         foreach ($shares as $key => $value) {
             $tmp = driver_mel::gi()->getUser($value->user)->name;
             
-            if (isset($tmp))
+            if (isset($tmp) || $tmp !== '')
             {
                 $html .= html::div(["class" => "row"], 
                 html::div(["class" => "col-2"],

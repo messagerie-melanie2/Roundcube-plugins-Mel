@@ -469,6 +469,8 @@ function m_mp_NotificationsAction(action, uids) {
                     object.remove();
                     break;
             }
+
+            rcmail.triggerEvent('mel_notification.action.after', {notification:notifications[uid], action});
         }
     }
 
@@ -867,7 +869,10 @@ class html_notification extends mel_html2 {
                 const action = notification.action[key];
                 this.attribs['href'] = action.href ?? '#',
                 this.onclick.push((e) => {
-                   rcmail.command(action.command, action.params ?? '', e); e.stopPropagation();
+                    if (!!action.command) rcmail.command(action.command, action.params ?? '', e); 
+                    else if (!!action.click) _action.click(e);
+
+                    e.stopPropagation();
                 })
                 this.attribs['title'] = rcmail.get_label('mel_notification.Action title');
             }

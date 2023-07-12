@@ -91,6 +91,7 @@ export class MelRocketChat extends MelObject {
     }
 
     unread_change(args) {
+        const top = true;
         let {do_base_action, datas} = args;
 
         if (!datas.eventName && !!datas.data.eventName) datas = datas.data;
@@ -98,6 +99,32 @@ export class MelRocketChat extends MelObject {
         if (datas.eventName === 'unread-changed-by-subscription')
         {
             ChatManager.Instance().updateMention(datas.data.name, datas.data.unread);
+            if ('discussion' !== this.rcmail(top).env.current_frame_name && datas.data.unread > 0) {
+                const url = 'd' === datas.data.t ? 'direct' : ('c' === datas.data.t ? 'channel' : 'group')
+                const text = `Vous avez ${1 === datas.data.unread ? 'une nouvelle mention' : 'des nouvelles mentions'} ${('d' === datas.data.t ? 'de' : 'dans le canal')} ${datas.data.fname} !`;
+                this.send_notification({
+                    uid: `unread-${datas.data.rid}`,
+                    title: text,
+                    content: text,
+                    category: 'chat',
+                    action: [
+                      {
+                        href: '#',
+                        title: "Cliquez ici pour ouvrir pour aller voir !",
+                        text: "Ouvrir le canal",
+                        command: 'chat-notification-action',
+                        params: {
+                            url,
+                            id:datas.data.rid
+                        }
+                      }
+                    ],
+                    created: Math.floor(Date.now() / 1000),
+                    modified: Math.floor(Date.now() / 1000),
+                    isread: false,
+                    local: true,
+                  });
+            }
         }
         else {
             ChatManager.Instance().updateUnreads(datas.data === '•');

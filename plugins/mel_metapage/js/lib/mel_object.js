@@ -452,6 +452,14 @@ class MelObject {
         return isNullOrUndefined(item);
     }
 
+    /**
+     * Envoie une notification BNUM
+     * @param {*} notification 
+     */
+    send_notification(notification) {
+        this.rcmail().triggerEvent('plugin.push_notification', notification);
+    }
+
     static Empty() {
         return new MelObject();
     }

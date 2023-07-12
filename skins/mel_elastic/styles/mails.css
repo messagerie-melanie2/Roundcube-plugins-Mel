@@ -149,6 +149,7 @@ table.messagelist tr.message td.subject span.priority span.prio2 {
   font-size: 22px;
   margin-top: -31px;
   margin-left: -3px;
+  pointer-events: none;
 }
 table.messagelist tr.message td.subject span.priority span.prio1::before,
 table.messagelist tr.message td.subject span.priority span.prio2::before {

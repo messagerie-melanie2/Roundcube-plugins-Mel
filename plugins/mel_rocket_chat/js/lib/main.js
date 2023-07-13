@@ -101,7 +101,9 @@ export class MelRocketChat extends MelObject {
             ChatManager.Instance().updateMention(datas.data.name, datas.data.unread);
             if ('discussion' !== this.rcmail(top).env.current_frame_name && datas.data.unread > 0) {
                 const url = 'd' === datas.data.t ? 'direct' : ('c' === datas.data.t ? 'channel' : 'group')
-                const text = `Vous avez ${1 === datas.data.unread ? 'une nouvelle mention' : 'des nouvelles mentions'} ${('d' === datas.data.t ? 'de' : 'dans le canal')} ${datas.data.fname} !`;
+                const text_mention = 1 === datas.data.unread ? 'une nouvelle mention' : 'des nouvelles mentions';
+                const text_direct = 1 === datas.data.unread ? 'un nouveau message' : 'des nouveaux messages';
+                const text = `Vous avez ${'d' === datas.data.t ? text_direct : text_mention} ${('d' === datas.data.t ? 'de' : 'dans le canal')} ${datas.data.fname} !`;
                 this.send_notification({
                     uid: `unread-${datas.data.rid}`,
                     title: text,

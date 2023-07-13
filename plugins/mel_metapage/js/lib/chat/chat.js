@@ -132,7 +132,7 @@ class Chat extends MelObject {
             message:''
         }
         await mel_metapage.Functions.get(
-            mel_metapage.Functions.url('discussion', 'get_status'),
+            mel_metapage.Functions.url(this.task(), 'get_status'),
             {},
             (datas) => {
                 if ("string" === typeof datas) datas = JSON.parse(datas);
@@ -150,7 +150,7 @@ class Chat extends MelObject {
     
     async set_status_to_server(status, message) {
         await mel_metapage.Functions.post(
-            mel_metapage.Functions.url('discussion', 'set_status'),
+            mel_metapage.Functions.url(this.task(), 'set_status'),
             {
                 _st:status,
                 _msg:message
@@ -171,6 +171,10 @@ class Chat extends MelObject {
             message:this.message_status
         };
         this.save('tchat', tmp);
+    }
+
+    task() {
+        return 'clavardage';
     }
 
 }

@@ -115,6 +115,8 @@ class mel_workspace extends bnum_plugin
      */
     function portal()
     {
+        if (class_exists('mel_rocket_chat')) mel_rocket_chat::InitConnectors();
+
         $this->include_css();
         $this->include_js();
         $this->register_action('index', array($this, 'index'));
@@ -2152,6 +2154,8 @@ class mel_workspace extends bnum_plugin
 
     function create_channel(&$workspace, $services, $users, $default_values = null)
     {
+        $rocket = $this->get_ariane();
+        $rocket->ignore_encode_start();
         $service = self::CHANNEL;
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Services : ".json_encode($service)." => $service");
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Can enter : ".($this->get_object($workspace,$service) === null && array_search($service, $services) !== false));
@@ -2170,7 +2174,7 @@ class mel_workspace extends bnum_plugin
                 case 'custom_name':
                     if (!isset($uid)) $uid = $this->generate_channel_id_via_uid($default_values['channel']['value']);
 
-                    $rocket = $this->get_ariane();//$this->rc->plugins->get_plugin('rocket_chat');
+                    $rocket = $rocket ?? $this->get_ariane();//$this->rc->plugins->get_plugin('rocket_chat');
                     $value = $rocket->create_channel_connector($uid, $users, $workspace->ispublic === 0 ? false : true);//$rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
                     break;
 
@@ -2189,6 +2193,8 @@ class mel_workspace extends bnum_plugin
                     return $this->create_channel($workspace, $services, $users, null);
             }
             mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Valeur : ".json_encode($value));
+
+            if (is_string($value)) $value = json_decode($value);
 
             if (is_string($value["content"]))
             {
@@ -2210,6 +2216,8 @@ class mel_workspace extends bnum_plugin
 
         if ($key !== false)
             unset($services[$key]);
+
+        $rocket->ignore_encode_end();
 
         return $services;
     }
@@ -2564,8 +2572,8 @@ class mel_workspace extends bnum_plugin
             $workspace->save();
 
             try {
-                $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                $rocket->update_channel_type(
+                $rocket = $this->get_ariane();
+                $rocket->update_channel_type_connector(
                     $this->get_object($workspace, self::CHANNEL)->id,
                     !$isPublic);
             } catch (\Throwable $th) {
@@ -2685,11 +2693,11 @@ class mel_workspace extends bnum_plugin
             try {
                 if (!(array_search(self::CHANNEL, $services) === false))
                 {
-                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                    $rocket = $this->get_ariane();//$this->rc->plugins->get_plugin('rocket_chat');
                     if ($workspace->uid === "apitech-1")
-                        $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
+                        $rocket->add_user_connector($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
                     else
-                        $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                        $rocket->add_user_connector($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
                 }
             } catch (\Throwable $th) {
                 //throw $th;
@@ -2731,8 +2739,8 @@ class mel_workspace extends bnum_plugin
             switch ($value) {
                 case self::CHANNEL:
                     try {
-                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                        $rocket->kick_user($this->get_object($workspace, self::CHANNEL)->id, $user, $workspace->ispublic === 0 ? true : false);
+                        $rocket = $this->get_ariane();//$this->rc->plugins->get_plugin('rocket_chat');
+                        $rocket->kick_user_connector($this->get_object($workspace, self::CHANNEL)->id, $user, $workspace->ispublic === 0 ? true : false);
                     } catch (\Throwable $th) {
                         //throw $th;
                     }
@@ -2797,7 +2805,7 @@ class mel_workspace extends bnum_plugin
                 $services = $this->get_worskpace_services($workspace);
 
                 if ($services[self::CHANNEL])
-                    $this->get_ariane()->update_owner($user, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false, $new_right === Share::RIGHT_WRITE);
+                    $this->get_ariane()->update_owner_connector($user, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false, $new_right === Share::RIGHT_WRITE);
 
                 if ($services[self::WEKAN])
                     $this->wekan()->update_user_status($this->get_object($workspace, self::WEKAN)->id, $user, !($new_right === Share::RIGHT_WRITE));
@@ -2943,8 +2951,8 @@ class mel_workspace extends bnum_plugin
 
                     if ($can)
                     {
-                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                        $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                        $rocket = $this->get_ariane(); //$this->rc->plugins->get_plugin('rocket_chat');
+                        $rocket->delete_channel_connector($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
                     }
                 }
 
@@ -2983,8 +2991,8 @@ class mel_workspace extends bnum_plugin
                         }
                         $users = $tmp_users;
                         unset($tmp_user);
-                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                        $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? false : true);
+                        $rocket = $this->get_ariane();//$this->rc->plugins->get_plugin('rocket_chat');
+                        $value = $rocket->create_channel_connector($workspace->uid, $users,$workspace->ispublic === 0 ? false : true);
                         if (is_string($value["content"]))
                         {
                             $value = json_decode($value["content"]);
@@ -3017,8 +3025,8 @@ class mel_workspace extends bnum_plugin
 
                         if ($can)
                         {
-                            $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                            $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                            $rocket = $this->get_ariane();//rc->plugins->get_plugin('rocket_chat');
+                            $rocket->delete_channel_connector($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
                         }
                         
                         break;
@@ -3143,6 +3151,8 @@ class mel_workspace extends bnum_plugin
 
     function notify_chat()
     {
+        if (class_exists('mel_rocket_chat')) mel_rocket_chat::InitConnectors();
+        
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $text = rcube_utils::get_input_value("_text", rcube_utils::INPUT_POST);
         //$path = rcube_utils::get_input_value("_path", rcube_utils::INPUT_POST);
@@ -3154,10 +3164,10 @@ class mel_workspace extends bnum_plugin
         // else
         //     $logo = $path.$logo;
 
-        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+        $rocket = $this->get_ariane();//rc->plugins->get_plugin('rocket_chat');
         try {
 
-            echo json_encode($rocket->post_message($this->get_object($workspace, self::CHANNEL)->id, $text, $workspace->title, $logo));
+            echo json_encode($rocket->post_message_connector($this->get_object($workspace, self::CHANNEL)->id, $text, $workspace->title, $logo));
         } catch (\Throwable $th) {
             echo "error";
             $func = "notify_chat";
@@ -3304,12 +3314,13 @@ class mel_workspace extends bnum_plugin
 
     function check_channel($channel_id)
     {
-        return $this->get_ariane()->check_if_room_exist($channel_id);
+        return $this->get_ariane()->check_if_room_exist_connector($channel_id);
     }
 
     function check_channel_name($channel_name)
     {
-        return $this->get_ariane()->check_if_room_exist_by_name($channel_name);
+        $returned = $this->get_ariane()->check_if_room_exist_by_name_connector($channel_name);
+        return $returned;
     }
 
     function generate_channel_id_via_uid($uid)
@@ -3951,7 +3962,7 @@ class mel_workspace extends bnum_plugin
         $name = rcube_utils::get_input_value("_name", rcube_utils::INPUT_GPC);
         $uid =  rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
 
-        $name = $this->get_ariane()->room_info($name);
+        $name = $this->get_ariane()->room_info_connector($name);
         $datas = ["id" => $name["content"]->room->_id, "name" => $name["content"]->room->name, "edited" => true];
 
         $wsp = self::get_workspace($uid);
@@ -3974,8 +3985,8 @@ class mel_workspace extends bnum_plugin
         foreach ($shares as $key => $user) {
             $room_id = $room->_id;
             $isPrivate = $room->t === 'p';
-            $rocket->add_users([$key], $room_id, $isPrivate);
-            $rocket->update_owner($key, $room_id, $isPrivate, !self::is_admin($wsp, $key));
+            $rocket->add_user_connector([$key], $room_id, $isPrivate);
+            $rocket->update_owner_connector($key, $room_id, $isPrivate, !self::is_admin($wsp, $key));
         }
     }
 

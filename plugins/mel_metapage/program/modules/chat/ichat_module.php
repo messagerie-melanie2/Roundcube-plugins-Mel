@@ -21,30 +21,30 @@ interface iChatModuleConnectors {
 }
 
 interface iChatModuleActions {
-    function create_channel_action($args);
-    function add_user_action($args);
-    function get_user_info_action($args);
-    function get_channel_unread_count_action($args);
-    function get_joined_action($args);
-    function get_status_action($args);
-    function set_status_action($args);
-    function logout_action($args);
+    function create_channel_action($args = null);
+    function add_user_action($args = null);
+    function get_user_info_action($args = null);
+    function get_channel_unread_count_action($args = null);
+    function get_joined_action($args = null);
+    function get_status_action($args = null);
+    function set_status_action($args = null);
+    function logout_action($args = null);
 }
 
 interface iChatClient extends iChatModuleConnectors, iChatModuleActions {
     function setup_hooks();
 
-    function post_message_action($args);
-    function update_owner_action($args);
-    function kick_user_action($args);
-    function delete_channel_action($args);
-    function update_channel_type_action($args);
-    function check_if_room_exist_action($args);
-    function check_if_room_exist_by_name_action($args);
-    function room_info_action($args);
+    function post_message_action($args = null);
+    function update_owner_action($args = null);
+    function kick_user_action($args = null);
+    function delete_channel_action($args = null);
+    function update_channel_type_action($args = null);
+    function check_if_room_exist_action($args = null);
+    function check_if_room_exist_by_name_action($args = null);
+    function room_info_action($args = null);
 }
 
-interface iChatModule extends iChatClient {
+interface iChatModule extends iChatModuleConnectors, iChatModuleActions {
     function setup_task();
     function setup_actions();
 }

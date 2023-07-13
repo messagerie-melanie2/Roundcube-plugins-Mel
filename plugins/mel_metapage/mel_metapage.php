@@ -170,7 +170,7 @@ class mel_metapage extends bnum_plugin
         $this->require_plugin('mel_helper');
 
         include_once __DIR__.'/program/modules/chat/chat_module.php';
-        $this-> module_chat = ChatModule::Start($this);
+        $this->module_chat = ChatModule::Start($this);
 
         $this->rc->output->set_env('mel_metapage_is_from_iframe', rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC) === 'iframe');
 

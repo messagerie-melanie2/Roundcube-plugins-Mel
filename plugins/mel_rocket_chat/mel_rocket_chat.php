@@ -14,7 +14,7 @@ class mel_rocket_chat extends bnum_plugin {
             if ($this->rc()->action === '' || $this->rc()->action === 'index') $this->setup();
         }
 
-        $this->module = new ChatModuleConnector();
+        $this->module = $this->module ?? new ChatModuleConnector();
     }
 
     function setup() {
@@ -30,5 +30,19 @@ class mel_rocket_chat extends bnum_plugin {
             }
         }
         return $this;
+    }
+
+    static function InitConnectors($plugin = null) {
+        $force = true;
+
+        if (!isset($plugin)) $plugin = rcmail::get_instance()->plugins->get_plugin('mel_rocket_chat');
+
+        if (isset($plugin->module)) $plugin->module->setup_hooks($force);
+        else {
+            $plugin->module = new ChatModuleConnector();
+            $plugin->module->setup_hooks($force);
+        }
+
+        return $module;
     }
 }

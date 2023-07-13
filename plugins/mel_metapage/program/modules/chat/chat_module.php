@@ -1,9 +1,13 @@
 <?php
+$dir = __DIR__;
 include_once 'ichat_module.php';
-include_once __DIR__.'/../../program.php';
+include_once $dir.'/../../program.php';
 class ChatModule extends Program implements iChatModule {
 
+    public const TASK = 'clavardage';
     public const ACTIONS = ['create_channel', 'add_user', 'get_user_info', 'get_channel_unread_count', 'get_joined', 'get_status', 'set_status', 'logout'];
+
+    private $force_decoded = false;
 
     public function __construct($plugin = null) {
         parent::__construct(rcmail::get_instance(), ($plugin ?? rcmail::get_instance()->plugins->get_plugin('mel_metapage')));
@@ -20,7 +24,7 @@ class ChatModule extends Program implements iChatModule {
     }
 
     public function setup_actions() {
-        if ('chat' === $this->rc->task) {
+        if (self::TASK === $this->rc->task) {
             $actions = self::ACTIONS;
 
             for ($i=0, $len = count($actions); $i < $len; ++$i) { 
@@ -32,9 +36,17 @@ class ChatModule extends Program implements iChatModule {
     }
 
     public function setup_task() {
-        if ('chat' === $this->rc->task) {
-            $this->plugin->register_task("chat");
+        if (self::TASK === $this->rc->task) {
+            $this->plugin->register_task(self::TASK);
         }
+    }
+
+    public function ignore_encode_start() {
+        $this->force_decoded = true;
+    }
+
+    public function ignore_encode_end() {
+        $this->force_decoded = false;
     }
 
     public function create_channel_connector($room, ...$otherArgs){
@@ -101,35 +113,35 @@ class ChatModule extends Program implements iChatModule {
         return $this->call('chat.room_info', $room_name, ...$otherArgs);
     }
 
-    public function create_channel_action($args) {
+    public function create_channel_action($args = null) {
         $this->exit_action([$this, 'create_channel_connector'], '_roomname', '_users', '_public');
     }
 
-    public function add_user_action($args) {
+    public function add_user_action($args = null) {
         $this->exit_action([$this, 'add_user_action_connector'], '_users', '_channel', '_private');
     }
 
-    public function get_user_info_action($args) {
+    public function get_user_info_action($args = null) {
         $this->exit_action([$this, 'get_user_info_action_connector'], '_users', '_channel', '_private');
     }
 
-    public function get_channel_unread_count_action($args) {
+    public function get_channel_unread_count_action($args = null) {
         $this->exit_action([$this, 'get_channel_unread_count_connector'], '_channel');
     }
 
-    public function get_joined_action($args) {
+    public function get_joined_action($args = null) {
         $this->exit_action([$this, 'get_joined_connector'], '_user_id', '_moderator', '_mode');
     }
 
-    public function get_status_action($args) {
+    public function get_status_action($args = null) {
         $this->exit_action([$this, 'get_status_connector']);
     }
 
-    public function set_status_action($args) {
+    public function set_status_action($args = null) {
         $this->exit_action([$this, 'set_status_connector'], '_st', '_msg');
     }
 
-    public function logout_action($args){
+    public function logout_action($args = null){
         $this->exit_action([$this, 'logout_connector']);
     }
 

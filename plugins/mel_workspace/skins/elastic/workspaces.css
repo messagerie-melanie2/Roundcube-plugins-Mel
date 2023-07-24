@@ -1066,3 +1066,9 @@ body.task-workspace	.table-bordered thead th{
     background-color: var(--main-bckg-color);
     color:var(--secondary-text-color);
 }
+
+.toolbar-icons {
+  font-variation-settings: 'wght' 300;
+  font-size: 26px;
+  line-height: 18px;
+}

@@ -1821,6 +1821,7 @@ $(document).ready(() => {
         }
         
         setTimeout(async () => {
+            debugger;
             $("#wsp-event-all-cal-mm").removeClass("disabled").removeAttr("disabled");
             $("#edit-wsp").removeClass("disabled").removeAttr("disabled");   
 
@@ -1977,44 +1978,42 @@ $(document).ready(() => {
                     event.calendar_blocked = "true";
                 }
 
-                if (event.categories !== undefined && event.categories.length > 0)
+                const default_cat_value = '#none';
+                const has_categories = event.categories !== undefined && event.categories.length > 0;
+                if (has_categories && event.categories[0].includes("ws#"))
                 {
-                    if (event.categories[0].includes("ws#"))
+                    $("#edit-wsp")[0].checked = true;
+                    $("#div-events-wsp").css("display", "");
+                    $("#div-events-category").css("display", "none");
+                    $("#wsp-event-all-cal-mm").val(event.categories[0].replace("ws#", ""));
+
+                    if (event.calendar_blocked === "true")
                     {
-                        $("#edit-wsp")[0].checked = true;
-                        $("#div-events-wsp").css("display", "");
-                        $("#div-events-category").css("display", "none");
-                        $("#wsp-event-all-cal-mm").val(event.categories[0].replace("ws#", ""));
-                        if (event.calendar_blocked === "true")
-                        {
-                            $("#wsp-event-all-cal-mm").addClass("disabled").attr("disabled", "disabled");
-                            $("#edit-wsp").addClass("disabled").attr("disabled", "disabled");
-                        }
+                        $("#wsp-event-all-cal-mm").addClass("disabled").attr("disabled", "disabled");
+                        $("#edit-wsp").addClass("disabled").attr("disabled", "disabled");
                     }
-                    else
+                }
+                else
+                {
+                    if (has_categories && $("#edit-wsp")[0].checked)
                     {
-                        if ($("#edit-wsp")[0].checked)
-                        {
-                            $("#edit-wsp").click();
-                            if ($("#wsp-event-all-cal-mm").val() === "#none")
-                                $(".have-workspace").css("display", "none");
-                            else
-                                $(".have-workspace").css("display", "");
-                        }
-                        else {
-                            $("#div-events-wsp").css("display", "none");
-                            $("#div-events-category").css("display", "");
+                        $("#edit-wsp").click();
+                        if ($("#wsp-event-all-cal-mm").val() === "#none")
                             $(".have-workspace").css("display", "none");
-                        }
-                        $("#categories-event-all-cal-mm").val(event.categories[0]);
+                        else
+                            $(".have-workspace").css("display", "");
                     }
-
-                    $("#edit-categories").val(event.categories[0]);
-
+                    else {
+                        const wsp_state = has_categories ? 'none' : EMPTY_STRING; 
+                        const cat_state = has_categories ? EMPTY_STRING : 'none';
+                        $("#div-events-wsp").css("display", wsp_state);
+                        $("#div-events-category").css("display", cat_state);
+                        $(".have-workspace").css("display", "none");
+                    }
+                    $("#categories-event-all-cal-mm").val(event?.categories?.[0] ?? default_cat_value);
                 }
-                else {
-                    $(".have-workspace").css("display", "none");
-                }
+
+                $("#edit-categories").val(event?.categories?.[0] ?? default_cat_value);
 
                 $("#edit-attendees-donotify").addClass("custom-control-input");
             }
@@ -2269,7 +2268,7 @@ $(document).ready(() => {
 
                         case 'visio':
                             //visioTypeOptions
-                            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[element.type] ?? visioTypeOptions[`${value}_selected`])}`);
+                            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[element.type] ?? visioTypeOptions[`${element.type}_selected`])}`);
                             switch (element.type) {
                                 case 'integrated':
                                     $visioSelect.val('intregrated');

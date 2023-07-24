@@ -4369,7 +4369,7 @@ class mel_workspace extends bnum_plugin
 
         if (!isset($sid))
         {
-            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être créer dans l\'espace "'.$wsp->title.'" !', 'Vous pouvez répondre en allant dans l\'espace.', 
+            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être créé dans l\'espace "'.$wsp->title.'" !', 'Vous pouvez répondre en allant dans l\'espace.', 
             [
                 'main' => ['href' => "./?_task=workspace&_action=workspace&_uid=".$wsp->uid,
                             'text' => $this->gettext("mel_workspace.open"),
@@ -4380,7 +4380,7 @@ class mel_workspace extends bnum_plugin
             $sid = $this->generate_survey_id($wsp, $survey);
         }
         else {
-            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être modifier dans l\'espace "'.$wsp->title.'" !', 'Vous pouvez répondre en allant dans l\'espace.', 
+            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être modifié dans l\'espace "'.$wsp->title.'" !', 'Vous pouvez répondre en allant dans l\'espace.', 
             [
                 'main' => ['href' => "./?_task=workspace&_action=workspace&_uid=".$wsp->uid,
                             'text' => $this->gettext("mel_workspace.open"),
@@ -4423,7 +4423,7 @@ class mel_workspace extends bnum_plugin
         $isset = isset($survey);
         $can = $this->can_delete_survey($wsp, $survey);
         if ($isset && $can) {
-            self::notify($wsp, 'Le sondage "'.$survey->title.'" vient d\'être supprimer de l\'espace "'.$wsp->title.'" !', '', null);
+            self::notify($wsp, 'Le sondage "'.$survey->title.'" vient d\'être supprimé de l\'espace "'.$wsp->title.'" !', '', null);
 
             if (is_array($survey_list)) unset($survey_list[$survey_id]);
             else unset($survey_list->$survey_id);

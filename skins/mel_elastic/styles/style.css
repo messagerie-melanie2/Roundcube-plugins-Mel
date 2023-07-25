@@ -2778,8 +2778,8 @@ html.dark-mode #theme-panel .input-top-selectable {
 #theme-panel .picture:hover,
 .mel-selectable.picture-only:hover,
 #theme-panel .input-top-selectable.hovered {
-  background-color: var(--tierciary-bckg-color) !important;
-  background-blend-mode: overlay !important;
+  background-color: var(--background-pannel-hover) !important;
+  background-blend-mode: multiply !important;
   box-shadow: none;
 }
 #theme-panel .picture.selected,
@@ -3309,4 +3309,9 @@ html.dark-mode .mel-note.dragover::before {
   height: calc(100% - 60px);
   border: solid 2px lightgreen;
   /* box-shadow: -5px -10px -9px -15px white; */
+}
+.elastic-contact-qr-button-code {
+  position: absolute;
+  right: 15px;
+  top: 15px;
 }

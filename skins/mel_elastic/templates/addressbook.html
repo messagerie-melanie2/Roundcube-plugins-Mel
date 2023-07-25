@@ -178,9 +178,9 @@
 <div id="contact-menu" class="popupmenu">
 	<h3 id="aria-label-contact-menu" class="voice"><roundcube:label name="arialabelmorecontactactions" /></h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-contact-menu">
-		<roundcube:if condition="env:qrcode" />
+		<!-- <roundcube:if condition="env:qrcode" />
 		<roundcube:button type="link-menuitem" command="qrcode" label="qrcode" class="qrcode disabled" classAct="qrcode active" />
-		<roundcube:endif />
+		<roundcube:endif /> -->
 		<roundcube:button type="link-menuitem" command="group-assign-selected" label="groupassign" class="assigngroup disabled" classAct="assigngroup active" innerclass="folder-selector-link"  aria-haspopup="true" />
 		<roundcube:button type="link-menuitem" command="group-remove-selected" label="groupremove" class="removegroup disabled" classAct="removegroup active" />
 		<roundcube:if condition="env:contact_move_enabled" />

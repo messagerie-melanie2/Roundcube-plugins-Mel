@@ -1728,14 +1728,15 @@ $(document).ready(() => {
         var Enumerable = Enumerable || top.Enumerable;
 
         try {
+            let $target = $(event.currentTarget ?? event.target);
             //Vérification si on intercetpe le lien ou non
-            const intercept = $(event.target).data("spied");
+            const intercept = $target.data("spied");
 
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
-            else if ($(event.target).attr('href').includes('mailto:')) return intercept_mailto(event);
-            else if ($(event.target).attr("onclick") !== undefined && !$(event.target).attr("onclick").includes('event.click')) return;
-            else if (!!Enumerable && Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
-            else if ($(event.target).parent().parent().parent().attr("id") === "taskmenu") return;
+            else if ($target.attr('href').includes('mailto:')) return intercept_mailto(event);
+            else if ($target.attr("onclick") !== undefined && !$target.attr("onclick").includes('event.click')) return;
+            else if (!!Enumerable && Enumerable.from($target.parent()[0].classList).any(x => x.includes('listitem'))) return;
+            else if ($target.parent().parent().parent().attr("id") === "taskmenu") return;
 
             //On ferme la modal
             $('#globalModal').modal('hide')
@@ -1750,7 +1751,7 @@ $(document).ready(() => {
              * @constant
              * @type {string} Adresse du lien
              */
-            const url = $(event.target).attr('href');
+            const url = $target.attr('href');
 
             //Changement des liens en enumerable (optimisation)
             if (rcmail.env.enumerated_url_spies !== true)

@@ -1,0 +1,35 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice"><roundcube:label name="contactproperties" /></h1>
+
+<div class="formcontent">
+	<div class="contact-header">
+		<div id="contactphoto" class="contact-photo">
+			<roundcube:object name="contactphoto" id="contactpic" placeholder="/images/contactpic.svg"
+				placeholderGroup="/images/contactgroup.svg" />
+		</div>
+		<roundcube:object name="contacthead" id="contacthead" class="contact-head readonly" with-source="true" />
+	</div>
+
+	<div class="elastic-contact-qr-button-code">
+		<button id="qrcode-button" title="Afficher le qr code du contact" onclick="rcmail.command('qrcode')" style="line-height: 1" class="mel-button no-margin-button no-button-margin bckg true"><span class="material-symbols-outlined">qr_code_2</span></button>
+	</div>
+
+	<div id="contacttabs" class="tabbed">
+		<roundcube:object name="contactdetails" fieldset-class="propform grouped readonly"
+			short-legend-labels="true" />
+	</div>
+</div>
+
+<div class="formbuttons">
+	<roundcube:button command="edit" class="btn btn-primary edit" label="edit" condition="!ENV:readonly" />
+</div>
+
+<script>
+	rcmail.addEventListener('init', () => {
+		if (!rcmail.env.cid) $('#qrcode-button').addClass('disabled').attr('disabled', 'disabled');
+	});
+</script>
+
+
+<roundcube:include file="includes/footer.html" />

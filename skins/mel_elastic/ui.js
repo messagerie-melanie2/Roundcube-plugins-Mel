@@ -2183,8 +2183,13 @@ $(document).ready(() => {
                         'padding-bottom:0;'
                     ));
 
-                    _css.push(new Mel_CSS_Advanced_Rule('table.messagelist tr.message td.flags span.attachment,table.messagelist td.subject span.subject', 
+                    _css.push(new Mel_CSS_Advanced_Rule('table.messagelist td.subject span.subject', 
                         'margin-top: -10px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('table.messagelist tr.message td.flags span.attachment', 
+                        'margin-top: -7px;',
+                        'pointer-events: none'
                     ));
 
                     const rule = new Mel_CSS_Array_Rule(_css);

@@ -439,6 +439,15 @@ if (rcmail)
                 );
             }, true);
 
+            rcmail.register_command('chat-notification-action', async (args) => {
+                const {url, id} = args;
+                const Manager = await ChatHelper.Manager();
+
+                await Manager.change_frame('discussion', {update:false});
+                Manager.goToRoom(`/${url}/${id}`);
+
+            }, true);
+
             rcmail.register_command('update_mail_css', (args) => {
                 const {key, value} = args;
 

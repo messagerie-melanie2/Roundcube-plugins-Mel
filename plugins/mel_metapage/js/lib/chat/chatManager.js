@@ -44,11 +44,15 @@ export class ChatManager extends MelObject {
 
         if (lastRoom.isValid())
         {
-            this.get_frame()[0].contentWindow.postMessage({
-                externalCommand: 'go',
-                path: `/${(lastRoom.public ? "channel" : "group")}/${lastRoom.name}`
-              }, '*');
+            this.goToRoom( `/${(lastRoom.public ? "channel" : "group")}/${lastRoom.name}`);
         }
+    }
+
+    goToRoom(url) {
+        this.get_frame()[0].contentWindow.postMessage({
+            externalCommand: 'go',
+            path: url
+          }, '*');
     }
 
     updateLastRoom(last_room_item) {

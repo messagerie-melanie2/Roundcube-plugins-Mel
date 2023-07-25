@@ -426,12 +426,12 @@ metapage_frames.addEvent("changepage.before", (eClass) => {
             if (!e.classList.contains("selected"))
                 e.classList.add("selected");
             
-            $(e).attr("aria-disabled", true).attr("tabIndex", "-1");
+            $(e).attr("aria-disabled", true).attr("tabIndex", "-1").attr('aria-current', true);
         }
         else
         {
             e.classList.remove("selected");
-            $(e).attr("aria-disabled", false).attr("tabIndex", "0");
+            $(e).attr("aria-disabled", false).attr("tabIndex", "0").attr('aria-current', false);
         }
     });
 

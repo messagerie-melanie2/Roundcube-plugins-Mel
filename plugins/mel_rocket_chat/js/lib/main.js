@@ -96,7 +96,7 @@ export class MelRocketChat extends MelObject {
 
         if (!datas.eventName && !!datas.data.eventName) datas = datas.data;
 
-        if (datas.eventName === 'unread-changed-by-subscription')
+        if (datas.eventName === 'unread-changed-by-subscription' && !ChatManager.Instance().chat().isBusy())
         {
             ChatManager.Instance().updateMention(datas.data.name, datas.data.unread);
             if ('discussion' !== this.rcmail(top).env.current_frame_name && datas.data.unread > 0) {

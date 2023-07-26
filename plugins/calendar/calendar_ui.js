@@ -1912,7 +1912,7 @@ function rcube_calendar_ui(settings) {
     freebusy_ui.needsupdate = true;
   };
 
-  // attempt to find a time slot where all attemdees are available
+  // attempt to find a time slot where all attendees are available
   var freebusy_find_slot = function (dir) {
     // exit if free-busy data isn't available yet
     if (!freebusy_data || !freebusy_data.start)
@@ -1930,6 +1930,7 @@ function rcube_calendar_ui(settings) {
       checkdate, slotend, email, ts, slot, slotdate = new Date(),
       candidatecount = 0, candidatestart = false, success = false;
 
+      const valid_ts = ['0', '1', '5'];
     // shift event times to next possible slot
     eventstart += sinterval * intvlslots * dir;
     eventend += sinterval * intvlslots * dir;
@@ -1966,7 +1967,7 @@ function rcube_calendar_ui(settings) {
 
       // check freebusy data for all attendees
       for (var i = 0; i < event_attendees.length; i++) {
-        if (freebusy_ui.attendees[i].role != 'OPT-PARTICIPANT' && (email = freebusy_ui.attendees[i].email) && freebusy_data[email] && freebusy_data[email][ts] > 1) {
+        if (freebusy_ui.attendees[i].role != 'OPT-PARTICIPANT' && (email = freebusy_ui.attendees[i].email) && freebusy_data[email] && !valid_ts.includes(freebusy_data[email][ts])) {
           candidatestart = false;
           break;
         }

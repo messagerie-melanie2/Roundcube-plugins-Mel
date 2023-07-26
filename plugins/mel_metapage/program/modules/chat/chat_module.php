@@ -50,7 +50,7 @@ class ChatModule extends Program implements iChatModule {
     }
 
     public function create_channel_connector($room, ...$otherArgs){
-        return $this->call('chat.create_channel', $room, ...$otherArgs);
+        return $this->verifyReturn($this->call('chat.create_channel', $room, ...$otherArgs));
     }
 
     public function add_user_connector($user, $room, ...$otherArgs) {
@@ -146,7 +146,7 @@ class ChatModule extends Program implements iChatModule {
     }
 
     private function call($key, ...$args) {
-        $datas = $this->trigger_hook($key, ['echo' => '', 'datas' => $args, 'encoded' => true]);
+        $datas = $this->trigger_hook($key, ['echo' => '', 'datas' => $args, 'encoded' => false]);
 
         if (true === $datas['encoded']) $datas = json_encode($datas['echo']);
         else $datas = $datas['echo'];
@@ -162,6 +162,12 @@ class ChatModule extends Program implements iChatModule {
         echo call_user_func($callback, ...$inputs);
         exit;
     } 
+
+    private function verifyReturn($datas) {
+        if (is_a($datas, 'ChatApiResult', true)) return $datas;
+        else throw new Exception("Les données d'objets retournés ne sont pas sous forme de classe ChatApiResult", 565);
+        
+    }
 
     public static function Start($plugin = null) {
         $module = new ChatModule($plugin);

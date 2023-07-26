@@ -2179,6 +2179,21 @@ class mel_workspace extends bnum_plugin
 
                     $rocket = $rocket ?? $this->get_ariane();//$this->rc->plugins->get_plugin('rocket_chat');
                     $value = $rocket->create_channel_connector($uid, $users, $workspace->ispublic === 0 ? false : true);//$rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
+                    
+                    if ($value->isValid()) {
+                        $value = [
+                            'content' => [
+                                "channel" => [
+                                    '_id' => $value->get_contents()->get_id(),
+                                    'name' => $value->get_contents()->get_name()
+                                ]
+                            ]
+                        ];
+                    }
+                    else {
+
+                    }
+
                     break;
 
                 case 'already_exist':

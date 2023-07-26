@@ -2,6 +2,7 @@
 include_once __DIR__.'/../../mel_metapage/program/program.php';
 include_once __DIR__.'/../../mel_metapage/program/modules/chat/ichat_module.php';
 include_once __DIR__.'/../../mel_metapage/program/modules/chat/chat_module.php';
+include_once __DIR__.'/../../mel_metapage/program/modules/chat/chat_contents/channel_chat_content.php';
 
 class ChatModuleConnector extends Program implements iChatClient {
 
@@ -108,12 +109,13 @@ class ChatModuleConnector extends Program implements iChatClient {
     public function create_channel_connector($room, ...$otherArgs) {
         [$users, $public] = $otherArgs;
 
-        return $this->plugin->_create_channel($room, $users, $public);
+        $datas = $this->plugin->_create_channel($room, $users, $public);
+        return ChannelChatContent::fromFetch($datas);
     }
 
     public function add_user_connector($user, $room, ...$otherArgs){
-        return $this->plugin->add_users($room, $user, $this->input_to_bool($otherArgs[0]));
-        //$otherArgs[0] => public ou non
+        $datas =  $this->plugin->add_users($user, $room, $this->input_to_bool($otherArgs[0]));
+        return ChannelChatContent::fromFetch($datas);
     }
 
     public function get_user_info_connector($user, ...$otherArgs) {

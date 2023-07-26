@@ -1,4 +1,7 @@
 <?php
+/**
+ * Connecteurs vers les plugins ou les clients
+ */
 interface iChatModuleConnectors {
     function create_channel_connector($room, ...$otherArgs);
     function add_user_connector($user, $room, ...$otherArgs);
@@ -20,6 +23,9 @@ interface iChatModuleConnectors {
 
 }
 
+/**
+ * Action vers les connecteurs
+ */
 interface iChatModuleActions {
     function create_channel_action($args = null);
     function add_user_action($args = null);
@@ -31,6 +37,9 @@ interface iChatModuleActions {
     function logout_action($args = null);
 }
 
+/**
+ * Fonctions des clients
+ */
 interface iChatClient extends iChatModuleConnectors, iChatModuleActions {
     function setup_hooks();
 
@@ -44,6 +53,9 @@ interface iChatClient extends iChatModuleConnectors, iChatModuleActions {
     function room_info_action($args = null);
 }
 
+/**
+ * Fonctions du module
+ */
 interface iChatModule extends iChatModuleConnectors, iChatModuleActions {
     function setup_task();
     function setup_actions();

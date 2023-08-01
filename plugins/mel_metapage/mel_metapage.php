@@ -244,8 +244,8 @@ class mel_metapage extends bnum_plugin
                     {
                         $this->rc->output->set_env("is_model", true);
                         $this->rc->output->set_env("model_id", $_COOKIE['current_model_id']);
-                        $this->include_script('js/actions/mail_compose_event.js');
                     }
+                    $this->include_script('js/actions/mail_compose_event.js');
                     break;
 
                 case 'preview':
@@ -2831,8 +2831,12 @@ class mel_metapage extends bnum_plugin
                     $value = explode($delimiter, $value);
                     $len = count($value);
                     $key = $value[$len - 1];
-                    if ($len - 1 === 1) $value = "| $key";
-                    else $value = implode(mel_helper::Enumerable(range(1, $len - 2))->select(function($k, $v) {return '=';})->toArray())."> | $key";
+                    if ($len - 1 === 1) $len = "| $key";
+                    else $len = implode(mel_helper::Enumerable(range(1, $len - 2))->select(function($k, $v) {return '=';})->toArray())."> | $key";
+
+                    $key = implode('/', $value);
+                    $value = $len;
+                    unset($len);
                 }
 
             }

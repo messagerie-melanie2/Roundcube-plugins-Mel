@@ -132,6 +132,8 @@ class mel_sharedmailboxes extends rcube_plugin {
             $this->api->add_content($hidden_account->show($this->get_account), 'composeoptionsaccount');
             // Modification de l'affichage des dossiers imap
             $this->set_compose_sent_folder();
+            $default_sended_folder = $this->rc->config->get('sended_folder', [])[driver_mel::gi()->getUser()->uid];
+            $this->rc->output->set_env('default_sended_folder', $default_sended_folder);
         }
         // Folders list handler
         else if ($this->rc->task == 'mail' && empty($this->rc->action)) {

@@ -1308,10 +1308,10 @@ class mel_workspace extends bnum_plugin
                     margin-top: 15px;
                 "], 
                             '<span>Accéder au drive</span><span class="icon-mel-external plus"></span>'
-                        ).
+                        )/*.
                         html::tag("button", [$cloudDisabled => $cloudDisabled, "onclick"  => "rcmail.env.wsp_roundrive_show.createFile()", "class" => "$cloudDisabled mel-button btn btn-secondary"], 
                             '<span>Créer</span><span class="icon-mel-plus plus"></span>'
-                        )
+                        )*/
                     );
                 }
 

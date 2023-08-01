@@ -50,15 +50,15 @@ class ChatModule extends Program implements iChatModule {
     }
 
     public function create_channel_connector($room, ...$otherArgs){
-        return $this->verifyReturn($this->call('chat.create_channel', $room, ...$otherArgs));
+        return $this->verifyReturn($this->call('chat.create_channel', $room, ...$otherArgs), 'ChannelChatContent');
     }
 
     public function add_user_connector($user, $room, ...$otherArgs) {
-        return $this->call('chat.add_user', $user, $room, ...$otherArgs);
+        return $this->verifyReturn($this->call('chat.add_user', $user, $room, ...$otherArgs), 'ChannelChatContent');
     }
 
     public function get_user_info_connector($user, ...$otherArgs) {
-        return $this->call('chat.get_user_info', $user, ...$otherArgs);
+        return $this->verifyReturn($this->call('chat.get_user_info', $user, ...$otherArgs), 'CompleteUserChatContent');
     }
 
     public function get_channel_unread_count_connector($room, ...$otherArgs) {
@@ -66,7 +66,7 @@ class ChatModule extends Program implements iChatModule {
     }
 
     public function get_joined_connector($user, ...$otherArgs) {
-        return $this->call('chat.get_joined', $user, ...$otherArgs);
+        return $this->verifyReturn($this->call('chat.get_joined', $user, ...$otherArgs), 'ChannelsChatContent');
     }
 
     public function get_status_connector(...$otherArgs) {
@@ -163,8 +163,17 @@ class ChatModule extends Program implements iChatModule {
         exit;
     } 
 
-    private function verifyReturn($datas) {
-        if (is_a($datas, 'ChatApiResult', true)) return $datas;
+    private function verifyReturn($datas, string $expected) {
+        if (is_a($datas, 'ChatApiResult', true)){
+            if (is_a($datas->get_contents(), $expected, true))  return $datas;
+            else if (is_a($datas->get_contents(), 'NullChatContent', true)) {
+                if (class_exists('mel_log')) {
+                    mel_logs::get_instance()->log(mel_logs::WARN, "[verifyReturn]Les données devaient être de type $expected mais sont null, est-ce normal ?");
+                }
+                return $datas;
+            }
+            else throw new Exception("Les données de ChatApiResult retournés ne sont pas sous forme de classe $expected ou NullChatContent", 566);
+        }
         else throw new Exception("Les données d'objets retournés ne sont pas sous forme de classe ChatApiResult", 565);
         
     }

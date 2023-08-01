@@ -15,6 +15,9 @@ class mel_rocket_chat extends bnum_plugin {
         }
 
         $this->module = $this->module ?? new ChatModuleConnector();
+        // $this->module->setup_hooks(true);
+        // $dbg1 = rcmail::get_instance()->plugins->get_plugin('mel_metapage')->module_chat->get_joined_connector(driver_mel::gi()->getUser()->uid, null, null);
+        // $dbg2 = 0;
     }
 
     function setup() {

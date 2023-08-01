@@ -1,7 +1,8 @@
 <?php
+include_once 'user_chat_content.php';
+include_once 'enums.php';
 include_once __DIR__.'/../ichat_content.php';
 include_once __DIR__.'/../chat_structure.php';
-include_once 'user_chat_content.php';
 
 class ChannelChatContent implements IChatContent {
     private $id;
@@ -60,7 +61,7 @@ class ChannelChatContent implements IChatContent {
 
     public static function fromStructure($content) : IChatContent {
         $return = null;
-        $content = isset($content->channel) ? $content->channel : $content->group;
+        $content = isset($content->channel) ? $content->channel : (isset($content->group) ? $content->group : $content);
 
         if (isset($content))
         {
@@ -103,30 +104,136 @@ class ChannelChatContent implements IChatContent {
     }
 }
 
-class EnumChannelType {
-    private $value;
+class ChannelsChatContent extends \ArrayObject implements IChatContent {
+    private $cache;
 
-    private function __construct(string $enum) {
-        $this->value = $enum;
+    public function offsetSet($key, $val) {
+        if ($val instanceof ChannelChatContent) {
+            return parent::offsetSet($key, $val);
+        }
+        throw new \InvalidArgumentException('Value must be a ChannelChatContent');
     }
 
-    public function isEqual(EnumChannelType $enum) : bool {
-        return $enum->value === $this->value;
+    public function has() : bool {
+        return count($this);
     }
 
-    public function toString() {
-        return is_string($this->value) ? $this->value : json_encode($this->value);
+    public function get() : any {
+        return [
+            'groups' => $this->get_from_cache(EnumChannelType::Private()->toString()),
+            'channels' => $this->get_from_cache(EnumChannelType::Public()->toString()),
+        ];
     }
 
-    public static function Private() {
-        return new EnumChannelType('p');
+    protected function _get(array $channels) : array {
+
     }
 
-    public static function Public() {
-        return new EnumChannelType('c');
+    public function yield_get() {
+        foreach ($this as $value) {
+            yield $value->get();
+        }
     }
 
-    public static function Direct() {
-        return new EnumChannelType('d');
+    private function &get_cache() : array {
+        if (!isset($this->cache)) $this->cache = [];
+        
+        return $this->cache;
+    }
+
+    protected function update_cache($key, $value) : ChannelsChatContent{
+        $this->get_cache()[$key] = $value;
+        return $this;
+    }
+
+    protected function clear_cache($key, $value) : ChannelsChatContent{
+        $this->cache = [];
+        return $this;
+    }
+
+    protected function get_from_cache($key) {
+        return $this->get_cache()[$key];
+    }
+
+    public function get_type(EnumChannelType $type) {
+        $groups = $this->get_from_cache($type->toString());
+        if (!isset($groups)) {
+            $groups = array_filter([...$this], function ($item) use($type) {
+                return $item->get_type() === $type;
+            });
+            $this->update_cache($type->toString(), $groups);
+        }
+
+        return $groups;
+    }
+
+    private function _add_to_type(array $items, EnumChannelType $type) {
+        $values = $this->get_from_cache($type->toString());
+
+        if (!isset($values)) $values = $items ?? [];
+        else $values = array_merge($values, ($items ?? []));
+
+        $this->update_cache($type->toString(), $values);
+    }
+
+    public function add_to_type(ChannelChatContent $item, EnumChannelType $type) : ChannelsChatContent {
+        $this[] = $item;
+        $this->_add_to_type([$item], $type);
+        return $this;
+    }
+
+    public function adds_to_type(array $items, EnumChannelType $type)  : ChannelsChatContent {
+        foreach ($items as $item) {
+            $this[] = $item;
+        }
+
+        $this->_add_to_type($items, $type);
+        return $this;
+    }
+
+    public function destroy() {
+        $this->cache = null;
+        
+        for ($i=count($this) - 1; $i > 0; --$i) { 
+            $this->offsetUnset($i);
+        }
+    }
+
+    public static function fromFetch($fetched) : ChatApiResult {
+        if (is_string($fetched)) $fetched = json_decode($fetched);
+
+        $httpCode = 0;
+        $contents = null;
+
+        if (isset($fetched->httpCode)) $httpCode = $fetched->httpCode;
+        else if (200 === $fetched->channel->httpCode && 200 === $fetched->group->httpCode) $httpCode = 200;
+        else $httpCode = 200 === $fetched->channel->httpCode ? $fetched->group->httpCode : $fetched->channel->httpCode;
+
+        if (isset($fetched->content)) {
+            if (is_string($fetched->content)) $fetched->content = json_decode($fetched->content);
+            $contents = new ChannelsChatContent(array_map(function ($item) {
+                return ChannelChatContent::fromStructure($item);
+            }, $fetched->content->channels ?? $fetched->content->groups));
+        }
+        else {
+            if (is_string($fetched->channel->content)) $fetched->channel->content = json_decode($fetched->channel->content);
+            if (is_string($fetched->group->content)) $fetched->group->content = json_decode($fetched->group->content);
+
+            $contents = new ChannelsChatContent();
+            $contents->adds_to_type(
+                array_map(function ($item) {
+                    return ChannelChatContent::fromStructure($item);
+                },  $fetched->channel->content->channels),
+                EnumChannelType::Public()
+            );
+            $contents->adds_to_type(
+                array_map(function ($item) {
+                    return ChannelChatContent::fromStructure($item);
+                },  $fetched->group->content->groups),
+                EnumChannelType::Private()
+            );
+        }
+
+        return new ChatApiResult($httpCode, $contents);
     }
 }

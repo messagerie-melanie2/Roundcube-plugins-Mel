@@ -1,36 +1,26 @@
 <?php 
-include_once __DIR__.'/../../mel_metapage/program/program.php';
-include_once __DIR__.'/../../mel_metapage/program/modules/chat/ichat_module.php';
+// include_once __DIR__.'/../../mel_metapage/program/program.php';
+// include_once __DIR__.'/../../mel_metapage/program/modules/chat/ichat_module.php';
+include_once __DIR__.'/../../mel_metapage/program/modules/chat/achat_client.php';
 include_once __DIR__.'/../../mel_metapage/program/modules/chat/chat_module.php';
 include_once __DIR__.'/../../mel_metapage/program/modules/chat/chat_contents/channel_chat_content.php';
 
-class ChatModuleConnector extends Program implements iChatClient {
+
+class ChatModuleConnector extends AChatClient {
 
     public const NOT_ACTIONS = ['post_message', 'update_owner', 'kick_user', 'delete_channel', 'update_channel_type', 
                                      'check_if_room_exist', 'check_if_room_exist_by_name', 'room_info'];
 
-    private $is_setup;
-
     public function __construct($plugin = null) {
-        parent::__construct(rcmail::get_instance(), ($plugin ?? rcmail::get_instance()->plugins->get_plugin('rocket_chat')));
-        $this->is_setup = false;
-        $this->init();
+        parent::__construct(($plugin ?? rcmail::get_instance()->plugins->get_plugin('rocket_chat')));
     } 
 
-    public function program_task() {}
-    public function init() {
-        $this->setup_hooks();
+    protected function hooks() : array {
+        return array_merge(ChatModule::ACTIONS, self::NOT_ACTIONS);
     }
 
-    public function setup_hooks($force = false) {
-        if ((ChatModule::TASK === $this->rc->task || $force) && !$this->is_setup) {
-            $hooks = array_merge(ChatModule::ACTIONS, self::NOT_ACTIONS);
-            for ($i=0, $len=count($hooks); $i < $len; ++$i) { 
-                $hook = $hooks[$i];
-                $this->add_hook('chat.'.$hook, [$this, $hook.'_action']);
-            }
-            $this->is_setup = true;
-        }
+    protected function test_start_tasks_setup_hook() : array {
+        return [ChatModule::TASK];
     }
 
     public function create_channel_action($args = null)
@@ -119,7 +109,10 @@ class ChatModuleConnector extends Program implements iChatClient {
     }
 
     public function get_user_info_connector($user, ...$otherArgs) {
-        return $this->plugin->getUserInfos($user);
+        $infos = $this->plugin->getUserInfos($user, $otherArgs[0], $otherArgs[1]);
+        $infos = CompleteUserChatContent::FromArray($infos);
+
+        return new ChatApiResult($infos->has() ? 200 : 0, $infos);
     }
 
     public function get_channel_unread_count_connector($room, ...$otherArgs){
@@ -128,7 +121,7 @@ class ChatModuleConnector extends Program implements iChatClient {
 
     public function get_joined_connector($user, ...$otherArgs) {
         [$modo_only, $mode] = $otherArgs;
-        return $this->plugin->_get_joined_action($user, $modo_only, $mode);
+        return ChannelsChatContent::fromFetch($this->plugin->_get_joined_action($user, $modo_only, $mode));
     }
 
     public function get_status_connector(...$otherArgs) {
@@ -173,12 +166,5 @@ class ChatModuleConnector extends Program implements iChatClient {
 
     public function room_info_connector($room_name, ...$otherArgs) {
         return $this->plugin->room_info($room_name);
-    }
-
-    private function execute_connector($hook_args, $connector) {
-        $connector = str_replace('_action', '_connector', $connector);
-        $connector = explode('::', $connector)[1];
-        $hook_args['echo'] = call_user_func([$this, $connector], ...$hook_args['datas']);
-        return $hook_args;
     }
 }

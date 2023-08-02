@@ -1,5 +1,4 @@
 #toplogo {
-	width: 15%;
 	max-height: 80%;
 	max-width: 140px;
 }
@@ -94,6 +93,11 @@
 	background-size: 30px !important;
 }
 
+.minimal #taskbar .button-logout {
+    position: absolute;
+    right: 13px;
+}
+
 #taskbar a.button-logout span.button-inner{
 	background: url(../images/ens/logout.svg) center 15px no-repeat !important;
 	background-size: 30px !important;
@@ -137,6 +141,10 @@
 
 #loginfooter{
 	display: none;
+}
+
+#settings-tabs #settingstabresponses {
+	display: block;
 }
 
 :root {

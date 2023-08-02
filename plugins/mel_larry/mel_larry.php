@@ -134,7 +134,9 @@ class mel_larry extends rcube_plugin
    * Remove folders section
    */
   function sections_list($args) {
-    if (isset($args['list']['folders'])) {
+    $rcmail = rcmail::get_instance();
+    $dossiers_speciaux = $rcmail->config->get('dossiers_speciaux', false);
+    if (isset($args['list']['folders']) && !$dossiers_speciaux) {
       unset($args['list']['folders']);
     }
     return $args;
@@ -368,9 +370,6 @@ class mel_larry extends rcube_plugin
     $this->add_texts('localization/', true);
     // Check if the user use mel_larry skin
     if ($skin == static::SKIN_NAME && !$rc->output->get_env('mobile')) {
-      // Themes css
-      $theme_param = $rc->config->get(static::SKIN_NAME . '_theme', 'auto');
-      $this->include_stylesheet(static::CSS_FOLDER.str_replace('%%param%%', $theme_param, static::THEMES_CSS));
       // App css
       $this->include_stylesheet(static::CSS_FOLDER.static::APP_CSS);
       // For each plugin, add the associated css file
@@ -385,6 +384,9 @@ class mel_larry extends rcube_plugin
       }
       // Load other custom css files
       $this->include_stylesheet(static::CSS_FOLDER.static::$plugins_css_map['jqueryui']);
+      // Themes css
+      $theme_param = $rc->config->get(static::SKIN_NAME . '_theme', 'auto');
+      $this->include_stylesheet(static::CSS_FOLDER.str_replace('%%param%%', $theme_param, static::THEMES_CSS));
       // Load ui & mel js file
       $this->include_script(static::JS_FOLDER.static::UI_JS);
       $this->include_script(static::JS_FOLDER.static::MEL_JS);

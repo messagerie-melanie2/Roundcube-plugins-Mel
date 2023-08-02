@@ -24,4 +24,14 @@ class ens_driver_mel extends mtes_driver_mel {
    * Namespace for the objets
    */
   protected static $_objectsNS = "\\LibMelanie\\Api\\Ens\\";
+
+
+
+  // Est-ce que le user est bien l'identifiant d'un groupe
+  // @param string $user Identifiant de l'objet group
+  // @return boolean true si c'est un groupe, false sinon
+
+  public function userIsGroup($user) {
+    return strpos($user, "cn=") === 0 && strpos($user, "ou=posixGroup,ou=groups,dc=ens-lyon,dc=fr") !== false;
+    }
 }

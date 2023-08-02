@@ -3315,3 +3315,30 @@ html.dark-mode .mel-note.dragover::before {
   right: 15px;
   top: 15px;
 }
+.new-note-button {
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  width: 315px;
+  height: 158px;
+  border: solid thin var(--main-bckg-color);
+  background-color: var(--main-bckg-color);
+  color: var(--secondary-text-color);
+}
+.new-note-button .new-note-icon {
+  display: block;
+  margin-bottom: 5px;
+}
+html.dark-mode .new-note-button {
+  color: #E1C58F;
+  border-color: #E1C58F;
+  background-color: #181C28;
+  height: 149px;
+}
+.new-note-button:hover {
+  background-color: var(--tierciary-bckg-color);
+  border: solid thin var(--tierciary-bckg-color);
+}
+html.dark-mode .new-note-button:hover {
+  background-color: #2E2E2E;
+}

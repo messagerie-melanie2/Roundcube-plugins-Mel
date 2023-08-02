@@ -1,6 +1,7 @@
 import { MelEnumerable } from "../classes/enum.js";
 import { MelFullScreenItem } from "../classes/fullscreen.js";
 import { Random } from "../classes/random.js";
+import { MainIconHtml, MaterialSymbolHtml } from "../html/html_icon.js";
 import { Point } from "../mel_maths.js";
 import { MetapageModule } from "./metapage_module.js";
 import { PinSticker } from "./notes/pined_sticker.js";
@@ -261,7 +262,25 @@ export class MetapageNotesModule extends MetapageModule {
 
         if (!!focused_sticker) focused_sticker.get_html().find('button.eye').click();
 
+        this._generate_plus_button().create($app);
+
         return this._generate_pined_notes();
+    }
+
+    _generate_plus_button() {
+        const create_icon = 'add_circle';
+        const icon = new MainIconHtml(create_icon, {class: 'new-note-icon'}, {});
+        const text = new mel_html('span', {class:'new-note-text'}, 'Nouvelle note');
+        let html_button = new mel_html2('button', {
+            attribs:{class:`new-note-button ${MaterialSymbolHtml.get_class_fill_on_hover()}`},
+            contents:[icon, text]
+        });
+
+        html_button.onclick.push(() => {
+            Sticker.new();
+        });
+
+        return html_button;
     }
 
     _generate_pined_notes() {

@@ -134,7 +134,7 @@ $labels['subfolders_pref_text'] = "Regrouper les dossiers";
 $labels['unified_pref_text'] = "Dossiers unifiés";
 $labels['subfolders'] = 'Dossiers';
 
-$labels['bnum advertise login'] = "Plus besoin de jongler avec tous les outils ! Retrouvez votre courriel mais aussi votre agenda, vos tchats, vos groupes de travail et le stockage sur une seule page web : le Bureau numérique.";
+$labels['bnum advertise login'] = "Plus besoin de jongler avec tous les outils ! Retrouvez votre courriel mais aussi votre agenda, vos tchats, vos groupes de travail et le stockage sur une seule page web : le Bureau numérique. A compter du 15 mai, il remplacera automatiquement Mél web.";
 $labels['bnum advertise login button'] = 'Découvrir';
 $labels['bnum advertise login button title'] = 'Ouvrir le Bureau numérique';
 $labels['go to bnum'] = "Ouvrir le Bureau numérique";

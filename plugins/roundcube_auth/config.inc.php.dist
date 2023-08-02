@@ -17,8 +17,11 @@ $config['auth_kerb_keyword'] = "kerb";
 // OIDC Provider URL
 $config['oidc_url'] = 'OIDC_PROVIDER_URL';
 
-// Proxy (url:port) to reach OIDC Provider
+// Proxy (url:port) to reach OIDC Provider - Leave empty if you don't need it
 $config['oidc_proxy'] = '';
+
+// App URL to redirect after OIDC login - Leave empty if you don't need it
+$config['oidc_redirect'] = '';
 
 // Client ID (registered on the provider)
 $config['oidc_client'] = 'OIDC_CLIENT_ID';
@@ -30,6 +33,9 @@ $config['oidc_secret'] = 'OIDC_CLIENT_SECRET';
 $config['oidc_scope'] = 'uid';
 
 // -------------- OIDC -----------------
+
+$config['auth_oidc_link_enabled'] = true;
+$config['auth_oidc_link_name'] = "Cerbère"; // "CAS", "Auth Unifiée", ...
 
 // Field used as a login UID (email, uid, ...)
 $config['oidc_field_uid'] = 'uid';

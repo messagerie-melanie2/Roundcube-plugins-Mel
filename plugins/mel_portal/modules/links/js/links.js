@@ -137,7 +137,7 @@ class html_link extends mel_html2 {
         if ($item.parent().css('display') !== 'none' && $item.css('display') !== 'none')
         {
             this.order = $item.data('order');
-            this._name = $item.find('.inner')?.text?.() ?? EMPTY_STRING;
+            this._name = $item.find('.inner')?.text?.() ?? $item.find('.button-inner')?.text?.() ?? EMPTY_STRING;
             this._current_task = $item.attr?.('href')?.split?.('task=');
 
             if (!!this._current_task && !!this._current_task[1]) {

@@ -1,6 +1,7 @@
 //compress:false
 @import "main.less";
 @import "style_mixin.less";
+@import "./variables/apps.less";
 /** BODY **/
 
 body{
@@ -4334,6 +4335,12 @@ a.rcmContactAddress {
     }
 }
 
+.mv2-app {
+    &.fill-on-hover:hover {
+        font-variation-settings: 'FILL' 1;
+    }
+}
+
 .aprilfool {
     background-image: url(../images/aprilfools.png);
     width:500px;
@@ -4975,5 +4982,165 @@ button.melv2-sec-nav-correction{
         html.dark-mode &{
             background-color: #2E2E2E;
         }
+    }
+}
+
+.module_Links {
+
+    .melv2-card {
+        box-shadow: none;
+
+        html.dark-mode &{
+            // &{
+                background-color: transparent;
+            // }
+        }
+    }
+
+    .melv2-card-pre {
+        border-bottom: solid thin #E0E0E0;
+        margin-bottom: 15px;
+    }
+
+    .melv2-card-contents {
+        display: flex;
+        padding: 0 308px;
+        flex-wrap: wrap;
+        overflow: unset;
+        height: 325px;
+        max-height: 325px;
+        justify-content: center;
+
+        @media screen and (max-width: 1859px)  {
+            &{
+                padding: 0 285px;
+                overflow: unset;
+            }
+        }
+
+        @media screen and (max-width: 1725px)  {
+            &{
+                padding: 0 189px;
+                overflow: unset;
+                // overflow-x: unset;
+                // overflow-y: auto;
+            }
+        }
+
+        @media screen and (max-width: 1477px)  {
+            &{
+                padding: 0 200px;
+                overflow: unset;
+            }
+        }
+
+        @media screen and (max-width: 1433px)  {
+            &{
+                padding: 0;
+                overflow-x: unset;
+                overflow-y: auto;
+            }
+        }
+
+    }
+}
+
+.mv2-app {
+    border: none;
+    background-color: transparent;
+    margin: 5px 20px 50px;
+    max-width: 100px;
+    max-height: 100px;
+    flex: 1 0 auto;
+
+    @media screen and (max-width: 1477px)  {
+        &{
+            margin: 5px 17px 50px;
+        }
+    }
+
+    .mv2-app-icon {
+        width: 90px;
+        height: 90px;
+        max-width: 90px;
+        max-height: 90px;
+        border: none;
+        background-color: var(--main-bckg-color);
+        color: var(--secondary-text-color);
+        border-radius: 10px;
+        display: block;
+        margin-bottom: 5px;
+        line-height: 1.07;
+        font-size: 84px;
+
+        @media screen and (max-width: 1477px)  {
+            &{
+                width: 80px;
+                height: 80px;
+                max-width: 80px;
+                max-height: 80px;
+                font-size: 60px;
+                line-height: 1.35;
+            }
+        }
+    }
+
+    .mv2-app-text {
+        font-size: 12px;
+    }
+}
+
+each(@apps, {
+    .app-icon-color(@value);
+});
+
+.app-icon-color(@name) {
+    @color: e('var(--@{name}-app-color)');
+    .@{name}_app{
+        .mv2-app-icon {
+            background-color: @color;
+
+            &:hover {
+                background-color: var(--hover-app-color);
+            }
+        }
+
+        &.only-text {
+            .mv2-app-icon {
+                color: @color;
+            }
+        }
+
+        &.only-current.only-background{
+            background-color: @color;
+
+            &:hover {
+                background-color: var(--hover-app-color);
+            }
+        }
+
+        &.only-current.only-text {
+            color: @color;
+        }
+    }
+}
+
+html.dark-mode {
+    &:root{
+        --hover-app-color:#2E2E2E;
+    }
+
+    .mv2-app-icon {
+        color:#E1C58F;
+        background-color: #181C28;
+        border:solid thin #E1C58F;
+
+        &:hover {
+            background-color: var(--hover-app-color);
+        }
+    }
+
+    .mv2-app-text{
+        color:#96b9e7;
     }
 }

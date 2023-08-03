@@ -1,3 +1,5 @@
+@import '../../../../styles/less/variables/apps.less';
+
 html.theme-super-classique:root{
   --mail-layout-sidebar-background-color: #fafafa;
   --main-layout-content-background-color: #fff;
@@ -22,4 +24,7 @@ html.theme-super-classique:root{
   --focus-border-color: #363A5B;
 
   --selected-mail-border-color: var(--primary-border-color);
+
+  .update-each-app-color(var(--default-background));
+  --hover-app-color: var(--main-layout-hover-background-color);
 }

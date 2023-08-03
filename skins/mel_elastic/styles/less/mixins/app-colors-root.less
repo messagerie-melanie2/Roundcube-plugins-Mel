@@ -1,0 +1,16 @@
+// out: false
+@import '../variables/apps-colors.less';
+@import '../variables/apps.less';
+
+.variable-color(@name) {
+    @var: e(`'@{name}_color'.toUpperCase()`);
+    .update-app-color(@name, @@var);
+}
+
+
+
+.app-color-root() {
+    each(@apps, {
+        .variable-color(@value);
+    });
+}

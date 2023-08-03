@@ -1111,8 +1111,10 @@ $(document).ready(() => {
 
                     $taskmenu.append('<ul class="list-unstyled"></ul>');
 
+                    let li;
                     Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
-                        let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
+                        li = $(`<li style="display:block" data-order="${e.order}" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
+                        e.item.attr('data-order', e.order);
                         e = e.item;
                         if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
                         li.css("display", "none");
@@ -1120,6 +1122,8 @@ $(document).ready(() => {
                         e.appendTo(li);
                         li.appendTo($("#taskmenu ul"));
                     });
+
+                    li = null;
 
                     let $taskMenu = $("#taskmenu .menu-last-frame").attr("tabIndex", "-1");
 

@@ -1116,8 +1116,7 @@ $(document).ready(() => {
                         li = $(`<li style="display:block" data-order="${e.order}" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
                         e.item.attr('data-order', e.order);
                         e = e.item;
-                        if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
-                        li.css("display", "none");
+                        if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose")) li.css("display", "none");
 
                         e.appendTo(li);
                         li.appendTo($("#taskmenu ul"));

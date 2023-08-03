@@ -581,8 +581,9 @@ class Horde_Date_Recurrence
             // If we're starting past this month's recurrence of the event,
             // look in the next month on the day the event recurs.
             if ($after->mday > $start->mday) {
-                ++$after->month;
+                // PAMELA - Fix 0007820: Les évènements récurrents ne s'affichent pas pour le dernier jour du mois
                 $after->mday = $start->mday;
+                ++$after->month;
             }
 
             // Adjust $start to be the first match.

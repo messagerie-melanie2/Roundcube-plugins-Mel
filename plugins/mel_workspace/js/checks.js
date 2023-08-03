@@ -139,7 +139,7 @@ function check_workspace_integrity()
 
                         if (datas.state === states.invalid) { //Si le service a été supprimer
                             const isCustomState = !!datas.service_state?.state;
-                            const text = isCustomState && !!datas.service_state.text ? datas.service_state.text : `Nous ne parvenons pas à trouver des données pour le service "${datas.service}", le service à dût être supprimer par un des administrateurs, création du service en cours....`;
+                            const text = isCustomState && !!datas.service_state.text ? datas.service_state.text : `Nous ne parvenons pas à trouver des données pour le service "${rcmail.gettext(datas.service, 'mel_workspace')}", le service a dû être supprimé par un des administrateurs, création du service en cours....`;
                             console.error(`###[checks]${text}`, datas);
                             rcmail.display_message(text, 'error');
 
@@ -199,7 +199,7 @@ function check_workspace_integrity()
                                         let displayedText = EMPTY_STRING;
                                         
                                         if (isCustomState && !!datas.service_state.ok_text) displayedText = datas.service_state.ok_text;
-                                        else displayedText = `Le service ${datas.service} a été créé avec succès !`;
+                                        else displayedText = `Le service ${rcmail.gettext(datas.service, 'mel_workspace')} a été créé avec succès !`;
 
                                         rcmail.display_message(displayedText, 'confirmation');
                                     }

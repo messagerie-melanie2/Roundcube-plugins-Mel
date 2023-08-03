@@ -2428,6 +2428,10 @@ $(document).ready(() => {
          */
         switch_color()
         {
+            let $html = $('html');
+            if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+            $html = null;
+
             rcmail.triggerEvent("switch_color_theme");
 
             return this._update_theme_color();
@@ -2456,6 +2460,7 @@ $(document).ready(() => {
                     if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
                 }
             }
+            else if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
 
             if (this.color_mode() === "dark" && !this.themes[this.theme]?.custom_dark_mode)
             {

@@ -1,8 +1,10 @@
+html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
 	border-color: #E1C58F;
 	background-color: #3e4c59;
 }
 
+html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block::before,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
 	top: 2px;
 	left: 3px;
@@ -10,6 +12,7 @@ html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
     content: "\ee81";
 }
 
+html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block::after,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::after {
 	/* border: solid #E1C58F thin; */
     background-color: #2E2E2E;

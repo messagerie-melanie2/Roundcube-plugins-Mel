@@ -77,6 +77,13 @@ class Theme {
     public $class;
 
     /**
+     * Le thème possède son propre mode sombre ou non
+     *
+     * @var bool
+     */
+    public $custom_dark_mode;
+
+    /**
      * Constructeur de la classe
      *
      * @param string $path Chemin du dossier du thème
@@ -113,6 +120,7 @@ class Theme {
 
         $this->displayed = new ThemeLocalization($this->id, $json->display ?? $this->id, self::SkinPath().self::THEME_PATH.'/'.$this->name.'/localization');
         $this->desc = new ThemeLocalization($this->id, $json->description ?? '', self::SkinPath().self::THEME_PATH.'/'.$this->name.'/localization');
+        $this->custom_dark_mode = $json->custom_dark_mode ?? false;
     }
 
     /**
@@ -150,7 +158,7 @@ class Theme {
      */
     public function prepareToSave() {
         $forSave = [];
-        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent'];
+        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent', 'custom_dark_mode'];
 
         foreach ($array as $value) {
             switch ($value) {

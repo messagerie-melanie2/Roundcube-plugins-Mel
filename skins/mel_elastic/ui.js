@@ -2429,6 +2429,7 @@ $(document).ready(() => {
         switch_color()
         {
             rcmail.triggerEvent("switch_color_theme");
+
             return this._update_theme_color();
         }
 
@@ -2438,14 +2439,25 @@ $(document).ready(() => {
          */
         color_mode()
         {
-            return $('html').hasClass("dark-mode") ? "dark" : "light";
+            return $('html').hasClass("dark-mode") || $('html').hasClass("dark-mode-custom")  ? "dark" : "light";
         }
 
         _update_theme_color()
         {
             let $html = $('html');
 
-            if (this.color_mode() === "dark")
+            if (this.color_mode() === "dark") {
+                if (this.themes[this.theme]?.custom_dark_mode){
+                    if ($html.hasClass('dark-mode')) $html.removeClass('dark-mode');
+                    if (!$html.hasClass('dark-mode-custom')) $html.addClass('dark-mode-custom');
+                }
+                else {
+                    if (!$html.hasClass('dark-mode')) $html.addClass('dark-mode');
+                    if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+                }
+            }
+
+            if (this.color_mode() === "dark" && !this.themes[this.theme]?.custom_dark_mode)
             {
                 let current = this.themes[this.get_current_theme()];
                 do {

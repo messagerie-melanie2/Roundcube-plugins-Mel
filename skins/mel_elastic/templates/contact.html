@@ -12,6 +12,8 @@
 	</div>
 
 	<div class="elastic-contact-qr-button-code">
+		<!-- <button id="copy-button" title="Copier le contact" style="line-height: 1" class="mel-button no-margin-button no-button-margin bckg true"><span class="material-symbols-outlined">person_add</span></button> -->
+		<roundcube:button command="copy-to-contact" type="button" class="button add-to-contacts mel-button no-margin-button no-button-margin bckg true" title="Ajouter aux contacts" label="mel_contacts.copy_to_contact" condition="env:copy_to_contact" />
 		<button id="qrcode-button" title="Afficher le qr code du contact" onclick="rcmail.command('qrcode')" style="line-height: 1" class="mel-button no-margin-button no-button-margin bckg true"><span class="material-symbols-outlined">qr_code_2</span></button>
 	</div>
 
@@ -28,6 +30,7 @@
 <script>
 	rcmail.addEventListener('init', () => {
 		if (!rcmail.env.cid) $('#qrcode-button').addClass('disabled').attr('disabled', 'disabled');
+		$('.add-to-contacts').html('<span class="material-symbols-outlined">person_add</span>').attr('title', 'Ajouter aux contacts');
 	});
 </script>
 

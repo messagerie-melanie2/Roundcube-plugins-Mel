@@ -58,6 +58,9 @@ class Horde_Date_Recurrence
     /** Recurs monthly on the same date. */
     const RECUR_MONTHLY_DATE = 3;
 
+    /** Recurs monthly by the last day of month. */
+    const RECUR_MONTHLY_BYLASTDATE = 8;
+
     /** Recurs monthly on the same week day. */
     const RECUR_MONTHLY_WEEKDAY = 4;
 
@@ -293,6 +296,7 @@ class Horde_Date_Recurrence
         case self::RECUR_WEEKLY:
             return Horde_Date_Translation::t("Weekly");
         case self::RECUR_MONTHLY_DATE:
+        case self::RECUR_MONTHLY_BYLASTDATE:
         case self::RECUR_MONTHLY_WEEKDAY:
             return Horde_Date_Translation::t("Monthly");
         case self::RECUR_YEARLY_DATE:
@@ -570,8 +574,12 @@ class Horde_Date_Recurrence
             }
             break;
 
+        case self::RECUR_MONTHLY_BYLASTDATE:
         case self::RECUR_MONTHLY_DATE:
             $start = clone $this->start;
+            if (self::RECUR_MONTHLY_BYLASTDATE == $this->getRecurType()) {
+              $start->mday = '1';
+            }
             if ($after->compareDateTime($start) < 0) {
                 $after = clone $start;
             } else {
@@ -609,6 +617,15 @@ class Horde_Date_Recurrence
                     return false;
                 }
                 if ($start->isValid()) {
+                  if (self::RECUR_MONTHLY_BYLASTDATE == $this->getRecurType()) {
+                    $nthDay = $this->getRecurNthWeekday();
+                    if ($nthDay !== -1) {
+                      $start->mday = $nthDay;
+                    }
+                    else {
+                      $start->mday = Horde_Date_Utils::daysInMonth($start->month, $start->year);
+                    }
+                }
                     return $start;
                 }
 
@@ -1215,8 +1232,13 @@ class Horde_Date_Recurrence
                 if (isset($rdata['BYDAY'])) {
                     $this->setRecurType(self::RECUR_MONTHLY_WEEKDAY);
                     if (preg_match('/(-?[1-4])([A-Z]+)/', $rdata['BYDAY'], $m)) {
+                      if ($m[2] === 'LD') {
+                        $this->setRecurType(self::RECUR_MONTHLY_BYLASTDATE);
+                        $this->setRecurNthWeekday($m[1]);
+                      } else {                        
                         $this->setRecurOnDay($maskdays[$m[2]]);
                         $this->setRecurNthWeekday($m[1]);
+                      }
                     }
                 } else {
                     $this->setRecurType(self::RECUR_MONTHLY_DATE);

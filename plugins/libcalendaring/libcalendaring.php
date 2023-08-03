@@ -1059,7 +1059,8 @@ class libcalendaring extends rcube_plugin
         for ($j = $first; $j <= $first+6; $j++) {
             $d = $j % 7;
             $select_wday->add($this->gettext($daymap[$d]), strtoupper(substr($daymap[$d], 0, 2)));
-        }
+          }
+          $select_wday->add($this->gettext('dayofmonth'), 'LD');
 
         return $select_prefix->show() . '&nbsp;' . $select_wday->show();
     }

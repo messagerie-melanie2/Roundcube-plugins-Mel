@@ -577,6 +577,8 @@ class Horde_Date_Recurrence
         case self::RECUR_MONTHLY_BYLASTDATE:
         case self::RECUR_MONTHLY_DATE:
             $start = clone $this->start;
+
+             // PAMELA - 	0007815: Rajouter la possibilté de créer des évènements pour le dernier jour du mois
             if (self::RECUR_MONTHLY_BYLASTDATE == $this->getRecurType()) {
               $start->mday = '1';
             }
@@ -617,6 +619,7 @@ class Horde_Date_Recurrence
                     return false;
                 }
                 if ($start->isValid()) {
+                  // PAMELA - 	0007815: Rajouter la possibilté de créer des évènements pour le dernier jour du mois 
                   if (self::RECUR_MONTHLY_BYLASTDATE == $this->getRecurType()) {
                     $nthDay = $this->getRecurNthWeekday();
                     if ($nthDay !== -1) {
@@ -1232,6 +1235,7 @@ class Horde_Date_Recurrence
                 if (isset($rdata['BYDAY'])) {
                     $this->setRecurType(self::RECUR_MONTHLY_WEEKDAY);
                     if (preg_match('/(-?[1-4])([A-Z]+)/', $rdata['BYDAY'], $m)) {
+                       // PAMELA - 	0007815: Rajouter la possibilté de créer des évènements pour le dernier jour du mois
                       if ($m[2] === 'LD') {
                         $this->setRecurType(self::RECUR_MONTHLY_BYLASTDATE);
                         $this->setRecurNthWeekday($m[1]);

@@ -1821,7 +1821,6 @@ $(document).ready(() => {
         }
         
         setTimeout(async () => {
-            debugger;
             $("#wsp-event-all-cal-mm").removeClass("disabled").removeAttr("disabled");
             $("#edit-wsp").removeClass("disabled").removeAttr("disabled");   
 
@@ -2586,11 +2585,13 @@ $(document).ready(() => {
         const config = new GlobalModalConfig(rcmail.gettext('create_event', plugin_text), "default", dialog, null);
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
 
-        kolab_event_dialog_element.footer.buttons.save.click(() => {
+        kolab_event_dialog_element.footer.buttons.save.click(async () => {
             window.event_saved = true;
-            if (kolab_event_dialog_element.modal.find("iframe")[0].contentWindow.rcube_calendar_ui.save())
+            kolab_event_dialog_element.footer.buttons.save.addClass('disabled').attr('disabled', 'disabled');
+            const saved = await kolab_event_dialog_element.modal.find("iframe")[0].contentWindow.rcube_calendar_ui.save();
+            if (!saved)
             {
-
+                kolab_event_dialog_element.footer.buttons.save.removeClass('disabled').removeAttr('disabled');
             }
         }).removeClass("btn-primary")
         .addClass("btn-secondary mel-button");

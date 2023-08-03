@@ -58,6 +58,7 @@ $labels['monthly'] = 'mensuelle';
 $labels['yearly'] = 'annuelle';
 $labels['rdate'] = 'à certaines dates';
 $labels['every'] = 'Tous les';
+$labels['everymonth'] = 'Tous les mois';
 $labels['days'] = 'jour(s)';
 $labels['weeks'] = 'semaine(s)';
 $labels['months'] = 'mois';

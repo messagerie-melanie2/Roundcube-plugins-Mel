@@ -2039,7 +2039,10 @@ class mel_driver extends calendar_driver {
               if (strtotime($next_event['end']->format(self::DB_DATE_FORMAT)) < $start) {
                 continue;
               }
-              if (strtotime($next_event['start']->format(self::DB_DATE_FORMAT)) > $end) {
+              if ($_event['recurrence']['FREQ'] == 'MONTHLY' && !isset($_event['recurrence']['BYDAY']) && $next_event['start']->format('d') !== $_event['start']->format('d')) {
+                  continue;                
+              }
+                if (strtotime($next_event['start']->format(self::DB_DATE_FORMAT)) > $end) {
                 break;
               }
               // Ajout de la date de l'occurrence pour la récupérer lors des modifications

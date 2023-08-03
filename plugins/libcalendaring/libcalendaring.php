@@ -941,8 +941,8 @@ class libcalendaring extends rcube_plugin
                 // rule selectors
                 $radio = new html_radiobutton(array('name' => 'repeatmode', 'class' => 'edit-recurrence-monthly-mode'));
                 $table = new html_table(array('cols' => 2, 'border' => 0, 'cellpadding' => 0, 'class' => 'formtable'));
-                $table->add('label', html::label(null, $radio->show('BYMONTHDAY', array('value' => 'BYMONTHDAY')) . ' ' . $this->gettext('each')));
-                $table->add(null, $monthdays);
+                $table->add('label', html::label(null, $radio->show('BYMONTHDAY', array('value' => 'BYMONTHDAY')) . ' ' . $this->gettext('everymonth')));
+                $table->add('checkbox-day', $monthdays);
                 $table->add('label', html::label(null, $radio->show('', array('value' => 'BYDAY')) . ' ' . $this->gettext('every')));
                 $table->add('recurrence-onevery', $this->rrule_selectors($attrib['part']));
 

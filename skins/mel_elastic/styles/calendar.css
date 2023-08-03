@@ -853,3 +853,6 @@ body.quickview-active .fc .fc-scroller {
   left: 49%;
   transform: translate(-50%, -50%);
 }
+#recurrence-form-monthly .checkbox-day {
+  display: none;
+}

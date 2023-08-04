@@ -3405,7 +3405,7 @@ html.layout-phone .mv2-app-line {
   margin-bottom: 5px;
 }
 .mv2-app .mv2-app-text {
-  font-size: 10px;
+  font-size: 12px;
 }
 .mail_app .mv2-app-icon {
   background-color: var(--mail-app-color);
@@ -3418,8 +3418,9 @@ html.layout-phone .mv2-app-line {
 }
 .mail_app.only-current.only-background {
   background-color: var(--mail-app-color);
+  color: white;
 }
-.mail_app.only-current.only-background:hover {
+.mail_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .mail_app.only-current.only-text {
@@ -3436,8 +3437,9 @@ html.layout-phone .mv2-app-line {
 }
 .calendar_app.only-current.only-background {
   background-color: var(--calendar-app-color);
+  color: white;
 }
-.calendar_app.only-current.only-background:hover {
+.calendar_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .calendar_app.only-current.only-text {
@@ -3454,8 +3456,9 @@ html.layout-phone .mv2-app-line {
 }
 .stockage_app.only-current.only-background {
   background-color: var(--stockage-app-color);
+  color: white;
 }
-.stockage_app.only-current.only-background:hover {
+.stockage_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .stockage_app.only-current.only-text {
@@ -3472,8 +3475,9 @@ html.layout-phone .mv2-app-line {
 }
 .addressbook_app.only-current.only-background {
   background-color: var(--addressbook-app-color);
+  color: white;
 }
-.addressbook_app.only-current.only-background:hover {
+.addressbook_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .addressbook_app.only-current.only-text {
@@ -3490,8 +3494,9 @@ html.layout-phone .mv2-app-line {
 }
 .visio_app.only-current.only-background {
   background-color: var(--visio-app-color);
+  color: white;
 }
-.visio_app.only-current.only-background:hover {
+.visio_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .visio_app.only-current.only-text {
@@ -3508,8 +3513,9 @@ html.layout-phone .mv2-app-line {
 }
 .parapheur_app.only-current.only-background {
   background-color: var(--parapheur-app-color);
+  color: white;
 }
-.parapheur_app.only-current.only-background:hover {
+.parapheur_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .parapheur_app.only-current.only-text {
@@ -3526,8 +3532,9 @@ html.layout-phone .mv2-app-line {
 }
 .chat_app.only-current.only-background {
   background-color: var(--chat-app-color);
+  color: white;
 }
-.chat_app.only-current.only-background:hover {
+.chat_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .chat_app.only-current.only-text {
@@ -3544,8 +3551,9 @@ html.layout-phone .mv2-app-line {
 }
 .workspace_app.only-current.only-background {
   background-color: var(--workspace-app-color);
+  color: white;
 }
-.workspace_app.only-current.only-background:hover {
+.workspace_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .workspace_app.only-current.only-text {
@@ -3562,8 +3570,9 @@ html.layout-phone .mv2-app-line {
 }
 .sondage_app.only-current.only-background {
   background-color: var(--sondage-app-color);
+  color: white;
 }
-.sondage_app.only-current.only-background:hover {
+.sondage_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .sondage_app.only-current.only-text {
@@ -3580,8 +3589,9 @@ html.layout-phone .mv2-app-line {
 }
 .rizomo_app.only-current.only-background {
   background-color: var(--rizomo-app-color);
+  color: white;
 }
-.rizomo_app.only-current.only-background:hover {
+.rizomo_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .rizomo_app.only-current.only-text {
@@ -3598,8 +3608,9 @@ html.layout-phone .mv2-app-line {
 }
 .wekan_app.only-current.only-background {
   background-color: var(--wekan-app-color);
+  color: white;
 }
-.wekan_app.only-current.only-background:hover {
+.wekan_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .wekan_app.only-current.only-text {
@@ -3616,8 +3627,9 @@ html.layout-phone .mv2-app-line {
 }
 .useful_links_app.only-current.only-background {
   background-color: var(--useful_links-app-color);
+  color: white;
 }
-.useful_links_app.only-current.only-background:hover {
+.useful_links_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .useful_links_app.only-current.only-text {
@@ -3634,8 +3646,9 @@ html.layout-phone .mv2-app-line {
 }
 .bureau_app.only-current.only-background {
   background-color: var(--bureau-app-color);
+  color: white;
 }
-.bureau_app.only-current.only-background:hover {
+.bureau_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .bureau_app.only-current.only-text {
@@ -3652,8 +3665,9 @@ html.layout-phone .mv2-app-line {
 }
 .settings_app.only-current.only-background {
   background-color: var(--settings-app-color);
+  color: white;
 }
-.settings_app.only-current.only-background:hover {
+.settings_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .settings_app.only-current.only-text {
@@ -3670,8 +3684,9 @@ html.layout-phone .mv2-app-line {
 }
 .news_app.only-current.only-background {
   background-color: var(--news-app-color);
+  color: white;
 }
-.news_app.only-current.only-background:hover {
+.news_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .news_app.only-current.only-text {
@@ -3688,8 +3703,9 @@ html.layout-phone .mv2-app-line {
 }
 .tasks_app.only-current.only-background {
   background-color: var(--tasks-app-color);
+  color: white;
 }
-.tasks_app.only-current.only-background:hover {
+.tasks_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .tasks_app.only-current.only-text {
@@ -3706,8 +3722,9 @@ html.layout-phone .mv2-app-line {
 }
 .notes_app.only-current.only-background {
   background-color: var(--notes-app-color);
+  color: white;
 }
-.notes_app.only-current.only-background:hover {
+.notes_app.only-current.only-background.can-be-hovered:hover {
   background-color: var(--hover-app-color);
 }
 .notes_app.only-current.only-text {

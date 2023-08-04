@@ -5063,7 +5063,7 @@ button.melv2-sec-nav-correction{
     }
 
     .mv2-app-text {
-        font-size: 10px;
+        font-size: 12px;
     }
 }
 
@@ -5090,8 +5090,9 @@ each(@apps, {
 
         &.only-current.only-background{
             background-color: @color;
+            color: white;
 
-            &:hover {
+            &.can-be-hovered:hover {
                 background-color: var(--hover-app-color);
             }
         }

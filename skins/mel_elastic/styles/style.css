@@ -3357,77 +3357,47 @@ html.dark-mode .module_Links .melv2-card {
 }
 .module_Links .melv2-card-contents {
   display: flex;
-  padding: 0 308px;
   flex-wrap: wrap;
   overflow: unset;
-  height: 325px;
-  max-height: 325px;
+  height: 260px;
+  max-height: 260px;
   justify-content: center;
 }
-@media screen and (max-width: 1859px) {
-  .module_Links .melv2-card-contents {
-    padding: 0 285px;
-    overflow: unset;
-  }
+.touch .module_Links .melv2-card-contents {
+  padding: 0;
+  overflow: auto;
+  height: 275px;
+  max-height: 275px;
 }
-@media screen and (max-width: 1725px) {
-  .module_Links .melv2-card-contents {
-    padding: 0 189px;
-    overflow: unset;
-  }
-}
-@media screen and (max-width: 1477px) {
-  .module_Links .melv2-card-contents {
-    padding: 0 200px;
-    overflow: unset;
-  }
-}
-@media screen and (max-width: 1433px) {
-  .module_Links .melv2-card-contents {
-    padding: 0;
-    overflow-x: unset;
-    overflow-y: auto;
-  }
+.mv2-app-line {
+  display: flex;
+  flex: 1 0 100%;
+  justify-content: center;
 }
 .mv2-app {
   border: none;
   background-color: transparent;
-  margin: 5px 20px 50px;
-  max-width: 100px;
-  max-height: 100px;
+  margin: 5px 17px 50px;
+  max-width: 92px;
+  max-height: 80px;
   flex: 1 0 auto;
 }
-@media screen and (max-width: 1477px) {
-  .mv2-app {
-    margin: 5px 17px 50px;
-  }
-}
 .mv2-app .mv2-app-icon {
-  width: 90px;
-  height: 90px;
-  max-width: 90px;
-  max-height: 90px;
+  width: 80px;
+  height: 80px;
+  max-width: 80px;
+  max-height: 80px;
+  font-size: 60px;
+  line-height: 1.35;
   border: none;
   background-color: var(--main-bckg-color);
   color: var(--secondary-text-color);
   border-radius: 10px;
   display: block;
   margin-bottom: 5px;
-  line-height: 1.07;
-  font-size: 84px;
-}
-@media screen and (max-width: 1477px) {
-  .mv2-app .mv2-app-icon {
-    width: 80px;
-    height: 80px;
-    max-width: 80px;
-    max-height: 80px;
-    font-size: 60px;
-    line-height: 1.35;
-  }
 }
 .mv2-app .mv2-app-text {
-  font-size: 12px;
+  font-size: 10px;
 }
 .mail_app .mv2-app-icon {
   background-color: var(--mail-app-color);

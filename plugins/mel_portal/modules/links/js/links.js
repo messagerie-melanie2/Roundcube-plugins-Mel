@@ -1,4 +1,5 @@
 import { MelEnumerable } from "../../../../mel_metapage/js/lib/classes/enum.js";
+import { MelFor } from "../../../../mel_metapage/js/lib/helpers/loops.js";
 import { MaterialSymbolHtml } from "../../../../mel_metapage/js/lib/html/html_icon.js";
 import { MelObject } from "../../../../mel_metapage/js/lib/mel_object.js";
 import { BaseModule } from "../../../js/lib/module.js";
@@ -23,6 +24,7 @@ export class ModuleLinks extends BaseModule {
     }
 
     _generate_links() {
+        const lines = 2;
         let _$ = (top ?? parent ?? window).$;
 
         let $apps = _$('#taskmenu li a');
@@ -53,6 +55,14 @@ export class ModuleLinks extends BaseModule {
         }
 
         if (links.any()) {
+
+            let html_lines = [];
+
+            MelFor.Start(0, lines, (i, start, end) => {
+                html_lines.push(new mel_html2('div', {attribs:{class:'mv2-app-line'}}));
+            });
+
+            let it = 0;
             for (let iterator of links.orderBy(x => x.order)) {
                 if ('last_frame' === iterator._current_task) continue;
                 if (!iterator.onclick.haveEvents())
@@ -76,8 +86,17 @@ export class ModuleLinks extends BaseModule {
                         }
                     });
                 }
-                iterator.create(this.select_module_content());
+
+                    html_lines[it % lines].addContent(iterator);
+                    ++it;
             }
+
+            MelFor.Start(0, html_lines.length, (i, start, end, $module, html_lines) => {
+                html_lines[i].create($module);
+            }, this.select_module_content(), html_lines);
+
+            html_lines = null;
+
         }
     }
 

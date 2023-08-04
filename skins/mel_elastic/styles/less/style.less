@@ -5025,6 +5025,10 @@ button.melv2-sec-nav-correction{
 	display: flex;
 	flex: 1 0 100%;
 	justify-content: center;
+
+    html.layout-phone &{
+        margin-left:230px;
+    }
 }
 
 .mv2-app {
@@ -5035,11 +5039,13 @@ button.melv2-sec-nav-correction{
     max-height: 80px;
     flex: 1 0 auto;
 
-    // @media screen and (max-width: 1477px)  {
-    //     &{
-    //         margin: 5px 17px 50px;
-    //     }
-    // }
+    @media screen and (max-width: 904px)  {
+        &{
+            margin: 0;
+        }
+
+
+    }
 
     .mv2-app-icon {
         width: 80px;

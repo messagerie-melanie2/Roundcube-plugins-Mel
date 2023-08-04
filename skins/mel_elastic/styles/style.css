@@ -3374,6 +3374,9 @@ html.dark-mode .module_Links .melv2-card {
   flex: 1 0 100%;
   justify-content: center;
 }
+html.layout-phone .mv2-app-line {
+  margin-left: 230px;
+}
 .mv2-app {
   border: none;
   background-color: transparent;
@@ -3381,6 +3384,11 @@ html.dark-mode .module_Links .melv2-card {
   max-width: 92px;
   max-height: 80px;
   flex: 1 0 auto;
+}
+@media screen and (max-width: 904px) {
+  .mv2-app {
+    margin: 0;
+  }
 }
 .mv2-app .mv2-app-icon {
   width: 80px;

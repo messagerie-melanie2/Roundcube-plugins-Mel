@@ -1,4 +1,5 @@
 (() => {
+    const VERSION = '0.0.0';
     const BASE_PATH = '/js/lib/';
     const UNLOAD_TIME_MS = 60 * 5 * 1000;
 
@@ -24,7 +25,7 @@
         if (!modules[key]) {
             console.info('Load module', key);
             try {
-                modules[key] = await import(`../../../${plugin}${path}${name}`);
+                modules[key] = await import(`../../../${plugin}${path}${name}?v=${VERSION}`);
             } catch (error) {
                 console.error(`###[loadJsModule]Impossible de charger le module ${key}`, error);
                 throw error;

@@ -284,10 +284,9 @@ html.touch span.menu-last-frame-item {
 
 .menu.toolbar a.more-options.icon-mel-dots:before
 {
-    content:"\e5d3";
+    content:"\e5c3";
     font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
-    font-variation-settings: 'wght' 600;
 }
 
 a.useful_links.icon-mel-link::before
@@ -311,12 +310,6 @@ a.useful_links.icon-mel-link::before
 #layout-menu .menu.toolbar a:hover:before
 {
   font-variation-settings: 'FILL' 1;
-}
-
-#layout-menu .menu.toolbar a.selected.icon-mel-dots:before,
-#layout-menu .menu.toolbar a.icon-mel-dots:hover:before
-{
-  font-variation-settings: 'FILL' 1, 'wght' 600;
 }
 
 #layout-menu .menu.toolbar a:before,

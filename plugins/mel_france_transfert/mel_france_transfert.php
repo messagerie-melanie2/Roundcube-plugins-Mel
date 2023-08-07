@@ -346,6 +346,7 @@ class mel_france_transfert extends rcube_plugin {
             'current_action'  => $COMPOSE['ft_action'] ?: '',
             'current_value'   => $COMPOSE['ft_value'] ?: null,
             'finish'          => $finish,
+            'errorMessage'    => $this->ws->getErrorMessage(),
             'success'         => $success,
     );
     echo json_encode($result);

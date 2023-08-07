@@ -75,9 +75,25 @@ if (window.rcmail) {
       send_with_francetransfert(event);
     }
   });
+
+  rcmail.addEventListener('responseafterplugin.send_francetransfert', function(event) {
+    if (event.response.success) {
+      window.timer = setInterval(() => {
+        rcmail.http_post('plugin.update_progressbar', {
+          _id : rcmail.env.compose_id
+        });
+      }, 10000);
+      
+      // Modifier le libéllé
+      $( "#send_francetransfert_dialog .dialog_text" ).text(rcmail.labels['mel_france_transfert.Download files France Transfert message']);
+    }
+    else {
+      rcmail.display_message(rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.errorMessage, 'error');
+      $("#send_francetransfert_dialog").dialog('close');
+    }
+  });
   
-  rcmail.addEventListener('responseafterplugin.update_progressbar', function(
-      event) {
+  rcmail.addEventListener('responseafterplugin.update_progressbar', function(event) {
     if (event.response.finish) {
       // Suppression du timer
       clearInterval(timer);
@@ -92,7 +108,7 @@ if (window.rcmail) {
         }, 2000);
       }
       else {
-        rcmail.display_message(rcmail.labels['mel_france_transfert.Send France Transfert error']  + " " + event.response.current_action, 'error');
+        rcmail.display_message(rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.current_action, 'error');
       }
       // Masquer le gif de loading
       $('#send_francetransfert_dialog .uil-rolling-css').hide();
@@ -182,20 +198,14 @@ function send_francetransfert_message() {
     _draft_id: $('input[name=\'_draft_saveid\']').val(),
     _subject: $('#compose-subject').val(),
     _message: francetransfert_get_compose_message_text(),
-  });
+  }); 
 
-  window.timer = setInterval(() => {
-    rcmail.http_post('plugin.update_progressbar', {
-      _id : rcmail.env.compose_id
-    });
-  }, 10000);
-  
   var dialog_html = '<div id="send_francetransfert_dialog">';
-  dialog_html += '<div class="dialog_title row align-items-center"><span class="col-3"><img alt="Logo République française" src="https://francetransfert.numerique.gouv.fr/assets/logos/republique_francaise_logo.svg"></span><span class="col-6"><img alt="Logo France transfert" src="https://francetransfert.numerique.gouv.fr/assets/logos/france_transfert_logo.svg"></span></div>';
-  dialog_html += '<span class="dialog_text">' + rcmail.labels['mel_france_transfert.Send France Transfert message'] + '</span>';
-  dialog_html += '<div class="uil-rolling-css"><div>';
-  dialog_html += '</div>';
-  
+      dialog_html += '<div class="dialog_title row align-items-center"><span class="col-3"><img alt="Logo République française" src="https://francetransfert.numerique.gouv.fr/assets/logos/republique_francaise_logo.svg"></span><span class="col-6"><img alt="Logo France transfert" src="https://francetransfert.numerique.gouv.fr/assets/logos/france_transfert_logo.svg"></span></div>';
+      dialog_html += '<span class="dialog_text">' + rcmail.labels['mel_france_transfert.Send France Transfert message'] + '</span>';
+      dialog_html += '<div class="uil-rolling-css"><div>';
+      dialog_html += '</div>';
+      
   $(dialog_html).dialog({
     modal: true, 
     title: rcmail.labels['mel_france_transfert.Send France Transfert title'], 
@@ -209,10 +219,6 @@ function send_francetransfert_message() {
       $(this).remove();      
     }
   });
-  // Modifier le libéllé au bout de 5sec
-  setTimeout(function() {
-    $( "#send_francetransfert_dialog .dialog_text" ).text(rcmail.labels['mel_france_transfert.Download files France Transfert message']);
-  }, 5000);  
 }
 
 /**

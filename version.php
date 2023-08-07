@@ -9,10 +9,10 @@ class Version {
   /**
    * Version number
    */
-  const VERSION = '23.6';
+  const VERSION = '23.7';
   
   /**
    * Build
    */
-  const BUILD = '20230623092652';
+  const BUILD = '20230807164052';
 }

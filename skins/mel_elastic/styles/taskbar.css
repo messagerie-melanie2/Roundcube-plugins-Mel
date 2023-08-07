@@ -452,7 +452,7 @@ html.touch #layout-menu  span > a > span.inner,
     /* overflow: initial; */
     /* padding: 0; */
     /* position: absolute; */
-    width: 120px;
+    width: 140px;
 
     margin: -.45rem 0;
     margin-left: -5px;
@@ -490,10 +490,9 @@ html.touch #layout-menu  span > a > span.inner
     /* padding:0;
     height: 58px; */
 } 
-
 #layout-menu:hover a.wsp:hover > span.inner,
 #layout-menu:hover a.more-options:hover > span.inner {
-	padding-bottom: 0.36rem;
+  border-top: solid thin var(--invisible)
 }
 
 #layout-menu:hover a.menu-last-frame:hover > span.inner {

@@ -1,6 +1,6 @@
 <?php
 $labels = array();
-$labels['my_workspaces'] = 'Mes espaces de travail';
+$labels['my_workspaces'] = 'Espaces de travail';
 $labels['back'] = 'Retour';
 $labels['home'] = 'Accueil';
 $labels['calendar'] = 'Agenda';

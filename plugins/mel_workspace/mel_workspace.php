@@ -353,7 +353,7 @@ class mel_workspace extends bnum_plugin
         ));
         $this->include_script('js/workspace_frame_manager.js');
         $this->load_script_module('index', '/js/mel_lib/');
-        $this->rc->output->set_pagetitle("Mes espaces de travail");
+        $this->rc->output->set_pagetitle("Espaces de travail");
         $this->rc->output->send('mel_workspace.workspaces');
     }
 

@@ -32,7 +32,7 @@ $labels['my_day_and_notes'] = $labels['my_day'];//.' & mes notes';
 $labels['headline'] = "Informations";
 $labels['thematic_1'] = "Thématique 1";
 $labels['thematic_2'] = "Thématique 2";
-$labels['workspaces'] = "Mes espaces de travail";
+$labels['workspaces'] = "Espaces de travail";
 
 //Workspaces
 $labels['tak'] = "Épingler";

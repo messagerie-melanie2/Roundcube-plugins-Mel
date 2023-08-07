@@ -287,6 +287,7 @@ html.touch span.menu-last-frame-item {
     content:"\e5c3";
     font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
+    font-variation-settings: 'wght' 300;
 }
 
 a.useful_links.icon-mel-link::before
@@ -310,6 +311,12 @@ a.useful_links.icon-mel-link::before
 #layout-menu .menu.toolbar a:hover:before
 {
   font-variation-settings: 'FILL' 1;
+}
+
+#layout-menu .menu.toolbar a.selected.icon-mel-dots:before,
+#layout-menu .menu.toolbar a.icon-mel-dots:hover:before
+{
+  font-variation-settings: 'FILL' 1, 'wght' 300;
 }
 
 #layout-menu .menu.toolbar a:before,

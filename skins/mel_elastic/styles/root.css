@@ -270,4 +270,5 @@
   --tierciary-bckg-color: #323F4B;
   --secondary-bckg-color: #374549;
   --secondary-text-color: #c7dfff;
+  --calendar-sidebar-header-bottom-separator: solid thin var(--separate);
 }

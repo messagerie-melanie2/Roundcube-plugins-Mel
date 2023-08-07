@@ -7,7 +7,12 @@
 <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="arial-label-notebooks">
 	<div class="header">
 		<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
-		<span id="aria-label-tasklists" class="header-title" style="font-size: larger;"><roundcube:label name="tasklist.lists" /></span>
+    <span class="material-symbols-outlined colored-header-icon tasks_app only-current no-hover only-background">
+      check_box
+      </span>
+      <span class="colored-header-title">
+        <roundcube:label name="tasklist.lists" />
+      </span>
 		<roundcube:button name="tasklistactionsmenu" id="tasklistoptionsmenulink" type="link"
 			title="tasklist.listactions" class="button icon sidebar-menu" data-popup="tasklistactions-menu"
 			innerClass="inner" label="actions" />

@@ -3744,3 +3744,16 @@ html.dark-mode .mv2-app-icon:hover {
 html.dark-mode .mv2-app-text {
   color: #96b9e7;
 }
+.colored-header-icon {
+  font-size: 30px;
+  border-radius: 8px;
+  margin: auto;
+  padding: 6px;
+  font-variation-settings: 'wght' 300;
+}
+.colored-header-title {
+  flex: 1 0 auto;
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 16px;
+}

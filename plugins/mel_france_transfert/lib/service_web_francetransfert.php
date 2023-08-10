@@ -195,7 +195,7 @@ class ServiceWebFranceTransfert {
     }
     else if ($this->_httpCode == 403) {
       $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
-      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlMessageFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::initPli() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
       return false;
     }
     else { // En théorie on a httpcode = 422
@@ -203,14 +203,14 @@ class ServiceWebFranceTransfert {
       if (isset($content->erreurs)) {
         $errors = [];
         foreach ($content->erreurs as $erreur) {
-          $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
+          $errors[] = "Erreur $erreur->numErreur sur '$erreur->codeChamp' : $erreur->libelleErreur";
         }
         $this->_errorMessage = implode(' / ', $errors);
       }
       else if (isset($content->errors) && isset($content->errors->message)) {
         $this->_errorMessage = $content->errors->message;
       }
-      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlMessageFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::initPli() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
       return false;
     }
   }
@@ -302,7 +302,7 @@ class ServiceWebFranceTransfert {
         if (isset($content->erreurs)) {
           $errors = [];
           foreach ($content->erreurs as $erreur) {
-            $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
+            $errors[] = "Erreur $erreur->numErreur sur '$erreur->codeChamp' : $erreur->libelleErreur";
           }
           $this->_errorMessage = implode(' / ', $errors);
         }

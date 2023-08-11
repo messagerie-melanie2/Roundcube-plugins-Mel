@@ -203,7 +203,7 @@ class ServiceWebFranceTransfert {
       if (isset($content->erreurs)) {
         $errors = [];
         foreach ($content->erreurs as $erreur) {
-          $errors[] = "Erreur $erreur->numErreur sur '$erreur->codeChamp' : $erreur->libelleErreur";
+          $errors[] = "Erreur: $erreur->libelleErreur";
         }
         $this->_errorMessage = implode(' / ', $errors);
       }
@@ -231,11 +231,11 @@ class ServiceWebFranceTransfert {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::sendFile($COMPOSE_ID, $name)");
 
     // Tester si on n'est pas sur une extension interdite
-    if (in_array(array_pop(explode('.', $name)), $this->rc->config->get('francetransfert_forbidden_extensions', []))) {
-      $this->_errorMessage = "Le fichier '$name' n'est pas autorisé. Liste des extensions de fichier interdites : " . implode(', ', $this->rc->config->get('francetransfert_forbidden_extensions', []));
-      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur : " . $this->_errorMessage);
-      return false;
-    }
+    // if (in_array(array_pop(explode('.', $name)), $this->rc->config->get('francetransfert_forbidden_extensions', []))) {
+    //   $this->_errorMessage = "Le fichier '$name' n'est pas autorisé. Liste des extensions de fichier interdites : " . implode(', ', $this->rc->config->get('francetransfert_forbidden_extensions', []));
+    //   mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur : " . $this->_errorMessage);
+    //   return false;
+    // }
 
     $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
     $COMPOSE['ft_action'] = "Envoi du fichier '$name' vers France Transfert";
@@ -302,7 +302,7 @@ class ServiceWebFranceTransfert {
         if (isset($content->erreurs)) {
           $errors = [];
           foreach ($content->erreurs as $erreur) {
-            $errors[] = "Erreur $erreur->numErreur sur '$erreur->codeChamp' : $erreur->libelleErreur";
+            $errors[] = "Erreur: $erreur->libelleErreur";
           }
           $this->_errorMessage = implode(' / ', $errors);
         }

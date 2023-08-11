@@ -31,22 +31,28 @@ $(document).ready(function() {
       _id : rcmail.env.compose_id
     }, lock);
   });
-  
-  // binds to onchange event of your input field
-  $('#uploadformFrm input[type=\'file\']').bind('change', function() {
-    total_size += this.files[0].size
-    // Supprimer l'appel a l'auto save dans les brouillons pour un message Mélanissimo
-    if (total_size > rcmail.env.max_attachments_size) {
-      clearTimeout(rcmail.save_timer);
-      rcmail.env.draft_autosave = 0;
-    }
-  });
 });
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
     // Supprime le onclick des boutons pour intercepter le click
     $("#toolbar-menu a.send").prop('onclick', null);
+  });
+
+  rcmail.addEventListener('actionbefore', function(evt) {
+    if (evt.action == 'send-attachment') {
+      const formInput = $('#uploadformInput')[0];
+      if (formInput.files.length) {
+        for (var i=0; i < formInput.files.length; i++) {
+          total_size += formInput.files[i].size
+          // Supprimer l'appel a l'auto save dans les brouillons pour un message Mélanissimo
+          if (total_size > rcmail.env.max_attachments_size) {
+            clearTimeout(rcmail.save_timer);
+            rcmail.env.draft_autosave = 0;
+          }
+        }
+      }
+    }
   });
 
   rcmail.addEventListener('responseafterplugin.test_francetransfert', function(

@@ -22,6 +22,7 @@
 // Variables globales
 var timer;
 var total_size = 0;
+var ft_error_timeout = 300000;
 
 $(document).ready(function() {
   // binds to click event of your input send button
@@ -94,7 +95,10 @@ if (window.rcmail) {
       $( "#send_francetransfert_dialog .dialog_text" ).text(rcmail.labels['mel_france_transfert.Download files France Transfert message']);
     }
     else {
-      rcmail.display_message(rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.errorMessage, 'error');
+      rcmail.display_message(
+        rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.errorMessage, 
+        'error', 
+        ft_error_timeout);
       $("#send_francetransfert_dialog").dialog('close');
     }
   });
@@ -114,7 +118,10 @@ if (window.rcmail) {
         }, 2000);
       }
       else {
-        rcmail.display_message(rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.current_action, 'error');
+        rcmail.display_message(
+          rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.current_action, 
+          'error', 
+          ft_error_timeout);
       }
       // Masquer le gif de loading
       $('#send_francetransfert_dialog .uil-rolling-css').hide();
@@ -135,7 +142,10 @@ function send_with_francetransfert(event) {
   if (event.response.use_francetransfert) {
     // Est-ce que le service France Transfert est up ?
     if (!event.response.francetransfert_up) {
-      alert(rcmail.labels['mel_france_transfert.France Transfert service down'] + " Error [" + event.response.httpCode + "] : " + event.response.errorMessage);      
+      rcmail.display_message(
+        rcmail.labels['mel_france_transfert.France Transfert service down'] + " Error [" + event.response.httpCode + "] : " + event.response.errorMessage, 
+        'error', 
+        ft_error_timeout);
     }
     else {
       var buttons = {};
@@ -164,7 +174,12 @@ function send_with_francetransfert(event) {
   }
   // Est-ce qu'on dépasse la limite maximum du service France Transfert ?
   else if (event.response.over_size_francetransfert) {
-    alert(rcmail.labels['mel_france_transfert.Over size France Transfert error'].replace('%%max_francetransfert_size%%', event.response.max_francetransfert_size).replace('%%size%%', event.response.size));
+    rcmail.display_message(
+      rcmail.labels['mel_france_transfert.Over size France Transfert error']
+        .replace('%%max_francetransfert_size%%', event.response.max_francetransfert_size)
+        .replace('%%size%%', event.response.size), 
+      'error', 
+      ft_error_timeout);
   } 
   // Envoi classique du message
   else {
@@ -192,7 +207,7 @@ function francetransfert_get_compose_message_text() {
  */
 function send_francetransfert_message() {
   // MANTIS 0005303: Problème de délai dépassé dans la requête
-  rcmail.env.request_timeout = 1500;
+  rcmail.env.request_timeout = 6000;
   
   rcmail.http_post('plugin.send_francetransfert', {
     _id : rcmail.env.compose_id,

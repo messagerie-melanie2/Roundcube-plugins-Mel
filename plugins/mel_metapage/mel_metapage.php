@@ -36,6 +36,7 @@ class mel_metapage extends bnum_plugin
     public $task = '.*';
 
     private $idendity_cache;
+    private $from_message_reading;
 
     public const SPIED_TASK_DRIVE = "drive";
     public const SPIED_TASK_CHAT = "chat";
@@ -206,6 +207,8 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
         $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
+        $this->add_hook("message_part_structure", [$this, 'hook_message_part_structure']);
+        $this->add_hook("message_part_before", [$this, 'hook_message_part_before']);
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs")
@@ -3171,4 +3174,23 @@ class mel_metapage extends bnum_plugin
         return $this->rc->config->get('picture-mode', true);
     }
 
+    public function hook_message_part_structure($args) {
+        $this->from_message_reading = $args['object']->headers->get('from');
+
+        return $args;
+    }
+
+    public function hook_message_part_before($args) {
+        if (isset($this->from_message_reading)) {
+            if (strpos($this->from_message_reading, '<')) {
+                $this->from_message_reading = explode('<', $this->from_message_reading)[1];
+                $this->from_message_reading = explode('>', $this->from_message_reading)[0];
+            }
+
+            if (in_array($this->from_message_reading, $this->rc->config->get('trusted_mails', []))) $args['safe'] = true;
+            $this->from_message_reading = null;
+        }
+
+        return $args;
+    }
 }

@@ -40,7 +40,7 @@ export class MetapageMailModule extends MetapageModule {
 
                     let html = mel_cancellable_html_timer.Success(delay, {
                         cancel_icon:'cancel_schedule_send',
-                        contents: new mel_html('span', {}, `Le message sera envoyé dans <span class="time-number">${delay}</span>...`)
+                        contents: new mel_html('span', {}, `${this.gettext('delaytimer', 'mel_metapage')} <span class="time-number">${delay}</span>...`)
                     });
 
                     html.attribs['data-uid'] = MetapageMailModule.elements._generateKey();
@@ -101,7 +101,7 @@ export class MetapageMailModule extends MetapageModule {
 
     onBeforeUnload(e) {
         if (!!MetapageMailModule.elements && MetapageMailModule.elements.haveEvents()) {
-            const message = 'Si vous quittez, le mail ne sera pas envoyé, êtes-vous sûr de vouloir quitter ?';
+            const message = rcmail.gettext('quitdelayconfirmation', 'mel_metapage');
             (e || window.event).returnValue = message;
             return message;
         }

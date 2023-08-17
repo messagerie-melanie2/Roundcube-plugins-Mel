@@ -64,10 +64,10 @@ class mce_driver_mel extends driver_mel {
       if ($load && !self::$_users[$keyCache]->load()) {
         self::$_users[$keyCache] = null;
       }
-      else {
-        self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
-      }
       \mel::setCache('users', self::$_users);
+    }
+    if (isset(self::$_users[$keyCache])) {
+      self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
     }
     return self::$_users[$keyCache];
   }

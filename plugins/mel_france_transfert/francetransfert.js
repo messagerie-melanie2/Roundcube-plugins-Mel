@@ -22,6 +22,7 @@
 // Variables globales
 var timer;
 var total_size = 0;
+var ft_error_timeout = 300000;
 
 $(document).ready(function() {
   // binds to click event of your input send button
@@ -31,22 +32,28 @@ $(document).ready(function() {
       _id : rcmail.env.compose_id
     }, lock);
   });
-  
-  // binds to onchange event of your input field
-  $('#uploadformFrm input[type=\'file\']').bind('change', function() {
-    total_size += this.files[0].size
-    // Supprimer l'appel a l'auto save dans les brouillons pour un message Mélanissimo
-    if (total_size > rcmail.env.max_attachments_size) {
-      clearTimeout(rcmail.save_timer);
-      rcmail.env.draft_autosave = 0;
-    }
-  });
 });
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
     // Supprime le onclick des boutons pour intercepter le click
     $("#toolbar-menu a.send").prop('onclick', null);
+  });
+
+  rcmail.addEventListener('actionbefore', function(evt) {
+    if (evt.action == 'send-attachment') {
+      const formInput = $('#uploadformInput')[0];
+      if (formInput.files.length) {
+        for (var i=0; i < formInput.files.length; i++) {
+          total_size += formInput.files[i].size
+          // Supprimer l'appel a l'auto save dans les brouillons pour un message Mélanissimo
+          if (total_size > rcmail.env.max_attachments_size) {
+            clearTimeout(rcmail.save_timer);
+            rcmail.env.draft_autosave = 0;
+          }
+        }
+      }
+    }
   });
 
   rcmail.addEventListener('responseafterplugin.test_francetransfert', function(
@@ -75,9 +82,28 @@ if (window.rcmail) {
       send_with_francetransfert(event);
     }
   });
+
+  rcmail.addEventListener('responseafterplugin.send_francetransfert', function(event) {
+    if (event.response.success) {
+      window.timer = setInterval(() => {
+        rcmail.http_post('plugin.update_progressbar', {
+          _id : rcmail.env.compose_id
+        });
+      }, 10000);
+      
+      // Modifier le libéllé
+      $( "#send_francetransfert_dialog .dialog_text" ).text(rcmail.labels['mel_france_transfert.Download files France Transfert message']);
+    }
+    else {
+      rcmail.display_message(
+        rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.errorMessage, 
+        'error', 
+        ft_error_timeout);
+      $("#send_francetransfert_dialog").dialog('close');
+    }
+  });
   
-  rcmail.addEventListener('responseafterplugin.update_progressbar', function(
-      event) {
+  rcmail.addEventListener('responseafterplugin.update_progressbar', function(event) {
     if (event.response.finish) {
       // Suppression du timer
       clearInterval(timer);
@@ -92,7 +118,10 @@ if (window.rcmail) {
         }, 2000);
       }
       else {
-        rcmail.display_message(rcmail.labels['mel_france_transfert.Send France Transfert error']  + " " + event.response.current_action, 'error');
+        rcmail.display_message(
+          rcmail.labels['mel_france_transfert.Send France Transfert error']  + ". " + event.response.current_action, 
+          'error', 
+          ft_error_timeout);
       }
       // Masquer le gif de loading
       $('#send_francetransfert_dialog .uil-rolling-css').hide();
@@ -113,7 +142,10 @@ function send_with_francetransfert(event) {
   if (event.response.use_francetransfert) {
     // Est-ce que le service France Transfert est up ?
     if (!event.response.francetransfert_up) {
-      alert(rcmail.labels['mel_france_transfert.France Transfert service down'] + " Error [" + event.response.httpCode + "] : " + event.response.errorMessage);      
+      rcmail.display_message(
+        rcmail.labels['mel_france_transfert.France Transfert service down'] + " Error [" + event.response.httpCode + "] : " + event.response.errorMessage, 
+        'error', 
+        ft_error_timeout);
     }
     else {
       var buttons = {};
@@ -142,7 +174,12 @@ function send_with_francetransfert(event) {
   }
   // Est-ce qu'on dépasse la limite maximum du service France Transfert ?
   else if (event.response.over_size_francetransfert) {
-    alert(rcmail.labels['mel_france_transfert.Over size France Transfert error'].replace('%%max_francetransfert_size%%', event.response.max_francetransfert_size).replace('%%size%%', event.response.size));
+    rcmail.display_message(
+      rcmail.labels['mel_france_transfert.Over size France Transfert error']
+        .replace('%%max_francetransfert_size%%', event.response.max_francetransfert_size)
+        .replace('%%size%%', event.response.size), 
+      'error', 
+      ft_error_timeout);
   } 
   // Envoi classique du message
   else {
@@ -170,7 +207,7 @@ function francetransfert_get_compose_message_text() {
  */
 function send_francetransfert_message() {
   // MANTIS 0005303: Problème de délai dépassé dans la requête
-  rcmail.env.request_timeout = 1500;
+  rcmail.env.request_timeout = 6000;
   
   rcmail.http_post('plugin.send_francetransfert', {
     _id : rcmail.env.compose_id,
@@ -182,20 +219,14 @@ function send_francetransfert_message() {
     _draft_id: $('input[name=\'_draft_saveid\']').val(),
     _subject: $('#compose-subject').val(),
     _message: francetransfert_get_compose_message_text(),
-  });
+  }); 
 
-  window.timer = setInterval(() => {
-    rcmail.http_post('plugin.update_progressbar', {
-      _id : rcmail.env.compose_id
-    });
-  }, 10000);
-  
   var dialog_html = '<div id="send_francetransfert_dialog">';
-  dialog_html += '<div class="dialog_title row align-items-center"><span class="col-3"><img alt="Logo République française" src="https://francetransfert.numerique.gouv.fr/assets/logos/republique_francaise_logo.svg"></span><span class="col-6"><img alt="Logo France transfert" src="https://francetransfert.numerique.gouv.fr/assets/logos/france_transfert_logo.svg"></span></div>';
-  dialog_html += '<span class="dialog_text">' + rcmail.labels['mel_france_transfert.Send France Transfert message'] + '</span>';
-  dialog_html += '<div class="uil-rolling-css"><div>';
-  dialog_html += '</div>';
-  
+      dialog_html += '<div class="dialog_title row align-items-center"><span class="col-3"><img alt="Logo République française" src="https://francetransfert.numerique.gouv.fr/assets/logos/republique_francaise_logo.svg"></span><span class="col-6"><img alt="Logo France transfert" src="https://francetransfert.numerique.gouv.fr/assets/logos/france_transfert_logo.svg"></span></div>';
+      dialog_html += '<span class="dialog_text">' + rcmail.labels['mel_france_transfert.Send France Transfert message'] + '</span>';
+      dialog_html += '<div class="uil-rolling-css"><div>';
+      dialog_html += '</div>';
+      
   $(dialog_html).dialog({
     modal: true, 
     title: rcmail.labels['mel_france_transfert.Send France Transfert title'], 
@@ -209,10 +240,6 @@ function send_francetransfert_message() {
       $(this).remove();      
     }
   });
-  // Modifier le libéllé au bout de 5sec
-  setTimeout(function() {
-    $( "#send_francetransfert_dialog .dialog_text" ).text(rcmail.labels['mel_france_transfert.Download files France Transfert message']);
-  }, 5000);  
 }
 
 /**

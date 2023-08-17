@@ -3,13 +3,15 @@ import { ModuleMail } from "../../modules/mails/js/module_mail.js";
 import { ModuleWorkspaces } from "../../modules/workspaces/js/main.js";
 import { ModuleLayout } from "../../modules/layout/js/layout.js";
 import { ModuleNew } from "../../modules/headlines/js/module_news.js";
+import { ModuleLinks } from "../../modules/links/js/links.js";
 
 const loader = {
     ModuleMyDay,
     ModuleMail,
     ModuleWorkspaces,
     ModuleLayout,
-    ModuleNew
+    ModuleNew,
+    ModuleLinks
 };
 
 let _loaded = false;

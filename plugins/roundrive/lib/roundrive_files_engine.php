@@ -1216,6 +1216,8 @@ class roundrive_files_engine
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_GET);
         $folder = str_replace($this->plugin->gettext('files'), '/', $folder);
         $folder = $this->encoderawpath($folder);
+        $folder = str_replace('%28', '(', $folder);
+        $folder = str_replace('%29', ')', $folder);
         $files = $this->filesystem->listContents($folder, false);
         echo json_encode($files);
         exit;

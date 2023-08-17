@@ -76,7 +76,7 @@ class MelEvent {
             }
         }
 
-        switch (Object.keys(results)) {
+        switch (Object.keys(results).length) {
             case 0:
                 return null;
             case 1:

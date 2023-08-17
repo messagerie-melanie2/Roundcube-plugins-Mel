@@ -38,6 +38,7 @@ class mel_metapage extends bnum_plugin
     public $module_chat;
 
     private $idendity_cache;
+    private $from_message_reading;
 
     public const SPIED_TASK_DRIVE = "drive";
     public const SPIED_TASK_CHAT = "chat";
@@ -212,6 +213,8 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
         $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
+        $this->add_hook("message_part_structure", [$this, 'hook_message_part_structure']);
+        $this->add_hook("message_part_before", [$this, 'hook_message_part_before']);
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs")
@@ -234,6 +237,14 @@ class mel_metapage extends bnum_plugin
 
         if ($this->rc->task === "mail" )
         {
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
+                $this->rc->output->set_env("mail_delay", $this->rc->config->get('mail_delay', 5));
+                $this->load_metapage_script_module('mails.js');
+
+                unset($delay);
+            }
+            
             $this->add_hook('mel_config_suspect_url', [$this,'check_message_is_suspect_custom']);
             $this->add_hook('mel_config_bloqued_url', [$this,'check_message_is_bloqued_custom']);
             $this->add_hook("messages_list", [$this, 'hook_messages_list']);
@@ -250,8 +261,8 @@ class mel_metapage extends bnum_plugin
                     {
                         $this->rc->output->set_env("is_model", true);
                         $this->rc->output->set_env("model_id", $_COOKIE['current_model_id']);
-                        $this->include_script('js/actions/mail_compose_event.js');
                     }
+                    $this->include_script('js/actions/mail_compose_event.js');
                     break;
 
                 case 'preview':
@@ -592,7 +603,7 @@ class mel_metapage extends bnum_plugin
         $save_in_memory = true;
         //$not_save_in_memory = true;
         $this->load_metapage_script_module('notes.js', $save_in_memory);
-        $this->load_metapage_script_module('calendar');
+        $this->load_metapage_script_module('calendar.js');
     }
 
     protected function load_metapage_script_module($name, $save_in_memory = false) {
@@ -2086,6 +2097,26 @@ class mel_metapage extends bnum_plugin
                 }
             }
         }
+        else if ($args['section'] == 'compose') {
+            $force_disabled = $this->rc->config->get('mail_delay_forced_disabled');
+
+            if (!$force_disabled) {
+                $delay = $this->rc->config->get('mail_delay', 5);
+                $delay_max = $this->rc->config->get('mail_max_delay', 10);
+                $options = range(0, $delay_max);
+                $delay_key = 'delay';
+
+                $select  = new html_select(['name' => $delay_key, 'id' => $delay_key]);
+                $select->add($options);
+
+                unset($options);
+
+                $args['blocks']['main']['options'][$delay_key] = [
+                    'title'   => html::label($startup, rcube::Q($this->gettext($delay_key, 'mel_metapage'))),
+                    'content' => $select->show([$delay])
+                ];
+            }
+        }
 
         return $args;
     }
@@ -2271,6 +2302,23 @@ class mel_metapage extends bnum_plugin
                     # code...
                     break;
             }
+        }
+    }
+    else if ($args['section'] == 'compose') {
+        $force_disabled = $this->rc->config->get('mail_delay_forced_disabled');
+
+        if (!$force_disabled) {
+            $delay = $this->rc->config->get('mail_delay', 5);
+            $delay_max = $this->rc->config->get('mail_max_delay', 10);
+            $delay_key = 'delay';
+
+            $delay = +rcube_utils::get_input_value($delay_key, rcube_utils::INPUT_POST);
+
+            if ($delay > $delay_max) $delay = $delay_max;
+
+            $args['prefs']['mail_delay'] = $delay;
+
+            $this->rc->output->set_env('mail_delay', $delay);
         }
     }
 
@@ -2837,8 +2885,12 @@ class mel_metapage extends bnum_plugin
                     $value = explode($delimiter, $value);
                     $len = count($value);
                     $key = $value[$len - 1];
-                    if ($len - 1 === 1) $value = "| $key";
-                    else $value = implode(mel_helper::Enumerable(range(1, $len - 2))->select(function($k, $v) {return '=';})->toArray())."> | $key";
+                    if ($len - 1 === 1) $len = "| $key";
+                    else $len = implode(mel_helper::Enumerable(range(1, $len - 2))->select(function($k, $v) {return '=';})->toArray())."> | $key";
+
+                    $key = implode('/', $value);
+                    $value = $len;
+                    unset($len);
                 }
 
             }
@@ -3015,7 +3067,10 @@ class mel_metapage extends bnum_plugin
             case 'compose_extwin':
                 $value = $value === 'true' || $value === true || $value === 1 ? 1 : 0;
                 break;
-            
+
+            case 'mail_delay':
+                $value = +$value;
+                break;
             default:
                 $const_mel_options = ["mel-icon-size", 
                                     "mel-folder-space",
@@ -3078,73 +3133,108 @@ class mel_metapage extends bnum_plugin
     $html = $args['html'];
     $default_values = $args['default_values'];
     
-    $pattern = '/%%(.*?)%%/';
+    switch ($option) {
+        case 'calendar':
+            $pattern = '/%%(.*?)%%/';
 
-    preg_match_all($pattern, $html, $matches);
-
-    foreach ($matches[1] as $match) {
-      $name = substr($match, 6, strlen($match) - 7);
-
-      switch ($name) {
-        case 'calendar_work_start':
-          $time_format = $this->rc->config->get('calendar_time_format', null);
-          $time_format = $this->rc->config->get('time_format', libcalendaring::to_php_date_format($time_format));
-          $work_start = $default_values['calendar_work_start'] ?? $this->rc->config->get('calendar_work_start', 6);
-          $work_end   = $default_values['calendar_work_end'] ?? $this->rc->config->get('calendar_work_end', 18);
-
-          $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda']);
-          for ($h = 0; $h < 24; ++$h) {
-            $select_hours->add(date($time_format, mktime($h, 0, 0)), $h);
-          }
-          $content = html::div(
-            'input-group',
-            $select_hours->show((int)$work_start, ['name' => 'calendar_work_start', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
-              . html::span('input-group-append input-group-prepend', html::span('input-group-text', ' &mdash; '))
-              . $select_hours->show((int)$work_end, ['name' => 'calendar_work_end', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
-          );
-          $html = str_replace('%%' . $match . '%%', $content, $html);
-          break;
+            preg_match_all($pattern, $html, $matches);
         
-        case ('calendar_first_hour'):
-          $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda', 'name' => 'calendar_first_hour','class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_first_hour", this.value, this)']);
-          for ($h = 0; $h < 24; ++$h) {
-            $select_hours->add(date('H:i', mktime($h, 0, 0)), $h);
-          }
-          $html = str_replace('%%' . $match . '%%', $select_hours->show(), $html);
-          break;
-
-        // case ('default_addressbook'):
-          
-        //   $books = $this->rc->get_address_sources(true, true);
-
-        //   $field_id = 'rcmfd_default_addressbook';
-        //   $select   = new html_select([
-        //     'name'  => '_default_addressbook',
-        //     'id'    => $field_id,
-        //     'class' => 'custom-select'
-        //   ]);
-
-        //   if (!empty($books)) {
-        //     foreach ($books as $book) {
-        //       $select->add(html_entity_decode($book['name'], ENT_COMPAT, 'UTF-8'), $book['id']);
-        //     }
-        //   }
-        //   $html = str_replace('%%' . $match . '%%', $select->show(), $html);
-
-        //   break;
-          
-        default:
-          break;
-
+            foreach ($matches[1] as $match) {
+              $name = substr($match, 6, strlen($match) - 7);
+        
+              switch ($name) {
+                case 'calendar_work_start':
+                  $time_format = $this->rc->config->get('calendar_time_format', null);
+                  $time_format = $this->rc->config->get('time_format', libcalendaring::to_php_date_format($time_format));
+                  $work_start = $default_values['calendar_work_start'] ?? $this->rc->config->get('calendar_work_start', 6);
+                  $work_end   = $default_values['calendar_work_end'] ?? $this->rc->config->get('calendar_work_end', 18);
+        
+                  $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda']);
+                  for ($h = 0; $h < 24; ++$h) {
+                    $select_hours->add(date($time_format, mktime($h, 0, 0)), $h);
+                  }
+                  $content = html::div(
+                    'input-group',
+                    $select_hours->show((int)$work_start, ['name' => 'calendar_work_start', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
+                      . html::span('input-group-append input-group-prepend', html::span('input-group-text', ' &mdash; '))
+                      . $select_hours->show((int)$work_end, ['name' => 'calendar_work_end', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
+                  );
+                  $html = str_replace('%%' . $match . '%%', $content, $html);
+                  break;
+                
+                case ('calendar_first_hour'):
+                  $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda', 'name' => 'calendar_first_hour','class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_first_hour", this.value, this)']);
+                  for ($h = 0; $h < 24; ++$h) {
+                    $select_hours->add(date('H:i', mktime($h, 0, 0)), $h);
+                  }
+                  $html = str_replace('%%' . $match . '%%', $select_hours->show(), $html);
+                  break;
+        
+                // case ('default_addressbook'):
+                  
+                //   $books = $this->rc->get_address_sources(true, true);
+        
+                //   $field_id = 'rcmfd_default_addressbook';
+                //   $select   = new html_select([
+                //     'name'  => '_default_addressbook',
+                //     'id'    => $field_id,
+                //     'class' => 'custom-select'
+                //   ]);
+        
+                //   if (!empty($books)) {
+                //     foreach ($books as $book) {
+                //       $select->add(html_entity_decode($book['name'], ENT_COMPAT, 'UTF-8'), $book['id']);
+                //     }
+                //   }
+                //   $html = str_replace('%%' . $match . '%%', $select->show(), $html);
+        
+                //   break;
+                  
+                default:
+                  break;
+        
+                    
+                  }
+                }
+            break;
+        
+        
+        case 'mail':
+            $delay_is_disabled = $this->rc->config->get('mail_delay_forced_disabled', false);
             
-          }
-        }
+            if ($delay_is_disabled) {
+                unset($delay_is_disabled);
+                $html = str_replace('<delay_enabled/>', 'style="display:none;', $html);
+                $html = str_replace('<delay/>', '', $html);
+                $html = str_replace('<delay_start/>', '', $html);
+            }
+            else {
+                unset($delay_is_disabled);
+                $delay = $this->rc->config->get('mail_delay', 5);
+                $delay_max = $this->rc->config->get('mail_max_delay', 10);
+                $html = str_replace('<delay_enabled/>', '', $html);
+                $html = str_replace('<delay_start/>', $delay, $html);
 
-        $args['option'] = $option;
-        $args['html'] = $html;
-        $args['default_values'] = $default_values;
+                $select = new html_inputfield(['type' => "range", 'name' => 'speed-delay', 'data-no-action' => true, 'class' => 'col-7 form-control input-mel', 'id' => 'speed-delay']);
 
-      return $args;
+                $html = str_replace('<delay/>', $select->show($delay, ['data-min' => 0, 'data-max' => $delay_max]), $html);
+
+                unset($delay);
+                unset ($delay_max);
+                unset($select);
+            }
+            
+            break;
+
+        default:
+            break;
+    }
+
+    $args['option'] = $option;
+    $args['html'] = $html;
+    $args['default_values'] = $default_values;
+
+    return $args;
   }
     public function logout_after($args) {
 
@@ -3173,4 +3263,23 @@ class mel_metapage extends bnum_plugin
         return $this->rc->config->get('picture-mode', true);
     }
 
+    public function hook_message_part_structure($args) {
+        $this->from_message_reading = $args['object']->headers->get('from');
+
+        return $args;
+    }
+
+    public function hook_message_part_before($args) {
+        if (isset($this->from_message_reading)) {
+            if (strpos($this->from_message_reading, '<')) {
+                $this->from_message_reading = explode('<', $this->from_message_reading)[1];
+                $this->from_message_reading = explode('>', $this->from_message_reading)[0];
+            }
+
+            if (in_array($this->from_message_reading, $this->rc->config->get('trusted_mails', []))) $args['safe'] = true;
+            $this->from_message_reading = null;
+        }
+
+        return $args;
+    }
 }

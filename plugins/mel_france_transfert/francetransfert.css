@@ -28,8 +28,12 @@
 }
 
 #send_francetransfert_dialog .uil-rolling-css {
-  background-image: url("images/rolling.gif?v=05d7.390");
+  background-image: url("images/rolling.gif?v=05d7.391");
   height: 30px;
   width: 30px;
   margin-bottom: 10px;
+}
+
+html.dark-mode #send_francetransfert_dialog .uil-rolling-css {
+  background-image: url("images/rolling-dark.gif?v=05d7.390");
 }

@@ -355,7 +355,7 @@ class mel_workspace extends bnum_plugin
         ));
         $this->include_script('js/workspace_frame_manager.js');
         $this->load_script_module('index', '/js/mel_lib/');
-        $this->rc->output->set_pagetitle("Mes espaces de travail");
+        $this->rc->output->set_pagetitle("Espaces de travail");
         $this->rc->output->send('mel_workspace.workspaces');
     }
 
@@ -1310,10 +1310,10 @@ class mel_workspace extends bnum_plugin
                     margin-top: 15px;
                 "], 
                             '<span>Accéder au drive</span><span class="icon-mel-external plus"></span>'
-                        ).
+                        )/*.
                         html::tag("button", [$cloudDisabled => $cloudDisabled, "onclick"  => "rcmail.env.wsp_roundrive_show.createFile()", "class" => "$cloudDisabled mel-button btn btn-secondary"], 
                             '<span>Créer</span><span class="icon-mel-plus plus"></span>'
-                        )
+                        )*/
                     );
                 }
 

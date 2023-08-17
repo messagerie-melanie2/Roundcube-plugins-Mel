@@ -36,7 +36,7 @@ html.theme-super-classique #layout-menu:hover #taskmenu a.selected {
 }
 html.theme-super-classique #layout-menu:hover a > span.inner {
   width: 140px;
-  padding-right: 20px;
+  padding-right: 18px;
   height: 60px;
 }
 html.theme-super-classique #layout-menu:hover a.wsp:hover > span.inner {

@@ -11,4 +11,8 @@ $(document).ready(() => {
         $('[name="_draft_saveid"]').val(id);
     }
 
+    if (!!rcmail.env.default_sended_folder) {
+        $('#compose-store-target').val(rcmail.env.default_sended_folder);
+    }
+
 });

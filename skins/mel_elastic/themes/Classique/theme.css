@@ -511,3 +511,13 @@ html.layout-small.theme-classique #mulba {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
+html.theme-classique .new-note-button {
+  border-color: #F8F9FA;
+  background-color: #F8F9FA;
+  color: var(--main-text-color);
+}
+html.theme-classique .new-note-button:hover {
+  color: var(--secondary-text-color);
+  border-color: var(--tierciary-bckg-color);
+  background-color: var(--tierciary-bckg-color);
+}

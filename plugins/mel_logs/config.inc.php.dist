@@ -16,3 +16,9 @@ $rcmail_config['log_file'] = 'roundcube_mel.log';
 // ERROR : Affiche les erreurs d'execution du code qui empeche le bon déroulement du code
 // WARN : Affiche des warning sur des erreurs qui n'empeche pas le bon déroulement du code
 $rcmail_config['mel_logs_level'] = 'TRACE|DEBUG|INFO|ERROR|WARN';
+
+// Liste des utilisateurs en debug
+$rcmail_config['mel_logs_debug_users'] = [];
+
+// Liste des utilisateurs en trace
+$rcmail_config['mel_logs_trace_users'] = [];

@@ -335,15 +335,15 @@ $labels['notif-nothing'] = "Rien/Fonctionnement par défaut";
 $labels['tab_title_style_help'] = "\"<all/>\" affiche sur l'onglet la somme des notifications sur la navigation principal (ex : 5 mail, 3 évènements => (8) Paramètres)\r\n\"<page/>\" affiche seulement les notifications de la page en cours (ex : (3) Agenda).\r\nFonctionnement par défaut sinon.";
 
 $labels['app_chat'] = 'Mes discussions';
-$labels['app_documents'] = 'Mes documents';
-$labels['app_tasks'] = 'Mes tâches';
+$labels['app_documents'] = 'Documents';
+$labels['app_tasks'] = 'Tâches';
 $labels['app_news'] = 'M\'informer';
-$labels['app_ul'] = 'Mes liens utiles';
+$labels['app_ul'] = 'Liens utiles';
 $labels['app_kanban'] = 'Kanban';
 $labels['app_survey'] = 'Sondage';
 $labels['app_rizomo'] = 'Outils SNAP';
 $labels['app_calendar'] = 'Mon agenda';
-$labels['app_workspace'] = 'Mes espaces de travail';
+$labels['app_workspace'] = 'Espaces de travail';
 
 $labels['to_comment'] = 'Commenter';
 
@@ -377,3 +377,8 @@ $labels['busy'] = 'Ne pas déranger';
 $labels['logout'] = 'Hors ligne';
 $labels['custom_status'] = 'Statut personnalisé...';
 $labels['change_status'] = 'Modifier le statut';
+$labels['delay'] = 'Retard d\'envoi (secondes)';
+$labels['delay_speed'] = 'Retard d\'envoi';
+$labels['delay_setting_help'] = "Retarde l'envoi du message de x secondes pour pouvoir annuler l'envoi de celui-ci.";
+$labels['quitdelayconfirmation'] = 'Si vous quittez, le mail ne sera pas envoyé, êtes-vous sûr de vouloir quitter ?';
+$labels['delaytimer'] = 'Le message sera envoyé dans';

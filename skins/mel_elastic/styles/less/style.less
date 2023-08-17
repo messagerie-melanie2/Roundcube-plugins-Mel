@@ -1,6 +1,7 @@
 //compress:false
 @import "main.less";
 @import "style_mixin.less";
+@import "./variables/apps.less";
 /** BODY **/
 
 body{
@@ -4334,6 +4335,12 @@ a.rcmContactAddress {
     }
 }
 
+.mv2-app {
+    &.fill-on-hover:hover {
+        font-variation-settings: 'FILL' 1;
+    }
+}
+
 .aprilfool {
     background-image: url(../images/aprilfools.png);
     width:500px;
@@ -4944,4 +4951,246 @@ button.melv2-sec-nav-correction{
 	position: absolute;
 	right: 15px;
 	top: 15px;
+}
+
+.new-note-button {
+	margin: 10px;
+	border: none;
+	border-radius: 5px;
+	width: 315px;
+	height: 158px;
+    border: solid thin var(--main-bckg-color);
+	background-color: var(--main-bckg-color);
+    color: var(--secondary-text-color);
+
+    .new-note-icon {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    html.dark-mode &{
+        color: #E1C58F;
+        border-color: #E1C58F;
+        background-color: #181C28;
+        height: 149px;
+    }
+
+    &:hover{
+        background-color:var(--tierciary-bckg-color);
+        border: solid thin var(--tierciary-bckg-color);
+
+        html.dark-mode &{
+            background-color: #2E2E2E;
+        }
+    }
+}
+
+.module_Links {
+
+    .melv2-card {
+        box-shadow: none;
+
+        html.dark-mode &{
+            // &{
+                background-color: transparent;
+            // }
+        }
+    }
+
+    .melv2-card-pre {
+        border-bottom: solid thin #E0E0E0;
+        margin-bottom: 15px;
+    }
+
+    .melv2-card-contents {
+        display: flex;
+        // padding: 0 308px;
+        flex-wrap: wrap;
+        overflow: unset;
+        height: 260px;
+        max-height: 260px;
+        justify-content: center;
+
+        .touch &{
+            padding: 0;
+            overflow: auto;
+            height: 275px;
+            max-height: 275px;
+        }
+
+    }
+}
+
+.mv2-app-line {
+	display: flex;
+	flex: 1 0 100%;
+	justify-content: center;
+
+    html.layout-phone &{
+        margin-left:230px;
+    }
+}
+
+.mv2-app {
+    border: none;
+    background-color: transparent;
+    margin: 5px 17px 50px;
+    max-width: 92px;
+    max-height: 80px;
+    flex: 1 0 auto;
+
+    @media screen and (max-width: 904px)  {
+        &{
+            margin: 0;
+        }
+
+
+    }
+
+    .mv2-app-icon {
+        width: 80px;
+        height: 80px;
+        max-width: 80px;
+        max-height: 80px;
+        font-size: 60px;
+        line-height: 1.35;
+        border: none;
+        background-color: var(--main-bckg-color);
+        color: var(--secondary-text-color);
+        border-radius: 10px;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .mv2-app-text {
+        font-size: 12px;
+    }
+}
+
+each(@apps, {
+    .app-icon-color(@value);
+});
+
+.app-icon-color(@name) {
+    @color: e('var(--@{name}-app-color)');
+    .@{name}_app{
+        .mv2-app-icon {
+            background-color: @color;
+
+            &:hover {
+                background-color: var(--hover-app-color);
+            }
+        }
+
+        &.only-text {
+            .mv2-app-icon {
+                color: @color;
+            }
+        }
+
+        &.only-current.only-background{
+            background-color: @color;
+            color: white;
+
+            &.can-be-hovered:hover {
+                background-color: var(--hover-app-color);
+            }
+        }
+
+        &.only-current.only-text {
+            color: @color;
+        }
+    }
+}
+
+html.dark-mode {
+    &:root{
+        --hover-app-color:#2E2E2E;
+    }
+
+    .mv2-app-icon {
+        color:#E1C58F;
+        background-color: #181C28;
+        border:solid thin #E1C58F;
+
+        &:hover {
+            background-color: var(--hover-app-color);
+        }
+    }
+
+    .mv2-app-text{
+        color:#96b9e7;
+    }
+}
+
+.colored-header-icon {
+  font-size: 30px;
+  border-radius: 8px;
+  margin: auto;
+  padding: 6px;
+  font-variation-settings: 'wght' 300;
+}
+
+.colored-header-title {
+  flex: 1 0 auto;
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+#messagestack{
+    .mel-message-timer {
+        --background-message-timer: #dbdbdb;
+        --foreground-message-timer: var(--main-bckg-color);
+        display: block;
+
+        p {
+            margin-top:5px;
+        }
+        
+        .mel-message-timer-bckg{
+            width: 100%;
+            height: 5px; 
+            border-radius: 50px;
+            background-color: var(--background-message-timer);
+    
+            .mel-message-timer-fg{
+                height: 5px;
+                background-color: var(--foreground-message-timer);
+                transition: all 1s ease-in;
+            }
+        }
+
+        .mel-timer-cancel {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            height: 40px;
+            width: 40px;
+            line-height: 5px;
+
+            &:hover {
+                --tierciary-bckg-color: var(--danger-color);
+            }
+        }
+    
+        &.alert-info{
+            background-color: #6b7275;
+        }
+
+        &.alert-success {
+            --background-message-timer: #b0ffa9;
+            --foreground-message-timer: green;
+        }
+
+        &.alert-danger{
+            --background-message-timer: #ffa1a1;
+            --foreground-message-timer: red;
+        }
+
+        &.alert-warning{
+            --background-message-timer: #fffea1;
+            --foreground-message-timer: #c1610c;
+        }
+    }
 }

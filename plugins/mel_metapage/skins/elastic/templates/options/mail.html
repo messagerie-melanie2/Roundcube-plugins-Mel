@@ -36,6 +36,21 @@
       </div>
     </div>
   </div>
+  <div class="row" <delay_enabled/>>
+  <div class="col-12 justify-content-between mt-2">
+    <div class="d-flex options-custom-title">
+      <roundcube:label name='mel_metapage.delay_speed' />
+      <span class="material-symbols-outlined options-help ml-2" title="<roundcube:label name='mel_metapage.delay_setting_help' />">
+        help
+      </span>
+      <label class="sr-only" for="speed-delay"><roundcube:label name='mel_metapage.delay_setting_help' /></label>
+    </div>
+    <div class="custom-control custom-switch no-click-focus d-flex">
+      <delay/>
+      <p style="margin:0;align-self: center;" class="col-5" id="delay-number"><delay_start/> secondes</p>
+    </div>
+  </div>
+</div>
   <div class="row mt-3">
     <div class="col-12">
       <div class="options-custom-title"><roundcube:label name="mel_metapage.mel-message-space-nomail"/></div>

@@ -941,8 +941,8 @@ class libcalendaring extends rcube_plugin
                 // rule selectors
                 $radio = new html_radiobutton(array('name' => 'repeatmode', 'class' => 'edit-recurrence-monthly-mode'));
                 $table = new html_table(array('cols' => 2, 'border' => 0, 'cellpadding' => 0, 'class' => 'formtable'));
-                $table->add('label', html::label(null, $radio->show('BYMONTHDAY', array('value' => 'BYMONTHDAY')) . ' ' . $this->gettext('each')));
-                $table->add(null, $monthdays);
+                $table->add('label', html::label(null, $radio->show('BYMONTHDAY', array('value' => 'BYMONTHDAY')) . ' ' . $this->gettext('everymonth')));
+                $table->add('checkbox-day', $monthdays);
                 $table->add('label', html::label(null, $radio->show('', array('value' => 'BYDAY')) . ' ' . $this->gettext('every')));
                 $table->add('recurrence-onevery', $this->rrule_selectors($attrib['part']));
 
@@ -1059,7 +1059,8 @@ class libcalendaring extends rcube_plugin
         for ($j = $first; $j <= $first+6; $j++) {
             $d = $j % 7;
             $select_wday->add($this->gettext($daymap[$d]), strtoupper(substr($daymap[$d], 0, 2)));
-        }
+          }
+          $select_wday->add($this->gettext('dayofmonth'), 'LD');
 
         return $select_prefix->show() . '&nbsp;' . $select_wday->show();
     }

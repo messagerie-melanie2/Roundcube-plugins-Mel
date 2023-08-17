@@ -48,7 +48,7 @@ class Workspaces extends Module
 
     // $res = $workspace->save();
     $this->edit_row_size(12);
-    $this->edit_order(5);
+    $this->edit_order(6);
     $this->set_use_custom_style(true);
 
     // $it = 0;

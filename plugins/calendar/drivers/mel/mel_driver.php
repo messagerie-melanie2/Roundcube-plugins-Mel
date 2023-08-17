@@ -2039,7 +2039,10 @@ class mel_driver extends calendar_driver {
               if (strtotime($next_event['end']->format(self::DB_DATE_FORMAT)) < $start) {
                 continue;
               }
-              if (strtotime($next_event['start']->format(self::DB_DATE_FORMAT)) > $end) {
+              if ($_event['recurrence']['FREQ'] == 'MONTHLY' && !isset($_event['recurrence']['BYDAY']) && $next_event['start']->format('d') !== $_event['start']->format('d')) {
+                  continue;                
+              }
+                if (strtotime($next_event['start']->format(self::DB_DATE_FORMAT)) > $end) {
                 break;
               }
               // Ajout de la date de l'occurrence pour la récupérer lors des modifications
@@ -2333,11 +2336,13 @@ class mel_driver extends calendar_driver {
             // status
             $_event_attendee['status'] = mel_mapping::m2_to_rc_attendee_status($attendee->response);
             // is saved
-            if (is_bool($attendee->is_saved) && in_array($_event_attendee['status'], ['ACCEPTED', 'DECLINED'])) {
-              $_event_attendee['skip_notify'] = $attendee->is_saved;
-            }
-            else {
-              $_event_attendee['skip_notify'] = false;
+            if (!$organizer->extern) {
+              if (is_bool($attendee->is_saved) && in_array($_event_attendee['status'], ['ACCEPTED', 'DECLINED'])) {
+                $_event_attendee['skip_notify'] = $attendee->is_saved;
+              }
+              else {
+                $_event_attendee['skip_notify'] = false;
+              }
             }
             // Delegation
             if (isset($attendee->delegated_from)) {

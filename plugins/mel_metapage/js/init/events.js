@@ -217,7 +217,7 @@ if (rcmail && window.mel_metapage)
     });
 
     rcmail.addEventListener('toggle-quick-options.after', (args) => {
-        const {hidden} = args;
+        const {hidden, frame} = args;
 
         if (!hidden && mel_metapage.Functions.isNavigator(mel_metapage.Symbols.navigator.firefox)) {
             let $scollbar = $('#mel-scrollbar-size-large').parent();
@@ -234,6 +234,41 @@ if (rcmail && window.mel_metapage)
 
             $parent.show();
             $parent = null;
+        }
+
+        if (!hidden) {
+            switch (frame) {
+                case 'mail':
+                    let $delay = $('#speed-delay');
+                    $delay.on('change', () => {
+                        const val = $('#speed-delay').val();
+                        top.save_option('mail_delay', val, $('#speed-delay')).then(() => {
+                            top.rcmail.env.mail_delay = val;
+                            top.$('iframe.mm-frame').each((i, e) => {
+                                e.contentWindow.rcmail.env.mail_delay = val;
+                            });
+            
+                            try {
+                                if (top.$('.wlp-contents iframe').length > 0) {
+                                    top.$('.wlp-contents iframe').each((i, e) => {
+                                        e.contentWindow.rcmail.env.mail_delay = val;
+                                    });
+                                }
+                            } catch (error) {
+                                
+                            }
+                        });
+                    }).attr('min', $delay.data('min')).attr('max', $delay.data('max'))
+                    .on('input', () => {
+                        $('#delay-number').text(`${$('#speed-delay').val()} secondes`);
+                    });
+
+                    $delay = null;
+                    break;
+            
+                default:
+                    break;
+            }
         }
     });
 
@@ -341,6 +376,23 @@ if (rcmail && window.mel_metapage)
                             top.location.reload();
                         }
                     );
+                }
+            }
+
+            if (rcmail.env.mail_delay !== top.rcmail.env.mail_delay) {
+                top.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                top.$('iframe.mm-frame').each((i, e) => {
+                    e.contentWindow.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                });
+
+                try {
+                    if (top.$('.wlp-contents iframe').length > 0) {
+                        top.$('.wlp-contents iframe').each((i, e) => {
+                            e.contentWindow.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                        });
+                    }
+                } catch (error) {
+                    
                 }
             }
 

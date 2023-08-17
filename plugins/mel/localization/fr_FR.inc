@@ -88,7 +88,7 @@ $labels['mel_default_task'] = 'Page d\'accueil après la connexion';
 
 $labels['portail'] = 'Bureau numérique';
 $labels['calendar'] = 'Mon agenda';
-$labels['discussion'] = 'Mes discussions';
+$labels['discussion'] = 'Discussions';
 $labels['chat'] = $labels['discussion'];
 $labels['sondage'] = 'Sondage';
 $labels['stockage'] = 'Stockage';

@@ -1111,15 +1111,18 @@ $(document).ready(() => {
 
                     $taskmenu.append('<ul class="list-unstyled"></ul>');
 
+                    let li;
                     Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
-                        let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
+                        li = $(`<li style="display:block" data-order="${e.order}" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
+                        e.item.attr('data-order', e.order);
                         e = e.item;
-                        if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
-                        li.css("display", "none");
+                        if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose")) li.css("display", "none");
 
                         e.appendTo(li);
                         li.appendTo($("#taskmenu ul"));
                     });
+
+                    li = null;
 
                     let $taskMenu = $("#taskmenu .menu-last-frame").attr("tabIndex", "-1");
 
@@ -1811,6 +1814,10 @@ $(document).ready(() => {
                             box.close.data('force', '');
                             let frame_context = box.content.find("iframe")[0].contentWindow;
 
+                            frame_context.popup_action = (callback) => {
+                                callback($html, box);
+                            };
+
                             frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
 
                             frame_context.$('#compose-subject').on('input', (e) => {
@@ -2425,7 +2432,12 @@ $(document).ready(() => {
          */
         switch_color()
         {
+            let $html = $('html');
+            if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+            $html = null;
+
             rcmail.triggerEvent("switch_color_theme");
+
             return this._update_theme_color();
         }
 
@@ -2435,14 +2447,26 @@ $(document).ready(() => {
          */
         color_mode()
         {
-            return $('html').hasClass("dark-mode") ? "dark" : "light";
+            return $('html').hasClass("dark-mode") || $('html').hasClass("dark-mode-custom")  ? "dark" : "light";
         }
 
         _update_theme_color()
         {
             let $html = $('html');
 
-            if (this.color_mode() === "dark")
+            if (this.color_mode() === "dark") {
+                if (this.themes[this.theme]?.custom_dark_mode){
+                    if ($html.hasClass('dark-mode')) $html.removeClass('dark-mode');
+                    if (!$html.hasClass('dark-mode-custom')) $html.addClass('dark-mode-custom');
+                }
+                else {
+                    if (!$html.hasClass('dark-mode')) $html.addClass('dark-mode');
+                    if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+                }
+            }
+            else if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+
+            if (this.color_mode() === "dark" && !this.themes[this.theme]?.custom_dark_mode)
             {
                 let current = this.themes[this.get_current_theme()];
                 do {

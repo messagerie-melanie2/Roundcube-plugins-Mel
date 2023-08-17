@@ -941,6 +941,10 @@ class RotomecaEnumerable
         return this.generator().join(separator);
     }
 
+    count() {
+        return this.generator().count();
+    }
+
     /**
      * Transforme en tableau
      * @returns {*[]}

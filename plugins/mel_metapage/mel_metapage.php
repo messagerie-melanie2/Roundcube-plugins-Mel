@@ -231,6 +231,14 @@ class mel_metapage extends bnum_plugin
 
         if ($this->rc->task === "mail" )
         {
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
+                $this->rc->output->set_env("mail_delay", $this->rc->config->get('mail_delay', 5));
+                $this->load_metapage_script_module('mails.js');
+
+                unset($delay);
+            }
+            
             $this->add_hook('mel_config_suspect_url', [$this,'check_message_is_suspect_custom']);
             $this->add_hook('mel_config_bloqued_url', [$this,'check_message_is_bloqued_custom']);
             $this->add_hook("messages_list", [$this, 'hook_messages_list']);
@@ -589,7 +597,7 @@ class mel_metapage extends bnum_plugin
         $save_in_memory = true;
         //$not_save_in_memory = true;
         $this->load_metapage_script_module('notes.js', $save_in_memory);
-        $this->load_metapage_script_module('calendar');
+        $this->load_metapage_script_module('calendar.js');
     }
 
     protected function load_metapage_script_module($name, $save_in_memory = false) {
@@ -2083,6 +2091,26 @@ class mel_metapage extends bnum_plugin
                 }
             }
         }
+        else if ($args['section'] == 'compose') {
+            $force_disabled = $this->rc->config->get('mail_delay_forced_disabled');
+
+            if (!$force_disabled) {
+                $delay = $this->rc->config->get('mail_delay', 5);
+                $delay_max = $this->rc->config->get('mail_max_delay', 10);
+                $options = range(0, $delay_max);
+                $delay_key = 'delay';
+
+                $select  = new html_select(['name' => $delay_key, 'id' => $delay_key]);
+                $select->add($options);
+
+                unset($options);
+
+                $args['blocks']['main']['options'][$delay_key] = [
+                    'title'   => html::label($startup, rcube::Q($this->gettext($delay_key, 'mel_metapage'))),
+                    'content' => $select->show([$delay])
+                ];
+            }
+        }
 
         return $args;
     }
@@ -2268,6 +2296,23 @@ class mel_metapage extends bnum_plugin
                     # code...
                     break;
             }
+        }
+    }
+    else if ($args['section'] == 'compose') {
+        $force_disabled = $this->rc->config->get('mail_delay_forced_disabled');
+
+        if (!$force_disabled) {
+            $delay = $this->rc->config->get('mail_delay', 5);
+            $delay_max = $this->rc->config->get('mail_max_delay', 10);
+            $delay_key = 'delay';
+
+            $delay = +rcube_utils::get_input_value($delay_key, rcube_utils::INPUT_POST);
+
+            if ($delay > $delay_max) $delay = $delay_max;
+
+            $args['prefs']['mail_delay'] = $delay;
+
+            $this->rc->output->set_env('mail_delay', $delay);
         }
     }
 

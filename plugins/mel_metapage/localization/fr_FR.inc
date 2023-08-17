@@ -377,3 +377,4 @@ $labels['busy'] = 'Ne pas déranger';
 $labels['logout'] = 'Hors ligne';
 $labels['custom_status'] = 'Statut personnalisé...';
 $labels['change_status'] = 'Modifier le statut';
+$labels['delay'] = 'Retard d\'envoi (secondes)';

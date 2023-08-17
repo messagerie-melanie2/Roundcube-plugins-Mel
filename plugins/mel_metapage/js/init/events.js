@@ -344,6 +344,23 @@ if (rcmail && window.mel_metapage)
                 }
             }
 
+            if (rcmail.env.mail_delay !== top.rcmail.env.mail_delay) {
+                top.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                top.$('iframe.mm-frame').each((i, e) => {
+                    e.contentWindow.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                });
+
+                try {
+                    if (top.$('.wlp-contents iframe').length > 0) {
+                        top.$('.wlp-contents iframe').each((i, e) => {
+                            e.contentWindow.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                        });
+                    }
+                } catch (error) {
+                    
+                }
+            }
+
             if (rcmail.env.menu_last_frame_enabled !== top.rcmail.env.menu_last_frame_enabled) {
                 top.rcmail.env.menu_last_frame_enabled = rcmail.env.menu_last_frame_enabled;
                 let $item = top.$("#taskmenu .menu-last-frame");

@@ -3757,3 +3757,48 @@ html.dark-mode .mv2-app-text {
   margin-left: 10px;
   font-size: 16px;
 }
+#messagestack .mel-message-timer {
+  --background-message-timer: #dbdbdb;
+  --foreground-message-timer: var(--main-bckg-color);
+  display: block;
+}
+#messagestack .mel-message-timer p {
+  margin-top: 5px;
+}
+#messagestack .mel-message-timer .mel-message-timer-bckg {
+  width: 100%;
+  height: 5px;
+  border-radius: 50px;
+  background-color: var(--background-message-timer);
+}
+#messagestack .mel-message-timer .mel-message-timer-bckg .mel-message-timer-fg {
+  height: 5px;
+  background-color: var(--foreground-message-timer);
+  transition: all 1s ease-in;
+}
+#messagestack .mel-message-timer .mel-timer-cancel {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  height: 40px;
+  width: 40px;
+  line-height: 5px;
+}
+#messagestack .mel-message-timer .mel-timer-cancel:hover {
+  --tierciary-bckg-color: var(--danger-color);
+}
+#messagestack .mel-message-timer.alert-info {
+  background-color: #6b7275;
+}
+#messagestack .mel-message-timer.alert-success {
+  --background-message-timer: #b0ffa9;
+  --foreground-message-timer: green;
+}
+#messagestack .mel-message-timer.alert-danger {
+  --background-message-timer: #ffa1a1;
+  --foreground-message-timer: red;
+}
+#messagestack .mel-message-timer.alert-warning {
+  --background-message-timer: #fffea1;
+  --foreground-message-timer: #c1610c;
+}

@@ -1814,6 +1814,10 @@ $(document).ready(() => {
                             box.close.data('force', '');
                             let frame_context = box.content.find("iframe")[0].contentWindow;
 
+                            frame_context.popup_action = (callback) => {
+                                callback($html, box);
+                            };
+
                             frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
 
                             frame_context.$('#compose-subject').on('input', (e) => {

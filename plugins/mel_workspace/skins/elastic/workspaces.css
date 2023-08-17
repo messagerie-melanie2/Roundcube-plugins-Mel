@@ -1031,12 +1031,6 @@ html.dark-mode .click-master{
     margin-bottom: 0;
 } 
 
-.task-workspace.action-action .joined .mel-button.plus.btn.btn-secondary{
-    position: absolute;
-    top: 45px;
-    right: 0px;  
-}
-
 html.layout-phone .task-workspace.action-workspace .responsiveTabList,
 html.layout-small .task-workspace.action-workspace .responsiveTabList {
     flex-wrap: wrap!important;

@@ -2853,18 +2853,16 @@ html.dark-mode .green-badge {
   aspect-ratio: 0.8/1;
 }
 .tiny-rocket-chat.inbarup {
-  position: sticky;
+  position: unset;
   height: 100%;
-  width: 100%;
-  border-radius: 15px;
-  z-index: 0;
-  white-space: nowrap;
-  font-size: var(--rocket-chat-barup-font-size);
+  font-size: 0;
+  float: left;
+  width: fit-content;
 }
 .tiny-rocket-chat.inbarup .tiny-rocket-chat-icon {
   position: initial;
-  font-size: var(--rocket-chat-barup-font-size);
-  margin-left: var(--rocket-chat-barup-margin-left);
+  font-size: 24px;
+  color: #FDCF42;
 }
 #list-contacts .scroller {
   position: absolute;

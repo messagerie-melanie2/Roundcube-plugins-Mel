@@ -69,8 +69,10 @@ class ArianePopUp{
         this.button.loading();
         if (!this.ariane.is_loaded())
             new Promise(async (a,b) => {
+                const id = rcmail.display_message('Ouverture du chat....', 'loading');
                 await this.ariane.wait_loading();
                 this._show();
+                rcmail.hide_message(id);
             });
         else
             this._show();
@@ -100,6 +102,8 @@ class ArianePopUp{
         // if ($("#pop-up-resizer").length === 0)
         //     ArianePopUp.splitter_init(this.ariane.popUp);
         window.onresize();
+
+        $('.tiny-rocket-chat').addClass('force-fill');
     }
 
     hide()
@@ -124,6 +128,7 @@ class ArianePopUp{
             this.button.button.find(".icon-mel-close").removeClass("icon-mel-close").addClass("icon-mel-message");
 
         $("html").removeClass("ariane-started");
+        $('.tiny-rocket-chat').removeClass('force-fill');
     }
 }
 ArianePopUp.set_width = function(node)

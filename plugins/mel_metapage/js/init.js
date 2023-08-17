@@ -557,16 +557,18 @@
                 if (rcmail.env.mel_metapage_chat_visible == undefined || rcmail.env.mel_metapage_chat_visible === true) {
                     if (rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage")) {
                         //console.log("neteoemkd");//width: calc(25% - 60px)
-                        $("#barup-search-col").append(`<div class="row"><div class=col-7></div></div>`)
-                            .find(".search").appendTo("#barup-search-col .col-7");
+                        // $("#barup-search-col").append(`<div class="row"><div class=col-7></div></div>`)
+                        //     .find(".search").appendTo("#barup-search-col .col-7");
 
-                        $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
+                        // $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
 
-                        $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
+                        // $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
                         $('#rcmfd_hide_chat').prop("checked", true);
 
-                        $(".tiny-rocket-chat").appendTo("#chatCore").addClass('inbarup')
+                        $(".tiny-rocket-chat").prependTo(".hide-button-search").addClass('inbarup transparent-icon-button ml-3');
+
+                        $('#button-help').removeClass('ml-3');
                             // .css("position", "sticky")
                             // .css("height", "100%")
                             // .css("width", "100%")
@@ -574,7 +576,7 @@
                             // .css("border-radius", "15px")
                             // .css("z-index", 0)
                             // .css("white-space", "nowrap")
-                            .prepend("<span class=disc>Discussion</span>")
+                            //.prepend("<span class=disc>Discussion</span>")
                             // .css("font-size", "1vw")
                             // .find(".tiny-rocket-chat-icon")
                             // .css("position", "initial")
@@ -603,7 +605,7 @@
 
                     $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
-                    $(".tiny-rocket-chat").removeClass('inbarup').appendTo("#layout")
+                    $(".tiny-rocket-chat").removeClass('inbarup').removeClass('transparent-icon-button').removeClass('ml-3').appendTo("#layout")
                         // .css("position", "absolute")
                         // .css("height", "")
                         // .css("width", "")
@@ -620,6 +622,8 @@
                         .remove();
 
                     $("#barup-search-col .row").remove();
+
+                    $('#button-help').addClass('ml-3');
                 }
 
             }, true);

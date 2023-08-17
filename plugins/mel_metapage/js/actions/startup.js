@@ -638,9 +638,9 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         html += `<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;${(!changepage ? 'display:none;' : '')}">`;
         html += '<div class="card-header-disabled frame-header" >';
         // html += '<span>Ariane</span>';
-        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-popup-cose card-close mel-focus"></a>`;
-        html += `<a class="mel-focus icon-mel-popup-anchor card-anchor" href="anchor_ariane" data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("anchor", "mel_metapage")}" onclick="m_mp_anchor_ariane()"></a>`;
-        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="mel-focus icon-mel-fullscreen-interface card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>`;
+        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="fill-on-hover material-symbols-outlined card-close mel-focus">close</a>`;
+        html += `<a class="mel-focus material-symbols-outlined card-anchor fill-on-hover" href="anchor_ariane" data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("anchor", "mel_metapage")}" onclick="m_mp_anchor_ariane()">right_panel_open</a>`;
+        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="mel-focus material-symbols-outlined fill-on-hover card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()">fullscreen</a>`;
         html += "</div>";
         html += '<div class="card-body-disabled frame-body a-frame" style="height:100%;width:100%;">'
         html += frame;

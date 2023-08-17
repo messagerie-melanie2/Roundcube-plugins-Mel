@@ -327,7 +327,7 @@ class ArianeFrame{
             //this.popUp.css("width", "initial");
             //if (!is_touch())
                 //this.popUp.css("margin-top", "60px");
-            this.card.card.card.find(".card-anchor").addClass(ArianeFrame.unanchor).removeClass(ArianeFrame.anchor);
+            this.card.card.card.find(".card-anchor").text(ArianeFrame.unanchor);//.removeClass(ArianeFrame.anchor);
 
             if (rcmail.env.task === "mail")
             {
@@ -347,7 +347,7 @@ class ArianeFrame{
             //this.popUp.css("width", "");
             //if (!is_touch())
                 //this.popUp.css("margin-top", "");
-            this.card.card.card.find(".card-anchor").removeClass(ArianeFrame.unanchor).addClass(ArianeFrame.anchor);   
+            this.card.card.card.find(".card-anchor").text(ArianeFrame.anchor);   
             
             if (rcmail.env.task === "mail")
             {
@@ -363,7 +363,7 @@ class ArianeFrame{
 
     is_anchor()
     {
-        return this.card.card.card.find(".card-anchor").hasClass(ArianeFrame.unanchor);
+        return this.card.card.card.find(".card-anchor").text() === ArianeFrame.unanchor;
     }
 
     enable()
@@ -481,8 +481,8 @@ class ArianeFrame{
     }
 }
 
-ArianeFrame.unanchor = "icon-mel-popup-external";
-ArianeFrame.anchor = "icon-mel-popup-anchor";
+ArianeFrame.unanchor = "right_panel_close";
+ArianeFrame.anchor = "right_panel_open";
 
 class ArianeCard
 {

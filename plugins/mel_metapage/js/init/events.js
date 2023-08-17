@@ -217,7 +217,7 @@ if (rcmail && window.mel_metapage)
     });
 
     rcmail.addEventListener('toggle-quick-options.after', (args) => {
-        const {hidden} = args;
+        const {hidden, frame} = args;
 
         if (!hidden && mel_metapage.Functions.isNavigator(mel_metapage.Symbols.navigator.firefox)) {
             let $scollbar = $('#mel-scrollbar-size-large').parent();
@@ -234,6 +234,35 @@ if (rcmail && window.mel_metapage)
 
             $parent.show();
             $parent = null;
+        }
+debugger;
+        if (!hidden) {
+            switch (frame) {
+                case 'mail':
+                    $('#speed-delay').on('change', () => {
+                        const val = $('#speed-delay').val();
+                        top.save_option('mail_delay', val, $('#speed-delay')).then(() => {
+                            top.rcmail.env.mail_delay = val;
+                            top.$('iframe.mm-frame').each((i, e) => {
+                                e.contentWindow.rcmail.env.mail_delay = val;
+                            });
+            
+                            try {
+                                if (top.$('.wlp-contents iframe').length > 0) {
+                                    top.$('.wlp-contents iframe').each((i, e) => {
+                                        e.contentWindow.rcmail.env.mail_delay = val;
+                                    });
+                                }
+                            } catch (error) {
+                                
+                            }
+                        });
+                    })
+                    break;
+            
+                default:
+                    break;
+            }
         }
     });
 

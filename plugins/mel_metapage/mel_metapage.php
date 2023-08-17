@@ -3061,7 +3061,10 @@ class mel_metapage extends bnum_plugin
             case 'compose_extwin':
                 $value = $value === 'true' || $value === true || $value === 1 ? 1 : 0;
                 break;
-            
+
+            case 'mail_delay':
+                $value = +$value;
+                break;
             default:
                 $const_mel_options = ["mel-icon-size", 
                                     "mel-folder-space",
@@ -3124,73 +3127,108 @@ class mel_metapage extends bnum_plugin
     $html = $args['html'];
     $default_values = $args['default_values'];
     
-    $pattern = '/%%(.*?)%%/';
+    switch ($option) {
+        case 'calendar':
+            $pattern = '/%%(.*?)%%/';
 
-    preg_match_all($pattern, $html, $matches);
-
-    foreach ($matches[1] as $match) {
-      $name = substr($match, 6, strlen($match) - 7);
-
-      switch ($name) {
-        case 'calendar_work_start':
-          $time_format = $this->rc->config->get('calendar_time_format', null);
-          $time_format = $this->rc->config->get('time_format', libcalendaring::to_php_date_format($time_format));
-          $work_start = $default_values['calendar_work_start'] ?? $this->rc->config->get('calendar_work_start', 6);
-          $work_end   = $default_values['calendar_work_end'] ?? $this->rc->config->get('calendar_work_end', 18);
-
-          $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda']);
-          for ($h = 0; $h < 24; ++$h) {
-            $select_hours->add(date($time_format, mktime($h, 0, 0)), $h);
-          }
-          $content = html::div(
-            'input-group',
-            $select_hours->show((int)$work_start, ['name' => 'calendar_work_start', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
-              . html::span('input-group-append input-group-prepend', html::span('input-group-text', ' &mdash; '))
-              . $select_hours->show((int)$work_end, ['name' => 'calendar_work_end', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
-          );
-          $html = str_replace('%%' . $match . '%%', $content, $html);
-          break;
+            preg_match_all($pattern, $html, $matches);
         
-        case ('calendar_first_hour'):
-          $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda', 'name' => 'calendar_first_hour','class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_first_hour", this.value, this)']);
-          for ($h = 0; $h < 24; ++$h) {
-            $select_hours->add(date('H:i', mktime($h, 0, 0)), $h);
-          }
-          $html = str_replace('%%' . $match . '%%', $select_hours->show(), $html);
-          break;
-
-        // case ('default_addressbook'):
-          
-        //   $books = $this->rc->get_address_sources(true, true);
-
-        //   $field_id = 'rcmfd_default_addressbook';
-        //   $select   = new html_select([
-        //     'name'  => '_default_addressbook',
-        //     'id'    => $field_id,
-        //     'class' => 'custom-select'
-        //   ]);
-
-        //   if (!empty($books)) {
-        //     foreach ($books as $book) {
-        //       $select->add(html_entity_decode($book['name'], ENT_COMPAT, 'UTF-8'), $book['id']);
-        //     }
-        //   }
-        //   $html = str_replace('%%' . $match . '%%', $select->show(), $html);
-
-        //   break;
-          
-        default:
-          break;
-
+            foreach ($matches[1] as $match) {
+              $name = substr($match, 6, strlen($match) - 7);
+        
+              switch ($name) {
+                case 'calendar_work_start':
+                  $time_format = $this->rc->config->get('calendar_time_format', null);
+                  $time_format = $this->rc->config->get('time_format', libcalendaring::to_php_date_format($time_format));
+                  $work_start = $default_values['calendar_work_start'] ?? $this->rc->config->get('calendar_work_start', 6);
+                  $work_end   = $default_values['calendar_work_end'] ?? $this->rc->config->get('calendar_work_end', 18);
+        
+                  $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda']);
+                  for ($h = 0; $h < 24; ++$h) {
+                    $select_hours->add(date($time_format, mktime($h, 0, 0)), $h);
+                  }
+                  $content = html::div(
+                    'input-group',
+                    $select_hours->show((int)$work_start, ['name' => 'calendar_work_start', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
+                      . html::span('input-group-append input-group-prepend', html::span('input-group-text', ' &mdash; '))
+                      . $select_hours->show((int)$work_end, ['name' => 'calendar_work_end', 'id' => 'rcmfd_workstart', 'class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_work_start", this.value, this)'])
+                  );
+                  $html = str_replace('%%' . $match . '%%', $content, $html);
+                  break;
+                
+                case ('calendar_first_hour'):
+                  $select_hours = new html_select(['id' => 'rcmfd_firsthour', 'data-command' => 'redraw_aganda', 'name' => 'calendar_first_hour','class' => 'form-control custom-select', 'onchange' => 'save_option("calendar_first_hour", this.value, this)']);
+                  for ($h = 0; $h < 24; ++$h) {
+                    $select_hours->add(date('H:i', mktime($h, 0, 0)), $h);
+                  }
+                  $html = str_replace('%%' . $match . '%%', $select_hours->show(), $html);
+                  break;
+        
+                // case ('default_addressbook'):
+                  
+                //   $books = $this->rc->get_address_sources(true, true);
+        
+                //   $field_id = 'rcmfd_default_addressbook';
+                //   $select   = new html_select([
+                //     'name'  => '_default_addressbook',
+                //     'id'    => $field_id,
+                //     'class' => 'custom-select'
+                //   ]);
+        
+                //   if (!empty($books)) {
+                //     foreach ($books as $book) {
+                //       $select->add(html_entity_decode($book['name'], ENT_COMPAT, 'UTF-8'), $book['id']);
+                //     }
+                //   }
+                //   $html = str_replace('%%' . $match . '%%', $select->show(), $html);
+        
+                //   break;
+                  
+                default:
+                  break;
+        
+                    
+                  }
+                }
+            break;
+        
+        
+        case 'mail':
+            $delay_is_disabled = $this->rc->config->get('mail_delay_forced_disabled', false);
             
-          }
-        }
+            if ($delay_is_disabled) {
+                unset($delay_is_disabled);
+                $html = str_replace('<delay_enabled/>', 'style="display:none;', $html);
+                $html = str_replace('<delay/>', '', $html);
+            }
+            else {
+                unset($delay_is_disabled);
+                $delay = $this->rc->config->get('mail_delay', 5);
+                $delay_max = $this->rc->config->get('mail_max_delay', 10);
+                $html = str_replace('<delay_enabled/>', '', $html);
 
-        $args['option'] = $option;
-        $args['html'] = $html;
-        $args['default_values'] = $default_values;
+                $select = new html_select(['name' => 'speed-delay', 'data-no-action' => true, 'class' => 'form-control input-mel', 'id' => 'speed-delay']);
 
-      return $args;
+                $select->add(range(0, $delay_max));
+
+                $html = str_replace('<delay/>', $select->show([$delay]), $html);
+
+                unset($delay);
+                unset ($delay_max);
+                unset($select);
+            }
+            
+            break;
+
+        default:
+            break;
+    }
+
+    $args['option'] = $option;
+    $args['html'] = $html;
+    $args['default_values'] = $default_values;
+
+    return $args;
   }
     public function logout_after($args) {
 

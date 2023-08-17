@@ -2437,7 +2437,7 @@ async function m_mp_ToggleGroupOptionsUser(opener) {
         )
     }
 
-    rcmail.triggerEvent('toggle-quick-options.after', {hidden:state});
+    rcmail.triggerEvent('toggle-quick-options.after', {hidden:state, frame:rcmail.env.current_frame_name});
 
     $goupoptions_user = null;
     $button_settings = null;
@@ -2453,7 +2453,7 @@ function save_option(_option_name, _option_value, element) {
   $(`[name="${name}"]`).attr('disabled', 'disabled')
   const id = rcmail.set_busy(true, 'loading')
   
-  mel_metapage.Functions.post(
+  return mel_metapage.Functions.post(
     mel_metapage.Functions.url('mel_settings', 'save'),
     { _option_name, _option_value },
     (data) => {

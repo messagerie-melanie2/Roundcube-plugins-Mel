@@ -239,7 +239,8 @@ if (rcmail && window.mel_metapage)
         if (!hidden) {
             switch (frame) {
                 case 'mail':
-                    $('#speed-delay').on('change', () => {
+                    let $delay = $('#speed-delay');
+                    $delay.on('change', () => {
                         const val = $('#speed-delay').val();
                         top.save_option('mail_delay', val, $('#speed-delay')).then(() => {
                             top.rcmail.env.mail_delay = val;
@@ -257,7 +258,12 @@ if (rcmail && window.mel_metapage)
                                 
                             }
                         });
-                    })
+                    }).attr('min', $delay.data('min')).attr('max', $delay.data('max'))
+                    .on('input', () => {
+                        $('#delay-number').text(`${$('#speed-delay').val()} secondes`);
+                    });
+
+                    $delay = null;
                     break;
             
                 default:

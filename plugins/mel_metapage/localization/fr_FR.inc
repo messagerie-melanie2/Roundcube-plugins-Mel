@@ -378,5 +378,7 @@ $labels['logout'] = 'Hors ligne';
 $labels['custom_status'] = 'Statut personnalisé...';
 $labels['change_status'] = 'Modifier le statut';
 $labels['delay'] = 'Retard d\'envoi (secondes)';
+$labels['delay_speed'] = 'Retard d\'envoi';
+$labels['delay_setting_help'] = "Retarde l'envoi du message de x secondes pour pouvoir annuler l'envoi de celui-ci.";
 $labels['quitdelayconfirmation'] = 'Si vous quittez, le mail ne sera pas envoyé, êtes-vous sûr de vouloir quitter ?';
 $labels['delaytimer'] = 'Le message sera envoyé dans';

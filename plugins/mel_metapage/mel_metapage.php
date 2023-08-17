@@ -3200,18 +3200,18 @@ class mel_metapage extends bnum_plugin
                 unset($delay_is_disabled);
                 $html = str_replace('<delay_enabled/>', 'style="display:none;', $html);
                 $html = str_replace('<delay/>', '', $html);
+                $html = str_replace('<delay_start/>', '', $html);
             }
             else {
                 unset($delay_is_disabled);
                 $delay = $this->rc->config->get('mail_delay', 5);
                 $delay_max = $this->rc->config->get('mail_max_delay', 10);
                 $html = str_replace('<delay_enabled/>', '', $html);
+                $html = str_replace('<delay_start/>', $delay, $html);
 
-                $select = new html_select(['name' => 'speed-delay', 'data-no-action' => true, 'class' => 'form-control input-mel', 'id' => 'speed-delay']);
+                $select = new html_inputfield(['type' => "range", 'name' => 'speed-delay', 'data-no-action' => true, 'class' => 'col-7 form-control input-mel', 'id' => 'speed-delay']);
 
-                $select->add(range(0, $delay_max));
-
-                $html = str_replace('<delay/>', $select->show([$delay]), $html);
+                $html = str_replace('<delay/>', $select->show($delay, ['data-min' => 0, 'data-max' => $delay_max]), $html);
 
                 unset($delay);
                 unset ($delay_max);

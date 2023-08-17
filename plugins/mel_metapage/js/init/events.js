@@ -235,7 +235,7 @@ if (rcmail && window.mel_metapage)
             $parent.show();
             $parent = null;
         }
-debugger;
+
         if (!hidden) {
             switch (frame) {
                 case 'mail':

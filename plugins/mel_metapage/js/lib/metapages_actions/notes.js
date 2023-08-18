@@ -237,6 +237,8 @@ export class MetapageNotesModule extends MetapageModule {
         this._fullscreen.clear();
 
         let $app = new mel_html('div', {class:'app-notes'}).generate();
+        this._generate_plus_button().create($app);
+
         this._fullscreen.add('app-notes', $app);
 
         let len;
@@ -261,8 +263,6 @@ export class MetapageNotesModule extends MetapageModule {
         }
 
         if (!!focused_sticker) focused_sticker.get_html().find('button.eye').click();
-
-        this._generate_plus_button().create($app);
 
         return this._generate_pined_notes();
     }

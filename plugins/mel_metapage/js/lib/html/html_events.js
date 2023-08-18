@@ -3,6 +3,8 @@ import { MaterialIcon } from "../icons.js";
 import { EventLocation } from "../calendar/event_location.js";
 import { MelObject } from "../mel_object.js";
 import { CalendarLoader } from "../calendar/calendar_loader.js";
+import { DIV, P, BUTTON } from "../constants/constants_html.js";
+import { EMPTY_STRING } from "../constants/constants.js";
 
 /**
  * Représente un évènement du calendrier.
@@ -76,18 +78,18 @@ export class html_events extends mel_html2 {
     }
 
     _create_content() {
-        const html_hour = new mel_html2('div', {attribs:{class:'melv2-event-hour'}, contents:this._create_range_hour()});
-        const html_infos = new mel_html2('div', {attribs:{class:'melv2-event-content'}, contents:this._create_event()});
-        const html_separator = new mel_html('div', {class:'melv2-event-separator'});
-        const html_side = new mel_html2('div', {attribs:{class:'melv2-event-side'}, contents:this._create_side_click()});
+        const html_hour = new mel_html2(DIV, {attribs:{class:'melv2-event-hour'}, contents:this._create_range_hour()});
+        const html_infos = new mel_html2(DIV, {attribs:{class:'melv2-event-content'}, contents:this._create_event()});
+        const html_separator = new mel_html(DIV, {class:'melv2-event-separator'});
+        const html_side = new mel_html2(DIV, {attribs:{class:'melv2-event-side'}, contents:this._create_side_click()});
 
-        let html_date = new mel_html('div', {class:'melv2-event-date'}, this._date_format());
+        let html_date = new mel_html(DIV, {class:'melv2-event-date'}, this._date_format());
 
         if (this.attribs['data-ignore-date']) {
             html_date.css('display', 'none');
         }
 
-        let html_clickable = new mel_html2('div', {attribs:{class:'melv2-event-clickable'}, contents:[html_date, html_hour, html_separator, html_infos]});
+        let html_clickable = new mel_html2(DIV, {attribs:{class:'melv2-event-clickable'}, contents:[html_date, html_hour, html_separator, html_infos]});
         html_clickable.onclick.push(() => {
             this.onaction.call();
         });
@@ -108,8 +110,8 @@ export class html_events extends mel_html2 {
         const is_all_day = this.event.allDay;
         const top_content = is_all_day ? 'Journée' : this._hour_start();
         const bottom_content = is_all_day ? EMPTY_STRING : this._hour_end();
-        const html_top_hour = new mel_html('p', {class:'melv2-event-hour-top'}, top_content);
-        const html_bottom_hour = new mel_html('p', {class:'melv2-event-hour-bottom'}, bottom_content);
+        const html_top_hour = new mel_html(P, {class:'melv2-event-hour-top'}, top_content);
+        const html_bottom_hour = new mel_html(P, {class:'melv2-event-hour-bottom'}, bottom_content);
 
         return [html_top_hour, html_bottom_hour];
     }
@@ -117,8 +119,8 @@ export class html_events extends mel_html2 {
     _create_event() {
         const top_content = this._get_title_formated();
         const bottom_content = this._get_description();
-        const html_top = new mel_html('p', {class:'melv2-event-content-top'}, top_content);
-        const html_bottom = new mel_html('p', {class:'melv2-event-content-bottom'}, bottom_content);
+        const html_top = new mel_html(P, {class:'melv2-event-content-top'}, top_content);
+        const html_bottom = new mel_html(P, {class:'melv2-event-content-bottom'}, bottom_content);
 
         return [html_top, html_bottom];
     }
@@ -139,7 +141,7 @@ export class html_events extends mel_html2 {
             for (const location of locations) {
                 if (!!location.key || !!location.audio) {
                     icon = !!location.key ? 'videocam' : 'call';
-                    html = new mel_html2('button', {attribs:{class:`melv2-event-button ${mel_button.html_base_class_full}`}, contents:[new MaterialIcon(icon, null).get()]});
+                    html = new mel_html2(BUTTON, {attribs:{class:`melv2-event-button ${mel_button.html_base_class_full}`}, contents:[new MaterialIcon(icon, null).get()]});
                     html.onclick.push(location.side_action.bind(location));
                     htmls.push(html);
                     html = null;

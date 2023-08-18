@@ -1,3 +1,5 @@
+import { SPAN } from "./constants/constants_html.js";
+
 export {BaseIcon as Icon, MaterialIcon, MainIcon}
 class BaseIcon {
     constructor(icon_class, $item) {
@@ -17,7 +19,7 @@ class BaseIcon {
     }
 
     get(attribs = {}) {
-        let html = new mel_html('span', attribs);
+        let html = new mel_html(SPAN, attribs);
         html.addClass(this._icon);
         return html;
     }

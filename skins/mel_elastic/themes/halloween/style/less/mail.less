@@ -1,0 +1,131 @@
+html.party-halloween .task-mail{
+
+    &.action-preview{
+        background-image:none;
+
+        .message-partheaders{
+            background-color: transparent;
+        }
+
+        #message-buttons .btn {
+            &:extend(html.party-halloween .task-mail .formbuttons button);
+
+            &:hover {
+                &:extend(html.party-halloween .task-mail .formbuttons button:hover);
+            }
+        }
+
+        .header {
+            a {
+                --main-text-color: #371B58;
+                --tierciary-bckg-color: #371B58;
+            }
+        }
+    }
+
+    #layout {
+        background-color: transparent !important;
+    }
+
+    #layout-list {
+        --mail-layout-sidebar-background-color: transparent;
+        --main-text-color: white;
+        --mail-unread-icon-color: white;
+        --default-background-lighter: #7858A693;
+        --default-background: #371B5893;
+        --main-layout-hover-background-color: #371B5893;
+
+       .listing tr.selected td {
+        background-color: #51050F93;
+       }
+    }
+
+    #layout-content{
+        --mail-layout-sidebar-background-color: transparent;
+        --main-text-color: white;
+        --mail-unread-icon-color: white;
+        --default-background-lighter: #7858A693;
+        --default-background: #371B5893;
+        --main-layout-hover-background-color: #371B5893;
+
+        > .header #toolbar-menu li a {
+            &:hover {
+                color: white !important;
+                background-color: #371B58 !important;
+                --invisible: #FF5B00;
+                border-left: none !important;
+                border-bottom: none !important;
+                border-right: none !important;
+                --secondary-bckg-color: #371B58;
+            }
+
+            &:focus {
+                color: white !important;
+                background-color: #371B58 !important;
+                --secondary-bckg-color: #371B58;
+            }
+        }
+
+        .iframe-wrapper {
+            --main-layout-content-background-color: #ffffff93;
+        }
+    }
+
+    #mail-search-icon{
+        color: white;
+    }
+
+    #mailsearchform {
+        color:white;
+    }
+
+    #layout .header a.button:hover, 
+    #layout .header a.options:hover, 
+    #layout .header a.select:hover, 
+    #layout .header a.threads:hover {
+        color: white !important;
+        background-color: #371B58 !important;
+        --invisible: #FF5B00;
+        border-left: none !important;
+        border-bottom: none !important;
+        border-right: none !important;
+        --secondary-bckg-color: #371B58;
+    }
+
+    #layout .header a.button:focus, 
+    #layout .header a.options:focus, 
+    #layout .header a.select:focus, 
+    #layout .header a.threads:focus {
+        color: white !important;
+        background-color: #371B58 !important;
+        --secondary-bckg-color: #371B58;
+        
+    }
+
+    #searchmenu{
+        background-color: var(--main-layout-content-background-color);
+        border-radius: var(--main-layout-panel-border-radius);
+    }
+
+    .formbuttons {
+        button {
+            border-radius: 100px;
+            color: white;
+            border-color: var(--roundbadge-bckg-color);
+
+            &:hover {
+                border-color: #F78812;
+                --btn-primary-bckg-color-hover: #F78812;
+            }
+        }
+    }
+
+    #folderlist-content > a.button:hover,
+    #folderlist-content > a.button:focus{
+        color: white !important;
+        background-color: #5B4B8A !important;
+        --secondary-bckg-color: #5B4B8A;
+    }
+
+
+}

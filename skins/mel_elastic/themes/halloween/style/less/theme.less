@@ -1,0 +1,97 @@
+//compress:false
+html{
+    &.party-halloween{
+
+        body {
+            background-image: url("../images/halloween-bg-light-unsplash.jpg");
+        }
+    
+        &.dark-mode-custom {
+            body {
+                background-image: url("../images/halloween-bg-dark-unsplash.jpg");
+            }
+        }
+    
+        div#layout-sidebar {
+            --main-text-color: var(--main-layout-taskbar-text-color);
+            --mail-layout-sidebar-background-color: #371b5893;
+            
+    
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+
+            margin-top: 10px !important;
+        }
+    
+        #layout > div > .header a.button {
+            &:hover {
+                color: white !important;
+                background-color: #5B4B8A !important;
+                --layout-bg-hover: #5B4B8A !important;
+                --invisible: #FF5B00;
+                border-left: none !important;
+                border-bottom: none !important;
+                border-right: none !important;
+                --secondary-bckg-color: #5B4B8A;
+            }
+
+            &:focus {
+                color: white !important;
+                background-color: #5B4B8A !important;
+                --secondary-bckg-color: #5B4B8A;
+                --layout-bg-hover: #5B4B8A !important;
+            }
+        }
+        
+        a {
+            color: #51050F;
+    
+            &:hover {
+                color: #371B58;
+            }
+        }
+    
+        .mel-button {
+            --main-bckg-color: #FF5B00;
+            --mel-button-border-color: var(--main-bckg-color);
+        }
+    
+        .barup {
+            background: none!important;
+            
+            #barup-right-buttons {
+                background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #371B58 100%)
+            }
+        }
+        
+        .scroller > .listing li {
+            a {
+                &:hover{
+                    background-color:#5B4B8A;
+                    --list-bg-hover: #5B4B8A!important;
+                }
+
+                &:focus{
+                    background-color:#5B4B8A!important;
+                }
+            }
+
+            div {
+                &:hover{
+                    background-color:#5B4B8A;
+                    --list-bg-hover: #5B4B8A!important;
+                }
+            }
+
+            &.selected > div > * {
+                --list-bg-selected: #5B4B8A!important;
+            }
+        }
+    }
+
+    &.framed {
+        body {
+            background: transparent;
+        }
+    }
+}

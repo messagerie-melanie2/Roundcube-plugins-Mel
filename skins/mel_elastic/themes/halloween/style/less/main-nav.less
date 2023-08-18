@@ -1,0 +1,18 @@
+html.party-halloween{
+    #taskmenu {
+        --main-text-color: var(--main-layout-taskbar-text-color);
+
+        &.menu.toolbar a.home.icon-mel-home {
+            background-image: url("../images/halloween-pumpkin-empty.svg");
+            background-size: cover;
+
+            &::before{
+                content: none;
+            }
+        }
+
+        &.menu.toolbar a.home.icon-mel-home:hover {
+            background-image: url("../images/halloween-pumpkin-full.svg");
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "parent":"super-classique",
+    "id":"party-halloween",
+    "display":"white",
+    "description":"desc",
+    "icon":"icon.svg",
+    "enabled":true,
+    "style":"style",
+    "class":"party-halloween",
+    "custom_dark_mode":true
+}

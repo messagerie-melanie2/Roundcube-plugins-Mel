@@ -5,14 +5,67 @@ html.party-halloween .task-calendar{
         > div {
             --layout-list-background-color: #371B5893;
             margin-right: 15px;
+
+            > .header {
+                a.button {
+                    --tierciary-bckg-color: #FF5B00;
+                }
+            }
+        }
+
+        #layout-content {
+
+            --layout-list-background-color: transparent;
+
+            > .header {
+                a.button{
+                    --main-text-color: white;
+                }
+            }
         }
     }
 
-    #layout > div > .header a.button {
-        --tierciary-bckg-color: #FF5B00;
+    #datepicker {
+        background-color: var(--datepicker-bg-color) !important;
+
+        #datepicker-onoff{
+            &:hover {
+                --main-layout-hover-background-color: var(--main-layout-taskbar-background-color);
+            }
+        }
     }
 
-    #layout #layout-content > .header a.button{
-        --main-text-color: white;
+    .calendar-datepicker {
+        .ui-datepicker {
+            &:extend(html.party-halloween .task-calendar #datepicker);
+        }
+
+        .ui-datepicker-header {
+            &:extend(html.party-halloween .task-calendar #datepicker);
+        }
+
+        .ui-datepicker-inline {
+            .ui-datepicker-activerange {
+                &:extend(html.party-halloween .task-calendar #datepicker);
+            }
+        }
+    }
+
+    .fc {
+        .fc-center {
+            h2 {
+                --main-text-color: white;
+            }
+        }
+
+        .fc-day{
+            &.fc-today{
+                background-color: var(--main-layout-taskbar-background-color) !important;
+            }
+        }
+
+        .fc-axis{
+            color: white !important;
+        }
     }
 }

@@ -27,6 +27,28 @@ html.party-halloween #layout > div > .header a.button:focus {
   --secondary-bckg-color: #5B4B8A;
   --layout-bg-hover: #5B4B8A !important;
 }
+html.party-halloween #layout #layout-content {
+  background-color: transparent;
+}
+html.party-halloween #layout #layout-content .header a {
+  color: white;
+}
+html.party-halloween #layout #layout-content .header a:hover {
+  background-color: #5B4B8A !important;
+  color: white!important;
+  --tierciary-bckg-color: #FF5B00;
+  --invisible: #FF5B00;
+}
+html.party-halloween #layout #layout-content .header a:focus {
+  color: white !important;
+  background-color: #5B4B8A !important;
+  --secondary-bckg-color: #5B4B8A;
+  --layout-bg-hover: #5B4B8A !important;
+  --invisible: transparent;
+}
+html.party-halloween #layout-list > .header li a.button {
+  --main-text-color: white;
+}
 html.party-halloween a {
   color: #51050F;
 }

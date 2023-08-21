@@ -42,6 +42,34 @@ html{
                 --layout-bg-hover: #5B4B8A !important;
             }
         }
+
+        #layout {
+            #layout-content {
+                background-color: transparent;
+
+                .header a{
+                    color: white;
+                    &:hover {
+                        background-color: #5B4B8A !important;
+                        color: white!important;
+                        --tierciary-bckg-color:#FF5B00;
+                        --invisible: #FF5B00;
+                    }
+
+                    &:focus {
+                        color: white !important;
+                        background-color: #5B4B8A !important;
+                        --secondary-bckg-color: #5B4B8A;
+                        --layout-bg-hover: #5B4B8A !important;
+                        --invisible: transparent;
+                    }
+                }
+            }
+        }
+
+        #layout-list > .header li a.button{
+            --main-text-color: white;
+        }
         
         a {
             color: #51050F;

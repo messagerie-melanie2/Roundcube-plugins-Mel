@@ -13,19 +13,19 @@ html.party-halloween div#layout-sidebar {
 }
 html.party-halloween #layout > div > .header a.button:hover {
   color: white !important;
-  background-color: #5B4B8A !important;
-  --layout-bg-hover: #5B4B8A !important;
+  background-color: #371B58 !important;
+  --layout-bg-hover: #371B58 !important;
   --invisible: #FF5B00;
   border-left: none !important;
   border-bottom: none !important;
   border-right: none !important;
-  --secondary-bckg-color: #5B4B8A;
+  --secondary-bckg-color: #371B58;
 }
 html.party-halloween #layout > div > .header a.button:focus {
   color: white !important;
-  background-color: #5B4B8A !important;
-  --secondary-bckg-color: #5B4B8A;
-  --layout-bg-hover: #5B4B8A !important;
+  background-color: #371B58 !important;
+  --secondary-bckg-color: #371B58;
+  --layout-bg-hover: #371B58 !important;
 }
 html.party-halloween #layout #layout-content {
   background-color: transparent;
@@ -34,20 +34,31 @@ html.party-halloween #layout #layout-content .header a {
   color: white;
 }
 html.party-halloween #layout #layout-content .header a:hover {
-  background-color: #5B4B8A !important;
+  background-color: #371B58 !important;
   color: white!important;
   --tierciary-bckg-color: #FF5B00;
   --invisible: #FF5B00;
 }
 html.party-halloween #layout #layout-content .header a:focus {
   color: white !important;
-  background-color: #5B4B8A !important;
-  --secondary-bckg-color: #5B4B8A;
-  --layout-bg-hover: #5B4B8A !important;
+  background-color: #371B58 !important;
+  --secondary-bckg-color: #371B58;
+  --layout-bg-hover: #371B58 !important;
   --invisible: transparent;
+}
+html.party-halloween #layout #layout-content .content {
+  --main-layout-content-background-color: #FFFFFF93;
 }
 html.party-halloween #layout-list > .header li a.button {
   --main-text-color: white;
+}
+html.party-halloween #layout-list .scroller > .listing li {
+  --main-text-color: white;
+  --secondary-bckg-color: #371B58;
+  border-radius: 5px;
+}
+html.party-halloween #layout-list .scroller > .listing li a {
+  border-color: transparent !important;
 }
 html.party-halloween a {
   color: #51050F;
@@ -58,6 +69,11 @@ html.party-halloween a:hover {
 html.party-halloween .mel-button {
   --main-bckg-color: #FF5B00;
   --mel-button-border-color: var(--main-bckg-color);
+  --tierciary-bckg-color: #F78812;
+  --mel-button-border-color-alt: #F78812;
+}
+html.party-halloween .mel-button.white {
+  --default-background: transparent;
 }
 html.party-halloween .barup {
   background: none!important;
@@ -78,6 +94,38 @@ html.party-halloween .scroller > .listing li div:hover {
 }
 html.party-halloween .scroller > .listing li.selected > div > * {
   --list-bg-selected: #5B4B8A!important;
+}
+html.party-halloween .custom-switch .custom-control-label::before {
+  background-color: #F2E8C6;
+}
+html.party-halloween .custom-switch .custom-control-label::after {
+  background-color: #371B58;
+}
+html.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+  background-color: #371B58;
+}
+html.party-halloween .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
+html.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #FF5B00;
+}
+html.party-halloween .searchbar {
+  --main-text-color: white;
+}
+html.party-halloween .searchbar input {
+  color: white;
+}
+html.party-halloween .searchbar a {
+  color: white;
+  border-top: solid thin transparent;
+}
+html.party-halloween .searchbar.menu:focus,
+html.party-halloween .searchbar.menu a:hover {
+  --secondary-bckg-color: #371B58;
+  background-color: #371B58;
+  border-top-color: #FF5B00;
+}
+html.party-halloween .watermark::before {
+  content: none;
 }
 html.framed body {
   background: transparent;

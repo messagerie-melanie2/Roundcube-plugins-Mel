@@ -187,9 +187,6 @@ html.theme-classique #layout-content .header a:hover {
 html.theme-classique #layout-content .header .header-title {
   --secondary-text-color: var(--theme-base-text-color);
 }
-html.theme-classique .task-mail ul ul li.mailbox:hover > a:first-of-type {
-  background-color: unset!important;
-}
 html.theme-classique .task-mail #layout-sidebar #compose-options {
   color: var(--main-text-color) !important;
 }
@@ -200,11 +197,11 @@ html.theme-classique .task-mail #layout-sidebar .scroller > .listing li a {
 }
 html.theme-classique .task-mail #layout-sidebar .scroller > .listing li a:hover {
   border-radius: 0!important;
-  background-color: #edebe9 !important;
+  background-color: #edebe9;
   border-bottom-color: var(--secondary-bckg-color) !important;
 }
 html.theme-classique .task-mail #layout-sidebar .scroller > .listing li.selected a {
-  background-color: #edebe9 !important;
+  background-color: #edebe9;
   border-left-color: var(--tierciary-bckg-color) !important;
   border-bottom: unset!important;
 }
@@ -296,7 +293,7 @@ html.theme-classique .task-mail #layout-list .listing tr.selected td.threads + .
   border-left: none!important;
 }
 html.theme-classique .task-calendar #layout > div {
-  background-color: var(--layout-list-background-color) !important;
+  background-color: var(--layout-list-background-color);
   border-color: var(--main-text-color) !important;
 }
 html.theme-classique .task-calendar #layout > div > .header {

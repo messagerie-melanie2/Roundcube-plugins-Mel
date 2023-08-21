@@ -1,10 +1,43 @@
 html.theme-super-classique {
 
+  #layout-sidebar {
+    background-color: var(--mail-layout-sidebar-background-color) !important;
+
+    .header {
+      background-color: var(--mail-layout-sidebar-background-color) !important;
+    }
+
+    .scroller {
+      .listing {
+        li {
+          &.selected {
+            >a {
+              background-color: var(--mail-layout-sidebar-selected-background-color) !important;
+            }
+          }
+
+          a:hover {
+            background-color: var(--mail-layout-sidebar-hover-background-color) !important;
+          }
+        }
+      }
+    }
+  }
+
+  #layout-list {
+    background-color: var(--mail-layout-sidebar-background-color) !important;
+  }
+
+  #layout-content {
+    background-color: var(--mail-layout-sidebar-background-color) !important;
+  }
+
   .menu {
     a:not(.disabled) {
       &:focus {
         color: var(--main-text-color) !important;
       }
+
       &:hover {
         color: var(--main-text-color) !important;
       }
@@ -81,10 +114,10 @@ html.theme-super-classique {
 
   #frame-buttons-history {
     .history-button {
-      --secondary-text-color:var(--main-text-color);
+      --secondary-text-color: var(--main-text-color);
 
       &:hover {
-        --secondary-text-color:white;
+        --secondary-text-color: white;
       }
     }
   }
@@ -95,7 +128,7 @@ html.theme-super-classique {
     border-radius: 15px;
     border: none;
     background-color: white;
-    color:var(--main-text-color);
+    color: var(--main-text-color);
 
     #list-contacts {
 
@@ -107,18 +140,18 @@ html.theme-super-classique {
           &:extend(html.theme-super-classique #listview-float-right #list-contacts .scroller);
         }
 
-        #annuaire-list{
+        #annuaire-list {
           li {
 
             .description {
               color: var(--main-text-color);
             }
 
-            &:hover{
+            &:hover {
               --secondary-bckg-color: var(--main-bckg-color);
-              color:var(--secondary-text-color);
-              --main-text-color:var(--secondary-text-color);
-              --listbox-text-color:var(--secondary-text-color);
+              color: var(--secondary-text-color);
+              --main-text-color: var(--secondary-text-color);
+              --listbox-text-color: var(--secondary-text-color);
             }
 
             &[aria-expanded="true"] {
@@ -143,17 +176,19 @@ html.theme-super-classique {
     }
   }
 
-  #button-notes{
-    --note-bckg-color-hover: #FFF6AF;
-    --note-text-color-hover: var(--note-text-color);
-  }
-
   .new-note-button {
 
     &:hover {
       border-color: #F0F0F0;
       background-color: #F0F0F0;
       color: var(--main-text-color);
+    }
+  }
+
+  .mel-button {
+    &:hover {
+      color: var(--secondary-text-color);
+      background-color: var(--mel-button-bckg-color-alt);
     }
   }
 }

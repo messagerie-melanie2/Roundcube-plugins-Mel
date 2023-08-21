@@ -159,6 +159,7 @@
   /* MAILS */
   --message-hover-shadow: #26283b47;
   --mail-unread-icon-color: #15193A;
+  --mail-unread-text-color: #15193A;
   --mail-icon-hover-color: #779bd6;
   --mail-unread-icon-hover-color: #A8ACC0;
   --drag-n-drop-bckg-color: var(--drag-n-drop-color);

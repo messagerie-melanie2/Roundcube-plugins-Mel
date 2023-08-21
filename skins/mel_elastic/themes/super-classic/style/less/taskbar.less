@@ -5,6 +5,10 @@ html.theme-super-classique {
     // border-right: solid thin #2C3054;
    
     #taskmenu {
+      li a:hover {
+        border-radius: 10px 0 0 10px;
+
+      }
       a {
         color: var(--main-text-color) !important;
         height: 60px !important;
@@ -12,6 +16,8 @@ html.theme-super-classique {
         &:hover {
           background-color: var(--mail-layout-sidebar-background-color) !important;
           color: var(--main-text-color) !important;
+        
+          
 
           >span.inner {
             &:extend(html.theme-super-classique #layout-menu #taskmenu a:hover);
@@ -28,7 +34,7 @@ html.theme-super-classique {
             &:extend(html.theme-super-classique #layout-menu #taskmenu a:hover > span.inner);
           }
         }
-
+        html.theme-super-classique #layout-menu #taskmenu a:hover
         >span {
           &.inner {
             border: none;
@@ -71,6 +77,7 @@ html.theme-super-classique {
             width: 140px;
             padding-right: 18px;
             height: 60px;
+            border-color: transparent;
           }
         }
       }

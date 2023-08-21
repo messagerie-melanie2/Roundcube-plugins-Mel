@@ -2437,8 +2437,11 @@ $(document).ready(() => {
             $html = null;
 
             $('iframe.mm-frame').each((i,e) => {
-                $html = e.contentWindow.$('html');
-                if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+                if (!e.classList.contains('discussion-frame')) {
+                    $html = e.contentWindow.$('html');
+                    
+                    if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+                }
             });
 
             rcmail.triggerEvent("switch_color_theme");
@@ -2488,7 +2491,9 @@ $(document).ready(() => {
             }
             
             $('iframe.mm-frame').each((i,e) => {
-                e.contentWindow.MEL_ELASTIC_UI._update_theme_color();
+                if (!e.classList.contains('discussion-frame')) {
+                    e.contentWindow.MEL_ELASTIC_UI._update_theme_color();
+                }
             });
 
             return this;

@@ -2436,6 +2436,11 @@ $(document).ready(() => {
             if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
             $html = null;
 
+            $('iframe.mm-frame').each((i,e) => {
+                $html = e.contentWindow.$('html');
+                if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+            });
+
             rcmail.triggerEvent("switch_color_theme");
 
             return this._update_theme_color();

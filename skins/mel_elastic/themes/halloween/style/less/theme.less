@@ -103,7 +103,17 @@ html{
             &.white{
                 --default-background: transparent;
             }
+
+            &.invite-button.create{
+                background-color: var(--main-bckg-color);
+
+                &:hover {
+                    --main-bckg-color: var(--tierciary-bckg-color);
+                }
+            }
         }
+
+        
     
         .barup {
             background: none!important;
@@ -114,6 +124,7 @@ html{
         }
         
         .scroller > .listing li {
+            --main-layout-selected-background-color: #371B58;
             a {
                 &:hover{
                     background-color:#5B4B8A;
@@ -180,6 +191,96 @@ html{
         .watermark::before {
             content:none;
         }
+
+        .menu a:not(.disabled):focus, .menu a:not(.disabled):hover, .menu.toolbar .dropbutton:not(.disabled):hover {
+            background-color: #5B4B8A;
+        }
+
+        #layout-list .listing tbody {
+            tr {
+                td {
+                    --main-text-color: white;
+        
+                    &:hover {
+                        background-color: #371B58;
+                    }
+                }
+
+                &.selected {
+                    td{
+                        background-color: #371B58;
+                    }
+                }
+            }
+        }
+
+        
+
+        .formcontainer .formbuttons button{
+            border-radius: 100px;
+            color: white;
+            border-color: var(--roundbadge-bckg-color);
+
+            &:hover {
+                border-color: #F78812;
+                --btn-primary-bckg-color-hover: #F78812;
+            }
+        }
+
+        .footer{
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            color: white;
+
+            a {
+                color:white;
+                &.pagenav {
+                    color:white;
+                }
+            }
+        }
+
+        #layout-content .body {
+            background-color: #371B5893;
+            padding: 15px;
+            border-radius: 15px;
+            color: white;
+            --main-text-color: white;
+        }
+
+        .melv2-hello{
+            margin-top: 0;
+        }
+
+        .melv2-card {
+            background-color: #5B4B8A93;
+        }
+
+        .melv2-color, .melv2-event, .melv2-mail {
+            --mv2-item-background-color: #5B4B8A;
+        }
+
+        a.melv2-card-title {
+            color: white;
+
+            &:hover {
+                color: #371B58;
+            }
+        }
+
+        .mv2-app-text {
+            color: white;
+        }
+
+        .module_Workspaces .workspace {
+            background-color: #5B4B8A93;
+        }
+
+        .mel-tab:hover,
+        button.btn.mel-tab:hover{
+            background-color: #F78812!important;
+        }
+
     }
 
     &.framed {

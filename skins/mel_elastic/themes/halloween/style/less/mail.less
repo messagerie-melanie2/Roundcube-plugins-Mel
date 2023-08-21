@@ -36,7 +36,12 @@ html.party-halloween .task-mail{
         --main-layout-hover-background-color: #371B5893;
 
        .listing tr.selected td {
-        background-color: #51050F93;
+        background-color: #51050F;
+       }
+
+       #messagelist-content{
+        --main-layout-content-background-color: #371B58;
+        --main-layout-hover-background-color: #51050F;
        }
     }
 
@@ -131,6 +136,16 @@ html.party-halloween .task-mail{
     .message-part,
     #attachment-list {
         border-radius: 5px;
+    }
+
+    #message-list {
+        &:hover {
+            --main-layout-hover-background-color: #51050F;
+        }
+    }
+
+    .message-partheaders table.headers-table {
+        color: #363A5B;
     }
 
 

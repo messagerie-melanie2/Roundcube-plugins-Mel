@@ -1,5 +1,13 @@
 html.theme-super-classique {
   .task-mail {
+    #mail-search-border {
+      border-color: var(--mel-button-border-color);
+    }
+
+    #mail-search-icon {
+      color: var(--button-color-alt);
+    }
+
     #layout {
       background-color: var(--mail-layout-sidebar-background-color);
     }
@@ -11,6 +19,7 @@ html.theme-super-classique {
         >a:hover {
           border-top: solid thin var(--invisible) !important;
           border-radius: var(--main-layout-element-border-radius);
+          background-color: var(--mail-layout-sidebar-hover-background-color);
         }
 
 
@@ -76,6 +85,25 @@ html.theme-super-classique {
         a:focus {
           color: var(--main-text-color) !important;
         }
+
+        a:hover {
+          background-color: var(--main-layout-hover-background-color) !important;
+        }
+
+        .searchbar {
+          #mailsearchform {
+            color: var(--button-color-alt) !important;
+
+            &::placeholder {
+              color: var(--default-placeholder) !important;
+            }
+          }
+
+          a.button,
+          a.button:hover {
+            color: var(--button-color-alt) !important;
+          }
+        }
       }
 
       #messagelist-content {
@@ -87,6 +115,14 @@ html.theme-super-classique {
             td:hover {
               background-color: var(--invisible);
             }
+
+            td {
+              border-bottom: solid thin var(--mail-layout-border-bottom-color);
+
+              &.subject span.msgicon::before {
+                color: var(--mail-unread-text-color) !important;
+              }
+            }
           }
 
           tr {
@@ -95,15 +131,28 @@ html.theme-super-classique {
 
               td {
                 border-bottom: solid thin var(--invisible) !important;
+                background-color: var(--selected-mail-bckg-color);
               }
 
               .subject {
-                color: var(--main-text-color) !important;
+                span {
+
+                  &.fromto,
+                  &.subject a,
+                  &.date,
+                  &.msgicon::before {
+                    color: var(--selected-mail-color) !important;
+                  }
+                }
+              }
+
+              .flags {
+                color: var(--selected-mail-color) !important;
               }
 
               >td.selection {
                 +td {
-                  border-left: 2px solid var(--main-text-color) !important;
+                  border-left: 2px solid var(--selected-mail-border-color) !important;
                 }
               }
             }

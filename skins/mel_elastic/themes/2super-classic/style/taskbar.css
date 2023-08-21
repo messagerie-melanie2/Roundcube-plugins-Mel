@@ -1,6 +1,9 @@
 html.theme-super-classique #layout-menu {
   background-color: var(--main-layout-taskbar-background-color);
 }
+html.theme-super-classique #layout-menu #taskmenu li a:hover {
+  border-radius: 10px 0 0 10px;
+}
 html.theme-super-classique #layout-menu #taskmenu a {
   color: var(--main-text-color) !important;
   height: 60px !important;
@@ -19,7 +22,7 @@ html.theme-super-classique #layout-menu #taskmenu a.selected > span.inner {
 html.theme-super-classique #layout-menu #taskmenu a.selected {
   border-radius: 10px 0 0 10px;
 }
-html.theme-super-classique #layout-menu #taskmenu a > span.inner {
+html.theme-super-classique #layout-menu #taskmenu a html.theme-super-classique #layout-menu #taskmenu a:hover > span.inner {
   border: none;
 }
 html.theme-super-classique #layout-menu #taskmenu a:focus,
@@ -38,6 +41,7 @@ html.theme-super-classique #layout-menu:hover a > span.inner {
   width: 140px;
   padding-right: 18px;
   height: 60px;
+  border-color: transparent;
 }
 html.theme-super-classique #layout-menu:hover a.wsp:hover > span.inner {
   padding-bottom: 0;

@@ -195,7 +195,7 @@ table.messagelist tr.flagged td.subject span.date {
   color: var(--main-text-color);
 }
 table.messagelist tr.flagged td.subject span.fromto {
-  color: var(--mail-unread-icon-color);
+  color: var(--mail-unread-text-color);
 }
 table.messagelist tr:hover span.unflagged::before {
   content: "\e958" !important;
@@ -256,7 +256,7 @@ table.messagelist td.subject span.priority {
   color: var(--main-text-color);
 }
 table.messagelist td.subject span.fromto {
-  color: var(--mail-unread-icon-color);
+  color: var(--mail-unread-text-color);
   padding-left: 0!important;
 }
 table.messagelist td.subject span.msgicon.status::before {

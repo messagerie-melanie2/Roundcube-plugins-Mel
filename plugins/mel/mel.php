@@ -115,6 +115,11 @@ class mel extends rcube_plugin
     $this->init_ui();
 
     // Configurer les LOG de la librairie Mél
+    $trace_log = function ($message) {
+      $message = "[LibM2] $message";
+      if (mel_logs::is(mel_logs::TRACE))
+        mel_logs::get_instance()->log(mel_logs::TRACE, $message);
+    };
     $debug_log = function ($message) {
       $message = "[LibM2] $message";
       if (mel_logs::is(mel_logs::DEBUG))
@@ -130,6 +135,7 @@ class mel extends rcube_plugin
       if (mel_logs::is(mel_logs::ERROR))
         mel_logs::get_instance()->log(mel_logs::ERROR, $message);
     };
+    LibMelanie\Log\M2Log::InitTraceLog($trace_log);
     LibMelanie\Log\M2Log::InitDebugLog($debug_log);
     LibMelanie\Log\M2Log::InitInfoLog($info_log);
     LibMelanie\Log\M2Log::InitErrorLog($error_log);

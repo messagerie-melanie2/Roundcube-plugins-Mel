@@ -71,6 +71,12 @@ class mel_france_transfert extends rcube_plugin {
               'updateProgressBar'
       ));
 
+      // Draft hooks
+      $this->add_hook('save_message', array(
+        $this,
+        'save_message'
+      ));
+
       // Charger le javascript si on est dans l'écriture d'un message
       if ($this->rc->action == 'compose') {
         $max_attachments_size = $this->rc->config->get('max_attachments_size', 5000000);
@@ -153,6 +159,18 @@ class mel_france_transfert extends rcube_plugin {
     if (! in_array($key, $dont_override)) {
       $config_key = 'max_attachments_size';
       $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
+    }
+    return $args;
+  }
+
+  /**
+   * Gestion des brouillons
+   */
+  public function save_message($args) {
+    $max_message_size = intval(4/3*intval($this->rc->config->get('max_attachments_size', 5000000)));
+    if (strlen($args['message']) > $max_message_size) {
+      $args['abort'] = true;
+      $args['return'] = false;
     }
     return $args;
   }

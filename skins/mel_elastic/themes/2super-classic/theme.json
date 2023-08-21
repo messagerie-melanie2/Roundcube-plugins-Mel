@@ -6,5 +6,6 @@
     "icon":"icon.svg",
     "enabled":true,
     "style":"style",
-    "class":"theme-super-classique"
+    "class":"theme-super-classique",
+    "custom_dark_mode":true
 }

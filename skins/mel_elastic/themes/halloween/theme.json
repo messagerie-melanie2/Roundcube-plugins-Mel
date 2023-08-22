@@ -4,7 +4,7 @@
     "display":"white",
     "description":"desc",
     "icon":"icon.svg",
-    "enabled":true,
+    "enabled":false,
     "style":"style",
     "class":"party-halloween",
     "custom_dark_mode":true

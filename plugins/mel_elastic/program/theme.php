@@ -84,6 +84,20 @@ class Theme {
     public $custom_dark_mode;
 
     /**
+     * L'ordre du thème
+     *
+     * @var number
+     */
+    public $order;
+
+    /**
+     * Si le thème doit s'afficher temporairement ou non (si null)
+     *
+     * @var ThemeSaison
+     */
+    public $saison;
+
+    /**
      * Constructeur de la classe
      *
      * @param string $path Chemin du dossier du thème
@@ -121,6 +135,11 @@ class Theme {
         $this->displayed = new ThemeLocalization($this->id, $json->display ?? $this->id, self::SkinPath().self::THEME_PATH.'/'.$this->name.'/localization');
         $this->desc = new ThemeLocalization($this->id, $json->description ?? '', self::SkinPath().self::THEME_PATH.'/'.$this->name.'/localization');
         $this->custom_dark_mode = $json->custom_dark_mode ?? false;
+        $this->order = $json->order;
+        $this->saison = $json->saison;
+
+        if (isset($this->saison)) $this->saison = new ThemeSaison($this->saison);
+        else $this->saison = new ThemeSaisonForced();
     }
 
     /**
@@ -158,7 +177,7 @@ class Theme {
      */
     public function prepareToSave() {
         $forSave = [];
-        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent', 'custom_dark_mode'];
+        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent', 'custom_dark_mode', 'order'];
 
         foreach ($array as $value) {
             switch ($value) {
@@ -360,4 +379,41 @@ class SingletonThemeLocalization {
         return self::$_instance;
     }
 
+}
+
+class ThemeSaison {
+    private $start;
+    private $end;
+
+    public function __construct($date) {  
+         $date = explode('-', $date);  
+        
+        $this->start = $this->_date($date[0]);
+        $this->end = $this->_date($date[1]);
+    }
+
+    public function can_be_shown() {
+        $now = new DateTime();
+
+        return $this->start <= $now && $now < $this->end;
+    }
+
+    private function _date($init_date) {
+        $date = explode('/', $init_date);
+
+        if (count($date) < 3) $date[] = date("Y");
+
+        return DateTime::createFromFormat('d/m/Y H:i:s', implode('/', $date).' 00:00:00');
+    }
+}
+
+class ThemeSaisonForced extends ThemeSaison {
+    public function __construct() {  
+
+    }
+
+
+    public function can_be_shown() {
+        return true;
+    }
 }

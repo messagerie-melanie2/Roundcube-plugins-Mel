@@ -630,6 +630,12 @@ $(document).ready(() => {
             //Si il y a un thème courant, on l'applique à la page
             if (!!rcmail.env.current_theme) {
                 let $html = mel_html.select_html();
+
+                if (!rcmail.env.mel_themes[rcmail.env.current_theme]) {
+                    rcmail.env.current_theme = 'default';
+                    this.theme = rcmail.env.current_theme;
+                }
+
                 let current = rcmail.env.mel_themes[rcmail.env.current_theme];
 
                 do { //Gestion du multi-thème
@@ -655,7 +661,7 @@ $(document).ready(() => {
                      * @type {boolean}
                      */
                     let is_selected;
-                    for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes)) {
+                    for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).orderBy(x => x.value.order ?? Infinity)) {
                         is_selected =  iterator.value.id === this.theme;
                         //Création du "bouton" du thème
                         html_theme = new mel_html(CONST_HTML_DIV, 

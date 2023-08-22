@@ -7,5 +7,6 @@
     "enabled":true,
     "style":"style",
     "class":"theme-super-classique",
-    "custom_dark_mode":true
+    "custom_dark_mode":true,
+    "order":2
 }

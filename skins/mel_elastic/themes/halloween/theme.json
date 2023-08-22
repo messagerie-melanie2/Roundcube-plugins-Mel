@@ -4,8 +4,9 @@
     "display":"white",
     "description":"desc",
     "icon":"icon.svg",
-    "enabled":false,
+    "enabled":true,
     "style":"style",
     "class":"party-halloween",
-    "custom_dark_mode":true
+    "custom_dark_mode":true,
+    "order":100
 }

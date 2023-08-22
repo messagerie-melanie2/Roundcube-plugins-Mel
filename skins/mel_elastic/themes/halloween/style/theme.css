@@ -1,17 +1,17 @@
-html.party-halloween body {
+html.theme-super-classique.party-halloween body {
   background-image: url("../images/halloween-bg-light-unsplash.jpg");
 }
-html.party-halloween.dark-mode-custom body {
+html.theme-super-classique.party-halloween.dark-mode-custom body {
   background-image: url("../images/halloween-bg-dark-unsplash.jpg");
 }
-html.party-halloween div#layout-sidebar {
+html.theme-super-classique.party-halloween div#layout-sidebar {
   --main-text-color: var(--main-layout-taskbar-text-color);
   --mail-layout-sidebar-background-color: #371b5893;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
   margin-top: 10px !important;
 }
-html.party-halloween #layout > div > .header a.button:hover {
+html.theme-super-classique.party-halloween #layout > div > .header a.button:hover {
   color: white !important;
   background-color: #371B58 !important;
   --layout-bg-hover: #371B58 !important;
@@ -21,191 +21,191 @@ html.party-halloween #layout > div > .header a.button:hover {
   border-right: none !important;
   --secondary-bckg-color: #371B58;
 }
-html.party-halloween #layout > div > .header a.button:focus {
+html.theme-super-classique.party-halloween #layout > div > .header a.button:focus {
   color: white !important;
   background-color: #371B58 !important;
   --secondary-bckg-color: #371B58;
   --layout-bg-hover: #371B58 !important;
 }
-html.party-halloween #layout #layout-content {
+html.theme-super-classique.party-halloween #layout #layout-content {
   background-color: transparent;
 }
-html.party-halloween #layout #layout-content .header a {
+html.theme-super-classique.party-halloween #layout #layout-content .header a {
   color: white;
 }
-html.party-halloween #layout #layout-content .header a:hover {
+html.theme-super-classique.party-halloween #layout #layout-content .header a:hover {
   background-color: #371B58 !important;
   color: white!important;
   --tierciary-bckg-color: #FF5B00;
   --invisible: #FF5B00;
 }
-html.party-halloween #layout #layout-content .header a:focus {
+html.theme-super-classique.party-halloween #layout #layout-content .header a:focus {
   color: white !important;
   background-color: #371B58 !important;
   --secondary-bckg-color: #371B58;
   --layout-bg-hover: #371B58 !important;
   --invisible: transparent;
 }
-html.party-halloween #layout #layout-content .content {
+html.theme-super-classique.party-halloween #layout #layout-content .content {
   --main-layout-content-background-color: #FFFFFF93;
 }
-html.party-halloween #layout #layout-list {
+html.theme-super-classique.party-halloween #layout #layout-list {
   --mail-layout-sidebar-background-color: transparent;
 }
-html.party-halloween #layout-list > .header li a.button {
+html.theme-super-classique.party-halloween #layout-list > .header li a.button {
   --main-text-color: white;
 }
-html.party-halloween #layout-list .scroller > .listing li {
+html.theme-super-classique.party-halloween #layout-list .scroller > .listing li {
   --main-text-color: white;
   --secondary-bckg-color: #371B58;
   border-radius: 5px;
 }
-html.party-halloween #layout-list .scroller > .listing li a {
+html.theme-super-classique.party-halloween #layout-list .scroller > .listing li a {
   border-color: transparent !important;
 }
-html.party-halloween a {
+html.theme-super-classique.party-halloween a {
   color: #51050F;
 }
-html.party-halloween a:hover {
+html.theme-super-classique.party-halloween a:hover {
   color: #371B58;
 }
-html.party-halloween .mel-button {
+html.theme-super-classique.party-halloween .mel-button {
   --main-bckg-color: #FF5B00;
   --mel-button-border-color: var(--main-bckg-color);
   --tierciary-bckg-color: #F78812;
   --mel-button-border-color-alt: #F78812;
   --mel-button-bckg-color-alt: #F78812;
 }
-html.party-halloween .mel-button.white {
+html.theme-super-classique.party-halloween .mel-button.white {
   --default-background: transparent;
 }
-html.party-halloween .mel-button.invite-button.create {
+html.theme-super-classique.party-halloween .mel-button.invite-button.create {
   background-color: var(--main-bckg-color);
 }
-html.party-halloween .mel-button.invite-button.create:hover {
+html.theme-super-classique.party-halloween .mel-button.invite-button.create:hover {
   --main-bckg-color: var(--tierciary-bckg-color);
 }
-html.party-halloween .barup {
+html.theme-super-classique.party-halloween .barup {
   background: none!important;
 }
-html.party-halloween .barup #barup-right-buttons {
+html.theme-super-classique.party-halloween .barup #barup-right-buttons {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #371B58 100%);
 }
-html.party-halloween .scroller > .listing li {
+html.theme-super-classique.party-halloween .scroller > .listing li {
   --main-layout-selected-background-color: #371B58;
 }
-html.party-halloween .scroller > .listing li a:hover {
+html.theme-super-classique.party-halloween .scroller > .listing li a:hover {
   background-color: #5B4B8A;
   --list-bg-hover: #5B4B8A!important;
 }
-html.party-halloween .scroller > .listing li a:focus {
+html.theme-super-classique.party-halloween .scroller > .listing li a:focus {
   background-color: #5B4B8A !important;
 }
-html.party-halloween .scroller > .listing li div:hover {
+html.theme-super-classique.party-halloween .scroller > .listing li div:hover {
   background-color: #5B4B8A;
   --list-bg-hover: #5B4B8A!important;
 }
-html.party-halloween .scroller > .listing li.selected > div > * {
+html.theme-super-classique.party-halloween .scroller > .listing li.selected > div > * {
   --list-bg-selected: #5B4B8A!important;
 }
-html.party-halloween .custom-switch .custom-control-label::before {
+html.theme-super-classique.party-halloween .custom-switch .custom-control-label::before {
   background-color: #F2E8C6;
 }
-html.party-halloween .custom-switch .custom-control-label::after {
+html.theme-super-classique.party-halloween .custom-switch .custom-control-label::after {
   background-color: #371B58;
 }
-html.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+html.theme-super-classique.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
   background-color: #371B58;
 }
-html.party-halloween .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
-html.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+html.theme-super-classique.party-halloween .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
+html.theme-super-classique.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
   background-color: #FF5B00;
 }
-html.party-halloween .searchbar {
+html.theme-super-classique.party-halloween .searchbar {
   --main-text-color: white;
 }
-html.party-halloween .searchbar input {
+html.theme-super-classique.party-halloween .searchbar input {
   color: white;
 }
-html.party-halloween .searchbar a {
+html.theme-super-classique.party-halloween .searchbar a {
   color: white;
   border-top: solid thin transparent;
 }
-html.party-halloween .searchbar.menu:focus,
-html.party-halloween .searchbar.menu a:hover {
+html.theme-super-classique.party-halloween .searchbar.menu:focus,
+html.theme-super-classique.party-halloween .searchbar.menu a:hover {
   --secondary-bckg-color: #371B58;
   background-color: #371B58;
   border-top-color: #FF5B00;
 }
-html.party-halloween .watermark::before {
+html.theme-super-classique.party-halloween .watermark::before {
   content: none;
 }
-html.party-halloween .menu a:not(.disabled):focus,
-html.party-halloween .menu a:not(.disabled):hover,
-html.party-halloween .menu.toolbar .dropbutton:not(.disabled):hover {
+html.theme-super-classique.party-halloween .menu a:not(.disabled):focus,
+html.theme-super-classique.party-halloween .menu a:not(.disabled):hover,
+html.theme-super-classique.party-halloween .menu.toolbar .dropbutton:not(.disabled):hover {
   background-color: #5B4B8A;
 }
-html.party-halloween #layout-list .listing tbody tr td {
+html.theme-super-classique.party-halloween #layout-list .listing tbody tr td {
   --main-text-color: white;
 }
-html.party-halloween #layout-list .listing tbody tr td:hover {
+html.theme-super-classique.party-halloween #layout-list .listing tbody tr td:hover {
   background-color: #371B58;
 }
-html.party-halloween #layout-list .listing tbody tr.selected td {
+html.theme-super-classique.party-halloween #layout-list .listing tbody tr.selected td {
   background-color: #371B58;
 }
-html.party-halloween .formcontainer .formbuttons button {
+html.theme-super-classique.party-halloween .formcontainer .formbuttons button {
   border-radius: 100px;
   color: white;
   border-color: var(--roundbadge-bckg-color);
 }
-html.party-halloween .formcontainer .formbuttons button:hover {
+html.theme-super-classique.party-halloween .formcontainer .formbuttons button:hover {
   border-color: #F78812;
   --btn-primary-bckg-color-hover: #F78812;
 }
-html.party-halloween .footer {
+html.theme-super-classique.party-halloween .footer {
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   color: white;
 }
-html.party-halloween .footer a {
+html.theme-super-classique.party-halloween .footer a {
   color: white;
 }
-html.party-halloween .footer a.pagenav {
+html.theme-super-classique.party-halloween .footer a.pagenav {
   color: white;
 }
-html.party-halloween #layout-content .body {
+html.theme-super-classique.party-halloween #layout-content .body {
   background-color: #371B5893;
   padding: 15px;
   border-radius: 15px;
   color: white;
   --main-text-color: white;
 }
-html.party-halloween .melv2-hello {
+html.theme-super-classique.party-halloween .melv2-hello {
   margin-top: 0;
 }
-html.party-halloween .melv2-card {
+html.theme-super-classique.party-halloween .melv2-card {
   background-color: #5B4B8A93;
 }
-html.party-halloween .melv2-color,
-html.party-halloween .melv2-event,
-html.party-halloween .melv2-mail {
+html.theme-super-classique.party-halloween .melv2-color,
+html.theme-super-classique.party-halloween .melv2-event,
+html.theme-super-classique.party-halloween .melv2-mail {
   --mv2-item-background-color: #5B4B8A;
 }
-html.party-halloween a.melv2-card-title {
+html.theme-super-classique.party-halloween a.melv2-card-title {
   color: white;
 }
-html.party-halloween a.melv2-card-title:hover {
+html.theme-super-classique.party-halloween a.melv2-card-title:hover {
   color: #371B58;
 }
-html.party-halloween .mv2-app-text {
+html.theme-super-classique.party-halloween .mv2-app-text {
   color: white;
 }
-html.party-halloween .module_Workspaces .workspace {
+html.theme-super-classique.party-halloween .module_Workspaces .workspace {
   background-color: #5B4B8A93;
 }
-html.party-halloween .mel-tab:hover,
-html.party-halloween button.btn.mel-tab:hover {
+html.theme-super-classique.party-halloween .mel-tab:hover,
+html.theme-super-classique.party-halloween button.btn.mel-tab:hover {
   background-color: #F78812 !important;
 }
 html.framed body {

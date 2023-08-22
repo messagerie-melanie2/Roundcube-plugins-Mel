@@ -207,7 +207,12 @@ function francetransfert_get_compose_message_text() {
  */
 function send_francetransfert_message() {
   // MANTIS 0005303: Problème de délai dépassé dans la requête
-  rcmail.env.request_timeout = 6000;
+  rcmail.env.request_timeout = 1800;
+
+  // set jQuery ajax options
+  $.ajaxSetup({
+    timeout: rcmail.env.request_timeout * 1000
+  });
   
   rcmail.http_post('plugin.send_francetransfert', {
     _id : rcmail.env.compose_id,

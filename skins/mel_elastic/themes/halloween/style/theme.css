@@ -49,6 +49,9 @@ html.party-halloween #layout #layout-content .header a:focus {
 html.party-halloween #layout #layout-content .content {
   --main-layout-content-background-color: #FFFFFF93;
 }
+html.party-halloween #layout #layout-list {
+  --mail-layout-sidebar-background-color: transparent;
+}
 html.party-halloween #layout-list > .header li a.button {
   --main-text-color: white;
 }
@@ -71,6 +74,7 @@ html.party-halloween .mel-button {
   --mel-button-border-color: var(--main-bckg-color);
   --tierciary-bckg-color: #F78812;
   --mel-button-border-color-alt: #F78812;
+  --mel-button-bckg-color-alt: #F78812;
 }
 html.party-halloween .mel-button.white {
   --default-background: transparent;

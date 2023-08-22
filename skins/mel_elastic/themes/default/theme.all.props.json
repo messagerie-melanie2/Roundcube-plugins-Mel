@@ -7,5 +7,7 @@
     "enabled":true, //Si on prend ce thème en compte ou non
     "style":"theme.css", //Fichier css du thème (theme.css par défaut), si pas d'extention, on part du principe qu'on charge le dossier. Peut être un tableau
     "class":"my-great-theme", //Classe css qui sera mise sur la balise "html". Par défaut : theme-XX ou XX est l'id du theme
-    "custom_dark_mode":false //Si le thème utilise le dark-mode du bnum ou fournit son propre dark-mode
+    "custom_dark_mode":false, //Si le thème utilise le dark-mode du bnum ou fournit son propre dark-mode
+    "order":null, //L'ordre du thème dans la liste des thèmes. Null = tout à la fin
+    "saison": "21/09-01/11"
 }

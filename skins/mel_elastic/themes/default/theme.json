@@ -3,5 +3,6 @@
     "display":"default",
     "description":"desc",
     "icon":"icon.svg",
-    "alternate":"images/Computer_default.png"
+    "alternate":"images/Computer_default.png",
+    "order":-1
 }

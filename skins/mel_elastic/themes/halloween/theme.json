@@ -8,5 +8,6 @@
     "style":"style",
     "class":"party-halloween",
     "custom_dark_mode":true,
-    "order":100
+    "order":100,
+    "saison":"21/09-01/11"
 }

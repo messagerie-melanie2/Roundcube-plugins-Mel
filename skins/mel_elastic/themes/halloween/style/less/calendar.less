@@ -1,3 +1,4 @@
+//compress:false
 html.theme-super-classique.party-halloween .task-calendar{
     #layout {
         background-color: transparent;
@@ -37,16 +38,17 @@ html.theme-super-classique.party-halloween .task-calendar{
 
     .calendar-datepicker {
         .ui-datepicker {
-            &:extend(html.party-halloween .task-calendar #datepicker);
+            &:extend(html.theme-super-classique.party-halloween .task-calendar #datepicker);
         }
 
         .ui-datepicker-header {
-            &:extend(html.party-halloween .task-calendar #datepicker);
+            &:extend(html.theme-super-classique.party-halloween .task-calendar #datepicker);
         }
 
         .ui-datepicker-inline {
             .ui-datepicker-activerange {
-                &:extend(html.party-halloween .task-calendar #datepicker);
+                &:extend(html.theme-super-classique.party-halloween .task-calendar #datepicker);
+                --datepicker-bg-color: #7858A6;
             }
         }
     }
@@ -76,4 +78,5 @@ html.theme-super-classique.party-halloween .task-calendar{
     #layout #layout-content #calendar .fc-header-toolbar{
         background-color: transparent;
     }
+
 }

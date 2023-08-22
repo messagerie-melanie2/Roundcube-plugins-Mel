@@ -208,6 +208,7 @@ html.theme-super-classique.party-halloween .mel-tab:hover,
 html.theme-super-classique.party-halloween button.btn.mel-tab:hover {
   background-color: #F78812 !important;
 }
-html.framed body {
-  background: transparent;
+html.theme-super-classique.party-halloween.framed body {
+  background-color: transparent;
+  background-image: none;
 }

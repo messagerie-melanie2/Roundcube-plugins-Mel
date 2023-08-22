@@ -19,7 +19,7 @@
 $labels = array();
 
 $labels['annuaire'] = 'Contacts';
-$labels['annuaires'] = 'Annuaires';
+$labels['annuaires'] = 'Annuaire';
 $labels['all'] = 'Tous';
 $labels['persons'] = 'Personnes';
 $labels['groups'] = 'Groupes';

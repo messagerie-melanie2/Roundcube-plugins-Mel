@@ -4,10 +4,9 @@
     "display":"white",
     "description":"desc",
     "icon":"icon.svg",
-    "enabled":false,
+    "enabled":true,
     "style":"style",
     "class":"party-halloween",
     "custom_dark_mode":true,
-    "order":100,
-    "saison": "21/09-01/11"
+    "order":100
 }

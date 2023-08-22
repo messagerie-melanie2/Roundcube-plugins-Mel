@@ -232,7 +232,9 @@ class mel_elastic extends rcube_plugin
         $mep = [];
 
         foreach ($themes as $key => $value) {
-            $mep[$key] = $value->prepareToSave();
+            if ($value->saison->can_be_shown()) {
+                $mep[$key] = $value->prepareToSave();
+            }
         }
 
         return $mep;

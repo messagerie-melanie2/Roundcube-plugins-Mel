@@ -168,10 +168,19 @@ class mel_france_transfert extends rcube_plugin {
    */
   public function save_message($args) {
     $max_message_size = intval(4/3*intval($this->rc->config->get('max_attachments_size', 5000000)));
-    if (strlen($args['message']) > $max_message_size) {
+
+    if ($args['is_file']) {
+      $message_size = filesize($args['message']);
+    }
+    else {
+      $message_size = strlen($args['message']);
+    }
+    
+    if ($message_size > $max_message_size) {
       $args['abort'] = true;
       $args['return'] = false;
     }
+
     return $args;
   }
 

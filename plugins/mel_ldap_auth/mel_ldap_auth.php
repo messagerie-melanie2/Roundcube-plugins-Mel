@@ -93,6 +93,16 @@ class mel_ldap_auth extends rcube_plugin {
       return $args;
     }
 
+    // Gérer les changements d'utilisateurs avec le cookie
+    if (isset($_COOKIE['roundcube_login'])) {
+      $login = explode('###', $_COOKIE['roundcube_login']);
+      if ($user != $login[0]) {
+        // Suppression du cookie
+        unset($_COOKIE['roundcube_login']);
+        rcube_utils::setcookie('roundcube_login', null, -1);
+      }
+    }
+
     if ($this->rc->config->get('enable_auth_protection', false)) {
       // Controle du nb de connexions en echecs
       // =====================================

@@ -3235,8 +3235,10 @@ class mel_metapage extends bnum_plugin
         foreach ($_COOKIE as $key => $value) {
             if (strpos($key, 'id') !== false || strpos($key, 'ses') !== false || strpos($key, 'login') !== false) 
             {
-                unset($_COOKIE[$key]); 
-                setcookie($key, '', -1, '/');
+                if ('roundcube_login' !== $key) {
+                    unset($_COOKIE[$key]); 
+                    setcookie($key, '', -1, '/');
+                }
             }
         }
 

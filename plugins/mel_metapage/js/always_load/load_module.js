@@ -111,5 +111,14 @@
     window.runModule = runModule;
     window.awaitModules = await_modules;
     window.loadAction = loadAction;
+    
+    Object.defineProperties(window, {
+        scriptVersion: {
+            get: function() {
+                return VERSION;
+            },
+            configurable: false
+        }
+    });
 
 })();

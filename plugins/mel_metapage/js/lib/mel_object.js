@@ -119,6 +119,10 @@ class MelObject {
         return (top && !!Top.top()?.rcmail) ? Top.top().rcmail : window.rcmail;
     }
 
+    gettext(key_text, plugin = ''){
+        return this.rcmail().gettext(key_text, plugin);
+    }
+
     /**
      * Ajoute un écouteur qui pourra être appelé plus tard.
      * @param {string} key Clé qui permettra d'appeller l'écouteur 

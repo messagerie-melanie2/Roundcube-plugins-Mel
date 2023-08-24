@@ -3801,3 +3801,24 @@ html.dark-mode .mv2-app-text {
   --background-message-timer: #fffea1;
   --foreground-message-timer: #c1610c;
 }
+.page-abs {
+  margin: 15px;
+}
+.page-abs .div-last {
+  margin: 15px 0;
+}
+.abs-title {
+  margin-bottom: 15px;
+}
+.abs-flex {
+  display: flex;
+  justify-content: space-around;
+}
+.abs-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+}
+#abs-loader {
+  height: 200px;
+}

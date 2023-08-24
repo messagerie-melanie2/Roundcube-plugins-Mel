@@ -277,6 +277,129 @@ if (rcmail)
                 });
             }, true);
 
+            rcmail.register_command('set_custom_abs', async () => {
+                const reset = () => {
+                    $('#user-dropdown .notifications-header').show();
+                    $('#user-dropdown .page-abs').hide();
+                    $('#user-dropdown .user-menu-items').show();
+                };
+                const open = async () => {
+                    await new Promise((ok, nok) => {
+                        setTimeout(() => {
+                            $('#button-user').click();
+                            ok();
+                        }, 10);
+                    });
+                }
+                let $dropdown = $('#user-dropdown');
+                let $header = $dropdown.find('.notifications-header');
+                let $items = $dropdown.find('.user-menu-items');
+                let $abs = $dropdown.find('.page-abs');
+                let $loader = $dropdown.find('#abs-loader');
+
+                if ($abs.length <= 0) {
+
+                    let input_start = new mel_label_input('abs-ponc-start', 'date', 'Démarre le : ');
+                    let input_end = new mel_label_input('abs-ponc-end', 'date', 'Termine le : ');
+                    let button = new mel_button({class:'abs-btn-save'}, 'Enregistrer');
+                    button.onclick.push(() => {
+                        mel_metapage.Functions.post(
+                            mel_metapage.Functions.url('bnum', 'plugin.abs.set_dates'),
+                            {
+                                absence_date_debut:moment($('#user-dropdown .div-first input').val()).format('DD/MM/YYYY'),
+                                absence_date_fin:moment($('#user-dropdown .div-last input').val()).format('DD/MM/YYYY')
+                            },
+                            (datas) => {
+                                console.log('valid', datas);
+                            }
+                        )
+                        reset();
+                    });
+
+                    let button_back = new mel_button({class:'abs-btn-back'}, 'Annuler');
+                    button_back.onclick.push(() => {
+                        reset();
+                        open();
+                    });
+
+                    let flex_button = mel_html2.div({
+                        attribs:{class:'abs-flex'},
+                        contents:[button_back, button]
+                    });
+
+                    let see_more_link = new mel_html2('a', {
+                        attribs:{class:'abs-link',href: mel_metapage.Functions.url('settings', 'plugin.mel_moncompte', {_open_section:'gestionnaireabsence'}) },
+                        contents:[new mel_html('span', {}, 'Plus de configuration')]
+                    });
+
+                    see_more_link.onclick.push(reset);
+
+                    let message = new mel_html('p', {style:'margin:0', class:'abs-message alert'});
+
+                    let html_container = new mel_html2('div', {
+                        attribs:{class:'page-abs'},
+                        contents:[new mel_html('h3', {class:'abs-title'}, 'Absence ponctuelle'), message, input_start, input_end, flex_button, see_more_link]
+                    });
+
+                    $abs = html_container.create($dropdown);
+
+                    let $inputs = $abs.find('input');
+                    const len = $inputs.length - 1;
+
+                    $inputs.each((i, e) => {
+                        switch (i) {
+                            case 0:
+                                $(e).parent().addClass('div-first');
+                                break;
+
+                            case len:
+                                $(e).parent().addClass('div-last');
+                                break;
+                        
+                            default:
+                                $(e).parent().addClass(`div-${i}`);
+                                break;
+                        }
+                    });
+
+                    $inputs = null;
+                }
+
+                if ($loader.length <= 0) {
+                    $loader = MEL_ELASTIC_UI.create_loader('abs-loader', true, false).create($dropdown);
+                }
+
+                $abs.hide();
+                $header.hide();
+                $items.hide();
+                $loader.show();
+
+                open();
+
+                mel_metapage.Functions.get(
+                    mel_metapage.Functions.url('bnum', 'plugin.abs.get_dates'),
+                    {},
+                    (datas) => {
+                        datas = JSON.parse(datas);
+
+                        if (!!datas.message && EMPTY_STRING !== datas.message && !!datas.start && EMPTY_STRING !== datas.start) {
+                            $('#user-dropdown .div-first input').val(moment(datas.start, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
+                            $('#user-dropdown .div-last input').val(moment(datas.end, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
+                            $('#user-dropdown .abs-message').hide();
+                            $('.page-abs div').show();
+                        }
+                        else {
+                            $('#user-dropdown .abs-message').addClass('alert-warning').text("Vous n'avez pas encore d'absence, cliquez sur le bouton \"Plus de configuration\" pour en créer !")
+                            $('.page-abs div').hide();
+                        }
+
+                        $loader.hide();
+                        $abs.show();
+                    }
+                )
+
+            }, true);
+
             rcmail.register_command("mel.search.global", async (event) => {
                 event = $(event);
                 const word = event.val();

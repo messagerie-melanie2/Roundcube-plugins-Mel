@@ -928,6 +928,36 @@ class mel_input extends amel_form_item
 	}
 }
 
+class mel_label_input extends mel_input {
+	constructor(id, type, label, attribs = {}) {
+		super(attribs);
+
+		this.id = id;
+		this.type = type;
+		this.label = label;
+	}
+
+	_before_generate() {
+		this.setId(this.id);
+		this.attribs.type = this.type;
+	}
+
+	generate(value, attribs = {}, parent_attribs = {}) {
+		let $generated = super.generate(value, attribs);
+
+		const html_label = new mel_html('label', {for:this.id}, this.label);
+		let $parent_div = new mel_html2('div', {
+			attribs:parent_attribs,
+			contents:html_label
+		}).generate();
+
+		$parent_div.append($generated);
+		$generated = null;
+
+		return $parent_div;
+	}
+}
+
 class mel_password extends mel_input {
 	constructor(attribs = {})
 	{

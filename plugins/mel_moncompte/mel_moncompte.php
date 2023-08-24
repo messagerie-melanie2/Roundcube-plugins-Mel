@@ -241,6 +241,12 @@ class mel_moncompte extends rcube_plugin {
       $this->register_action('plugin.listes_upload_csv', array('Gestionnairelistes','uploadCSVMembers'));
     }
 
+    if (in_array($this->rc->task, ['bnum', 'chat', 'webconf'])) {
+      include_once "moncompte/Gestionnaireabsence.php";
+      $this->register_action('plugin.abs.get_dates', array('Gestionnaireabsence','get_ponctual_dates'));
+      $this->register_action('plugin.abs.set_dates', array('Gestionnaireabsence','set_quick_ponctual_dates'));
+    }
+
     $this->ui_initialized = true;
   }
 

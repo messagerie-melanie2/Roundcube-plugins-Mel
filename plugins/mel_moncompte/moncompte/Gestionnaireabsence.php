@@ -376,4 +376,53 @@ class Gestionnaireabsence extends Moncompteobject
       return false;
     }
   }
+  
+
+  public static function get_ponctual_dates() {
+		    // Récupération de l'utilisateur
+        $user = driver_mel::gi()->getUser(driver_mel::gi()->getUser()->uid, true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
+        $user->load(['outofoffices']);
+        $offices = $user->outofoffices;
+        $external_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
+      echo json_encode(['start' => $external_oof->start->format('d/m/Y H:i:s'),
+                        'end' => $external_oof->end->format('d/m/Y H:i:s'),
+                        'message' => $external_oof->message]);
+      exit;
+	}
+
+	public static function set_quick_ponctual_dates() {
+    $date_debut = trim(rcube_utils::get_input_value('absence_date_debut', rcube_utils::INPUT_POST));
+    $date_fin = trim(rcube_utils::get_input_value('absence_date_fin', rcube_utils::INPUT_POST));
+    $user = driver_mel::gi()->getUser(driver_mel::gi()->getUser()->uid, true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
+    $user->load(['outofoffices']);
+    echo self::set_ponctual_dates($user, $date_debut, $date_fin);
+    exit;
+  }
+
+	private static function set_ponctual_dates(&$user, $start, $end) {
+    $outoffice = $user->outofoffices;
+    $outoffice[Outofoffice::TYPE_INTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_INTERNAL], $start, $end);
+    $outoffice[Outofoffice::TYPE_EXTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_EXTERNAL], $start, $end);
+    $outoffice = self::try_enable_ponctual_date($outoffice);
+    $user->outofoffices = $outoffice;
+    return $user->save();
+  }
+
+  private static function update_ponctual($outoffice, $start, $end) {
+    $outoffice->start = \DateTime::createFromFormat('d/m/Y', $start);
+    $outoffice->end = \DateTime::createFromFormat('d/m/Y', $end);
+    $message = $outoffice->message;
+    $message = preg_replace("/jusqu'au (\d{2}\/\d{2}\/\d{4})/im", "jusqu'au $end", $message);
+
+    $outoffice->message = $message;
+
+    return $outoffice;
+  }
+
+	private static function try_enable_ponctual_date($outoffice) {
+    $outoffice[Outofoffice::TYPE_EXTERNAL]->enabled = true;
+    $outoffice[Outofoffice::TYPE_INTERNAL]->enabled = true;
+
+    return $outoffice;
+  }
 }

@@ -91,7 +91,7 @@ export class Calendar_Alarm extends MelObject
 
                 if (time <= 0)
                     this.show(event);
-                else
+                else if(time < Calendar_Alarm.max_time)
                 {
                     const id = this.generate_id(event.uid);
                     this.timeouts[id] = setTimeout(() => {
@@ -234,3 +234,12 @@ export class Calendar_Alarm extends MelObject
     }
 
 }
+
+Object.defineProperties(Calendar_Alarm, {
+    max_time: {
+        get: function() {
+            return 703607907; //Une semaine
+        },
+        configurable: false
+    }
+});

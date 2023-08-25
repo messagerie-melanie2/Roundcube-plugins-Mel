@@ -98,6 +98,13 @@ class Gestionnaireabsence extends Moncompteobject {
 					&& isset($outofoffice->days)) {
 				$hasAbsence = true;
 
+				// Gérer les cas de timezone en UTC pour la MCE
+				// TODO: Trouver une façon de faire plus propre avec le timezone dans l'ORM
+				if ($outofoffice instanceof \LibMelanie\Api\Mce\Users\Outofoffice) {
+					$outofoffice->hour_start->setTimezone(new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+					$outofoffice->hour_end->setTimezone(new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+				}
+				
 				$all_day = !isset($outofoffice->hour_start) 
 							&& !isset($outofoffice->hour_end);
 				$html .= self::absence_template($i, $all_day, 

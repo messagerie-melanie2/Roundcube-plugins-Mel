@@ -4,6 +4,7 @@ if (window.rcmail) {
         if (rcmail.gui_objects.editform && rcmail.env.action.match(/^plugin\.book/)) {
             rcmail.enable_command('book-save', true);
         }
+        rcmail.gui_objects.countdisplay = '#aria-label-contactslist span';
     });
     rcmail.addEventListener('listupdate', function() {
         rcmail.set_book_actions();

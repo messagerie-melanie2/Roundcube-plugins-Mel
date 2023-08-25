@@ -19,7 +19,7 @@
 $labels = array();
 
 $labels['Send France Transfert title'] = "Envoi France Transfert";
-$labels['Send France Transfert text'] = "La taille du message est trop importante pour un envoi par la messagerie. Si vous continuez, votre message sera envoyé par le service France Transfert et vos destinataires receveront un lien de téléchargement des pièces jointes.";
+$labels['Send France Transfert text'] = "La taille du message est trop importante pour un envoi par la messagerie. Si vous continuez, votre message sera envoyé par le service France Transfert et vos destinataires recevront un lien de téléchargement des pièces jointes.";
 $labels['Send France Transfert keep the file'] = "Conserver les fichiers pendant : ";
 $labels['Send France Transfert days'] = "jours";
 $labels['maxuploadsize'] = 'La taille de fichier maximum autorisée est $size. À partir de %%max_attachments_size%% le message sera envoyé par le service France Transfert.';

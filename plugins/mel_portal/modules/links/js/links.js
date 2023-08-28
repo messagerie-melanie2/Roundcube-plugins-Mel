@@ -65,7 +65,7 @@ export class ModuleLinks extends BaseModule {
             links = links.where(x => x._current_task !== 'last_frame').orderBy(x => x.order);
             const links_lenght = links.count();
             let it = 0;
-            for (let iterator of links.orderBy(x => x.order)) {
+            for (let iterator of links) {
                 if (!iterator.onclick.haveEvents())
                 {
                     iterator.onclick.push((e) => {

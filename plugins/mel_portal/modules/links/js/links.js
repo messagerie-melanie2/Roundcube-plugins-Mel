@@ -62,9 +62,10 @@ export class ModuleLinks extends BaseModule {
                 html_lines.push(new mel_html2('div', {attribs:{class:'mv2-app-line'}}));
             });
 
+            links = links.where(x => x._current_task !== 'last_frame').orderBy(x => x.order);
+            const links_lenght = links.count();
             let it = 0;
             for (let iterator of links.orderBy(x => x.order)) {
-                if ('last_frame' === iterator._current_task) continue;
                 if (!iterator.onclick.haveEvents())
                 {
                     iterator.onclick.push((e) => {
@@ -86,9 +87,8 @@ export class ModuleLinks extends BaseModule {
                         }
                     });
                 }
-
-                    html_lines[it % lines].addContent(iterator);
-                    ++it;
+                html_lines[~~(it / (links_lenght / lines))].addContent(iterator);
+                ++it;
             }
 
             MelFor.Start(0, html_lines.length, (i, start, end, $module, html_lines) => {

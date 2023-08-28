@@ -22101,29 +22101,6 @@ a.fr-share__link:not([href]) {
     --brighten: -1;
   }
 
-  a[href]:hover,
-  button:not(:disabled):hover,
-  input[type=button]:not(:disabled):hover,
-  input[type=image]:not(:disabled):hover,
-  input[type=reset]:not(:disabled):hover,
-  input[type=submit]:not(:disabled):hover {
-    background-color: var(--hover-tint);
-  }
-
-  a[href]:active,
-  button:not(:disabled):active,
-  input[type=button]:not(:disabled):active,
-  input[type=image]:not(:disabled):active,
-  input[type=reset]:not(:disabled):active,
-  input[type=submit]:not(:disabled):active {
-    background-color: var(--active-tint);
-  }
-
-  a[href]:hover,
-  a[href]:active {
-    --underline-hover-width: var(--underline-max-width);
-  }
-
   .fr-enlarge-link a:hover,
   .fr-enlarge-link a:active {
     background: none;

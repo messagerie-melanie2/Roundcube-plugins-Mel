@@ -33,8 +33,10 @@ $rcmail_config['enable_moncompte_photo']    = true;
 $rcmail_config['enable_mesressources']              = true;
 // Activer le menu Mes ressources / Boites aux lettres
 $rcmail_config['enable_mesressources_mail']         = true;
-// Activer la restaurationdes mails
+// Activer la restauration des mails
 $rcmail_config['enable_mesressources_mail_restore'] = true;
+// Activer la restauration des dossiers
+$rcmail_config['enable_mesressources_dir_restore']  = true;
 // Activer le menu Mes ressources / Agendas
 $rcmail_config['enable_mesressources_cal']          = true;
 // Activer la restauration des agendas

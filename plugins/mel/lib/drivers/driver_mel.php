@@ -538,35 +538,41 @@ abstract class driver_mel {
   }
 
   /**
-     * Retourne le username et le balpname à partir d'un username complet
-     * balpname sera null si username n'est pas un objet de partage
-     * username sera nettoyé de la boite partagée si username est un objet de partage
+     * Retourne
+     * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+     * user_host === host imap <= adresse serveur imap de la bal
+     * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
+     *
      *
      * @param string $mail Mail à traiter peut être un objet de partage ou non, ou un mailroutingaddress
-     * @return array($user_objet_share, $host) $user_object_share traité, $host
+     * @return array(($user_objet_share, $user_host, $user_bal)
      */
     public function getShareUserBalpHostFromMail($mail) {
-        $user_objet_share=$host=null;
+        $user_objet_share=$user_host=$user_bal=null;
         // Split sur @ pour les comptes de boites partagées <username>@<hostname>
         $inf = explode('@', $mail, 2);
         // Le username est encodé pour éviter les problèmes avec @
-        $user_objet_share = $inf[0]?urldecode($inf[0]):null;
+        $user_objet_share = $user_bal = $inf[0]?urldecode($inf[0]):null;
         // Récupération du host
-        $host = $inf[1] ?: null;
-        return [$user_objet_share, $host];
+        $user_host = $inf[1] ?: null;
+        return [$user_objet_share, $user_host, $user_bal];
     }
 
 
     /**
      * Retourne les valeurs depuis la session
-     * @return array ($user_objet_share, $host) $user_object_share, $host
+     * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+     * user_host === host imap <= adresse serveur imap de la bal
+     * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
+     *
+     * @return array ($user_objet_share, $user_host, $user_bal)
      */
     public function getShareUserBalpHostFromSession() {
-        $user_objet_share=$host=null;
+        $user_objet_share=$user_host=$user_bal=null;
         $rc = rcmail::get_instance();
-        $user_objet_share = $rc->user->get_username('local');
-        $host = $rc->user->get_username('host');
-        return [$user_objet_share, $host];
+        $user_objet_share = $user_bal = $rc->user->get_username('local');
+        $user_host = $rc->user->get_username('host');
+        return [$user_objet_share, $user_host, $user_bal];
     }
 
     /**

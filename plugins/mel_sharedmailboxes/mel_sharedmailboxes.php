@@ -142,13 +142,13 @@ class mel_sharedmailboxes extends rcube_plugin {
             // Tableau pour la conf du chargement des boites partagées
             // task => [action => needs_gestionnaire ?]
             $list_tasks = [
-                'settings' => [
+                'settings' => $this->rc->config->get("mel_sharedmailboxes_list_task_settings",[
                     'plugin.managesieve' => true,
                     'folders' => false,
                     'plugin.mel_resources_agendas' => true,
                     'plugin.mel_resources_contacts' => true,
                     'plugin.mel_resources_tasks' => true,
-                ],
+                ]),
             ];
   
             // Définition des valeurs par défaut en session
@@ -156,9 +156,6 @@ class mel_sharedmailboxes extends rcube_plugin {
     
             if (isset($list_tasks[$this->rc->task]) && isset($list_tasks[$this->rc->task][$this->rc->action])) {
                 $user = driver_mel::gi()->getUser($this->mel->get_share_objet(), false);
-                if (!$user->is_objectshare) {
-                    $user->load();
-                }
                 // Récupération de la liste des balp de l'utilisateur courant
                 if ($list_tasks[$this->rc->task][$this->rc->action]) {
                     // Boites gestionnaires ?
@@ -167,6 +164,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                 else {
                     $_objects = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsShared());
                 }
+
                 // Affichage du nom de l'utilisateur et du menu déroulant de balp
                 if ($this->rc->task == 'settings') {
                     $_fullName = $user->is_objectshare ? $user->objectshare->mailbox->fullname : $user->fullname;
@@ -436,6 +434,12 @@ class mel_sharedmailboxes extends rcube_plugin {
                 mel_logs::gi()->l(mel_logs::DEBUG, "mel::storage_connect()");
             /* PAMELA - Gestion des boites partagées */
             if (!empty($this->get_account)) {
+                if(!$this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', false)) {
+                    $user = driver_mel::gi()->getUser($this->mel->get_share_objet(), false);
+                      if ($user->is_objectshare) {
+                          return;
+                      }
+                }
                 $args['user'] = $this->mel->get_share_objet();
                 $args['host'] = $this->mel->get_host();
             }

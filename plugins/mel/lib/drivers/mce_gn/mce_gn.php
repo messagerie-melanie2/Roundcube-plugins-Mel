@@ -39,7 +39,7 @@ class mce_gn_driver_mel extends mce_driver_mel {
      */
     public function getRoutage($infos, $function = '')
     {
-        $dnsRoutage = rcmail::get_instance()->config->get('llng_storage_dns', null);
+        $dnsRoutage = rcmail::get_instance()->config->get('dggn_sso_storage_dns', null);
         $dnsListRoutage = explode(",", $dnsRoutage);
         $dnsRoutage = [];
         foreach($dnsListRoutage as $r) {
@@ -48,6 +48,7 @@ class mce_gn_driver_mel extends mce_driver_mel {
         }
         $hostname = null;
         if ($infos) {
+            $infos->load('mcemailroutingaddress');
             $routingAdresses = $infos->getObjectMelanie()->mceMailRoutingAddress;
             if ($routingAdresses
                 && is_array($routingAdresses)
@@ -61,10 +62,10 @@ class mce_gn_driver_mel extends mce_driver_mel {
                         break;
                     }
                 }
+            } else {
+                $infos->load('server_host');
+                $hostname = $infos->server_host;
             }
-        } else {
-            $infos->load('server_host');
-            $hostname = $infos->server_host;
         }
         return $hostname;
     }
@@ -117,22 +118,23 @@ class mce_gn_driver_mel extends mce_driver_mel {
     }
 
     /**
-     * Retourne le username et le balpname à partir d'un username complet
-     * balpname sera null si username n'est pas un objet de partage
-     * username sera nettoyé de la boite partagée si username est un objet de partage
+     * Retourne
+     * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+     * user_host === host imap <= adresse serveur imap de la bal
+     * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
      *
      * @param string $mail Mail à traiter peut être un objet de partage ou non, ou un mailroutingaddress
-     * @return array($user_object_share, $host) $username traité, $balpname si objet de partage ou null sinon, idem $host
+     * @return array($user_object_share, $user_host, $user_bal)
      */
     public function getShareUserBalpHostFromMail($mail) {
-        $user_host = null;
+        $user_objet_share = $user_host = $user_bal = null;
         $user_objet_share = $mail;
         // forme uid@domain@host
         if (preg_match("/^(?P<radical>.+?)@(?P<domaine>(?:(?:gendarmerie|police)\.)?interieur.gouv.fr)@(?P<host>.+?)$/",
             $mail, $m)) {
             // doit-on faire ici un fixmail ? on va passer par nginx
             $user_objet_share = $this->fixMail($m["radical"] . (isset($m["domaine"]) && $m["domaine"] ? "@".$m["domaine"] : ""));
-
+            $user_bal = $user_objet_share;
             // si on a un @gendarmerie.interieur.gouv.fr => ce n'est pas un host
             $user_host = isset($m["host"]) && $m["host"] ? $m["host"] : null;
         }
@@ -141,7 +143,19 @@ class mce_gn_driver_mel extends mce_driver_mel {
             $mail, $m)) {
             // doit-on faire ici un fixmail ? on va passer par nginx
             $user_objet_share = $this->fixMail($m["radical"] . (isset($m["domaine"]) && $m["domaine"] ? "@".$m["domaine"] : ""));
-
+            $user_bal = $user_objet_share;
+            // si on a un @gendarmerie.interieur.gouv.fr => ce n'est pas un host
+            $user_host = isset($m["host"]) && $m["host"] ? $m["host"] : null;
+        }
+        // forme uid.-.sid%40domain@host
+        elseif (preg_match(
+            "/^(?P<radical_user>.+?)\.\-\.(?P<radical_balp>.+?)(@((?P<domaine>(?:(?:gendarmerie|police)\.)?interieur.gouv.fr)|(?P<host>.+?)))?$/",
+            $mail,
+            $m)
+            ) {
+            // doit-on faire ici un fixmail ? on va passer par nginx
+            $user_objet_share = $this->fixMail($m["radical_user"] . ".-.". $m["radical_balp"] . (isset($m["domaine"]) && $m["domaine"] ? "@".$m["domaine"] : ""));
+            $user_bal = $this->fixMail($m["radical_balp"] . (isset($m["domaine"]) && $m["domaine"] ? "@".$m["domaine"] : ""));;
             // si on a un @gendarmerie.interieur.gouv.fr => ce n'est pas un host
             $user_host = isset($m["host"]) && $m["host"] ? $m["host"] : null;
         }
@@ -150,19 +164,29 @@ class mce_gn_driver_mel extends mce_driver_mel {
             $mail, $m)) {
             // doit-on faire ici un fixmail ? on va passer par nginx
             $user_objet_share = $this->fixMail($m["radical"] . (isset($m["domaine"]) && $m["domaine"] ? "@".$m["domaine"] : ""));
-
+            $user_bal = $user_objet_share;
             // si on a un @gendarmerie.interieur.gouv.fr => ce n'est pas un host
             $user_host = isset($m["host"]) && $m["host"] ? $m["host"] : null;
         }
-        return [$user_objet_share, $user_host];
+
+        if($user_host === null) {
+            $user = $this->getUser($user_objet_share);
+            $user_host = $this->getRoutage($user);
+        }
+
+        return [$user_objet_share, $user_host, $user_bal];
     }
 
     /**
      * Retourne les valeurs depuis la session
-     * @return array ($user_objet_share, $host) $user_object_share, $host
+     * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+     * user_host === host imap <= adresse serveur imap de la bal
+     * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
+     *
+     * @return array ($user_objet_share, $user_host, $user_bal) $user_object_share, $host
      */
     public function getShareUserBalpHostFromSession() {
-        return $this->getShareUserBalpHostFromMail(rcmail::get_instance()->get_user_name());
+        return $this->getShareUserBalpHostFromMail(rcmail::get_instance()->user->get_username());
     }
 
     /**
@@ -232,39 +256,6 @@ class mce_gn_driver_mel extends mce_driver_mel {
                 . "@" . $infuser[1];
         } else {
             return $infuser[0] . $osDelim . $infbalp[0];
-        }
-    }
-
-    /**
-     * Définition des propriétées de l'utilisateur
-     */
-    private function set_user_properties() {
-        if (!empty($this->get_account) && $this->get_account != $this->rc->get_user_name()) {
-            // Récupération du username depuis l'url
-//      $this->user_name = urldecode($this->get_account);
-//      $inf = explode('@', $this->user_name);
-//      $this->user_objet_share = urldecode($inf[0]);
-//      $this->user_host = $inf[1] ?: null;
-            $this->user_name = urldecode($this->get_account);
-            list($user_object_share, $user_host) = $this->getShareUserBalpHostFromMail($this->user_name);
-            $this->user_objet_share = $user_object_share;
-            $this->user_host = $user_host ?: null;
-
-            $user = driver_mel::gi()->getUser($this->user_objet_share, false);
-            if ($user->is_objectshare) {
-                $this->user_bal = $user->objectshare->mailbox_uid;
-            }
-            else {
-                $this->user_bal = $this->user_objet_share;
-            }
-        }
-        else {
-            // Récupération du username depuis la session
-            $this->user_name = $this->rc->get_user_name();
-            //amr $this->user_objet_share = $this->rc->user->get_username('local');
-            $this->user_objet_share = $this->rc->user->get_username();
-            $this->user_host = $this->rc->user->get_username('host');
-            $this->user_bal = $this->user_objet_share;
         }
     }
 

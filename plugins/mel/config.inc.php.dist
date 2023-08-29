@@ -37,3 +37,12 @@ $rcmail_config['virtual_shared_mailboxes'] = false;
 
 // Nom du préfixe a utiliser pour le partage virtuel
 $rcmail_config['virtual_balp_label'] = 'Virtual shared';
+
+// Port de l'API de restauration
+$rcmail_config['restoration_api_port'] = 5001;
+
+// Jeton d'accès de l'API de restauration
+$rcmail_config['restoration_api_key'] = '0123456789012345678901234567890123456789';
+
+// Restauration d'emails ('files', 'api')
+$rcmail_config['restore_emails_method'] = 'api';

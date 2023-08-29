@@ -311,9 +311,14 @@ class mel_moncompte extends rcube_plugin {
       if ($shared) {
         $this->rc->output->add_handler('usersaclframe', array(new M2mailbox($this->rc->user->get_username()),'acl_frame'));
         $this->rc->output->add_handler('restore_bal', array(new M2mailbox($this->rc->user->get_username()),'restore_bal'));
+        $this->rc->output->add_handler('get_restorable_directories', array(new M2mailbox($this->rc->user->get_username()),'get_restorable_directories'));
+        $this->rc->output->add_handler('get_available_size', array(new M2mailbox($this->rc->user->get_username()),'get_available_size'));
         $this->rc->output->add_handler('restore_bal_expl', array($this ,'restore_bal_expl'));
 
-        if (isset($_POST['nbheures'])) {
+        if (isset($_POST['restore_dir'])) {
+          M2mailbox::restore_dir();
+        }
+        if (isset($_POST['valide']) && isset($_POST['date'])) {
           M2mailbox::unexpunge();
         }
       }
@@ -1032,6 +1037,18 @@ class mel_moncompte extends rcube_plugin {
   }
   /**
    * Définition des propriétées de l'utilisateur
+   *
+   *
+   * récupère les infos de la bal via les drivers
+   *
+   * la bal concerné est celle passé en $_GET dans l'url (pemret de switcher sur les bal partagées)
+   *
+   * 3 attributs à récupérer et définir
+   * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+   * user_host === host imap <= adresse serveur imap de la bal
+   * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
+   *
+   * @return void
    */
   private function set_user_properties() {
     // Chargement de l'account passé en Get
@@ -1040,16 +1057,13 @@ class mel_moncompte extends rcube_plugin {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
       // sam: usage du driver
-      list($user_object_share, $user_host) = driver_mel::gi()->getShareUserBalpHostFromMail($this->user_name);
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromMail($this->user_name);
       $this->user_objet_share = $user_object_share;
       $this->user_host = $user_host;
-
+      $this->user_bal = $user_bal;
       $user = driver_mel::gi()->getUser($this->user_objet_share, false);
       if ($user->is_objectshare) {
         $this->user_bal = $user->objectshare->mailbox_uid;
-      }
-      else {
-        $this->user_bal = $this->user_objet_share;
       }
       // est-ce qu'il a les droits gestionnaire
       $bal = driver_mel::gi()->getUser($this->user_bal);
@@ -1059,20 +1073,20 @@ class mel_moncompte extends rcube_plugin {
         // Récupération du username depuis la session
         $this->user_name = $this->rc->get_user_name();
         // sam: usage driver
-        list($user_object_share, $user_host) = driver_mel::gi()->getShareUserBalpHostFromSession();
+        list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromSession();
         $this->user_objet_share = $user_object_share;
         $this->user_host = $user_host;
-        $this->user_bal = $this->user_objet_share;
+        $this->user_bal = $user_bal;
       }
     }
     else {
       // Récupération du username depuis la session
       $this->user_name = $this->rc->get_user_name();
       // sam:usage driver
-      list($user_object_share, $user_host) = driver_mel::gi()->getShareUserBalpHostFromSession();
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromSession();
       $this->user_objet_share = $user_object_share;
       $this->user_host = $user_host;
-      $this->user_bal = $this->user_objet_share;
+      $this->user_bal = $user_bal;
     }
   }
 }

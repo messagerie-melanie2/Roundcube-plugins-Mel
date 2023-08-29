@@ -973,6 +973,46 @@ ul#mailboxlist.treelist li a:focus {
 .boxfooter .listbutton.delete .inner {
  background-position: center -343px;
 }
+
+/** Directories table **/
+
+table#restorable_directories {
+	width: 100%;
+    border: solid 1px #aaa;
+    border-collapse: collapse;
+}
+
+table#restorable_directories tr {
+    border: solid 1px #aaa;
+}
+
+table#restorable_directories th {
+	text-align: left;
+  background: #f7f7f7;
+}
+
+table#restorable_directories th,
+table#restorable_directories td {
+  padding: 8px 7px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+table#restorable_directories .checkbox {
+  width: 20px;
+}
+table#restorable_directories .size {
+  width: 60px;
+}
+table#restorable_directories .deletiondate {
+  width: 160px;
+}
+
+table#restorable_directories .info {
+  font-style: italic;
+  text-align: center;
+}
+
 /*** Records table ***/table.records-table {
  border: none;
 }
@@ -2106,4 +2146,12 @@ ul.treelist li.selected > div.collapsed {
 
 #calsidebarsplitter{
     width: 5px !important;
+}
+
+input.button.mainaction[disabled],
+input.button.mainaction[disabled]:hover {
+	color: #aaa;
+	background-color: #ddd;
+	box-shadow: none;
+	cursor: auto;
 }

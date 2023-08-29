@@ -30,6 +30,21 @@ class mce_driver_mel extends driver_mel {
   protected static $_unexpungeFolder;
 
   /**
+   * Méthode a appeler pour l'unexpunge
+   */
+  protected $_restore_emails_method;
+
+  /**
+   * Port pour l'API d'unexpunge
+   */
+  protected $_restoration_api_port;
+
+  /**
+   * Clé pour l'API d'unexpunge
+   */
+  protected $_restoration_api_key;
+
+  /**
    * Constructeur par défaut
    */
   public function __construct() {
@@ -37,6 +52,9 @@ class mce_driver_mel extends driver_mel {
     if ($rcmail->config->get('virtual_shared_mailboxes', false)) {
       $this->BALP_LABEL = $rcmail->config->get('virtual_balp_label', $this->BALP_LABEL);
     }
+    $this->_restoration_api_port = $rcmail->config->get('restoration_api_port', false);
+    $this->_restoration_api_key = $rcmail->config->get('restoration_api_key', false);
+    $this->_restore_emails_method = $rcmail->config->get('restore_emails_method', 'files');
   }
 
   /**
@@ -235,6 +253,17 @@ class mce_driver_mel extends driver_mel {
     return strpos($user, "mceRDN=") === 0;
   }
 
+  private function get_restoration_api_url($mbox) {
+    $user = $this->getUser($mbox, false);
+    if ($user->is_objectshare) {
+      $user = $user->objectshare->mailbox;
+    }
+    // Récupération de la configuration de la boite pour l'affichage
+    $host = $this->getRoutage($user, 'unexpunge');
+
+    return $host . ":" . $this->_restoration_api_port;
+  }
+
   /**
    * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
    * Utilisé pour la restauration d'un dossier
@@ -243,6 +272,25 @@ class mce_driver_mel extends driver_mel {
    * @param string $folder Dossier IMAP à restaurer
    */
   public function unexpunge($mbox, $folder, $hours) {
+    switch ($this->_restore_emails_method) {
+      case "files":
+        return $this->unexpunge_files($mbox, $folder, $hours);
+      case "api":
+        return $this->unexpunge_api($mbox, $folder, $hours);
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * en passant par un fichier
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
+   */
+  private function unexpunge_files($mbox, $folder, $hours) {
     // Pas de dossier configuré dans le driver, par d'unexpunge
     if (!isset(static::$_unexpungeFolder)) {
       return false;
@@ -293,6 +341,118 @@ class mce_driver_mel extends driver_mel {
       return false;
     }
     return $res;
+  }
+
+  /**
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * en passant par l'api
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
+   */
+  private function unexpunge_api($mbox, $folder, $hours) {
+    $body = (object) [
+      "folder" => $folder,
+      "hours" => $hours,
+    ];
+    $json = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    // Requête http à l'API
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/msg?key=' . $this->_restoration_api_key . '&user=' . $mbox,
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_POST => 1,
+      CURLOPT_POSTFIELDS => $json,
+      CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($json),
+      ],
+    ]);
+    $output = curl_exec($ch);
+    if ($output === false) {
+      return curl_error($ch);
+    }
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($http_code < 200 || $http_code > 299) {
+      return 'Erreur HTTP ' . $http_code;
+    }
+    curl_close($ch);
+
+    return true;
+ 
+  }
+
+  /**
+   * Méthode pour obtenir les dossiers restaurables
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   */
+  public function get_restorable_directories($mbox) {
+    // Requête http à l'API
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/dir?key=' . $this->_restoration_api_key . '&user=' . $mbox,
+      CURLOPT_RETURNTRANSFER => 1
+    ]);
+    $output = curl_exec($ch);
+    if ($output === false) {
+      return curl_error($ch);
+    }
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($http_code < 200 || $http_code > 299) {
+      return 'Erreur HTTP ' . $http_code;
+    }
+    curl_close($ch);
+
+    return json_decode($output);
+  }
+
+  /**
+   * Méthode permettant de restaurer des dossiers
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param $directories Liste des dossiers à restaurer
+   * Sous la forme :
+   * [
+   *   (object) [
+   *     'path' => '/1',
+   *     'deletionDate' => 1678805569,
+   *   ],
+   *   (object) [
+   *     'path' => '/1/2/3',
+   *     'deletionDate' => 1678696515,
+   *   ],
+   * ]
+   */
+  public function restore_directories($mbox, $directories) {
+    $json = json_encode($directories, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    // Requête http à l'API
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/dir?key=' . $this->_restoration_api_key . '&user=' . $mbox,
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_POST => 1,
+      CURLOPT_POSTFIELDS => $json,
+      CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($json),
+      ],
+    ]);
+    $output = curl_exec($ch);
+    if ($output === false) {
+      return curl_error($ch);
+    }
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($http_code < 200 || $http_code > 299) {
+      return 'Erreur HTTP ' . $http_code;
+    }
+    curl_close($ch);
+
+    return json_decode($output);
   }
 
   /**

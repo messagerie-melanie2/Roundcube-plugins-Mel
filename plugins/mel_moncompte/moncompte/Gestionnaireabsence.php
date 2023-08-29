@@ -251,6 +251,7 @@ class Gestionnaireabsence extends Moncompteobject {
 				$outofoffices[] = $outofoffice_externe;
 			}
 
+			rcmail::get_instance()->plugins->exec_hook('task_outofoffice', [$user, $outofoffice_interne, $outofoffice_externe, $date_debut, $date_fin]);
 			// Gestion des absences hebdo
 			$i = 0;
 			while (isset($_POST["message$i"])) {

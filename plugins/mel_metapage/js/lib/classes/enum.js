@@ -186,6 +186,56 @@ class RotomecaGenerator
         return this.toArray().join(separator);
     }
 
+    _findMinMax() {
+        let array = this.toArray();
+        const length = array.length;
+
+        let max, min, i;
+
+        if (length % 2 !== 0) {
+            max = array[0];
+            min = array[0];
+            i = 1;
+        }
+        else {
+            if (array[0] >= array[1]) {
+                max = array[0];
+                min = array[1];
+            }
+            else {
+                max = array[1];
+                min = array[0];
+            }
+            i = 2;
+        }
+
+        while (i < length) {
+            if (array[i] < array[i + 1]) {
+                if (array[i] < min) min = array[i];
+                if (array[i + 1] > max) max = array[i + 1];
+            }
+            else {
+                if (array[i + 1] < min) min = array[i + 1];
+                if (array[i] > max) max = array[i];
+            }
+            i += 2;
+        }
+
+        return {min, max};
+    }
+
+    max(selector = null) {
+        let generator = selector ? this.select(selector) : this;
+
+        return generator._findMinMax().max;
+    }
+
+    min(selector = null) {
+        let generator = selector ? this.select(selector) : this;
+
+        return generator._findMinMax().min;
+    }
+
     toArray()
     {
         let arr = [];
@@ -941,8 +991,30 @@ class RotomecaEnumerable
         return this.generator().join(separator);
     }
 
+    /**
+     * Compte le nombre d'éléments dans l'énumération
+     * @returns {number}
+     */
     count() {
         return this.generator().count();
+    }
+
+    /**
+     * Récupère la valeur maximale de l'énumération
+     * @param {null | function} selector Séléctionne la valeur à comparer
+     * @returns {number}
+     */
+    max(selector = null) {
+        return this.generator().max(selector);
+    }
+
+    /**
+     * Récupère la valeur minimale de l'énumération
+     * @param {null | function} selector Séléctionne la valeur à comparer
+     * @returns {number}
+     */
+    min(selector = null) {
+        return this.generator().min(selector);
     }
 
     /**

@@ -17,11 +17,11 @@ $config['auth_kerb_keyword'] = "kerb";
 // OIDC Provider URL
 $config['oidc_url'] = 'OIDC_PROVIDER_URL';
 
-// Proxy (url:port) to reach OIDC Provider - Leave empty if you don't need it
-$config['oidc_proxy'] = '';
+// Proxy (url:port) to reach OIDC Provider (can be empty/commented if not needed)
+//$config['oidc_proxy'] = 'OIDC_PROVIDER_PROXY';
 
-// App URL to redirect after OIDC login - Leave empty if you don't need it
-$config['oidc_redirect'] = '';
+// App URL to redirect after OIDC login (can be empty/commented if not needed)
+//$config['oidc_redirect'] = 'APP_REDIRECT_URL';
 
 // Client ID (registered on the provider)
 $config['oidc_client'] = 'OIDC_CLIENT_ID';

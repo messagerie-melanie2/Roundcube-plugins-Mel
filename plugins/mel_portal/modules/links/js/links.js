@@ -102,7 +102,7 @@ export class ModuleLinks extends BaseModule {
 
     additionnal_links(args) {
         let {links} = args;
-        const count = links.count();
+        const count = links.where(x => x.order !== Infinity).select(x => x.order).max();
         const add_links = [
          {name:'Visioconférence', class:'visio', font:'Material Symbols Outlined', content:'e04b', click:() => {
             window.webconf_helper.go();

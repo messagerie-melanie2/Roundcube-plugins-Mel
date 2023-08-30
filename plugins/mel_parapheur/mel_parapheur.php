@@ -57,7 +57,7 @@ class mel_parapheur extends bnum_plugin
                     'type'       => 'link',
                     'domain' => "mel_parapheur",
                     'href' => './?_task='.self::TASK_NAME,
-                    'style' => 'order:16'
+                    'style' => 'order:17'
                 ), $need_button);
             }
         }

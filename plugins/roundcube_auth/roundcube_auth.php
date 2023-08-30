@@ -223,6 +223,27 @@ class roundcube_auth extends rcube_plugin
         }
         else
         {
+            // TODO FIX BNUM REFRESH ISSUE
+            // --------------------------------------------------------------------------------------------------
+            // Thomas :
+            // pour moi il faudrait ne garder aucune requête qui n'est pas $this->api->output->type == 'html'
+            // parce que tout ce qui est ajax il ne faut pas les reprendre
+            //
+            // Tom-Brian :
+            // Le problème c'est que si on déclenche que sur les requêtes html, y'a pas de refresh automatique
+            // Il faut forcément attendre une action manuelle (j'ai ça en tête, de mémoire)
+            // --------------------------------------------------------------------------------------------------
+            //
+            // Exemples de pages d'erreur (url + contenu)
+            //
+            // https://mel.din.developpement-durable.gouv.fr/bureau/?_task=settings&_action=keep-alive&_remote=1&_unlock=0&_=1675791765917&_token=xSVScYsYrc8mGKrutLjSmbwyXrYtbiRr
+            // https://mel.din.developpement-durable.gouv.fr/bureau/?_task=mail&_action=plugin.notifications_refresh&_last=1675184824&_remote=1&_unlock=0&_=1675183729951&_token=XdvFDkxFgg4ZFTw5CXqrqCuWtdwfmRMY
+            // {
+            //   "action": "keep-alive",
+            //   "exec": ""
+            // }
+            // --------------------------------------------------------------------------------------------------
+
             // if the query contains these values, we do no store it
             $avoid = ['task=login', 'task=logout', 'kerb=1'];
 
@@ -230,6 +251,9 @@ class roundcube_auth extends rcube_plugin
             {
                 // if the query contains these values, we remove them before storing it
                 $replace = ['&_action=refresh'];
+
+                // TODO FIX BNUM REFRESH ISSUE
+                // $replace = ['&_action=refresh', '&_action=keep-alive', '&_remote=1'];
 
                 $_SESSION['redirect_query'] = str_replace($replace, [''], $_SERVER['QUERY_STRING']);
 

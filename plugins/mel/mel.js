@@ -125,6 +125,9 @@ if (window.rcmail) {
         }
       }
     }
+    else if (rcmail.env.task === 'mail' && rcmail.env.action === 'compose') {
+      $("#compose-options select[name=\"_store_target\"]").change();
+    }
     else if (rcmail.env.task == 'settings') {
       // Masquer la skin mobile de l'interface de choix des skins
       if ($('#rcmfd_skinmel_larry_mobile').length) {

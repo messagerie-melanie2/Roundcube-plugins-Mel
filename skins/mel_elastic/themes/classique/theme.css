@@ -37,6 +37,7 @@ html.theme-classique:root {
   --side-selected-background-color: var(--side-hover-background-color);
   --side-hover-text-color: var(--theme-base-text-color);
   --side-selected-text-color: var(--side-hover-text-color);
+  --calendar-sidebar-background-color: var(--layout-list-background-color);
 }
 html.theme-classique #layout-list {
   color: var(--main-text-color) !important;

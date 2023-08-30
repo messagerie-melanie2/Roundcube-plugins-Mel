@@ -639,8 +639,8 @@ class roundcube_auth extends rcube_plugin
                         explode(" ", $rcmail->config->get('oidc_scope')),
                         false, // host verification (TODO enable)
                         false, // peer verification (TODO enable)
-                        $rcmail->config->get('oidc_proxy'),
-                        $rcmail->config->get('oidc_redirect')
+                        $rcmail->config->get('oidc_proxy', ''),
+                        $rcmail->config->get('oidc_redirect', '')
                     );
                     
                     // Authenticate

@@ -344,6 +344,7 @@ $labels['app_survey'] = 'Sondage';
 $labels['app_rizomo'] = 'Outils SNAP';
 $labels['app_calendar'] = 'Mon agenda';
 $labels['app_workspace'] = 'Espaces de travail';
+$labels['app_parapheur'] = 'Parapheur';
 
 $labels['to_comment'] = 'Commenter';
 

@@ -30,36 +30,54 @@ class mel_parapheur extends bnum_plugin
      */
     function init()
     {
-        $this->add_texts('localization/', true);
+        $this->load_config();
 
-        if ($this->rc()->task === self::TASK_NAME)
-        {
-            $this->load_config();
-            $this->register_task(self::TASK_NAME);
-            $this->start_parapheur();
+        switch ($this->rc()->task) {
+            case 'settings':
+                $this->add_hook('mel_metapage.navigation.apps', array($this, 'gestion_apps'));
+                break;
+            
+            default:
+                # code...
+                break;
         }
-        else if ($_SERVER['REQUEST_METHOD'] === 'GET'){
-            // Ajoute le bouton en fonction de la skin
-            $need_button = 'taskbar';
-            if (class_exists("mel_metapage")) {
-                $need_button = $this->rc()->plugins->get_plugin('mel_metapage')->is_app_enabled('app_parapheur', false) ? $need_button : 'otherappsbar';
+
+        if (true === $this->get_config('enabled')) {
+            $this->add_texts('localization/', true);
+
+            switch ($this->rc()->task) {
+                case self::TASK_NAME:
+                    $this->register_task(self::TASK_NAME);
+                    $this->start_parapheur();
+                    break;
+
+                default:
+                    if ($_SERVER['REQUEST_METHOD'] === 'GET'){
+                        // Ajoute le bouton en fonction de la skin
+                        $need_button = 'taskbar';
+                        if (class_exists("mel_metapage")) {
+                            $need_button = $this->rc()->plugins->get_plugin('mel_metapage')->is_app_enabled('app_parapheur', false) ? $need_button : 'otherappsbar';
+                        }
+                    
+                        if ($need_button)
+                        {
+                            $this->add_button(array(
+                                'command' => self::TASK_NAME,
+                                'class'	=> 'parapheur',
+                                'classsel' => 'parapheur selected',
+                                'innerclass' => 'inner',
+                                'label'	=> 'parapheur',
+                                'title' => '',
+                                'type'       => 'link',
+                                'domain' => "mel_parapheur",
+                                'href' => './?_task='.self::TASK_NAME,
+                                'style' => 'order:17'
+                            ), $need_button);
+                        }
+                    }
+                    break;
             }
-        
-            if ($need_button)
-            {
-                $this->add_button(array(
-                    'command' => self::TASK_NAME,
-                    'class'	=> 'parapheur',
-                    'classsel' => 'parapheur selected',
-                    'innerclass' => 'inner',
-                    'label'	=> 'parapheur',
-                    'title' => '',
-                    'type'       => 'link',
-                    'domain' => "mel_parapheur",
-                    'href' => './?_task='.self::TASK_NAME,
-                    'style' => 'order:17'
-                ), $need_button);
-            }
+            
         }
     }
 
@@ -88,8 +106,31 @@ class mel_parapheur extends bnum_plugin
      * @return string
      */
     public function parapheur_frame($attrib) {
-        $attrib['src'] = $this->rc()->config->get('url');
+        $attrib['src'] = $this->get_config('url');
 
         return $this->rc()->output->frame($attrib);
     }
+
+    public function gestion_apps($args) {
+        if (!$this->is_parapheur_enabled()) {
+            $args['apps'] = mel_helper::Enumerable($args['apps'])->where(function($key) {
+                return $key !== 'app_parapheur';
+            })->toArray();
+        }
+
+        return $args;
+    }
+
+    protected function get_config($key, $default = null) {
+        return $this->rc()->config->get('parapheur', [])[$key];
+    }
+
+    public function is_parapheur_enabled() {
+        return $this->get_config('enabled');
+    }
+
+    public static function is_enabled() {
+        $plugins = rcmail::get_instance()->plugins;
+        return $plugins->is_loaded('mel_parapheur') && $plugins->get_plugin('mel_parapheur')->is_parapheur_enabled();
+    } 
 }

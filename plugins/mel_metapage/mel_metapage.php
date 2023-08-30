@@ -2050,9 +2050,10 @@ class mel_metapage extends bnum_plugin
             $this->add_texts('localization/');
             $templates = $this->rc->config->get('template_navigation_apps', []);//mel_helper::Enumerable($this->rc->config->get('navigation_apps', []));
             $config = $this->rc->config->get('navigation_apps', []);
-            // $main = $config->where(function ($k, $v) {
-            //     return !isset($v['link']);
-            // });
+            
+            $plugin = $this->rc->plugins->exec_hook('mel_metapage.navigation.apps', ['apps' => $templates]);
+
+            if (isset($plugin['apps'])) $templates = $plugin['apps'];
 
             $args['blocks']['main_nav']['name'] = 'Applications par défauts';
 

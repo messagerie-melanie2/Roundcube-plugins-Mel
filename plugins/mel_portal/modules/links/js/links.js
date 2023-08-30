@@ -114,6 +114,8 @@ export class ModuleLinks extends BaseModule {
         let html;
         for (let index = 0, len = add_links.length; index < len; ++index) {
             const element = add_links[index];
+            if (element.class === 'notes' && !!links.where(x => x._current_task === 'parapheur').firstOrDefault()) continue;
+
             html = new html_link($());
             html._current_task = element.class;
             html._name = element.name;

@@ -212,12 +212,18 @@ html.layout-phone #taskmenu a
     order:15;
 }
 
+.parapheur::before{
+    content:"\e746" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+}
+
 .more-options{
-    order:16;
+    order:17;
 }
 
 .settings{
-    order:17;
+    order:18;
 }
 
 
@@ -308,7 +314,9 @@ a.useful_links.icon-mel-link::before
 .barup-right-buttons .menu.toolbar a.selected:before,
 .barup-right-buttons .menu.toolbar a:hover:before,
 #layout-menu .menu.toolbar a.selected:before,
-#layout-menu .menu.toolbar a:hover:before
+#layout-menu .menu.toolbar a:hover:before,
+#otherapps.menu.toolbar a:hover:before,
+#otherapps.menu.toolbar a.selected:before
 {
   font-variation-settings: 'FILL' 1;
 }

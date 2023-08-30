@@ -204,6 +204,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+        $this->add_hook('rocket.chat.sectionlist',     array($this, 'rc_section_list'));
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
         $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
@@ -1711,12 +1712,18 @@ class mel_metapage extends bnum_plugin
             ];
         }
 
-        if (class_exists("rocket_chat"))
+        if (!class_exists("rocket_chat"))
         {
             $p['list']['chat'] = [
                 'id'      => 'chat',
                 'section' => $this->gettext('chat', 'mel_metapage'),
             ];
+        }
+        else {
+            $p['list']['mel_chat_ui'] = [
+                'id'      => 'mel_chat_ui',
+                'section' => 'Paramètres visuels',
+              ];
         }
 
         if (!class_exists('mel_notification'))
@@ -1844,7 +1851,6 @@ class mel_metapage extends bnum_plugin
      * Handler for user preferences form (preferences_list hook)
      */
     public function prefs_list($args) {
-
         if ($args['section'] == 'general') {
             // Load localization and configuration
             $this->add_texts('localization/');
@@ -1975,7 +1981,7 @@ class mel_metapage extends bnum_plugin
             ];
             
         }
-        else if ($args['section'] == 'chat')
+        else if (($args['section'] == 'chat' && !class_exists('rocket_chat')) || $args['section'] == 'mel_chat_ui')
         {
             $this->add_texts('localization/');
             $startup = 'chat_startup';
@@ -2215,7 +2221,7 @@ class mel_metapage extends bnum_plugin
             $args['prefs'][$op_table_bali] = $this->_save_pref_update_config($config_bali, $bali_folders, 'bali_folders_');
         }
     }
-    else if ($args['section'] == 'chat')
+    else if ($args['section'] == 'chat' || $args['section'] == 'mel_chat_ui')
     {
         $this->add_texts('localization/');
         $startup = 'chat_startup';
@@ -3275,6 +3281,12 @@ class mel_metapage extends bnum_plugin
             if (in_array($this->from_message_reading, $this->rc->config->get('trusted_mails', []))) $args['safe'] = true;
             $this->from_message_reading = null;
         }
+
+        return $args;
+    }
+
+    public function rc_section_list($args) {
+        $args['sections'][] = ["id" => "mel_chat_ui", "section" => "Paramètres Bnum"];
 
         return $args;
     }

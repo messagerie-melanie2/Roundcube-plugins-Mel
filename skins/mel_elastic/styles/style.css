@@ -2958,6 +2958,9 @@ html.dark-mode .green-badge {
 .task-settings #layout-sidebar .listing.iconized li.mel_suggestion_box > a::before {
   content: "\e175";
 }
+.task-settings #layout-sidebar .listing.iconized li.rocketchat > a::before {
+  content: "\e0b7";
+}
 .task-settings #layout-list .listing.iconized.settings-default-icon tr td.section::before {
   font-family: 'Material Symbols Outlined' !important;
   font-variation-settings: 'wght' 500, 'opsz' 40;
@@ -3015,6 +3018,12 @@ html.dark-mode .green-badge {
 }
 .task-settings #layout-list .listing.iconized.settings-default-icon tr.a_mel_news_flux > td.section::before {
   content: "\e8b8";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr#section_mel_chat_settings > td::before {
+  content: "\f02e";
+}
+.task-settings #layout-list .listing.iconized.settings-default-icon tr#rcmrowmel_chat_ui > td::before {
+  content: "\e3c4";
 }
 .mel-toolbar {
   position: absolute;

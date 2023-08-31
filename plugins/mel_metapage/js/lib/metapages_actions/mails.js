@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from "../constants/constants.js";
 import { mel_cancellable_html_timer } from "../html/html_timer.js";
 import { Top } from "../top.js";
 import { MetapageModule } from "./metapage_module.js";
@@ -89,7 +90,7 @@ export class MetapageMailModule extends MetapageModule {
         if (!window.onbeforeunload) {
             const window_onbeforeunload = window.onbeforeunload;
             window.onbeforeunload = (...args) => {
-                const txt = window_onbeforeunload.call(window, ...args);
+                const txt = window_onbeforeunload?.call?.(window, ...args) ?? EMPTY_STRING;
 
                 if (!!txt) return txt;
                 else return this.onBeforeUnload(...args);

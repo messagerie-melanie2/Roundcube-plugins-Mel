@@ -7,7 +7,7 @@
     "enabled":true,
     "style":"style",
     "class":"party-halloween",
-    "custom_dark_mode":true,
+    "custom_dark_mode":false,
     "order":100,
-    "saison":"21/09-01/11"
+    "saison":"01/09-01/11"
 }

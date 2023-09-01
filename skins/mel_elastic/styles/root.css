@@ -203,7 +203,7 @@
   --layout-sidebar-text-color: var(--secondary-text-color);
   --layout-sidebar-header-text-color: var(--layout-sidebar-text-color);
   --layout-list-background-color: var(--tierciary-bckg-color);
-  --layout-list-header-background-color: var(--layout-list-background-color);
+  --layout-list-header-background-color: red;
   --layout-list-text-color: var(--secondary-text-color);
   --layout-list-header-text-color: var(--layout-list-text-color);
   --layout-content-background-color: var(--default-background);
@@ -271,5 +271,4 @@
   --tierciary-bckg-color: #323F4B;
   --secondary-bckg-color: #374549;
   --secondary-text-color: #c7dfff;
-  --calendar-sidebar-header-bottom-separator: solid thin var(--separate);
 }

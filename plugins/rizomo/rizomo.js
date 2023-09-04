@@ -35,6 +35,14 @@ if (window.rcmail && rcmail.env.task == 'rizomo') {
                         token: rcmail.env.rizomo_user_token,
                     }, '*');
                 }, 50);
+
+                // Log open widget
+                setTimeout(function() {
+                    console.log('Rizomo openWidget');
+                    window.document.getElementById('rizomo_frame').contentWindow.postMessage({
+                        type: 'openWidget',
+                    }, '*');
+                }, 500);
             };
         }
 

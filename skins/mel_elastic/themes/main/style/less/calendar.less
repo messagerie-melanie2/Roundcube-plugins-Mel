@@ -1,0 +1,65 @@
+.task-calendar {
+  #datepicker {
+    background-color: var(--calendar-widget-background-color) !important;
+    color: var(--calendar-widget-text-color);
+
+    #datepicker-onoff:hover {
+      background-color: var(--hover-background-color) !important;
+    }
+  }
+
+  #layout {
+    #layout-content {
+      .searchbar.menu {
+        border: var(--searchbar-border);
+      }
+
+      >.header a.button.reset {
+        color: var(--input-button-text-color) !important;
+
+        &:hover {
+          background-color: var(--hover-background-color) !important;
+          color: var(--hover-close-color) !important;
+        }
+      }
+
+      select.mel-input.calendar,
+      .fc-toolbar.fc-header-toolbar .fc-right button {
+        border: var(--searchbar-border);
+        color: var(--input-button-text-color) !important;
+        background-color: var(--searchbar-background-color);
+      }
+
+      #calendar {
+
+        .fc-day-header,
+        .fc-axis.fc-widget-header {
+          background-color: var(--calendar-table-header);
+        }
+      }
+    }
+  }
+
+  .fc-unthemed .fc-divider {
+    background-color: var(--calendar-table-separator-color) !important;
+  }
+  .fc {
+    .fc-day-header,
+    .fc-axis {
+      color: var(--calendar-table-text-color) !important;
+    }
+
+    .fc-day.fc-today {
+      background-color: var(--calendar-table-today-background-color) !important;
+    }
+  }
+
+  .calendar-datepicker {
+
+    .ui-datepicker,
+    .ui-datepicker-header,
+    .ui-datepicker-inline .ui-datepicker-activerange {
+      &:extend(.task-calendar #datepicker);
+    }
+  }
+}

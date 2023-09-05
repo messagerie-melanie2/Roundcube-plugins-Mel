@@ -44,6 +44,51 @@
     background-color: var(--barup-icon-badge-background-color);
     color: var(--barup-icon-badge-text-color);
   }
+
+  .dropdown-menu {
+    background-color: var(--dropdown-menu-background-color);
+    color: var(--dropdown-menu-text-color);
+
+    &::after {
+      border-bottom-color: var(--dropdown-menu-background-color);
+    }
+
+    .blue-color,
+    .notification-button-icon,
+    .notification-category,
+    .notification-title,
+    .dropdown-color {
+      color: var(--dropdown-menu-text-color);
+    }
+
+    .notification-button-icon:hover {
+      color: var(--hover-close-color);
+    }
+
+    .notification-icon {
+      color: var(--dropdown-menu-icon-color);
+    }
+
+    .notifications-header {
+      border-bottom: var(--main-separator-border);
+    }
+
+    .dropdown-item:focus,
+    .dropdown-item:hover,
+    .dropdown-item.unread {
+      background-color: var(--dropdown-item-hover-background-color);
+    }
+
+    .dropdown-menu-scroll {
+      scrollbar-width: var(--scrollbar-width-moz) !important;
+      scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
+    }
+  }
+
+  #user-up-panel .user-menu-separator {
+    border-bottom: var(--main-separator-border);
+  }
+
 }
 
 #folderlist-content {
@@ -108,11 +153,11 @@
 
     #mailsearchlist .searchbar a,
     #mail-search-icon {
-      color: var(--layout-list-header-input-text-color) !important;
+      color: var(--searchbar-text-color) !important;
     }
 
     #mailsearchlist .searchbar a:hover {
-      color: var(--layout-list-header-text-hover-color) !important;
+      color: var(--searchbar-text-color) !important;
     }
   }
 }
@@ -142,7 +187,7 @@
   background-color: var(--secondary-mel-button-background-color);
   color: var(--secondary-mel-button-text-color);
   border: var(--secondary-mel-button-border);
-  
+
   &:hover {
     background-color: var(--secondary-mel-button-hover-background-color);
     color: var(--secondary-mel-button-hover-text-color);
@@ -169,5 +214,171 @@
 
 #groupoptions-user {
   background-color: var(--modal-background-color);
+  color: var(--main-text-color);
+  box-shadow: var(--groupotions-box-shadow);
+
+  &::after {
+    border-bottom-color: var(--modal-background-color);
+  }
+
+  .option_radio_wrapper .option {
+    background-color: var(--option-menu-radio-button-background-color);
+
+    &:hover {
+      background-color: var(--option-menu-radio-button-hover-background-color);
+    }
+
+    .option-image {
+      &:extend(#groupoptions-user .option_radio_wrapper .option);
+
+      &:hover {
+        &:extend(#groupoptions-user .option_radio_wrapper .option:hover);
+      }
+
+    }
+
+    .color-icon {
+      color: var(--option-menu-radio-button-icon-color) !important;
+    }
+  }
+
+  .option-menu-button {
+    background-color: var(--option-menu-button-background-color) !important;
+    color: var(--option-menu-button-text-color) !important;
+    border: var(--option-menu-button-border) !important;
+
+    &:hover {
+      background-color: var(--option-menu-button-hover-background-color) !important;
+    }
+  }
+
+  .bottom-option {
+    &:extend(#groupoptions-user);
+  }
+}
+
+.custom-switch {
+  .custom-control-label {
+    &::before {
+      background-color: var(--custom-switch-unchecked-background-color);
+      border: var(--custom-switch-border);
+    }
+
+    &::after {
+      background-color: var(--custom-switch-unchecked-dot-color);
+    }
+  }
+
+  .custom-control-input:checked~.custom-control-label {
+    &::before {
+      background-color: var(--custom-switch-checked-background-color);
+      border: var(--custom-switch-border);
+    }
+
+    &::after {
+      background-color: var(--custom-switch-checked-dot-color);
+    }
+  }
+}
+
+.mel-tab {
+  color: var(--mel-tabs-text-color) !important;
+  background-color: var(--mel-tabs-background-color) !important;
+
+  &:hover {
+    color: var(--mel-tabs-hover-text-color) !important;
+    background-color: var(--mel-tabs-hover-background-color) !important;
+  }
+
+  &.active {
+    color: var(--mel-tabs-active-text-color) !important;
+    background-color: var(--mel-tabs-active-background-color) !important;
+  }
+}
+
+.popover {
+  background-color: var(--popover-background-color);
+  color: var(--popover-text-color);
+  border: var(--popover-border);
+  box-shadow: var(--popover-box-shadow);
+
+  &.menu a:not(.disabled):focus,
+  .menu a:not(.disabled):hover,
+  li:focus,
+  li:hover {
+    background-color: var(--popover-hover-background-color) !important;
+    color: var(--popover-hover-text-color) !important;
+  }
+
+  .listing li a,
+  .listing tbody td {
+    color: var(--popover-text-color);
+  }
+}
+
+.ui-widget-content {
+  background-color: var(--modal-background-color);
+  color: var(--modal-text-color);
+}
+
+.ui-widget-header {
+  &:extend(.ui-widget-content);
+
+  .ui-dialog-title {
+    color: var(--modal-title-color);
+  }
+
+  .ui-dialog-titlebar-close {
+    color: var(--modal-title-color);
+
+    &:hover {
+      color: var(--hover-close-color);
+    }
+  }
+}
+
+.form-control {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border-color: var(--input-border-color);
+
+  &:focus {
+    background-color: var(--input-focus-background-color);
+    color: var(--input-text-color);
+    border-color: var(--popover-focus-border-color);
+  }
+}
+
+.mel-input-container.form-control.input-mel,
+.searchbar {
+  background-color: var(--searchbar-background-color);
+
+  input {
+    color: var(--searchbar-text-color);
+  }
+}
+
+#mail-search-border {
+  border: var(--searchbar-border);
+}
+
+p,
+span,
+div {
+  scrollbar-width: var(--scrollbar-width-moz) !important;
+  scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color) !important;
+}
+
+.input-group-text {
+  background-color: var(--secondary-mel-button-background-color);
+  border-color: var(--input-border-color);
+}
+
+.html-editor .editor-toolbar {
+  background-color: var(--secondary-mel-button-background-color);
+}
+
+optgroup {
+  background-color: var(--tierciary-bckg-color);
   color: var(--main-text-color);
 }

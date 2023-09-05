@@ -1,46 +1,96 @@
 :root {
-  // // TEST - Main background colors
+  // // TEST - SOMBRE Main background colors
   // --main-bckg-color: #1f2933;
   // --secondary-bckg-color: #1f2933;
   // --tierciary-bckg-color: #323f4b;
   // --default-bckg-color: #1f2933;
 
-  // //TEST - Main text colors
+  // //TEST - SOMBRE Main text colors
   // --main-text-color: #96b9e7;
   // --secondary-text-color: #c7dfff;
   // --tierciary-text-color: #323f4b;
-  // --fourth-text-color: brown;
+  // --fourth-text-color: #80d5c6;
+  // --input-button-text-color: #E1C58F;
+  // --default-text-color: #E1C58F;
 
-  //Main background colors
+  // // // TEST - Main background colors
+  // --main-bckg-color: red;
+  // --secondary-bckg-color: orange;
+  // --tierciary-bckg-color: aliceblue;
+  // --default-bckg-color: green;
+
+  // //TEST - Main text colors
+  // --main-text-color: blue;
+  // --secondary-text-color: purple;
+  // --tierciary-text-color: brown;
+  // --fourth-text-color: brown;
+  // --default-text-color: #E1C58F;
+
+  // Main background colors
   --main-bckg-color: #363A5B;
   --secondary-bckg-color: #2C3054;
   --tierciary-bckg-color: #484D7A;
   --default-bckg-color: #FFF;
-  
-  
+
   //Main text colors
   --main-text-color: #363A5B;
   --secondary-text-color: #FFFFFF;
   --tierciary-text-color: #484D7A;
   --fourth-text-color: #80D5C6;
+  --input-button-text-color: var(--main-text-color);
+  --default-text-color: var(--secondary-text-color);
+
+  //Hover
+  --hover-background-color: rgba(113, 117, 152, 0.5);
+  --secondary-hover-background-color: #f8f9fa;
+  --hover-close-color: red;
 
   //Border colors
   --main-border-color: var(--main-text-color);
+  --secondary-border-color: #ced4da;
+  --main-separator-border-color: #0000000c;
 
   //Badge color
   --badge-background-color: var(--fourth-text-color);
-  --badge-text-color: var(--main-text-color);
+  --badge-text-color: var(--tierciary-text-color);
 
   //Modal
   --modal-background-color: var(--default-bckg-color);
   --modal-text-color: var(--main-text-color);
+  --modal-title-color: var(--main-text-color);
+
+  //Input
+  --input-background-color: var(--default-bckg-color);
+  --input-focus-background-color: var(--default-bckg-color);
+  --input-text-color: var(--main-text-color);
+  --input-border-color: var(--secondary-border-color);
+
+  //Searchbar
+  --searchbar-background-color: var(--default-bckg-color);
+  --searchbar-text-color: var(--input-button-text-color);
+  --searchbar-border-color: transparent;
+
+  //Dropdown
+  --dropdown-menu-background-color: var(--default-bckg-color);
+  --dropdown-menu-text-color: var(--main-text-color);
+  --dropdown-menu-icon-color: var(--secondary-text-color);
+  --dropdown-item-hover-background-color: var(--secondary-hover-background-color);
+
+  //Popover
+  --popover-background-color: var(--default-bckg-color);
+  --popover-hover-background-color: var(--tierciary-bckg-color);
+  --popover-text-color: var(--main-text-color);
+  --popover-hover-text-color: var(--secondary-text-color);
+  --popover-box-shadow-color: #f1f3f4;
+  --popover-border-color: #d4dbde;
+  --popover-focus-border-color: #37beff;
 
   //Buttons
   --mel-button-background-color: var(--main-bckg-color);
   --mel-button-hover-background-color: var(--tierciary-bckg-color);
   --mel-button-border-color: var(--main-border-color);
   --mel-button-hover-border-color: var(--tierciary-bckg-color);
-  --mel-button-text-color: var(--secondary-text-color);
+  --mel-button-text-color: var(--default-text-color);
   --mel-button-hover-text-color: var(--secondary-text-color);
 
   --secondary-mel-button-background-color: #f0f0f0;
@@ -48,7 +98,22 @@
   --secondary-mel-button-border-color: var(--secondary-mel-button-background-color);
   --secondary-mel-button-hover-border-color: var(--main-bckg-color);
   --secondary-mel-button-text-color: var(--main-text-color);
-  --secondary-mel-button-hover-text-color: var(--secondary-text-color);  
+  --secondary-mel-button-hover-text-color: var(--secondary-text-color);
+
+  //Switch buttons
+  --custom-switch-unchecked-background-color: #e8e8e8;
+  --custom-switch-checked-background-color: var(--tierciary-bckg-color);
+  --custom-switch-unchecked-dot-color: #fff;
+  --custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
+  --custom-switch-border-color: transparent;
+
+  //Tab buttons
+  --mel-tabs-background-color: transparent;
+  --mel-tabs-active-background-color: transparent;
+  --mel-tabs-hover-background-color: var(--hover-background-color);
+  --mel-tabs-text-color: var(--main-text-color);
+  --mel-tabs-active-text-color: #5069BC;
+  --mel-tabs-hover-text-color: null;
 
   //Layout menu - Taskbar
   --layout-menu-background-color: var(--secondary-bckg-color);
@@ -62,8 +127,8 @@
   //Barup
   --barup-search-input-background-color: var(--default-bckg-color);
   --barup-search-input-border-color: var(--main-border-color);
-  --barup-search-input-text-color: var(--main-text-color);
-  --barup-icon-color: var(--secondary-text-color);
+  --barup-search-input-text-color: var(--input-button-text-color);
+  --barup-icon-color: var(--default-text-color);
   --barup-icon-badge-background-color: #aa3333;
   --barup-icon-badge-text-color: var(--secondary-text-color);
 
@@ -79,6 +144,16 @@
   --layout-list-header-text-color: var(--secondary-text-color);
   --layout-list-header-text-hover-color: var(--secondary-text-color);
   --layout-list-header-input-text-color: var(--main-text-color);
+
+  //Option menu
+  --option-menu-button-background-color: var(--default-bckg-color);
+  --option-menu-button-hover-background-color: var(--hover-background-color);
+  --option-menu-button-text-color: var(--main-text-color);
+  --option-menu-button-border-color: transparent;
+
+  --option-menu-radio-button-background-color: var(--default-bckg-color);
+  --option-menu-radio-button-hover-background-color: var(--hover-background-color);
+  --option-menu-radio-button-icon-color: var(--main-text-color);
 
   //Bureau
   --bureau-card-background-color: var(--default-bckg-color);
@@ -119,6 +194,22 @@
 
   --message-list-content-hover-shadow: #26283b47;
   --message-list-content-border-color: #D1D3DD;
+
+  //Calendar 
+  --calendar-list-item-hover-background-color: var(--main-bckg-color);
+  --calendar-list-item-selected-background-color: var(--main-bckg-color);
+  --calendar-sidebar-header-bottom-separator-color: var(--secondary-border-color);
+  --calendar-widget-background-color: #31365b;
+  --calendar-widget-text-color: var(--secondary-text-color);
+
+  --calendar-widget-header-background-color: #5870bf;
+
+  --calendar-toolbar-search-icon-color: var(--input-button-text-color);
+
+  --calendar-table-header: #e3e4ea;
+  --calendar-table-separator-color: var(--calendar-table-header);
+  --calendar-table-text-color: var(--main-text-color);
+  --calendar-table-today-background-color: #f2faf9;
 
   //Layout content
   --layout-content-header-background-color: var(--tierciary-bckg-color);

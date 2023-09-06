@@ -1,0 +1,16 @@
+.task-tasks {
+  ul#tasklist li.taskitem {
+    background-color: var(--message-list-content-row-background-color);
+
+    &:nth-child(2n) {
+      background-color: var(--message-list-content-row-alternate-background-color);
+    }
+  }
+
+  .watermark::before {
+    background-color: var(--layout-content-background-color);
+  }
+  .menu.toolbar a {
+    color: var(--layout-content-text-color);
+  }
+}

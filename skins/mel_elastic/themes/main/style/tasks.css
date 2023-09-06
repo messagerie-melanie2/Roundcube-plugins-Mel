@@ -1,0 +1,1 @@
+.task-tasks ul#tasklist li.taskitem{background-color:var(--message-list-content-row-background-color)}.task-tasks ul#tasklist li.taskitem:nth-child(2n){background-color:var(--message-list-content-row-alternate-background-color)}.task-tasks .watermark::before{background-color:var(--layout-content-background-color)}.task-tasks .menu.toolbar a{color:var(--layout-content-text-color)}

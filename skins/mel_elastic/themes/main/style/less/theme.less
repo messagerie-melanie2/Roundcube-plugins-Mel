@@ -281,7 +281,8 @@
   }
 }
 
-.mel-tab {
+.mel-tab,
+button.btn.mel-tab {
   color: var(--mel-tabs-text-color) !important;
   background-color: var(--mel-tabs-background-color) !important;
 
@@ -350,7 +351,8 @@
 }
 
 .mel-input-container.form-control.input-mel,
-.searchbar {
+.searchbar,
+.mel-search-group {
   background-color: var(--searchbar-background-color);
 
   input {
@@ -361,6 +363,19 @@
 #mail-search-border {
   border: var(--searchbar-border);
 }
+
+.mel-search-group {
+  >input {
+    border: var(--searchbar-border);
+  }
+
+  .input-group-append>.input-group-text {
+    border: var(--searchbar-border);
+    background-color: var(--searchbar-background-color);
+    color: var(--searchbar-text-color);
+  }
+}
+
 
 p,
 span,
@@ -382,3 +397,29 @@ optgroup {
   background-color: var(--tierciary-bckg-color);
   color: var(--main-text-color);
 }
+
+.task-tasks #layout-sidebar,
+.task-addressbook #layout-sidebar
+ {
+  background-color: var(--primary-layout-sidebar-background-color) !important;
+  color: var(--primary-layout-sidebar-text-color) !important;
+
+  > .header {
+    &:extend(.task-tasks #layout-sidebar);
+  }
+ }
+
+ #layout > div > .header {
+  background-color: var(--layout-content-header-background-color);
+  color: var(--layout-content-text-color);
+ }
+
+ #listview-float-right #list-contacts .listsearchbox input, #edit-alarm-item, #edit-attendees-comment, #edit-attendee-name, #edit-identities-list, .edit-attendee-role, textarea.input-mel, .fake-input.input-mel, select.input-mel, input.input-mel {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border-color: var(--input-mel-border-color);
+
+  &:focus {
+    background-color: var(--input-mel-focus-background-color);
+  }
+ }

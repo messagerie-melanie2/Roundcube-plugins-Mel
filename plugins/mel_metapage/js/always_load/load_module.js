@@ -1,5 +1,5 @@
 (() => {
-    const VERSION = '0.0.4';
+    const VERSION = 'X.X.X';
     const BASE_PATH = '/js/lib/';
     const UNLOAD_TIME_MS = 60 * 5 * 1000;
 

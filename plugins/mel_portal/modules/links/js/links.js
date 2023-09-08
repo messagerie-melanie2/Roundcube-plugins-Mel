@@ -134,7 +134,7 @@ export class ModuleLinks extends BaseModule {
                                     break;
                             }
     
-                            MelObject.Empty().change_frame(app, {force_update:false});
+                            MelObject.Empty().change_frame(app, {force_update:false, update:false});
                         }
                     });
                 }

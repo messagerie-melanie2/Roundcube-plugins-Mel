@@ -228,6 +228,52 @@ class mel extends rcube_plugin
           'role' => 'menuitem'
         ), $this->api->output->button($button_array));
         $this->api->add_content($content, 'mailboxoptions');
+
+        if (in_array($this->rc->action, ['', 'index'])) {
+          $container = 'messagelistfiltersmenu';
+          $filters = ['all', 'unread', 'followed', 'attachment', 'labels', 'priority', 'noresponses'];
+          //Filtres rapides
+          foreach ($filters as $value) {
+            $config = array(
+              'name' => "quick-filter-$value",
+              'class' => "quick-filter quick-filter-$value btn btn-secondary mel-button no-button-margin no-margin-button bckg true",
+              'innerclass' => 'inner',
+              'id' => "quick-filter-$value",//tb_label_popup
+              'title' => "title-$value", // gets translated
+              'type' => 'button-menuitem',
+              'label' => "label-$value", // maybe put translated version of "Labels" here?
+              'domain' => 'mel',
+              'data-action' => $this->gettext("filter-data-action-$value")
+            );
+
+            switch ($value) {
+              case 'all':
+                $config['data-filter-start-enabled'] = true;
+                $config['data-filter-default-filter'] = true;
+                $config['data-filter-can-be-multiple'] = false;
+                break;
+              case 'labels':
+                $config['data-filter-custom-action'] = 'trigger:quick-filter.labels';
+                $config['data-filter-can-be-multiple'] = true;
+                break;
+
+              case 'priority':
+                $config['data-filter-custom-action'] = 'trigger:quick-filter.priority';
+                $config['data-filter-can-be-multiple'] = true;
+                break;
+
+              default:
+              $config['data-filter-can-be-multiple'] = true;
+                break;
+            }
+
+            $this->add_button($config, $container);
+          }
+
+          $this->include_script('mel_filters.js');
+        }
+
+
       } else if ($this->rc->task == 'calendar') {
         // Link to Settings/Folders
         $content = html::tag('li', array(

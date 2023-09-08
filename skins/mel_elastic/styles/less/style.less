@@ -5234,3 +5234,30 @@ html.dark-mode {
 #abs-loader {
 	height: 200px;
 }
+
+.mel-tooltip {
+	position: absolute;
+	background-color: white;
+	padding: 5px;
+	border-radius: 5px;
+    border: solid thin #D1D3DD;
+
+    &::before{
+        content: '\e5c7';
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        top: -37px;
+        left: -5px;
+        font-family: Material Symbols Outlined;
+        font-size: 45px;
+        color: white;
+        text-shadow: 0px 0px 1px #000;
+        pointer-events: none;
+    }
+
+    .mel-button {
+        border-radius: 5px;
+    }
+}
+

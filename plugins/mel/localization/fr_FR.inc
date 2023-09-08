@@ -148,3 +148,18 @@ $labels['sent'] = 'Éléments envoyés';
 $labels['mailboxselector'] = 'Liste des boites';
 
 $labels['bureau'] = 'Accueil';
+
+$labels['label-all'] =         'Tout'                 ;
+$labels['label-read'] =        'Lus'                  ;
+$labels['label-unread'] =      'Non lus'              ;
+$labels['label-followed'] =    'Suivis'               ;
+$labels['label-attachment'] =  'Avec une pièce jointe';
+$labels['label-labels'] =      'Étiquettes'           ;
+$labels['label-priority'] =    'Priorités'            ;
+$labels['label-noresponses'] = 'Sans réponses'        ;
+
+$labels['filter-data-action-all'] = 'ALL';
+$labels['filter-data-action-unread'] = 'UNSEEN';
+$labels['filter-data-action-followed'] = 'FLAGGED';
+$labels['filter-data-action-attachment'] = 'OR OR OR HEADER Content-Type application/ HEADER Content-Type multipart/m HEADER Content-Type multipart/signed HEADER Content-Type multipart/report';
+$labels['filter-data-action-noresponses'] = 'UNANSWERED';

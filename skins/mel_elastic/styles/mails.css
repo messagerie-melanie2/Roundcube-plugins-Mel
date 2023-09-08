@@ -195,7 +195,7 @@ table.messagelist tr.flagged td.subject span.date {
   color: var(--main-text-color);
 }
 table.messagelist tr.flagged td.subject span.fromto {
-  color: var(--mail-unread-text-color);
+  color: var(--mail-unread-icon-color);
 }
 table.messagelist tr:hover span.unflagged::before {
   content: "\e958" !important;
@@ -256,7 +256,7 @@ table.messagelist td.subject span.priority {
   color: var(--main-text-color);
 }
 table.messagelist td.subject span.fromto {
-  color: var(--mail-unread-text-color);
+  color: var(--mail-unread-icon-color);
   padding-left: 0!important;
 }
 table.messagelist td.subject span.msgicon.status::before {
@@ -1414,4 +1414,62 @@ body.task-mail.action-compose a.removelink {
 }
 #melplusmails {
   color: var(--secondary-text-color);
+}
+#message-list-filters {
+  display: flex;
+  padding: 5px 5px 5px 10px;
+  border-bottom: solid thin var(--message-border-color);
+  margin-bottom: 0;
+  background-color: white;
+  align-items: center;
+}
+#message-list-filters li {
+  margin-right: 5px;
+}
+#message-list-filters li.input-group {
+  width: auto;
+}
+#message-list-filters li #list-select-mail-choices {
+  color: var(--main-text-color);
+  width: 15px;
+  justify-content: center;
+  display: flex;
+  margin-left: 0;
+  border-radius: 5px;
+}
+#message-list-filters li #list-select-mail-choices:hover {
+  color: var(--secondary-text-color);
+}
+#message-list-filters li .quick-filter {
+  color: var(--main-text-color);
+  border-radius: 5px;
+  padding: 0px 5px;
+}
+#message-list-filters li .quick-filter:hover {
+  color: var(--secondary-text-color);
+}
+#message-list-filters-extra {
+  background-color: white;
+}
+#message-list-filters-extra div {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid var(--message-border-color);
+}
+#message-list-filters-extra button {
+  background-color: var(--tierciary-bckg-color);
+  border-radius: 5px;
+  padding: 0px 10px;
+  display: flex;
+  align-items: center;
+  margin: 5px;
+}
+#message-list-filters-extra button .material-symbols-outlined {
+  margin-left: 10px;
+}
+#message-list-filters-extra button:hover .material-symbols-outlined {
+  color: red;
+}
+#toolbar-list-menu .selection {
+  display: none!important;
 }

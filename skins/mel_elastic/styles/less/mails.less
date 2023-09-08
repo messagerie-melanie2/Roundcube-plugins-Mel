@@ -1863,3 +1863,76 @@ body.task-mail.action-compose a.removelink
 #melplusmails{
     color: var(--secondary-text-color);
 }
+
+#message-list-filters{
+    display: flex;
+    padding: 5px 5px 5px 10px;
+    border-bottom: solid thin var(--message-border-color);
+    margin-bottom: 0;
+    background-color: white;
+    align-items: center;
+
+    li {
+        margin-right: 5px;
+
+        &.input-group {
+            width: auto;
+        }
+
+        #list-select-mail-choices {
+            color: var(--main-text-color);
+            width: 15px;
+            justify-content: center;
+            display: flex;
+            margin-left: 0;
+            border-radius: 5px;
+
+            &:hover {
+                color: var(--secondary-text-color);
+            }
+        }
+
+        .quick-filter {
+            color: var(--main-text-color);
+            border-radius: 5px;
+            padding: 0px 5px;
+
+            &:hover{
+                color: var(--secondary-text-color);
+            }
+        }
+    }
+}
+
+#message-list-filters-extra {
+    background-color: white;
+    // border-bottom: 1px solid var(--message-border-color);
+    div {
+        display: flex;
+        flex-direction: row;  
+        border-bottom: 1px solid var(--message-border-color);
+    }
+
+    button {
+        background-color: var(--tierciary-bckg-color);
+        border-radius: 5px;
+        padding: 0px 10px;
+        display: flex;
+        align-items: center;
+        margin: 5px;
+
+        .material-symbols-outlined{
+            margin-left: 10px;
+        }
+
+        &:hover {
+            .material-symbols-outlined{
+                color:red;
+            }
+        }
+    }
+}
+
+#toolbar-list-menu .selection{
+    display:none!important;
+}

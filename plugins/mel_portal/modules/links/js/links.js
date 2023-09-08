@@ -1,3 +1,4 @@
+import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log.js";
 import { MelEnumerable } from "../../../../mel_metapage/js/lib/classes/enum.js";
 import { MelFor } from "../../../../mel_metapage/js/lib/helpers/loops.js";
 import { MaterialSymbolHtml } from "../../../../mel_metapage/js/lib/html/html_icon.js";
@@ -5,6 +6,21 @@ import { MelObject } from "../../../../mel_metapage/js/lib/mel_object.js";
 import { BaseModule } from "../../../js/lib/module.js";
 
 const MODULE_ID = 'Links';
+const ICONS_ANTI_NaN = {
+    mail: 'e158',
+    calendar: 'ebcc',
+    chat: 'e0bf',
+    workspace: 'e1a0',
+    stockage: 'e2c8',
+    addressbook: 'e7fd',
+    useful_links: 'e157',
+    sondage: 'e653',
+    wekan: 'eb7f',
+    news: 'ef42',
+    rizomo: 'f19c',
+    tasks: 'e834'
+}
+
 export class ModuleLinks extends BaseModule {
     constructor(load_module = true) {
         super(load_module);
@@ -12,6 +28,7 @@ export class ModuleLinks extends BaseModule {
 
     start() {
         super.start();
+        this.has_NaN = false;
 
         this.add_event_listener('mel.portal.links.ongenerate.add', (args) => {
             return this.additionnal_links(args);
@@ -20,6 +37,40 @@ export class ModuleLinks extends BaseModule {
 
         if (!!(hook_datas ?? true) && !hook_datas?.break) {
             this._generate_links();
+
+            if (this.has_NaN) {
+                const default_level = BnumLog.log_level;
+                BnumLog.log_level = BnumLog.LogLevels.debug;                
+                let it = 0;
+                const max = 10;
+                const regenerate = () => {
+                    if (false !== this.has_NaN && it < max) {
+                        ++it;
+                        BnumLog.debug('regenerate', 'Tentative', it);
+                        this.has_NaN = false;
+                        this.select_module_content().html('');
+                        this._generate_links();
+                        if (this.has_NaN) {
+                            return setTimeout(() => {
+                                regenerate();
+                            }, 100);
+                        }
+                    }
+                    else if (this.has_NaN) {
+                        BnumLog.error('ModuleLinks/start', 'Les liens sont des NaN', this);
+                        BnumLog.warning('ModuleLinks/start', 'Les liens seront remplacer par des icônes par défaut, celles-ci peuvent différer des icônes de la barre de gauche.');
+                        html_link.use_replace_on_NaN = true;
+                        it = -2;
+                        regenerate();
+                        html_link.use_replace_on_NaN = false;
+                        return;
+                    }
+
+                    BnumLog.log_level = default_level;
+                }
+
+                regenerate();
+            }
         }
     }
 
@@ -93,6 +144,11 @@ export class ModuleLinks extends BaseModule {
 
             MelFor.Start(0, html_lines.length, (i, start, end, $module, html_lines) => {
                 html_lines[i].create($module);
+
+                if (MelEnumerable.from(html_lines[i].jcontents).any(x => x.has_nan)) {
+                    this.has_NaN = true;
+                }
+
             }, this.select_module_content(), html_lines);
 
             html_lines = null;
@@ -145,6 +201,8 @@ class html_link extends mel_html2 {
         super('button', {});
 
         this._startup($item);
+
+        if (BnumLog.log_level <= BnumLog.LogLevels.debug) BnumLog.debug('html_link/constructor', `Création du lien ${this._name}`, this);
     }
 
     _startup($item) {
@@ -154,6 +212,7 @@ class html_link extends mel_html2 {
         this.content = EMPTY_STRING;
         this.font = EMPTY_STRING;
         this.order = Infinity;
+        this.has_nan = false;
 
         if ($item.parent().css('display') !== 'none' && $item.css('display') !== 'none')
         {
@@ -187,10 +246,22 @@ class html_link extends mel_html2 {
             ).getPropertyValue('content').replace(/"/g, '').charCodeAt(0).toString(16);
         }
 
+        if (BnumLog.log_level <= BnumLog.LogLevels.debug) {
+            BnumLog.debug('html_link/_before_generate', this.content, this._$item[0]);
+        }
+
+        if (!this.has_nan  && "NaN" === this.content) this.has_nan = true;
+
         if (EMPTY_STRING === this.font) {
             this.font =    window.getComputedStyle(
                 this._$item[0], ':before'
             ).getPropertyValue('font-family');
+        }
+
+        if (this.has_nan && html_link.use_replace_on_NaN) {
+            this.content = ICONS_ANTI_NaN[this._current_task] ?? 'e7cc';
+            this.font = 'Material Symbols Outlined';
+            this.has_nan = false;
         }
 
         if (MEL_ELASTIC_UI.css_rules.ruleExist(css_key)) MEL_ELASTIC_UI.css_rules.remove(css_key);
@@ -204,3 +275,5 @@ class html_link extends mel_html2 {
         this.jcontents[1] = new mel_html('span', {class:'mv2-app-text'}, this._name);
     }
 }
+
+html_link.use_replace_on_NaN = false;

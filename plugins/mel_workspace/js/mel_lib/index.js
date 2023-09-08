@@ -1,6 +1,6 @@
-import { ChatCallback, ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager";
-import { MelObject } from "../../../mel_metapage/js/lib/mel_object"
-import { GetChannelValue, GetWspChannel, GetWspNotifChat, SetNotifChatState } from "./helpers";
+import { ChatCallback, ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager.js";
+import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js"
+import { GetChannelValue, GetWspChannel, GetWspNotifChat, SetNotifChatState } from "./helpers.js";
 
 export class MainWorkspace extends MelObject {
     constructor() {

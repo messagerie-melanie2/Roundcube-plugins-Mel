@@ -82,6 +82,8 @@ $(document).ready(() => {
 
                     this.toggle();
 
+                    mel_filter.disable_button_from_all_filters();
+
                     if (0 !== [...mel_filter.get_filters_enabled()].length) {
                         let search = EMPTY_STRING;
 
@@ -99,8 +101,6 @@ $(document).ready(() => {
                             $(rcmail.gui_objects.search_filter).find('#custom-option').val(search);
                         }
 
-                        mel_filter.disable_button_from_all_filters();
-
                         $(rcmail.gui_objects.search_filter).val(search);
 
                         if (this.action === 'ALL')
@@ -108,11 +108,13 @@ $(document).ready(() => {
                             mel_filter.reset_labels();
                             mel_filter.reset_priorities();
                             rcmail.command('reset-search');
-                            mel_filter.enable_button_from_all_filters();
+                            mel_filter.on_search = false;
+                            //update_selected_check();
                         }
-                        else rcmail.command('search');
-
-
+                        else {
+                            rcmail.command('search');
+                            mel_filter.on_search = true;
+                        }
                     }
                     else 
                     {
@@ -121,7 +123,8 @@ $(document).ready(() => {
                             mel_filter.reset_labels();
                             mel_filter.reset_priorities();
                             rcmail.command('reset-search');
-                            mel_filter.enable_button_from_all_filters();
+                            mel_filter.on_search = false;
+                            //update_selected_check();
                         }
                     }
 
@@ -183,6 +186,9 @@ $(document).ready(() => {
             }
 
             static disable_button_from_all_filters() {
+                $('#select-mail-state').attr('disabled', 'disabled').addClass('disabled');
+                $('#list-select-mail-choices').attr('disabled', 'disabled').addClass('disabled');
+                this.disable_extra_buttons();
                 for (let index = 0, len = filters.length; index < len; ++index) {
                     const element = filters[index];
                     
@@ -191,6 +197,9 @@ $(document).ready(() => {
             }
 
             static enable_button_from_all_filters() {
+                $('#select-mail-state').removeAttr('disabled').removeClass('disabled');
+                $('#list-select-mail-choices').removeAttr('disabled');
+                this.enable_extra_buttons();
                 for (let index = 0, len = filters.length; index < len; ++index) {
                     const element = filters[index];
                     
@@ -267,6 +276,14 @@ $(document).ready(() => {
             static reset_priorities() {
                 this.get_line_priority().html('').hide();
             }
+
+            static disable_extra_buttons() {
+                return $('#message-list-filters-extra button').attr('disabled', 'disabled').addClass('disabled');
+            }
+
+            static enable_extra_buttons() {
+                return $('#message-list-filters-extra button').removeAttr('disabled').removeClass('disabled');
+            }
         }
 
         mel_filter.priority = (name, value) => {
@@ -283,9 +300,25 @@ $(document).ready(() => {
             }));
         }
 
+        function update_selected_check() {
+            let $check = $('#select-mail-state');
+            let list = rcmail.message_list;
+            if (0 === list.selection.length) $check.removeAttr('checked', 'checked')[0].checked = false;
+            else $check.attr('checked', 'checked')[0].checked = true;
+        }
+
         rcmail.addEventListener('responseaftersearch', function(args) {
-            console.log('args', args);
             mel_filter.enable_button_from_all_filters();
+            update_selected_check();
+        });
+
+        rcmail.addEventListener('responseafterlist', function(args) {
+            mel_filter.enable_button_from_all_filters();
+            update_selected_check();
+            mel_filter.disable_all_quick_filters();
+            mel_filter.enable_quick_filter(mel_filter.get_default_filter());
+            mel_filter.reset_labels();
+            mel_filter.reset_priorities();
         });
 
         rcmail.addEventListener('label.tooltip.click', (args) => {
@@ -380,39 +413,47 @@ $(document).ready(() => {
 
             target_event.mel_tooltip('toggle');
         });
-    }
 
-    const rcmail_command_handler = rcmail.command_handler;
-    rcmail.command_handler = function(command, ...args) {
-        let return_value = rcmail_command_handler.call(this, command, ...args);
-
-        let $check = $('#select-mail-state');
-
-        switch (command) {
-            case 'select-all':
-                let list = this[this.task == 'addressbook' ? 'contact_list' : 'message_list'];
-                if (0 === list.selection.length) $check.removeAttr('checked', 'checked')[0].checked = false;
-                else $check.attr('checked', 'checked')[0].checked = true;
-
-                break;
-        
-              case 'select-none':
-                $check.removeAttr('checked')[0].checked = false;
-                break;
-        
-            default:
-                break;
+        const rcmail_command_handler = rcmail.command_handler;
+        rcmail.command_handler = function(command, ...args) {
+            let return_value = rcmail_command_handler.call(this, command, ...args);
+    
+            let $check = $('#select-mail-state');
+    
+            switch (command) {
+                case 'list':
+                    mel_filter.disable_button_from_all_filters();
+                    break;
+                case 'select-all':
+                    let list = this[this.task == 'addressbook' ? 'contact_list' : 'message_list'];
+                    if (0 === list.selection.length) $check.removeAttr('checked', 'checked')[0].checked = false;
+                    else $check.attr('checked', 'checked')[0].checked = true;
+    
+                    break;
+            
+                  case 'select-none':
+                    $check.removeAttr('checked')[0].checked = false;
+                    break;
+            
+                default:
+                    break;
+            }
+    
+            return return_value;
         }
+    
+        $('#select-mail-state').click((e) => {
+            if (e.currentTarget.checked) rcmail.command('select-all');
+            else rcmail.command('select-none');
+        });
+    
+        $('#toolbar-list-menu .select').parent().remove();
 
-        return return_value;
+        rcmail.addEventListener('init', () => {
+            rcmail.message_list.addEventListener('select', () => {
+                update_selected_check();
+            });
+        });
     }
-
-    $('#select-mail-state').click((e) => {
-        if (e.currentTarget.checked) rcmail.command('select-all');
-        else rcmail.command('select-none');
-    });
-
-    $('#toolbar-list-menu .select').parent().remove();
-    // $('#toolbar-list-menu .selection').parent().remove();
 
 });

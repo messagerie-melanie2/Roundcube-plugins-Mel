@@ -766,7 +766,7 @@ function rcube_libcalendaring(settings)
 			{
 				let link;
 				if (alarm.location.includes("@visio")) {
-                    link = `target="_blank" href="${alarm.location.replace("@visio:", "")}"`;
+                    link = `class="external-webconf" target="_blank" href="${alarm.location.replace("@visio:", "")}"`;
                 }
 				else if (alarm.location.includes("#visio")) {
 					let tmp_link = new WebconfLink(alarm.location);

@@ -188,7 +188,8 @@ export class Calendar_Alarm extends MelObject
     {
         try {
             let querry = this.select("#alarm-display .event-section")[0];
-            querry.innerHTML = this.urlify(querry.innerHTML);
+            if (querry.firstChild.className != "external-webconf")
+                querry.innerHTML = this.urlify(querry.innerHTML);
         } catch (error) {
             console.error("###[update_links()]", error);
         }

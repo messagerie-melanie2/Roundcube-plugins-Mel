@@ -2,13 +2,28 @@ $(document).ready(() => {
     const EMPTY_STRING = '';
 
     if ('mail' === rcmail.env.task && [EMPTY_STRING, 'index'].includes(rcmail.env.action)) {
-        let filters = [];
-
+/** La classe `mel_filter` est une classe JavaScript qui représente un filtre et fournit des méthodes
+pour gérer son état et son comportement. */
         class mel_filter {
+            /**
+             * Constructeur de la classe
+             * @param {$} $item Item jquery qui représente le filtre
+             * @param {string} action Action du filtre (ALL, etc...)
+             * @param {Object} param2
+             * @param {boolean} param2.enabled Indique si le filtre est activé ou non 
+             * @param {boolean} param2.default_filter Indique si le filtre est le filtre par défaut
+             * @param {boolean} param2.can_be_multiple Indique si le filtre peut être activé avec plusieurs autres filtres
+             * @param {string|function} param2.custom_action Action personnalisée à exécuter lorsque le filtre est activé
+             */
             constructor($item, action, {enabled = false, default_filter = false, can_be_multiple = false, custom_action = null}) {
                 this._init()._setup($item, action, enabled, default_filter, can_be_multiple, custom_action)._start();
             }
 
+            /**
+             * Initialise les propriétés de la classe
+             * @private
+             * @returns Chaînage
+             */
             _init() {
                 this.$item = $();
                 this.action = EMPTY_STRING;
@@ -21,6 +36,16 @@ $(document).ready(() => {
                 return this;
             }
 
+            /**
+             * Assigne les variables de la classe
+             * @param {$} $item 
+             * @param {string} action 
+             * @param {boolean} enabled 
+             * @param {boolean} default_filter 
+             * @param {boolean} can_be_multiple 
+             * @param {string|function} custom_action 
+             * @returns Chaîne
+             */
             _setup($item, action, enabled, default_filter, can_be_multiple, custom_action) {
                 this.$item = $item;
                 this.action = action;
@@ -32,9 +57,13 @@ $(document).ready(() => {
                 return this;
             }
 
+            /**
+             * Initialise les fonctionnalités des membres de la classe
+             */
             _start() {
                 let callback;
 
+                //Gestion des actions personnalisées
                 if (!!this.custom_action) {
                     if ('string' === typeof this.custom_action){
                         callback = this.custom_action.split(':');
@@ -54,9 +83,7 @@ $(document).ready(() => {
                     }
                     else callback = this.custom_action;
                 }
-                else {
-                    callback = (e) => this.click_callback(e);
-                }
+                else callback = (e) => mel_filter_manager.base_callback(this, e, {});
 
                 this._callback = callback;
 
@@ -67,144 +94,232 @@ $(document).ready(() => {
                 }); 
                 callback = null;
 
-                if (this.starting_enabled) this.enable();
+                if (this.starting_enabled) this.activate();
             }
 
-            click_callback(e) {
-                rcmail.triggerEvent('quick-filter.brefore', {filter: this, target_event:e});
-
-                if (!this.can_be_multiple) mel_filter.disable_all_quick_filters();
-                else mel_filter.disable_quick_filter(mel_filter.get_default_filter());
-
-                const plugin = rcmail.triggerEvent('quick-filter.action', {filter: this, target_event:e});
-
-                if (!plugin?.abort) {
-
-                    this.toggle();
-
-                    mel_filter.disable_button_from_all_filters();
-
-                    if (0 !== [...mel_filter.get_filters_enabled()].length) {
-                        let search = EMPTY_STRING;
-
-                        for (const iterator of mel_filter.get_filters_enabled()) {
-                            search += `${iterator.action} `;
-                        }
-
-                        search = search.slice(0, -1);
-                            
-                        if (0 === $(rcmail.gui_objects.search_filter).find('#custom-option').length)    
-                        {
-                            $(rcmail.gui_objects.search_filter).append(`<option id="custom-option" value="${search}">Custom</option>`);
-                        }
-                        else {
-                            $(rcmail.gui_objects.search_filter).find('#custom-option').val(search);
-                        }
-
-                        $(rcmail.gui_objects.search_filter).val(search);
-
-                        if (this.action === 'ALL')
-                        {
-                            mel_filter.reset_labels();
-                            mel_filter.reset_priorities();
-                            rcmail.command('reset-search');
-                            mel_filter.on_search = false;
-                            //update_selected_check();
-                        }
-                        else {
-                            rcmail.command('search');
-                            mel_filter.on_search = true;
-                        }
-                    }
-                    else 
-                    {
-                        if (0 === [...mel_filter.get_filters_enabled()].length) {
-                            mel_filter.enable_quick_filter(mel_filter.get_default_filter());
-                            mel_filter.reset_labels();
-                            mel_filter.reset_priorities();
-                            rcmail.command('reset-search');
-                            mel_filter.on_search = false;
-                            //update_selected_check();
-                        }
-                    }
-
-                }
-            }
-
-            is_enabled() {
+/**
+ * La fonction vérifie si l'élément est actif.
+ * @returns {boolean}
+ */
+            is_active() {
                 return this.$item.is('.active');
             }
 
+            /**
+             * Active visuellement le filtre
+             * @returns Chaînage
+             */
+            activate() {
+                this.$item.addClass('active');
+                return this;
+            }
+
+            /**
+             * Désactive visuellement le filtre
+             * @returns Chaînage
+             */
+            deactivate() {
+                this.$item.removeClass('active');
+                return this;
+            }
+
+/**
+ * La fonction vérifie si l'élément est activé ou non.
+ * @returns {boolean}
+ */
+            is_enabled() {
+                return !this.$item.is('.disabled');
+            }
+
+            /**
+             * Désactive le filtre
+             * @returns Chaînage
+             */
+            disable() {
+                this.$item.attr('disabled', 'disabled').addClass('disabled');
+                return this;
+            }
+
+            /**
+             * Active le filtre
+             * @returns Chaînage
+             */
             enable() {
-                return mel_filter.enable_quick_filter(this.$item);
+                this.$item.removeAttr('disabled').removeClass('disabled');
+                return this;
+            }
+
+            /**
+             * Active ou désactive le filtre
+             * @returns Chaînage
+             */
+            toggle_active() {
+                return this.is_active() ? this.deactivate() : this.activate();
+            }
+
+                        /**
+             * Active ou désactive le filtre
+             * @returns Chaînage
+             */
+            toggle() {
+                return this.is_enabled() ? this.disable() : this.enable();
+            }
+
+/**
+ * La fonction "filter_class" renvoie la chaîne "quick-filter".
+ * @returns La chaîne « quick-filter » est renvoyée.
+ */
+            static filter_class() {
+                return 'quick-filter';
+            }
+
+        }
+
+/** Le code ci-dessus définit une fonction appelée « priorité » pour l'objet « mel_filter » en
+JavaScript. Cette fonction prend deux paramètres, « nom » et « valeur », et renvoie un objet avec
+les propriétés « nom » et « valeur ». 
+* @param {string} name Nom de la priorité
+* @param {string} value Valeur de la priorité
+*/
+        mel_filter.priority = (name, value) => {
+            return {name, value};
+        }
+
+        class mel_selector {
+
+            constructor($item) {
+                this.$item = $item;
+            }
+
+            is_active() {
+                return this.$item.is('.active');
+            }
+
+            activate() {
+                this.$item.addClass('active');
+                return this;
+            }
+
+            deactivate() {
+                this.$item.removeClass('active');
+                return this;
+            }
+
+            is_enabled() {
+                return !this.$item.is('.disabled');
             }
 
             disable() {
-                return mel_filter.disable_quick_filter(this.$item);
+                this.$item.attr('disabled', 'disabled').addClass('disabled');
+                return this;
+            }
+
+            enable() {
+                this.$item.removeAttr('disabled').removeClass('disabled');
+                return this;
+            }
+
+            toggle_active() {
+                return this.is_active() ? this.deactivate() : this.activate();
             }
 
             toggle() {
                 return this.is_enabled() ? this.disable() : this.enable();
             }
 
-            static filter_class() {
-                return 'quick-filter';
+            update_selected_check() {
+                let $check = this.$item;
+                let list = rcmail.message_list;
+                if (0 === list.selection.length) $check.removeAttr('checked', 'checked')[0].checked = false;
+                else $check.attr('checked', 'checked')[0].checked = true;
             }
 
-            static disable_all_quick_filters() {
-                return $(`.${this.filter_class()}`).removeClass('active');
+            static get_checkbox() {
+                return new mel_selector($('#select-mail-state'));
             }
 
-            static enable_quick_filter($item) {
-                return $($item).addClass('active');
+            static get_button_list() {
+                return new mel_selector($('#list-select-mail-choices'));
             }
 
-            static disable_quick_filter($item) {
-                return $($item).removeClass('active');
+
+        }
+
+        class mel_filter_manager {
+            constructor() {
+                this.filters = [];
+
+                this._create_filters();
             }
 
-            static get_all_quick_filters_from_class() {
-                return $(`.${this.filter_class()}`);
+            _create_filters() {
+                for (const filter of this.get_all_quick_filters_from_class()) {
+                    const $filter = $(filter);
+                    this.filters.push(new mel_filter($filter, $filter.data('action'), {
+                        enabled: $filter.data('filter-start-enabled'), 
+                        default_filter: $filter.data('filter-default-filter'), 
+                        can_be_multiple: $filter.data('filter-can-be-multiple'),
+                        custom_action: $filter.data('filter-custom-action') || null
+                    }));
+                }
             }
 
-            static get_default_filter() {
+            deactivate_all_filters() {
+                this._action_on_all_filter((f) => f.deactivate());
+                return this;
+            } 
+
+            /**
+             * La fonction `get_default_filter` renvoie le filtre par défaut à partir d'une liste de filtres.
+             * @returns {mel_filter}
+             */
+            get_default_filter() {
                 if (!this.get_default_filter.filter) {
-                    let tmp = filters.filter((f) => [1, true].includes(f.default_filter));
+                    let tmp = this.filters.filter((f) => [1, true].includes(f.default_filter));
 
-                    if (tmp.length > 0) this.get_default_filter.filter = tmp[0].$item;
+                    if (tmp.length > 0) this.get_default_filter.filter = tmp[0];
                 }
 
                 return this.get_default_filter.filter;
             }
 
-            static * get_filters_enabled() {
-                for (let index = 0, len = filters.length; index < len; ++index) {
-                    const element = filters[index];
-                    
-                    if (element.is_enabled()) yield element;
+            get_all_quick_filters_from_class() {
+                return $(`.${mel_filter.filter_class()}`);
+            }
+
+            * _set_action_on_all_filters(action, where = null) {
+                for (let index = 0, len = this.filters.length; index < len; ++index) {
+                    if (!where) yield action(this.filters[index]);
+                    else if (where(this.filters[index])) yield action(this.filters[index]);
                 }
             }
 
-            static disable_button_from_all_filters() {
-                $('#select-mail-state').attr('disabled', 'disabled').addClass('disabled');
-                $('#list-select-mail-choices').attr('disabled', 'disabled').addClass('disabled');
-                this.disable_extra_buttons();
-                for (let index = 0, len = filters.length; index < len; ++index) {
-                    const element = filters[index];
-                    
-                    element.$item.attr('disabled', 'disabled').addClass('disabled');
-                }
+            _action_on_all_filter(action, where = null) {
+                return [...this._set_action_on_all_filters(action, where)];
             }
 
-            static enable_button_from_all_filters() {
-                $('#select-mail-state').removeAttr('disabled').removeClass('disabled');
-                $('#list-select-mail-choices').removeAttr('disabled');
-                this.enable_extra_buttons();
-                for (let index = 0, len = filters.length; index < len; ++index) {
-                    const element = filters[index];
-                    
-                    element.$item.removeAttr('disabled').removeClass('disabled');
-                }
+            * get_filters_active() {
+                yield * this._set_action_on_all_filters((f) => f, (f) => f.is_active());
+            }
+
+            get_filters_active_array() {
+                return [...this.get_filters_active()];
+            }
+
+            disable_all() {
+                mel_selector.get_checkbox().disable();
+                mel_selector.get_button_list().disable();
+                mel_filter_manager.disable_extra_buttons();
+                this._action_on_all_filter((f) => f.disable());
+                return this;
+            }
+
+            enable_all() {
+                mel_selector.get_checkbox().enable();
+                mel_selector.get_button_list().enable();
+                mel_filter_manager.enable_extra_buttons();
+                this._action_on_all_filter((f) => f.enable());
+                return this;
             }
 
             static get_line_label() {
@@ -241,6 +356,10 @@ $(document).ready(() => {
 
             static reset_labels() {
                 this.get_line_label().html('').hide();
+            }
+
+            static reset_extra_states() {
+                $('.mel-tooltip button').removeClass('active').removeClass('background').addClass('txt');
             }
 
             static get_line_priority() {
@@ -284,57 +403,124 @@ $(document).ready(() => {
             static enable_extra_buttons() {
                 return $('#message-list-filters-extra button').removeAttr('disabled').removeClass('disabled');
             }
+
+            static _base_callback_reset_action(filter, event, on_reset) {
+                mel_filter_manager.Instance.get_default_filter().activate();
+                this.reset_labels();
+                this.reset_priorities();
+                this.reset_extra_states();
+                rcmail.command('reset-search');
+
+                if (!!on_reset) on_reset(filter, event);
+            }
+
+            /**
+             * 
+             * @param {mel_filter} filter 
+             * @param {*} event 
+             * @param {*} param2 
+             */
+            static base_callback(filter, event, {
+                before = null,
+                after = null,
+                on_reset = null
+            }) {
+                debugger;
+                if (!!before) before(filter, event);
+
+                rcmail.triggerEvent('quick-filter.brefore', {filter, target_event:event});
+
+                if (!filter.can_be_multiple) mel_filter_manager.Instance.deactivate_all_filters(); //mel_filter.disable_all_quick_filters()
+                else mel_filter_manager.Instance.get_default_filter().deactivate(); //mel_filter.disable_quick_filter(mel_filter.get_default_filter());
+
+                const plugin = rcmail.triggerEvent('quick-filter.action', {filter, target_event:event});
+
+                if (!plugin?.abort) {
+                    filter.toggle_active();
+
+                    mel_filter_manager.Instance.disable_all();
+                    //mel_filter.disable_button_from_all_filters();
+
+                    if (0 !== mel_filter_manager.Instance.get_filters_active_array().length) {
+                        let search = EMPTY_STRING;
+
+                        for (const iterator of mel_filter_manager.Instance.get_filters_active()) {
+                            search += `${iterator.action} `;
+                        }
+
+                        search = search.slice(0, -1);
+                            
+                        if (0 === $(rcmail.gui_objects.search_filter).find('#custom-option').length)    
+                        {
+                            $(rcmail.gui_objects.search_filter).append(`<option id="custom-option" value="${search}">Custom</option>`);
+                        }
+                        else {
+                            $(rcmail.gui_objects.search_filter).find('#custom-option').val(search);
+                        }
+
+                        $(rcmail.gui_objects.search_filter).val(search);
+
+                        if (filter.action === 'ALL')
+                        {
+                            this._base_callback_reset_action(filter, event, on_reset);
+                        }
+                        else {
+                            rcmail.command('search');
+                        }
+                    }
+                    else 
+                    {
+                        this._base_callback_reset_action(filter, event, on_reset);
+                    }
+
+                    if (!!after) after(filter, event);
+
+                }
+            }
         }
 
-        mel_filter.priority = (name, value) => {
-            return {name, value};
-        }
+        /**
+         * @type {mel_filter_manager}
+         */
+        mel_filter_manager.Instance = null;
 
-        for (const filter of mel_filter.get_all_quick_filters_from_class()) {
-            const $filter = $(filter);
-            filters.push(new mel_filter($filter, $filter.data('action'), {
-                enabled: $filter.data('filter-start-enabled'), 
-                default_filter: $filter.data('filter-default-filter'), 
-                can_be_multiple: $filter.data('filter-can-be-multiple'),
-                custom_action: $filter.data('filter-custom-action') || null
-            }));
-        }
+        Object.defineProperties(mel_filter_manager, {
+            Instance: {
+                get: function() {
+                    if (!mel_filter_manager._instance) mel_filter_manager._instance = new mel_filter_manager();
 
-        function update_selected_check() {
-            let $check = $('#select-mail-state');
-            let list = rcmail.message_list;
-            if (0 === list.selection.length) $check.removeAttr('checked', 'checked')[0].checked = false;
-            else $check.attr('checked', 'checked')[0].checked = true;
-        }
+                    return mel_filter_manager._instance;
+                },
+                configurable: true
+            }
+        });
 
         rcmail.addEventListener('responseaftersearch', function(args) {
-            mel_filter.enable_button_from_all_filters();
-            update_selected_check();
+            mel_filter_manager.Instance.enable_all();
+            mel_selector.get_checkbox().update_selected_check();
         });
 
         rcmail.addEventListener('responseafterlist', function(args) {
-            mel_filter.enable_button_from_all_filters();
-            update_selected_check();
-            mel_filter.disable_all_quick_filters();
-            mel_filter.enable_quick_filter(mel_filter.get_default_filter());
-            mel_filter.reset_labels();
-            mel_filter.reset_priorities();
+            mel_filter_manager.Instance.enable_all();
+            mel_filter_manager.Instance.deactivate_all_filters();
+            mel_filter_manager.Instance.get_default_filter().activate();
+            mel_filter_manager.reset_labels();
+            mel_filter_manager.reset_priorities();
+            mel_filter_manager.reset_extra_states();
+            mel_selector.get_checkbox().update_selected_check();
         });
 
         rcmail.addEventListener('label.tooltip.click', (args) => {
             let {state, $target, $caller} = args;
-
-            mel_filter.reset_labels();
+            mel_filter_manager.reset_labels();
 
             //TODO => get all labels from $target
             const labels = [...$target.parent().find('button')].filter((e) => $(e).hasClass('active')).map((e) => {
-                mel_filter.show_label($(e));
+                mel_filter_manager.show_label($(e));
                 return 'KEYWORD '+$(e).data('value');
             });
 
-            console.log('labels', labels);
-
-            let filter = filters.filter((x) => x.$item.attr('id') === 'quick-filter-labels')[0];
+            let filter = mel_filter_manager.Instance.filters.filter((x) => x.$item.attr('id') === 'quick-filter-labels')[0];
             if (0 === labels.length) {
                 $caller.addClass('active');//.mel_tooltip('hide');
             }
@@ -344,11 +530,10 @@ $(document).ready(() => {
             }
 
             $caller.mel_tooltip('hide');
-            filter.click_callback($caller);
+            mel_filter_manager.base_callback(filter, $caller, {});
         });
 
         rcmail.addEventListener('quick-filter.priority', async (args) => {
-            //debugger;
             let {filter, target_event} = args;
 
             let $tooltip = $('body .priority-tooltip');
@@ -375,13 +560,13 @@ $(document).ready(() => {
                     html_button.onclick.push((e) => {
                         let $target = $(e.target);
 
-                        mel_filter.reset_priorities();
+                        mel_filter_manager.reset_priorities();
 
                         if ($target.hasClass('active')) $target.removeClass('active');
                         else $target.addClass('active');
 
                         const priorities = [...$('body .priority-tooltip button')].filter((e) => $(e).hasClass('active')).map(e => {
-                            mel_filter.show_priority($(e));
+                            mel_filter_manager.show_priority($(e));
                             return $(e).data('value');
                         });
 
@@ -394,7 +579,7 @@ $(document).ready(() => {
                             filter.action = '';
                         }
 
-                        filter.click_callback(e);
+                        mel_filter_manager.base_callback(filter, e, {});
                     });
 
                     html_div.addContent(html_button);
@@ -422,7 +607,7 @@ $(document).ready(() => {
     
             switch (command) {
                 case 'list':
-                    mel_filter.disable_button_from_all_filters();
+                    mel_filter_manager.Instance.disable_all();
                     break;
                 case 'select-all':
                     let list = this[this.task == 'addressbook' ? 'contact_list' : 'message_list'];
@@ -451,7 +636,7 @@ $(document).ready(() => {
 
         rcmail.addEventListener('init', () => {
             rcmail.message_list.addEventListener('select', () => {
-                update_selected_check();
+                mel_selector.get_checkbox().update_selected_check();
             });
         });
     }

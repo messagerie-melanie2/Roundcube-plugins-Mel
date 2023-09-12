@@ -250,7 +250,7 @@ class mel extends rcube_plugin
               case 'all':
                 $config['data-filter-start-enabled'] = true;
                 $config['data-filter-default-filter'] = true;
-                $config['data-filter-can-be-multiple'] = false;
+                $config['data-filter-can-be-multiple'] = 'false';
                 break;
               case 'labels':
                 $config['data-filter-custom-action'] = 'trigger:quick-filter.labels';

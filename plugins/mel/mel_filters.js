@@ -425,7 +425,6 @@ les propriétés « nom » et « valeur ».
                 after = null,
                 on_reset = null
             }) {
-                debugger;
                 if (!!before) before(filter, event);
 
                 rcmail.triggerEvent('quick-filter.brefore', {filter, target_event:event});

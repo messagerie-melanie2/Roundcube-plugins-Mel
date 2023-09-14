@@ -19,6 +19,8 @@ export class MetapageMailModule extends MetapageModule {
         if (!MetapageMailModule.elements) MetapageMailModule.elements = new MelEvent();
 
         this._init();
+
+        if (!MetapageMailModule.Instance) MetapageMailModule.Instance = this;
     }
 
     /**
@@ -64,6 +66,8 @@ export class MetapageMailModule extends MetapageModule {
                         }
 
                         MetapageMailModule.elements.remove(e.data('uid'));
+                        MetapageMailModule.Instance.enable_mail_window_actions();
+                        $(window).resize();
                     });
                     
                     if (navigator.$('#messagestack').length <= 0) {
@@ -74,6 +78,8 @@ export class MetapageMailModule extends MetapageModule {
                     $gen.find('.mel-timer-cancel').attr('title', 'Annuler l\'envoie');
 
                     MetapageMailModule.elements.add(html.attribs['data-uid'], {$gen, html, rcmail});
+
+                    MetapageMailModule.Instance.disable_mail_window_actions();
 
                     if (!!window.popup_action) {
                         window.popup_action(($element, box) => {
@@ -106,5 +112,29 @@ export class MetapageMailModule extends MetapageModule {
             (e || window.event).returnValue = message;
             return message;
         }
+    }
+
+    _get_elements_form_states_can_be_changed(){
+        return [
+            $('#layout-sidebar input'),
+            $('#layout-sidebar button'),
+            $('#layout-sidebar select'),
+            $('#layout-content input'),
+            $('#layout-content select'),
+            $('#layout-content a'),
+            $('#layout-content button')
+        ];
+    }
+
+    disable_mail_window_actions() {
+        $('#layout-content').hide();
+        $('#layout-sidebar').attr('style', 'display: none !important;');
+        this.get_skin().create_loader('mail-send-loader', true, false).create($('#layout'));
+    }
+    
+    enable_mail_window_actions() {
+        $('#layout-content').show();
+        $('#layout-sidebar').removeAttr('style');
+        $('#mail-send-loader').remove();
     }
 }

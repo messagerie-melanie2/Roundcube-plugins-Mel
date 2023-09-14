@@ -67,6 +67,7 @@ export class MetapageMailModule extends MetapageModule {
 
                         MetapageMailModule.elements.remove(e.data('uid'));
                         MetapageMailModule.Instance.enable_mail_window_actions();
+                        rcmail.display_message('Envoi du message annulé avec succès !', 'confirmation');
                         $(window).resize();
                     });
                     
@@ -75,7 +76,7 @@ export class MetapageMailModule extends MetapageModule {
                     }
 
                     let $gen = html.create(navigator.$('#messagestack'));
-                    $gen.find('.mel-timer-cancel').attr('title', 'Annuler l\'envoie');
+                    $gen.find('.mel-timer-cancel').attr('title', 'Annuler l\'envoi');
 
                     MetapageMailModule.elements.add(html.attribs['data-uid'], {$gen, html, rcmail});
 

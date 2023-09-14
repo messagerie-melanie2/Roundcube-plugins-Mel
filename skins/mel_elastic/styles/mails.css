@@ -195,7 +195,7 @@ table.messagelist tr.flagged td.subject span.date {
   color: var(--main-text-color);
 }
 table.messagelist tr.flagged td.subject span.fromto {
-  color: var(--mail-unread-text-color);
+  color: var(--mail-unread-icon-color);
 }
 table.messagelist tr:hover span.unflagged::before {
   content: "\e958" !important;
@@ -256,7 +256,7 @@ table.messagelist td.subject span.priority {
   color: var(--main-text-color);
 }
 table.messagelist td.subject span.fromto {
-  color: var(--mail-unread-text-color);
+  color: var(--mail-unread-icon-color);
   padding-left: 0!important;
 }
 table.messagelist td.subject span.msgicon.status::before {
@@ -402,10 +402,9 @@ table.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
 html body.task-mail #mailsearchlist .searchbar a {
   color: var(--main-text-color);
 }
-#mailsearchlist .searchbar a.unread::before {
-  content: "\e91e";
-  font-family: DWP;
-  font-weight: normal;
+#mailsearchlist .searchbar a.unread,
+#mailsearchlist .searchbar a.flag {
+  display: none;
 }
 #mailsearchlist .searchbar a.options::before {
   content: "\e5cf";
@@ -1414,4 +1413,98 @@ body.task-mail.action-compose a.removelink {
 }
 #melplusmails {
   color: var(--secondary-text-color);
+}
+#message-list-filters {
+  display: flex;
+  padding: 0px 5px 1px 10px;
+  border-bottom: solid thin var(--message-border-color);
+  margin-bottom: 0;
+  background-color: white;
+  align-items: center;
+}
+#message-list-filters li.input-group {
+  width: auto;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.touch #message-list-filters li.input-group {
+  border-radius: 5px;
+}
+#message-list-filters li #list-select-mail-choices {
+  color: var(--main-text-color);
+  width: 15px;
+  justify-content: center;
+  display: flex;
+  margin-left: 0;
+  border-radius: 0px;
+  max-height: 30px;
+  align-items: center;
+  margin-right: 5px;
+}
+#message-list-filters li #list-select-mail-choices:hover {
+  color: var(--secondary-text-color);
+}
+#message-list-filters li .quick-filter {
+  color: var(--main-text-color);
+  border-radius: 5px;
+  padding: 0px 5px;
+  white-space: nowrap;
+  font-size: 12px;
+  margin-right: 5px;
+}
+#message-list-filters li .quick-filter.active,
+#message-list-filters-extra button.active {
+  color: var(--secondary-text-color);
+  background-color: var(--main-bckg-color);
+  border-color: var(--mel-button-border-color);
+}
+#message-list-filters li .quick-filter.active.hoverable:hover,
+#message-list-filters-extra button.active.hoverable:hover {
+  background-color: var(--tierciary-bckg-color);
+  border-color: var(--mel-button-border-color-alt);
+}
+#message-list-filters li .quick-filter.active.quick-filter-all {
+  pointer-events: none;
+}
+#message-list-filters li .quick-filter:hover {
+  color: var(--secondary-text-color);
+}
+#message-list-filters li.mel-filter-more {
+  margin-right: 0;
+  height: 100%;
+  margin-left: auto;
+}
+#message-list-filters li.mel-filter-more button.mel-button {
+  padding: 0;
+  border-radius: 0;
+  height: 100%;
+}
+#message-list-filters-extra {
+  background-color: white;
+}
+#message-list-filters-extra div {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid var(--message-border-color);
+  overflow: auto;
+}
+#message-list-filters-extra button {
+  border-radius: 5px;
+  padding: 0px 10px;
+  display: flex;
+  align-items: center;
+  margin: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+#message-list-filters-extra button .material-symbols-outlined {
+  margin-left: 10px;
+  font-size: 18px;
+  margin-right: -5px;
+}
+#message-list-filters-extra button:hover .material-symbols-outlined {
+  color: red;
+}
+#toolbar-list-menu .selection {
+  display: none!important;
 }

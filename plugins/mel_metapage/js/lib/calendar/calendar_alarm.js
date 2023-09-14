@@ -91,7 +91,7 @@ export class Calendar_Alarm extends MelObject
 
                 if (time <= 0)
                     this.show(event);
-                else
+                else if(time < Calendar_Alarm.max_time)
                 {
                     const id = this.generate_id(event.uid);
                     this.timeouts[id] = setTimeout(() => {
@@ -188,7 +188,8 @@ export class Calendar_Alarm extends MelObject
     {
         try {
             let querry = this.select("#alarm-display .event-section")[0];
-            querry.innerHTML = this.urlify(querry.innerHTML);
+            if (querry.firstChild.className != "external-webconf")
+                querry.innerHTML = this.urlify(querry.innerHTML);
         } catch (error) {
             console.error("###[update_links()]", error);
         }
@@ -234,3 +235,12 @@ export class Calendar_Alarm extends MelObject
     }
 
 }
+
+Object.defineProperties(Calendar_Alarm, {
+    max_time: {
+        get: function() {
+            return 703607907; //Une semaine
+        },
+        configurable: false
+    }
+});

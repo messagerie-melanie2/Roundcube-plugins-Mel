@@ -1,0 +1,13 @@
+{
+    "parent":"super-classique",
+    "id":"party-halloween",
+    "display":"white",
+    "description":"desc",
+    "icon":"icon.svg",
+    "enabled":true,
+    "style":"style",
+    "class":"party-halloween",
+    "custom_dark_mode":false,
+    "order":100,
+    "saison":"01/09-01/11"
+}

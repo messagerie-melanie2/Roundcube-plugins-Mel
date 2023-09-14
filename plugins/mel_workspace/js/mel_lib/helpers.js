@@ -1,5 +1,5 @@
-import { ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager";
-import { MelObject } from "../../../mel_metapage/js/lib/mel_object";
+import { ChatManager } from "../../../mel_metapage/js/lib/chat/chatManager.js";
+import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js";
 
 
 export function GetWspNotifChat() {

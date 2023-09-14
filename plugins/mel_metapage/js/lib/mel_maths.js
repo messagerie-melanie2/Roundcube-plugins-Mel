@@ -25,10 +25,10 @@ class Point {
 class Shape extends Point {
     constructor(position, ...lines) {
         super(position.x, position.y);
-        this._init()._setup(...lines);
+        this.__init().__setup(...lines);
     }
 
-    _init() {
+    __init() {
         /**
          * @type {number[]}
          */
@@ -37,7 +37,7 @@ class Shape extends Point {
         return this;
     }
 
-    _setup(...lines) {
+    __setup(...lines) {
         this._lines = lines;
         return this;
     }

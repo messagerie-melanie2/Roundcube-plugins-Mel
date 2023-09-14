@@ -1439,6 +1439,11 @@ $(document).ready(() => {
                 event.end = moment().add(30, "m");
         }
 
+        const mail_datas = rcmail.env['event_prop.mails'];
+
+        if (!!mail_datas) $('.have-mails').show();
+        else $('.have-mails').hide();
+
         //Initialisation des fonctions
         const shuffle = window.rcube_calendar_ui.shuffle;
         const generateRoomName = rcube_calendar_ui.generateRoomName;
@@ -2448,6 +2453,19 @@ $(document).ready(() => {
                     mel_metapage.Functions.busy(false);
                 });
 
+            }, true);
+
+            rcmail.register_command('calendar-mail-add-all', () => {
+                for (const key in rcmail.env['event_prop.mails'] ) {
+                    if (Object.hasOwnProperty.call( rcmail.env['event_prop.mails'] , key)) {
+                        const element =  rcmail.env['event_prop.mails'][key]?.split?.(',');
+
+                        if (!!element) {
+                            $("#edit-attendee-name").val(element);
+                            $("#edit-attendee-add").click();
+                        }
+                    }
+                }
             }, true);
 
             try {            

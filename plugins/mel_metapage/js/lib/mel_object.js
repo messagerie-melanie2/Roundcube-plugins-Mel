@@ -119,11 +119,15 @@ class MelObject {
         return (top && !!Top.top()?.rcmail) ? Top.top().rcmail : window.rcmail;
     }
 
+    gettext(key_text, plugin = ''){
+        return this.rcmail().gettext(key_text, plugin);
+    }
+
     /**
      * Ajoute un écouteur qui pourra être appelé plus tard.
      * @param {string} key Clé qui permettra d'appeller l'écouteur 
      * @param {function} callback Fonction qui sera appelée
-     * @param {{top:boolean}} param2 Si on doit récupérer rcmail sur frame principale ou non
+     * @param {{callback_key:function|null, condition:boolean}} param2 Si on doit récupérer rcmail sur frame principale ou non
      */
     add_event_listener(key, callback, {callback_key = null, condition = true}) {
         let can_call = typeof condition === 'function' ? condition() : condition;

@@ -22,6 +22,12 @@ html.theme-classique:root{
     --drag-n-drop-bckg-color:#edebe9;
     --drag-n-drop-color: var(--drag-n-drop-bckg-color);
     --button-color-hover: var(--main-text-color)!important;
+
+    --side-hover-background-color: #edebe9;
+    --side-selected-background-color: var(--side-hover-background-color);
+    --side-hover-text-color: var(--theme-base-text-color);
+    --side-selected-text-color: var(--side-hover-text-color);
+    --calendar-sidebar-background-color: var(--layout-list-background-color);
 }
 
 .mixin-listing()
@@ -40,7 +46,8 @@ html.theme-classique:root{
                     color:var(--main-text-color);
 
                     &:hover{
-                        background-color: #edebe9;
+                        --list-bg-hover: #edebe9;
+                        background-color: var(--list-bg-hover);
                     }
                 }
 
@@ -48,7 +55,8 @@ html.theme-classique:root{
                     border-bottom:solid thin var(--invisible);
 
                     &:hover{
-                        background-color: #edebe9!important;
+                        --list-bg-hover: #edebe9;
+                        background-color: var(--list-bg-hover)!important;
                     }
                 }
 
@@ -81,7 +89,8 @@ html.theme-classique:root{
                         }
 
                         > * {
-                            background-color:#edebe9!important;
+                            --list-bg-selected: #edebe9;
+                            background-color: var(--list-bg-selected)!important;
                         }
                     }
 
@@ -394,14 +403,16 @@ html
                                 border-left: solid thick var(--invisible)!important;
                                 &:hover{
                                     border-radius: 0!important;
-                                    background-color: #edebe9;
+                                    background-color: var(--side-hover-background-color)!important;
                                     border-bottom-color: var(--secondary-bckg-color)!important;
+                                    color: var(--side-hover-text-color);
                                 }
                             }
             
                             &.selected{
                                 a{
-                                    background-color: #edebe9;
+                                    color: var(--side-selected-text-color);
+                                    background-color: var(--side-selected-background-color)!important;
                                     border-left-color: var(--tierciary-bckg-color)!important;
                                     border-bottom: unset!important;
                                 }
@@ -557,7 +568,8 @@ html
         
                                 &:hover{
                                     // color:var(--secondary-text-color)!important;
-                                    background-color:#edebe9!important;
+                                    --layout-bg-hover: #edebe9;
+                                    background-color:var(--layout-bg-hover)!important;
                                     border-top-color:  var(--tierciary-bckg-color)!important;
                                 }
                             }

@@ -1,5 +1,5 @@
 (() => {
-    const VERSION = '0.0.2';
+    const VERSION = 'X.X.X';
     const BASE_PATH = '/js/lib/';
     const UNLOAD_TIME_MS = 60 * 5 * 1000;
 
@@ -111,5 +111,14 @@
     window.runModule = runModule;
     window.awaitModules = await_modules;
     window.loadAction = loadAction;
+    
+    Object.defineProperties(window, {
+        scriptVersion: {
+            get: function() {
+                return VERSION;
+            },
+            configurable: false
+        }
+    });
 
 })();

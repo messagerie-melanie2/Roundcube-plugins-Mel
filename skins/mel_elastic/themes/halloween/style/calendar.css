@@ -1,0 +1,43 @@
+html.theme-super-classique.party-halloween .task-calendar #layout {
+  background-color: transparent;
+}
+html.theme-super-classique.party-halloween .task-calendar #layout > div {
+  --layout-list-background-color: #371B5893;
+  margin-right: 15px;
+}
+html.theme-super-classique.party-halloween .task-calendar #layout > div > .header a.button {
+  --tierciary-bckg-color: #FF5B00;
+}
+html.theme-super-classique.party-halloween .task-calendar #layout #layout-content {
+  --layout-list-background-color: transparent;
+}
+html.theme-super-classique.party-halloween .task-calendar #layout #layout-content > .header a.button {
+  --main-text-color: white;
+}
+html.theme-super-classique.party-halloween .task-calendar #datepicker,
+html.theme-super-classique.party-halloween .task-calendar .calendar-datepicker .ui-datepicker,
+html.theme-super-classique.party-halloween .task-calendar .calendar-datepicker .ui-datepicker-header,
+html.theme-super-classique.party-halloween .task-calendar .calendar-datepicker .ui-datepicker-inline .ui-datepicker-activerange {
+  background-color: var(--datepicker-bg-color) !important;
+}
+html.theme-super-classique.party-halloween .task-calendar #datepicker #datepicker-onoff:hover {
+  --main-layout-hover-background-color: var(--main-layout-taskbar-background-color);
+}
+html.theme-super-classique.party-halloween .task-calendar .calendar-datepicker .ui-datepicker-inline .ui-datepicker-activerange {
+  --datepicker-bg-color: #7858A6;
+}
+html.theme-super-classique.party-halloween .task-calendar .fc .fc-center h2 {
+  --main-text-color: white;
+}
+html.theme-super-classique.party-halloween .task-calendar .fc .fc-day.fc-today {
+  background-color: var(--main-layout-taskbar-background-color) !important;
+}
+html.theme-super-classique.party-halloween .task-calendar .fc .fc-axis {
+  color: white !important;
+}
+html.theme-super-classique.party-halloween .task-calendar #layout #layout-content #calendar {
+  background: #7858A6 !important;
+}
+html.theme-super-classique.party-halloween .task-calendar #layout #layout-content #calendar .fc-header-toolbar {
+  background-color: transparent;
+}

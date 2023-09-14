@@ -1,0 +1,221 @@
+html.theme-super-classique.party-halloween body {
+  background-image: url("../images/halloween-bg-light-unsplash.jpg");
+}
+html.theme-super-classique.party-halloween.dark-mode-custom body {
+  background-image: url("../images/halloween-bg-dark-unsplash.jpg");
+}
+html.theme-super-classique.party-halloween div#layout-sidebar {
+  --main-text-color: var(--main-layout-taskbar-text-color);
+  --mail-layout-sidebar-background-color: #371b5893;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  margin-top: 10px !important;
+}
+html.theme-super-classique.party-halloween #layout > div > .header a.button:hover {
+  color: white !important;
+  background-color: #371B58 !important;
+  --layout-bg-hover: #371B58 !important;
+  --invisible: #FF5B00;
+  border-left: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  --secondary-bckg-color: #371B58;
+}
+html.theme-super-classique.party-halloween #layout > div > .header a.button:focus {
+  color: white !important;
+  background-color: #371B58 !important;
+  --secondary-bckg-color: #371B58;
+  --layout-bg-hover: #371B58 !important;
+}
+html.theme-super-classique.party-halloween #layout #layout-content {
+  background-color: transparent;
+}
+html.theme-super-classique.party-halloween #layout #layout-content .header a {
+  color: white;
+}
+html.theme-super-classique.party-halloween #layout #layout-content .header a:hover {
+  background-color: #371B58 !important;
+  color: white!important;
+  --tierciary-bckg-color: #FF5B00;
+  --invisible: #FF5B00;
+}
+html.theme-super-classique.party-halloween #layout #layout-content .header a:focus {
+  color: white !important;
+  background-color: #371B58 !important;
+  --secondary-bckg-color: #371B58;
+  --layout-bg-hover: #371B58 !important;
+  --invisible: transparent;
+}
+html.theme-super-classique.party-halloween #layout #layout-content .content {
+  --main-layout-content-background-color: #FFFFFF93;
+}
+html.theme-super-classique.party-halloween #layout #layout-list {
+  --mail-layout-sidebar-background-color: transparent;
+}
+html.theme-super-classique.party-halloween #layout-list > .header li a.button {
+  --main-text-color: white;
+}
+html.theme-super-classique.party-halloween #layout-list .scroller > .listing li {
+  --main-text-color: white;
+  --secondary-bckg-color: #371B58;
+  border-radius: 5px;
+}
+html.theme-super-classique.party-halloween #layout-list .scroller > .listing li a {
+  border-color: transparent !important;
+}
+html.theme-super-classique.party-halloween a {
+  color: #51050F;
+}
+html.theme-super-classique.party-halloween a:hover {
+  color: #371B58;
+}
+html.theme-super-classique.party-halloween .mel-button {
+  --main-bckg-color: #FF5B00;
+  --mel-button-border-color: var(--main-bckg-color);
+  --tierciary-bckg-color: #F78812;
+  --mel-button-border-color-alt: #F78812;
+  --mel-button-bckg-color-alt: #F78812;
+}
+html.theme-super-classique.party-halloween .mel-button.white {
+  --default-background: transparent;
+}
+html.theme-super-classique.party-halloween .mel-button.invite-button.create {
+  background-color: var(--main-bckg-color);
+}
+html.theme-super-classique.party-halloween .mel-button.invite-button.create:hover {
+  --main-bckg-color: var(--tierciary-bckg-color);
+}
+html.theme-super-classique.party-halloween .barup {
+  background: none!important;
+}
+html.theme-super-classique.party-halloween .barup #barup-right-buttons {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #371B58 100%);
+}
+html.theme-super-classique.party-halloween .scroller > .listing li {
+  --main-layout-selected-background-color: #371B58;
+}
+html.theme-super-classique.party-halloween .scroller > .listing li a:hover {
+  background-color: #5B4B8A;
+  --list-bg-hover: #5B4B8A!important;
+}
+html.theme-super-classique.party-halloween .scroller > .listing li a:focus {
+  background-color: #5B4B8A !important;
+}
+html.theme-super-classique.party-halloween .scroller > .listing li div:hover {
+  background-color: #5B4B8A;
+  --list-bg-hover: #5B4B8A!important;
+}
+html.theme-super-classique.party-halloween .scroller > .listing li.selected > div > * {
+  --list-bg-selected: #5B4B8A!important;
+}
+html.theme-super-classique.party-halloween .custom-switch .custom-control-label::before {
+  background-color: #F2E8C6;
+}
+html.theme-super-classique.party-halloween .custom-switch .custom-control-label::after {
+  background-color: #371B58;
+}
+html.theme-super-classique.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+  background-color: #371B58;
+}
+html.theme-super-classique.party-halloween .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
+html.theme-super-classique.party-halloween .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #FF5B00;
+}
+html.theme-super-classique.party-halloween .searchbar {
+  --main-text-color: white;
+}
+html.theme-super-classique.party-halloween .searchbar input {
+  color: white;
+}
+html.theme-super-classique.party-halloween .searchbar a {
+  color: white;
+  border-top: solid thin transparent;
+}
+html.theme-super-classique.party-halloween .searchbar.menu:focus,
+html.theme-super-classique.party-halloween .searchbar.menu a:hover {
+  --secondary-bckg-color: #371B58;
+  background-color: #371B58;
+  border-top-color: #FF5B00;
+}
+html.theme-super-classique.party-halloween .watermark::before {
+  content: none;
+}
+html.theme-super-classique.party-halloween .menu a:not(.disabled):focus,
+html.theme-super-classique.party-halloween .menu a:not(.disabled):hover,
+html.theme-super-classique.party-halloween .menu.toolbar .dropbutton:not(.disabled):hover {
+  background-color: #5B4B8A;
+}
+html.theme-super-classique.party-halloween #layout-list .listing tbody tr td {
+  --main-text-color: white;
+}
+html.theme-super-classique.party-halloween #layout-list .listing tbody tr td:hover {
+  background-color: #371B58;
+}
+html.theme-super-classique.party-halloween #layout-list .listing tbody tr.selected td {
+  background-color: #371B58;
+}
+html.theme-super-classique.party-halloween .formcontainer .formbuttons button {
+  border-radius: 100px;
+  color: white;
+  border-color: var(--roundbadge-bckg-color);
+}
+html.theme-super-classique.party-halloween .formcontainer .formbuttons button:hover {
+  border-color: #F78812;
+  --btn-primary-bckg-color-hover: #F78812;
+}
+html.theme-super-classique.party-halloween .footer {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  color: white;
+}
+html.theme-super-classique.party-halloween .footer a {
+  color: white;
+}
+html.theme-super-classique.party-halloween .footer a.pagenav {
+  color: white;
+}
+html.theme-super-classique.party-halloween #layout-content .body {
+  background-color: #371B5893;
+  padding: 15px;
+  border-radius: 15px;
+  color: white;
+  --main-text-color: white;
+}
+html.theme-super-classique.party-halloween .melv2-hello {
+  margin-top: 0;
+}
+html.theme-super-classique.party-halloween .melv2-card {
+  background-color: #5B4B8A93;
+}
+html.theme-super-classique.party-halloween .melv2-color,
+html.theme-super-classique.party-halloween .melv2-event,
+html.theme-super-classique.party-halloween .melv2-mail {
+  --mv2-item-background-color: #5B4B8A;
+}
+html.theme-super-classique.party-halloween a.melv2-card-title {
+  color: white;
+}
+html.theme-super-classique.party-halloween a.melv2-card-title:hover {
+  color: #371B58;
+}
+html.theme-super-classique.party-halloween .mv2-app-text {
+  color: white;
+}
+html.theme-super-classique.party-halloween .module_Workspaces .workspace {
+  background-color: #5B4B8A93;
+}
+html.theme-super-classique.party-halloween .mel-tab:hover,
+html.theme-super-classique.party-halloween button.btn.mel-tab:hover {
+  background-color: #F78812 !important;
+}
+html.theme-super-classique.party-halloween.framed body {
+  background-color: transparent;
+  background-image: none;
+}
+html.theme-super-classique.party-halloween .btn-text.btn-mel-invisible:hover {
+  color: #F78812;
+}
+html.theme-super-classique.party-halloween .mel-hover:hover {
+  box-shadow: 0 0 0 0.2rem #F78812;
+  border-radius: 15px;
+}

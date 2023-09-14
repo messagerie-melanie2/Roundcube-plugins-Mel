@@ -26,9 +26,9 @@ export class MetapageCalendarModule extends MetapageModule {
             await this._generate_alarms();
         }
 
-        this.calendarLoader().on_calendar_updated.add('MetapageCalendarModule', () => {
+        this.add_event_listener(mel_metapage.EventListeners.calendar_updated.after, () => {
             this._generate_alarms();
-        });
+        }, {callback_key:'generate_alarms'});
     }
 
     /**

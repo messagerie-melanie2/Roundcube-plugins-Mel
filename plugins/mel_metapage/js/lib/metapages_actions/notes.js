@@ -270,9 +270,9 @@ export class MetapageNotesModule extends MetapageModule {
     _generate_plus_button() {
         const create_icon = 'add_circle';
         const icon = new MainIconHtml(create_icon, {class: 'new-note-icon'}, {});
-        const text = new mel_html('span', {class:'new-note-text'}, 'Nouvelle note');
+        const text = new mel_html('span', {class:'new-note-text'}, this.gettext('new-note', 'mel_metapage'));
         let html_button = new mel_html2('button', {
-            attribs:{class:`new-note-button ${MaterialSymbolHtml.get_class_fill_on_hover()}`},
+            attribs:{class:`new-note-button ${MaterialSymbolHtml.get_class_fill_on_hover()}`, title:this.gettext('note-create-title', 'mel_metapage')},
             contents:[icon, text]
         });
 

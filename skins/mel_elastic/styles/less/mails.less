@@ -651,7 +651,7 @@ table.messagelist{
                 &.subject{
                     span{
                         &.fromto,
-                        &.date,{
+                        &.date{
                             color: var(--secondary-text-color);
                         }
                     }
@@ -726,10 +726,15 @@ table.messagelist{
             }
 
             &.unread{
-                &::before{
-                    content: "\e91e";
-                    ._dwp-icon();
-                }
+                display: none;
+                // &::before{
+                //     content: "\e91e";
+                //     ._dwp-icon();
+                // }
+            }
+
+            &.flag {
+                &:extend(#mailsearchlist .searchbar a.unread);
             }
 
             &.options{
@@ -1862,4 +1867,133 @@ body.task-mail.action-compose a.removelink
 
 #melplusmails{
     color: var(--secondary-text-color);
+}
+
+#message-list-filters{
+    display: flex;
+    padding: 0px 5px 1px 10px;
+    border-bottom: solid thin var(--message-border-color);
+    margin-bottom: 0;
+    background-color: white;
+    align-items: center;
+
+    li {
+        &.input-group {
+            width: auto;
+            flex-wrap: nowrap;
+            align-items: center;
+
+            .touch &{
+                border-radius: 5px;
+            }
+        }
+
+        #list-select-mail-choices {
+            color: var(--main-text-color);
+            width: 15px;
+            justify-content: center;
+            display: flex;
+            margin-left: 0;
+            border-radius: 0px;
+            max-height: 30px;
+            align-items: center;
+            margin-right: 5px;
+
+            &:hover {
+                color: var(--secondary-text-color);
+            }
+        }
+
+        .quick-filter {
+            color: var(--main-text-color);
+            border-radius: 5px;
+            padding: 0px 5px;
+            white-space: nowrap;
+            font-size: 12px;
+            margin-right: 5px;
+
+            &.active{
+                color: var(--secondary-text-color);
+                background-color: var(--main-bckg-color);
+                border-color: var(--mel-button-border-color);
+        
+                &.hoverable{
+                    &:hover{
+                        background-color: var(--tierciary-bckg-color);
+                        border-color: var(--mel-button-border-color-alt);
+                    }
+                }
+
+                &.quick-filter-all {
+                    pointer-events: none;
+                }
+            }
+
+            &:hover{
+                color: var(--secondary-text-color);
+            }
+        }
+
+        &.mel-filter-more{
+            margin-right: 0;
+            height: 100%;
+            margin-left: auto;
+
+            button {
+                &.mel-button{
+                    padding: 0;
+                    border-radius: 0;
+                    height: 100%;
+                }
+            }
+        }
+    }
+}
+
+#message-list-filters-extra {
+    background-color: white;
+    // border-bottom: 1px solid var(--message-border-color);
+    div {
+        display: flex;
+        flex-direction: row;  
+        border-bottom: 1px solid var(--message-border-color);
+        overflow: auto;
+    }
+
+    button {
+        //background-color: var(--secondary-bckg-color);
+        border-radius: 5px;
+        padding: 0px 10px;
+        display: flex;
+        align-items: center;
+        margin: 5px;
+        font-size: 12px;
+        white-space: nowrap;
+
+        &.active{
+            &:extend(#message-list-filters li .quick-filter.active);
+    
+            &.hoverable{
+                &:hover{
+                    &:extend(#message-list-filters li .quick-filter.active.hoverable:hover);
+                }
+            }
+        }
+
+        .material-symbols-outlined{
+            margin-left: 10px;
+            font-size: 18px;
+            margin-right: -5px;
+        }
+
+        &:hover {
+            .material-symbols-outlined{
+                color:red;
+            }
+        }
+    }
+}
+
+#toolbar-list-menu .selection{
+    display:none!important;
 }

@@ -341,9 +341,10 @@ $labels['app_news'] = 'M\'informer';
 $labels['app_ul'] = 'Liens utiles';
 $labels['app_kanban'] = 'Kanban';
 $labels['app_survey'] = 'Sondage';
-$labels['app_rizomo'] = 'Outils SNAP';
+$labels['app_rizomo'] = 'Suite numérique';
 $labels['app_calendar'] = 'Mon agenda';
 $labels['app_workspace'] = 'Espaces de travail';
+$labels['app_parapheur'] = 'Parapheur';
 
 $labels['to_comment'] = 'Commenter';
 
@@ -382,3 +383,5 @@ $labels['delay_speed'] = 'Retard d\'envoi';
 $labels['delay_setting_help'] = "Retarde l'envoi du message de x secondes pour pouvoir annuler l'envoi de celui-ci.";
 $labels['quitdelayconfirmation'] = 'Si vous quittez, le mail ne sera pas envoyé, êtes-vous sûr de vouloir quitter ?';
 $labels['delaytimer'] = 'Le message sera envoyé dans';
+$labels['new-note'] = 'Nouvelle note';
+$labels['note-create-title'] = $labels['new-note'].' - Créer une nouvelle note qui s\'affichera après les autres notes';

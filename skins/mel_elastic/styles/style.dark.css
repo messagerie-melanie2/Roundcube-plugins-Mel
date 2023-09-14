@@ -146,6 +146,8 @@ html.dark-mode .mel-button {
     border-width: thin;
 }
 
+html.dark-mode #message-list-filters li .quick-filter,
+html.dark-mode #message-list-filters li #list-select-mail-choices,
 html.dark-mode .mel-button.bckg.color-for-dark
 {
     color: #E1C58F;
@@ -348,7 +350,9 @@ html.dark-mode .frame-header
     box-shadow: -2px 0px 3px #96b9e745;
 }
 
-html.dark-mode #messagelist-content
+html.dark-mode #messagelist-content,
+html.dark-mode #message-list-filters,
+html.dark-mode #message-list-filters-extra
 {
     background-color: #1F2933!important;
     color:#96b9e7!important;
@@ -1271,4 +1275,41 @@ html.dark-mode.barup-picture .barup .search .input-group-append span{
 
 html.dark-mode.barup-picture .barup #button-help {
     background-color: var(--secondary-nav-background-color);
+}
+
+html.dark-mode #message-list-filters li .quick-filter.active, 
+html.dark-mode #message-list-filters-extra button.active,
+html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active {
+    background-color: #E1C58F;
+    color: black;
+    border-color: #2E2E2E;
+}
+
+html.dark-mode #message-list-filters li .quick-filter.active:focus, 
+html.dark-mode #message-list-filters-extra button.active:focus,
+html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active:focus {
+    color: black!important;
+}
+
+html.dark-mode #message-list-filters li .quick-filter.active.hoverable:hover, 
+html.dark-mode #message-list-filters-extra button.active.hoverable:hover,
+html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active:hover {
+    background-color: #2E2E2E;
+    color: #E1C58F;
+    border-color: #E1C58F;
+}
+
+html.dark-mode .mel-tooltip{
+    background-color: #1F2933;
+    border:1px solid #4d6066;
+}
+
+html.dark-mode .mel-tooltip::before{
+    color: #1F2933;
+    text-shadow: 0px 0px 1px #4d6066;
+}
+
+html.dark-mode #message-list-filters-extra div,
+html.dark-mode #message-list-filters{
+    border-color: #4d6066;
 }

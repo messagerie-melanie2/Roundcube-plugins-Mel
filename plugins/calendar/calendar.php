@@ -4355,6 +4355,11 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
 
             $this->rc->output->set_env('event_prop', $event);
+            $this->rc->output->set_env('event_prop.mails', [
+                'to' => $message->get_header('to'),
+                'from' => $message->get_header('from'),
+                'cc' => $message->get_header('cc'),
+            ]);
         }
         else {
             $this->rc->output->command('display_message', $this->gettext('messageopenerror'), 'error');

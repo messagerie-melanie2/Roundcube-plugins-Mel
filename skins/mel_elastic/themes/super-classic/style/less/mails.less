@@ -72,6 +72,16 @@ html.theme-super-classique {
       background-color: var(--mail-layout-sidebar-background-color) !important;
       border-right-color: transparent;
 
+      #message-list-filters {
+        border-top-right-radius: var(--main-layout-panel-border-radius) !important;
+        border-top-left-radius: var(--main-layout-panel-border-radius) !important;
+        background-color: var(--main-layout-content-background-color) !important;
+      }
+
+      #message-list-filters-extra {
+        background-color: var(--main-layout-content-background-color) !important;
+      }
+
       #messagelist-header {
         background: var(--main-layout-content-background-color) !important;
         border-radius: var(--main-layout-panel-border-radius) !important;
@@ -108,6 +118,8 @@ html.theme-super-classique {
 
       #messagelist-content {
         &:extend(html.theme-super-classique .task-mail #layout-list #messagelist-header);
+        border-top-right-radius: 0!important;
+        border-top-left-radius: 0!important;
         margin-top: 0px;
 
         #messagelist {
@@ -217,6 +229,48 @@ html.theme-super-classique {
         margin-top: 0px;
       }
     }
+  
+    #message-list-filters {
+      li{
+        .quick-filter{
+          &:hover {
+            background-color: var(--main-layout-hover-background-color);
+            color: var(--main-text-color);
+          }
+
+          &.active {
+            &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+            border-color: transparent;
+          }
+        }
+
+        &.mel-filter-more{
+          .mel-filter-more{
+            background-color: transparent;
+            color: var(--main-text-color);
+            border:none;
+            border-top-right-radius: var(--main-layout-panel-border-radius);
+            &:hover{
+              &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+            }
+          }
+        }
+      }
+
+      #list-select-mail-choices{
+        &:hover{
+          &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+        }
+      }
+    }
+
+    #message-list-filters-extra{
+      button {
+        &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+        border-color: transparent;
+      }
+    }
+
   }
 
   .task-mail.action-preview {

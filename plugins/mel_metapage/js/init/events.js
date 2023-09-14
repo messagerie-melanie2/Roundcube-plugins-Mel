@@ -834,6 +834,16 @@ if (rcmail && window.mel_metapage)
             let $querry = $('iframe.wekan-frame');
             if ($querry.length > 0) {
                 $querry[0].contentWindow.$('#wekan-iframe').contentWindow.Meteor.logout();
+
+                try {
+                    const kanban = $querry[0].contentWindow.rcmail.env.wekan_storage_end;
+                    const storage = Object.keys(storage);
+                    for (const key of storage) {
+                        if (key.includes(kanban)) localStorage.removeItem(key);
+                    }
+                } catch (error) {
+                    
+                }
             }
         }
     });

@@ -3238,9 +3238,10 @@ class mel_metapage extends bnum_plugin
     return $args;
   }
     public function logout_after($args) {
-
         foreach ($_COOKIE as $key => $value) {
-            if (strpos($key, 'id') !== false || strpos($key, 'ses') !== false || strpos($key, 'login') !== false) 
+            if (strpos($key, 'id') !== false || strpos($key, 'ses') !== false || strpos($key, 'login') !== false || 
+                (class_exists('mel_wekan') && strpos($key, $this->rc->config->get('wekan_storage_end')) !== false)
+            ) 
             {
                 if ('roundcube_login' !== $key) {
                     unset($_COOKIE[$key]); 

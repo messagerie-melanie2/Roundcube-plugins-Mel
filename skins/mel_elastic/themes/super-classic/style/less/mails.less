@@ -72,6 +72,16 @@ html.theme-super-classique {
       background-color: var(--mail-layout-sidebar-background-color) !important;
       border-right-color: transparent;
 
+      #message-list-filters {
+        border-top-right-radius: var(--main-layout-panel-border-radius) !important;
+        border-top-left-radius: var(--main-layout-panel-border-radius) !important;
+        background-color: var(--main-layout-content-background-color) !important;
+      }
+
+      #message-list-filters-extra {
+        background-color: var(--main-layout-content-background-color) !important;
+      }
+
       #messagelist-header {
         background: var(--main-layout-content-background-color) !important;
         border-radius: var(--main-layout-panel-border-radius) !important;
@@ -108,6 +118,7 @@ html.theme-super-classique {
 
       #messagelist-content {
         &:extend(html.theme-super-classique .task-mail #layout-list #messagelist-header);
+        --main-layout-panel-border-radius: 0;
         margin-top: 0px;
 
         #messagelist {

@@ -1463,6 +1463,9 @@ body.task-mail.action-compose a.removelink {
   background-color: var(--tierciary-bckg-color);
   border-color: var(--mel-button-border-color-alt);
 }
+#message-list-filters li .quick-filter.active.quick-filter-all {
+  pointer-events: none;
+}
 #message-list-filters li .quick-filter:hover {
   color: var(--secondary-text-color);
 }

@@ -1,24 +1,12 @@
 :root {
-  // // TEST - SOMBRE Main background colors
-  // --main-bckg-color: #1f2933;
-  // --secondary-bckg-color: #1f2933;
-  // --tierciary-bckg-color: #323f4b;
-  // --default-bckg-color: #1f2933;
-
-  // //TEST - SOMBRE Main text colors
-  // --main-text-color: #96b9e7;
-  // --secondary-text-color: #c7dfff;
-  // --tierciary-text-color: #323f4b;
-  // --fourth-text-color: #80d5c6;
-  // --input-button-text-color: #E1C58F;
-  // --default-text-color: #E1C58F;
-
-
   // Main background colors
   --main-bckg-color: #363A5B;
   --secondary-bckg-color: #2C3054;
   --tierciary-bckg-color: #484D7A;
   --default-bckg-color: #FFF;
+  --button-background-color: #F0F0F0;
+  --warning-color: #FC945A;
+  --card-background-color: #f0f0f0;
 
   //Main text colors
   --main-text-color: #363A5B;
@@ -26,7 +14,10 @@
   --tierciary-text-color: #484D7A;
   --fourth-text-color: #80D5C6;
   --input-button-text-color: var(--main-text-color);
+  --header-title-color: var(--main-text-color);
   --default-text-color: var(--secondary-text-color);
+  --default-placeholder-text-color: #a8a9b8;
+  --hint-text-color: #737677;
 
   //Hover
   --hover-background-color: rgba(113, 117, 152, 0.5);
@@ -37,6 +28,7 @@
   --main-border-color: var(--main-text-color);
   --secondary-border-color: #ced4da;
   --main-separator-border-color: #0000000c;
+  --layout-border: white;
 
   //Badge color
   --badge-background-color: var(--fourth-text-color);
@@ -46,18 +38,31 @@
   --modal-background-color: var(--default-bckg-color);
   --modal-text-color: var(--main-text-color);
   --modal-title-color: var(--main-text-color);
+  --modal-border: solid thin var(--secondary-border-color);
 
   //Input
   --input-background-color: var(--default-bckg-color);
   --input-focus-background-color: var(--default-bckg-color);
   --input-text-color: var(--main-text-color);
   --input-border-color: var(--secondary-border-color);
-  --input-mel-border-color: var(--main-border-color);
+
+  --input-mel-background-color: var(--button-background-color);
+  --input-mel-focus-background-color: var(--input-mel-background-color);
+  --input-mel-focus-border-color: var(--main-text-color);
+  --input-mel-focus-shadow-color: #C8CDFC59;
+  --input-mel-text-color: var(--main-text-color);
+  --input-mel-border-color: var(--input-mel-background-color);
+
+  //Overlay
+  --ui-widget-overlay: rgba(44, 54, 58, .5);
 
   //Searchbar
   --searchbar-background-color: var(--default-bckg-color);
+  --searchbar-alternate-background-color: var(--default-bckg-color);
   --searchbar-text-color: var(--input-button-text-color);
+  --searchbar-text-hover-color: var(--secondary-text-color);
   --searchbar-border-color: transparent;
+  --searchbar-alternate-border-color: var(--main-bckg-color);
 
   //Dropdown
   --dropdown-menu-background-color: var(--default-bckg-color);
@@ -73,6 +78,7 @@
   --popover-box-shadow-color: #f1f3f4;
   --popover-border-color: #d4dbde;
   --popover-focus-border-color: #37beff;
+  --popover-icon-color: var(--popover-background-color);
 
   //Buttons
   --mel-button-background-color: var(--main-bckg-color);
@@ -82,12 +88,26 @@
   --mel-button-text-color: var(--default-text-color);
   --mel-button-hover-text-color: var(--secondary-text-color);
 
-  --secondary-mel-button-background-color: #f0f0f0;
+  --secondary-mel-button-background-color: var(--button-background-color);
   --secondary-mel-button-hover-background-color: var(--main-bckg-color);
   --secondary-mel-button-border-color: var(--secondary-mel-button-background-color);
   --secondary-mel-button-hover-border-color: var(--main-bckg-color);
   --secondary-mel-button-text-color: var(--main-text-color);
   --secondary-mel-button-hover-text-color: var(--secondary-text-color);
+
+  --mel-button-danger-background-color: var(--warning-color);
+  --mel-button-danger-text-color: var(--secondary-text-color);
+  --mel-button-danger-hover-background-color: #f7ab82;
+  --mel-button-danger-hover-text-color: var(--mel-button-danger-text-color);
+  --mel-button-danger-border-color: transparent;
+  --mel-button-danger-hover-border-color: transparent;
+
+  --quit-button-background-color: transparent;
+  --quit-button-hover-background-color: var(--main-bckg-color);
+  --quit-button-border-color: var(--main-border-color);
+  --quit-button-hover-border-color: var(--quit-button-border-color);
+  --quit-button-text-color: var(--main-text-color);
+  --quit-button-hover-text-color: var(--secondary-text-color);
 
   //Switch buttons
   --custom-switch-unchecked-background-color: #e8e8e8;
@@ -95,6 +115,12 @@
   --custom-switch-unchecked-dot-color: #fff;
   --custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
   --custom-switch-border-color: transparent;
+
+  --alternate-custom-switch-unchecked-background-color: #bfbfbf;
+  --alternate-custom-switch-checked-background-color: var(--main-bckg-color);
+  --alternate-custom-switch-unchecked-dot-color: #fff;
+  --alternate-custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
+  --alternate-custom-switch-border-color: transparent;
 
   //Tab buttons
   --mel-tabs-background-color: transparent;
@@ -104,6 +130,20 @@
   --mel-tabs-active-text-color: #5069BC;
   --mel-tabs-hover-text-color: null;
 
+  //Nav tabs 
+  --nav-tabs-background-color: var(--modal-background-color);
+  --nav-tabs-border-bottom-color: #dee2e6;
+
+  --nav-item-background-color: #dbdbdb;
+  --nav-item-active-background-color: var(--button-background-color);
+  --nav-item-hover-background-color: var(--button-background-color);
+  --nav-item-text-color: var(--main-text-color);
+  --nav-item-active-text-color: var(--nav-item-text-color);
+  --nav-item-hover-text-color: var(--nav-item-text-color);
+  --nav-item-border-bottom: none;
+  --nav-item-active-border-bottom: none;
+  --nav-item-hover-border-bottom: none;
+
   //Layout menu - Taskbar
   --layout-menu-background-color: var(--secondary-bckg-color);
   --layout-menu-background-selected-color: var(--tierciary-bckg-color);
@@ -112,20 +152,30 @@
   --layout-menu-text-selected-color: var(--secondary-text-color);
   --layout-menu-text-hover-color: var(--secondary-text-color);
   --layout-menu-border-top: solid thin var(--main-border-color);
+  --layout-menu-border-right: transparent;
 
   //Barup
   --barup-search-input-background-color: var(--default-bckg-color);
   --barup-search-input-border-color: var(--main-border-color);
   --barup-search-input-text-color: var(--input-button-text-color);
+  --barup-create-button-background-color: var(--main-text-color);
+  --barup-create-button-hover-background-color: var(--tierciary-bckg-color);
   --barup-icon-color: var(--default-text-color);
   --barup-icon-badge-background-color: #aa3333;
   --barup-icon-badge-text-color: var(--secondary-text-color);
+  --note-text-color: var(--main-text-color);
 
   //Layout sidebar
   --layout-sidebar-background-color: var(--tierciary-bckg-color);
   --layout-sidebar-background-hover-color: var(--secondary-bckg-color);
+  --layout-sidebar-background-selected-color: var(--secondary-bckg-color);
+  --layout-sidebar-background-hover-selected-color: var(--layout-sidebar-background-selected-color);
   --layout-sidebar-text-color: var(--secondary-text-color);
   --layout-sidebar-text-hover-color: var(--secondary-text-color);
+  --layout-sidebar-text-selected-color: var(--secondary-text-color);
+  --layout-sidebar-text-hover-selected-color: var(--layout-sidebar-text-selected-color);
+  --layout-sidebar-border-color: var(--layout-border);
+  --layout-sidebar-border-selected-color: transparent;
 
   --primary-layout-sidebar-background-color: var(--main-bckg-color);
   --primary-layout-sidebar-text-color: var(--layout-sidebar-text-color);
@@ -137,7 +187,12 @@
   --layout-list-header-text-hover-color: var(--secondary-text-color);
   --layout-list-header-input-text-color: var(--main-text-color);
 
+  --alternative-layout-list-background-color: var(--tierciary-bckg-color);
+  --alternative-layout-list-header-background-color: var(--alternative-layout-list-background-color);
+
   //Option menu
+  --option-menu-title-color: var(--main-text-color);
+
   --option-menu-button-background-color: var(--default-bckg-color);
   --option-menu-button-hover-background-color: var(--hover-background-color);
   --option-menu-button-text-color: var(--main-text-color);
@@ -149,6 +204,9 @@
 
   //Bureau
   --bureau-card-background-color: var(--default-bckg-color);
+  --bureau-card-box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  --bureau-card-border-radius: 10px;
+  --bureau-card-text-color: var(--main-text-color);
   --bureau-card-content-background-color: #F8F9FA;
   --bureau-card-content-hover-background-color: var(--main-bckg-color);
   --bureau-card-content-hover-text-color: var(--secondary-text-color);
@@ -165,6 +223,8 @@
   --message-list-content-row-alternate-background-color: #FAFAFA;
   --message-list-content-row-background-hover-color: none;
   --message-list-content-selected-row-background-color: var(--secondary-bckg-color);
+  --message-list-content-selected-row-background-color: var(--secondary-bckg-color);
+  --message-list-border-bottom: 1px solid var(--message-list-content-border-color);
 
   //Mail - msgicon, flags
   --message-list-content-mail-button-color: var(--mail-unread-icon-color);
@@ -204,23 +264,30 @@
   --calendar-table-today-background-color: #f2faf9;
 
   //Workspace 
-  --workspace-item-background-color: #f0f0f0;
+  --workspace-item-background-color: var(--button-background-color);
   --workspace-separator-color: var(--secondary-border-color);
+
+  //Tasks
+  --tasklist-row-background-color: var(--tierciary-bckg-color);
+  --tasklist-alternate-row-background-color: #52588c;
 
   //Layout content
   --layout-content-header-background-color: var(--tierciary-bckg-color);
+  --alternative-layout-content-header-background-color: #f4f4f4;
   --layout-content-header-background-hover-color: var(--secondary-bckg-color);
   --layout-content-header-text-color: var(--secondary-text-color);
   --layout-content-header-text-hover-color: var(--secondary-text-color);
-  --layout-content-background-color: var(--default-bckg-color);
   --layout-content-text-color: var(--main-text-color);
+  --layout-content-background-color: var(--default-bckg-color);
 
-  //Mail
+  //Mail Panel
   --layout-content-header-right-border-color: var(--secondary-text-color);
   --layout-content-contact-address-color: #333;
   --layout-content-message-partheaders: #fcfcfc;
   --layout-content-message-partheaders-top-border-color: #f4f4f4;
-  --layout-content-message-partheaders-title: #737677;
+  --layout-content-message-partheaders-title: var(--hint-text-color);
+  --layout-content-message-attachment-text-color: var(--layout-content-contact-address-color);
+  --layout-content-message-attachment-size-color: var(--hint-text-color);
 
   //Scrollbar 
   --scrollbar-width-moz: thin;

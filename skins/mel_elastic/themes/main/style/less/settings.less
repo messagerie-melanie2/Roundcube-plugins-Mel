@@ -1,0 +1,34 @@
+.task-settings {
+  #layout-list {
+    background-color: var(--alternative-layout-list-background-color) !important;
+
+    >.header {
+      background-color: var(--alternative-layout-list-background-color) !important;
+    }
+  }
+
+  #layout-content>.header {
+    background-color: var(--alternative-layout-content-header-background-color) !important;
+  }
+
+
+  .listing tr.selected td {
+    background-color: var(--layout-sidebar-background-selected-color);
+    border-radius: var(--layout-sidebar-border-radius);
+    color: var(--layout-sidebar-text-selected-color);
+
+    &:hover {
+      color: var(--layout-sidebar-text-selected-color);
+    }
+  }
+
+  .scroller .listing li.selected {
+    &:extend(.task-settings .listing tr.selected td);
+
+    a {
+      color: var(--layout-sidebar-text-selected-color);
+
+    }
+  }
+
+}

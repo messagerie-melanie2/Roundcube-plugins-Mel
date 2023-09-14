@@ -8,6 +8,12 @@
     }
   }
 
+  #edit-attendees-table {
+    color: var(--main-text-color);
+  }
+
+  
+
   #layout {
     #layout-content {
       .searchbar.menu {
@@ -43,7 +49,9 @@
   .fc-unthemed .fc-divider {
     background-color: var(--calendar-table-separator-color) !important;
   }
+
   .fc {
+
     .fc-day-header,
     .fc-axis {
       color: var(--calendar-table-text-color) !important;
@@ -61,5 +69,10 @@
     .ui-datepicker-inline .ui-datepicker-activerange {
       &:extend(.task-calendar #datepicker);
     }
+  }
+
+  #calendaroptionsmenulink:hover,
+  #calendaroptionsmenulink:focus {
+    background-color: var(--main-bckg-color);
   }
 }

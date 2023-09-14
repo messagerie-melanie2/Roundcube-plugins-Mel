@@ -1,6 +1,18 @@
 .task-bureau {
+  .module_Links .melv2-card {
+    background-color: transparent;
+  }
+
   .melv2-card {
     background-color: var(--bureau-card-background-color);
+
+    a.melv2-card-title,
+    .melv2-mail,
+    .melv2-card-icon,
+    .melv2-event,
+    .square_div > .contents {
+      color: var(--bureau-card-text-color);
+    }
 
     .melv2-event,
     .melv2-mail {
@@ -16,6 +28,7 @@
   .module_Workspaces {
     .workspace {
       background-color: var(--bureau-card-background-color);
+      color: var(--bureau-card-text-color);
     }
   }
 
@@ -23,6 +36,7 @@
     .mv2-app-icon {
       color: var(--bureau-app-icon-color);
     }
+
     .mv2-app-text {
       color: var(--bureau-app-text-color);
     }

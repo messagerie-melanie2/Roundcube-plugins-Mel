@@ -1,5 +1,6 @@
 #layout-menu {
   background-color: var(--layout-menu-background-color);
+  border-right: var(--layout-menu-border-right);
 
   #taskmenu {
     a {
@@ -7,6 +8,12 @@
 
       &:hover {
         color: var(--layout-menu-text-color) !important;
+      }
+
+      &:focus>span.inner {
+        background-color: var(--layout-menu-background-color);
+        border: none;
+
       }
 
       &.selected {
@@ -22,6 +29,16 @@
     }
   }
 }
+
+nav.otherapps {
+  background-color: var(--layout-menu-background-color);
+  border-right: var(--layout-menu-border-right);
+}
+
+#otherapps a {
+  color: var(--layout-menu-text-color) !important;
+}
+
 
 #taskmenu a.selected,
 #taskmenu a:hover,

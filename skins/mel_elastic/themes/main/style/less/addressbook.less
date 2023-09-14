@@ -1,5 +1,74 @@
 .task-addressbook {
+  ul.treelist li.selected>a {
+    background-color: var(--alternative-layout-list-background-color) !important;
+  }
+
+  ul#directorylist.treelist li:hover>a {
+    background-color: var(--alternative-layout-list-background-color) !important;
+  }
+
+  li.object[aria-selected="true"] {
+    background-color: var(--layout-sidebar-background-selected-color) !important;
+    color: var(--layout-sidebar-text-selected-color) !important;
+    border-left: solid thin var(--layout-sidebar-border-selected-color) !important;
+  }
+
   #annuaire-list [aria-expanded="true"] {
-    background-color: var(--primary-layout-sidebar-background-color) !important;
+    background-color: var(--alternative-layout-list-background-color) !important;
+    border-left: solid thin var(--separate);
+  }
+
+
+  #layout-list {
+    background-color: var(--alternative-layout-list-background-color) !important;
+
+    >.header {
+      background-color: var(--alternative-layout-list-background-color) !important;
+    }
+
+    .searchbar.menu {
+      border: solid thin var(--searchbar-border-color) !important;
+      border-radius: 60px;
+
+      a.button,
+      &:after {
+        color: var(--searchbar-text-color) !important;
+      }
+
+      a.button:hover {
+        color: var(--searchbar-text-hover-color) !important;
+      }
+    }
+  }
+
+
+  #layout-content>.header {
+    background-color: var(--alternative-layout-content-header-background-color) !important;
+  }
+
+
+  #layout>div>.footer {
+    border-top: solid thin var(--separate);
+    background-color: var(--alternative-layout-list-background-color);
+  }
+
+  .gestion-options {
+    color: var(--secondary-text-color);
+
+    &:hover {
+      background-color: var(--alternative-layout-list-background-color);
+    }
+  }
+
+  .menu.pagenav {
+
+    a,
+    .pagenav-text {
+      color: var(--secondary-text-color);
+    }
+  }
+
+  .menu.toolbar a {
+    color: var(--layout-content-text-color);
   }
 }

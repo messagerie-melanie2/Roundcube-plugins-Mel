@@ -1,15 +1,63 @@
 .task-tasks {
+  #layout-sidebar {
+    ul.treelist li.selected>div {
+
+      >a,
+      >div,
+      >span {
+        background-color: var(--alternative-layout-list-background-color) !important;
+      }
+    }
+
+
+    .listing li:hover>div>a:first-child:hover {
+      background-color: var(--alternative-layout-list-background-color) !important;
+      border-radius: 0 !important;
+
+    }
+  }
+
+  .selected .custom-switch .custom-control-input:checked~.custom-control-label {
+    &::before {
+      background-color: var(--alternate-custom-switch-checked-background-color);
+      border: var(--alternate-custom-switch-border);
+    }
+
+    &::after {
+      background-color: var(--alternate-custom-switch-checked-dot-color);
+    }
+
+  }
+
+
+
+
+  #layout-list {
+    background-color: var(--alternative-layout-list-background-color) !important;
+
+    >.header {
+      background-color: var(--alternative-layout-list-header-background-color) !important;
+    }
+
+
+  }
+
+  #layout-content>.header {
+    background-color: var(--alternative-layout-content-header-background-color) !important;
+  }
+
   ul#tasklist li.taskitem {
-    background-color: var(--message-list-content-row-background-color);
+    background-color: var(--tasklist-row-background-color);
 
     &:nth-child(2n) {
-      background-color: var(--message-list-content-row-alternate-background-color);
+      background-color: var(--tasklist-alternate-row-background-color);
     }
   }
 
   .watermark::before {
     background-color: var(--layout-content-background-color);
   }
+
   .menu.toolbar a {
     color: var(--layout-content-text-color);
   }

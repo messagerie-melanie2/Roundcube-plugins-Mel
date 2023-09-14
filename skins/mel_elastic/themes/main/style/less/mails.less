@@ -110,6 +110,10 @@
       }
     }
 
+    table.messagelist:not(.threaded) tbody tr.unread td {
+      background-color: var(--message-list-content-row-background-color);
+    }
+
     table.messagelist {
       tr {
         &.selected td {
@@ -120,6 +124,10 @@
           &:hover {
             box-shadow: var(--message-list-hover-shadow);
             background-color: var(---message-list-content-background-hover-color) !important;
+
+            td.subject span.msgicon.status:hover::before {
+              color: var(--mail-unread-icon-hover-color) !important;
+            }
           }
 
           td {
@@ -154,6 +162,10 @@
     }
   }
 
+  #mail-search-border {
+    background-color: var(--searchbar-alternate-background-color);
+  }
+
   #layout-content {
     >.header {
       background-color: var(--layout-content-header-background-color) !important;
@@ -169,6 +181,22 @@
 
         .dropbutton {
           background-color: var(--layout-content-header-background-color);
+        }
+      }
+    }
+
+    .attachmentslist {
+      background-color: var(--layout-content-message-partheaders);
+      border-top: solid thin var(--layout-content-message-partheaders-top-border-color) !important;
+      border: none;
+
+      a.filename {
+        .attachment-name {
+          color: var(--layout-content-message-attachment-text-color);
+        }
+
+        .attachment-size {
+          color: var(--layout-content-message-attachment-size-color);
         }
       }
     }
@@ -191,4 +219,8 @@
       color: var(--input-text-color);
     }
   }
+}
+
+body.task-mail.action-none #layout-content {
+  border-left: none;
 }

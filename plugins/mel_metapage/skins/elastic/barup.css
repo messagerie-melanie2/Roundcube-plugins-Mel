@@ -950,7 +950,6 @@ html.dark-mode .barup-icons-button:hover {
 
 #button-notes {
   --note-bckg-color: #FDCF42;
-  --note-text-color: var(--main-text-color);
 
   --note-bckg-color-hover: var(--tierciary-bckg-color);
   --note-text-color-hover: var(--secondary-text-color);

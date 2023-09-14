@@ -3833,10 +3833,10 @@ html.dark-mode .mv2-app-text {
 }
 .mel-tooltip {
   position: absolute;
-  background-color: white;
+  background-color: var(--popover-background-color);
   padding: 5px;
   border-radius: 5px;
-  border: solid thin #D1D3DD;
+  border: solid thin var(--popover-border-color);
 }
 html.touch .mel-tooltip {
   top: 0!important;
@@ -3854,7 +3854,7 @@ html.touch .mel-tooltip {
   left: -5px;
   font-family: Material Symbols Outlined;
   font-size: 45px;
-  color: white;
+  color: var(--popover-icon-color);
   text-shadow: 0px 0px 1px #000;
   pointer-events: none;
 }
@@ -3863,15 +3863,17 @@ html.touch .mel-tooltip::before {
 }
 .mel-tooltip button.mel-button {
   border-radius: 5px;
+  color: var(--popover-text-color);
+}
+.mel-tooltip button.mel-button:hover {
+  background-color: var(--popover-hover-background-color);
+  color: var(--popover-hover-text-color);
+  border-color: transparent !important;
 }
 .mel-tooltip button.mel-button.btn-secondary.active {
-  color: var(--secondary-text-color);
-  background-color: var(--main-bckg-color);
-  border-color: var(--mel-button-border-color);
-}
-.mel-tooltip button.mel-button.btn-secondary.active:hover {
-  background-color: var(--tierciary-bckg-color);
-  border-color: var(--mel-button-border-color-alt);
+  background-color: var(--popover-hover-background-color);
+  color: var(--popover-hover-text-color);
+  border-color: transparent !important;
 }
 .mel-tooltip .tooltip-close-button {
   display: none;

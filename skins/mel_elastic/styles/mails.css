@@ -1417,9 +1417,9 @@ body.task-mail.action-compose a.removelink {
 #message-list-filters {
   display: flex;
   padding: 0px 5px 1px 10px;
-  border-bottom: solid thin var(--message-border-color);
+  border-bottom: var(--message-list-border-bottom);
   margin-bottom: 0;
-  background-color: white;
+  background-color: var(--default-bckg-color);
   align-items: center;
 }
 #message-list-filters li.input-group {
@@ -1431,7 +1431,7 @@ body.task-mail.action-compose a.removelink {
   border-radius: 5px;
 }
 #message-list-filters li #list-select-mail-choices {
-  color: var(--main-text-color);
+  color: var(--input-button-text-color);
   width: 15px;
   justify-content: center;
   display: flex;
@@ -1442,10 +1442,10 @@ body.task-mail.action-compose a.removelink {
   margin-right: 5px;
 }
 #message-list-filters li #list-select-mail-choices:hover {
-  color: var(--secondary-text-color);
+  color: var(--default-text-color);
 }
 #message-list-filters li .quick-filter {
-  color: var(--main-text-color);
+  color: var(--input-button-text-color);
   border-radius: 5px;
   padding: 0px 5px;
   white-space: nowrap;
@@ -1454,20 +1454,20 @@ body.task-mail.action-compose a.removelink {
 }
 #message-list-filters li .quick-filter.active,
 #message-list-filters-extra button.active {
-  color: var(--secondary-text-color);
-  background-color: var(--main-bckg-color);
-  border-color: var(--mel-button-border-color);
+  color: var(--active-button-text-color);
+  background-color: var(--active-button-background-color);
+  border-color: var(--main-border-color);
 }
 #message-list-filters li .quick-filter.active.hoverable:hover,
 #message-list-filters-extra button.active.hoverable:hover {
   background-color: var(--tierciary-bckg-color);
-  border-color: var(--mel-button-border-color-alt);
+  border-color: var(--main-border-color);
 }
 #message-list-filters li .quick-filter.active.quick-filter-all {
   pointer-events: none;
 }
 #message-list-filters li .quick-filter:hover {
-  color: var(--secondary-text-color);
+  color: var(--default-text-color);
 }
 #message-list-filters li.mel-filter-more {
   margin-right: 0;
@@ -1480,12 +1480,12 @@ body.task-mail.action-compose a.removelink {
   height: 100%;
 }
 #message-list-filters-extra {
-  background-color: white;
+  background-color: var(--default-bckg-color);
 }
 #message-list-filters-extra div {
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid var(--message-border-color);
+  border-bottom: var(--message-list-border-bottom);
   overflow: auto;
 }
 #message-list-filters-extra button {
@@ -1496,6 +1496,9 @@ body.task-mail.action-compose a.removelink {
   margin: 5px;
   font-size: 12px;
   white-space: nowrap;
+}
+#message-list-filters-extra button.active.hoverable:hover {
+  color: var(--default-text-color);
 }
 #message-list-filters-extra button .material-symbols-outlined {
   margin-left: 10px;

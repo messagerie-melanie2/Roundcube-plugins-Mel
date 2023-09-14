@@ -67,7 +67,8 @@ html.theme-super-classique .task-mail #layout-list #messagelist-header .searchba
   color: var(--button-color-alt) !important;
 }
 html.theme-super-classique .task-mail #layout-list #messagelist-content {
-  --main-layout-panel-border-radius: 0;
+  border-top-right-radius: 0!important;
+  border-top-left-radius: 0!important;
   margin-top: 0px;
 }
 html.theme-super-classique .task-mail #layout-list #messagelist-content #messagelist tbody td:hover {

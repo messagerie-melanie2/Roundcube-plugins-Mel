@@ -1,3 +1,4 @@
+//compress:false
 html.theme-super-classique {
   .task-mail {
     #mail-search-border {
@@ -228,6 +229,48 @@ html.theme-super-classique {
         margin-top: 0px;
       }
     }
+  
+    #message-list-filters {
+      li{
+        .quick-filter{
+          &:hover {
+            background-color: var(--main-layout-hover-background-color);
+            color: var(--main-text-color);
+          }
+
+          &.active {
+            &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+            border-color: transparent;
+          }
+        }
+
+        &.mel-filter-more{
+          .mel-filter-more{
+            background-color: transparent;
+            color: var(--main-text-color);
+            border:none;
+            border-top-right-radius: var(--main-layout-panel-border-radius);
+            &:hover{
+              &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+            }
+          }
+        }
+      }
+
+      #list-select-mail-choices{
+        &:hover{
+          &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+        }
+      }
+    }
+
+    #message-list-filters-extra{
+      button {
+        &:extend(html.theme-super-classique .task-mail #message-list-filters li .quick-filter:hover);
+        border-color: transparent;
+      }
+    }
+
   }
 
   .task-mail.action-preview {

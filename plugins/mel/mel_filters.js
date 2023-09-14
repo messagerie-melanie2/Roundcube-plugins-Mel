@@ -409,6 +409,7 @@ les propriétés « nom » et « valeur ».
                 this.reset_labels();
                 this.reset_priorities();
                 this.reset_extra_states();
+                $('#mailsearchlist .searchbar').removeClass('active');
                 rcmail.command('reset-search');
 
                 if (!!on_reset) on_reset(filter, event);
@@ -578,6 +579,7 @@ les propriétés « nom » et « valeur ».
                             filter.action = '';
                         }
 
+                        target_event.mel_tooltip('hide');
                         mel_filter_manager.base_callback(filter, e, {});
                     });
 

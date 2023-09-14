@@ -3838,6 +3838,13 @@ html.dark-mode .mv2-app-text {
   border-radius: 5px;
   border: solid thin #D1D3DD;
 }
+html.touch .mel-tooltip {
+  top: 0!important;
+  left: unset!important;
+  right: 0!important;
+  height: 100%;
+  z-index: 2;
+}
 .mel-tooltip::before {
   content: '\e5c7';
   position: absolute;
@@ -3851,6 +3858,37 @@ html.dark-mode .mv2-app-text {
   text-shadow: 0px 0px 1px #000;
   pointer-events: none;
 }
-.mel-tooltip .mel-button {
+html.touch .mel-tooltip::before {
+  display: none;
+}
+.mel-tooltip button.mel-button {
   border-radius: 5px;
+}
+.mel-tooltip button.mel-button.btn-secondary.active {
+  color: var(--secondary-text-color);
+  background-color: var(--main-bckg-color);
+  border-color: var(--mel-button-border-color);
+}
+.mel-tooltip button.mel-button.btn-secondary.active:hover {
+  background-color: var(--tierciary-bckg-color);
+  border-color: var(--mel-button-border-color-alt);
+}
+.mel-tooltip .tooltip-close-button {
+  display: none;
+}
+html.touch .mel-tooltip .tooltip-close-button {
+  display: block;
+  float: right;
+}
+.tooltip-fullscreen-background {
+  display: none;
+}
+html.touch .tooltip-fullscreen-background {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00000094;
 }

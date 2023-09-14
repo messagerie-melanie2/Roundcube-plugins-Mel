@@ -155,6 +155,27 @@ class RotomecaGenerator
         return default_value;
     }
 
+    last(where = null) {
+        const not_exist = Symbol();
+        const value = this.lastOrDefault({default_value:not_exist, where});
+
+        if (value === not_exist) throw 'Item not exist';
+        else return value;
+    }
+
+    lastOrDefault({default_value = null, where = null}) {
+        let generator = this;
+
+        if (!!where) generator = generator.where(where);
+
+        let last = default_value;
+        for (const iterator of generator) {
+            last = iterator;
+        }
+
+        return last;
+    }
+
     flat() {
         return new RotomecaFlatGenerator(this);
     }
@@ -184,6 +205,20 @@ class RotomecaGenerator
 
     join(separator = '') {
         return this.toArray().join(separator);
+    }
+
+    sum({where = null, selector = null}) {
+        let generator = this;
+
+        if (!!where) generator = generator.where(where);
+        if (!!selector) generator = generator.select(selector);
+
+        let sum = 0;
+        for (const iterator of generator) {
+            sum += iterator;
+        }
+
+        return sum;
     }
 
     _findMinMax() {
@@ -947,7 +982,7 @@ class RotomecaEnumerable
     }
 
     /**
-     * Retourne l premier élément dans l'énumération.
+     * Retourne le premier élément dans l'énumération.
      * @param {(item:any, index:number) => boolean | null} callback where
      * @returns {*}
      * @throws If empty
@@ -958,7 +993,7 @@ class RotomecaEnumerable
     }
 
     /**
-     * Retourne l premier élément dans l'énumération.
+     * Retourne le premier élément dans l'énumération.
      * @param {any | null} default_value Valeur par défaut si on ne trouve rien
      * @param {(item:any, index:number) => boolean | null} callback where
      * @returns {*}
@@ -966,6 +1001,32 @@ class RotomecaEnumerable
     firstOrDefault(default_value = null, callback = null)
     {
         return this.generator().firstOrDefault(default_value, callback);
+    }
+
+    /**
+     * La fonction `last` renvoie le dernier élément d'un générateur, éventuellement filtré par une
+     * condition.
+     * @param {null | Function} where - Le paramètre "where" est une fonction qui détermine si un élément doit être
+     * inclus ou non dans la recherche. Il permet de filtrer les éléments avant de retrouver le dernier. Si
+     * la fonction "where" renvoie vrai pour un élément, celui-ci sera inclus dans la recherche ; sinon, ce
+     * sera
+     * @returns Le dernier élément du générateur qui satisfait la condition donnée.
+     */
+    last(where = null) {
+        return this.generator().last(where);
+    }
+    
+    /**
+     * La fonction renvoie le dernier élément d'un générateur ou une valeur par défaut si le générateur est
+     * vide.
+     * @param {Object} param0 
+     * @param {any} [param0.default_value=null] Valeur par défaut si on ne trouve rien
+     * @param {null | Function} [param0.where=null] Fonction where qui sera appliqué avant de récupérer le dernier élément
+     * @returns La fonction lastOrDefault renvoie le résultat de l'appel de la fonction lastOrDefault du
+     * générateur avec les paramètres fournis.
+     */
+    lastOrDefault({default_value = null, where = null}) {
+        return this.generator().lastOrDefault({default_value, where});
     }
 
     /**
@@ -989,6 +1050,16 @@ class RotomecaEnumerable
      */
     join(separator = '') {
         return this.generator().join(separator);
+    }
+
+    /**
+     * Fait la somme des éléments de l'énumération
+     * @param {{where: (item:any, index:number) => boolean | null, selector: (item:any, index:number) => any | null}} param0
+     * @returns {number}
+     * @throws Si selector retourne autre chose qu'un nombre
+     */
+    sum({where = null, selector = null}) {
+        return this.generator().sum({where, selector});
     }
 
     /**

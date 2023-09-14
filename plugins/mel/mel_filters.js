@@ -1,4 +1,4 @@
-$(document).ready(() => {
+$(document).ready(async () => {
     const EMPTY_STRING = '';
 
     if ('mail' === rcmail.env.task && [EMPTY_STRING, 'index'].includes(rcmail.env.action)) {
@@ -338,7 +338,7 @@ les propriétés « nom » et « valeur ».
 
                 new mel_html2('button', {
                     attribs:{
-                        class:`btn btn-secondary mel-button no-button-margin no-margin-button bckg true label_${$label.data('mel-label')} background important`
+                        class:`btn btn-secondary mel-button no-button-margin no-margin-button bckg true label_${$label.data('mel-label')} background hoverable important`
                     },
                     contents:[
                         new mel_html('span', {class:''}, $label.text()),
@@ -380,7 +380,7 @@ les propriétés « nom » et « valeur ».
 
                 new mel_html2('button', {
                     attribs:{
-                        class:`btn btn-secondary mel-button no-button-margin no-margin-button active`
+                        class:`btn btn-secondary mel-button no-button-margin no-margin-button active hoverable`
                     },
                     contents:[
                         new mel_html('span', {class:''}, $prio.text()),
@@ -638,6 +638,101 @@ les propriétés « nom » et « valeur ».
                 mel_selector.get_checkbox().update_selected_check();
             });
         });
+
+        const { MelEnumerable } = await loadJsModule('mel_metapage', 'enum.js', '/js/lib/classes/');
+        const corrector = 0;
+
+        const observe = async () => {
+            $('#message-list-filters li').show();
+            $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');
+
+            if (0 !== $('#message-list-filters li.mel-filter-more').length) {
+                $('#message-list-filters li.mel-filter-more').hide();
+
+                if ($('#message-list-filters li.mel-filter-more button').hasClass('activated')) {
+                    $('#message-list-filters li.mel-filter-more button').click();
+                }
+            }
+
+            const layout_list_width = $('#layout-list').width(); 
+            const li_width = MelEnumerable.from($('#message-list-filters li')).sum({selector: (x) => $(x).width()});
+            console.log('observe...', 'layout',layout_list_width, 'li', li_width);
+            if (li_width > layout_list_width) {
+
+                $('#message-list-filters').css('padding-right', 0);
+
+                let width = 0;
+                let $iterator;
+                for (const iterator of $('#message-list-filters li')) {
+                    $iterator = $(iterator);
+                    width += $iterator.width() + corrector;
+
+                    if (width > layout_list_width) {
+                        $iterator.hide();
+                        if (0 === $('#message-list-filters li.filter-last-before-more').length) {
+                            $iterator.addClass('filter-last-before-more')
+                        }
+                    }
+                }
+
+                width = null;
+                $iterator = null;
+
+                if (0 === $('#message-list-filters li.mel-filter-more').length)
+                {
+                    let more_button = new mel_html2('button', {
+                        attribs:{class:'mel-button no-button-margin no-margin-button mel-filter-more'},
+                        contents: new mel_html('span', {class:'material-symbols-outlined'}, 'chevron_right')
+                    });
+
+                    more_button.onclick.push((e) => {
+                        e = $(e.currentTarget);
+                        if (!e.hasClass('activated')) {
+                            $('#message-list-filters li').show();
+                            e.addClass('activated').find('span').html('expand_more');
+                            $('#message-list-filters').css({
+                                'flex-wrap': 'wrap',
+                            });
+                            e.parent().css('margin-top', '-47px');
+                        }
+                        else {
+                            e.removeClass('activated').find('span').html('chevron_right');
+                            $('#message-list-filters').css({
+                                'flex-wrap': '',
+                                'justify-content': ''
+                            });
+                            e.parent().css('margin-top', '');
+                            observe();
+                        }
+                    });
+
+                    new mel_html2('li', {attribs:{class:'mel-filter-more'}, contents:more_button}).create($('#message-list-filters'));
+                }
+
+                $('#message-list-filters li.mel-filter-more').show();
+
+                const visible_enum = MelEnumerable.from($('#message-list-filters li')).where(x => $(x).css('display') !== 'none');
+
+                if (visible_enum.select(x => $(x).width() + ($(x).hasClass('mel-filter-more') ? 0 : corrector)).sum({}) > layout_list_width) {
+                    $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');
+                    let last = visible_enum.where(x => !$(x).hasClass('mel-filter-more')).last();//.hide();
+                    console.log('last', visible_enum.toArray(), last, $(last).children());
+                    if (!!last) $(last).addClass('filter-last-before-more').hide();
+                }
+            }
+        };
+
+        let timeout;
+        let filter_observer = new ResizeObserver(() => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                observe();
+                clearTimeout(timeout);
+            }, 200);
+        });
+
+        filter_observer.observe($('#layout-list')[0]);
+
     }
 
 });

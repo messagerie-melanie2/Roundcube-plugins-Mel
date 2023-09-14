@@ -1866,18 +1866,21 @@ body.task-mail.action-compose a.removelink
 
 #message-list-filters{
     display: flex;
-    padding: 5px 5px 5px 10px;
+    padding: 0px 5px 1px 10px;
     border-bottom: solid thin var(--message-border-color);
     margin-bottom: 0;
     background-color: white;
     align-items: center;
 
     li {
-        margin-right: 5px;
-
         &.input-group {
             width: auto;
             flex-wrap: nowrap;
+            align-items: center;
+
+            .touch &{
+                border-radius: 5px;
+            }
         }
 
         #list-select-mail-choices {
@@ -1886,7 +1889,10 @@ body.task-mail.action-compose a.removelink
             justify-content: center;
             display: flex;
             margin-left: 0;
-            border-radius: 5px;
+            border-radius: 0px;
+            max-height: 30px;
+            align-items: center;
+            margin-right: 5px;
 
             &:hover {
                 color: var(--secondary-text-color);
@@ -1898,9 +1904,38 @@ body.task-mail.action-compose a.removelink
             border-radius: 5px;
             padding: 0px 5px;
             white-space: nowrap;
+            font-size: 12px;
+            margin-right: 5px;
+
+            &.active{
+                color: var(--secondary-text-color);
+                background-color: var(--main-bckg-color);
+                border-color: var(--mel-button-border-color);
+        
+                &.hoverable{
+                    &:hover{
+                        background-color: var(--tierciary-bckg-color);
+                        border-color: var(--mel-button-border-color-alt);
+                    }
+                }
+            }
 
             &:hover{
                 color: var(--secondary-text-color);
+            }
+        }
+
+        &.mel-filter-more{
+            margin-right: 0;
+            height: 100%;
+            margin-left: auto;
+
+            button {
+                &.mel-button{
+                    padding: 0;
+                    border-radius: 0;
+                    height: 100%;
+                }
             }
         }
     }
@@ -1913,18 +1948,33 @@ body.task-mail.action-compose a.removelink
         display: flex;
         flex-direction: row;  
         border-bottom: 1px solid var(--message-border-color);
+        overflow: auto;
     }
 
     button {
-        background-color: var(--tierciary-bckg-color);
+        //background-color: var(--secondary-bckg-color);
         border-radius: 5px;
         padding: 0px 10px;
         display: flex;
         align-items: center;
         margin: 5px;
+        font-size: 12px;
+        white-space: nowrap;
+
+        &.active{
+            &:extend(#message-list-filters li .quick-filter.active);
+    
+            &.hoverable{
+                &:hover{
+                    &:extend(#message-list-filters li .quick-filter.active.hoverable:hover);
+                }
+            }
+        }
 
         .material-symbols-outlined{
             margin-left: 10px;
+            font-size: 18px;
+            margin-right: -5px;
         }
 
         &:hover {

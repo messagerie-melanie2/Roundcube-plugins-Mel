@@ -5242,6 +5242,14 @@ html.dark-mode {
 	border-radius: 5px;
     border: solid thin #D1D3DD;
 
+    html.touch &{
+        top: 0!important;
+        left:unset!important;
+        right: 0!important;
+        height:100%;
+        z-index:2;
+    }
+
     &::before{
         content: '\e5c7';
         position: absolute;
@@ -5254,10 +5262,49 @@ html.dark-mode {
         color: white;
         text-shadow: 0px 0px 1px #000;
         pointer-events: none;
+
+        html.touch & {
+            display: none;
+        }
     }
 
-    .mel-button {
+    button.mel-button {
         border-radius: 5px;
+
+        &.btn-secondary.active{
+            color: var(--secondary-text-color);
+            background-color: var(--main-bckg-color);
+            border-color: var(--mel-button-border-color);
+    
+            &:hover{
+                background-color: var(--tierciary-bckg-color);
+                border-color: var(--mel-button-border-color-alt);
+            }
+        }
+
+    }
+
+    .tooltip-close-button {
+        display: none;
+
+        html.touch &{
+            display: block;
+            float: right;
+        }
+    }
+}
+
+.tooltip-fullscreen-background {
+    display: none;
+
+    html.touch &{
+        display: block;
+        position: absolute;
+        top:0;
+        left:0;
+        width: 100%;
+        height: 100%;
+        background-color: #00000094;
     }
 }
 

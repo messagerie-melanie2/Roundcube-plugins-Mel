@@ -1,4 +1,5 @@
 import { EMPTY_STRING, TYPE_STRING } from "../constants/constants.js";
+import { MainIconHtml } from "../html/html_icon.js";
 import { Point, Rectangle } from "../mel_maths.js";
 import { MelEnumerable } from "./enum.js";
 import { Random } from "./random.js";
@@ -18,6 +19,8 @@ class mel_tooltip {
     _init() {
         this.$parent = null;
         this.$ref = null;
+        this.$close = null;
+        this.$fullscreen_background = null;
         this._content = EMPTY_STRING;
         this._position = enum_tooltip_position.AUTO;
         this._mode = enum_tooltip_mode.HOVER;
@@ -31,6 +34,16 @@ class mel_tooltip {
         this._position = position;
         this._mode = mode;
 
+        this.$fullscreen_background = new mel_html2('div', {
+            attribs:{class:'tooltip-fullscreen-background'},
+            events: {
+                click: () => {
+                    this.hide();
+                    this.$fullscreen_background.hide();
+                }
+            }
+        }).create($('body'));
+
         return this;
     }
 
@@ -43,7 +56,7 @@ class mel_tooltip {
                 this.$ref.addContent(mel_html.div({class:'mel-tooltip-content-wrapper'}, this._content));
                 break;
             default:
-                if (this._content instanceof mel_html) this.$ref.addContent(this._content); 
+                if (this._content instanceof mel_html) this.$ref.addContent(mel_html.div({class:'mel-tooltip-content-wrapper'}, this._content)); 
                 else before_create = false
                 break;
         }
@@ -78,9 +91,21 @@ class mel_tooltip {
                 break;
         }
 
-        if (!before_create) this.$ref.append(this._content);
+        this.$close = new mel_html2('button', {
+            attribs:{class: `mel-button no-button-margin no-margin-button bckg true tooltip-close-button`},
+            contents:new MainIconHtml('close', {}, {})
+        });
+
+        this.$close.onclick.push(() => {
+            this.hide();
+        })
+
+        if (!before_create) this.$ref.append($('<div>').addClass('mel-tooltip-content-wrapper').append(this._content));
+
+        this.$close = this.$close.generate().prependTo(this.$ref);
 
         this.$parent.data('toggle-id', mel_tooltip.generate_id());
+        this.$fullscreen_background.attr('id', `${this.id()}-tooltip-fullscreen-background`);
 
         return this;
     }
@@ -103,10 +128,12 @@ class mel_tooltip {
 
     show() {
         this.$ref.addClass('showed').attr('tabindex', 0).show().focus();
+        this.$fullscreen_background.show();
         return this;
     }
 
     hide() {
+        this.$fullscreen_background.hide();
         this.$ref.removeClass('showed').hide().attr('tabindex', -1).blur();
         this.$parent.focus();
         return this;
@@ -118,6 +145,17 @@ class mel_tooltip {
 
     is_active() {
         return this.$ref.is('.showed');
+    }
+
+    destroy() {
+        this.$ref.remove();
+        this.$close = null;
+        this.$fullscreen_background.remove();
+        this.$fullscreen_background = null;
+        this.$ref = null;
+        this.$parent = null;
+
+        if (!!mel_tooltip.tooltips[this.id()]) mel_tooltip.remove_tooltip(this.id());
     }
 
     static generate_id() {
@@ -138,7 +176,7 @@ mel_tooltip.add_tooltip = function (tooltip) {
 }
 
 mel_tooltip.remove_tooltip = function (id) {
-    this.tooltips[id] = null;
+    this.tooltips[id]  = this.tooltips[id].destroy();
     ids = ids.filter(x => x !== id);
 }
 
@@ -206,3 +244,12 @@ if (typeof $ !== 'undefined' && !!$.fn && !$.fn.mel_tooltip) {
         }
     })
 }
+
+$(window).on('resize', () => {
+    for (const key in mel_tooltip.tooltips) {
+        if (Object.hasOwnProperty.call(mel_tooltip.tooltips, key)) {
+            var tooltip = mel_tooltip.tooltips[key];
+            tooltip._set_pos();
+        }
+    }
+});

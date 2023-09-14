@@ -1,0 +1,10 @@
+{
+    "id":"main",
+    "display":"main",
+    "description":"main theme",
+    "icon":"icon.svg",
+    "alternate":"images/Computer_classic.png",
+    "style":"style",
+    "class":"main-theme",
+    "custom_dark_mode":true
+}

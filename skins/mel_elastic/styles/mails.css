@@ -402,10 +402,9 @@ table.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
 html body.task-mail #mailsearchlist .searchbar a {
   color: var(--main-text-color);
 }
-#mailsearchlist .searchbar a.unread::before {
-  content: "\e91e";
-  font-family: DWP;
-  font-weight: normal;
+#mailsearchlist .searchbar a.unread,
+#mailsearchlist .searchbar a.flag {
+  display: none;
 }
 #mailsearchlist .searchbar a.options::before {
   content: "\e5cf";

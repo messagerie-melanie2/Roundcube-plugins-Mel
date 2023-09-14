@@ -651,7 +651,7 @@ table.messagelist{
                 &.subject{
                     span{
                         &.fromto,
-                        &.date,{
+                        &.date{
                             color: var(--secondary-text-color);
                         }
                     }
@@ -726,10 +726,15 @@ table.messagelist{
             }
 
             &.unread{
-                &::before{
-                    content: "\e91e";
-                    ._dwp-icon();
-                }
+                display: none;
+                // &::before{
+                //     content: "\e91e";
+                //     ._dwp-icon();
+                // }
+            }
+
+            &.flag {
+                &:extend(#mailsearchlist .searchbar a.unread);
             }
 
             &.options{

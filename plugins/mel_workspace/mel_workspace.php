@@ -1968,8 +1968,8 @@ class mel_workspace extends bnum_plugin
             $subject = $bodymail->subject();
             $message = $bodymail->body();
 
-
-            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name]);
+            $is_html = true;
+            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
         }
     }
 

@@ -47,7 +47,7 @@ $labels["default"] = "Par défaut";
 $labels["canal_change_confirmation"] = "Attention !\r\nCe canal sera synchronisé avec cet espace.\r\nDe plus, le canal ne sera pas supprimé automatiquement à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?";
 
 $labels["open"] = "Ouvrir";
-$labels["click_for_open"] = "Cliquez pour ouvrir l'espace de travail";
+$labels["click_for_open"] = "Rendez-vous sur le Bnum pour vous rendre sur cet espace !";
 $labels["notification_title"] = ' vous a ajouté à l\'espace de travail ';
 $labels["notification_content"] = "Vous pouvez ouvrir l'espace en cliquant sur le lien ci-dessous";
 $labels["notification_content2"] = "Vous pouvez ouvrir l'espace \"<wsp/>\" en cliquant sur le lien ci-dessous";

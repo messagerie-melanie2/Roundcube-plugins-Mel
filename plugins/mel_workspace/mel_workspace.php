@@ -1912,7 +1912,7 @@ class mel_workspace extends bnum_plugin
         } else $canNotify = false;
 
         if ($canNotify) {
-            mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
+            mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.click_for_open"), [
                 [
                     'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
                     'text' => $this->gettext("mel_workspace.open"),

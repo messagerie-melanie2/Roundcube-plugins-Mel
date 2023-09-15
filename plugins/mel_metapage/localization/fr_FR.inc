@@ -334,7 +334,7 @@ $labels['notif-nothing'] = "Rien/Fonctionnement par défaut";
 
 $labels['tab_title_style_help'] = "\"<all/>\" affiche sur l'onglet la somme des notifications sur la navigation principal (ex : 5 mail, 3 évènements => (8) Paramètres)\r\n\"<page/>\" affiche seulement les notifications de la page en cours (ex : (3) Agenda).\r\nFonctionnement par défaut sinon.";
 
-$labels['app_chat'] = 'Mes discussions';
+$labels['app_chat'] = 'Discussions';
 $labels['app_documents'] = 'Documents';
 $labels['app_tasks'] = 'Tâches';
 $labels['app_news'] = 'M\'informer';
@@ -342,7 +342,7 @@ $labels['app_ul'] = 'Liens utiles';
 $labels['app_kanban'] = 'Kanban';
 $labels['app_survey'] = 'Sondage';
 $labels['app_rizomo'] = 'Suite numérique';
-$labels['app_calendar'] = 'Mon agenda';
+$labels['app_calendar'] = 'Agenda';
 $labels['app_workspace'] = 'Espaces de travail';
 $labels['app_parapheur'] = 'Parapheur';
 

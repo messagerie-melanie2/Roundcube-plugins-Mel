@@ -833,11 +833,15 @@ if (rcmail && window.mel_metapage)
         if (prop === 'logout') {
             let $querry = $('iframe.wekan-frame');
             if ($querry.length > 0) {
-                $querry[0].contentWindow.$('#wekan-iframe').contentWindow.Meteor.logout();
+                try {
+                    $querry[0].contentWindow.$('#wekan-iframe').contentWindow.Meteor.logout();
+                } catch (error) {
+                    
+                }
 
                 try {
                     const kanban = $querry[0].contentWindow.rcmail.env.wekan_storage_end;
-                    const storage = Object.keys(storage);
+                    const storage = Object.keys(localStorage);
                     for (const key of storage) {
                         if (key.includes(kanban)) localStorage.removeItem(key);
                     }

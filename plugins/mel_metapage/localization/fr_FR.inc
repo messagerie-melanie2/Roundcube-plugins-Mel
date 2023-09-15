@@ -250,7 +250,7 @@ $labels['main_contents'] = 'Contenu principal';
 $labels['to_search'] = 'Rechercher';
 $labels['notifications_help'] = 'Afficher les notifications';
 $labels['settings_help'] = 'Afficher les options';
-$labels['global_search_title'] = 'Recherche globale : recherche dans les contacts, les mails ansi que l\'agenda.';
+$labels['global_search_title'] = 'Recherche globale : recherche dans les contacts, les mails ainsi que l\'agenda.';
 
 $labels['open_chat_popup'] = 'Ouvrir la discussion instantanée';
 $labels['other_actions'] = 'Autres actions';

@@ -1,4 +1,4 @@
-:root {
+.theme-classique-main:root {
   // Main background colors
   --main-bckg-color: #363A5B;
   --secondary-bckg-color: #2C3054;
@@ -8,12 +8,13 @@
   --warning-color: #FC945A;
   --card-background-color: #f0f0f0;
   --active-button-background-color: var(--main-bckg-color);
+  --theme-background-color: #f3f2f1;
 
   //Main text colors
   --main-text-color: #363A5B;
   --secondary-text-color: #FFFFFF;
   --tierciary-text-color: #484D7A;
-  --fourth-text-color: #80D5C6;
+  --fourth-text-color: #779bd6;
   --input-button-text-color: var(--main-text-color);
   --header-title-color: var(--main-text-color);
   --default-text-color: var(--secondary-text-color);
@@ -22,7 +23,7 @@
   --active-button-text-color: var(--secondary-text-color);
 
   //Hover
-  --hover-background-color: rgba(113, 117, 152, 0.5);
+  --hover-background-color: #edebe9;
   --secondary-hover-background-color: #f8f9fa;
   --hover-close-color: red;
 
@@ -134,41 +135,41 @@
   --layout-menu-border-right: transparent;
 
   //Layout sidebar
-  --layout-sidebar-background-color: var(--tierciary-bckg-color);
-  --layout-sidebar-background-hover-color: var(--secondary-bckg-color);
-  --layout-sidebar-background-selected-color: var(--secondary-bckg-color);
+  --layout-sidebar-background-color: var(--theme-background-color);
+  --layout-sidebar-background-hover-color: var(--hover-background-color);
+  --layout-sidebar-background-selected-color: var(--hover-background-color);
   --layout-sidebar-background-hover-selected-color: var(--layout-sidebar-background-selected-color);
-  --layout-sidebar-text-color: var(--secondary-text-color);
-  --layout-sidebar-text-hover-color: var(--secondary-text-color);
-  --layout-sidebar-text-selected-color: var(--secondary-text-color);
+  --layout-sidebar-text-color: var(--main-text-color);
+  --layout-sidebar-text-hover-color: var(--main-text-color);
+  --layout-sidebar-text-selected-color: var(--main-text-color);
   --layout-sidebar-text-hover-selected-color: var(--layout-sidebar-text-selected-color);
   --layout-sidebar-border-color: var(--layout-border);
-  --layout-sidebar-border-selected-color: transparent;
+  --layout-sidebar-border-selected-color: var(--main-border-color);
 
   --primary-layout-sidebar-background-color: var(--main-bckg-color);
   --primary-layout-sidebar-text-color: var(--layout-sidebar-text-color);
 
   //Layout list
-  --layout-list-header-background-color: var(--tierciary-bckg-color);
-  --layout-list-header-background-hover-color: var(--secondary-bckg-color);
-  --layout-list-header-text-color: var(--secondary-text-color);
-  --layout-list-header-text-hover-color: var(--secondary-text-color);
+  --layout-list-header-background-color: var(--theme-background-color);
+  --layout-list-header-background-hover-color: var(--hover-background-color);
+  --layout-list-header-text-color: var(--main-text-color);
+  --layout-list-header-text-hover-color: var(--main-text-color);
   --layout-list-header-input-text-color: var(--main-text-color);
 
-  --layout-list-background-color: var(--layout-list-header-background-color);
+  --layout-list-background-color: var(--theme-background-color);
 
   --alternative-layout-list-background-color: var(--tierciary-bckg-color);
   --alternative-layout-list-header-background-color: var(--alternative-layout-list-background-color);
 
   //Layout content
-  --layout-content-header-background-color: var(--tierciary-bckg-color);
+  --layout-content-header-background-color: var(--theme-background-color);
   --alternative-layout-content-header-background-color: #f4f4f4;
-  --layout-content-header-background-hover-color: var(--secondary-bckg-color);
-  --layout-content-header-text-color: var(--secondary-text-color);
-  --layout-content-header-text-hover-color: var(--secondary-text-color);
+  --layout-content-header-background-hover-color: var(--hover-background-color);
+  --layout-content-header-text-color: var(--main-text-color);
+  --layout-content-header-text-hover-color: var(--main-text-color);
   --layout-content-text-color: var(--main-text-color);
   --layout-content-background-color: var(--default-bckg-color);
-  --layout-content-border-left-color:none;
+  --layout-content-border-left-color: solid var(--tierciary-text-color);
 
   //Mail
   --mail-unread-text-color: var(--main-text-color);
@@ -179,32 +180,32 @@
   --message-list-content-row-background-color: #FFFFFF;
   --message-list-content-row-alternate-background-color: #FAFAFA;
   --message-list-content-row-background-hover-color: none;
-  --message-list-content-selected-row-background-color: var(--secondary-bckg-color);
-  --message-list-border-bottom: 1px solid var(--message-list-content-border-color);
+  --message-list-content-selected-row-background-color: var(--theme-background-color);
+  --message-list-border-bottom: solid thin #f0f0f0;
 
   //Mail - msgicon, flags
   --message-list-content-mail-button-color: var(--mail-unread-icon-color);
   --message-list-content-mail-button-hover-color: var(--mail-unread-text-color);
-  --message-list-content-selected-mail-button-color: var(--secondary-text-color);
-  --message-list-content-selected-mail-button-hover-color: var(--secondary-text-color);
+  --message-list-content-selected-mail-button-color: var(--main-text-color);
+  --message-list-content-selected-mail-button-hover-color: var(--main-text-color);
 
   //Mail - address
   --message-list-content-mail-address-color: var(--mail-unread-text-color);
   --message-list-content-mail-address-hover-color: var(--mail-unread-text-color);
-  --message-list-content-selected-mail-address-color: var(--secondary-text-color);
-  --message-list-content-selected-mail-address-hover-color: var(--secondary-text-color);
+  --message-list-content-selected-mail-address-color: var(--main-text-color);
+  --message-list-content-selected-mail-address-hover-color: var(--main-text-color);
 
   //Mail - subject, date, size, attachment
   --message-list-content-mail-subject-color: var(--main-text-color);
   --message-list-content-mail-subject-hover-color: var(--main-text-color);
-  --message-list-content-selected-mail-subject-color: var(--secondary-text-color);
-  --message-list-content-selected-mail-subject-hover-color: var(--secondary-text-color);
+  --message-list-content-selected-mail-subject-color: var(--main-text-color);
+  --message-list-content-selected-mail-subject-hover-color: var(--main-text-color);
 
   --message-list-content-hover-shadow: #26283b47;
   --message-list-content-border-color: #D1D3DD;
 
   //Mail Panel
-  --layout-content-header-right-border-color: var(--secondary-text-color);
+  --layout-content-header-right-border-color: var(--main-text-color);
   --layout-content-contact-address-color: #333;
   --layout-content-message-partheaders: #fcfcfc;
   --layout-content-message-partheaders-top-border-color: #f4f4f4;
@@ -249,10 +250,10 @@
 
   //Popover
   --popover-background-color: var(--default-bckg-color);
-  --popover-hover-background-color: var(--tierciary-bckg-color);
+  --popover-hover-background-color: var(--hover-background-color);
   --popover-text-color: var(--main-text-color);
-  --popover-hover-text-color: var(--secondary-text-color);
-  --popover-hover-icon-color: var(--secondary-text-color);
+  --popover-hover-text-color: var(--main-text-color);
+  --popover-hover-icon-color: var(--main-text-color);
   --popover-box-shadow-color: #f1f3f4;
   --popover-border-color: #d4dbde;
   --popover-focus-border-color: #37beff;
@@ -267,12 +268,12 @@
   --searchbar-background-color: var(--default-bckg-color);
   --searchbar-alternate-background-color: var(--default-bckg-color);
   --searchbar-text-color: var(--input-button-text-color);
-  --searchbar-text-hover-color: var(--secondary-text-color);
-  --searchbar-border-color: transparent;
+  --searchbar-text-hover-color: var(--main-text-color);
+  --searchbar-border-color: var(--main-border-color);
   --searchbar-alternate-border-color: var(--main-bckg-color);
-
-  //Searchmenu
-  --searchmenu-text-color:var(--secondary-text-color);
+  
+   //Searchmenu
+   --searchmenu-text-color:var(--main-text-color);
 
   //Switch buttons
   --custom-switch-unchecked-background-color: #e8e8e8;

@@ -177,6 +177,15 @@ body {
   border-right-color: var(--layout-sidebar-border-color) !important;
 }
 
+.task-mail #layout-sidebar,
+.task-calendar #layout-sidebar {
+  background-color: var(--layout-sidebar-background-color) !important;
+}
+
+.popover .menu li a[aria-haspopup]:hover::after {
+  color: var(--popover-hover-icon-color);
+}
+
 .search>.input-group>.task-mail {
   #layout-sidebar {
     background-color: var(--layout-sidebar-background-color) !important;
@@ -299,7 +308,12 @@ body {
   border-bottom-color: var(--popover-icon-color);
 }
 
+#searchmenu {
+  color: var(--searchmenu-text-color);
+}
+
 #layout-list {
+  background-color: var(--layout-list-background-color);
   >.header {
     background-color: var(--layout-list-header-background-color) !important;
 
@@ -323,8 +337,9 @@ body {
       color: var(--searchbar-text-color) !important;
     }
 
-    #mailsearchlist .searchbar a:hover {
-      color: var(--searchbar-text-color) !important;
+    #mailsearchlist .searchbar a:hover,
+    #mailsearchlist .searchbar a:focus     {
+      color: var(--searchbar-text-hover-color) !important;
     }
   }
 }
@@ -449,7 +464,7 @@ body {
 
   .custom-control-input:checked~.custom-control-label {
     &::before {
-      background-color: var(--custom-switch-checked-background-color);
+      background-color: var(--alternate-custom-switch-checked-background-color);
       border: var(--custom-switch-border);
     }
 

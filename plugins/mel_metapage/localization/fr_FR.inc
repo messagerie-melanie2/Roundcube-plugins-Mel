@@ -385,3 +385,4 @@ $labels['quitdelayconfirmation'] = 'Si vous quittez, le mail ne sera pas envoyé
 $labels['delaytimer'] = 'Le message sera envoyé dans';
 $labels['new-note'] = 'Nouvelle note';
 $labels['note-create-title'] = $labels['new-note'].' - Créer une nouvelle note qui s\'affichera après les autres notes';
+$labels['main_nav_can_deploy'] = 'Déplier la barre de navigation au survol ?';

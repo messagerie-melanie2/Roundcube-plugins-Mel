@@ -396,6 +396,11 @@ if (rcmail && window.mel_metapage)
                 }
             }
 
+            if (rcmail.env.main_nav_can_deploy !== top.rcmail.env.main_nav_can_deploy) {
+                top.rcmail.env.main_nav_can_deploy = rcmail.env.main_nav_can_deploy;
+                top.MEL_ELASTIC_UI.update_main_nav_meca();
+            }
+
             if (rcmail.env.menu_last_frame_enabled !== top.rcmail.env.menu_last_frame_enabled) {
                 top.rcmail.env.menu_last_frame_enabled = rcmail.env.menu_last_frame_enabled;
                 let $item = top.$("#taskmenu .menu-last-frame");

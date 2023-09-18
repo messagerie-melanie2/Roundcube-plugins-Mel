@@ -308,6 +308,7 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("mel_metapage_weather_enabled", $this->rc->config->get("enable_weather", false));
         $this->rc->output->set_env('mel_metapage.tab.notification_style', $this->rc->config->get('tab_title_style', 'page'));
         $this->rc->output->set_env('mel_metapage.webconf_voxify_indicatif', $this->rc->config->get('webconf_voxify_indicatif', 'FR'));
+        $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
 
         $icon = "mel-icon-size";
         $folder_space = "mel-folder-space";
@@ -2076,6 +2077,14 @@ class mel_metapage extends bnum_plugin
                 'title'   => html::label($showBackIcon, rcube::Q($this->gettext($showBackIcon))),
                 'content' => $check->show($haveBackIcon ? 1 : 0),
             ];
+
+            $mainNavDeploy = 'main_nav_can_deploy';
+            $mainNavDeployConfig = $this->rc->config->get($mainNavDeploy, true);
+            $check = new html_checkbox(['name' => $mainNavDeploy, 'id' => $mainNavDeploy, 'value' => 1]);
+            $args['blocks']['second_nav']['options'][$mainNavDeploy] = [
+                'title'   => html::label($mainNavDeploy, rcube::Q($this->gettext($mainNavDeploy))),
+                'content' => $check->show($mainNavDeployConfig ? 1 : 0),
+            ];
         }
         else if ($args['section'] == 'bnum-experimental')
         {
@@ -2286,6 +2295,13 @@ class mel_metapage extends bnum_plugin
         $haveBackIcon = '1' === $haveBackIcon;
         $args['prefs'][$showBackIcon] = $haveBackIcon;
         $this->rc->output->set_env("menu_last_frame_enabled", $haveBackIcon);
+
+        $mainNavParam = 'main_nav_can_deploy';
+        $mainNavValue = $this->rc->config->get($mainNavParam, false);
+        $mainNavValue = rcube_utils::get_input_value($mainNavParam, rcube_utils::INPUT_POST) ?? false;
+        $mainNavValue = '1' === $mainNavValue;
+        $args['prefs'][$mainNavParam] = $mainNavValue;
+        $this->rc->output->set_env("main_nav_can_deploy", $mainNavValue);
     }
     else if ($args['section'] == 'bnum-experimental')
     {

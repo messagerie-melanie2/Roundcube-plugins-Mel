@@ -698,3 +698,12 @@ li#menu-small-li
 .menu-last-frame:hover .menu-last-frame-item::before{
     font-variation-settings: 'FILL' 1;
 }
+
+#layout-menu.main-nav-cannot-deploy:hover {
+    max-width: 60px;
+}
+
+#layout-menu.main-nav-cannot-deploy:hover a .button-inner,
+#layout-menu.main-nav-cannot-deploy:hover a .inner {
+    display: none!important;
+}

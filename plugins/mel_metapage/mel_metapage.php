@@ -3088,6 +3088,10 @@ class mel_metapage extends bnum_plugin
             case 'mail_delay':
                 $value = +$value;
                 break;
+
+            case 'main_nav_can_deploy':
+                $value = 'true' == $value;
+                break;
             default:
                 $const_mel_options = ["mel-icon-size", 
                                     "mel-folder-space",

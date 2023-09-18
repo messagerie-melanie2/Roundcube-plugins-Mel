@@ -620,6 +620,13 @@ if (rcmail)
                 }
             }, true);
 
+            rcmail.register_command('updateMainNavDep', async args => {
+                if (top.$('#layout-menu').hasClass('main-nav-cannot-deploy')) top.rcmail.env.main_nav_can_deploy = true;
+                else top.rcmail.env.main_nav_can_deploy = false;
+                
+                top.MEL_ELASTIC_UI.update_main_nav_meca();
+            }, true);
+
             rcmail.register_command('updateScollBarMode', async args => {
                 const {key, value} = args;
                 const helper = await load_helper();

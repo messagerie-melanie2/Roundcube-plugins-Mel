@@ -64,5 +64,36 @@
       </div>
     </div>
   </div>
+  <!-- Barre de navigation -->
+  <div class="row row-options">
+    <div class="col-12">
+      <div class="options-custom-title">
+        Déplier la barre de navigation ?
+        <div class="material-symbols-outlined options-help ml-2" style="vertical-align: top;" title="Si ''Oui'', la barre de navigation se déplie au survol de la souris">
+          help
+        </div>
+      </div>
+      <div class="option_radio_wrapper">
+        <div class="col-6 text-center px-1">
+          <input data-command="updateMainNavDep" type="radio" name="main_nav_can_deploy" id="deploy-nav-default" data-value="true"
+            onclick="save_option('main_nav_can_deploy', true, this)">
+          <label for="deploy-nav-default" class="option">
+            <div class="option-image candeploy"></div>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.yes' />
+        </div>
+        <div class="col-6 text-center px-1">
+          <input data-command="updateMainNavDep" type="radio" name="main_nav_can_deploy" id="deploy-nav-no" data-value="false"
+            onclick="save_option('main_nav_can_deploy', false, this)">
+          <label for="deploy-nav-no" class="option">
+            <div class="option-image cannotdeploy"></div>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.no' />
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 

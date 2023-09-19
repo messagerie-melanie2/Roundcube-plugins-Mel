@@ -3057,6 +3057,7 @@ $(document).ready(() => {
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_page(e, number, doAction = true){
+            //debugger;
             const _integer = this._integer;
             e = $(e).parent();
             const count = Math.ceil(e.parent().data("count")/7.0);
@@ -3131,7 +3132,7 @@ $(document).ready(() => {
             e.parent().data("current", number);
  
             if (doAction)
-                eval(e.parent().data("page").replaceAll("Â¤pageÂ¤", number));
+                eval(e.parent().data("page").replaceAll("¤page¤", number));
 
             return this;
         }

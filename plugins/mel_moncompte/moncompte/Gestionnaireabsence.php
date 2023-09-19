@@ -384,9 +384,13 @@ class Gestionnaireabsence extends Moncompteobject
         $user->load(['outofoffices']);
         $offices = $user->outofoffices;
         $external_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
-      echo json_encode(['start' => $external_oof->start->format('d/m/Y H:i:s'),
-                        'end' => $external_oof->end->format('d/m/Y H:i:s'),
-                        'message' => $external_oof->message]);
+
+        $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
+        $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
+
+      echo json_encode(['start' => $start,
+                        'end' => $end,
+                        'message' => $external_oof->message ?? '']);
       exit;
 	}
 

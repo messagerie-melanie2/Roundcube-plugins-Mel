@@ -515,7 +515,12 @@ class mel extends rcube_plugin
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
     }
 
-    if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0) {
+    if (!isset($this->get_account) && $this->rc->task == 'mail' && $this->rc->action == '') {
+      if (mel_logs::is(mel_logs::DEBUG)) {
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account() cache problem folder");
+      }
+    }
+    else if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0) {
       $bal = driver_mel::gi()->user();
       $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $args['folder']);
       $bal->load();

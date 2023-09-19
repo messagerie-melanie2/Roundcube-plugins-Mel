@@ -64,6 +64,11 @@ body {
   }
 }
 
+ul.treelist li.selected>div>a,
+.scroller>.listing li a {
+  color: var(--layout-sidebar-text-color);
+}
+
 #eventedit {
   .nav-tabs {
     border-bottom: var(--nav-tabs-border-bottom);
@@ -249,7 +254,6 @@ body {
   #user-up-panel .user-menu-separator {
     border-bottom: var(--main-separator-border);
   }
-
 }
 
 #folderlist-content {
@@ -314,6 +318,7 @@ body {
 
 #layout-list {
   background-color: var(--layout-list-background-color);
+
   >.header {
     background-color: var(--layout-list-header-background-color) !important;
 
@@ -338,7 +343,7 @@ body {
     }
 
     #mailsearchlist .searchbar a:hover,
-    #mailsearchlist .searchbar a:focus     {
+    #mailsearchlist .searchbar a:focus {
       color: var(--searchbar-text-hover-color) !important;
     }
   }
@@ -591,7 +596,7 @@ div {
 }
 
 optgroup {
-  background-color: var(--tierciary-bckg-color);
+  background-color: transparent;
   color: var(--main-text-color);
 }
 
@@ -616,6 +621,16 @@ optgroup {
 .task-settings #layout-sidebar {
   background-color: var(--primary-layout-sidebar-background-color) !important;
   color: var(--primary-layout-sidebar-text-color) !important;
+
+  .scroller>.listing li {
+
+    &.selected {
+      background-color: var(--primary-layout-sidebar-background-selected-color) !important;
+    }
+    a {
+      color: var(--primary-layout-sidebar-text-color) !important;
+    }
+  }
 
   >.header {
     &:extend(.task-tasks #layout-sidebar);

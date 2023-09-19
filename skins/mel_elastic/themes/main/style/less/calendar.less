@@ -1,18 +1,50 @@
 .task-calendar {
-  #datepicker {
-    background-color: var(--calendar-widget-background-color) !important;
+
+  .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight
+  {
+    background-color: var(--badge-background-color) !important;
+    color: var(--badge-text-color) !important;
+  }
+
+  #layout-sidebar .ui-datepicker.ui-widget-content .ui-state-default {
     color: var(--calendar-widget-text-color);
+  }
+
+  #datepicker,
+  #datepicker-onoff {
+    background-color: var(--calendar-widget-background-color) !important;
+    color: var(--calendar-widget-text-color) !important;
 
     #datepicker-onoff:hover {
       background-color: var(--hover-background-color) !important;
     }
   }
 
+  #layout>div>.header a.button {
+    color: var(--calendar-sidebar-header-color);
+  }
+
+  #layout #layout-content>.header {
+    background-color: var(--layout-content-header-background-color) !important;
+
+    a.button:not(.disabled) {
+      color: var(--layout-content-header-text-color) !important;
+
+      &:hover {
+        color: var(--layout-content-header-text-hover-color) !important;
+      }
+    }
+  }
+
+
+  #calendaroptionsmenulink:hover,
+  #calendaroptionsmenulink:focus {
+    background-color: var(--calendar-toolbar-roundcube-hover-background-color) !important;
+  }
+
   #edit-attendees-table {
     color: var(--main-text-color);
   }
-
-  
 
   #layout {
     #layout-content {

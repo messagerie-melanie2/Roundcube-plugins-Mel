@@ -1,10 +1,11 @@
 .task-addressbook {
+  
   ul.treelist li.selected>a {
-    background-color: var(--alternative-layout-list-background-color) !important;
+    background-color: var(--primary-layout-sidebar-background-selected-color) !important;
   }
 
   ul#directorylist.treelist li:hover>a {
-    background-color: var(--alternative-layout-list-background-color) !important;
+    background-color: var(--primary-layout-sidebar-background-selected-color) !important;
   }
 
   li.object[aria-selected="true"] {
@@ -18,9 +19,14 @@
     border-left: solid thin var(--separate);
   }
 
+  #annuaire-list .folder > .description,
+  #layout > div > .header  {
+    color: var(--alternative-layout-list-text-color) !important;
+  }
 
   #layout-list {
     background-color: var(--alternative-layout-list-background-color) !important;
+    color: var(--alternative-layout-list-text-color) !important;
 
     >.header {
       background-color: var(--alternative-layout-list-background-color) !important;

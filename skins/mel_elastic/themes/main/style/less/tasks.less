@@ -5,13 +5,13 @@
       >a,
       >div,
       >span {
-        background-color: var(--alternative-layout-list-background-color) !important;
+        background-color: var(--primary-layout-sidebar-background-selected-color) !important;
       }
     }
 
 
     .listing li:hover>div>a:first-child:hover {
-      background-color: var(--alternative-layout-list-background-color) !important;
+      background-color: var(--primary-layout-sidebar-background-selected-color) !important;
       border-radius: 0 !important;
 
     }
@@ -20,7 +20,7 @@
   .selected .custom-switch .custom-control-input:checked~.custom-control-label {
     &::before {
       background-color: var(--alternate-custom-switch-checked-background-color);
-      border: var(--alternate-custom-switch-border);
+      border: var(--custom-switch-border);
     }
 
     &::after {
@@ -38,8 +38,15 @@
     >.header {
       background-color: var(--alternative-layout-list-header-background-color) !important;
     }
+  }
+  .fake-input.input-mel {
+    background-color: var(--searchbar-background-color);
+    border-color: var(--searchbar-border-color);
+    color: var(--searchbar-text-color);
+  }
 
-
+  .menu a:not(.disabled):hover {
+    background-color: var(--layout-list-header-background-hover-color) !important;
   }
 
   #layout-content>.header {
@@ -51,6 +58,18 @@
 
     &:nth-child(2n) {
       background-color: var(--tasklist-alternate-row-background-color);
+    }
+
+    span,
+    div.taskhead.complete span.title {
+      color: var(--tasklist-row-text-color) !important;
+    }
+
+    div.taskhead:hover {
+      span,
+      &.complete span.title {
+        color: var(--tasklist-row-hover-text-color) !important;
+      }
     }
   }
 

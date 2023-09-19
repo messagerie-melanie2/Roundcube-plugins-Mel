@@ -2,6 +2,15 @@
   #layout-list {
     background-color: var(--alternative-layout-list-background-color) !important;
 
+    .listing tbody td {
+      color: var(--alternative-layout-list-text-color) !important;
+
+      &:hover {
+        background-color: var(--alternative-layout-list-hover-background-color);
+        color: var(--alternative-layout-list-hover-text-color);
+      }
+    }
+
     >.header {
       background-color: var(--alternative-layout-list-background-color) !important;
     }

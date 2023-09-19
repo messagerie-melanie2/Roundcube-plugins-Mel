@@ -90,15 +90,18 @@
   --quit-button-hover-text-color: var(--secondary-text-color);
 
   //Calendar 
-  --calendar-list-item-hover-background-color: var(--main-bckg-color);
-  --calendar-list-item-selected-background-color: var(--main-bckg-color);
-  --calendar-sidebar-header-bottom-separator-color: var(--secondary-border-color);
-  --calendar-widget-background-color: #31365b;
-  --calendar-widget-text-color: var(--secondary-text-color);
+  --calendar-list-item-hover-background-color: var(--hover-background-color);
+  --calendar-list-item-selected-background-color: var(--hover-background-color);
+  --calendar-sidebar-header-bottom-separator-color: var(--main-border-color);
+  --calendar-sidebar-header-background-color: var(--theme-background-color);
+  --calendar-widget-background-color: var(--hover-background-color);
+  --calendar-widget-text-color: var(--main-text-color);
+  --calendar-widget-header-text-color: var(--main-text-color);
 
-  --calendar-widget-header-background-color: #5870bf;
+  --calendar-widget-header-background-color: var(--theme-background-color);
 
   --calendar-toolbar-search-icon-color: var(--input-button-text-color);
+  --calendar-toolbar-roundcube-hover-background-color: var(--hover-background-color);
 
   --calendar-table-header: #e3e4ea;
   --calendar-table-separator-color: var(--calendar-table-header);
@@ -147,7 +150,8 @@
   --layout-sidebar-border-selected-color: var(--main-border-color);
 
   --primary-layout-sidebar-background-color: var(--main-bckg-color);
-  --primary-layout-sidebar-text-color: var(--layout-sidebar-text-color);
+  --primary-layout-sidebar-background-selected-color: var(--secondary-bckg-color);
+  --primary-layout-sidebar-text-color: var(--secondary-text-color);
 
   //Layout list
   --layout-list-header-background-color: var(--theme-background-color);
@@ -158,8 +162,11 @@
 
   --layout-list-background-color: var(--theme-background-color);
 
-  --alternative-layout-list-background-color: var(--tierciary-bckg-color);
+  --alternative-layout-list-background-color: var(--theme-background-color);
   --alternative-layout-list-header-background-color: var(--alternative-layout-list-background-color);
+  --alternative-layout-list-text-color: var(--main-text-color);
+  --alternative-layout-list-hover-background-color: var(--hover-background-color);
+  --alternative-layout-list-hover-text-color: var(--main-text-color);
 
   //Layout content
   --layout-content-header-background-color: var(--theme-background-color);
@@ -182,6 +189,8 @@
   --message-list-content-row-background-hover-color: none;
   --message-list-content-selected-row-background-color: var(--theme-background-color);
   --message-list-border-bottom: solid thin #f0f0f0;
+  --mail-quota-widget-text-color: var(--main-text-color);
+
 
   //Mail - msgicon, flags
   --message-list-content-mail-button-color: var(--mail-unread-icon-color);
@@ -271,9 +280,9 @@
   --searchbar-text-hover-color: var(--main-text-color);
   --searchbar-border-color: var(--main-border-color);
   --searchbar-alternate-border-color: var(--main-bckg-color);
-  
-   //Searchmenu
-   --searchmenu-text-color:var(--main-text-color);
+
+  //Searchmenu
+  --searchmenu-text-color: var(--main-text-color);
 
   //Switch buttons
   --custom-switch-unchecked-background-color: #e8e8e8;
@@ -283,7 +292,7 @@
   --custom-switch-border-color: transparent;
 
   --alternate-custom-switch-unchecked-background-color: #bfbfbf;
-  --alternate-custom-switch-checked-background-color: var(--main-bckg-color);
+  --alternate-custom-switch-checked-background-color: var(--tierciary-bckg-color);
   --alternate-custom-switch-unchecked-dot-color: #fff;
   --alternate-custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
   --alternate-custom-switch-border-color: transparent;
@@ -297,8 +306,10 @@
   --mel-tabs-hover-text-color: null;
 
   //Tasks
-  --tasklist-row-background-color: var(--tierciary-bckg-color);
-  --tasklist-alternate-row-background-color: #52588c;
+  --tasklist-row-background-color: var(--theme-background-color);
+  --tasklist-alternate-row-background-color: var(--secondary-text-color);
+  --tasklist-row-text-color: var(--main-text-color);
+  --tasklist-row-hover-text-color: var(--secondary-text-color);
 
   //Workspace 
   --workspace-item-background-color: var(--button-background-color);

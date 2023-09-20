@@ -3213,8 +3213,6 @@ class mel_metapage extends bnum_plugin
                   
                 default:
                   break;
-        
-                    
                   }
                 }
             break;

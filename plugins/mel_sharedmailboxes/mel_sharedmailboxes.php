@@ -61,12 +61,13 @@ class mel_sharedmailboxes extends rcube_plugin {
         $this->mel = $this->rc->plugins->get_plugin('mel');
 
         // Hooks
-        $this->add_hook('storage_connect',      array($this, 'storage_connect'));
-        $this->add_hook('managesieve_connect',  array($this, 'managesieve_connect'));
-        $this->add_hook('identity_select',      array($this, 'identity_select'));
-        $this->add_hook('message_before_send',  array($this, 'message_before_send'));
-        $this->add_hook('check_recent',         array($this, 'check_recent'));
-        $this->add_hook('messages_list',        array($this, 'messages_list'));
+        $this->add_hook('storage_connect',          array($this, 'storage_connect'));
+        $this->add_hook('managesieve_connect',      array($this, 'managesieve_connect'));
+        $this->add_hook('identity_select',          array($this, 'identity_select'));
+        $this->add_hook('message_before_send',      array($this, 'message_before_send'));
+        $this->add_hook('check_recent',             array($this, 'check_recent'));
+        $this->add_hook('messages_list',            array($this, 'messages_list'));
+        $this->add_hook('render_folder_selector',   array($this, 'render_folder_selector'));
 
         $this->add_hook('config_get',           array($this, 'config_get'));
 
@@ -690,6 +691,47 @@ class mel_sharedmailboxes extends rcube_plugin {
                 }
             }
         }
+        return $args;
+    }
+
+    /**
+     * Folder selector for BALP
+     *
+     * @param array $args
+     */
+    public function render_folder_selector($args) {
+        // Déterminer si on est sur une BALP ou non
+        $is_balp = isset($args['list'][driver_mel::gi()->getBalpLabel()]);
+
+        // Traitement pour une BALP
+        if ($is_balp) {
+            $list = $args['list'];
+
+            // Inbox
+            $inbox = array_pop($list[driver_mel::gi()->getBalpLabel()]['folders']);
+            $inbox['name'] = $this->gettext('inbox');
+
+            // Trash
+            $trash = $list['Corbeille'] ?: null;
+
+            // Clean list
+            unset($list['INBOX']);
+            unset($list['Corbeille']);
+            unset($list[driver_mel::gi()->getBalpLabel()]);
+
+            // BALP Subfolders
+            $folders = $inbox['folders'];
+            $inbox['folders'] = [];
+
+            // Recreate the list
+            $list['INBOX'] = $inbox;
+            if (isset($trash)) {
+                $list['Corbeille'] = $trash;
+            }
+            $list = array_merge($list, $folders);
+            $args['list'] = $list;
+        }
+
         return $args;
     }
 

@@ -864,7 +864,7 @@ class mel_workspace extends bnum_plugin
             }
         }
         else
-            $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
+            $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag('span', [], 'Rejoindre').html::tag('span', ['class' => $icon])); 
         
         return html::div([], $html);
     }

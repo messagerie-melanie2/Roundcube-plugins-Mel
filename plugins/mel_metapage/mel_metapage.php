@@ -1544,9 +1544,9 @@ class mel_metapage extends bnum_plugin
 
         $this->include_script('../mel_workspace/js/setup_event.js');
 
-        $event["attendees"] = [
-            ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
-        ];
+        // $event["attendees"] = [
+        //     ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
+        // ];
         $settings = $calendar->__get("settings");
         
         foreach ($this->rc->user->list_emails() as $rec) {

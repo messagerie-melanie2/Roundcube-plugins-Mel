@@ -139,10 +139,11 @@ export class html_events extends mel_html2 {
             let html;
             let icon;
             for (const location of locations) {
-                if (!!location.key || !!location.audio) {
-                    icon = !!location.key ? 'videocam' : 'call';
+                if (!!location.after_html_generation) {
+                    icon = location.icon;
                     html = new mel_html2(BUTTON, {attribs:{class:`melv2-event-button ${mel_button.html_base_class_full}`}, contents:[new MaterialIcon(icon, null).get()]});
                     html.onclick.push(location.side_action.bind(location));
+                    html = location.after_html_generation(html);
                     htmls.push(html);
                     html = null;
                 }
@@ -200,6 +201,9 @@ export class html_events extends mel_html2 {
 
         if (!this._cache.has('location')) this._cache.add('location', new EventLocation(event));
 
+        /**
+         * @type {EventLocation}
+         */
         const location = this._cache.get('location');
 
         if (location.has()) {
@@ -210,9 +214,9 @@ export class html_events extends mel_html2 {
             }
             else {
                 desc = [];
-                if (location.has_audio()) desc.push('Audio');
+                if (location.has_audio()) desc.push(location.audio.desc);
                 
-                if (location.has_visio()) desc.push(desc.length > 0 ? 'Visio' : 'Visio-conférence');
+                if (location.has_visio()) desc.push(location.visio._get_description(location.locations.length));
 
                 desc = desc.join(' & ');
             } 

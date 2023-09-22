@@ -96,7 +96,32 @@
 .mixin-test(@class-mail-selected, @mail-var-list-selected, @mail-var-list-selected-hover);
 .mixin-test(@class-mail-contextrow, @mail-var-list-selected, @mail-var-list-selected-hover);
 
+body.task-mail {
+  background-color: transparent;
+}
+
 .task-mail {
+
+  #layout-content .iframe-wrapper{
+    margin-top: 0px !important;
+  }
+
+  #layout-list #messagelist-content {
+    border-top-right-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+    margin-top: 0px !important;
+  }
+
+  #layout-list #message-list-filters {
+    border-radius: var(--main-panel-border-radius) var(--main-panel-border-radius) 0 0;
+  }
+
+  #layout-sidebar {
+    .scroller>.listing li.selected a {
+      border-radius: var(--layout-sidebar-selected-item-border-radius);
+    }
+  }
+
   #messagelist-content {
     background-color: var(--message-list-content-row-background-color) !important;
 
@@ -121,9 +146,16 @@
         }
 
         &.message {
+          &.selected:hover {
+            background-color: var(--message-list-content-selected-row-background-hover-color) !important;
+          }
           &:hover {
             box-shadow: var(--message-list-hover-shadow);
             background-color: var(--message-list-content-row-background-hover-color) !important;
+
+            td {
+              background-color: var(--message-list-content-row-background-hover-color) !important;
+            }
 
             td.subject span.msgicon.status:hover::before {
               color: var(--mail-unread-icon-hover-color) !important;
@@ -132,6 +164,10 @@
 
           td {
             border-bottom: var(--message-list-border-bottom);
+          }
+
+          &.selected>td.selection+td {
+            border-left-color: var(--message-list-content-selected-row-border-color) !important;
           }
         }
 
@@ -162,6 +198,30 @@
     }
   }
 
+  #message-list-filters li .quick-filter.active,
+  #message-list-filters-extra button.active {
+    background-color: var(--message-list-quick-filter-active-background-color);
+    color: var(--message-list-quick-filter-active-text-color);
+    border-color: var(--message-list-quick-filter-active-border-color);
+  }
+
+  #message-list-filters li .quick-filter:hover {
+    color: var(--message-list-quick-filter-hover-text-color);
+    background-color: var(--message-list-quick-filter-hover-background-color);
+  }
+
+  .mel-filter-more .mel-button {
+    background-color: var(--message-list-quick-filter-button-background-color);
+    color: var(--message-list-quick-filter-button-text-color);
+    border-color: var(--message-list-quick-filter-button-border-color);
+
+    &:hover {
+      background-color: var(--message-list-quick-filter-button-hover-background-color);
+      color: var(--message-list-quick-filter-button-hover-text-color);
+      border-color: var(--message-list-quick-filter-button-hover-border-color);
+    }
+  }
+
   .quota-widget,
   .quota-widget .count {
     color: var(--mail-quota-widget-text-color);
@@ -171,6 +231,9 @@
     background-color: var(--searchbar-alternate-background-color);
   }
 
+  &.action-preview #layout-content{
+      background-color: var(--layout-content-background-color) !important;
+  }
   #layout-content {
     >.header {
       background-color: var(--layout-content-header-background-color) !important;
@@ -189,6 +252,7 @@
         }
       }
     }
+
 
     .attachmentslist {
       background-color: var(--layout-content-message-partheaders);

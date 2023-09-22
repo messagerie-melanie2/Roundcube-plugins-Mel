@@ -1,10 +1,12 @@
 {
-    "id":"Classique",
-    "display":"classic",
-    "description":"desc",
-    "icon":"icon.svg",
-    "alternate":"images/Computer_classic.png",
-    "style":"theme.css",
-    "class":"theme-classique",
-    "order":1
+  "id":"Classiquen",
+  "parent": "main",
+  "display":"classic",
+  "description":"desc",
+  "icon":"icon.svg",
+  "alternate":"images/Computer_classic.png",
+  "style":"style",
+  "class":"theme-classique",
+  "order":1,
+  "custom_dark_mode":true
 }

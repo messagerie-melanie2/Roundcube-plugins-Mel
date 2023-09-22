@@ -1,7 +1,6 @@
 .task-calendar {
 
-  .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight
-  {
+  .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight {
     background-color: var(--badge-background-color) !important;
     color: var(--badge-text-color) !important;
   }
@@ -10,6 +9,25 @@
     color: var(--calendar-widget-text-color);
   }
 
+  #layout #layout-content {
+    margin-right: var(--space-margin);
+    #calendar {
+      margin-top: 0px !important;
+    }
+  }
+
+
+  #layout #layout-sidebar .scroller .listing.treelist.iconized li>div {
+    border-radius: var(--secondary-border-radius) !important;
+    overflow: hidden;
+    border-left: 2px solid transparent !important;
+    border-bottom: solid thin var(--invisible) !important;
+  }
+
+  #layout #layout-sidebar .scroller .listing {
+    padding: var(--sidebar-list-padding);
+  }
+  
   #datepicker,
   #datepicker-onoff {
     background-color: var(--calendar-widget-background-color) !important;

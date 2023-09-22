@@ -1,4 +1,4 @@
-.theme-classique-main:root {
+.theme-classique:root {
   // Main background colors
   --main-bckg-color: #363A5B;
   --secondary-bckg-color: #2C3054;
@@ -26,6 +26,13 @@
   --hover-background-color: #edebe9;
   --secondary-hover-background-color: #f8f9fa;
   --hover-close-color: red;
+
+  //Adressbook
+  --addressbook-list-item-text-color: var(--main-text-color);
+  --addressbook-list-item-hover-text-color: var(--main-text-color);
+  --addressbook-list-item-selected-text-color: var(--main-text-color);
+  --addressbook-list-item-hover-background-color: var(--hover-background-color);
+  --addressbook-list-item-selected-background-color: var(--hover-background-color);
 
   //Badge color
   --badge-background-color: var(--fourth-text-color);
@@ -159,6 +166,7 @@
   --layout-list-header-text-color: var(--main-text-color);
   --layout-list-header-text-hover-color: var(--main-text-color);
   --layout-list-header-input-text-color: var(--main-text-color);
+  --layout-list-pagenav-color:var(--main-text-color);
 
   --layout-list-background-color: var(--theme-background-color);
 
@@ -184,10 +192,13 @@
   --mail-unread-icon-color: #A8ACC0;
   --mail-unread-icon-hover-color: #779BD6;
 
+  --mail-header-layout-list-background-color: var(--theme-background-color);
+
   --message-list-content-row-background-color: #FFFFFF;
   --message-list-content-row-alternate-background-color: #FAFAFA;
   --message-list-content-row-background-hover-color: none;
   --message-list-content-selected-row-background-color: var(--theme-background-color);
+  --message-list-content-selected-row-background-hover-color: var(--theme-background-color);
   --message-list-border-bottom: solid thin #f0f0f0;
   --mail-quota-widget-text-color: var(--main-text-color);
 
@@ -309,6 +320,7 @@
   --tasklist-row-background-color: var(--theme-background-color);
   --tasklist-alternate-row-background-color: var(--secondary-text-color);
   --tasklist-row-text-color: var(--main-text-color);
+  --tasklist-row-selected-text-color: var(--secondary-text-color);
   --tasklist-row-hover-text-color: var(--secondary-text-color);
 
   //Workspace 

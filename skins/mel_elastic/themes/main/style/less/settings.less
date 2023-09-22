@@ -1,6 +1,10 @@
+body.task-settings {
+  background-color: transparent;
+}
+
 .task-settings {
   #layout-list {
-    background-color: var(--alternative-layout-list-background-color) !important;
+    background-color: transparent !important;
 
     .listing tbody td {
       color: var(--alternative-layout-list-text-color) !important;
@@ -13,13 +17,74 @@
 
     >.header {
       background-color: var(--alternative-layout-list-background-color) !important;
+      color: var(--alternative-layout-list-text-color) !important;
+
+    }
+
+    .scroller {
+      margin-top: 0px !important;
+      background-color: var(--alternative-layout-list-background-color) !important;
+      padding: var(--task-list-padding);
+
+      table.listing tbody tr.selected td,
+      table.listing tbody tr:hover td {
+        border-radius: var(--secondary-border-radius);
+
+      }
     }
   }
 
-  #layout-content>.header {
-    background-color: var(--alternative-layout-content-header-background-color) !important;
+  .menu.pagenav.pagenav-list {
+    background-color: var(--alternative-layout-list-background-color) !important;
+
+    a,
+    .pagenav-text {
+      color: var(--alternative-layout-list-text-color) !important;
+
+    }
   }
 
+  #mailboxselector-content {
+    padding: 0 !important;
+  }
+
+  #layout-content {
+    .iframe-wrapper {
+      background-color: var(--layout-content-background-color) !important;
+    }
+
+    >.header {
+      background-color: var(--alternative-layout-content-header-background-color) !important;
+      margin-bottom: 0px !important;
+    }
+  }
+
+  #layout-sidebar {
+    .scroller {
+      padding: var(--sidebar-list-padding);
+
+      >.listing li {
+
+        &.selected,
+        &:hover {
+          border-radius: var(--secondary-border-radius);
+        }
+      }
+    }
+  }
+
+  .scroller>.listing li:hover {
+    background-color: var(--list-hover-background-color) !important;
+  }
+
+  #layout-list .scroller>.listing li {
+
+    &:hover,
+    &.selected a {
+      background-color: var(--alternative-layout-list-hover-background-color) !important;
+      border-radius: var(--secondary-border-radius);
+    }
+  }
 
   .listing tr.selected td {
     background-color: var(--layout-sidebar-background-selected-color);

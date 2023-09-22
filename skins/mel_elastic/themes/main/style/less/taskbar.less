@@ -39,7 +39,15 @@ nav.otherapps {
   color: var(--layout-menu-text-color) !important;
 }
 
+#taskmenu a.selected:focus, #taskmenu a:focus, #taskmenu .action-buttons a:focus {
+  box-shadow: none;
+}
 
+.menu a:not(.disabled):focus, .menu a:not(.disabled):hover,
+#layout-menu #taskmenu a:focus > span.inner {
+  background-color: var(--layout-menu-background-selected-color) !important;
+  color: var(--layout-menu-text-selected-color) !important;
+}
 #taskmenu a.selected,
 #taskmenu a:hover,
 #taskmenu a.selected:hover,

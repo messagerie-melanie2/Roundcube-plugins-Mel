@@ -1,3 +1,4 @@
 {
-    "main":"Par défaut",
+  "default":"Par défaut",
+  "desc":"Thème par défaut du Bnum"
 }

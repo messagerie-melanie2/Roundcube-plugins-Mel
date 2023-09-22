@@ -29,7 +29,13 @@
 
   }
 
+  #layout-content {
+    background-color: var(--body-background-color) !important;
 
+    .content {
+      background-color: var(--layout-content-background-color) !important;
+    }
+  }
 
 
   #layout-list {
@@ -38,7 +44,52 @@
     >.header {
       background-color: var(--alternative-layout-list-header-background-color) !important;
     }
+
+    #layout-list-content {
+      height: 100%;
+      padding-top: var(--task-list-padding);
+      margin-top: 0px !important;
+      background-color: var(--alternative-layout-list-header-background-color) !important;
+
+      .scroller ul.listing {
+        padding: var(--sidebar-list-padding);
+
+        .taskhead {
+          border-radius: var(--secondary-border-radius);
+          border-bottom-color: var(--secondary-border-color) !important;
+          border-left-color: var(--default-border-color) !important;
+
+          &.selected {
+            background-color: var(--tasklist-row-selected-background-color) !important;
+            color: var(--tasklist-row-selected-text-color) !important;
+          }
+
+          &:hover {
+            background-color: var(--tasklist-row-hover-background-color);
+          }
+        }
+      }
+    }
   }
+
+  #layout #layout-sidebar .scroller .listing {
+    padding: var(--sidebar-list-padding);
+
+    li {
+      margin-bottom: var(--list-between-margin);
+
+      &.selected,
+      &:hover {
+        border-radius: var(--secondary-border-radius);
+        background-color: var(--primary-layout-sidebar-background-selected-color);
+      }
+    }
+  }
+
+  #layout-content .content {
+    margin-top: 0px !important;
+  }
+
   .fake-input.input-mel {
     background-color: var(--searchbar-background-color);
     border-color: var(--searchbar-border-color);
@@ -65,7 +116,13 @@
       color: var(--tasklist-row-text-color) !important;
     }
 
+    div.taskhead.selected span,
+    div.taskhead.selected span.title {
+      color: var(--tasklist-row-selected-text-color) !important;
+    }
+
     div.taskhead:hover {
+
       span,
       &.complete span.title {
         color: var(--tasklist-row-hover-text-color) !important;

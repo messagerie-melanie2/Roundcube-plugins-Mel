@@ -447,9 +447,9 @@ class mel_sharedmailboxes extends rcube_plugin {
 
         $default_value = $config ?? $this->rc->config->get('sent_mbox');
 
-        if (isset($userid) && isset($config)) {
-            $default_value = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'].$default_value;
-        }
+        // if (isset($userid) && isset($config)) {
+        //     $default_value = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'].$default_value;
+        // }
 
         $result = array(
                 'action' => 'plugin.refresh_store_target_selection',

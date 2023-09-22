@@ -2879,16 +2879,18 @@ class mel_metapage extends bnum_plugin
         }
 
         unset($init);
-        $folders = $folders->select(function ($key, $value) use ($balp_label, $delimiter, $bal, $len, $order, &$maxOrder){
+        $tmp = null;
+        $folders = $folders->select(function ($key, $value) use ($tmp, $balp_label, $delimiter, $bal, $len, $order, &$maxOrder){
             if (!isset($maxOrder)) $maxOrder = 0;
 
             if ($value === $balp_label.$delimiter.$bal || $value === 'INBOX')
             {
-                $key = 'INBOX';
+                $key = $value;
                 $value = 'Courrier entrant';
                 $order = 0; 
             }
             else {
+                $tmp = $value;
                 $value = str_ireplace($balp_label.$delimiter.$bal.$delimiter, '', $value);
 
                 if (strpos($value, $delimiter) === false) {
@@ -2905,10 +2907,11 @@ class mel_metapage extends bnum_plugin
                     if ($len - 1 === 1) $len = "| $key";
                     else $len = implode(mel_helper::Enumerable(range(1, $len - 2))->select(function($k, $v) {return '=';})->toArray())."> | $key";
 
-                    $key = implode('/', $value);
                     $value = $len;
                     unset($len);
                 }
+
+                $key = $tmp;
 
             }
 

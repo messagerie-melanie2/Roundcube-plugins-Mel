@@ -2,16 +2,40 @@ body {
   background-color: var(--body-background-color);
 }
 
-#layout-list .header,
+body.action-dialog-ui {
+  background-color: transparent;
+}
+
+#layout > div > .footer {
+  background-color: var(--addressbook-list-pagenav-background-color);
+  border-top-color: var(--separate);
+}
+
+.menu.pagenav.pagenav-list
+{
+  border-bottom-color: transparent;
+}
+.task-workspace,
+.task-useful_links,
+.task-news,
+.task-bureau {
+  #layout #layout-content {
+    background-color: var(--bureau-background-color) !important;
+    margin-right: 0px !important;
+  }
+}
+
 .task-settings #layout-list .searchbar.menu,
+#layout-list .header,
 #layout-list .pagenav.pagenav-list.menu,
 #layout-list #layout-list-content,
 #layout-list #messagelist-header,
 #layout-list #messagelist-content,
-#layout-content>.header,
 #layout-list>.scroller,
+#layout #layout-content #calendar,
+#layout-content>.header,
 #layout-content .iframe-wrapper,
-#layout #layout-content #calendar {
+#layout-content #mel_suggestion_box_option_box {
   margin: var(--main-margin) !important;
   border-radius: var(--main-panel-border-radius) !important;
   box-shadow: var(--main-box-shadow) !important;
@@ -20,10 +44,19 @@ body {
 #layout-content .content {
   border-radius: var(--main-panel-border-radius) !important;
   box-shadow: var(--main-box-shadow) !important;
+  background-color: var(--layout-content-background-color) !important;
+  margin: var(--main-margin) !important;
+  margin-top: 0px !important;
+}
+
+#layout-sidebar separate {
+  border-top-color: var(--layout-list-separate-color);
 }
 
 #layout-menu {
-  #taskmenu a.selected {
+
+  #taskmenu a.selected,
+  #taskmenu a:hover {
     border-radius: var(--layout-menu-border-radius);
   }
 }
@@ -333,7 +366,7 @@ ul.treelist li.selected>div>a,
 
         &:hover>a:first-of-type {
           background-color: var(--layout-sidebar-background-hover-color);
-          border-radius: var(--layout-sidebar-selected-item-border-radius);
+          border-radius: var(--layout-sidebar-item-border-radius);
 
           color: var(--layout-sidebar-text-hover-color);
         }
@@ -357,6 +390,11 @@ ul.treelist li.selected>div>a,
 
 #layout #layout-content {
   margin-right: var(--space-margin) !important;
+}
+
+.task-mail.action-compose #layout-content,
+.task-settings.action-plugin-mel_suggestion_box #layout #layout-content {
+  margin-left: var(--space-margin) !important;
 }
 
 #layout-list {

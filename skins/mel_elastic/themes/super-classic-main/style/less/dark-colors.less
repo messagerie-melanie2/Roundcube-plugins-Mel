@@ -1,4 +1,4 @@
-html.dark-mode-custom:root {
+html.theme-super-classique-main.dark-mode-custom:root {
   // Main background colors
   --main-bckg-color: #1f2933;
   --secondary-bckg-color: #1f2933;
@@ -8,7 +8,8 @@ html.dark-mode-custom:root {
   --warning-color: transparent;
   --card-background-color: #3e4c59;
   --active-button-background-color: #E1C58F;
-  --body-background-color: var(--default-bckg-color);
+  --theme-background-color: var(--tierciary-bckg-color);
+  --body-background-color: var(--tierciary-bckg-color);
 
   //Main text colors
   --main-text-color: #96b9e7;
@@ -26,29 +27,33 @@ html.dark-mode-custom:root {
   --main-border-color: var(--default-text-color);
   --secondary-border-color: #4d6066;
   --main-separator-border-color: #96b9e71c;
-  --layout-border: var(--secondary-border-color);
+  --layout-border: transparent;
   --default-border-color: var(--main-border-color);
+  --layout-list-separate-color:var(--secondary-border-color);
+  --foldersearchform-searchbar-border-color:transparent;
 
-    //Main border raidus
-    --main-border-radius: 0px;
-    --secondary-border-radius: 0px;
-    --main-panel-border-radius: 0;
-  
-    //Main box shadow
-    --main-box-shadow: none;
-  
-    //Main margin
-    --main-margin: 0px;
-    --space-margin: 0px;
-    --separate-margin: 20px 30px;
-  
-    //Padding
-    --sidebar-list-padding: 0;
-    --task-list-padding: 0px;
+  //Main border radius
+  --main-border-radius: 10px;
+  --secondary-border-radius: 5px;
+  --main-panel-border-radius: 15px;
+
+  //Box shadow
+  --main-box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+
+  //Main margin
+  --main-margin: 10px 0px;
+  --space-margin: 8px;
+  --list-between-margin: 5px;
+  --separate-margin: 0px;
+
+  //Padding
+  --sidebar-list-padding: 0 14px;
+  --task-list-padding: 15px;
 
   //Hover
-  --hover-background-color: #2E2E2E;
+  --hover-background-color: #161d24;
   --secondary-hover-background-color: #f8f9fa;
+  --menu-hover-background-color: #161d24;
   --hover-close-color: red;
 
 
@@ -106,23 +111,26 @@ html.dark-mode-custom:root {
   --calendar-widget-background-color: #181c28;
   --calendar-widget-text-color: var(--secondary-text-color);
 
-  --calendar-widget-header-background-color: var(--card-background-color);
+  --calendar-widget-header-background-color: var(--secondary-bckg-color);
 
   --calendar-toolbar-search-icon-color: var(--input-button-text-color);
+  --calendar-toolbar-roundcube-hover-background-color: var(--menu-hover-background-color);
 
   --calendar-table-header: var(--main-bckg-color);
   --calendar-table-separator-color: var(--calendar-table-header);
   --calendar-table-text-color: var(--main-text-color);
+  --calendar-table-background-color: var(--secondary-bckg-color);
   --calendar-table-today-background-color: var(--tierciary-bckg-color);
 
 
   //Searchbar
   --searchbar-background-color: transparent;
-  --searchbar-alternate-background-color: var(--tierciary-bckg-color);
+  --searchbar-alternate-background-color: var(--secondary-bckg-color);
   --searchbar-text-color: var(--input-button-text-color);
   --searchbar-text-hover-color: var(--input-button-text-color);
   --searchbar-border-color: var(--main-border-color);
   --searchbar-alternate-border-color: var(--main-border-color);
+  --foldersearchform-searchbar-background-color:var(--secondary-bckg-color);
 
   //Modal
   --modal-background-color: var(--default-bckg-color);
@@ -157,8 +165,10 @@ html.dark-mode-custom:root {
   --layout-sidebar-text-hover-color: var(--secondary-text-color);
   --layout-sidebar-text-selected-color: var(--default-text-color);
   --layout-sidebar-text-hover-selected-color: var(--layout-sidebar-text-selected-color);
-  --layout-sidebar-border-color: var(--secondary-border-color);
+  --layout-sidebar-border-color: transparent;
   --layout-sidebar-border-selected-color: var(--main-border-color);
+  --layout-sidebar-selected-item-border-radius: 0;
+  --layout-sidebar-item-border-radius: var(--secondary-border-radius);
 
   --primary-layout-sidebar-background-color: var(--tierciary-bckg-color);
   --primary-layout-sidebar-background-selected-color: var(--card-background-color);
@@ -177,14 +187,24 @@ html.dark-mode-custom:root {
   --input-mel-text-color: var(--default-text-color);
   --input-mel-border-color: var(--main-border-color);
 
+  //Layout menu - Taskbar
+  --layout-menu-background-color: #181f27;
+  --layout-menu-background-selected-color: var(--theme-background-color);
+  --layout-menu-background-hover-color: var(--theme-background-color);
+  --layout-menu-text-color: var(--secondary-text-color);
+  --layout-menu-text-selected-color: var(--secondary-text-color);
+  --layout-menu-text-hover-color: var(--secondary-text-color);
+  --layout-menu-border-top: solid thin transparent;
+  --layout-menu-border-right: transparent;
+
   //Layout Menu
   --layout-menu-border-top: solid thin transparent;
-  --layout-menu-border-right: solid thin var(--secondary-border-color);
+  --layout-menu-border-right: transparent;
 
   //Layout content
-  --layout-content-header-background-color: var(--tierciary-bckg-color);
-  --alternative-layout-content-header-background-color: var(--tierciary-bckg-color);
-  --layout-content-header-background-hover-color: var(--secondary-bckg-color);
+  --layout-content-header-background-color: var(--secondary-bckg-color);
+  --alternative-layout-content-header-background-color: var(--secondary-bckg-color);
+  --layout-content-header-background-hover-color: var(--menu-hover-background-color);
   --layout-content-header-text-color: var(--secondary-text-color);
   --layout-content-header-text-hover-color: var(--secondary-text-color);
   --layout-content-background-color: var(--default-bckg-color);
@@ -192,19 +212,20 @@ html.dark-mode-custom:root {
 
 
   //Layout list
-  --layout-list-header-background-color: var(--tierciary-bckg-color);
-  --layout-list-header-background-hover-color: var(--secondary-bckg-color);
+  --layout-list-header-background-color: var(--secondary-bckg-color);
+  --layout-list-header-background-hover-color: var(--menu-hover-background-color);
   --layout-list-header-text-color: var(--secondary-text-color);
   --layout-list-header-text-hover-color: var(--secondary-text-color);
   --layout-list-header-input-text-color: var(--main-text-color);
+  --layout-list-pagenav-color: var(--main-text-color);
 
-  --mail-header-layout-list-background-color: var(--tierciary-bckg-color);
-
-
-  --alternative-layout-list-background-color: #3e4c59;
+  --alternative-layout-list-background-color: var(--secondary-bckg-color);
   --alternative-layout-list-header-text-color: #fff;
-  --alternative-layout-list-header-background-color: var(--alternative-layout-list-background-color);
+  --alternative-layout-list-header-background-color: var(--secondary-bckg-color);
+  --alternative-layout-list-text-color: var(--secondary-text-color);
 
+  //Addressbook
+  --addressbook-list-pagenav-background-color: var(--body-background-color);
 
   //Mail
   --layout-content-header-right-border-color: var(--secondary-border-color);
@@ -215,6 +236,7 @@ html.dark-mode-custom:root {
   --layout-content-message-attachment-text-color: var(--layout-content-message-partheaders-title);
   --layout-content-message-attachment-size-color: var(--hint-text-color);
 
+  --primary-border-color: var(--secondary-bckg-color);
 
   --message-list-quick-filter-active-background-color: var(--active-button-background-color);
   --message-list-quick-filter-active-text-color: var(--tierciary-text-color);
@@ -232,8 +254,10 @@ html.dark-mode-custom:root {
   --message-list-quick-filter-button-hover-border-color: transparent;
 
   //Tasks
-  --tasklist-row-background-color: #3e4c59;
-  --tasklist-alternate-row-background-color: #4b5c6c;
+  --tasklist-row-background-color: var(--main-bckg-color);
+  --tasklist-alternate-row-background-color: #1a222b;
+  --tasklist-row-hover-background-color: var(--menu-hover-background-color);
+  --tasklist-row-border-color: transparent;
 
   //Option menu
   --option-menu-title-color: var(--main-text-color);
@@ -242,8 +266,10 @@ html.dark-mode-custom:root {
   --option-menu-button-hover-background-color: var(--hover-background-color);
   --option-menu-button-text-color: var(--default-text-color);
   --option-menu-button-border-color: var(--default-text-color);
+  --groupotions-box-shadow: -1px 2px 1px 1px rgba(255, 255, 255, 0.22);
 
   //Bureau
+  --bureau-background-color: var(--default-bckg-color);
   --bureau-card-background-color: var(--tierciary-bckg-color);
   --bureau-card-box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
   --bureau-card-border-radius: 10px;
@@ -306,6 +332,6 @@ html.dark-mode-custom:root {
   --message-list-content-border-color: #D1D3DD;
 
   //Scrollbar 
-  --scrollbar-handler-color: #181c28;
-  --scrollbar-background-color: var(--tierciary-bckg-color);
+  --scrollbar-handler-color: #1a222b;
+  --scrollbar-background-color: #1f2933;
 }

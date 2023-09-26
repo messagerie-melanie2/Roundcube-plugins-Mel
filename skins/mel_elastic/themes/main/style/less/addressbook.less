@@ -21,8 +21,8 @@ body.task-addressbook {
         &:hover {
           background-color: var(--addressbook-list-item-hover-background-color) !important;
           color: var(--addressbook-list-item-hover-text-color) !important;
-        border-radius: var(--secondary-border-radius) !important;
-      }
+          border-radius: var(--secondary-border-radius) !important;
+        }
       }
 
       &.selected td {
@@ -52,9 +52,12 @@ body.task-addressbook {
     border-left: solid thin var(--separate);
   }
 
-  #annuaire-list .folder>.description,
-  #layout>div>.header {
+  #annuaire-list .folder>.description {
     color: var(--alternative-layout-list-text-color) !important;
+  }
+
+  #layout>div>.header {
+    color: var(--primary-layout-sidebar-background-selected-color);
   }
 
   #layout-sidebar {
@@ -86,7 +89,7 @@ body.task-addressbook {
 
     #annuaire-list {
       li.selected {
-        border-radius: var(--secondary-border-radius);
+        border-radius: var(--layout-sidebar-selected-item-border-radius);
       }
 
       li:hover {
@@ -130,7 +133,8 @@ body.task-addressbook {
 
   #layout>div>.footer {
     border-top: solid thin var(--separate);
-    background-color: var(--alternative-layout-list-background-color);
+    background-color: var(--addressbook-list-pagenav-background-color);
+    color: var(--alternative-layout-list-text-color) !important;
   }
 
   .gestion-options {

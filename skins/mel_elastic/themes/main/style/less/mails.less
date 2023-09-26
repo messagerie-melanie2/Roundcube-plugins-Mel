@@ -97,12 +97,12 @@
 .mixin-test(@class-mail-contextrow, @mail-var-list-selected, @mail-var-list-selected-hover);
 
 body.task-mail {
-  background-color: transparent;
+  background-color: var(--theme-background-color);
 }
 
 .task-mail {
 
-  #layout-content .iframe-wrapper{
+  #layout-content .iframe-wrapper {
     margin-top: 0px !important;
   }
 
@@ -120,6 +120,10 @@ body.task-mail {
     .scroller>.listing li.selected a {
       border-radius: var(--layout-sidebar-selected-item-border-radius);
     }
+  }
+
+  #messagecontframe {
+    border-radius: var(--main-panel-border-radius);
   }
 
   #messagelist-content {
@@ -149,6 +153,7 @@ body.task-mail {
           &.selected:hover {
             background-color: var(--message-list-content-selected-row-background-hover-color) !important;
           }
+
           &:hover {
             box-shadow: var(--message-list-hover-shadow);
             background-color: var(--message-list-content-row-background-hover-color) !important;
@@ -198,6 +203,12 @@ body.task-mail {
     }
   }
 
+  #layout-sidebar,
+  #layout-sidebar>.header,
+  .upload-form .hint {
+    color: var(--layout-sidebar-text-color) !important;
+  }
+
   #message-list-filters li .quick-filter.active,
   #message-list-filters-extra button.active {
     background-color: var(--message-list-quick-filter-active-background-color);
@@ -231,9 +242,10 @@ body.task-mail {
     background-color: var(--searchbar-alternate-background-color);
   }
 
-  &.action-preview #layout-content{
-      background-color: var(--layout-content-background-color) !important;
+  &.action-preview #layout-content {
+    background-color: var(--layout-content-background-color) !important;
   }
+
   #layout-content {
     >.header {
       background-color: var(--layout-content-header-background-color) !important;

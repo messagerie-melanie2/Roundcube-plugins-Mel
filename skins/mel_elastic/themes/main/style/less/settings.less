@@ -2,6 +2,9 @@ body.task-settings {
   background-color: transparent;
 }
 
+#preferences-frame {
+  border-radius: var(--main-panel-border-radius);
+}
 .task-settings {
   #layout-list {
     background-color: transparent !important;
@@ -32,6 +35,11 @@ body.task-settings {
 
       }
     }
+  }
+
+  .searchbar.menu[aria-labelledby='aria-label-foldersearchform'] {
+    background-color: var(--foldersearchform-searchbar-background-color) !important;
+    border-bottom-color: var(--foldersearchform-searchbar-border-color) !important;
   }
 
   .menu.pagenav.pagenav-list {
@@ -75,6 +83,11 @@ body.task-settings {
 
   .scroller>.listing li:hover {
     background-color: var(--list-hover-background-color) !important;
+  }
+
+  #settings-suggest-frame {
+    border-radius: var(--main-panel-border-radius) !important;
+    background-color: var(--layout-content-background-color);
   }
 
   #layout-list .scroller>.listing li {

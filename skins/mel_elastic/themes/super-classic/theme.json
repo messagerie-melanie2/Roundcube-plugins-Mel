@@ -1,12 +1,11 @@
 {
-    "parent":"Classique",
-    "id":"super-classique",
-    "display":"white",
-    "description":"desc",
-    "icon":"icon.svg",
-    "enabled":true,
-    "style":"style",
-    "class":"theme-super-classique",
-    "custom_dark_mode":false,
-    "order":2
+  "id":"super-classique",
+  "parent": "main",
+  "display":"white",
+  "description":"desc",
+  "icon":"icon.svg",
+  "style":"style",
+  "class":"theme-super-classique-main",
+  "order":-1,
+  "custom_dark_mode":true
 }

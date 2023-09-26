@@ -1870,8 +1870,11 @@ body.task-mail.action-compose a.removelink
 }
 
 .message-list-filter-container{
-    background-color: white;
-    border-bottom: solid thin var(--message-border-color);
+    background-color: var(--default-bckg-color);
+    border-bottom: var(--message-list-border-bottom);
+    padding: 0px 0px 0px 10px;
+    display: flex;
+    justify-content: space-between;
 
     .mel-filter-more{
         // margin-right: -2.7px;
@@ -1890,12 +1893,9 @@ body.task-mail.action-compose a.removelink
 }
 
 #message-list-filters{
-    padding: 0px 5px 0px 10px;
     display: flex;
     padding: 0px 5px 1px 10px;
-    border-bottom: var(--message-list-border-bottom);
     margin-bottom: 0;
-    background-color: var(--default-bckg-color);
     align-items: center;
 
     li {

@@ -112,7 +112,7 @@ body.task-mail {
     margin-top: 0px !important;
   }
 
-  #layout-list #message-list-filters {
+  #layout-list .message-list-filter-container {
     border-radius: var(--main-panel-border-radius) var(--main-panel-border-radius) 0 0;
   }
 
@@ -221,10 +221,11 @@ body.task-mail {
     background-color: var(--message-list-quick-filter-hover-background-color);
   }
 
-  .mel-filter-more .mel-button {
+  .message-list-filter-container .mel-filter-more .mel-button {
     background-color: var(--message-list-quick-filter-button-background-color);
     color: var(--message-list-quick-filter-button-text-color);
     border-color: var(--message-list-quick-filter-button-border-color);
+    border-top-right-radius: var(--main-panel-border-radius);
 
     &:hover {
       background-color: var(--message-list-quick-filter-button-hover-background-color);

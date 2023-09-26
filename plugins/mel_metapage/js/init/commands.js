@@ -311,6 +311,8 @@ if (rcmail)
                             },
                             (datas) => {
                                 console.log('valid', datas);
+                                if (['false', false].includes(datas)) (top ?? parent ?? window).rcmail.display_message('Une erreur est survenue !', 'error');
+                                else (top ?? parent ?? window).rcmail.display_message('Abscence enregistrée !', 'confirmation');
                             }
                         )
                         reset();

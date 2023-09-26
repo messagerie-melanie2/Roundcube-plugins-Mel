@@ -380,22 +380,51 @@ class Gestionnaireabsence extends Moncompteobject
 
   public static function get_ponctual_dates() {
 		    // Récupération de l'utilisateur
-        $user = driver_mel::gi()->getUser(driver_mel::gi()->getUser()->uid, true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
-        $user->load(['outofoffices']);
-        $offices = $user->outofoffices;
-        $external_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
-      echo json_encode(['start' => $external_oof->start->format('d/m/Y H:i:s'),
-                        'end' => $external_oof->end->format('d/m/Y H:i:s'),
-                        'message' => $external_oof->message]);
+        $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
+        if ($user->authentification(Moncompte::get_current_user_password(), true))
+        {
+          $user->load(['outofoffices']);
+          $offices = $user->outofoffices;
+          $external_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
+  
+          $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
+          $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
+  
+          if (!isset($start) || isset($end)) {
+            $external_oof = $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
+  
+            $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
+            $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
+          }
+  
+        echo json_encode(['start' => $start,
+                          'end' => $end,
+                          'message' => $external_oof->message ?? '']);
+        }
+        else {
+          rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
+          echo json_encode(['start' => null,
+          'end' => null,
+          'message' => $external_oof->message ?? '']);
+        }
+
       exit;
 	}
 
 	public static function set_quick_ponctual_dates() {
     $date_debut = trim(rcube_utils::get_input_value('absence_date_debut', rcube_utils::INPUT_POST));
     $date_fin = trim(rcube_utils::get_input_value('absence_date_fin', rcube_utils::INPUT_POST));
-    $user = driver_mel::gi()->getUser(driver_mel::gi()->getUser()->uid, true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
-    $user->load(['outofoffices']);
-    echo self::set_ponctual_dates($user, $date_debut, $date_fin);
+    // Récupération de l'utilisateur
+    $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
+    if ($user->authentification(Moncompte::get_current_user_password(), true))
+    {
+      $user->load(['outofoffices']);
+      echo self::set_ponctual_dates($user, $date_debut, $date_fin);
+    }
+    else {           
+      rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
+      echo false;
+    }
     exit;
   }
 
@@ -420,8 +449,8 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
 	private static function try_enable_ponctual_date($outoffice) {
-    $outoffice[Outofoffice::TYPE_EXTERNAL]->enabled = true;
-    $outoffice[Outofoffice::TYPE_INTERNAL]->enabled = true;
+    $outoffice[Outofoffice::TYPE_EXTERNAL]->enable = true;
+    $outoffice[Outofoffice::TYPE_INTERNAL]->enable = true;
 
     return $outoffice;
   }

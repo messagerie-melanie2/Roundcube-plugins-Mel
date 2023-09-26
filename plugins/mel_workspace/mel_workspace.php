@@ -864,7 +864,7 @@ class mel_workspace extends bnum_plugin
             }
         }
         else
-            $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
+            $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag('span', [], 'Rejoindre').html::tag('span', ['class' => $icon])); 
         
         return html::div([], $html);
     }
@@ -1912,7 +1912,7 @@ class mel_workspace extends bnum_plugin
         } else $canNotify = false;
 
         if ($canNotify) {
-            mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
+            mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.click_for_open"), [
                 [
                     'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
                     'text' => $this->gettext("mel_workspace.open"),
@@ -1968,8 +1968,8 @@ class mel_workspace extends bnum_plugin
             $subject = $bodymail->subject();
             $message = $bodymail->body();
 
-
-            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name]);
+            $is_html = true;
+            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
         }
     }
 

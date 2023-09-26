@@ -1139,6 +1139,45 @@ $(document).ready(() => {
                 }
             }
 
+            return this.update_main_nav_meca();
+        }
+
+        update_main_nav_meca() {
+            let $menu = $('#layout-menu');
+            if ($menu.length > 0) {
+                if(!rcmail.env.main_nav_can_deploy) {
+                    $menu.addClass('main-nav-cannot-deploy').find('a').each((index, element) => {
+                        element = $(element);
+                        element.attr('title', element.find('span').first().text());
+                    });
+                }
+                else {
+                    $menu.removeClass('main-nav-cannot-deploy').find('a').each((index, element) => {
+                        element = $(element);
+                        element.removeAttr('title');
+                    });
+                }
+            }
+
+            $menu = $('#otherapps');
+            if ($menu.length > 0) {
+                if(!rcmail.env.main_nav_can_deploy) {
+                    $menu.find('a').each((index, element) => {
+                        element = $(element);
+                        element.attr('title', element.find('span').first().text());
+                    });
+                }
+                else {
+                    $menu.find('a').each((index, element) => {
+                        element = $(element);
+                        element.removeAttr('title');
+                    });
+                }
+            }
+
+            $menu = null;
+
+
             return this;
         }
 
@@ -3018,6 +3057,7 @@ $(document).ready(() => {
          * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_page(e, number, doAction = true){
+            //debugger;
             const _integer = this._integer;
             e = $(e).parent();
             const count = Math.ceil(e.parent().data("count")/7.0);
@@ -3092,7 +3132,7 @@ $(document).ready(() => {
             e.parent().data("current", number);
  
             if (doAction)
-                eval(e.parent().data("page").replaceAll("Â¤pageÂ¤", number));
+                eval(e.parent().data("page").replaceAll("¤page¤", number));
 
             return this;
         }

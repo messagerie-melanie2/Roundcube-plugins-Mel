@@ -311,6 +311,8 @@ if (rcmail)
                             },
                             (datas) => {
                                 console.log('valid', datas);
+                                if (['false', false].includes(datas)) (top ?? parent ?? window).rcmail.display_message('Une erreur est survenue !', 'error');
+                                else (top ?? parent ?? window).rcmail.display_message('Abscence enregistrée !', 'confirmation');
                             }
                         )
                         reset();
@@ -618,6 +620,13 @@ if (rcmail)
                         iterator.contentWindow.MEL_ELASTIC_UI.set_font_size();
                     }
                 }
+            }, true);
+
+            rcmail.register_command('updateMainNavDep', async args => {
+                if (top.$('#layout-menu').hasClass('main-nav-cannot-deploy')) top.rcmail.env.main_nav_can_deploy = true;
+                else top.rcmail.env.main_nav_can_deploy = false;
+                
+                top.MEL_ELASTIC_UI.update_main_nav_meca();
             }, true);
 
             rcmail.register_command('updateScollBarMode', async args => {

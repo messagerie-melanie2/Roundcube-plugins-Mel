@@ -1869,7 +1869,28 @@ body.task-mail.action-compose a.removelink
     color: var(--secondary-text-color);
 }
 
+.message-list-filter-container{
+    background-color: white;
+    border-bottom: solid thin var(--message-border-color);
+
+    .mel-filter-more{
+        // margin-right: -2.7px;
+        height: 100%;
+        border:none;
+        // margin-left: auto;
+
+        button {
+            &.mel-button{
+                padding: 0;
+                border-radius: 0;
+                height: 100%;
+            }
+        }
+    }
+}
+
 #message-list-filters{
+    padding: 0px 5px 0px 10px;
     display: flex;
     padding: 0px 5px 1px 10px;
     border-bottom: var(--message-list-border-bottom);
@@ -1933,20 +1954,6 @@ body.task-mail.action-compose a.removelink
                 color: var(--default-text-color);
             }
         }
-
-        &.mel-filter-more{
-            margin-right: 0;
-            height: 100%;
-            margin-left: auto;
-
-            button {
-                &.mel-button{
-                    padding: 0;
-                    border-radius: 0;
-                    height: 100%;
-                }
-            }
-        }
     }
 }
 
@@ -1998,4 +2005,9 @@ body.task-mail.action-compose a.removelink
 
 #toolbar-list-menu .selection{
     display:none!important;
+}
+
+.message-list-filter-container {
+	display: flex;
+	justify-content: space-between;
 }

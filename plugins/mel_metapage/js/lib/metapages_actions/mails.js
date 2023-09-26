@@ -1,3 +1,4 @@
+import { MelEnumerable } from "../classes/enum.js";
 import { EMPTY_STRING } from "../constants/constants.js";
 import { mel_cancellable_html_timer } from "../html/html_timer.js";
 import { Top } from "../top.js";
@@ -19,6 +20,8 @@ export class MetapageMailModule extends MetapageModule {
         if (!MetapageMailModule.elements) MetapageMailModule.elements = new MelEvent();
 
         this._init();
+
+        if (!MetapageMailModule.Instance) MetapageMailModule.Instance = this;
     }
 
     /**
@@ -47,6 +50,10 @@ export class MetapageMailModule extends MetapageModule {
                     html.attribs['data-uid'] = MetapageMailModule.elements._generateKey();
 
                     html.ontimerfinished.push(($element) => {
+                        try {
+                            MetapageMailModule.Instance.enable_mail_window_actions().show_loader();
+                        } catch (error) {
+                        }
                         rcmail_submit_messageform.call(self, ...args);
                         MetapageMailModule.elements.remove($element.data('uid'));
                     });
@@ -64,6 +71,9 @@ export class MetapageMailModule extends MetapageModule {
                         }
 
                         MetapageMailModule.elements.remove(e.data('uid'));
+                        MetapageMailModule.Instance.enable_mail_window_actions();
+                        rcmail.display_message('Envoi du message annulé avec succès !', 'confirmation');
+                        $(window).resize();
                     });
                     
                     if (navigator.$('#messagestack').length <= 0) {
@@ -71,9 +81,11 @@ export class MetapageMailModule extends MetapageModule {
                     }
 
                     let $gen = html.create(navigator.$('#messagestack'));
-                    $gen.find('.mel-timer-cancel').attr('title', 'Annuler l\'envoie');
+                    $gen.find('.mel-timer-cancel').attr('title', 'Annuler l\'envoi');
 
                     MetapageMailModule.elements.add(html.attribs['data-uid'], {$gen, html, rcmail});
+
+                    MetapageMailModule.Instance.disable_mail_window_actions();
 
                     if (!!window.popup_action) {
                         window.popup_action(($element, box) => {
@@ -106,5 +118,61 @@ export class MetapageMailModule extends MetapageModule {
             (e || window.event).returnValue = message;
             return message;
         }
+    }
+
+    _get_elements_form_states_can_be_changed(){
+        return [
+            $('#layout-sidebar input'),
+            $('#layout-sidebar button'),
+            $('#layout-sidebar select'),
+            $('#layout-content input'),
+            $('#layout-content select'),
+            $('#layout-content a'),
+            $('#layout-content button')
+        ];
+    }
+
+    show_loader(){
+        $('#layout-content').hide();
+        $('#layout-sidebar').attr('style', 'display: none !important;');
+        this.get_skin().create_loader('mail-send-loader', true, false).create($('#layout'));
+    } 
+
+    disable_mail_window_actions() {
+        // $('#layout-content').hide();
+        // $('#layout-sidebar').attr('style', 'display: none !important;');
+        // this.get_skin().create_loader('mail-send-loader', true, false).create($('#layout'));
+        const elements = this._get_elements_form_states_can_be_changed();
+        for (const iterator of elements) {
+            MelEnumerable.from(iterator).where(x => $(x).hasClass('disabled')).select(x => $(x).attr('data-original-state', 'disabled')).count();
+            iterator.attr('disabled', 'disabled').addClass('disabled');
+        }
+
+        $('#compose_to ul').css({
+            'pointer-events':'none',
+            'background-color':'#e9ecef'
+        });
+
+        return this;
+    }
+    
+    enable_mail_window_actions() {
+        // $('#layout-content').show();
+        // $('#layout-sidebar').removeAttr('style');
+        // $('#mail-send-loader').remove();
+        const elements = this._get_elements_form_states_can_be_changed();
+        for (const iterator of elements) {
+            iterator.removeAttr('disabled').removeClass('disabled');
+            MelEnumerable.from(iterator).where(x => $(x).attr('data-original-state') === 'disabled').select(x => $(x).removeAttr('data-original-state').attr('disabled', 'disabled').addClass('disabled')).count();
+        }
+
+        
+        $('#compose_to ul').css({
+            'pointer-events':'',
+            'background-color':''
+        });
+
+
+        return this;
     }
 }

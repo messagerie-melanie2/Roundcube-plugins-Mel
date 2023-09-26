@@ -396,6 +396,11 @@ if (rcmail && window.mel_metapage)
                 }
             }
 
+            if (rcmail.env.main_nav_can_deploy !== top.rcmail.env.main_nav_can_deploy) {
+                top.rcmail.env.main_nav_can_deploy = rcmail.env.main_nav_can_deploy;
+                top.MEL_ELASTIC_UI.update_main_nav_meca();
+            }
+
             if (rcmail.env.menu_last_frame_enabled !== top.rcmail.env.menu_last_frame_enabled) {
                 top.rcmail.env.menu_last_frame_enabled = rcmail.env.menu_last_frame_enabled;
                 let $item = top.$("#taskmenu .menu-last-frame");
@@ -833,7 +838,21 @@ if (rcmail && window.mel_metapage)
         if (prop === 'logout') {
             let $querry = $('iframe.wekan-frame');
             if ($querry.length > 0) {
-                $querry[0].contentWindow.$('#wekan-iframe').contentWindow.Meteor.logout();
+                try {
+                    $querry[0].contentWindow.$('#wekan-iframe').contentWindow.Meteor.logout();
+                } catch (error) {
+                    
+                }
+
+                try {
+                    const kanban = $querry[0].contentWindow.rcmail.env.wekan_storage_end;
+                    const storage = Object.keys(localStorage);
+                    for (const key of storage) {
+                        if (key.includes(kanban)) localStorage.removeItem(key);
+                    }
+                } catch (error) {
+                    
+                }
             }
         }
     });

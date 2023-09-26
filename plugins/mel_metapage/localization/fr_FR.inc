@@ -250,7 +250,7 @@ $labels['main_contents'] = 'Contenu principal';
 $labels['to_search'] = 'Rechercher';
 $labels['notifications_help'] = 'Afficher les notifications';
 $labels['settings_help'] = 'Afficher les options';
-$labels['global_search_title'] = 'Recherche globale : recherche dans les contacts, les mails ansi que l\'agenda.';
+$labels['global_search_title'] = 'Recherche globale : recherche dans les contacts, les mails ainsi que l\'agenda.';
 
 $labels['open_chat_popup'] = 'Ouvrir la discussion instantanée';
 $labels['other_actions'] = 'Autres actions';
@@ -334,7 +334,7 @@ $labels['notif-nothing'] = "Rien/Fonctionnement par défaut";
 
 $labels['tab_title_style_help'] = "\"<all/>\" affiche sur l'onglet la somme des notifications sur la navigation principal (ex : 5 mail, 3 évènements => (8) Paramètres)\r\n\"<page/>\" affiche seulement les notifications de la page en cours (ex : (3) Agenda).\r\nFonctionnement par défaut sinon.";
 
-$labels['app_chat'] = 'Mes discussions';
+$labels['app_chat'] = 'Discussions';
 $labels['app_documents'] = 'Documents';
 $labels['app_tasks'] = 'Tâches';
 $labels['app_news'] = 'M\'informer';
@@ -342,7 +342,7 @@ $labels['app_ul'] = 'Liens utiles';
 $labels['app_kanban'] = 'Kanban';
 $labels['app_survey'] = 'Sondage';
 $labels['app_rizomo'] = 'Suite numérique';
-$labels['app_calendar'] = 'Mon agenda';
+$labels['app_calendar'] = 'Agenda';
 $labels['app_workspace'] = 'Espaces de travail';
 $labels['app_parapheur'] = 'Parapheur';
 
@@ -385,3 +385,4 @@ $labels['quitdelayconfirmation'] = 'Si vous quittez, le mail ne sera pas envoyé
 $labels['delaytimer'] = 'Le message sera envoyé dans';
 $labels['new-note'] = 'Nouvelle note';
 $labels['note-create-title'] = $labels['new-note'].' - Créer une nouvelle note qui s\'affichera après les autres notes';
+$labels['main_nav_can_deploy'] = 'Déplier la barre de navigation au survol ?';

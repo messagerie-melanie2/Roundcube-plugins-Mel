@@ -1,3 +1,6 @@
+import { EMPTY_STRING } from "../constants/constants.js";
+import { MainIconHtml } from "../html/html_icon.js";
+
 export { EventLocation };
 
 const NEWLINE = String.fromCharCode('8199');
@@ -18,7 +21,42 @@ class BaseLocation {
     side_action() { return false; }
 }
 
-class VisioLocation extends BaseLocation {
+class ActionLocation extends BaseLocation {
+    constructor(location) {
+        super(location);
+
+        Object.defineProperties(this, {
+            icon: {
+                get: () => {
+                    return this._get_icon();
+                },
+                configurable: true
+            },
+            desc: {
+                get: () => {
+                    return this._get_description({});
+                },
+                configurable: true
+            }
+        });
+    }
+
+    _get_icon() {}
+
+    _get_description({
+        length = 0
+    }) {}
+
+    _update_html(html) {
+        return html;
+    }
+
+    after_html_generation(html) {
+        return this._update_html(html);
+    }
+}
+
+class VisioLocation extends ActionLocation {
     constructor(location, categories = []) {
         super(location);
         const webconflink = WebconfLink.create({location, categories});
@@ -47,9 +85,54 @@ class VisioLocation extends BaseLocation {
     side_action() {
         return window.webconf_helper.go(this.key, this.wsp, this.ariane);
     }
+
+    _get_description({
+        length = 0
+    }) {
+        return length > 1 ? 'Visio' : 'Visio-conférence';
+    }
+
+    _get_icon() {
+        return 'videocam';
+    }
 }
 
-class AudioLocation extends BaseLocation {
+class CustomVisioLocation extends ActionLocation {
+    constructor(location) {
+        if (CustomVisioLocation.is_custom_visio(location)) location = location.replace(CustomVisioLocation.visio_key, EMPTY_STRING); 
+        
+        super(location);
+    }
+
+    side_action() {
+        return new mel_html('a', {href:this.location}).generate().click();
+    }
+
+    _get_icon() {
+        return 'open_in_new';
+    }
+
+    _get_description({
+        length = 0
+    }) {
+        return length > 1 ? 'Visio (externe)' : 'Visio-conférence externe';
+    }
+
+    static is_custom_visio(txt) {
+        return txt.includes(CustomVisioLocation.visio_key);
+    }
+}
+
+Object.defineProperties(CustomVisioLocation, {
+    visio_key: {
+        get: function() {
+            return '@visio:';
+        },
+        configurable: false
+    }
+});
+
+class AudioLocation extends ActionLocation {
     constructor(location) {
         super(location);
         const splited = location.split(' - ');
@@ -74,6 +157,16 @@ class AudioLocation extends BaseLocation {
                 configurable: true
             },
         });
+    }
+
+    _get_icon() {
+        return 'call';
+    }
+
+    _get_description({
+        length = 0
+    }) {
+        return 'Audio';
     }
 
     side_action() {
@@ -118,6 +211,7 @@ class EventLocation extends BaseLocation {
             const element = locations[index];
             
             if (element.includes(AUDIO_URL)) new_locations.audio = new AudioLocation(element);
+            else if (CustomVisioLocation.is_custom_visio(element)) new_locations.visio = new CustomVisioLocation(element);
             else {
                 tmp = new VisioLocation(element, event.categories);
                 if (!!(tmp.key || false)) new_locations.visio = tmp;

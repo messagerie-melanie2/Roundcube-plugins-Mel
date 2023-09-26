@@ -359,7 +359,8 @@ les propriétés « nom » et « valeur ».
             }
 
             static reset_extra_states() {
-                $('.mel-tooltip button').removeClass('active').removeClass('background').addClass('txt');
+                $('#mel-label-tooltip-dropdown button').removeClass('active').removeClass('background').addClass('txt');
+                $('#priority-tooltip button').removeClass('active');
             }
 
             static get_line_priority() {
@@ -529,7 +530,7 @@ les propriétés « nom » et « valeur ».
                 $caller.attr('data-action', filter.action).removeClass('active');//.mel_tooltip('hide');
             }
 
-            $caller.mel_tooltip('hide');
+            //$caller.mel_tooltip('hide');
             mel_filter_manager.base_callback(filter, $caller, {});
         });
 
@@ -547,7 +548,7 @@ les propriétés « nom » et « valeur ».
                     mel_filter.priority('La plus basse', 'HEADER X-PRIORITY 5')
                 ];
 
-                let html_div = new mel_html2('div', {attribs:{class:'priority-tooltip btn-group-vertical'}});
+                let html_div = new mel_html2('div', {attribs:{id:'priority-tooltip', class:'priority-tooltip btn-group-vertical'}});
 
                 let html_button;
                 for (const iterator of priorities) {
@@ -579,7 +580,6 @@ les propriétés « nom » et « valeur ».
                             filter.action = '';
                         }
 
-                        target_event.mel_tooltip('hide');
                         mel_filter_manager.base_callback(filter, e, {});
                     });
 
@@ -587,17 +587,18 @@ les propriétés « nom » et « valeur ».
                     html_button = undefined;
                 }
 
-                window.loadJsModule = window.loadJsModule ?? (top ?? parent).loadJsModule;
-
-                const mel_tooltip_js = await loadJsModule('mel_metapage', 'mel_tooltip.js', '/js/lib/classes/');
-
-                target_event.mel_tooltip('init', {
-                    content: html_div.generate(),
-                    mode: mel_tooltip_js.enum_tooltip_mode.CLICK_AND_FOCUS
-                });
+                html_div.create($('body'));
+                target_event.addClass('priority-tooltip').data('popup', 'priority-tooltip');
+                UI.popup_init(target_event);
+                target_event.click();
             }
 
-            target_event.mel_tooltip('toggle');
+            setTimeout(() => {
+                if ($('#priority-tooltip').hasClass('hidden')) target_event.popover('show');
+                else target_event.popover('hide');
+        
+                target_event.popover('toggle');
+            }, 100);
         });
 
         const rcmail_command_handler = rcmail.command_handler;
@@ -642,17 +643,17 @@ les propriétés « nom » et « valeur ».
         });
 
         const { MelEnumerable } = await loadJsModule('mel_metapage', 'enum.js', '/js/lib/classes/');
-        const corrector = 0;
+        const corrector = 5;
 
         const observe = async () => {
             $('#message-list-filters li').show();
             $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');
 
-            if (0 !== $('#message-list-filters li.mel-filter-more').length) {
-                $('#message-list-filters li.mel-filter-more').hide();
+            if (0 !== $('.message-list-filter-container .mel-filter-more').length) {
+                $('.message-list-filter-container .mel-filter-more').hide();
 
-                if ($('#message-list-filters li.mel-filter-more button').hasClass('activated')) {
-                    $('#message-list-filters li.mel-filter-more button').click();
+                if ($('.message-list-filter-container .mel-filter-more button').hasClass('activated')) {
+                    $('.message-list-filter-container .mel-filter-more button').click();
                 }
             }
 
@@ -680,7 +681,7 @@ les propriétés « nom » et « valeur ».
                 width = null;
                 $iterator = null;
 
-                if (0 === $('#message-list-filters li.mel-filter-more').length)
+                if (0 === $('.message-list-filter-container .mel-filter-more').length)
                 {
                     let more_button = new mel_html2('button', {
                         attribs:{class:'mel-button no-button-margin no-margin-button mel-filter-more'},
@@ -695,7 +696,7 @@ les propriétés « nom » et « valeur ».
                             $('#message-list-filters').css({
                                 'flex-wrap': 'wrap',
                             });
-                            e.parent().css('margin-top', '-47px');
+                            //e.parent().css('margin-top', '-47px');
                         }
                         else {
                             e.removeClass('activated').find('span').html('chevron_right');
@@ -703,17 +704,17 @@ les propriétés « nom » et « valeur ».
                                 'flex-wrap': '',
                                 'justify-content': ''
                             });
-                            e.parent().css('margin-top', '');
+                            //e.parent().css('margin-top', '');
                             observe();
                         }
                     });
 
-                    new mel_html2('li', {attribs:{class:'mel-filter-more'}, contents:more_button}).create($('#message-list-filters'));
+                    new mel_html2('div', {attribs:{class:'mel-filter-more'}, contents:more_button}).create($('#message-list-filters').parent());
                 }
 
-                $('#message-list-filters li.mel-filter-more').show();
+                $('.message-list-filter-container .mel-filter-more').show();
 
-                const visible_enum = MelEnumerable.from($('#message-list-filters li')).where(x => $(x).css('display') !== 'none');
+                const visible_enum = MelEnumerable.from($('#message-list-filters li')).append($('.message-list-filter-container .mel-filter-more')).where(x => $(x).css('display') !== 'none');
 
                 if (visible_enum.select(x => $(x).width() + ($(x).hasClass('mel-filter-more') ? 0 : corrector)).sum({}) > layout_list_width) {
                     $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');

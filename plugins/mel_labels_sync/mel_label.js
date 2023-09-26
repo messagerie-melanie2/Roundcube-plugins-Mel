@@ -478,9 +478,9 @@ rcube_webmail.prototype.mel_label_toggle = function(toggle_label) {
 
 rcube_webmail.prototype.mel_label_show_tooltip = async function($parent) {
 //debugger;
-	window.loadJsModule = window.loadJsModule ?? (top ?? parent).loadJsModule;
+//	window.loadJsModule = window.loadJsModule ?? (top ?? parent).loadJsModule;
 
-	const mel_tooltip_js = await loadJsModule('mel_metapage', 'mel_tooltip.js', '/js/lib/classes/');
+	//const mel_tooltip_js = await loadJsModule('mel_metapage', 'mel_tooltip.js', '/js/lib/classes/');
 
 	let $body = $('body');
 	let $tooltip = $('body .label-tooltip');
@@ -488,7 +488,7 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function($parent) {
 	if (0 === $tooltip.length) {
 		let $ul;
 		let tooltips = Object.keys(rcmail.env.labels_translate);
-		$tooltip = $('<div id="mel-label-tooltip-dropdown" class="label-tooltip"></div>');
+		$tooltip = $('<div id="mel-label-tooltip-dropdown" class=""></div>');
 
 		$ul = $('<div class="ignore-bullet btn-group-vertical"></div>');
 		
@@ -507,6 +507,9 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function($parent) {
 						$target.addClass('active').addClass('background').removeClass('txt');
 					}
 
+					const key = $target.data('mel-label');
+					$target.addClass(`label_${key}`);
+
 					rcmail.triggerEvent('label.tooltip.click', {state:$target.is('.active'), $caller:$parent, $target});
 				}).data('mel-label', key).addClass(`label_${key} txt important`)
 				.on('mouseover', (e) => {
@@ -520,18 +523,31 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function($parent) {
 				})
 			);
 		}
-
 		$ul.appendTo($tooltip);
 
-		$parent.mel_tooltip('init', {
-			content:$tooltip,
-			mode: mel_tooltip_js.enum_tooltip_mode.CLICK_AND_FOCUS
-		});
+		$tooltip.appendTo($body);
+
+		// $parent.addClass('label-tooltip').popover({
+		// 	html:true,
+		// 	content:() => {
+		// 		console.log('generating contents ! ');
+		// 		return $ul;
+		// 	}
+		// });
+
+		// console.log('yolo');
+		$parent.addClass('label-tooltip').data('popup', 'mel-label-tooltip-dropdown');
+		UI.popup_init($parent);
+
+		$parent.click();
 	}
 
-	$parent.mel_tooltip('toggle');
+	setTimeout(() => {
+		if ($('#mel-label-tooltip-dropdown').hasClass('hidden')) $parent.popover('show');
+		else $parent.popover('hide');
 
-	
+		$parent.popover('toggle');
+	}, 100);
 }
 	
 	//kMel_LuminanceRatioAAA(kMel_extractRGB('#1A2F34'), kMel_extractRGB('rgb(230, 199, 66)')) 

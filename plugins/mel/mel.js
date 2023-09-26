@@ -169,7 +169,7 @@ if (window.rcmail) {
 // Open edit folder iframe
 rcube_webmail.prototype.window_edit_folder = function() {
   window.location.hash = 'createfolder';
-  var folder = $('#mailboxlist > li.contextRow').length ? atob($('#mailboxlist > li.contextRow').attr('id').replace('rcmli', '')) : rcmail.env.mailbox;
+  var folder = $('#mailboxlist li.contextRow').length ? atob($('#mailboxlist li.contextRow').attr('id').replace('rcmli', '')) : rcmail.env.mailbox;
   var frame = $('<iframe>').attr('id', 'managemailboxfolder')
     .attr('src', rcmail.url('settings/edit-folder') + '&_framed=1&_path=' + encodeURIComponent(folder))
     .attr('onLoad', "if (this.contentWindow.location.href.indexOf('edit-folder') === -1) {$('#managemailboxfolder').dialog('close'); window.location.reload();} ")

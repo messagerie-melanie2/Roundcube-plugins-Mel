@@ -26,8 +26,11 @@ class CalendarLoader extends MelObject{
         this.on_calendar_updated = new MelEvent();
 
         const now = moment();
-        MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
-               .update_badge(this.get_next_events_day(now, {}).count(), mel_metapage.Ids.menu.badge.calendar);
+
+        if (['bnum', 'webconf', 'chat'].includes(rcmail.env.task)){
+            MainNav.try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar)
+                   .update_badge(this.get_next_events_day(now, {}).count(), mel_metapage.Ids.menu.badge.calendar);
+        }
 
         if (this.load(mel_metapage.Storage.last_calendar_update) !== moment().format(CONST_DATE_FORMAT_BNUM) || 
             null === this.load(mel_metapage.Storage.calendar_all_events)) {

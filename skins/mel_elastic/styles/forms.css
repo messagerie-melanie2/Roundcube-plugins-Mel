@@ -433,7 +433,7 @@ input.input-mel.error {
 
 #edit-attendees-donotify
 {
-	display: none;
+	/* display: none; */
 }
 
 #eventedit

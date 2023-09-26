@@ -1108,6 +1108,7 @@ $(document).ready(() => {
             const NOK_DESC = rcmail.gettext('custom_calendar_notification_nok_desc', PLUGIN);
             let title;
             let $notified;
+            let has_ok = false;
             $('#edit-attendees-table tr').each((i, e) => {
                 e = $(e);
                 $notified = e.find(NOTIFIED_SELECTOR);
@@ -1137,11 +1138,25 @@ $(document).ready(() => {
                         
                         break;
                 }       
+
+                if (!has_ok && $notified.find('.' + ICON_OK).length > 0) has_ok = true;
             });
 
             title = null;
             $notified = null;
+
+            $('#edit-attendees-notify').css('display', has_ok ? '' : 'none');
+
             return this;
+        }
+
+        hasNotify() {
+            const ICON_OK = 'icofont-check';
+            const NOTIFIED_CLASS = 'notified';
+            const CLASS_SELECTOR = '.';
+            const NOTIFIED_SELECTOR = CLASS_SELECTOR + NOTIFIED_CLASS;
+
+            return $(`#edit-attendees-table ${NOTIFIED_CLASS} ${CLASS_SELECTOR}${ICON_OK}`).length > 0;
         }
 
         /**
@@ -1386,7 +1401,6 @@ $(document).ready(() => {
     }
 
     window.rcube_calendar_ui._beforeSave = (event) => {
-
         if (event._notify === undefined || event._notify === null)
         {
             let checked = false;
@@ -2022,7 +2036,12 @@ $(document).ready(() => {
                 $("#edit-attendees-donotify").addClass("custom-control-input");
             }
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
-            //$('#edit-attendees-notify').css('display', 'none');
+            
+            if (!event.attendees || event.attendees.length <= 1) {
+                $('#edit-attendees-notify label').text('Envoyer une notification aux participants ?');
+            }
+
+            $('#edit-attendees-notify').css('display', EventUserNotified.Instance().hasNotify() ? '' : 'none').find('input')[0].checked = true;
             update_location();
             onAlertChange();
         }, 10);

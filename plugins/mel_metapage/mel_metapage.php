@@ -308,6 +308,7 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("mel_metapage_weather_enabled", $this->rc->config->get("enable_weather", false));
         $this->rc->output->set_env('mel_metapage.tab.notification_style', $this->rc->config->get('tab_title_style', 'page'));
         $this->rc->output->set_env('mel_metapage.webconf_voxify_indicatif', $this->rc->config->get('webconf_voxify_indicatif', 'FR'));
+        $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
 
         $icon = "mel-icon-size";
         $folder_space = "mel-folder-space";
@@ -1543,9 +1544,9 @@ class mel_metapage extends bnum_plugin
 
         $this->include_script('../mel_workspace/js/setup_event.js');
 
-        $event["attendees"] = [
-            ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
-        ];
+        // $event["attendees"] = [
+        //     ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
+        // ];
         $settings = $calendar->__get("settings");
         
         foreach ($this->rc->user->list_emails() as $rec) {
@@ -2076,6 +2077,14 @@ class mel_metapage extends bnum_plugin
                 'title'   => html::label($showBackIcon, rcube::Q($this->gettext($showBackIcon))),
                 'content' => $check->show($haveBackIcon ? 1 : 0),
             ];
+
+            $mainNavDeploy = 'main_nav_can_deploy';
+            $mainNavDeployConfig = $this->rc->config->get($mainNavDeploy, true);
+            $check = new html_checkbox(['name' => $mainNavDeploy, 'id' => $mainNavDeploy, 'value' => 1]);
+            $args['blocks']['second_nav']['options'][$mainNavDeploy] = [
+                'title'   => html::label($mainNavDeploy, rcube::Q($this->gettext($mainNavDeploy))),
+                'content' => $check->show($mainNavDeployConfig ? 1 : 0),
+            ];
         }
         else if ($args['section'] == 'bnum-experimental')
         {
@@ -2286,6 +2295,13 @@ class mel_metapage extends bnum_plugin
         $haveBackIcon = '1' === $haveBackIcon;
         $args['prefs'][$showBackIcon] = $haveBackIcon;
         $this->rc->output->set_env("menu_last_frame_enabled", $haveBackIcon);
+
+        $mainNavParam = 'main_nav_can_deploy';
+        $mainNavValue = $this->rc->config->get($mainNavParam, false);
+        $mainNavValue = rcube_utils::get_input_value($mainNavParam, rcube_utils::INPUT_POST) ?? false;
+        $mainNavValue = '1' === $mainNavValue;
+        $args['prefs'][$mainNavParam] = $mainNavValue;
+        $this->rc->output->set_env("main_nav_can_deploy", $mainNavValue);
     }
     else if ($args['section'] == 'bnum-experimental')
     {
@@ -2863,16 +2879,18 @@ class mel_metapage extends bnum_plugin
         }
 
         unset($init);
-        $folders = $folders->select(function ($key, $value) use ($balp_label, $delimiter, $bal, $len, $order, &$maxOrder){
+        $tmp = null;
+        $folders = $folders->select(function ($key, $value) use ($tmp, $balp_label, $delimiter, $bal, $len, $order, &$maxOrder){
             if (!isset($maxOrder)) $maxOrder = 0;
 
             if ($value === $balp_label.$delimiter.$bal || $value === 'INBOX')
             {
-                $key = 'INBOX';
+                $key = $value;
                 $value = 'Courrier entrant';
                 $order = 0; 
             }
             else {
+                $tmp = $value;
                 $value = str_ireplace($balp_label.$delimiter.$bal.$delimiter, '', $value);
 
                 if (strpos($value, $delimiter) === false) {
@@ -2889,10 +2907,11 @@ class mel_metapage extends bnum_plugin
                     if ($len - 1 === 1) $len = "| $key";
                     else $len = implode(mel_helper::Enumerable(range(1, $len - 2))->select(function($k, $v) {return '=';})->toArray())."> | $key";
 
-                    $key = implode('/', $value);
                     $value = $len;
                     unset($len);
                 }
+
+                $key = $tmp;
 
             }
 
@@ -3072,6 +3091,10 @@ class mel_metapage extends bnum_plugin
             case 'mail_delay':
                 $value = +$value;
                 break;
+
+            case 'main_nav_can_deploy':
+                $value = 'true' == $value;
+                break;
             default:
                 $const_mel_options = ["mel-icon-size", 
                                     "mel-folder-space",
@@ -3193,8 +3216,6 @@ class mel_metapage extends bnum_plugin
                   
                 default:
                   break;
-        
-                    
                   }
                 }
             break;
@@ -3238,9 +3259,10 @@ class mel_metapage extends bnum_plugin
     return $args;
   }
     public function logout_after($args) {
-
         foreach ($_COOKIE as $key => $value) {
-            if (strpos($key, 'id') !== false || strpos($key, 'ses') !== false || strpos($key, 'login') !== false) 
+            if (strpos($key, 'id') !== false || strpos($key, 'ses') !== false || strpos($key, 'login') !== false || 
+                (class_exists('mel_wekan') && strpos($key, $this->rc->config->get('wekan_storage_end')) !== false)
+            ) 
             {
                 if ('roundcube_login' !== $key) {
                     unset($_COOKIE[$key]); 

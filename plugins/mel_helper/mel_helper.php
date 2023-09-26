@@ -274,7 +274,7 @@ class mel_helper extends rcube_plugin
         else return null;
     }
 
-    public static function send_mail($subject, $mailbody, $from, $recipient) {
+    public static function send_mail($subject, $mailbody, $from, $recipient, $html = false) {
         $rc = rcmail::get_instance();
         $message = new Mail_mime("\r\n");
         $message->setParam('text_encoding', 'quoted-printable');
@@ -289,7 +289,7 @@ class mel_helper extends rcube_plugin
             'Date' => $rc->user_date(),
             'Message-ID' => $rc->gen_message_id(),
             'X-Sender' => $from,
-            'Content-type' => 'text/plain; charset=UTF-8'
+            'Content-type' => ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8')
         );
         if ($agent = $rc->config->get('useragent')) {
             $headers['User-Agent'] = $agent;

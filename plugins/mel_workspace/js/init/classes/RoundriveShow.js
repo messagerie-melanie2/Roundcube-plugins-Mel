@@ -141,7 +141,7 @@ class RoundriveShow
                 },
                 (xhr, ajaxOptions, thrownError) => {
                     console.error(xhr, ajaxOptions, thrownError, this);
-                    this.parent.html("Connexion impossible.");
+                    this.parent.html("Stockage non accessible, si vous venez de rejoindre l'espace de travail merci de réessayer dans quelques minutes.");
                     
                     if (this.showErrors)
                         rcmail.display_message("Impossible de se connecter au stockage !", "error");

@@ -1,3 +1,4 @@
+import { MelEnumerable } from "../classes/enum.js";
 import { EMPTY_STRING } from "../constants/constants.js";
 import { mel_cancellable_html_timer } from "../html/html_timer.js";
 import { Top } from "../top.js";
@@ -49,6 +50,10 @@ export class MetapageMailModule extends MetapageModule {
                     html.attribs['data-uid'] = MetapageMailModule.elements._generateKey();
 
                     html.ontimerfinished.push(($element) => {
+                        try {
+                            MetapageMailModule.Instance.enable_mail_window_actions().show_loader();
+                        } catch (error) {
+                        }
                         rcmail_submit_messageform.call(self, ...args);
                         MetapageMailModule.elements.remove($element.data('uid'));
                     });
@@ -127,15 +132,47 @@ export class MetapageMailModule extends MetapageModule {
         ];
     }
 
-    disable_mail_window_actions() {
+    show_loader(){
         $('#layout-content').hide();
         $('#layout-sidebar').attr('style', 'display: none !important;');
         this.get_skin().create_loader('mail-send-loader', true, false).create($('#layout'));
+    } 
+
+    disable_mail_window_actions() {
+        // $('#layout-content').hide();
+        // $('#layout-sidebar').attr('style', 'display: none !important;');
+        // this.get_skin().create_loader('mail-send-loader', true, false).create($('#layout'));
+        const elements = this._get_elements_form_states_can_be_changed();
+        for (const iterator of elements) {
+            MelEnumerable.from(iterator).where(x => $(x).hasClass('disabled')).select(x => $(x).attr('data-original-state', 'disabled')).count();
+            iterator.attr('disabled', 'disabled').addClass('disabled');
+        }
+
+        $('#compose_to ul').css({
+            'pointer-events':'none',
+            'background-color':'#e9ecef'
+        });
+
+        return this;
     }
     
     enable_mail_window_actions() {
-        $('#layout-content').show();
-        $('#layout-sidebar').removeAttr('style');
-        $('#mail-send-loader').remove();
+        // $('#layout-content').show();
+        // $('#layout-sidebar').removeAttr('style');
+        // $('#mail-send-loader').remove();
+        const elements = this._get_elements_form_states_can_be_changed();
+        for (const iterator of elements) {
+            iterator.removeAttr('disabled').removeClass('disabled');
+            MelEnumerable.from(iterator).where(x => $(x).attr('data-original-state') === 'disabled').select(x => $(x).removeAttr('data-original-state').attr('disabled', 'disabled').addClass('disabled')).count();
+        }
+
+        
+        $('#compose_to ul').css({
+            'pointer-events':'',
+            'background-color':''
+        });
+
+
+        return this;
     }
 }

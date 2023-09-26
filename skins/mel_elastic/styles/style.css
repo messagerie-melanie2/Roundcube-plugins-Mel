@@ -1599,6 +1599,10 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 }
 .btn-group-vertical .mel-button {
   border-radius: 5px;
+  width: 100%;
+}
+.popover .btn-group-vertical {
+  width: 100%;
 }
 .mel-ui-button.btn {
   background-color: var(--main-bckg-color);

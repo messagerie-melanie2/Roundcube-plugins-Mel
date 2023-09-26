@@ -231,7 +231,7 @@ class mel extends rcube_plugin
 
         if (in_array($this->rc->action, ['', 'index'])) {
           $container = 'messagelistfiltersmenu';
-          $filters = ['all', 'unread', 'followed', 'attachment', 'labels', 'priority', 'noresponses'];
+          $filters = ['all', 'unread', 'followed', 'labels', 'priority', 'attachment', 'noresponses'];
           //Filtres rapides
           foreach ($filters as $value) {
             $config = array(

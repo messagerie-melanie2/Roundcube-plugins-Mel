@@ -2481,3 +2481,53 @@ function save_option(_option_name, _option_value, element) {
     }
   )
 }
+
+//0007910: Popup d'information lors du clic sur un lien dans un mail
+function external_link_modal(_url) {
+  let url = new URL(_url);
+  let domain = url.hostname;
+  let html = new mel_html2('div', { attribs: {id:'external-link-modal'},contents: [] });
+  let title = new mel_html('label',{class:'span-mel t2'}, rcmail.gettext('mel_metapage.leaving_bnum'));
+  let link = new mel_html('p',{class:'external_url'}, _url);
+  let warning = new mel_html2('label', { attribs: {class:'text-danger mt-3 warning-label'},contents: [
+    new mel_html('span',{class:'material-symbols-outlined warning-icon-large'}, "warning"),
+    new mel_html('span',{class:'ml-2'}, rcmail.gettext('mel_metapage.warning_external_link'))    
+  ] });
+
+  let custom_switch = new mel_html2('div', { attribs: {class:'custom-control custom-switch no-click-focus'},contents: [
+    new mel_html('input',{name:'_trust_domain', id:'rcmfd_trust_domain', type:'checkbox', value:'false', class:'form-check-input custom-control-input no-click-focus', onchange:'$(this).val(this.checked)'}),
+    new mel_html('label',{for:'rcmfd_trust_domain', class:'custom-control-label option-switch no-click-focus pl-6'}, rcmail.gettext('mel_metapage.always_authorize') + '<span class="external_domain">'+domain+'</span>'),
+  ] });
+
+
+  html.addContent(title);
+  html.addContent(link);
+  html.addContent(custom_switch);
+  html.addContent(warning);
+
+  let buttons = [{
+    text: rcmail.gettext('mel_metapage.back'),
+    'class': 'modal-close-footer btn mel-button btn-danger mel-before-remover px-4',
+    click: function () {
+      $(this).closest('.ui-dialog-content').dialog('close');
+    }
+  },
+  {
+    text: rcmail.gettext('mel_metapage.open_external_link'),
+    'class': 'modal-save-footer btn btn-secondary mel-button px-4',
+    click: function () {
+      if($('#rcmfd_trust_domain').val() === "true") 
+      {
+        mel_metapage.Functions.post(
+          mel_metapage.Functions.url('mel_metapage', 'save_user_pref_domain'),
+          { _domain: domain }
+        );
+      }
+      window.open(_url, '_blank');
+      $(this).closest('.ui-dialog-content').dialog('close');
+    }
+  }
+  ];
+
+  rcmail.show_popup_dialog(html.generate(), rcmail.gettext("mel_metapage.attention"),buttons,{ width: 600, resizable: false, height: 180 });
+}

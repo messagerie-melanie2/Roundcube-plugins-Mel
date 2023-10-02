@@ -351,7 +351,7 @@ html.dark-mode .frame-header
 }
 
 html.dark-mode #messagelist-content,
-html.dark-mode #message-list-filters,
+html.dark-mode .message-list-filter-container,
 html.dark-mode #message-list-filters-extra
 {
     background-color: #1F2933!important;
@@ -1310,6 +1310,6 @@ html.dark-mode .mel-tooltip::before{
 }
 
 html.dark-mode #message-list-filters-extra div,
-html.dark-mode #message-list-filters{
+html.dark-mode .message-list-filter-container{
     border-color: #4d6066;
 }

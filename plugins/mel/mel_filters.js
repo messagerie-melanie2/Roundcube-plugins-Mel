@@ -643,17 +643,17 @@ les propriétés « nom » et « valeur ».
         });
 
         const { MelEnumerable } = await loadJsModule('mel_metapage', 'enum.js', '/js/lib/classes/');
-        const corrector = 0;
+        const corrector = 5;
 
         const observe = async () => {
             $('#message-list-filters li').show();
             $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');
 
-            if (0 !== $('#message-list-filters li.mel-filter-more').length) {
-                $('#message-list-filters li.mel-filter-more').hide();
+            if (0 !== $('.message-list-filter-container .mel-filter-more').length) {
+                $('.message-list-filter-container .mel-filter-more').hide();
 
-                if ($('#message-list-filters li.mel-filter-more button').hasClass('activated')) {
-                    $('#message-list-filters li.mel-filter-more button').click();
+                if ($('.message-list-filter-container .mel-filter-more button').hasClass('activated')) {
+                    $('.message-list-filter-container .mel-filter-more button').click();
                 }
             }
 
@@ -681,7 +681,7 @@ les propriétés « nom » et « valeur ».
                 width = null;
                 $iterator = null;
 
-                if (0 === $('#message-list-filters li.mel-filter-more').length)
+                if (0 === $('.message-list-filter-container .mel-filter-more').length)
                 {
                     let more_button = new mel_html2('button', {
                         attribs:{class:'mel-button no-button-margin no-margin-button mel-filter-more'},
@@ -696,7 +696,7 @@ les propriétés « nom » et « valeur ».
                             $('#message-list-filters').css({
                                 'flex-wrap': 'wrap',
                             });
-                            e.parent().css('margin-top', '-47px');
+                            //e.parent().css('margin-top', '-47px');
                         }
                         else {
                             e.removeClass('activated').find('span').html('chevron_right');
@@ -704,17 +704,17 @@ les propriétés « nom » et « valeur ».
                                 'flex-wrap': '',
                                 'justify-content': ''
                             });
-                            e.parent().css('margin-top', '');
+                            //e.parent().css('margin-top', '');
                             observe();
                         }
                     });
 
-                    new mel_html2('li', {attribs:{class:'mel-filter-more'}, contents:more_button}).create($('#message-list-filters'));
+                    new mel_html2('div', {attribs:{class:'mel-filter-more'}, contents:more_button}).create($('#message-list-filters').parent());
                 }
 
-                $('#message-list-filters li.mel-filter-more').show();
+                $('.message-list-filter-container .mel-filter-more').show();
 
-                const visible_enum = MelEnumerable.from($('#message-list-filters li')).where(x => $(x).css('display') !== 'none');
+                const visible_enum = MelEnumerable.from($('#message-list-filters li')).aggregate($('.message-list-filter-container .mel-filter-more')).where(x => $(x).css('display') !== 'none');
 
                 if (visible_enum.select(x => $(x).width() + ($(x).hasClass('mel-filter-more') ? 0 : corrector)).sum({}) > layout_list_width) {
                     $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');

@@ -1414,12 +1414,23 @@ body.task-mail.action-compose a.removelink {
 #melplusmails {
   color: var(--secondary-text-color);
 }
-#message-list-filters {
-  display: flex;
-  padding: 0px 5px 1px 10px;
-  border-bottom: solid thin var(--message-border-color);
-  margin-bottom: 0;
+.message-list-filter-container {
   background-color: white;
+  border-bottom: solid thin var(--message-border-color);
+}
+.message-list-filter-container .mel-filter-more {
+  height: 100%;
+  border: none;
+}
+.message-list-filter-container .mel-filter-more button.mel-button {
+  padding: 0;
+  border-radius: 0;
+  height: 100%;
+}
+#message-list-filters {
+  padding: 0px 5px 0px 10px;
+  display: flex;
+  margin-bottom: 0;
   align-items: center;
 }
 #message-list-filters li.input-group {
@@ -1469,16 +1480,6 @@ body.task-mail.action-compose a.removelink {
 #message-list-filters li .quick-filter:hover {
   color: var(--secondary-text-color);
 }
-#message-list-filters li.mel-filter-more {
-  margin-right: 0;
-  height: 100%;
-  margin-left: auto;
-}
-#message-list-filters li.mel-filter-more button.mel-button {
-  padding: 0;
-  border-radius: 0;
-  height: 100%;
-}
 #message-list-filters-extra {
   background-color: white;
 }
@@ -1507,4 +1508,8 @@ body.task-mail.action-compose a.removelink {
 }
 #toolbar-list-menu .selection {
   display: none!important;
+}
+.message-list-filter-container {
+  display: flex;
+  justify-content: space-between;
 }

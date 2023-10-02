@@ -165,14 +165,16 @@
   <roundcube:add_label name="showunread" />
 
   <!-- <separate></separate> -->
-  <ul id="message-list-filters" class="ignore-bullet">
-    <!-- MANTIS -->
-    <li class="input-group">
-      <input type="checkbox" id="select-mail-state" />
-      <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn mel-button no-button-margin no-margin-button bckg true"><span class="material-symbols-outlined">expand_more</span></button>
-    </li>
-    <roundcube:container name="messagelistfiltersmenu" id="messagelistfiltersmenu" />
-  </ul>
+  <div class="message-list-filter-container">
+    <ul id="message-list-filters" class="ignore-bullet">
+      <!-- MANTIS -->
+      <li class="input-group">
+        <input type="checkbox" id="select-mail-state" />
+        <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn mel-button no-button-margin no-margin-button bckg true"><span class="material-symbols-outlined">expand_more</span></button>
+      </li>
+      <roundcube:container name="messagelistfiltersmenu" id="messagelistfiltersmenu" />
+    </ul>
+  </div>
   <div id="message-list-filters-extra"></div>
   <div id="messagelist-content" class="scroller" tabindex="-1">
     <h2 id="aria-label-messagelist" class="voice">

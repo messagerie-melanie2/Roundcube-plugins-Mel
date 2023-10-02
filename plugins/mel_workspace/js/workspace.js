@@ -446,7 +446,6 @@ async function UpdateCalendar()
  */
 async function setup_calendar(datas, querry, _date = moment())
 {
-    debugger;
     let html = await html_helper.Calendars({
         datas:datas,
         _date:_date,

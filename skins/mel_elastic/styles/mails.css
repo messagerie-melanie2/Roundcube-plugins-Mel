@@ -143,21 +143,41 @@ html body table.messagelist tr.message td.labels {
 table.messagelist tr.message td.subject span.priority {
   height: 0;
 }
-table.messagelist tr.message td.subject span.priority span.prio1,
-table.messagelist tr.message td.subject span.priority span.prio2 {
+table.messagelist tr.message td.subject span.priority span.prio,
+table.messagelist tr.message td.subject span.priority span.prio5,
+table.messagelist tr.message td.subject span.priority span.prio4,
+table.messagelist tr.message td.subject span.priority span.prio2,
+table.messagelist tr.message td.subject span.priority span.prio1 {
   display: block;
   font-size: 22px;
   margin-top: -31px;
   margin-left: -3px;
   pointer-events: none;
 }
-table.messagelist tr.message td.subject span.priority span.prio1::before,
-table.messagelist tr.message td.subject span.priority span.prio2::before {
-  content: "\e645";
+table.messagelist tr.message td.subject span.priority span.prio::before,
+table.messagelist tr.message td.subject span.priority span.prio5:before,
+table.messagelist tr.message td.subject span.priority span.prio4:before,
+table.messagelist tr.message td.subject span.priority span.prio2:before,
+table.messagelist tr.message td.subject span.priority span.prio1:before {
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal;
-  color: red;
   font-variation-settings: 'wght' 300;
+}
+table.messagelist tr.message td.subject span.priority span.prio5:before {
+  content: '\ead0';
+  color: #5870BF;
+}
+table.messagelist tr.message td.subject span.priority span.prio4:before {
+  content: '\e313';
+  color: #5870BF;
+}
+table.messagelist tr.message td.subject span.priority span.prio2:before {
+  content: '\e316';
+  color: red;
+}
+table.messagelist tr.message td.subject span.priority span.prio1:before {
+  content: '\eacf';
+  color: red;
 }
 table.messagelist tr.message:hover {
   box-shadow: 0px 2px 2px var(--message-hover-shadow);

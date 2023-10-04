@@ -2015,3 +2015,30 @@ body.task-mail.action-compose a.removelink
 	display: flex;
 	justify-content: space-between;
 }
+
+#quick-filter-priority{
+    &.prio {
+        &::after{
+            font-family: 'Material Symbols Outlined' !important;
+            font-weight: normal;
+            font-variation-settings: 'wght' 300;
+            vertical-align: top;
+        }
+
+        each(@priorities, {
+            @tmp: @value[CLASS];
+            &.@{tmp}{
+                //&:extend(table.messagelist tr.message td.subject span.priority span.@{tmp});
+                &:after{
+                    content: @value[ICON];
+                }
+            }
+        });
+
+        &.prio3 {
+            &:after{
+                content: '\e15b';
+            }
+        }
+    }
+}

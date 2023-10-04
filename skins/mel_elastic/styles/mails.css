@@ -1533,3 +1533,24 @@ body.task-mail.action-compose a.removelink {
   display: flex;
   justify-content: space-between;
 }
+#quick-filter-priority.prio::after {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-variation-settings: 'wght' 300;
+  vertical-align: top;
+}
+#quick-filter-priority.prio.prio5:after {
+  content: '\ead0';
+}
+#quick-filter-priority.prio.prio4:after {
+  content: '\e313';
+}
+#quick-filter-priority.prio.prio2:after {
+  content: '\e316';
+}
+#quick-filter-priority.prio.prio1:after {
+  content: '\eacf';
+}
+#quick-filter-priority.prio.prio3:after {
+  content: '\e15b';
+}

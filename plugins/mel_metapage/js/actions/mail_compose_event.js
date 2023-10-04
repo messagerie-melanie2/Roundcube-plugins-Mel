@@ -15,4 +15,7 @@ $(document).ready(() => {
         $('#compose-store-target').val(rcmail.env.default_sended_folder);
     }
 
+    if ('empty' === rcmail.env['compose-option'] && true === rcmail.env.show_sig) {
+        rcmail.command('insert-sig');
+    }
 });

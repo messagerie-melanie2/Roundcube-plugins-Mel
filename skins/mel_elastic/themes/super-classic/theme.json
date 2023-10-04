@@ -6,6 +6,6 @@
   "icon":"icon.svg",
   "style":"style",
   "class":"theme-super-classique-main",
-  "order":-1,
+  "order":2,
   "custom_dark_mode":true
 }

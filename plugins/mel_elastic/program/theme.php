@@ -417,3 +417,31 @@ class ThemeSaisonForced extends ThemeSaison {
         return true;
     }
 }
+
+class DefaultTheme extends Theme {
+    public $default_theme;
+
+    public function __construct($path, $default_theme) {
+        parent::__construct($path);
+
+        $json = json_decode(file_get_contents($path.'/theme.json'));
+
+        $this->default_theme = $json->default_theme ?? $default_theme;
+    }
+
+    public function getDefaultTheme() {
+        return $this->default_theme;
+    }
+
+        /**
+     * Renvoie un objet qui contient les données de la classe.
+     *
+     * @return array
+     */
+    public function prepareToSave() {
+        $forSave = parent::prepareToSave();
+        $forSave['default_theme'] = $this->default_theme;
+
+        return $forSave;
+    }
+}

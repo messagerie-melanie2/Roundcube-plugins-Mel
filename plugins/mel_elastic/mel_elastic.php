@@ -38,6 +38,7 @@ class mel_elastic extends rcube_plugin
 
     private $loaded_theme;
     private $themes;
+    private static $default_theme;
 
     function init()
     {
@@ -206,7 +207,7 @@ class mel_elastic extends rcube_plugin
         {
             include_once __DIR__.'/program/theme.php';
             $theme_folder = $this->skinPath.'/themes/';
-            $themes = [self::DEFAULT_THEME => new Theme($theme_folder.self::DEFAULT_THEME)];
+            $themes = [self::DEFAULT_THEME => new DefaultTheme($theme_folder.self::DEFAULT_THEME, self::DEFAULT_THEME)];
             $folders = scandir($theme_folder);
             
             $currentTheme = null;
@@ -310,5 +311,14 @@ class mel_elastic extends rcube_plugin
 
     public static function SkinPath() {
         return getcwd()."/skins/mel_elastic";
+    }
+
+    public static function get_default_theme(){
+        if (!isset(self::$default_theme)) {
+            $theme = new DefaultTheme($theme_folder.self::DEFAULT_THEME, self::DEFAULT_THEME);
+            self::$default_theme = $theme->getDefaultTheme();
+        }
+
+        return self::$default_theme;
     }
 }

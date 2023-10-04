@@ -615,6 +615,9 @@ $(document).ready(() => {
             const THEME_MAIN_CLASS_COL = `${CONST_CLASS_COL}-${THEME_CLASS_COL_NUMBER}`;
             const SELECTOR_NOTIFICATION_PANEL = `${CONST_JQUERY_SELECTOR_ID}notifications-panel`;
             const SELECTOR_THEME_PANEL = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID}`;
+
+            const DEFAULT_THEME = rcmail.env.mel_themes[CONST_THEME_DEFAULT_ID]?.default_theme ?? CONST_THEME_DEFAULT_ID;
+
             /**
              * Thèmes additionnels, générer par le javascript
              * @type {Function[]}
@@ -625,14 +628,16 @@ $(document).ready(() => {
              * @type {mel_html2}
              */
             let html = new mel_html2(CONST_HTML_DIV, {attribs:{class:CONST_CLASS_ROW, style:STYLE_MAIN_DIV_THEME}});
-            this.theme = rcmail.env.current_theme || CONST_THEME_DEFAULT_ID;
+            this.theme = rcmail.env.current_theme || DEFAULT_THEME;
+
+            if (rcmail.env.current_theme === CONST_THEME_DEFAULT_ID && DEFAULT_THEME !== CONST_THEME_DEFAULT_ID) rcmail.env.current_theme = DEFAULT_THEME;
 
             //Si il y a un thème courant, on l'applique à la page
             if (!!rcmail.env.current_theme) {
                 let $html = mel_html.select_html();
 
                 if (!rcmail.env.mel_themes[rcmail.env.current_theme]) {
-                    rcmail.env.current_theme = 'default';
+                    rcmail.env.current_theme = DEFAULT_THEME;
                     this.theme = rcmail.env.current_theme;
                 }
 
@@ -662,6 +667,9 @@ $(document).ready(() => {
                      */
                     let is_selected;
                     for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).orderBy(x => x.value.order ?? Infinity)) {
+
+                        if (iterator.value.id === CONST_THEME_DEFAULT_ID && CONST_THEME_DEFAULT_ID !== DEFAULT_THEME) continue;
+
                         is_selected =  iterator.value.id === this.theme;
                         //Création du "bouton" du thème
                         html_theme = new mel_html(CONST_HTML_DIV, 

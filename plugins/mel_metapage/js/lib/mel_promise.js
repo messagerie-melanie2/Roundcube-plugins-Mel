@@ -268,6 +268,10 @@ class Mel_Promise {
     build_call_back(callback, current, ...args) {
         return callback(current, ...args);
     }
+
+    static wait(whatIWait, timeout = 5){
+        return new WaitSomething(whatIWait, timeout);
+    }
 }
 
 class Mel_Ajax extends Mel_Promise{

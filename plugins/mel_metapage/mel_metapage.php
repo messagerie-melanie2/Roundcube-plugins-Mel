@@ -299,6 +299,9 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("plugin.mel_metapage", true);//compose_extwin
         $this->rc->output->set_env("matomo_tracking", $this->rc->config->get("matomo_tracking", false));
         $this->rc->output->set_env("matomo_tracking_popup", $this->rc->config->get("matomo_tracking_popup", false));
+
+        $this->rc->output->set_env("mel_official_domain",  array_merge($this->rc->config->get("mel_official_domain", []),$this->rc->config->get('mel_user_domain',[])));
+
         //$this->rc->output->set_env("compose_extwin", true);
         $config = $this->rc->config->get("mel_metapage_chat_visible", true);
 
@@ -521,6 +524,8 @@ class mel_metapage extends bnum_plugin
             $this->register_action('get_have_cerbere', array($this, 'get_have_cerbere'));
             $this->register_action('comment_mail', array($this, 'comment_mail'));
             $this->register_action('calendar_load_events', [$this, 'calendar_load_events']);
+            $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
+
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
@@ -3312,5 +3317,12 @@ class mel_metapage extends bnum_plugin
         $args['sections'][] = ["id" => "mel_chat_ui", "section" => "Paramètres Bnum"];
 
         return $args;
+    }
+
+    public function save_user_pref_domain() {
+        $domain = rcube_utils::get_input_value('_domain', rcube_utils::INPUT_POST);
+        $user_domain = $this->rc->config->get('mel_user_domain',[]);
+        $user_domain[] = $domain;
+        $this->rc->user->save_prefs(['mel_user_domain' => $user_domain]);
     }
 }

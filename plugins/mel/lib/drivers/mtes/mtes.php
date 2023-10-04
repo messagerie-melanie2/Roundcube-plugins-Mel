@@ -381,7 +381,7 @@ class mtes_driver_mel extends mce_driver_mel
         // Search in LDAP
         $user = $this->user();
         $user->email = $args['record']['email'];
-        $lists = $user->getListsIsMember(['dn', 'email']);
+        $lists = [0];
         if (is_array($lists)) {
           $args['record']['list'] = [];
           foreach ($lists as $list) {

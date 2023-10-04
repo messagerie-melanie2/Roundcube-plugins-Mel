@@ -875,15 +875,7 @@ class mel_driver extends calendar_driver {
         $exceptions[$recid] = $this->_write_postprocess($_exception, $event, true);
 
         // Gérer la sequence
-        if (isset($event['sequence'])) {
-          $_exception->sequence = $event['sequence'];
-        }
-        else if (is_int($_exception->sequence)) {
-          $_exception->sequence = $_exception->sequence + 1;
-        }
-        else {
-          $_exception->sequence = 0;
-        }
+        $this->_sequence_process($event, $_exception);
 
         $_event->exceptions = $exceptions;
         $_event->modified = time();
@@ -907,16 +899,7 @@ class mel_driver extends calendar_driver {
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $event, false);
 
-          // Gérer la sequence
-          if (isset($event['sequence'])) {
-            $_event->sequence = $event['sequence'];
-          }
-          else if (is_int($_event->sequence)) {
-            $_event->sequence = $_event->sequence + 1;
-          }
-          else {
-            $_event->sequence = 0;
-          }
+          $this->_sequence_process($event, $_event);
         }
         else {
           $enddate->sub(new DateInterval('P1D'));
@@ -924,16 +907,7 @@ class mel_driver extends calendar_driver {
           $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
           $_event->recurrence->count = null;
 
-          // Gérer la sequence
-          if (isset($event['sequence'])) {
-            $_event->sequence = $event['sequence'];
-          }
-          else if (is_int($_event->sequence)) {
-            $_event->sequence = $_event->sequence + 1;
-          }
-          else {
-            $_event->sequence = 0;
-          }
+
 
           $_event->save();
           // Création de la nouvelle
@@ -966,16 +940,7 @@ class mel_driver extends calendar_driver {
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, $new);
 
-        // Gérer la sequence
-        if (isset($event['sequence'])) {
-          $_event->sequence = $event['sequence'];
-        }
-        else if (is_int($_event->sequence)) {
-          $_event->sequence = $_event->sequence + 1;
-        }
-        else {
-          $_event->sequence = 0;
-        }
+        $this->_sequence_process($event, $_event);
 
         // Supprime le tag que l'alarme a été repoussé
         if ($_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK) !== null)
@@ -1015,6 +980,29 @@ class mel_driver extends calendar_driver {
       return false;
     }
     return false;
+  }
+
+   /**
+   * Gère la séquence de l'évènement
+   *
+   * @param event event properties
+   * @param _event évènement Mél
+   */
+  protected function _sequence_process($event, &$_event)
+  {
+
+    $useless_fields = ["attendees", "alarm", "modified", "modified_json"];
+    $modified_fields = $_event->getObjectMelanie()->fieldsHasChanged();
+
+    if (isset($event['sequence'])) {
+      $_event->sequence = $event['sequence'];
+    } else if (is_int($_event->sequence)) {
+      if (!empty(array_diff($modified_fields, $useless_fields))) {
+        $_event->sequence = $_event->sequence + 1;
+      }
+    } else {
+      $_event->sequence = 0;
+    }
   }
 
   /**

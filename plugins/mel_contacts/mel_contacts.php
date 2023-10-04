@@ -65,13 +65,16 @@ class mel_contacts extends rcube_plugin {
     }
 
     if ($this->rc->task == 'addressbook') {
-      $this->add_texts('localization');
+      $this->add_texts('localization', true);
       $this->add_hook('contact_form', array($this, 'contact_form'));
       $this->add_hook('saved_search_create', array($this, 'saved_search_create'));
 
       // Plugin actions
       $this->register_action('plugin.book', array($this,'book_actions'));
       $this->register_action('plugin.book-save', array($this,'book_save'));
+
+      //List actions
+      $this->register_action('plugin.get-lists', array($this, 'get_lists'));
 
       // ACL Actions
       $this->register_action('plugin.contacts-acl', array($this,'contacts_acl'));
@@ -471,5 +474,19 @@ class mel_contacts extends rcube_plugin {
   public function saved_search_create($args) {
     $args['data']['data']['source'] = rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST);
     return $args;
+  }
+
+  // returns list of contacts
+  public function get_lists()
+  {
+    $cid = rcube_utils::get_input_value('cid', rcube_utils::INPUT_POST);
+    $dn = base64_decode(explode('-', $cid, 2)[0]);
+    $user = driver_mel::gi()->getUser(null, true, null, $dn);
+    $lists = $user->getListsIsMember(['dn', 'email']);
+    $list = mel_helper::Enumerable($lists)->select(function ($k, $v) {
+      return $v->email;
+    })->toArray();
+    echo(json_encode($list));
+    exit;
   }
 }

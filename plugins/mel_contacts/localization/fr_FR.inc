@@ -29,6 +29,7 @@ $labels['members'] = 'Membres';
 $labels['owners'] = 'Propriétaires';
 $labels['shares'] = 'Gestionnaires';
 $labels['lists'] = 'Listes de diffusion';
+$labels['no_lists'] = 'Ce contact ne se trouve dans aucune listes de diffusion.';
 $labels['sympaUrl'] = 'Gestionnaires et membres';
 $labels['sympaUrllabel'] = 'L\'ensemble des informations disponibles sur cette liste est accessible à cette adresse : ';
 $labels['restrictions'] = 'Restrictions';

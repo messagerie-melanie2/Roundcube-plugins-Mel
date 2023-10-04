@@ -143,21 +143,41 @@ html body table.messagelist tr.message td.labels {
 table.messagelist tr.message td.subject span.priority {
   height: 0;
 }
-table.messagelist tr.message td.subject span.priority span.prio1,
-table.messagelist tr.message td.subject span.priority span.prio2 {
+table.messagelist tr.message td.subject span.priority span.prio,
+table.messagelist tr.message td.subject span.priority span.prio5,
+table.messagelist tr.message td.subject span.priority span.prio4,
+table.messagelist tr.message td.subject span.priority span.prio2,
+table.messagelist tr.message td.subject span.priority span.prio1 {
   display: block;
   font-size: 22px;
   margin-top: -31px;
   margin-left: -3px;
   pointer-events: none;
 }
-table.messagelist tr.message td.subject span.priority span.prio1::before,
-table.messagelist tr.message td.subject span.priority span.prio2::before {
-  content: "\e645";
+table.messagelist tr.message td.subject span.priority span.prio::before,
+table.messagelist tr.message td.subject span.priority span.prio5:before,
+table.messagelist tr.message td.subject span.priority span.prio4:before,
+table.messagelist tr.message td.subject span.priority span.prio2:before,
+table.messagelist tr.message td.subject span.priority span.prio1:before {
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal;
-  color: red;
   font-variation-settings: 'wght' 300;
+}
+table.messagelist tr.message td.subject span.priority span.prio5:before {
+  content: '\ead0';
+  color: #5870BF;
+}
+table.messagelist tr.message td.subject span.priority span.prio4:before {
+  content: '\e313';
+  color: #5870BF;
+}
+table.messagelist tr.message td.subject span.priority span.prio2:before {
+  content: '\e316';
+  color: red;
+}
+table.messagelist tr.message td.subject span.priority span.prio1:before {
+  content: '\eacf';
+  color: red;
 }
 table.messagelist tr.message:hover {
   box-shadow: 0px 2px 2px var(--message-hover-shadow);
@@ -1518,4 +1538,25 @@ body.task-mail.action-compose a.removelink {
 .message-list-filter-container {
   display: flex;
   justify-content: space-between;
+}
+#quick-filter-priority.prio::after {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-variation-settings: 'wght' 300;
+  vertical-align: top;
+}
+#quick-filter-priority.prio.prio5:after {
+  content: '\ead0';
+}
+#quick-filter-priority.prio.prio4:after {
+  content: '\e313';
+}
+#quick-filter-priority.prio.prio2:after {
+  content: '\e316';
+}
+#quick-filter-priority.prio.prio1:after {
+  content: '\eacf';
+}
+#quick-filter-priority.prio.prio3:after {
+  content: '\e15b';
 }

@@ -222,22 +222,31 @@ table.messagelist{
                   height: 0;
 
                   span {
-                    &.prio1,
-                    &.prio2 {
-                      display: block;
-                      font-size: 22px;
-                      margin-top: -31px;
-                      margin-left: -3px;
-                      pointer-events: none;
+                    &.prio{
+                        display: block;
+                        font-size: 22px;
+                        margin-top: -31px;
+                        margin-left: -3px;
+                        pointer-events: none;
 
-                      &::before {
-                        content: "\e645";
-                        font-family: 'Material Symbols Outlined' !important;
-                        font-weight: normal;
-                        color: red;
-                        font-variation-settings: 'wght' 300;
-                      }
+                        &::before{
+                            font-family: 'Material Symbols Outlined' !important;
+                            font-weight: normal;
+                            font-variation-settings: 'wght' 300;
+                        }
                     }
+
+                    each(@priorities, {
+                        @tmp: @value[CLASS];
+                        &.@{tmp}{
+                            &:extend(table.messagelist tr.message td.subject span.priority span.prio);
+                            &:before{
+                                &:extend(table.messagelist tr.message td.subject span.priority span.prio::before);
+                                content: @value[ICON];
+                                color: @value[COLOR];
+                            }
+                        }
+                    });
                   }
                 }
               }
@@ -2010,4 +2019,31 @@ body.task-mail.action-compose a.removelink
 .message-list-filter-container {
 	display: flex;
 	justify-content: space-between;
+}
+
+#quick-filter-priority{
+    &.prio {
+        &::after{
+            font-family: 'Material Symbols Outlined' !important;
+            font-weight: normal;
+            font-variation-settings: 'wght' 300;
+            vertical-align: top;
+        }
+
+        each(@priorities, {
+            @tmp: @value[CLASS];
+            &.@{tmp}{
+                //&:extend(table.messagelist tr.message td.subject span.priority span.@{tmp});
+                &:after{
+                    content: @value[ICON];
+                }
+            }
+        });
+
+        &.prio3 {
+            &:after{
+                content: '\e15b';
+            }
+        }
+    }
 }

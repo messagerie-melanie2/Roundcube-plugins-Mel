@@ -180,9 +180,10 @@ JavaScript. Cette fonction prend deux paramètres, « nom » et « valeur », et
 les propriétés « nom » et « valeur ». 
 * @param {string} name Nom de la priorité
 * @param {string} value Valeur de la priorité
+* @param {number} prio
 */
-        mel_filter.priority = (name, value) => {
-            return {name, value};
+        mel_filter.priority = (name, value, prio) => {
+            return {name, value, prio};
         }
 
         class mel_selector {
@@ -361,6 +362,7 @@ les propriétés « nom » et « valeur ».
             static reset_extra_states() {
                 $('#mel-label-tooltip-dropdown button').removeClass('active').removeClass('background').addClass('txt');
                 $('#priority-tooltip button').removeClass('active');
+                $('#quick-filter-priority').removeClass('prio');
             }
 
             static get_line_priority() {
@@ -541,11 +543,11 @@ les propriétés « nom » et « valeur ».
 
             if (0 === $tooltip.length) {
                 const priorities = [
-                    mel_filter.priority('La plus élevée', 'HEADER X-PRIORITY 1'),
-                    mel_filter.priority('Élevée', 'HEADER X-PRIORITY 2'),
-                    mel_filter.priority('Normale', 'NOT HEADER X-PRIORITY 1 NOT HEADER X-PRIORITY 2 NOT HEADER X-PRIORITY 4 NOT HEADER X-PRIORITY 5'),
-                    mel_filter.priority('Basse', 'HEADER X-PRIORITY 4'),
-                    mel_filter.priority('La plus basse', 'HEADER X-PRIORITY 5')
+                    mel_filter.priority('La plus élevée', 'HEADER X-PRIORITY 1', 1),
+                    mel_filter.priority('Élevée', 'HEADER X-PRIORITY 2', 2),
+                    mel_filter.priority('Normale', 'NOT HEADER X-PRIORITY 1 NOT HEADER X-PRIORITY 2 NOT HEADER X-PRIORITY 4 NOT HEADER X-PRIORITY 5', 3),
+                    mel_filter.priority('Basse', 'HEADER X-PRIORITY 4', 4),
+                    mel_filter.priority('La plus basse', 'HEADER X-PRIORITY 5', 5)
                 ];
 
                 let html_div = new mel_html2('div', {attribs:{id:'priority-tooltip', class:'priority-tooltip btn-group-vertical'}});
@@ -555,25 +557,42 @@ les propriétés « nom » et « valeur ».
                     html_button = new mel_html('button', 
                         {
                             class:'btn btn-secondary mel-button no-button-margin no-margin-button bckg true',
-                            'data-value':iterator.value
+                            'data-value':iterator.value,
+                            'data-priority':iterator.prio
                         }, iterator.name);
 
                     html_button.onclick.push((e) => {
+                        debugger;
                         let $target = $(e.target);
 
-                        mel_filter_manager.reset_priorities();
-
                         if ($target.hasClass('active')) $target.removeClass('active');
-                        else $target.addClass('active');
+                        else {
+                            $target.addClass('active').data('isTarget', 1);
+                        }
+
+                        for (let iterator of $('body .priority-tooltip button')) {
+                            iterator = $(iterator);
+
+                            if (1 !== iterator.data('isTarget')) iterator.removeClass('active');
+                            else iterator.data('isTarget', 0);
+                        }
 
                         const priorities = [...$('body .priority-tooltip button')].filter((e) => $(e).hasClass('active')).map(e => {
-                            mel_filter_manager.show_priority($(e));
+                            //mel_filter_manager.show_priority($(e));
                             return $(e).data('value');
                         });
+
+                        target_event.removeClass('prio1')
+                                    .removeClass('prio2')
+                                    .removeClass('prio3')
+                                    .removeClass('prio4')
+                                    .removeClass('prio5')
+                                    .removeClass('prio');
 
                         if (priorities.length > 0) {
                             filter.$item.removeClass('active');
                             filter.action = priorities.join(' ');
+                            target_event.addClass('prio').addClass(`prio${$target.data('priority')}`);
                         }
                         else {
                             filter.$item.addClass('active');
@@ -696,7 +715,6 @@ les propriétés « nom » et « valeur ».
                             $('#message-list-filters').css({
                                 'flex-wrap': 'wrap',
                             });
-                            //e.parent().css('margin-top', '-47px');
                         }
                         else {
                             e.removeClass('activated').find('span').html('chevron_right');
@@ -704,7 +722,6 @@ les propriétés « nom » et « valeur ».
                                 'flex-wrap': '',
                                 'justify-content': ''
                             });
-                            //e.parent().css('margin-top', '');
                             observe();
                         }
                     });

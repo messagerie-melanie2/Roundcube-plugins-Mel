@@ -1967,6 +1967,19 @@ $(document).ready(() => {
                                 }
                             }
 
+                            //On ouvre une modal pour prévenir d'un lien externe
+                            let domain = new URL(url).hostname;
+                            let open_modal = true;
+                            
+                            rcmail.env.mel_official_domain.forEach(item => {
+                              if (domain.endsWith(item)) {
+                                open_modal = false;
+                              }
+                            });
+                            if (open_modal) { 
+                              event.preventDefault();
+                              top.external_link_modal(url);
+                            }
                             break;
                     }
                 } while (reloop);

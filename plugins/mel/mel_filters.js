@@ -714,7 +714,7 @@ les propriétés « nom » et « valeur ».
 
                 $('.message-list-filter-container .mel-filter-more').show();
 
-                const visible_enum = MelEnumerable.from($('#message-list-filters li')).append($('.message-list-filter-container .mel-filter-more')).where(x => $(x).css('display') !== 'none');
+                const visible_enum = MelEnumerable.from($('#message-list-filters li')).aggregate($('.message-list-filter-container .mel-filter-more')).where(x => $(x).css('display') !== 'none');
 
                 if (visible_enum.select(x => $(x).width() + ($(x).hasClass('mel-filter-more') ? 0 : corrector)).sum({}) > layout_list_width) {
                     $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');

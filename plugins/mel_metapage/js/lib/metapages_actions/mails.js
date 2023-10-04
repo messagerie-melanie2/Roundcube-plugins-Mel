@@ -1,6 +1,7 @@
 import { MelEnumerable } from "../classes/enum.js";
 import { EMPTY_STRING } from "../constants/constants.js";
 import { mel_cancellable_html_timer } from "../html/html_timer.js";
+import { Mel_Promise } from "../mel_promise.js";
 import { Top } from "../top.js";
 import { MetapageModule } from "./metapage_module.js";
 
@@ -109,6 +110,14 @@ export class MetapageMailModule extends MetapageModule {
             };
         }
         else window.onbeforeunload = this.onBeforeUnload;
+
+        Mel_Promise.wait(() => {
+            return $('#list-toggle-button').length > 0;
+        }).always((value) => {
+            let $toggle = $('#list-toggle-button');
+            if (value.resolved && $toggle.hasClass('disabled')) $('#list-toggle-button').addClass('active').removeClass('disabled').removeAttr('disabled');
+        });
+        
         return this;
     }
 

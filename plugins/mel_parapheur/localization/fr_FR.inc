@@ -1,4 +1,4 @@
 <?php
 $labels = [];
 $labels['parapheur'] = 'Parapheur';
-$labels['to-parapheur'] = 'Transmettre au parapheur';
+$labels['to-parapheur'] = 'Mettre au parapheur';

@@ -30,6 +30,8 @@ class mel_parapheur extends bnum_plugin
      */
     function init()
     {
+        if (!mel::is_internal()) return;
+
         $this->load_config();
 
         switch ($this->rc()->task) {
@@ -37,6 +39,9 @@ class mel_parapheur extends bnum_plugin
                 $this->add_hook('mel_metapage.navigation.apps', array($this, 'gestion_apps'));
                 break;
             
+            case 'mail':
+                $this->add_hook('message_compose', [$this, 'message_compose']);    
+                break;
             default:
                 # code...
                 break;
@@ -54,8 +59,8 @@ class mel_parapheur extends bnum_plugin
                 case 'mail':
                     $this->add_button(array(
                         'command' => 'toParapheur',
-                        'class'	=> 'to-parapheur active',
-                        'classAct' => 'to-parapheur active',
+                        'class'	=> 'to-parapheur forward inline active',
+                        'classAct' => 'to-parapheur forward inline  active',
                         'label'	=> 'to-parapheur',
                         'title' => 'to-parapheur',
                         'type'       => 'link-menuitem',
@@ -226,6 +231,13 @@ class mel_parapheur extends bnum_plugin
             })->toArray();
         }
 
+        return $args;
+    }
+
+    public function message_compose($args) {
+        if ($args['param']['option'] === 'parapheur') {
+            $args['param']['to'] = $this->get_config('mail');
+        }
         return $args;
     }
 

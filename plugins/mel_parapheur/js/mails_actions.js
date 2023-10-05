@@ -31,17 +31,28 @@ export class ParapheurMailAction extends ParapheurAction {
      * confirmation en cas de succès, ou un message d'erreur en cas d'échec.
      */
     command_to_parapheur() {
+        //debugger;
         const mail_uid = this.rcmail().get_single_uid();
 
-        this.post('to_parapheur', (data) => {
-            if ('true' === data) this.rcmail().display_message('Message envoyé au parapheur !', 'confirmation');
-            else this.rcmail().display_message('Impossible de transférer le mail au parapheur !', 'error');
-        }, {
-            params: {
-                _uid:mail_uid,
-                _folder: this.get_env('mailbox') 
-            }
-        });
+        var uids = this.rcmail().env?.uid ? [this.rcmail().env.uid] : (this.rcmail().message_list ? this.rcmail().message_list.get_selection() : [mail_uid]);
+        if (uids.length) {
+          let url = { _forward_uid: this.rcmail().uids_to_list(uids), _mbox: this.rcmail().env.mailbox, _search: this.rcmail().env.search_request };
+
+          if ((this.rcmail().env.forward_attachment) || uids.length > 1) url._attachment = 1;
+
+          url._option = `parapheur`;
+          this.rcmail().open_compose_step(url);
+        }
+
+        // this.post('to_parapheur', (data) => {
+        //     if ('true' === data) this.rcmail().display_message('Message envoyé au parapheur !', 'confirmation');
+        //     else this.rcmail().display_message('Impossible de transférer le mail au parapheur !', 'error');
+        // }, {
+        //     params: {
+        //         _uid:mail_uid,
+        //         _folder: this.get_env('mailbox') 
+        //     }
+        // });
     }
 
 /**

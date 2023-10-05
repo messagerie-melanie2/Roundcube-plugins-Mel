@@ -365,7 +365,7 @@ class Gestionnaireabsence extends Moncompteobject
     $message_interne = trim(rcube_utils::get_input_value('absence_message_interne', rcube_utils::INPUT_POST));
     $radio_externe = trim(rcube_utils::get_input_value('absence_reponse_externe', rcube_utils::INPUT_POST));
     $message_externe = trim(rcube_utils::get_input_value('absence_message_externe', rcube_utils::INPUT_POST));
-    $timezone = $_POST["absence_timezone"];
+    $timezone = trim(rcube_utils::get_input_value('absence_timezone', rcube_utils::INPUT_POST));
 
     // Récupération de l'utilisateur
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');

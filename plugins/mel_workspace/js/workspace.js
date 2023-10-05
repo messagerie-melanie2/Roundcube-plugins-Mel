@@ -737,8 +737,10 @@ function UpdateFrameAriane()
     }
 }
 
-async function initCloud()
+async function initCloud(tentative = 0)
 {
+    // debugger;
+    // console.trace('tentative', tentative);
     if (rcmail.env.current_workspace_services.doc !== true || rcmail.env.is_stockage_active !== true)
         return;
 
@@ -747,7 +749,7 @@ async function initCloud()
 
     if(rcmail.env.checknews_action_on_success === undefined)
         rcmail.env.checknews_action_on_success = [];
-
+        
     rcmail.env.checknews_action_on_error.push(() => {
         //rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");
         //console.log("ncupdated", rcmail.env.current_nextcloud_updated);
@@ -770,6 +772,7 @@ async function initCloud()
         }
 
         const finished = moment(rcmail.env.current_nextcloud_updated).add(rcmail.env.wsp_waiting_nextcloud_minutes, "m");
+
         if (moment() < finished) //(personnal data)
         {
             $("button.wsp-documents").css("display", "none");
@@ -788,16 +791,43 @@ async function initCloud()
                 {
                     $("button.wsp-documents").css("display", "");
                     clearInterval(createdTimeOut);
+                    rcmail.env.checknews_action_on_error = undefined;
+                    rcmail.env.checknews_action_on_success = undefined;
                     initCloud();
                     //Envoi au serveur que rcmail.env.current_workspace_document_ten vaut vrai
                 }
             }, 1000);
         }  
         else {
-            $("button.wsp-documents").css("display", "none");
-            rcmail.display_message("Impossible d'accéder au dossier !", "error");
-            if (moment(rcmail.env.current_nextcloud_updated).add(rcmail.env.wsp_waiting_nextcloud_minutes*2, "m") > moment())
-                rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");
+            if (tentative === 0)
+            {
+                $("button.wsp-documents").css("display", "none");
+                rcmail.display_message("Stockage non accessible pour le moment !", "error");
+                setTimeout(() => {
+                    rcmail.display_message("Si vous venez de rejoindre l'espace de travail, il sera accessible dans quelques minute !", "error");
+                    setTimeout(() => {
+                        rcmail.display_message("Tentative de connexion en cours...");
+                        
+                    }, 300);
+                }, 200);
+                console.info(`Tentative de connexion au stockage N°${tentative + 1}...`);
+                rcmail.env.checknews_action_on_error = undefined;
+                rcmail.env.checknews_action_on_success = undefined;
+                return initCloud(1);
+            }
+            else if (tentative > 20) {
+                rcmail.display_message("Impossible d'atteinde le stockage !", "error");
+                rcmail.env.con_nex_impo = true;
+                return;
+            }
+
+            setTimeout(() => {
+                console.info(`Tentative de connexion au stockage N°${tentative + 1}...`);
+                rcmail.env.checknews_action_on_error = undefined;
+                rcmail.env.checknews_action_on_success = undefined;
+                initCloud(++tentative);
+            }, 30*1000);
+
         }
 
     });
@@ -819,7 +849,30 @@ async function initCloud()
 
     rcmail.env.wsp_roundrive_show = new RoundriveShow(folder, frame, {
         afterInit() {
-            spinner.remove();
+            if ($("#cloud-frame").find('div').length > 0)
+            {
+                spinner.remove();
+                frame.find('.con').remove();
+                frame.find('.progress').remove();
+
+                if ($("button.wsp-documents").css("display") === "none") $("button.wsp-documents").css("display", '');
+            }
+            else if (rcmail.env.con_nex_impo === true) {
+                spinner.remove();
+                frame.html($('<p>').text('Impossible de se connecter aux documents !').css('width', '100%').css('text-align', 'center'));
+            }
+            else {
+                frame.html($('<p>').addClass('con').text('Tentative de connexion aux documents...').css('width', '100%').css('text-align', 'center'));
+                if (frame.parent().find('.progress').length === 0){
+                    let $progress = $(`<div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                       </div>`);
+                    $progress = $progress.appendTo(frame.parent()).find('.progress-bar').css('color', 'transparent');
+
+                    startTimer(600, $progress);
+                }
+            }
+
             frame.css("display", "");
         },
 
@@ -852,6 +905,33 @@ async function initCloud()
         wsp:rcmail.env.current_workspace_uid,
         show_errors:false
     });
+}
+
+function startTimer(duration, bar) {
+    var timer = duration, minutes, seconds;
+    const interval = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        
+        var totalSeconds = duration
+        , remainingSeconds = minutes * 60 + seconds
+        , width = (100-(remainingSeconds*100/totalSeconds)) 
+        
+        bar.css('width', width + '%');
+        bar.attr('aria-valuenow', width).text(width + '%');
+
+        if (!bar.hasClass('bg-warning') && width > 50) {
+            bar.addClass('bg-warning');
+        }
+        else if (!bar.hasClass('bg-danger') && width > 80) {
+            bar.removeClass('bg-warning');
+            bar.addClass('bg-danger');
+        }
+
+        if (--timer < 0) {
+            clearInterval(interval);
+        }
+    }, 1000);
 }
 
 function showMail($id)

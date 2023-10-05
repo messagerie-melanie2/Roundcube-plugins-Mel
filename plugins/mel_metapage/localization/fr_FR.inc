@@ -388,7 +388,7 @@ $labels['note-create-title'] = $labels['new-note'].' - Créer une nouvelle note 
 $labels['main_nav_can_deploy'] = 'Déplier la barre de navigation au survol ?';
 
 $labels['attention'] = 'Attention';
-$labels['leaving_bnum'] = 'Vous êtes sur le point de quitter le bnum pour aller sur le site suivant :';
+$labels['leaving_bnum'] = 'Vous êtes sur le point de quitter le Bnum pour aller sur le site suivant :';
 $labels['always_authorize'] = 'Toujours autoriser les liens provenant de ';
 $labels['warning_external_link'] = 'Attention, ne jamais donner vos identifiants ou mots de passe Bnum ou Mél sur le site que vous allez visiter';
 $labels['open_external_link'] = 'Visiter le site';

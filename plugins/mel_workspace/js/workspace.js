@@ -737,7 +737,7 @@ function UpdateFrameAriane()
     }
 }
 
-async function initCloud(tentative = 0)
+async function initCloud(tentative = 0, waiting_timeout = undefined)
 {
     // debugger;
     // console.trace('tentative', tentative);
@@ -783,23 +783,40 @@ async function initCloud(tentative = 0)
                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Création en cours...</div>
             </div>-->
             `);
-            
-            let createdTimeOut = setInterval(() => {
-                const val = Math.round((1 - ((finished - moment())/(rcmail.env.wsp_waiting_nextcloud_minutes*60*1000)))*100);
-                //$("#cloud-frame .progress-bar").css("width", `${val}%`);
-                rcmail.triggerEvent("workspace.roundrive.createStockage.wait", val);
-                if (val >= 100)
-                {
-                    $("button.wsp-documents").css("display", "");
-                    clearInterval(createdTimeOut);
-                    rcmail.env.checknews_action_on_error = undefined;
-                    rcmail.env.checknews_action_on_success = undefined;
-                    initCloud();
-                    //Envoi au serveur que rcmail.env.current_workspace_document_ten vaut vrai
-                }
-            }, 1000);
+
+            if (!waiting_timeout) {
+                rcmail.display_message("Les documents sera accessible dans quelques minute !");
+                rcmail.display_message("Une tentative de connexion automatique est en cours...");
+
+                let val = 0;
+                let createdTimeOut = setInterval(() => {
+                    ///onst val = Math.round((1 - ((finished - moment())/(rcmail.env.wsp_waiting_nextcloud_minutes*60*1000)))*100);
+                    //$("#cloud-frame .progress-bar").css("width", `${val}%`);
+                    rcmail.triggerEvent("workspace.roundrive.createStockage.wait", val);
+    
+                    if (++val >= 20)
+                    {
+                        clearTimeout(createdTimeOut);
+                    }
+                    else{
+                        console.info(`Creation tentative N°${val}...`);
+                        rcmail.env.checknews_action_on_error = undefined;
+                        rcmail.env.checknews_action_on_success = undefined;
+                        initCloud(0, createdTimeOut);
+                    }
+    
+    
+                }, 30000);
+            }
         }  
         else {
+
+            if (!!waiting_timeout) {
+                clearTimeout(waiting_timeout);
+                waiting_timeout = null;
+                console.info('Creation tentative stopped');
+            }
+
             if (tentative === 0)
             {
                 $("button.wsp-documents").css("display", "none");
@@ -851,7 +868,7 @@ async function initCloud(tentative = 0)
 
     rcmail.env.wsp_roundrive_show = new RoundriveShow(folder, frame, {
         afterInit() {
-            if (window.nc_state || $("#cloud-frame").find('div').length > 0)
+            if (window.nc_state)
             {
                 spinner.remove();
                 frame.find('.con').remove();
@@ -860,10 +877,27 @@ async function initCloud(tentative = 0)
                 if ($("button.wsp-documents").css("display") === "none") $("button.wsp-documents").css("display", '');
 
                 clearInterval(window.nc_interval);
+
+                if (!!waiting_timeout || tentative > 0)
+                {
+                    if (!!waiting_timeout) {
+                        clearTimeout(waiting_timeout);
+                        waiting_timeout = null;
+                        console.info('Creation tentative stopped');
+                    }
+
+                    rcmail.display_message("Connexion au stockage réussie !", "confirmation");
+                }
             }
             else if (rcmail.env.con_nex_impo === true) {
                 spinner.remove();
                 frame.html($('<p>').text('Impossible de se connecter aux documents !').css('width', '100%').css('text-align', 'center'));
+
+                if (!!waiting_timeout) {
+                    clearTimeout(waiting_timeout);
+                    waiting_timeout = null;
+                    console.info('Creation tentative stopped');
+                }
             }
             else {
                 frame.html($('<p>').addClass('con').text('Tentative de connexion aux documents...').css('width', '100%').css('text-align', 'center'));

@@ -751,6 +751,7 @@ async function initCloud(tentative = 0)
         rcmail.env.checknews_action_on_success = [];
         
     rcmail.env.checknews_action_on_error.push(() => {
+        window.nc_state = false;
         //rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");
         //console.log("ncupdated", rcmail.env.current_nextcloud_updated);
         if (rcmail.env.current_nextcloud_updated === null || rcmail.env.current_nextcloud_updated === false)
@@ -833,6 +834,7 @@ async function initCloud(tentative = 0)
     });
 
     rcmail.env.checknews_action_on_success.push(() => {
+        window.nc_state = true;
         if (rcmail.env.current_nextcloud_updated !== 1)
         {
             mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_date_stockage_user_updated"), {
@@ -849,13 +851,15 @@ async function initCloud(tentative = 0)
 
     rcmail.env.wsp_roundrive_show = new RoundriveShow(folder, frame, {
         afterInit() {
-            if ($("#cloud-frame").find('div').length > 0)
+            if (window.nc_state || $("#cloud-frame").find('div').length > 0)
             {
                 spinner.remove();
                 frame.find('.con').remove();
-                frame.find('.progress').remove();
+                frame.parent().find('.progress').remove();
 
                 if ($("button.wsp-documents").css("display") === "none") $("button.wsp-documents").css("display", '');
+
+                clearInterval(window.nc_interval);
             }
             else if (rcmail.env.con_nex_impo === true) {
                 spinner.remove();
@@ -869,7 +873,7 @@ async function initCloud(tentative = 0)
                        </div>`);
                     $progress = $progress.appendTo(frame.parent()).find('.progress-bar').css('color', 'transparent');
 
-                    startTimer(600, $progress);
+                    window.nc_interval = startTimer(600, $progress);
                 }
             }
 
@@ -932,6 +936,8 @@ function startTimer(duration, bar) {
             clearInterval(interval);
         }
     }, 1000);
+
+    return interval;
 }
 
 function showMail($id)

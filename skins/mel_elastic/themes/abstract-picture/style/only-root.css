@@ -35,6 +35,7 @@ html.theme-super-classique-main.picture-theme body.task-mail #layout-content > .
 html.theme-super-classique-main.picture-theme body.task-calendar #layout-sidebar {
   margin-right: var(--space-margin);
 }
+html.theme-super-classique-main.picture-theme body.task-search .wsp-header,
 html.theme-super-classique-main.picture-theme body.task-news .wsp-header,
 html.theme-super-classique-main.picture-theme body.task-useful_links .wsp-header {
   background-color: var(--theme-background-color) !important;
@@ -56,7 +57,9 @@ html.theme-super-classique-main.picture-theme body.task-bureau .wsp-header,
 html.theme-super-classique-main.picture-theme body.task-useful_links .body,
 html.theme-super-classique-main.picture-theme body.task-useful_links .wsp-header,
 html.theme-super-classique-main.picture-theme body.task-news .body,
-html.theme-super-classique-main.picture-theme body.task-news .wsp-header {
+html.theme-super-classique-main.picture-theme body.task-news .wsp-header,
+html.theme-super-classique-main.picture-theme body.task-search .body,
+html.theme-super-classique-main.picture-theme body.task-search .wsp-header {
   background-color: var(--theme-background-color);
   border-radius: 15px;
   padding: 15px;
@@ -74,6 +77,10 @@ html.theme-super-classique-main.picture-theme body.task-useful_links .wsp-header
   --bureau-background-color: var(--theme-background-color);
 }
 html.theme-super-classique-main.picture-theme body.task-news .wsp-header {
+  margin-bottom: 10px;
+  --bureau-background-color: var(--theme-background-color);
+}
+html.theme-super-classique-main.picture-theme body.task-search .wsp-header {
   margin-bottom: 10px;
   --bureau-background-color: var(--theme-background-color);
 }

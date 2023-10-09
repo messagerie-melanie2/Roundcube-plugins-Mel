@@ -187,7 +187,7 @@
       //   --input-mel-focus-background-color: var(--input-mel-background-color);
       //   --input-mel-focus-border-color: var(--main-text-color);
       //   --input-mel-focus-shadow-color: #C8CDFC59;
-      //   --input-mel-text-color: var(--main-text-color);
+         --input-mel-text-color: var(--input-text-color);
       //   --input-mel-border-color: var(--input-mel-background-color);
       
       //   //Layout menu - Taskbar
@@ -372,7 +372,7 @@
       //   //Switch buttons
       //   --custom-switch-unchecked-background-color: #e8e8e8;
       //   --custom-switch-checked-background-color: var(--tierciary-bckg-color);
-      //   --custom-switch-unchecked-dot-color: #fff;
+         --custom-switch-unchecked-dot-color: var(--button-color-base);
       //   --custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
       //   --custom-switch-border-color: transparent;
       
@@ -391,8 +391,8 @@
       //   --mel-tabs-hover-text-color: null;
       
       //   //Tasks
-      //   --tasklist-row-background-color: #fff;
-      //   --tasklist-alternate-row-background-color: #fff;
+         --tasklist-row-background-color: var(--base-2);
+         --tasklist-alternate-row-background-color: var(--base-2-n-1);
       //   --tasklist-row-hover-background-color: var(--hover-background-color);
       //   --tasklist-row-selected-background-color: var(--hover-background-color);
       //   --tasklist-row-text-color: var(--main-text-color);
@@ -439,6 +439,12 @@
       &:hover {
          --searchbar-background-color: var(--button-color-base-hover);
          --input-button-text-color: var(--button-text-color-base-hover);
+      }
+   }
+
+   .task-search{
+      .mel-block-list{
+         background-color: var(--base-2);
       }
    }
 }

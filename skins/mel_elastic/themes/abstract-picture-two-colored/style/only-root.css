@@ -45,6 +45,7 @@
   --dropdown-menu-background-color: var(--popover-background-color);
   --dropdown-item-hover-background-color: var(--button-color-base-hover);
   --input-text-color: black;
+  --input-mel-text-color: var(--input-text-color);
   --layout-menu-background-color: var(--base-2);
   --layout-menu-background-selected-color: var(--base-1);
   --layout-menu-background-hover-color: var(--base-1);
@@ -75,6 +76,9 @@
   --popover-background-color: var(--base-1);
   --searchbar-text-color: var(--input-text-color);
   --searchlist-background-color: var(--theme-background-color);
+  --custom-switch-unchecked-dot-color: var(--button-color-base);
+  --tasklist-row-background-color: var(--base-2);
+  --tasklist-alternate-row-background-color: var(--base-2-n-1);
   --contact-background-color: black;
   --bureau-background-color: transparent;
   --hover-app-color: var(--button-color-base-hover);
@@ -101,4 +105,7 @@
 .theme-super-classique-main.picture-theme .task-calendar #layout #layout-content .fc-toolbar.fc-header-toolbar .fc-right button:hover {
   --searchbar-background-color: var(--button-color-base-hover);
   --input-button-text-color: var(--button-text-color-base-hover);
+}
+.theme-super-classique-main.picture-theme .task-search .mel-block-list {
+  background-color: var(--base-2);
 }

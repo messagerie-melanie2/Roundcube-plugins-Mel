@@ -666,7 +666,8 @@ $(document).ready(() => {
                      * @type {boolean}
                      */
                     let is_selected;
-                    for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).orderBy(x => x.value.order ?? Infinity)) {
+                    let html_main_div;;
+                    for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).where(x => x.value.showed).orderBy(x => x.value.order ?? Infinity)) {
 
                         if (iterator.value.id === CONST_THEME_DEFAULT_ID && CONST_THEME_DEFAULT_ID !== DEFAULT_THEME) continue;
 
@@ -697,9 +698,18 @@ $(document).ready(() => {
                             this.update_theme(e.data('name'));
                             this._update_theme_color();
                         });
+                        html_main_div = new mel_html2(CONST_HTML_DIV, {attribs:{class:THEME_MAIN_CLASS_COL, style:STYLE_THEME_BUTTON_PARENT}, contents:[html_theme]});
+                        html_main_div.css('position', 'flex');
+
+                        if (!!iterator.value.saison){
+                            html_main_div.addContent(
+                                new mel_html(CONST_HTML_SPAN, {class:'theme-saison-date'}, `${iterator.value.saison.start} - ${iterator.value.saison.end}`)
+                            );
+                        }
+
                         //Ajouter à la DIV des thèmes, le bouton de thème dans une div "col-6"
                         html.addContent(
-                            new mel_html2(CONST_HTML_DIV, {attribs:{class:THEME_MAIN_CLASS_COL, style:STYLE_THEME_BUTTON_PARENT}, contents:[html_theme]})
+                            html_main_div
                         );
                     }
 

@@ -1,0 +1,393 @@
+@transparency: 93;
+@enable_barup_custom_background: 1;
+@base-color-1:#371b58;
+@base-color-2:#5B4B8A;
+
+
+
+.theme-super-classique-main.picture-theme:root {
+//     // Main background colors
+//   --main-bckg-color: #363A5B;
+//   --secondary-bckg-color: #2C3054;
+//   --tierciary-bckg-color: #484D7A;
+//   --default-bckg-color: #FFF;
+//   --button-background-color: #F0F0F0;
+//   --warning-color: #FC945A;
+//   --card-background-color: #f0f0f0;
+//   --active-button-background-color: #F0F0F0;
+  --theme-background-color: e("#FFFFFF@{transparency}");
+
+  --body-background-color: transparent;
+  --framed-body-background-color: var(--body-background-color);
+  
+  --body-picture: url("../images/halloween-bg-light-unsplash.jpg");
+  --framed-body-picture: unset;
+//   //Main text colors
+//   --main-text-color: #363A5B;
+//   --secondary-text-color: #FFFFFF;
+//   --tierciary-text-color: #484D7A;
+//   --fourth-text-color: #779bd6;
+//   --input-button-text-color: var(--main-text-color);
+//   --header-title-color: var(--main-text-color);
+//   --default-text-color: var(--secondary-text-color);
+//   --default-placeholder-text-color: #a8a9b8;
+//   --hint-text-color: #737677;
+//   --active-button-text-color: var(--secondary-text-color);
+
+//   //Main border radius
+//   --main-border-radius: 10px;
+//   --secondary-border-radius: 5px;
+//   --main-panel-border-radius: 15px;
+
+//   //Box shadow
+//   --main-box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+
+//   //Main margin
+//   --main-margin: 10px 0px;
+//   --space-margin: 8px;
+//   --list-between-margin: 5px;
+//   --separate-margin: 0px;
+
+//   //Padding
+//   --sidebar-list-padding: 0 14px;
+//   --task-list-padding: 15px;
+
+//   //Hover
+//   --hover-background-color: #f0f0f0;
+//   --secondary-hover-background-color: #f8f9fa;
+//   --list-hover-background-color:var(--hover-background-color);
+//   --hover-close-color: red;
+
+//   //Adressbook
+//   --addressbook-list-item-text-color: var(--main-text-color);
+//   --addressbook-list-item-hover-text-color: var(--main-text-color);
+//   --addressbook-list-item-selected-text-color: var(--main-text-color);
+//   --addressbook-list-item-selected-hover-text-color: var(--main-text-color);
+//   --addressbook-list-item-background-color: var(--theme-background-color);
+//   --addressbook-list-item-hover-background-color: var(--hover-background-color);
+//   --addressbook-list-item-selected-background-color: var(--hover-background-color);
+//   --addressbook-list-item-selected-hover-background-color: var(--hover-background-color);
+   --addressbook-list-pagenav-background-color: var(--list-pagenav-background-color);
+
+//   //Badge color
+//   --badge-background-color: var(--fourth-text-color);
+//   --badge-text-color: var(--tierciary-text-color);
+
+//   //Barup
+//   --barup-search-input-background-color: var(--default-bckg-color);
+//   --barup-search-input-border-color: var(--main-border-color);
+//   --barup-search-input-text-color: var(--input-button-text-color);
+//   --barup-create-button-background-color: var(--main-text-color);
+//   --barup-create-button-hover-background-color: var(--tierciary-bckg-color);
+//   --barup-icon-color: var(--default-text-color);
+//   --barup-icon-badge-background-color: #aa3333;
+//   --barup-icon-badge-text-color: var(--secondary-text-color);
+//   --note-text-color: var(--main-text-color);
+
+//   //Border colors
+//   --main-border-color: var(--main-text-color);
+//   --secondary-border-color: #ced4da;
+//   --main-separator-border-color: transparent;
+//   --separate: transparent;
+   --layout-border: transparent;
+//   --default-border-color: transparent;
+//   --layout-list-separate-color:var(--secondary-border-color);
+
+//Footer
+  --list-pagenav-background-color: var(--theme-background-color);
+
+//   //Bureau
+//   --bureau-card-background-color: var(--default-bckg-color);
+//   --bureau-card-box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+//   --bureau-card-border-radius: 10px;
+//   --bureau-card-text-color: var(--main-text-color);
+//   --bureau-card-content-background-color: #F8F9FA;
+//   --bureau-card-content-hover-background-color: var(--hover-background-color);
+//   --bureau-card-content-hover-text-color: var(--main-text-color);
+//   --bureau-app-icon-color: var(--secondary-text-color);
+//   --bureau-app-text-color: var(--main-text-color);
+
+//   //Buttons
+//   --mel-button-background-color: var(--main-bckg-color);
+//   --mel-button-hover-background-color: var(--tierciary-bckg-color);
+//   --mel-button-border-color: var(--main-border-color);
+//   --mel-button-hover-border-color: var(--tierciary-bckg-color);
+//   --mel-button-text-color: var(--default-text-color);
+//   --mel-button-hover-text-color: var(--secondary-text-color);
+
+//   --secondary-mel-button-background-color: var(--button-background-color);
+//   --secondary-mel-button-hover-background-color: var(--main-bckg-color);
+//   --secondary-mel-button-border-color: var(--secondary-mel-button-background-color);
+//   --secondary-mel-button-hover-border-color: var(--main-bckg-color);
+//   --secondary-mel-button-text-color: var(--main-text-color);
+//   --secondary-mel-button-hover-text-color: var(--secondary-text-color);
+
+//   --mel-button-danger-background-color: var(--warning-color);
+//   --mel-button-danger-text-color: var(--secondary-text-color);
+//   --mel-button-danger-hover-background-color: #f7ab82;
+//   --mel-button-danger-hover-text-color: var(--mel-button-danger-text-color);
+//   --mel-button-danger-border-color: transparent;
+//   --mel-button-danger-hover-border-color: transparent;
+
+//   --quit-button-background-color: transparent;
+//   --quit-button-hover-background-color: var(--main-bckg-color);
+//   --quit-button-border-color: var(--main-border-color);
+//   --quit-button-hover-border-color: var(--quit-button-border-color);
+//   --quit-button-text-color: var(--main-text-color);
+//   --quit-button-hover-text-color: var(--secondary-text-color);
+
+//   //Calendar 
+//   --calendar-list-item-hover-background-color: var(--hover-background-color);
+//   --calendar-list-item-selected-background-color: var(--hover-background-color);
+//   --calendar-sidebar-header-bottom-separator-color: var(--main-border-color);
+//   --calendar-sidebar-header-background-color: var(--theme-background-color);
+//   --calendar-widget-background-color: var(--hover-background-color);
+//   --calendar-widget-text-color: var(--main-text-color);
+//   --calendar-widget-header-text-color: var(--main-text-color);
+
+//   --calendar-widget-header-background-color: #fff;
+
+//   --calendar-toolbar-search-icon-color: var(--input-button-text-color);
+//   --calendar-toolbar-roundcube-hover-background-color: var(--hover-background-color);
+
+//   --calendar-table-header: #e3e4ea;
+//   --calendar-table-separator-color: var(--calendar-table-header);
+//   --calendar-table-text-color: var(--main-text-color);
+//   --calendar-table-today-background-color: #f2faf9;
+
+//   //Dropdown
+//   --dropdown-menu-background-color: var(--default-bckg-color);
+//   --dropdown-menu-text-color: var(--main-text-color);
+//   --dropdown-menu-icon-color: var(--secondary-text-color);
+//   --dropdown-item-hover-background-color: var(--secondary-hover-background-color);
+
+//   //Input
+//   --input-background-color: var(--default-bckg-color);
+//   --input-focus-background-color: var(--default-bckg-color);
+//   --input-text-color: var(--main-text-color);
+//   --input-border-color: var(--secondary-border-color);
+
+//   --input-mel-background-color: var(--button-background-color);
+//   --input-mel-focus-background-color: var(--input-mel-background-color);
+//   --input-mel-focus-border-color: var(--main-text-color);
+//   --input-mel-focus-shadow-color: #C8CDFC59;
+//   --input-mel-text-color: var(--main-text-color);
+//   --input-mel-border-color: var(--input-mel-background-color);
+
+//   //Layout menu - Taskbar
+//   --layout-menu-background-color: #f0f0f0;
+//   --layout-menu-background-selected-color: var(--theme-background-color);
+//   --layout-menu-background-hover-color: var(--theme-background-color);
+//   --layout-menu-text-color: var(--main-text-color);
+//   --layout-menu-text-selected-color: var(--main-text-color);
+//   --layout-menu-text-hover-color: var(--main-text-color);
+//   --layout-menu-border-top: solid thin transparent;
+//   --layout-menu-border-right: transparent;
+
+//   //Layout sidebar
+//   --layout-sidebar-background-color: var(--theme-background-color);
+//   --layout-sidebar-background-hover-color: var(--hover-background-color);
+//   --layout-sidebar-background-selected-color: #edebe9;
+//   --layout-sidebar-background-hover-selected-color: var(--layout-sidebar-background-selected-color);
+//   --layout-sidebar-text-color: var(--main-text-color);
+//   --layout-sidebar-text-hover-color: var(--main-text-color);
+//   --layout-sidebar-text-selected-color: var(--main-text-color);
+//   --layout-sidebar-text-hover-selected-color: var(--layout-sidebar-text-selected-color);
+//   --layout-sidebar-border-color: transparent;
+//   --layout-sidebar-border-selected-color: transparent;
+//   --layout-sidebar-item-border-radius: var(--secondary-border-radius);
+  
+//   --primary-layout-sidebar-background-color: var(--theme-background-color);
+//   --primary-layout-sidebar-background-selected-color: #edebe9;
+//   --primary-layout-sidebar-text-color: var(--main-text-color);
+
+//   //Layout list
+   --layout-list-header-background-color: var(--theme-background-color);
+//   --layout-list-header-background-hover-color: var(--hover-background-color);
+//   --layout-list-header-text-color: var(--main-text-color);
+//   --layout-list-header-text-hover-color: var(--main-text-color);
+//   --layout-list-header-input-text-color: var(--main-text-color);
+//   --layout-list-pagenav-color: var(--tierciary-text-color);
+
+--layout-list-background-color: var(--framed-body-background-color);
+
+   --alternative-layout-list-background-color: var(--theme-background-color);
+   --alternative-layout-list-header-background-color: var(--alternative-layout-list-background-color);
+//   --alternative-layout-list-text-color: var(--main-text-color);
+//   --alternative-layout-list-hover-background-color: var(--hover-background-color);
+//   --alternative-layout-list-hover-text-color: var(--main-text-color);
+
+//   //Layout content
+   --layout-content-header-background-color: var(--theme-background-color);
+   --alternative-layout-content-header-background-color: var(--layout-content-header-background-color);
+//   --layout-content-header-background-hover-color: var(--hover-background-color);
+//   --layout-content-header-text-color: var(--main-text-color);
+//   --layout-content-header-text-hover-color: var(--main-text-color);
+//   --layout-content-text-color: var(--main-text-color);
+   --layout-content-background-color: var(--theme-background-color);
+//   --layout-content-border-left-color: solid transparent;
+
+//   //Mail
+//   --mail-unread-text-color: var(--main-text-color);
+//   --mail-unread-flagged-text-color: #15193A;
+//   --mail-unread-icon-color: #A8ACC0;
+//   --mail-unread-icon-hover-color: #779BD6;
+
+//   --mail-header-layout-list-background-color: var(--theme-background-color);
+
+
+//   --message-list-quick-filter-active-background-color: var(--active-button-background-color);
+//   --message-list-quick-filter-active-text-color: var(--main-text-color);
+//   --message-list-quick-filter-active-border-color: transparent;
+
+//   --message-list-quick-filter-hover-background-color: var(--active-button-background-color);
+//   --message-list-quick-filter-text-color: var(--main-text-color);
+//   --message-list-quick-filter-hover-text-color: var(--main-text-color);
+
+//   --message-list-quick-filter-button-background-color: transparent;
+//   --message-list-quick-filter-button-text-color: var(--main-text-color);
+//   --message-list-quick-filter-button-border-color: transparent;
+//   --message-list-quick-filter-button-hover-background-color: var(--active-button-background-color);
+//   --message-list-quick-filter-button-hover-text-color: var(--main-text-color);
+//   --message-list-quick-filter-button-hover-border-color: transparent;
+
+//   --message-list-content-row-background-color: #FFFFFF;
+//   --message-list-content-row-alternate-background-color: #FAFAFA;
+//   --message-list-content-row-background-hover-color: var(--hover-background-color);
+//   --message-list-content-selected-row-background-color: var(--hover-background-color);
+//   --message-list-content-selected-row-border-color: var(--main-border-color);
+//   --message-list-border-bottom: solid thin #f0f0f0;
+//   --mail-quota-widget-text-color: var(--main-text-color);
+
+
+//   //Mail - msgicon, flags
+//   --message-list-content-mail-button-color: var(--mail-unread-icon-color);
+//   --message-list-content-mail-button-hover-color: var(--mail-unread-text-color);
+//   --message-list-content-selected-mail-button-color: var(--main-text-color);
+//   --message-list-content-selected-mail-button-hover-color: var(--main-text-color);
+
+//   //Mail - address
+//   --message-list-content-mail-address-color: var(--mail-unread-text-color);
+//   --message-list-content-mail-address-hover-color: var(--mail-unread-text-color);
+//   --message-list-content-selected-mail-address-color: var(--main-text-color);
+//   --message-list-content-selected-mail-address-hover-color: var(--main-text-color);
+
+//   //Mail - subject, date, size, attachment
+//   --message-list-content-mail-subject-color: var(--main-text-color);
+//   --message-list-content-mail-subject-hover-color: var(--main-text-color);
+//   --message-list-content-selected-mail-subject-color: var(--main-text-color);
+//   --message-list-content-selected-mail-subject-hover-color: var(--main-text-color);
+
+//   --message-list-content-hover-shadow: #26283b47;
+//   --message-list-content-border-color: #D1D3DD;
+
+//   //Mail Panel
+//   --layout-content-header-right-border-color: var(--main-text-color);
+//   --layout-content-contact-address-color: #333;
+//   --layout-content-message-partheaders: #fcfcfc;
+//   --layout-content-message-partheaders-top-border-color: #f4f4f4;
+//   --layout-content-message-partheaders-title: var(--hint-text-color);
+//   --layout-content-message-attachment-text-color: var(--layout-content-contact-address-color);
+//   --layout-content-message-attachment-size-color: var(--hint-text-color);
+
+//   //Modal
+//   --modal-background-color: var(--default-bckg-color);
+//   --modal-text-color: var(--main-text-color);
+//   --modal-title-color: var(--main-text-color);
+//   --modal-border: solid thin var(--secondary-border-color);
+
+//   //Nav tabs 
+//   --nav-tabs-background-color: var(--modal-background-color);
+//   --nav-tabs-border-bottom-color: #dee2e6;
+
+//   --nav-item-background-color: #dbdbdb;
+//   --nav-item-active-background-color: var(--button-background-color);
+//   --nav-item-hover-background-color: var(--button-background-color);
+//   --nav-item-text-color: var(--main-text-color);
+//   --nav-item-active-text-color: var(--nav-item-text-color);
+//   --nav-item-hover-text-color: var(--nav-item-text-color);
+//   --nav-item-border-bottom: none;
+//   --nav-item-active-border-bottom: none;
+//   --nav-item-hover-border-bottom: none;
+
+//   //Option menu
+//   --option-menu-title-color: var(--main-text-color);
+
+//   --option-menu-button-background-color: var(--default-bckg-color);
+//   --option-menu-button-hover-background-color: var(--hover-background-color);
+//   --option-menu-button-text-color: var(--main-text-color);
+//   --option-menu-button-border-color: transparent;
+
+//   --option-menu-radio-button-background-color: var(--default-bckg-color);
+//   --option-menu-radio-button-hover-background-color: var(--hover-background-color);
+//   --option-menu-radio-button-icon-color: var(--main-text-color);
+
+//   //Overlay
+//   --ui-widget-overlay: rgba(44, 54, 58, .5);
+
+//   //Popover
+//   --popover-background-color: var(--default-bckg-color);
+//   --popover-hover-background-color: var(--hover-background-color);
+//   --popover-text-color: var(--main-text-color);
+//   --popover-hover-text-color: var(--main-text-color);
+//   --popover-hover-icon-color: var(--main-text-color);
+//   --popover-box-shadow-color: #f1f3f4;
+//   --popover-border-color: #d4dbde;
+//   --popover-focus-border-color: #37beff;
+//   --popover-icon-color: var(--popover-background-color);
+
+//   //Scrollbar 
+//   --scrollbar-width-moz: thin;
+//   --scrollbar-handler-color: #cdcdcd;
+//   --scrollbar-background-color: #f0f0f0;
+
+//   //Searchbar
+//   --searchbar-background-color: var(--default-bckg-color);
+//   --searchbar-alternate-background-color: var(--default-bckg-color);
+//   --searchbar-text-color: var(--input-button-text-color);
+//   --searchbar-text-hover-color: var(--main-text-color);
+//   --searchbar-border-color: var(--main-border-color);
+//   --searchbar-alternate-border-color: var(--main-bckg-color);
+
+//   //Searchmenu
+//   --searchmenu-text-color: var(--main-text-color);
+     --searchlist-background-color: var(--theme-background-color);
+
+//   //Switch buttons
+//   --custom-switch-unchecked-background-color: #e8e8e8;
+//   --custom-switch-checked-background-color: var(--tierciary-bckg-color);
+//   --custom-switch-unchecked-dot-color: #fff;
+//   --custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
+//   --custom-switch-border-color: transparent;
+
+//   --alternate-custom-switch-unchecked-background-color: #bfbfbf;
+//   --alternate-custom-switch-checked-background-color: var(--tierciary-bckg-color);
+//   --alternate-custom-switch-unchecked-dot-color: #fff;
+//   --alternate-custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
+//   --alternate-custom-switch-border-color: transparent;
+
+//   //Tab buttons
+//   --mel-tabs-background-color: transparent;
+//   --mel-tabs-active-background-color: transparent;
+//   --mel-tabs-hover-background-color: var(--hover-background-color);
+//   --mel-tabs-text-color: var(--main-text-color);
+//   --mel-tabs-active-text-color: #5069BC;
+//   --mel-tabs-hover-text-color: null;
+
+//   //Tasks
+//   --tasklist-row-background-color: #fff;
+//   --tasklist-alternate-row-background-color: #fff;
+//   --tasklist-row-hover-background-color: var(--hover-background-color);
+//   --tasklist-row-selected-background-color: var(--hover-background-color);
+//   --tasklist-row-text-color: var(--main-text-color);
+//   --tasklist-row-selected-text-color: var(--main-text-color);
+//   --tasklist-row-hover-text-color: var(--main-text-color);
+
+//   //Workspace 
+//   --workspace-item-background-color: var(--button-background-color);
+//   --workspace-separator-color: var(--secondary-border-color);
+
+    --contact-background-color: black;
+    --bureau-background-color: transparent;
+}
+

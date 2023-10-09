@@ -1,0 +1,12 @@
+{
+    "parent":"abstract-picture-theme",
+    "id":"abstract-picture-theme-two-colored",
+    "display":"white",
+    "description":"desc",
+    "icon":"icon.svg",
+    "enabled":true,
+    "style":"style",
+    "class":"abstract-picture-theme-two-colored",
+    "custom_dark_mode":true,
+    "order":100
+}

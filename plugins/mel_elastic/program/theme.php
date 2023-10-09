@@ -38,7 +38,13 @@ class Theme {
      *
      * @var boolean
      */
-    public $enabled; 
+    public $enabled;
+    /**
+     * Thème actif affiché ou non
+     *
+     * @var boolean
+     */
+    public $showed;
     /**
      * Id du thème (unique)
      *
@@ -128,6 +134,7 @@ class Theme {
         $this->name = $this->name[count($this->name) - 1];
         $this->styles = self::generate_style_path($json->style, $this->name);
         $this->enabled = $json->enabled ?? true;
+        $this->showed = $json->showed ?? true;
 
         if (!isset($json->class)) $this->class = 'theme-'.$this->id;
         else $this->class = $json->class;
@@ -177,7 +184,7 @@ class Theme {
      */
     public function prepareToSave() {
         $forSave = [];
-        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent', 'custom_dark_mode', 'order'];
+        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent', 'custom_dark_mode', 'order', 'showed', 'saison'];
 
         foreach ($array as $value) {
             switch ($value) {
@@ -192,6 +199,13 @@ class Theme {
                 case 'parent':
                     if ($this->parent->exist()) {
                         $forSave[$value] = $this->parent->id;
+                    }
+                    break;
+
+                case 'saison':
+                    $saison = $this->saison->prepareToSave();
+                    if ($saison !== null){
+                        $forSave[$value] = $saison;
                     }
                     break;
                 
@@ -398,6 +412,20 @@ class ThemeSaison {
         return $this->start <= $now && $now < $this->end;
     }
 
+    /**
+     * Renvoie un objet qui contient les données de la classe.
+     *
+     * @return array
+     */
+    public function prepareToSave() {
+        $forSave = [
+            'start' => $this->start->format('d/m/Y'),
+            'end' => $this->end->format('d/m/Y')
+        ];
+
+        return $forSave;
+    }
+
     private function _date($init_date) {
         $date = explode('/', $init_date);
 
@@ -415,6 +443,10 @@ class ThemeSaisonForced extends ThemeSaison {
 
     public function can_be_shown() {
         return true;
+    }
+
+    public function prepareToSave() {
+        return null;
     }
 }
 

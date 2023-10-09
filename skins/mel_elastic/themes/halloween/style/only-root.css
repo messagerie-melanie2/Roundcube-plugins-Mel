@@ -1,0 +1,1 @@
+.theme-super-classique-main.party-halloween:root{--theme-background-color:#371B5893;--body-background-color:transparent;--body-picture:url("../images/halloween-bg-light-unsplash.jpg")}html.theme-super-classique-main.party-halloween body{background-color:var(--body-background-color);background-image:var(--body-picture)}

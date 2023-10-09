@@ -5,6 +5,7 @@
     "description":"desc",
     "icon":"icon.svg",
     "enabled":true,
+    "showed": false,
     "style":"style",
     "class":"abstract-picture-theme-two-colored",
     "custom_dark_mode":true,

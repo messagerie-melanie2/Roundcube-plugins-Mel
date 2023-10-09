@@ -1,5 +1,5 @@
 {
-    "parent":"super-classique",
+    "parent":"abstract-picture-theme-two-colored",
     "id":"party-halloween",
     "display":"white",
     "description":"desc",
@@ -7,7 +7,7 @@
     "enabled":true,
     "style":"style",
     "class":"party-halloween",
-    "custom_dark_mode":false,
+    "custom_dark_mode":true,
     "order":100,
     "saison":"01/09-01/11"
 }

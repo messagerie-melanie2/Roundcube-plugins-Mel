@@ -1,4 +1,4 @@
-.theme-super-classique-main.picture-theme:root {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored:root {
   --base-1: #42000e;
   --base-2: #1c0166;
   --base-2-n-1: #3802cb;
@@ -85,27 +85,27 @@
   --bureau-app-icon-color: var(--button-text-color-base-hover);
   --calendar-list-item-switch-background-color: var(--button-color-base);
 }
-.theme-super-classique-main.picture-theme .barup {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored .barup {
   background: none!important;
 }
-.theme-super-classique-main.picture-theme #button-notes {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored #button-notes {
   --note-bckg-color-hover: var(---note-bckg-color-hover);
   --note-text-color-hover: var(---note-text-color);
 }
-.theme-super-classique-main.picture-theme .mel-hover:hover {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored .mel-hover:hover {
   box-shadow: 0 0 0 0.2rem var(--button-color-base-hover);
   border-radius: 15px;
 }
-.theme-super-classique-main.picture-theme .option_radio_wrapper .switch-overlay {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored .option_radio_wrapper .switch-overlay {
   color: var(--input-text-color);
 }
-.theme-super-classique-main.picture-theme .theme-saison-date {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored .theme-saison-date {
   color: var(--input-text-color);
 }
-.theme-super-classique-main.picture-theme .task-calendar #layout #layout-content .fc-toolbar.fc-header-toolbar .fc-right button:hover {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored .task-calendar #layout #layout-content .fc-toolbar.fc-header-toolbar .fc-right button:hover {
   --searchbar-background-color: var(--button-color-base-hover);
   --input-button-text-color: var(--button-text-color-base-hover);
 }
-.theme-super-classique-main.picture-theme .task-search .mel-block-list {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored .task-search .mel-block-list {
   background-color: var(--base-2);
 }

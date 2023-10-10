@@ -185,8 +185,8 @@
          --dropdown-item-hover-background-color: var(--button-color-base-hover);
       
       //   //Input
-      //   --input-background-color: var(--default-bckg-color);
-      //   --input-focus-background-color: var(--default-bckg-color);
+         --input-background-color: var(--input-mel-background-color);
+         --input-focus-background-color: var(--input-background-color);
          --input-text-color: white;
       //   --input-border-color: var(--secondary-border-color);
       
@@ -315,7 +315,7 @@
       
       //   //Modal
          --modal-background-color: var(--popover-background-color);
-      //   --modal-text-color: var(--main-text-color);
+         --modal-text-color: white;
       //   --modal-title-color: var(--main-text-color);
       //   --modal-border: solid thin var(--secondary-border-color);
       
@@ -495,6 +495,33 @@
          background-color: var(--modal-background-color)!important;
       }
    }
+
+   .mel-calendar-button{
+      color: var(--button-text-color-base);
+
+      &:hover {
+         color: var(--button-text-color-base-hover);
+         background-color: var(--button-color-base-hover);
+      }
+   }
+
+   #taskmenu {
+      //--main-text-color: var(--main-layout-taskbar-text-color);
+
+      &.menu.toolbar a.home.icon-mel-home {
+          background-image: url("../images/halloween-pumpkin-empty.svg");
+          background-size: cover;
+
+          &::before{
+              //content: none;
+              display: none;
+          }
+      }
+
+      &.menu.toolbar a.home.icon-mel-home:hover {
+          background-image: url("../images/halloween-pumpkin-full.svg");
+      }
+  }
 }
 
 html.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-halloween.dark-mode-custom{

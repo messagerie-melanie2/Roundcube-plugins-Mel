@@ -84,6 +84,15 @@ html.theme-super-classique-main.picture-theme body.task-search .wsp-header {
   margin-bottom: 10px;
   --bureau-background-color: var(--theme-background-color);
 }
+html.theme-super-classique-main.picture-theme body .task-settings.each-placeholder #layout-content,
+html.theme-super-classique-main.picture-theme body.task-settings.action-plugin-mel_doubleauth .formcontent,
+html.theme-super-classique-main.picture-theme body.task-settings.action-plugin-mel_doubleauth #settings-right,
+html.theme-super-classique-main.picture-theme body.task-settings.action-plugin-mel_signatures .formcontent,
+html.theme-super-classique-main.picture-theme body.task-settings.action-plugin-mel_signatures #settings-right {
+  background-color: var(--theme-background-color);
+  margin: 10px;
+  border-radius: 15px;
+}
 html.theme-super-classique-main.picture-theme .barup {
   background: none!important;
 }
@@ -113,4 +122,11 @@ html.theme-super-classique-main.picture-theme .logo-mel {
   background-color: white;
   padding: 15px;
   border-radius: 15px;
+}
+html.theme-super-classique-main.picture-theme .global-modal-header.modal-header,
+html.theme-super-classique-main.picture-theme .modal-footer.global-modal-footer {
+  background-color: var(--modal-background-color) !important;
+}
+html.theme-super-classique-main.picture-theme .table {
+  color: var(--main-text-color);
 }

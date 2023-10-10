@@ -97,7 +97,8 @@ class Gestionnaireabsence extends Moncompteobject
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
     // Parcourir les absences
     $hasAbsence = false;
-    $html = self::absence_template('%%template%%');
+    $html = self::generate_timezone();
+    $html .= self::absence_template('%%template%%');
     $i = 0;
     foreach ($user->outofoffices as $type => $outofoffice) {
       if (
@@ -125,6 +126,34 @@ class Gestionnaireabsence extends Moncompteobject
       $html .= html::div('noabsence', rcmail::get_instance()->gettext('noabsence', 'mel_moncompte'));
     }
     return $html;
+  }
+
+  /**
+   * Génération de la liste déroulante des timezones pour les absence hebdo
+   */
+  private static function generate_timezone() {
+    $field_id = 'rcmfd_timezone';
+    $select = new html_select([
+            'name'  => 'absence_timezone',
+            'id'    => $field_id,
+            'class' => 'custom-select mb-4'
+    ]);
+
+    $zones = [];
+    foreach (DateTimeZone::listIdentifiers() as $i => $tzs) {
+        if ($data = self::timezone_standard_time_data($tzs)) {
+            $zones[$data['key']] = [$tzs, $data['offset']];
+        }
+    }
+
+    ksort($zones);
+
+    foreach ($zones as $zone) {
+        list($tzs, $offset) = $zone;
+        $select->add('(GMT ' . $offset . ') ' . self::timezone_label($tzs), $tzs);
+    }
+
+    return $select->show((string)rcmail::get_instance()->config->get('timezone'));
   }
 
   /**
@@ -215,6 +244,75 @@ class Gestionnaireabsence extends Moncompteobject
     );
   }
 
+    /**
+     * Localize timezone identifiers
+     *
+     * @param string $tz Timezone name
+     *
+     * @return string Localized timezone name
+     */
+    public static function timezone_label($tz)
+    {
+        static $labels;
+
+        if ($labels === null) {
+            $labels = [];
+            $lang   = $_SESSION['language'];
+            if ($lang && $lang != 'en_US') {
+                if (file_exists(RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc")) {
+                    include RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc";
+                }
+            }
+        }
+
+        if (empty($labels)) {
+            return str_replace('_', ' ', $tz);
+        }
+
+        $tokens = explode('/', $tz);
+        $key    = 'tz';
+
+        foreach ($tokens as $i => $token) {
+            $idx   = strtolower($token);
+            $token = str_replace('_', ' ', $token);
+            $key  .= ":$idx";
+
+            $tokens[$i] = !empty($labels[$key]) ? $labels[$key] : $token;
+        }
+
+        return implode('/', $tokens);
+    }
+
+    /**
+     * Returns timezone offset in standard time
+     */
+    public static function timezone_standard_time_data($tzname)
+    {
+        try {
+            $tz    = new DateTimeZone($tzname);
+            $date  = new DateTime(null, $tz);
+            $count = 12;
+
+            // Move back for a month (up to 12 times) until non-DST date is found
+            while ($count > 0 && $date->format('I')) {
+                $date->sub(new DateInterval('P1M'));
+                $count--;
+            }
+
+            $offset  = $date->format('Z') + 45000;
+            $sortkey = sprintf('%06d.%s', $offset, $tzname);
+
+            return [
+                'key'    => $sortkey,
+                'offset' => $date->format('P'),
+            ];
+        }
+        catch (Exception $e) {
+            // ignore
+        }
+    }
+
+
   /**
    * Generation for the days checkbox form
    * 
@@ -267,6 +365,7 @@ class Gestionnaireabsence extends Moncompteobject
     $message_interne = trim(rcube_utils::get_input_value('absence_message_interne', rcube_utils::INPUT_POST));
     $radio_externe = trim(rcube_utils::get_input_value('absence_reponse_externe', rcube_utils::INPUT_POST));
     $message_externe = trim(rcube_utils::get_input_value('absence_message_externe', rcube_utils::INPUT_POST));
+    $timezone = trim(rcube_utils::get_input_value('absence_timezone', rcube_utils::INPUT_POST));
 
     // Récupération de l'utilisateur
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
@@ -343,13 +442,13 @@ class Gestionnaireabsence extends Moncompteobject
             $outofoffice->message = trim(rcube_utils::get_input_value("message$i", rcube_utils::INPUT_POST));
             $all_day = trim(rcube_utils::get_input_value("all_day$i", rcube_utils::INPUT_POST));
             if ($all_day) {
-              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
-              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone($timezone));
+              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone($timezone));
             } else {
               $hour_start = trim(rcube_utils::get_input_value("hour_start$i", rcube_utils::INPUT_POST));
               $hour_end = trim(rcube_utils::get_input_value("hour_end$i", rcube_utils::INPUT_POST));
-              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
-              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', $hour_end, new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone($timezone));
+              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', $hour_end, new \DateTimeZone($timezone));
             }
             $outofoffices[] = $outofoffice;
           }

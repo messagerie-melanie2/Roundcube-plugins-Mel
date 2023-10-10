@@ -419,8 +419,8 @@ class ThemeSaison {
      */
     public function prepareToSave() {
         $forSave = [
-            'start' => $this->start->format('d/m/Y'),
-            'end' => $this->end->format('d/m/Y')
+            'start' => $this->start->format('d/m'),
+            'end' => $this->end->format('d/m')
         ];
 
         return $forSave;

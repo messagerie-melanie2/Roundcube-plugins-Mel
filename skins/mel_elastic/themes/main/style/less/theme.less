@@ -828,3 +828,18 @@ html:not(.touch) #messagelist-header .listing li>a:focus,
 html:not(.touch) #layout-content .header .listing li>a:focus {
   border-left: none !important;
 }
+
+.mel-radio-1.radio-small input[type="checkbox"] + label span::before {
+	height: 11px;
+	width: 11px;
+}
+
+.mel-radio-1 input[type="checkbox"] + label span::before {
+	top: 1px;
+	left: 1px;
+}
+
+.mel-radio-1 input[type="checkbox"]:checked + label span::before {
+	top: 1px;
+	right: 1px;
+}

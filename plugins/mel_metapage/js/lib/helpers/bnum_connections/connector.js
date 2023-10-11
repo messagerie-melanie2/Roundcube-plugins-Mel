@@ -85,15 +85,19 @@ class Connector {
         params = null,
         default_return = null
     }) {
+        //debugger;
         let return_datas = null;
         let error_datas = {
             has_error: false,
             error: null
         };
 
+        BnumLog.info('connect', `Connecting to ${this.task}/${this.action}`);
+
         if (Connector.constants.in_progress_task === this.task && Connector.constants.in_progress === this.action) {
             error_datas.has_error = true;
             error_datas.error = 'Connector is in progress';
+            BnumLog.warning('connect', `${this.task}/${this.action}`, 'Connector is in progress !');
         }
         else {
             let url_parameters = this.params ?? {};
@@ -105,7 +109,7 @@ class Connector {
                 }
             }
     
-            switch (type) {
+            switch (this.type) {
                 case Connector.enums.type.get:
                     await new Mel_Promise(() => {}).create_ajax_get_request({
                         url:MelObject.Empty().url(this.task, {action:this.action, params:url_parameters}),
@@ -116,18 +120,21 @@ class Connector {
                                 BnumLog.debug('connect', 'datas', datas, error);
                             }
     
-                            if (null !== this.on_success) return_datas = this.on_success(datas);
-                            else return_datas = datas;
+                            return_datas = datas;
+
+                            BnumLog.info('connect', 'Connected !');
                         },
                         failed:(...args) => {
                             error_datas.has_error = true;
                             error_datas.error = args;
+                            BnumLog.error('connect', `${this.task}/${this.action}`, 'Connexion failed !', ...args);
                         }
                     });
                     break;
                 case Connector.enums.type.post:
                     await new Mel_Promise(() => {}).create_ajax_post_request({
-                        url:MelObject.Empty().url(this.task, {action:this.action, params:url_parameters}),
+                        url:MelObject.Empty().url(this.task, {action:this.action}),
+                        datas:url_parameters,
                         success:(datas) => {
                             try {
                                 if ('string' === typeof datas) datas = JSON.parse(datas);
@@ -135,12 +142,13 @@ class Connector {
                                 BnumLog.debug('connect', 'datas', datas, error);
                             }
     
-                            if (null !== this.on_success) return_datas = this.on_success(datas);
-                            else return_datas = datas;
+                            return_datas = datas;
+                            BnumLog.info('connect', 'Connected !');
                         },
                         failed:(...args) => {
                             error_datas.has_error = true;
                             error_datas.error = args;
+                            BnumLog.error('connect', `${this.task}/${this.action}`, 'Connexion failed !', ...args);
                         }
                     });
                     break;
@@ -149,12 +157,20 @@ class Connector {
             }
         }
 
-
-        return {
+        return_datas = {
             datas: return_datas ?? default_return,
             has_error: error_datas.has_error,
             error: error_datas.error
         };
+
+        if (!error_datas.has_error) {
+            if (!!this.on_success && this.on_success.constructor.name === "AsyncFunction") return_datas = await this.on_success(return_datas, this);
+            else return_datas = this.on_success?.(return_datas, this) ?? return_datas;
+        }
+
+        BnumLog.info('connect', `${this.task}/${this.action}`, 'Connection ended !');
+
+        return return_datas;
     }
 
     /**

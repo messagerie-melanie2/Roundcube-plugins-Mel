@@ -562,7 +562,6 @@ les propriétés « nom » et « valeur ».
                         }, iterator.name);
 
                     html_button.onclick.push((e) => {
-                        debugger;
                         let $target = $(e.target);
 
                         if ($target.hasClass('active')) $target.removeClass('active');

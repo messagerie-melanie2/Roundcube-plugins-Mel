@@ -393,12 +393,13 @@ class mel_metapage extends bnum_plugin
             if ($courielleur === '') $courielleur = true;
             else if ($courielleur !== true) $courielleur = false;
             $from_cour = rcube_utils::get_input_value('_redirected_from_courrielleur', rcube_utils::INPUT_GET); 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->rc->task !== 'bnum' && $this->rc->task !== 'chat' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe' && $courielleur) {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->rc->task !== 'bnum' && $this->rc->task !== 'chat' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action || !!rcube_utils::get_input_value('_force_bnum', rcube_utils::INPUT_GET)) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe' && $courielleur) {
                 $this->rc->output->redirect([
                     '_task' => 'bnum',
                     '_action' => '',
                     '_initial_request' => $_SERVER["REQUEST_URI"],
-                    '_initial_task' => $this->rc->task
+                    '_initial_task' => $this->rc->task,
+                    '_initial_action' => (!!rcube_utils::get_input_value('_force_bnum', rcube_utils::INPUT_GET) ? $this->rc->task : null)
                 ]);
                 exit;
             }
@@ -2829,6 +2830,7 @@ class mel_metapage extends bnum_plugin
     public function bnum_page() {
         $request = rcube_utils::get_input_value('_initial_request', rcube_utils::INPUT_GET) ?: null;
         $init_task = rcube_utils::get_input_value('_initial_task', rcube_utils::INPUT_GET) ?: null;
+        $init_action = rcube_utils::get_input_value('_initial_action', rcube_utils::INPUT_GET) ?: null;
         if (isset($request)) {
             $this->rc->output->set_env("bnum.redirect", $request);
         }
@@ -2836,6 +2838,11 @@ class mel_metapage extends bnum_plugin
         if (isset($init_task)) {
             $this->rc->output->set_env("bnum.init_task", $init_task);
         }
+
+        if (isset($init_action)) {
+            $this->rc->output->set_env("bnum.init_action", $init_action);
+        }
+
         $this->rc->output->send('mel_metapage.empty');
     }
 

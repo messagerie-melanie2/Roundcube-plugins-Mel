@@ -73,7 +73,11 @@ class mel_doubleauth extends rcube_plugin {
         $this->register_action('mel_doubleauth', array($this, 'mel_doubleauth_init'));
         if ($this->rc->task == 'settings') {
             $this->register_action('plugin.mel_doubleauth-save', array($this, 'mel_doubleauth_save'));
+            $this->register_action('plugin.mel.doubleauth.get', array($this, 'actions_get'));
+            $this->register_action('plugin.mel.doubleauth.set', array($this, 'actions_set'));
+            $this->register_action('plugin.mel.doubleauth.send_otp', array($this, 'send_otp'));
         }
+
         $this->include_script('mel_doubleauth.js');
         $this->include_script('qrcode.min.js');
     }
@@ -492,6 +496,59 @@ class mel_doubleauth extends rcube_plugin {
         exit;
     }
     
+    public function actions_get() {
+        $autorized_props = ['double_authentification_adresse_recuperation', 'double_authentification_adresse_valide'];
+        $prop = rcube_utils::get_input_value('_prop', rcube_utils::INPUT_GET);
+
+        if (in_array($prop, $autorized_props)) {
+            $prop = driver_mel::gi()->getUser()->$prop;
+        }
+        else throw new Exception("Denied !", 1);
+
+        echo json_encode($prop);
+        exit;
+    }
+
+    public function actions_set() {
+        $autorized_props = ['double_authentification_adresse_recuperation'];
+        $prop = rcube_utils::get_input_value('_prop', rcube_utils::INPUT_POST);
+        $value = rcube_utils::get_input_value('_val', rcube_utils::INPUT_POST);
+
+        if (in_array($prop, $autorized_props)) {
+            driver_mel::gi()->getUser()->$prop = $value;
+            echo 'true';
+        }
+        else throw new Exception("Denied !", 1);
+
+        exit;
+    }
+
+    public function send_otp() {
+        $this->require_plugin('mel_helper');
+        mel_helper::include_mail_body();
+
+        $otp = rand(100000, 999999);
+        $cid = 'bnumlogo';
+        driver_mel::gi()->getUser()->token_otp = $otp;
+        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;// ?? 'delphin.tommy@gmail.com';
+
+        $bodymail = new MailBody('mel_doubleauth.email', [
+            'code' => $otp,
+            'bnum.base_url' => 'http://mtes.fr/2',
+            'bnum.da_url' => 'https://mel.din.developpement-durable.gouv.fr/?_task=settings&_action=plugin.mel_doubleauth&_force_bnum=1',
+            'logobnum' => __DIR__.'/skins/elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
+        ]);
+
+        $subject = $bodymail->subject();
+        $message = $bodymail->body();
+
+        $is_html = true;
+        $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html, [['path' => __DIR__.'/skins/elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+        
+        echo json_encode($sent);
+        exit;
+    }
+
     //------------- static methods
     /**
      * Return if the double auth is enable for this session for the user

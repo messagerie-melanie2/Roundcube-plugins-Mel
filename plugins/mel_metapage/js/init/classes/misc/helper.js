@@ -14,8 +14,21 @@ var module_helper_mel = module_helper_mel || (() => {
         }
     }
 
+    async function BnumConnector() {
+        const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+
+        if (!!loadJsModule) {
+            const {BnumConnector} = await loadJsModule('mel_metapage', 'bnum_connections.js', '/js/lib/helpers/bnum_connections/');
+
+            return BnumConnector;
+        }
+
+        throw new Error('loadJsModule not found');
+    }
+
     return {
         load_mel_object,
-        load_calendar_events
+        load_calendar_events,
+        BnumConnector
     }
 })();

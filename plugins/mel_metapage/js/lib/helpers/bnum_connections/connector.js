@@ -16,18 +16,21 @@ class Connector {
      * @param {Symbol} param2.type Type de la requête (Connector.enums.type)
      * @param {any | {} | null} param2.params Paramètres de la requête
      * @param {null | function} param2.moulinette Action à faire une fois les données récupérés
+     * @param {{} | JSON} param2.needed Paramètres à mettre dans `connect` et à compléter pour que ça fonctionne
      */
     constructor(task, action, {
         type = Connector.enums.type.get,
         params = null,
-        moulinette = null
+        moulinette = null,
+        needed = {}
     }){
         //Init pour inteliscense
         this.task = EMPTY_STRING;
         this.action = EMPTY_STRING;
         this.type = Connector.enums.type.get;
         this.params = null;
-        this.on_success = moulinette;
+        this.on_success = null;
+        this.needed = null;
         //Getter des variables privés
         Object.defineProperties(this, {
             task: {
@@ -57,6 +60,12 @@ class Connector {
             on_success: {
                 get: function() {
                     return moulinette;
+                },
+                configurable: false
+            },
+            needed: {
+                get: function() {
+                    return JSON.parse(JSON.stringify(needed));
                 },
                 configurable: false
             }

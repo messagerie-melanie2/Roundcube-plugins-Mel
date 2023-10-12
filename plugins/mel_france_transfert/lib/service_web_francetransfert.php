@@ -211,6 +211,11 @@ class ServiceWebFranceTransfert {
         $this->_errorMessage = $content->errors->message;
       }
       mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::initPli() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      // 0007946: [France Transfert] Gérer le message d'erreur "size must be between 0 and 2500"
+      if ($this->_httpCode == 400 && strpos($this->_errorMessage, 'size must be between') === 0) {
+        $max_message_size = substr($this->_errorMessage, strlen('size must be between 0 and '));
+        $this->_errorMessage = str_replace('%%max_message_size%%', $max_message_size, $this->rc->gettext('error_message_size_limit', 'mel_france_transfert'));
+      }
       return false;
     }
   }

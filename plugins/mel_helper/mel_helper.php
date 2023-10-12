@@ -276,12 +276,34 @@ class mel_helper extends rcube_plugin
 
     public static function send_mail($subject, $mailbody, $from, $recipient, $html = false, $pictures = []) {
         $rc = rcmail::get_instance();
-        $message = new Mail_mime("\r\n");
-        $message->setParam('text_encoding', RCUBE_CHARSET);
-        $message->setParam('head_encoding', RCUBE_CHARSET);
-        $message->setParam('head_charset', RCUBE_CHARSET);
-        $message->setParam('text_charset', RCUBE_CHARSET);
-        $message->setParam('html_charset', RCUBE_CHARSET);
+
+        $to = format_email_recipient($mailto, $recipient['name']);
+        $SENDMAIL = new rcmail_sendmail(null, [
+            'sendmail'      => true,
+            'from'          => $from,
+            'mailto'        => $to,
+            'dsn_enabled'   => false,
+            'charset'       => 'UTF-8',
+        ]);
+
+        $headers = array(
+            'From' => $from,
+            'Date' => $rc->user_date(),
+            'Message-ID' => $rc->gen_message_id(),
+            'X-Sender' => $from,
+            'Subject' => $subject,
+            'To' => $to
+            //'Content-type' => ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8')
+        );
+
+        $message = $SENDMAIL->create_message($headers, $mailbody, $html);
+
+        //$message = new Mail_mime("\r\n");
+        // $message->setParam('text_encoding', RCUBE_CHARSET);
+        // $message->setParam('head_encoding', RCUBE_CHARSET);
+        // $message->setParam('head_charset', RCUBE_CHARSET);
+        // $message->setParam('text_charset', RCUBE_CHARSET);
+        // $message->setParam('html_charset', RCUBE_CHARSET);
 
         if (count($pictures) > 0)
         {
@@ -291,25 +313,27 @@ class mel_helper extends rcube_plugin
         }
 
         // compose common headers array
-        $headers = array(
-            'From' => $from,
-            'Date' => $rc->user_date(),
-            'Message-ID' => $rc->gen_message_id(),
-            'X-Sender' => $from,
-            //'Content-type' => ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8')
-        );
+        // $headers = array(
+        //     'From' => $from,
+        //     'Date' => $rc->user_date(),
+        //     'Message-ID' => $rc->gen_message_id(),
+        //     'X-Sender' => $from,
+        //     //'Content-type' => ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8')
+        // );
         if ($agent = $rc->config->get('useragent')) {
             $headers['User-Agent'] = $agent;
         }
 
         $mailto = rcube_utils::idn_to_ascii($recipient['email']);
-        $headers['To'] = format_email_recipient($mailto, $recipient['name']);
-        $headers['Subject'] = $subject;
+        //$headers['To'] = format_email_recipient($mailto, $recipient['name']);
+        //$headers['Subject'] = $subject;
 
-        if (count($pictures) <= 0) $headers['Content-type'] = ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8');
+//        if (count($pictures) <= 0) $headers['Content-type'] = ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8');
 
-        $message->headers($headers);
-        $message->setHTMLBody($mailbody);
+
+        // $message->headers($headers);
+        // $message->setHTMLBody($mailbody);
+        // new rcmail_sendmail().
         $sent = rcmail::get_instance()->deliver_message($message, $headers['X-Sender'], $mailto, $smtp_error);
 
         return $sent;

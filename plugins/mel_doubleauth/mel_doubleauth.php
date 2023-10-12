@@ -290,6 +290,8 @@ class mel_doubleauth extends rcube_plugin {
             $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         }
 
+        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30));
+        
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         $this->rc->output->send('plugin');
     }
@@ -530,12 +532,13 @@ class mel_doubleauth extends rcube_plugin {
         $otp = rand(100000, 999999);
         $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
-        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;// ?? 'delphin.tommy@gmail.com';
+        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;// ?? 'tommy.delphin@i-carre.net';
 
         $bodymail = new MailBody('mel_doubleauth.email', [
             'code' => $otp,
-            'bnum.base_url' => 'http://mtes.fr/2',
-            'bnum.da_url' => 'https://mel.din.developpement-durable.gouv.fr/?_task=settings&_action=plugin.mel_doubleauth&_force_bnum=1',
+            'bnum.change_password' => 'https://mel.din.developpement-durable.gouv.fr/changepassword/index.php',
+            'url.internal.security' => 'https://mel.din.developpement-durable.gouv.fr/aide/doc/bnum/#15-Configuration:l4GIVl2g7xdGSnhdT7Cdwd',
+            'expiration' => $this->rc->config->get('code_expiration', 30),
             'logobnum' => __DIR__.'/skins/elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
         ]);
 

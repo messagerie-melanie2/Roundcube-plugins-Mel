@@ -1,15 +1,13 @@
-<!-- Subject : Validez vôtre email ! -->
-<!-- Liste des templates pour ce mail : logobnum, bnum.da_url, code, bnum.base_url-->
+<!-- Subject : Votre code de vérification Bnum ! -->
+<!-- Liste des templates pour ce mail : logobnum, bnum.change_password, code, url.internal.security, expiration-->
 
 <center><img src="{{logobnum}}" title="Logo du bureau numérique" alt="Logo du bureau numérique" style="width: 100%;max-width: 300px;" /></center>
 <br/>
+<center><h1>Votre code est : {{code}}</h1></center>
+<p style="margin-top:5px">Pour renforcer la sécurité du Bnum, nous vous demandons de saisir le code de vérification ci-dessus. 
+Ce code à usage unique n'est valable que {{expiration}} minutes</p>
 <br/>
-<h2>Validez votre email de récupération !</h2>
-<p>Voici vôtre code de récupération : <span style="font-size: xx-large;">{{code}}</span></p>
-<p>Rentrez-le <a href="{{bnum.da_url}}" title="Configuration de l'authentification renforcée">ici</a> pour pouvoir valider votre adresse puis activer l'authentification renforcée sur votre compte Bnum</p>
+<h2>Vous n'êtes pas à l'origine de cette connexion ?</h2>
+<p>Si vous n'avez pas souhaité vous connecter récemment au Bnum, nous vous invitons à <a href="{{bnum.change_password}}">changer votre mot de passe</a>.</p>
 <br/>
-<h2>Qu'est ce que le Bnum ?</h2>
-<br/>
-<p>Le Bnum est une application qui rassemble simplement, et sur une seule page web les outils que vous utilisez au quotidient : mails, agenda, listes de tâches etc...</p>
-
-<strong><u><a href="{{bnum.base_url}}" title="Adresse du bureau numérique">Découvrir le Bnum</a></u></strong>
+<p>Pour plus d'informations sur la sécurité de votre compte, nous vous invitons à consulter <a href="{{url.internal.security}}">notre article dédié</a>.</p>

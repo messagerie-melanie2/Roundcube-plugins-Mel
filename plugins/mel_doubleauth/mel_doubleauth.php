@@ -532,7 +532,7 @@ class mel_doubleauth extends rcube_plugin {
         $otp = rand(100000, 999999);
         $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
-        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;// ?? 'tommy.delphin@i-carre.net';
+        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation ?? 'tommy.delphin@i-carre.net';
 
         $bodymail = new MailBody('mel_doubleauth.email', [
             'code' => $otp,

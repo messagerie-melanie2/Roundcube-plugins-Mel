@@ -277,6 +277,7 @@ class mel_helper extends rcube_plugin
     public static function send_mail($subject, $mailbody, $from, $recipient, $html = false, $pictures = []) {
         $rc = rcmail::get_instance();
 
+        $mailto = rcube_utils::idn_to_ascii($recipient['email']);
         $to = format_email_recipient($mailto, $recipient['name']);
         $SENDMAIL = new rcmail_sendmail(null, [
             'sendmail'      => true,
@@ -324,7 +325,6 @@ class mel_helper extends rcube_plugin
             $headers['User-Agent'] = $agent;
         }
 
-        $mailto = rcube_utils::idn_to_ascii($recipient['email']);
         //$headers['To'] = format_email_recipient($mailto, $recipient['name']);
         //$headers['Subject'] = $subject;
 

@@ -12,6 +12,7 @@ const connectors = {
                                                                                             moulinette: settings_da_set_email_recup
                                                                                         }),
     settings_da_set_token_otp: Connector.in_work(),
+    settings_da_send_otp_token: new Connector('settings', 'plugin.mel.doubleauth.send_otp', {type:Connector.enums.type.post})
   
 };
 

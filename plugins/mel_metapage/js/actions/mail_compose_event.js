@@ -13,6 +13,14 @@ $(document).ready(() => {
 
     if (!!rcmail.env.default_sended_folder) {
         $('#compose-store-target').val(rcmail.env.default_sended_folder);
+
+        let $select = $('#compose-store-target')[0];
+        
+        if ('' === $select.value) {
+            $select.value = rcmail.env.sended_folder;
+        }
+
+        $select = null;
     }
 
     if ('empty' === rcmail.env['compose-option'] && true === rcmail.env.show_sig) {

@@ -161,6 +161,15 @@ if (window.rcmail) {
     $("#compose-options select[name=\"_store_target\"]").html($(evt.response.select_html).html());
     setTimeout(() => {
       $("#compose-options select[name=\"_store_target\"]").addClass("form-control custom-select pretty-select").change();
+
+      let $select = $("#compose-options select[name=\"_store_target\"]")[0];
+
+      if ('' === $select.value) {
+        $select.value = evt.response.sended_folder;
+      }
+
+      $select = null;
+
     }, 100);  
     $('#_compose_hidden_account').val(rcmail.env.identities_to_bal[rcmail.env.identity]);
   });

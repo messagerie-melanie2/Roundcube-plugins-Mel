@@ -43,9 +43,12 @@
       //   //Main text colors
          --main-text-color: white;
       //   --secondary-text-color: #FFFFFF;
-      //   --tierciary-text-color: #484D7A;
+         --tierciary-text-color: var(--button-text-color-base);
       //   --fourth-text-color: #779bd6;
          --input-button-text-color: var(--input-text-color);
+         --btn-primary-border-color: var(--button-color-base);
+         --btn-primary-border-color-hover: var(--button-color-base-hover);
+         --btn-primary-bckg-color-hover: var(--button-color-base-hover);
       //   --header-title-color: var(--main-text-color);
       //   --default-text-color: var(--secondary-text-color);
       //   --default-placeholder-text-color: #a8a9b8;
@@ -242,7 +245,7 @@
       //   //Layout content
          --layout-content-header-background-color: var(--layout-list-header-background-color);
          --alternative-layout-content-header-background-color: var(--alternative-layout-list-header-background-color);
-         --layout-content-header-background-hover-color: var(--button-base-color-hover);
+         --layout-content-header-background-hover-color: var(--button-color-base-hover);
       //   --layout-content-header-text-color: var(--main-text-color);
       //   --layout-content-header-text-hover-color: var(--main-text-color);
       //   --layout-content-text-color: var(--main-text-color);
@@ -415,6 +418,8 @@
           --bureau-app-icon-color: var(--button-text-color-base-hover);
 
           --calendar-list-item-switch-background-color: var(--button-color-base);
+          --main-content-bg-color: var(--base-1);
+          --main-border-color: white;
       }
 
    .barup {
@@ -521,6 +526,66 @@
           background-image: url("../images/halloween-pumpkin-full.svg");
       }
   }
+
+  .task-calendar .fc-day-header{
+   background-color: var(--calendar-table-header);
+  }
+
+  .print-config{
+      background-color: var(--base-1);
+
+      + .print-content {
+         background-color: var(--layout-content-background-color);
+      }
+  }
+
+  .print-content .fc .fc-header-toolbar{
+      background-color: var(--base-1);
+      h2 {
+         color: white;
+      }
+  }
+
+  .input-group-text.mel,
+  .form-control[readonly],
+  .form-control:disabled{
+   background-color: var(--base-2-n-1)!important;
+  }
+
+  #print-layout {
+   #calendarlist li a {
+      background-color: white;
+      padding: 6px;
+      border-radius: 5px;
+   }
+  }
+
+  #eventfreebusy .attendee {
+   color:white!important;
+  }
+
+  #aclcontainer {
+   .menu.toolbar a{
+      color: var(--button-text-color-base);
+      // background-color: var(--button-color-base);
+   
+      &:hover {
+         color: var(--button-text-color-base-hover);
+         background-color: var(--button-color-base-hover)!important;
+         border-radius: 5px;
+      }
+     }
+  }
+
+  .task-addressbook.action-print {
+	/* color: wheat; */
+	/* backgroun-color: white; */
+	--body-picture: none;
+	--main-text-color: black;
+	--header-title-color: black;
+	--body-background-color: var(--base-2-n-1);
+}
+  
 }
 
 html.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-halloween.dark-mode-custom{

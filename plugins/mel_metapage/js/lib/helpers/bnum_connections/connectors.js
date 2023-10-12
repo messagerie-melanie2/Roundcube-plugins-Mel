@@ -11,7 +11,10 @@ const connectors = {
                                                                                             needed:{_val:'email', _send_mail:true},
                                                                                             moulinette: settings_da_set_email_recup
                                                                                         }),
-    settings_da_set_token_otp: Connector.in_work(),
+    settings_da_set_token_otp: new Connector('settings', 'plugin.mel.doubleauth.verify_code', {
+                                                                                                type: Connector.enums.type.post,
+                                                                                                needed:{_token:'token'}
+                                                                                              }),
     settings_da_send_otp_token: new Connector('settings', 'plugin.mel.doubleauth.send_otp', {type:Connector.enums.type.post})
   
 };

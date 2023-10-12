@@ -76,6 +76,7 @@ class mel_doubleauth extends rcube_plugin {
             $this->register_action('plugin.mel.doubleauth.get', array($this, 'actions_get'));
             $this->register_action('plugin.mel.doubleauth.set', array($this, 'actions_set'));
             $this->register_action('plugin.mel.doubleauth.send_otp', array($this, 'send_otp'));
+            $this->register_action('plugin.mel.doubleauth.verify_code', array($this, 'verify_code'));
         }
 
         $this->include_script('mel_doubleauth.js');
@@ -529,16 +530,19 @@ class mel_doubleauth extends rcube_plugin {
         $this->require_plugin('mel_helper');
         mel_helper::include_mail_body();
 
-        $otp = rand(100000, 999999);
+        $otp = rand(100000, 999999) + '';
+        $expire = $this->rc->config->get('code_expiration', 30);
         $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
+        driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
+        driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
         $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation ?? 'tommy.delphin@i-carre.net';
 
         $bodymail = new MailBody('mel_doubleauth.email', [
             'code' => $otp,
             'bnum.change_password' => 'https://mel.din.developpement-durable.gouv.fr/changepassword/index.php',
             'url.internal.security' => 'https://mel.din.developpement-durable.gouv.fr/aide/doc/bnum/#15-Configuration:l4GIVl2g7xdGSnhdT7Cdwd',
-            'expiration' => $this->rc->config->get('code_expiration', 30),
+            'expiration' => $expire,
             'logobnum' => __DIR__.'/skins/elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
         ]);
 
@@ -549,6 +553,22 @@ class mel_doubleauth extends rcube_plugin {
         $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html, [['path' => __DIR__.'/skins/elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
         
         echo json_encode($sent);
+        exit;
+    }
+
+    public function verify_code() {
+        $return = 0;
+        $token = rcube_utils::get_input_value('_token', rcube_utils::INPUT_POST) + '';
+
+        if (driver_mel::gi()->getUser()->token_otp_expire < time()) {
+            if ($token === driver_mel::gi()->getUser()->token_otp) {
+                driver_mel::gi()->getUser()->double_authentification_adresse_valide = true;
+                $return = 1;
+            }
+        }
+        else $return = -1;
+
+        echo $return;
         exit;
     }
 
@@ -835,6 +855,7 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->removeUser($this->rc->user->get_username());
+
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser() result:$res");
         }
         catch (Exception $e) {

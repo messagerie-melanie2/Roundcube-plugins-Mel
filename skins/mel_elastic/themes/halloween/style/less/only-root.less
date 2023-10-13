@@ -308,8 +308,8 @@
       
       //   //Mail Panel
       //   --layout-content-header-right-border-color: var(--main-text-color);
-      //   --layout-content-contact-address-color: #333;
-      //   --layout-content-message-partheaders: #fcfcfc;
+         --layout-content-contact-address-color: white;
+         --layout-content-message-partheaders: var(--base-1);
       //   --layout-content-message-partheaders-top-border-color: #f4f4f4;
       //   --layout-content-message-partheaders-title: var(--hint-text-color);
       //   --layout-content-message-attachment-text-color: var(--layout-content-contact-address-color);
@@ -584,7 +584,26 @@
 	--main-text-color: black;
 	--header-title-color: black;
 	--body-background-color: var(--base-2-n-1);
-}
+   }
+
+   .headlines-by.headlines-rss-type {
+      background-color: transparent;
+      color: #30C5B2 !important;
+   }
+
+   .task-useful_links{
+      .link-block.square_div {
+         .contents{
+            color:black;
+         }
+      }
+   }
+
+   html&{
+      body a.filename .attachment-name {
+         color:white;
+      }
+   }
   
 }
 
@@ -602,5 +621,9 @@ html.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored
       #layout-content{
          background-color: transparent;
       }
+   }
+
+   .logo-mel{
+      background-color: black;
    }
 }

@@ -4,7 +4,7 @@
 
 @content-only-tasks: workspace, bureau, useful_links, news, search;
 @external-tasks: parapheur, rizomo, wekan, sondage, stockage, webconf;
-@settings-need-background: action-plugin-mel_doubleauth, action-plugin-mel_signatures;
+@settings-need-background: action-plugin-mel_doubleauth, action-plugin-mel_signatures, action-plugin-mel_statistics_mobile;
 
 .theme-super-classique-main.picture-theme:root {
 //     // Main background colors
@@ -490,9 +490,14 @@ html.theme-super-classique-main.picture-theme{
       }
       each(@settings-need-background, {
         &.task-settings.@{value}{
+          #mel_statistics_mobile_frame,
           .formcontent,
           #settings-right{
             &:extend(html.theme-super-classique-main.picture-theme body .task-settings.each-placeholder #layout-content);
+          }
+
+          #mel_statistics_mobile_frame{
+            margin: 10px 0 0 0;
           }
         }
       })

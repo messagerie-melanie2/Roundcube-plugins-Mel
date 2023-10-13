@@ -326,9 +326,11 @@ class mel_metapage extends bnum_plugin
             $folder_space => $this->gettext("normal", "mel_metapage"),
             $message_space => $this->gettext("normal", "mel_metapage"),
             $mel_column => $this->gettext("yes", "mel_metapage"),
-            $chat_placement => $this->gettext("down", "mel_metapage"),
+            $chat_placement => $this->gettext("up", "mel_metapage"),
             $scrollbar_size => $this->gettext("auto", "mel_metapage")
         ]);
+
+        $config[$chat_placement] =  $this->gettext("up", "mel_metapage");
 
         $this->rc->output->set_env("mel_metapage_mail_configs", $config);
         $this->rc->output->set_env("mel_metapage_audio_url", $this->rc->config->get("audio_event_url", 'https://audio.mtes.fr/'));
@@ -1902,10 +1904,10 @@ class mel_metapage extends bnum_plugin
                     $this->gettext("yes", "mel_metapage"),
                     $this->gettext("no", "mel_metapage")
                 ],
-                $chat_placement => [
-                    $this->gettext("up", "mel_metapage"),
-                    $this->gettext("down", "mel_metapage")
-                ],
+                // $chat_placement => [
+                //     $this->gettext("up", "mel_metapage"),
+                //     $this->gettext("down", "mel_metapage")
+                // ],
                 $scrollbar_size => [
                     //$this->gettext('auto', 'mel_metapage'),
                     $this->gettext("default", 'mel_metapage'),
@@ -1914,8 +1916,8 @@ class mel_metapage extends bnum_plugin
                 ]
             ];
 
-            if ($config[$chat_placement] === null || $config[$chat_placement] === "")
-                $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+            // if ($config[$chat_placement] === null || $config[$chat_placement] === "")
+            //     $config[$chat_placement] = $this->gettext("down", "mel_metapage");
 
             if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "" || $config[$scrollbar_size] === $this->gettext('auto', 'mel_metapage'))
                 $config[$scrollbar_size] = $this->gettext("default", "mel_metapage");
@@ -2017,18 +2019,18 @@ class mel_metapage extends bnum_plugin
                 $folder_space => $this->gettext("normal", "mel_metapage"),
                 $message_space => $this->gettext("normal", "mel_metapage"),
                 $mel_column => $this->gettext("yes", "mel_metapage"),
-                $chat_placement => $this->gettext("down", "mel_metapage"),
+                $chat_placement => $this->gettext("up", "mel_metapage"),
                 $scrollbar_size => $this->gettext("default", "mel_metapage")
             ]);
 
-            if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+            //if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
             if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "" || $config[$scrollbar_size] === $this->gettext('auto', 'mel_metapage')) $config[$scrollbar_size] = $this->gettext("default", "mel_metapage");
 
             $options = [
-                $chat_placement => [
-                    $this->gettext("up", "mel_metapage"),
-                    $this->gettext("down", "mel_metapage")
-                ]
+                // $chat_placement => [
+                //     $this->gettext("up", "mel_metapage"),
+                //     $this->gettext("down", "mel_metapage")
+                // ]
             ];
 
             foreach ($config as $key => $value) {
@@ -2162,12 +2164,12 @@ class mel_metapage extends bnum_plugin
             $folder_space => $this->gettext("normal", "mel_metapage"),
             $message_space => $this->gettext("normal", "mel_metapage"),
             $mel_column => $this->gettext("yes", "mel_metapage"),
-            $chat_placement => $this->gettext("down", "mel_metapage"),
+            $chat_placement => $this->gettext("up", "mel_metapage"),
             $scrollbar_size => $this->gettext("default", "mel_metapage")
         ]);
 
         if ($config[$chat_placement] === null || $config[$chat_placement] === "")
-            $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+            $config[$chat_placement] = $this->gettext("up", "mel_metapage");
 
         if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "" || $config[$scrollbar_size] === $this->gettext('auto', 'mel_metapage'))
             $config[$scrollbar_size] = $this->gettext("default", "mel_metapage");
@@ -2261,11 +2263,11 @@ class mel_metapage extends bnum_plugin
             $folder_space => $this->gettext("normal", "mel_metapage"),
             $message_space => $this->gettext("normal", "mel_metapage"),
             $mel_column => $this->gettext("yes", "mel_metapage"),
-            $chat_placement => $this->gettext("down", "mel_metapage")
+            $chat_placement => $this->gettext("up", "mel_metapage")
         ]);
 
         if ($config[$chat_placement] === null || $config[$chat_placement] === "")
-            $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+            $config[$chat_placement] = $this->gettext("up", "mel_metapage");
 
         $config[$chat_placement] = rcube_utils::get_input_value($chat_placement, rcube_utils::INPUT_POST);
 
@@ -3038,7 +3040,7 @@ class mel_metapage extends bnum_plugin
                     "mel-folder-space",
                     "mel-message-space",
                     "mel-3-columns",
-                    "mel-chat-placement",
+                   // "mel-chat-placement",
                     'mel-scrollbar-size'];
 
                 if (in_array($param, $const_mel_options)) {
@@ -3046,7 +3048,7 @@ class mel_metapage extends bnum_plugin
                     $folder_space = "mel-folder-space";
                     $message_space = "mel-message-space";
                     $mel_column = "mel-3-columns";
-                    $chat_placement = "mel-chat-placement";
+                   // $chat_placement = "mel-chat-placement";
                     $scrollbar_size = 'mel-scrollbar-size';
 
                     $config = $this->rc->config->get('mel_mail_configuration', [
@@ -3054,11 +3056,11 @@ class mel_metapage extends bnum_plugin
                         $folder_space => $this->gettext("normal", "mel_metapage"),
                         $message_space => $this->gettext("normal", "mel_metapage"),
                         $mel_column => $this->gettext("yes", "mel_metapage"),
-                        $chat_placement => $this->gettext("down", "mel_metapage"),
+                        $chat_placement => $this->gettext("up", "mel_metapage"),
                         $scrollbar_size => $this->gettext("default", "mel_metapage")
                     ]);
 
-                    if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+                    if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("up", "mel_metapage");
 
                     $default_value = $config[$param];
                 }

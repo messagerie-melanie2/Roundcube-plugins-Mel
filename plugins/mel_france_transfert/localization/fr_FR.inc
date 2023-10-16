@@ -39,3 +39,4 @@ $labels['action fichier'] = "Envoi du fichier %%filename%% au service France Tra
 $labels['action envoi'] = "Envoi du message";
 $labels['action garde'] = "Enregistrement de la durée de garde";
 $labels['pref_max_attachments_size'] = "Taille maximum des pièces jointes avant un envoi par France Transfert";
+$labels['error_message_size_limit'] = "Un message France Transfert ne peux pas dépasser les %%max_message_size%% caractères. Si vous avez faire un Répondre à, pensez à supprimer les citations en dessous de votre texte pour réduire la taille du message.";

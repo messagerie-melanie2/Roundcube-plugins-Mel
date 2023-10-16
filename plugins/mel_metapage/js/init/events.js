@@ -161,10 +161,12 @@ if (rcmail && window.mel_metapage)
                         uid:uid
                     }
                   };
-
+                  //FIX MANTIS 0007961
+                    $('.modal-save-footer').removeAttr('disabled').removeClass('disabled');
                     this.create_event_from_somewhere(event);
             }
             rcmail.register_command('calendar-create-from-mail', function() { cal.create_from_mail(); }, true);
+
         }
 
     });

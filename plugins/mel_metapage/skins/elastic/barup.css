@@ -17,7 +17,7 @@ html.touch .barup {
   width: 100%;
 }
 
-.help {
+/* .help {
   display: inline-block;
   width: 136px;
   height: 32px;
@@ -40,7 +40,7 @@ html.touch .barup {
 .help:hover {
   background-color: #484D7A;
   color: white;
-}
+} */
 
 .barup>.wrapper>div>.create {
   width: 107px;

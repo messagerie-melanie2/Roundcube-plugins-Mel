@@ -1,8 +1,9 @@
 $(document).ready(async () => {
      //debugger;
-    const JsHtml = await module_helper_mel.JsHtml({includes_inputs:true, includes_bootstrap: true});
+     const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+    const {MelHtml} = await loadJsModule('mel_metapage', '');
 
-    window.a = JsHtml.start
+    window.a = MelHtml.start
     .row()
         .col_10()
             .select()

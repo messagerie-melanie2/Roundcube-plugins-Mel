@@ -1081,7 +1081,7 @@ if (rcmail && window.mel_metapage)
         //Gérer le titre
         modal.header.querry.css("position", "sticky")
         .css("top", "0")
-        .css("background-color","white")
+        // .css("background-color","white")
         .css("border-top-left-radius","15px")
         .css("border-top-right-radius","15px")
         .css("z-index", 1);
@@ -1089,7 +1089,7 @@ if (rcmail && window.mel_metapage)
         //gérer les boutons du footer
         modal.footer.querry.css("position", "")
         .css("bottom", "0")
-        .css("background-color", "white")
+        // .css("background-color", "white")
         .css("flex-direction", "row-reverse")
         .css("z-index", 1)
         .addClass("calendar-show-event");

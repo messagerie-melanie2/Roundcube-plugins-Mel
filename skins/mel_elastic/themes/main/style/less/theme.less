@@ -265,6 +265,10 @@ ul.treelist li.selected>div>a,
 #barup-right-buttons {
   button {
     color: var(--barup-icon-color) !important;
+
+    .barup-picture &{
+      --barup-icon-color: var(--barup-icon-color-picture);
+    }
   }
 
   #notificationunread.active {
@@ -733,6 +737,7 @@ optgroup {
   opacity: .5;
 }
 
+.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select,
 #edit-attendees-comment,
 #edit-attendee-name,
 #edit-identities-list,
@@ -740,7 +745,6 @@ optgroup {
 .fake-input.input-mel,
 .roundbadge.icon-mel-videoconference,
 .tiny-webconf-menu.dwp-round,
-.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select,
 #rcmloginsubmit,
 .btn.btn-block.btn-secondary.btn-mel,
 body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button,
@@ -762,6 +766,20 @@ input.input-mel {
 
   &::placeholder {
     color: var(--default-placeholder-text-color);
+  }
+}
+
+.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select{
+  background-color: var(--jitsii-input-mel-background-color);
+  color: var(--jitsii-mel-button-text-color);
+  border-color: var(--input-mel-border-color);
+
+  &.light-focus:focus,
+  &:focus,
+  &:hover {
+    background-color: var(--mel-button-hover-background-color);
+    color: var(--mel-button-text-color);
+    border-color: var(--input-mel-border-color);
   }
 }
 

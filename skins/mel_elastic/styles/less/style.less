@@ -2817,8 +2817,12 @@ img {
 html:not(.touch) .listing li > a:focus,
 html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
 html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
-    border-left: 2px solid var(--invisible) !important;
+    // border-left: 2px solid var(--invisible) !important;
     border-radius: 0;
+}
+
+.menu a:not(.disabled):focus{
+    border-left: 2px solid var(--button-background-color)!important;
 }
 
 html:not(.touch) .listing.focus tbody tr.focused.unread > td:first-child,

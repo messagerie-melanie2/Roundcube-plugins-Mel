@@ -129,4 +129,21 @@
   #calendaroptionsmenulink:focus {
     background-color: var(--main-bckg-color);
   }
+
+  button.mel-calendar-button {
+    background-color: transparent;
+    color: var(--mel-button-text-color)!important;
+
+    &:hover {
+      background-color: var(--hover-background-color);
+      --mel-button-text-color: var(--mel-button-hover-text-color);
+    }
+
+    &.danger {
+      &:hover {
+        --hover-background-color: var(--warning-color);
+        // --mel-button-text-color: var(--tierciary-text-color);
+      }
+    }
+  }
 }

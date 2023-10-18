@@ -94,6 +94,14 @@ class RotomecaHtml {
         return this.tag_one_line('img', attribs);
     }
 
+    style() {
+        return this.tag('style');
+    }
+
+    style_css_prop(key, value){
+        return this.text(`${key}:${value};`);
+    }
+
     _try_add_label(attribs = {}) {
         let html_input = this;
         if (!!attribs?.id && attribs?.label) {

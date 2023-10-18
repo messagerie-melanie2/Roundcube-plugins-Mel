@@ -26,9 +26,30 @@ var module_helper_mel = module_helper_mel || (() => {
         throw new Error('loadJsModule not found');
     }
 
+    async function JsHtml({
+        includes_inputs = false,
+        includes_bootstrap = false,
+        include_mel = true
+    }) {
+        const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+
+        if (!!loadJsModule) {
+            var {JsHtml} = await loadJsModule('mel_metapage', 'JsHtml.js', '/js/lib/html/JsHtml/');
+
+            if (includes_inputs) var {JsHtml} = await loadJsModule('mel_metapage', 'JsInputsHtml.js', '/js/lib/html/JsHtml/');
+            if (includes_bootstrap) var {JsHtml} = await loadJsModule('mel_metapage', 'JsBootstrapHtml.js', '/js/lib/html/JsHtml/');
+            if (include_mel) var {JsHtml} = await loadJsModule('mel_metapage', 'JsMelHtml.js', '/js/lib/html/JsHtml/');
+
+            return JsHtml;
+        }
+
+        throw new Error('loadJsModule not found');
+    }
+
     return {
         load_mel_object,
         load_calendar_events,
-        BnumConnector
+        BnumConnector,
+        JsHtml
     }
 })();

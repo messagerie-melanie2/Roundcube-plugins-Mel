@@ -1,10 +1,21 @@
 $(document).ready(async () => {
-    // debugger;
-    const BnumConnector = await module_helper_mel.BnumConnector();
+     //debugger;
+    const JsHtml = await module_helper_mel.JsHtml({includes_inputs:true, includes_bootstrap: true});
 
-    let config = BnumConnector.connectors.settings_da_set_email_recup.needed;
-    config._val = 'delphin.tommy@gmail.com';
-    await BnumConnector.connect(BnumConnector.connectors.settings_da_send_otp_token, {
-        params:config,
-    });
+    window.a = JsHtml.start
+    .row()
+        .col_10()
+            .select()
+                .option({value:''}).text('Defaut').end()
+                .option({value:'other', selected:'selected'}).text('Autre').end()
+            .end('select')
+        .end()
+        .comment('Commentaire html')
+        .col_2()
+            .button().text('Envoyer').end()
+        .end()
+    .end()
+    .generate().appendTo($('#layout-content'));
+    //window.b = a.generate().appendTo($('#layout-content'));
+
 });

@@ -1,0 +1,22 @@
+import { JsHtml } from "./JsHtml.js";
+export { JsHtml }
+
+JsHtml.update('input', function (old, attribs = {}) {
+    let html = old.call(this, attribs);
+    return html.addClass('form-control').addClass('input-mel');
+});
+
+JsHtml.update('select', function (self, old, attribs = {}) {
+    let html = old.call(self, attribs);
+    return html.addClass('form-control').addClass('input-mel');
+});
+
+JsHtml.update('textarea', function (self, old, attribs = {}) {
+    let html = old.call(self, attribs);
+    return html.addClass('form-control').addClass('input-mel');
+});
+
+JsHtml.update('button', function (self, old, attribs = {}) {
+    let html = old.call(self, attribs);
+    return html.addClass('mel-button').addClass('no-button-margin').addClass('no-margin-button');
+});

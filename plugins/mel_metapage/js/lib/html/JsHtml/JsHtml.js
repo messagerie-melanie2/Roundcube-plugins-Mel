@@ -89,8 +89,7 @@ class RotomecaHtml {
         return this.tag('p', attribs);
     }
 
-    img(src, attribs = {}){
-        attribs.src = src; 
+    img(attribs = {}){
         return this.tag_one_line('img', attribs);
     }
 

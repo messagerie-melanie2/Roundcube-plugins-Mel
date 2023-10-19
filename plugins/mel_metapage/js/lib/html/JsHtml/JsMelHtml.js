@@ -1,8 +1,8 @@
 import { JsHtml } from "./JsHtml.js";
 export { JsHtml }
 
-JsHtml.update('input', function (old, attribs = {}) {
-    let html = old.call(this, attribs);
+JsHtml.update('input', function (self, old, attribs = {}) {
+    let html = old.call(self, attribs);
     return html.addClass('form-control').addClass('input-mel');
 });
 

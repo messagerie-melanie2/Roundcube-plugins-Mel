@@ -1,7 +1,6 @@
 $(document).ready(async () => {
-     //debugger;
-     const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
-    const {MelHtml} = await loadJsModule('mel_metapage', '');
+    const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+    const {MelHtml} = await loadJsModule('mel_metapage', 'MelHtml.js', '/js/lib/html/JsHtml/');
 
     window.a = MelHtml.start
     .row()
@@ -15,8 +14,9 @@ $(document).ready(async () => {
         .col_2()
             .button().text('Envoyer').end()
         .end()
-    .end()
-    .generate().appendTo($('#layout-content'));
+    .end();
+
+    window.b = a.generate().appendTo($('#layout-content'));
     //window.b = a.generate().appendTo($('#layout-content'));
 
 });

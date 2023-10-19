@@ -5394,4 +5394,166 @@ html.dark-mode .external_url {
         background-color: var(--tierciary-bckg-color);
         color: var(--secondary-text-color);
     }
+  }
+.double-auth-modal {
+
+  &:focus-visible {
+    outline: none !important;
+  }
+  .subtitle {
+    color: #5C5CFF;
+    font-size: 19px;
+    font-weight: 600;
+  }
+
+  .title {
+    font-size: 23px;
+    font-weight: 700;
+    color: #3A3E5E;
+  }
+
+  .content {
+   max-width: 335px;
+  }
+
+  .modal-custom-button {
+    border-radius: 30px !important;
+    padding: 8px 25px 8px 25px !important;
+    border: none !important;
+    text-shadow: none !important;
+    float: left !important;
+    font-weight: 600 !important;
+    width: 140px !important;  
+  }
+
+  .next-button {
+    background-color: #5C5CFF !important;
+    color: #fff !important;
+
+    &:hover {
+      background-color: #4c4cbb !important;
+    }
+  }
+
+  .done-button {
+    background-color: #F0F0FF !important;
+    color: #5C5CFF !important;
+    &:hover {
+      background-color: #e1e1ec !important;
+    }
+  }
+
+  input {
+    background-color: #eee;
+    border: none;
+    
+    &:focus {
+      background-color: #eee !important;
+    }
+  }
+
+  .code-input {
+    max-width: 180px;
+    background-color: #eee;
+  }
+
+  .secret-code-input {
+    max-width: 315px;
+    background-color: #eee;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+  
+  .input-group-code .input-group-append{
+    background-color: #eee;
+    border-top-right-radius: 60px;
+    border-bottom-right-radius: 60px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #e1e1e1;
+    }
+  }
+
+  .check_logo {
+    width: 100px;
+    height: 100px;
+    margin: 10px 0;
+    background-color: #5C5CFF;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .material-symbols-outlined {
+      font-size: 68px;
+      color: #fff;
+      font-variation-settings:'wght' 600;
+    }
+  }
+
+  #qr-code {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+}
+
+html.dark-mode-custom .double-auth-modal {
+  .title {
+    color: #96b9e7 !important;
+  }
+
+  input {
+    border: solid thin var(--input-border-color) !important;
+    background-color: var(--input-background-color);
+    &:focus {
+      background-color: var(--input-background-color) !important;
+    }
+  }
+
+  .done-button {
+    background-color: var(--mel-button-background-color) !important;
+    border: var(--mel-button-border) !important;
+    color: var(--mel-button-text-color) !important;
+
+    &:hover {
+      background-color: var(--mel-button-hover-background-color) !important;
+    }
+  }
+  .input-group-code .input-group-append{
+    border: solid thin var(--input-border-color) !important;
+    background-color: var(--input-background-color);
+    color: var(--input-mel-text-color);
+
+    &:hover {
+      background-color: var(--mel-button-hover-background-color);
+    }
+  }
+}
+
+.double-auth-modal-progress {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+ padding-left: 2rem;
+
+  .progress-point {
+    width: 30px;
+    height: 7px;
+    background-color: #eee;
+    border-radius: 50px;
+    margin: 0 5px;
+  }
+
+  .active {
+    background-color: #5c5cff;
+    color: #fff;
+  }
+}
+
+.ui-dialog .ui-dialog-content {
+  margin-bottom: 10px;
 }

@@ -44,7 +44,11 @@ if (rcmail)
         }, true);
 
         rcmail.register_command("open_suggestion", () => {
-          mel_metapage.Functions.change_page("settings",'plugin.mel_suggestion_box')
+          mel_metapage.Functions.change_page("settings",'plugin.mel_suggestion_box');
+        }, true);
+      
+        rcmail.register_command("open_double_auth", () => {
+          mel_metapage.Functions.change_page('settings','plugin.mel_doubleauth', true, true);
         }, true);
         
         rcmail.register_command("custom_taskbar", () => {

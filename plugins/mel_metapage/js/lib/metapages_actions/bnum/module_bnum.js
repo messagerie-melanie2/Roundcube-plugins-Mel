@@ -2,6 +2,7 @@ import { MetapageModule } from "../metapage_module.js";
 export {module_bnum};
 
 let user_defined_modules = [
+  'double_auth_modal'
 ];
 
 class module_bnum extends MetapageModule {

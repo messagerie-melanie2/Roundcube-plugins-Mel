@@ -81,8 +81,19 @@ class mel_doubleauth extends rcube_plugin {
 
         $this->include_script('mel_doubleauth.js');
         $this->include_script('qrcode.min.js');
-    }
-    
+
+        $user = driver_mel::gi()->getUser();
+        if ($user) {
+          $user->load(['double_authentification_forcee', 'double_authentification_date_butoir']);
+          if ($user->double_authentification_forcee) {
+            if (!$this->__isActivated()) {
+            $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
+            $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
+            }
+          }
+        }
+      }
+        
     /**
      * Hook login_after
      * Permet d'afficher la demande de double authentification en js
@@ -291,7 +302,7 @@ class mel_doubleauth extends rcube_plugin {
             $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         }
 
-        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30));
+        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30*60));
         
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         $this->rc->output->send('plugin');
@@ -531,12 +542,12 @@ class mel_doubleauth extends rcube_plugin {
         mel_helper::include_mail_body();
 
         $otp = rand(100000, 999999) + '';
-        $expire = $this->rc->config->get('code_expiration', 30);
+        $expire = $this->rc->config->get('code_expiration', 30*60);
         $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
         driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
-        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation ?? 'tommy.delphin@i-carre.net';
+        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;
 
         $bodymail = new MailBody('mel_doubleauth.email', [
             'code' => $otp,
@@ -560,7 +571,7 @@ class mel_doubleauth extends rcube_plugin {
         $return = 0;
         $token = rcube_utils::get_input_value('_token', rcube_utils::INPUT_POST) + '';
 
-        if (driver_mel::gi()->getUser()->token_otp_expire < time()) {
+        if (driver_mel::gi()->getUser()->token_otp_expire > time()) {
             if ($token === driver_mel::gi()->getUser()->token_otp) {
                 driver_mel::gi()->getUser()->double_authentification_adresse_valide = true;
                 $return = 1;

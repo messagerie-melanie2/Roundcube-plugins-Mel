@@ -621,6 +621,15 @@ $(document).ready(function() {
 
 			#messagelist tr.label_${id} td{
 				background-color:${val}20;
+				--message-list-content-selected-mail-address-color: ${textcolor};
+				--message-list-content-selected-row-background-color: ${val};
+				--message-list-content-selected-mail-subject-color: var(--message-list-content-selected-mail-address-color);
+			}
+
+			#messagelist tr.label_${id}:hover td{
+				/*--message-list-content-selected-mail-address-hover-color: ${textcolor};
+				--message-list-content-row-background-hover-color: ${val};
+				--message-list-content-selected-mail-subject-hover-color: ${textcolor};*/
 			}
 
 			.label_${id}.background {
@@ -649,8 +658,8 @@ $(document).ready(function() {
 			css += "#messagelist tr.selected.label_" + id + " td,\n";
 			css += "#messagelist tr.selected.label_" + id + " td a\n";
 			css += "{\n";
-			css += "  color: #FFFFFF;\n";
-			css += "  background-color: "+val+";\n";
+			css += "  /*color: #FFFFFF;\n";
+			css += "  background-color: "+val+";\n*/";
 			css += "}\n";
 			css += `
 				html.dark-mode #messagelist tr.label_${id} td,

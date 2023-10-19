@@ -3,7 +3,8 @@ export { JsHtml }
 
 JsHtml.update('input', function (self, old, attribs = {}) {
     let html = old.call(self, attribs);
-    return html.addClass('form-control').addClass('input-mel');
+    html.childs[html.childs.length - 1].addClass('form-control').addClass('input-mel');
+    return html;
 });
 
 JsHtml.update('select', function (self, old, attribs = {}) {

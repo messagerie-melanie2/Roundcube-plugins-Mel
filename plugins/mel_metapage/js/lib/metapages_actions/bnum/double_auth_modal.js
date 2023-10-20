@@ -42,9 +42,9 @@ function later_button(dam, dialog){
 
 const bnum_connector = BnumConnector.connect;
 BnumConnector.connect = async function (...args) {
-  double_auth_modal.Instance.disable_buttons();
+  double_auth_modal.Instance?.disable_buttons?.();
   const data = await bnum_connector.call(BnumConnector, ...args);
-  double_auth_modal.Instance.enable_buttons();
+  double_auth_modal.Instance?.enable_buttons?.();
 
   return data;
 };

@@ -215,7 +215,7 @@ class mel extends rcube_plugin
         $button_array = [
           'label' => 'mel.menumanageresources_mailboxes',
           'type' => 'link',
-          "class" => "settings",
+          "class" => "settings active",
           'classact' => 'settings active',
           'command' => 'plugin.mel_resources_bal'
         ];

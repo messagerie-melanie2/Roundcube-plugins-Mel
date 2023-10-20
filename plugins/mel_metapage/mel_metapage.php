@@ -770,8 +770,8 @@ class mel_metapage extends bnum_plugin
         $this->add_button(array(
             'command' => "mail-force-refresh",
             // 'href' => './?_task=mail&_action=compose',
-            'class'	=> 'refresh mel-event-compose options',
-            'classsel' => 'refresh mel-event-compose options',
+            'class'	=> 'refresh mel-event-compose options active',
+            'classsel' => 'refresh mel-event-compose options active',
             'innerclass' => 'inner',
             'label'	=> 'mel_metapage.force-refresh',
             'title' => '',

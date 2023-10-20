@@ -12,7 +12,7 @@ $(document).ready(async () => {
         .end()
         .comment('Commentaire html')
         .col_2()
-            .button().text('Envoyer').end()
+            .input_email()
         .end()
     .end();
 

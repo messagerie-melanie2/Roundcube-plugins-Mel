@@ -14,14 +14,10 @@ export async function settings_da_set_email_recup(data, connector) {
 
         data.datas = {
             set: data.datas,
-            sent: result.datas
+            sent: result
         };
 
-        if (result.has_error) {
-            data.has_error = true;
-            data.error = result.error;
-        }
-        else if (result.datas === null || result.datas === undefined) {
+        if (!result) {
             data.datas.set = null;
             data.datas.sent = false;
             data.has_error = true;

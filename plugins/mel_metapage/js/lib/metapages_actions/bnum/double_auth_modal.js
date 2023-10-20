@@ -4,6 +4,51 @@ import { module_bnum } from "./module_bnum.js";
 
 export { double_auth_modal };
 
+MelHtml.create_alias('close_button', {
+  after_callback(html) {
+    html.addClass('done-button');
+    html.attribs.id = 'modal-custom-button done-button';
+    html.attribs.onclick = function() {close_modal(double_auth_modal.Instance, this, html.attribs.action);}
+  },
+  tag: 'button'
+});
+
+function close_modal(dam, dialog, action) {
+  dam.closeDialog(dialog);
+  dam[action]();
+}
+
+function later_button(dam, dialog){
+  top.rcmail.triggerEvent('plugin.push_notification', {
+    uid: 'double-auth-' + Math.random(),
+    title: rcmail.gettext('mel_metapage.double_authentication_notification'),
+    content: rcmail.gettext('mel_metapage.double_authentication_notification'),
+    category: 'double_auth',
+    action: [
+      {
+        title: "Cliquez ici pour ouvrir les options",
+        text: "Options",
+        command: "open_double_auth",
+      }
+    ],
+    created: Math.floor(Date.now() / 1000),
+    modified: Math.floor(Date.now() / 1000),
+    isread: false,
+    local: true,
+  });
+
+  dam.closeDialog(dialog);
+}
+
+const bnum_connector = BnumConnector.connect;
+BnumConnector.connect = async function (...args) {
+  double_auth_modal.Instance.disable_buttons();
+  const data = await bnum_connector.call(BnumConnector, ...args);
+  double_auth_modal.Instance.enable_buttons();
+
+  return data;
+};
+
 class double_auth_modal extends module_bnum {
 
   constructor () {
@@ -12,12 +57,25 @@ class double_auth_modal extends module_bnum {
 
   main() {
     super.main();
+    double_auth_modal.Instance = this;
   }
 
   exec() {
     if (rcmail.env.double_authentification_forcee) {
       this.intro_modal();
     }
+    return this;
+  }
+
+  disable_buttons(){
+    $('.ui-dialog button').addClass('disabled').attr('disabled', 'disabled');
+    $('.ui-dialog input').addClass('disabled').attr('disabled', 'disabled');
+    return this;
+  }
+
+  enable_buttons(){
+    $('.ui-dialog button').removeClass('disabled').removeAttr('disabled', 'disabled');
+    $('.ui-dialog input').removeClass('disabled').removeAttr('disabled', 'disabled');
     return this;
   }
 
@@ -57,35 +115,10 @@ class double_auth_modal extends module_bnum {
         .end()
         .row()
           .div({ class: "custom-tooltipbuttons" })
-              .button({ id: "modal-custom-button next-button", class:"next-button", 
-                onclick:function () {
-                  self.closeDialog(this);
-                  self.secondary_mail_modal()
-                }})
+            .close_button({action:'secondary_mail_modal'})
               .text(rcmail.gettext('mel_metapage.show_me'))
             .end()
-            .button({ id: "modal-custom-button done-button", class: "done-button ml-3", 
-                  onclick:function () {
-                    top.rcmail.triggerEvent('plugin.push_notification', {
-                      uid: 'double-auth-' + Math.random(),
-                      title: rcmail.gettext('mel_metapage.double_authentication_notification'),
-                      content: rcmail.gettext('mel_metapage.double_authentication_notification'),
-                      category: 'double_auth',
-                      action: [
-                        {
-                          title: "Cliquez ici pour ouvrir les options",
-                          text: "Options",
-                          command: "open_double_auth",
-                        }
-                      ],
-                      created: Math.floor(Date.now() / 1000),
-                      modified: Math.floor(Date.now() / 1000),
-                      isread: false,
-                      local: true,
-                    });
-                    self.closeDialog(this);
-                  } 
-                })
+            .button({ id: "modal-custom-button done-button", class: "done-button ml-3", onclick:function () {later_button(self, this);} })
               .text(rcmail.gettext('mel_metapage.later'))
             .end('button')
           .end('div')
@@ -121,12 +154,7 @@ class double_auth_modal extends module_bnum {
         .end()
       .end()
       .row({ class: "custom-tooltipbuttons justify-content-between" })
-        .button({ id: "modal-custom-button done-button", class: "done-button",
-          onclick:function () {
-            self.closeDialog(this);
-            self.intro_modal();
-          }
-        })
+        .close_button({action:'intro_modal'})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
         .button({ id: "modal-custom-button next-button", class: "next-button",
@@ -185,7 +213,6 @@ class double_auth_modal extends module_bnum {
           .end()
           .row({ class: "justify-content-center" })
             .input({ type: "text", id: "code", class: "form control code-input text-center", placeholder: "0 0 0 0 0 0" })
-
           .end()
           .row({ class: "justify-content-center" })
             .span({ id: "error", class: "text-danger", style: "display:none" })
@@ -194,12 +221,7 @@ class double_auth_modal extends module_bnum {
         .end()
       .end()
       .row({ class: "custom-tooltipbuttons justify-content-between" })
-        .button({ id: "modal-custom-button done-button", class: "done-button",
-          onclick:function () {
-            self.closeDialog(this);
-            self.secondary_mail_modal();
-          }
-        })
+        .close_button({action:'secondary_mail_modal'})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
         .button({ id: "modal-custom-button next-button", class: "next-button",
@@ -303,12 +325,7 @@ class double_auth_modal extends module_bnum {
         .end()
       .end()
       .row({ class: "custom-tooltipbuttons justify-content-between" })
-        .button({ id: "modal-custom-button done-button", class: "done-button",
-          onclick:function () {
-            self.closeDialog(this);
-            self.verification_mail_modal();
-          }
-        })
+        .close_button({action:'verification_mail_modal'})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
         .button({ id: "modal-custom-button next-button", class: "next-button",

@@ -140,13 +140,15 @@ class ServiceWebFranceTransfert {
 
     // Parcours des pièces jointes pour les lister
     if (is_array($COMPOSE['attachments'])) {
-      foreach ($COMPOSE['attachments'] as $id => $a_prop) {
+      $attaches = class_exists('mel_france_transfert') ? mel_france_transfert::ignore_double_attachments($COMPOSE['attachments']) : $COMPOSE['attachments'];
+      foreach ($attaches as $id => $a_prop) {
         $fichiers[] = [
           "idFichier"     => $id,
           "nomFichier"    => $a_prop['name'],
           "tailleFichier" => $a_prop['size'],
         ];
       }
+      unset($attaches);
     }
 
     // Paramètres de la requête

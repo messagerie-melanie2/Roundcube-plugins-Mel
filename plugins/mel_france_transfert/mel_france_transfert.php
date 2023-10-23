@@ -184,6 +184,19 @@ class mel_france_transfert extends rcube_plugin {
     return $args;
   }
 
+  public static function ignore_double_attachments($attaches) {
+    $names = [];
+
+    foreach ($attaches as $id => $a_prop) {
+      if (!in_array($a_prop[$id]['name'], $names)) {
+        $names[] = $a_prop[$id]['name'];
+        yield $id => $a_prop;
+      }
+    }
+
+    $names = null;
+  }
+
   /**
    * Fonction permettant de tester si le service France Transfert doit être appelé au moment de l'envoi
    * Appelé en Ajax
@@ -203,7 +216,7 @@ class mel_france_transfert extends rcube_plugin {
 
     // Parcours des pièces jointes pour calculer la taille
     if (is_array($COMPOSE['attachments'])) {
-      foreach ($COMPOSE['attachments'] as $id => $a_prop) {
+      foreach (self::ignore_double_attachments($COMPOSE['attachments']) as $id => $a_prop) {
         $size += $COMPOSE['attachments'][$id]['size'];
       }
     }
@@ -280,7 +293,7 @@ class mel_france_transfert extends rcube_plugin {
 
       // Parcours des pièces jointes pour les lister
       if (is_array($COMPOSE['attachments'])) {
-        foreach ($COMPOSE['attachments'] as $id => $a_prop) {
+        foreach (self::ignore_double_attachments($COMPOSE['attachments']) as $id => $a_prop) {
           if (!$this->ws->sendFile($COMPOSE_ID, $from, $id, $a_prop['path'], $a_prop['name'])) {
             $success = false;
             break;

@@ -145,6 +145,12 @@ class mel_logs extends rcube_plugin
 		$method = isset($_SESSION['auth_type']) ? $_SESSION['auth_type'] : "password";
 		$eidas = $_SESSION['eidas'];
 	    $this->log(self::INFO, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.") - $eidas");
+
+		// MANTIS 0007937: Logguer les connexions d'une BALP en directe
+		if (!driver_mel::gi()->getUser()->is_individuelle && !driver_mel::gi()->getUser()->is_applicative) {
+			$this->log(self::INFO, "[login] Connexion directe BALP <".rcmail::get_instance()->get_user_name()."> [" . driver_mel::gi()->getUser()->type . "]");
+		}
+
 	    return $args;
 	}
 	/**

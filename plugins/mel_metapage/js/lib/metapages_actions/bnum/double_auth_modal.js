@@ -109,7 +109,7 @@ class double_auth_modal extends module_bnum {
           .end()
           .col_4()
             .p()
-              .img({ src: "plugins/mel_metapage/skins/elastic/images/double_authentication.webp", width: "150px" })
+              .img({ src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/double_authentication.webp`, width: "150px" })
             .end()
           .end()
         .end()

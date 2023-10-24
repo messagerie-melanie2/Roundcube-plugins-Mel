@@ -543,38 +543,104 @@ RotomecaHtml.add_action = function(id, action, callback) {
     RotomecaHtml.actions[id] = {action, callback};
 }
 
-/**
- * Fonctions utiles pour écrire du html en javascript.
- * @type {{start:RotomecaHtml, create_alias:function, extend:function}} 
- * 
- */
-const JsHtml = {};
-Object.defineProperties(JsHtml, {
-    start: {
-        get() {
-            return RotomecaHtml.start();
-        },
-        configurable: false,
-        enumerable: false,
-    },
-    create_alias: {
-        get() {
-            return RotomecaHtml.create_alias;
-        },
-        configurable: false,
-        enumerable: false,
-    },
-    extend:{
-        value: function (name, callback) {
-            RotomecaHtml.prototype[name] = callback;
-        }
-    },
-    update:{
-        value: function (name, callback) {
-            const old = RotomecaHtml.prototype[name];
-            RotomecaHtml.prototype[name] = function (...args) {
-                return callback(this, old, ...args);
+class ____js_html___ {
+    constructor() {
+        /**
+         * Commence un texte html en javascript
+         * @type {RotomecaHtml}
+         */
+        this.start = null;
+        Object.defineProperties(this, {
+            start: {
+                get() {
+                    return RotomecaHtml.start();
+                },
+                configurable: false,
+                enumerable: false,
             }
+        });
+    }
+
+    /**
+     * Permet d'ajouter des nouvelles balises à l'écriture js html
+     * @param {string} alias Nom de la fonction 
+     * @param {Object} param1
+     * @param {boolean} param1.online Si la balise doit être sur une ligne
+     * @param {function} param1.before_callback Fonction qui sera appelé avant la création de la balise
+     * @param {function} param1.generate_callback Fonction qui sera appelé pour la création de la balise
+     * @param {function} param1.after_callback Fonction qui sera appelé après la création de la balise
+     * @param {string} param1.tag Nom de la balise
+     * @returns 
+     */
+    create_alias(alias, {
+        online = false,
+        before_callback = null,
+        generate_callback = null,
+        after_callback = null,
+        tag = 'div'
+    }) {
+        return RotomecaHtml.create_alias(alias, {
+            online, 
+            before_callback,
+            generate_callback,
+            after_callback,
+            tag
+        });
+    }
+
+    /**
+     * Permet d'ajouter des nouvelles fonctions à l'écriture js html
+     * @param {string} name Nom de la fonction 
+     * @param {function} callback Fonction qui sera appelé 
+     */
+    extend(name, callback) {
+        RotomecaHtml.prototype[name] = callback;
+    }
+
+    /**
+     * Permet de maj une fonction de l'écriture js html
+     * @param {string} name Nom de la fonction à override 
+     * @param {function} callback Nouvelle fonction arg1 => this, arg2 => ancienne fonction, arg3 => arguments de la fonction
+     */
+    update(name, callback) {
+        const old = RotomecaHtml.prototype[name];
+        RotomecaHtml.prototype[name] = function (...args) {
+            return callback(this, old, ...args);
         }
     }
-});
+
+    /**
+     * Ecrit une page en js html
+     * @param {function} callback Function qui contient le js html.
+     * @param  {...any} args Arguments de la fonction `callback`
+     * @returns {RotomecaHtml}
+     */
+    write(callback, ...args) {
+        return callback(this.start, ...args);
+    }
+
+    /**
+     * Charge une page js html en fonction de la skin
+     * @async
+     * @param {string} name Nom du fichier 
+     * @param {string} plugin Nom du plugin qui contient le fichier 
+     * @param {string} skin Nom de la skin
+     * @returns {Promise<null | RotomecaHtml>}
+     */
+    async load_page(name, plugin = 'mel_metapage', skin = (window?.rcmail?.env?.skin ?? '')) {
+        const load = top?.loadJsModule ?? parent?.loadJsModule ?? window?.loadJsModule;
+        const returned = await load(plugin, name, `/skins/js_templates/${skin}/`);
+        const keys = Object.keys(returned);
+        const len = keys.length;
+
+        if (len > 0) {
+            for (let index = 0; index < len; ++index) {
+                return returned[keys[index]];                
+            }
+        }
+
+        return null;
+    }
+}
+
+const JsHtml = new ____js_html___();

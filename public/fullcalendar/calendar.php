@@ -33,6 +33,15 @@ if (!$data['user']) {
 
 $user_prefs = $data['user']->getCalendarPreference("appointment_properties");
 
+// Génération du Calendar Mél
+$calendar = new LibMelanie\Api\Mel\Calendar();
+$calendar->id = $data['calendar_name'];
+if ($calendar->load()) {
+  $user_prefs = json_decode($user_prefs, true);
+  $user_prefs['calendar_name'] = $calendar->name;
+  $user_prefs = json_encode($user_prefs);
+}
+
 header('Content-Type: application/json; charset=utf-8');
 header("Expires: ".gmdate("D, d M Y H:i:s")." GMT");
 header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");

@@ -1,7 +1,7 @@
 let url = new URL(window.location.href);
 let params = url.searchParams;
 let appointment_duration = 0;
-let owner_name = window.atob(params.get('_name'));
+let owner_name = params.get('_name') ? window.atob(params.get('_name')) : '';
 let response = null;
 let calendar = null;
 let current_datetimepicker_month = null;
@@ -23,6 +23,7 @@ function display_calendar_name() {
   document.title = 'Calendrier de ' + owner_name;
   if (owner_name.includes('-')) {
     owner_name = owner_name.split('-')
+    
     document.getElementById('owner_calendar').textContent = owner_name[0];
     document.getElementById('owner_role').textContent = owner_name[1];
   }
@@ -44,6 +45,12 @@ function run() {
         $('#error_message').show();
         $('#show-calendar').hide();
         return;
+      }
+
+      // Nom du calendrier
+      if (response.calendar_name) {
+        owner_name = response.calendar_name;
+        display_calendar_name();
       }
 
       get_disabled_days(response);

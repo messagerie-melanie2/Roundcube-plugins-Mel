@@ -3460,10 +3460,10 @@ function rcube_calendar_ui(settings) {
           $('#button_fullcalendarurl', dialog).hide();
           $("#checkpublicfeedurl", dialog).prop("checked", false);
         }
-        $('#ppublicfeedurl').show();
+        $('#ppublicfeedurl', dialog).parent().parent().show();
       }
       else {
-        $('#ppublicfeedurl').hide();
+        $('#ppublicfeedurl', dialog).parent().parent().hide();
       }
 
       rcmail.simple_dialog(dialog, rcmail.gettext('showurl', 'calendar'), null, {

@@ -2912,6 +2912,13 @@ class mel_driver extends calendar_driver {
    */
   public function add_calendar_public_key($calendar, $key) {
     $calendar = driver_mel::gi()->rcToMceId($calendar);
+
+    $cal = driver_mel::gi()->calendar();
+    $cal->id = $calendar;
+    if (!$cal->load() || $cal->owner != driver_mel::gi()->getUser()->uid) {
+      return false;
+    }
+
     // On récupère la clé avec la valeur des paramètres utilisateurs
     $value = driver_mel::gi()->getUser()->getCalendarPreference("calendarskeyhash");
 
@@ -2972,6 +2979,13 @@ class mel_driver extends calendar_driver {
    */
   public function add_appointment_public_key($calendar, $key) {
     $calendar = driver_mel::gi()->rcToMceId($calendar);
+
+    $cal = driver_mel::gi()->calendar();
+    $cal->id = $calendar;
+    if (!$cal->load() || $cal->owner != driver_mel::gi()->getUser()->uid) {
+      return false;
+    }
+    
     // On récupère la clé avec la valeur des paramètres utilisateurs
     $value = driver_mel::gi()->getUser()->getCalendarPreference("appointmentkeyhash");
 

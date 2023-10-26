@@ -17,8 +17,8 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
-class mel_doubleauth extends rcube_plugin {
+include_once __DIR__.'/../mel_metapage/bnum_plugin.php';
+class mel_doubleauth extends bnum_plugin {
     /**
      *
      * @var rcmail
@@ -78,6 +78,9 @@ class mel_doubleauth extends rcube_plugin {
             $this->register_action('plugin.mel.doubleauth.send_otp', array($this, 'send_otp'));
             $this->register_action('plugin.mel.doubleauth.verify_code', array($this, 'verify_code'));
         }
+        else if ($this->rc->task === 'login') {
+            $this->register_action('plugin.da.try_connect', array($this, 'otp_forgotten_connect'));
+        }
 
         $this->include_script('mel_doubleauth.js');
         $this->include_script('qrcode.min.js');
@@ -104,14 +107,14 @@ class mel_doubleauth extends rcube_plugin {
     public function login_after($args)
     {
         //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_login_after");
-        if ($this->is_auth_strong()) {
-            return $args;
-        }
+        if (false && $this->is_auth_strong()) return $args;
         
         $_SESSION['mel_doubleauth_login'] = time();
         
         $config_2FA = $this->__get2FAconfig();
         
+        if (!$this->login_after_check_deadline($config_2FA)) return $args;
+
         $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
 
         if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
@@ -166,13 +169,41 @@ class mel_doubleauth extends rcube_plugin {
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         
         $this->add_texts('localization', true);
+        $this->setup_module();
         $this->include_script('mel_doubleauth_form.js');
 
+
+        $this->rc->output->set_env('double_authentification_adresse_recuperation', driver_mel::gi()->getUser()->double_authentification_adresse_recuperation);
        $this->rc->output->set_env("_url", $url);
         
         $this->rc->output->send('login');
     }
 
+    private function login_after_check_deadline($config_2FA, $user = null){
+        $return = true;
+
+        $user = $user ?? driver_mel::gi()->getUser();
+        if ($user) {
+            $user->load(['double_authentification_forcee', 'double_authentification_date_butoir', 'double_authentification_date_grace']);
+            $deadline = $user->double_authentification_date_grace;
+
+            if (!$deadline || $deadline < $user->double_authentification_date_butoir) $deadline = $user->double_authentification_date_butoir;
+
+            if ($user->double_authentification_forcee && 
+                !$config_2FA['activate'] && 
+                (!$deadline || new DateTime() > $deadline)) {
+                $this->__exitSession($this->gettext('logout_2fa_needed_not_secure'));
+                $return = false;
+            }
+        }
+        else {
+            $this->__exitSession($this->gettext('logout_2fa_needed_unknown'));
+            $return = false;
+        }
+
+
+        return $return;
+    }
 
     /**
      * Hook logout_after
@@ -305,6 +336,7 @@ class mel_doubleauth extends rcube_plugin {
         $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30*60));
         
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
+        //$this->load_js_page('resend');
         $this->rc->output->send('plugin');
     }
     
@@ -540,7 +572,6 @@ class mel_doubleauth extends rcube_plugin {
     public function send_otp() {
         $this->require_plugin('mel_helper');
         mel_helper::include_mail_body();
-
         $otp = rand(100000, 999999) + '';
         $expire = $this->rc->config->get('code_expiration', 30*60);
         $cid = 'bnumlogo';
@@ -561,15 +592,15 @@ class mel_doubleauth extends rcube_plugin {
         $message = $bodymail->body();
 
         $is_html = true;
-        $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html, [['path' => __DIR__.'/skins/elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+        $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
         
-        echo json_encode($sent);
+        echo json_encode(isset($mail) ? $sent : -1);
         exit;
     }
 
-    public function verify_code() {
+    public function verify_code($echo = true) {
         $return = 0;
-        $token = rcube_utils::get_input_value('_token', rcube_utils::INPUT_POST) + '';
+        $token = rcube_utils::get_input_value('_token', rcube_utils::INPUT_GP) + '';
 
         if (driver_mel::gi()->getUser()->token_otp_expire > time()) {
             if ($token === driver_mel::gi()->getUser()->token_otp) {
@@ -579,8 +610,34 @@ class mel_doubleauth extends rcube_plugin {
         }
         else $return = -1;
 
-        echo $return;
-        exit;
+        if ($echo){
+            echo $return;
+            exit;
+        }
+        else {
+            return $return;
+        }
+
+    }
+
+    public function otp_forgotten_connect() {
+        $send_to_page = false;
+        $code = $this->verify_code($send_to_page);
+
+        switch ($code) {
+            case 1:
+                $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth', ['_force_bnum' => 1]);
+                break;
+            case 0:
+                $this->__exitSession('Le code n\'est pas bon !');
+                break;
+            case -1:
+                $this->__exitSession('Le code a expiré !');
+                break;
+            default:
+                $this->__exitSession('Une erreur est survenue....');
+                break;
+        }
     }
 
     //------------- static methods

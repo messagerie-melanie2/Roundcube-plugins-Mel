@@ -15,6 +15,23 @@ abstract class bnum_plugin extends rcube_plugin
         $this->api->output->add_script("runModule($args)", 'docready');
     }
 
+    protected function load_js_page($name) {
+        $this->setup_module();
+
+        $this->api->output->add_script("
+        if (!rcmail.env.page) rcmail.env.page = {};
+        (async () => {
+            if (!MelHtml) var {MelHtml} = await loadJsModule('mel_metapage', 'MelHtml.js', '/js/lib/html/JsHtml/');
+            const {page} = await MelHtml.load_page('$name', '$this->ID');
+
+            rcmail.env.page['$name'] = page;
+        })();
+
+        ", 'docready');
+
+        return $this;
+    }
+
     protected function setup_module() {
         if (!self::$module_loaded) {
             $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js');

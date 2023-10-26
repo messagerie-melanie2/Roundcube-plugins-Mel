@@ -1,5 +1,5 @@
 (() => {
-    const VERSION = 'X.X.X';
+    const VERSION = 'X.X.X.14';
     const BASE_PATH = '/js/lib/';
     const UNLOAD_TIME_MS = 60 * 5 * 1000;
 
@@ -106,11 +106,22 @@
         return null;
     }
 
+    async function load_js_page(name, {
+        plugin = 'mel_metapage',
+        skin = (window?.rcmail?.env?.skin ?? '')
+    }) {
+        var {JsHtml} = await loadJsModule('mel_metapage', 'JsHtml.js', '/js/lib/html/JsHtml/');
+
+
+        return await JsHtml.load_page(name, plugin, skin);
+    }
+
     window.loadJsModule = loadJsModule;
     window.unloadModule = unloadModule;
     window.runModule = runModule;
     window.awaitModules = await_modules;
     window.loadAction = loadAction;
+    window.loadJsPage = load_js_page;
     
     Object.defineProperties(window, {
         scriptVersion: {

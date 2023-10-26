@@ -70,6 +70,8 @@ $labels['info_active_ok'] = "La double authentification est activée pour votre 
 $labels['check_code_to_activate'] = 'Pour sauvegarder vous devez valider un code au préalable';
 
 $labels['logout_2fa_needed'] = "La double authentification est obligatoire pour votre compte.";
+$labels['logout_2fa_needed_not_secure'] = "La double authentification est obligatoire pour vous connecter depuis internet !";
+$labels['logout_2fa_needed_unknown'] = "Utilisateur incconnu !";
 
 // Messages used for the different portions of the plugin
 $messages = array();

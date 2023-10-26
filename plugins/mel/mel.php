@@ -899,7 +899,7 @@ class mel extends rcube_plugin
           'value' => $this->rc->gettext('login')
         ), $this->rc->gettext('login')));
         if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
-          $args['content'] .= html::div(array(), html::a(array(
+          $args['content'] .= html::div(array('id' => 'bali-reset-password'), html::a(array(
             "href" => "./changepassword/index.php"
           ), $this->gettext('no bal')));
         }

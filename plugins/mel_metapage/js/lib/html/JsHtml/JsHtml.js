@@ -1,3 +1,5 @@
+import { BnumEvent } from "../../mel_events.js";
+
 export {JsHtml}
 
 class RotomecaHtml {
@@ -9,7 +11,8 @@ class RotomecaHtml {
     }
 
     addClass(class_to_add) {
-        if (!this.hasClass(class_to_add)) this.attribs.class.push(class_to_add);
+        let navigator = this._updated_balise();
+        if (!navigator.hasClass(class_to_add)) navigator.attribs.class.push(class_to_add);
         return this;
     }
 
@@ -17,9 +20,16 @@ class RotomecaHtml {
         return this._update_class().attribs.class.includes(class_to_verify);
     }
 
+    removeClass(class_to_remove){
+        if (this.hasClass(class_to_remove)) this.attribs.class = this.attribs.class.filter(x => x !== class_to_remove);
+
+        return this;
+    }
+
     css(key_or_attrib, value = '') {
         if (typeof key_or_attrib === 'string') {
-            if (!this._update_css().attribs.style[key_or_attrib]) this.attribs.style[key_or_attrib] = value;
+            let navigator = this._updated_balise();
+            if (!navigator._update_css().attribs.style[key_or_attrib]) navigator.attribs.style[key_or_attrib] = value;
         }
         else {
             for (const key in key_or_attrib) {
@@ -30,6 +40,54 @@ class RotomecaHtml {
             }
         }
 
+        return this;
+    }
+
+    /**
+     * 
+     * @returns {RotomecaHtml}
+     */
+    _updated_balise() {
+        if (this.childs.length > 0) {
+            if (['img', 'input', 'br', 'hr'].includes(this.childs[this.childs.length - 1].balise)) return this.childs[this.childs.length - 1];
+            else if (this.childs[this.childs.length - 1].attribs?.one_line === true) return this.childs[this.childs.length - 1];
+        }
+
+        return this;
+    }
+
+    hasAttr(name) {
+        return !!this.attribs[name]
+    }
+
+    attr(name, value) {
+        if (this._isOn(name)) {
+            this.attribs[name] = this._getOn(name);
+            this.attribs[name].push(value);
+        }
+        else this.attribs[name] = value;
+        return this;
+    }
+
+    _isOn(name) {
+        return name.length > 2 && name[0] === 'o' && name[1] === 'n';
+    }
+
+    _getOn(name) {
+        if (!this.attribs[name]) this.attribs[name] = new BnumEvent();
+        else if (!!this.attribs[name] && !(this.attribs[name] instanceof BnumEvent)) {
+            const old = this.attribs[name];
+            this.attribs[name] = new BnumEvent();
+
+            if (typeof old === 'string') this.attribs[name].push((callback) => eval(callback), old);
+            else this.attribs[name].push(old);
+        };
+        
+        return this.attribs[name];
+    }
+
+    removeAttr(name) {
+        this.attribs[name] = undefined;
         return this;
     }
 
@@ -288,7 +346,7 @@ class RotomecaHtml {
     }
 
     tr(attribs = {}) {
-        return this.tag('th', attribs);
+        return this.tag('tr', attribs);
     }
 
     tfoot(attribs = {}) {
@@ -339,6 +397,14 @@ class RotomecaHtml {
         return this._generate({joli_html});
     }
 
+    /**
+     * 
+     * @param {*} balise 
+     * @param {*} parent 
+     * @param {*} attribs 
+     * @param {*} isend 
+     * @returns {RotomecaHtml}
+     */
     _create(balise, parent, attribs, isend) {
         this.childs.push(new this.constructor(balise, parent, attribs));
          
@@ -361,6 +427,10 @@ class RotomecaHtml {
     _update_css() {
         if (!this.attribs) this.attribs = {style:{}};
         else if (!this.attribs.style) this.attribs.style = {};
+        else if (!!this.attribs.style && typeof this.attribs.style === 'string') {
+            const [key, value] = this.attribs.style.split(':');
+            this.attribs.style = {[key]:value};
+        }
 
         return this;
     }
@@ -388,14 +458,22 @@ class RotomecaHtml {
 
                 let id;
                 let $item;
-                for (const iterator of html.find("[data-on-id!=''][data-on-id]")) {
+                const $nodes = [html, ...html.find("[data-on-id!=''][data-on-id]")];
+                for (const iterator of $nodes) {
                     $item = $(iterator);
                     id = $item.attr('data-on-id');
 
-                    $item.on(RotomecaHtml.actions[id].action.replace('on', ''), RotomecaHtml.actions[id].callback);
+                    if (!!id) {
+                        for (const key in RotomecaHtml.actions[id]) {
+                            if (Object.hasOwnProperty.call(RotomecaHtml.actions[id], key)) {
+                                const element = RotomecaHtml.actions[id][key];
+                                $item.on(key.replace('on', ''), (element instanceof BnumEvent ? element.call.bind(element) : element));
+                            }
+                        }
+                        RotomecaHtml.remove_id(id);
+                        id = null;
+                    }
 
-                    RotomecaHtml.remove_id(id);
-                    id = null;
                     $item = null;
                 }
 
@@ -422,8 +500,10 @@ class RotomecaHtml {
                 for (const key in this.attribs) {
                     if (Object.hasOwnProperty.call(this.attribs, key)) {
                         const element = this.attribs[key];
+
+                        if (element === undefined || element === null) continue;
                         
-                        if (!key.includes('on') || (key.includes('on') && typeof element !== 'function')) {
+                        if (!this._isOn(key) || (this._isOn(key) && typeof element !== 'function' && !(element instanceof BnumEvent))) {
                             
                             switch (key) {
                                 case 'raw-content':
@@ -443,21 +523,39 @@ class RotomecaHtml {
                                         current_class = null;
                                         break;
                                     }
+
+                                case 'style':
+                                    if (typeof element === 'object') {
+                                        var current_class = [];
+
+                                        for (const key in element) {
+                                            if (Object.hasOwnProperty.call(element, key)) {
+                                                if (typeof element[key] === 'function') current_class.push(`${key}:${element[key](this)}`);
+                                                else current_class.push(`${key}:${element[key]}`);
+                                            }
+                                        }
+
+                                        balise.push(`${key}="${current_class.join(';')}"`);
+                                        current_class.length = 0;
+                                        current_class = null;
+                                        break;
+                                    }
                             
                                 default:
                                     balise.push(`${key}="${(typeof element === 'function' ? element(this) : element)}"`);
                                     break;
                             }
                         }
-                        else if (key.includes('on')) {
-                            var id = RotomecaHtml.generate_ids();
+                        else if (this._isOn(key)) {
+                            var id = id || RotomecaHtml.generate_ids();
                             balise.push(`data-on-id="${id}"`);
-                            RotomecaHtml.add_action(id, key, element);
-                            id = null;
+                            RotomecaHtml.add_action(id, key, this._getOn(key));
                         }
                     }
                 }
             }
+
+            id = null;
 
             balise.push(`${(true === this.attribs?.one_line ? '/' : '')}>`);
 
@@ -484,6 +582,10 @@ class RotomecaHtml {
         }
 
         return blanks.join('');
+    }
+
+    toString() {
+        return this.generate_html({joli_html:true});
     }
 
     static start() {
@@ -540,7 +642,11 @@ RotomecaHtml.remove_id = function (id) {
     RotomecaHtml.actions[id] = null;
 }
 RotomecaHtml.add_action = function(id, action, callback) {
-    RotomecaHtml.actions[id] = {action, callback};
+    if (!RotomecaHtml.actions[id]) RotomecaHtml.actions[id] = {}
+
+    if (!RotomecaHtml.actions[id][action]) RotomecaHtml.actions[id][action] = new BnumEvent();
+
+    RotomecaHtml.actions[id][action] = callback;
 }
 
 class ____js_html___ {
@@ -629,7 +735,7 @@ class ____js_html___ {
      */
     async load_page(name, plugin = 'mel_metapage', skin = (window?.rcmail?.env?.skin ?? '')) {
         const load = top?.loadJsModule ?? parent?.loadJsModule ?? window?.loadJsModule;
-        const returned = await load(plugin, name, `/skins/js_templates/${skin}/`);
+        const returned = await load(plugin, name, `/skins/${skin}/js_templates/`);
         const keys = Object.keys(returned);
         const len = keys.length;
 

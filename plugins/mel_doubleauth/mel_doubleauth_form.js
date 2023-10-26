@@ -1,7 +1,7 @@
 if (window.rcmail) {
 	rcmail.addEventListener(
 		'init',
-		function() {
+		async function() {
 			if (rcmail.env.ismobile) {
 				// remove the user/password/... input from login
 				$('form > div#formlogintable > div').each(function() {
@@ -42,18 +42,21 @@ if (window.rcmail) {
 
 				if (!!rcmail.env._url) $('input[name=_url]').attr('value', rcmail.env._url).val(rcmail.env._url);
 
-				var text = '';
-				text += '<tr>';
-				text += '<td colspan="2" align="center">'
-						+ rcmail.gettext(
-								'two_step_verification_form',
-								'mel_doubleauth') + '</td>';
-				text += '<tr/><tr>';
-				text += '<td colspan="2" align="center"><input name="_code_2FA" id="2FA_code" style="width:150px; " size="10" autocapitalize="off" autocomplete="off" type="text" maxlength="10"></td>';
-				text += '</tr>';
+				// var text = '';
+				// text += '<tr>';
+				// text += '<td colspan="2" align="center">'
+				// 		+ rcmail.gettext(
+				// 				'two_step_verification_form',
+				// 				'mel_doubleauth') + '</td>';
+				// text += '<tr/><tr>';
+				// text += '<td colspan="2" align="center"><input name="_code_2FA" id="2FA_code" style="width:150px; " size="10" autocapitalize="off" autocomplete="off" type="text" maxlength="10"></td>';
+				// text += '</tr>';
+				const page = (await loadJsPage('da', {plugin:'mel_doubleauth'}));
+				const text = page.js_html.generate_html({});
 
 				// create textbox
 				$('form > table > tbody:last').append(text);
+				$('#bali-reset-password').html(page.button_code_forgotten().generate());
 
 				// focus
 				$('#2FA_code').focus();

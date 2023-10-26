@@ -64,6 +64,11 @@ class BnumConnector {
     }
 }
 
+/**
+ * @type {Connectors}
+ */
+BnumConnector.connectors = null;
+
 Object.defineProperties(BnumConnector, {
     connectors: {
         get: function() {

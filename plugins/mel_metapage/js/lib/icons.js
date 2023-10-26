@@ -51,4 +51,6 @@ class MaterialIcon extends BaseIcon {
     }
 }
 
+MaterialIcon.html_class = MATERIAL_ICON_CLASS;
+
 const MainIcon = MaterialIcon;

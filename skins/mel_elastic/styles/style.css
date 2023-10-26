@@ -4024,3 +4024,6 @@ html.dark-mode-custom .double-auth-modal .input-group-code .input-group-append:h
 .ui-dialog .ui-dialog-content {
   margin-bottom: 10px;
 }
+.cursor-help {
+  cursor: help;
+}

@@ -216,6 +216,7 @@ class mel_doubleauth extends bnum_plugin {
 
         if (isset($message)) {
             $this->rc->output->show_message($message);
+            $this->rc->output->set_env('da_logout_message', $message);
         }
 
         return $args;

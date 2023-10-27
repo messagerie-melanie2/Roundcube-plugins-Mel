@@ -7,15 +7,22 @@ export { double_auth_modal };
 MelHtml.create_alias('close_button', {
   after_callback(html) {
     html.addClass('done-button');
-    html.attribs.id = 'modal-custom-button done-button';
-    html.attribs.onclick = function() {close_modal(double_auth_modal.Instance, this, html.attribs.action);}
+    html.attribs.id = 'modal-custom-button';
+ 
+    if (html.attribs['data-is-start'] === true && html.attribs.action === 'intro_modal') html.attribs.action = null;
+
+    html.attribs.onclick = function() {
+      close_modal(double_auth_modal.Instance, $('#modal-custom-button')[0], html.attribs.action);
+    }
   },
   tag: 'button'
 });
 
 function close_modal(dam, dialog, action) {
   dam.closeDialog(dialog);
-  dam[action]();
+
+  if (!!action) dam[action]();
+  else this.rcmail().triggerEvent('da.modal.close', dam);
 }
 
 function later_button(dam, dialog){
@@ -57,6 +64,7 @@ class double_auth_modal extends module_bnum {
 
   main() {
     super.main();
+    this.nb_max_states = 4;
     double_auth_modal.Instance = this;
   }
 
@@ -84,7 +92,7 @@ class double_auth_modal extends module_bnum {
 
     const mois = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
-    const date = moment(rcmail.env.double_authentification_date_butoir.date)
+    const date = moment(rcmail.env.double_authentification_date_butoir?.date ?? moment().add('y', 1))
     let displayDate = mois[date.format('M') - 1] + ' ' + date.format('YYYY');
 
     const html = MelHtml.start
@@ -118,7 +126,7 @@ class double_auth_modal extends module_bnum {
             .close_button({action:'secondary_mail_modal'})
               .text(rcmail.gettext('mel_metapage.show_me'))
             .end()
-            .button({ id: "modal-custom-button done-button", class: "done-button ml-3", onclick:function () {later_button(self, this);} })
+            .button({ id: "modal-custom-button", class: "done-button ml-3", onclick:function () {later_button(self, $('#modal-custom-button')[0]);} })
               .text(rcmail.gettext('mel_metapage.later'))
             .end('button')
           .end('div')
@@ -126,10 +134,10 @@ class double_auth_modal extends module_bnum {
       .end('div')
     .generate();
 
-    rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 210 })
+    rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 210});
   }
 
-  secondary_mail_modal() {
+  secondary_mail_modal(isStart = false) {
     const self = this;
 
     const html = MelHtml.start
@@ -154,10 +162,10 @@ class double_auth_modal extends module_bnum {
         .end()
       .end()
       .row({ class: "custom-tooltipbuttons justify-content-between" })
-        .close_button({action:'intro_modal'})
+        .close_button({action:'intro_modal', 'data-is-start':isStart})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
-        .button({ id: "modal-custom-button next-button", class: "next-button",
+        .button({ id: "modal-custom-button", class: "next-button",
           onclick:async function () {
             const email = $('#email').val();
             if (self.isValidEmail(email)) {
@@ -172,7 +180,7 @@ class double_auth_modal extends module_bnum {
                   console.log(data);
                   self.displayTextError('#email-error', rcmail.gettext('mel_metapage.send_email_error'), 100000)
                 } else {
-                  self.closeDialog(this);
+                  self.closeDialog($('#modal-custom-button')[0]);
                   self.verification_mail_modal();
                 }
               } catch (error) {
@@ -192,6 +200,10 @@ class double_auth_modal extends module_bnum {
   rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 210 });
 
   this.createProgressPoint(1)
+
+    $('.ui-dialog button.ui-dialog-titlebar-close').click(() => {
+      this.rcmail().triggerEvent('da.modal.close', this);
+    });
   }
 
   verification_mail_modal() {
@@ -224,7 +236,7 @@ class double_auth_modal extends module_bnum {
         .close_button({action:'secondary_mail_modal'})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
-        .button({ id: "modal-custom-button next-button", class: "next-button",
+        .button({ id: "modal-custom-button", class: "next-button",
           onclick:async function () {
             try {
               const data = await BnumConnector.connect(BnumConnector.connectors.settings_da_set_token_otp, {
@@ -245,8 +257,11 @@ class double_auth_modal extends module_bnum {
                     self.displayTextError('#error', rcmail.gettext('mel_metapage.wrong_code'))
                     break;
                   case 1:
-                    self.closeDialog(this);
-                    self.application_modal();
+                    self.closeDialog($('#modal-custom-button')[0]);
+
+                    const plugin = rcmail.triggerEvent('da.mail_changed.after', {break:false, modal:self})
+
+                    if (!(plugin?.break ?? false)) self.application_modal();
                     break;
                   default:
                     self.displayTextError('#error', rcmail.gettext('mel_metapage.error'))
@@ -267,6 +282,10 @@ class double_auth_modal extends module_bnum {
     rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 200 })
 
     this.createProgressPoint(2)
+
+    $('.ui-dialog button.ui-dialog-titlebar-close').click(() => {
+      this.rcmail().triggerEvent('da.modal.close', this);
+    });
   }
 
   application_modal() {
@@ -328,10 +347,10 @@ class double_auth_modal extends module_bnum {
         .close_button({action:'verification_mail_modal'})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
-        .button({ id: "modal-custom-button next-button", class: "next-button",
+        .button({ id: "modal-custom-button", class: "next-button",
           onclick:function () {
             rcmail.env.continueWithUser = true;
-            self.closeDialog(this);
+            self.closeDialog($('#modal-custom-button')[0]);
             self.verification_application_modal();
           }
         })
@@ -340,7 +359,7 @@ class double_auth_modal extends module_bnum {
       .end('row')
     .end('div')
     .generate();
-
+debugger;
     if (!rcmail.env.userSecret) {
       mel_metapage.Functions.post(
         mel_metapage.Functions.url('mel_metapage', 'plugin.mel_doubleauth-adduser'),
@@ -408,18 +427,18 @@ class double_auth_modal extends module_bnum {
         .end()
       .end()
       .row({ class: "custom-tooltipbuttons justify-content-between mt-4" })
-        .button({ id: "modal-custom-button done-button", class: "done-button",
+        .button({ id: "modal-custom-button", class: "done-button",
           onclick:function () {
             rcmail.env.continueWithUser = true;
-            self.closeDialog(this);
+            self.closeDialog($('#modal-custom-button')[0]);
             self.application_modal();
           }
         })
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
-        .button({ id: "modal-custom-button next-button", class: "next-button",
+        .button({ id: "modal-custom-button", class: "next-button",
           onclick:function () {
-            let dialog = this;
+            let dialog = $('#modal-custom-button')[0];
 
             if($('#code_to_check').val().length === 0) { 
               self.displayTextError('#error', rcmail.gettext('mel_metapage.enter_code')); 
@@ -477,9 +496,10 @@ class double_auth_modal extends module_bnum {
         .end()
       .end()
       .row({ class: "custom-tooltipbuttons justify-content-center" })
-        .button({ id: "modal-custom-button next-button", class: "next-button",
+        .button({ id: "modal-custom-button", class: "next-button",
           onclick:function () {
-            self.closeDialog(this);
+            rcmail.triggerEvent('da.da_changed.after', {modal:self});
+            self.closeDialog($('#modal-custom-button')[0]);
           }
         })
           .text(rcmail.gettext('mel_metapage.close_double_auth'))
@@ -489,6 +509,10 @@ class double_auth_modal extends module_bnum {
     .generate();
 
     rcmail.show_popup_dialog(html, "", null, { width: 500, resizable: false, height: 280 })
+
+    $('.ui-dialog button.ui-dialog-titlebar-close').click(() => {
+      this.rcmail().triggerEvent('da.da_changed.after', {modal:this});
+    });
   }
 
   closeDialog(dialog) {
@@ -533,7 +557,7 @@ class double_auth_modal extends module_bnum {
   }
 
   createProgressPoint(numActivePoints) {
-    if (numActivePoints < 0 || numActivePoints > 4) {
+    if (numActivePoints < 0 || numActivePoints > this.nb_max_states) {
       console.error("Le paramètre doit être compris entre 0 et 4.");
       return;
     }
@@ -541,7 +565,7 @@ class double_auth_modal extends module_bnum {
     const doubleAuthModalProgress = document.createElement("div");
     doubleAuthModalProgress.className = "double-auth-modal-progress";
   
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < this.nb_max_states; ++i) {
       const progressPoint = document.createElement("div");
       progressPoint.className = "progress-point";
       

@@ -458,6 +458,31 @@ class mel_doubleauth extends bnum_plugin {
 
             $div_container .= rowcol($html_recovery_codes);
             $div_container .= rowcol('<br>');
+
+            if (!!driver_mel::gi()->getUser()->double_authentification_adresse_recuperation && !!driver_mel::gi()->getUser()->double_authentification_adresse_valide) {
+                $div_container .= html::div(['id' => 'mail-group'], 
+                    row(
+                        col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Votre email de récupération : '), 'col-2').
+                        col(html::div(['class' => 'input-group'],
+                        html::tag('input', ['id' => 'mail-da-input', 'style' => 'text-align:center;','class' => 'disabled form-control', 'disabled' => 'disabled', 'value' => driver_mel::gi()->getUser()->double_authentification_adresse_recuperation]).
+                        html::div(['class' => 'input-group-append'],
+                            html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Changer l\'adresse de récupération')
+                        )
+                    ), 'col-4')
+                    )
+                );
+            }
+            else {
+                $div_container .= html::div(['id' => 'mail-group'], 
+                row(
+                    col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Veuillez entrer une adresse de récupération !'), 'col-3').
+                    col(
+                        html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Définir une adresse de récupération !')
+                ))
+            );
+            }
+
+            $div_container .= rowcol('<br>');
             $div_container .= rowcol($this->gettext('info_desactiver'));
 
             $field_id = '2FA_desactivate_button';

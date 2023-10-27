@@ -1,3 +1,4 @@
+import { BnumConnector } from "../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js";
 import { MelHtml } from "../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js";
 
 const RotomecaHtml = MelHtml.start;
@@ -13,13 +14,30 @@ function button_code_forgotten(...args) {
 }
 
 async function update_page() {
-    if ($('#resend-container').length > 0) $('#resend-container').show();
+    const busy = rcmail.set_busy(true, 'loading');
+    $('button').addClass('disabled').attr('disabled', 'disabled');
+    $('a').addClass('disabled').attr('disabled', 'disabled');
+
+    const email_ok = await BnumConnector.connect(BnumConnector.connectors.settings_da_get_email_valid, {});
+
+    if (!!email_ok.datas) {
+        if ($('#resend-container').length > 0) $('#resend-container').show();
+        else {
+            const page = await MelHtml.load_page('resend', 'mel_doubleauth');
+            $('#mel-login-form').append(page.generate());
+        }
+    
+        $('#main-login-card').css('display', 'none');
+    }
     else {
-        const page = await MelHtml.load_page('resend', 'mel_doubleauth');
-        $('#mel-login-form').append(page.generate());
+        const alert_msg = "Votre adresse de récupération n'est pas valide ! Connectez-vous en intranet pour vous connecter et changer votre adresse de récupération.";
+        alert(alert_msg);
+        rcmail.display_message(alert_msg, 'error');
     }
 
-    $('#main-login-card').css('display', 'none');
+    rcmail.set_busy(false, 'loading', busy);
+    $('button').removeClass('disabled').removeAttr('disabled');
+    $('a').removeClass('disabled').removeAttr('disabled');
 }
 
 export const page = MelHtml.write(

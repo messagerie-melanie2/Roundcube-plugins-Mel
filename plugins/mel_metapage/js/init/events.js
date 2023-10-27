@@ -715,6 +715,89 @@ if (rcmail && window.mel_metapage)
             else $('.ct-cm').css('display', 'none');
     });
 
+    rcmail.addEventListener('start-da-modal', async function(args) {
+        const loader =  top.loadJsModule ?? parent.loadJsModule ?? window.loadJsModule;
+
+        const {double_auth_modal} = await loader('mel_metapage', 'double_auth_modal', '/js/lib/metapages_actions/bnum/');
+
+        let da = new double_auth_modal();//.intro_modal();
+        da.nb_max_states = args.do_all ? da.nb_max_states : 2;
+        da.data = args;
+
+        const is_first_step_ignore = true;
+
+        if (args.do_all) {
+            da.data = undefined;
+            da.after_data = args;
+            da.intro_modal();
+        }
+        else da.secondary_mail_modal(is_first_step_ignore);
+    });
+
+    rcmail.addEventListener('da.mail_changed.after', function (args) {
+
+        if (!args.modal.data) return args;
+
+        args.break = true;
+
+        new Promise(async (ok ,nok) => {
+            let {$input, $button} = args.modal.data;
+
+            const busy = rcmail.set_busy(true, 'loading');
+            $button.addClass('disabled').attr('disabled', 'disabled');
+            const BnumConnector = await module_helper_mel.BnumConnector();
+            
+            const email_recup = await BnumConnector.connect(BnumConnector.connectors.settings_da_get_email_recup, {});
+
+            rcmail.set_busy(false, 'loading', busy);
+
+            if ($input.length > 0) {
+                $input.val(email_recup?.datas ?? 'ERROR');
+            }
+            else {
+                rcmail.command('refreshFrame');
+            }
+    
+            $button.removeClass('disabled').removeAttr('disabled');
+
+            args = null;
+
+            if (!!email_recup?.datas) {
+                rcmail.display_message('Adresse changée avec succès !', 'confirmation');
+                ok();
+            }
+            else {
+                console.error('### [DA]', email_recup);
+                rcmail.display_message('Une erreur est survenue !', 'error');
+                nok();
+            }
+        });
+
+        return args;
+    });
+
+    rcmail.addEventListener('da.da_changed.after', async function (args) {
+        let {modal} = args;
+        if (!!modal.after_data) {
+            modal.after_data = null;
+            rcmail.command('refreshFrame');
+            modal = null;
+        }
+    });
+
+    
+    rcmail.addEventListener('da.modal.close', async function (modal) {
+        if (!!modal.data) {
+            const BnumConnector = await module_helper_mel.BnumConnector();
+
+            const obj = await BnumConnector.connect(BnumConnector.connectors.settings_da_get_email_valid, {});
+
+            if (!obj.datas && data.$input.length > 0) {
+                rcmail.command('refreshFrame');
+            }
+        }
+    });
+
     rcmail.addEventListener('responseaftercheck-recent', function(){
           if (!!rcmail.env.list_uid_to_select) 
           {

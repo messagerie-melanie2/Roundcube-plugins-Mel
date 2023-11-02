@@ -335,14 +335,14 @@ html.dark-mode #notificationstack article span.category {
   background-color: rgb(170, 51, 51);
   border-radius: 100%;
   /* border: 1px solid #7c7c85; */
-  top: 10px;
-  left: 25px;
+  top: 14px;
+  left: 22px;
   position: absolute;
   color: #fff;
   font-size: 11px;
   text-align: center;
   line-height: initial;
-  font-family: monospace;
+  font-family: Arial;
 }
 
 

@@ -1,7 +1,7 @@
 import { BnumLog } from "../../classes/bnum_log.js";
 import { EMPTY_STRING } from "../../constants/constants.js";
-import { MelObject } from "../../mel_object";
-import { Mel_Promise } from "../../mel_promise";
+import { MelObject } from "../../mel_object.js";
+import { Mel_Promise } from "../../mel_promise.js";
 export {Connector};
 
 /**

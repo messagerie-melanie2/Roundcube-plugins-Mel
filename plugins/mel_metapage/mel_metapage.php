@@ -1154,14 +1154,14 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env('mel_metapage_templates_models', $this->rc->config->get('documents_models'));
         $this->rc->output->set_env('mel_metapage_templates_services', $this->rc->config->get('workspace_services'));
 
-        $icons_files = scandir(__DIR__."/skins/elastic/pictures/dwp_icons");
+        $icons_files = scandir(__DIR__."/skins/mel_elastic/pictures/dwp_icons");
         if ($icons_files !== false)
         {
             $icons= [];
             foreach ($icons_files as $key => $value) {
                 if ($value === "." || $value === "..")
                     continue;
-                $icons[] = ["name" => $value, "path" => "plugins/mel_metapage/skins/elastic/pictures/dwp_icons/".$value];
+                $icons[] = ["name" => $value, "path" => "plugins/mel_metapage/skins/mel_elastic/pictures/dwp_icons/".$value];
             }
             $this->rc->output->set_env('mel_metapage_workspace_logos', $icons);
         }

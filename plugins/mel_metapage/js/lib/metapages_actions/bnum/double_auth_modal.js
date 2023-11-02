@@ -359,7 +359,7 @@ class double_auth_modal extends module_bnum {
       .end('row')
     .end('div')
     .generate();
-debugger;
+    
     if (!rcmail.env.userSecret) {
       mel_metapage.Functions.post(
         mel_metapage.Functions.url('mel_metapage', 'plugin.mel_doubleauth-adduser'),

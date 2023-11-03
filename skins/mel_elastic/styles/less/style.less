@@ -5561,3 +5561,11 @@ html.dark-mode-custom .double-auth-modal {
 .cursor-help {
     cursor: help;
 }
+
+html:not(.touch) .listing li > a:focus, 
+html:not(.touch) .listing.focus tbody tr.focused > td:first-child, 
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td,
+.menu a:not(.disabled):focus {
+	border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}

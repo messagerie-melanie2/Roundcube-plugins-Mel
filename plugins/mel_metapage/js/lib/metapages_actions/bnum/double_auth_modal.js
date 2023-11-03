@@ -113,7 +113,7 @@ class double_auth_modal extends module_bnum {
             .end()
             .row()
               .p({ class: "content" })
-                .text(!!date ? rcmail.gettext('mel_metapage.introduction_text').replace('%%date%%', displayDate) : "TEXTE POUR DIRE QUE BA, ON COMMENCER A CONFIGURER LA DA ! UI.")
+                .text(!!date ? rcmail.gettext('mel_metapage.introduction_text').replace('%%date%%', displayDate) : 'mel_metapage.introduction_text_without_date')
               .end()
             .end()
           .end()
@@ -140,6 +140,7 @@ class double_auth_modal extends module_bnum {
   }
 
   secondary_mail_modal(isStart = false) {
+    window.double_fact_saved = false;
     const self = this;
 
     const html = MelHtml.start
@@ -399,6 +400,17 @@ class double_auth_modal extends module_bnum {
 
       $('#code_to_copy').val(rcmail.env.userSecret);
     }
+
+    if (!window._bnum_da_on_quit){
+      $(window).on('beforeunload', (e) => {
+        if (false === window.double_fact_saved) {
+          rcmail.http_request('plugin.mel_doubleauth-removeuser');
+          return "Attention! La configuration n'est pas terminée et l'authentification double facteur n'est pas encore activée, vous pouvez rester sur la page pour terminer la configuration ou quitter et laisse la double authentification désactivée.";	
+        }
+      });
+
+      window._bnum_da_on_quit = true;
+    }
   }
 
   verification_application_modal() {
@@ -455,6 +467,8 @@ class double_auth_modal extends module_bnum {
                 new Mel_Promise(async () => {
                   const busy = rcmail.set_busy(true, 'loading');
 
+                  $('#verification-application button').addClass('disabled').attr('disabled', 'disabled');
+
                   let createCode = function createCode() {
                     let min = 0; let max = 9;
                     let n = 0; let x = '';
@@ -482,6 +496,8 @@ class double_auth_modal extends module_bnum {
                     on_success:(datas) => {
                       rcmail.set_busy(false, 'loading', busy);
 
+                      window.double_fact_saved = true;
+
                       self.closeDialog(dialog);
                       self.closing_modal();
                     },
@@ -493,6 +509,8 @@ class double_auth_modal extends module_bnum {
                   createCode = null;
 
                   if (rcmail.busy) rcmail.set_busy(false, 'loading', busy);
+
+                  if ($('#verification-application button').length > 0) $('#verification-application button').removeClass('disabled').removeAttr('disabled');
 
                 });
 

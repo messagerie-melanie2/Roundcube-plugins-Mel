@@ -5401,7 +5401,7 @@ html.dark-mode .external_url {
     outline: none !important;
   }
   .subtitle {
-    color: #5C5CFF;
+    color: var(--modal-da-title-text-color);//#5C5CFF;
     font-size: 19px;
     font-weight: 600;
   }
@@ -5409,7 +5409,7 @@ html.dark-mode .external_url {
   .title {
     font-size: 23px;
     font-weight: 700;
-    color: #3A3E5E;
+    color: var(--main-text-color);//#3A3E5E;
   }
 
   .content {
@@ -5427,19 +5427,21 @@ html.dark-mode .external_url {
   }
 
   .next-button {
-    background-color: #5C5CFF !important;
-    color: #fff !important;
+    background-color: var(--modal-da-next-button-background-color) !important;
+    color: var(--modal-da-next-button-text-color) !important;
 
     &:hover {
-      background-color: #4c4cbb !important;
+      --modal-da-next-button-text-color: var(--modal-da-next-button-hover-text-color);
+      background-color: var(--modal-da-next-button-hover-background-color) !important;
     }
   }
 
   .done-button {
-    background-color: #F0F0FF !important;
-    color: #5C5CFF !important;
+    background-color: var(--modal-da-button-background-color) !important;
+    color: var(--modal-da-button-text-color) !important;
     &:hover {
-      background-color: #e1e1ec !important;
+      --modal-da-button-text-color: var(--modal-da-button-hover-text-color);
+      background-color: var(--modal-da-button-hover-background-color) !important;
     }
   }
 

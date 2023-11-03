@@ -53,10 +53,17 @@ if (window.rcmail) {
 				// text += '</tr>';
 				const page = (await loadJsPage('da', {plugin:'mel_doubleauth'}));
 				const text = page.js_html.generate_html({});
-
 				// create textbox
 				$('form > table > tbody:last').append(text);
-				$('#bali-reset-password').html(page.button_code_forgotten().generate());
+
+				let $bali_r_p = $('#bali-reset-password');
+				let $button = page.button_code_forgotten().generate();
+
+				if ($bali_r_p.length > 0) $bali_r_p.html($button);
+				else $('.footerbox').before($('<div>').attr('id', 'bali-reset-password').html($button));
+
+				$bali_r_p = null;
+				$button = null;
 
 				// focus
 				$('#2FA_code').focus();

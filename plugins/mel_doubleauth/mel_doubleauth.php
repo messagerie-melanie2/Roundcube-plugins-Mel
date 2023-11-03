@@ -569,11 +569,19 @@ class mel_doubleauth extends bnum_plugin {
     }
     
     public function actions_get() {
-        $autorized_props = ['double_authentification_adresse_recuperation', 'double_authentification_adresse_valide'];
+        $autorized_props = ['double_authentification_adresse_recuperation', 'double_authentification_adresse_valide', 'NUMBER_RECOVERY_CODES'];
         $prop = rcube_utils::get_input_value('_prop', rcube_utils::INPUT_GET);
 
         if (in_array($prop, $autorized_props)) {
-            $prop = driver_mel::gi()->getUser()->$prop;
+            switch ($prop) {
+                case 'NUMBER_RECOVERY_CODES':
+                    $prop = self::NUMBER_RECOVERY_CODES;
+                    break;
+                
+                default:
+                    $prop = driver_mel::gi()->getUser()->$prop;
+                    break;
+            }
         }
         else throw new Exception("Denied !", 1);
 

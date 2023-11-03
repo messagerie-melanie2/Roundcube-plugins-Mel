@@ -1,5 +1,7 @@
 import { BnumConnector } from "../../helpers/bnum_connections/bnum_connections.js";
 import { MelHtml } from "../../html/JsHtml/MelHtml.js";
+import { MelObject } from "../../mel_object.js";
+import { Mel_Promise } from "../../mel_promise.js";
 import { module_bnum } from "./module_bnum.js";
 
 export { double_auth_modal };
@@ -92,8 +94,8 @@ class double_auth_modal extends module_bnum {
 
     const mois = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
-    const date = moment(rcmail.env.double_authentification_date_butoir?.date ?? moment().add('y', 1))
-    let displayDate = mois[date.format('M') - 1] + ' ' + date.format('YYYY');
+    const date = !(rcmail.env.double_authentification_date_butoir?.date ? null : moment(rcmail.env.double_authentification_date_butoir?.date))
+    let displayDate = !!date ? mois[date.format('M') - 1] + ' ' + date.format('YYYY') : '';
 
     const html = MelHtml.start
       .div({ id: "introduction", tabindex: "0", class: "double-auth-modal mx-5 mt-n3" })
@@ -111,7 +113,7 @@ class double_auth_modal extends module_bnum {
             .end()
             .row()
               .p({ class: "content" })
-                .text(rcmail.gettext('mel_metapage.introduction_text').replace('%%date%%', displayDate))
+                .text(!!date ? rcmail.gettext('mel_metapage.introduction_text').replace('%%date%%', displayDate) : "TEXTE POUR DIRE QUE BA, ON COMMENCER A CONFIGURER LA DA ! UI.")
               .end()
             .end()
           .end()
@@ -449,8 +451,51 @@ class double_auth_modal extends module_bnum {
             $.post(url, function (data) {
               if (data == rcmail.gettext('code_ok', 'mel_doubleauth')) {
                 rcmail.env.continueWithUser = true;
-                self.closeDialog(dialog);
-                self.closing_modal();
+
+                new Mel_Promise(async () => {
+                  const busy = rcmail.set_busy(true, 'loading');
+
+                  let createCode = function createCode() {
+                    let min = 0; let max = 9;
+                    let n = 0; let x = '';
+          
+                    while (n < 6) {
+                      n++; x += Math.floor(Math.random() * (max - min)) + min;
+                    }
+                    return x;
+                  }
+
+                  const max = (await BnumConnector.connect(BnumConnector.connectors.settings_da_get_recovery_code_max, {}))?.datas ?? 4;
+                  let codes = [];
+
+                  for (let index = 0; index < max; ++index) {
+                    codes.push(createCode());                    
+                  }
+
+                  await MelObject.Empty().http_internal_post({
+                    task:'settings',
+                    action:'plugin.mel_doubleauth-save',
+                    params:{
+                      p2FA_activate:1,
+                      '2FA_recovery_codes': codes
+                    },
+                    on_success:(datas) => {
+                      rcmail.set_busy(false, 'loading', busy);
+
+                      self.closeDialog(dialog);
+                      self.closing_modal();
+                    },
+                    on_error:(...args) => {
+                      console.error(...args);
+                    }
+                  });
+
+                  createCode = null;
+
+                  if (rcmail.busy) rcmail.set_busy(false, 'loading', busy);
+
+                });
+
               }
               else {
                 self.displayTextError('#error', rcmail.gettext('mel_metapage.wrong_code'))

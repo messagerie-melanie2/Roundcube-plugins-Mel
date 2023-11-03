@@ -15,7 +15,8 @@ const connectors = {
                                                                                                 type: Connector.enums.type.post,
                                                                                                 needed:{_token:'token'}
                                                                                               }),
-    settings_da_send_otp_token: new Connector('settings', 'plugin.mel.doubleauth.send_otp', {type:Connector.enums.type.post})
+    settings_da_send_otp_token: new Connector('settings', 'plugin.mel.doubleauth.send_otp', {type:Connector.enums.type.post}),
+    settings_da_get_recovery_code_max: new Connector('settings', 'plugin.mel.doubleauth.get', {params:{_prop:'NUMBER_RECOVERY_CODES'}}),
   
 };
 

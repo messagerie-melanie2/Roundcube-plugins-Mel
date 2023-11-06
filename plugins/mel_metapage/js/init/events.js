@@ -1089,10 +1089,10 @@ if (rcmail && window.mel_metapage)
             for (const key in tmp) {
                 if (Object.hasOwnProperty.call(tmp, key)) {
                     const element = tmp[key];
-
+                    
                     if (!!element && element.length > 0)
                     {
-                        html += `${element.length} ${rcmail.gettext(`itip${key.toLowerCase()}`, (key === 'ACCEPTED' ? 'mel_metapage' : 'libcalendaring'))}, `;
+                        html += `${element.length} ${rcmail.gettext(`status${key.toLowerCase()}`, (key === 'NEEDS-ACTION' ? 'mel_metapage' : 'libcalendaring'))}, `;
                     }
                 }
             }

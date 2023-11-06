@@ -310,6 +310,7 @@ $labels['is_model'] = 'Ce message est un modèle';
 $labels['use'] = 'Utiliser';
 $labels['model_saved'] = 'Modèle enregistré avec succès !';
 $labels['itipaccepted'] = 'Accepté';
+$labels['statusneeds-action'] = 'En attente';
 $labels['webconf_toggle_chat_help'] = "Affiche ou ferme le tchat interne";
 $labels['webconf_phone_help'] = "Copie le numéro de téléphone pour permettre à d'autre de rejoindre la visio en cours";
 $labels['webconf_phone'] = "Rejoindre par téléphone";

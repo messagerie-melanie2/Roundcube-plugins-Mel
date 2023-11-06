@@ -137,6 +137,10 @@ class double_auth_modal extends module_bnum {
     .generate();
 
     rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 210});
+
+    setTimeout(() => {
+      $('.ui-dialog .done-button').focus();
+    }, 10);
   }
 
   secondary_mail_modal(isStart = false) {
@@ -207,6 +211,10 @@ class double_auth_modal extends module_bnum {
     $('.ui-dialog button.ui-dialog-titlebar-close').click(() => {
       this.rcmail().triggerEvent('da.modal.close', this);
     });
+
+    setTimeout(() => {
+      $('.ui-dialog input').first().focus();
+    }, 10);
   }
 
   verification_mail_modal() {
@@ -289,6 +297,10 @@ class double_auth_modal extends module_bnum {
     $('.ui-dialog button.ui-dialog-titlebar-close').click(() => {
       this.rcmail().triggerEvent('da.modal.close', this);
     });
+
+    setTimeout(() => {
+      $('.ui-dialog input').first().focus();
+    }, 10);
   }
 
   application_modal() {
@@ -411,6 +423,10 @@ class double_auth_modal extends module_bnum {
 
       window._bnum_da_on_quit = true;
     }
+
+    setTimeout(() => {
+      $('.ui-dialog input').first().focus();
+    }, 10);
   }
 
   verification_application_modal() {
@@ -530,6 +546,10 @@ class double_auth_modal extends module_bnum {
     rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 200, close:function (event, ui) { $(this).remove(); self.checkBeforeClose() }})
 
     this.createProgressPoint(4)
+
+    setTimeout(() => {
+      $('.ui-dialog input').first().focus();
+    }, 10);
   }
 
   closing_modal() {
@@ -576,6 +596,10 @@ class double_auth_modal extends module_bnum {
     $('.ui-dialog button.ui-dialog-titlebar-close').click(() => {
       this.rcmail().triggerEvent('da.da_changed.after', {modal:this});
     });
+
+    setTimeout(() => {
+      $('.ui-dialog .next-button').focus();
+    }, 10);
   }
 
   closeDialog(dialog) {

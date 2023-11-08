@@ -17,19 +17,20 @@ class RotomecaHtml {
     }
 
     hasClass(class_to_verify) {
-        return this._update_class().attribs.class.includes(class_to_verify);
+        return this._updated_balise()._update_class().attribs.class.includes(class_to_verify);
     }
 
     removeClass(class_to_remove){
-        if (this.hasClass(class_to_remove)) this.attribs.class = this.attribs.class.filter(x => x !== class_to_remove);
+        let navigator = this._updated_balise();
+        if (navigator.hasClass(class_to_remove)) navigator.attribs.class = navigator.attribs.class.filter(x => x !== class_to_remove);
 
         return this;
     }
 
     css(key_or_attrib, value = '') {
         if (typeof key_or_attrib === 'string') {
-            let navigator = this._updated_balise();
-            if (!navigator._update_css().attribs.style[key_or_attrib]) navigator.attribs.style[key_or_attrib] = value;
+            let navigator = this._update_attribs()._updated_balise()._update_css();
+            navigator.attribs.style[key_or_attrib] = value;
         }
         else {
             for (const key in key_or_attrib) {
@@ -50,22 +51,49 @@ class RotomecaHtml {
     _updated_balise() {
         if (this.childs.length > 0) {
             if (['img', 'input', 'br', 'hr'].includes(this.childs[this.childs.length - 1].balise)) return this.childs[this.childs.length - 1];
-            else if (this.childs[this.childs.length - 1].attribs?.one_line === true) return this.childs[this.childs.length - 1];
+            else if (this.childs[this.childs.length - 1]._update_attribs().attribs?.one_line === true) return this.childs[this.childs.length - 1];
         }
 
         return this;
     }
 
     hasAttr(name) {
-        return !!this.attribs[name]
+        return !!this._updated_balise().attribs[name]
     }
 
     attr(name, value) {
-        if (this._isOn(name)) {
-            this.attribs[name] = this._getOn(name);
-            this.attribs[name].push(value);
+        let navigator = this._updated_balise();
+
+        if (navigator._update_attribs()._isOn(name)) {
+            navigator.attribs[name] = navigator._getOn(name);
+            navigator.attribs[name].push(value);
         }
-        else this.attribs[name] = value;
+        else navigator.attribs[name] = value;
+        return this;
+    }
+
+    attrs(attributes) {
+        for (const key in attributes) {
+            if (Object.hasOwnProperty.call(attributes, key)) {
+                const element = attributes[key];
+                this.attr(key, element);
+            }
+        }
+
+        return this;
+    }
+
+    _update_attribs() {
+        if (typeof this.attribs === 'string') {
+            const regex = /\s(\w+?)="(.+?)"/g;
+            const str = this.attribs;
+            this.attribs = {};
+
+            for (const iterator of str.matchAll(regex)) {
+                this.attribs[iterator[1]] = iterator[2]; 
+            }
+        }
+
         return this;
     }
 
@@ -87,7 +115,7 @@ class RotomecaHtml {
     }
 
     removeAttr(name) {
-        this.attribs[name] = undefined;
+        this._updated_balise().attribs[name] = undefined;
         return this;
     }
 
@@ -416,7 +444,7 @@ class RotomecaHtml {
     }
 
     _update_class() {
-        if (!this.attribs) this.attribs = {class:[]};
+        if (!this._update_attribs().attribs) this.attribs = {class:[]};
         else if (!this.attribs.class) this.attribs.class = [];
         else if (!!this.attribs.class && typeof this.attribs.class === 'string') this.attribs.class = this.attribs.class.split(' ');
         else if (!!this.attribs.class && !this.attribs.class instanceof Array) this.attribs.class = [this.attribs.class];

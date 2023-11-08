@@ -1,5 +1,76 @@
+import { MelHtml } from "../../html/JsHtml/MelHtml.js";
 import { MaterialSymbolHtml } from "../../html/html_icon.js";
 import { MelObject } from "../../mel_object.js";
+
+function find_parent(node, cond) {
+    while ((!cond(node)) || node[0].nodeName === 'BODY') {
+        node = node.parent();
+    }
+
+    return node[0].nodeName === 'BODY' ? false : node;
+}
+
+function string_rgb_to_hex(rgb){
+    if (rgb.includes('(')) {
+        rgb = rgb.split('(');
+        rgb = rgb[1].replace(')', '');
+        rgb = rgb.split(',');
+
+        let hex = '#';
+
+        for (const iterator of rgb) {
+            hex += componentToHex(+iterator);
+        }
+
+        rgb = hex;
+    }
+
+    return rgb;
+}
+
+MelHtml.extend('button_note', function (attribs = {}) {
+    return this.button(attribs)
+    .addClass(MaterialSymbolHtml.get_class_fill_on_hover())
+    .addClass('bckg')
+    .addClass('true')
+    .css({
+        border:'none!important',
+        'border-radius':'0px!important',
+        transition:'none'
+    })
+    .attr('onmouseenter', function (e) {
+        e = $(e.currentTarget);
+
+        let parent = find_parent(e, (x) => x.hasClass('mel-note'));
+
+        if (!parent) throw new Error('Unable to found parent !');
+
+        const note_color = string_rgb_to_hex(parent.attr('data-textcolor'));
+
+        console.log('color', note_color, parent.attr('data-textcolor'));
+
+        const bckg_color = string_rgb_to_hex(e.css('background-color'));
+        const color = mel_metapage.Functions.colors.kMel_extractRGB(note_color);
+        const background = mel_metapage.Functions.colors.kMel_extractRGB(bckg_color);
+
+        console.log('ratio', mel_metapage.Functions.colors.kMel_CompareLuminance(color, background), color, background);
+
+        if (!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(color, background)) {
+            e.css('color', invertColor(note_color, true));
+        }
+
+    })
+    .attr('onmouseleave', function (e) {
+        e = $(e.currentTarget);
+        let parent = find_parent(e, (x) => x.hasClass('mel-note'));
+
+        if (!parent) throw new Error('Unable to found parent !');
+
+        const note_color = string_rgb_to_hex(parent.attr('data-textcolor'));
+
+        e.css('color', note_color);
+    });
+});
 
 /**
  * Plugin qui contient la localization pour rcmail.gettext
@@ -40,6 +111,40 @@ function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
+function padZero(str, len) {
+    len = len || 2;
+    var zeros = new Array(len).join('0');
+    return (zeros + str).slice(-len);
+}
+
+function invertColor(hex, bw) {
+    if (hex.indexOf('#') === 0) {
+        hex = hex.slice(1);
+    }
+    // convert 3-digit hex to 6-digits.
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) {
+        throw new Error('Invalid HEX color.');
+    }
+    var r = parseInt(hex.slice(0, 2), 16),
+        g = parseInt(hex.slice(2, 4), 16),
+        b = parseInt(hex.slice(4, 6), 16);
+    if (bw) {
+        // https://stackoverflow.com/a/3943023/112731
+        return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+            ? '#000000'
+            : '#FFFFFF';
+    }
+    // invert color components
+    r = (255 - r).toString(16);
+    g = (255 - g).toString(16);
+    b = (255 - b).toString(16);
+    // pad each with zeros and return
+    return "#" + padZero(r) + padZero(g) + padZero(b);
+}
+
 /**
  * Représentation et fonctions utile d'une note
  */
@@ -73,33 +178,89 @@ export class Sticker
      */
     html(hidden = false)
     {
-        return `
-        <div class="mel-note" style="background-color:${this.color};color:${this.textcolor};${hidden ? 'display:none;' : ''}" ${this.get_datas()}>
-            <div class="note-header">
-                <table>
-                <tr>
-                    <!-- <td><button title="${rcmail.gettext('new_n', plugin_text)}" class="${MaterialSymbolHtml.get_class_fill_on_hover()} mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="material-symbols-outlined">add_circle</span></button></td> -->
-                    <td><button title="${'Afficher sur le Bnum'}" aria-describedby="${this.uid}" class="${MaterialSymbolHtml.get_class_fill_on_hover()} mel-button no-button-margin bckg true takb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="material-symbols-outlined">push_pin</span><span class="sr-only">Afficher sur le Bnum - Affiche la note en avant plan sur le bureau numérique. Cela permet d'avoir toujours la note en visu.</span></button></td>
-                    <td style="width:100%"><input title="Titre de la note" class="change mel-focus" type=text style="width:100%;background-color:${this.color};color:${this.textcolor}" value="${this.title}" /></td>
-                    <td><button title="Se concentrer sur cette note" aria-describedby="${this.uid}" class="mel-button no-button-margin bckg true eye ${MaterialSymbolHtml.get_class_fill_on_hover()}" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="material-symbols-outlined">visibility</span><span class="sr-only">Se concentrer sur cette note - Cache les autres notes</span></button></td>
-                    <td><button title="${rcmail.gettext('settings', plugin_text)}" aria-describedby="${this.uid}" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="material-symbols-outlined">more_horiz</span><span class="sr-only">${rcmail.gettext('settings', plugin_text)}</span></button></td>
-                    <td><button title="${rcmail.gettext('delete')}" aria-describedby="${this.uid}" class=" mel-button no-button-margin bckg true db danger ${MaterialSymbolHtml.get_class_fill_on_hover()}" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="material-symbols-outlined">delete_forever</span><span class="sr-only">${rcmail.gettext('delete')}</span></button></td>
-                </tr>
-                </table>
-            </div>
-            <div class="note-header-params" style="display:none">
-                <input title="${rcmail.gettext('change_background_color', plugin_text)}" aria-describedby="${this.uid}" class="change bcgcolor" type="color" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
-                <input title="${rcmail.gettext('change_text_color', plugin_text)}" aria-describedby="${this.uid}" class="change txtcolor" type="color" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
-                <button title="${rcmail.gettext('quit_settings', plugin_text)}" aria-describedby="${this.uid}" class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="material-symbols-outlined">arrow_back</span><span class="sr-only">${rcmail.gettext('quit_settings', plugin_text)}</span></button>
-                <button title="${rcmail.gettext('move', plugin_text)}" aria-describedby="${this.uid}" class=" mel-button no-button-margin bckg true downb ${MaterialSymbolHtml.get_class_fill_on_hover()}" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="material-symbols-outlined">drag_pan</span><span class="sr-only">${rcmail.gettext('move', plugin_text)}</span></button>
-                <!--<button title="${rcmail.gettext('move_up', plugin_text)}" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>-->
-                <button title="Réinitialiser la taille de la note" aria-describedby="${this.uid}" class="  mel-button no-button-margin bckg true rsb ${MaterialSymbolHtml.get_class_fill_on_hover()}" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="material-symbols-outlined">fullscreen_exit</span><span class="sr-only">Réinitialiser la taille de la note</span></button>
-            </div>
-            <div class="note-body">
-                <textarea rows="5" title="Ecrivez vos notes dans ce champ" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor};${(!!this.height ? `height:${this.height}px;` : '')}">${this.text}</textarea>
-            </div>
-        </div>
-        `;
+        const generate_style = () => {
+            let html = `background-color:${this.color};color:${this.textcolor};`;
+
+            if (hidden) html += 'display:none;';
+
+            return html;
+        };
+
+        const html_js = MelHtml.start
+        .div({class:"mel-note", style:generate_style(), id:`note-${this.uid}`}).attrs(this.get_datas())
+            .div({class:"note-header"})
+                .table()
+                    .tr()
+                        .td()
+                            .button_note(this._generate_buttons_attributes('takb', 'Afficher sur le Bnum', {})).css('border-radius', '5px 0 0 0!important')
+                                .icon('push_pin').end()
+                                .sr()
+                                    .text('Afficher sur le Bnum - Affiche la note en avant plan sur le bureau numérique. Cela permet d\'avoir toujours la note en visu.')
+                                .end('sr')
+                            .end('epingler')
+                        .end('td')
+                        .td().css('width', '100%')
+                            .input_text({class:'change mel-focus', title: 'Titre de la note', 'aria-describedby': this.uid, value: this.title}).css({width: '100%', 'background-color': this.color, 'color': this.textcolor})
+                        .end('td 100%')
+                        .td()
+                            .button_note(this._generate_buttons_attributes('pb', rcmail.gettext('settings', plugin_text), {}))
+                                .icon('more_horiz').end()
+                                .sr()
+                                    .text(`${plugin_text}.settings`)
+                                .end('sr')
+                            .end('paramètres')
+                        .end('td')
+                        .td()
+                            .button_note(this._generate_buttons_attributes('db danger', rcmail.gettext('delete'), {})).css('border-radius', '0 5px 0 0!important')
+                                .icon('delete_forever').end()
+                                .sr()
+                                    .text('delete')
+                                .end('sr')
+                            .end('Supprimer')
+                        .end('td')
+                    .end('tr')
+                .end('table')
+            .end('div')
+            .div({class:'note-header-params'}).css('display', 'none')
+                .input_color(`title="${rcmail.gettext('change_background_color', plugin_text)}" aria-describedby="${this.uid}" class="change bcgcolor" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel')
+                .input_color(`title="${rcmail.gettext('change_text_color', plugin_text)}" aria-describedby="${this.uid}" class="change txtcolor" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"`).removeClass('form-control').removeClass('input-mel')
+                .button_note(this._generate_buttons_attributes('bb', rcmail.gettext('quit_settings', plugin_text), {})).css('float', 'right').css('border-radius', '0 5px 0 0!important')
+                    .icon('arrow_back').end()
+                    .sr()
+                        .text(`${plugin_text}.quit_settings`)
+                    .end('sr')
+                .end('retour')
+                .button_note(this._generate_buttons_attributes('downb', rcmail.gettext('move', plugin_text), {})).css('float', 'right')
+                    .icon('drag_pan').end()
+                    .sr()
+                        .text(`${plugin_text}.move`)
+                    .end('sr')
+                .end('Déplacer')
+                .button_note(this._generate_buttons_attributes('rsb', 'Réinitialiser la taille de la note', {})).css('float', 'right')
+                    .icon('fullscreen_exit').end()
+                    .sr()
+                        .text('Réinitialiser la taille de la note')
+                    .end('sr')
+                .end('Taille')
+            .end('params')
+            .div({class:'note-body'})
+                .textarea({rows:5, title:'Ecrivez vos notes dans ce champ', class:'change', style:`width:100%;background-color:${this.color};color:${this.textcolor};${(!!this.height ? `height:${this.height}px;` : '')}`})
+                    .text(this.text)
+                .end()
+            .end()
+        .end()
+        ;
+   
+        return html_js.generate();
+    }
+
+    _generate_buttons_attributes(button_class, title, {additionnal_style = ''}){
+        return {
+            title,
+            'aria-describedby':this.uid,
+            class:`${MaterialSymbolHtml.get_class_fill_on_hover()} mel-button no-button-margin bckg true ${button_class}`,
+            style:`color:${this.textcolor};${additionnal_style}`
+        };
     }
 
     /**
@@ -284,6 +445,9 @@ export class Sticker
             this.text = $element.find("textarea").val();
             this.color =  $element.css("background-color");
             this.textcolor = $element.css("color");
+
+            $element.attr('data-textcolor', this.textcolor);
+
             await this.post_update();
 
             if (isCreate)
@@ -374,7 +538,12 @@ export class Sticker
      * @returns id & data-order
      */
     get_datas(){
-        return ` id="note-${this.uid}" data-order="${this.order}"  data-pin="${this.pin}"`;
+        return {
+            id:`note-${this.uid}`,
+            'data-textcolor': this.textcolor,
+            'data-order': this.order,
+            'data-pin': this.pin
+        }
     }
 
     /**

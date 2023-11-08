@@ -2,8 +2,7 @@ import { JsHtml } from "./JsHtml.js";
 export { JsHtml }
 
 JsHtml.extend('_ext_input_tag', function (name, attribs = {}) {
-    attribs.type = name;
-    return this.input(attribs);
+    return this.input(attribs).attr('type', name);
 });
 
 function create_input_alias(name) {

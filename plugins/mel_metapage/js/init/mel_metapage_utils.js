@@ -1390,13 +1390,13 @@ const mel_metapage = {
                     const l2 = this.kMel_Luminance(rgb2)
                 
                     let ratio
-                    if (l1 > l2) { ratio = l1 / l2 } else { ratio = l2 / l1 }
+                    if (l1 > l2) { ratio = (l1 + 0.05) / (l2 + 0.05) } else { ratio = (l2 + 0.05) / (l1 + 0.05) }
                 
                     return ratio
                 },
                 
                 kMel_LuminanceRatioAAA(rgb1, rgb2) {
-                    const isAAA = this.kMel_CompareLuminance(rgb1, rgb2) > 7       
+                    const isAAA = this.kMel_CompareLuminance(rgb1, rgb2) > 4.5       
                     return isAAA
                 },
                 

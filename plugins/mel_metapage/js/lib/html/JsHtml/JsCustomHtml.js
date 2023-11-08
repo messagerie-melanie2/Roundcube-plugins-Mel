@@ -1,4 +1,4 @@
-import { BnumHtmlIcon, HtmlCustomTag } from "./CustomAttributes/classes.js";
+import { BnumHtmlIcon, BnumHtmlSrOnly, HtmlCustomTag } from "./CustomAttributes/classes.js";
 import { JsHtml } from "./JsHtml.js";
 export { JsHtml };
 
@@ -17,7 +17,7 @@ JsHtml.create_custom_tag =  function (name, {
 
         customElements.define(tag, already_existing_class ?? HtmlCustomTag, config);
 
-        JsHtml.create_alias(name, {
+        JsHtml.create_alias(name.replaceAll('-', '_'), {
             tag,
             generate_callback,
             online:one_line,
@@ -47,4 +47,12 @@ JsHtml.update('icon', function(self, old, icon, attribs = {}) {
     }
 
     return html;
+});
+
+JsHtml.create_custom_tag('screen-reader', {
+    already_existing_class:BnumHtmlSrOnly
+});
+
+JsHtml.extend('sr', function (attribs = {}) {
+    return this.screen_reader(attribs);
 });

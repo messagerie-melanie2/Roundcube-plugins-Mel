@@ -2,12 +2,14 @@
 {
     "no-background":{
         "isThemeColor":true,
-        "isFirst":true
+        "isFirst":true,
+        "title":"Pas d'image"
     },
     "custom-background":{
         "isThemeColor":true,
         "customOrder":1,
-        "userprefid":"custom-2nd-nav-background"
+        "userprefid":"custom-2nd-nav-background",
+        "title":"Importer une image"
     },   
     "stars-1":{
         "background":"stars1.jpg",

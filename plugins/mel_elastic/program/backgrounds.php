@@ -9,6 +9,7 @@ class Background {
     private $view;
     private $customOrder;
     private $userprefid;
+    private $title;
     public function __construct($decoded){
         $this->isFirst = $decoded->isFirst;
         $this->isThemeColor = $decoded->isThemeColor;
@@ -16,6 +17,7 @@ class Background {
         $this->view = $decoded->view;
         $this->customOrder = $decoded->customOrder;
         $this->userprefid = $decoded->userprefid;
+        $this->title = $decoded->title;
     }
 
     public function get_background_path(){
@@ -48,6 +50,8 @@ class Background {
             $item['background'] = $this->get_background_path();
             $item['view'] = $this->get_view_path();
         }
+
+        if (isset($this->title)) $item['title'] = $this->title;
         
         return $item;
     }

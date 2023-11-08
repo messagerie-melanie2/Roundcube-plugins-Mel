@@ -888,6 +888,8 @@ $(document).ready(() => {
                         accept:INPUT_ACCEPT,
                         'data-prefid':iterator.value.userprefid
                     });
+
+
                     //MAJ de l'image
                     $input.onchange.push((ev) => {
                         ev = $(ev.currentTarget)
@@ -932,6 +934,9 @@ $(document).ready(() => {
                     $button.onclick.push((e) => {
                         $(e.currentTarget).parent().find(CONST_HTML_INPUT).click();
                     });
+
+                    if (!!iterator.value.title) $button.setAttr('title', iterator.value.title);
+
                     //Mise en forme
                     $item.addContent(new mel_html2(CONST_HTML_DIV, {
                         attribs:{
@@ -945,6 +950,9 @@ $(document).ready(() => {
                             style:`${CONST_CSS_DISPLAY}${CONST_CSS_ASSIGN}${CONST_CSS_DISPLAY_FLEX}`
                         }
                     }).addClass(CUSTOM_THEME_CLASSES_PIC).appendTo($item);
+                }
+                else if (!!iterator.value.title) {
+                    $item.setAttr('title', iterator.value.title);
                 }
 
                 //Ajout des classes et du fonctionnement des boutons

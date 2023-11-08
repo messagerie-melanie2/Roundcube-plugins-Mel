@@ -396,6 +396,13 @@ if (rcmail)
                         }
                         else {
                             $('#user-dropdown .abs-message').addClass('alert-warning').text("Vous n'avez pas encore d'absence, cliquez sur le bouton \"Plus de configuration\" pour en créer !")
+                            
+                            if ($('#user-dropdown .go_back').length <= 0) $('#user-dropdown').append($('<div class="back mel-button bckg true" style="position: absolute;top: 0;right: 0;"><bnum-icon>undo</bnum-icon></div>').click(() => {
+                                reset();
+                                open();
+                            }));
+
+                            $('#user-dropdown .abs-message')
                             $('.page-abs div').hide();
                         }
 

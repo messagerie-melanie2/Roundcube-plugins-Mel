@@ -1,8 +1,8 @@
-.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-christmas body {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.season-winter body {
 
   &:before,
   &:after {
-    display: none;
+    // display: none;
     filter: blur(1px);
     content: "";
     position: fixed;
@@ -13,16 +13,16 @@
     background-color: rgba(black, 0.01);
     background-image: url(http://www.freepngimg.com/download/winter_snow/4-2-white-snow-png.png);
     background-size: 30%;
-    // animation-name: MOVE-BG;
-    // animation-duration: 500s;
-    // animation-timing-function: linear;
-    // animation-iteration-count: infinite;
+    animation-name: MOVE-BG;
+    animation-duration: 500s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
     z-index: -100;
 
   }
 }
 
-.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-christmas.framed body {
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.season-winter.framed body {
 
   &:before,
   &:after {

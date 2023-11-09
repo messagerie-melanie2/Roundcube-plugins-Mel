@@ -35,12 +35,12 @@
       //   --active-button-background-color: #F0F0F0;
         --theme-background-color: var(--base-theme-color-1);
       
-        --body-background-color: #123;
+        --body-background-color: transparent;
         --framed-body-background-color: transparent;
         
-        --body-picture: url('../images/snow-bg.jpg');
+        --body-picture: url('../images/christmas/christmas-bg.jpg');
         --framed-body-picture: unset;
-        --compose-body-picture: url("../images/mail-halloween-light.svg");
+        --compose-body-picture: url("../images/christmas-bg.jpg");
       //   //Main text colors
          --main-text-color: white;
       //   --secondary-text-color: #FFFFFF;
@@ -292,7 +292,7 @@
          --message-list-content-row-background-hover-color: var(--button-color-base-hover);
       //   --message-list-content-selected-row-background-color: var(--hover-background-color);
       //   --message-list-content-selected-row-border-color: var(--main-border-color);
-      //   --message-list-border-bottom: solid thin #f0f0f0;
+        --message-list-border-bottom: solid thin #2c373a;
       //   --mail-quota-widget-text-color: var(--main-text-color);
       
       
@@ -378,7 +378,7 @@
       //   --scrollbar-background-color: #f0f0f0;
       
       //   //Searchbar
-         --searchbar-background-color: var(--input-mel-background-color);
+        --searchbar-background-color: var(--input-mel-background-color);
         --searchbar-alternate-background-color: var(--input-mel-background-color);
         --searchbar-text-color: var(--input-text-color);
       //   --searchbar-text-hover-color: var(--main-text-color);
@@ -527,8 +527,8 @@
       //--main-text-color: var(--main-layout-taskbar-text-color);
 
       &.menu.toolbar a.home.icon-mel-home {
-          background-image: url("../images/home_noel.svg");
-          background-size: 39px;
+          background-image: url("../images/home-christmas.svg");
+          background-size: 31px;
           background-position: center;
           background-repeat: no-repeat;
 
@@ -539,7 +539,7 @@
       }
 
       &.menu.toolbar a.home.icon-mel-home:hover {
-          background-image: url("../images/home_noel_fill.svg");
+          background-image: url("../images/home-christmas-fill.svg");
       }
   }
 
@@ -623,15 +623,15 @@
   
 }
 
-html.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-halloween.dark-mode-custom{
+html.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-christmas.dark-mode-custom{
    &:root{
-      --input-text-color: var(--default-text-color);
-      --message-list-quick-filter-active-text-color: var(--input-text-color);
-      --input-mel-background-color:#181c28;
-     --body-picture: url("../images/halloween-bg-dark-unsplash.jpg");
-     --compose-body-picture: url("../images/mail-halloween-dark.jpg");
-     --layout-sidebar-background-color: var(--base-theme-color-1-nuances-1);
-     --scrollbar-background-color: var(--base-2-n-1);
+    --input-text-color: var(--default-text-color);
+    --message-list-quick-filter-active-text-color: var(--input-text-color);
+    --input-mel-background-color:#181c28;
+    --body-picture: url("../images/christmas/christmas-dark-bg.jpg");
+    --compose-body-picture: url("../images/christmas-dark-bg.jpg");
+    --layout-sidebar-background-color: var(--base-theme-color-1-nuances-1);
+    --scrollbar-background-color: var(--base-2-n-1);
    }
 
    .task-mail.action-compose {
@@ -642,5 +642,13 @@ html.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored
 
    .logo-mel{
       background-color: black;
+   }
+
+   #taskmenu.menu.toolbar a.home.icon-mel-home {
+        background-image: url("../images/home-christmas-dark.svg");
+
+        &:hover {
+        background-image: url("../images/home-christmas-full-dark.svg");
+        }
    }
 }

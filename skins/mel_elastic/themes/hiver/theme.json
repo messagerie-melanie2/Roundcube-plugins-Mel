@@ -1,0 +1,13 @@
+{
+    "parent":"abstract-picture-theme-two-colored",
+    "id":"season-winter",
+    "display":"white",
+    "description":"desc",
+    "icon":"icon.svg",
+    "enabled":true,
+    "style":"style",
+    "class":"season-winter",
+    "custom_dark_mode":true,
+    "order":100,
+    "saison":"22/09-31/12"
+}

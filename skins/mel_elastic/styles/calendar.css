@@ -527,11 +527,10 @@ html.layout-phone .task-calendar select.mel-input.calendar {
 .menu a.import::before,
 .menu a.upload::before {
   content: "\f090" !important;
-  font-family: 'Material Symbols Outlined' !important;
-  font-weight: normal !important;
-  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
-  font-size: 17px !important;
-  transform: scale(1.5) !important;
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-variation-settings: 'wght' 300, 'opsz' 48;
+  font-size: 22px;
 }
 .menu a.download::before,
 .menu a.download.eml::before,

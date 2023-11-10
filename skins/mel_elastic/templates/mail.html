@@ -237,6 +237,10 @@
       classAct="read active" />
     <roundcube:button command="manage_mailbox_folders" type="link-menuitem" label="managefolders" class="folders active"
       classAct="folders active" />
+    <roundcube:if condition="template:name != 'message'" />
+			<roundcube:button type="link-menuitem" command="import-messages" label="import" class="import disabled" classAct="import active"
+      name="messageimport" onclick="UI.import_dialog()" />
+    <roundcube:endif />
     <roundcube:container name="mailboxoptions" id="mailboxoptionsmenu" />
   </ul>
 </div>

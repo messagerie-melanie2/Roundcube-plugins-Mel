@@ -59,3 +59,6 @@ $rcmail_config['pwd_user_canchange_endpoint'] = "pwd/user/canChange";
 $rcmail_config['token_revoke_endpoint'] = "token/revoke";
 $rcmail_config['portail_uri_changepwd'] = "#in/changePwd";
 $rcmail_config['mel_moncompte_pages'] = ['informationspersonnelles','changepassword','gestionnaireabsence','accesinternet','synchronisationmobile','gestionnairelistes'];
+
+// Affiche ou non la possibilité de partager sa boite interpersonnelle
+$rcmail_config['enable_mesressources_bal_share'] = !(isset($_SERVER['MEL_MONCOMPTE_RESOURCE_BAL_SHARE_ENABLED']) && $_SERVER['MEL_MONCOMPTE_RESOURCE_BAL_SHARE_ENABLED'] == '0');

@@ -48,8 +48,7 @@ div.legend {
 		<br>
 		<roundcube:object name="plugin.mailbox_additional_action" />
 		<br>
-
-		<roundcube:if condition="env:resource_shared == false" />
+		<roundcube:if condition="!env:resource_shared" />
 		<div class="legend">
 			<roundcube:label name="mel_moncompte.users_shares" />
 		</div>

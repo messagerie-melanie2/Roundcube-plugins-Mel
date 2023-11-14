@@ -287,6 +287,10 @@ class mel_moncompte extends rcube_plugin {
         $acl = $this->gettext('gestionnaire');
         // Les boites individuelles et applicatives ne sont pas des vrais partages, le repartage est donc bloqué. A voir si on passe ça en Driver
         $shared = $currentUser == $user->uid || (!$user->is_individuelle && !$user->is_applicative);
+        // hack tordu pour GN, j'ignore comment mieux gérer finement l'affichage ou non d'un tableau
+        if ($user->is_individuelle && !$user->is_objectshare && !$this->rc->config->get('enable_mesressources_bal_share', true)) {
+            $shared = false;
+        }
       }
       else {
         // Si pas gestionnaire on cherche le bon droit a afficher

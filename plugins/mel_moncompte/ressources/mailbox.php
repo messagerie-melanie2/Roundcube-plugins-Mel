@@ -356,6 +356,12 @@ class M2mailbox {
     $id = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
     // Récupération de la boite a restaurer
     $mbox = driver_mel::gi()->getUser($id, false);
+
+    // sam: test si BAlP autorisé
+    if (!$this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', true)){
+        return "<div>".$this->rc->gettext("acces_balp_disabled")."</div>";
+    }
+
     if ($mbox->is_objectshare) {
       $mbox = $mbox->objectshare->mailbox;
       $id = $mbox->uid;

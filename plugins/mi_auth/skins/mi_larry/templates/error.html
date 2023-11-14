@@ -1,0 +1,37 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+  <title><roundcube:object name="pagetitle" /></title>
+  <meta name="Robots" content="noindex,nofollow" />
+  <link rel="shortcut icon" href="/images/favicon-mi.png"/>
+</head>
+<body>
+  <div id="login-form">
+  	<div class="box-inner" role="main">
+  		<div class="box-left">
+  			<div class="productname"><roundcube:label name="productname" /></div>
+  			<div class="productioninformation"><roundcube:label name="mi_larry.login_productioninformation" /></div>
+  			<div class="footerbox">
+  				<div><roundcube:label name="mi_larry.login_footerbox" /></div>
+  				<div class="info"><roundcube:label name="mi_larry.login_footerbox_info" /></div>
+  			</div>
+  		</div>
+  		<div class="box-right error">
+        <div>
+          <span>Une erreur est survenue. La connexion a échouée.</span>
+        </div>
+        <div>
+  			     <roundcube:object name="message" id="message" />
+        </div>
+  			<div class="footerbox"><roundcube:label name="mi_larry.login_warning" /></div>
+  		</div>
+  	</div>
+  </div>
+
+  <div id="loginfooter">
+  	<span><roundcube:label name="mi_larry.login_footer1" /></span>
+  	<span><roundcube:label name="mi_larry.login_footer2" /></span>
+  </div>
+  <roundcube:include file="/includes/footer.html" />
+</body>
+</html>

@@ -1,0 +1,72 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/resources.css" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="offset">
+
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="settings-right">
+
+<div id="mel_resources_elements_listbox" class="uibox listbox">
+	<roundcube:if condition="env:resources_action != 'bal'" />
+     <!-- PAMELA Ajout d'un conteneur pour le nom de la boite -->
+     <roundcube:container name="folderlistheader-settings" id="folderlistheader-settings" />
+  <roundcube:endif />
+
+	<h2 class="boxtitle">
+		<roundcube:if condition="env:resources_action != 'bal'" />
+			<roundcube:button command="plugin.mel_moncompte_add_resource" type="link" title="mel_moncompte.add_resource" class="listbutton add disabled" classAct="listbutton add" content="+" />
+		<roundcube:endif />
+		<roundcube:label name="mel_moncompte.elements" />
+	</h2>
+	<roundcube:if condition="env:resources_action != 'bal'" />
+	  <div class="scroller withlistheader withfooter">
+  <roundcube:else />
+    <div class="scroller">
+	<roundcube:endif />
+	  <roundcube:object name="mel_resources_elements_list" id="mel_resources_elements_list" class="listing" cellspacing="0" summary="Objects list" noheader="true" />
+	</div>
+	<roundcube:if condition="env:resources_action != 'bal'" />
+		<div class="boxfooter">
+		  <roundcube:button command="plugin.mel_moncompte_delete_resource" type="link" title="mel_moncompte.delete_resource" class="listbutton delete disabled" classAct="listbutton delete" innerClass="inner" content="-" />
+		</div>
+	<roundcube:endif />
+</div>
+<div id="mel_resources_elements_type_box" class="uibox contentbox">
+  <div class="iframebox">
+    <roundcube:object name="mel_resources_type_frame" id="mel_resources_type_frame" style="width:100%; height:100%" frameborder="0" src="/watermark.html" />
+  </div>
+  <roundcube:object name="message" id="message" class="statusbar" />
+</div>
+<roundcube:if condition="env:annuaire_source" />
+<div id="listview-float-right">
+	<!-- inline address book -->
+	<div id="list-contacts" class="uibox listbox contactslist" role="region" aria-labelledby="aria-label-listcontacts">
+		<h2 id="aria-label-listcontacts" class="boxtitle2"><roundcube:label name="contacts" /></h2>
+		<div class="close">&nbsp;</div>
+		<!-- bug sur le scroller, ajout class xxx pour désactiver temporairement -->
+		<div class="scroller withfooter nosearch" tabindex="-1">
+			<roundcube:object name="annuaire_list" id="annuaire-list" class="treelist listing iconized" noheader="true" role="listbox" />
+		</div>
+	</div>
+</div>
+<roundcube:endif />
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+	new rcube_splitter({ id:'melsplitter', p1:'#settings-sections', p2:'#settings-right',
+		orientation:'v', relative:true, start:180, min:42, size:1 }).init();
+	new rcube_splitter({ id:'melresourcessplitter2', p1:'#mel_resources_elements_listbox', p2:'#mel_resources_elements_type_box',
+      orientation:'v', relative:true, start:186, min:120, size:1 }).init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+	<title><roundcube:object name="pagetitle" /></title>
+	<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+	<div data-role="page" data-ajax="true" data-theme="a" class="jqm-settings-edit" data-dom-cache="true">
+		<div data-role="header" data-position="fixed" data-theme="f" data-tap-toggle="false">
+			<a href="./?_task=settings&_action=plugin.mel_moncompte" data-ajax="false" class="ui-btn ui-link ui-icon-back ui-btn-icon-notext">Back</a>
+			<h1 class="boxtitle"><roundcube:label name="mel_moncompte.accesinternet" /></h1>
+		</div>
+		
+		<div role="main" class="ui-content jqm-content ui-alt-icon">
+			<div id="preferences-details" class="boxcontent">
+				<roundcube:object name="moncompte_balp_list" />
+				<form name="valide" action="#" method="post" class="propform">
+					<fieldset>
+						<legend><roundcube:label name="mel_moncompte.acces_internet_title" /></legend>
+						<div>
+							<span><roundcube:label name="mel_moncompte.acces_internet_status_label" /></span>
+							<span style="font-weight: bold;"><roundcube:label name="mel_moncompte.acces_internet_disable" /></span>
+						</div>
+						<div style="margin-top: 10px;">
+							<roundcube:label name="mel_moncompte.acces_internet_disable_label_forbidden" />
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>      
+	<roundcube:include file="/includes/footer.html" />      
+</body>
+</html>

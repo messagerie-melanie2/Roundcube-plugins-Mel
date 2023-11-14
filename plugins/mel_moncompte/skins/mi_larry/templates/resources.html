@@ -1,0 +1,33 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/resources.css" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen">
+
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="settings-right">
+
+<div id="mel_resources_type_box" class="uibox contentbox">
+  <div class="iframebox">
+	 <iframe name="preferences-frame" id="preferences-frame" style="width:100%; height:100%" frameborder="0" src="skins/larry/watermark.html"></iframe>
+	</div>
+	<roundcube:object name="message" id="message" class="statusbar" />
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+	new rcube_splitter({ id:'melsplitter', p1:'#settings-sections', p2:'#settings-right',
+		orientation:'v', relative:true, start:180, min:42, size:1 }).init();
+</script>
+
+</body>
+</html>

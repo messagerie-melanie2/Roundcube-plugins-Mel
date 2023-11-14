@@ -52,3 +52,10 @@ $rcmail_config['enable_mesressources_task']         = true;
 $rcmail_config['enable_messtatistiques']        = true;
 // Activer le menu Mes statistiques / Mobiles
 $rcmail_config['enable_messtatistiques_mobile'] = true;
+
+//Changement mdp MIOM. Se base sur la conf du plugin mi_auth pour accès API et portail utilisateur
+$rcmail_config['enable_moncompte_mdp_miom'] = true;
+$rcmail_config['pwd_user_canchange_endpoint'] = "pwd/user/canChange";
+$rcmail_config['token_revoke_endpoint'] = "token/revoke";
+$rcmail_config['portail_uri_changepwd'] = "#in/changePwd";
+$rcmail_config['mel_moncompte_pages'] = ['informationspersonnelles','changepassword','gestionnaireabsence','accesinternet','synchronisationmobile','gestionnairelistes'];

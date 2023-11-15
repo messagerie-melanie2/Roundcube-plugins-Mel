@@ -17,6 +17,11 @@ const connectors = {
                                                                                               }),
     settings_da_send_otp_token: new Connector('settings', 'plugin.mel.doubleauth.send_otp', {type:Connector.enums.type.post}),
     settings_da_get_recovery_code_max: new Connector('settings', 'plugin.mel.doubleauth.get', {params:{_prop:'NUMBER_RECOVERY_CODES'}}),
+
+    mail_toggle_favorite: new Connector('mail', 'plugin.mel_metapage.toggle_favorite', {
+                                                                                            type:Connector.enums.type.post,
+                                                                                            needed:{_folder:'folder', _state:false}
+                                                                                        }),
   
 };
 

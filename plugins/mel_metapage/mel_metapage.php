@@ -232,6 +232,8 @@ class mel_metapage extends bnum_plugin
 
         if ($this->rc->task === "mail" )
         {
+            $this->register_action('plugin.mel_metapage.toggle_favorite', array($this, 'toggle_favorite_folder'));
+
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
                 $this->rc->output->set_env("mail_delay", $this->rc->config->get('mail_delay', 5));
@@ -267,6 +269,10 @@ class mel_metapage extends bnum_plugin
                         $this->rc->output->set_env("is_model", true);
                     }
                     break;
+
+                case '':
+                case 'index':
+                    $this->rc->output->set_env('favorites_folders', $this->rc->config->get('favorite_folders', []));
                 
                 default:
                     $this->rc->output->set_env("model_mbox", $model_mbox);
@@ -801,6 +807,17 @@ class mel_metapage extends bnum_plugin
                 'aria-haspopup' => 'true',
                 'type'          => 'link',
             ), "toolbar");
+
+            $this->add_button(array(
+                'command'       => 'set-favorite-folder',
+                'class'	        => 'favorite folder-to disabled',
+                'classact'      => 'favorite folder-to active',
+                'classsel'      => 'favorite folder-to active',
+                'label'	        => 'set-to-favorite',
+                'title'         => 'set-to-favorite',
+                'innerclass'    => 'inner',
+                'type'          => 'link-menuitem',
+            ), "mailboxoptions");
         }
 
         //listcontrols
@@ -3337,5 +3354,21 @@ class mel_metapage extends bnum_plugin
         $user_domain = $this->rc->config->get('mel_user_domain',[]);
         $user_domain[] = $domain;
         $this->rc->user->save_prefs(['mel_user_domain' => $user_domain]);
+    }
+
+    public function toggle_favorite_folder(){
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $state = rcube_utils::get_input_value('_state', rcube_utils::INPUT_POST);
+        $state = $state === 'true' || $state === true || $state === 1;
+
+        $prefs = $this->rc->config->get('favorite_folders', []);
+
+        if ($state) $prefs[$folder] = ['expended' => true, 'selected' => true];
+        else unset($prefs[$folder]);
+
+        $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
+        
+        echo json_encode($prefs);
+        exit;
     }
 }

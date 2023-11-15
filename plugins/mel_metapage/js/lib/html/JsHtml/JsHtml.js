@@ -164,7 +164,7 @@ class RotomecaHtml {
     }
 
     li(attribs = {}) {
-        return this.tag('ul', attribs);
+        return this.tag('li', attribs);
     }
 
     span(attribs = {}){

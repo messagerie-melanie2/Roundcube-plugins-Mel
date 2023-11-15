@@ -216,7 +216,7 @@ class mel_france_transfert extends rcube_plugin {
 
     // Parcours des pièces jointes pour calculer la taille
     if (is_array($COMPOSE['attachments'])) {
-      foreach (self::ignore_double_attachments($COMPOSE['attachments']) as $id => $a_prop) {
+      foreach ($COMPOSE['attachments'] as $id => $a_prop) {
         $size += $COMPOSE['attachments'][$id]['size'];
       }
     }

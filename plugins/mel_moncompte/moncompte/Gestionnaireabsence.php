@@ -97,7 +97,10 @@ class Gestionnaireabsence extends Moncompteobject
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
     // Parcourir les absences
     $hasAbsence = false;
-    $html = self::generate_timezone();
+    $offsetChoice = ["-0400" => "America/Guadeloupe","+0000" => "Europe/Paris","+0300" => "Indien/Mayotte","+0400" => "Indien/Réunion"];
+    
+    $html = "%%selectTimezone%%";
+    
     $html .= self::absence_template('%%template%%');
     $i = 0;
     foreach ($user->outofoffices as $type => $outofoffice) {
@@ -106,6 +109,11 @@ class Gestionnaireabsence extends Moncompteobject
         && isset($outofoffice->days)
       ) {
         $hasAbsence = true;
+
+        $offset = sprintf("%+'03d00", $outofoffice->offset);
+        if (array_key_exists($offset, $offsetChoice)) {
+          $timezone = $offsetChoice[$offset];
+        }
 
         $all_day = !isset($outofoffice->hour_start)
           && !isset($outofoffice->hour_end);
@@ -124,14 +132,15 @@ class Gestionnaireabsence extends Moncompteobject
     // Pas d'absence ?
     if (!$hasAbsence) {
       $html .= html::div('noabsence', rcmail::get_instance()->gettext('noabsence', 'mel_moncompte'));
+      $timezone = rcmail::get_instance()->config->get('timezone');
     }
-    return $html;
+    return str_replace("%%selectTimezone%%",self::generate_timezone($timezone),$html);
   }
 
   /**
    * Génération de la liste déroulante des timezones pour les absence hebdo
    */
-  private static function generate_timezone() {
+  private static function generate_timezone($timezone) {
     $field_id = 'rcmfd_timezone';
     $select = new html_select([
             'name'  => 'absence_timezone',
@@ -153,7 +162,7 @@ class Gestionnaireabsence extends Moncompteobject
         $select->add('(GMT ' . $offset . ') ' . self::timezone_label($tzs), $tzs);
     }
 
-    return $select->show((string)rcmail::get_instance()->config->get('timezone'));
+    return $select->show((string)$timezone);
   }
 
   /**

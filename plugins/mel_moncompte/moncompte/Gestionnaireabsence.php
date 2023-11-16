@@ -97,7 +97,7 @@ class Gestionnaireabsence extends Moncompteobject
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
     // Parcourir les absences
     $hasAbsence = false;
-    $offsetChoice = ["-0400" => "America/Guadeloupe","+0000" => "Europe/Paris","+0300" => "Indien/Mayotte","+0400" => "Indien/Réunion"];
+    $offsetChoice = ["-0400" => "America/Guadeloupe","+0000" => "Europe/Paris","+0300" => "Indian/Mayotte","+0400" => "Indian/Reunion"];
     
     $html = "%%selectTimezone%%";
     

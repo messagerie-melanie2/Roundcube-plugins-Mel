@@ -98,6 +98,7 @@ class Gestionnaireabsence extends Moncompteobject
     // Parcourir les absences
     $hasAbsence = false;
     $offsetChoice = ["-0400" => "America/Guadeloupe","+0000" => "Europe/Paris","+0300" => "Indian/Mayotte","+0400" => "Indian/Reunion"];
+    $timezone = rcmail::get_instance()->config->get('timezone');
     
     $html = "%%selectTimezone%%";
     
@@ -132,7 +133,6 @@ class Gestionnaireabsence extends Moncompteobject
     // Pas d'absence ?
     if (!$hasAbsence) {
       $html .= html::div('noabsence', rcmail::get_instance()->gettext('noabsence', 'mel_moncompte'));
-      $timezone = rcmail::get_instance()->config->get('timezone');
     }
     return str_replace("%%selectTimezone%%",self::generate_timezone($timezone),$html);
   }

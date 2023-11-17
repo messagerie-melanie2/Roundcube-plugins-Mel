@@ -160,7 +160,8 @@ class Connector {
         return_datas = {
             datas: return_datas ?? default_return,
             has_error: error_datas.has_error,
-            error: error_datas.error
+            error: error_datas.error,
+            params
         };
 
         if (!error_datas.has_error) {

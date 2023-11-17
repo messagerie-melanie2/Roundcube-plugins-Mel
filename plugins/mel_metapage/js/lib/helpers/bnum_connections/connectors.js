@@ -1,5 +1,5 @@
 import { Connector } from "./connector.js";
-import { settings_da_set_email_recup } from "./functions.js";
+import { m_mail_toggle_favorite, settings_da_set_email_recup } from "./functions.js";
 export { connectors as Connectors };
 
 const connectors = {
@@ -20,9 +20,14 @@ const connectors = {
 
     mail_toggle_favorite: new Connector('mail', 'plugin.mel_metapage.toggle_favorite', {
                                                                                             type:Connector.enums.type.post,
-                                                                                            needed:{_folder:'folder', _state:false}
+                                                                                            needed:{_folder:'folder', _state:false}//,
+                                                                                            //moulinette: m_mail_toggle_favorite
                                                                                         }),
-  
+    mail_toggle_display_folder: new Connector('mail', 'save-pref', {
+                                                                        type:Connector.enums.type.post,
+                                                                        params:{_name:'favorite_folders_collapsed',_remote:"1"},
+                                                                        needed:{_value:''}
+                                                                    }),
 };
 
 

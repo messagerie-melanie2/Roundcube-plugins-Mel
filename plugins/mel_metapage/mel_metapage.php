@@ -173,6 +173,7 @@ class mel_metapage extends bnum_plugin
         $this->include_script('js/always_load/mel_event.js');
         // $this->include_script('js/always_load/load_module.js');
         $this->include_script('js/html.js');
+        $this->rc->plugins->allowed_prefs[] = 'favorite_folders_collapsed';
  
         if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe' && $this->rc->task !== "login")
         {
@@ -233,10 +234,12 @@ class mel_metapage extends bnum_plugin
         if ($this->rc->task === "mail" )
         {
             $this->register_action('plugin.mel_metapage.toggle_favorite', array($this, 'toggle_favorite_folder'));
+            $this->register_action('plugin.mel_metapage.toggle_display_folder', array($this, 'toggle_display_folder'));
 
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
                 $this->rc->output->set_env("mail_delay", $this->rc->config->get('mail_delay', 5));
+                $this->rc->output->set_env("favorite_folders_collapsed", $this->rc->config->get('favorite_folders_collapsed', ''));
                 $this->load_metapage_script_module('mails.js');
 
                 unset($delay);
@@ -3363,11 +3366,27 @@ class mel_metapage extends bnum_plugin
 
         $prefs = $this->rc->config->get('favorite_folders', []);
 
-        if ($state) $prefs[$folder] = ['expended' => true, 'selected' => true];
+        if ($state) $prefs[$folder] = ['selected' => true];
         else unset($prefs[$folder]);
 
         $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
         
+        echo json_encode($prefs);
+        exit;
+    }
+
+    public function toggle_display_folder() {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $state = rcube_utils::get_input_value('_state', rcube_utils::INPUT_POST);
+        $state = $state === 'true' || $state === true || $state === 1;
+
+        $prefs = $this->rc->config->get('favorite_folders', []);
+
+        if (isset($prefs[$folder])) $prefs[$folder]['expended'] = $state;
+        else $prefs[$folder] = ['expended' => false, 'selected' => $state];
+
+        if (!$prefs[$folder]['expended'] && !$prefs[$folder]['selected']) unset($prefs[$folder]);
+
         echo json_encode($prefs);
         exit;
     }

@@ -27,3 +27,32 @@ export async function settings_da_set_email_recup(data, connector) {
 
     return data;
 }
+
+export async function m_mail_toggle_favorite(data, connector) {
+    if (data.params._state === false) {
+        let promises = [];
+        const split = data.params._folder.split('/');
+
+        let last = '';
+        for (let index = 0, len = split.length; index < len; ++index) {
+            const element = last + split[index];
+            var promise = new Connector('mail', 'plugin.mel_metapage.toggle_display_folder', {
+                type:Connector.enums.type.post,
+                params:{
+                    _state:false,
+                    _folder:element
+                }
+            }).connect({});
+
+            promises.push(promise);
+            promise = null;
+            last += element + '/';
+        }
+
+        const array_of_data = await Promise.allSettled(promises);
+
+        data = array_of_data[array_of_data.length - 1];
+    }
+
+    return data;
+}

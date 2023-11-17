@@ -112,9 +112,9 @@ class MailElement extends MelObject {
 
         Object.defineProperty(this, 'rel', {
             get: () => {
-                let rel = this.target.parent().attr('rel');
-                if (rel.includes('favourite')) rel = rel.replace('favourite/', '');
-                if (rel.includes(this.get_env('current_user').full)) rel = rel.replace(`${this.get_env('current_user').full}/`, '');
+                const rel = this.target.parent().attr('rel');
+                //if (rel.includes('favourite')) rel = rel.replace('favourite/', '');
+                //if (rel.includes(this.get_env('current_user').full)) rel = rel.replace(`${this.get_env('current_user').full}/`, '');
                
                 return rel;
             }
@@ -126,8 +126,37 @@ class MailElement extends MelObject {
     }
 
     toggle() {
-        if (this.target.hasClass('expanded')) this.collapse();
-        else this.expand();
+        let collapsed = true;
+
+        if (this.is_expand()) this.collapse();
+        else {
+            collapsed = false;
+            this.expand();
+        }
+
+        BnumConnector.connect(BnumConnector.connectors.mail_toggle_display_folder, {
+            params:{
+                        _value:this._update_favorite_collapsed_folder(this.rel, collapsed)
+                    }
+            }
+        );
+    }
+
+    _update_favorite_collapsed_folder(item, state) {
+        let collapsed_folders = this.get_env('favorite_folders_collapsed') || '';
+
+        if (collapsed_folders.includes('&&')) collapsed_folders = collapsed_folders.split('&&');
+        else if (collapsed_folders !== '') collapsed_folders = [collapsed_folders];
+        else collapsed_folders = [];
+
+        if (state) collapsed_folders.push(item);
+        else collapsed_folders = collapsed_folders.filter(x => x !== item);
+
+        collapsed_folders = collapsed_folders.join('&&');
+
+        rcmail.env.favorite_folders_collapsed = collapsed_folders;
+
+        return collapsed_folders;
     }
 
     collapse() {
@@ -214,10 +243,6 @@ export class MailFavoriteFolder extends MailModule {
     
             $('#mailboxlist').before($('#favorite-folders')).find('li').first().css('margin-top', 0);
         }
-
-
-        console.log('tree', tree, html);
-
     }
 
     _generate_favorite_tree() {
@@ -265,7 +290,18 @@ export class MailFavoriteFolder extends MailModule {
         }
     }
 
+    _is_collapsed_rel(rel) {
+        let collapsed_folders = this.get_env('favorite_folders_collapsed') || '';
+
+        if (collapsed_folders.includes('&&')) collapsed_folders = collapsed_folders.split('&&');
+        else if (collapsed_folders !== '') collapsed_folders = [collapsed_folders];
+        else collapsed_folders = [];
+
+        return collapsed_folders.includes(rel);
+    }
+
     _generate_html_tree(tree, tree_html = null, level = 2) {
+        //debugger;
         let html = tree_html || JsHtml.start 
         .ul({class:'treelist listing folderlist'});
 
@@ -275,16 +311,17 @@ export class MailFavoriteFolder extends MailModule {
         else enum_tree = enum_tree.orderBy((x) => (x.id?.includes?.('INBOX') ?? true) ? 0 : 1).then((x) => x?.id);
 
         for (let element of enum_tree) {
+            var rel = `favourite/${element.get_full_path()}`;
             var have_child_len = element.hasChildren();
             
-            html = html.li({'aria-level':level, class:'mailbox', rel:`favourite/${element.get_full_path()}`}).css('margin-bottom', (level === 2 ? '10px' : EMPTY_STRING)).addClass((level === 2 ? 'boite' : (have_child_len ? '' : 'drafts')))
+            html = html.li({'aria-level':level, class:'mailbox', rel}).css('margin-bottom', (level === 2 ? '10px' : EMPTY_STRING)).addClass((level === 2 ? 'boite' : (have_child_len ? '' : 'drafts')))
                             .a()
                                 .span()
                                     .text(element.name)
                                 .end('span')
                                 .span({class:'unreadcount skip-content'}).end()
                             .end()
-                            .div({class:`treetoggle ${element.expended ? 'expanded' : 'collapsed'}`, onclick:this._toggle_folder.bind(this)});
+                            .div({class:`treetoggle ${this._is_collapsed_rel(rel) ? 'collapsed' : 'expanded'}`, onclick:this._toggle_folder.bind(this)});
 
                             if (!have_child_len) html = html.css('color', 'var(--invisible)');
 
@@ -294,6 +331,8 @@ export class MailFavoriteFolder extends MailModule {
 
             if (have_child_len) {
                 html = html.ul('role="group"');
+
+                if (this._is_collapsed_rel(rel)) html = html.css('display', 'none');
 
                 html = this._generate_html_tree(element, html, level + 1)
             }
@@ -317,9 +356,13 @@ export class MailFavoriteFolder extends MailModule {
                 .end()
                 .div({onclick:(e) => {
                     this._toggle_folder(e);
-                }, class:`treetoggle ${(this.get_env('favorites_folders')['favourite']?.expended ?? true) ? 'expanded' : 'collapsed'}`}).end();
+                }, class:`treetoggle ${this._is_collapsed_rel('favourite') ? 'collapsed' : 'expanded'}`}).end();
 
-        html = this._generate_html_tree(tree, html.ul({role:"group"}).css('padding-left', '1.5em')).end();
+        html = html.ul({role:"group"}).css('padding-left', '1.5em');
+
+        if (this._is_collapsed_rel('favourite')) html = html.css('display', 'none');
+
+        html = this._generate_html_tree(tree, html).end();
 
         return html;
     }

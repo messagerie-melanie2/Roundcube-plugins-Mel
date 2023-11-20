@@ -359,5 +359,5 @@ $labels['changeend'] = 'Date de fin';
 $labels['changeattendees'] = 'Liste des participants'; 
 $labels['changelocation'] = 'Lieu'; 
 $labels['changedescription'] = 'Description'; 
-$labels['changerecurrence'] = 'Répétition'; 
+$labels['changerecurrence'] = 'Ancienne répétition'; 
 ?>

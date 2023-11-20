@@ -218,8 +218,8 @@ class libcalendaring_itip
 
         //PAMELA - Dans le message de modification de réunion, indiquer les changements
         if (!empty($old)) {
-          $info_changes = ['location', 'description', 'recurrence', 'attendees'];
-          // $compare_changes = ['title', 'start', 'end'];
+          $info_changes = ['location', 'description', 'attendees'];
+
           $changes = calendar::event_diff($event, $old);
           if (!empty($changes)) {
             $template = $this->gettext('itipchanges');
@@ -232,6 +232,11 @@ class libcalendaring_itip
               }
               else if($change == "start" || $change == "end") {
                 $template .= "\n - " . $this->gettext("change".$change). " : " . $old[$change]->format('d/m/Y H:i') . " -> " . $event[$change]->format('d/m/Y H:i');
+              }
+              else if($change == "recurrence") {
+                $old_recurrence = $old[$change];
+                $time = ['DAILY' => $this->gettext("days"), 'WEEKLY' => $this->gettext("weeks"), 'MONTHLY' => $this->gettext("months"), 'YEARLY' => $this->gettext("years")];
+                $template .= "\n - " . $this->gettext("change".$change). " : " . (isset($old_recurrence) ? "Tous les ".$old_recurrence['INTERVAL']. " " . $time[$old_recurrence['FREQ']] : "Pas de répétition");
               }
             }
             $mailbody = str_replace('%%modification%%', $template, $mailbody);

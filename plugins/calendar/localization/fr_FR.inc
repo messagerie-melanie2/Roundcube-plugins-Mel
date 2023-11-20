@@ -194,7 +194,7 @@ $labels['invitationmailbody'] = "*\$title*\n\nQuand: \$date\n\nOrganisateur: \$o
 $labels['invitationattendlinks'] = "Dans le cas où votre application de messagerie ne gère pas les demandes \"iTip\", vous pouvez utiliser ce lien pour accepter ou refuser l'invitation : \n\$url";
 $labels['eventupdatesubject'] = '"$title" a été modifié';
 $labels['eventupdatesubjectempty'] = 'Un événement vous concernant a été modifié';
-$labels['eventupdatemailbody'] = "*\$title*\n\nQuand: \$date\n\nOrganisateur: \$organizer\n\nParticipants: \$attendees\n\nVous trouverez ci-joint un fichier iCalendar avec toutes les modifications à l'événement que vous pourrez importer dans votre agenda électronique.";
+$labels['eventupdatemailbody'] = "*\$title*\n\nQuand: \$date\n\n%%modification%%\n\nOrganisateur: \$organizer\n\nParticipants: \$attendees\n\nVous trouverez ci-joint un fichier iCalendar avec toutes les modifications à l'événement que vous pourrez importer dans votre agenda électronique.";
 $labels['eventcancelsubject'] = '"$title" a été annulé';
 $labels['eventcancelmailbody'] = "*\$title*\n\nQuand: \$date\n\nOrganisateur: \$organizer\n\nParticipants: \$attendees\n\nL'événement a été annulé par \$organizer.\n\nVous trouverez en pièce jointe un fichier iCalendar avec les modifications de l'événement que vous pourrez importer dans votre agenda électronique.";
 $labels['itipobjectnotfound'] = 'L\'événement lié à ce message n\'a pas été trouvé dans votre agenda.';
@@ -350,6 +350,14 @@ $labels['appointmentreason'] = 'Motif de rendez-vous';
 $labels['letusercustomreason'] = 'Laisser la possibilité à l\'utilisateur de choisir un motif personnalisé';
 $labels['see_direct_page'] = 'Voir la page de direct';
 $labels['__bdays__'] = $labels['birthdays'];
-//PAMELLA
+//PAMELA
 $labels['attendeeneeds-action'] = 'Une action est attendu de votre part.';
+$labels['itipchanges'] = 'Modifications : '; 
+$labels['changetitle'] = 'Titre'; 
+$labels['changestart'] = 'Date de début'; 
+$labels['changeend'] = 'Date de fin'; 
+$labels['changeattendees'] = 'Liste des participants'; 
+$labels['changelocation'] = 'Lieu'; 
+$labels['changedescription'] = 'Description'; 
+$labels['changerecurrence'] = 'Répétition'; 
 ?>

@@ -2851,7 +2851,7 @@ $("#rcmfd_new_category").keypress(function(event) {
             $event['comment'] = $comment;
 
             // finally send the message
-            if ($itip->send_itip_message($event, $method, $attendee, $subject, $bodytext, $message, $is_rsvp)) {
+            if ($itip->send_itip_message($event, $method, $attendee, $subject, $bodytext, $message, $is_rsvp, null, $old)) {
                 $sent++;
                 $array_attendees[] = $attendee;
             }

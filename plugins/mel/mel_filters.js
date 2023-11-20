@@ -735,18 +735,19 @@ les propriétés « nom » et « valeur ».
                 if (visible_enum.select(x => $(x).width() + ($(x).hasClass('mel-filter-more') ? 0 : corrector)).sum({}) > layout_list_width) {
                     $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');
                     let last = visible_enum.where(x => !$(x).hasClass('mel-filter-more')).last();//.hide();
-                    console.log('last', visible_enum.toArray(), last, $(last).children());
                     if (!!last) $(last).addClass('filter-last-before-more').hide();
                 }
             }
         };
 
-        let timeout;
+        let timeout = undefined;
         let filter_observer = new ResizeObserver(() => {
-            clearTimeout(timeout);
+            if(!!timeout) clearTimeout(timeout);
+            
             timeout = setTimeout(() => {
                 observe();
-                clearTimeout(timeout);
+
+                if (!!timeout) clearTimeout(timeout);
             }, 200);
         });
 

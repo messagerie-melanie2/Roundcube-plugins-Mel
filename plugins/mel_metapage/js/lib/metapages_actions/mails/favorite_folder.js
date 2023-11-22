@@ -109,6 +109,7 @@ class MailElement extends MelObject {
         this.target = $(event.currentTarget);
         this.group = this.target.parent().find('ul').first();
         this.rel = '';
+        this.relative_path = '';
 
         Object.defineProperty(this, 'rel', {
             get: () => {               
@@ -118,7 +119,7 @@ class MailElement extends MelObject {
 
         Object.defineProperty(this, 'relative_path', {
             get: () => {
-                const rel = this.rel;
+                let rel = this.rel;
                 if (rel.includes('favourite')) rel = rel.replace('favourite/', '');
                 if (rel.includes(this.get_env('current_user').full)) rel = rel.replace(`${this.get_env('current_user').full}/`, '');
                
@@ -222,7 +223,7 @@ export class MailFavoriteFolder extends MailModule {
                 var rel = $(`[rel="${this._toRel(key)}"]`);
 
                 if (rel.length > 0) {
-                    rel.find('.unreadcount').first().text(count);
+                    rel.find('.unreadcount').first().text(count || '');
                 }
 
             }
@@ -397,7 +398,7 @@ export class MailFavoriteFolder extends MailModule {
             var have_child_len = element.hasChildren();
             
             html = html.li({'aria-level':level, class:'mailbox', rel}).css('margin-bottom', (level === 2 ? '10px' : EMPTY_STRING)).addClass((level === 2 ? 'boite' : (have_child_len ? '' : 'drafts')))
-                            .a()
+                            .a({oncontextmenu:(e) => this._contextmenu(e)})
                                 .span()
                                     .text(element.name)
                                 .end('span')
@@ -424,6 +425,20 @@ export class MailFavoriteFolder extends MailModule {
         html = html.end();
         
         return html;
+    }
+
+    _contextmenu(e) {
+        e.preventDefault();
+        const {x, y} = e.originalEvent;
+        let $element = $(`[rel="${new MailElement(e).relative_path}"]`);
+
+        $element.contextmenu();
+
+        $('#rcm_folderlist').css('top', `${y}px`).css('left', `${x}px`);
+
+        setTimeout(() => {
+            $('#rcm_folderlist').css('display', '');
+        }, 10);
     }
 
     _create_html_tree(tree) {

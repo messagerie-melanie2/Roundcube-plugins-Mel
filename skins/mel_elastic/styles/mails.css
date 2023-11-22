@@ -1560,3 +1560,6 @@ body.task-mail.action-compose a.removelink {
 #quick-filter-priority.prio.prio3:after {
   content: '\e15b';
 }
+.folderlist li a.favourite-virtual-box::before {
+  content: "\e838" !important;
+}

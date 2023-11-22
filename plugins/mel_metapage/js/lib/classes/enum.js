@@ -193,6 +193,7 @@ class RotomecaGenerator
     }
 
     count() {
+        debugger;
         if (!this.length){
             this.length = 0;
             for (const iterator of this) {
@@ -504,6 +505,10 @@ class ARotomecaItemModifierGenerator extends RotomecaGenerator
         super(iterable);
         this.item = item;
     }
+
+    *next() {
+        yield *super.next();
+    }
 }
 
 class RotomecaAggegateGenerator extends ARotomecaItemModifierGenerator
@@ -757,7 +762,7 @@ class RotomecaTakeGenerator extends ARotomecaItemModifierGenerator
 class ObjectKeyEnumerable extends RotomecaGenerator {
     constructor(object) {
         super();
-        this.iterable = this._generate(object);
+        this.iterable = RotomecaEnumerable.from(this._generate.bind(this, object));
     }
 
     * _generate(object) {

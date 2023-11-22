@@ -111,12 +111,18 @@ class MailElement extends MelObject {
         this.rel = '';
 
         Object.defineProperty(this, 'rel', {
+            get: () => {               
+                return this.target.parent().attr('rel');
+            }
+        });
+
+        Object.defineProperty(this, 'relative_path', {
             get: () => {
-                const rel = this.target.parent().attr('rel');
-                //if (rel.includes('favourite')) rel = rel.replace('favourite/', '');
-                //if (rel.includes(this.get_env('current_user').full)) rel = rel.replace(`${this.get_env('current_user').full}/`, '');
+                const rel = this.rel;
+                if (rel.includes('favourite')) rel = rel.replace('favourite/', '');
+                if (rel.includes(this.get_env('current_user').full)) rel = rel.replace(`${this.get_env('current_user').full}/`, '');
                
-                return rel;
+                return rel
             }
         });
     }
@@ -170,7 +176,6 @@ class MailElement extends MelObject {
         this.target.removeClass('collapsed').addClass('expanded');
         this.group.show();
     }
-    
 }
 
 export class MailFavoriteFolder extends MailModule {
@@ -181,10 +186,87 @@ export class MailFavoriteFolder extends MailModule {
     main() {
         super.main();
 
-        this.startup();
-        this.startup_context_menu();
+        this.unreads = undefined;
+
+        this.main_async();
         this.setup_command();
-        this._update_favorites();
+    }
+
+    async main_async() {
+        await this.startup();
+        await this.startup_context_menu();
+        await this._update_favorites();
+
+        if (!this.unreads && !!this.get_env('unread_counts')) this.unreads = this.get_env('unread_counts');
+        this._setup_listeners();
+    }
+
+    _setup_listeners() {
+        this.rcmail().addEventListener('responseaftergetunread', () => {
+            this.unreads = this.get_env('unread_counts');
+            this._update_unreads();
+        });
+        this._update_unreads();
+    }
+
+    _update_unreads() {
+        const unreads = Object.keys(this.unreads ?? {});
+
+        if (unreads.length > 0) {
+            const unread_count = this.get_env('unread_counts');
+            for (let index = 0, len = unreads.length; index < len; ++index) {
+                const key = unreads[index];
+                const count = unread_count[key];
+                
+                console.log('rel', this._toRel(key));
+                var rel = $(`[rel="${this._toRel(key)}"]`);
+
+                if (rel.length > 0) {
+                    rel.find('.unreadcount').first().text(count);
+                }
+
+            }
+        }
+
+        this._update_count_collapsed();
+    }
+
+    _toRel(key) {
+        if (key.includes(this.balp())) {
+            if (key.split('/').length === 2) {
+                key = key + '/INBOX';
+            }
+        }
+        else key =  rcmail.env.current_user.full + '/' + key;
+        
+        return 'favourite/' + key;
+    }
+
+    _update_count_collapsed() {
+        const $current = $(`.treetoggle.collapsed`);
+
+        for (const iterator of $current) {
+            this._update_current_count_collapsed($(iterator));
+        }
+    }
+
+    _update_current_count_collapsed($current) {
+        if ($current.hasClass('treetoggle')) $current = $current.parent();
+
+        if ($current.find('.treetoggle').first().hasClass('collapsed')) {
+            let count = 0;
+
+            var $it;
+            for (const iterator of $current.find('.unreadcount')) {
+                $it = $(iterator);
+                if ($it.parent().parent().find('.treetoggle').first().hasClass('collapsed')) continue;
+
+                count += (+($it.text()));
+            }
+
+            $current.find('.unreadcount').first().text(count || '');
+        }
+        else $current.find('.unreadcount').first().text('');
     }
 
     async startup() {
@@ -374,6 +456,8 @@ export class MailFavoriteFolder extends MailModule {
         const mail_element = new MailElement(event);
 
         mail_element.toggle();
+
+        this._update_current_count_collapsed(mail_element.target);
 
         return mail_element;
     }

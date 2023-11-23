@@ -2059,3 +2059,18 @@ body.task-mail.action-compose a.removelink
         }
     }
 }
+
+#rcm_folderlist .menu a.favorite::before{
+    content: "\e838"!important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+    font-variation-settings: 'wght' 300, 'opsz' 48;
+    font-size: 22px;
+    line-height: inherit;
+    transform: scale(1);
+}
+
+#rcm_folderlist .menu a.favorite.unset-to::before{
+    content: "\e838"!important;
+    font-variation-settings: 'FILL' 1;
+}

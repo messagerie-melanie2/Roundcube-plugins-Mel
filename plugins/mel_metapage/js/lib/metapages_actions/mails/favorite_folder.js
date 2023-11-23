@@ -502,12 +502,12 @@ export class MailFavoriteFolder extends MailModule {
         const current_folder = folder || this.current_folder();
 
         if (!!current_folder) {
-            let $link = $('.popover .folder-to.favorite').removeClass('disabled').addClass('active');
+            let $link = $('.popover .folder-to.favorite').removeClass('disabled').addClass('active').removeClass('unset-to');
 
             const favorites_folders = this.get_env('favorites_folders');
             if (!!favorites_folders) {
                 if (!!favorites_folders[current_folder]) {
-                    $link.find('span.inner').text(this.gettext('unset-to-favorite', 'mel_metapage')).data('favorite', true).data('rel', current_folder);
+                    $link.find('span.inner').text(this.gettext('unset-to-favorite', 'mel_metapage')).data('favorite', true).data('rel', current_folder).parent().addClass('unset-to');
                 }
                 else {
                     $link.find('span.inner').text(this.gettext('set-to-favorite', 'mel_metapage')).data('favorite', false).data('rel', current_folder);
@@ -542,7 +542,7 @@ export class MailFavoriteFolder extends MailModule {
         const favorites_folders = this.get_env('favorites_folders');
 
         let favorite_tree = new tree();
-        for (const iterator of MelEnumerable.from(favorites_folders).orderBy((x) => x.key === 'INBOX' ? 0 : 1).then(x => x.key).select(x => new MelKeyValuePair(x.key.replace(`${this.balp()}/`, `${this.balp()}\\`), x.value))) {
+        for (const iterator of MelEnumerable.from(favorites_folders).orderBy((x) =>  rcmail.env.mailboxes_list.findIndex(a => a === x.key)).select(x => new MelKeyValuePair(x.key.replace(`${this.balp()}/`, `${this.balp()}\\`), x.value))) {
             this._generate_favorite_tree_element(favorite_tree, iterator);
         }
 
@@ -598,8 +598,8 @@ export class MailFavoriteFolder extends MailModule {
 
         let enum_tree = MelEnumerable.from(tree);
 
-        if (level === 2) enum_tree = enum_tree.orderBy((x) => (x.id?.includes?.(`${this.balp()}`) ?? true) ? 1 : 0).then((x) => x?.id);
-        else enum_tree = enum_tree.orderBy((x) => (x.id?.includes?.('INBOX') ?? true) ? 0 : 1).then((x) => x?.id);
+        // if (level === 2) enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.(`${this.balp()}`) ?? true) ? 1 : 0).then((x) => x?.id);
+        // else enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.('INBOX') ?? true) ? 0 : 1).then((x) => x?.id);
 
         for (let element of enum_tree) {
             var rel = `favourite/${element.get_full_path()}`;
@@ -704,14 +704,21 @@ export class MailFavoriteFolder extends MailModule {
 
     setup_command() {
         this.rcmail().register_command('set-favorite-folder', async (...args) => {
+            const busy = rcmail.set_busy(true, 'loading');
             const is_favorite = $('.popover .folder-to.favorite span.inner').data('favorite');
             const folder = $('.popover .folder-to.favorite span.inner').data('rel');
             const datas = await BnumConnector.connect(BnumConnector.connectors.mail_toggle_favorite, {
                 params:{
                     _folder: folder,
                     _state: !is_favorite
-                }
+                },
             })
+
+            rcmail.env.favorites_folders = datas.datas;
+
+            await this._update_favorites();
+            this._update_unreads();
+            rcmail.set_busy(false, 'loading', busy);
         }, true);
     }
 }

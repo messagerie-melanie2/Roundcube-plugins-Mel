@@ -274,7 +274,7 @@ class mel_helper extends rcube_plugin
         else return null;
     }
 
-    public static function send_mail($subject, $mailbody, $from, $recipient, $html = false, $pictures = []) {
+    public static function send_mail($subject, $mailbody, $from, $recipient, $html = false, $pictures = [], $custom_headers = []) {
         $rc = rcmail::get_instance();
 
         $mailto = rcube_utils::idn_to_ascii($recipient['email']);
@@ -296,6 +296,8 @@ class mel_helper extends rcube_plugin
             'To' => $to
             //'Content-type' => ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8')
         );
+
+        if (count($custom_headers) > 0) $headers = array_merge($headers, $custom_headers);
 
         $message = $SENDMAIL->create_message($headers, $mailbody, $html);
 

@@ -114,9 +114,10 @@ class libcalendaring_itip
      * @param object  Mail_mime object with message data
      * @param boolean Request RSVP
      * @param string  PAMELA attendee name
+     * @param array   PAMELA Old event in case of update  
      * @return boolean True on success, false on failure
      */
-    public function send_itip_message($event, $method, $recipient, $subject, $bodytext, $message = null, $rsvp = true, $attendee_name = null)
+    public function send_itip_message($event, $method, $recipient, $subject, $bodytext, $message = null, $rsvp = true, $attendee_name = null, $old = null)
     {
         if (!$this->sender['name']) {
             $this->sender['name'] = $this->sender['email'];
@@ -213,6 +214,36 @@ class libcalendaring_itip
         }
         else if ($method == 'CANCEL' && $event['cancelled']) {
             $this->cancel_itip_invitation($event);
+        }
+
+        //PAMELA - Dans le message de modification de réunion, indiquer les changements
+        if (!empty($old)) {
+          $info_changes = ['location', 'description', 'attendees'];
+
+          $changes = calendar::event_diff($event, $old);
+          if (!empty($changes)) {
+            $template = $this->gettext('itipchanges');
+            foreach ($changes as $change) {
+              if (in_array($change, $info_changes)) {
+                $template .= "\n - " . $this->gettext("change".$change);
+              }
+              else if($change == "title") {
+                $template .= "\n - " . $this->gettext("change".$change). " : " . $old[$change] . " -> " . $event[$change];
+              }
+              else if($change == "start" || $change == "end") {
+                $template .= "\n - " . $this->gettext("change".$change). " : " . $old[$change]->format('d/m/Y H:i') . " -> " . $event[$change]->format('d/m/Y H:i');
+              }
+              else if($change == "recurrence") {
+                $old_recurrence = $old[$change];
+                $time = ['DAILY' => $this->gettext("days"), 'WEEKLY' => $this->gettext("weeks"), 'MONTHLY' => $this->gettext("months"), 'YEARLY' => $this->gettext("years")];
+                $template .= "\n - " . $this->gettext("change".$change). " : " . (isset($old_recurrence) ? "Tous les ".$old_recurrence['INTERVAL']. " " . $time[$old_recurrence['FREQ']] : "Pas de répétition");
+              }
+            }
+            $mailbody = str_replace('%%modification%%', $template, $mailbody);
+          }
+        }
+        else {
+          $mailbody = str_replace('%%modification%%', "Pas de modifications", $mailbody);
         }
 
         $message->headers($headers, true);

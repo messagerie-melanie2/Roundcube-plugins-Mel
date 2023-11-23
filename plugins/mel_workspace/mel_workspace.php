@@ -593,12 +593,21 @@ class mel_workspace extends bnum_plugin
         $this->rc->output->send('mel_workspace.calendar');
     }
 
+    public static function get_workspace_logo($workspace) {
+        $logo = $workspace->logo;
+        if ($logo !== null && strpos($logo, 'mel_elastic') === false && strpos($logo, 'elastic') !== false) {
+            $logo = str_replace('elastic', 'mel_elastic', $logo);
+        }
+
+        return $logo;
+    }
+
     function get_picture()
     {
-        
+        $logo = self::get_workspace_logo($this->currentWorkspace);
         try {
-            if ($this->currentWorkspace->logo !== null && $this->currentWorkspace->logo !== "false" && $this->currentWorkspace->logo !== "")
-                $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><img src="'.$this->currentWorkspace->logo.'"></div>';
+            if ($logo !== null && $logo !== "false" && $logo !== "")
+                $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><img src="'.$logo.'"></div>';
             else
                 $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><span>'.substr($this->currentWorkspace->title, 0, 3)."</span></div>";
         } catch (\Throwable $th) {
@@ -1583,7 +1592,8 @@ class mel_workspace extends bnum_plugin
         
         if ($user_rights === Share::RIGHT_OWNER)
         {
-            $html = str_replace("<logo/>", (($this->currentWorkspace->logo ?? "false") == "false" ? '<span>'.substr($this->currentWorkspace->title, 0, 3)."</span>" : '<img src="'.$this->currentWorkspace->logo.'" />'), $html);
+            $logo = self::get_workspace_logo($this->currentWorkspace);
+            $html = str_replace("<logo/>", (($logo ?? "false") == "false" ? '<span>'.substr($this->currentWorkspace->title, 0, 3)."</span>" : '<img src="'.$logo.'" />'), $html);
             $html = str_replace("<visibility/>", ($this->currentWorkspace->ispublic ? "privé" : 'public'), $html);
         }
         else
@@ -1934,7 +1944,7 @@ class mel_workspace extends bnum_plugin
             $bodymail->wsp_creator = $workspace->creator;
             $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Créer le' : 'Mise à jour';
             $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
-            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png');
+            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
             $bodymail->url = 'https://mel.din.developpement-durable.gouv.fr/bureau/?_task=workspace&_action=workspace&_uid='.$workspace->uid;
 
@@ -2425,8 +2435,9 @@ class mel_workspace extends bnum_plugin
             $html = str_replace("<epingle-title>", "Épingler", $html);
         }
 
-        if ($workspace->logo !== null && $workspace->logo !== false  && $workspace->logo !== "false")
-            $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img alt="" src="'.$workspace->logo.'"></div>', $html);
+        $logo = self::get_workspace_logo($workspace);
+        if ($logo !== null && $logo !== false  && $logo !== "false")
+            $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img alt="" src="'.$logo.'"></div>', $html);
         else
             $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span style=color:".$this->get_badge_text_color($workspace).">".substr($workspace->title, 0, 3)."</span></div>", $html);
         

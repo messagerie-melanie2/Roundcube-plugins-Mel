@@ -340,8 +340,6 @@ export class MailFavoriteFolder extends MailModule {
             rcmail_drag_move.call(this, e);
 
             if (null === this.env.last_folder_target) {
-                console.log('drag', this, e);
-
                 let $parent = $(e.target);
 
                 while(!$parent.attr('mailid') && $parent.length > 0 && $parent[0].tagName !== 'BODY') {
@@ -619,8 +617,6 @@ export class MailFavoriteFolder extends MailModule {
                             if (!have_child_len) html = html.css('color', 'var(--invisible)');
 
                             html = html.end();
-
-                            console.log('html1', html);
 
             if (have_child_len) {
                 html = html.ul('role="group"');

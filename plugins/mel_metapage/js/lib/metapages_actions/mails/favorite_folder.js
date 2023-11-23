@@ -207,6 +207,8 @@ export class MailFavoriteFolder extends MailModule {
     main() {
         super.main();
 
+        if (!['', 'index'].includes(rcmail.env.action)) return;
+
         this.unreads = undefined;
 
         const rcmail_folder_selector = rcmail.folder_selector;
@@ -379,6 +381,47 @@ export class MailFavoriteFolder extends MailModule {
             $('#favorite-folders .droptarget').removeClass('droptarget');
         };
 
+        const rcmail_msglist_dbl_click = rcmail.msglist_dbl_click;
+
+        rcmail.msglist_dbl_click = (...args) => {
+            rcmail_msglist_dbl_click.call(rcmail, ...args);
+
+            setTimeout(() => {
+                this._update_unreads();
+            }, 30*1000);
+        }
+
+        const rcmail_msglist_select = rcmail.msglist_select;
+
+        rcmail.msglist_select = (...args) => {
+            rcmail_msglist_select.call(rcmail, ...args);
+
+            setTimeout(() => {
+                this._update_unreads();
+            }, 30*1000);
+        }
+        // const rcmail_command = rcmail.command;
+
+        // rcmail.command = (...args) => {
+        //     rcmail_command.call(rcmail, ...args);
+
+        //     switch (args[0]) {
+        //         case 'mark-all-read':
+        //         case 'purge':
+        //         case 'update-unread':
+        //             this._update_unreads();
+        //             break;
+
+        //         case 'update-favorite':
+        //             this._update_favorites();
+        //             this._update_selected();
+        //             this._update_unreads();
+        //             break;
+            
+        //         default:
+        //             break;
+        //     }
+        // };
         this.main_async();
         this.setup_command();
     }
@@ -397,8 +440,23 @@ export class MailFavoriteFolder extends MailModule {
             this.unreads = this.get_env('unread_counts');
             this._update_unreads();
         });
-
         this.rcmail().addEventListener('responseafterlist', () => {
+            this._update_selected();
+            this._update_unreads();
+        });
+        this.rcmail().addEventListener('responseaftermark', () => {
+            this._update_unreads();
+        });
+        this.rcmail().addEventListener('responseaftercheck-recent', () => {
+            this._update_unreads();
+        });
+        this.rcmail().addEventListener('responseafterpurge', () => {
+            this._update_unreads();
+        });
+        this.rcmail().addEventListener('mel_metapage_refresh', async () => {
+            await this.get_favorites_from_serv();
+            await this._update_favorites();
+            this._update_unreads();
             this._update_selected();
         });
         this._update_unreads();
@@ -720,5 +778,11 @@ export class MailFavoriteFolder extends MailModule {
             this._update_unreads();
             rcmail.set_busy(false, 'loading', busy);
         }, true);
+    }
+
+    async get_favorites_from_serv() {
+        const datas = await BnumConnector.connect(BnumConnector.connectors.mail_get_favorite_folder, {});
+
+        rcmail.env.favorites_folders = datas.datas;
     }
 }

@@ -28,6 +28,9 @@ const connectors = {
                                                                         params:{_name:'favorite_folders_collapsed',_remote:"1"},
                                                                         needed:{_value:''}
                                                                     }),
+    mail_get_favorite_folder: new Connector('mail', 'plugin.mel_metapage.get_favorite_folders', {
+                                                                                                    type:Connector.enums.type.post
+                                                                                                })
 };
 
 

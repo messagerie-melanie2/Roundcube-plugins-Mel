@@ -235,6 +235,7 @@ class mel_metapage extends bnum_plugin
         {
             $this->register_action('plugin.mel_metapage.toggle_favorite', array($this, 'toggle_favorite_folder'));
             $this->register_action('plugin.mel_metapage.toggle_display_folder', array($this, 'toggle_display_folder'));
+            $this->register_action('plugin.mel_metapage.get_favorite_folders', [$this, 'get_display_folder']);
 
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
@@ -276,6 +277,7 @@ class mel_metapage extends bnum_plugin
                 case '':
                 case 'index':
                     $this->rc->output->set_env('favorites_folders', $this->rc->config->get('favorite_folders', []));
+                    break;
                 
                 default:
                     $this->rc->output->set_env("model_mbox", $model_mbox);
@@ -3388,6 +3390,11 @@ class mel_metapage extends bnum_plugin
         if (!$prefs[$folder]['expended'] && !$prefs[$folder]['selected']) unset($prefs[$folder]);
 
         echo json_encode($prefs);
+        exit;
+    }
+
+    public function get_display_folder() {
+        echo json_encode($this->rc->config->get('favorite_folders', []));
         exit;
     }
 }

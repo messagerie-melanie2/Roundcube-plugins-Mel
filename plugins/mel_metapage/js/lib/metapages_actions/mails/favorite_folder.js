@@ -80,6 +80,19 @@ class treeElement extends tree {
                 else return rcmail.env.mailboxes[this.get_full_path()]?.name ?? 'error';
             }
         });
+
+        this.full_id = '';
+        Object.defineProperty(this, 'full_id', {
+            get: () => {
+                let path = '';
+
+                if (!!this.parent) path += this.parent.full_id;
+
+                path += `${!!this.parent && this.parent.full_id === '' ? '' : '/'}${this.id}`;
+
+                return path.replace('/undefined', EMPTY_STRING).replace('undefined/', EMPTY_STRING).replace(`${rcmail.env.current_user.full}/`, '').replace(`${rcmail.env.username}.-.`, `${this.balp()}/`);
+            }
+        });
     }
 
     balp() {
@@ -339,7 +352,28 @@ export class MailFavoriteFolder extends MailModule {
             this.unreads = this.get_env('unread_counts');
             this._update_unreads();
         });
+
+        this.rcmail().addEventListener('responseafterlist', () => {
+            this._update_selected();
+        });
         this._update_unreads();
+        this._update_selected();
+    }
+
+    _update_selected() {
+        debugger;
+        const current_mbox = this.get_env('mailbox'); 
+        let $element = $(`[mailid="${current_mbox}"]`);
+
+        if (current_mbox.includes(this.balp()) && current_mbox.split('/').length === 2) {
+            $element = $(`[mailid="${current_mbox}/INBOX"]`);
+        }
+        
+        $('#favorite-folders .selected').removeClass('selected');
+
+        if ($element.length > 0) {
+            $element.addClass('selected');
+        }
     }
 
     _update_unreads() {
@@ -527,7 +561,7 @@ export class MailFavoriteFolder extends MailModule {
             var rel = `favourite/${element.get_full_path()}`;
             var have_child_len = element.hasChildren();
             
-            html = html.li({'aria-level':level, class:'mailbox', rel}).css('margin-bottom', (level === 2 ? '10px' : EMPTY_STRING)).addClass(this._get_folder_class(element.id))
+            html = html.li({'aria-level':level, class:'mailbox', mailid:element.full_id, rel}).css('margin-bottom', (level === 2 ? '10px' : EMPTY_STRING)).addClass(this._get_folder_class(element.id))
                             .a({oncontextmenu:(e) => this._contextmenu(e), onclick:this._onclicktree.bind(this)})
                                 .span()
                                     .text(element.name)
@@ -597,7 +631,7 @@ export class MailFavoriteFolder extends MailModule {
         html = html.ul({role:"group"}).css('padding-left', '1.5em');
 
         if (this._is_collapsed_rel('favourite')) html = html.css('display', 'none');
-
+console.log('tree', tree);
         html = this._generate_html_tree(tree, html).end();
 
         return html;

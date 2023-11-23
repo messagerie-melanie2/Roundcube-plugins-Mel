@@ -332,7 +332,54 @@ export class MailFavoriteFolder extends MailModule {
             else {
                 return rcmail_folder_selector.call(this, ...args);
             }
-        }
+        };
+
+        const rcmail_drag_move = rcmail.drag_move;
+
+        rcmail.drag_move = function(e) {
+            rcmail_drag_move.call(this, e);
+
+            if (null === this.env.last_folder_target) {
+                console.log('drag', this, e);
+
+                let $parent = $(e.target);
+
+                while(!$parent.attr('mailid') && $parent.length > 0 && $parent[0].tagName !== 'BODY') {
+                    $parent = $parent.parent();
+                }
+
+                let mailid = $parent.attr('mailid');
+
+                if (!!mailid) {
+                    if (mailid.includes(new MailModule().balp())) {
+                        if (mailid.split('/').length === 2) return;
+                        else mailid = mailid.replace('/INBOX', '');
+                    }
+                    else if (mailid === this.env.current_user.full) return;
+
+                    if (this.env.last_folder_target !== $(`[rel="${mailid}"]`))  $('#favorite-folders .droptarget').removeClass('droptarget');
+
+                    if (!!mailid) {
+                        $parent.addClass('droptarget')
+                        this.env.last_folder_target = mailid;
+                    }
+                    else {
+                        this.env.last_folder_target = null;
+                    }
+                }
+                else {
+                    $('#favorite-folders .droptarget').removeClass('droptarget');
+                    this.env.last_folder_target = null;
+                }
+
+            }
+        };
+
+        const rcmail_drag_end = rcmail.drag_end;
+        rcmail.drag_end = function(e) {
+            rcmail_drag_end.call(this, e);
+            $('#favorite-folders .droptarget').removeClass('droptarget');
+        };
 
         this.main_async();
         this.setup_command();
@@ -361,7 +408,6 @@ export class MailFavoriteFolder extends MailModule {
     }
 
     _update_selected() {
-        debugger;
         const current_mbox = this.get_env('mailbox'); 
         let $element = $(`[mailid="${current_mbox}"]`);
 
@@ -617,7 +663,7 @@ export class MailFavoriteFolder extends MailModule {
     _create_html_tree(tree) {
         let html = JsHtml.start
         .ul({class:'treelist listing folderlist'})
-            .li({'aria-level':1, rel:"favourite"})
+            .li({'aria-level':1, rel:"favourite", class:'mailbox boite virtual'})
                 .a({class:'favourite-virtual-box'})
                     .span()
                         .text('Favoris')
@@ -631,7 +677,7 @@ export class MailFavoriteFolder extends MailModule {
         html = html.ul({role:"group"}).css('padding-left', '1.5em');
 
         if (this._is_collapsed_rel('favourite')) html = html.css('display', 'none');
-console.log('tree', tree);
+
         html = this._generate_html_tree(tree, html).end();
 
         return html;

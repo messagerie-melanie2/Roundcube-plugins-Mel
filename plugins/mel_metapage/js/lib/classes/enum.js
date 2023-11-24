@@ -193,7 +193,6 @@ class RotomecaGenerator
     }
 
     count() {
-        debugger;
         if (!this.length){
             this.length = 0;
             for (const iterator of this) {

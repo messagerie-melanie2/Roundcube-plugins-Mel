@@ -321,3 +321,22 @@ html.layout-phone .--row
   height: 100%!important;
 }
  
+.bottom-right {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+}
+
+.bottom-right div {
+  width: 150px;
+  height: 70px;
+  background-image: url('https://jedonnemonavis.numerique.gouv.fr/static/bouton-bleu.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 150px;
+}
+
+html.dark-mode-custom .bottom-right div {
+  background-image: url('https://jedonnemonavis.numerique.gouv.fr/static/bouton-blanc.svg');
+}

@@ -2,6 +2,16 @@ $(document).ready(async () => {
     const EMPTY_STRING = '';
 
     if ('mail' === rcmail.env.task && [EMPTY_STRING, 'index'].includes(rcmail.env.action)) {
+
+        function close_previsu() {
+            // let $layout_content = $('#layout-content');
+
+            // if ($layout_content.css('display') !== 'none') $layout_content.hide();
+
+            // $layout_content = null;
+            rcmail.command('close-mail-visu', {ignore_select:true});
+        }
+
 /** La classe `mel_filter` est une classe JavaScript qui représente un filtre et fournit des méthodes
 pour gérer son état et son comportement. */
         class mel_filter {
@@ -233,6 +243,10 @@ les propriétés « nom » et « valeur ».
                 let list = rcmail.message_list;
                 if (0 === list.selection.length) $check.removeAttr('checked', 'checked')[0].checked = false;
                 else $check.attr('checked', 'checked')[0].checked = true;
+
+                if (list.selection.length !== 1) {
+                    close_previsu();
+                }
             }
 
             static get_checkbox() {
@@ -511,6 +525,8 @@ les propriétés « nom » et « valeur ».
             mel_filter_manager.reset_priorities();
             mel_filter_manager.reset_extra_states();
             mel_selector.get_checkbox().update_selected_check();
+
+            close_previsu();
         });
 
         rcmail.addEventListener('label.tooltip.click', (args) => {
@@ -631,13 +647,17 @@ les propriétés « nom » et « valeur ».
                     break;
                 case 'select-all':
                     let list = this[this.task == 'addressbook' ? 'contact_list' : 'message_list'];
-                    if (0 === list.selection.length) $check.removeAttr('checked', 'checked')[0].checked = false;
+                    if (0 === list.selection.length) {
+                        $check.removeAttr('checked', 'checked')[0].checked = false;
+                        close_previsu();
+                    }
                     else $check.attr('checked', 'checked')[0].checked = true;
     
                     break;
             
                   case 'select-none':
                     $check.removeAttr('checked')[0].checked = false;
+                    close_previsu();
                     break;
             
                 default:
@@ -677,7 +697,6 @@ les propriétés « nom » et « valeur ».
 
             const layout_list_width = $('#layout-list').width(); 
             const li_width = MelEnumerable.from($('#message-list-filters li')).sum({selector: (x) => $(x).width()});
-            console.log('observe...', 'layout',layout_list_width, 'li', li_width);
             if (li_width > layout_list_width) {
 
                 $('#message-list-filters').css('padding-right', 0);

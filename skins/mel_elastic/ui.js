@@ -1319,9 +1319,10 @@ $(document).ready(() => {
                         $('#layout-content .header .move.simplified').css('display', 'none');
 
                         //Fermer la prévisu
-                        rcmail.register_command("close-mail-visu", () => {
-                            console.log('close-mail-visu');
-                            $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
+                        rcmail.register_command("close-mail-visu", (args) => {
+                            const {ignore_select} = args;
+
+                            if (!ignore_select) $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
 
                             $("#layout-content").css("display", "none").addClass("hidden layout-hidden");
                             $("#layout-list").addClass("full");

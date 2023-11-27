@@ -3347,15 +3347,16 @@ function rcube_calendar_ui(settings) {
         click: function () {
           if (form) {
             var start = 0, range = $('#event-export-range', this).val(),
-              source = $('#event-export-calendar').val(),
-              attachmt = $('#event-export-attachments').get(0).checked;
+              source = $('#event-export-calendar').val();
+              //PAMELA - Dans la mesure où la fonction Exporter ne peut prendre les PJ, autant virer l'option.
+              // attachmt = $('#event-export-attachments').get(0).checked;
 
             if (range == 'custom')
               start = date2unixtime(me.parse_datetime('00:00', $('#event-export-startdate').val()));
             else if (range > 0)
               start = 'today -' + range + ' months';
 
-            rcmail.goto_url('export_events', { source: source, start: start, attachments: attachmt ? 1 : 0 }, false);
+            rcmail.goto_url('export_events', { source: source, start: start, attachments: 0 }, false);
           }
           $dialog.dialog("close");
         }

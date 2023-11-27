@@ -537,6 +537,40 @@ if (rcmail)
 
             }, true);
 
+
+            rcmail.register_command("toggleAnimations", async () => {
+                const busy = rcmail.set_busy(true, 'loading');
+                await mel_metapage.Functions.post(
+                    mel_metapage.Functions.url("mel_elastic", "plugin.toggle_animations"),
+                    {},
+                    (datas) => {
+                        //debugger;
+                        rcmail.env.animation_enabled = JSON.parse(datas);
+                        let current = MEL_ELASTIC_UI.themes[MEL_ELASTIC_UI.theme];
+
+                        //rcmail.env.animation_enabled = !(rcmail.env.animation_enabled ?? current.animation_enabled_by_default);
+
+                        for (const key in MEL_ELASTIC_UI.themes) {
+                            if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
+                                const element = MEL_ELASTIC_UI.themes[key];
+        
+                                if (!!element.animation_class) $('body').removeClass(element.animation_class);
+                            }
+                        }
+
+                        if (!!current.animation_class){
+                            if (rcmail.env.animation_enabled ?? current.animation_enabled_by_default) {
+                                $('body').addClass(current.animation_class);
+                                $('#rcmfd-toggle-anims')[0].checked = false;
+                            }
+                            else $('#rcmfd-toggle-anims')[0].checked = true;
+                        }
+                    }
+                );
+
+                rcmail.set_busy(false, 'loading', busy);
+            }, true);
+
             rcmail.register_command("toggleChat", () => {
                 mel_metapage.Functions.post(
                     mel_metapage.Functions.url("mel_metapage", "toggleChat"),

@@ -55,6 +55,7 @@ class mel_elastic extends rcube_plugin
             $this->register_action('update_theme', array($this, 'update_theme'));
             $this->register_action('update_theme_picture', array($this, 'update_theme_picture'));
             $this->register_action('update_custom_picture', array($this, 'update_custom_picture'));
+            $this->register_action('toggle_animations', array($this, 'toggleAnimations'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
@@ -67,11 +68,11 @@ class mel_elastic extends rcube_plugin
             $this->add_texts('localization/', true);
             //$this->add_hook('messages_list', [$this, 'mail_messages_list']);
             $this->rc->output->set_env("button_add", 
-            '<div class="mel-add" onclick="¤¤¤">
-                <span style="position:relative">'.$this->gettext('add').'<span class="icofont-plus-circle plus"></span></span>
-            </div>'
-
-        );
+                '<div class="mel-add" onclick="¤¤¤">
+                    <span style="position:relative">'.$this->gettext('add').'<span class="icofont-plus-circle plus"></span></span>
+                </div>'
+            );
+            $this->rc->output->set_env('animation_enabled', $this->rc->config->get('mel_metapage_animation_state', null));     
         }
     }
 
@@ -306,6 +307,14 @@ class mel_elastic extends rcube_plugin
         $pref = rcube_utils::get_input_value('_prefid', rcube_utils::INPUT_POST);
         $this->rc->user->save_prefs(array($pref => $datas));
         echo 'ok';
+        exit;
+    }
+
+    public function toggleAnimations() {
+        $config = !$this->rc->config->get('mel_metapage_animation_state', $this->mep_themes()[$this->get_current_theme()]["animation_enabled_by_default"]);
+        $this->rc->user->save_prefs(array('mel_metapage_animation_state' => $config));
+    
+        echo json_encode($config);
         exit;
     }
 

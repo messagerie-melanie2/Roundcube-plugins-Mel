@@ -104,6 +104,20 @@ class Theme {
     public $saison;
 
     /**
+     * Undocumented variable
+     *
+     * @var string
+     */
+    public $animation_class;
+
+    /**
+     * Undocumented variable
+     *
+     * @var boolean
+     */
+    public $animation_enabled_by_default;
+
+    /**
      * Constructeur de la classe
      *
      * @param string $path Chemin du dossier du thème
@@ -144,6 +158,8 @@ class Theme {
         $this->custom_dark_mode = $json->custom_dark_mode ?? false;
         $this->order = $json->order;
         $this->saison = $json->saison;
+        $this->animation_class = $json->animation_class;
+        $this->animation_enabled_by_default = $json->animation_enabled_by_default;
 
         if (isset($this->saison)) $this->saison = new ThemeSaison($this->saison);
         else $this->saison = new ThemeSaisonForced();
@@ -184,7 +200,7 @@ class Theme {
      */
     public function prepareToSave() {
         $forSave = [];
-        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent', 'custom_dark_mode', 'order', 'showed', 'saison'];
+        $array = ['id', 'icon', 'displayed', 'desc', 'class', 'parent', 'custom_dark_mode', 'order', 'showed', 'saison', 'animation_class', 'animation_enabled_by_default'];
 
         foreach ($array as $value) {
             switch ($value) {
@@ -208,6 +224,11 @@ class Theme {
                         $forSave[$value] = $saison;
                     }
                     break;
+
+                case 'animation_class':
+                case 'animation_enabled_by_default':
+                    if (isset($this->$value)) $forSave[$value] = $this->$value;
+                    else continue;
                 
                 default:
                     $forSave[$value] = $this->$value;
@@ -404,6 +425,10 @@ class ThemeSaison {
         
         $this->start = $this->_date($date[0]);
         $this->end = $this->_date($date[1]);
+
+        if ($this->end <= $this->start) {
+            $this->end = $this->end->add(new DateInterval("P1Y"));
+        }
     }
 
     public function can_be_shown() {

@@ -420,3 +420,5 @@ $labels['send_email_error'] = 'Erreur serveur lors de l\'envoi du mail';
 $labels['introduction_text_without_date'] = 'Nous allons commencer à configurer le reforcement de la sécurité sur votre compte. Cliquez sur "'.$labels['show_me'] .'" pour continuer !';
 $labels['set-to-favorite'] = 'Ajouter aux favoris';
 $labels['unset-to-favorite'] = 'Retirer des favoris';
+$labels['disable-animations'] = 'Désactiver les animations';
+$labels['disable-animations-helper'] = "Désactive les animation du thème en cours pour améliorer les performances.";

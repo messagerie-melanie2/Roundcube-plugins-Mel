@@ -318,7 +318,7 @@ class mel_metapage extends bnum_plugin
 
         if (!$this->is_app_enabled('chat')) $config = false;
 
-        $this->rc->output->set_env("mel_metapage_chat_visible", $config);
+        $this->rc->output->set_env("mel_metapage_chat_visible", true);
         $this->rc->output->set_env("mel_metapage_weather_enabled", $this->rc->config->get("enable_weather", false));
         $this->rc->output->set_env('mel_metapage.tab.notification_style', $this->rc->config->get('tab_title_style', 'page'));
         $this->rc->output->set_env('mel_metapage.webconf_voxify_indicatif', $this->rc->config->get('webconf_voxify_indicatif', 'FR'));
@@ -2398,7 +2398,7 @@ class mel_metapage extends bnum_plugin
   function toggleChat()
   {
     $config = !$this->rc->config->get('mel_metapage_chat_visible', true);
-    $this->rc->user->save_prefs(array('mel_metapage_chat_visible' => $config));
+    $this->rc->user->save_prefs(array('mel_metapage_chat_visible' => true));
 
     echo json_encode($config);
     exit;

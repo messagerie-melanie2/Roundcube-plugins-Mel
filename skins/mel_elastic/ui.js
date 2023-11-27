@@ -697,6 +697,7 @@ $(document).ready(() => {
 
                             this.update_theme(e.data('name'));
                             this._update_theme_color();
+                            
                         });
                         html_main_div = new mel_html2(CONST_HTML_DIV, {attribs:{class:THEME_MAIN_CLASS_COL, style:STYLE_THEME_BUTTON_PARENT}, contents:[html_theme]});
                         html_main_div.css('position', 'flex');
@@ -754,6 +755,26 @@ $(document).ready(() => {
                 else {
                     //Sinon, on le désactive
                     $theme_button.addClass(CONST_ATTRIB_DISABLED).attr(CONST_ATTRIB_DISABLED, CONST_ATTRIB_DISABLED);
+                }
+            }
+
+            if ($('#rcmfd-toggle-anims').length > 0) {
+                //Affichage du bouton de thème
+                if (!this.themes[this.theme].animation_class) {
+                    $('#rcmfd-toggle-anims').addClass('disabled').attr('disabled', 'disabled').parent().parent().css({opacity:0, position:'absolute'});
+                }
+                else {
+                    $('#rcmfd-toggle-anims').removeClass('disabled').removeAttr('disabled').parent().parent().css({opacity:'', position:''});
+                }
+
+                let current = this.themes[this.theme];
+
+                if (!!current.animation_class){
+                    if (rcmail.env.animation_enabled ?? current.animation_enabled_by_default) {
+                        $('body').addClass(current.animation_class);
+                        $('#rcmfd-toggle-anims')[0].checked = false;
+                    }
+                    else $('#rcmfd-toggle-anims')[0].checked = true;
                 }
             }
 
@@ -3466,6 +3487,37 @@ $(document).ready(() => {
                 }
 
                 this.theme = theme;
+
+                //Désactiver les autres animations
+                for (const key in this.themes) {
+                    if (Object.hasOwnProperty.call(this.themes, key)) {
+                        const element = this.themes[key];
+
+                        if (!!element.animation_class) $('body').removeClass(element.animation_class);
+                    }
+                }
+                
+                if ($('#rcmfd-toggle-anims').length > 0)
+                {
+                    //Afficher ou non un bouton pour activer les animations
+                    if (!this.themes[this.theme].animation_class) {
+                        $('#rcmfd-toggle-anims').addClass('disabled').attr('disabled', 'disabled').parent().parent().css({opacity:0, position:'absolute'});
+                    }
+                    else {
+                        $('#rcmfd-toggle-anims').removeClass('disabled').removeAttr('disabled').parent().parent().css({opacity:'', position:''});
+                    }
+
+                    //Activer ou non les animations du thème
+                    let current = this.themes[this.theme];
+
+                    if (!!current.animation_class){
+                        if (rcmail.env.animation_enabled ?? current.animation_enabled_by_default) {
+                            $('body').addClass(current.animation_class);
+                            $('#rcmfd-toggle-anims')[0].checked = false;
+                        }
+                        else $('#rcmfd-toggle-anims')[0].checked = true;
+                    }
+                }
             }
 
             $('iframe.mm-frame').each((i, e) => {

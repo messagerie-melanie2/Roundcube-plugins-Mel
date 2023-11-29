@@ -22,6 +22,7 @@ if (window.rcmail) {
 				rcmail.addEventListener('quick-filter.labels', (args) => {
 					const {filter, target_event} = args;
 
+					console.log('debug', 'quick-filter.labels', target_event, filter, rcmail.mel_label_show_tooltip + '');
 					rcmail.mel_label_show_tooltip(target_event);
 				});
 			}
@@ -541,6 +542,8 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function($parent) {
 
 		$parent.click();
 	}
+
+	console.log('debug label', $tooltip.length, rcmail.env.labels_translate);
 
 	setTimeout(() => {
 		if ($('#mel-label-tooltip-dropdown').hasClass('hidden')) $parent.popover('show');

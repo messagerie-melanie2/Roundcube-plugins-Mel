@@ -625,6 +625,8 @@ les propriétés « nom » et « valeur ».
                 target_event.addClass('priority-tooltip').data('popup', 'priority-tooltip');
                 UI.popup_init(target_event);
                 target_event.click();
+
+                console.log('debug [Filter]', target_event, html_div, html_div.toString());
             }
 
             setTimeout(() => {

@@ -1459,6 +1459,8 @@ function rcube_tasklist_ui(settings)
 
         if (is_complete(rec))
             div.addClass('complete');
+        if (is_cancelled(rec))
+            div.addClass('cancelled');
         if (rec.flagged)
             div.addClass('flagged');
         if (!rec.date)
@@ -1661,6 +1663,14 @@ function rcube_tasklist_ui(settings)
     function is_complete(rec)
     {
         return ((rec.complete == 1.0 && !rec.status) || rec.status === 'COMPLETED') ? 1 : 0;
+    }
+
+    /**
+     * Determine whether the given task should be displayed as "complete"
+     */
+    function is_cancelled(rec)
+    {
+        return rec.status == "CANCELLED" ? 1 : 0;
     }
 
     /**

@@ -2052,7 +2052,7 @@ $(document).ready(() => {
                                 }
                             }
                             
-                            if (rcmail.env.task !== 'useful_links')
+                            if (!url.includes('/?_task=')) 
                             {
                               //On ouvre une modal pour prévenir d'un lien externe
                               let domain = new URL(url).hostname;

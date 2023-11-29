@@ -4486,11 +4486,15 @@ class mel_workspace extends bnum_plugin
         $current_user = driver_mel::gi()->getUser();
 
         
-        foreach ($users as $user) {
-            if ($user->user !== $current_user->uid || $include_current)
-            {
-                mel_notification::notify("workspace", $title, $content, $action, $user->user);
+        try {
+            foreach ($users as $user) {
+                if (($user->user !== $current_user->uid || $include_current) && driver_mel::gi()->getUser($user->user) !== null)
+                {
+                    mel_notification::notify("workspace", $title, $content, $action, $user->user);
+                }
             }
+        } catch (\Throwable $th) {
+            //throw $th;
         }
     }
 

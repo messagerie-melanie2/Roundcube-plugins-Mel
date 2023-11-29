@@ -202,6 +202,9 @@ class RoundriveShow
             if (Object.hasOwnProperty.call(datas, key)) {
                 const element = datas[key];
 
+                //0007816: Ne pas montrer les fichiers cachés dans Mes documents de l'espace de travail
+                if (decodeURIComponent(element.basename)[0] === '.') continue;
+
                 switch (element.type) {
                     case this.enum.type.directory:
 

@@ -1,3 +1,4 @@
+//compress:false
 body {
   background-color: var(--body-background-color);
 }
@@ -128,7 +129,19 @@ body.action-dialog-ui {
 ul.treelist li.selected>div>a,
 .scroller>.listing li a,
 .scroller>.listing li div {
-  color: var(--layout-sidebar-text-color);
+  color: var(--main-text-color);
+
+  // #files-folder-list,
+  // #files-compose-dialog &{
+  //   color: var(--secondary-text-color);
+  // }
+}
+
+#files-folder-list,
+#files-compose-dialog{
+  li.selected div.treetoggle{
+    color: var(--secondary-text-color);
+  }
 }
 
 #eventedit {

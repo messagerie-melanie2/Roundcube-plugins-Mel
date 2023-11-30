@@ -22,7 +22,6 @@ if (window.rcmail) {
 				rcmail.addEventListener('quick-filter.labels', (args) => {
 					const {filter, target_event} = args;
 
-					console.log('debug', 'quick-filter.labels', target_event, filter, rcmail.mel_label_show_tooltip + '');
 					rcmail.mel_label_show_tooltip(target_event);
 				});
 			}
@@ -528,29 +527,12 @@ rcube_webmail.prototype.mel_label_show_tooltip = async function($parent) {
 
 		$tooltip.appendTo($body);
 
-		// $parent.addClass('label-tooltip').popover({
-		// 	html:true,
-		// 	content:() => {
-		// 		console.log('generating contents ! ');
-		// 		return $ul;
-		// 	}
-		// });
 
-		// console.log('yolo');
 		$parent.addClass('label-tooltip').data('popup', 'mel-label-tooltip-dropdown');
-		UI.popup_init($parent);
+		UI.popup_init($parent[0]);
 
 		$parent.click();
 	}
-
-	console.log('debug label', $tooltip.length, rcmail.env.labels_translate);
-
-	setTimeout(() => {
-		if ($('#mel-label-tooltip-dropdown').hasClass('hidden')) $parent.popover('show');
-		else $parent.popover('hide');
-
-		$parent.popover('toggle');
-	}, 100);
 }
 	
 	//kMel_LuminanceRatioAAA(kMel_extractRGB('#1A2F34'), kMel_extractRGB('rgb(230, 199, 66)')) 

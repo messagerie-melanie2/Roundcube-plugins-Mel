@@ -517,6 +517,16 @@ les propriétés « nom » et « valeur ».
             mel_selector.get_checkbox().update_selected_check();
         });
 
+        rcmail.dom_element_is_visible = function($item) {
+            if ($item.is(':visible') && $item.css('opacity') > 0 && $item.css('display') !== 'none') {
+                $item = $item.parent().parent();
+                if ($item.hasClass('popover')) return rcmail.dom_element_is_visible($item);  
+                else return true;
+            }
+
+            return false;
+        }
+
         rcmail.addEventListener('responseafterlist', function(args) {
             mel_filter_manager.Instance.enable_all();
             mel_filter_manager.Instance.deactivate_all_filters();
@@ -623,18 +633,10 @@ les propriétés « nom » et « valeur ».
 
                 html_div.create($('body'));
                 target_event.addClass('priority-tooltip').data('popup', 'priority-tooltip');
-                UI.popup_init(target_event);
+                target_event.data('popup-trigger', 'click');
+                UI.popup_init(target_event[0]);
                 target_event.click();
-
-                console.log('debug [Filter]', target_event, html_div, html_div.toString());
             }
-
-            setTimeout(() => {
-                if ($('#priority-tooltip').hasClass('hidden')) target_event.popover('show');
-                else target_event.popover('hide');
-        
-                target_event.popover('toggle');
-            }, 100);
         });
 
         const rcmail_command_handler = rcmail.command_handler;
@@ -685,7 +687,7 @@ les propriétés « nom » et « valeur ».
         const { MelEnumerable } = await loadJsModule('mel_metapage', 'enum.js', '/js/lib/classes/');
         const corrector = 5;
 
-        const observe = async () => {
+        window.mel_filter_observe = window.mel_filter_observe || (async () => {
             $('#message-list-filters li').show();
             $('#message-list-filters .filter-last-before-more').removeClass('filter-last-before-more');
 
@@ -742,7 +744,7 @@ les propriétés « nom » et « valeur ».
                                 'flex-wrap': '',
                                 'justify-content': ''
                             });
-                            observe();
+                            window.mel_filter_observe();
                         }
                     });
 
@@ -759,14 +761,14 @@ les propriétés « nom » et « valeur ».
                     if (!!last) $(last).addClass('filter-last-before-more').hide();
                 }
             }
-        };
+        });
 
         let timeout = undefined;
         let filter_observer = new ResizeObserver(() => {
             if(!!timeout) clearTimeout(timeout);
             
             timeout = setTimeout(() => {
-                observe();
+                window.mel_filter_observe();
 
                 if (!!timeout) clearTimeout(timeout);
             }, 200);

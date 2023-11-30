@@ -604,6 +604,10 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('switched_color_theme', (color_mode) => {
         on_switched_color_mode(color_mode);
         sendMessageToAriane({'isDarkTheme': color_mode === 'dark'});
+        
+        if (rcmail.env.task === 'stockage') {
+            window.document.getElementById('mel_nextcloud_frame').contentWindow.postMessage(`switch-theme-${color_mode}`);
+        }
     });
 
     function on_switched_color_mode(color_mode)

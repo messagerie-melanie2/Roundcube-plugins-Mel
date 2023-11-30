@@ -46,6 +46,8 @@ $(document).ready(function() {
 						window.document.getElementById('mel_nextcloud_frame').src = rcmail.env.nextcloud_gotourl;
 					}
 				}
+
+				window.document.getElementById('mel_nextcloud_frame').contentWindow.postMessage(`switch-theme-${MEL_ELASTIC_UI.MEL_ELASTIC_UI.color_mode()}`);
 			 //    $("#wait_box").hide();
 			},
 			error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response

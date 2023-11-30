@@ -23,6 +23,8 @@ $(document).ready(function() {
 				console.error('###[$("#mel_nextcloud_frame").on("load", () => {]', error);
 			}
 		}
+
+		window.document.getElementById('mel_nextcloud_frame').contentWindow.postMessage(`switch-theme-${MEL_ELASTIC_UI.color_mode()}`);
 	});
 
 	function nc_login(refresh = true)
@@ -45,9 +47,7 @@ $(document).ready(function() {
 					} else {
 						window.document.getElementById('mel_nextcloud_frame').src = rcmail.env.nextcloud_gotourl;
 					}
-				}
-
-				window.document.getElementById('mel_nextcloud_frame').contentWindow.postMessage(`switch-theme-${MEL_ELASTIC_UI.color_mode()}`);
+				}				
 			 //    $("#wait_box").hide();
 			},
 			error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response

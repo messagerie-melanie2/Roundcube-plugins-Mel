@@ -107,7 +107,7 @@ class mel_doubleauth extends bnum_plugin {
     public function login_after($args)
     {
         //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_login_after");
-        if (false && $this->is_auth_strong()) return $args;
+        if ($this->is_auth_strong()) return $args;
         
         $_SESSION['mel_doubleauth_login'] = time();
         

@@ -129,16 +129,17 @@ body.action-dialog-ui {
 ul.treelist li.selected>div>a,
 .scroller>.listing li a,
 .scroller>.listing li div {
-  color: var(--main-text-color);
-
-  // #files-folder-list,
-  // #files-compose-dialog &{
-  //   color: var(--secondary-text-color);
-  // }
+  color: var(--layout-sidebar-text-color);
 }
 
-#files-folder-list,
+#folderlistbox,
 #files-compose-dialog{
+  ul.treelist li.selected>div>a,
+.scroller>.listing li a,
+.scroller>.listing li div
+{
+  color: var(--main-text-color);
+}
   li.selected div.treetoggle{
     color: var(--secondary-text-color);
   }

@@ -100,9 +100,17 @@ body.action-dialog-ui {
 ul.treelist li.selected > div > a,
 .scroller > .listing li a,
 .scroller > .listing li div {
+  color: var(--layout-sidebar-text-color);
+}
+#folderlistbox ul.treelist li.selected > div > a,
+#files-compose-dialog ul.treelist li.selected > div > a,
+#folderlistbox .scroller > .listing li a,
+#files-compose-dialog .scroller > .listing li a,
+#folderlistbox .scroller > .listing li div,
+#files-compose-dialog .scroller > .listing li div {
   color: var(--main-text-color);
 }
-#files-folder-list li.selected div.treetoggle,
+#folderlistbox li.selected div.treetoggle,
 #files-compose-dialog li.selected div.treetoggle {
   color: var(--secondary-text-color);
 }

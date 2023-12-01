@@ -1576,6 +1576,7 @@ body.task-mail.action-compose a.removelink {
   content: "\e838" !important;
   font-variation-settings: 'FILL' 1;
 }
-ul.treelist.iconized li div.treetoggle {
+#folderlistbox ul.treelist.iconized li div.treetoggle,
+#files-compose-dialog ul.treelist.iconized li div.treetoggle {
   top: 1px!important;
 }

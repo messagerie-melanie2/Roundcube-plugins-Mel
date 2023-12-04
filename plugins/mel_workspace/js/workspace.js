@@ -785,7 +785,7 @@ async function initCloud(tentative = 0, waiting_timeout = undefined)
             `);
 
             if (!waiting_timeout) {
-                rcmail.display_message("Les documents sera accessible dans quelques minute !");
+                rcmail.display_message("Le module Documents de l'espace sera accessible dans quelques minutes.");
                 rcmail.display_message("Une tentative de connexion automatique est en cours...");
 
                 let val = 0;

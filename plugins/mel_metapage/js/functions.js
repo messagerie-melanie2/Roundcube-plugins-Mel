@@ -1248,7 +1248,7 @@ function m_mp_add_users() {
             html += '<div class="col-10 workspace-users-added">';
             html += `<span class="name">${element.name}</span><br/>`;
             html += `<span class="email">${element.email}</span>`;
-            html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;">Retirer <span class=icon-mel-minus></span></button>`;
+            html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>`;
             html += "</div>";
             html += "</div></li>";
             querry.append(html);

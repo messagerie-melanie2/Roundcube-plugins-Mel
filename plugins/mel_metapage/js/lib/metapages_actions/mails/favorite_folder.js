@@ -658,13 +658,7 @@ export class MailFavoriteFolder extends MailModule {
 
         let enum_tree = MelEnumerable.from(tree);
 
-        // if (level === 2) enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.(`${this.balp()}`) ?? true) ? 1 : 0).then((x) => x?.id);
-        // else enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.('INBOX') ?? true) ? 0 : 1).then((x) => x?.id);
-
         for (let element of enum_tree) {
-
-            //if (element.name === 'error') continue;
-
             var rel = `favourite/${element.get_full_path()}`;
             var have_child_len = element.hasChildren();
             

@@ -781,6 +781,7 @@ export class MailFavoriteFolder extends MailModule {
 
             await this._update_favorites();
             this._update_unreads();
+            this._update_selected();
             rcmail.set_busy(false, 'loading', busy);
         }, true);
     }

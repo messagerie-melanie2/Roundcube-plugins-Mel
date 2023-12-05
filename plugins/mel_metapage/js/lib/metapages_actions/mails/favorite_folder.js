@@ -663,7 +663,7 @@ export class MailFavoriteFolder extends MailModule {
 
         for (let element of enum_tree) {
 
-            if (element.name === 'error') continue;
+            //if (element.name === 'error') continue;
 
             var rel = `favourite/${element.get_full_path()}`;
             var have_child_len = element.hasChildren();

@@ -543,12 +543,14 @@ export class MailFavoriteFolder extends MailModule {
 
     async startup() {
         (await this.await_folder_list_content()).find('a.sidebar-menu').on('shown.bs.popover', (event) => {
-            this._set_link();
+            this._set_link(this.current_folder());
         });
     }
 
     async startup_context_menu() {
-        (await this.await_folder_list_content()).find('#mailboxlist ul[role="group"] a').on('contextmenu', (...args) => {
+       // console.log('menus', (await this.await_folder_list_content()).find('#mailboxlist ul[role="group"] a'));
+        (await this.await_folder_list_content()).find('#mailboxlist a').on('contextmenu', (...args) => {
+            //debugger;
             const [event] = args;
             const folder = $(event.currentTarget).attr('rel');
 
@@ -556,11 +558,11 @@ export class MailFavoriteFolder extends MailModule {
         });
     }
 
-    _set_link(folder = null) {
-        const current_folder = folder || this.current_folder();
+    _set_link(folder) {
+        const current_folder = folder;// || this.current_folder();
 
         if (!!current_folder) {
-            let $link = $('.popover .folder-to.favorite').removeClass('disabled').addClass('active').removeClass('unset-to');
+            let $link = $('.popover .folder-to.favorite').show().removeClass('disabled').addClass('active').removeClass('unset-to');
 
             const favorites_folders = this.get_env('favorites_folders');
             if (!!favorites_folders) {
@@ -574,7 +576,7 @@ export class MailFavoriteFolder extends MailModule {
             else $link.find('span.inner').text(this.gettext('set-to-favorite', 'mel_metapage')).data('favorite', false).data('rel', current_folder);
         }
         else {
-            $('.popover .folder-to.favorite').removeClass('active').addClass('disabled');
+            $('.popover .folder-to.favorite').hide();
         }
     }
 
@@ -655,9 +657,6 @@ export class MailFavoriteFolder extends MailModule {
         .ul({class:'treelist listing folderlist'});
 
         let enum_tree = MelEnumerable.from(tree);
-
-        // if (level === 2) enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.(`${this.balp()}`) ?? true) ? 1 : 0).then((x) => x?.id);
-        // else enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.('INBOX') ?? true) ? 0 : 1).then((x) => x?.id);
 
         for (let element of enum_tree) {
             var rel = `favourite/${element.get_full_path()}`;
@@ -776,6 +775,7 @@ export class MailFavoriteFolder extends MailModule {
 
             await this._update_favorites();
             this._update_unreads();
+            this._update_selected();
             rcmail.set_busy(false, 'loading', busy);
         }, true);
     }

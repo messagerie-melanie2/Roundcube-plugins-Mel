@@ -276,7 +276,10 @@ class mel_metapage extends bnum_plugin
 
                 case '':
                 case 'index':
-                    $this->rc->output->set_env('favorites_folders', $this->rc->config->get('favorite_folders', []));
+                    $favs = $this->rc->config->get('favorite_folders', []);
+                    if (isset($favs[''])) unset($favs['']);
+
+                    $this->rc->output->set_env('favorites_folders', $favs);
                     break;
                 
                 default:
@@ -3370,6 +3373,8 @@ class mel_metapage extends bnum_plugin
 
         if ($state) $prefs[$folder] = ['selected' => true];
         else unset($prefs[$folder]);
+
+        if (isset($prefs[''])) unset($prefs['']);
 
         $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
         

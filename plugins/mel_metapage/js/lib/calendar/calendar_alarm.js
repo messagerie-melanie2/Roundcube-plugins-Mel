@@ -217,7 +217,7 @@ export class Calendar_Alarm extends MelObject
 
         for (let index = 0; index < events.length; ++index) {
             const element = events[index];
-            if (element.alarms !== undefined && element.alarms !== null && element.alarm_dismissed !== true)
+            if (this.is_alarm_valid(element))
             {
                 if (rcmail.env.calendars[element.calendar].showalarms === 1)
                 {
@@ -232,6 +232,14 @@ export class Calendar_Alarm extends MelObject
               if(this.showed_alarms.has(uid)) this.showed_alarms.remove(uid);
             }
         }
+    }
+
+    is_alarm_valid(event) {
+        const alarm_is_defined = event.alarms !== undefined && event.alarms !== null;
+        const alarm_not_dismissed = event.alarm_dismissed !== true;
+        const event_not_annulated = event.status !== "CANCELLED";
+
+        return alarm_is_defined && alarm_not_dismissed && event_not_annulated;
     }
 
 }

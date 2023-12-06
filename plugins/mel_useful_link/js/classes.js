@@ -99,7 +99,7 @@
 
                  link.callUpdate(task, action, addonConfig).then((result) => {
                     if (afterCreate !== null)
-                        afterCreate(result);
+                        afterCreate(result, link);
                     else {
 
                       if (result === true)
@@ -237,7 +237,7 @@
 
                 link.callUpdate(task, action, addonConfig).then((result) => {
                    if (afterCreate !== null)
-                       afterCreate(result);
+                       afterCreate(result, link);
                    else {
 
                      if (result === true)

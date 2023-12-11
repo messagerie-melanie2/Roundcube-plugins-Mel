@@ -1,4 +1,23 @@
-<div id="link-block-<id/>" style="margin-bottom: 20px;position: relative;" class="link-block square_div <hidden\>" <datas/>>
+<div id="link-block-<id/>" title="<title/>" class="link-block <hidden\>" <datas/>>
+<div id="context-menu-<id/>" class="link-context-menu">
+  <button class="link-context-menu-button" title="Copier le lien dans le presse-papier">
+    <span class="material-symbols-outlined"onclick="PaperClipCopy($('#link-id-<id/>'))">content_copy</span>
+  </button>
+  <button class="link-context-menu-button" title="Modifier le lien">
+    <span class="material-symbols-outlined" onclick="EditLink(`<id/>`)">edit</span>
+  </button>
+  <button class="link-context-menu-button" title="Supprimer le lien">
+    <span class="material-symbols-outlined" onclick="DeleteLink(MelLink.from(`<id/>`))">delete</span>
+  </button>
+</div>
+<a id="link-id-<id/>" class='link-block-icon-container' href="<link/>" target="_blank">
+  <img id='link-block-icon-image' class='link-block-icon-image' src="<image_link/>" onerror="imgError(this.src)">
+</a>
+<span class="title">
+  <title/>
+</span>
+</div>
+<!-- <div id="link-block-<id/>" style="margin-bottom: 20px;position: relative;" class="link-block square_div <hidden\>" <datas/>>
     <div style="<color/>" class="contents square-contents">
         <h5 class="link-ellipse three-lines" title="<title/>" onclick="$('#link-id-<id/>')[0].click()" style="cursor: pointer;"><title/></h5>
         <p><span style="white-space: nowrap;max-width:90%;" class="link-ellipse">via <a target="_blank" class="mel-focus" title="Ouvrir dans une nouvelle fenêtre" id="link-id-<id/>" href="<link/>"><reduced_link/></a></span> <span style="vertical-align:super" class="icon-mel-external"></span></p>
@@ -15,4 +34,4 @@
             <a <personal/> href="#" role="button" onclick="EditLink('<id/>')" class="edit <hidden\> mel-focus icon-mel-pencil icon-mel-pencil roundbadge large no-weight" title="Modifier le lien" ></a>
         </div>
     </div>
-</div>
+</div> -->

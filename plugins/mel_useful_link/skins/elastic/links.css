@@ -2,7 +2,18 @@
 /** FONTS **/
 /* CONTENT */
 /** ANIMATIONS **/
+/** LOADER **/
 /** WIDTH **/
+/**
+ * Roundcube Webmail styles for the Elastic skin
+ *
+ * Copyright (c) The Roundcube Dev Team
+ *
+ * The contents are subject to the Creative Commons Attribution-ShareAlike
+ * License. It is allowed to copy, distribute, transmit and to adapt the work
+ * by keeping credits to the original authors in the README.md file.
+ * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+ */
 body.task-useful_links separate {
   border-top-color: var(--separate-light);
   border-top-style: solid;
@@ -122,4 +133,103 @@ html.layout-small #mulba .plus {
 html.layout-small .joinedtitle,
 html.layout-phone .joinedtitle {
   display: flex;
+}
+.link-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 20px;
+  margin-top: 10px;
+  position: relative;
+}
+.link-block .link-block-icon-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75px;
+  height: 75px;
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0);
+  transition: 0.1s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.link-block .link-block-icon-container:hover::after {
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+}
+.link-block .link-block-icon-container img {
+  width: 75px;
+  height: 75px;
+  border-radius: 15px;
+  box-shadow: var(--bureau-card-box-shadow);
+  background-color: var(--bureau-card-background-color);
+  transition: filter 0.1s ease;
+}
+.link-block span.title {
+  text-align: center;
+  max-width: 75px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 10px;
+}
+.link-context-menu {
+  position: absolute;
+  top: -44px;
+  width: 115px;
+  border-radius: 10px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  display: none;
+}
+.link-context-menu::after {
+  border-top: 6px solid var(--bureau-card-background-color);
+  border-left: 6px solid rgba(51, 51, 51, 0);
+  border-right: 6px solid rgba(0, 0, 0, 0);
+  content: "";
+  display: inline-block;
+  right: 52px;
+  position: absolute;
+  top: 36px;
+}
+.link-context-menu .link-context-menu-button {
+  margin: 3px;
+  background-color: var(--bureau-card-content-background-color);
+  border-radius: 50%;
+  color: var(--layout-content-text-color);
+  border: none;
+  padding: 0 0;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.link-context-menu .link-context-menu-button:hover {
+  background-color: var(--bureau-card-content-hover-background-color);
+}
+.link-icon-container {
+  width: 75px;
+  height: 75px;
+  border-radius: 15px;
+  box-shadow: var(--bureau-card-box-shadow);
+  background-color: var(--bureau-card-background-color);
+  transition: filter 0.1s ease;
+}
+.link-icon-container img {
+  height: 100%;
+  border-radius: inherit;
+  width: 100%;
+}
+.link-icon-container #no-image {
+  justify-content: center;
+  align-items: center;
+  border-radius: inherit;
+  height: 100%;
+  font-size: 48px;
+  display: none;
+  background-color: var(--bureau-card-background-color);
 }

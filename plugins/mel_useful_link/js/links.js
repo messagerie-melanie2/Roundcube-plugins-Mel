@@ -85,10 +85,12 @@ function SearchLinks(search)
 function DeleteLink(link)
 {
     GetLinkPopUp().setLoading();
-    return link.callDelete().then(() => {
+    if (confirm('Voulez-vous supprimer ce lien ?')) { 
+      return link.callDelete().then(() => {
         GetLinkPopUp().hide();
         window.location.reload();
-    });
+      });
+    }
 }
 
 function TakLink(id)

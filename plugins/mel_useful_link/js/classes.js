@@ -1,3 +1,4 @@
+
 /**
  * Récupère la popup et permet de la manipuler.
  * @returns {LinkPopUp}
@@ -10,6 +11,47 @@
      return GetLinkPopUp.popup;
  }
  
+  function fetchIcon(url) {
+    $('#mulc-url-error').hide();
+    $('#no-image').hide();
+    $('#icon-image').css("display", "flex");
+
+    const validProtocol = /^https?:\/\//i;
+    
+    if (!validProtocol.test(url)) {
+      // Si le protocole n'est pas présent, ajoute 'https://' avant l'URL
+      url = 'https://' + url;
+    } 
+    else if(url == "https://")
+    {
+      url = "";
+    }
+    
+    $('#mulc-url').val(url);
+
+    let domain = "";
+    try {
+      domain = new URL(url).hostname;
+    } catch (error) {
+      console.error('Erreur :', error.message);
+      $('#mulc-url-error').show().delay(3000).fadeOut();
+      return null;
+    }
+
+    const apiUrl = `https://api.faviconkit.com/${domain}`;
+
+    $('#icon-image').attr('src', apiUrl);
+    $('#icon-image').data('firstLetter', domain[0].toUpperCase());
+
+  }
+
+  function imgError() {
+    const firstLetter = $('#icon-image').data('firstLetter');
+    $('#no-image').html(firstLetter);
+    $('#icon-image').hide();
+    $('#no-image').css("display", "flex");
+  }
+
  class LinkPopUp
  {
      constructor()
@@ -75,10 +117,11 @@
              this.linkText("mulc-title", "Nom du lien", "Titre du lien", link.title, true, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(parentDiv);
  
              /**Url */
-             this.linkText("mulc-url", "Adresse de la page", "URL", link.link, false, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(parentDiv);
+             this.linkText("mulc-url", "Adresse de la page", "URL", link.link, false, (!isPersonal ? {disabled:'disabled'} : {onchange:'fetchIcon(this.value)'})).appendTo(parentDiv);
+             this.linkErrorText('mulc-url-error', 'L\'adresse du lien est invalide').appendTo(parentDiv);
 
-             /**Couleur */
-             this.linkColor("mulc-color", "Couleur de la vignette", link.color, link.textColor).appendTo(parentDiv);
+             /**Logo */
+             this.linkIcon("mulc-icon", "Prévisualisation de l'icone").appendTo(parentDiv);
          
              /**Show When */
              //this.linkChoice("mulc-sw", "Choisissez quand le lien doit être visible", 0, {value:"always", text:"Tout le temps"}, {value:"internet", text:"Depuis internet"}, {value:"intranet", text:"Depuis l'intranet"}).appendTo(parentDiv);
@@ -360,6 +403,20 @@
         }
 
         return $input.parent();
+     }
+
+     linkErrorText(id, text) {
+      let $span = $(`<span id='${id}' class="text-danger ml-2" style="display:none">${text}</span>`);
+
+      return $span;        
+     }
+
+     linkIcon(id, title, value, attrib = null) {
+      let $label = $(`<label for="${id}" class="span-mel t1"}"><span class="title-label-text">${title}</span></label>`);
+      let $input = $(`<div class='link-icon-container'><img id='icon-image' class='icon-image' onerror="imgError(this.src)" style="display:none"><span id="no-image"></span></div>`);
+      // let $input = $(`<div class='link-icon-container'><span class="material-symbols-outlined">language</span></div><button class="btn btn-secondary mel-button no-button-margin" style="margin-top:15px">Choisir une icone</button>`);
+
+      return $label.add($input);        
      }
  
      linkChoice(id, title, _default = 0, ...choices)

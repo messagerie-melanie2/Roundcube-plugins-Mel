@@ -96,6 +96,17 @@ class mel_link
         return json_encode($this);
     }
 
+    public function getDomainFromURL($url) {
+      $parsedUrl = parse_url($url);
+      $domain = $parsedUrl['host'];
+    
+      // Remove "www." if present
+      if (strpos($domain, 'www.') === 0) {
+        $domain = substr($domain, 4);
+      }
+      return $domain;
+    }
+
     public function html($rc, $exit = false, $write = false)
     {
         $html = $rc->output->parse("mel_useful_link.template", $exit, $write);
@@ -110,6 +121,7 @@ class mel_link
             $html = str_replace("<link/>", 'ERROR', $html);
             $this->link = 'ERROR';
         }
+        $html = str_replace("<image_link/>", "https://api.faviconkit.com/". $this->getDomainFromURL($this->link), $html);
         $html = str_replace("<reduced_link/>", $this->get_reduced_link(), $html);
         $html = str_replace("<create_date/>", $this->createDate === null ? "" : "Ajouté le ".$this->localEn(strftime("%d %B %Y",$this->createDate)), $html);
         $html = str_replace("<title/>", $this->title, $html);

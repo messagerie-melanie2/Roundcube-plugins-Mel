@@ -90,6 +90,7 @@ class mel_useful_link extends rcube_plugin
         }
 
       $this->include_script('js/classes.js');
+      $this->include_script('js/display.js');
     }
 
     function index()
@@ -183,7 +184,7 @@ class mel_useful_link extends rcube_plugin
       include_once "lib/xTuple.php";
 
       $html = "";
-      $couples = new xTuple(4);
+      $couples = new xTuple(11);
       $size = count($this->links);
       $min = 10*($page-1);
       $max = $size;// 10*$page > $size ? $size : 10*$page; 
@@ -230,7 +231,7 @@ class mel_useful_link extends rcube_plugin
           $divs = "";
 
           foreach ($min as $key => $value) {
-            $divs .= html::div(["class" => "col-md-".$couples->get_md()], $value->html($this->rc));
+            $divs .= html::div([], $value->html($this->rc));
           }
 
           if ($addInRow) $html.=html::div(["class" => "row"], $divs);

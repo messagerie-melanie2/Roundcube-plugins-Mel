@@ -580,12 +580,28 @@ export class MailFavoriteFolder extends MailModule {
         }
     }
 
+    async _erase_errors() {
+        let $list_content = (await this.await_folder_list_content());
+        let favs = this.get_env('favorites_folders')
+
+        for (const key in favs) {
+            if (Object.hasOwnProperty.call(favs, key)) {
+                const element = favs[key];
+                if ($list_content.find(`[rel="${key}"]`).length === 0) delete favs[key];
+            }
+        }
+
+        rcmail.env.favorites_folders = favs;
+    }
+
     async _update_favorites() {
         if ($('#favorite-folders').length === 0) {
             (await this.await_folder_list_content()).before($('<div>').attr('id', 'favorite-folders').css('padiing-left', '20px'));
         }
 
         $('#favorite-folders').html('');
+
+        await this._erase_errors();
 
         const tree = this._generate_favorite_tree();
 

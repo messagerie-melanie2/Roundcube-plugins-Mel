@@ -2056,7 +2056,7 @@ $(document).ready(() => {
                                 }
                             }
                             
-                            if (!url.includes('/?_task=')) 
+                            if (!url.includes('/?_task=') && !/^data:/i.test(url)) 
                             {
                               //On ouvre une modal pour prévenir d'un lien externe
                               let domain = new URL(url).hostname;

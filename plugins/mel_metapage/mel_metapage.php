@@ -201,10 +201,18 @@ class mel_metapage extends bnum_plugin
             return;
         }
 
+        //$plugin = $rcmail->plugins->exec_hook('folder_update', ['record' => $folder]);
+
+
+
+
+
+
         $this->add_hook('logout_after', array($this, 'logout_after'));
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+        $this->add_hook('folder_update',     array($this, 'folder_update'));
         $this->add_hook('rocket.chat.sectionlist',     array($this, 'rc_section_list'));
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
@@ -3401,5 +3409,21 @@ class mel_metapage extends bnum_plugin
     public function get_display_folder() {
         echo json_encode($this->rc->config->get('favorite_folders', []));
         exit;
+    }
+
+    public function folder_update($args) {
+        $this->_update_folders_pref($args['record']['oldname'], $args['record']['name']);
+        return $args;
+    }
+
+    function _update_folders_pref($old, $new) {
+        $prefs = $this->rc->config->get('favorite_folders', []);
+
+        if(isset($prefs[$old])) {
+            $prefs[$new] = $prefs[$old];
+            unset($prefs[$old]);
+        }
+
+        $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
     }
 }

@@ -244,6 +244,8 @@ class mel_metapage extends bnum_plugin
             $this->register_action('plugin.mel_metapage.toggle_favorite', array($this, 'toggle_favorite_folder'));
             $this->register_action('plugin.mel_metapage.toggle_display_folder', array($this, 'toggle_display_folder'));
             $this->register_action('plugin.mel_metapage.get_favorite_folders', [$this, 'get_display_folder']);
+            $this->register_action('plugin.mel_metapage.set_folder_color', [$this, 'update_color_folder']);
+            $this->register_action('plugin.mel_metapage.get_folders_color', [$this, 'get_folder_colors']);
 
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
@@ -288,6 +290,7 @@ class mel_metapage extends bnum_plugin
                     if (isset($favs[''])) unset($favs['']);
 
                     $this->rc->output->set_env('favorites_folders', $favs);
+                    $this->rc->output->set_env('folders_colors', $this->rc->config->get('folders_colors', []));
                     break;
                 
                 default:
@@ -831,6 +834,28 @@ class mel_metapage extends bnum_plugin
                 'classsel'      => 'favorite folder-to active',
                 'label'	        => 'set-to-favorite',
                 'title'         => 'set-to-favorite',
+                'innerclass'    => 'inner',
+                'type'          => 'link-menuitem',
+            ), "mailboxoptions");
+
+            $this->add_button(array(
+                'command'       => 'update-color-folder',
+                'class'	        => 'color-folder disabled',
+                'classact'      => 'color-folder active',
+                'classsel'      => 'color-folder active',
+                'label'	        => 'update-color-folder',
+                'title'         => 'update-color-folder',
+                'innerclass'    => 'inner',
+                'type'          => 'link-menuitem',
+            ), "mailboxoptions");
+
+            $this->add_button(array(
+                'command'       => 'cancel-color-folder',
+                'class'	        => 'cancel-color-folder disabled',
+                'classact'      => 'cancel-color-folder active',
+                'classsel'      => 'cancel-color-folder active',
+                'label'	        => 'cancel-color-folder',
+                'title'         => 'cancel-color-folder',
                 'innerclass'    => 'inner',
                 'type'          => 'link-menuitem',
             ), "mailboxoptions");
@@ -3244,26 +3269,7 @@ class mel_metapage extends bnum_plugin
                   }
                   $html = str_replace('%%' . $match . '%%', $select_hours->show(), $html);
                   break;
-        
-                // case ('default_addressbook'):
-                  
-                //   $books = $this->rc->get_address_sources(true, true);
-        
-                //   $field_id = 'rcmfd_default_addressbook';
-                //   $select   = new html_select([
-                //     'name'  => '_default_addressbook',
-                //     'id'    => $field_id,
-                //     'class' => 'custom-select'
-                //   ]);
-        
-                //   if (!empty($books)) {
-                //     foreach ($books as $book) {
-                //       $select->add(html_entity_decode($book['name'], ENT_COMPAT, 'UTF-8'), $book['id']);
-                //     }
-                //   }
-                //   $html = str_replace('%%' . $match . '%%', $select->show(), $html);
-        
-                //   break;
+    
                   
                 default:
                   break;
@@ -3412,7 +3418,10 @@ class mel_metapage extends bnum_plugin
     }
 
     public function folder_update($args) {
-        $this->_update_folders_pref($args['record']['oldname'], $args['record']['name']);
+        $old = $args['record']['oldname'];
+        $new = $args['record']['name'];
+        $this->_update_folders_pref($old, $new);
+        $this->_update_folder_color_on_rename($old, $new);
         return $args;
     }
 
@@ -3425,5 +3434,40 @@ class mel_metapage extends bnum_plugin
         }
 
         $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
+    }
+
+    function _update_folder_color_on_rename($old, $new) {
+        $prefs = $this->rc->config->get('folders_colors', []);
+
+        if(isset($prefs[$old])) {
+            $prefs[$new] = $prefs[$old];
+            unset($prefs[$old]);
+        }
+
+        $this->rc->user->save_prefs(['folders_colors' => $prefs]);
+    }
+
+    public function update_color_folder() {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $color = rcube_utils::get_input_value('_color', rcube_utils::INPUT_POST) ?? null;
+
+        if ('' === $color) $color = null;
+
+        $prefs = $this->rc->config->get('folders_colors', []);
+
+        if (isset($color)) $prefs[$folder] = $color;
+        else unset($prefs[$folder]);
+
+        $this->rc->user->save_prefs(['folders_colors' => $prefs]);
+        
+        echo json_encode($prefs);
+        exit;
+    }
+
+    public function get_folder_colors() {
+        $prefs = $this->rc->config->get('folders_colors', []);
+        
+        echo json_encode($prefs);
+        exit;
     }
 }

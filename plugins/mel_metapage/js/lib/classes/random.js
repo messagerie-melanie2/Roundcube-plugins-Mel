@@ -8,4 +8,8 @@ export class Random {
     static range(min, max) {
         return Math.random() * (max - min) + min;
     }
+
+    static rbg_color() {
+        return `rgb(${Random.intRange(0, 255)}, ${Random.intRange(0, 255)}, ${Random.intRange(0, 255)})`;	
+    }
 }

@@ -105,7 +105,7 @@ class Color {
      * @returns {string}
      */
     toHexa() {
-        return "#" + componentToHex(this.r) + componentToHex(this.g) + componentToHex(this.b);
+        return "#" + this._componentToHex(this.r) + this._componentToHex(this.g) + this._componentToHex(this.b);
     }
 
     /**
@@ -134,6 +134,25 @@ class Color {
     static fromHexa(hexa) {
         throw 'TODO';
     }
+
+    /**
+     * 
+     * @param {*} color 
+     * @returns {null | Color}
+     */
+    static fromRGB(color) {
+        try {
+            color = mel_metapage.Functions.colors.kMel_extractRGB(color);
+        } catch (error) {
+            color = null;    
+        }
+
+        if (!!color) {
+            color = new Color(+color[0], +color[1], +color[2]);
+        }
+
+        return color;
+    }
 }
 
 Object.defineProperty(Color, 'MIN', {
@@ -150,6 +169,8 @@ Object.defineProperty(Color, 'MIN', {
     value:255
 });
 
+
+Color.random = new Color();
 Object.defineProperties(Color, {
     white:{
         enumerable: false,

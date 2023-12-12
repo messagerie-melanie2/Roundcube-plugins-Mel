@@ -409,6 +409,11 @@ class RotomecaHtml {
         return this._create(text, this, {is_raw:true}, true);
     }
 
+    /**
+     * 
+     * @param {*} debug 
+     * @returns {RotomecaHtml}
+     */
     end(debug = null) {
         let end = this._parent._create(`/${this.balise}`, this._parent, null, true);
 

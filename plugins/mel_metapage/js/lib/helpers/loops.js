@@ -1,4 +1,4 @@
-export {MelFor, MelForEx, MelForCallbacks};
+export {MelFor, MelForEx, MelForCallbacks, MelForLoopObject};
 
 class MelFor {
     constructor(start, end, callback, ...args) {
@@ -91,5 +91,31 @@ class MelForCallbacks extends MelForEx {
 
     static *Starting(start_callback, callback_end, callback, iterator_callback, {args_end = [], args_callback = [], args_start = [], args_iterator = []}) {
         yield * new MelForCallbacks(start_callback, callback_end, callback, iterator_callback, {args_end, args_callback, args_start, args_iterator}).exec_yield();
+    }
+}
+
+class MelForLoopObject extends MelFor {
+    constructor(item, callback, ...args) {
+        const _keys = Object.keys(item);
+        const wrapper_callback = function (index, start, end, ...args) {
+            return callback(item[_keys[index]], _keys[index], index, start, end, ...args);
+        }
+        super(0, _keys?.length ?? 0, wrapper_callback, ...args);
+        this.keys = _keys;
+        Object.defineProperties(this, {
+            keys: {
+                value: _keys,
+                configurable: false,
+                writable: false
+            },
+        });
+    }
+
+    static Start(item, callback, ...args) {
+        return new MelForLoopObject(item, callback, ...args).exec();
+    }
+
+    static *Starting(item, callback, ...args) {
+        yield * new MelForLoopObject(item, callback, ...args).exec_yield();
     }
 }

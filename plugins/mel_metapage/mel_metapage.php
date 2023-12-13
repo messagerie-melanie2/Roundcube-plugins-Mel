@@ -447,6 +447,9 @@ class mel_metapage extends bnum_plugin
 
                 if ($this->rc->task === 'bnum') {
                     $this->load_metapage_script_module('bnum.js');
+
+                    include_once __DIR__."/program/classes/metrics.php";
+                    (new MetricsConfigData($this))->send_to_env();
                 }
             }
 
@@ -843,8 +846,8 @@ class mel_metapage extends bnum_plugin
                 'class'	        => 'color-folder disabled',
                 'classact'      => 'color-folder active',
                 'classsel'      => 'color-folder active',
-                'label'	        => 'update-color-folder',
-                'title'         => 'update-color-folder',
+                'label'	        => 'mel_metapage.update-color-folder',
+                'title'         => 'mel_metapage.update-color-folder',
                 'innerclass'    => 'inner',
                 'type'          => 'link-menuitem',
             ), "mailboxoptions");
@@ -854,8 +857,8 @@ class mel_metapage extends bnum_plugin
                 'class'	        => 'cancel-color-folder disabled',
                 'classact'      => 'cancel-color-folder active',
                 'classsel'      => 'cancel-color-folder active',
-                'label'	        => 'cancel-color-folder',
-                'title'         => 'cancel-color-folder',
+                'label'	        => 'mel_metapage.cancel-color-folder',
+                'title'         => 'mel_metapage.cancel-color-folder',
                 'innerclass'    => 'inner',
                 'type'          => 'link-menuitem',
             ), "mailboxoptions");

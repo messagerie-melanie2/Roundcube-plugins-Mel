@@ -12,26 +12,37 @@ class Serialize {
 
 }
 
-class LookLabel extends Serialize {
+export class BaseLookLabel extends Serialize {
     constructor({userid = '', service = ''}) {
-        super();
+      super();
+      this.userid = userid || rcmail.env.username;
+      this.service = service || this._get_user_service();
+  }
+
+  _get_user_service() {
+      return rcmail.env.current_user.full.split('- ')[1];
+  }
+
+  serialize() {
+    return JSON.stringify(this);
+}
+
+}
+
+export class LookLabel extends BaseLookLabel {
+    constructor({userid = '', service = ''}) {
+        super({userid, service});
         this.browser = navigator.userAgent;
         this.bowserName = this.get_browser();
         this.browserVersion = navigator.appVersion;
         this.platform = navigator.platform;
         this.language = navigator.language;
         this.isMobile = (/Mobi/.test(navigator.userAgent) || ('maxTouchPoints' in navigator && navigator.maxTouchPoints > 0)).toString();
-        this.userid = userid || rcmail.env.username;
-        this.service = service || this._get_user_service();
 
         const screenWidth = window.screen.width; 
         const screenHeight = window.screen.height;
         const screenResolution = `${screenWidth}x${screenHeight}`;
         this.screen_resolution = screenResolution;
-    }
-
-    _get_user_service() {
-        return rcmail.env.current_user.full.split('- ')[1];
     }
 
     serialize() {
@@ -73,7 +84,7 @@ class LookLabel extends Serialize {
     }
 }
 
-class LookDatas extends Serialize {
+export class LookDatas extends Serialize {
     constructor({metric_name = '', metric_value = 1, labels = null}) {
         super();
         this.metric_name = metric_name;
@@ -87,8 +98,8 @@ class LookDatas extends Serialize {
 }
 
 export class Look {
-    static async Send(name, value) {
-        const lookData = new LookDatas({metric_name: name, metric_value: value});
+    static async Send(name, value, labels = null) {
+        const lookData = new LookDatas({metric_name: name, metric_value: value, labels});
         const config = {
             url: this.URL,
             type: 'POST',
@@ -108,8 +119,8 @@ export class Look {
         await $.ajax(config);
     }
 
-    static async SendTask(task) {
-        return await this.Send(`bnum_${task}`, 1);
+    static async SendTask(task, labels = new BaseLookLabel({})) {
+        return await this.Send(`bnum_${task}`, 1, labels);
     }
 }
 

@@ -58,4 +58,4 @@ Object.defineProperty(BnumLog, 'LogLevels', {
     }, false)
 });
 
-BnumLog.log_level = BnumLog.LogLevels.log;
+BnumLog.log_level = BnumLog.LogLevels.error;

@@ -154,11 +154,15 @@ function Start(uid, hasAriane, datas) {
     }
 
     setup_wsp_colors();
+    
 
     $(".wsp-copy-button").click(() => {
-        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
+        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '') + '&_force_bnum=1';
         mel_metapage.Functions.copy(url);
     });
+    
+    const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}) + '&_force_bnum=1';
+    (top ?? parent ?? window).history.replaceState({}, document.title, url.replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
 
     setup_end_date();
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);

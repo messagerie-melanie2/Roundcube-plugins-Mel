@@ -420,7 +420,7 @@ class mel_metapage extends bnum_plugin
             if ($courielleur === '') $courielleur = true;
             else if ($courielleur !== true) $courielleur = false;
             $from_cour = rcube_utils::get_input_value('_redirected_from_courrielleur', rcube_utils::INPUT_GET); 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->rc->task !== 'bnum' && $this->rc->task !== 'chat' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action || !!rcube_utils::get_input_value('_force_bnum', rcube_utils::INPUT_GET)) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe' && $courielleur) {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->rc->task !== 'bnum' && ('' === $this->rc->action || 'index' === $this->rc->action || !!rcube_utils::get_input_value('_force_bnum', rcube_utils::INPUT_GET)) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe' && $courielleur) {
                 $this->rc->output->redirect([
                     '_task' => 'bnum',
                     '_action' => '',
@@ -441,7 +441,7 @@ class mel_metapage extends bnum_plugin
                 exit;
             }
 
-            if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf' || $this->rc->task === 'search') {
+            if ($this->rc->task === 'bnum' || $this->rc->task === 'search') {
                 if (in_array($this->rc->task, self::TASKS_SETUP_MODULE)) $this->setup_module();
                 else $this->load_js_modules_actions();
 

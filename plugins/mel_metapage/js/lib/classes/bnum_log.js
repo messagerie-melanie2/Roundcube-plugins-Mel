@@ -1,7 +1,7 @@
 export class BnumLog {
     static _log(log_level ,log_func, prepend_text, function_name, ...args) {
         if (log_level >= BnumLog.log_level) {
-            log_func(`${prepend_text}[${function_name}]`, ...args);
+            log_func(`${moment().format('DD/MM/YYYY HH:mm:ss.SSS')} ${prepend_text}[${function_name}]`, ...args);
         }
     }
 

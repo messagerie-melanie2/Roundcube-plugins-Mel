@@ -115,4 +115,4 @@ export class Look {
 
 Look.URL = rcmail.env.mel_metrics_url;
 Look.TOKEN = rcmail.env.mel_metrics_token;
-Look.SEND_INTERVAL = mel_metrics_send_interval;
+Look.SEND_INTERVAL = rcmail.env.mel_metrics_send_interval;

@@ -2,6 +2,7 @@ import { BnumLog } from "../../classes/bnum_log.js";
 import { Look } from "../../classes/metrics.js";
 import { AMetricsModule } from "../ametrics_module.js";
 
+const tasks_to_ignore = ['bnum'];
 export class MainNavMetrics extends AMetricsModule {
     constructor() {
         super();
@@ -45,17 +46,19 @@ export class MainNavMetrics extends AMetricsModule {
         super.exec();
 
          this._send_current_task();
+
+         return this;
     }
 
     async _send_current_task() {
         const task = this.rc_data.task;
 
-        BnumLog.info('_send_current_task', 'send current task : ', task);
+        if (!tasks_to_ignore.includes(task)){
+            BnumLog.info('_send_current_task', 'send current task : ', task);
+            await Look.SendTask(task);
+        }
+        else BnumLog.info('_send_current_task', 'current task : ', task, 'ignored !');
 
-        await Look.SendTask(task);
-
-        setTimeout(() => {
-            this._send_current_task();
-        }, ((+Look.SEND_INTERVAL) * 1000));
+        setTimeout(this._send_current_task.bind(this), ((+Look.SEND_INTERVAL) * 1000));
     }
 }

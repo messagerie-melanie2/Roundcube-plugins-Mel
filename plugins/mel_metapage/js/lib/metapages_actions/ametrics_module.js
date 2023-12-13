@@ -1,7 +1,7 @@
 import { Look } from "../classes/metrics.js";
-import { MetapageModule } from "./metapage_module.js";
+import { module_bnum } from "./bnum/module_bnum.js";
 
-export class AMetricsModule extends MetapageModule {
+export class AMetricsModule extends module_bnum {
     constructor() {
         super();
     }

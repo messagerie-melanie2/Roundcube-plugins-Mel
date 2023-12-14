@@ -1,0 +1,289 @@
+/**
+ * @author Jan-Christoph Borchardt, http://jancborchardt.net
+ * @copyright Copyright (c) 2015, ownCloud, Inc.
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+/* use logos from theme */
+
+body {
+	background: #FAFAFA;
+}
+
+#header .logo,
+#firstrunwizard .logo {
+	background-image: url('../img/logo.png');
+	width: 256px;
+	height: 128px;
+	filter: none;
+}
+
+#header .logo-icon {
+	width: 43px;
+	height: 43px;
+	filter: none;
+}
+
+#nextcloud {
+	padding-left: 310px;
+}
+
+#header .logo-icon::after {
+	content: "Documents";
+	position: absolute;
+	top: 8px;
+	left: 45px;
+	font-weight: bold;
+	margin-left: 10px;
+	font-size: 16px;
+	color: rgb(54, 58, 91);
+}
+
+#content {
+	border-radius: 0;
+}
+
+#app-content {
+	border-radius: 15px;
+	box-shadow: rgba(0, 0, 0, 0.132) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
+}
+
+#app-navigation {
+	margin-right: 10px;
+	border-radius: 15px;
+	box-shadow: rgba(0, 0, 0, 0.132) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
+}
+
+#app-navigation:not(.vue) > ul > li > a, 
+#app-navigation:not(.vue) > ul > li > ul > li > a {
+	border-radius: 5px !important;
+}
+
+body[data-theme-light] #editor_close.icon-close,
+body[data-themes="light-highcontrast"] #editor_close.icon-close,
+body[data-themes="light-highcontrast,opendyslexic"] #editor_close.icon-close {
+	background-image: var(--icon-close-dark);
+}
+
+body[data-theme-light] .unified-search__trigger,
+body[data-theme-light] .app-menu-main .app-menu-entry,
+body[data-themes="light-highcontrast"] .unified-search__trigger,
+body[data-themes="light-highcontrast"] .app-menu-main .app-menu-entry,
+body[data-themes="light-highcontrast,opendyslexic"] .unified-search__trigger,
+body[data-themes="light-highcontrast,opendyslexic"] .app-menu-main .app-menu-entry {
+	filter: invert(1) !important;
+}
+
+#notifications,
+#contactsmenu,
+#user-menu .user-status-menu-item,
+#user-menu #help,
+#user-menu #logout,
+#user-menu .avatardiv__user-status,
+#user-menu .avatardiv img,
+#personal-settings #personal-settings-avatar-container,
+#personal-settings .personal-settings-container,
+#personal-settings .profile-settings-container .personal-settings-setting-box:first-child,
+#profile-visibility,
+#content.app-settings #app-content .development-notice,
+#content.app-settings #app-navigation > ul > li:nth-child(8),
+#content.app-settings #app-navigation > ul > li:nth-child(9) {
+	display: none;
+}
+
+#user-menu,
+body#body-settings #header {
+	display: none;
+}
+
+#user-menu .avatardiv {
+	background-image: var(--icon-settings-dark);
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+#user-menu .avatardiv:hover {
+	border: none;
+}
+
+body[data-themes="dark"],
+body[data-themes="opendyslexic,dark"],
+body[data-themes="dark,opendyslexic"],
+body[data-themes="dark-highcontrast,opendyslexic"],
+body[data-themes="dark-highcontrast"] {
+	background: #323f4b;
+}
+
+body[data-themes="dark"] #header .logo,
+body[data-themes="dark"] #firstrunwizard .logo,
+body[data-themes="opendyslexic,dark"] #header .logo,
+body[data-themes="opendyslexic,dark"] #firstrunwizard .logo,
+body[data-themes="dark,opendyslexic"] #header .logo,
+body[data-themes="dark,opendyslexic"] #firstrunwizard .logo,
+body[data-themes="dark-highcontrast,opendyslexic"] #header .logo,
+body[data-themes="dark-highcontrast,opendyslexic"] #firstrunwizard .logo,
+body[data-themes="dark-highcontrast"] #header .logo,
+body[data-themes="dark-highcontrast"] #firstrunwizard .logo {
+	background-image: url('../img/logo-dark.png');
+}
+
+body[data-themes="dark"] #header .logo-icon::after,
+body[data-themes="opendyslexic,dark"] #header .logo-icon::after,
+body[data-themes="dark,opendyslexic"] #header .logo-icon::after,
+body[data-themes="dark-highcontrast,opendyslexic"] #header .logo-icon::after,
+body[data-themes="dark-highcontrast"] #header .logo-icon::after {
+	color: rgb(199, 223, 255);
+}
+
+body[data-themes="dark"] .app-menu-main .app-menu-entry,
+body[data-themes="opendyslexic,dark"] .app-menu-main .app-menu-entry,
+body[data-themes="dark,opendyslexic"] .app-menu-main .app-menu-entry,
+body[data-themes="dark-highcontrast,opendyslexic"] .app-menu-main .app-menu-entry,
+body[data-themes="dark-highcontrast"] .app-menu-main .app-menu-entry {
+	filter: none;
+}
+
+body[data-themes="dark"] #unified-search .header-menu__trigger .material-design-icon__svg,
+body[data-themes="opendyslexic,dark"] #unified-search .header-menu__trigger .material-design-icon__svg,
+body[data-themes="dark,opendyslexic"] #unified-search .header-menu__trigger .material-design-icon__svg,
+body[data-themes="dark-highcontrast,opendyslexic"] #unified-search .header-menu__trigger .material-design-icon__svg,
+body[data-themes="dark-highcontrast"] #unified-search .header-menu__trigger .material-design-icon__svg {
+	fill: #000 !important;
+}
+
+body[data-themes="dark"] .unified-search__trigger,
+body[data-themes="opendyslexic,dark"] .unified-search__trigger,
+body[data-themes="dark,opendyslexic"] .unified-search__trigger,
+body[data-themes="dark"] .unified-search__trigger,
+body[data-themes="dark-highcontrast"] .unified-search__trigger {
+	filter: invert(1) !important;
+}
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li.active,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li.active,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li.active,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li.active,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li.active,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li.active > a,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li.active > a,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li.active > a,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li.active > a,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li.active > a,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:active,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a:active,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a:active,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:active,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a:active,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:active > a,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a:active > a,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a:active > a,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:active > a,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a:active > a,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.selected,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a.selected,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a.selected,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.selected,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a.selected,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.selected > a,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a.selected > a,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a.selected > a,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.selected > a,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a.selected > a,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.active,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a.active,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a.active,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.active,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a.active,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.active > a,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a.active > a,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a.active > a,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a.active > a,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a.active > a {
+	background-color: #323f4b !important;
+}
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:hover,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a:hover,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a:hover,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:hover,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a:hover,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:hover > a,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a:hover > a,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a:hover > a,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:hover > a,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a:hover > a,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:focus,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a:focus,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a:focus,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:focus,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a:focus,
+
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:focus > a,
+body[data-themes="opendyslexic,dark"] #app-navigation:not(.vue) > ul > li a:focus > a,
+body[data-themes="dark,opendyslexic"] #app-navigation:not(.vue) > ul > li a:focus > a,
+body[data-themes="dark"] #app-navigation:not(.vue) > ul > li a:focus > a,
+body[data-themes="dark-highcontrast"] #app-navigation:not(.vue) > ul > li a:focus > a {
+	background-color: #1f2933 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+	body[data-themes=""],
+	body[data-themes="default"],
+	body[data-themes="default,opendyslexic"] {
+		background: #323f4b;
+	}
+
+	body[data-themes=""] #header .logo,
+	body[data-themes=""] #firstrunwizard .logo,
+	body[data-themes="default"] #header .logo,
+	body[data-themes="default"] #firstrunwizard .logo,
+	body[data-themes="default,opendyslexic"] #header .logo,
+	body[data-themes="default,opendyslexic"] #firstrunwizard .logo {
+		background-image: url('../img/logo-dark.png');
+	}
+
+	body[data-themes=""] #header .logo-icon::after,
+	body[data-themes="default"] #header .logo-icon::after,
+	body[data-themes="default,opendyslexic"] #header .logo-icon::after {
+		color: rgb(199, 223, 255);
+	}
+
+	body[data-themes=""] .app-menu-main .app-menu-entry,
+	body[data-themes="default"] .app-menu-main .app-menu-entry,
+	body[data-themes="default,opendyslexic"] .app-menu-main .app-menu-entry {
+		filter: none;
+	}
+
+	body[data-themes=""] #unified-search .header-menu__trigger .material-design-icon__svg,
+	body[data-themes="default"] #unified-search .header-menu__trigger .material-design-icon__svg,
+	body[data-themes="default,opendyslexic"] #unified-search .header-menu__trigger .material-design-icon__svg {
+		fill: #000 !important;
+	}
+
+	body[data-themes=""] .unified-search__trigger,
+	body[data-themes="default"] .unified-search__trigger,
+	body[data-themes="default,opendyslexic"] .unified-search__trigger {
+		filter: invert(1) !important;
+	}
+}

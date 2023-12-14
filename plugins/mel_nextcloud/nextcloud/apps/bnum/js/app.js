@@ -7,7 +7,6 @@
  * See the COPYING-README file.
  *
  */
-
 (function() {
 
 	if (!OCA.Bnum) {
@@ -230,4 +229,35 @@ window.addEventListener('DOMContentLoaded', function() {
 	$('#app-content-personalfiles').on('hide', function() {
 		OCA.Bnum.App.removePersonalFiles()
 	})
+
+	// Gérer le switch des thèmes
+	window.addEventListener("message", (event) => {
+		if (event.data === 'switch-theme-dark' || event.data === 'switch-theme-light') {
+			const current_theme = document.querySelector('body').dataset.themes;
+			const themeId = event.data.replace(/switch-theme-/, '');
+			const real_theme = themeId == 'dark' ? 'light' : 'dark';
+			if (current_theme == real_theme || !current_theme) {
+				const requesttoken = document.querySelector('head').dataset.requesttoken;
+				fetch(
+					'/mdrive/ocs/v2.php/apps/theming/api/v1/theme/' + themeId + '/enable', 
+					{ 
+						method: "PUT",
+						headers: {
+							"requesttoken": requesttoken
+						}
+					}
+				);
+				document.querySelector('body').dataset.themes = themeId;
+
+				if (themeId == 'dark') {
+					document.querySelector('body').dataset.themeDark = '';
+					delete document.querySelector('body').dataset.themeLight;
+				}
+				else {
+					document.querySelector('body').dataset.themeLight = '';
+					delete document.querySelector('body').dataset.themeDark;
+				}
+			}
+		}
+	});
 });

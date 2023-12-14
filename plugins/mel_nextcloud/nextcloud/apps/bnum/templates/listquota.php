@@ -50,6 +50,9 @@
 			<th class="hidden column-size">
 				<a class="size sort columntitle" href="#" onclick="event.preventDefault()" data-sort="size"><span><?php p($l->t('Size')); ?></span><span class="sort-indicator"></span></a>
 			</th>
+			<th class="hidden column-quota">
+				<a class="quota sort columntitle" href="#" onclick="event.preventDefault()" data-sort="quota"><span><?php p($l->t('Quota')); ?></span><span class="sort-indicator"></span></a>
+			</th>
 			<th class="hidden column-mtime">
 				<a class="columntitle" href="#" onclick="event.preventDefault()" data-sort="mtime"><span><?php p($l->t('Modified')); ?></span><span class="sort-indicator"></span></a>
 			</th>

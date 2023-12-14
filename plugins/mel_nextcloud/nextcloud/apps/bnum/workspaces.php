@@ -21,17 +21,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+use OCP\Server;
+use OCP\IConfig;
+use OCP\IUserSession;
 
-// TODO: move to handlebars
-$config = \OC::$server->getConfig();
-$userSession = \OC::$server->getUserSession();
+$config = Server::get(IConfig::class);
+$userSession = Server::get(IUserSession::class);
 
 $showgridview = $config->getUserValue($userSession->getUser()->getUID(), 'files', 'show_grid', false);
 
 // renders the controls and table headers template
-$tmpl = new OCP\Template('bnum', 'simplelist', '');
+$tmpl = new OCP\Template('bnum', 'listquota', '');
 
 // gridview not available for ie
 $tmpl->assign('showgridview', $showgridview);
-
 $tmpl->printPage();

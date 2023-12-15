@@ -114,7 +114,8 @@ class roundrive extends rcube_plugin
      */
     private function ui()
     {
-        if ($this->rc->output->type != 'html') {
+        if ($this->rc->output->type != 'html'
+            || $this->rc->task == 'calendar') {
             return;
         }
 

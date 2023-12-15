@@ -1,5 +1,5 @@
 import { MaterialIcon } from "../../../icons.js";
-export {HtmlCustomTag, BnumHtmlIcon, BnumHtmlSrOnly};
+export {HtmlCustomTag, BnumHtmlIcon, BnumHtmlSrOnly, BnumHtmlSeparate, BnumHtmlFlexContainer, BnumHtmlCenteredFlexContainer};
 
 class HtmlCustomTag extends HTMLElement {
     constructor() {
@@ -23,5 +23,29 @@ class BnumHtmlSrOnly extends HtmlCustomTag {
         const sr_only = 'sr-only';
 
         if (!this.classList.contains(sr_only)) this.classList.add(sr_only);
+    }
+}
+
+class BnumHtmlSeparate extends HtmlCustomTag {
+    constructor() {
+        super();
+
+        this.classList.add('bnum-separate');
+    }
+}
+
+class BnumHtmlFlexContainer extends HtmlCustomTag {
+    constructor() {
+        super();
+
+        this.style.display = 'flex';
+    }
+}
+
+class BnumHtmlCenteredFlexContainer extends BnumHtmlFlexContainer {
+    constructor() {
+        super();
+
+        this.style.justifyContent = 'center';
     }
 }

@@ -785,21 +785,27 @@ class mel_driver extends calendar_driver {
         $result = $_event->uid;
       }
 
-      if ($_event->save() !== null) {
-        // add attachments
-        if (is_array($event['attachments'])) {
-          foreach ($event['attachments'] as $attachment) {
-            $this->add_attachment($attachment, $_event);
-            unset($attachment);
-          }
-        }
+      // Générer un id pour le stockage des pièces jointes
+      if ($new && !isset($_event->id)) {
+        $_event->id = hash('sha256', $_event->uid . $_event->calendar . uniqid(), false);
+      }
 
-        // remove attachments
-        if (is_array($event['deleted_attachments'])) {
-          foreach ($event['deleted_attachments'] as $attachment) {
-            $this->remove_attachment($attachment, $_event->uid);
-          }
+      // add attachments
+      if (is_array($event['attachments'])) {
+        foreach ($event['attachments'] as $attachment) {
+          $this->add_attachment($attachment, $_event);
+          unset($attachment);
         }
+      }
+
+      // remove attachments
+      if (is_array($event['deleted_attachments'])) {
+        foreach ($event['deleted_attachments'] as $attachment) {
+          $this->remove_attachment($attachment, $_event);
+        }
+      }
+
+      if ($_event->save() !== null) {
         return $result;
       }
     }
@@ -1264,14 +1270,10 @@ class mel_driver extends calendar_driver {
       if ($event['_savemode'] == 'all') {
         if ($_event->load()) {
           foreach ($_event->exceptions as $exception) {
-            $exception_uid = $exception->uid;
             $exception->delete();
-            $this->remove_event_attachments($exception_uid);
           }
         }
-        $event_uid = $_event->uid;
         if ($_event->delete()) {
-          $this->remove_event_attachments($event_uid);
           return true;
         }
         else {
@@ -1347,7 +1349,6 @@ class mel_driver extends calendar_driver {
         // 0005105: La suppression d'un événement simple ne le charge pas
         if ($_event->load()) {
           if ($_event->delete()) {
-            $this->remove_event_attachments($_event->uid);
             // Tester si c'est une réunion et que l'organisateur est sur Mel pour refuser l'invitation
             $organizer_calendar = $_event->organizer->calendar;
             if (isset($organizer_calendar)) {
@@ -2205,14 +2206,18 @@ class mel_driver extends calendar_driver {
     try {
       $organizer = $event->organizer;
       // Ne pas ajouter de pièce jointe si on n'est pas organisateur (et que l'organisateur est au ministère
-      if (isset($organizer) && !$organizer->extern && ! empty($organizer->email) && $organizer->uid != $this->calendars[$event->calendar]->owner) {
-        return true;
+      if (isset($organizer) 
+          && !$organizer->extern 
+          && !empty($organizer->email) 
+          && $organizer->uid != $this->calendars[$event->calendar]->owner) {
+        return false;
       }
+
       // Création de la pièce jointe
       $_attachment = driver_mel::gi()->attachment();
       $_attachment->modified = time();
       $_attachment->name = $attachment['name'];
-      $_attachment->path = $event->uid . '/' . $this->calendars[$event->calendar]->owner;
+      $_attachment->path = $event->id;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
       $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
@@ -2224,9 +2229,7 @@ class mel_driver extends calendar_driver {
         $attachments[] = $_attachment;
         $event->attachments = $attachments;
         $event->modified = time();
-        $ret = $event->save();
-
-        return !is_null($ret);
+        return true;
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -2245,124 +2248,34 @@ class mel_driver extends calendar_driver {
    * @param string $attachment_id
    * @return boolean
    */
-  private function remove_attachment($attachment_id, $event_uid) {
+  private function remove_attachment($attachment_id, $event) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::remove_attachment($attachment_id)");
     try {
-      $attachment_name = null;
-      $attachment = driver_mel::gi()->attachment();
-      $attachment->isfolder = false;
-      $attachment->id = $attachment_id;
-      $attachment->path = $event_uid . '/%';
-      $ret = true;
-      foreach ($attachment->getList(null, null, ['path' => MappingMce::like]) as $att) {
-        // Vérifie si d'autres pièces jointes sont présentes
-        $other_attachment = driver_mel::gi()->attachment();
-        $other_attachment->isfolder = false;
-        $other_attachment->path = $att->path;
-        $attachment_name = $att->name;
-        $ret = $ret & $att->delete();
-        $other_att = $other_attachment->getList();
-        if (count($other_att) == 0) {
-          // S'il n'y a pas d'autres pieces jointes on supprime le dossier
-          $path = explode('/', $other_attachment->path);
-          $folder = driver_mel::gi()->attachment();
-          $folder->isfolder = true;
-          $folder->name = $path[count($path) - 1];
-          $folder->path = $path[count($path) - 2];
-          $ret = $ret & $folder->delete();
-        }
+      $organizer = $event->organizer;
+      // Ne pas supprimer de pièce jointe si on n'est pas organisateur (et que l'organisateur est au ministère
+      if (isset($organizer) 
+          && !$organizer->extern 
+          && !empty($organizer->email) 
+          && $organizer->uid != $this->calendars[$event->calendar]->owner) {
+        return false;
       }
 
-      // Supprimer cette pièce jointe des événements
-      if (isset($attachment_name)) {
-        $_events = driver_mel::gi()->event();
-        $_events->uid = $event_uid;
-        foreach ($_events->getList() as $event) {
-          $attachments = $event->attachments;
-          $save = false;
-          foreach ($attachments as $key => $att) {
-            if ($att->name == $attachment_name) {
-              unset($attachments[$key]);
-              $save = true;
-            }
-          }
-          if ($save) {
-            $event->attachments = $attachments;
-            $event->modified = time();
-            $event->save();
-          }
+      $ret = false;
+
+      $attachments = $event->attachments;
+      foreach ($attachments as $key => $attachment) {
+        if (md5($attachment->name) == $attachment_id && $attachment->delete()) {
+          unset($attachments[$key]);
+          $ret = true;
         }
       }
+      $event->attachments = $attachments;
 
       return $ret;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_driver::remove_attachment() Melanie2DatabaseException");
-      return false;
-    }
-    catch (\Exception $ex) {
-      return false;
-    }
-    return false;
-  }
-  /**
-   * Remove all attachments for a deleted event
-   *
-   * @param string $event_uid
-   */
-  private function remove_event_attachments($event_uid) {
-    try {
-      $_events = driver_mel::gi()->event();
-      $_events->uid = $event_uid;
-      $events = $_events->getList('count');
-      $count = count($events);
-      // Si c'est le dernier evenement avec le même uid on supprime toutes les pièces jointes
-      if ($count === 0) {
-        $attachments_folders = driver_mel::gi()->attachment();
-        $attachments_folders->isfolder = true;
-        $attachments_folders->path = $event_uid;
-        $folders_list = array();
-        // Récupère les dossiers lié à l'évènement
-        $folders = $attachments_folders->getList();
-        if (count($folders) > 0) {
-          foreach ($folders as $folder) {
-            $folders_list[] = $folder->path . '/' . $folder->name;
-          }
-          $attachments = driver_mel::gi()->attachment();
-          $attachments->isfolder = false;
-          $attachments->path = $folders_list;
-          // Lecture des pièces jointes pour chaque dossier de l'évènement
-          $attachments = $attachments->getList(array('id','name','path'));
-          if (count($attachments) > 0) {
-            foreach ($attachments as $attachment) {
-              // Supprime la pièce jointe
-              $attachment->delete();
-            }
-          }
-          foreach ($folders as $folder) {
-            // Supprime le dossier
-            $folder->delete();
-          }
-        }
-        $folder = driver_mel::gi()->attachment();
-        $folder->isfolder = true;
-        $folder->path = '';
-        $folder->name = $event_uid;
-        if ($folder->load()) {
-          $folder->delete();
-        }
-      }
-
-      // Supprimer toutes les pièces jointes de toutes les événements
-      foreach ($events as $event) {
-        $event->attachment = [];
-        $event->modified = time();
-        $event->save();
-      }
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
-      mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_driver::remove_event_attachments() Melanie2DatabaseException");
       return false;
     }
     catch (\Exception $ex) {
@@ -2379,29 +2292,17 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::list_attachments()");
     try {
       $_attachments = array();
-      // Récupération des pièces jointes
-      $attachments_folders = driver_mel::gi()->attachment();
-      $attachments_folders->isfolder = true;
-      $attachments_folders->path = $event->uid;
-      $folders_list = array();
-      // Récupère les dossiers lié à l'évènement
-      $folders = $attachments_folders->getList();
-      if (count($folders) > 0) {
-        foreach ($folders as $folder) {
-          $folders_list[] = $folder->path . '/' . $folder->name;
-        }
-        $attachments = driver_mel::gi()->attachment();
-        $attachments->isfolder = false;
-        $attachments->path = $folders_list;
-        // Lecture des pièces jointes pour chaque dossier de l'évènement
-        $attachments = $attachments->getList(array('id','name'));
-        if (count($attachments) > 0) {
-          foreach ($attachments as $attachment) {
-            $_attachment = array('id' => $attachment->id,'name' => $attachment->name);
-            $_attachments[] = $_attachment;
-          }
-        }
+
+      foreach ($event->attachments as $attachment) {
+        $_attachment = [
+          'id'        => md5($attachment->name),
+          'name'      => $attachment->name,
+          'mimetype'  => $attachment->contenttype,
+          'size'      => $attachment->size
+        ];
+        $_attachments[] = $_attachment;
       }
+
       return $_attachments;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -2427,13 +2328,26 @@ class mel_driver extends calendar_driver {
         $event_id = explode('@DATE-', $event_id, 2);
         $event_id = $event_id[0];
       }
-      $attachment = driver_mel::gi()->attachment();
-      $attachment->isfolder = false;
-      $attachment->id = $id;
-      $attachment->path = $event_id . '/%';
-      foreach ($attachment->getList(null, null, ['path' => MappingMce::like]) as $att) {
-        $ret = array('id' => $att->id,'name' => $att->name,'mimetype' => $att->contenttype,'size' => $att->size);
-        $this->attachment = $att;
+
+      $ret = false;
+
+      $_event = driver_mel::gi()->event();
+      $_event->calendar = driver_mel::gi()->rcToMceId($event['calendar']);
+      $_event->uid = $event_id;
+
+      if ($_event->load()) {
+        foreach ($_event->attachments as $attachment) {
+          if (md5($attachment->name) == $id) {
+            $ret = [
+              'id'        => md5($attachment->name),
+              'name'      => $attachment->name,
+              'mimetype'  => $attachment->contenttype,
+              'size'      => $attachment->size
+            ];
+            $this->attachment = $attachment;
+          }
+        }
+
         return $ret;
       }
     }
@@ -2453,9 +2367,12 @@ class mel_driver extends calendar_driver {
   public function get_attachment_body($id, $event) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::get_attachment_body($id)");
+
     if (isset($this->attachment)) {
+      $this->attachment->load();
       return $this->attachment->data;
     }
+
     return false;
   }
 

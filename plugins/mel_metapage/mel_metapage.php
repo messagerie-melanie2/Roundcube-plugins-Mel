@@ -246,6 +246,8 @@ class mel_metapage extends bnum_plugin
             $this->register_action('plugin.mel_metapage.get_favorite_folders', [$this, 'get_display_folder']);
             $this->register_action('plugin.mel_metapage.set_folder_color', [$this, 'update_color_folder']);
             $this->register_action('plugin.mel_metapage.get_folders_color', [$this, 'get_folder_colors']);
+            $this->register_action('plugin.mel_metapage.set_folder_icon', [$this, 'update_icon_folder']);
+            $this->register_action('plugin.mel_metapage.get_folders_icon', [$this, 'get_folder_icons']);
 
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
@@ -291,6 +293,7 @@ class mel_metapage extends bnum_plugin
 
                     $this->rc->output->set_env('favorites_folders', $favs);
                     $this->rc->output->set_env('folders_colors', $this->rc->config->get('folders_colors', []));
+                    $this->rc->output->set_env('folders_icons', $this->rc->config->get('folders_icons', []));
                     break;
                 
                 default:
@@ -3489,8 +3492,32 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    public function update_icon_folder() {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $icon = rcube_utils::get_input_value('_icon', rcube_utils::INPUT_POST) ?? null;
+
+        if ('' === $icon) $icon = null;
+
+        $prefs = $this->rc->config->get('folders_icons', []);
+
+        if (isset($icon)) $prefs[$folder] = $icon;
+        else unset($prefs[$folder]);
+
+        $this->rc->user->save_prefs(['folders_icons' => $prefs]);
+        
+        echo json_encode($prefs);
+        exit;
+    }
+
     public function get_folder_colors() {
         $prefs = $this->rc->config->get('folders_colors', []);
+        
+        echo json_encode($prefs);
+        exit;
+    }
+
+    public function get_folder_icons() {
+        $prefs = $this->rc->config->get('folders_icons', []);
         
         echo json_encode($prefs);
         exit;

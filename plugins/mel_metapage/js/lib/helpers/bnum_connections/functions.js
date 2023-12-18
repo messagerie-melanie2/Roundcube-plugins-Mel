@@ -35,3 +35,11 @@ export async function m_mail_get_favorites_colors(data) {
 
     return data;
 }
+
+export async function m_mail_get_favorites_icons(data) {
+    if (!data.has_error) {
+        rcmail.env.folders_icons = data.datas;
+    }
+
+    return data;
+}

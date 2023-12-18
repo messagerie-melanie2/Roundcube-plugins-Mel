@@ -10,11 +10,16 @@ class HtmlCustomTag extends HTMLElement {
 class BnumHtmlIcon extends HtmlCustomTag {
     constructor() {
         super();
-        if (!this.classList.contains(MaterialIcon.html_class)) this.classList.add(MaterialIcon.html_class);
+
+        if (!this.getAttribute('class')) this.setAttribute('class', BnumHtmlIcon.HTML_CLASS);
+
+        if (!this.classList.contains(BnumHtmlIcon.HTML_CLASS)) this.classList.add(BnumHtmlIcon.HTML_CLASS);
 
         if (!!this.dataset['icon']) this.appendChild(document.createTextNode(this.dataset['icon']));
     }
 }
+
+BnumHtmlIcon.HTML_CLASS = MaterialIcon.html_class;
 
 class BnumHtmlSrOnly extends HtmlCustomTag {
     constructor() {
@@ -29,8 +34,6 @@ class BnumHtmlSrOnly extends HtmlCustomTag {
 class BnumHtmlSeparate extends HtmlCustomTag {
     constructor() {
         super();
-
-        this.classList.add('bnum-separate');
     }
 }
 

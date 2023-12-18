@@ -37,7 +37,6 @@ JsHtml.create_custom_tag('icon', {
 });
 
 JsHtml.update('icon', function(self, old, icon, attribs = {}) {
-
     if (typeof icon !== 'string') {
         attribs = icon;
         icon = null;

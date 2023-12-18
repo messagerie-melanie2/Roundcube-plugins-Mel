@@ -433,6 +433,8 @@ export class MailFavoriteFolder extends MailModule {
 
         if (!this.unreads && !!this.get_env('unread_counts')) this.unreads = this.get_env('unread_counts');
         this._setup_listeners();
+
+        this.load_finished = true;
     }
 
     _setup_listeners() {

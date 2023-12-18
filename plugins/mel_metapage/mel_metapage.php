@@ -294,6 +294,7 @@ class mel_metapage extends bnum_plugin
                     $this->rc->output->set_env('favorites_folders', $favs);
                     $this->rc->output->set_env('folders_colors', $this->rc->config->get('folders_colors', []));
                     $this->rc->output->set_env('folders_icons', $this->rc->config->get('folders_icons', []));
+                    $this->include_stylesheet($this->local_skin_path().'/icons_modifier.css');
                     break;
                 
                 default:

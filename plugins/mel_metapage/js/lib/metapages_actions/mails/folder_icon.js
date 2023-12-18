@@ -195,7 +195,7 @@ export class FolderIcon extends AFolderModifier {
     update_visuel() {
         const folders = this.get_env('folders_icons');
 
-        $('#folderlist-content a').each((i, e) => {
+        $('#folderlist-content li').each((i, e) => {
             i = MelEnumerable.from(e.classList).where(x => x.includes('bnum-updated-'));
 
             if (i.any()) {
@@ -209,7 +209,7 @@ export class FolderIcon extends AFolderModifier {
             if (Object.hasOwnProperty.call(folders, key)) {
                 const icon = folders[key];
                 
-                $(`#mailboxlist a[rel="${key}"]`).addClass(`bnum-updated-${icon}`);
+                $(`#mailboxlist a[rel="${key}"]`).parent().addClass(`bnum-updated-${icon}`);
                 $(`#favorite-folders li[mailid="${key}"]`).addClass(`bnum-updated-${icon}`);
             }
         }

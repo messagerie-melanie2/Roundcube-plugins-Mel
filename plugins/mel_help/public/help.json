@@ -8,7 +8,7 @@
             "generalites"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:Hj1HymPAxKfgMZyd7yr0i",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:Hj1HymPAxKfgMZyd7yr0i",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Généralités"
     },
     {
@@ -20,8 +20,22 @@
             "interface"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:keX4JZN5UneBjQopr1g8id",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:keX4JZN5UneBjQopr1g8id",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Interface de Mes documents"
+    },
+    {
+        "title": "Mes documents - Interface de Mes documents - Écran : Comment naviger dans mes documents ?",
+        "description": "La barre de navigation dans le module Mes documents vous permet de parcourir :",
+        "keywords": [
+            "documents",
+            "fichiers",
+            "interface",
+            "ecran",
+            "naviger"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:WGFvtfsr2OendDXvYPmpGc",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Interface de Mes documents - Écran : Comment naviger dans mes documents ?"
     },
     {
         "title": "Mes documents - Les différents types de drives",
@@ -34,7 +48,7 @@
             "drives"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:sjeG36RAcFetfEVD0syBZg",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:sjeG36RAcFetfEVD0syBZg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Les différents types de drives"
     },
     {
@@ -50,7 +64,7 @@
             "individuel"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:SkbHRdKJwfguYfmpbeinJh",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:SkbHRdKJwfguYfmpbeinJh",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Les différents types de drives - DriveI : votre Drive Individuel"
     },
     {
@@ -66,7 +80,7 @@
             "entite"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:edpVstAETiQGowfDjLv7f",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:edpVstAETiQGowfDjLv7f",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Les différents types de drives - DriveE : Vos Drives d'Entité"
     },
     {
@@ -82,7 +96,7 @@
             "thematique"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:G8fiSBhdbWgDfteU3QTHaf",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:G8fiSBhdbWgDfteU3QTHaf",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Les différents types de drives - DriveT : vos Drives Thématique ?"
     },
     {
@@ -95,7 +109,7 @@
             "creer"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:oebiBkQhOpd0aTyW0VtWoj",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:oebiBkQhOpd0aTyW0VtWoj",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Déposer ou Créer des fichiers"
     },
     {
@@ -108,7 +122,7 @@
             "collaboratif"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:oayQutEJdWgV2vaZhG97rd",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:oayQutEJdWgV2vaZhG97rd",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Travailler en mode collaboratif"
     },
     {
@@ -120,7 +134,7 @@
             "partager"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:nHhfkq6JuLfeXY1H69tVUf",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:nHhfkq6JuLfeXY1H69tVUf",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Partager les fichiers"
     },
     {
@@ -133,7 +147,7 @@
             "drives"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#07-Document:iDPQM7NV4diwAR7QVoMvcj",
+        "help_url": "/aide/doc/bnum//index.html#07-Document:iDPQM7NV4diwAR7QVoMvcj",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes documents - Synchroniser les fichiers entre vos drives et votre PC"
     },
     {
@@ -147,7 +161,7 @@
             "publics"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#09-_Annuaire:SLVsk0RVXqcyn0GOaqlLee",
+        "help_url": "/aide/doc/bnum//index.html#09-_Annuaire:SLVsk0RVXqcyn0GOaqlLee",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Annuaire - Utilisation des contacts \"publics\""
     },
     {
@@ -161,7 +175,7 @@
             "prives"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#09-_Annuaire:nJlVNP9lTcblQOEM0wHVWe",
+        "help_url": "/aide/doc/bnum//index.html#09-_Annuaire:nJlVNP9lTcblQOEM0wHVWe",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Annuaire - Gestion des contacts \"privés\""
     },
     {
@@ -171,7 +185,7 @@
             "kanban"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#13-Kanban:EWhyPePiP5dn2kslGUKWgh",
+        "help_url": "/aide/doc/bnum//index.html#13-Kanban:EWhyPePiP5dn2kslGUKWgh",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Kanban"
     },
     {
@@ -183,7 +197,7 @@
             "interface"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#13-Kanban:f4HYGO9s1svhUEpLQfVBg",
+        "help_url": "/aide/doc/bnum//index.html#13-Kanban:f4HYGO9s1svhUEpLQfVBg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Kanban - Présentation de l'interface d'un kanban"
     },
     {
@@ -195,7 +209,7 @@
             "carte"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#13-Kanban:tj9bg15zCygMgvmArDJMkf",
+        "help_url": "/aide/doc/bnum//index.html#13-Kanban:tj9bg15zCygMgvmArDJMkf",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Kanban - Présentation d'une carte"
     },
     {
@@ -208,7 +222,7 @@
             "supprimer"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#13-Kanban:H75imftIRNgeJDmmgEzVYd",
+        "help_url": "/aide/doc/bnum//index.html#13-Kanban:H75imftIRNgeJDmmgEzVYd",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Kanban - Paramétrer, archiver ou supprimer un kanban"
     },
     {
@@ -221,7 +235,7 @@
             "preferences"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:xSYMU8dgIkNr7m89JTGhg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:xSYMU8dgIkNr7m89JTGhg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences"
     },
     {
@@ -236,7 +250,7 @@
             "utilisateur"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:zjC8YrI8tebSUKUfGU9s5",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:zjC8YrI8tebSUKUfGU9s5",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Interface utilisateur"
     },
     {
@@ -251,7 +265,7 @@
             "courriel"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:ihWdrcjznxe2Ho5q8VtJrf",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:ihWdrcjznxe2Ho5q8VtJrf",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Vue de la boite de courriel"
     },
     {
@@ -266,7 +280,7 @@
             "courriels"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:HMxTvVBd0Kgt2x7nBSo4Mg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:HMxTvVBd0Kgt2x7nBSo4Mg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Affichage des courriels"
     },
     {
@@ -281,7 +295,7 @@
             "courriels"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:JKSdeiKTpJkoFlD5d3mzli",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:JKSdeiKTpJkoFlD5d3mzli",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Rédaction de courriels"
     },
     {
@@ -296,7 +310,7 @@
             "carnet d'adresses"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:BtefywZAxWeK7rFPiEjYgg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:BtefywZAxWeK7rFPiEjYgg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Annuaire"
     },
     {
@@ -311,7 +325,7 @@
             "serveur"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:DYjbr5sZl4fq2pbabjCg5g",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:DYjbr5sZl4fq2pbabjCg5g",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Paramètres du serveur"
     },
     {
@@ -325,7 +339,7 @@
             "chiffrement"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:eITKoTnUTVdp3wGwgNeN0i",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:eITKoTnUTVdp3wGwgNeN0i",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Chiffrement"
     },
     {
@@ -340,7 +354,7 @@
             "globale"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:e8tVEK7WoVjgNVS34Zjlb",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:e8tVEK7WoVjgNVS34Zjlb",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Recherche globale"
     },
     {
@@ -354,7 +368,7 @@
             "visioconferences"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:MbLpmJSVhFfrCVRClLgG0h",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:MbLpmJSVhFfrCVRClLgG0h",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Visioconférences"
     },
     {
@@ -368,7 +382,7 @@
             "discussions"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:VG7kLzT2Tzj7So3ecXnHd",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:VG7kLzT2Tzj7So3ecXnHd",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Discussions"
     },
     {
@@ -383,7 +397,7 @@
             "principale"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:diot5Q5Govfede9U3mUvyg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:diot5Q5Govfede9U3mUvyg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Navigation principale"
     },
     {
@@ -397,7 +411,7 @@
             "experimental"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:mRLkvSF0hicZLux2jz8Jxe",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:mRLkvSF0hicZLux2jz8Jxe",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Expérimental"
     },
     {
@@ -412,7 +426,7 @@
             "messages"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:qUfj42EklYezO6zqjnUMtd",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:qUfj42EklYezO6zqjnUMtd",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Étiquettes des messages"
     },
     {
@@ -426,7 +440,7 @@
             "notifications"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:mZrQg1awH5dEfkpl95290",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:mZrQg1awH5dEfkpl95290",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Notifications"
     },
     {
@@ -441,7 +455,7 @@
             "agendas"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:Ijt5if13HWdCFGCVz2Mgqi",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:Ijt5if13HWdCFGCVz2Mgqi",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Préférences - Mon agenda"
     },
     {
@@ -454,7 +468,7 @@
             "dossiers"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:zaRQ89C0GEfN7GvyjxYGkg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:zaRQ89C0GEfN7GvyjxYGkg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Dossiers"
     },
     {
@@ -467,7 +481,7 @@
             "signatures"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:IOgdQyScWogdJilOfn0RYg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:IOgdQyScWogdJilOfn0RYg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Signatures"
     },
     {
@@ -481,7 +495,7 @@
             "signatures"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:q0DIgNriPOc1SfRMLiPfi",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:q0DIgNriPOc1SfRMLiPfi",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Générer ma signature"
     },
     {
@@ -495,7 +509,7 @@
             "fichiers"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:i61maWKosXdyWkI2QbGP5i",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:i61maWKosXdyWkI2QbGP5i",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes documents"
     },
     {
@@ -508,7 +522,7 @@
             "filtres"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:j0KDFPcbmbVbheFxV6Xjd",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:j0KDFPcbmbVbheFxV6Xjd",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Filtres"
     },
     {
@@ -523,7 +537,7 @@
             "roadmap"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:vV1NibJGiyi8JyBIKZU2Fi",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:vV1NibJGiyi8JyBIKZU2Fi",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Feuille de route"
     },
     {
@@ -536,7 +550,7 @@
             "informations"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:yThCfwXUFSfWDrkiJFumYg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:yThCfwXUFSfWDrkiJFumYg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Informations"
     },
     {
@@ -550,7 +564,7 @@
             "interface"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:VLqMjR62yFdRB7tlGJQlgj",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:VLqMjR62yFdRB7tlGJQlgj",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Informations - Interface"
     },
     {
@@ -565,7 +579,7 @@
             "flux"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:FlNdMhrBYudOMEwZOkPkaf",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:FlNdMhrBYudOMEwZOkPkaf",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Informations - Gestions des flux"
     },
     {
@@ -579,7 +593,7 @@
             "authentification"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:pNz1YIFSj2XDL5ivSIKYg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:pNz1YIFSj2XDL5ivSIKYg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Double authentification"
     },
     {
@@ -592,7 +606,7 @@
             "ressources"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:Ak7rB4UWrHjmeVnZgLVulg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:Ak7rB4UWrHjmeVnZgLVulg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes ressources"
     },
     {
@@ -607,7 +621,7 @@
             "lettres"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:fta5KyiRrvfYK4k5BweaD",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:fta5KyiRrvfYK4k5BweaD",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes ressources - Boîtes aux lettres"
     },
     {
@@ -622,7 +636,7 @@
             "agendas"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:LlMgDyZodxiHAXAGjgAhWi",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:LlMgDyZodxiHAXAGjgAhWi",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes ressources - Agendas"
     },
     {
@@ -636,7 +650,7 @@
             "contacts"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:OAaUp2zV42cCd2HK6vhsOb",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:OAaUp2zV42cCd2HK6vhsOb",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes ressources - Contacts"
     },
     {
@@ -650,7 +664,7 @@
             "taches"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:ARZuihxpVOf7ig4rvmc63e",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:ARZuihxpVOf7ig4rvmc63e",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes ressources - Tâches"
     },
     {
@@ -663,7 +677,7 @@
             "compte"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:Pl2w5KhfpJbhRqOFTfIu5d",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:Pl2w5KhfpJbhRqOFTfIu5d",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte"
     },
     {
@@ -678,7 +692,7 @@
             "personnelles"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:JP6NXLXVFZdFCGlDYFBG0g",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:JP6NXLXVFZdFCGlDYFBG0g",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte - Informations personnelles"
     },
     {
@@ -692,7 +706,7 @@
             "passe"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:l4GIVl2g7xdGSnhdT7Cdwd",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:l4GIVl2g7xdGSnhdT7Cdwd",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte - Mot de passe"
     },
     {
@@ -707,7 +721,7 @@
             "absence"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:os6cNX22OFfVxAlngb5WI",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:os6cNX22OFfVxAlngb5WI",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte - Gestionnaire d'absence"
     },
     {
@@ -722,7 +736,7 @@
             "internet"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:i6ld5xP8GGzxqVWEzV8bg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:i6ld5xP8GGzxqVWEzV8bg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte - Accès internet"
     },
     {
@@ -737,7 +751,7 @@
             "mobile"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:uUVdcU86h4deEWCRkGyUFh",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:uUVdcU86h4deEWCRkGyUFh",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte - Synchronisation mobile"
     },
     {
@@ -752,7 +766,7 @@
             "listes"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:oZIx8wZlzGecEnLrSAQiJg",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:oZIx8wZlzGecEnLrSAQiJg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte - Gestionnaire de listes"
     },
     {
@@ -767,7 +781,7 @@
             "suspects"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:tUYQc7QcWFePnlW1GoLouc",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:tUYQc7QcWFePnlW1GoLouc",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mon compte - Liens suspects"
     },
     {
@@ -780,7 +794,7 @@
             "statistiques"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:lsB45IhoJBfh6kEt1kqUQ",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:lsB45IhoJBfh6kEt1kqUQ",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes statistiques"
     },
     {
@@ -794,7 +808,7 @@
             "mobiles"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:FwXVWL1YVneDBxA6E78EFc",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:FwXVWL1YVneDBxA6E78EFc",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Mes statistiques - Mobiles"
     },
     {
@@ -808,135 +822,77 @@
             "suggestions"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#15-Configuration:U0Z6uhxqzdxnxGLUSrk3g",
+        "help_url": "/aide/doc/bnum//index.html#15-Configuration:U0Z6uhxqzdxnxGLUSrk3g",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Configuration du bureau numérique - Faire une suggestion"
     },
     {
-        "title": "Sondage - Comment, pourquoi et pour qui ?",
-        "description": "Sondage est basé sur Pégase, une application du Ministère qui permet de réaliser rapidement des sondages ou planifier des réunions tant en interne qu'avec des partenaires externes.",
+        "title": "L'interface du Bnum - Comment se connecter au Bnum ?",
+        "description": "Pour vous connecter au Bnum, vous pouvez utiliser :",
         "keywords": [
-            "pegase",
-            "sondages",
-            "comment,"
+            "interface",
+            "bnum",
+            "connecter"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#12-Sondage:rlxjNfcIeJi0o7VccHwfi",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Comment, pourquoi et pour qui ?"
+        "help_url": "/aide/doc/bnum//index.html#01-Interface:JBlZJcoTStfXfBmIPpDVwb",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Comment se connecter au Bnum ?"
     },
     {
-        "title": "Sondage - L'écran d'accueil de Sondage",
-        "description": "Dans cette page d'accueil vous retrouverez :",
+        "title": "L'interface du Bnum - Le tableau de bord, cœur du Bnum",
+        "description": "Découvrez ici les différents composants de son interface.",
         "keywords": [
-            "pegase",
-            "sondages",
+            "interface",
+            "bnum",
+            "tableau",
+            "bord,"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#01-Interface:kY3sE8mCq9izbXc5HLUlvb",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Le tableau de bord, cœur du Bnum"
+    },
+    {
+        "title": "L'interface du Bnum - Le tableau de bord, cœur du Bnum - Écran : Présentation de l'interface et de la page d'accueil du Bnum",
+        "description": "La barre de navigation latérale qui vous permettra d'accéder aux différents modules du Bnum sans ouvrir de nouveaux onglets.",
+        "keywords": [
+            "interface",
+            "bnum",
+            "tableau",
+            "bord,",
             "ecran",
+            "presentation",
+            "page",
             "accueil"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#12-Sondage:HiDPbBSe6VegRmuQOPjWad",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - L'écran d'accueil de Sondage"
+        "help_url": "/aide/doc/bnum//index.html#01-Interface:T8M8yq0juWelmwgW0SYtjf",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Le tableau de bord, cœur du Bnum - Écran : Présentation de l'interface et de la page d'accueil du Bnum"
     },
     {
-        "title": "Sondage - Création d'un sondage",
-        "description": "La création d'un nouveau sondage se fait à partir du bouton \"Nouveau\" présent sur la page d'accueil du module Sondage :  ",
+        "title": "L'interface du Bnum - Zoom sur le menu",
+        "description": "Lorsque vous cliquez sur le bouton Créer une pop-up s'ouvre.",
         "keywords": [
-            "pegase",
-            "sondages",
-            "creation"
+            "interface",
+            "bnum",
+            "zoom",
+            "menu"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#12-Sondage:WF5AfQ1VG3fiVoa44FcUyf",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Création d'un sondage"
+        "help_url": "/aide/doc/bnum//index.html#01-Interface:uIOm2PTSTPhdUL2AOgVVag",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Zoom sur le menu"
     },
     {
-        "title": "Sondage - Répondre à un sondage",
-        "description": "Pour répondre à un sondage, l'organisateur doit vous transmettre le lien https sur lequel vous devez vous rendre.",
+        "title": "L'interface du Bnum - Zoom sur le centre de notification",
+        "description": "Votre nom en haut à droite vous rappelle votre statut disponible dans le module Mes discussions. En cliquant sur votre nom vous pouvez ouvrir le centre de notification.",
         "keywords": [
-            "pegase",
-            "sondages",
-            "repondre"
+            "interface",
+            "bnum",
+            "zoom",
+            "centre",
+            "notifications"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#12-Sondage:EJmBLDX3ricQQKdBR98tHd",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Répondre à un sondage"
-    },
-    {
-        "title": "Sondage - Gérer un sondage en tant qu'organisateur",
-        "description": "Lorsque vous créez un sondage de date ou de prise de rendez-vous, lors de l'étape 2 vous devez définir les créneaux que vous proposez.",
-        "keywords": [
-            "pegase",
-            "sondages",
-            "gerer",
-            "tant",
-            "organisateur"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#12-Sondage:zgRspMgkThdgSXAKk8nxjg",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Gérer un sondage en tant qu'organisateur"
-    },
-    {
-        "title": "Mon agenda - L'affichage des agendas",
-        "description": "Par défaut, l'affichage des agendas est proposé en vue semaine.",
-        "keywords": [
-            "calendriers",
-            "agendas",
-            "affichage"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#03-Calendrier:w35JxrCIO4fomP3WRR241h",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - L'affichage des agendas"
-    },
-    {
-        "title": "Mon agenda - Propriétés d'un événement",
-        "description": "Un évènement est un rendez-vous positionné dans un agenda qui est décrit généralement par :",
-        "keywords": [
-            "calendriers",
-            "agendas",
-            "proprietes",
-            "evenement"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#03-Calendrier:nanOHPzMs5YEjEvqcFZwb",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Propriétés d'un événement"
-    },
-    {
-        "title": "Mon agenda - Création d'un événement depuis le calendrier",
-        "description": "Un clic dans l'espace d'affichage, ou l'utilisation de l’icône Créer de la barre d'outils, permet de créer un nouvel événement",
-        "keywords": [
-            "calendriers",
-            "agendas",
-            "creation",
-            "evenement"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#03-Calendrier:DVqh5HJxH2cgysPi28jIpi",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Création d'un événement depuis le calendrier"
-    },
-    {
-        "title": "Mon agenda - Création d'un évènement depuis un courriel",
-        "description": "Il est normalement possible de créer automatiquement un évènement dans votre agenda si vous recevez un mel contenant en pièce jointe un fichier au format ics. Nous appelons ce type de courriel un courriel d'invitation.",
-        "keywords": [
-            "calendriers",
-            "agendas",
-            "creation",
-            "evenement",
-            "courriel"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#03-Calendrier:m4N7NJdBIVci5qtyqOFHpj",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Création d'un évènement depuis un courriel"
-    },
-    {
-        "title": "Mon agenda - Actions sur les évènements",
-        "description": "Lorsque vous cliquez sur un évènement dans un agenda, plusieurs bouton d'action s'affiche en bas de la pop-up qui s'ouvre.",
-        "keywords": [
-            "calendriers",
-            "agendas",
-            "evenements"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#03-Calendrier:LQJImvHkBlh7XxuPRUUfld",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Actions sur les évènements"
+        "help_url": "/aide/doc/bnum//index.html#01-Interface:tqpLSd19LCjAE4WPaacKZc",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Zoom sur le centre de notification"
     },
     {
         "title": "Mes discussions - Discussion",
@@ -945,7 +901,7 @@
             "discussions"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#04-Discussion:rZsKsQk5Hwh201V0QL735",
+        "help_url": "/aide/doc/bnum//index.html#04-Discussion:rZsKsQk5Hwh201V0QL735",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes discussions - Discussion"
     },
     {
@@ -956,7 +912,7 @@
             "connexion"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#04-Discussion:zmcowX1S2UcQ8gGTuieExg",
+        "help_url": "/aide/doc/bnum//index.html#04-Discussion:zmcowX1S2UcQ8gGTuieExg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes discussions - Connexion à Mes discussions"
     },
     {
@@ -968,7 +924,7 @@
             "parametrages"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#04-Discussion:MRmVmrKz2yftiIIyy0v9N",
+        "help_url": "/aide/doc/bnum//index.html#04-Discussion:MRmVmrKz2yftiIIyy0v9N",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes discussions - Ergonomie et paramétrage global de Discussion"
     },
     {
@@ -979,7 +935,7 @@
             "utilisation"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#04-Discussion:c5bQoVB6A5csOA7s4efIcg",
+        "help_url": "/aide/doc/bnum//index.html#04-Discussion:c5bQoVB6A5csOA7s4efIcg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes discussions - Utilisation de Mes discussions"
     },
     {
@@ -990,12 +946,12 @@
             "outils"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#04-Discussion:IooLCc24HXdvY4bRy5J14b",
+        "help_url": "/aide/doc/bnum//index.html#04-Discussion:IooLCc24HXdvY4bRy5J14b",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes discussions - Outils autour de Mes discussions"
     },
     {
         "title": "Mes discussions - Création d'un nouveau canal",
-        "description": "Un clic sur cette icône donne le choix entre la création :",
+        "description": "Dans la barre de menu du salon, un clic sur cette icone permet :",
         "keywords": [
             "discussions",
             "creation",
@@ -1004,8 +960,20 @@
             "salon"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#04-Discussion:A4DP69QukDdEpWBp823Crg",
+        "help_url": "/aide/doc/bnum//index.html#04-Discussion:A4DP69QukDdEpWBp823Crg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes discussions - Création d'un nouveau canal"
+    },
+    {
+        "title": "Mes discussions - Création d'une équipe",
+        "description": "Une équipe est un ensemble de personnes qui peuvent disposer de plusieurs canaux privés. Elle est dédiée à un groupe de personnes ayant plusieurs thématiques à traiter en parallèle. A la différence d'un canal (salon) qui est orienté sur une seule thématique, mais avec un périmètre de membres mouvants.",
+        "keywords": [
+            "discussions",
+            "creation",
+            "equipe"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#04-Discussion:tx75Sqcua0hDYFzKShTxkc",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes discussions - Création d'une équipe"
     },
     {
         "title": "Mes espaces de travail - Espace de travail",
@@ -1015,7 +983,7 @@
             "travail"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#05-Espace-de-travail:Ak6DCy4P3kf2HQWPcOuGHg",
+        "help_url": "/aide/doc/bnum//index.html#05-Espace-de-travail:Ak6DCy4P3kf2HQWPcOuGHg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes espaces de travail - Espace de travail"
     },
     {
@@ -1028,7 +996,7 @@
             "accueil"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#05-Espace-de-travail:q4s79ayDDCc6pwAvVbg9Qd",
+        "help_url": "/aide/doc/bnum//index.html#05-Espace-de-travail:q4s79ayDDCc6pwAvVbg9Qd",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes espaces de travail - L'écran d'accueil d'un espace de travail"
     },
     {
@@ -1040,7 +1008,7 @@
             "rejoindre"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#05-Espace-de-travail:L6CYpVdN4SiLoI8NJeNkA",
+        "help_url": "/aide/doc/bnum//index.html#05-Espace-de-travail:L6CYpVdN4SiLoI8NJeNkA",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes espaces de travail - Comment rejoindre un espace de travail ?"
     },
     {
@@ -1053,7 +1021,7 @@
             "sein"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#05-Espace-de-travail:uD4G8zVSMjbJZwEOw77Qvg",
+        "help_url": "/aide/doc/bnum//index.html#05-Espace-de-travail:uD4G8zVSMjbJZwEOw77Qvg",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes espaces de travail - Comment collaborer au sein d'un espace de travail ?"
     },
     {
@@ -1066,7 +1034,7 @@
             "nouvel"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#05-Espace-de-travail:bdAC7wHzUAduIbtyILJRni",
+        "help_url": "/aide/doc/bnum//index.html#05-Espace-de-travail:bdAC7wHzUAduIbtyILJRni",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes espaces de travail - Comment créer un nouvel espace de travail ?"
     },
     {
@@ -1079,7 +1047,7 @@
             "astuces"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#05-Espace-de-travail:cdlHrz5kgGjuc9RqFVb61g",
+        "help_url": "/aide/doc/bnum//index.html#05-Espace-de-travail:cdlHrz5kgGjuc9RqFVb61g",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes espaces de travail - Trucs & Astuces sur les espaces de travail"
     },
     {
@@ -1090,7 +1058,7 @@
             "generalites"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#11-Liens:Hj1HymPAxKfgMZyd7yr0i",
+        "help_url": "/aide/doc/bnum//index.html#11-Liens:Hj1HymPAxKfgMZyd7yr0i",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes Liens - Généralités"
     },
     {
@@ -1102,7 +1070,7 @@
             "carte"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#11-Liens:qCvfi2dTeFfSbkNJLfE60f",
+        "help_url": "/aide/doc/bnum//index.html#11-Liens:qCvfi2dTeFfSbkNJLfE60f",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes Liens - Créer une carte"
     },
     {
@@ -1115,7 +1083,7 @@
             "unique"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#11-Liens:AeI2GQq2wjjV86QxmDICjh",
+        "help_url": "/aide/doc/bnum//index.html#11-Liens:AeI2GQq2wjjV86QxmDICjh",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes Liens - Cas d'une carte \"lien unique\""
     },
     {
@@ -1128,70 +1096,8 @@
             "multi-liens"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#11-Liens:YHRlOh7u8lhueqINzBIkKc",
+        "help_url": "/aide/doc/bnum//index.html#11-Liens:YHRlOh7u8lhueqINzBIkKc",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes Liens - Créer une carte multi-liens"
-    },
-    {
-        "title": "Ma messagerie Mèl - Interface du module",
-        "description": "Après avoir cliqué sur Ma messagerie Mèl dans la barre de navigation latérale, la boîte de réception de votre compte individuel s'affiche par défaut.",
-        "keywords": [
-            "messagerie",
-            "interface",
-            "module"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#02-Courriel:lvjhKBqGc4fC52Ka7kR8Md",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Interface du module"
-    },
-    {
-        "title": "Ma messagerie Mèl - Consultation des messages",
-        "description": "Après avoir sélectionné la boite et le courriel à consulter, son contenu apparaît dans la colonne de consultation. Un double-clic sur le courriel, dans la liste des courriels, permet de l'ouvrir dans une fenêtre pop-up.",
-        "keywords": [
-            "messagerie",
-            "consultation",
-            "messages"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#02-Courriel:Smgcz8cEYjfrPWpUnYH60f",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Consultation des messages"
-    },
-    {
-        "title": "Ma messagerie Mèl - Création d'un message",
-        "description": "Pour créer un message, cliquer sur le bouton ",
-        "keywords": [
-            "messagerie",
-            "creation",
-            "messages"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#02-Courriel:AYOXdeskrek7H5cqpORmYf",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Création d'un message"
-    },
-    {
-        "title": "Ma messagerie Mèl - Actions possibles sur un message",
-        "description": "Des boutons d'action sont disponibles pour le traitement des messages reçus en en-tête de la colonne de consultation ou de la fenêtre pop-up selon vos paramétrages d'affichage des messages.",
-        "keywords": [
-            "messagerie",
-            "possibles",
-            "messages"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#02-Courriel:TNcNYoduAriDF6AWRZLvmj",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Actions possibles sur un message"
-    },
-    {
-        "title": "Ma messagerie Mèl - Actions possibles sur un message - Quel usage pour les étiquettes des messages ?",
-        "description": "Les étiquettes permettent de marquer les messages afin d'améliorer leur visibilité dans une liste de messages et d'apporter une indication pour un éventuel traitement ou classement à réaliser. Un nom et une couleur sont associés à chaque étiquette et dans la liste des messages, le message associé prend la couleur de l'étiquette.",
-        "keywords": [
-            "messagerie",
-            "possibles",
-            "messages",
-            "usage",
-            "etiquettes"
-        ],
-        "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#02-Courriel:yHBJs51NVkgv4pWU9ucHug",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Actions possibles sur un message - Quel usage pour les étiquettes des messages ?"
     },
     {
         "title": "Espace de réunion",
@@ -1201,7 +1107,7 @@
             "reunions"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#06-Espace-de-reunion:m74cH27yyblFOBnpSLvMEb",
+        "help_url": "/aide/doc/bnum//index.html#06-Espace-de-reunion:m74cH27yyblFOBnpSLvMEb",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Espace de réunion"
     },
     {
@@ -1218,7 +1124,7 @@
             "centrale"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#06-Espace-de-reunion:K3lV0UmIVXiiWgaPzV67Ke",
+        "help_url": "/aide/doc/bnum//index.html#06-Espace-de-reunion:K3lV0UmIVXiiWgaPzV67Ke",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Espace de réunion - Lorsque la visio-conférence occupe la place centrale"
     },
     {
@@ -1234,7 +1140,7 @@
             "reduit"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#06-Espace-de-reunion:Er4FFcpWCsb4MMI582SNh",
+        "help_url": "/aide/doc/bnum//index.html#06-Espace-de-reunion:Er4FFcpWCsb4MMI582SNh",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Espace de réunion - Lorsque la visio-conférence est en affichage réduit"
     },
     {
@@ -1248,7 +1154,7 @@
             "contextuelle"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#06-Espace-de-reunion:VfQxbIvXGll1j7ycz2eDMf",
+        "help_url": "/aide/doc/bnum//index.html#06-Espace-de-reunion:VfQxbIvXGll1j7ycz2eDMf",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Espace de réunion - La barre d'outils contextuelle"
     },
     {
@@ -1260,7 +1166,7 @@
             "rejoindre"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#06-Espace-de-reunion:dbMAg67ByIjB2R4So0Hc3g",
+        "help_url": "/aide/doc/bnum//index.html#06-Espace-de-reunion:dbMAg67ByIjB2R4So0Hc3g",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Espace de réunion - Comment rejoindre une réunion ?"
     },
     {
@@ -1272,86 +1178,209 @@
             "initier"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#06-Espace-de-reunion:FQXLBkDYCJb1mEtvUFKX5d",
+        "help_url": "/aide/doc/bnum//index.html#06-Espace-de-reunion:FQXLBkDYCJb1mEtvUFKX5d",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Espace de réunion - Comment initier une réunion ?"
     },
     {
-        "title": "L'interface du Bnum - Comment se connecter au Bnum ?",
-        "description": "Pour vous connecter au Bnum, vous pouvez utiliser :",
+        "title": "Mon agenda - L'affichage des agendas",
+        "description": "Par défaut, l'affichage des agendas est proposé en vue semaine.",
         "keywords": [
-            "interface",
-            "bnum",
-            "connecter"
+            "calendriers",
+            "agendas",
+            "affichage"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#01-Interface:JBlZJcoTStfXfBmIPpDVwb",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Comment se connecter au Bnum ?"
+        "help_url": "/aide/doc/bnum//index.html#03-Calendrier:w35JxrCIO4fomP3WRR241h",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - L'affichage des agendas"
     },
     {
-        "title": "L'interface du Bnum - Le tableau de bord, cœur du Bnum",
-        "description": "Découvrez ici les différents composants de son interface.",
+        "title": "Mon agenda - Propriétés d'un événement",
+        "description": "Un évènement est un rendez-vous positionné dans un agenda qui est décrit généralement par :",
         "keywords": [
-            "interface",
-            "bnum",
-            "tableau",
-            "bord,"
+            "calendriers",
+            "agendas",
+            "proprietes",
+            "evenement"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#01-Interface:kY3sE8mCq9izbXc5HLUlvb",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Le tableau de bord, cœur du Bnum"
+        "help_url": "/aide/doc/bnum//index.html#03-Calendrier:nanOHPzMs5YEjEvqcFZwb",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Propriétés d'un événement"
     },
     {
-        "title": "L'interface du Bnum - Premier pas dans le Bnum",
-        "description": "Le Bnum vous permet de retrouver immédiatement, via la barre de navigation latérale disponible à gauche de l'écran :",
+        "title": "Mon agenda - Création d'un événement depuis le calendrier",
+        "description": "Un clic dans l'espace d'affichage, ou l'utilisation de l’icône Créer de la barre d'outils, permet de créer un nouvel événement",
         "keywords": [
-            "interface",
-            "bnum",
-            "premier"
+            "calendriers",
+            "agendas",
+            "creation",
+            "evenement"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#01-Interface:PB6H2wr5u3cSplQlSQjiRi",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Premier pas dans le Bnum"
+        "help_url": "/aide/doc/bnum//index.html#03-Calendrier:DVqh5HJxH2cgysPi28jIpi",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Création d'un événement depuis le calendrier"
     },
     {
-        "title": "L'interface du Bnum - Zoom sur la barre de navigation",
-        "description": "La barre de navigation s'ouvre lors d'un survol avec la souris, vous voyez alors en plus des icônes, le texte qui explicite leur usage.",
+        "title": "Mon agenda - Création d'un évènement depuis un courriel",
+        "description": "Il est normalement possible de créer automatiquement un évènement dans votre agenda si vous recevez un mel contenant en pièce jointe un fichier au format ics. Nous appelons ce type de courriel un courriel d'invitation.",
         "keywords": [
-            "interface",
-            "bnum",
-            "zoom",
-            "barre",
-            "navigation"
+            "calendriers",
+            "agendas",
+            "creation",
+            "evenement",
+            "courriel"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#01-Interface:YwstHUkENWegKz4iEaQU3",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Zoom sur la barre de navigation"
+        "help_url": "/aide/doc/bnum//index.html#03-Calendrier:m4N7NJdBIVci5qtyqOFHpj",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Création d'un évènement depuis un courriel"
     },
     {
-        "title": "L'interface du Bnum - Zoom sur le menu",
-        "description": "Lorsque vous cliquez sur le bouton Créer une pop-up s'ouvre.",
+        "title": "Mon agenda - Actions sur les évènements",
+        "description": "Lorsque vous cliquez sur un évènement dans un agenda, plusieurs bouton d'action s'affiche en bas de la pop-up qui s'ouvre.",
         "keywords": [
-            "interface",
-            "bnum",
-            "zoom",
-            "menu"
+            "calendriers",
+            "agendas",
+            "evenements"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#01-Interface:uIOm2PTSTPhdUL2AOgVVag",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Zoom sur le menu"
+        "help_url": "/aide/doc/bnum//index.html#03-Calendrier:LQJImvHkBlh7XxuPRUUfld",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Mon agenda - Actions sur les évènements"
     },
     {
-        "title": "L'interface du Bnum - Zoom sur le centre de notification",
-        "description": "Votre nom en haut à droite vous rappelle votre statut disponible dans le module Mes discussions. En cliquant sur votre nom vous pouvez ouvrir le centre de notification.",
+        "title": "Ma messagerie Mèl - Interface du module",
+        "description": "Après avoir cliqué sur Ma messagerie Mèl dans la barre de navigation latérale, la boîte de réception de votre compte individuel s'affiche par défaut.",
         "keywords": [
+            "messagerie",
             "interface",
-            "bnum",
-            "zoom",
-            "centre",
-            "notifications"
+            "module"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#01-Interface:tqpLSd19LCjAE4WPaacKZc",
-        "help_title": "Ouvrez l'aide pour en découvrir plus sur L'interface du Bnum - Zoom sur le centre de notification"
+        "help_url": "/aide/doc/bnum//index.html#02-Courriel:lvjhKBqGc4fC52Ka7kR8Md",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Interface du module"
+    },
+    {
+        "title": "Ma messagerie Mèl - Consultation des messages",
+        "description": "Après avoir sélectionné la boite et le courriel à consulter, son contenu apparaît dans la colonne de consultation. Un double-clic sur le courriel, dans la liste des courriels, permet de l'ouvrir dans une fenêtre pop-up.",
+        "keywords": [
+            "messagerie",
+            "consultation",
+            "messages"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#02-Courriel:Smgcz8cEYjfrPWpUnYH60f",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Consultation des messages"
+    },
+    {
+        "title": "Ma messagerie Mèl - Envoi d'un message",
+        "description": "Pour créer un message, cliquer sur le bouton ",
+        "keywords": [
+            "messagerie",
+            "envoi",
+            "messages"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#02-Courriel:k8Ag7o95SHgS4nOwLZaHf",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Envoi d'un message"
+    },
+    {
+        "title": "Ma messagerie Mèl - Traitement d'un message",
+        "description": "Des boutons d'action sont disponibles pour le traitement des messages reçus en en-tête de la colonne de consultation ou de la fenêtre pop-up selon vos paramétrages d'affichage des messages.",
+        "keywords": [
+            "messagerie",
+            "traitement",
+            "messages"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#02-Courriel:yPLsUTUTR4Np1TWVCjQjf",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Traitement d'un message"
+    },
+    {
+        "title": "Ma messagerie Mèl - Traitement d'un message - Quel usage pour les étiquettes des messages ?",
+        "description": "Les étiquettes permettent de marquer les messages afin d'améliorer leur visibilité dans une liste de messages et d'apporter une indication pour un éventuel traitement ou classement à réaliser. Un nom et une couleur sont associés à chaque étiquette et dans la liste des messages, le message associé prend la couleur de l'étiquette.",
+        "keywords": [
+            "messagerie",
+            "traitement",
+            "messages",
+            "usage",
+            "etiquettes"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#02-Courriel:yHBJs51NVkgv4pWU9ucHug",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Traitement d'un message - Quel usage pour les étiquettes des messages ?"
+    },
+    {
+        "title": "Ma messagerie Mèl - Archiver les messages",
+        "description": "Si vous disposez du courrielleur (client lourd) de messagerie, vous pouvez utiliser la fonctionnalité « Archibald » de ce dernier.",
+        "keywords": [
+            "messagerie",
+            "archiver",
+            "messages"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#02-Courriel:kNPL3pdPX7gGV0vTFdViU",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Ma messagerie Mèl - Archiver les messages"
+    },
+    {
+        "title": "Sondage - Comment, pourquoi et pour qui ?",
+        "description": "Sondage est basé sur Pégase, une application du Ministère qui permet de réaliser rapidement des sondages ou planifier des réunions tant en interne qu'avec des partenaires externes.",
+        "keywords": [
+            "pegase",
+            "sondages",
+            "comment,"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#12-Sondage:rlxjNfcIeJi0o7VccHwfi",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Comment, pourquoi et pour qui ?"
+    },
+    {
+        "title": "Sondage - L'écran d'accueil de Sondage",
+        "description": "Dans cette page d'accueil vous retrouverez :",
+        "keywords": [
+            "pegase",
+            "sondages",
+            "ecran",
+            "accueil"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#12-Sondage:HiDPbBSe6VegRmuQOPjWad",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - L'écran d'accueil de Sondage"
+    },
+    {
+        "title": "Sondage - Création d'un sondage",
+        "description": "La création d'un nouveau sondage se fait à partir du bouton \"Nouveau\" présent sur la page d'accueil du module Sondage :  ",
+        "keywords": [
+            "pegase",
+            "sondages",
+            "creation"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#12-Sondage:WF5AfQ1VG3fiVoa44FcUyf",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Création d'un sondage"
+    },
+    {
+        "title": "Sondage - Répondre à un sondage",
+        "description": "Pour répondre à un sondage, l'organisateur doit vous transmettre le lien https sur lequel vous devez vous rendre.",
+        "keywords": [
+            "pegase",
+            "sondages",
+            "repondre"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#12-Sondage:EJmBLDX3ricQQKdBR98tHd",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Répondre à un sondage"
+    },
+    {
+        "title": "Sondage - Gérer un sondage en tant qu'organisateur",
+        "description": "Lorsque vous créez un sondage de date ou de prise de rendez-vous, lors de l'étape 2 vous devez définir les créneaux que vous proposez.",
+        "keywords": [
+            "pegase",
+            "sondages",
+            "gerer",
+            "tant",
+            "organisateur"
+        ],
+        "help_name": "En savoir plus...",
+        "help_url": "/aide/doc/bnum//index.html#12-Sondage:zgRspMgkThdgSXAKk8nxjg",
+        "help_title": "Ouvrez l'aide pour en découvrir plus sur Sondage - Gérer un sondage en tant qu'organisateur"
     },
     {
         "title": "Mes tâches - Principe",
@@ -1361,7 +1390,7 @@
             "principe"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#08-Tache:ibxrf9QHWxj5KnSxDAUsx",
+        "help_url": "/aide/doc/bnum//index.html#08-Tache:ibxrf9QHWxj5KnSxDAUsx",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes tâches - Principe"
     },
     {
@@ -1372,7 +1401,7 @@
             "listes"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#08-Tache:QuNGPu0JCDcVKecE0OTM3g",
+        "help_url": "/aide/doc/bnum//index.html#08-Tache:QuNGPu0JCDcVKecE0OTM3g",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes tâches - Listes de tâches"
     },
     {
@@ -1383,7 +1412,7 @@
             "gestion"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#08-Tache:OujOGo0KpPfsuXo8XO0cb",
+        "help_url": "/aide/doc/bnum//index.html#08-Tache:OujOGo0KpPfsuXo8XO0cb",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes tâches - Gestion des tâches"
     },
     {
@@ -1395,7 +1424,7 @@
             "tache"
         ],
         "help_name": "En savoir plus...",
-        "help_url": "/aide/doc/bnum/index.html#08-Tache:cgPOxBoESZhtilz2IbiyNb",
+        "help_url": "/aide/doc/bnum//index.html#08-Tache:cgPOxBoESZhtilz2IbiyNb",
         "help_title": "Ouvrez l'aide pour en découvrir plus sur Mes tâches - Création d'une tâche"
     }
 ]

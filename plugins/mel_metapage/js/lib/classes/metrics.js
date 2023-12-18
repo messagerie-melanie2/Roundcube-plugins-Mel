@@ -1,4 +1,5 @@
 import { BnumLog } from "./bnum_log.js";
+import { MelEnumerable } from "./enum.js";
 
 class Serialize {
     constructor() {
@@ -20,7 +21,8 @@ export class BaseLookLabel extends Serialize {
   }
 
   _get_user_service() {
-      return rcmail.env.current_user.full.split('- ')[1];
+      const max = rcmail.env.current_user.full.includes(' SG') ? 2 : 1;
+      return MelEnumerable.from(rcmail.env.current_user.full.split('- ')[1].split('/')).where((x, i) => i < max).join('/');
   }
 
   serialize() {

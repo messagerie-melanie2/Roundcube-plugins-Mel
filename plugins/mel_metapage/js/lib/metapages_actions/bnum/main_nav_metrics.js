@@ -1,4 +1,4 @@
-// import { BnumLog } from "../../classes/bnum_log.js";
+import { BnumLog } from "../../classes/bnum_log.js";
 import { Look, LookLabel } from "../../classes/metrics.js";
 import { AMetricsModule } from "../ametrics_module.js";
 
@@ -51,13 +51,13 @@ export class MainNavMetrics extends AMetricsModule {
     }
 
     async _send_current_task() {
-        // const task = this.rc_data.task;
+        const task = this.rc_data.task;
 
-        // if (!tasks_to_ignore.includes(task)){
-        //     BnumLog.info('_send_current_task', 'send current task : ', task);
-        //     await Look.SendTask(task);
-        // }
-        // else BnumLog.info('_send_current_task', 'current task : ', task, 'ignored !');
+        if (!tasks_to_ignore.includes(task)){
+            BnumLog.info('_send_current_task', 'send current task : ', task);
+            await Look.SendTask(task);
+        }
+        else BnumLog.info('_send_current_task', 'current task : ', task, 'ignored !');
         await Look.SendTask('connected', new LookLabel({}));
 
         setTimeout(this._send_current_task.bind(this), ((+Look.SEND_INTERVAL) * 1000));

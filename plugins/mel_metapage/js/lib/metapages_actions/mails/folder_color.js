@@ -69,7 +69,7 @@ export class FolderColor extends AFolderModifier {
             css_key = `color-folder-${key}`;
             favorite_css_key = `color-favorite-folder-${key}`;
             this.get_skin().css_rules.addAdvanced(css_key, `a[rel="${key}"]::before`, `color:${color} !important;`);
-            this.get_skin().css_rules.addAdvanced(favorite_css_key, `li[mailid="${key}"] > a::before`, `color:${color} !important;`);
+            this.get_skin().css_rules.addAdvanced(favorite_css_key, `li[mailid="${this._get_true_key(key)}"] > a::before`, `color:${color} !important;`);
         }); 
     }
 
@@ -118,14 +118,11 @@ export class FolderColor extends AFolderModifier {
     }
 
     _preview(folder, event) {
-        //const $folder = $(`a[rel="${folder}"]`);
         const color = $(event.target).val();
         this.get_skin().css_rules.remove('preview_folder_color');
         this.get_skin().css_rules.remove('preview_favorite_folder_color');
         this.get_skin().css_rules.addAdvanced('preview_folder_color', `a[rel="${folder}"]::before`, `color:${color} !important;`);
-        this.get_skin().css_rules.addAdvanced('preview_favorite_folder_color', `li[mailid="${folder}"] > a::before`, `color:${color} !important;`);
-        // $folder.css('color', $(event.target).val());
-        // BnumLog.debug('_preview', $(event.target).val(), folder, event.target.value, $folder)
+        this.get_skin().css_rules.addAdvanced('preview_favorite_folder_color', `li[mailid="${this._get_true_key(folder)}"] > a::before`, `color:${color} !important;`);
     }
 
     static is_default_color(color) {

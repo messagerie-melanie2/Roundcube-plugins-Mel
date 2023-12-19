@@ -67,6 +67,12 @@ export class AFolderModifier extends MailModule
         else return this.folder_list_content();
     }
 
+    _get_true_key(key) {
+        if (key === `${this.balp()}/${key.split('/')[1]}`) key += '/INBOX';
+
+        return key;
+    }
+
     static Start() {
         return new this();
     }

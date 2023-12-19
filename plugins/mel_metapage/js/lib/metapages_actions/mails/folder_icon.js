@@ -230,7 +230,7 @@ export class FolderIcon extends AFolderModifier {
                 const icon = folders[key];
                 
                 $(`#mailboxlist a[rel="${key}"]`).parent().addClass(`bnum-updated-${icon}`);
-                $(`#favorite-folders li[mailid="${key}"]`).addClass(`bnum-updated-${icon}`);
+                $(`#favorite-folders li[mailid="${this._get_true_key(key)}"]`).addClass(`bnum-updated-${icon}`);
             }
         }
     }

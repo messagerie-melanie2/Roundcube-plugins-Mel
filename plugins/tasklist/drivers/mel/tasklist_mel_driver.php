@@ -780,9 +780,13 @@ class tasklist_mel_driver extends tasklist_driver {
     );
 
     // Gestion du pourcentage de complete
-    if (isset($record->completed)) {
-      $task['complete'] = $record->completed;
+    if (isset($record->complete)) {
+      $task['complete'] = $record->complete;
     }
+    else if (isset($record->percent_complete)) {
+      $task['complete'] = $record->percent_complete / 100;
+    }
+
     if (isset($record->status)) {
       $task['status'] = $record->status;
     }
@@ -875,15 +879,19 @@ class tasklist_mel_driver extends tasklist_driver {
       $object->completed = 1;
     }
     else if ($task['status'] == LibMelanie\Api\Defaut\Task::STATUS_IN_PROCESS) {
-      $object->completed = $task['complete'];;
+      $object->completed = $task['complete'];
     }
     else if (isset($task['complete'])) {
       if ($task['complete'] == 1) {
         $object->status = LibMelanie\Api\Defaut\Task::STATUS_COMPLETED;
       }
       $object->completed = $task['complete'];
+      $object->setAttribute('PERCENT-COMPLETE', $task['complete'] * 100);
     }
-    else $object->completed = $task['complete'];
+    else {
+      $object->completed = $task['complete'];
+      $object->setAttribute('PERCENT-COMPLETE', $task['complete'] * 100);
+    }
     
     // TODO: Mettre à jour le plugin taskslist pour la gestion des alarmes
     if (isset($task['valarms']) && !empty($task['valarms'])) {

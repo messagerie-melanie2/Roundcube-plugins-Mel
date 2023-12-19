@@ -1,7 +1,5 @@
-import { Color } from "../../classes/color.js";
 import { MelEnumerable } from "../../classes/enum.js";
 import { BnumConnector } from "../../helpers/bnum_connections/bnum_connections.js";
-import { MelForLoopObject } from "../../helpers/loops.js";
 import { MelHtml } from "../../html/JsHtml/MelHtml.js";
 import { AFolderModifier } from "./afolder_modifier.js";
 
@@ -13,13 +11,17 @@ export class FolderIcon extends AFolderModifier {
     async generate_context_menu() {
         await super.generate_context_menu();
         this.rcmail().register_command('update-icon-folder', (args) => {
-            //debugger;
-            const $link = $('.popover .color-folder');
-            const folder = $link.attr('rel');
+            //Constantes
+            const $link = $('.popover .icon-folder');
+            const folder = $link.attr('relativeto');
             const selector = `li a[rel="${folder}"]`;
+
+            this._remove_visuals($(selector).parent());
+
             const default_classes = MelEnumerable.from($(selector).parent()[0].classList).toArray().join(' ');
             const icon = this.get_env('folders_icons')?.[folder];
 
+            //Générer la modale
             let html = MelHtml.start
             .div({id:'bnum-folder-icon'})
                 .centered_flex_container({id:'bnum-folder-main-icon-container'})
@@ -36,7 +38,7 @@ export class FolderIcon extends AFolderModifier {
                         .end()
                     .end();
 
-
+            //Générer les boutons
             for (const iterator of FolderIcon.ICONS) {
                 html = html.li()
                         .button({class:(iterator === icon ? 'selected-item' : '')})
@@ -49,9 +51,11 @@ export class FolderIcon extends AFolderModifier {
                     .end();
             }
                     
-               html =  html.end()
-            .end();
+            //finir le ul et la div
+               html =  html.end('ul')
+            .end('div');
 
+            //Ajoute une règle css pour que le bouton "par défaut" soit afficher correctement
             const icon_key = 'folder-icon-before-modifier';
             if (!this.get_skin().css_rules.ruleExist(icon_key)){
                 this.get_skin().css_rules.addAdvanced(icon_key, '#bnum-folder-icons-container.folderlist li a::before', 
@@ -66,20 +70,24 @@ export class FolderIcon extends AFolderModifier {
 
             html = html.generate();
 
+            //Si il y a une icône par défaut, on affiche l'icône.
             if (!!icon) {
                 html.find('#bnum-folder-main-icon').html(MelHtml.start.icon(icon ?? 'default').generate());
             }
 
+            let self = this;
             this.rcmail().show_popup_dialog(html, 'Changement de l\'icône du dossier', [{
                 text:'Annuler',
                 class: 'mel-button no-margin-button no-button-margin',
                 click() {
-                    $(this).dialog('close');
+                    $(this).dialog('destroy');
+                    self.update_visuel();
+                    self = null;
                 }
             }, {
                 text: 'Sauvegarder',
                 class: 'mel-button no-margin-button no-button-margin',
-                click: async () => {
+                async click() {
                     const icon = $('#bnum-folder-main-icon').children().first()?.text?.() || 'default';
                     const folder_to_save = folder;
 
@@ -87,18 +95,29 @@ export class FolderIcon extends AFolderModifier {
                     config['_folder'] = folder_to_save;
                     config['_icon'] = icon;
 
-                    const busy = this.rcmail().set_busy(true, 'loading');
+                    const busy = self.rcmail().set_busy(true, 'loading');
+
+                    $(this).parent().find('button').addClass('disabled').attr('disabled', 'disabled');
+                    $(this).parent().find('a').addClass('disabled').attr('disabled', 'disabled');
+                    
                     const result = await BnumConnector.connect(BnumConnector.connectors.mail_set_folder_icon, {params:config});
-                    this.rcmail().set_busy(false, 'loading', busy);
+                    self.rcmail().set_busy(false, 'loading', busy);
 
                     if (!result.has_error){
                         rcmail.env.folders_icons = result.datas; 
                     }
 
-                    this.update_visuel();
+                    self.update_visuel();
+                    self = null;
+                    $(this).dialog('destroy');
                 }
-            }]);
+            }], {close() {
+                self?.update_visuel?.();
+                self = null;
+                $(this).dialog('destroy');
+            }});
 
+            //Si il n'y a pas de boutons défini, on affiche l'icône par défaut.
             if (!icon) {
                 setTimeout(() => {
                     this._default_button_on_hover(selector);
@@ -106,9 +125,6 @@ export class FolderIcon extends AFolderModifier {
             }
         }, true);
 
-        // this.rcmail().register_command('cancel-color-folder', (args) => {
-
-        // }, true);
 
        this.update_visuel();
     }
@@ -186,16 +202,14 @@ export class FolderIcon extends AFolderModifier {
             $link.hide();
         }
         else {
-            $link.attr('rel', folder);
+            $link.attr('relativeto', folder);
         }
 
         $link = null;
     }
 
-    update_visuel() {
-        const folders = this.get_env('folders_icons');
-
-        $('#folderlist-content li').each((i, e) => {
+    _remove_visuals($item = null) {
+        ($item ?? $('#folderlist-content li')).each((i, e) => {
             i = MelEnumerable.from(e.classList).where(x => x.includes('bnum-updated-'));
 
             if (i.any()) {
@@ -204,6 +218,12 @@ export class FolderIcon extends AFolderModifier {
 
             i = null;
         });
+    }
+
+    update_visuel() {
+        const folders = this.get_env('folders_icons');
+
+        this._remove_visuals();
 
         for (const key in folders) {
             if (Object.hasOwnProperty.call(folders, key)) {
@@ -215,11 +235,8 @@ export class FolderIcon extends AFolderModifier {
         }
     }
 
-    async set_to_server(folder, start_color, updated_color = FolderColor.DEFAULT_COLOR) {
-        
-    }
-
     async get_from_server() {
+        await BnumConnector.connect(BnumConnector.connectors.mail_get_folders_icon, {});
     }
 
 }

@@ -425,3 +425,4 @@ $labels['disable-animations'] = 'Désactiver les animations';
 $labels['disable-animations-helper'] = "Désactive les animation du thème en cours pour améliorer les performances.";
 $labels['cancel-color-folder'] = 'Restaurer la couleur par défaut';
 $labels['update-color-folder'] = 'Changer la couleur du dossier';
+$labels['update-icon-folder'] = "Changer l'icône du dossier";

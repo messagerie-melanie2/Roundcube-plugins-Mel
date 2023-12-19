@@ -400,28 +400,7 @@ export class MailFavoriteFolder extends MailModule {
                 this._update_unreads();
             }, 30*1000);
         }
-        // const rcmail_command = rcmail.command;
 
-        // rcmail.command = (...args) => {
-        //     rcmail_command.call(rcmail, ...args);
-
-        //     switch (args[0]) {
-        //         case 'mark-all-read':
-        //         case 'purge':
-        //         case 'update-unread':
-        //             this._update_unreads();
-        //             break;
-
-        //         case 'update-favorite':
-        //             this._update_favorites();
-        //             this._update_selected();
-        //             this._update_unreads();
-        //             break;
-            
-        //         default:
-        //             break;
-        //     }
-        // };
         this.main_async();
         this.setup_command();
     }
@@ -460,6 +439,7 @@ export class MailFavoriteFolder extends MailModule {
             await this._update_favorites();
             this._update_unreads();
             this._update_selected();
+            this.rcmail().triggerEvent('favorite_folder_updated');
         });
         this._update_unreads();
         this._update_selected();
@@ -502,6 +482,8 @@ export class MailFavoriteFolder extends MailModule {
     }
 
     _get_folder_class(id) {
+        if (id === this.get_env('current_user').full) id = this.get_env('username');
+
         return this.rcmail().env.mailboxes?.[id]?.class ?? '';
     }
 
@@ -550,9 +532,7 @@ export class MailFavoriteFolder extends MailModule {
     }
 
     async startup_context_menu() {
-       // console.log('menus', (await this.await_folder_list_content()).find('#mailboxlist ul[role="group"] a'));
         (await this.await_folder_list_content()).find('#mailboxlist a').on('contextmenu', (...args) => {
-            //debugger;
             const [event] = args;
             const folder = $(event.currentTarget).attr('rel');
 
@@ -561,7 +541,7 @@ export class MailFavoriteFolder extends MailModule {
     }
 
     _set_link(folder) {
-        const current_folder = folder;// || this.current_folder();
+        const current_folder = folder;
 
         if (!!current_folder) {
             let $link = $('.popover .folder-to.favorite').show().removeClass('disabled').addClass('active').removeClass('unset-to');
@@ -794,6 +774,9 @@ export class MailFavoriteFolder extends MailModule {
             await this._update_favorites();
             this._update_unreads();
             this._update_selected();
+
+            this.rcmail().triggerEvent('favorite_folder_updated');
+
             rcmail.set_busy(false, 'loading', busy);
         }, true);
     }

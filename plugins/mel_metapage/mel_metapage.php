@@ -877,17 +877,6 @@ class mel_metapage extends bnum_plugin
                 'innerclass'    => 'inner',
                 'type'          => 'link-menuitem',
             ), "mailboxoptions");
-
-            $this->add_button(array(
-                'command'       => 'cancel-icon-folder',
-                'class'	        => 'cancel-icon-folder disabled',
-                'classact'      => 'cancel-icon-folder active',
-                'classsel'      => 'cancel-icon-folder active',
-                'label'	        => 'mel_metapage.cancel-icon-folder',
-                'title'         => 'mel_metapage.cancel-icon-folder',
-                'innerclass'    => 'inner',
-                'type'          => 'link-menuitem',
-            ), "mailboxoptions");
         }
 
         //listcontrols

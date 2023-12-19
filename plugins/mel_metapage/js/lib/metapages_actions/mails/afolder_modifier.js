@@ -48,6 +48,10 @@ export class AFolderModifier extends MailModule
         this.rcmail().addEventListener('mel_metapage_refresh', async () => {
             await this.on_refresh();
         });
+
+        this.rcmail().addEventListener('favorite_folder_updated',  () => {
+            this.update_visuel();
+        });
     }
 
     _get_data() {}

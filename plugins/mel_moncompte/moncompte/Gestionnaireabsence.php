@@ -498,11 +498,11 @@ class Gestionnaireabsence extends Moncompteobject
           $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
           $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
   
-          if (!isset($start) || isset($end)) {
+          if (!isset($start) || !isset($end)) {
             $external_oof = $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
   
-            $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
-            $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
+            $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : $start;
+            $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : $end;
           }
   
         echo json_encode(['start' => $start,

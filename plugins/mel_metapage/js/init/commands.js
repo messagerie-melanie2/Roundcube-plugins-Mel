@@ -388,7 +388,7 @@ if (rcmail)
                     (datas) => {
                         datas = JSON.parse(datas);
 
-                        if (!!datas.message && EMPTY_STRING !== datas.message && !!datas.start && EMPTY_STRING !== datas.start) {
+                        if (/*!!datas.message && EMPTY_STRING !== datas.message && */!!datas.start && EMPTY_STRING !== datas.start) {
                             $('#user-dropdown .div-first input').val(moment(datas.start, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
                             $('#user-dropdown .div-last input').val(moment(datas.end, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
                             $('#user-dropdown .abs-message').hide();

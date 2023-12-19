@@ -3,7 +3,7 @@ import { Look, LookLabel } from "../../classes/metrics.js";
 import { AMetricsModule } from "../ametrics_module.js";
 
 const current_tasks_to_ignore = ['bnum'];
-const tasks_action = ['bnum', 'last_frame']
+const tasks_action = ['bnum']
 export class MainNavMetrics extends AMetricsModule {
     constructor() {
         super();
@@ -28,10 +28,6 @@ export class MainNavMetrics extends AMetricsModule {
 
     _task_replace_action_bnum(event, task) {
         return false;
-    }
-
-    _task_replace_action_last_frame(event, task) {
-        return this.rc_data.task;
     }
 
     send_callback() {

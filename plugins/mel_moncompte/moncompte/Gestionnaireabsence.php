@@ -499,7 +499,7 @@ class Gestionnaireabsence extends Moncompteobject
           $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
   
           if (!isset($start) || !isset($end)) {
-            $external_oof = $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
+            $external_oof = $external_oof ?? $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
   
             $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : $start;
             $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : $end;

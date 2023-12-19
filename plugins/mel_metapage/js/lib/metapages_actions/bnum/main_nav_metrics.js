@@ -2,7 +2,8 @@ import { BnumLog } from "../../classes/bnum_log.js";
 import { Look, LookLabel } from "../../classes/metrics.js";
 import { AMetricsModule } from "../ametrics_module.js";
 
-const tasks_to_ignore = ['bnum'];
+const current_tasks_to_ignore = ['bnum'];
+const tasks_action = ['bnum', 'last_frame']
 export class MainNavMetrics extends AMetricsModule {
     constructor() {
         super();
@@ -17,9 +18,20 @@ export class MainNavMetrics extends AMetricsModule {
     }
 
     before(event) {
-        const task = this._get_task_from_event(event);
+        let task = this._get_task_from_event(event);
+
+        const function_called = this[`_task_replace_action_${task}`];
+        if (!!function_called && tasks_action.includes(task)) task = function_called.call(this, event, task) ?? task;
 
         if (!(task || false) || task.includes('#')) return AMetricsModule.BREAK;
+    }
+
+    _task_replace_action_bnum(event, task) {
+        return false;
+    }
+
+    _task_replace_action_last_frame(event, task) {
+        return this.rc_data.task;
     }
 
     send_callback() {
@@ -53,7 +65,7 @@ export class MainNavMetrics extends AMetricsModule {
     async _send_current_task() {
         const task = this.rc_data.task;
 
-        if (!tasks_to_ignore.includes(task)){
+        if (!current_tasks_to_ignore.includes(task)){
             BnumLog.info('_send_current_task', 'send current task : ', task);
             await Look.SendTask(task);
         }

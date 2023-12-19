@@ -71,3 +71,5 @@ JsHtml.create_custom_tag('flex-container', {
 JsHtml.create_custom_tag('centered-flex-container', {
     already_existing_class:BnumHtmlCenteredFlexContainer
 });
+
+JsHtml.create_custom_tag('placeholder', {});

@@ -568,7 +568,7 @@ export class MailFavoriteFolder extends MailModule {
 
         for (const key in favs) {
             if (Object.hasOwnProperty.call(favs, key)) {
-                const element = favs[key];
+                //const element = favs[key];
                 if ($list_content.find(`[rel="${key}"]`).length === 0) delete favs[key];
             }
         }
@@ -659,6 +659,21 @@ export class MailFavoriteFolder extends MailModule {
         for (let element of enum_tree) {
             var rel = `favourite/${element.get_full_path()}`;
             var have_child_len = element.hasChildren();
+            {
+                var is_not_in_favorite = !(this.get_env('favorites_folders')?.[element.full_id]);
+                var not_contain_username = !element.get_full_path().includes(this.get_env('username'));
+                var is_not_user = !element.id.includes(this.get_env('current_user').full);
+
+                if (is_not_in_favorite && not_contain_username && is_not_user) {
+                    is_not_in_favorite = null;
+                    not_contain_username = null;
+                    is_not_user = null;
+                    if (have_child_len) {
+                        html = this._generate_html_tree(element, html.placeholder(), level + 1);
+                    }
+                    continue;
+                }
+            }
             
             html = html.li({'aria-level':level, class:'mailbox', mailid:element.full_id, rel}).css('margin-bottom', (level === 2 ? '10px' : EMPTY_STRING)).addClass(this._get_folder_class(element.id))
                             .a({oncontextmenu:(e) => this._contextmenu(e), onclick:this._onclicktree.bind(this)})
@@ -671,7 +686,7 @@ export class MailFavoriteFolder extends MailModule {
 
                             if (!have_child_len) html = html.css('color', 'var(--invisible)');
 
-                            html = html.end();
+                            html = html.end('treetoggle');
 
             if (have_child_len) {
                 html = html.ul('role="group"');
@@ -712,6 +727,7 @@ export class MailFavoriteFolder extends MailModule {
     }
 
     _create_html_tree(tree) {
+        //debugger;
         let html = JsHtml.start
         .ul({class:'treelist listing folderlist'})
             .li({'aria-level':1, rel:"favourite", class:'mailbox boite virtual'})

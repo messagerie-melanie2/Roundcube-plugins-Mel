@@ -1597,6 +1597,11 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 .mel-button.under-button.selected {
   color: var(--secondary-text-color);
 }
+.mel-button.selected-item {
+  background-color: var(--mel-button-active-background-color);
+  color: var(--mel-button-active-text-color);
+  pointer-events: none;
+}
 .btn-group-vertical .mel-button {
   border-radius: 5px;
   width: 100%;
@@ -4035,4 +4040,18 @@ html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.select
 .menu a:not(.disabled):focus {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
+}
+bnum-separate {
+  width: 100%;
+  height: 1px;
+  background-color: var(--main-border-color);
+  display: block;
+}
+.square-item {
+  border: solid thin var(--main-border-color);
+  border-radius: 5px;
+}
+.square-item.px25 {
+  width: 25px;
+  height: 25px;
 }

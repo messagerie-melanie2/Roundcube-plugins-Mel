@@ -542,6 +542,9 @@ class RotomecaHtml {
                                 case 'raw-content':
                                     break;
 
+                                case 'data-custom-tag':
+                                    continue;
+
                                 case 'class':
                                     if (element instanceof Array) {
                                         var current_class = [];
@@ -590,7 +593,11 @@ class RotomecaHtml {
 
             id = null;
 
-            balise.push(`${(true === this.attribs?.one_line ? '/' : '')}>`);
+            if (this.attribs?.['data-custom-tag'] && this.attribs?.one_line) {
+                balise.push('>');
+                balise.push(`</${this.balise}>`);
+            }
+            else balise.push(`${(true === this.attribs?.one_line ? '/' : '')}>`);
 
             let join;
             if (balise.length === 2) join = '';      

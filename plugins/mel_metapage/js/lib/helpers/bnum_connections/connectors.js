@@ -1,5 +1,5 @@
 import { Connector } from "./connector.js";
-import { settings_da_set_email_recup, m_mail_get_favorites_colors } from "./functions.js";
+import { settings_da_set_email_recup, m_mail_get_favorites_colors, m_mail_get_favorites_icons } from "./functions.js";
 export { connectors as Connectors };
 
 const connectors = {
@@ -38,6 +38,14 @@ const connectors = {
     mail_get_folders_color: new Connector('mail', 'plugin.mel_metapage.get_folders_color', {
                                                                                             type:Connector.enums.type.post,
                                                                                             moulinette: m_mail_get_favorites_colors
+                                                                                        }),
+    mail_set_folder_icon: new Connector('mail', 'plugin.mel_metapage.set_folder_icon', {
+                                                                                            type:Connector.enums.type.post,
+                                                                                            needed:{_folder:'', _icon:''}
+                                                                                        }),
+    mail_get_folders_icon: new Connector('mail', 'plugin.mel_metapage.get_folders_icon', {
+                                                                                            type:Connector.enums.type.post,
+                                                                                            moulinette: m_mail_get_favorites_icons
                                                                                         }),
 };
 

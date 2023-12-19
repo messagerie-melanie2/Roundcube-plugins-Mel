@@ -246,6 +246,8 @@ class mel_metapage extends bnum_plugin
             $this->register_action('plugin.mel_metapage.get_favorite_folders', [$this, 'get_display_folder']);
             $this->register_action('plugin.mel_metapage.set_folder_color', [$this, 'update_color_folder']);
             $this->register_action('plugin.mel_metapage.get_folders_color', [$this, 'get_folder_colors']);
+            $this->register_action('plugin.mel_metapage.set_folder_icon', [$this, 'update_icon_folder']);
+            $this->register_action('plugin.mel_metapage.get_folders_icon', [$this, 'get_folder_icons']);
 
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
@@ -291,6 +293,8 @@ class mel_metapage extends bnum_plugin
 
                     $this->rc->output->set_env('favorites_folders', $favs);
                     $this->rc->output->set_env('folders_colors', $this->rc->config->get('folders_colors', []));
+                    $this->rc->output->set_env('folders_icons', $this->rc->config->get('folders_icons', []));
+                    $this->include_stylesheet($this->local_skin_path().'/icons_modifier.css');
                     break;
                 
                 default:
@@ -859,6 +863,17 @@ class mel_metapage extends bnum_plugin
                 'classsel'      => 'cancel-color-folder active',
                 'label'	        => 'mel_metapage.cancel-color-folder',
                 'title'         => 'mel_metapage.cancel-color-folder',
+                'innerclass'    => 'inner',
+                'type'          => 'link-menuitem',
+            ), "mailboxoptions");
+
+            $this->add_button(array(
+                'command'       => 'update-icon-folder',
+                'class'	        => 'icon-folder disabled',
+                'classact'      => 'icon-folder active',
+                'classsel'      => 'icon-folder active',
+                'label'	        => 'mel_metapage.update-icon-folder',
+                'title'         => 'mel_metapage.update-icon-folder',
                 'innerclass'    => 'inner',
                 'type'          => 'link-menuitem',
             ), "mailboxoptions");
@@ -3467,8 +3482,32 @@ class mel_metapage extends bnum_plugin
         exit;
     }
 
+    public function update_icon_folder() {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $icon = rcube_utils::get_input_value('_icon', rcube_utils::INPUT_POST) ?? null;
+
+        if ('' === $icon) $icon = null;
+
+        $prefs = $this->rc->config->get('folders_icons', []);
+
+        if (isset($icon)) $prefs[$folder] = $icon;
+        else unset($prefs[$folder]);
+
+        $this->rc->user->save_prefs(['folders_icons' => $prefs]);
+        
+        echo json_encode($prefs);
+        exit;
+    }
+
     public function get_folder_colors() {
         $prefs = $this->rc->config->get('folders_colors', []);
+        
+        echo json_encode($prefs);
+        exit;
+    }
+
+    public function get_folder_icons() {
+        $prefs = $this->rc->config->get('folders_icons', []);
         
         echo json_encode($prefs);
         exit;

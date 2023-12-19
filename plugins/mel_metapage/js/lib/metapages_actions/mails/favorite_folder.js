@@ -664,10 +664,13 @@ export class MailFavoriteFolder extends MailModule {
                 var not_contain_username = !element.get_full_path().includes(this.get_env('username'));
                 var is_not_user = !element.id.includes(this.get_env('current_user').full);
 
+                if (is_not_in_favorite && element.full_id.includes(this.balp()) && element.full_id.includes('INBOX')) is_not_in_favorite = false;
+
                 if (is_not_in_favorite && not_contain_username && is_not_user) {
                     is_not_in_favorite = null;
                     not_contain_username = null;
                     is_not_user = null;
+
                     if (have_child_len) {
                         html = this._generate_html_tree(element, html.placeholder(), level + 1);
                     }

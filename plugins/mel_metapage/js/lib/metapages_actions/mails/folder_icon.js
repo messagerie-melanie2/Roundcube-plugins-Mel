@@ -1,3 +1,4 @@
+import { MelIconPrevisualiser } from "../../../../skins/mel_elastic/js_templates/blocks/icon_previsualiser.js";
 import { MelEnumerable } from "../../classes/enum.js";
 import { BnumConnector } from "../../helpers/bnum_connections/bnum_connections.js";
 import { MelHtml } from "../../html/JsHtml/MelHtml.js";
@@ -20,46 +21,60 @@ export class FolderIcon extends AFolderModifier {
 
             const default_classes = MelEnumerable.from($(selector).parent()[0].classList).toArray().join(' ');
             const base_icon = this.get_env('folders_icons')?.[folder];
-            const icon = base_icon === 'default' ? '' : base_icon;
+            const icon = base_icon === 'default' ? null : base_icon;
 
-            //Générer la modale
-            let html = MelHtml.start
-            .div({id:'bnum-folder-icon'})
-                .centered_flex_container({id:'bnum-folder-main-icon-container'})
-                    .span({id:'bnum-folder-main-icon', class:'square-item px25'}).end()
-                .end()
-                .separate().css({'margin-top':'10px', 'margin-bottom':'10px'})
-                .ul({id:'bnum-folder-icons-container', class:'folderlist ignore-bullet'}).css({'flex-wrap': 'wrap', 'justify-content':'center', 'display':'flex'})
-                    .li({class:default_classes})
-                        .a({class:`${!!icon ? '' : 'selected-item'} mel-button no-button-margin no-margin-button`})
-                        .css({'border-radius':'5px', 'margin-right':'5px', 'margin-bottom':'5px', 'line-height':'initial', 'padding':'5px 10px'})
-                        .attr('onmouseenter', this._default_button_on_hover.bind(this, selector))
-                        .attr('onmouseleave', this._button_on_leave.bind(this, selector))
-                        .attr('onclick', this._default_click.bind(this, selector))
-                        .end()
-                    .end();
+            let popup = new MelIconPrevisualiser({});
 
-            //Générer les boutons
-            for (const iterator of FolderIcon.ICONS) {
-                html = html.li()
-                        .button({class:(iterator === icon ? 'selected-item' : '')})
-                        .attr('onmouseenter', this._button_on_hover.bind(this))
-                        .attr('onmouseleave', this._button_on_leave.bind(this, selector))
-                        .attr('onclick', this._on_click.bind(this))
-                        .css({'border-radius':'5px', 'margin-right':'5px', 'margin-bottom':'5px'})
-                            .icon(iterator).end()
-                        .end()
-                    .end();
+            popup.on_create_default_items.push(() => {
+                return MelHtml.start.li({class:default_classes})
+                    .a({class:`${!!icon ? '' : 'selected-item'} mel-button no-button-margin no-margin-button`})
+                    .css({'border-radius':'5px', 'margin-right':'5px', 'margin-bottom':'5px', 'line-height':'initial', 'padding':'5px 10px'})
+                    .attr('onmouseenter', this._default_button_on_hover.bind(this, selector))
+                    .attr('onmouseleave', this._default_button_on_leave.bind(this, selector))
+                    .attr('onclick', this._default_click.bind(this, selector))
+                    .end()
+                .end();
+            });
+
+            if (!!icon) {
+                popup.on_create_set_selected.push((html, from_icon, popup) => {
+                    if (from_icon === icon) {
+                        html = popup.select_item(html);
+                    }
+
+                    return html;
+                });
             }
-                    
-            //finir le ul et la div
-               html =  html.end('ul')
-            .end('div');
+            else { 
+                popup.on_after_generate_jquery.push(($html, popup) => {
+                    $html.find(`#${popup.previsu_id} bnum-icon`).text('');
+
+                    return $html;
+                });
+            }
+
+            popup.on_button_hover.push((icon, popup) => {
+                this.get_skin().css_rules.remove('previsu-update-folder-icon-default');
+            });
+
+            popup.on_button_leave.push((icon, popup) => {
+                let $previsu = popup.get_previsu();
+                console.log($previsu.find('bnum-icon').text(), $previsu.data('starticon'));
+                if ($previsu.find('bnum-icon').text() === '') {
+                    this._default_button_on_hover(selector, null);
+                    $previsu.data('starticon', '');
+                }
+            });
+
+            popup.on_create_show_selected.push((html, popup) => {
+                if (!!icon) return icon;
+                else return 'default';
+            });
 
             //Ajoute une règle css pour que le bouton "par défaut" soit afficher correctement
             const icon_key = 'folder-icon-before-modifier';
             if (!this.get_skin().css_rules.ruleExist(icon_key)){
-                this.get_skin().css_rules.addAdvanced(icon_key, '#bnum-folder-icons-container.folderlist li a::before', 
+                this.get_skin().css_rules.addAdvanced(icon_key, `#${popup.list_container_id}.folderlist li a::before`, //bnum-folder-icons-container
                  'margin: 0 !important;',
                  'font-size: 24px !important;',
                  'float: unset;',
@@ -69,54 +84,40 @@ export class FolderIcon extends AFolderModifier {
                 );
             }
 
-            html = html.generate();
-
-            //Si il y a une icône par défaut, on affiche l'icône.
-            if (!!icon) {
-                html.find('#bnum-folder-main-icon').html(MelHtml.start.icon(icon ?? 'default').generate());
-            }
-
-            let self = this;
-            this.rcmail().show_popup_dialog(html, 'Changement de l\'icône du dossier', [{
-                text:'Annuler',
-                class: 'mel-button no-margin-button no-button-margin',
-                click() {
-                    $(this).dialog('destroy');
-                    self.update_visuel();
-                    self = null;
-                }
-            }, {
-                text: 'Sauvegarder',
-                class: 'mel-button no-margin-button no-button-margin',
-                async click() {
-                    const icon = $('#bnum-folder-main-icon').children().first()?.text?.() || 'default';
+            popup.on_save.push(async (popup, dialog) => {
+                    const icon = popup.get_selected_icon() || 'default';
                     const folder_to_save = folder;
 
                     let config = BnumConnector.connectors.mail_set_folder_icon.needed;
                     config['_folder'] = folder_to_save;
                     config['_icon'] = icon;
 
-                    const busy = self.rcmail().set_busy(true, 'loading');
+                    const busy = this.rcmail().set_busy(true, 'loading');
 
-                    $(this).parent().find('button').addClass('disabled').attr('disabled', 'disabled');
-                    $(this).parent().find('a').addClass('disabled').attr('disabled', 'disabled');
+                    $(dialog).parent().find('button').addClass('disabled').attr('disabled', 'disabled');
+                    $(dialog).parent().find('a').addClass('disabled').attr('disabled', 'disabled');
                     
                     const result = await BnumConnector.connect(BnumConnector.connectors.mail_set_folder_icon, {params:config});
-                    self.rcmail().set_busy(false, 'loading', busy);
+                    this.rcmail().set_busy(false, 'loading', busy);
 
                     if (!result.has_error){
                         rcmail.env.folders_icons = result.datas; 
                     }
 
-                    self.update_visuel();
-                    self = null;
-                    $(this).dialog('destroy');
-                }
-            }], {close() {
-                self?.update_visuel?.();
-                self = null;
-                $(this).dialog('destroy');
-            }});
+                    this.update_visuel();
+                    $(dialog).dialog('destroy');
+            });
+
+            const func_id = popup.on_close.push((popup, dialog) => {
+                this.update_visuel();
+            });
+
+            popup.on_cancel.push(popup.on_close.events[func_id].callback.bind(this))
+
+            const key = 'previsu-update-folder-icon-default';
+            this.get_skin().css_rules.remove(key);
+
+            popup.create_popup('Changement de l\'icône du dossier');
 
             //Si il n'y a pas de boutons défini, on affiche l'icône par défaut.
             if (!icon) {
@@ -149,16 +150,7 @@ export class FolderIcon extends AFolderModifier {
 
     }
 
-    _button_on_hover(e) {
-        let $previsu = this._save_default_icon();
-        e = $(e.currentTarget);
-
-        this.get_skin().css_rules.remove('previsu-update-folder-icon-default');
-        $previsu.html(MelHtml.start.icon(e.children().first().text()).generate());
-        $previsu = null;
-    }
-
-    _button_on_leave(selector) {
+    _default_button_on_leave(selector) {
         let $previsu = $('#bnum-folder-main-icon');
 
         if(!!($previsu.data('starticon') || false)) {
@@ -180,13 +172,6 @@ export class FolderIcon extends AFolderModifier {
         return $previsu;
     }
 
-    _on_click(e) {
-        this._button_on_hover(e);
-        e = $(e.currentTarget);
-        $('#bnum-folder-icons-container .selected-item').removeClass('selected-item');
-        e.addClass('selected-item');
-        $('#bnum-folder-main-icon').data('starticon', e.children().first().text());
-    }
 
     _default_click(selector, e) {
         this._default_button_on_hover(selector, e);
@@ -242,4 +227,4 @@ export class FolderIcon extends AFolderModifier {
 
 }
 
-FolderIcon.ICONS = ['home', 'settings', 'favorite', 'bolt', 'key', '123', 'saved_search', 'deployed_code', 'person', 'group', 'groups', 'public', 'thumb_down', 'cookie', 'flood', 'calendar_month', 'lock', 'bookmark', 'priority_high', 'label', 'mail', 'alternate_email', 'package', 'local_post_office', 'attach_email', 'markunread_mailbox'];
+//FolderIcon.ICONS = ['home', 'settings', 'favorite', 'bolt', 'key', '123', 'saved_search', 'deployed_code', 'person', 'group', 'groups', 'public', 'thumb_down', 'cookie', 'flood', 'calendar_month', 'lock', 'bookmark', 'priority_high', 'label', 'mail', 'alternate_email', 'package', 'local_post_office', 'attach_email', 'markunread_mailbox'];

@@ -137,43 +137,55 @@ html.layout-phone .joinedtitle {
 .link-block {
   display: flex;
   flex-direction: column;
-  align-items: center;
   margin: 0 20px;
-  margin-top: 10px;
   position: relative;
 }
-.link-block .link-block-icon-container::after {
+.link-block .link-icon-container {
+  width: 75px;
+  height: 75px;
+  border-radius: 15px;
+  box-shadow: var(--bureau-card-box-shadow);
+  background-color: var(--bureau-card-background-color);
+  color: var(--bureau-card-content-text-color);
+  transition: filter 0.1s ease;
+  display: flex;
+  margin-bottom: 10px;
+  text-decoration: none;
+}
+.link-block .link-icon-container::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 75px;
   height: 75px;
-  border-radius: 15px;
+  border-radius: 16px;
   background-color: rgba(0, 0, 0, 0);
   transition: 0.1s ease;
   opacity: 0;
   pointer-events: none;
 }
-.link-block .link-block-icon-container:hover::after {
+.link-block .link-icon-container:hover::after {
   background-color: rgba(0, 0, 0, 0.5);
   opacity: 1;
 }
-.link-block .link-block-icon-container img {
-  width: 75px;
-  height: 75px;
+.link-block .link-icon-container .link-icon-image {
+  width: inherit;
+  height: inherit;
   border-radius: 15px;
-  box-shadow: var(--bureau-card-box-shadow);
-  background-color: var(--bureau-card-background-color);
-  transition: filter 0.1s ease;
 }
-.link-block span.title {
+.link-block .link-icon-container .link-icon-no-image {
+  width: inherit;
+  height: inherit;
+  justify-content: center;
+  font-size: 48px;
+}
+.link-block .link-icon-title {
   text-align: center;
   max-width: 75px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 10px;
 }
 .link-context-menu {
   position: absolute;
@@ -184,6 +196,7 @@ html.layout-phone .joinedtitle {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 100;
   display: none;
+  align-self: center;
 }
 .link-context-menu::after {
   border-top: 6px solid var(--bureau-card-background-color);
@@ -210,26 +223,4 @@ html.layout-phone .joinedtitle {
 }
 .link-context-menu .link-context-menu-button:hover {
   background-color: var(--bureau-card-content-hover-background-color);
-}
-.link-icon-container {
-  width: 75px;
-  height: 75px;
-  border-radius: 15px;
-  box-shadow: var(--bureau-card-box-shadow);
-  background-color: var(--bureau-card-background-color);
-  transition: filter 0.1s ease;
-}
-.link-icon-container img {
-  height: 100%;
-  border-radius: inherit;
-  width: 100%;
-}
-.link-icon-container #no-image {
-  justify-content: center;
-  align-items: center;
-  border-radius: inherit;
-  height: 100%;
-  font-size: 48px;
-  display: none;
-  background-color: var(--bureau-card-background-color);
 }

@@ -4,16 +4,17 @@
     <span class="material-symbols-outlined"onclick="PaperClipCopy($('#link-id-<id/>'))">content_copy</span>
   </button>
   <button class="link-context-menu-button" title="Modifier le lien">
-    <span class="material-symbols-outlined" onclick="EditLink(`<id/>`)">edit</span>
+    <span class="material-symbols-outlined" onclick="ModifyLink(MelLink.from(`<id/>`))">edit</span>
   </button>
   <button class="link-context-menu-button" title="Supprimer le lien">
     <span class="material-symbols-outlined" onclick="DeleteLink(MelLink.from(`<id/>`))">delete</span>
   </button>
 </div>
-<a id="link-id-<id/>" class='link-block-icon-container' href="<link/>" target="_blank">
-  <img id='link-block-icon-image' class='link-block-icon-image' src="<image_link/>" onerror="imgError(this.src)">
+<a id="link-id-<id/>" class='link-icon-container' href="<link/>" target="_blank">
+  <img id='link-block-icon-image-<id/>' class='link-icon-image' src="<image_link/>" onerror="imgError(this.id, 'no-image-<id/>', '<title/>')">
+  <span id="no-image-<id/>" class="link-icon-no-image"></span>
 </a>
-<span class="title">
+<span class="link-icon-title">
   <title/>
 </span>
 </div>

@@ -214,12 +214,21 @@ button {
 .link-block {
   display: flex;
   flex-direction: column;
-  align-items: center;
   margin: 0 20px;
-  margin-top: 10px;
   position: relative;
 
-  .link-block-icon-container {
+  .link-icon-container {
+    width: 75px;
+    height: 75px;
+    border-radius: 15px;
+    box-shadow: var(--bureau-card-box-shadow);
+    background-color: var(--bureau-card-background-color);
+    color: var(--bureau-card-content-text-color); 
+    transition: filter 0.1s ease;
+    display: flex;
+    margin-bottom: 10px;
+    text-decoration: none;
+
     &::after {
       content: '';
       position: absolute;
@@ -227,7 +236,7 @@ button {
       left: 0;
       width: 75px;
       height: 75px;
-      border-radius: 15px;
+      border-radius: 16px;
       background-color: rgba(0, 0, 0, 0);
       transition: 0.1s ease;
       opacity: 0;
@@ -239,25 +248,26 @@ button {
       opacity: 1;
     }
 
-    img {
-      width: 75px;
-      height: 75px;
+    .link-icon-image {
+      width: inherit;
+      height: inherit;
       border-radius: 15px;
-      box-shadow: var(--bureau-card-box-shadow);
-      background-color: var(--bureau-card-background-color);
-      transition: filter 0.1s ease;
+    }
 
-
+    .link-icon-no-image {
+      width: inherit;
+      height: inherit;
+      justify-content: center;
+      font-size: 48px;
     }
   }
 
-  span.title {
+  .link-icon-title {
     text-align: center;
     max-width: 75px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 10px;
   }
 }
 
@@ -270,6 +280,7 @@ button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 100;
   display: none;
+  align-self: center;
 
   &::after {
     border-top: 6px solid  var(--bureau-card-background-color);
@@ -299,31 +310,5 @@ button {
     &:hover {
       background-color: var(--bureau-card-content-hover-background-color);
     }
-  }
-}
-
-
-.link-icon-container {
-  width: 75px;
-  height: 75px;
-  border-radius: 15px;
-  box-shadow: var(--bureau-card-box-shadow);
-  background-color: var(--bureau-card-background-color);
-  transition: filter 0.1s ease;
-  
-  img {
-  height: 100%;
-  border-radius: inherit;
-  width: 100%;
-  }
-
-  #no-image {
-    justify-content: center;
-    align-items: center;
-    border-radius: inherit;
-    height: 100%;
-    font-size: 48px;
-    display: none;
-    background-color: var(--bureau-card-background-color);
   }
 }

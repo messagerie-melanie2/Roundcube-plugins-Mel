@@ -637,7 +637,26 @@ class mel_metapage extends bnum_plugin
             $this->include_script('js/actions/settings_events.js');
             $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
         }
+
+        // if ($this->task === 'settings' && $this->action === 'edit-folder'){
+        //     $this->settings_edit_folder_bnum_action();
+        // }
     }
+
+    // private function settings_edit_folder_bnum_action() {
+    //     $this->rc->output->add_handlers(array(
+    //         'bnumfolderperso'    => '_edit_folder_hack',
+    //     ));
+    // }
+
+    // private function _edit_folder_hack($attrib) {
+    //     $html = html::div(array('class' => 'bnumfolderperso'),
+    //         html::div(['id' => 'folder-edit-custom-color']),
+    //         html::div(['id' => 'folder-edit-custom-icon'])
+    //     );
+
+    //     return $html;
+    // }
 
     function load_js_modules_actions() {
         $save_in_memory = true;
@@ -3486,7 +3505,7 @@ class mel_metapage extends bnum_plugin
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
         $icon = rcube_utils::get_input_value('_icon', rcube_utils::INPUT_POST) ?? null;
 
-        if ('' === $icon) $icon = null;
+        if (in_array($icon, ['', 'default'])) $icon = null;
 
         $prefs = $this->rc->config->get('folders_icons', []);
 

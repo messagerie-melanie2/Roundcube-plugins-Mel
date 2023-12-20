@@ -19,7 +19,8 @@ export class FolderIcon extends AFolderModifier {
             this._remove_visuals($(selector).parent());
 
             const default_classes = MelEnumerable.from($(selector).parent()[0].classList).toArray().join(' ');
-            const icon = this.get_env('folders_icons')?.[folder];
+            const base_icon = this.get_env('folders_icons')?.[folder];
+            const icon = base_icon === 'default' ? '' : base_icon;
 
             //Générer la modale
             let html = MelHtml.start

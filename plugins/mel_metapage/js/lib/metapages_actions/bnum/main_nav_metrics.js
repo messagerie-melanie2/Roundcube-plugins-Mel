@@ -10,7 +10,7 @@ export class MainNavMetrics extends AMetricsModule {
     }
 
     selector() {
-        return '#taskmenu li a';
+        return '#taskmenu li a, #otherapps li a';
     }
 
     action() {
@@ -43,7 +43,7 @@ export class MainNavMetrics extends AMetricsModule {
     }
 
     _get_task(url) {
-        return url.split('?_task=')[1].split('&')[0];
+        return url?.split?.('?_task=')?.[1]?.split?.('&')?.[0];
     }
 
     _get_task_from_event(event) {

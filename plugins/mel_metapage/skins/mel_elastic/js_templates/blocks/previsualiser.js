@@ -157,7 +157,18 @@ export class MelPrevisualiser extends MelObject {
     }
 }
 
+/**
+ * Class qui permet de gérer le lancement d'une popup servant à prévisualiser un élément parmis une liste d'éléments 
+ */
 export class MelListingPrevisualiser extends MelPrevisualiser {
+    /**
+     * Constrcuteur de la classe
+     * @param {string} id Id de la modal
+     * @param {Object} param1 Contient les ids optionneles des autres éléments qui composent la popup.
+     * @param {string} param1.previsu_id Id de l'élément qui contiendra la prévisualisation.
+     * @param {string} param1.list_container_id Id de l'élément qui contiendra la liste des éléments.  
+     * @param  {...any} args Pour l'héritage
+     */
     constructor(id, {previsu_id = 'bnum-previsu', list_container_id = 'bnum-previsu-list-container'}, ...args) {
         super(id, {previsu_id}, list_container_id, ...args);
     }
@@ -200,10 +211,19 @@ export class MelListingPrevisualiser extends MelPrevisualiser {
         return html.end();
     }
 
+    /**
+     * Récupère les éléments qui seront affichés dans la popup
+     * @returns {Array<JsHtml>}
+     */
     get_elements() {
         return this.elements;
     }
 
+    /**
+     * Ajoute un élément à la liste des éléments qui seront affichés dans la popup
+     * @param {JsHtml} js_html 
+     * @returns Chaînage
+     */
     addElement(js_html) {
         this.elements.push(js_html);
         return this;

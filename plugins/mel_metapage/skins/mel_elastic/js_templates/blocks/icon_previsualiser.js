@@ -3,8 +3,18 @@ import { MelHtml } from "../../../../js/lib/html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../../../../js/lib/mel_events.js";
 import { MelListingPrevisualiser } from "./previsualiser.js";
 
+/**
+ * Fourni une popup qui permet de prévisualiser et de changer l'icône d'un élément.
+ */
 export class MelIconPrevisualiser extends MelListingPrevisualiser
 {
+    /**
+     * Constrcuteur de la classe
+     * @param {Object} param0 Activer ou non les actions par défauts
+     * @param {boolean} param0.add_defaults_actions Activer ou non les actions par défauts  
+     * @param {boolean} param0.add_default_action_default_buttons Activer ou non les actions par défauts sur les boutons par défauts
+     * @param {boolean} param0.generate_defaults_icons Générer ou non les boutons par défauts
+     */
     constructor({add_defaults_actions = true, add_default_action_default_buttons = false, generate_defaults_icons = true}) {
         super('bnum-folder-icon', {previsu_id: 'bnum-folder-main-icon', list_container_id: 'bnum-folder-icons-container'}, add_defaults_actions, generate_defaults_icons, add_default_action_default_buttons);
     }
@@ -12,12 +22,54 @@ export class MelIconPrevisualiser extends MelListingPrevisualiser
     main(...args) {
         super.main(...args);
 
+        /**
+         * Event qui sera appelé avant la génération du html, génère les éléments qui représente l'icône par "défaut" si il y en a une.
+         * 
+         * Le callback envoyé devra avoir la structure : (popup:MelPrevisualiser) => JsHtml
+         * @type {BnumEvent}
+         */
         this.on_create_default_items = new BnumEvent();
+        /**
+         * Event qui sera appelé au click d'un bouton
+         * 
+         * Le callback envoyé devra avoir la structure : (icon:string, popup:MelPrevisualiser) => null
+         * @type {BnumEvent}
+         */
         this.on_button_click = new BnumEvent();
+        /**
+         * Event qui sera appelé lorsque la souris passe sur un bouton
+         * 
+         * Le callback envoyé devra avoir la structure : (icon:string, popup:MelPrevisualiser) => null
+         * @type {BnumEvent}
+         */
         this.on_button_hover = new BnumEvent();
+        /**
+         * Event qui sera appelé lorsque la souris quitte sur un bouton
+         * 
+         * Le callback envoyé devra avoir la structure : (icon:string, popup:MelPrevisualiser) => null
+         * @type {BnumEvent}
+         */
         this.on_button_leave = new BnumEvent();
+        /**
+         * Event qui sera appelé lors de la génération des boutons, séléctionne le bouton par défaut.
+         * 
+         * Le callback envoyé devra avoir la structure : (html:JsHtml, popup:MelPrevisualiser) => JsHtml
+         * @type {BnumEvent}
+         */
         this.on_create_set_selected = new BnumEvent();
+        /**
+         * Event qui sera appelé lors de la génération, affiche le bouton sléctionné dans la prévisu.
+         * 
+         * Le callback envoyé devra avoir la structure : (html:JsHtml, popup:MelPrevisualiser) => JsHtml
+         * @type {BnumEvent}
+         */
         this.on_create_show_selected = new BnumEvent();
+        /**
+         * Event qui sera appelé lors de la génération de la liste, ajoute des éléments à la fin de la liste, après les boutons par défaut
+         * 
+         * Le callback envoyé devra avoir la structure : (popup:MelPrevisualiser) => Array<JsHtml>
+         * @type {BnumEvent}
+         */
         this.on_after_create_items = new BnumEvent();
 
         const add_defaults_actions = args[3];
@@ -200,19 +252,58 @@ export class MelIconPrevisualiser extends MelListingPrevisualiser
         return this.get_previsu().children().first().text();
     }
 
+    /**
+     * Ajoute une icone à la liste des icônes personnalisées
+     * @param {string} icon_name Icone google material
+     * @returns Chaînage
+     */
     addCustomIcon(icon_name) {
         this.custom_icons.push(icon_name);
         return this;
     }
 
+    /**
+     * Ajoute des icones à la liste des icônes personnalisées
+     * @param {Array<string>} icons Icones google material
+     * @returns Chaînage
+     */
     addCustomIcons(icons) {
         this.custom_icons = [...this.custom_icons, ...icons];
         return this;
     }
 
+    /**
+     * Ajoute un élément à la liste des éléments qui seront affichés dans la popup
+     * @param {JsHtml} js_html 
+     * @returns Chaînage
+     */
     addElement(js_html) {
         return super.addElement(this._attach_default_events(js_html));
     }
 }
 
 MelIconPrevisualiser.ICONS = ['home', 'settings', 'favorite', 'bolt', 'key', '123', 'saved_search', 'deployed_code', 'person', 'group', 'groups', 'public', 'thumb_down', 'cookie', 'flood', 'calendar_month', 'lock', 'bookmark', 'priority_high', 'label', 'mail', 'alternate_email', 'package', 'local_post_office', 'attach_email', 'markunread_mailbox'];
+
+/* EXEMPLE : */
+const start_exemple = false;
+if (start_exemple) {
+    let previsualiser = new MelIconPrevisualiser({
+        add_default_action_default_buttons: false,
+        add_defaults_actions: true,
+        generate_defaults_icons: true,
+    });
+
+    previsualiser.addCustomIcon('chevron_down');
+
+    previsualiser.on_button_click.add((icon, popup) => {
+        rcmail.triggerEvent('bnum_folder_icon_change', {icon, popup});
+    });
+
+    previsualiser.on_save.push((popup, dialog) => {
+        rcmail.triggerEvent('bnum_folder_icon_save', {popup, dialog});
+    })
+
+    previsualiser.create_popup('Ma popup');
+
+
+}

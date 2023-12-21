@@ -445,16 +445,20 @@ class mel_metapage extends bnum_plugin
                 exit;
             }
 
-            if ($this->rc->task === 'bnum' || $this->rc->task === 'search') {
-                if (in_array($this->rc->task, self::TASKS_SETUP_MODULE)) $this->setup_module();
-                else $this->load_js_modules_actions();
-
-                if ($this->rc->task === 'bnum') {
-                    $this->load_metapage_script_module('bnum.js');
-
-                    include_once __DIR__."/program/classes/metrics.php";
-                    (new MetricsConfigData($this))->send_to_env();
+            try {
+                if ($this->rc->task === 'bnum' || $this->rc->task === 'search') {
+                    if (in_array($this->rc->task, self::TASKS_SETUP_MODULE)) $this->setup_module();
+                    else $this->load_js_modules_actions();
+    
+                    if ($this->rc->task === 'bnum') {
+                        $this->load_metapage_script_module('bnum.js');
+    
+                        include_once __DIR__."/program/classes/metrics.php";
+                        (new MetricsConfigData($this))->send_to_env();
+                    }
                 }
+            } catch (\Throwable $th) {
+                //throw $th;
             }
 
             if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);
@@ -564,7 +568,6 @@ class mel_metapage extends bnum_plugin
             $this->register_action('comment_mail', array($this, 'comment_mail'));
             $this->register_action('calendar_load_events', [$this, 'calendar_load_events']);
             $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
-
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
@@ -638,6 +641,7 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
         }
 
+
         // if ($this->task === 'settings' && $this->action === 'edit-folder'){
         //     $this->settings_edit_folder_bnum_action();
         // }
@@ -672,7 +676,7 @@ class mel_metapage extends bnum_plugin
     /**
      * Fonction js appelé au refresh de roundcube.
      */
-    function refresh()
+    public function refresh()
     {
         $this->rc->output->command('mel_metapage_fn.refresh');
     }

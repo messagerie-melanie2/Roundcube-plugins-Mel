@@ -1,6 +1,7 @@
 import { AlarmManager } from "./alarms_manager.js";
 import { Alarm } from "./alarms.js";
 import { MelObject } from "../mel_object.js";
+import { MelEnumerable } from "../classes/enum.js";
 
 /**
  * Gère les alarmes de l'agenda
@@ -89,16 +90,12 @@ export class Calendar_Alarm extends MelObject
                 else
                     time = alarmDate - moment();
 
-                if (time <= 0)
-                    this.show(event);
-                else if(time < Calendar_Alarm.max_time)
+
+                if(time < Calendar_Alarm.max_time)
                 {
-                    const id = this.generate_id(event.uid);
-                    this.timeouts[id] = setTimeout(() => {
-                        delete this.timeouts[id];
-                        this.show(event);
-                    }, time);
-                    retour = this.timeouts[id];
+                   // const id = this.generate_id(event.uid);
+                   this.showed_alarms.push(time, event);
+                    //retour = this.timeouts[id];
                 }
                 
                 break;
@@ -155,26 +152,29 @@ export class Calendar_Alarm extends MelObject
      * Affiche l'évènement
      * @param {JSON} event Evènement de l'agenda
      */
-    show(event)
+    show(time)
     {
-        if (event.alarm_dismissed === true || event.alarm_dismissed === "true")
-            return;
-
         const trigger_key = "plugin.display_alarms";
 
-        event.id = this.setCalId(event.id);//"cal:" + event.id;
-        event.uid = this.setCalId(event.uid);//"cal:" + event.uid;
-        this.showed_alarms.push(event);
+        const alarms = MelEnumerable.from(this.showed_alarms.alarms[time]).where(x => ![true, 'true'].includes(x.alarm_dismissed)).select((x) => {
+            x.id = this.setCalId(x.id);
+            x.uid = this.setCalId(x.uid);
 
-        const alarms = this.showed_alarms.toArray();
+            return x;
+        }).toArray();
 
-        this.rcmail().triggerEvent(trigger_key, alarms);
-        this.trigger_event(trigger_key, alarms);
+        if (alarms.length > 0) {
+            this.showed_alarms.remove(time);
 
-        setTimeout(() => {
-            this.update_links();
-        }, 100);
+            this.rcmail().triggerEvent(trigger_key, alarms);
+            this.trigger_event(trigger_key, alarms);
+    
+            setTimeout(() => {
+                this.update_links();
+            }, 100);
+        }
     }
+
 
     setCalId(id)
     {
@@ -188,7 +188,7 @@ export class Calendar_Alarm extends MelObject
     {
         try {
             let querry = this.select("#alarm-display .event-section")[0];
-            if (querry.firstChild.className != "external-webconf")
+            if (querry?.firstChild?.className != "external-webconf")
                 querry.innerHTML = this.urlify(querry.innerHTML);
         } catch (error) {
             console.error("###[update_links()]", error);
@@ -212,8 +212,10 @@ export class Calendar_Alarm extends MelObject
     generate(events = [])
     {
         
-        if (events === undefined || events === null)
-            return;
+        if (events === undefined || events === null) return;
+        else if (window !== parent) return;
+
+        this.clearTimeouts();
 
         for (let index = 0; index < events.length; ++index) {
             const element = events[index];
@@ -227,11 +229,16 @@ export class Calendar_Alarm extends MelObject
                         this.create_alarm(element, moment(element.alarm_dismissed*1000));
                 }
             }
-            else {
-              const uid = this.setCalId(element.uid);
-              if(this.showed_alarms.has(uid)) this.showed_alarms.remove(uid);
-            }
         }
+
+        for (const iterator of this.showed_alarms) {
+            if (iterator <= 0) this.show(iterator);
+            else this.timeouts[iterator] = setTimeout((time) => {
+                this.show(time);
+            }, iterator, iterator);
+        }
+
+        console.trace();
     }
 
     is_alarm_valid(event) {

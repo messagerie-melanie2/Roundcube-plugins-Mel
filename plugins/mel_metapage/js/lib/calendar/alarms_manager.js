@@ -3,22 +3,31 @@ export class AlarmManager {
         this.alarms = {};
     }
 
-    push(event) {
-        this.alarms[event.uid] = event;
+    push(time, event) {
+        time = this._time_modifier(time);
+        if (!this.has(time)) this.alarms[time] = [];
+
+        this.alarms[time].push(event);
         return this;
     }
 
-    has(uid) {
-      return !!this.alarms[uid]
+    has(time) {
+        time = this._time_modifier(time);
+        return !!this.alarms[time]
     }
 
-    remove(uid) {
-      delete this.alarms[uid];
+    remove(time) {
+        time = this._time_modifier(time);
+        delete this.alarms[time];
     }
 
     clear() {
         this.alarms = {};
         return this;
+    }
+
+    _time_modifier(time) {
+        return time <= 0 ? 0 : time;
     }
 
     toArray() {
@@ -31,6 +40,10 @@ export class AlarmManager {
         }
 
         return array;
+    }
+
+    *[Symbol.iterator]() {
+        yield * Object.keys(this.alarms);
     }
 }
 

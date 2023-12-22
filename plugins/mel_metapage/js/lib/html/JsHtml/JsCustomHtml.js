@@ -68,6 +68,12 @@ JsHtml.create_custom_tag('flex-container', {
     already_existing_class:BnumHtmlFlexContainer
 });
 
+JsHtml.update('flex_container', function(self, old, attribs = {}) {
+    let html =  old.call(self, attribs);
+
+    return html.css('display', 'flex');
+});
+
 JsHtml.create_custom_tag('centered-flex-container', {
     already_existing_class:BnumHtmlCenteredFlexContainer
 });

@@ -1,5 +1,6 @@
 import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log.js";
 import { MelEnumerable } from "../../../../mel_metapage/js/lib/classes/enum.js";
+import { Look } from "../../../../mel_metapage/js/lib/classes/metrics.js";
 import { MelFor } from "../../../../mel_metapage/js/lib/helpers/loops.js";
 import { MaterialSymbolHtml } from "../../../../mel_metapage/js/lib/html/html_icon.js";
 import { MelObject } from "../../../../mel_metapage/js/lib/mel_object.js";
@@ -135,6 +136,7 @@ export class ModuleLinks extends BaseModule {
                             }
     
                             MelObject.Empty().change_frame(app, {force_update:false, update:false});
+                            Look.SendTask(app);
                         }
                     });
                 }
@@ -162,9 +164,11 @@ export class ModuleLinks extends BaseModule {
         const add_links = [
          {name:'Visioconférence', class:'visio', font:'Material Symbols Outlined', content:'e04b', click:() => {
             window.webconf_helper.go();
+            Look.SendTask('webconf');
          }},
          {name:'Notes', class:'notes', font:'Material Symbols Outlined', content:'f1fc', click:() =>{
             (top ?? parent ?? window).$('#button-notes').click();
+            Look.SendTask('notes');
          }}];
 
         let html;

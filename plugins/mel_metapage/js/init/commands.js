@@ -445,9 +445,9 @@ if (rcmail)
                     //rcmail.clear_messages();
                 }
                 
+debugger;
 
-
-
+                await module_helper_mel.Look.SendTask('search');
             }, true);
 
             rcmail.register_command("mel.search.global.show", async (event) => {
@@ -467,6 +467,8 @@ if (rcmail)
                     $('#layout-frames').css('display', 'none');
                     $('.search-frame').css('display', '');
                 }
+
+                await module_helper_mel.Look.SendTask('search');
             }, true);
 
             rcmail.register_command('message_send_error', (args) => {

@@ -222,6 +222,33 @@ export class RcmailDialog extends MelObject {
     }
 
     /**
+     * Cache la dialog
+     * @returns Chaînage
+     */
+    hide() {
+        this._$dialog.dialog('hide');
+        return this;
+    }
+
+    /**
+     * Affiche la dialog
+     * @returns Chaînage
+     */
+    show() {
+        this._$dialog.dialog('show');
+        return this;
+    }
+
+    /**
+     * Supprime la dialog
+     * @returns Chaînage
+     */
+    destroy() {
+        this._$dialog.dialog('destroy');
+        return this;
+    }
+
+    /**
      * Affiche X boutons qui permettront de faire certaines actions
      * @param {string} title Titre de la modale
      * @param  {...RcmailDialogChoiceButton} buttons Bouttons qui seront affichés

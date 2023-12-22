@@ -641,26 +641,25 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
         }
 
-
-        // if ($this->task === 'settings' && $this->action === 'edit-folder'){
-        //     $this->settings_edit_folder_bnum_action();
-        // }
+        if ($this->task === 'settings' && $this->action === 'edit-folder'){
+            $this->settings_edit_folder_bnum_action();
+        }
     }
 
-    // private function settings_edit_folder_bnum_action() {
-    //     $this->rc->output->add_handlers(array(
-    //         'bnumfolderperso'    => '_edit_folder_hack',
-    //     ));
-    // }
+    private function settings_edit_folder_bnum_action() {
+        $this->rc->output->add_handlers(array(
+            'bnumfolderperso'    => '_edit_folder_hack',
+        ));
+    }
 
-    // private function _edit_folder_hack($attrib) {
-    //     $html = html::div(array('class' => 'bnumfolderperso'),
-    //         html::div(['id' => 'folder-edit-custom-color']),
-    //         html::div(['id' => 'folder-edit-custom-icon'])
-    //     );
+    private function _edit_folder_hack($attrib) {
+        $html = html::div(array('class' => 'bnumfolderperso'),
+            html::div(['id' => 'folder-edit-custom-color']),
+            html::div(['id' => 'folder-edit-custom-icon'])
+        );
 
-    //     return $html;
-    // }
+        return $html;
+    }
 
     function load_js_modules_actions() {
         $save_in_memory = true;

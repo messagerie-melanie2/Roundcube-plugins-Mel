@@ -444,8 +444,7 @@ if (rcmail)
                     //top.rcmail.set_busy(false);
                     //rcmail.clear_messages();
                 }
-                
-debugger;
+    
 
                 await module_helper_mel.Look.SendTask('search');
             }, true);

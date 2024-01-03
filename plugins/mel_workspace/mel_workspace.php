@@ -1711,7 +1711,7 @@ class mel_workspace extends bnum_plugin
 
         foreach ($share as $key => $value) {
             $html .= "<tr>";
-            $html .= "<td>". driver_mel::gi()->getUser($value->user)->name."</td>";
+            $html .= "<td>". driver_mel::gi()->getUser($value->user)->fullname."</td>";
             
             $html .= "<td>".$this->setup_params_value($icons_rights, $options_title, $current_title, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)

@@ -1688,6 +1688,7 @@ button{
     }
 }
 
+.tb_noclass::before,
 #tb_label_popuplink::before
 {
     content: "\e866"!important;
@@ -2102,3 +2103,16 @@ body.task-mail.action-compose a.removelink
     content: "\f88d"!important;
 }
 
+#selected-action-list{
+    border-left: solid thin var(--layout-list-header-text-color);
+    margin-left:10px;
+    padding-left:10px;
+    
+    ul {
+        li {
+            a{
+                color: var(--layout-list-header-text-color) !important;
+            }
+        }
+    }
+}

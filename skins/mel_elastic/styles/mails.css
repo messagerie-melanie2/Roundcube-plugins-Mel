@@ -1328,6 +1328,7 @@ button.btn.refresh::before {
   font-size: 26px !important;
   font-variation-settings: 'wght' 400, 'opsz' 48 !important;
 }
+.tb_noclass::before,
 #tb_label_popuplink::before {
   content: "\e866" !important;
   font-family: 'Material Symbols Outlined' !important;
@@ -1594,4 +1595,12 @@ body.task-mail.action-compose a.removelink {
 }
 #rcm_folderlist .menu a.icon-folder::before {
   content: "\f88d" !important;
+}
+#selected-action-list {
+  border-left: solid thin var(--layout-list-header-text-color);
+  margin-left: 10px;
+  padding-left: 10px;
+}
+#selected-action-list ul li a {
+  color: var(--layout-list-header-text-color) !important;
 }

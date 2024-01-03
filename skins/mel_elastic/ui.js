@@ -1305,7 +1305,7 @@ $(document).ready(() => {
                         delete rcmail.env.is_from_scroll;
                     else if ($("#layout-list").hasClass("initial") && show)
                     {
-                        console.log('hoverable', JSON.stringify($("#layout-list")[0].classList), show);
+                        rcmail.triggerEvent('ui.open-mail-visu');
                         //Mise en place du système
                         $("#layout-content").css("display", "").removeClass("hidden layout-hidden");
                         $("#layout-list").removeClass("initial");
@@ -1350,7 +1350,7 @@ $(document).ready(() => {
 
                             $("#mailsearchlist").removeClass("hoverable");
 
-                            // $("#messagelist-content .selected .selection input")[0].checked = false;
+                            rcmail.triggerEvent('ui.close-mail-visu');
                             
 
                         }, true)
@@ -1358,12 +1358,13 @@ $(document).ready(() => {
                     }   
                     else if ($("#layout-list").hasClass("full") && show)
                     {
-                        console.log('hoverable 2', JSON.stringify($("#layout-list")[0].classList), show);
                         //Afficher ou fermer
                         $("#layout-content").css("display", "").removeClass("hidden").removeClass("layout-hidden");
                         $("#layout-list").removeClass("full");
 
                         $("#mailsearchlist").addClass("hoverable");
+
+                        rcmail.triggerEvent('ui.open-mail-visu');
                         
                     }
 

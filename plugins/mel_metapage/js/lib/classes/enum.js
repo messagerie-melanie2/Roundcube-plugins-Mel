@@ -730,10 +730,10 @@ class RotomecaReverseGenerator extends RotomecaGenerator
     }
 
     *next() {
-        let order = RotomecaEnumerable.from(super.next()).orderByDescending(x => x);
+        let order = RotomecaEnumerable.from(super.next()).toArray();
 
-        for (const iterator of order) {
-            yield iterator;
+        for (let len = order.length, index = len - 1; index >= 0; --index) {
+            yield order[index];
         }
     }
 }

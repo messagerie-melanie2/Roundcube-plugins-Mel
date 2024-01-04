@@ -50,6 +50,19 @@ export class MainNavMetrics extends AMetricsModule {
         return this._get_task(this._get_url(event));
     }
 
+    tasks_corrections(task) {
+        switch (task) {
+            case 'discussion':
+                task = 'chat';
+                break;
+        
+            default:
+                break;
+        }
+
+        return task;
+    }
+
     exec() {
         super.exec();
 
@@ -59,7 +72,7 @@ export class MainNavMetrics extends AMetricsModule {
     }
 
     async _send_current_task() {
-        const task = this.rc_data.task;
+        const task = this.tasks_corrections(this.rc_data.task);
 
         if (!current_tasks_to_ignore.includes(task)){
             BnumLog.info('_send_current_task', 'send current task : ', task);

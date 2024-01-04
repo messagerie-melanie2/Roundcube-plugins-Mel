@@ -641,26 +641,57 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
         }
 
+        if ($this->task === 'settings' && $this->action === 'edit-folder'){
+            $this->settings_edit_folder_bnum_action();
+            $this->add_hook('folder_form', [$this, 'folder_form']);
+        }
 
-        // if ($this->task === 'settings' && $this->action === 'edit-folder'){
-        //     $this->settings_edit_folder_bnum_action();
-        // }
+        $this->add_hook('folder_form', [$this, 'folder_form']);
+        $this->add_hook('folder_create', [$this, 'folder_create']);
     }
 
-    // private function settings_edit_folder_bnum_action() {
-    //     $this->rc->output->add_handlers(array(
-    //         'bnumfolderperso'    => '_edit_folder_hack',
-    //     ));
-    // }
+    private function settings_edit_folder_bnum_action() {
+        $this->rc->output->add_handlers(array(
+            'bnumfolderperso'    => '_edit_folder_hack',
+        ));
+    }
 
-    // private function _edit_folder_hack($attrib) {
-    //     $html = html::div(array('class' => 'bnumfolderperso'),
-    //         html::div(['id' => 'folder-edit-custom-color']),
-    //         html::div(['id' => 'folder-edit-custom-icon'])
-    //     );
+    private function _edit_folder_hack($attrib) {
+        $html = html::div(array('class' => 'bnumfolderperso'),
+            html::div(['id' => 'folder-edit-custom-color']),
+            html::div(['id' => 'folder-edit-custom-icon'])
+        );
 
-    //     return $html;
-    // }
+        return $html;
+    }
+
+    function folder_form($args) {
+        $args['form']['props']['fieldsets']['color'] = [
+            'name' => 'Couleur du dossier',
+            'content' => [
+                'color' => [
+                    'label' => 'Couleur du dossier',
+                    'value' => '<input type="color" title="Laissez pour avoir la couleur par défaut !" name="_color" id="folder-edit-color" value="">'
+                ]
+            ]
+        ];
+
+        return $args;
+    }
+
+    function folder_create($args) {
+        $color = rcube_utils::get_input_value('_color', rcube_utils::INPUT_POST);
+
+        if ($color === '#000000' || $color === '#000' || $color === '#0' || $color === '') $color = null;
+
+        $_POST['_color'] = $color;
+        $_POST['_folder'] = $args['record']['name'];
+        $_POST['_color_break'] = true;
+
+        $this->update_color_folder();
+
+        return $args;
+    }
 
     function load_js_modules_actions() {
         $save_in_memory = true;
@@ -3501,8 +3532,12 @@ class mel_metapage extends bnum_plugin
 
         $this->rc->user->save_prefs(['folders_colors' => $prefs]);
         
-        echo json_encode($prefs);
-        exit;
+        if (rcube_utils::get_input_value('_color_break', rcube_utils::INPUT_POST) === null)
+        {
+            echo json_encode($prefs);
+            exit;
+        }
+
     }
 
     public function update_icon_folder() {

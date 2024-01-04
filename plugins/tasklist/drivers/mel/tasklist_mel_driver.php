@@ -779,13 +779,20 @@ class tasklist_mel_driver extends tasklist_driver {
         '_hasdate' => 0
     );
 
-    // Gestion du pourcentage de complete
-    if (isset($record->complete)) {
-      $task['complete'] = $record->complete;
+    if ($record->completed === 1)
+    {
+      $task['complete'] = 1;
     }
-    else if (isset($record->percent_complete)) {
-      $task['complete'] = $record->percent_complete / 100;
+    else {
+      // Gestion du pourcentage de complete
+      if (isset($record->complete)) {
+        $task['complete'] = $record->complete;
+      }
+      else if (isset($record->percent_complete)) {
+        $task['complete'] = $record->percent_complete / 100;
+      }
     }
+
 
     if (isset($record->status)) {
       $task['status'] = $record->status;

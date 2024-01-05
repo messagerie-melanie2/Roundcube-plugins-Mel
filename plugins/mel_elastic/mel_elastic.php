@@ -49,8 +49,8 @@ class mel_elastic extends rcube_plugin
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
             $this->load_config();
-            $this->add_hook('preferences_list', array($this, 'prefs_list'));
-            $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+            // $this->add_hook('preferences_list', array($this, 'prefs_list'));
+            // $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->add_hook('ready', array($this, 'set_theme'));
             $this->register_action('update_theme', array($this, 'update_theme'));
             $this->register_action('update_theme_picture', array($this, 'update_theme_picture'));
@@ -83,14 +83,14 @@ class mel_elastic extends rcube_plugin
             $this->include_stylesheet('/'.$this->css[$i]);
         }
 
-        $this->load_css_font();
+        //$this->load_css_font();
     }
 
     function load_css_font()
     {
         //$this->rc->config->get('custom-font-size', "sm")
-        $this->include_stylesheet("/fonts/fontsize.css");
-        $this->rc->output->set_env('font-size', $this->rc->config->get('custom-font-size', "lg"));
+        // $this->include_stylesheet("/fonts/fontsize.css");
+        // $this->rc->output->set_env('font-size', $this->rc->config->get('custom-font-size', "lg"));
     }
 
     function load_folders()
@@ -121,86 +121,86 @@ class mel_elastic extends rcube_plugin
         return $p;
     }
 
-    public function prefs_list($args) {
+    // public function prefs_list($args) {
 
-        if ($args['section'] == 'general') {
-          // Load localization and configuration
-          $this->add_texts('localization/');
+    //     if ($args['section'] == 'general') {
+    //       // Load localization and configuration
+    //       $this->add_texts('localization/');
     
-          $text_size = "mel-text-size";
+    //       $text_size = "mel-text-size";
     
-          // Check that configuration is not disabled
-          $config = $this->rc->config->get('custom-font-size', 'lg');
+    //       // Check that configuration is not disabled
+    //       $config = $this->rc->config->get('custom-font-size', 'lg');
     
-          $options = [
-                $text_size => [
-                    $this->gettext("smaller", "mel_elastic"),
-                    $this->gettext("normal", "mel_elastic")
-                ],
-            ];
+    //       $options = [
+    //             $text_size => [
+    //                 $this->gettext("smaller", "mel_elastic"),
+    //                 $this->gettext("normal", "mel_elastic")
+    //             ],
+    //         ];
     
-            // $args['blocks']['main']['options'][$text_size] = null;
-        $attrib = [];
+    //         // $args['blocks']['main']['options'][$text_size] = null;
+    //     $attrib = [];
     
-        $attrib['name'] = $text_size;
-        $attrib['id'] = $text_size;
+    //     $attrib['name'] = $text_size;
+    //     $attrib['id'] = $text_size;
     
-        $input = new html_select($attrib);   
-        $input->add($options[$text_size], ["sm", "lg"]);
+    //     $input = new html_select($attrib);   
+    //     $input->add($options[$text_size], ["sm", "lg"]);
         
     
-        unset($attrib['name']);
-        unset($attrib['id']);
-        $attrib["for"] = $text_size;
+    //     unset($attrib['name']);
+    //     unset($attrib['id']);
+    //     $attrib["for"] = $text_size;
     
-        $args['blocks']['main']['options'][$text_size] = array(
-            'title' => html::label($attrib, rcube::Q($this->gettext($text_size, "mel_elastic"))),
-            'content' => $input->show($config),
-          );
+    //     $args['blocks']['main']['options'][$text_size] = array(
+    //         'title' => html::label($attrib, rcube::Q($this->gettext($text_size, "mel_elastic"))),
+    //         'content' => $input->show($config),
+    //       );
         
-          //THEMES
-        //   $args['blocks']['themes']['name'] = 'Thèmes';
-        //   $current_theme = $this->get_current_theme();
-        //   $themes = $this->load_themes();
+    //       //THEMES
+    //     //   $args['blocks']['themes']['name'] = 'Thèmes';
+    //     //   $current_theme = $this->get_current_theme();
+    //     //   $themes = $this->load_themes();
 
-        //   foreach ($themes as $theme) {
-        //     $radio = new html_radiobutton(['name' => 'themes', 'id' => $theme->name, 'value' => $theme->name, 'class' => 'form-check-input themesettingsrb']);
-        //     $args['blocks']['themes']['options'][$theme->name] = [
-        //         //'title' => html::label([], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name),
-        //         'content' => html::div([], html::div(['style' => 'display:inline-block;margin-right:5px;width:150px;'], html::tag('img', ['src' => $theme->picture, 'style' => 'max-width:150px'])).html::div(['class' => 'form-check', 'style' => 'display:inline-block'], $radio->show($current_theme).html::label(['class' => 'form-check-label', 'for' => $theme->name], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name)))
-        //     ];
-        //   }
+    //     //   foreach ($themes as $theme) {
+    //     //     $radio = new html_radiobutton(['name' => 'themes', 'id' => $theme->name, 'value' => $theme->name, 'class' => 'form-check-input themesettingsrb']);
+    //     //     $args['blocks']['themes']['options'][$theme->name] = [
+    //     //         //'title' => html::label([], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name),
+    //     //         'content' => html::div([], html::div(['style' => 'display:inline-block;margin-right:5px;width:150px;'], html::tag('img', ['src' => $theme->picture, 'style' => 'max-width:150px'])).html::div(['class' => 'form-check', 'style' => 'display:inline-block'], $radio->show($current_theme).html::label(['class' => 'form-check-label', 'for' => $theme->name], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name)))
+    //     //     ];
+    //     //   }
 
-        //   $args['blocks']['themes']['options']['hiddenthemes'] = [
-        //     'content' => (new html_hiddenfield(['name' => 'themevalue', 'id' => 'themevalue', 'value' => $current_theme]))->show()
-        //   ];
+    //     //   $args['blocks']['themes']['options']['hiddenthemes'] = [
+    //     //     'content' => (new html_hiddenfield(['name' => 'themevalue', 'id' => 'themevalue', 'value' => $current_theme]))->show()
+    //     //   ];
 
-        }
+    //     }
 
     
-        return $args;
-      }
+    //     return $args;
+    //   }
 
 
-    public function prefs_save($args) {
-        if ($args['section'] == 'general') {
+    // public function prefs_save($args) {
+    //     if ($args['section'] == 'general') {
 
-            $this->add_texts('localization/');
+    //         $this->add_texts('localization/');
 
-            $text_size = "mel-text-size";
+    //         $text_size = "mel-text-size";
 
-            // Check that configuration is not disabled
-            $config = $this->rc->config->get('custom-font-size', 'lg');
+    //         // Check that configuration is not disabled
+    //         $config = $this->rc->config->get('custom-font-size', 'lg');
 
-            $config = rcube_utils::get_input_value($text_size, rcube_utils::INPUT_POST);
+    //         $config = rcube_utils::get_input_value($text_size, rcube_utils::INPUT_POST);
             
 
-            $args['prefs']["custom-font-size"] = $config;
+    //         $args['prefs']["custom-font-size"] = $config;
             
-        }
+    //     }
 
-        return $args;
-    }
+    //     return $args;
+    // }
 
     private function load_themes()
     {

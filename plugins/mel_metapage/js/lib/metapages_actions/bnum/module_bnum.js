@@ -3,7 +3,8 @@ export {module_bnum};
 
 let user_defined_modules = [
   'double_auth_modal',
-  'main_nav_metrics'
+  'main_nav_metrics',
+  'progressive_web_app'
 ];
 
 class module_bnum extends MetapageModule {

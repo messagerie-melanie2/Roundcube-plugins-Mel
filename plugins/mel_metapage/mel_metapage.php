@@ -2975,6 +2975,7 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("bnum.init_action", $init_action);
         }
 
+        $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
         $this->rc->output->send('mel_metapage.empty');
     }
 

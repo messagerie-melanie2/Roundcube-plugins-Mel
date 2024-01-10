@@ -3269,7 +3269,7 @@ var MasterWebconfBar = (() => {
         {
             if (!this._phone_datas)
             {
-                this._phone_datas = await webconf_helper.phone.getAll();
+                this._phone_datas = await webconf_helper.phone.getAll(this.webconfManager.key);
             }
 
 

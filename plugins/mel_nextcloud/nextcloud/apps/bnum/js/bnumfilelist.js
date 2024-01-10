@@ -16,7 +16,7 @@
 	 *
 	 * @classdesc Bnum for Entities and Workspaces file list.
 	 *
-	 * @param $el container element with existing markup for the #controls
+	 * @param $el container element with existing markup for the .files-controls
 	 * and a table
 	 * @param [options] map of options, see other parameters
 	 * @param {boolean} [options.entities] true to return entities folders
@@ -100,8 +100,8 @@
 				var dir = this.getCurrentDirectory()
 				if (dir === '/') {
 				// root has special permissions
-					this.$el.find('#emptycontent').toggleClass('hidden', !this.isEmpty)
-					this.$el.find('#filestable thead th').toggleClass('hidden', this.isEmpty)
+					this.$el.find('.emptyfilelist.emptycontent').toggleClass('hidden', !this.isEmpty)
+					this.$el.find('.files-filestable thead th').toggleClass('hidden', this.isEmpty)
 
 					// hide expiration date header for non link only shares
 					if (!this._linksOnly) {
@@ -229,7 +229,7 @@
 						this._updateDirectoryPermissions();
 					}
 					this.$el.find('#free_space').val(this.dirInfo.freeSpace);
-					this.$el.find('#controls .breadcrumb .crumbhome span.icon-shared').hide();
+					this.$el.find('.files-controls .breadcrumb .crumbhome span.icon-shared').hide();
 				}
 
 				result.sort(this._sortComparator);

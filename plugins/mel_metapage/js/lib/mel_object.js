@@ -86,6 +86,11 @@ class MelObject {
          * @type {MelEventManager}
          */
         this._listener = null;
+        let _rc_data = null;
+        /**
+         * @type {{task:string}}
+         */
+        this.rc_data = {task:''};
         Object.defineProperties(this, {
             _listener: {
                 get: function() {
@@ -96,6 +101,23 @@ class MelObject {
                     return Top.get(KEY);
                 },
                 configurable: true
+            },
+            rc_data: {
+                get() {
+                    if (!_rc_data) {
+                        _rc_data = {};
+                        Object.defineProperties(_rc_data, {
+                            task: {
+                                get() {
+                                    return rcmail.env.current_task
+                                },
+                                configurable: false,
+                            }
+                        });
+                    }
+
+                    return _rc_data
+                }
             }
         });
         this.main(...args);

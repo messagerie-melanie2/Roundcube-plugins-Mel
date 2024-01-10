@@ -1,22 +1,9 @@
 $(document).ready(async () => {
     const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
-    const {MelHtml} = await loadJsModule('mel_metapage', 'MelHtml.js', '/js/lib/html/JsHtml/');
+    const {RcmailDialog, RcmailDialogChoiceButton} = await loadJsModule('mel_metapage', 'modal.js', '/js/lib/classes/');
 
-    window.a = MelHtml.start
-    .row()
-        .col_10()
-            .select()
-                .option({value:''}).text('Defaut').end()
-                .option({value:'other', selected:'selected'}).text('Autre').end()
-            .end('select')
-        .end()
-        .comment('Commentaire html')
-        .col_2()
-            .input_email()
-        .end()
-    .end();
+    const button1 = new RcmailDialogChoiceButton('Aller à l\'accueil', 'home', {});
+    const button2 = new RcmailDialogChoiceButton('Aller aux paramètres', 'settings', {});
 
-    window.b = a.generate().appendTo($('#layout-content'));
-    //window.b = a.generate().appendTo($('#layout-content'));
-
+    RcmailDialog.DrawChoice('Test', button1, button2);
 });

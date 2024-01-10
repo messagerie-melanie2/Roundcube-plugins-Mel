@@ -2,7 +2,9 @@ import { MetapageModule } from "../metapage_module.js";
 export {module_bnum};
 
 let user_defined_modules = [
-  'double_auth_modal'
+  'double_auth_modal',
+  'main_nav_metrics',
+  'progressive_web_app'
 ];
 
 class module_bnum extends MetapageModule {
@@ -22,7 +24,6 @@ class module_bnum extends MetapageModule {
     async exec_async() {};
 
     static async exec_modules() {
-
         if (user_defined_modules.length > 0) {
             for (const iterator of user_defined_modules) {
                 var loaded = await window.loadJsModule('mel_metapage', iterator, '/js/lib/metapages_actions/bnum/');

@@ -1,4 +1,4 @@
-export {isNullOrUndefined, isArrayLike, Classes};
+export {isNullOrUndefined, isArrayLike, Classes, toHex};
 
 /**
  * Renvoie vrai si la variable vaut `null` ou `undefined`.
@@ -26,6 +26,15 @@ function isArrayLike(item) {
           (item.length - 1) in item
         )
     );
+}
+
+/**
+ * Change un nombre en base 10 en hexadécimal
+ * @param {number} number 
+ * @returns {string} Hexadecimal number
+ */
+function toHex(number) {
+    return number.toString(16);
 }
 
 var Classes = (baseClass, ...mixins) => {

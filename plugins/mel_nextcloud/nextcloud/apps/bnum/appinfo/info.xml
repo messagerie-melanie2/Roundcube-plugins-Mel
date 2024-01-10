@@ -5,8 +5,8 @@
 	<description>Integration between Bnum and nextCloud</description>
 	<licence>AGPL</licence>
 	<author>Thomas Payen</author>
-	<version>0.11</version>
+	<version>0.16</version>
 	<dependencies>
-		<nextcloud min-version="21" max-version="24" />
+		<nextcloud min-version="25" max-version="25" />
 	</dependencies>
 </info>

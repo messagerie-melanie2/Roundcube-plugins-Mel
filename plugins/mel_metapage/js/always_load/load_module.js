@@ -129,6 +129,12 @@
                 return VERSION;
             },
             configurable: false
+        },
+        jsModulesBasePath: {
+            get: function() {
+                return BASE_PATH;
+            },
+            configurable: false
         }
     });
 

@@ -1665,7 +1665,10 @@ class Webconf{
             else if (!!ariane) misc_urls['_ariane'] = this.chat.room;
 
             //Création de l'alerte
-            let $ff = $(`
+            let $ff;
+
+            try {
+                $ff = $(`
             <div class="alert alert-warning" role="alert" style="
                 position: absolute;
                 z-index:9999;
@@ -1685,6 +1688,28 @@ class Webconf{
                     <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>`);
+            } catch (error) {
+                $ff = $(`
+                <div class="alert alert-warning" role="alert" style="
+                    position: absolute;
+                    z-index:9999;
+                    text-align: center;">
+                    Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence.
+                    <br/>
+                    Nous vous conseillons d'utiliser un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre téléphone.
+                    <button style="margin-top:-12px" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div class="progress" style="    position: absolute;
+                        bottom: 0;
+                        width: 100%;
+                        left: 0;
+                        height: 0.3rem;
+                    ">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>`);
+            }
 
             //Gestion des attributs css
             let width = '100%';

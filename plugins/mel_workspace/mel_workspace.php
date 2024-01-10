@@ -1395,7 +1395,7 @@ class mel_workspace extends bnum_plugin
 
                     $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
                     $body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤"],
-                    ($links["pined"] === "" ? "<center>Aucun liens épinglés.</center>" : $links["pined"])
+                    ($links['pined'] === '' && $links['joined'] === '' ? "<center>Aucun liens épinglés.</center>" : $links["pined"].$links['joined'])
                     //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
                     // html::tag('center', ["id" => "spinner-grow-center"],
                     // html::tag('span', ["class" => "spinner-grow"], html::tag('p', ["class" => "sr-only"], "Chargement des documents..."))).    
@@ -1711,7 +1711,7 @@ class mel_workspace extends bnum_plugin
 
         foreach ($share as $key => $value) {
             $html .= "<tr>";
-            $html .= "<td>". driver_mel::gi()->getUser($value->user)->name."</td>";
+            $html .= "<td>". driver_mel::gi()->getUser($value->user)->fullname."</td>";
             
             $html .= "<td>".$this->setup_params_value($icons_rights, $options_title, $current_title, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)
@@ -3920,8 +3920,9 @@ class mel_workspace extends bnum_plugin
         $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
 
         $workspace = $this->get_workspace($wid);
+        $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($workspace, $this, true);
 
-        echo $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($workspace, $this, true)["pined"];
+        echo $links["pined"].$links['joined'];
         exit;
     }
 

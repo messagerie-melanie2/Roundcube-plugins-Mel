@@ -21,7 +21,7 @@ $labels["wekan_in_progress"] = "En cours";
 $labels["wekan_do"] = "Fait";
 
 $labels["useful_links"] = "Liens utiles";
-$labels["infos"] = "Informations";
+$labels["infos"] = "Membres";
 
 $labels["create_mail"] = "Envoyer un message aux membres";
 $labels["create_webconf"] = "Commencer une visioconférence";

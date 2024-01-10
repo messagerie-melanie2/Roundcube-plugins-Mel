@@ -388,7 +388,7 @@ if (rcmail)
                     (datas) => {
                         datas = JSON.parse(datas);
 
-                        if (!!datas.message && EMPTY_STRING !== datas.message && !!datas.start && EMPTY_STRING !== datas.start) {
+                        if (/*!!datas.message && EMPTY_STRING !== datas.message && */!!datas.start && EMPTY_STRING !== datas.start) {
                             $('#user-dropdown .div-first input').val(moment(datas.start, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
                             $('#user-dropdown .div-last input').val(moment(datas.end, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
                             $('#user-dropdown .abs-message').hide();
@@ -444,10 +444,9 @@ if (rcmail)
                     //top.rcmail.set_busy(false);
                     //rcmail.clear_messages();
                 }
-                
+    
 
-
-
+                await module_helper_mel.Look.SendTask('search');
             }, true);
 
             rcmail.register_command("mel.search.global.show", async (event) => {
@@ -467,6 +466,8 @@ if (rcmail)
                     $('#layout-frames').css('display', 'none');
                     $('.search-frame').css('display', '');
                 }
+
+                await module_helper_mel.Look.SendTask('search');
             }, true);
 
             rcmail.register_command('message_send_error', (args) => {

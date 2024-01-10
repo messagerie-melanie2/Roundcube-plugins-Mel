@@ -67,6 +67,7 @@ h3 {
   box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
 }
 #help-url-list ul li a span.name {
+	display: block;
 	font-size: 16px;
 	position: relative;
 	top: 15px;

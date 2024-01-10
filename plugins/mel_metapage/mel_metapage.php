@@ -201,10 +201,18 @@ class mel_metapage extends bnum_plugin
             return;
         }
 
+        //$plugin = $rcmail->plugins->exec_hook('folder_update', ['record' => $folder]);
+
+
+
+
+
+
         $this->add_hook('logout_after', array($this, 'logout_after'));
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+        $this->add_hook('folder_update',     array($this, 'folder_update'));
         $this->add_hook('rocket.chat.sectionlist',     array($this, 'rc_section_list'));
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
@@ -236,6 +244,10 @@ class mel_metapage extends bnum_plugin
             $this->register_action('plugin.mel_metapage.toggle_favorite', array($this, 'toggle_favorite_folder'));
             $this->register_action('plugin.mel_metapage.toggle_display_folder', array($this, 'toggle_display_folder'));
             $this->register_action('plugin.mel_metapage.get_favorite_folders', [$this, 'get_display_folder']);
+            $this->register_action('plugin.mel_metapage.set_folder_color', [$this, 'update_color_folder']);
+            $this->register_action('plugin.mel_metapage.get_folders_color', [$this, 'get_folder_colors']);
+            $this->register_action('plugin.mel_metapage.set_folder_icon', [$this, 'update_icon_folder']);
+            $this->register_action('plugin.mel_metapage.get_folders_icon', [$this, 'get_folder_icons']);
 
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $delay = true === $this->rc->config->get('mail_delay_forced_disabled') ? 0 : $this->rc->config->get('mail_delay', 5);
@@ -276,7 +288,13 @@ class mel_metapage extends bnum_plugin
 
                 case '':
                 case 'index':
-                    $this->rc->output->set_env('favorites_folders', $this->rc->config->get('favorite_folders', []));
+                    $favs = $this->rc->config->get('favorite_folders', []);
+                    if (isset($favs[''])) unset($favs['']);
+
+                    $this->rc->output->set_env('favorites_folders', $favs);
+                    $this->rc->output->set_env('folders_colors', $this->rc->config->get('folders_colors', []));
+                    $this->rc->output->set_env('folders_icons', $this->rc->config->get('folders_icons', []));
+                    $this->include_stylesheet($this->local_skin_path().'/icons_modifier.css');
                     break;
                 
                 default:
@@ -406,7 +424,7 @@ class mel_metapage extends bnum_plugin
             if ($courielleur === '') $courielleur = true;
             else if ($courielleur !== true) $courielleur = false;
             $from_cour = rcube_utils::get_input_value('_redirected_from_courrielleur', rcube_utils::INPUT_GET); 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->rc->task !== 'bnum' && $this->rc->task !== 'chat' && $this->rc->task !== 'webconf' && ('' === $this->rc->action || 'index' === $this->rc->action || !!rcube_utils::get_input_value('_force_bnum', rcube_utils::INPUT_GET)) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe' && $courielleur) {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->rc->task !== 'bnum' && ('' === $this->rc->action || 'index' === $this->rc->action || !!rcube_utils::get_input_value('_force_bnum', rcube_utils::INPUT_GET)) && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) !== 'iframe' && $courielleur) {
                 $this->rc->output->redirect([
                     '_task' => 'bnum',
                     '_action' => '',
@@ -427,13 +445,20 @@ class mel_metapage extends bnum_plugin
                 exit;
             }
 
-            if ($this->rc->task === 'bnum' || $this->rc->task === 'chat' || $this->rc->task === 'webconf' || $this->rc->task === 'search') {
-                if (in_array($this->rc->task, self::TASKS_SETUP_MODULE)) $this->setup_module();
-                else $this->load_js_modules_actions();
-
-                if ($this->rc->task === 'bnum') {
-                    $this->load_metapage_script_module('bnum.js');
+            try {
+                if ($this->rc->task === 'bnum' || $this->rc->task === 'search') {
+                    if (in_array($this->rc->task, self::TASKS_SETUP_MODULE)) $this->setup_module();
+                    else $this->load_js_modules_actions();
+    
+                    if ($this->rc->task === 'bnum') {
+                        $this->load_metapage_script_module('bnum.js');
+    
+                        include_once __DIR__."/program/classes/metrics.php";
+                        (new MetricsConfigData($this))->send_to_env();
+                    }
                 }
+            } catch (\Throwable $th) {
+                //throw $th;
             }
 
             if (isset($from_cour)) $this->rc->output->set_env("_courielleur", $from_cour);
@@ -543,7 +568,6 @@ class mel_metapage extends bnum_plugin
             $this->register_action('comment_mail', array($this, 'comment_mail'));
             $this->register_action('calendar_load_events', [$this, 'calendar_load_events']);
             $this->register_action('save_user_pref_domain', array($this, 'save_user_pref_domain'));
-
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
@@ -616,6 +640,57 @@ class mel_metapage extends bnum_plugin
             $this->include_script('js/actions/settings_events.js');
             $this->rc->output->set_env("customUid", rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET));
         }
+
+        if ($this->task === 'settings' && $this->action === 'edit-folder'){
+            $this->settings_edit_folder_bnum_action();
+            $this->add_hook('folder_form', [$this, 'folder_form']);
+        }
+
+        $this->add_hook('folder_form', [$this, 'folder_form']);
+        $this->add_hook('folder_create', [$this, 'folder_create']);
+    }
+
+    private function settings_edit_folder_bnum_action() {
+        $this->rc->output->add_handlers(array(
+            'bnumfolderperso'    => '_edit_folder_hack',
+        ));
+    }
+
+    private function _edit_folder_hack($attrib) {
+        $html = html::div(array('class' => 'bnumfolderperso'),
+            html::div(['id' => 'folder-edit-custom-color']),
+            html::div(['id' => 'folder-edit-custom-icon'])
+        );
+
+        return $html;
+    }
+
+    function folder_form($args) {
+        $args['form']['props']['fieldsets']['color'] = [
+            'name' => 'Couleur du dossier',
+            'content' => [
+                'color' => [
+                    'label' => 'Couleur du dossier',
+                    'value' => '<input type="color" title="Laissez pour avoir la couleur par défaut !" name="_color" id="folder-edit-color" value="">'
+                ]
+            ]
+        ];
+
+        return $args;
+    }
+
+    function folder_create($args) {
+        $color = rcube_utils::get_input_value('_color', rcube_utils::INPUT_POST);
+
+        if ($color === '#000000' || $color === '#000' || $color === '#0' || $color === '') $color = null;
+
+        $_POST['_color'] = $color;
+        $_POST['_folder'] = $args['record']['name'];
+        $_POST['_color_break'] = true;
+
+        $this->update_color_folder();
+
+        return $args;
     }
 
     function load_js_modules_actions() {
@@ -632,7 +707,7 @@ class mel_metapage extends bnum_plugin
     /**
      * Fonction js appelé au refresh de roundcube.
      */
-    function refresh()
+    public function refresh()
     {
         $this->rc->output->command('mel_metapage_fn.refresh');
     }
@@ -820,6 +895,39 @@ class mel_metapage extends bnum_plugin
                 'classsel'      => 'favorite folder-to active',
                 'label'	        => 'set-to-favorite',
                 'title'         => 'set-to-favorite',
+                'innerclass'    => 'inner',
+                'type'          => 'link-menuitem',
+            ), "mailboxoptions");
+
+            $this->add_button(array(
+                'command'       => 'update-color-folder',
+                'class'	        => 'color-folder disabled',
+                'classact'      => 'color-folder active',
+                'classsel'      => 'color-folder active',
+                'label'	        => 'mel_metapage.update-color-folder',
+                'title'         => 'mel_metapage.update-color-folder',
+                'innerclass'    => 'inner',
+                'type'          => 'link-menuitem',
+            ), "mailboxoptions");
+
+            $this->add_button(array(
+                'command'       => 'cancel-color-folder',
+                'class'	        => 'cancel-color-folder disabled',
+                'classact'      => 'cancel-color-folder active',
+                'classsel'      => 'cancel-color-folder active',
+                'label'	        => 'mel_metapage.cancel-color-folder',
+                'title'         => 'mel_metapage.cancel-color-folder',
+                'innerclass'    => 'inner',
+                'type'          => 'link-menuitem',
+            ), "mailboxoptions");
+
+            $this->add_button(array(
+                'command'       => 'update-icon-folder',
+                'class'	        => 'icon-folder disabled',
+                'classact'      => 'icon-folder active',
+                'classsel'      => 'icon-folder active',
+                'label'	        => 'mel_metapage.update-icon-folder',
+                'title'         => 'mel_metapage.update-icon-folder',
                 'innerclass'    => 'inner',
                 'type'          => 'link-menuitem',
             ), "mailboxoptions");
@@ -2867,6 +2975,7 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("bnum.init_action", $init_action);
         }
 
+        $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
         $this->rc->output->send('mel_metapage.empty');
     }
 
@@ -3233,26 +3342,7 @@ class mel_metapage extends bnum_plugin
                   }
                   $html = str_replace('%%' . $match . '%%', $select_hours->show(), $html);
                   break;
-        
-                // case ('default_addressbook'):
-                  
-                //   $books = $this->rc->get_address_sources(true, true);
-        
-                //   $field_id = 'rcmfd_default_addressbook';
-                //   $select   = new html_select([
-                //     'name'  => '_default_addressbook',
-                //     'id'    => $field_id,
-                //     'class' => 'custom-select'
-                //   ]);
-        
-                //   if (!empty($books)) {
-                //     foreach ($books as $book) {
-                //       $select->add(html_entity_decode($book['name'], ENT_COMPAT, 'UTF-8'), $book['id']);
-                //     }
-                //   }
-                //   $html = str_replace('%%' . $match . '%%', $select->show(), $html);
-        
-                //   break;
+    
                   
                 default:
                   break;
@@ -3371,6 +3461,8 @@ class mel_metapage extends bnum_plugin
         if ($state) $prefs[$folder] = ['selected' => true];
         else unset($prefs[$folder]);
 
+        if (isset($prefs[''])) unset($prefs['']);
+
         $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
         
         echo json_encode($prefs);
@@ -3395,6 +3487,88 @@ class mel_metapage extends bnum_plugin
 
     public function get_display_folder() {
         echo json_encode($this->rc->config->get('favorite_folders', []));
+        exit;
+    }
+
+    public function folder_update($args) {
+        $old = $args['record']['oldname'];
+        $new = $args['record']['name'];
+        $this->_update_folders_pref($old, $new);
+        $this->_update_folder_color_on_rename($old, $new);
+        return $args;
+    }
+
+    function _update_folders_pref($old, $new) {
+        $prefs = $this->rc->config->get('favorite_folders', []);
+
+        if(isset($prefs[$old])) {
+            $prefs[$new] = $prefs[$old];
+            unset($prefs[$old]);
+        }
+
+        $this->rc->user->save_prefs(['favorite_folders' => $prefs]);
+    }
+
+    function _update_folder_color_on_rename($old, $new) {
+        $prefs = $this->rc->config->get('folders_colors', []);
+
+        if(isset($prefs[$old])) {
+            $prefs[$new] = $prefs[$old];
+            unset($prefs[$old]);
+        }
+
+        $this->rc->user->save_prefs(['folders_colors' => $prefs]);
+    }
+
+    public function update_color_folder() {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $color = rcube_utils::get_input_value('_color', rcube_utils::INPUT_POST) ?? null;
+
+        if ('' === $color) $color = null;
+
+        $prefs = $this->rc->config->get('folders_colors', []);
+
+        if (isset($color)) $prefs[$folder] = $color;
+        else unset($prefs[$folder]);
+
+        $this->rc->user->save_prefs(['folders_colors' => $prefs]);
+        
+        if (rcube_utils::get_input_value('_color_break', rcube_utils::INPUT_POST) === null)
+        {
+            echo json_encode($prefs);
+            exit;
+        }
+
+    }
+
+    public function update_icon_folder() {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $icon = rcube_utils::get_input_value('_icon', rcube_utils::INPUT_POST) ?? null;
+
+        if (in_array($icon, ['', 'default'])) $icon = null;
+
+        $prefs = $this->rc->config->get('folders_icons', []);
+
+        if (isset($icon)) $prefs[$folder] = $icon;
+        else unset($prefs[$folder]);
+
+        $this->rc->user->save_prefs(['folders_icons' => $prefs]);
+        
+        echo json_encode($prefs);
+        exit;
+    }
+
+    public function get_folder_colors() {
+        $prefs = $this->rc->config->get('folders_colors', []);
+        
+        echo json_encode($prefs);
+        exit;
+    }
+
+    public function get_folder_icons() {
+        $prefs = $this->rc->config->get('folders_icons', []);
+        
+        echo json_encode($prefs);
         exit;
     }
 }

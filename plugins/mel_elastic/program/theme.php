@@ -428,6 +428,11 @@ class ThemeSaison {
 
         if ($this->end <= $this->start) {
             $this->end = $this->end->add(new DateInterval("P1Y"));
+
+            if (!$this->can_be_shown()) {
+                $this->end = $this->end->modify('-1 year');
+                $this->start = $this->start->modify('-1 year');
+            }
         }
     }
 

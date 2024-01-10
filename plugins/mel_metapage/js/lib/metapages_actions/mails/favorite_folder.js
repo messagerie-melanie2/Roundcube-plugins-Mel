@@ -400,28 +400,7 @@ export class MailFavoriteFolder extends MailModule {
                 this._update_unreads();
             }, 30*1000);
         }
-        // const rcmail_command = rcmail.command;
 
-        // rcmail.command = (...args) => {
-        //     rcmail_command.call(rcmail, ...args);
-
-        //     switch (args[0]) {
-        //         case 'mark-all-read':
-        //         case 'purge':
-        //         case 'update-unread':
-        //             this._update_unreads();
-        //             break;
-
-        //         case 'update-favorite':
-        //             this._update_favorites();
-        //             this._update_selected();
-        //             this._update_unreads();
-        //             break;
-            
-        //         default:
-        //             break;
-        //     }
-        // };
         this.main_async();
         this.setup_command();
     }
@@ -433,6 +412,8 @@ export class MailFavoriteFolder extends MailModule {
 
         if (!this.unreads && !!this.get_env('unread_counts')) this.unreads = this.get_env('unread_counts');
         this._setup_listeners();
+
+        this.load_finished = true;
     }
 
     _setup_listeners() {
@@ -458,6 +439,7 @@ export class MailFavoriteFolder extends MailModule {
             await this._update_favorites();
             this._update_unreads();
             this._update_selected();
+            this.rcmail().triggerEvent('favorite_folder_updated');
         });
         this._update_unreads();
         this._update_selected();
@@ -500,6 +482,8 @@ export class MailFavoriteFolder extends MailModule {
     }
 
     _get_folder_class(id) {
+        if (id === this.get_env('current_user').full) id = this.get_env('username');
+
         return this.rcmail().env.mailboxes?.[id]?.class ?? '';
     }
 
@@ -543,12 +527,12 @@ export class MailFavoriteFolder extends MailModule {
 
     async startup() {
         (await this.await_folder_list_content()).find('a.sidebar-menu').on('shown.bs.popover', (event) => {
-            this._set_link();
+            this._set_link(this.current_folder());
         });
     }
 
     async startup_context_menu() {
-        (await this.await_folder_list_content()).find('#mailboxlist ul[role="group"] a').on('contextmenu', (...args) => {
+        (await this.await_folder_list_content()).find('#mailboxlist a').on('contextmenu', (...args) => {
             const [event] = args;
             const folder = $(event.currentTarget).attr('rel');
 
@@ -556,11 +540,11 @@ export class MailFavoriteFolder extends MailModule {
         });
     }
 
-    _set_link(folder = null) {
-        const current_folder = folder || this.current_folder();
+    _set_link(folder) {
+        const current_folder = folder;
 
         if (!!current_folder) {
-            let $link = $('.popover .folder-to.favorite').removeClass('disabled').addClass('active').removeClass('unset-to');
+            let $link = $('.popover .folder-to.favorite').show().removeClass('disabled').addClass('active').removeClass('unset-to');
 
             const favorites_folders = this.get_env('favorites_folders');
             if (!!favorites_folders) {
@@ -574,8 +558,22 @@ export class MailFavoriteFolder extends MailModule {
             else $link.find('span.inner').text(this.gettext('set-to-favorite', 'mel_metapage')).data('favorite', false).data('rel', current_folder);
         }
         else {
-            $('.popover .folder-to.favorite').removeClass('active').addClass('disabled');
+            $('.popover .folder-to.favorite').hide();
         }
+    }
+
+    async _erase_errors() {
+        let $list_content = (await this.await_folder_list_content());
+        let favs = this.get_env('favorites_folders')
+
+        for (const key in favs) {
+            if (Object.hasOwnProperty.call(favs, key)) {
+                //const element = favs[key];
+                if ($list_content.find(`[rel="${key}"]`).length === 0) delete favs[key];
+            }
+        }
+
+        rcmail.env.favorites_folders = favs;
     }
 
     async _update_favorites() {
@@ -584,6 +582,8 @@ export class MailFavoriteFolder extends MailModule {
         }
 
         $('#favorite-folders').html('');
+
+        await this._erase_errors();
 
         const tree = this._generate_favorite_tree();
 
@@ -656,12 +656,27 @@ export class MailFavoriteFolder extends MailModule {
 
         let enum_tree = MelEnumerable.from(tree);
 
-        // if (level === 2) enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.(`${this.balp()}`) ?? true) ? 1 : 0).then((x) => x?.id);
-        // else enum_tree = enum_tree;//.orderBy((x) => (x.id?.includes?.('INBOX') ?? true) ? 0 : 1).then((x) => x?.id);
-
         for (let element of enum_tree) {
             var rel = `favourite/${element.get_full_path()}`;
             var have_child_len = element.hasChildren();
+            {
+                var is_not_in_favorite = !(this.get_env('favorites_folders')?.[element.full_id]);
+                var not_contain_username = !element.get_full_path().includes(this.get_env('username'));
+                var is_not_user = !element.id.includes(this.get_env('current_user').full);
+
+                if (is_not_in_favorite && element.full_id.includes(this.balp()) && element.full_id.includes('INBOX')) is_not_in_favorite = false;
+
+                if (is_not_in_favorite && not_contain_username && is_not_user) {
+                    is_not_in_favorite = null;
+                    not_contain_username = null;
+                    is_not_user = null;
+
+                    if (have_child_len) {
+                        html = this._generate_html_tree(element, html.placeholder(), level + 1);
+                    }
+                    continue;
+                }
+            }
             
             html = html.li({'aria-level':level, class:'mailbox', mailid:element.full_id, rel}).css('margin-bottom', (level === 2 ? '10px' : EMPTY_STRING)).addClass(this._get_folder_class(element.id))
                             .a({oncontextmenu:(e) => this._contextmenu(e), onclick:this._onclicktree.bind(this)})
@@ -674,7 +689,7 @@ export class MailFavoriteFolder extends MailModule {
 
                             if (!have_child_len) html = html.css('color', 'var(--invisible)');
 
-                            html = html.end();
+                            html = html.end('treetoggle');
 
             if (have_child_len) {
                 html = html.ul('role="group"');
@@ -715,6 +730,7 @@ export class MailFavoriteFolder extends MailModule {
     }
 
     _create_html_tree(tree) {
+        //debugger;
         let html = JsHtml.start
         .ul({class:'treelist listing folderlist'})
             .li({'aria-level':1, rel:"favourite", class:'mailbox boite virtual'})
@@ -776,6 +792,10 @@ export class MailFavoriteFolder extends MailModule {
 
             await this._update_favorites();
             this._update_unreads();
+            this._update_selected();
+
+            this.rcmail().triggerEvent('favorite_folder_updated');
+
             rcmail.set_busy(false, 'loading', busy);
         }, true);
     }

@@ -1,4 +1,4 @@
-import { BnumHtmlIcon, BnumHtmlSrOnly, HtmlCustomTag } from "./CustomAttributes/classes.js";
+import { BnumHtmlCenteredFlexContainer, BnumHtmlFlexContainer, BnumHtmlIcon, BnumHtmlSeparate, BnumHtmlSrOnly, HtmlCustomTag } from "./CustomAttributes/classes.js";
 import { JsHtml } from "./JsHtml.js";
 export { JsHtml };
 
@@ -21,6 +21,9 @@ JsHtml.create_custom_tag =  function (name, {
             tag,
             generate_callback,
             online:one_line,
+            after_callback: (html) => {
+                return html.attr('data-custom-tag', name);
+            }
         });
 
         return true;
@@ -34,7 +37,6 @@ JsHtml.create_custom_tag('icon', {
 });
 
 JsHtml.update('icon', function(self, old, icon, attribs = {}) {
-
     if (typeof icon !== 'string') {
         attribs = icon;
         icon = null;
@@ -56,3 +58,24 @@ JsHtml.create_custom_tag('screen-reader', {
 JsHtml.extend('sr', function (attribs = {}) {
     return this.screen_reader(attribs);
 });
+
+JsHtml.create_custom_tag('separate', {
+    already_existing_class:BnumHtmlSeparate,
+    one_line:true
+});
+
+JsHtml.create_custom_tag('flex-container', {
+    already_existing_class:BnumHtmlFlexContainer
+});
+
+JsHtml.update('flex_container', function(self, old, attribs = {}) {
+    let html =  old.call(self, attribs);
+
+    return html.css('display', 'flex');
+});
+
+JsHtml.create_custom_tag('centered-flex-container', {
+    already_existing_class:BnumHtmlCenteredFlexContainer
+});
+
+JsHtml.create_custom_tag('placeholder', {});

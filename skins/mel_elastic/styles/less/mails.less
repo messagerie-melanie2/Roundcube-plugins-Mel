@@ -1688,6 +1688,7 @@ button{
     }
 }
 
+.tb_noclass::before,
 #tb_label_popuplink::before
 {
     content: "\e866"!important;
@@ -2061,7 +2062,24 @@ body.task-mail.action-compose a.removelink
 }
 
 #rcm_folderlist .menu a.favorite::before{
+    &:extend(.menu-before-format);
     content: "\e838"!important;
+}
+
+#rcm_folderlist .menu a.favorite.unset-to::before{
+    content: "\e838"!important;
+    font-variation-settings: 'FILL' 1;
+}
+
+#folderlistbox,
+#files-compose-dialog
+{
+    ul.treelist.iconized li div.treetoggle {
+        top: 1px!important;
+    }
+}
+
+.menu-before-format {
     font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
     font-variation-settings: 'wght' 300, 'opsz' 48;
@@ -2070,7 +2088,31 @@ body.task-mail.action-compose a.removelink
     transform: scale(1);
 }
 
-#rcm_folderlist .menu a.favorite.unset-to::before{
-    content: "\e838"!important;
-    font-variation-settings: 'FILL' 1;
+#rcm_folderlist .menu a.color-folder::before{
+    &:extend(.menu-before-format);
+    content: "\e23a"!important;
+}
+
+#rcm_folderlist .menu a.cancel-color-folder::before{
+    &:extend(.menu-before-format);
+    content: "\e23b"!important;
+}
+
+#rcm_folderlist .menu a.icon-folder::before{
+    &:extend(.menu-before-format);
+    content: "\f88d"!important;
+}
+
+#selected-action-list{
+    border-left: solid thin var(--layout-list-header-text-color);
+    margin-left:10px;
+    padding-left:10px;
+    
+    ul {
+        li {
+            a{
+                color: var(--layout-list-header-text-color) !important;
+            }
+        }
+    }
 }

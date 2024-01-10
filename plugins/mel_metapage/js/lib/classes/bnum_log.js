@@ -1,7 +1,7 @@
 export class BnumLog {
     static _log(log_level ,log_func, prepend_text, function_name, ...args) {
         if (log_level >= BnumLog.log_level) {
-            log_func(`${prepend_text}[${function_name}]`, ...args);
+            log_func(`${moment().format('DD/MM/YYYY HH:mm:ss.SSS')} ${prepend_text}[${function_name}]`, ...args);
         }
     }
 
@@ -44,18 +44,23 @@ export class BnumLog {
     }
 }
 
+/**
+ * @type {{log:number, trace:number, debug:number, warning:number, error:number, fatal:number}}
+ */
+BnumLog.LogLevels = {
+    log:-1,
+    trace:0,
+    debug:1,
+    warning:2,
+    error:3,
+    fatal:4
+};
+
 Object.defineProperty(BnumLog, 'LogLevels', {
     enumerable: false,
     configurable: false,
     writable: false,
-    value:MelEnum.createEnum('LogLevels', {
-        log:-1,
-        trace:0,
-        debug:1,
-        warning:2,
-        error:3,
-        fatal:4
-    }, false)
+    value:MelEnum.createEnum('LogLevels', BnumLog.LogLevels, false)
 });
 
 BnumLog.log_level = BnumLog.LogLevels.error;

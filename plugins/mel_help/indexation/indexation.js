@@ -195,6 +195,8 @@ function indexPage(key, page) {
     for (const section of sections) {
         if (section.querySelector('h2')) {
 
+            const node = section.querySelector('h2');
+
             let titleSelector = 'h2';
 
             if (section.classList.contains("concept")) {
@@ -207,6 +209,8 @@ function indexPage(key, page) {
                 title = titlePage + " - " + title;
             }
 
+            var last_title = title;
+
             const section_descriptions = section.querySelectorAll('p.txt_p');
 
             const item = {
@@ -214,13 +218,51 @@ function indexPage(key, page) {
                 description: section_descriptions[0] ? section_descriptions[0].innerText : '',
                 keywords: getKeywords(title),
                 help_name: "En savoir plus...",
-                help_url: getUrl(window.pages[key], section),
+                help_url: getUrl(window.pages[key], section, 'h2'),
                 help_title: "Ouvrez l'aide pour en découvrir plus sur " + title
             };
 
             document.getElementById('message').innerHTML += 'Section ' + item.title + ' / Description ' + item.description.length + '<br>';
             window.indexation.push(item);
         }
+
+        // Ne pas traiter les listes de pas à pas
+        if (section.classList.contains("stepList") 
+                || section.classList.contains("infoblock")
+                || section.classList.contains("concept")) {
+            continue;
+        }
+
+        // Gestion des sous menus
+        if (section.querySelector(':scope > h3')) {
+
+            let titleSelector = ':scope > h3';
+
+            let title = section.querySelector(titleSelector).innerText.replace(regEx, '');
+
+            if (titlePage != title) {
+                if (last_title)
+                    title = last_title + " - " + title;
+                else
+                    title = titlePage + " - " + title;
+            }
+
+            const section_descriptions = section.querySelectorAll('p.txt_p');
+
+            const item = {
+                title: title,
+                description: section_descriptions[0] ? section_descriptions[0].innerText : '',
+                keywords: getKeywords(title),
+                help_name: "En savoir plus...",
+                help_url: getUrl(window.pages[key], section, titleSelector),
+                help_title: "Ouvrez l'aide pour en découvrir plus sur " + title
+            };
+
+            document.getElementById('message').innerHTML += 'Section ' + item.title + ' / Description ' + item.description.length + '<br>';
+            window.indexation.push(item);
+        }
+
+        delete last_title;
     }
 }
 
@@ -330,8 +372,9 @@ function getSynonyms(word) {
  * 
  * @param {*} page 
  * @param {*} section 
+ * @param {*} selector 
  */
-function getUrl(page, section) {
+function getUrl(page, section, selector) {
     let split_url = document.getElementById('url').value.split('/');
     split_url.shift();
     split_url.shift();
@@ -340,5 +383,5 @@ function getUrl(page, section) {
     const regExCo = new RegExp('co/', 'g');
     const regExHtml = new RegExp('.html', 'g');
 
-    return '/' + help_url + '/index.html' + page.replace(regExCo, '#').replace(regExHtml, '') + ':' + section.querySelector('h2').id
+    return '/' + help_url + '/index.html' + page.replace(regExCo, '#').replace(regExHtml, '') + ':' + section.querySelector(selector).id
 }

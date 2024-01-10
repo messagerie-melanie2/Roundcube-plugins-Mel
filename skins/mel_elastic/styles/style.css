@@ -262,9 +262,6 @@ body.task-tasks .menu.pagenav.pagenav-list .pagenav-text {
   content: "\ed1b" !important;
   font-family: var(--secondary-icon-font) !important;
 }
-.menu .responses {
-  display: none!important;
-}
 #toolbar-menu a.icon-mel-undo::before {
   content: "\e936" !important;
   font-family: var(--main-icon-font) !important;
@@ -1322,9 +1319,6 @@ body.task-settings .scroller > .listing li.selected a {
 body.task-settings .scroller > .listing li:hover {
   background-color: var(--secondary-bckg-color);
 }
-#settingstabresponses {
-  display: none;
-}
 /** SEPARATIONS ***/
 .row.separate,
 .btn.separate,
@@ -1596,6 +1590,11 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 }
 .mel-button.under-button.selected {
   color: var(--secondary-text-color);
+}
+.mel-button.selected-item {
+  background-color: var(--mel-button-active-background-color);
+  color: var(--mel-button-active-text-color);
+  pointer-events: none;
 }
 .btn-group-vertical .mel-button {
   border-radius: 5px;
@@ -4035,4 +4034,36 @@ html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.select
 .menu a:not(.disabled):focus {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
+}
+bnum-separate {
+  width: 100%;
+  height: 1px;
+  background-color: var(--main-border-color);
+  display: block;
+}
+.square-item {
+  border: solid thin var(--main-border-color);
+  border-radius: 5px;
+}
+.square-item.px25 {
+  width: 25px;
+  height: 25px;
+}
+.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel {
+  min-height: 160px;
+  width: 100%;
+  margin-right: 15px;
+  border-radius: 5px;
+}
+.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel:first-of-type {
+  margin-left: 15px;
+}
+.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel .btn-txt {
+  display: block;
+}
+.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel bnum-icon {
+  margin-right: 0px;
+  font-size: 60px;
+  margin-bottom: 20px;
+  display: block;
 }

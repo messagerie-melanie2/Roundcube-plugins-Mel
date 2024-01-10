@@ -611,10 +611,10 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
     if (uid !== undefined)
     {
-        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:uid, _page:_class});
-        window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:uid, _page:_class}) + '&_force_bnum=1';
+        window.history.replaceState({}, document.title, url.replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
         if (window !== top)
-            top.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+            top.history.replaceState({}, document.title, url.replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
     }
 }
 

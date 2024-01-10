@@ -1,4 +1,31 @@
 var module_helper_mel = module_helper_mel || (() => {
+
+    class Look {
+        static async _LoadModule() {
+            const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+
+            if (!!loadJsModule) {
+                const {Look} = await loadJsModule('mel_metapage', 'metrics.js', '/js/lib/classes/');
+
+                return Look;
+            }
+
+            throw new Error('loadJsModule not found');
+        } 
+
+        static async SendTask(task) {
+            const Look = await this._LoadModule();
+
+            return await Look.SendTask(task);
+        }
+
+        static async Send(name, value) {
+            const Look = await this._LoadModule();
+
+            return await Look.Send(name, value);
+        }
+    }
+
     async function load_mel_object() {
         const {MelObject} = await loadJsModule('mel_metapage', 'mel_object.js');
 
@@ -50,6 +77,7 @@ var module_helper_mel = module_helper_mel || (() => {
         load_mel_object,
         load_calendar_events,
         BnumConnector,
-        JsHtml
+        JsHtml,
+        Look
     }
 })();

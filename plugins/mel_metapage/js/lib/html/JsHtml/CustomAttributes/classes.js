@@ -1,5 +1,5 @@
 import { MaterialIcon } from "../../../icons.js";
-export {HtmlCustomTag, BnumHtmlIcon, BnumHtmlSrOnly};
+export {HtmlCustomTag, BnumHtmlIcon, BnumHtmlSrOnly, BnumHtmlSeparate, BnumHtmlFlexContainer, BnumHtmlCenteredFlexContainer};
 
 class HtmlCustomTag extends HTMLElement {
     constructor() {
@@ -10,11 +10,16 @@ class HtmlCustomTag extends HTMLElement {
 class BnumHtmlIcon extends HtmlCustomTag {
     constructor() {
         super();
-        if (!this.classList.contains(MaterialIcon.html_class)) this.classList.add(MaterialIcon.html_class);
+
+        if (!this.getAttribute('class')) this.setAttribute('class', BnumHtmlIcon.HTML_CLASS);
+
+        if (!this.classList.contains(BnumHtmlIcon.HTML_CLASS)) this.classList.add(BnumHtmlIcon.HTML_CLASS);
 
         if (!!this.dataset['icon']) this.appendChild(document.createTextNode(this.dataset['icon']));
     }
 }
+
+BnumHtmlIcon.HTML_CLASS = MaterialIcon.html_class;
 
 class BnumHtmlSrOnly extends HtmlCustomTag {
     constructor() {
@@ -23,5 +28,27 @@ class BnumHtmlSrOnly extends HtmlCustomTag {
         const sr_only = 'sr-only';
 
         if (!this.classList.contains(sr_only)) this.classList.add(sr_only);
+    }
+}
+
+class BnumHtmlSeparate extends HtmlCustomTag {
+    constructor() {
+        super();
+    }
+}
+
+class BnumHtmlFlexContainer extends HtmlCustomTag {
+    constructor() {
+        super();
+
+        this.style.display = 'flex';
+    }
+}
+
+class BnumHtmlCenteredFlexContainer extends BnumHtmlFlexContainer {
+    constructor() {
+        super();
+
+        this.style.justifyContent = 'center';
     }
 }

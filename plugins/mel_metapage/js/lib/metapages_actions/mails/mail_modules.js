@@ -21,6 +21,10 @@ export class MailModule extends MetapageModule {
         return 'Boite partag&AOk-e'
     }
 
+    has_mail_selected() {
+        return this.rcmail().message_list.selection.length > 0;
+    }
+
     static Start() {
         return new this();
     }

@@ -211,7 +211,8 @@ if (rcmail && window.mel_metapage)
                 if (!base_url.includes('?')) base_url += `?task=${rcmail.env['bnum.init_task']}`;
 
                 const urls = mel_metapage.Functions.get_from_url(base_url);
-                mel_metapage.Functions.change_frame(top.mm_st_ClassContract(rcmail.env['bnum.init_task']), true, true, urls);
+                const task = rcmail.env['bnum.init_task'] === 'chat' ? 'rocket' : top.mm_st_ClassContract(rcmail.env['bnum.init_task']);
+                mel_metapage.Functions.change_frame(task, true, true, urls);
             } catch (error) {
                 mel_metapage.Functions.change_frame('bureau', true, true);
             }
@@ -604,6 +605,10 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('switched_color_theme', (color_mode) => {
         on_switched_color_mode(color_mode);
         sendMessageToAriane({'isDarkTheme': color_mode === 'dark'});
+        
+        if (rcmail.env.task === 'stockage') {
+            window.document.getElementById('mel_nextcloud_frame').contentWindow.postMessage(`switch-theme-${color_mode}`);
+        }
     });
 
     function on_switched_color_mode(color_mode)
@@ -2052,7 +2057,7 @@ $(document).ready(() => {
                                 }
                             }
                             
-                            if (!url.includes('/?_task=')) 
+                            if (!url.includes('/?_task=') && !/^data:/i.test(url)) 
                             {
                               //On ouvre une modal pour prévenir d'un lien externe
                               let domain = new URL(url).hostname;

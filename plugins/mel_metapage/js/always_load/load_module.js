@@ -1,5 +1,5 @@
 (() => {
-    const VERSION = 'X.X.X.ROTOMECA';
+    const VERSION = 'X.X.X';
     const BASE_PATH = '/js/lib/';
     const UNLOAD_TIME_MS = 60 * 5 * 1000;
 
@@ -127,6 +127,12 @@
         scriptVersion: {
             get: function() {
                 return VERSION;
+            },
+            configurable: false
+        },
+        jsModulesBasePath: {
+            get: function() {
+                return BASE_PATH;
             },
             configurable: false
         }

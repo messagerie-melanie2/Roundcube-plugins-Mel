@@ -3,6 +3,7 @@ import { BnumLog } from "../../classes/bnum_log.js";
 import { ServiceWorkerException } from "../../exceptions/metapages_actions_exceptions.js";
 import { module_bnum } from "./module_bnum.js";
 
+const ENABLE = false;
 export class ProgressiveWebApp extends module_bnum{
     constructor() {
         super();
@@ -19,8 +20,10 @@ export class ProgressiveWebApp extends module_bnum{
     exec() {
         super.exec();
 
-        this.registerServiceWorker();
-        window.addEventListener("beforeinstallprompt", this.beforeInstallPromptEventHandler.bind(this), this.beforeInstallPromptErrorHandler.bind(this));
+        if (ENABLE) {
+            this.registerServiceWorker();
+            window.addEventListener("beforeinstallprompt", this.beforeInstallPromptEventHandler.bind(this), this.beforeInstallPromptErrorHandler.bind(this));
+        }
 
         return this;
     }
@@ -28,7 +31,7 @@ export class ProgressiveWebApp extends module_bnum{
     registerServiceWorker () {
         // enregistre le script sw avec les navigateurs qui le gèrent
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js', {scope: '/'}).then((registration) => {
+            navigator.serviceWorker.register(`/sw.js`, {scope: '/'}).then((registration) => {
                 BnumLog.info('registerServiceWorker', 'Service Worker enregistré correctement, scope : ', registration.scope);
     
             }).catch(error => {

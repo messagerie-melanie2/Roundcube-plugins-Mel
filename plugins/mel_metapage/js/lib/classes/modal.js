@@ -90,10 +90,10 @@ export class RcmailDialogButton extends NotifierObject{
         return {
             text: this.text,
             class: this.classes,
-            click: this.click,
-            hover: this.hover,
-            mouseenter: this.mouseenter,
-            mouseleave: this.mouseleave,
+            click: this.click.call.bind(this.click),
+            hover: this.hover.call.bind(this.hover),
+            mouseenter: this.mouseenter.call.bind(this.mouseenter),
+            mouseleave: this.mouseleave.call.bind(this.mouseleave),
         };
     }
 }
@@ -168,20 +168,21 @@ export class RcmailDialog extends MelObject {
      * @param {string} param1.title Titre de la dialog
      * @param {RcmailDialogButton[]} param1.buttons Boutons de la dialog
      */
-    constructor(contents, {title = '', buttons = []}) {
-        super(contents, title, buttons);
+    constructor(contents, {title = '', buttons = [], options = []}) {
+        super(contents, title, buttons, options);
     }
 
     _init() {
         this.contents = MelHtml.start;
         this.title = '';
         this.buttons = [];
+        this.options = [];
         this._$dialog = $();
 
         return this;
     }
 
-    _setup(contents, title, buttons) {
+    _setup(contents, title, buttons, options) {
         Object.defineProperties(this, {
             contents: {
                 get() {
@@ -197,6 +198,11 @@ export class RcmailDialog extends MelObject {
                 get() {
                     return buttons;
                 }
+            },
+            options: {
+                get() {
+                    return options;
+                }
             }
         });
 
@@ -206,8 +212,8 @@ export class RcmailDialog extends MelObject {
     main(...args) {
         {
             super.main(...args);
-            const [contents, title, buttons] = args;
-            this._init()._setup(contents, title, buttons);
+            const [contents, title, buttons, options] = args;
+            this._init()._setup(contents, title, buttons, options);
         }
 
         let $contents = !!this.contents.generate ? this.contents.generate() : this.contents;
@@ -235,7 +241,9 @@ export class RcmailDialog extends MelObject {
      * @returns Chaînage
      */
     show() {
-        this._$dialog.dialog('show');
+        let $contents = !!this.contents.generate ? this.contents.generate() : this.contents;
+
+        this._$dialog = this.rcmail().show_popup_dialog($contents[0], this.title, this.buttons.map(x => x.generate()), this.options);
         return this;
     }
 

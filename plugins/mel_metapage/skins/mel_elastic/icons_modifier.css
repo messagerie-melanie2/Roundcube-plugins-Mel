@@ -8,7 +8,7 @@
 .folderlist li.bnum-updated-saved_search > a::before,
 .folderlist li.bnum-updated-deployed_code > a::before,
 .folderlist li.bnum-updated-person > a::before,
-.folderlist li.bnum-updated-group > a::before,
+.folderlist li.bnum-updated-cloud > a::before,
 .folderlist li.bnum-updated-groups > a::before,
 .folderlist li.bnum-updated-public > a::before,
 .folderlist li.bnum-updated-thumb_down > a::before,
@@ -54,8 +54,8 @@
 .folderlist li.bnum-updated-person > a::before {
   content: "\e7fd" !important;
 }
-.folderlist li.bnum-updated-group > a::before {
-  content: "\e7ef" !important;
+.folderlist li.bnum-updated-cloud > a::before {
+  content: "\e2bd" !important;
 }
 .folderlist li.bnum-updated-groups > a::before {
   content: "\f233" !important;
@@ -104,4 +104,7 @@
 }
 .folderlist li.bnum-updated-markunread_mailbox > a::before {
   content: "\e89b" !important;
+}
+.bnum-initial-button::before {
+  color: var(--mel-button-text-color);
 }

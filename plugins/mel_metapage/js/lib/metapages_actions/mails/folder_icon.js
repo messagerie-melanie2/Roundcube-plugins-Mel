@@ -27,7 +27,7 @@ export class FolderIcon extends AFolderModifier {
 
             popup.on_create_default_items.push(() => {
                 return MelHtml.start.li({class:default_classes})
-                    .a({class:`${!!icon ? '' : 'selected-item'} mel-button no-button-margin no-margin-button`})
+                    .a({class:`${!!icon ? '' : 'selected-item'} mel-button no-button-margin no-margin-button bnum-initial-button`})
                     .css({'border-radius':'5px', 'margin-right':'5px', 'margin-bottom':'5px', 'line-height':'initial', 'padding':'5px 10px'})
                     .attr('onmouseenter', this._default_button_on_hover.bind(this, selector))
                     .attr('onmouseleave', this._default_button_on_leave.bind(this, selector))
@@ -226,5 +226,3 @@ export class FolderIcon extends AFolderModifier {
     }
 
 }
-
-//FolderIcon.ICONS = ['home', 'settings', 'favorite', 'bolt', 'key', '123', 'saved_search', 'deployed_code', 'person', 'group', 'groups', 'public', 'thumb_down', 'cookie', 'flood', 'calendar_month', 'lock', 'bookmark', 'priority_high', 'label', 'mail', 'alternate_email', 'package', 'local_post_office', 'attach_email', 'markunread_mailbox'];

@@ -1,6 +1,6 @@
 //compress:false
-@icons: home, settings, favorite, bolt, key, 123, saved_search, deployed_code, person, group, groups, public, thumb_down, cookie, flood, calendar_month, lock, bookmark, priority_high, label, mail, alternate_email, package, local_post_office, attach_email, markunread_mailbox;
-@contents: e88a, e8b8, e87d, ea0b, e73c, eb8d, ea11, f720, e7fd, e7ef, f233, e80b, e8db, eaac, ebe6, ebcc, e897, e866, e645, e892, e158, e0e6, e48f, e554, ea5e, e89b;
+@icons:    home, settings, favorite, bolt, key,  123,  saved_search, deployed_code, person, cloud, groups, public, thumb_down, cookie, flood, calendar_month, lock, bookmark, priority_high, label, mail, alternate_email, package, local_post_office, attach_email, markunread_mailbox;
+@contents: e88a, e8b8,     e87d,     ea0b, e73c, eb8d, ea11,         f720,          e7fd,   e2bd,  f233,   e80b,   e8db,       eaac,   ebe6,  ebcc,           e897, e866,     e645,          e892,  e158, e0e6,            e48f,    e554,              ea5e,         e89b;
 
 .material-symbol-font-family{
     font-family: 'Material Symbols Outlined';
@@ -23,6 +23,14 @@ each(@icons, {
             }
         }
     }
-
-
 });
+
+.bnum-initial-button {
+
+    &::before
+    {
+        color:var(--mel-button-text-color);
+    }
+            
+    
+}

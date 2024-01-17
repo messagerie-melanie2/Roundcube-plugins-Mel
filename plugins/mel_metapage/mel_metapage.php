@@ -1163,12 +1163,13 @@ class mel_metapage extends bnum_plugin
         $added_users = [];
         foreach ($users as $key => $value) {
             $tmp = driver_mel::gi()->getUser(null, true, false, null, $value);
-            if ($tmp->uid === null)
+
+            if ($tmp->uid === null && !$tmp->is_list)
                 $unexisting_users[] = $value;
             else{
                 $added_users[] = [
                     "name" => $tmp->name,
-                    "uid" => $tmp->uid,
+                    "uid" => ($tmp->is_list ? $value : $tmp->uid),
                     "email" => $value
                 ];
             }

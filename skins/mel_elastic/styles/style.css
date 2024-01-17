@@ -1565,6 +1565,18 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   top: 0;
   right: 5px;
 }
+.mel-button.without-text {
+  border-radius: 100%;
+  line-height: 0;
+}
+.mel-button.without-text.px45 {
+  width: 35px;
+  height: 35px;
+}
+.mel-button.without-text span {
+  font-size: 20px;
+  margin-left: -3px;
+}
 .mel-button:hover,
 .mel-button.under-button.selected:hover {
   background-color: var(--tierciary-bckg-color);

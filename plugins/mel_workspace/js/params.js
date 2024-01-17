@@ -249,6 +249,26 @@
             });
         }
 
+        async sync_list_member(list) {
+            const busy = rcmail.set_busy(true, 'loading');
+            let refresh_table = false;
+            await this.ajax(this.url("sync_list_member"), {
+                _uid:this.uid,
+                _list:list
+            },
+            (data) => {
+                if (data === 'denied') rcmail.display_message('Vous n\'avez pas les droits pour faire ça !', 'error');
+                else refresh_table = true;
+            });
+
+            if (refresh_table) {
+                await this.update_user_table(() => {});
+                rcmail.display_message('Liste synchronisée avec succès !', 'confirmation');
+            }
+
+            rcmail.set_busy(false, 'loading', busy);
+        }
+
         update_user_table(func = () => this.busy(false))
         {
             return this.ajax(this.url("PARAMS_update_user_table_rights"), {
@@ -475,6 +495,34 @@
                 }).always(() => {
                     this.busy(false);
                 });
+        }
+
+        async delete_list(list) {
+            const confirm_text = 'Êtes-vous sûr de vouloir supprimer cette liste ?\r\nCela supprimera aussi les membres associés.';
+            if (confirm(confirm_text))
+            {
+                const busy = rcmail.set_busy(true, 'loading');
+
+                let refresh_table = false;
+                await this.ajax(this.url("delete_list"), {
+                    _uid:this.uid,
+                    _list:list
+                },
+                (datas) => {
+                    if (datas === "denied")
+                    {
+                        rcmail.display_message("Vous devez être administrateur pour pouvoir supprimer la liste.", "error");
+                    }
+                    else refresh_table = true;
+                });
+
+                if (refresh_table) {
+                    await this.update_user_table(() => {});
+                    rcmail.display_message('Liste supprimée avec succès !', 'confirmation');
+                }
+
+                rcmail.set_busy(false, 'loading', busy);
+            }
         }
 
         delete_user(user)
@@ -1232,6 +1280,8 @@
             rcmail.register_command('workspace.survey.create', () => {rcmail.env.WSP_Param.create_survey()}, true);
             rcmail.register_command('workspace.survey.edit', (survey) => {rcmail.env.WSP_Param.create_survey(survey)}, true);
             rcmail.register_command('workspace.survey.delete', (sid) => {rcmail.env.WSP_Param.delete_survey(sid)}, true);
+            rcmail.register_command('workspace.sync_list', rcmail.env.WSP_Param.sync_list_member.bind(rcmail.env.WSP_Param), true); 
+            rcmail.register_command('workspace.remove_list', rcmail.env.WSP_Param.delete_list.bind(rcmail.env.WSP_Param), true); 
             rcmail.register_command('workspace.update_title', () => 
             {
                 if (!confirm(rcmail.gettext('change_title_confirmation', 'mel_workspace'))) return;

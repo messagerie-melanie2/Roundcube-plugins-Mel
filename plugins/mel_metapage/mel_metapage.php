@@ -1009,7 +1009,7 @@ class mel_metapage extends bnum_plugin
         $pos = strpos($content,'<div id="eventedit"');
         if ($pos !== false)
         {
-            include_once "../calendar/calendar_ui.php";
+            require_once(__DIR__ . "/../calendar/lib/calendar_ui.php");
             $size = strlen($content);
             $textToReplace = "";
             $final_start = false;
@@ -1039,12 +1039,20 @@ class mel_metapage extends bnum_plugin
                 $ui->init_templates();
                 $w = function ()
                 {
-                    $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-                    $wsp->load_workspaces();
-                    $workpaces = mel_helper::Enumerable($wsp->workspaces)->orderBy(function ($k, $v) { return $v->title; });
+                    // Metapage sans workspace
+                    if (class_exists("mel_workspace"))
+                    {
+                        $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                        $wsp->load_workspaces();
+                        $workspaces = mel_helper::Enumerable($wsp->workspaces)->orderBy(function ($k, $v) { return $v->title; });
+                    }
+                    else {
+                        $workspaces = [];
+                    }
+                    
                     $html = '<select id=wsp-event-all-cal-mm class="form-control input-mel">';
                     $html .= "<option value=\"#none\">".$this->gettext('none')."</option>";
-                    foreach ($workpaces as $key => $value) {
+                    foreach ($workspaces as $key => $value) {
                         $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
                     }
                     $html .= "</select>";
@@ -1331,10 +1339,17 @@ class mel_metapage extends bnum_plugin
 
     public function get_wsp_unread_mails_count()
     {
-        $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-        $wsp->load_workspaces();
-        $workpaces = $wsp->workspaces;
-
+        // Metapage sans workspace
+        if (class_exists("mel_workspace"))
+        {
+            $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+            $wsp->load_workspaces();
+            $workspaces = $wsp->workspaces;
+        }
+        else {
+            $workspaces = [];
+        }
+            
         $datas = [];
 
         $msgs = $this->rc->get_storage()->list_messages();
@@ -1347,7 +1362,7 @@ class mel_metapage extends bnum_plugin
         $first = true;
         $annuaire_exists = false;
         //$annuaires = [];
-        foreach ($workpaces as $key => $value) {
+        foreach ($workspaces as $value) {
 
             try {
                 $mail = mel_workspace::get_wsp_mail($value->uid);
@@ -1615,12 +1630,20 @@ class mel_metapage extends bnum_plugin
     {
         $w = function ()
         {
-            $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-            $wsp->load_workspaces();
-            $workpaces = $wsp->workspaces;
+            // Metapage sans workspace
+            if (class_exists("mel_workspace"))
+            {
+                $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                $wsp->load_workspaces();
+                $workspaces = $wsp->workspaces;
+            }
+            else {
+                $workspaces = [];
+            }
+            
             $html = '<select class="form-control input-mel">';
             $html .= "<option value=none>".$this->gettext('none')."</option>";
-            foreach ($workpaces as $key => $value) {
+            foreach ($workspaces as $key => $value) {
                 $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
             }
             $html .= "</select>";

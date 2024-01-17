@@ -481,17 +481,6 @@ font-size: 2vw;
     font-size: smaller;
 }
 
-
-.mel-button > span.plus{
-    margin-left: 40px;
-}
-
-.mel-button > span.plus::before {
-	/* font-size: 15px; */
-	display: inline-block;
-	vertical-align: middle;
-}
-
 .invite-button.create{
     background-color: #363A5B;
     color: white;

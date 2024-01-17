@@ -242,21 +242,20 @@ class Webconf extends Program
 
     public function get_all_workspaces()
     {
-        $replace = "¤¤¤¤¤¤¤¤";
-
-        $plugin = $this->get_plugin("mel_workspace");
-        $plugin->load_workspaces();
-        $workspaces = $plugin->workspaces;
+        // Metapage sans workspace
+        if (class_exists("mel_workspace"))
+        {
+            $plugin = $this->get_plugin("mel_workspace");
+            $plugin->load_workspaces();
+            $workspaces = $plugin->workspaces;
+        }
+        else {
+            $workspaces = [];
+        }
+        
         $html = '<select class="wsp_select input-mel">';
 
-        foreach ($workspaces as $key => $workspace) {
-            // $wsp = [
-            //     "objects" => json_decode($workspace->objects), 
-            //     "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $workspace->uid, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
-            //         ,"title" => $workspace->title,
-            //         "color" => json_decode($workspace->settings)->color
-            //         ]
-            //     ];
+        foreach ($workspaces as $workspace) {
             $html .= '<option '.($this->get_input("_wsp") !== null && $this->get_input("_wsp") === $workspace->uid ? "selected" : "" ).' value="'.$workspace->uid.'">'.$workspace->title.'</option>';
         }
         $html .= "</select>";

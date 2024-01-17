@@ -113,7 +113,7 @@ class calendar extends rcube_plugin
         // load localizations
         $this->add_texts('localization/', $this->rc->task == 'calendar' && (!$this->rc->action || $this->rc->action == 'print'));
 
-        require($this->home . '/lib/calendar_ui.php');
+        require_once($this->home . '/lib/calendar_ui.php');
         $this->ui = new calendar_ui($this);
     }
 

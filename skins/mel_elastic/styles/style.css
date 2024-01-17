@@ -1482,6 +1482,15 @@ body.task-mail .floating-action-buttons {
   margin-top: 15px;
   cursor: pointer;
 }
+.mel-button > span.plus{
+  margin-left: 40px;
+}
+
+.mel-button > span.plus::before {
+/* font-size: 15px; */
+display: inline-block;
+vertical-align: middle;
+}
 .mel-button.mel-button-block {
   display: block;
 }

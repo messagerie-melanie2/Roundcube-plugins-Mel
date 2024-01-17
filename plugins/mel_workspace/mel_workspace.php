@@ -1910,9 +1910,6 @@ class mel_workspace extends bnum_plugin
             
             $res = $workspace->save();
 
-            //DEBUG
-            $test = $workspace->load();
-
             $retour["workspace_uid"] = $workspace->uid;
 
             $retour["uncreated_services"] = $datas["services"];

@@ -397,12 +397,12 @@ $labels['open_external_link'] = 'Visiter le site';
 
 $labels['informations'] = 'Informations';
 $labels['double_authentication'] = 'Authentification à deux facteurs';
-$labels['double_authentication_notification'] = 'Configurez la double authentification pour sécuriser votre accès au Bnum';
+$labels['double_authentication_notification'] = 'Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum';
 $labels['introduction_text'] = 'À partir de %%date%%, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum.';
 $labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas où vous perdez votre téléphone par exemple, veuillez entrer une adresse e-mail de récupération :';
 $labels['verification_email_text'] = 'Rentrer le code de validation reçu par mail';
 $labels['verification_application_text'] = 'Rentrer le code de validation affiché sur l’application';
-$labels['application_text'] = 'Télécharger une application de double authentification comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a> pour scanner ce QR Code. <a href="#">En savoir plus</a>';
+$labels['application_text'] = 'Télécharger une application de l\'authentification à deux facteurs comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a> pour scanner ce QR Code. <a href="#">En savoir plus</a>';
 $labels['add_key'] = 'Ou ajouter cette clé dans votre application :';
 $labels['show_me'] = 'Configurer maintenant';
 $labels['later'] = 'Plus tard';
@@ -414,7 +414,7 @@ $labels['code_expired'] = 'Le code à expiré';
 $labels['wrong_code'] = 'Le code est erroné';
 $labels['error'] = 'Erreur';
 $labels['doubleauth-error'] = 'Erreur lors de la configuration de l\'authentification double facteur';
-$labels['doubleauth_not_activated'] = 'La double authentification n\'a pas été activée';
+$labels['doubleauth_not_activated'] = 'L\'authentification à deux facteurs n\'a pas été activée';
 $labels['enter_code'] = 'Merci de rentrer un code valide';
 $labels['send_email_error'] = 'Erreur serveur lors de l\'envoi du mail';
 

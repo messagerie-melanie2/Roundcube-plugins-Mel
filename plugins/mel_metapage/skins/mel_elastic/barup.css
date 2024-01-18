@@ -647,6 +647,11 @@ html.dark-mode .barup-icon-button:focus .barup-icon-button.btn-secondary:active,
   box-shadow: none !important;
 }
 
+#barup-right-buttons #button-chat {
+  padding-top: 20px;
+  color: #FDCF42 !important;
+}
+
 .barup-icon-button,
 .barup-icon-button:hover {
   color: #2c3054;
@@ -725,6 +730,7 @@ html.dark-mode #button-search.btn.btn-secondary {
 #barup-right-buttons .user,
 #barup-right-buttons #button-search,
 #barup-right-buttons #notification-dropdown,
+#barup-right-buttons #button-chat,
 #barup-right-buttons #button-help,
 #barup-right-buttons #button-settings,
 #barup-right-buttons #barup-search-col {

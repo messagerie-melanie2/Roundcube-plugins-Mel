@@ -50,7 +50,16 @@
         </div>
       
       <span class="hide-button-search">  
-        <button id="button-help" class="transparent-icon-button barup-icons-button ml-3" onclick="m_mp_Help()"
+
+        <button id="button-chat" class="transparent-icon-button barup-icons-button ml-3" onclick="mel_metapage.PopUp.open_ariane()"
+          title="<roundcube:label name='mel_metapage.ariane_help' />">
+          <span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
+          <span class="material-symbols-outlined">
+            forum
+          </span>
+        </button>
+
+        <button id="button-help" class="transparent-icon-button barup-icons-button" onclick="m_mp_Help()"
           title="<roundcube:label name='mel_metapage.help_help' />">
           <span class="material-symbols-outlined">
             help
@@ -93,9 +102,7 @@
 <div id="barup-search-background" class="hidden">
 </div>
 
-<button title="<roundcube:label name='mel_metapage.ariane_help' />" class="fill-on-hover tiny-rocket-chat hide-touch show-normal" style="z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
-    <span class="tiny-rocket-chat-icon material-symbols-outlined">forum</span><span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
-</button>
+
 
 <li style="display: none;" id=menu-small-li>
 <a aria-expanded="false" style="display: block!important;"  aria-haspopup="true" id="menu-small" data-popup="groupoptions-smallmenu" class="menu-small stopAppMenu -normal-touch icofont-navigation-menu" label="actions" role=button href="#"><span class="button-inner inner"><roundcube:label name='mel_metapage.other_actions' /></span></a>

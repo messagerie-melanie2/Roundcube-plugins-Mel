@@ -1,38 +1,20 @@
 <div id="link-block-<id/>" title="<title/>" class="link-block <hidden\>" <datas/>>
-<div id="context-menu-<id/>" class="link-context-menu">
-  <button class="link-context-menu-button" title="Copier le lien dans le presse-papier">
-    <span class="material-symbols-outlined"onclick="PaperClipCopy($('#link-id-<id/>'))">content_copy</span>
-  </button>
-  <button class="link-context-menu-button" title="Modifier le lien">
-    <span class="material-symbols-outlined" onclick="ModifyLink(MelLink.from(`<id/>`))">edit</span>
-  </button>
-  <button class="link-context-menu-button" title="Supprimer le lien">
-    <span class="material-symbols-outlined" onclick="DeleteLink(MelLink.from(`<id/>`))">delete</span>
-  </button>
+  <div id="context-menu-<id/>" class="link-context-menu">
+    <button class="link-context-menu-button copy-link" title="Copier le lien dans le presse-papier" data-url='<link/>'>
+      <span class="material-symbols-outlined">content_copy</span>
+    </button>
+    <button class="link-context-menu-button modify-link" title="Modifier le lien" data-id="<id/>" data-title="<title/>" data-url="<link/>">
+      <span class="material-symbols-outlined">edit</span>
+    </button>
+    <button class="link-context-menu-button delete-link" title="Supprimer le lien" data-id="<id/>">
+      <span class="material-symbols-outlined">delete</span>
+    </button>
+  </div>
+  <a id="link-id-<id/>" class='link-icon-container' href="<link/>" target="_blank">
+    <img id='link-block-icon-image-<id/>' class='link-icon-image' src="<image_link/>" onerror="imgError(this.id, 'no-image-<id/>', '<title/>')">
+    <span id="no-image-<id/>" class="link-icon-no-image"></span>
+  </a>
+  <span class="link-icon-title">
+    <title/>
+  </span>
 </div>
-<a id="link-id-<id/>" class='link-icon-container' href="<link/>" target="_blank">
-  <img id='link-block-icon-image-<id/>' class='link-icon-image' src="<image_link/>" onerror="imgError(this.id, 'no-image-<id/>', '<title/>')">
-  <span id="no-image-<id/>" class="link-icon-no-image"></span>
-</a>
-<span class="link-icon-title">
-  <title/>
-</span>
-</div>
-<!-- <div id="link-block-<id/>" style="margin-bottom: 20px;position: relative;" class="link-block square_div <hidden\>" <datas/>>
-    <div style="<color/>" class="contents square-contents">
-        <h5 class="link-ellipse three-lines" title="<title/>" onclick="$('#link-id-<id/>')[0].click()" style="cursor: pointer;"><title/></h5>
-        <p><span style="white-space: nowrap;max-width:90%;" class="link-ellipse">via <a target="_blank" class="mel-focus" title="Ouvrir dans une nouvelle fenêtre" id="link-id-<id/>" href="<link/>"><reduced_link/></a></span> <span style="vertical-align:super" class="icon-mel-external"></span></p>
-        <p style="position: absolute;
-        bottom: 40px;
-        font-size: small;
-        left: 30px;"><create_date/></p>
-
-        <a href="#" role="button" onclick="TakLink('<id/>')"  <personal/> title="<tak-text/>" class="pin widget-no-events tak <tak/> <hidden\> roundbadge icon-mel-pin focus-bordered mel-focus "></a>
-
-        <div class="tools not-widget" >
-            <a <takHidden/> href="#" role="button" onclick="HideOrShowLink('<id/>')" class="<hidden/>eye mel-focus icon-mel-eye roundbadge large no-weight" title="<hiddenTitle/>"></a>
-            <a href="#" role="button" onclick="PaperClipCopy($('#link-id-<id/>'))" class="copy mel-focus icon-mel-copy roundbadge large no-weight" title="Copier le lien dans le presse-papier"></a>
-            <a <personal/> href="#" role="button" onclick="EditLink('<id/>')" class="edit <hidden\> mel-focus icon-mel-pencil icon-mel-pencil roundbadge large no-weight" title="Modifier le lien" ></a>
-        </div>
-    </div>
-</div> -->

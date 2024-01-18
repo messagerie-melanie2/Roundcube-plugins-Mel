@@ -79,6 +79,8 @@ class mel_link
     public $color;
     public $textColor;
 
+    protected static $template = null;
+
     protected function __construct() {
         $this->subItem = false;
         $this->subItemData = null;
@@ -107,9 +109,10 @@ class mel_link
       return $domain;
     }
 
-    public function html($rc, $exit = false, $write = false)
+    public function html()
     {
-        $html = $rc->output->parse("mel_useful_link.template", $exit, $write);
+        $html = self::Template();
+        // $html = $rc->output->parse("mel_useful_link.template", $exit, $write);
         $html = str_replace("<id/>", $this->configKey, $html);
         try {
             if (is_string($this->link)) $html = str_replace("<link/>", $this->link, $html);
@@ -314,11 +317,21 @@ class mel_link
         else 
             return $txt;
     }
+
+    protected static function Template() {
+      if (!isset(self::$template)) {
+        self::$template = rcmail::get_instance()->output->parse("mel_useful_link.template", false, false);
+      }
+      return self::$template;
+    }
 }
 
 class mel_multi_link extends mel_link{
     
     public $links;
+
+    protected static $multi_link_template = null;
+
     protected function __construct()
     {
         parent::__construct();
@@ -362,9 +375,8 @@ class mel_multi_link extends mel_link{
 
     private function create_links()
     {
-        $separate = $this->separate();
+        // $separate = $this->separate();
         $html = '';
-        $rl = null;
         foreach ($this->links as $key => $value) {
             if (strpos($key, 'http://') === false && strpos($key, 'https://') === false)
             {
@@ -372,29 +384,23 @@ class mel_multi_link extends mel_link{
                     $key = "https://$key";
                 }
             }
-
-            $html .= $separate;
-            $rl = $this->get_reduced_link_from($key);
-            if (false && $rl === 'BNUM') {
-                $html = html::tag('a', [
-                    'href' => '#',
-                    'title' => "Ouvrir dans le bnum"
-                ], $value);
-            }
-            else $html .= html::div(['title' => $value, 'style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;'], "<span style=\"cursor:pointer\" class='multi-links-title'>$value</span>".' via '.html::tag('a', [
-                'href' => $key,
-                'title' => "Ouvrir dans un nouvel onglet",
-                'target' => '_blank'
-            ], $rl)).$this->external());
+                        
+              $html .= html::tag('a', ['id' => $this->configKey, 'style' => 'display: inline-flex;flex-direction: column;position: relative;margin:5px;', 'class' => 'link-inside-'.$this->configKey, 'onclick'=> "openLink(this.class,'$key')"], html::tag('img', [
+                'src' => "https://api.faviconkit.com/". $this->getDomainFromURL($key),
+                'style' => 'width: 20px;height: 20px;border-radius:5px;']));
+            // else $html .= html::div(['title' => $value, 'style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;'], "<span style=\"cursor:pointer\" class='multi-links-title'>$value</span>".' via '.html::tag('a', [
+            //     'href' => $key,
+            //     'title' => "Ouvrir dans un nouvel onglet",
+            //     'target' => '_blank'
+            // ], $rl)).$this->external());
         }
-        $html .= $separate;
 
         return $html;
     }
 
-    public function html($rc, $exit = false, $write = false)
+    public function html()
     {
-        $html = $rc->output->parse("mel_useful_link.template-multi-links", $exit, $write);
+        $html = self::Template();
         $html = str_replace("<id/>", $this->configKey, $html);
         $html = str_replace("<link/>", $this->link, $html);
         $html = str_replace("<links/>", $this->create_links(), $html);
@@ -434,5 +440,12 @@ class mel_multi_link extends mel_link{
 
     public static function empty() {
         return new mel_multi_link();
+    }
+
+    protected static function Template() {
+      if (!isset(self::$multi_link_template)) {
+        self::$multi_link_template = rcmail::get_instance()->output->parse("mel_useful_link.template-multi-links", false, false);
+      }
+      return self::$multi_link_template;
     }
 }

@@ -1,5 +1,7 @@
 import { BnumEvent } from "../../../mel_metapage/js/lib/mel_events.js";
 
+export {MelLink, MelFolder};
+
 class MelBaseLink {
   constructor (id, title) {
     this._init()._setup(id, title);
@@ -36,19 +38,6 @@ class MelBaseLink {
 
     return this;
   }
-
-  async callUpdateLinks(task = "useful_links")
-  {
-     await mel_metapage.Functions.post(
-         mel_metapage.Functions.url(task, "get_joined_links"),
-         (datas) => {
-             $(".body .joined .links-items").html(datas);
-         }
-     );
-
-     return false;
-  }
-
 }
 
 class MelLink extends MelBaseLink {
@@ -69,6 +58,38 @@ class MelLink extends MelBaseLink {
 
     return this;
   }
+
+  async callUpdate(task = "useful_links",  action = "update")
+  {
+    let success = true;
+    let config = {
+      _id:this.id,
+      _title:this.title,
+      _link:this.url,
+  };
+
+    await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {}, (a, b, c) => {
+      success = false;
+      rcmail.display_message("Impossible d'ajouter ou de modifier ce lien.", "error");
+      console.error(a, b, c);
+    });
+
+    return success; 
+  }
+
+  callDelete(task = "useful_links", action = "delete")
+    {
+        rcmail.set_busy(true, "loading");
+
+        return mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
+        {_id:this.id},
+        (datas) => {
+          rcmail.set_busy(false);
+          rcmail.clear_messages();
+          rcmail.display_message("Suppression effectué avec succès !", "confirmation");
+          $('#link-block-'+this.id).remove();
+        });
+    }
 }
 
 class MelFolder extends MelBaseLink {
@@ -103,49 +124,5 @@ class MelFolder extends MelBaseLink {
     }
 
     return this;
-  }
-}
-
-class MelLinkVisualiser {
-  constructor () {
-    this._init()._setup()._main();
-  }
-
-  _init() {
-    this.link = new MelLink(null, null, null);
-    this.jquery_object = $();
-
-    return this;
-  }
-
-  _setup() {
-    Object.defineProperties(this, {
-      jquery_object: {
-        get() {
-          return $(`#link-${this.link.id}`);
-        }
-      },
-    });
-
-    return this;
-  }
-
-  _main() {
-    this.link.on_prop_changed.push((value, prop, link) => {
-      this[`update_${prop}`]();
-    });
-  }
-
-  update_title() {
-    this.jquery_object.find('.link-title').text(this.link.title);
-  }
-
-  update_url() {
-    this.jquery_object.find('.link-icon-image').attr("src", this.link.url);
-  }
-
-  update() {
-    this.update_title();
-    this.update_url();
   }
 }

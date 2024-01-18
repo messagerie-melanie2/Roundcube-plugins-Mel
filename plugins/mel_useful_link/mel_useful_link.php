@@ -1,5 +1,5 @@
 <?php
-class mel_useful_link extends rcube_plugin
+class mel_useful_link extends bnum_plugin
 {
         /**
      * @var string
@@ -41,6 +41,7 @@ class mel_useful_link extends rcube_plugin
             $this->include_uLinks();
             $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
             $this->rc->output->set_env("mul_items", $this->rc->config->get('personal_useful_links', []));
+            $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
             include_once "lib/hidden.php";
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
         }
@@ -57,6 +58,7 @@ class mel_useful_link extends rcube_plugin
 
     public function include_uLinks()
     {
+      $this->load_script_module('manager');
       $this->include_script('js/links.js');
       $this->include_stylesheet($this->local_skin_path().'/links.css');
       $this->rc->output->set_env("link_modify_options", $this->rc->config->get('modify_options', []));
@@ -184,7 +186,7 @@ class mel_useful_link extends rcube_plugin
       include_once "lib/xTuple.php";
 
       $html = "";
-      $couples = new xTuple(11);
+      $couples = new xTuple(12);
       $size = count($this->links);
       $min = 10*($page-1);
       $max = $size;// 10*$page > $size ? $size : 10*$page; 

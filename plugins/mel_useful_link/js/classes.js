@@ -1,3 +1,7 @@
+const MULTILINK_OPEN = "multilink-open";
+const MULTILINK_ICON_OPEN = "multilink-icon-open";
+const MULTILINK_TITLE_OPEN = "multilink-title-open";
+
 
 /**
  * Récupère la popup et permet de la manipuler.
@@ -10,6 +14,21 @@
  
      return GetLinkPopUp.popup;
  }
+
+ function openMultilink(id) {
+  $('#link-id-'+id).addClass('multilink-open');
+  $('.link-inside-'+id).addClass('multilink-icon-open');
+  $('#multilink-title-'+id).addClass('multilink-title-open');
+  $('#multilink-menu-'+id).show(); 
+ }
+
+ function closeMultilink(id) {
+  $('#link-id-'+id).removeClass('multilink-open');
+  $('.link-inside-'+id).removeClass('multilink-icon-open');
+  $('#multilink-title-'+id).removeClass('multilink-title-open');
+  $('#multilink-menu-'+id).hide(); 
+ }
+
 
  function displayIcon(url) {
     $('#mulc-url-error').hide();
@@ -165,17 +184,17 @@
          else
          {
             $("#mulc-color").val(link.color);
-             $("#mulc-id").val(link.id);
-             $("#mulc-title").val(link.title);
-             $("#mulc-url").val(link.link);
-             $("#icon-image").attr('src', fetchIcon(link.link));
-             if (link.isSubLink()) {
-               $("#mulc-subItem").val(link.isSubLink());
-               $("#mulc-subid").val(link.subItem.id);
-               $("#mulc-subparent").val(link.subItem.parentId);
-             }
-             $("#mulc-sw").val(link.showWhen === "" ? "always" : link.showWhen);
-             $("#mulc-button").html(link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-mel-pencil"></span>');
+            $("#mulc-id").val(link.id);
+            $("#mulc-title").val(link.title);
+            $("#mulc-url").val(link.link);
+            $("#icon-image").attr('src', fetchIcon(link.link));
+            if (link.isSubLink()) {
+              $("#mulc-subItem").val(link.isSubLink());
+              $("#mulc-subid").val(link.subItem.id);
+              $("#mulc-subparent").val(link.subItem.parentId);
+            }
+            $("#mulc-sw").val(link.showWhen === "" ? "always" : link.showWhen);
+            $("#mulc-button").html(link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-mel-pencil"></span>');
          }
  
          return this;
@@ -320,8 +339,6 @@
 
          this.setTitle(`Que souhaitez-vous faire du lien "${this.setLinkMaxSize(link.title)}"`);
          let html = '<div style="display:flex">';
- 
-         //console.log(link);
  
          for (let index = 0; index < rcmail.env.link_modify_options.length; ++index) {
              const element = rcmail.env.link_modify_options[index];
@@ -707,6 +724,7 @@
      async callUpdate(task = "useful_links", action = "update", addonConfig = null)
      {
          rcmail.set_busy(true, "loading");
+         debugger
          if (!this.personal)
          {
              await this.callNoPersonalAction('updateColor', (this.color === "#F0F0F0" ? null : this.color), task);
@@ -770,8 +788,7 @@
          if (rcmail.busy)
              notBusy();
  
-         return success;
- 
+         return success; 
      }
  
      static refresh(_class)

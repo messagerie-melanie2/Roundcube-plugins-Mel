@@ -59,12 +59,14 @@
           </span>
         </button>
 
+        <roundcube:if condition="env:plugin_list_help===true"/>
         <button id="button-help" class="transparent-icon-button barup-icons-button" onclick="m_mp_Help()"
           title="<roundcube:label name='mel_metapage.help_help' />">
           <span class="material-symbols-outlined">
             help
           </span>
         </button>
+        <roundcube:endif/>
       
         <option/>
       <roundcube:if condition="env:plugin_list_notifications===true"/>

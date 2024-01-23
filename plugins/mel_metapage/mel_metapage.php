@@ -3030,6 +3030,10 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("plugin_list_notifications", true);
         }
 
+        if (class_exists('mel_help')) {
+            $this->rc->output->set_env("plugin_list_help", true);
+        }
+
         if ($this->visio_enabled()) {
             $this->rc->output->set_env("plugin_list_visio", true);
         }

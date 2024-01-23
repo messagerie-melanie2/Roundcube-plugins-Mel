@@ -4155,6 +4155,14 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $mailto = $organizer['name'] ? $organizer['name'] : $organizer['email'];
                 $msg    = $this->gettext(['name' => 'sentresponseto', 'vars' => ['mailto' => $mailto]]);
                 $this->rc->output->command('display_message', $msg, 'confirmation');
+
+                // PAMELA - 0007719: Agenda: Lorsqu'on répond à un organisateur suite à une invitation, le mail de retour ne se retrouve pas dans les éléments envoyé
+                $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [
+                    'orga' =>  $attendee,
+                    'attendees' => [$organizer],
+                    'message' => $itip->last_message,
+                    'event' => $event
+                ]);
             }
             else {
                 $this->rc->output->command('display_message', $this->gettext('itipresponseerror'), 'error');

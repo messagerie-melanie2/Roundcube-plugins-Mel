@@ -2099,10 +2099,14 @@ $(document).ready(() => {
             audio:'Par audio'
         };
 
-        const visioTypeOptions = {
+        let visioTypeOptions = {
             intregrated_selected:rcmail.gettext('mel_metapage.state_tool_conf'),
             custom:rcmail.gettext('mel_metapage.other_tool_conf'),
         };
+
+        if (!rcmail.env.plugin_list_visio && !top.rcmail.env.plugin_list_visio) {
+            delete visioTypeOptions.intregrated_selected;
+        }
 
         let $parentDiv = $('#em-locations').append(`<div id="${mainDivId}" class="row locations"></div>`);
         let $mainDiv = $parentDiv.find(`#${mainDivId}`);
@@ -2276,6 +2280,8 @@ $(document).ready(() => {
                 if (selected) $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${element}`);
             }
         }
+
+        if (Object.keys(visioTypeOptions).length === 1) $visioSelect.css('opacity', '0').css('position', 'absolute').css('top', '0').css('pointer-events', 'none');
 
         $visioPhoneDatas.appendTo($leftCol);
 

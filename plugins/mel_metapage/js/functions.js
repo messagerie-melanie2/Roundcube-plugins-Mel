@@ -108,7 +108,7 @@ function m_mp_Create() {
         const _button = function(action, block = true) {
             return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action);
         }
-
+//debugger;
         let workspace = `<li class="col-12" id="workspace" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + _button(actions.espace, false) + '</li>'
         let mail = `<li class="col-sd-4 col-md-4" id="mail" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + _button(actions.mail) + "</li>";
         let reu = `<li class="col-sd-4 col-md-4" id="reu" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + _button(actions.event) + "</li>";
@@ -117,6 +117,48 @@ function m_mp_Create() {
         let document = `<li class="col-md-3" style="${haveNextcloud.style}" id="document" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + _button(actions.documents) + "</li>";
         let blocnote = `<li class="col-md-${haveNextcloud.col}"  id="blocnote" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + _button(actions.notes) + "</li>";
         let pega = `<li class="col-md-${haveNextcloud.col}" id="pega" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
+
+        if (!rcmail.env.plugin_list_workspace) {
+            workspace = '';
+        }
+
+        if (!rcmail.env.plugin_list_agenda) {
+            viso = viso.replace('col-6', 'col-12');
+            viso = viso.replace('col-sd-4 col-md-4', 'col-6');
+            mail = mail.replace('col-6', 'col-12');
+            mail = mail.replace('col-sd-4 col-md-4', 'col-6');
+            reu = '';
+        }
+
+        if (!rcmail.env.plugin_list_visio) {
+            reu = reu.replace('col-6', 'col-12');
+            reu = reu.replace('col-sd-4 col-md-4', 'col-6');
+            mail = mail.replace('col-6', 'col-12');
+            mail = mail.replace('col-sd-4 col-md-4', 'col-6');
+            viso = '';
+        }
+
+        if (!rcmail.env.plugin_list_tache) {
+            document = document.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = pega.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            tache = '';
+        }
+
+        if (!rcmail.env.plugin_list_document) {
+            tache = tache.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = pega.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            document = '';
+        }
+
+        if (!rcmail.env.plugin_list_sondage) {
+            document = document.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            tache = tache.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = '';
+        }
+
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         let create_popUp = new GlobalModal("globalModal", config, !isSmall);

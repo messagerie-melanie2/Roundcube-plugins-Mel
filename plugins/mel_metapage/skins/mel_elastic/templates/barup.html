@@ -67,7 +67,7 @@
         </button>
       
         <option/>
-      
+      <roundcube:if condition="env:plugin_list_notifications===true"/>
         <div id="notification-dropdown" class="dropdown">
           <button id="button-notifications" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
             class="transparent-icon-button barup-icons-button" onclick=""
@@ -81,6 +81,7 @@
             <div id="notifications-panel"></div>
           </div>
         </div>
+      <roundcube:endif/>
       </span>
       
         <button id="button-search" style="margin-top: 14px;" class="btn-circle" onclick="open_research()"

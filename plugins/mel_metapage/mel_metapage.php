@@ -476,7 +476,7 @@ class mel_metapage extends bnum_plugin
 
             $this->mm_include_plugin();
             //$this->rc->get_storage();
-            if ($this->rc->task === "webconf")
+            if ($this->rc->task === "webconf" && $this->visio_enabled())
                 $this->register_task("webconf");
             else if ($this->rc->task === 'search')
                 $this->register_task("search");
@@ -1848,8 +1848,10 @@ class mel_metapage extends bnum_plugin
 
         switch ($program_name) {
             case 'webconf':
-                include_once "program/webconf/webconf.php";
-                $program = new Webconf($this->rc, $this);            
+                if ($this->visio_enabled()) {
+                    include_once "program/webconf/webconf.php";
+                    $program = new Webconf($this->rc, $this);
+                }            
                 break;
             
             default:
@@ -2999,8 +3001,45 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("bnum.init_action", $init_action);
         }
 
+        if (class_exists('mel_workspace')) {
+            $this->rc->output->set_env("plugin_list_workspace", true);
+        }
+
+        if (class_exists('calendar')) {
+            $this->rc->output->set_env("plugin_list_agenda", true);
+        }
+
+        if (class_exists('tasklist')) {
+            $this->rc->output->set_env("plugin_list_tache", true);
+        }
+
+        if (class_exists('mel_nextcloud')) {
+            $this->rc->output->set_env("plugin_list_document", true);
+        }
+
+        if (class_exists('mel_sondage')) {
+            $this->rc->output->set_env("plugin_list_sondage", true);
+        }
+
+        if (class_exists('rocket_chat')) {
+            $this->rc->output->set_env("plugin_list_chat", true);
+        }
+
+        
+        if (class_exists('mel_notification')) {
+            $this->rc->output->set_env("plugin_list_notifications", true);
+        }
+
+        if ($this->visio_enabled()) {
+            $this->rc->output->set_env("plugin_list_visio", true);
+        }
+
         $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
         $this->rc->output->send('mel_metapage.empty');
+    }
+
+    public function visio_enabled() {
+        return $this->rc->config->get('visio_enabled', false);
     }
 
     public function get_folder_email_from_id($id) {

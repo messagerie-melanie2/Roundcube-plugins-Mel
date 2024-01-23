@@ -459,6 +459,10 @@
                     $(".tiny-rocket-chat").addClass("layout-hidden");
                     $('#rcmfd_hide_chat').prop("checked", false)
                 }
+
+                if (!rcmail.env.plugin_list_chat) {
+                    $("#button-chat").css('display', 'none');
+                }
             }
 
             rcmail.register_command("chat.setupConfig", () => {
@@ -498,6 +502,9 @@
                     $('#button-help').addClass('ml-3');
                 }
 
+                if (!rcmail.env.plugin_list_chat) {
+                    $("#button-chat").css('display', 'none');
+                }
             }, true);
 
             ChatSetupConfig();

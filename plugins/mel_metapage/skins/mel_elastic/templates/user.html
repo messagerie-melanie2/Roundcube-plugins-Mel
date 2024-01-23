@@ -10,12 +10,22 @@
     title="<roundcube:label name='mel_metapage.user_help' />">
     <div class="user-child" comment="Parent ariane, photo + dispo">
       <div id="user-picture" comment="photo utilisateur"></div>
-      <div id="user-dispo" class="chat-user-dispo logout" comment="Disponibilitée"></div>
+      <roundcube:if condition="env:plugin_list_chat===true"/>
+        <div id="user-dispo" class="chat-user-dispo logout" comment="Disponibilitée"></div>
+      <roundcube:else />
+        <div id="user-dispo" class="chat-user-dispo logout" comment="Disponibilitée" style="display: none;"></div>
+      <roundcube:endif/>
   </div>
   </button>
   <div id="user-dropdown" class="dropdown-menu user-dropdown-menu dropdown-menu-right p-2" aria-labelledby="button-notifications">
     <div class="notifications-header border-radius-md px-2 mb-2">
-      <div class="d-flex pt-1 pb-2 align-items-center">
+      
+      <roundcube:if condition="env:plugin_list_chat===true"/>
+        <div class="d-flex pt-1 pb-2 align-items-center">
+      <roundcube:else />
+        <div class="d-flex pt-1 pb-2 align-items-center" style="opacity: 0; position: absolute; pointer-events: none;">
+      <roundcube:endif/>
+      
         <div class="change_avatar_picture" title="Modifier votre avatar">
           <a href="javascript:void(0)" class="a_underline" onclick="rcmail.command('change_avatar')">
 
@@ -35,6 +45,7 @@
       </div>
     </div>
     <div class="user-menu-items">
+      <roundcube:if condition="env:plugin_list_chat===true"/>
       <div class="user-menu-state">
       <div class="user-menu-items-title">Statut</div>
       <a class="dropdown-item d-flex align-items-center" data-status="online">
@@ -64,6 +75,7 @@
         <span class="user-menu-item"> <roundcube:label name='mel_metapage.custom_status' /></span>
       </a>
     </div>
+    <roundcube:endif/>
     <div class="user-menu-separator"></div>
     <div class="user-menu-controls">
       <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="dropdown-item d-flex align-items-center dropdown-color icon-button icon-account" />

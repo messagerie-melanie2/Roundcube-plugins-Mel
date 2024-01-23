@@ -4,6 +4,7 @@ export {module_bnum};
 let user_defined_modules = [
   'double_auth_modal',
   'main_nav_metrics',
+  'secondary_nav_metrics',
   'progressive_web_app'
 ];
 

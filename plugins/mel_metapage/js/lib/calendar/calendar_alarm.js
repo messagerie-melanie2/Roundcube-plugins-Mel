@@ -237,8 +237,6 @@ export class Calendar_Alarm extends MelObject
                 this.show(time);
             }, iterator, iterator);
         }
-
-        console.trace();
     }
 
     is_alarm_valid(event) {

@@ -18,7 +18,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 use LibMelanie\Ldap\Ldap as Ldap;
 
 include_once __DIR__ . '/../mce/mce.php';
@@ -31,28 +30,28 @@ class mtes_driver_mel extends mce_driver_mel
    * @var string
    */
   protected $BALP_LABEL = 'Boite partag&AOk-e';
-
+  
   /**
    * Dossier pour les brouillons
    * 
    * @var string
    */
   protected $MBOX_DRAFT = "Brouillons";
-
+  
   /**
    * Dossier pour les éléments envoyés
    *  
    * @var string
    */
   protected $MBOX_SENT = "&AMk-l&AOk-ments envoy&AOk-s";
-
+  
   /**
    * Dossier pour les indésirables
    * 
    * @var string
    */
   protected $MBOX_JUNK = "Ind&AOk-sirables";
-
+  
   /**
    * Dossier pour la corbeille
    * 
@@ -64,6 +63,11 @@ class mtes_driver_mel extends mce_driver_mel
    * Namespace for the objets
    */
   protected static $_objectsNS = "\\LibMelanie\\Api\\Mel\\";
+
+  /**
+   * Dossier pour l'utilisation des fichiers pour le unexpunge
+   */
+  protected static $_unexpungeFolder = '/var/pamela/unexpunge/';
 
   /**
    * Liste des valeurs pour un groupe de workspace
@@ -280,52 +284,6 @@ class mtes_driver_mel extends mce_driver_mel
   {
     return strpos($user, "mineqRDN=") === 0 && strpos($user, "ou=organisation,dc=equipement,dc=gouv,dc=fr") !== false;
   }
-
-  /**
-   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
-   * Utilisé pour la restauration d'un dossier
-   * 
-   * @param string $mbox Identifiant de la boite concernée par la restauration
-   * @param string $folder Dossier IMAP à restaurer
-   * 
-   * @return boolean true si la commande s'est correctement lancée
-   */
-  public function unexpunge($mbox, $folder, $hours)
-  {
-    $_user = $this->getUser($mbox, false);
-    if ($_user->is_objectshare) {
-      $_user = $_user->objectshare->mailbox;
-    }
-    // Récupération de la configuration de la boite pour l'affichage
-    $host = $this->getRoutage($_user, 'unexpunge');
-    // Ecriture du fichier unexpunge pour le serveur
-    $server = explode('.', $host);
-    $rep = '/var/pamela/unexpunge/' . $server[0];
-    $dossier = str_replace('/', '^', $folder);
-
-    if (isset($dossier)) {
-      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
-    } else {
-      $nom = $rep . '/' . $_user->uid;
-    }
-
-    $fic = fopen($nom, 'w');
-    if (flock($fic, LOCK_EX)) {
-      fputs($fic, 'recuperation:' . $hours);
-      flock($fic, LOCK_UN);
-    } else {
-      return false;
-    }
-    fclose($fic);
-
-    if (file_exists($nom)) {
-      $res = chmod($nom, 0444);
-    } else {
-      return false;
-    }
-    return true;
-  }
-
   /**
    * Méthode permettant de personnaliser l'affichage des contacts
    * 

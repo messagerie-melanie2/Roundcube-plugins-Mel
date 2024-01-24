@@ -38,7 +38,8 @@ $labels['resourcesettings'] = 'Configurez la ressource';
 $labels['resourcesbal'] = 'Boites aux lettres';
 $labels['manageresourcesbal'] = 'Gérez vos boites aux lettres Mél (affichage, partages, restaurations)';
 $labels['restore_bal'] = "Récupération des courriels";
-$labels['imap_select'] = "Récupérer les courriels effacés depuis %%NB_HEURES%% heure(s) (maximum 168 heures) du dossier ";
+$labels['restore_dir'] = "Récupération de dossier";
+$labels['imap_select'] = "Récupérer les courriels effacés depuis %%DATE%% (maximum 168 heures) du dossier ";
 $labels['restore_bal_expl'] = "Mél vous offre la possibilité de <b>récupérer un ou plusieurs messages supprimés ou perdus</b> à la suite d'un incident survenu au cours des 7 derniers jours.
 <br>
 <br><b>La procédure</b> est la suivante :
@@ -60,6 +61,8 @@ $labels['restore_bal_expl'] = "Mél vous offre la possibilité de <b>récupérer
 $labels['INBOX'] = "Courrier entrant";
 $labels['restore_bal_succes'] = 'Votre demande de récupération a bien été prise en compte et sera exécutée dans les plus brefs délais.';
 $labels['restore_bal_error'] = 'Echec de votre demande de récupération.';
+$labels['restore_dir_succes'] = 'La restauration de dossier a bien été effectuée.';
+$labels['restore_dir_error_storage'] = 'Espace nécessaire insuffisant.';
 $labels['resourcesagendas'] = 'Agendas';
 $labels['manageresourcesagendas'] = 'Gérez vos agendas Mél (affichage, synchronisation, partages, restaurations)';
 $labels['restore_cal'] = 'Restauration de l\'agenda';
@@ -132,6 +135,7 @@ $labels['add_resource_nok_agendas'] = 'Une erreur s\'est produite, le calendrier
 $labels['add_resource_nok_contacts'] = 'Une erreur s\'est produite, le carnet d\'adresses n\'a pas pu être créé';
 $labels['add_resource_nok_tasks'] = 'Une erreur s\'est produite, la liste de tâches n\'a pas pu être créée';
 $labels['restore_mail'] = 'Récupérer';
+$labels['restore_dir_btn'] = 'Récupérer';
 
 // Mon compte
 $labels['moncompte'] = 'Mon Compte';
@@ -395,6 +399,7 @@ $labels['success_DeleteUserDeviceZP1'] = "Le compte vient d'être supprimé de l
 
 $labels['Webservice error'] = "Une erreur s'est produite, il est possible que le serveur de synchronisation mobile soit injoignable. Veuillez réessayer.";
 $labels['Missing arguments'] = "Une erreur s'est produite, essayez de vous déconnecter/reconnecter.";
+$labels['acces_balp_disabled'] = "L'accès aux boites spécifiques et organique est désactivé";
 $labels['suspectsurls'] = 'Liens suspects';
 $labels['suspects_websites'] = 'Adresses suspicieuses';
 $labels['bloqued'] = 'Est bloqué';

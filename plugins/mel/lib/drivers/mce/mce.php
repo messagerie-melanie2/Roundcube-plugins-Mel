@@ -25,6 +25,39 @@ class mce_driver_mel extends driver_mel {
   protected static $_objectsNS = "\\LibMelanie\\Api\\Mce\\";
 
   /**
+   * Dossier pour l'utilisation des fichiers pour le unexpunge
+   */
+  protected static $_unexpungeFolder;
+
+  /**
+   * Méthode a appeler pour l'unexpunge
+   */
+  protected $_restore_emails_method;
+
+  /**
+   * Port pour l'API d'unexpunge
+   */
+  protected $_restoration_api_port;
+
+  /**
+   * Clé pour l'API d'unexpunge
+   */
+  protected $_restoration_api_key;
+
+  /**
+   * Constructeur par défaut
+   */
+  public function __construct() {
+    $rcmail = rcmail::get_instance();
+    if ($rcmail->config->get('virtual_shared_mailboxes', false)) {
+      $this->BALP_LABEL = $rcmail->config->get('virtual_balp_label', $this->BALP_LABEL);
+    }
+    $this->_restoration_api_port = $rcmail->config->get('restoration_api_port', false);
+    $this->_restoration_api_key = $rcmail->config->get('restoration_api_key', false);
+    $this->_restore_emails_method = $rcmail->config->get('restore_emails_method', 'files');
+  }
+
+  /**
    * Retourne l'objet User associé à l'utilisateur courant
    * Permet de retourner l'instance User en fonction du driver
    * 
@@ -52,22 +85,25 @@ class mce_driver_mel extends driver_mel {
       return $user;
     }
     if (!isset(self::$_users)) {
-      self::$_users = \mel::getCache('users');
-      if (!isset(self::$_users)) {
-        self::$_users = [];
-      }
+      self::$_users = [];
     }
     $keyCache = $username . (isset($itemName) ? $itemName : '');
     if (!isset(self::$_users[$keyCache])) {
-      self::$_users[$keyCache] = $this->user([null, $itemName]);
-      self::$_users[$keyCache]->uid = $username;
-      if ($load && !self::$_users[$keyCache]->load()) {
-        self::$_users[$keyCache] = null;
+      $users = \mel::getCache('users');
+      if (isset($users) && isset($users[$keyCache]) && $users[$keyCache]->issetObjectMelanie()) {
+        self::$_users[$keyCache] = $users[$keyCache];
+        self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
       }
-      \mel::setCache('users', self::$_users);
-    }
-    if (isset(self::$_users[$keyCache])) {
-      self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+      else {
+        self::$_users[$keyCache] = $this->user([null, $itemName]);
+        self::$_users[$keyCache]->uid = $username;
+        if ($load && !self::$_users[$keyCache]->load()) {
+          self::$_users[$keyCache] = null;
+        }
+        else {
+          self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+        }
+      }
     }
     return self::$_users[$keyCache];
   }
@@ -88,10 +124,29 @@ class mce_driver_mel extends driver_mel {
    * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
    * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
    *
-   * @return \LibMelanie\Api\Mce\Group
+   * @return \LibMelanie\Api\Defaut\Group
    */
   public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null) {
-    return null;
+    if (!$fromCache) {
+      $group = $this->group([null, $itemName]);
+      $group->dn = $group_dn;
+      if ($load && !$group->load()) {
+        $group = null;
+      }
+      return $group;
+    }
+    if (!isset(self::$_groups)) {
+      self::$_groups = [];
+    }
+    $keyCache = $group_dn . (isset($itemName) ? $itemName : '');
+    if (!isset(self::$_groups[$keyCache])) {
+      self::$_groups[$keyCache] = $this->group([null, $itemName]);
+      self::$_groups[$keyCache]->dn = $group_dn;
+      if ($load && !self::$_groups[$keyCache]->load()) {
+        self::$_groups[$keyCache] = null;
+      }
+    }
+    return self::$_groups[$keyCache];
   }
   
   /**
@@ -110,10 +165,20 @@ class mce_driver_mel extends driver_mel {
    * pour retourner le hostname de connexion IMAP et/ou SMTP
    * 
    * @param array $infos Entry LDAP
+   * @param string $function Nom de la fonction pour personnaliser les retours
+   * 
    * @return string $hostname de routage, null si pas de routage trouvé
    */
-  public function getRoutage($infos) {
-    $hostname = rcmail::get_instance()->config->get('default_host');
+  public function getRoutage($infos, $function = '') {
+    // Conf dédiée pour le managesieve
+    if ($function == 'managesieve_connect') {
+      $conf = 'managesieve_host';
+    }
+    else {
+      $conf = 'default_host';
+    }
+    // Récupère le hostname depuis la configuration
+    $hostname = rcmail::get_instance()->config->get($conf);
     if (!isset($hostname) 
         || is_array($hostname)) {
       if (is_array($infos)) {
@@ -186,7 +251,18 @@ class mce_driver_mel extends driver_mel {
    * @return boolean true si c'est un groupe, false sinon
    */
   public function userIsGroup($user) {
-    return false;
+    return strpos($user, "mceRDN=") === 0;
+  }
+
+  private function get_restoration_api_url($mbox) {
+    $user = $this->getUser($mbox, false);
+    if ($user->is_objectshare) {
+      $user = $user->objectshare->mailbox;
+    }
+    // Récupération de la configuration de la boite pour l'affichage
+    $host = $this->getRoutage($user, 'unexpunge');
+
+    return $host . ":" . $this->_restoration_api_port;
   }
 
   /**
@@ -197,7 +273,187 @@ class mce_driver_mel extends driver_mel {
    * @param string $folder Dossier IMAP à restaurer
    */
   public function unexpunge($mbox, $folder, $hours) {
-    return false;
+    switch ($this->_restore_emails_method) {
+      case "files":
+        return $this->unexpunge_files($mbox, $folder, $hours);
+      case "api":
+        return $this->unexpunge_api($mbox, $folder, $hours);
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * en passant par un fichier
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
+   */
+  private function unexpunge_files($mbox, $folder, $hours) {
+    // Pas de dossier configuré dans le driver, par d'unexpunge
+    if (!isset(static::$_unexpungeFolder)) {
+      return false;
+    }
+
+    $_user = $this->getUser($mbox, false);
+    if ($_user->is_objectshare) {
+      $_user = $_user->objectshare->mailbox;
+    }
+    // Récupération de la configuration de la boite pour l'affichage
+    $host = $this->getRoutage($_user, 'unexpunge');
+    // Ecriture du fichier unexpunge pour le serveur
+    $server = explode('.', $host);
+    $rep = static::$_unexpungeFolder . $server[0];
+
+    // Créer le dossier s'il n'existe pas
+    if (!is_dir($rep)) {
+      if (mkdir($rep, 0774, true)) {
+        chmod($rep, 0774);
+      }
+      else {
+        return false;
+      }
+    }
+
+    $dossier = str_replace('/', '^', $folder);
+
+    if (isset($dossier)) {
+      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
+    } else {
+      $nom = $rep . '/' . $_user->uid;
+    }
+
+    $fic = fopen($nom, 'w');
+    if (flock($fic, LOCK_EX)) {
+      fputs($fic, 'recuperation:' . $hours);
+      flock($fic, LOCK_UN);
+    }
+    else {
+      return false;
+    }
+    fclose($fic);
+
+    if (file_exists($nom)) {
+      $res = chmod($nom, 0444);
+    }
+    else {
+      return false;
+    }
+    return $res;
+  }
+
+  /**
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * en passant par l'api
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
+   */
+  private function unexpunge_api($mbox, $folder, $hours) {
+    $body = (object) [
+      "folder" => $folder,
+      "hours" => $hours,
+    ];
+    $json = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    // Requête http à l'API
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/msg?key=' . $this->_restoration_api_key . '&user=' . $mbox,
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_POST => 1,
+      CURLOPT_POSTFIELDS => $json,
+      CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($json),
+      ],
+    ]);
+    $output = curl_exec($ch);
+    if ($output === false) {
+      return curl_error($ch);
+    }
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($http_code < 200 || $http_code > 299) {
+      return 'Erreur HTTP ' . $http_code;
+    }
+    curl_close($ch);
+
+    return true;
+ 
+  }
+
+  /**
+   * Méthode pour obtenir les dossiers restaurables
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   */
+  public function get_restorable_directories($mbox) {
+    // Requête http à l'API
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/dir?key=' . $this->_restoration_api_key . '&user=' . $mbox,
+      CURLOPT_RETURNTRANSFER => 1
+    ]);
+    $output = curl_exec($ch);
+    if ($output === false) {
+      return curl_error($ch);
+    }
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($http_code < 200 || $http_code > 299) {
+      return 'Erreur HTTP ' . $http_code;
+    }
+    curl_close($ch);
+
+    return json_decode($output);
+  }
+
+  /**
+   * Méthode permettant de restaurer des dossiers
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param $directories Liste des dossiers à restaurer
+   * Sous la forme :
+   * [
+   *   (object) [
+   *     'path' => '/1',
+   *     'deletionDate' => 1678805569,
+   *   ],
+   *   (object) [
+   *     'path' => '/1/2/3',
+   *     'deletionDate' => 1678696515,
+   *   ],
+   * ]
+   */
+  public function restore_directories($mbox, $directories) {
+    $json = json_encode($directories, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    // Requête http à l'API
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => $this->get_restoration_api_url($mbox) . '/dir?key=' . $this->_restoration_api_key . '&user=' . $mbox,
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_POST => 1,
+      CURLOPT_POSTFIELDS => $json,
+      CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($json),
+      ],
+    ]);
+    $output = curl_exec($ch);
+    if ($output === false) {
+      return curl_error($ch);
+    }
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($http_code < 200 || $http_code > 299) {
+      return 'Erreur HTTP ' . $http_code;
+    }
+    curl_close($ch);
+
+    return json_decode($output);
   }
 
   /**
@@ -223,11 +479,13 @@ class mce_driver_mel extends driver_mel {
    * 
    * @param string $workspace_id Identifiant du workspace
    * @param array $members Liste des membres du groupe
+   * 
    * @param boolean $mdrive Est-ce que l'accès au stockage est activé ou non
    * 
    * @return boolean
    */
-  public function workspace_group($workspace_id, $members = [], $mdrive = true) {
+  public function workspace_group($workspace_id, $members = [], $mdrive = true)
+  {
     return false;
   }
 
@@ -238,7 +496,9 @@ class mce_driver_mel extends driver_mel {
    * 
    * @return null|\LibMelanie\Api\Defaut\Group
    */
-  public function get_workspace_group($workspace_id) {
+  public function get_workspace_group($workspace_id)
+  {
+    
     return null;
   }
 }

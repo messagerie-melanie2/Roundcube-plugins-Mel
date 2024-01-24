@@ -62,7 +62,7 @@ class Accesinternet extends Moncompteobject {
 					rcmail::get_instance()->output->send('mel_moncompte.accesinternet_desactive');
 				}
 			}
-		}		
+		}
 		rcmail::get_instance()->output->send('mel_moncompte.accesinternet_interdit');
 	}
 	

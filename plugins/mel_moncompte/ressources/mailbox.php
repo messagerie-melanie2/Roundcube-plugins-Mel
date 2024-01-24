@@ -117,7 +117,7 @@ class M2mailbox {
     if ($data['abort']) {
       return false;
     }
-    $_mbox = driver_mel::gi()->getUser($this->mbox, false);
+    $_mbox = driver_mel::gi()->getUser($this->mbox, true, true, null, null, 'webmail.moncompte.mailbox');
     // Récupération de la boite
     if ($_mbox->is_objectshare) {
       $_mbox = $_mbox->objectshare->mailbox;
@@ -356,6 +356,10 @@ class M2mailbox {
     $id = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
     // Récupération de la boite a restaurer
     $mbox = driver_mel::gi()->getUser($id, false);
+    // sam: test si BAlP autorisé
+    if (!$this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', true)){
+        return "<div>".$this->rc->gettext("acces_balp_disabled")."</div>";
+    }
     if ($mbox->is_objectshare) {
       $mbox = $mbox->objectshare->mailbox;
       $id = $mbox->uid;
@@ -386,8 +390,8 @@ class M2mailbox {
       return 'Folders error';
     }
 
-    $input = new html_inputfield(array('name' => 'nbheures', 'title' => 'Sélectionner l’heure(s) où lescourriels on été supprimer (maximum 168 heures)'));
-    $select = new html_select(array('name' => 'folder', 'title' => 'Sélectionner le dossier à récupérer'));
+    $input = new html_inputfield(array('id' => 'datetimepicker', 'name' => 'date', 'type' => 'text'));
+    $select = new html_select(array('name' => 'folder'));
     $delimiter = $imap->get_hierarchy_delimiter();
 
     foreach ($folders as $folder) {
@@ -404,19 +408,51 @@ class M2mailbox {
       $select->add($name, $folder);
     }
     $imap->close();
-    return html::div(null, str_replace('%%NB_HEURES%%', $input->show(), $this->rc->gettext('imap_select', 'mel_moncompte')) . $select->show());
+    return html::div(null, str_replace('%%DATE%%', $input->show(), $this->rc->gettext('imap_select', 'mel_moncompte')) . $select->show());
+  }
+
+  /**
+   * Méthode qui affiche le tableau des dossiers à restaurer pour une boîte donnée
+   * 
+   * @return string $html HTML à afficher pour la restauration des dossiers
+   */
+  public function get_restorable_directories($attrib) {
+    $mbox = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
+    $directories = driver_mel::gi()->get_restorable_directories($mbox);
+
+    $table = '<table id="restorable_directories"><tr><th class="checkbox"></th><th>Nom du dossier</th><th class="size">Taille</th><th class="deletiondate">Date de suppression</th></tr>';
+    if (gettype($directories) === 'string') {
+      rcube::write_log('errors', 'Erreur lors de la récupération des dossiers à restaurer : ' . $directories);
+      $table .= '<tr><td class="info" colspan="4">Erreur lors de la récupération des dossiers à restaurer</td></tr>';
+    } else {
+      $count = count($directories);
+      if ($count === 0) {
+        $table .= '<tr><td class="info" colspan="4">Aucun dossier à restaurer</td></tr>';
+      }
+      for ($i = 0; $i < $count; $i++) {
+        $dir = $directories[$i];
+        $path = $dir->path;
+        $size = $this->rc->show_bytes($dir->size);
+        $deletionDate = $this->rc->format_date($dir->deletionDate);
+        $table .= '<tr><td class="checkbox"><input type="checkbox" name="directories[]" value="' . urlencode($path) . ':' . $dir->deletionDate . ':' . $dir->size . '"></td><td>' . $path . '</td><td class="size">' . $size . '</td><td class="deletiondate">' . $deletionDate . '</td></tr>';
+      }
+    }
+    $table .= '</table>';
+
+    return $table;
   }
 
   /**
    * Appel la méthode d'unexpunge pour la restauration des messages
    */
   public static function unexpunge() {
-    $hours = trim(rcube_utils::get_input_value('nbheures', rcube_utils::INPUT_POST));
+    $date = trim(rcube_utils::get_input_value('date', rcube_utils::INPUT_POST));
+    $seconds = time() - strtotime($date);
+    $hours = intdiv($seconds, 3600);
     $folder = trim(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST));
     $ret = false;
 
     if (!empty($hours)) {
-      $hours = intval($hours);
       $mbox = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
       $ret = driver_mel::gi()->unexpunge($mbox, $folder, $hours);
     }
@@ -427,28 +463,79 @@ class M2mailbox {
       rcmail::get_instance()->output->show_message('mel_moncompte.restore_bal_error', 'error');
     }
   }
+
+  /**
+   * Appel la méthode de restore_dir pour la restauration de dossiers
+   */
+  public static function restore_dir() {
+    $rcmail = rcmail::get_instance();
+    $rcmail->storage_init();
+    $quotas = $rcmail->quota_content();
+    $used = $quotas['used'] * 1024;
+    $total = $quotas['total'] * 1024;
+    $available_size = $total - $used;
+
+    $form_directories = rcube_utils::get_input_value('directories', rcube_utils::INPUT_POST);
+    if (count($form_directories) === 0) {
+      return;
+    }
+
+    $directories = [];
+    $restore_size = 0;
+    foreach ($form_directories as $form_dir) {
+      $arr = preg_split('/:/', $form_dir);
+      $dir = (object) [
+        "path" => urldecode($arr[0]),
+        "deletionDate" => intval($arr[1]),
+      ];
+      array_push($directories, $dir);
+      $restore_size += $arr[2];
+    }
+    if ($restore_size > $available_size) {
+      rcmail::get_instance()->output->show_message('mel_moncompte.restore_dir_error_storage', 'error');
+      return;
+    }
+
+    $mbox = driver_mel::gi()->rcToMceId(rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC));
+    $ret = driver_mel::gi()->restore_directories($mbox, $directories);
+
+    $dirs_not_enough_space = array_filter($ret, function($e) {
+      return $e->error == 'not enough space';
+    });
+    $dirs_error = array_filter($ret, function($e) {
+      return $e->error != 'not enough space';
+    });
+
+    if ($dirs_not_enough_space) {
+      $directories = array_map(function($e) {
+        return $e->path;
+      }, $dirs_not_enough_space);
+      rcmail::get_instance()->output->show_message("Les dossiers suivants n'ont pas pu être restaurés par manque d'espace : " . implode(', ', $directories), 'error');
+    }
+    if ($dirs_error) {
+      $directories = array_map(function($e) {
+        return $e->path;
+      }, $dirs_error);
+      rcmail::get_instance()->output->show_message("Les dossiers suivants n'ont pas pu être restaurés à cause d'une erreur : " . implode(', ', $directories), 'error');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rcmail::get_instance()->output->show_message('mel_moncompte.restore_dir_succes', 'confirmation');
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

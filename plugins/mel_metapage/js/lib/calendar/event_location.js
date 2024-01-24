@@ -105,7 +105,9 @@ class CustomVisioLocation extends ActionLocation {
     }
 
     side_action() {
-        return new mel_html('a', {href:this.location}).generate().click();
+        const link = this.location.includes('http') ? this.location : `https://${this.location}`;
+        window.open(link, '_blank');
+        return this;
     }
 
     _get_icon() {

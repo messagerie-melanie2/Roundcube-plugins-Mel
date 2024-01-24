@@ -5,5 +5,6 @@ $(document).ready(async () => {
     const button1 = new RcmailDialogChoiceButton('Aller à l\'accueil', 'home', {});
     const button2 = new RcmailDialogChoiceButton('Aller aux paramètres', 'settings', {});
 
-    RcmailDialog.DrawChoice('Test', button1, button2);
+    // RcmailDialog.DrawChoice('Test', button1, button2);
+    let dial = new RcmailDialog($('<div>Test</div>'), {title: 'Test', buttons: [button1, button2]});
 });

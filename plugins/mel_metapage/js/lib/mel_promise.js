@@ -272,6 +272,10 @@ class Mel_Promise {
     static wait(whatIWait, timeout = 5){
         return new WaitSomething(whatIWait, timeout);
     }
+
+    static Complete() {
+        return new Mel_Promise(() => {});
+    }
 }
 
 class Mel_Ajax extends Mel_Promise{

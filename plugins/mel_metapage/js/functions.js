@@ -64,6 +64,7 @@ async function m_mp_create_note()
  * Affiche la modale du bouton "créer".
  */
 function m_mp_Create() {
+    return;
     FullscreenItem.close_if_exist();
     m_mp_step3_param.datas = null;
 
@@ -1281,27 +1282,28 @@ function m_mp_add_users() {
             let html;
             let querry = $("#mm-cw-participants").css("height", `${window.innerHeight - 442}`);
             for (let index = 0; index < datas.added.length; ++index) {
-            const element = datas.added[index];
-            html = "<li>";
-            html += "<div class=row style=margin-top:15px>";
-            html += '<div class="col-2">';
-            html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
-            html += "</div>";
-            html += '<div class="col-10 workspace-users-added">';
-            html += `<span class="name">${element.name}</span><br/>`;
-            html += `<span class="email">${element.email}</span>`;
-            html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>`;
-            html += "</div>";
-            html += "</div></li>";
-            querry.append(html);
+                const element = datas.added[index];
+                html = "<li>";
+                html += "<div class=row style=margin-top:15px>";
+                html += '<div class="col-2">';
+                html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
+                html += "</div>";
+                html += '<div class="col-10 workspace-users-added">';
+                html += `<span class="name">${element.name}</span><br/>`;
+                html += `<span class="email">${element.email}</span>`;
+                html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>`;
+                html += "</div>";
+                html += "</div></li>";
+                querry.append(html);
             }
-            for (let it = 0; it < datas.unexist.length; it++) {
-            const element = datas.unexist[it];
-            rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
+
+                for (let it = 0; it < datas.unexist.length; it++) {
+                const element = datas.unexist[it];
+                rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
             }
         }
         ).always(() => {
-        $("#mm-wsp-loading").css("display", "none");
+            $("#mm-wsp-loading").css("display", "none");
         });
     }
 }

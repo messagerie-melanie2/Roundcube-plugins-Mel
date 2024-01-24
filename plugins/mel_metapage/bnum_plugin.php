@@ -71,4 +71,14 @@ abstract class bnum_plugin extends rcube_plugin
     protected function storage() {
         return $this->rc()->get_storage();
     }
+
+    protected function is_index() {
+        return $this->rc()->action == '' || $this->rc()->action == 'index';
+    }
+
+    static function LoadScriptModuleFrom($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false) {
+        $args = "'$plugin->ID', '$name', '$path', $save_in_memory";
+        
+        $plugin->api->output->add_script("runModule($args)", 'docready');
+    }
 }

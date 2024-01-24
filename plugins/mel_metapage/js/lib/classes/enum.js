@@ -1,6 +1,32 @@
 import { isArrayLike } from "../mel.js";
 
 export {RotomecaEnumerable as MelEnumerable, RotomecaKeyValuePair as MelKeyValuePair};
+
+class FromGenerator{
+    constructor(generator_inital) {
+        let result = null;
+
+        this.generator = [];
+        Object.defineProperty(this, 'generator', {
+            get:() => {
+                if (result === null) {
+                    result = [...generator_inital];
+                }
+
+                return result;
+            }
+        });
+    }
+
+    *next() {
+        yield * this.generator;
+     }
+
+     *[Symbol.iterator]() {
+        yield * this.next();
+    }
+}
+
 class RotomecaKeyValuePair {
     constructor(key, value)
     {
@@ -32,9 +58,7 @@ class RotomecaGenerator
     }
 
     *[Symbol.iterator]() {
-        for (const iterator of this.next()) {
-            yield iterator;
-        }
+        yield * this.next();
     }
 
     where(callback) {
@@ -186,10 +210,7 @@ class RotomecaGenerator
         if ('function' === typeof this.iterable && !!this.iterable.prototype.next) iterable = this.iterable();
         else iterable = this.iterable;
 
-        for (const iterator of iterable) {
-            yield iterator;
-        }
-        
+        yield * iterable;
     }
 
     count() {
@@ -1119,7 +1140,8 @@ class RotomecaEnumerable
     static from(item)
     {
         const is_array_like = isArrayLike(item);
-        if (Array.isArray(item) || (typeof item[Symbol.iterator] === 'function' && !is_array_like)) return new RotomecaEnumerable(new RotomecaGenerator(item));
+        if (Array.isArray(item)) return new RotomecaEnumerable(new RotomecaGenerator(item));
+        else if (typeof item[Symbol.iterator] === 'function' && !is_array_like) return new RotomecaEnumerable(new RotomecaGenerator(new FromGenerator(item)));
         else if (item instanceof RotomecaGenerator) return new RotomecaEnumerable(item);
         else if (typeof item === 'object' && !is_array_like){
             return this.from(new ObjectKeyEnumerable(item));

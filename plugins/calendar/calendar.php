@@ -23,7 +23,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class calendar extends rcube_plugin
+class calendar extends bnum_plugin
 {
     const FREEBUSY_UNKNOWN   = 0;
     const FREEBUSY_FREE      = 1;
@@ -225,6 +225,9 @@ class calendar extends rcube_plugin
                 $this->add_hook('contact_update', [$this, 'contact_update']);
                 $this->add_hook('contact_create', [$this, 'contact_update']);
             }
+        }
+        else if ($args['task'] === 'bnum' && ($args['action'] === 'index' || $args['action'] === '')) {
+            $this->load_script_module('metapage_connector.js', '/');
         }
 
         // add hooks to display alarms

@@ -28,6 +28,4 @@ export class MetapageMailModule extends MetapageModule {
         UIMailHeaderManager.Start();
 
     }
-
-
 }

@@ -1,6 +1,7 @@
 import { MelEnumerable } from "../classes/enum.js";
 import { isArrayLike } from "../mel.js";
-export { MelArray }
+import { BnumEvent } from "../mel_events.js";
+export { MelArray, SpyiedMelArray }
 
 class MelArray extends Array {
     constructor(...args) {
@@ -32,4 +33,33 @@ class MelArray extends Array {
             yield index;
         }
     }
+}
+
+class SpyiedMelArray extends MelArray {
+    constructor(...args) {
+        super(...args);
+        this.on_update = new BnumEvent();
+        this.on_push_update = new BnumEvent();
+        this.on_pop_update = new BnumEvent();
+    }
+
+    push(...items) {
+        const returned = super.push(...items);
+
+        this.on_push_update.call(this);
+        this.on_update.call(this, 'push');
+
+        return returned;
+    }
+
+    pop() {
+        const returned = super.pop();
+
+        this.on_pop_update.call(this);
+        this.on_update.call(this, 'pop');
+
+        return returned;
+    }
+
+    
 }

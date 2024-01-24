@@ -32,11 +32,13 @@
     color: #FDCF42;
 }
 
+.btn.btn-block.btn-secondary.btn-mel>bnum-icon,
 .btn.btn-block.btn-secondary.btn-mel>span {
     font-size: 80px;
     margin-right: 50px;
 }
 
+.btn.btn-block.btn-secondary.btn-mel>bnum-icon.block,
 .btn.btn-block.btn-secondary.btn-mel>span.block {
     display: block;
     margin-right: 0px;

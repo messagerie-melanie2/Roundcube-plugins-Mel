@@ -62,6 +62,11 @@ class mel_sondage extends rcube_plugin
 
         if (class_exists("mel_metapage")) {
           $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_survey') ? $need_button : 'otherappsbar';
+
+        if ('bnum' === $rcmail->task && ($rcmail->action === '' || $rcmail->action === 'index')) {
+            $this->include_script('sondage_init.js');
+        }
+          
         }
 
         if ($need_button)

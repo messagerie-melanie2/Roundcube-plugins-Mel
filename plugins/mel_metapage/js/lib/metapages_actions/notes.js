@@ -127,6 +127,15 @@ export class MetapageNotesModule extends MetapageModule {
             this._on_resize();
         });
 
+        this.add_event_listener('create_modal.init', (args) => {
+            args.config.bottom_right = args.manager.create_button('note_add', 'Une note', () => {
+                this.show();
+                args.manager.hide();
+            });
+
+            return args;
+        }, {});
+
         this._generate_pined_notes();
 
         if ($('.mel-note.pined').length > 0) {

@@ -49,8 +49,10 @@ class mel_workspace extends bnum_plugin
         $this->include_script('js/init/classes/WSPNotifications.js');
         $this->include_script('js/init/classes/RoundriveShow.js');
         $this->include_script('js/init/classes/WorkspaceDrive.js');
-        if ($this->rc->task === "workspace")
-            $this->portal();
+        if ($this->rc->task === "workspace") $this->portal();
+        else if ($this->rc->task === "bnum" && $this->is_index()) {
+            $this->load_script_module('workspace', '/js/mel_lib/');
+        }
     }
 
     /**

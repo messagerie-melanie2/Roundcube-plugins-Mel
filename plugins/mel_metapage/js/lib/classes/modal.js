@@ -1,3 +1,4 @@
+import { SpyiedMelArray } from "../helpers/array.js";
 import { MelHtml } from "../html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../mel_events.js";
 import { MelObject } from "../mel_object.js";
@@ -175,28 +176,52 @@ export class RcmailDialog extends MelObject {
     _init() {
         this.contents = MelHtml.start;
         this.title = '';
+        /**
+         * @type {SpyiedMelArray}
+         */
         this.buttons = [];
         this.options = [];
         this._$dialog = $();
+        this.shown = false;
 
         return this;
     }
 
     _setup(contents, title, buttons, options) {
+        const generate = (array) => {
+            this._$dialog.dialog('option', 'buttons', array.map(x => x.generate()));
+        };
+        buttons = new SpyiedMelArray(...buttons);
+        buttons.on_update.push(function update(array, type) {
+            generate(array);
+        });
         Object.defineProperties(this, {
             contents: {
                 get() {
                     return contents;
+                },
+                set:(value) => {
+                    contents = value;
+                    this._$dialog.html((!!contents.generate ? contents.generate() : contents));
                 }
+
             },
             title: {
                 get() {
                     return title;
+                },
+                set:(value) => {
+                    title = value;
+                    this._$dialog.dialog('option', 'title', title);
                 }
             },
             buttons: {
                 get() {
                     return buttons;
+                },
+                set(value) {
+                    buttons = new SpyiedMelArray(...value);
+                    generate(buttons);
                 }
             },
             options: {
@@ -216,7 +241,19 @@ export class RcmailDialog extends MelObject {
             this._init()._setup(contents, title, buttons, options);
         }
 
-        this.show();
+
+        this._generate_dialog();
+   }
+
+    _generate_dialog() {
+        let $contents = !!this.contents.generate ? this.contents.generate() : this.contents;
+
+        this._$dialog = this.rcmail().show_popup_dialog($contents[0], this.title, this.buttons.map(x => x.generate()), this.options);
+        this._$dialog.on("dialogbeforeclose", ( event, ui ) => {
+            this.shown = false;
+        } );
+
+        this.shown = true;
     }
 
     /**
@@ -224,7 +261,10 @@ export class RcmailDialog extends MelObject {
      * @returns Chaînage
      */
     hide() {
-        return this.destroy();
+        if (this.shown) {
+            this._$dialog.dialog('close');
+        }
+        return this;
     }
 
     /**
@@ -232,9 +272,12 @@ export class RcmailDialog extends MelObject {
      * @returns Chaînage
      */
     show() {
-        let $contents = !!this.contents.generate ? this.contents.generate() : this.contents;
-
-        this._$dialog = this.rcmail().show_popup_dialog($contents[0], this.title, this.buttons.map(x => x.generate()), this.options);
+        if (!this.shown) {
+            if (!this._$dialog.dialog('instance')) {
+                this._generate_dialog();
+            }
+            else this._$dialog.dialog('open');
+        }
         return this;
     }
 
@@ -244,6 +287,8 @@ export class RcmailDialog extends MelObject {
      */
     destroy() {
         this._$dialog.dialog('destroy');
+        this.shown = false;
+        
         return this;
     }
 

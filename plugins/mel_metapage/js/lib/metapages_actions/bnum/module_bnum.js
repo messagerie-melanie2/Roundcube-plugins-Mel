@@ -36,7 +36,13 @@ class module_bnum extends MetapageModule {
                 }
             }
         }
+    }
 
+    static async Start(){
+        let element = new this();
+        element.exec();
+        await element.exec_async();
+        return element;
     }
 }
 

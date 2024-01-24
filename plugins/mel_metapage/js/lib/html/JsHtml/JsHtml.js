@@ -1,3 +1,4 @@
+import { MelEnumerable } from "../../classes/enum.js";
 import { BnumEvent } from "../../mel_events.js";
 
 export {JsHtml}
@@ -42,6 +43,29 @@ class RotomecaHtml {
         }
 
         return this;
+    }
+
+    go_to_start() {
+        if (this.balise !== 'start') {
+            return this.parent().go_to_start();
+        }
+
+        return this;
+    }
+
+    find_from_data(data_name, data_value) {
+        return MelEnumerable.from(this._find_from_data(data_name, data_value));
+    }
+
+    * _find_from_data(data_name, data_value){
+        for (const iterator of this.childs) {
+          if (data_value === iterator.attribs?.[`data-${data_name}`]) {
+            console.log(`[${data_name}=${data_value}]`, iterator.attribs, iterator.attribs?.[`data-${data_name}`], iterator.balise);
+            yield iterator;
+          }
+
+          yield * iterator._find_from_data(data_name, data_value);
+        }
     }
 
     /**

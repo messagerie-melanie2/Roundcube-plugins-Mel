@@ -1,5 +1,51 @@
 <div id="eventedit" class="<roundcube:exp expression="env:framed ? '' : 'popupmenu '">formcontent" aria-hidden="true" data-notabs="true">
     <form class="tabbed" action="#" method="post" enctype="multipart/form-data">
+		<bnum-hidden style="display: none;">
+			<div class="form-group row" id="edit-alarms">
+				<span class="red-star-after span-mel t1 low-margins"><roundcube:label name='mel_metapage.alert' /></span>
+				<div class="col-sm-12 alarms-input">
+					<div class="edit-alarm-item input-group first">
+						<roundcube:object name="plugin.alarm_select" id="edit-alarm-item" />
+						<span class="edit-alarm-buttons input-group-append">
+							<a href="#add" class="icon button btn add add-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.addalarm" /></span></a>
+							<a href="#delete" class="icon button btn delete delete-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.removealarm" /></span></a>
+						</span>
+					</div>
+				</div>
+			</div>
+		</bnum-hidden>
+
+		<div class="row no-label-row">
+			<!-- Idéalement 15px entre chaque et pas au début -->
+			<div class="form-group col-5 set-margin-left-0 set-margin-right-1" id="calendar-select">
+				<label for="edit-calendar" class="red-star-after span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_calendar' /></label>
+				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
+					<span class="material-symbols-outlined">
+						calendar_month
+					</span>
+					<roundcube:object name="plugin.calendar_select" id="edit-calendar" style="background-color: transparent;border:none;display: inline-block" />
+				</div>
+
+			</div>
+			<div class="col-2">
+				<select class="form-control input-mel" id="mel-calendar-alarm">
+					<option value="">Aucune</option>
+				</select>	
+			</div>
+			<div class="col-2">
+				<label for="edit-event-status" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_event_state' /></label>
+				<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control input-mel" />
+
+			</div>
+			<div class="col-3">
+				<select class="form-control input-mel" id="mel-calendar-alarm">
+					<option value="">Aucune</option>
+				</select>	
+			</div>
+		</div>
+
+
+
 		<!-- basic info -->
 		<fieldset id="event-panel-summary">
             <span class="red-star"><roundcube:label name='mel_metapage.required_fields' /></span>
@@ -96,21 +142,6 @@
 						<option value="MONTHLY"><roundcube:label name='mel_metapage.MONTHLY' /></option>
 						<option value="YEARLY"><roundcube:label name='mel_metapage.YEARLY' /></option>
 					</select>
-                </div>
-                <div class="col-6"> <!--Alerte-->
-                    <div class="form-group row" id="edit-alarms">
-                        <!-- <label for="edit-alarm-item" class="col-sm-2 col-form-label"><roundcube:label name="calendar.alarms" /></label> -->
-                        <span class="red-star-after span-mel t1 low-margins"><roundcube:label name='mel_metapage.alert' /></span>
-                        <div class="col-sm-12 alarms-input">
-                            <div class="edit-alarm-item input-group first">
-                                <roundcube:object name="plugin.alarm_select" id="edit-alarm-item" />
-                                <span class="edit-alarm-buttons input-group-append">
-                                    <a href="#add" class="icon button btn add add-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.addalarm" /></span></a>
-                                    <a href="#delete" class="icon button btn delete delete-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.removealarm" /></span></a>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -292,24 +323,10 @@
 				</div>
 			</div> -->
 
-			<div class="form-group row" id="calendar-select">
-				<!-- <label for="edit-calendar" class="col-sm-2 col-form-label"><roundcube:label name="calendar.calendar" /></label> -->
-				<label for="edit-calendar" class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.choose_calendar' /></label>
-				<div class="col-sm-12">
-					<roundcube:object name="plugin.calendar_select" id="edit-calendar" class="form-control input-mel" />
-				</div>
-			</div>
 			<div class="form-group row hidden">
 				<label for="edit-categories" class="col-sm-2 col-form-label"><roundcube:label name="calendar.category" /></label>
 				<div class="col-sm-10">
 					<roundcube:object name="plugin.category_select" id="edit-categories" class="form-control" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<label for="edit-event-status" class="span-mel t1"><roundcube:label name='mel_metapage.choose_event_state' /></label>
-				<!-- <label for="edit-event-status" class="col-sm-2 col-form-label"><roundcube:label name="calendar.status" /></label> -->
-				<div class="col-sm-12">
-					<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control input-mel" />
 				</div>
 			</div>
 			<div class="form-group row" style="display: none;">

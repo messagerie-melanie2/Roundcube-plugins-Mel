@@ -1,0 +1,31 @@
+@size: 0, 15, 25, 30, 40;
+
+.set-margin(@index, @px)
+{
+    .set-margin-{
+        &all-@{index} {
+            margin: e('@{px}px');
+        }
+
+        &left-@{index} {
+            margin-left: e('@{px}px');
+        }
+
+        &right-@{index} {
+            margin-right: e('@{px}px');
+        }
+
+        &top-@{index} {
+            margin-top: e('@{px}px');
+        }
+
+        
+        &bottom-@{index} {
+            margin: e('@{px}px');
+        }
+    }
+}
+
+each(@size, {
+    .set-margin(e(%('%a', @key - 1)), @value);
+});

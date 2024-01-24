@@ -41,6 +41,10 @@ class My_day extends Module
         $this->set_icon('today');
     }
 
+    public function enabled() {
+        return class_exists('calendar');
+    }
+
     /**
      * Génère le html de ce module.
      */

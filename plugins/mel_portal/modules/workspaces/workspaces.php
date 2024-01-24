@@ -60,6 +60,10 @@ class Workspaces extends Module
     // }
   }
 
+  public function enabled() {
+    return class_exists('mel_workspace');
+}
+
   function generate_html()
   {
     // return '';

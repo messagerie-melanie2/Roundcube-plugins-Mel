@@ -262,6 +262,13 @@ class Module implements iModule {
         
     }
 
+    /**
+     * Si le module est activé ou non
+     */
+    public function enabled() {
+        return true;
+    }
+
     protected function generate_html(){}
     protected function set_js_vars(){} 
     protected function include_js(){}

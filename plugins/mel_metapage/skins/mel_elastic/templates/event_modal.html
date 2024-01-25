@@ -17,7 +17,7 @@
 
 		<div class="row no-label-row">
 			<!-- Idéalement 15px entre chaque et pas au début -->
-			<div class="form-group col-5 set-margin-left-0 set-margin-right-1" id="calendar-select">
+			<div class="form-group col-5 set-padding-left-0 set-padding-right-1" id="calendar-select">
 				<label for="edit-calendar" class="red-star-after span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_calendar' /></label>
 				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
 					<span class="material-symbols-outlined">
@@ -27,17 +27,17 @@
 				</div>
 
 			</div>
-			<div class="col-2">
+			<div class="col-2 set-padding-between-1">
 				<select class="form-control input-mel" id="mel-calendar-alarm">
 					<option value="">Aucune</option>
 				</select>	
 			</div>
-			<div class="col-2">
+			<div class="col-2 set-padding-between-1">
 				<label for="edit-event-status" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_event_state' /></label>
 				<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control input-mel" />
 
 			</div>
-			<div class="col-3">
+			<div class="col-3 set-padding-right-0 set-padding-left-1">
 				<select class="form-control input-mel" id="mel-calendar-alarm">
 					<option value="">Aucune</option>
 				</select>	

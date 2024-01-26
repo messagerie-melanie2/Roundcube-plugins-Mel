@@ -9,6 +9,9 @@ export class UIMailHeaderManager extends MailModule {
 
     main() {
         super.main();
+
+        if (!['', 'index'].includes(rcmail.env.action)) return;
+
         const lc_selector = '#layout-content .header ul#toolbar-menu li a';
         const ll_selector = '#layout-list .header';
         const ll_search_selector = `${ll_selector} #mailsearchlist`;

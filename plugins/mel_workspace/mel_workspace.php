@@ -1393,7 +1393,7 @@ class mel_workspace extends bnum_plugin
                 }
 
 
-                if ($services[self::LINKS]){
+                if ($services[self::LINKS] && class_exists('mel_useful_link')) {
 
                     $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
                     $body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤"],

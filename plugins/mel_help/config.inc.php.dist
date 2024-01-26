@@ -1,12 +1,64 @@
 <?php
 
 // General help page for the webmail
-$rcmail_config['help_page'] = '';
+$rcmail_config['help_page'] = '/aide/';
 
 // Show current page help page if exists
 $rcmail_config['task_help_page'] = [
-    'mail' => '', 
-    'calendar' => '',
-    'addressbook' => '',
-    'settings' => '',
+    'mail'          => '/aide/doc/melweb/#1-Courriel', 
+    'calendar'      => '/aide/doc/melweb/#3-Agendas',
+    'addressbook'   => '/aide/doc/melweb/#2-Carnets_adresses',
+    'tasks'         => '/aide/doc/melweb/index.html#4-Taches',
+    'settings'      => '/aide/doc/melweb/#5-Parametres',
+    'settings/preferences'      => '/aide/doc/melweb/#51-Preferences',
+    'settings/folders'          => '/aide/doc/melweb/#52-Dossiers',
+    'settings/identities'       => '/aide/doc/melweb/#53-Identites',
+    'settings/plugin.managesieve'               => '/aide/doc/melweb/#54-Filtres',
+    'settings/plugin.mel_resources_bal'         => '/aide/doc/melweb/#56-MesRessources',
+    'settings/plugin.mel_resources_agendas'     => '/aide/doc/melweb/#56-MesRessources',
+    'settings/plugin.mel_resources_contacts'    => '/aide/doc/melweb/#56-MesRessources',
+    'settings/plugin.mel_resources_tasks'       => '/aide/doc/melweb/#56-MesRessources',
+    'settings/plugin.mel_moncompte'             => '/aide/doc/melweb/#6-MonCompte',
+    'settings/plugin.mel_doubleauth'            => '/aide/doc/melweb/#7-Double_authentification',
+    'settings/plugin.mel_statistics_mobile'     => '/aide/doc/melweb/#58-MesStatistiques',
+    'settings/plugin.mel_suggestion_box'        => '/aide/doc/melweb/#60-FaireUneSuggestion',
+    'sondage'       => '/aide/doc/pegase/co/0-Introduction.html',
+    'stockage'      => '/aide/doc/stockage/#Sommaire1',
+    'discussion'    => '/aide/doc/ariane',
+];
+
+// Suggestion URL
+$rcmail_config['help_suggestion_url'] = [
+  'task' => 'settings',
+  'action' => 'plugin.mel_suggestion_box'
+];
+
+// Discussion channel url for support
+$rcmail_config['help_channel_support'] = '/?_task=discussion&_params=channel/mel-infos';
+
+$rcmail_config['help_video'] = [
+  'bureau' => [
+    'title' => 'Le Bnum et l\'accueil', 
+    'description' => 'Faites vos premiers pas sur le Bureau Numérique avec cette capsule vidéo de présentation du Bnum, de son interface et de sa page d\'accueil.', 
+    'poster' => 'bureau.png', 
+    'video' => 'Capsule-bureau.mp4',
+  ],
+  'workspace' => [
+    'title' => 'Les espaces de travail', 
+    'description' => 'Les espaces de travail facilitent le travail collaboratif sur un projet, découvrez comment dans cette capsule vidéo.', 
+    'poster' => 'workspace.png', 
+    'video' => 'Capsule-workspace.mp4',
+  ],
+  'webconf' => [
+    'title' => 'Les espaces de réunion', 
+    'description' => 'Les espaces de réunion vous permettent de faire des web-conférences et de travailler en direct avec les autres participants, découvrez comment dans cette capsule vidéo.', 
+    'poster' => 'webconference.png', 
+    'video' => 'Capsule-webconference.mp4',
+  ],
+  'agenda' => [
+    'title' => 'L\'agenda', 
+    'description' => 'L\'agenda vous permet de créer et visualiser tous vos évènements, découvrez comment dans cette capsule vidéo', 
+    'poster' => 'bureau.png', 
+    'video' => 'Capsule-agenda.mp4',
+  ]
 ];

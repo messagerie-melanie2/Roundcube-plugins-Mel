@@ -41,6 +41,9 @@ function rcube_calendar_ui(settings) {
   this.calendars = {};
   this.quickview_sources = [];
 
+  //Pamela
+  /** Contst private vars */
+  const width_modal_event = 800;
 
   /***  private vars  ***/
   var DAY_MS = 86400000;
@@ -1108,11 +1111,11 @@ function rcube_calendar_ui(settings) {
         },
         buttons: buttons,
         minWidth: 500,
-        width: 600
+        width: width_modal_event
       }).append(editform.show());  // adding form content AFTERWARDS massively speeds up opening on IE6
 
       // set dialog size according to form content
-      me.dialog_resize($dialog.get(0), editform.height() + (bw.ie ? 20 : 0), 550);
+      me.dialog_resize($dialog.get(0), editform.height() + (bw.ie ? 20 : 0), width_modal_event);
 
       rcmail.triggerEvent('calendar-event-dialog', { dialog: $dialog });
     }

@@ -13,6 +13,20 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="form-group row">
+				<label for="edit-categories" class="col-sm-2 col-form-label"><roundcube:label name="calendar.category" /></label>
+				<div class="col-sm-10">
+					<roundcube:object name="plugin.category_select" id="edit-categories" class="form-control" />
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="edit-location"><roundcube:label name="calendar.location" /></label>
+				<input type="text" class="form-control" name="location" id="edit-location" size="40" />
+			</div>
+
+			<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control input-mel" style="background-color: transparent;border:none;display: inline-block" />
 		</bnum-hidden>
 
 		<div class="row no-label-row set-margin-bottom-5">
@@ -49,11 +63,12 @@
 			</div>
 			<div class="col-1 set-padding-important-all-0">
 				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
-					<span class="material-symbols-outlined">
-						lock
-					</span>
-					<label for="edit-sensitivity" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
-					<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control input-mel" style="background-color: transparent;border:none;display: inline-block" />
+					<label for="update-sensivity" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
+					<button id="update-sensivity" aria-valuenow="busy" class="mel-button no-button-margin no-margin-button">
+						<span class=material-symbols-outlined>
+							lock
+						</span>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -72,12 +87,12 @@
 		<div class="row set-margin-left-0" style="align-items: center;">
 			<div class="col-6" style="display:flex;align-items: center;">
 				<span id="event-category-icon" class="material-symbols-outlined set-margin-right-1">unknown_med</span>
-				<select class="form-control input-mel">
+				<select id="event-category" class="form-control input-mel">
 					<option value="">Loading...</option>
 				</select>
 			</div>
 			<div class="col-6 set-padding-important-left-2">
-				<button type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0;" onclick="return rcmail.command('calendar-workspace-add-all')">
+				<button id="event-add-member" type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0;" onclick="return rcmail.command('calendar-workspace-add-all')">
 					<span><roundcube:label name='mel_metapage.add_all' /></span>
 					<span class="icofont-plus-circle set-margin-left-1"></span>
 				</button>
@@ -95,15 +110,15 @@
 			</div>
 			<div class="form-control fake-input input-mel" style="display: flex;align-items: center;">
 				<div id="attendees"></div>
-				<input id="attendee-input" class="form-control input-mel" type="text" value="Ajoutez des participants" style="background-color: transparent;border:none;display: inline-block"/>
+				<input id="attendee-input" class="form-control input-mel" type="text" placeholder="Ajoutez des participants" style="background-color: transparent;border:none;display: inline-block"/>
 			</div>
 			<div class="form-control fake-input input-mel set-margin-top-1" style="display: flex;align-items: center;">
 				<div id="attendees-optional"></div>
-				<input id="attendee-input-optional" class="form-control input-mel" type="text" value="Participants facultatifs" style="background-color: transparent;border:none;display: inline-block"/>
+				<input id="attendee-input-optional" class="form-control input-mel" type="text" placeholder="Participants facultatifs" style="background-color: transparent;border:none;display: inline-block"/>
 			</div>
 			<div class="form-control fake-input input-mel set-margin-top-1" style="display: flex;align-items: center;">
 				<div id="attendees-animators"></div>
-				<input id="attendee-animators" class="form-control input-mel" type="text" value="Animateurs" style="background-color: transparent;border:none;display: inline-block"/>
+				<input id="attendee-animators" class="form-control input-mel" type="text" placeholder="Animateurs" style="background-color: transparent;border:none;display: inline-block"/>
 			</div>
 		</div>
 
@@ -116,7 +131,7 @@ Choix de la période
 			<div class="col-sm-10 datetime">
 				<input type="text" name="startdate" size="11" id="edit-startdate" class="form-control input-mel" required="true" /> &nbsp;
 				<input style="display: none;" type="text" name="starttime" size="6" id="edit-starttime" class="form-control hidden" aria-label="<roundcube:label name='calendar.starttime' />" /> 
-				<select class="form-control input-mel">
+				<select id="mel-edit-starttime" class="form-control input-mel">
 					<option value="">??:??</option>
 				</select>
 				<label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox" /><roundcube:label name="calendar.all-day" /></label>
@@ -127,7 +142,7 @@ Choix de la période
 			<div class="col-sm-10 datetime">
 				<input type="text" name="enddate" size="11" id="edit-enddate" class="form-control input-mel" required="true" /> &nbsp;
 				<input style="display: none;" type="text" name="endtime" size="6" id="edit-endtime" class="form-control hidden" aria-label="<roundcube:label name='calendar.endtime' />" />
-				<select class="form-control input-mel">
+				<select id="mel-edit-endtime" class="form-control input-mel">
 					<option value="">??:??</option>
 				</select>
 				<div class=""><!--Récurence-->

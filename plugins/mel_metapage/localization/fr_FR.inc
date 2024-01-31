@@ -114,7 +114,7 @@ $labels["mosaik"] = "Mosaïque";
 $labels["url"] = "Url";
 
 $labels["required_fields"] = "Champs obligatoires";
-$labels["event_name"] = "Nom de l'évènement";
+$labels["event_name"] = "Ajoutez un titre";
 $labels["date_choice"] = "Choix de la période";
 $labels["event_start"] = "Début de l'évènement";
 $labels["event_end"] = "Fin de l'évènement";

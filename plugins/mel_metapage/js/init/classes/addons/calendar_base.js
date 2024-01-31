@@ -1438,6 +1438,7 @@ $(document).ready(() => {
      */
     window.rcube_calendar_ui.edit = function(event)
     {
+        return;
         EventUserNotified.CreateInstance(event);
         //Récupération de l'évènement mis en mémoire si l'évènement passé en paramètre est vide.
         if (event === "" && rcmail.env.event_prop !== undefined)
@@ -1772,7 +1773,7 @@ $(document).ready(() => {
             $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte").addClass("input-mel").on('change', () => onAlertChange());
             $(".edit-alarm-value").attr('title', "Alerte - Nombre de l'alerte");
             $(".edit-alarm-offset").attr('title', "Alerte - Elle doit se déclencher quand ?");
-            $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
+            //$("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
             

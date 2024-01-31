@@ -1,39 +1,41 @@
 //compress:false
-@size: 0, 15, 25, 30, 40;
+@size: 0, 5, 15, 25, 30, 40;
 
-.set-things(@name, @index, @px)
+.set-things(@name, @prop, @index, @px)
 {
     .set-@{name}-{
         &all-@{index} {
-            @{name}: e('@{px}px');
+            @{prop}: e('@{px}px');
         }
 
         &left-@{index} {
-            @{name}-left: e('@{px}px');
+            @{prop}-left: e('@{px}px');
         }
 
         &right-@{index} {
-            @{name}-right: e('@{px}px');
+            @{prop}-right: e('@{px}px');
         }
 
         &between-@{index} {
-            @{name}-right: e('@{px}px');
-            @{name}-left: e('@{px}px');
+            @{prop}-right: e('@{px}px');
+            @{prop}-left: e('@{px}px');
         }
 
         &top-@{index} {
-            @{name}-top: e('@{px}px');
+            @{prop}-top: e('@{px}px');
         }
 
         
         &bottom-@{index} {
-            @{name}: e('@{px}px');
+            @{prop}-bottom: e('@{px}px');
         }
     }
 }
 
-
 each(@size, {
-    .set-things(margin ,e(%('%a', @key - 1)), @value);
-    .set-things(padding ,e(%('%a', @key - 1)), @value);
+    .set-things(margin, margin ,e(%('%a', @key - 1)), @value);
+    .set-things(padding, padding ,e(%('%a', @key - 1)), @value);
+
+    .set-things(margin-important, margin ,e(%('%a', @key - 1)), @value)!important;
+    .set-things(padding-important, padding ,e(%('%a', @key - 1)), @value)!important;
 });

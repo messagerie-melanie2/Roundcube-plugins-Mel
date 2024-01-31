@@ -43,7 +43,7 @@ function rcube_calendar_ui(settings) {
 
   //Pamela
   /** Contst private vars */
-  const width_modal_event = 800;
+  const width_modal_event = 700;
 
   /***  private vars  ***/
   var DAY_MS = 86400000;

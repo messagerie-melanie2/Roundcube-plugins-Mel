@@ -861,3 +861,6 @@ body.quickview-active .fc .fc-scroller {
 #recurrence-form-monthly .recurrence-onevery select {
   width: 45%;
 }
+#eventedit .nav.nav-tabs {
+  display: none;
+}

@@ -1436,7 +1436,7 @@ $(document).ready(() => {
      * Affiche la modale d'édition d'un évènement
      * @param {JSON} event Event plugin calendar
      */
-    window.rcube_calendar_ui.edit = function(event)
+    window.rcube_calendar_ui.edit = function(event, dialog)
     {
         return;
         EventUserNotified.CreateInstance(event);
@@ -2444,8 +2444,9 @@ $(document).ready(() => {
         return $mainDiv;
     };
 
-        rcmail.addEventListener("edit-event", (event) =>{
-            window.rcube_calendar_ui.edit(event);
+        rcmail.addEventListener("calendar-event-dialog", ({dialog}) =>{
+            const event = cal.selected_event;
+            window.rcube_calendar_ui.edit(event, dialog);
         });   
 
         rcmail.addEventListener("dialog-attendees-save", (datetimes) => {

@@ -340,6 +340,8 @@ class mel_driver extends calendar_driver {
             'group'       => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
             'class'       => 'user',
     				'caldavurl'   => $this->get_caldav_url($cal),
+            'cache'       => true,
+            'token'       => $cal->getCTag($this->rc->action != 'refresh' && $this->rc->action != 'event'),
         );
         
         if (isset($tree)) {
@@ -968,6 +970,8 @@ class mel_driver extends calendar_driver {
             $this->remove_attachment($attachment, $_event->uid);
           }
         }
+        // Actualiser le ctag du calendrier
+        $this->calendars[$_event->calendar]->getCTag(false);
         return $result;
       }
     }
@@ -1294,6 +1298,8 @@ class mel_driver extends calendar_driver {
           }
         }
         if ($_event->save() !== null) {
+          // Actualiser le ctag du calendrier
+          $this->calendars[$_event->calendar]->getCTag(false);
           return $result;
         }
       }
@@ -2127,6 +2133,7 @@ class mel_driver extends calendar_driver {
     $_event['id'] = driver_mel::gi()->mceToRcId($event->calendar) . self::CALENDAR_SEPARATOR . $event->uid;
     $_event['uid'] = $event->uid;
     $_event['calendar-name'] = $this->_format_calendar_name($this->calendars[$event->calendar]->name);
+    $_event['calendar_token'] = $this->calendars[$event->calendar]->getCTag();
 
     // Evenement supprimé
     if ($event->deleted) {

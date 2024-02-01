@@ -3754,6 +3754,10 @@ function rcube_calendar_ui(settings) {
 
   // refresh the calendar view after saving event data
   this.refresh = function (p) {
+    // PAMELA - Gestion du cache
+    if (p.update && p.update.calendar_token) {
+      me.calendars[p.source].token = p.update.calendar_token;
+    }
     var source = me.calendars[p.source];
 
     // helper function to update the given fullcalendar view
@@ -3774,9 +3778,11 @@ function rcube_calendar_ui(settings) {
         // event.source = view.fullCalendar('getEventSourceById', source.id);  // link with source
         // view.fullCalendar('renderEvent', event);
         // MANTIS 0007067: Problème de doublon d'événement en affichage pendant une mise à jour
-        fc.fullCalendar('refetchEventSources', source.id);
+        fc.fullCalendar('refetchEventSources', source);
         fetch_counts();
       }
+      // PAMELA - Gestion du cache
+      fc.fullCalendar('updateEventSourceToken', source);
     }
 
     // remove temp events
@@ -3798,7 +3804,16 @@ function rcube_calendar_ui(settings) {
         $('#rcmlical' + source.id + ' input').prop('checked', true);
       }
 
-      fc.fullCalendar('refetchEventSources', source.id);
+      // PAMELA - gestion du cache
+      let sources = [];
+      for (const key in p.cals) {
+        if (me.calendars[key].token != p.cals[key].token) {
+          me.calendars[key].token = p.cals[key].token;
+          sources.push(me.calendars[key]);
+        }
+      }
+      fc.fullCalendar('refetchEventSources', sources);
+      // fc.fullCalendar('refetchEventSources', source.id);
       fetch_counts();
     }
     // add/update single event object
@@ -3814,7 +3829,16 @@ function rcube_calendar_ui(settings) {
     }
     // refetch all calendars
     else if (p.refetch) {
-      fc.fullCalendar('refetchEvents');
+      // PAMELA - gestion du cache
+      let sources = [];
+      for (const key in p.cals) {
+        if (me.calendars[key].token != p.cals[key].token) {
+          me.calendars[key].token = p.cals[key].token;
+          sources.push(me.calendars[key]);
+        }
+      }
+      fc.fullCalendar('refetchEventSources', sources);
+      // fc.fullCalendar('refetchEvents');
       fetch_counts();
     }
   };

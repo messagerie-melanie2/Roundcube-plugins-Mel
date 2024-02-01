@@ -8959,6 +8959,21 @@ var EventManager = /** @class */ (function () {
             this.currentPeriod.purgeAllSources(); // might release
         }
     };
+    // PAMELA - Cache
+    EventManager.prototype.updateSourceToken = function (matchInput, token) {
+        var i;
+        var source;
+
+        // given a proper event source object
+        for (i = 0; i < this.otherSources.length; i++) {
+            source = this.otherSources[i];
+            if (source === matchInput || matchInput.id && source.id === matchInput.id) {
+                // PAMELA - Token pour le cache
+                this.otherSources[i].token = token;
+                return [source];
+            }
+        }
+    };
     // Source Refetching
     // -----------------------------------------------------------------------------------------------------------------
     EventManager.prototype.refetchSource = function (eventSource) {
@@ -9011,7 +9026,9 @@ var EventManager = /** @class */ (function () {
         // given a proper event source object
         for (i = 0; i < sources.length; i++) {
             source = sources[i];
-            if (source === matchInput) {
+            if (source === matchInput || matchInput.id && source.id === matchInput.id) {
+                // PAMELA - Token pour le cache
+                source.token = matchInput.token;
                 return [source];
             }
         }
@@ -9358,6 +9375,10 @@ var JsonFeedEventSource = /** @class */ (function (_super) {
         var onSuccess = ajaxSettings.success;
         var onError = ajaxSettings.error;
         var requestParams = this.buildRequestParams(start, end, timezone);
+        // PAMELA - Gestion du token
+        if (this.token) {
+            requestParams['token'] = this.token;
+        }
         // todo: eventually handle the promise's then,
         // don't intercept success/error
         // tho will be a breaking API change
@@ -9444,7 +9465,9 @@ JsonFeedEventSource.defineStandardProps({
     url: true,
     startParam: true,
     endParam: true,
-    timezoneParam: true
+    timezoneParam: true,
+    // PAMELA - Gestion du cache
+    token: true
 });
 
 
@@ -11504,6 +11527,13 @@ var Calendar = /** @class */ (function () {
         for (i = 0; i < sources.length; i++) {
             eventManager.refetchSource(sources[i]);
         }
+        eventManager.thaw();
+    };
+    // PAMELA - Cache
+    Calendar.prototype.updateEventSourceToken = function (source) {
+        var eventManager = this.eventManager;
+        eventManager.freeze();
+        eventManager.updateSourceToken(source, source.token);
         eventManager.thaw();
     };
     // not for internal use. use options module directly instead.

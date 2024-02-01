@@ -1518,7 +1518,9 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                 // refresh all calendars
                 if ($event['calendar'] != $ev['calendar']) {
-                    $this->rc->output->command('plugin.refresh_calendar', ['source' => null, 'refetch' => true]);
+                    // PAMELA - Gestion du cache dans le calendrier
+                    $cals = $this->driver->list_calendars(calendar_driver::FILTER_ACTIVE);
+                    $this->rc->output->command('plugin.refresh_calendar', ['source' => null, 'refetch' => true, 'cals' => $cals]);
                     $reload = 0;
                 }
             }
@@ -1665,6 +1667,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         if ($reload && empty($_REQUEST['_framed'])) {
             $args = ['source' => $event['calendar']];
             if ($reload > 1) {
+                // PAMELA - Gestion du cache dans le calendrier
+                $args['cals'] = $this->driver->list_calendars(calendar_driver::FILTER_ACTIVE);
                 $args['refetch'] = true;
             }
             else if ($success && $action != 'remove') {
@@ -1796,6 +1800,12 @@ $("#rcmfd_new_category").keypress(function(event) {
         $query  = rcube_utils::get_input_value('q', rcube_utils::INPUT_GET);
         $source = rcube_utils::get_input_value('source', rcube_utils::INPUT_GET);
 
+        // PAMELA - Gestion du cache
+        $token  = rcube_utils::get_input_value('token', rcube_utils::INPUT_GET);
+        if (isset($token)) {
+            rcmail::get_instance()->output->future_expire_header();
+        }
+
         $events = $this->driver->load_events($start, $end, $query, $source);
         echo $this->encode($events, !empty($query));
         exit;
@@ -1875,8 +1885,11 @@ $("#rcmfd_new_category").keypress(function(event) {
     public function refresh($attr)
     {
         // refresh the entire calendar every 10th time to also sync deleted events
-        if (rand(0, 10) == 10) {
-            $this->rc->output->command('plugin.refresh_calendar', ['refetch' => true]);
+        // if (rand(0, 10) == 10) {
+        if (true) {
+            // PAMELA - Gestion du cache dans le calendrier
+            $cals = $this->driver->list_calendars(calendar_driver::FILTER_ACTIVE);
+            $this->rc->output->command('plugin.refresh_calendar', ['refetch' => true, 'cals' => $cals]);
             return;
         }
 

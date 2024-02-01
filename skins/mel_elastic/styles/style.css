@@ -4079,6 +4079,3 @@ bnum-separate {
   margin-bottom: 20px;
   display: block;
 }
-tr.disabled {
-  background-color: var(--disabled-background-color) !important;
-}

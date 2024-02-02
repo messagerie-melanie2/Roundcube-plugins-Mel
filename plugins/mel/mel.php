@@ -478,6 +478,9 @@ class mel extends rcube_plugin
           $rc_i['uid'] = $m2_i['uid'];
           $update_identities[$rc_i['identity_id']] = $m2_i;
         }
+        else if (empty(trim($rc_i['name']))) {
+          $update_identities[$rc_i['identity_id']] = ['name' => $m2_i['name']];
+        }
         // Vide le tableau pour lister ensuite les identities à créer
         unset($m2_identities[strtolower($rc_i['email'])]);
       } else {

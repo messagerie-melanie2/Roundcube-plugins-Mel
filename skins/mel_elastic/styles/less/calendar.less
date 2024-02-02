@@ -1352,3 +1352,27 @@ body.quickview-active {
         display: none;
     }
 }
+
+.edit-radio {
+    font-variation-settings: 'FILL' 1;
+
+    &-free {
+        &:extend(.edit-radio);
+        color: rgb(26, 192, 26);
+    }
+
+    &-busy {
+        &:extend(.edit-radio);
+        color: red;
+    }
+
+    &-wait {
+        &:extend(.edit-radio);
+        color: rgb(224, 168, 12);
+    }
+
+    &-telework {
+        &:extend(.edit-radio);
+        color: rgb(15, 156, 250);
+    }
+}

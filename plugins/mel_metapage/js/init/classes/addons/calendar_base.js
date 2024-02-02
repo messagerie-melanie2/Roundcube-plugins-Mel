@@ -1436,8 +1436,14 @@ $(document).ready(() => {
      * Affiche la modale d'édition d'un évènement
      * @param {JSON} event Event plugin calendar
      */
-    window.rcube_calendar_ui.edit = function(event, dialog)
+    window.rcube_calendar_ui.edit = async function(event, dialog)
     {
+        const loader = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+
+        const {CalendarEvent} = await loader('mel_metapage', 'edit_event', '/js/lib/calendar/event/');
+
+        new CalendarEvent(event, dialog);
+
         return;
         EventUserNotified.CreateInstance(event);
         //Récupération de l'évènement mis en mémoire si l'évènement passé en paramètre est vide.

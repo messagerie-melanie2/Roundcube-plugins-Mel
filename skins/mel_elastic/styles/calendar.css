@@ -864,3 +864,22 @@ body.quickview-active .fc .fc-scroller {
 #eventedit .nav.nav-tabs {
   display: none;
 }
+.edit-radio,
+.edit-radio-free,
+.edit-radio-busy,
+.edit-radio-wait,
+.edit-radio-telework {
+  font-variation-settings: 'FILL' 1;
+}
+.edit-radio-free {
+  color: #1ac01a;
+}
+.edit-radio-busy {
+  color: red;
+}
+.edit-radio-wait {
+  color: #e0a80c;
+}
+.edit-radio-telework {
+  color: #0f9cfa;
+}

@@ -1482,15 +1482,6 @@ body.task-mail .floating-action-buttons {
   margin-top: 15px;
   cursor: pointer;
 }
-.mel-button > span.plus{
-  margin-left: 40px;
-}
-
-.mel-button > span.plus::before {
-/* font-size: 15px; */
-display: inline-block;
-vertical-align: middle;
-}
 .mel-button.mel-button-block {
   display: block;
 }
@@ -4087,4 +4078,111 @@ bnum-separate {
   font-size: 60px;
   margin-bottom: 20px;
   display: block;
+}
+.mel-button > span.plus {
+  margin-left: 40px;
+}
+.mel-button > span.plus::before {
+  /* font-size: 15px; */
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}
+.input-mel.border-bottom-input {
+  border: none;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  border-bottom: solid thin var(--main-border-color-transparent);
+  height: 30px;
+}
+.input-mel.border-bottom-input:focus {
+  box-shadow: none;
+  border-color: var(--mel-button-border-color) !important;
+}
+.input-mel.large-input {
+  font-size: 21px;
+  height: 35px;
+}
+.event-subtitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--main-text-color);
+}
+.border-bottom-input-icon {
+  width: 100%;
+  position: relative;
+}
+.border-bottom-input-button {
+  position: absolute;
+  right: -5px;
+  top: 0px;
+  border-radius: 100%;
+  background: none;
+  border: none;
+  color: var(--main-text-color);
+}
+.border-bottom-input-button:hover,
+.border-bottom-input-button:active {
+  color: var(--main-text-color) !important;
+  background: none !important;
+  box-shadow: none !important;
+  border-color: none !important;
+}
+.border-bottom-input-button:focus {
+  background: none !important;
+  box-shadow: none !important;
+  border-color: none !important;
+}
+.icon-weight-400 {
+  font-variation-settings: 'wght' 400;
+}
+.icon-weight-300 {
+  font-variation-settings: 'wght' 300;
+}
+.close-button {
+  color: var(--default-placeholder-text-color);
+}
+.close-button:hover,
+.close-button:active {
+  color: red !important;
+}
+#update-sensivity {
+  background: none;
+  border: none;
+  color: var(--main-text-color);
+  margin-top: 4px;
+}
+.button-icon-hover:hover span {
+  font-variation-settings: 'FILL' 1;
+}
+.button-icon-hover:focus,
+.button-icon-hover:active,
+.button-icon-hover:active:focus {
+  box-shadow: none !important;
+}
+.icon-front-col {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.no-icon-front-col {
+  margin-left: 34px;
+}
+.relative {
+  position: relative;
+}
+.icon-datepicker {
+  height: 30px;
+}
+.icon-datepicker .input-mel {
+  width: 12em !important;
+}
+.icon-datepicker span {
+  position: absolute;
+  top: 4px;
+  right: 19px;
+}
+.datetime .hour-select {
+  width: 120px !important;
 }

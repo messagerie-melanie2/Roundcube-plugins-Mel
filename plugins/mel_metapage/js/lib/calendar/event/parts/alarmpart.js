@@ -58,20 +58,22 @@ class AlarmData {
     }
 
     toString() {
+        let val = this.getTime(true);
         let offset = EMPTY_STRING;
+        const has_s = val > 1;
 
         switch (this.offset) {
             case '-W':
-                offset = `semaine${this.value > 1 ? 's' : ''}`;
+                offset = `semaine${has_s ? 's' : ''}`;
                 break;
             case '-D':
-                offset = `jour${this.value > 1 ? 's' : ''}`;
+                offset = `jour${val > 1 ? 's' : ''}`;
                 break;
             case '-H':
-                offset = `heure${this.value > 1 ? 's' : ''}`;
+                offset = `heure${val > 1 ? 's' : ''}`;
         
             default:
-                offset = `minute${this.value > 1 ? 's' : ''}`;
+                offset = `minute${val > 1 ? 's' : ''}`;
                 break;
         }
 
@@ -104,7 +106,6 @@ export class AlarmPart extends FakePart {
     }
 
     init(event) {
-        debugger;
         this._$fakeField.html(EMPTY_STRING);
         let options_alarms = AlarmPart.PREDEFINED
         let val = 0;
@@ -187,15 +188,16 @@ export class AlarmPart extends FakePart {
 
                         const alarm = AlarmData.From(value, offset);
                         this.onUpdate(alarm.value);
-                        this._$fakeField.html(EMPTY_STRING);
-
-                        let enu = MelEnumerable.from(AlarmPart.PREDEFINED).aggregate([{
-                            value:alarm.value,
-                            label:alarm.toString()
-                        }]).orderBy(x => -1 === x.value ? Number.POSITIVE_INFINITY : x.value).toArray();
-
-                        for (const iterator of enu) {
-                            MelHtml.start.option({value:iterator.value}).text(iterator.label).end().generate().appendTo(this._$fakeField);
+                        if (!MelEnumerable.from(AlarmPart.PREDEFINED).where(x => x.value === alarm.value).any()) {
+                            this._$fakeField.html(EMPTY_STRING);
+                            let enu = MelEnumerable.from(AlarmPart.PREDEFINED).aggregate([{
+                                value:alarm.value,
+                                label:alarm.toString()
+                            }]).orderBy(x => -1 === x.value ? Number.POSITIVE_INFINITY : x.value).toArray();
+    
+                            for (const iterator of enu) {
+                                MelHtml.start.option({value:iterator.value}).text(iterator.label).end().generate().appendTo(this._$fakeField);
+                            }
                         }
 
                         setTimeout(() => {
@@ -205,6 +207,10 @@ export class AlarmPart extends FakePart {
                     }
                 })
             ]
+        });
+
+        $($dialog._$dialog).on( "dialogbeforeclose", ( event, ui ) => {
+            this._$fakeField.val(0);
         });
     }
 }

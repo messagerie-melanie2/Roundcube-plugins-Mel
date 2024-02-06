@@ -1,5 +1,5 @@
 <div id="eventedit" class="<roundcube:exp expression="env:framed ? '' : 'popupmenu '">formcontent" aria-hidden="true" data-notabs="true">
-    <form class="tabbed" action="#" method="post" enctype="multipart/form-data">
+    <form id="mel-event-form" class="tabbed" action="#" method="post" enctype="multipart/form-data" style="opacity: 0;">
 		<bnum-hidden style="display: none;">
 			<div class="form-group row" id="edit-alarms">
 				<span class="red-star-after span-mel t1 low-margins"><roundcube:label name='mel_metapage.alert' /></span>
@@ -94,8 +94,7 @@
 		<div class="row set-margin-left-0" style="align-items: center;">
 			<div class="col-6" style="display:flex;align-items: center;">
 				<span id="event-category-icon" class="material-symbols-outlined set-margin-right-1">unknown_med</span>
-				<select id="event-category" class="form-control input-mel">
-					<option value="">Loading...</option>
+				<select id="mel-event-category" class="form-control input-mel custom-select pretty-select">
 				</select>
 			</div>
 			<div class="col-6 set-padding-important-left-2">
@@ -111,15 +110,15 @@
 			<label for="attendee-input" class="set-margin-important-bottom-1 event-subtitle" style="display: block;">Participants</label>
 			<div class="custom-control custom-switch set-margin-bottom-2 set-margin-important-left-0">
 				<input type="checkbox" name="allday" id="notify-users" value="1" class="form-check-input custom-control-input" checked />
-				<label class="custom-control-label" for="edit-wsp">
+				<label class="custom-control-label" for="notify-users">
 					 <span class="set-margin-left-1"> Envoyer une notification aux participants </span>
 				</label>
 			</div>
-			<div style="display: flex;align-items: center;">
+			<div data-linked="attendee-input" class="form-control input-mel border-bottom-input" style="display: flex;align-items: center;">
 			<!-- <div class="form-control fake-input input-mel" style="display: flex;align-items: center;"> -->
 				<div id="attendees"></div>
         <div class="border-bottom-input-icon">
-          <input id="attendee-input" class="form-control input-mel border-bottom-input" type="text" placeholder="Ajoutez des participants" style="display: inline-block"/>
+          <input id="attendee-input" class="form-control" type="text" placeholder="Ajoutez des participants"/>
           <button class="border-bottom-input-button" type="button" style="right:25px">
             <span class="material-symbols-outlined">
               person
@@ -132,13 +131,13 @@
           </button>
         </div>
 			</div>
-			<div class="set-margin-top-1" style="display: flex;align-items: center;">
+			<div data-linked="attendee-input-optional" class="set-margin-top-1 form-control input-mel border-bottom-input" style="display: flex;align-items: center;">
 				<div id="attendees-optional"></div>
-				<input id="attendee-input-optional" class="form-control input-mel border-bottom-input" type="text" placeholder="Participants facultatifs" style="display: inline-block"/>
+				<input id="attendee-input-optional" class="form-control" type="text" placeholder="Participants facultatifs" style="display: inline-block"/>
 			</div>
-			<div class="set-margin-top-1" style="display: flex;align-items: center;">
+			<div data-linked="attendees-animators" class="set-margin-top-1 form-control input-mel border-bottom-input" style="display: flex;align-items: center;">
 				<div id="attendees-animators"></div>
-				<input id="attendee-animators" class="form-control input-mel border-bottom-input" type="text" placeholder="Animateurs" style="display: inline-block"/>
+				<input id="attendee-animators" class="form-control" type="text" placeholder="Animateurs" style="display: inline-block"/>
 			</div>
 		</div>
 
@@ -312,7 +311,7 @@ Choix de la période
 		</fieldset> -->
 
 		<!-- attendees list -->
-		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees" style="display:none">
+		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees" >
 			<span class="have-workspace span-mel t1 low-margins"><roundcube:label name='mel_metapage.add_all_member_from_a_workspace' /></span>
 			<button type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0;margin-bottom:15px" onclick="return rcmail.command('calendar-workspace-add-all')">
 				<span><roundcube:label name='mel_metapage.add_all' /></span>
@@ -354,6 +353,11 @@ Choix de la période
 		</fieldset> -->
 
 	</form>
+	<div id="mel-form-absolute-center-loading-event" class="absolute-center">
+		<div class="loader-base">
+			<div class="loader-looping"></div>
+		</div>
+	</div>
 	<roundcube:object name="plugin.edit_recurrence_sync" id="edit-recurrence-syncstart" class="dialog-message" style="display:none" />
 	<!-- HERE -->
 	<roundcube:object name="plugin.edit_attendees_notify" id="edit-attendees-notify" class="dialog-message"/>

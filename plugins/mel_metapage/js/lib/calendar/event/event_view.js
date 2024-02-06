@@ -1,5 +1,7 @@
 import { AlarmPart } from "./parts/alarmpart.js";
-import { FreeBusyPart } from "./parts/freebusypart.js";
+import { CategoryPart } from "./parts/categoryparts.js";
+import { GuestsPart } from "./parts/guestspart.js";
+import { SensitivityPart } from "./parts/sensitivitypart.js";
 import { StatePart } from "./parts/statepart.js";
 
 class EventField {
@@ -48,8 +50,10 @@ class EventManager {
 class EventParts {
     constructor(inputs, fakes, dialog) {
         this.status = new StatePart(inputs.select_status, inputs.select_status.parent().find('span.material-symbols-outlined'));
-        this.freebusy = new FreeBusyPart(inputs.select_sensivity, fakes.button_sensivity, fakes.button_sensivity.children().first(), dialog);
+        this.sensitivity = new SensitivityPart(inputs.select_sensivity, fakes.button_sensivity, fakes.button_sensivity.children().first(), dialog);
         this.alarm = new AlarmPart(inputs.select_alarm, inputs.text_alarm, inputs.select_alarm_offset, fakes.select_alarm);
+        this.category = new CategoryPart(inputs.select_category, fakes.select_category, fakes.check_category, fakes.span_category_icon, fakes.button_add_members);
+        this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, null);
     }
 }
 
@@ -57,10 +61,21 @@ export class EventView {
     constructor(event, dialog) {
         this._event = event;
         this._dialog = dialog;
+
+        if (!$._data(this._dialog[0], 'events' )?.dialogbeforeclose){
+            this._dialog.on('dialogbeforeclose', () => {
+                $('#mel-event-form').css('opacity', '0');
+                $('#mel-form-absolute-center-loading-event').css('display', '');
+            });
+        }
+
         this.inputs = new EventManager(...EventView.true_selectors).generate();
         this.fakes = new EventManager(...EventView.false_selectors).generate();
         this.parts = new EventParts(this.inputs, this.fakes, dialog);
         this.InitializeView();
+
+        $('#mel-event-form').css('opacity', '1');
+        $('#mel-form-absolute-center-loading-event').css('display', 'none');
     }
 
     InitializeView() {
@@ -68,9 +83,10 @@ export class EventView {
         this.inputs.text_title.val(ev.title);
         this.inputs.select_calendar_owner.val(ev.calendar);
         this.parts.status.onUpdate(ev.status);
-        this.parts.freebusy.onUpdate(!ev.id ? 'free' :  ev.free_busy);
+        this.parts.sensitivity.onUpdate(!ev.id ? SensitivityPart.STATES.public :  ev.sensitivity);
         this.parts.alarm.init(ev);
-
+        this.parts.category.init(ev);
+        this.parts.guests.init(ev);
     }
 
     static Create(name, selector) {
@@ -101,13 +117,12 @@ EventView.false_selectors = [
     EventView.Create('select_alarm', '#mel-calendar-alarm'),
     EventView.Create('check_category', '#edit-wsp'),
     EventView.Create('span_category_icon', '#event-category-icon'),
-    EventView.Create('select_category', '#event-category'),
+    EventView.Create('select_category', '#mel-event-category'),
     EventView.Create('button_add_members', '#event-add-member'),
-    EventView.Create('select_category', '#edit-categories'),
     EventView.Create('check_notify_user', '#notify-users'),
     EventView.Create('text_attendee', '#attendee-input'),
     EventView.Create('text_attedee_optional', '#attendee-input-optional'),
-    EventView.Create('text_attendee_animators', '#attendee-input-animators'),
+    EventView.Create('text_attendee_animators', '#attendee-animators'),
     EventView.Create('select_starttime', '#mel-edit-starttime'),
     EventView.Create('select_endtime', 'mel-edit-endtime'),
     EventView.Create('select_recurrence', '#fake-event-rec'),

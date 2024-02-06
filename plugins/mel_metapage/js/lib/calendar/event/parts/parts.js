@@ -31,15 +31,15 @@ export class Parts {
             for (const mode of modes) {
                 switch (mode) {
                     case Parts.MODE.click:
-                        $field.click(this.onClick.bind(this))
+                        if (!$._data($field[0], 'events' )?.click) $field.click(this.onClick.bind(this))
                         break;
     
                     case Parts.MODE.change:
-                        $field.on('change', this.onChange.bind(this));
+                        if (!$._data($field[0], 'events' )?.change) $field.on('change', this.onChange.bind(this));
                         break;
     
                     case Parts.MODE.input:
-                        $field.on('input', this.onInput.bind(this));
+                        if (!$._data($field[0], 'events' )?.input) $field.on('input', this.onInput.bind(this));
                         break;
                 
                     default:

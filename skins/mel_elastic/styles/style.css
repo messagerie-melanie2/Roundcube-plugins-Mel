@@ -4090,15 +4090,28 @@ bnum-separate {
 }
 .input-mel.border-bottom-input {
   border: none;
-  background: none;
+  background: transparent;
   border-radius: 0;
   padding: 0;
   border-bottom: solid thin var(--main-border-color-transparent);
   height: 30px;
 }
+.input-mel.border-bottom-input.forced-focus,
 .input-mel.border-bottom-input:focus {
   box-shadow: none;
   border-color: var(--mel-button-border-color) !important;
+}
+.input-mel.border-bottom-input input {
+  border: none;
+  background: transparent;
+  color: var(--input-text-color) !important;
+  width: 100%;
+  height: 99%;
+  padding: 0;
+}
+.input-mel.border-bottom-input input:focus {
+  border: none!important;
+  box-shadow: none!important;
 }
 .input-mel.large-input {
   font-size: 21px;

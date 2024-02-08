@@ -53,7 +53,7 @@ class EventParts {
         this.sensitivity = new SensitivityPart(inputs.select_sensivity, fakes.button_sensivity, fakes.button_sensivity.children().first(), dialog);
         this.alarm = new AlarmPart(inputs.select_alarm, inputs.text_alarm, inputs.select_alarm_offset, fakes.select_alarm);
         this.category = new CategoryPart(inputs.select_category, fakes.select_category, fakes.check_category, fakes.span_category_icon, fakes.button_add_members);
-        this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, null);
+        this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch);
     }
 }
 
@@ -123,6 +123,7 @@ EventView.false_selectors = [
     EventView.Create('text_attendee', '#attendee-input'),
     EventView.Create('text_attedee_optional', '#attendee-input-optional'),
     EventView.Create('text_attendee_animators', '#attendee-animators'),
+    EventView.Create('button_attendee_switch', '#mel-attendee-switch'),
     EventView.Create('select_starttime', '#mel-edit-starttime'),
     EventView.Create('select_endtime', 'mel-edit-endtime'),
     EventView.Create('select_recurrence', '#fake-event-rec'),

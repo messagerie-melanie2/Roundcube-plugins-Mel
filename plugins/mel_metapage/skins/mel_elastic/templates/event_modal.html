@@ -114,30 +114,31 @@
 					 <span class="set-margin-left-1"> Envoyer une notification aux participants </span>
 				</label>
 			</div>
-			<div data-linked="attendee-input" class="form-control input-mel border-bottom-input" style="display: flex;align-items: center;">
+
+			<div data-linked="attendee-input" class="form-control input-mel border-bottom-input" style="display: flex;align-items: center;flex-wrap: wrap;height:100%;">
 			<!-- <div class="form-control fake-input input-mel" style="display: flex;align-items: center;"> -->
-				<div id="attendees"></div>
-        <div class="border-bottom-input-icon">
-          <input id="attendee-input" class="form-control" type="text" placeholder="Ajoutez des participants"/>
-          <button class="border-bottom-input-button" type="button" style="right:25px">
-            <span class="material-symbols-outlined">
-              person
-            </span>
-          </button>
-          <button class="border-bottom-input-button" type="button">
-            <span class="material-symbols-outlined">
-              expand_more
-            </span>
-          </button>
-        </div>
+				<div style="flex:1;display:flex;flex-wrap: wrap;  align-items: baseline;">
+					<!-- <div id="attendees" class="mel-show-attendee" data-linked="attendee-input"></div> -->
+				<input id="attendee-input" class="form-control" type="text" placeholder="Ajoutez des participants" style="flex: auto;width: unset;"/>
+				</div>
+				<button class="no-background" type="button">
+					<span class="material-symbols-outlined">
+					person
+					</span>
+				</button>
+				<button class="no-background" id="mel-attendee-switch">
+					<span class="material-symbols-outlined">
+					expand_more
+					</span>
+				</button>
 			</div>
-			<div data-linked="attendee-input-optional" class="set-margin-top-1 form-control input-mel border-bottom-input" style="display: flex;align-items: center;">
-				<div id="attendees-optional"></div>
-				<input id="attendee-input-optional" class="form-control" type="text" placeholder="Participants facultatifs" style="display: inline-block"/>
+			<div data-linked="attendee-input-optional" class="mel-show-attendee-container set-margin-top-1 form-control input-mel border-bottom-input" style="display: flex;align-items: center;flex-wrap: wrap;height:100%;">
+				<!-- <div id="attendees-optional" class="mel-show-attendee" data-linked="attendee-input-optional"></div> -->
+				<input id="attendee-input-optional" class="form-control" type="text" placeholder="Participants facultatifs" style="width:unset;flex:auto"/>
 			</div>
-			<div data-linked="attendees-animators" class="set-margin-top-1 form-control input-mel border-bottom-input" style="display: flex;align-items: center;">
-				<div id="attendees-animators"></div>
-				<input id="attendee-animators" class="form-control" type="text" placeholder="Animateurs" style="display: inline-block"/>
+			<div data-linked="attendee-animators" class="mel-show-attendee-container set-margin-top-1 form-control input-mel border-bottom-input" style="display: flex;align-items: center;flex-wrap: wrap;height:100%;">
+				<!-- <div id="attendees-animators" class="mel-show-attendee" data-linked="attendee-animators"></div> -->
+				<input id="attendee-animators" class="form-control" type="text" placeholder="Animateurs" style="width:unset;flex:auto"/>
 			</div>
 		</div>
 

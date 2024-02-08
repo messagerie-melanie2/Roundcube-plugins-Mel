@@ -31,15 +31,15 @@ export class Parts {
             for (const mode of modes) {
                 switch (mode) {
                     case Parts.MODE.click:
-                        if (!$._data($field[0], 'events' )?.click) $field.click(this.onClick.bind(this))
+                        this._p_try_add_event($field, 'click', this.onClick.bind(this));
                         break;
     
                     case Parts.MODE.change:
-                        if (!$._data($field[0], 'events' )?.change) $field.on('change', this.onChange.bind(this));
+                        this._p_try_add_event($field, 'change', this.onChange.bind(this));
                         break;
     
                     case Parts.MODE.input:
-                        if (!$._data($field[0], 'events' )?.input) $field.on('input', this.onInput.bind(this));
+                        this._p_try_add_event($field, 'input', this.onInput.bind(this));
                         break;
                 
                     default:
@@ -48,6 +48,14 @@ export class Parts {
             }
         }
 
+    }
+
+    _p_try_add_event($field, event, callback) {
+        if (!$._data($field[0], 'events' )?.[event]) {
+            $field.on(event, callback);
+        }
+
+        return $field;
     }
 
 }

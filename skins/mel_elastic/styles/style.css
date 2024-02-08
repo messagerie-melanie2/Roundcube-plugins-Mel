@@ -4112,6 +4112,7 @@ bnum-separate {
 .input-mel.border-bottom-input input:focus {
   border: none!important;
   box-shadow: none!important;
+  background: transparent!important;
 }
 .input-mel.large-input {
   font-size: 21px;
@@ -4147,7 +4148,8 @@ bnum-separate {
   box-shadow: none !important;
   border-color: none !important;
 }
-.icon-weight-400 {
+.icon-weight-400,
+.close-button.for-attendee bnum-icon {
   font-variation-settings: 'wght' 400;
 }
 .icon-weight-300 {
@@ -4159,6 +4161,17 @@ bnum-separate {
 .close-button:hover,
 .close-button:active {
   color: red !important;
+}
+.close-button.for-attendee {
+  color: var(--main-text-color);
+  background-color: transparent!important;
+  border: none!important;
+  height: unset;
+  padding: 0;
+}
+.close-button.for-attendee bnum-icon {
+  font-size: 16px;
+  vertical-align: middle;
 }
 #update-sensivity {
   background: none;
@@ -4198,4 +4211,61 @@ bnum-separate {
 }
 .datetime .hour-select {
   width: 120px !important;
+}
+.mel-show-attendee {
+  display: flex;
+  flex-wrap: wrap;
+}
+.mel-attendee {
+  white-space: nowrap;
+  max-width: 155px;
+  background-color: #F0F0F0;
+  border-radius: 60px;
+  padding: 1px 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+}
+.mel-attendee .availability .availabilityicon {
+  margin: 0;
+}
+.mel-attendee .availability .availabilityicon::before {
+  content: '\e836';
+  font-variation-settings: 'FILL' 1;
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal!important;
+  margin: 0;
+  font-size: 16px !important;
+  vertical-align: sub;
+}
+.mel-attendee .availability .availabilityicon.loading::before {
+  content: '\e917';
+}
+.mel-attendee .availability .availabilityicon.unknown::before {
+  content: '\e887';
+}
+.mel-attendee .attendee-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+.mel-show-attendee-container {
+  display: flex;
+}
+.no-background {
+  color: var(--main-text-color);
+  border: none !important;
+  background: none !important;
+  padding: 0;
+}
+.no-background:hover,
+.no-background:active {
+  color: var(--main-text-color) !important;
+  background: none !important;
+  border-color: none !important;
+}
+.no-background:focus {
+  background: none !important;
+  border-color: none !important;
 }

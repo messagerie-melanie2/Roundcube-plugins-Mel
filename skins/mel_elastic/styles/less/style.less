@@ -5670,6 +5670,7 @@ bnum-separate{
     &:focus{
         border:none!important;
         box-shadow: none!important;
+        background:transparent!important;
     }
   }
 }
@@ -5728,6 +5729,20 @@ bnum-separate{
   &:active {
     color: red !important;
   } 
+
+  &.for-attendee{
+    color: var(--main-text-color);
+    background-color: transparent!important;
+    border:none!important;
+    height: unset;
+    padding:0;
+    
+    bnum-icon {
+        &:extend(.icon-weight-400);
+        font-size: 16px;
+        vertical-align: middle;
+      }
+  }
 }
 
 #update-sensivity {
@@ -5781,3 +5796,80 @@ bnum-separate{
   width: 120px !important;
 }
 
+.mel-show-attendee {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.mel-attendee{
+    white-space: nowrap;
+    max-width: 155px;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+    background-color: #F0F0F0;
+    border-radius: 60px;
+    padding: 1px 5px;
+    margin-right: 5px;
+    margin-top:5px;
+    display: flex;
+    align-items: center;
+    
+    .availability{
+        .availabilityicon{
+            margin:0;
+
+            &::before{
+                content: '\e836';
+                font-variation-settings: 'FILL' 1;
+                font-family: 'Material Symbols Outlined';
+                font-weight: normal!important;
+                margin: 0;
+                font-size: 16px !important;
+                vertical-align: sub;
+            }
+
+            &.loading {
+                &::before{
+                    content: '\e917';
+                }
+            }
+
+            &.unknown{
+                &::before{
+                    content: '\e887';
+                }
+            }
+        }
+    }
+
+    .attendee-name{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+}
+
+.mel-show-attendee-container {
+    display:flex;
+}
+
+.no-background {
+    color: var(--main-text-color);
+    border: none !important;
+    background: none !important;
+    padding:0;
+
+    &:hover,
+    &:active {
+      color: var(--main-text-color) !important;
+      background: none !important;
+    //   box-shadow: none !important;
+      border-color: none !important;
+    }
+  
+    &:focus {
+      background: none !important;
+    //   box-shadow: none !important;
+      border-color: none !important;
+    }
+}

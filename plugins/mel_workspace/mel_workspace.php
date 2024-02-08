@@ -1712,8 +1712,9 @@ class mel_workspace extends bnum_plugin
         $current_user = driver_mel::gi()->getUser();
 
         foreach ($share as $key => $value) {
+            $from_list = $this->_check_if_is_in_list($workspace, $value->user);
             $html .= "<tr>";
-            $html .= "<td>". driver_mel::gi()->getUser($value->user)->fullname."</td>";
+            $html .= '<td>'.(count($from_list) > 0 ? '<span style="margin-right:5px;vertical-align: bottom;" class="material-symbols-outlined" title="'.$this->_list_to_title($from_list).'">groups</span>' : ''). driver_mel::gi()->getUser($value->user)->fullname."</td>";
             
             $html .= "<td>".$this->setup_params_value($icons_rights, $options_title, $current_title, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)
@@ -1723,6 +1724,7 @@ class mel_workspace extends bnum_plugin
             
             $html .= "</tr>";
         }
+        unset($from_list);
 
         $lists = $this->get_setting($workspace, "lists") ?? [];
 
@@ -4535,15 +4537,18 @@ class mel_workspace extends bnum_plugin
             $list_members = $loaded_list->list->members;
             $all_saved_list_data = $this->get_setting($wsp, 'lists');
             $current_saved_list_data = $all_saved_list_data->$list;
+            $shared = $wsp->shares;
     
             $_POST['_users'] = [];
     
             $has_new = false;
             foreach ($list_members as $value) {
-                if (!in_array($value->uid, $current_saved_list_data))    
+                if (!in_array($value->uid, $current_saved_list_data) || !isset($shared[$value->uid]))    
                 {
                     $value->load();
-                    $current_saved_list_data[] = $value->uid;
+
+                    if (!in_array($value->uid, $current_saved_list_data)) $current_saved_list_data[] = $value->uid;
+
                     $_POST['_users'][] = $value->email;
 
                     if(!$has_new) $has_new = true;
@@ -4622,6 +4627,27 @@ class mel_workspace extends bnum_plugin
         } catch (\Throwable $th) {
             //throw $th;
         }
+    }
+
+    private function _check_if_is_in_list($wsp, $user_id) {
+        $array = [];
+        $lists = $this->get_setting($wsp, 'lists') ?? [];
+
+        foreach ($lists as $key => $value) {
+            if (in_array($user_id, $value)) $array[] = $key;
+        }
+
+        return $array;
+    }
+
+    private function _list_to_title($lists) {
+        $txt = '';
+        foreach ($lists as $key => $value) {
+            $value = driver_mel::gi()->getUser(null, true, false, null, $value);
+            $txt .= $value->fullname . "\n";
+        }
+
+        return $txt;
     }
 
   private function is_one_admin($workspace)

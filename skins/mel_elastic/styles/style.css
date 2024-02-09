@@ -4269,3 +4269,6 @@ bnum-separate {
   background: none !important;
   border-color: none !important;
 }
+.mel-guest-drag-started input {
+  box-shadow: 0 0 0 0.2rem green;
+}

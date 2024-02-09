@@ -124,9 +124,21 @@ class Guest {
         else return this.email;
     }
 
+    _dragStart(ev) {
+        ev = !!ev.dataTransfer ? ev : ev.originalEvent;
+        ev.dataTransfer.dropEffect = "move";
+        ev.dataTransfer.setData("text/plain", JSON.stringify({name:this.name, email:this.email, string:this.toString()}));
+
+        $('.mel-show-attendee-container, [data-linked="attendee-input"]').addClass('mel-guest-drag-started');
+    } 
+
+    _dragEnd(ev) {
+        $('.mel-show-attendee-container, [data-linked="attendee-input"]').removeClass('mel-guest-drag-started');
+    }
+
     toHtml(event) {
         let html = MelHtml.start
-        .div({class:'mel-attendee', title:this._formated(), 'data-email':this.email, 'data-name':this.name})
+        .div({class:'mel-attendee', title:this._formated(), 'data-email':this.email, 'data-name':this.name, draggable:true, ondragstart:this._dragStart.bind(this), ondragend:this._dragEnd.bind(this)})
             .span({class:'availability'})
                 .span({class:'availabilityicon loading'})
                 .end()
@@ -140,6 +152,10 @@ class Guest {
         });
 
         return html;
+    }
+
+    toString() {
+        return this._formated();
     }
 
 }

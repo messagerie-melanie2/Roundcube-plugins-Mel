@@ -1,8 +1,10 @@
+import { MelEnumerable } from "../../classes/enum.js";
 import { AlarmPart } from "./parts/alarmpart.js";
 import { CategoryPart } from "./parts/categoryparts.js";
 import { GuestsPart } from "./parts/guestspart.js";
 import { SensitivityPart } from "./parts/sensitivitypart.js";
 import { StatePart } from "./parts/statepart.js";
+import { TimePartManager } from "./parts/timepart.js";
 
 class EventField {
     constructor(name, selector) {
@@ -54,6 +56,7 @@ class EventParts {
         this.alarm = new AlarmPart(inputs.select_alarm, inputs.text_alarm, inputs.select_alarm_offset, fakes.select_alarm);
         this.category = new CategoryPart(inputs.select_category, fakes.select_category, fakes.check_category, fakes.span_category_icon, fakes.button_add_members);
         this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch);
+        this.date = new TimePartManager(inputs.date_startdate, inputs.text_starttime, fakes.select_starttime, inputs.date_enddate, inputs.text_endtime, fakes.select_endtime, inputs.check_all_day);
     }
 }
 
@@ -76,17 +79,34 @@ export class EventView {
 
         $('#mel-event-form').css('opacity', '1');
         $('#mel-form-absolute-center-loading-event').css('display', 'none');
+
+        if (!this._dialog[0].ondrop){
+            this._dialog[0].ondrop = (ev) => {
+                const autorized = [this.fakes.text_attendee, this.fakes.text_attedee_optional, this.fakes.text_attendee_animators];
+                ev = !!ev.dataTransfer ? ev : ev.originalEvent;
+                let data = JSON.parse(ev.dataTransfer.getData('text/plain'));
+
+                ev.preventDefault();
+                if (MelEnumerable.from(autorized).select(x => x.attr('id')).where(x => ev.target.id === x).any()) {
+                    $(`.mel-attendee[data-email="${data.email}"]`).remove();
+                    $(ev.target).val(`${data.string},`).change();
+                }
+
+                $('.mel-show-attendee-container, [data-linked="attendee-input"]').removeClass('mel-guest-drag-started');
+            };
+        }
     }
 
     InitializeView() {
         const ev = this._event;
-        this.inputs.text_title.val(ev.title);
-        this.inputs.select_calendar_owner.val(ev.calendar);
+        // this.inputs.text_title.val(ev.title);
+        // this.inputs.select_calendar_owner.val(ev.calendar);
         this.parts.status.onUpdate(ev.status);
         this.parts.sensitivity.onUpdate(!ev.id ? SensitivityPart.STATES.public :  ev.sensitivity);
         this.parts.alarm.init(ev);
         this.parts.category.init(ev);
         this.parts.guests.init(ev);
+        this.parts.date.init(ev);
     }
 
     static Create(name, selector) {
@@ -111,6 +131,7 @@ EventView.true_selectors = [
     EventView.Create('text_location', '#edit-location'),
     EventView.Create('textarea_description', '#edit-description'),
     EventView.Create('select_sensivity', '#edit-sensitivity'),
+    EventView.Create('check_all_day', '#edit-allday'),
 ];
 
 EventView.false_selectors = [
@@ -125,7 +146,7 @@ EventView.false_selectors = [
     EventView.Create('text_attendee_animators', '#attendee-animators'),
     EventView.Create('button_attendee_switch', '#mel-attendee-switch'),
     EventView.Create('select_starttime', '#mel-edit-starttime'),
-    EventView.Create('select_endtime', 'mel-edit-endtime'),
+    EventView.Create('select_endtime', '#mel-edit-endtime'),
     EventView.Create('select_recurrence', '#fake-event-rec'),
     EventView.Create('div_eventtype', '#events-type'),
     EventView.Create('button_sensivity', '#update-sensivity'),

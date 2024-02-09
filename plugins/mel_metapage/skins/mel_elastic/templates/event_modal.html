@@ -121,12 +121,12 @@
 					<!-- <div id="attendees" class="mel-show-attendee" data-linked="attendee-input"></div> -->
 				<input id="attendee-input" class="form-control" type="text" placeholder="Ajoutez des participants" style="flex: auto;width: unset;"/>
 				</div>
-				<button class="no-background" type="button">
+				<button onclick="m_mp_openTo(this, 'attendee-input', {onselect:m_mp_on_open_select_calendar_contacts})" type="button" class="no-background" type="button">
 					<span class="material-symbols-outlined">
 					person
 					</span>
 				</button>
-				<button class="no-background" id="mel-attendee-switch">
+				<button type="button" class="no-background" id="mel-attendee-switch">
 					<span class="material-symbols-outlined">
 					expand_more
 					</span>
@@ -164,7 +164,6 @@ Choix de la période
         </div>
 				<input style="display: none;" type="text" name="starttime" size="6" id="edit-starttime" class="form-control hidden" aria-label="<roundcube:label name='calendar.starttime' />" /> 
 				<select id="mel-edit-starttime" class="form-control input-mel hour-select">
-					<option value="">??:??</option>
 				</select>
 				<label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox" /><roundcube:label name="calendar.all-day-long" /></label>
 			</div>
@@ -179,7 +178,6 @@ Choix de la période
       </div>
 				<input style="display: none;" type="text" name="endtime" size="6" id="edit-endtime" class="form-control hidden" aria-label="<roundcube:label name='calendar.endtime' />" />
 				<select id="mel-edit-endtime" class="form-control input-mel hour-select">
-					<option value="">??:??</option>
 				</select>
         </div>  
 			<div class="col-sm-6">

@@ -2627,6 +2627,7 @@ $(document).ready(() => {
 
         const config = new GlobalModalConfig(rcmail.gettext('create_event', plugin_text), "default", dialog, null);
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
+        kolab_event_dialog_element.footer.buttons.save.removeClass('disabled').removeAttr('disabled');
 
         kolab_event_dialog_element.footer.buttons.save.click(async () => {
             window.event_saved = true;

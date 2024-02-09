@@ -354,9 +354,12 @@ button {
     box-shadow: var(--bureau-card-box-shadow);
     background-color: var(--bureau-card-background-color);
     transition: filter 0.1s ease;
-    display: flex;
     margin-bottom: 10px;
     text-decoration: none;
+
+    img {
+      vertical-align: top !important;
+    }
 
     &::after {
       content: '';

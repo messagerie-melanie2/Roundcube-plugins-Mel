@@ -513,7 +513,7 @@ const mel_metapage = {
             }
 
             copyOnClick(text);
-            rcmail.display_message(`${text} copier dans le presse-papier.`, "confirmation");
+            rcmail.display_message(`${text} copié dans le presse-papier.`, "confirmation");
 
             return this;
         },

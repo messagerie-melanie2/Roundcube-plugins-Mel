@@ -35,6 +35,7 @@ class mel_useful_link extends bnum_plugin
           $this->register_action('tak_default', array($this, 'pin_default'));
           $this->register_action('get_joined_links', array($this, 'get_joined_links'));
           $this->register_action('hideOrShow', array($this, 'HideOrShow'));
+          $this->register_action('update_list', array($this, 'update_list'));
 
           if ($this->rc->action == "index" || $this->rc->action == "")
             $this->links = $this->get_personal_links();
@@ -49,11 +50,24 @@ class mel_useful_link extends bnum_plugin
         {
             mel_metapage::add_widget("all_links" ,"useful_links");
             mel_metapage::add_widget("not_taked_links" ,"useful_links", 'joined');
-            mel_metapage::add_widget("taked_links" ,"useful_links", 'epingle');
         }
 
-        // $this->add_hook('preferences_list', array($this, 'prefs_list'));
-        // $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+    }
+
+    public function update_list() {
+      $newOrder = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+
+      $newList = array();
+      foreach ($newOrder as $object) {
+        if (isset($object['id'])) {
+            $id = $object['id'];
+            $object['configKey'] = $id;
+            unset($object['id']);
+            $newList[$id] = json_encode($object);
+        }
+    }
+
+      $this->rc->user->save_prefs(array('personal_useful_links' => $newList));
     }
 
     public function include_uLinks()
@@ -98,9 +112,8 @@ class mel_useful_link extends bnum_plugin
     function index()
     {
       $handler = [          
-        'epingle'    => array($this, 'index_epingle'),
         'joined'    => array($this, 'index_joined'),
-        'showahl'    => array($this, 'show_button_all_hidden_link')
+        // 'showahl'    => array($this, 'show_button_all_hidden_link') //Penser a supprimer la fonction
       ];
 
       $isWidget = rcube_utils::get_input_value("_mel", rcube_utils::INPUT_GPC) === 'widget';
@@ -110,18 +123,13 @@ class mel_useful_link extends bnum_plugin
         $isWidget = rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC);
 
         switch ($isWidget) {
-          case 'epingle':
-            unset($handler['joined']);
-            unset($handler['showahl']);
-            break;
+
 
           case 'joined':
-            unset($handler['epingle']);
             unset($handler['showahl']);
             break;
           
           default:
-            unset($handler['epingle']);
             unset($handler['showahl']);
             break;
         }
@@ -158,18 +166,11 @@ class mel_useful_link extends bnum_plugin
 
       return "";
     }
-
-    public function index_epingle()
-    {
-      $html = $this->index_show(true, 1);
-      return $html === "" ? "Pas de liens épinglés, ajoutez en dès maintenant !" : $html;
-    }
-
+    
     public function index_joined()
     {
       $isWidget = rcube_utils::get_input_value("_mel", rcube_utils::INPUT_GPC) === 'widget' && 
       rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC) !== 'joined' &&
-      rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC) !== 'epingle';
       
       $html = '';
 
@@ -178,7 +179,8 @@ class mel_useful_link extends bnum_plugin
 
       $html .= $this->index_show(false, 1, !$isWidget);
 
-      return $html === "" ? "Pas de liens, ajoutez en dès maintenant en cliquant sur le bouton \"Ajouter\" !" : $html;
+      // return $html === "" ? "Pas de liens, ajoutez en dès maintenant en cliquant sur le bouton \"Ajouter\" !" : $html;
+      return $html;
     }
 
     function index_show($pined, $page, $addInRow = true)
@@ -208,9 +210,9 @@ class mel_useful_link extends bnum_plugin
         if ($i >= $max)
           break;
 
-          if ($pined && !$value->pin ||
-            !$pined && $value->pin)//Si on demande seulement ceux qui sont épinglé
-            continue;
+          // if ($pined && !$value->pin ||
+          //   !$pined && $value->pin)//Si on demande seulement ceux qui sont épinglé
+          //   continue;
 
       
       
@@ -242,7 +244,8 @@ class mel_useful_link extends bnum_plugin
 
       }
 
-      return $html;
+      // return $html;
+      return $html = '';
 
     }
 
@@ -472,7 +475,7 @@ class mel_useful_link extends bnum_plugin
         $this->rc->user->save_prefs(array('personal_useful_links' => $config));
       }
 
-      echo true;
+      echo $id;
       exit;
 
     }
@@ -892,12 +895,4 @@ class mel_useful_link extends bnum_plugin
 
     return mel_link::create($id, $title, $link, $pin, $createDate, $from, $showWhen, null, true, $color, $multilink, $textColor);
   }
-
-
-
-  // public function prefs_list($args)
-  // {
-
-  // }
-
 }

@@ -2,7 +2,7 @@
 import { RcmailDialog, RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal.js";
 import { MelHtml } from "../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js";
 import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js";
-import { MelLink } from "./mel_link.js";
+import { MelLink, MelLinkVisualizer } from "./mel_link.js";
 
 
 export class LinkManager extends MelObject {
@@ -13,6 +13,8 @@ export class LinkManager extends MelObject {
   main() {
     super.main();
 
+    this.displayLinks();
+
     this.bindActions();
   }
 
@@ -22,7 +24,7 @@ export class LinkManager extends MelObject {
   openLinkModal(id = null, title = null, url = null) {
     if (this.newLinkModal) {
       this.newLinkModal.show();
-      this.resetModal(id, title, url);
+      this.getModalValue(id, title, url);
 
       this.bindModalActions();
     }
@@ -32,7 +34,7 @@ export class LinkManager extends MelObject {
         .span({ class: "text-danger" })
           .text('*')
         .end()
-        .text('Champs obligatoires')
+        .text(rcmail.gettext('required_fields', 'mel_useful_link'))
       .end()
       .input({id: "mulc-id", type: 'hidden', value: id})
       .row({class: 'mx-2'})
@@ -40,16 +42,16 @@ export class LinkManager extends MelObject {
           .span({ class: "text-danger" })
             .text('*')
           .end()
-          .text('Nom du lien')
+          .text(rcmail.gettext('link_name', 'mel_useful_link'))
         .end()
-        .input({id: "mulc-title", class: 'form-control input-mel required', required:true, placeholder: 'Titre du lien', value: title})
+        .input({id: "mulc-title", class: 'form-control input-mel required', required:true, placeholder: rcmail.gettext('link_title','mel_useful_link'), value: title})
       .end()
       .row({class: 'mx-2'})
         .label({class: "span-mel t1 first", for:'mulc-url'})
           .span({ class: "text-danger" })
             .text('*')
           .end()
-          .text('Adresse de la page')
+          .text(rcmail.gettext('link_url','mel_useful_link'))
         .end()
         .input({id: "mulc-url", class: 'form-control input-mel required', required:true, placeholder: 'URL', value: url})
       .end()
@@ -65,8 +67,8 @@ export class LinkManager extends MelObject {
       .generate();
 
       this.newLinkModal = new RcmailDialog(html, {
-        title: 'Création d\'un nouveau lien', buttons: [
-          new RcmailDialogButton('Ajouter', { id: 'add-mel-link', classes: 'mel-button btn btn-secondary', click: () => { this.addMelLink(); } }),
+        title: rcmail.gettext('create_new_link','mel_useful_link'), buttons: [
+          new RcmailDialogButton( id ? rcmail.gettext('update','mel_useful_link') : rcmail.gettext('add','mel_useful_link'), { id: 'add-mel-link', classes: 'add-mel-link mel-button btn btn-secondary', click: () => { this.addMelLink(); } }),
         ]
       });
       if(url) {this.displayIcon(url);}
@@ -74,46 +76,114 @@ export class LinkManager extends MelObject {
     }
   }
 
+  /**
+   * Affiche les liens sur la page web
+   */
+  displayLinks() {
+    let links_array = [];
+    for (const links in rcmail.env.mul_items) {
+      let link = rcmail.env.mul_items[links];
+      link = JSON.parse(link);
+      const linkVisualizer = new MelLinkVisualizer(link.configKey, link.title, link.link, this.fetchIcon(link.link));
+      links_array.push(linkVisualizer);
+
+      linkVisualizer.displayLink().appendTo(".links-items");
+    }
+    this.bindRightClickActions();
+    rcmail.env.mul_items = links_array;
+  }
+
+  /**
+   * Affiche un lien sur la page web
+   */
+  displayLink(link) {
+    const linkVisualizer = new MelLinkVisualizer(link.id, link.title, link.link, this.fetchIcon(link.link));
+    linkVisualizer.displayLink().appendTo(".links-items");
+
+    this.bindRightClickActions(linkVisualizer.id);
+    this.bindActions(linkVisualizer.id);
+    rcmail.env.mul_items.push(linkVisualizer)
+  }
+
 
   addMelLink() {
-    if (!$(LinkManager.SELECTOR_MODAL_TITLE)[0].reportValidity())
-      return;
-    if (!$(LinkManager.SELECTOR_MODAL_URL)[0].reportValidity())
-      return;
+    let link = rcmail.env.mul_items.find(function(objet) {
+      if ($(LinkManager.SELECTOR_MODAL_ID).val()) {
+        return objet.id === $(LinkManager.SELECTOR_MODAL_ID).val();
+      }
+      else {
+        return false;
+      }
+    });
 
-    const link = new MelLink($(LinkManager.SELECTOR_MODAL_ID).val(), $(LinkManager.SELECTOR_MODAL_TITLE).val(), $(LinkManager.SELECTOR_MODAL_URL).val());
-
-    link.callUpdate();
-    // window.location.reload();
+    if (!$(LinkManager.SELECTOR_MODAL_ID).val()) {
+      link = new MelLink($(LinkManager.SELECTOR_MODAL_ID).val(), $(LinkManager.SELECTOR_MODAL_TITLE).val(), $(LinkManager.SELECTOR_MODAL_URL).val());
+    }
+    else {
+      link.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
+      link.link = $(LinkManager.SELECTOR_MODAL_URL).val();
+      link.icon =  this.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+    }
+    // link.callUpdate();
+    link.callUpdate().then((data) => {
+      if(data !== link.id) {
+        link.id = data;
+        this.displayLink(link);
+      }
+      this.newLinkModal.hide();
+    });
   }
 
   deleteMelLink(id) {
     const link = new MelLink(id, null, null);
 
-    link.callDelete();
+    if (confirm(rcmail.gettext('confirm_delete_link_element', "mel_useful_link"))) {
+      link.callDelete();
+    }
   }
-
   
-
   /**
    * Bind des actions liés aux liens
    */
-  bindActions() {
+  bindActions(id = null) {
     let self = this;
-    $(LinkManager.CREATE_BUTTON).on('click', function () {
-      self.openLinkModal();
+    let _id = id ? `#link-block-${id} ` : '';
+
+    if (!id) { 
+      $(LinkManager.CREATE_BUTTON).on('click', function () {
+        self.openLinkModal();
+      });
+    }
+
+    $(_id + LinkManager.COPY_LINK).on('click', function (e) {
+      mel_metapage.Functions.copy($(e.currentTarget).attr('data-link'));
     });
 
-    $(LinkManager.COPY_LINK).on('click', function () {
-      mel_metapage.Functions.copy($(this).data('url'));
-    });
-
-    $(LinkManager.MODIFY_LINK).on('click', function () {
-      self.openLinkModal($(this).data('id'), $(this).data('title'), $(this).data('url'));
+    $(_id + LinkManager.MODIFY_LINK).on('click', function (e) {
+      self.openLinkModal($(e.currentTarget).attr('data-id'), $(e.currentTarget).attr('data-title'), $(e.currentTarget).attr('data-link'));
     });
     
-    $(LinkManager.DELETE_LINK).on('click', function () {
-      self.deleteMelLink($(this).data('id'));
+    $(_id + LinkManager.DELETE_LINK).on('click', function (e) {
+      self.deleteMelLink($(e.currentTarget).attr('data-id'));
+    });
+
+    $('.links-items').sortable({
+      // delay: 1000,
+      stop:function(event, ui) {
+        rcmail.env.mul_items.find(function(object, index) {
+          if (object.id == ui.item.data('id')) {
+            //On met l'objet dans la bonne position après le déplacement
+            rcmail.env.mul_items.splice(ui.item.index(), 0, rcmail.env.mul_items.splice(index, 1)[0]);
+            //ENVOYER LA VALEUR AU SERVEUR (updateList avec await mel_metapage.Functions.post)
+            return mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "update_list"),
+            { _list: rcmail.env.mul_items },
+            (datas) => {});
+          }
+          else {
+            return false;
+          }
+        });
+      }
     });
   }
 
@@ -131,10 +201,36 @@ export class LinkManager extends MelObject {
     });
   }
 
+  bindRightClickActions(id = null) {
+    let _id = id ? `#link-block-${id}` : '';
+    let contextMenuOpened = false;
+    // Open the context menu on right-click
+    $(_id + '.link-block').on('contextmenu', function (event) {
+      event.preventDefault();
+
+      const contextMenu = $('#context-menu-' + $(this).data('id'));
+
+      if (contextMenuOpened) {
+        contextMenuOpened.hide();
+      }
+
+      // Show the context menu
+      contextMenu.show();
+      contextMenuOpened = contextMenu;
+
+      $(document).on('click', function () {
+        if (!contextMenu.is(event.target) && contextMenu.has(event.target).length === 0) {
+          contextMenu.hide();
+          contextMenuOpened = false;
+        }
+      });
+    });  
+  }
+
   /**
    * Reset les informations précédentes de la modale
    */
-  resetModal(id = null, title = null, url = null) {
+  getModalValue(id = null, title = null, url = null) {
     $(LinkManager.SELECTOR_MODAL_ID).val(id);
     $(LinkManager.SELECTOR_MODAL_TITLE).val(title);
     $(LinkManager.SELECTOR_MODAL_URL).val(url);
@@ -145,6 +241,13 @@ export class LinkManager extends MelObject {
     else {
       $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', '');
       $(LinkManager.SELECTOR_MODAL_IMAGE).css("display", "none");
+    }
+
+    if(id) {
+      $('.add-mel-link').text(rcmail.gettext('update','mel_useful_link'));
+    }
+    else {
+      $('.add-mel-link').text(rcmail.gettext('add','mel_useful_link'));
     }
   }
 

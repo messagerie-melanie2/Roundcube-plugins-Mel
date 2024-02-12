@@ -22,17 +22,41 @@ export class TimePartManager {
             this.$allDay[0].checked = false;
         }
 
-        if ($._data(this.start._$fakeField[0], 'events' )?.change?.length <= 1) {
-            this.start._$fakeField.on('change', () => {
-                let start = moment(`${this._$start_date.val()} ${this.start._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
-                let end = moment(`${this._$end_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
+        if (($._data(this.start._$fakeField[0], 'events' )?.change?.length ?? 0) <= 1) {
+            this.start._$fakeField.on('change', this._update_date.bind(this));
+        }
 
-                if (start > end) {
-                    end = moment(start).add(TimePart.INTEVERVAL, 'm');
-                    this.end.reinit(end, end.format('HH:mm'));
+        if (($._data(this.$allDay[0], 'events' )?.change?.length ?? 0) === 0) {
+            this.$allDay.on('change', (e) => {
+                if ($(e.currentTarget)[0].checked) {
+                    this.start._$fakeField.css('display', 'none').parent().parent().addClass('all-day');
+                    this.end._$fakeField.css('display', 'none').parent().parent().addClass('all-day');
+
                 }
-                //this.end.reinit
+                else {
+                    this.start._$fakeField.css('display', '').parent().parent().removeClass('all-day');
+                    this.end._$fakeField.css('display', '').parent().parent().removeClass('all-day');
+                }
             });
+        }
+
+        rcmail.addEventListener('calendar.event_times_changed', this._update_date.bind(this));
+    }
+
+    _update_date() {
+        let start = moment(`${this._$start_date.val()} ${this.start._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
+        let end = moment(`${this._$end_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
+
+        if (start >= end) {
+            end = moment(`${this._$start_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');//.add(TimePart.INTEVERVAL, 'm');
+            this.end.reinit(end, start.format('HH:mm'));
+            this._$end_date.val(start.format('DD/MM/YYYY')).change();
+        }
+        else {
+            let is_same_day = moment(start).startOf('day').format('DD/MM/YYYY') === moment(end).startOf('day').format('DD/MM/YYYY');
+            let need_reinit = this.end._$fakeField.children().first().val() !== (is_same_day ? start.format('HH:mm') : '00:00');
+
+            if (need_reinit) this.end.reinit(end, (is_same_day ? start.format('HH:mm') : null));
         }
     }
 }
@@ -40,7 +64,6 @@ export class TimePartManager {
 class TimePart extends FakePart{
     constructor($time_field, $time_select) {
         super($time_field, $time_select, Parts.MODE.change);
-
     }
 
     init(val, min = null) {
@@ -57,14 +80,23 @@ class TimePart extends FakePart{
             while (base < next) {
                 if (!min || base > min) {
                     formatted_text = base.format('HH:mm')
-                    MelHtml.start.option({value:formatted_text}).text(formatted_text).end().generate().appendTo(this._$fakeField);
+                    this._$fakeField.append(MelHtml.start.option({value:formatted_text}).text(formatted_text).end().generate());
                 }
 
-                base  = base.add(TimePart.INTEVERVAL, 'm');
+                base = base.add(TimePart.INTERVAL, 'm');
             }
         }
 
-        this._$fakeField.val(val.format('HH:mm'));
+        setTimeout(() => {
+            val = this._toTimeMoment(val);
+            min = !!min ? this._toTimeMoment(min) : null;
+            let formatted = !!min && val <= min ? moment(min).add(TimePart.INTERVAL, 'm').format('HH:mm') : val.format('HH:mm');
+            $(`#${this._$fakeField.attr('id')}`).val(formatted);
+        }, 10);
+    }
+
+    _toTimeMoment(val) {
+        return moment(`${moment().startOf('year').format('DD/MM/YYYY')} ${val.format('HH:mm')}`);
     }
 
     reinit(val, min){
@@ -77,4 +109,4 @@ class TimePart extends FakePart{
     }
 }
 
-TimePart.INTEVERVAL = 15;
+TimePart.INTERVAL = 15;

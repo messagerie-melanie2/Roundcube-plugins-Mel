@@ -2033,6 +2033,9 @@ function rcube_calendar_ui(settings) {
       if (event_attendees)
         freebusy_ui.needsupdate = true;
       $('#edit-startdate').data('duration', Math.round((me.selected_event.end.getTime() - me.selected_event.start.getTime()) / 1000));
+
+      //PAMELLA
+      rcmail.triggerEvent('calendar.event_times_changed', {selected:me.selected_event});
     }
   };
 

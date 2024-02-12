@@ -4272,3 +4272,12 @@ bnum-separate {
 .mel-guest-drag-started input {
   box-shadow: 0 0 0 0.2rem green;
 }
+div.all-day div.relative {
+  width: 100%;
+}
+div.all-day input.input-mel {
+  width: 100%!important;
+}
+div.all-day input.input-mel#edit-enddate {
+  width: calc(100% - 34px) !important;
+}

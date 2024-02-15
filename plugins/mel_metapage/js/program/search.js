@@ -32,7 +32,7 @@ $(document).ready(() => {
 
         create()
         {
-            this.$block = $(`<div data-type="${this.type}">${this.raw.html}</div>`);
+            this.$block = $(`<div data-type="${this.type}"></div>`).html(this.raw.html);
             return this;
         }
 
@@ -187,10 +187,12 @@ $(document).ready(() => {
                 type: "GET", // methode de transmission des données au fichier php
                 url: element.replace(replaced, word), // url du fichier php
                 dataType: 'json',
-                success: function (data) {
+                success: async function (data) {
                     try {        
                         if (Array.isArray(data) && data.length > 0 && data[0].calendar !== undefined)
-                            data = SearchResultCalendar.from_array(data);
+                        {
+                            data = await SearchResultCalendar.from_array(data);
+                        }
         
                         if (data.datas !== undefined && data.datas.length > 0)
                         {

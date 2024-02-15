@@ -108,6 +108,8 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
       rcmail.addEventListener('beforemenu-open', function(p) {
         if (p.menu == 'attachmentmenu') {
           cal.selected_attachment = p.id;
+          var mimetype = rcmail.env.attachments[p.id];
+          rcmail.enable_command('attachment-save-calendar', mimetype == 'text/calendar' || mimetype == 'text/x-vcalendar' || mimetype == 'application/ics');
         }
       });
     }

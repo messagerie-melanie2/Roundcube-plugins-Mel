@@ -81,7 +81,7 @@ $(document).ready(
 
       });
 
-      if (!!window.mel_metapage) {
+      if (!!window.mel_metapage && rcmail.env.task === 'calendar') {
         top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get);
         top.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
           calendar_waiting_number();
@@ -121,52 +121,57 @@ $(document).ready(
           $("#datepicker-onoff").click();
       }, 1);
 
-      parent.metapage_frames.addEvent("open.after", async (eClass, changepage, isAriane, querry, id, actions) => {
+      // if (!!parent && typeof parent?.metapage_frames !== 'undefined' && !!parent?.mel_metapage?.addEvent)
+      // {
+      //   parent.metapage_frames.addEvent("open.after", async (eClass, changepage, isAriane, querry, id, actions) => {
 
-        if (eClass === "calendar") {
-          querry = $(`iframe#${id}`);
-          if (querry.length > 0) {
-            try {
-              querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
-            } catch (error) {
-
-            }
-          }
-          else {
-            try {
-              $('#calendar').fullCalendar('rerenderEvents');
-            } catch (error) {
-
-            }
-          }
-        }
-
-      });
+      //     if (eClass === "calendar") {
+      //       querry = $(`iframe#${id}`);
+      //       if (querry.length > 0) {
+      //         try {
+      //           querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
+      //         } catch (error) {
+  
+      //         }
+      //       }
+      //       else {
+      //         try {
+      //           $('#calendar').fullCalendar('rerenderEvents');
+      //         } catch (error) {
+  
+      //         }
+      //       }
+      //     }
+  
+      //   });
+      // }
 
     });
   }
 );
 
-function CalendarPageInit() {
-  DatePickerInit().then(() => {
-    $(".ui-datepicker-inline.ui-datepicker.ui-widget.ui-widget-content.ui-helper-clearfix.ui-corner-all").on("keyup", (event) => {
-      if ($.inArray(event.keyCode, [13, 33, 34, 35, 36, 37, 38, 39, 40]) != -1)
+function CalendarPageInit(init_date_picker = true) {
+  (init_date_picker ? DatePickerInit() : Promise.resolve()).then(() => {
+    if (init_date_picker)
+    {
+      $(".ui-datepicker-inline.ui-datepicker.ui-widget.ui-widget-content.ui-helper-clearfix.ui-corner-all").on("keyup", (event) => {
+        if ($.inArray(event.keyCode, [13, 33, 34, 35, 36, 37, 38, 39, 40]) != -1)
+          DatePickerInit();
+      });
+  
+      rcmail.addEventListener("calendar.datepicker.onChangeMonthYear", (a) => {
         DatePickerInit();
-    });
-
-    rcmail.addEventListener("calendar.datepicker.onChangeMonthYear", (a) => {
-      DatePickerInit();
-    });
-
-    rcmail.addEventListener("calendar.datepicker.onSelect", (a) => {
-      DatePickerInit();
-    });
-
-    rcmail.addEventListener("calendar.datepicker.beforeShowDay", (a) => {
-      DatePickerInit();
-    });
-
-
+      });
+  
+      rcmail.addEventListener("calendar.datepicker.onSelect", (a) => {
+        DatePickerInit();
+      });
+  
+      rcmail.addEventListener("calendar.datepicker.beforeShowDay", (a) => {
+        DatePickerInit();
+      });
+    }
+    
     const isSelected = (value) => {
       return $("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .active").html() === value ? "selected" : "";
     };

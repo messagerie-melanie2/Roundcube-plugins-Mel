@@ -1,1 +1,25 @@
-// out: false
+//out: false
+@import "./colors.less";
+
+@priority-super-high: {
+    ICON:'\eacf';
+    COLOR: @priority-high-color;
+    CLASS: prio1;
+};
+@priority-high: {
+    ICON:'\e316';
+    COLOR: @priority-high-color;
+    CLASS: prio2;
+};
+@priority-low: {
+    ICON:'\e313';
+    COLOR: @priority-low-color;
+    CLASS: prio4;
+};
+@priority-high-low: {
+    ICON:'\ead0';
+    COLOR: @priority-low-color;
+    CLASS: prio5;
+};
+
+@priorities: @priority-high-low, @priority-low, @priority-high, @priority-super-high;

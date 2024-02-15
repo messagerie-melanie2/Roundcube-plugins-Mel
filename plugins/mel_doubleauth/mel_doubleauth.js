@@ -167,9 +167,10 @@ if (window.rcmail) {
 			}
 
 			$('#p2FA_activate_button').click(function() {
-				setup2FAfields();
-				$('#p2FA_activate_button').attr('disabled', 'disabled');
-				window.double_fact_saved = false;
+				rcmail.triggerEvent('start-da-modal', {$input: $('#mail-da-input'), $button: $('#start-button-modal'), do_all: true});
+				// setup2FAfields();
+				// $('#p2FA_activate_button').attr('disabled', 'disabled');
+				// window.double_fact_saved = false;
 			});
 
 			// ajax
@@ -290,7 +291,7 @@ if (window.rcmail) {
 
 			// Define Variables
 			var tabmel_doubleauth = $('<li>').attr('id',
-					'settingstabpluginmel_doubleauth').addClass('tablink');
+					'settingstabpluginmel_doubleauth').addClass('tablink mel_doubleauth');
 			var button = $('<a>').attr('href',
 					rcmail.env.comm_path + '&_action=plugin.mel_doubleauth').html(
 					rcmail.gettext('mel_doubleauth', 'mel_doubleauth')).appendTo(
@@ -309,5 +310,9 @@ if (window.rcmail) {
 				window.double_fact_saved = true;
 				rcmail.gui_objects.mel_doubleauthform.submit();
 			}, true);
+
+			$('#start-button-modal').attr('type','button').removeClass('disabled').removeAttr('disabled').click(() => {
+				rcmail.triggerEvent('start-da-modal', {$input: $('#mail-da-input'), $button: $('#start-button-modal')});
+			});
 		});
 }

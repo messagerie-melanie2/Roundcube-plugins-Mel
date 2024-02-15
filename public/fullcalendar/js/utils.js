@@ -1,3 +1,5 @@
+let allDayEvents = [];
+
 Date.prototype.addMinutes = function (m) {
   var copiedDate = new Date(this.getTime());
   copiedDate.setMinutes(copiedDate.getMinutes() + m);
@@ -43,10 +45,28 @@ function custom_input_trigger() {
   }
 }
 
-function generateTimeGap(response) {
+function generateTimeGap(response, calendar) {
   calendar.getEvents().forEach((event) => {
-    event.setStart(moment(event.start).subtract(response.time_before_select, 'minute').toDate());
-    event.setEnd(moment(event.end).add(response.time_after_select, 'minute').toDate())
+
+    if (event.allDay) {
+      //On ajoute les évènements dans un tableau pour les désactiver dans le dateTimePicker
+      if (!event.title.startsWith('[Libre') && !event.title.startsWith('[Annulé')) {
+        allDayEvents.push(moment(event.start).format('DD.MM.y'))
+      }
+
+      event.setAllDay(false);
+      event.setStart(event.start);
+      event.setEnd(moment(event.end).add(22, 'hour').toDate())
+    }
+    else {
+      event.setStart(moment(event.start).subtract(response.time_before_select, 'minute').toDate());
+      event.setEnd(moment(event.end).add(response.time_after_select, 'minute').toDate())
+    }
+
+    //On affiche pas les évènement libre ou annulé dans le calendrier
+    if (event.title.startsWith('[Libre') || event.title.startsWith('[Annulé')) {
+      event.remove();
+    }
   })
   return true;
 }

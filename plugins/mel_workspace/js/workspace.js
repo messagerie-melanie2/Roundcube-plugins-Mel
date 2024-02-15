@@ -63,6 +63,8 @@ async function WSPReady()
  */
 function Start(uid, hasAriane, datas) {
 
+    //SetupToolbar();
+
     //Gérer la barre de navigation
     const style = rcmail.env.current_bar_colors;
     let $html = $("html");
@@ -107,15 +109,15 @@ function Start(uid, hasAriane, datas) {
         rcmail.command('workspace.survey.create');
     });
 
-    if (!parent.$("body").hasClass("task-workspace")) parent.$(".mwsp-style").remove();
+    if (!top.$("body").hasClass("task-workspace")) top.$(".mwsp-style").remove();
     
-    if (style !== undefined && style !== null && style !== '') if (!parent.$("body").hasClass("task-workspace")) parent.$("body").prepend(`<div class="mwsp-style">${style}</div>`);
+    if (style !== undefined && style !== null && style !== '') if (!top.$("body").hasClass("task-workspace")) top.$("body").prepend(`<div class="mwsp-style">${style}</div>`);
 
     //Gérer la barre de navigation avec ariane
-    if (parent.wsp_cf_d !== true)
+    if (top.wsp_cf_d !== true)
     {
         try {
-            parent.metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id, actions)=> {
+            top.metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id, actions)=> {
                 if (changepage)
                 {
                     if (eClass === "workspace")
@@ -132,7 +134,7 @@ function Start(uid, hasAriane, datas) {
                 }
             });
 
-            parent.$(".tiny-rocket-chat").click(async () => {
+            top.$(".tiny-rocket-chat").click(async () => {
                 //ariane-card
                 let $ariane = $(".ariane-card");
 
@@ -148,13 +150,19 @@ function Start(uid, hasAriane, datas) {
         } catch (error) {
             console.error(error);
         }
-        parent.wsp_cf_d = true;
+        top.wsp_cf_d = true;
     }
 
+    setup_wsp_colors();
+    
+
     $(".wsp-copy-button").click(() => {
-        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
+        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '') + '&_force_bnum=1';
         mel_metapage.Functions.copy(url);
     });
+    
+    const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}) + '&_force_bnum=1';
+    (top ?? parent ?? window).history.replaceState({}, document.title, url.replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
 
     setup_end_date();
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
@@ -162,9 +170,9 @@ function Start(uid, hasAriane, datas) {
         _uid:uid
     }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
     //A faire si webconf
-    if (parent.webconf_master_bar !== undefined)
+    if (top.webconf_master_bar !== undefined)
     {
-        parent.webconf_master_bar.minify_toolbar();
+        top.webconf_master_bar.minify_toolbar();
 
         if (!$("html").hasClass("framed"))
             $(".wsp-toolbar.melw-wsp").addClass('webconfstarted');
@@ -194,7 +202,7 @@ function Middle(uid, hasAriane, datas) {
 
     try {
         if (rcmail.env.current_workspace_services.mail)
-            parent.rcmail.mel_metapage_fn.mail_wsp_updated();
+            top.rcmail.mel_metapage_fn.mail_wsp_updated();
 
     } catch (error) {
         
@@ -204,19 +212,29 @@ function Middle(uid, hasAriane, datas) {
     {
         //console.log("c");
         let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
-        //console.log("Init()", datas, channel, datas[channel]);
-        UpdateAriane(channel, false, (datas[channel] === undefined ? 0 : datas[channel]));
+        // //console.log("Init()", datas, channel, datas[channel]);
+        // UpdateAriane(channel, false, (datas[channel] === undefined ? 0 : datas[channel]));
 
-        rcmail.addEventListener(`storage.change.${mel_metapage.Storage.ariane}`, (items) => {
-            UpdateAriane(channel, false, window.new_ariane(items).getChannel(channel));
-        });
+        // rcmail.addEventListener(`storage.change.${mel_metapage.Storage.ariane}`, (items) => {
+        //     UpdateAriane(channel, false, window.new_ariane(items).getChannel(channel));
+        // });
+        (async () => {
+            const manager = await ChatHelper.Manager();
+            const managerCallback = await ChatHelper.ManagerCallback();
+            UpdateAriane(channel, false, manager.chat().unreads?.[channel] ?? 0);
+            manager.on_mentions_update.add(`WSP-CHAT-${channel}`, managerCallback.create((helper, key, value, unread) => {
+                if (key === channel) {
+                    UpdateAriane(channel, false, value ?? 0);
+                }
+            }));
+        })()
     }
 
     UpdateCalendar();
-    parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
+    top.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
 
     UpdateTasks();
-    parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
+    top.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
 
     if (rcmail.env.current_workspace_file === undefined && rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
     {
@@ -225,7 +243,7 @@ function Middle(uid, hasAriane, datas) {
             const val = wsp_contract(rcmail.env.current_workspace_page);
             if (val === "ariane")
                 setTimeout(async () => {
-                    await wait(() => parent.rcmail.busy);
+                    await wait(() => top.rcmail.busy);
                     $(`.wsp-ariane`).click();
                 }, 100);
             else
@@ -281,7 +299,7 @@ async function End(uid, hasAriane, datas) {
     if (rcmail.env.current_workspace_file !== undefined && rcmail.env.current_workspace_services.doc)
     {
         let it = 0;
-        if (parent.$(".stockage-frame").length == 0)
+        if (top.$(".stockage-frame").length == 0)
             promises.push(wait(() => rcmail.busy).then(() => mel_metapage.Functions.change_frame("stockage", false, true).then(() => {
                 rcmail.set_busy(false);
                 rcmail.clear_messages();
@@ -353,7 +371,7 @@ var UpdateAriane = (channel, store, unread) => {
 function click_on_menu(page)
 {
     setTimeout(async () => {
-        await wait(() => parent.rcmail.busy);
+        await wait(() => top.rcmail.busy);
         $(`.wsp-${wsp_contract(page)}`).click();
     }, 100);
 }
@@ -400,40 +418,26 @@ function UpdateSomething(data,_class, editor = null)
     }
 }
 
-function UpdateCalendar()
+async function UpdateCalendar()
 {
     const uid = rcmail.env.current_workspace_uid;
-    let array;
-
-    Update(mel_metapage.Storage.calendar, UpdateSomething, null, null, "wsp-agenda", (data) => {
-        if (data === null || data === undefined)
-        {
-            parent.postMessage({
-                message:"update_calendar"
-            });
-            return null;
-        }
-        const before = "ws#";
-        const id = before + uid;
-        let tmp = Enumerable.from(data).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id));
-        array = tmp.toArray();
-        tmp = tmp.where(x => x.free_busy !== "free" && x.free_busy !== "telework");
-        if (tmp.any())
-            return tmp.count();
-        else
-            return 0;
-    });
+    const before = "ws#";
+    const id = before + uid;
+    const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
+    let array = Loader.get_next_events_day(moment(), {})
+                  .where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id))
+                  .where(x => x.free_busy !== "free" && x.free_busy !== "telework")
+                  .toArray();
 
     {
         const agenda = rcmail.env.current_workspace_constantes.agenda;
         const id = "wsp-block-" + agenda;
         let querry = $("#" + id).find(".block-body");
-        if (array.length === 0)
-            setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
+        if (array.length === 0) await setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
         else
         {
-            const count = Enumerable.from(array).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
-            setup_calendar(array, querry);
+            const count = array.length;
+            await setup_calendar(array, querry);
             UpdateSomething(count, "wsp-agenda-icon");
             $(".wsp-agenda-icon").find(".roundbadge").addClass("edited");
         }
@@ -444,9 +448,9 @@ function UpdateCalendar()
  * Affiche les évènements.
  * @param {array} datas Données des évènements.
  */
-function setup_calendar(datas, querry, _date = moment())
+async function setup_calendar(datas, querry, _date = moment())
 {
-    let html = html_helper.Calendars({
+    let html = await html_helper.Calendars({
         datas:datas,
         _date:_date,
         get_only_body:true,
@@ -464,7 +468,12 @@ function setup_calendar(datas, querry, _date = moment())
     });
 	querry.html(html);
 
-		
+    if (!!html_helper.Calendars.$jquery_array)
+    {
+        const $jquery_array = html_helper.Calendars.$jquery_array;
+        html_helper.Calendars.$jquery_array = undefined;
+        querry.find('ul').html($jquery_array);
+    }
 }
 
 function UpdateTasks()
@@ -474,7 +483,7 @@ function UpdateTasks()
     Update(mel_metapage.Storage.other_tasks, UpdateSomething, null, null, "wsp-tasks", (data) => {
         if (data === null || data === undefined)
         {
-            parent.postMessage({
+            top.postMessage({
                 message:"update_tasks"
             });
             return null;
@@ -722,7 +731,7 @@ function UpdateFrameAriane()
         arrow.removeClass(right).addClass(down).parent().attr("title", rcmail.gettext("close_ariane", "mel_workspace"));
         $(".ariane-frame").attr("aria-expanded", "true").find("iframe").css("display", "").parent().css("display", "");
         setTimeout(() => {
-            rcmail.triggerEvent("init_ariane", "wsp-disc-id");
+            rcmail.triggerEvent("init_rocket_chat", "wsp-disc-id");
         }, 100);
     }
     else
@@ -732,8 +741,10 @@ function UpdateFrameAriane()
     }
 }
 
-async function initCloud()
+async function initCloud(tentative = 0, waiting_timeout = undefined)
 {
+    // debugger;
+    // console.trace('tentative', tentative);
     if (rcmail.env.current_workspace_services.doc !== true || rcmail.env.is_stockage_active !== true)
         return;
 
@@ -742,8 +753,9 @@ async function initCloud()
 
     if(rcmail.env.checknews_action_on_success === undefined)
         rcmail.env.checknews_action_on_success = [];
-
+        
     rcmail.env.checknews_action_on_error.push(() => {
+        window.nc_state = false;
         //rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");
         //console.log("ncupdated", rcmail.env.current_nextcloud_updated);
         if (rcmail.env.current_nextcloud_updated === null || rcmail.env.current_nextcloud_updated === false)
@@ -765,6 +777,7 @@ async function initCloud()
         }
 
         const finished = moment(rcmail.env.current_nextcloud_updated).add(rcmail.env.wsp_waiting_nextcloud_minutes, "m");
+
         if (moment() < finished) //(personnal data)
         {
             $("button.wsp-documents").css("display", "none");
@@ -774,30 +787,75 @@ async function initCloud()
                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Création en cours...</div>
             </div>-->
             `);
-            
-            let createdTimeOut = setInterval(() => {
-                const val = Math.round((1 - ((finished - moment())/(rcmail.env.wsp_waiting_nextcloud_minutes*60*1000)))*100);
-                //$("#cloud-frame .progress-bar").css("width", `${val}%`);
-                rcmail.triggerEvent("workspace.roundrive.createStockage.wait", val);
-                if (val >= 100)
-                {
-                    $("button.wsp-documents").css("display", "");
-                    clearInterval(createdTimeOut);
-                    initCloud();
-                    //Envoi au serveur que rcmail.env.current_workspace_document_ten vaut vrai
-                }
-            }, 1000);
+
+            if (!waiting_timeout) {
+                rcmail.display_message("Le module Documents de l'espace sera accessible dans quelques minutes.");
+                rcmail.display_message("Une tentative de connexion automatique est en cours...");
+
+                let val = 0;
+                let createdTimeOut = setInterval(() => {
+                    ///onst val = Math.round((1 - ((finished - moment())/(rcmail.env.wsp_waiting_nextcloud_minutes*60*1000)))*100);
+                    //$("#cloud-frame .progress-bar").css("width", `${val}%`);
+                    rcmail.triggerEvent("workspace.roundrive.createStockage.wait", val);
+    
+                    if (++val >= 20)
+                    {
+                        clearTimeout(createdTimeOut);
+                    }
+                    else{
+                        console.info(`Creation tentative N°${val}...`);
+                        rcmail.env.checknews_action_on_error = undefined;
+                        rcmail.env.checknews_action_on_success = undefined;
+                        initCloud(0, createdTimeOut);
+                    }
+    
+    
+                }, 30000);
+            }
         }  
         else {
-            $("button.wsp-documents").css("display", "none");
-            rcmail.display_message("Impossible d'accéder au dossier !", "error");
-            if (moment(rcmail.env.current_nextcloud_updated).add(rcmail.env.wsp_waiting_nextcloud_minutes*2, "m") > moment())
-                rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");
+
+            if (!!waiting_timeout) {
+                clearTimeout(waiting_timeout);
+                waiting_timeout = null;
+                console.info('Creation tentative stopped');
+            }
+
+            if (tentative === 0)
+            {
+                $("button.wsp-documents").css("display", "none");
+                rcmail.display_message("Stockage non accessible pour le moment !", "error");
+                setTimeout(() => {
+                    rcmail.display_message("Si vous venez de rejoindre l'espace de travail, il sera accessible dans quelques minute !", "error");
+                    setTimeout(() => {
+                        rcmail.display_message("Tentative de connexion en cours...");
+                        
+                    }, 300);
+                }, 200);
+                console.info(`Tentative de connexion au stockage N°${tentative + 1}...`);
+                rcmail.env.checknews_action_on_error = undefined;
+                rcmail.env.checknews_action_on_success = undefined;
+                return initCloud(1);
+            }
+            else if (tentative > 20) {
+                rcmail.display_message("Impossible d'atteinde le stockage !", "error");
+                rcmail.env.con_nex_impo = true;
+                return;
+            }
+
+            setTimeout(() => {
+                console.info(`Tentative de connexion au stockage N°${tentative + 1}...`);
+                rcmail.env.checknews_action_on_error = undefined;
+                rcmail.env.checknews_action_on_success = undefined;
+                initCloud(++tentative);
+            }, 30*1000);
+
         }
 
     });
 
     rcmail.env.checknews_action_on_success.push(() => {
+        window.nc_state = true;
         if (rcmail.env.current_nextcloud_updated !== 1)
         {
             mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_date_stockage_user_updated"), {
@@ -814,7 +872,49 @@ async function initCloud()
 
     rcmail.env.wsp_roundrive_show = new RoundriveShow(folder, frame, {
         afterInit() {
-            spinner.remove();
+            if (window.nc_state)
+            {
+                spinner.remove();
+                frame.find('.con').remove();
+                frame.parent().find('.progress').remove();
+
+                if ($("button.wsp-documents").css("display") === "none") $("button.wsp-documents").css("display", '');
+
+                clearInterval(window.nc_interval);
+
+                if (!!waiting_timeout || tentative > 0)
+                {
+                    if (!!waiting_timeout) {
+                        clearTimeout(waiting_timeout);
+                        waiting_timeout = null;
+                        console.info('Creation tentative stopped');
+                    }
+
+                    rcmail.display_message("Connexion au stockage réussie !", "confirmation");
+                }
+            }
+            else if (rcmail.env.con_nex_impo === true) {
+                spinner.remove();
+                frame.html($('<p>').text('Impossible de se connecter aux documents !').css('width', '100%').css('text-align', 'center'));
+
+                if (!!waiting_timeout) {
+                    clearTimeout(waiting_timeout);
+                    waiting_timeout = null;
+                    console.info('Creation tentative stopped');
+                }
+            }
+            else {
+                frame.html($('<p>').addClass('con').text('Tentative de connexion aux documents...').css('width', '100%').css('text-align', 'center'));
+                if (frame.parent().find('.progress').length === 0){
+                    let $progress = $(`<div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                       </div>`);
+                    $progress = $progress.appendTo(frame.parent()).find('.progress-bar').css('color', 'transparent');
+
+                    window.nc_interval = startTimer(600, $progress);
+                }
+            }
+
             frame.css("display", "");
         },
 
@@ -849,6 +949,35 @@ async function initCloud()
     });
 }
 
+function startTimer(duration, bar) {
+    var timer = duration, minutes, seconds;
+    const interval = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        
+        var totalSeconds = duration
+        , remainingSeconds = minutes * 60 + seconds
+        , width = (100-(remainingSeconds*100/totalSeconds)) 
+        
+        bar.css('width', width + '%');
+        bar.attr('aria-valuenow', width).text(width + '%');
+
+        if (!bar.hasClass('bg-warning') && width > 50) {
+            bar.addClass('bg-warning');
+        }
+        else if (!bar.hasClass('bg-danger') && width > 80) {
+            bar.removeClass('bg-warning');
+            bar.addClass('bg-danger');
+        }
+
+        if (--timer < 0) {
+            clearInterval(interval);
+        }
+    }, 1000);
+
+    return interval;
+}
+
 function showMail($id)
 {
     try {
@@ -862,7 +991,7 @@ function showMail($id)
         _uid:$id
     };
 
-    if (parent.$("iframe.mail-frame").length > 0)
+    if (top.$("iframe.mail-frame").length > 0)
     {
         config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.key.value;
         workspaces.sync.PostToParent({
@@ -873,10 +1002,10 @@ function showMail($id)
         });
         mel_metapage.Functions.change_frame("mail");
     }
-    else if (parent.$(".mail-frame").length > 0)
+    else if (top.$(".mail-frame").length > 0)
     {
         rcmail.set_busy(true, "loading");
-        parent.location.href = mel_metapage.Functions.url("mail", "show", config).replaceAll(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
+        top.location.href = mel_metapage.Functions.url("mail", "show", config).replaceAll(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
     }
     else {
         config["_action"] = "show";
@@ -1130,5 +1259,25 @@ function init_sondages()
             inject_embeded(e.currentTarget);
         });
         inject_embeded(iterator);
+    }
+}
+
+function setup_wsp_colors() {
+   const color = rcmail.env.current_settings.color;
+
+    if (!!color) {
+        let $querry = $('.dwp-round.wsp-picture span');
+
+        if ($querry.length > 0){
+            let textColor =  $('.dwp-round.wsp-picture span').css('color').replaceAll('rgb', '').replaceAll('a', '').replaceAll('(', '').replaceAll(')', '').split(','); 
+            if (!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(textColor, mel_metapage.Functions.colors.kMel_extractRGB(color))) {
+                $querry.css('color', 'white');
+            }
+            else $querry.css('color', '#363A5B');
+
+            textColor = null;
+        }
+
+        $querry = null;
     }
 }

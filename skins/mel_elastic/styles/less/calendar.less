@@ -28,6 +28,10 @@
     pointer-events: none;
 }
 
+.form-control-plaintext {
+    color: var(--main-text-color);
+}
+
 .task-
 {
     &calendar{
@@ -379,7 +383,7 @@
                         a{
                             &.quickview{
                                 &::before{
-                                    opacity: 0.2;
+                                    opacity: 1;
                                     content: "\e962";
                                 }
                             }
@@ -409,12 +413,14 @@
 
             .custom-switch{
                 .custom-control-label{
+                  margin-right: 0px;
+                  
                     html@{touch} &{
                         padding-left: 2.5rem;
                     }
 
                     &::before{
-                        border-color: var(--calendar-list-item-switch-border-color)!important;
+                        border: 1px solid var(--calendar-list-item-switch-border-color)!important;
                         background-color: var(--calendar-list-item-switch-background-color)!important;
                         border-radius: 5px;
                         width: 16px;
@@ -435,7 +441,7 @@
                             &::after{
                                 background: none;
                                 top: 4px;
-                                left: -4px;
+                                left: -8px;
                                 content: "\ec4b";
                                 font-family: IcoFont;
                                 font-size: 8px;
@@ -532,7 +538,7 @@
                 }
 
                 &-nonbusiness{
-                    background-color: #F0F0F0;
+                    background-color: #C4C4C4;
                 }
 
                 &-axis{
@@ -563,6 +569,31 @@
                                 -webkit-font-smoothing: antialiased;
                             }
                         }
+                    }
+                }
+
+                &-content i,
+                &-time i{
+                    &.fc-icon-needs-action:before {
+                        content: "\f059";
+                        font-style: normal;
+                    }
+
+                    &.fc-icon-declined:before {
+                        content: "\f05e";
+                        font-style: normal;
+                    }
+
+                    &.fc-icon-delegated:before {
+                        content: "\f064";
+                        font-style: normal;
+                    }
+
+                    &.fc-icon-telework:before {
+                        content: "\e918";
+                        font-family: "DWP";
+                        font-weight: normal;
+                        font-style: normal;
                     }
                 }
             }
@@ -788,9 +819,8 @@
     a{
         &.refresh{
             &::before{
-                content: "\e95b"!important;
-                font-family: DWP!important;
-                font-weight: normal!important;
+              content: "\e5d5"!important;
+                ._material-icon-barup()!important;
             }
         }
 
@@ -804,9 +834,8 @@
             &.button{
                 &::before{
                     .task-calendar #layout #layout-content > .header &{
-                        content: "\e901"!important;
-                        font-family: DWP!important;
-                        font-weight: normal!important;
+                      content: "\ef85"!important;
+                      ._material-icon-barup()!important;
                     }
                 }
             }
@@ -828,6 +857,14 @@
             }
         }
 
+        &.appointment{
+          &::before{
+              content: "\e901"!important;
+              font-family: DWP!important;
+              font-weight: normal!important;
+          }
+      }
+
         &.settings{
             &::before{
                 content: "\e925"!important;
@@ -838,9 +875,11 @@
 
         &.import{
             &::before{
-                content: "\e95f"!important;
-                font-family: DWP!important;
-                font-weight: normal!important;
+                content: "\f090"!important;
+                font-family: 'Material Symbols Outlined';
+                font-weight: normal;
+                font-variation-settings: 'wght' 300, 'opsz' 48;
+                font-size: 22px;
             }
         }
 
@@ -878,9 +917,8 @@
 
         &.export{
             &::before{
-                content: "\e90d"!important;
-                font-family: DWP!important;
-                font-weight: normal!important;
+                content: "\f09b"!important;
+                ._material-icon-barup()!important;
             }
 
             &.all{
@@ -898,9 +936,8 @@
 
         &.print{
             &::before {
-                content: "\e965";
-                font-weight: normal!important;
-                font-family:DWP!important;
+              content: "\e8ad"!important;
+              ._material-icon-barup()!important;
             }
         }
 
@@ -1129,6 +1166,10 @@ ul{
             &:hover{
                 background-color: var(--calendar-list-item-hover-background-color);
             }
+
+            &.focusview{
+                font-weight: bold;
+            }
         }
 
         li{
@@ -1231,3 +1272,77 @@ ul{
     #calendarurlbox();
 }
 
+.calendar-scheduler {
+  .schedule-table {
+    tr.times th {
+      cursor: pointer;
+      min-width: 48px;
+      max-width: 48px;
+      font-size: .7rem;
+      text-align: center;
+      color: @color-link;
+      height: 1.4rem;
+      padding: 0 .1rem;
+      vertical-align: middle;
+      border-top: 1px solid @color-table-border;
+      border-left: 1px solid @color-list-border;
+    }
+  }
+}
+
+body.quickview-active {
+    .fc {
+        .fc-scroller {
+            background: none !important;
+        }
+    }
+}
+
+#edit-attendees-table{
+    .invite {
+        border: 0;
+        clip: rect(0,0,0,0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    .notified{
+        span{
+            &::before{
+                line-height:2;
+            }
+        }
+    }
+}
+
+#edit-alarms{
+    .edit-alarm-buttons{
+        &.input-group-append {
+            display:none;
+        }
+    }
+}
+
+.vabutton .mel-button {
+    padding: 15px;
+
+    .material-symbols-outlined {
+        position: absolute;
+        top: 49%;
+        left: 49%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+#recurrence-form-monthly {
+  .checkbox-day {
+    display: none;
+  }
+  .recurrence-onevery select {
+    width: 45%;
+  }
+}

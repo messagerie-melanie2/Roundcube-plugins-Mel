@@ -55,7 +55,9 @@ if (rcmail && window.mel_metapage)
         else if (top.rcmail.mel_metapage_fn !== undefined && top.rcmail.mel_metapage_fn.calendar_updated !== undefined)
             navigator = top;
 
-        navigator.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+        navigator.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get, {
+            force:true
+        });
     });
 
     //Après la mise à jours du calendrier
@@ -73,15 +75,26 @@ if (rcmail && window.mel_metapage)
         if (rcmail.env.task === 'bureau')
         {
             mel_item_in_update('#tab-for-agenda-content .icon-mel-calendar', 'icon-mel-calendar', 'spinner-grow');
+        }
+    });
+
+    rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.before, () => {
+        if (rcmail.env.task === 'bureau')
+        {
             mel_item_in_update('#tab-for-tasks-contents .icon-mel-task', 'icon-mel-task', 'spinner-grow');
         }
-
     });
 
     rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
         if (rcmail.env.task === 'bureau')
         {
             mel_item_in_update('#tab-for-agenda-content .spinner-grow', 'icon-mel-calendar', 'spinner-grow', false);
+        }
+    });
+
+    rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, () => {
+        if (rcmail.env.task === 'bureau')
+        {
             mel_item_in_update('#tab-for-tasks-contents .spinner-grow', 'icon-mel-task', 'spinner-grow', false);
         }
     });
@@ -148,10 +161,12 @@ if (rcmail && window.mel_metapage)
                         uid:uid
                     }
                   };
-
+                  //FIX MANTIS 0007961
+                    $('.modal-save-footer').removeAttr('disabled').removeClass('disabled');
                     this.create_event_from_somewhere(event);
             }
             rcmail.register_command('calendar-create-from-mail', function() { cal.create_from_mail(); }, true);
+
         }
 
     });
@@ -160,6 +175,16 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('responsebefore', function(props) {
         if (props.response && props.response.action=='getunread') {
             parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get);
+        }
+    });
+
+    
+    rcmail.addEventListener('responseafter', function(props) {
+        if ('tasks' === rcmail.env.task && props.response && props.response.action=='fetch') {
+            _rm_update_task_size();
+        }
+        else if (props.response && props.response.action === 'refresh') {
+            loadJsModule('mel_metapage', 'mel_object').then((loaded_module) => loaded_module.MelObject.Empty().trigger_event('on_frame_refresh', {rc:rcmail, context:window}))
         }
     });
 
@@ -177,6 +202,106 @@ if (rcmail && window.mel_metapage)
         mel_metapage.Storage.remove(mel_metapage.Storage.calendar);
         mel_metapage.Storage.remove(mel_metapage.Storage.last_calendar_update);
     });
+
+    rcmail.addEventListener('frames.setup.after', () => {
+        if (top === window && 'bnum' === rcmail.env.task) {
+            try {
+                let base_url = rcmail.env['bnum.redirect'];
+
+                if (!base_url.includes('?')) base_url += `?task=${rcmail.env['bnum.init_task']}`;
+
+                const urls = mel_metapage.Functions.get_from_url(base_url);
+                const task = rcmail.env['bnum.init_task'] === 'chat' ? 'rocket' : top.mm_st_ClassContract(rcmail.env['bnum.init_task']);
+                mel_metapage.Functions.change_frame(task, true, true, urls);
+            } catch (error) {
+                mel_metapage.Functions.change_frame('bureau', true, true);
+            }
+        }
+    });
+
+    rcmail.addEventListener('toggle-quick-options.after', (args) => {
+        const {hidden, frame} = args;
+
+        if (!hidden && mel_metapage.Functions.isNavigator(mel_metapage.Symbols.navigator.firefox)) {
+            let $scollbar = $('#mel-scrollbar-size-large').parent();
+            let $parent = $scollbar.parent();
+
+            $parent.hide().children().removeClass('col-4').addClass('col-6');
+            $scollbar.remove();
+
+            $scollbar = null;
+
+            if ('Large' === rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size']) {
+                $('#mel-scrollbar-size-normal').prop('checked', true);
+            }
+
+            $parent.show();
+            $parent = null;
+        }
+
+        if (!hidden) {
+            switch (frame) {
+                case 'mail':
+                    let $delay = $('#speed-delay');
+                    $delay.on('change', () => {
+                        const val = $('#speed-delay').val();
+                        top.save_option('mail_delay', val, $('#speed-delay')).then(() => {
+                            top.rcmail.env.mail_delay = val;
+                            top.$('iframe.mm-frame').each((i, e) => {
+                                e.contentWindow.rcmail.env.mail_delay = val;
+                            });
+            
+                            try {
+                                if (top.$('.wlp-contents iframe').length > 0) {
+                                    top.$('.wlp-contents iframe').each((i, e) => {
+                                        e.contentWindow.rcmail.env.mail_delay = val;
+                                    });
+                                }
+                            } catch (error) {
+                                
+                            }
+                        });
+                    }).attr('min', $delay.data('min')).attr('max', $delay.data('max'))
+                    .on('input', () => {
+                        $('#delay-number').text(`${$('#speed-delay').val()} secondes`);
+                    });
+
+                    $delay = null;
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+    });
+
+    if (rcmail.env.task === 'calendar' && !(top ?? parent ?? window).calendar_listener_added) {
+      (top ?? parent ?? window).rcmail.addEventListener('frame_loaded', (args) => {
+          const {eClass:frame_name, changepage, isAriane, querry:frame, id, first_load} = args;
+          
+          if ('calendar' === frame_name) { 
+              let it = 0;
+              const timeout = 5 * 100; //5 secondes
+              const interval = setInterval(() => {
+                  let $querry = $('#calendar');
+
+                  if ($querry.length > 0) {
+                      it = null;
+                      clearInterval(interval);
+                      $querry.fullCalendar('updateViewSize', true);
+                      $querry.fullCalendar('rerenderEvents', true);
+                  }
+                  else if (it >= timeout) {
+                      it = null;
+                      clearInterval(interval);
+                  }
+
+                  ++it;
+              }, 100);
+          }
+      });
+      (top ?? parent ?? window).calendar_listener_added = true;
+  }
 
     //Initialisation
     rcmail.addEventListener("init", () => {
@@ -256,6 +381,59 @@ if (rcmail && window.mel_metapage)
                     );
                 }
             }
+
+            if (rcmail.env.mail_delay !== top.rcmail.env.mail_delay) {
+                top.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                top.$('iframe.mm-frame').each((i, e) => {
+                    e.contentWindow.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                });
+
+                try {
+                    if (top.$('.wlp-contents iframe').length > 0) {
+                        top.$('.wlp-contents iframe').each((i, e) => {
+                            e.contentWindow.rcmail.env.mail_delay = rcmail.env.mail_delay;
+                        });
+                    }
+                } catch (error) {
+                    
+                }
+            }
+
+            if (rcmail.env.main_nav_can_deploy !== top.rcmail.env.main_nav_can_deploy) {
+                top.rcmail.env.main_nav_can_deploy = rcmail.env.main_nav_can_deploy;
+                top.MEL_ELASTIC_UI.update_main_nav_meca();
+            }
+
+            if (rcmail.env.menu_last_frame_enabled !== top.rcmail.env.menu_last_frame_enabled) {
+                top.rcmail.env.menu_last_frame_enabled = rcmail.env.menu_last_frame_enabled;
+                let $item = top.$("#taskmenu .menu-last-frame");
+                if (true === rcmail.env.menu_last_frame_enabled) {
+                    const css_key = 'm_mp_CreateOrUpdateIcon';
+
+                    $item
+                    .addClass('disabled')
+                    .attr('aria-disabled', true)
+                    .parent()
+                    .css(CONST_CSS_DISPLAY, 'block')
+                    .find('.menu-last-frame-inner-down').html(EMPTY_STRING);
+                    $item.find('.menu-last-frame-item').remove();
+
+                    top.rcmail.env.last_frame_class = 'settings';
+                    top.rcmail.env.last_frame_name =  "Configuration du bureau numérique";
+
+                    if (0 !== (mel_metapage.Frames.lastFrames?.length ?? 0)) mel_metapage.Frames.lastFrames.length = 0;
+
+                    MEL_ELASTIC_UI.css_rules.remove(css_key);
+                }
+                else $item.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+            }
+
+            if (JSON.stringify(rcmail.env.navigation_apps) !== JSON.stringify(top.rcmail.env.navigation_apps)) {
+              if (confirm('Voulez vous actualiser pour voir apparaître ces changements ?'))
+              {
+                top.location.reload();
+              }
+            }
         }
 
         if (rcmail.env.keep_login === true)
@@ -266,7 +444,7 @@ if (rcmail && window.mel_metapage)
                     mel_metapage.Functions.url('mel_metapage', 'get_have_cerbere'),
                     {},
                     (datas) => {
-                        setCookie('mel_cerbere', datas, moment().daysInMonth() - moment().date());
+                        melSetCookie('mel_cerbere', datas, moment().daysInMonth() - moment().date());
                     }
                 );
             }
@@ -295,37 +473,85 @@ if (rcmail && window.mel_metapage)
 
     })
 
+    function _rm_get_margin_height($item) {
+        return parseInt($item.css('margin-top').replace('px', '')) + parseInt($item.css('margin-bottom').replace('px', ''));
+    }
+
+    function _rm_update_theme_size() {
+        let size = window.innerHeight;
+        const array = [$('#layout-list .header'), $('#layout-list .searchbar'), $('#taskselector-content'), $('#layout-list-content separate').first()];
+
+        for (let index = 0, len = array.length; index < len; ++index) {
+            const element = array[index];
+            size -= (element.height() + _rm_get_margin_height(element));
+        }
+
+        return size;
+    }
+
+    function _rm_update_task_size() { 
+        const size = _rm_update_theme_size();
+        $('#layout-list .scroller').css('max-height', 
+        `${size}px`
+        );
+
+        const othersize = $('#layout-list .header').height() + _rm_get_margin_height($('#layout-list .header')) + $('#layout-list-content').height() + _rm_get_margin_height($('#layout-list-content'));
+        if (othersize < window.innerHeight)
+{
+        $('#layout-list .scroller').css('max-height', 
+        `${size + (window.innerHeight - othersize)}px`
+        );}
+    }
+
+    rcmail.addEventListener('theme.changed', () => {
+        if (rcmail.env.task === 'tasks') {
+            _rm_update_task_size();
+        }
+    })
+
     //Lorsqu'il y a un redimentionnement.
     rcmail.addEventListener("skin-resize", (datas)    => {
 
         if ($("html").hasClass("framed"))
-            return;
-
-        if ($("html").hasClass("touch") && $("html").hasClass("layout-normal"))
         {
-            $("#barup-buttons").removeClass("col-6").addClass("col-3");
-            $("#barup-search-col").removeClass("col-3").addClass("col-6").removeClass("col-7");
-            $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
-        }
-        else {
-            if ($("html").hasClass("touch") && rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
-            {
-                $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
-                $("#barup-buttons").removeClass("col-6").addClass("col-3");
-                $("#barup-search-col").removeClass("col-3").addClass("col-7");
+            if (rcmail.env.task === 'tasks') {
+                _rm_update_task_size();
+            }
 
-            }
-            else if ($("html").hasClass("touch"))
-            {
-                $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
-                $("#barup-buttons").removeClass("col-6").addClass("col-3");
-                $("#barup-search-col").removeClass("col-3").addClass("col-7");
-            }
-            else {
-                $("#barup-buttons").removeClass("col-3").addClass("col-6");
-                $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
-                $("#barup-search-col").removeClass("col-6").removeClass("col-7").addClass("col-3");
-            }
+            return;
+        }
+
+        // if ($("html").hasClass("touch") && $("html").hasClass("layout-normal"))
+        // {
+        //     $("#barup-buttons").removeClass("col-6").addClass("col-3");
+        //     $("#barup-search-col").removeClass("col-3").addClass("col-6").removeClass("col-7");
+        //     $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
+        // }
+        // else {
+        //     if ($("html").hasClass("touch") && rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+        //     {
+        //         $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
+        //         $("#barup-buttons").removeClass("col-6").addClass("col-3");
+        //         $("#barup-search-col").removeClass("col-3").addClass("col-7");
+
+        //     }
+        //     else if ($("html").hasClass("touch"))
+        //     {
+        //         $("#barup-search-col .col-7").removeClass("col-7").addClass("col-12");
+        //         $("#barup-buttons").removeClass("col-6").addClass("col-3");
+        //         $("#barup-search-col").removeClass("col-3").addClass("col-7");
+        //     }
+        //     else {
+        //         $("#barup-buttons").removeClass("col-3").addClass("col-6");
+        //         $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
+        //         $("#barup-search-col").removeClass("col-6").removeClass("col-7").addClass("col-3");
+        //     }
+        // }
+        
+        try {
+            MEL_ELASTIC_UI._resize_themes();
+        } catch (error) {
+            
         }
 
         $("window").resize();
@@ -337,10 +563,9 @@ if (rcmail && window.mel_metapage)
 
             if ($("html").hasClass("mwsp")) return args.eventDatas.categories !== undefined && args.eventDatas.categories[0] === `ws#${mel_metapage.Storage.get("current_wsp")}`;
 
-            if (args.eventDatas.allDay === true && args.eventDatas.sensitivity && args.eventDatas.sensitivity != 'public')
+            if (args.eventDatas.allDay === true)
             {
-                let $title = args.element.find('.fc-content');
-                $title.prepend('<i class="fc-icon-sensitive"></i>').addClass('sensible');
+                args.element.find('.fc-content').addClass('fc-time');
             }
             return true;
 
@@ -380,6 +605,10 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('switched_color_theme', (color_mode) => {
         on_switched_color_mode(color_mode);
         sendMessageToAriane({'isDarkTheme': color_mode === 'dark'});
+        
+        if (rcmail.env.task === 'stockage') {
+            window.document.getElementById('mel_nextcloud_frame').contentWindow.postMessage(`switch-theme-${color_mode}`);
+        }
     });
 
     function on_switched_color_mode(color_mode)
@@ -491,6 +720,89 @@ if (rcmail && window.mel_metapage)
             else $('.ct-cm').css('display', 'none');
     });
 
+    rcmail.addEventListener('start-da-modal', async function(args) {
+        const loader =  top.loadJsModule ?? parent.loadJsModule ?? window.loadJsModule;
+
+        const {double_auth_modal} = await loader('mel_metapage', 'double_auth_modal', '/js/lib/metapages_actions/bnum/');
+
+        let da = new double_auth_modal();//.intro_modal();
+        da.nb_max_states = args.do_all ? da.nb_max_states : 2;
+        da.data = args;
+
+        const is_first_step_ignore = true;
+
+        if (args.do_all) {
+            da.data = undefined;
+            da.after_data = args;
+            da.intro_modal();
+        }
+        else da.secondary_mail_modal(is_first_step_ignore);
+    });
+
+    rcmail.addEventListener('da.mail_changed.after', function (args) {
+
+        if (!args.modal.data) return args;
+
+        args.break = true;
+
+        new Promise(async (ok ,nok) => {
+            let {$input, $button} = args.modal.data;
+
+            const busy = rcmail.set_busy(true, 'loading');
+            $button.addClass('disabled').attr('disabled', 'disabled');
+            const BnumConnector = await module_helper_mel.BnumConnector();
+            
+            const email_recup = await BnumConnector.connect(BnumConnector.connectors.settings_da_get_email_recup, {});
+
+            rcmail.set_busy(false, 'loading', busy);
+
+            if ($input.length > 0) {
+                $input.val(email_recup?.datas ?? 'ERROR');
+            }
+            else {
+                rcmail.command('refreshFrame');
+            }
+    
+            $button.removeClass('disabled').removeAttr('disabled');
+
+            args = null;
+
+            if (!!email_recup?.datas) {
+                rcmail.display_message('Adresse changée avec succès !', 'confirmation');
+                ok();
+            }
+            else {
+                console.error('### [DA]', email_recup);
+                rcmail.display_message('Une erreur est survenue !', 'error');
+                nok();
+            }
+        });
+
+        return args;
+    });
+
+    rcmail.addEventListener('da.da_changed.after', async function (args) {
+        let {modal} = args;
+        if (!!modal.after_data) {
+            modal.after_data = null;
+            rcmail.command('refreshFrame');
+            modal = null;
+        }
+    });
+
+    
+    rcmail.addEventListener('da.modal.close', async function (modal) {
+        if (!!modal.data) {
+            const BnumConnector = await module_helper_mel.BnumConnector();
+
+            const obj = await BnumConnector.connect(BnumConnector.connectors.settings_da_get_email_valid, {});
+
+            if (!obj.datas && data.$input.length > 0) {
+                rcmail.command('refreshFrame');
+            }
+        }
+    });
+
     rcmail.addEventListener('responseaftercheck-recent', function(){
           if (!!rcmail.env.list_uid_to_select) 
           {
@@ -502,33 +814,36 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('storage.change', (datas) => {
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
 
-        if (window === top) m_mp_e_on_storage_change_notifications(datas.key);
+        m_mp_e_on_storage_change_notifications(datas.key);
     }, false);
 
-    function m_mp_e_on_storage_change_notifications(key)
+    async function m_mp_e_on_storage_change_notifications(key)
     {
-        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', true];
+        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', 'tchat', true];
 
         if (!accepted_changes.includes(key)) return;
 
+        if (!window.loadJsModule) return;
+
+        const Chat = await ChatHelper.Chat();
+        const Calendar = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance ;
         const delimiter = ') ';
         const config = rcmail.env["mel_metapage.tab.notification_style"];
         const get = mel_metapage.Storage.get;
         const current_task = top.rcmail.env.current_task;
         const current_title = top.document.title;
 
-        let temp= null;
         let numbers = 0;
         switch (config) {
             case 'all':
 
-                temp = get('ariane_datas');
+                //temp = ;
 
-                if (!!temp)
+                if (!!Chat)
                 {
-                    numbers = Enumerable.from(temp.unreads).sum(x => typeof x.value === "string" ? parseInt(x.value) : x.value);
+                    numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0));
 
-                    if (numbers === 0 && temp._some_unreads === true)
+                    if (numbers === 0 && Chat.unreads.haveUnreads() === true)
                     {
                         numbers = '•';
                         break;
@@ -537,21 +852,20 @@ if (rcmail && window.mel_metapage)
 
                 numbers += parseInt(get('mel_metapage.mail.count') ?? 0) +
                            (get('mel_metapage.tasks') ?? []).length +
-                           (get('mel_metapage.calendar') ?? []).length;
+                           Calendar.get_next_events_day(moment(), {enumerable:false}).length;
 
                 break;
 
             case 'page':
                 switch (current_task) {
                     case 'discussion':
-                        temp = get('ariane_datas');
-                        numbers = Enumerable.from(temp.unreads).sum(x => typeof x.value === "string" ? parseInt(x.value) : x.value);
+                        numbers = Enumerable.from(Chat.unreads[Symbol.iterator]()).where(x => x.key !== 'haveSomeUnreads').sum(x => (typeof x.value === "string" ? parseInt(x.value) : (x?.value ?? 0)));
 
-                        if (numbers === 0 && temp._some_unreads === true) numbers = '•';
+                        if (numbers === 0 && Chat.unreads.haveUnreads() === true) numbers = '•';
                         break;
 
                     case 'calendar':
-                        numbers = (get('mel_metapage.calendar') ?? []).length;
+                        numbers = Calendar.get_next_events_day(moment(), {enumerable:false}).length;
                         break;
 
                     case 'tasks':
@@ -610,8 +924,32 @@ if (rcmail && window.mel_metapage)
         }
     });
 
+    rcmail.addEventListener('beforeswitch-task', function(prop) {
+        if (prop === 'logout') {
+            let $querry = $('iframe.wekan-frame');
+            if ($querry.length > 0) {
+                try {
+                    $querry[0].contentWindow.$('#wekan-iframe').contentWindow.Meteor.logout();
+                } catch (error) {
+                    
+                }
+
+                try {
+                    const kanban = $querry[0].contentWindow.rcmail.env.wekan_storage_end;
+                    const storage = Object.keys(localStorage);
+                    for (const key of storage) {
+                        if (key.includes(kanban)) localStorage.removeItem(key);
+                    }
+                } catch (error) {
+                    
+                }
+            }
+        }
+    });
+
     /*********AFFICHAGE D'UN EVENEMENT*************/
-    rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
+    rcmail.addEventListener("calendar.event_show_dialog.custom", async (datas)    => {
+        const Alarm = (await loadJsModule('mel_metapage', 'alarms', '/js/lib/calendar/')).Alarm;
         if (datas.showed.start.format === undefined) datas.showed.start = moment(datas.showed.start);
 
         if (datas.showed.end === null) datas.showed.end = moment(datas.showed.start)
@@ -756,23 +1094,24 @@ if (rcmail && window.mel_metapage)
             for (const key in tmp) {
                 if (Object.hasOwnProperty.call(tmp, key)) {
                     const element = tmp[key];
-
+                    
                     if (!!element && element.length > 0)
                     {
-                        html += `${element.length} ${rcmail.gettext(`itip${key.toLowerCase()}`, (key === 'ACCEPTED' ? 'mel_metapage' : 'libcalendaring'))}, `;
+                        html += `${element.length} ${rcmail.gettext(`status${key.toLowerCase()}`, (key === 'NEEDS-ACTION' ? 'mel_metapage' : 'libcalendaring'))}, `;
                     }
                 }
             }
 
             html = `${html.slice(0, html.length-2)} </div>`;
 
-            //Affichage du status
+            // Affichage du status
             try {
-                const me = Enumerable.from(event.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).first();
-                if (me.status !== undefined)
+                // PAMELA - Mode assistantes
+                const me = Enumerable.from(event.attendees).where(x => x.email === datas.calendar.owner_email.toLowerCase()).first();
+                if (datas.calendar.editable && me.status !== undefined)
                 {
-                    html += `<div class=row style="margin-top:15px"><div class=col-4><span style="margin-right:11px" class="mel-cal-icon attendee ${me.status === undefined ? me.role.toLowerCase() : me.status.toLowerCase()}"></span><span style=vertical-align:text-top><b>Ma réponse</b> : ${rcmail.gettext(`status${me.status.toLowerCase()}`, "libcalendaring")}</span>
-                    ${me.status === "NEEDS-ACTION" || isInvited ? "" : '<button id="event-status-editor" class="btn btn-secondary dark-no-border-default mel-button" style="margin-top:0;margin-left:5px"><span class="icon-mel-pencil"></span></button>'}
+                    html += `<div class="row" id="event-dialog-invited-row" style="margin-top:15px"><div class=col-4><span style="margin-right:11px" class="mel-cal-icon attendee ${me.status === undefined ? me.role.toLowerCase() : me.status.toLowerCase()}"></span><span style=vertical-align:text-top><b>${rcmail.gettext(`answer`, "calendar")}</b> : ${rcmail.gettext(`status${me.status.toLowerCase()}`, "libcalendaring")}</span>
+                    ${me.status === "NEEDS-ACTION" || isInvited ? "" : '<button id="event-status-editor" class="btn btn-secondary dark-no-border-default mel-button" style="margin-top:0;margin-left:5px;padding:10px;line-height:0"><span class="icon-mel-pencil"></span></button>'}
                     </div>
                     </div>`;
                 }
@@ -830,7 +1169,7 @@ if (rcmail && window.mel_metapage)
         //Gérer le titre
         modal.header.querry.css("position", "sticky")
         .css("top", "0")
-        .css("background-color","white")
+        // .css("background-color","white")
         .css("border-top-left-radius","15px")
         .css("border-top-right-radius","15px")
         .css("z-index", 1);
@@ -838,7 +1177,7 @@ if (rcmail && window.mel_metapage)
         //gérer les boutons du footer
         modal.footer.querry.css("position", "")
         .css("bottom", "0")
-        .css("background-color", "white")
+        // .css("background-color", "white")
         .css("flex-direction", "row-reverse")
         .css("z-index", 1)
         .addClass("calendar-show-event");
@@ -862,7 +1201,7 @@ if (rcmail && window.mel_metapage)
             margin-left: -1px;"/>`);
 
             let $subject = $(`<input class="form-control input-mel" type="text" placeholder="Sujet du message..." value="${top.rcmail.env.firstname ?? ''} ${top.rcmail.env.lastname ?? ''}${(!!top.rcmail.env.firstname && !!top.rcmail.env.lastname ? '' : 'On')} vous partage l'évènement ${event.title}"/>`);
-            let $commentArea = $(`<textarea placeholder="Message optionel ici...." class="input-mel mel-input form-control" row=10 style="width:100%"></textarea>`);
+            let $commentArea = $(`<textarea placeholder="Message optionnel ici...." class="input-mel mel-input form-control" row=10 style="width:100%"></textarea>`);
 
             let $userInputParent = $(`<div></div>`).append($userInput);
 
@@ -1015,10 +1354,17 @@ if (rcmail && window.mel_metapage)
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
                     const ariane = null;
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
+                    const pass = querry.attr("href").includes('_pass=') ? querry.attr("href").split('_pass=')[1].split('&')[0].split(' (')[0] : null;
 
                     setTimeout(() => {
                         rcmail.set_busy(false);
-                        window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                        //window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                        window.webconf_helper.go_ex({
+                            key:mel_metapage.Functions.webconf_url(querry.attr("href")),
+                            ariane,
+                            wsp,
+                            pass
+                        });
                     }, 10);
                 });
 
@@ -1029,25 +1375,25 @@ if (rcmail && window.mel_metapage)
         {
             $('#noreply-event-rsvp')?.attr('id', 'noreply-event-rsvp-old');
             let a = $(`
-                <div id="event-rsvp-cloned">
+                <div id="event-rsvp-cloned" class="row" style="margin-top:10px;margin-left:-5px">
                     <div class="rsvp-buttons itip-buttons">
-                        <input type="button" class="button btn btn-secondary" rel="accepted" value="Accepter">
-                        <input type="button" class="button btn btn-secondary" rel="tentative" value="Peut-être">
-                        <input type="button" class="button btn btn-secondary" rel="declined" value="Refuser">
-                        <input type="button" class="button btn btn-secondary" rel="delegated" value="Déléguer">
-                        <div class="itip-reply-controls">
+                        <input type="button" class="button btn btn-secondary" rel="accepted" value="${rcmail.gettext(`itipaccepted`, "libcalendaring")}">
+                        <input type="button" class="button btn btn-secondary" rel="tentative" value="${rcmail.gettext(`itiptentative`, "libcalendaring")}">
+                        <input type="button" class="button btn btn-secondary" rel="declined" value="${rcmail.gettext(`itipdeclined`, "libcalendaring")}">
+                        <input type="button" class="button btn btn-secondary" rel="delegated" value="${rcmail.gettext(`itipdelegated`, "libcalendaring")}">
+                        <div class="itip-reply-controls" style="margin-top:5px">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" id="noreply-event-rsvp" value="1" class="pretty-checkbox form-check-input custom-control-input">
-                                <label class="custom-control-label" for="noreply-event-rsvp" title=""> Ne pas envoyer de réponse</label>
+                                <label class="custom-control-label" for="noreply-event-rsvp" title="">${rcmail.gettext(`itipsuppressreply`, "libcalendaring")}</label>
                             </div>
-                            <a href="#toggle" class="reply-comment-toggle" onclick="$(this).hide().parent().find('textarea').show().focus()">Saisissez votre réponse</a>
+                            <div><a href="#toggle" class="reply-comment-toggle" onclick="$(this).parent().hide().parent().find('textarea').show().focus()">${rcmail.gettext(`itipeditresponse`, "libcalendaring")}</a></div>
                             <div class="itip-reply-comment">
-                                <textarea id="reply-comment-event-rsvp" name="_comment" cols="40" rows="4" class="form-control" style="display:none" placeholder="Commentaire d’invitation ou de notification"></textarea>
+                                <textarea id="reply-comment-event-rsvp" name="_comment" cols="40" rows="4" class="form-control" style="display:none" placeholder="${rcmail.gettext(`itipcomment`, "libcalendaring")}"></textarea>
                                 </div>
                             </div>
                         </div>
                 </div>
-            `).appendTo($("#parenthtmlcalendar"))
+            `).insertAfter("#event-dialog-invited-row")
             .find('input[rel=accepted]')
             .click((e) => {
                 if (event.recurrence !== undefined) window.event_can_close = false;
@@ -1075,12 +1421,14 @@ if (rcmail && window.mel_metapage)
             .click((e) => {
                 if (event.recurrence !== undefined) window.event_can_close = false;
                 ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
-            })
-            ;
+            });
+            // Disable current response
+            const me = Enumerable.from(event.attendees).where(x => x.email === datas.calendar.owner_email.toLowerCase()).first();
+            $("#event-rsvp-cloned input[rel=" + me.status + "]").prop("disabled", true);
             return a;
         }
 
-        //Gestion des invitations
+        // Gestion des invitations
         if (isInvited)
         {
             invited();
@@ -1331,8 +1679,14 @@ if (rcmail && window.mel_metapage)
 
           // make sure this new shortcut is always active
           menu.addEventListener('activate', function(p) {
-            if (p.command == 'gestion_labels') {
-              return true;
+            console.log('p', p);
+            switch (p.command) {
+                case 'move':
+                    $(p.el).attr('aria-disabled', 'false').parent().css('display', '');
+                case 'gestion_labels':
+                    return true;
+                default:
+                    break;
             }
           });
         }
@@ -1482,6 +1836,8 @@ if (rcmail && window.mel_metapage)
 //Gestion des liens internes
 $(document).ready(() => {
 
+    if (!!rcmail.env._courielleur) return;
+
     /**
      * Liste des exceptions
      */
@@ -1533,14 +1889,15 @@ $(document).ready(() => {
         var Enumerable = Enumerable || top.Enumerable;
 
         try {
+            let $target = $(event.currentTarget ?? event.target);
             //Vérification si on intercetpe le lien ou non
-            const intercept = $(event.target).data("spied");
+            const intercept = $target.data("spied");
 
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
-            else if ($(event.target).attr('href').includes('mailto:')) return intercept_mailto(event);
-            else if ($(event.target).attr("onclick") !== undefined && !$(event.target).attr("onclick").includes('event.click')) return;
-            else if (!!Enumerable && Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
-            else if ($(event.target).parent().parent().parent().attr("id") === "taskmenu") return;
+            else if ($target.attr('href').includes('mailto:')) return intercept_mailto(event);
+            else if ($target.attr("onclick") !== undefined && !$target.attr("onclick").includes('event.click')) return;
+            else if (!!Enumerable && Enumerable.from($target.parent()[0].classList).any(x => x.includes('listitem'))) return;
+            else if ($target.parent().parent().parent().attr("id") === "taskmenu") return;
 
             //On ferme la modal
             $('#globalModal').modal('hide')
@@ -1555,7 +1912,7 @@ $(document).ready(() => {
              * @constant
              * @type {string} Adresse du lien
              */
-            const url = $(event.target).attr('href');
+            const url = $target.attr('href');
 
             //Changement des liens en enumerable (optimisation)
             if (rcmail.env.enumerated_url_spies !== true)
@@ -1699,7 +2056,23 @@ $(document).ready(() => {
                                     }
                                 }
                             }
-
+                            
+                            if (!url.includes('/?_task=') && !/^data:/i.test(url)) 
+                            {
+                              //On ouvre une modal pour prévenir d'un lien externe
+                              let domain = new URL(url).hostname;
+                              let open_modal = true;
+                              
+                              rcmail.env.mel_official_domain.forEach(item => {
+                                if (domain.endsWith(item)) {
+                                  open_modal = false;
+                                }
+                              });
+                              if (open_modal) { 
+                                event.preventDefault();
+                                top.external_link_modal(url);
+                              }
+                            }
                             break;
                     }
                 } while (reloop);
@@ -1755,6 +2128,9 @@ function sendMessageToAriane (data) {
         'https://ariane.din.developpement-durable.gouv.fr'
     ];
 
+    const suggestionUrl = 'suggestionUrl'; //type/value
+    const suggestionId = 'suggestionId';
+
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(event)
     {
@@ -1775,6 +2151,19 @@ function sendMessageToAriane (data) {
             const datas_accepted = 'isBNumEmbedded';
             if (event.data === datas_accepted) {
                 sendMessageToAriane({'bNumEmbedded': true, 'isDarkTheme': new Roundcube_Mel_Color().isDarkMode()});
+            }
+            if (event.data && event.data.webconfRoom) {
+                window.webconf_helper.go(key = event.data.webconfRoom, wsp = null, ariane = event.data.arianeRoom)
+            }
+        }
+        else if(rcmail.env.task === 'settings' && rcmail.env.action === 'plugin.mel_suggestion_box' && window.location.origin.includes(event.origin))
+        {
+            const datas_accepted = 'suggestion.app.url';
+            if (event.data === datas_accepted) {
+                $('#settings-suggest-frame')[0].contentWindow.postMessage({
+                    type:suggestionUrl,
+                    value:mel_metapage.Functions.url('settings', 'plugin.mel_suggestion_box', {_uid:suggestionId}).replace('&_is_from=iframe', '')
+                }, '*');
             }
         }
     }

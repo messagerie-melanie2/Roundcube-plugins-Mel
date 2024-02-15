@@ -1216,6 +1216,8 @@ class roundrive_files_engine
         $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_GET);
         $folder = str_replace($this->plugin->gettext('files'), '/', $folder);
         $folder = $this->encoderawpath($folder);
+        $folder = str_replace('%28', '(', $folder);
+        $folder = str_replace('%29', ')', $folder);
         $files = $this->filesystem->listContents($folder, false);
         echo json_encode($files);
         exit;
@@ -1226,6 +1228,9 @@ class roundrive_files_engine
         $doc = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
         $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
         $path = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+        $model = rcube_utils::get_input_value('_model', rcube_utils::INPUT_POST);
+
+        if (empty($model)) $model = "empty";
 
         $path = str_replace($this->plugin->gettext('files'), '/', $path);
         $path = $this->encoderawpath($path);
@@ -1280,7 +1285,7 @@ class roundrive_files_engine
             if ($handler[1] === "put")
                 $return["success"] = $handler[0]->$func("$path/$name.$ext", "");
             else
-                $return["success"] = $handler[0]->$func($path, $name);
+                $return["success"] = $handler[0]->$func($path, $name, $model);
 
         }
 

@@ -102,6 +102,8 @@ abstract class calendar_driver
     const FILTER_PRIVATE       = 16;
     const FILTER_CONFIDENTIAL  = 32;
     const FILTER_SHARED        = 64;
+    // PAMELA - Mode assistantes
+    const FILTER_INVITATION    = 128;
     const BIRTHDAY_CALENDAR_ID = '__bdays__';
 
     // features supported by backend

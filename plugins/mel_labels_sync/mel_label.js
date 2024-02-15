@@ -17,6 +17,15 @@ if (window.rcmail) {
 			if (rcmail.env.action == 'show') {
 				$('#tb_label_popup .toolbarmenu li.labels').addClass('show');
 			}
+			
+			if (['', 'index'].includes(rcmail.env.action)) {
+				rcmail.addEventListener('quick-filter.labels', (args) => {
+					const {filter, target_event} = args;
+
+					rcmail.mel_label_show_tooltip(target_event);
+				});
+			}
+
 			rcmail.addEventListener('responseafterlist', function (evt) {
 				var key = '';
 				if (rcmail.env.balp_label) {
@@ -467,6 +476,64 @@ rcube_webmail.prototype.mel_label_toggle = function(toggle_label) {
 	//rcmail.hide_menu('tb_label_popup');
 };
 
+rcube_webmail.prototype.mel_label_show_tooltip = async function($parent) {
+//debugger;
+//	window.loadJsModule = window.loadJsModule ?? (top ?? parent).loadJsModule;
+
+	//const mel_tooltip_js = await loadJsModule('mel_metapage', 'mel_tooltip.js', '/js/lib/classes/');
+
+	let $body = $('body');
+	let $tooltip = $('body .label-tooltip');
+
+	if (0 === $tooltip.length) {
+		let $ul;
+		let tooltips = Object.keys(rcmail.env.labels_translate);
+		$tooltip = $('<div id="mel-label-tooltip-dropdown" class=""></div>');
+
+		$ul = $('<div class="ignore-bullet btn-group-vertical"></div>');
+		
+		for (let index = 0, len = tooltips.length, key = null, element = null; index < len; ++index) {
+			key = tooltips[index];
+			element = rcmail.env.labels_translate[key];
+			
+			$ul.append(
+				$('<button type="button" class="btn mel-button no-button-margin no-margin-button bckg true"></button>').data('value', key.replace('_-s-_', '$').replace('_-t-_', '~').toUpperCase()).text(element).click((e) => {
+					let $target = $(e.target);
+
+					if ($target.is('.active')) {
+						$target.removeClass('active').removeClass('background').addClass('txt');
+					}
+					else {
+						$target.addClass('active').addClass('background').removeClass('txt');
+					}
+
+					const key = $target.data('mel-label');
+					$target.addClass(`label_${key}`);
+
+					rcmail.triggerEvent('label.tooltip.click', {state:$target.is('.active'), $caller:$parent, $target});
+				}).data('mel-label', key).addClass(`label_${key} txt important`)
+				.on('mouseover', (e) => {
+					let $target = $(e.target);
+					const key = $target.data('mel-label');
+					$target.removeClass(`label_${key}`);
+				}).on('mouseout', (e) => {
+					let $target = $(e.target);
+					const key = $target.data('mel-label');
+					$target.addClass(`label_${key}`);
+				})
+			);
+		}
+		$ul.appendTo($tooltip);
+
+		$tooltip.appendTo($body);
+
+
+		$parent.addClass('label-tooltip').data('popup', 'mel-label-tooltip-dropdown');
+		UI.popup_init($parent[0]);
+
+		$parent.click();
+	}
+}
 	
 	//kMel_LuminanceRatioAAA(kMel_extractRGB('#1A2F34'), kMel_extractRGB('rgb(230, 199, 66)')) 
 
@@ -539,8 +606,35 @@ $(document).ready(function() {
 
 			#messagelist tr.label_${id} td{
 				background-color:${val}20;
+				--message-list-content-selected-mail-address-color: ${textcolor};
+				--message-list-content-selected-row-background-color: ${val};
+				--message-list-content-selected-mail-subject-color: var(--message-list-content-selected-mail-address-color);
 			}
 
+			#messagelist tr.label_${id}:hover td{
+				/*--message-list-content-selected-mail-address-hover-color: ${textcolor};
+				--message-list-content-row-background-hover-color: ${val};
+				--message-list-content-selected-mail-subject-hover-color: ${textcolor};*/
+			}
+
+			.label_${id}.background {
+				color:${textcolor};
+				background-color:${val};
+			}
+
+			.label_${id}.txt {
+				color:${val};
+			}
+
+			.label_${id}.background.important {
+				color:${textcolor}!important;
+				background-color:${val}!important;
+			}
+
+			.label_${id}.txt.important {
+				color:${val}!important;
+			}
+			
 			#messagelist tr.label_${id} td.labels::before
 			{
 				text-shadow: ${textcolor} 1px 0px 0px, ${textcolor} 0.540302px 0.841471px 0px, ${textcolor} -0.416147px 0.909297px 0px, ${textcolor} -0.989993px 0.14112px 0px, ${textcolor} -0.653644px -0.756803px 0px, ${textcolor} 0.283662px -0.958924px 0px, ${textcolor} 0.96017px -0.279416px 0px;
@@ -549,8 +643,8 @@ $(document).ready(function() {
 			css += "#messagelist tr.selected.label_" + id + " td,\n";
 			css += "#messagelist tr.selected.label_" + id + " td a\n";
 			css += "{\n";
-			css += "  color: #FFFFFF;\n";
-			css += "  background-color: "+val+";\n";
+			css += "  /*color: #FFFFFF;\n";
+			css += "  background-color: "+val+";\n*/";
 			css += "}\n";
 			css += `
 				html.dark-mode #messagelist tr.label_${id} td,

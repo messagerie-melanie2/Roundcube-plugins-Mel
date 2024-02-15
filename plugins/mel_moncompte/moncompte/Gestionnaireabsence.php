@@ -97,7 +97,12 @@ class Gestionnaireabsence extends Moncompteobject
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
     // Parcourir les absences
     $hasAbsence = false;
-    $html = self::absence_template('%%template%%');
+    $offsetChoice = ["-0400" => "America/Guadeloupe","+0000" => "Europe/Paris","+0300" => "Indian/Mayotte","+0400" => "Indian/Reunion"];
+    $timezone = rcmail::get_instance()->config->get('timezone');
+    
+    $html = "%%selectTimezone%%";
+    
+    $html .= self::absence_template('%%template%%');
     $i = 0;
     foreach ($user->outofoffices as $type => $outofoffice) {
       if (
@@ -105,6 +110,11 @@ class Gestionnaireabsence extends Moncompteobject
         && isset($outofoffice->days)
       ) {
         $hasAbsence = true;
+
+        $offset = sprintf("%+'03d00", $outofoffice->offset);
+        if (array_key_exists($offset, $offsetChoice)) {
+          $timezone = $offsetChoice[$offset];
+        }
 
         $all_day = !isset($outofoffice->hour_start)
           && !isset($outofoffice->hour_end);
@@ -124,7 +134,35 @@ class Gestionnaireabsence extends Moncompteobject
     if (!$hasAbsence) {
       $html .= html::div('noabsence', rcmail::get_instance()->gettext('noabsence', 'mel_moncompte'));
     }
-    return $html;
+    return str_replace("%%selectTimezone%%",self::generate_timezone($timezone),$html);
+  }
+
+  /**
+   * Génération de la liste déroulante des timezones pour les absence hebdo
+   */
+  private static function generate_timezone($timezone) {
+    $field_id = 'rcmfd_timezone';
+    $select = new html_select([
+            'name'  => 'absence_timezone',
+            'id'    => $field_id,
+            'class' => 'custom-select mb-4'
+    ]);
+
+    $zones = [];
+    foreach (DateTimeZone::listIdentifiers() as $i => $tzs) {
+        if ($data = self::timezone_standard_time_data($tzs)) {
+            $zones[$data['key']] = [$tzs, $data['offset']];
+        }
+    }
+
+    ksort($zones);
+
+    foreach ($zones as $zone) {
+        list($tzs, $offset) = $zone;
+        $select->add('(GMT ' . $offset . ') ' . self::timezone_label($tzs), $tzs);
+    }
+
+    return $select->show((string)$timezone);
   }
 
   /**
@@ -215,6 +253,75 @@ class Gestionnaireabsence extends Moncompteobject
     );
   }
 
+    /**
+     * Localize timezone identifiers
+     *
+     * @param string $tz Timezone name
+     *
+     * @return string Localized timezone name
+     */
+    public static function timezone_label($tz)
+    {
+        static $labels;
+
+        if ($labels === null) {
+            $labels = [];
+            $lang   = $_SESSION['language'];
+            if ($lang && $lang != 'en_US') {
+                if (file_exists(RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc")) {
+                    include RCUBE_LOCALIZATION_DIR . "$lang/timezones.inc";
+                }
+            }
+        }
+
+        if (empty($labels)) {
+            return str_replace('_', ' ', $tz);
+        }
+
+        $tokens = explode('/', $tz);
+        $key    = 'tz';
+
+        foreach ($tokens as $i => $token) {
+            $idx   = strtolower($token);
+            $token = str_replace('_', ' ', $token);
+            $key  .= ":$idx";
+
+            $tokens[$i] = !empty($labels[$key]) ? $labels[$key] : $token;
+        }
+
+        return implode('/', $tokens);
+    }
+
+    /**
+     * Returns timezone offset in standard time
+     */
+    public static function timezone_standard_time_data($tzname)
+    {
+        try {
+            $tz    = new DateTimeZone($tzname);
+            $date  = new DateTime(null, $tz);
+            $count = 12;
+
+            // Move back for a month (up to 12 times) until non-DST date is found
+            while ($count > 0 && $date->format('I')) {
+                $date->sub(new DateInterval('P1M'));
+                $count--;
+            }
+
+            $offset  = $date->format('Z') + 45000;
+            $sortkey = sprintf('%06d.%s', $offset, $tzname);
+
+            return [
+                'key'    => $sortkey,
+                'offset' => $date->format('P'),
+            ];
+        }
+        catch (Exception $e) {
+            // ignore
+        }
+    }
+
+
   /**
    * Generation for the days checkbox form
    * 
@@ -267,6 +374,7 @@ class Gestionnaireabsence extends Moncompteobject
     $message_interne = trim(rcube_utils::get_input_value('absence_message_interne', rcube_utils::INPUT_POST));
     $radio_externe = trim(rcube_utils::get_input_value('absence_reponse_externe', rcube_utils::INPUT_POST));
     $message_externe = trim(rcube_utils::get_input_value('absence_message_externe', rcube_utils::INPUT_POST));
+    $timezone = trim(rcube_utils::get_input_value('absence_timezone', rcube_utils::INPUT_POST));
 
     // Récupération de l'utilisateur
     $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
@@ -343,13 +451,13 @@ class Gestionnaireabsence extends Moncompteobject
             $outofoffice->message = trim(rcube_utils::get_input_value("message$i", rcube_utils::INPUT_POST));
             $all_day = trim(rcube_utils::get_input_value("all_day$i", rcube_utils::INPUT_POST));
             if ($all_day) {
-              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
-              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone($timezone));
+              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone($timezone));
             } else {
               $hour_start = trim(rcube_utils::get_input_value("hour_start$i", rcube_utils::INPUT_POST));
               $hour_end = trim(rcube_utils::get_input_value("hour_end$i", rcube_utils::INPUT_POST));
-              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
-              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', $hour_end, new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+              $outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone($timezone));
+              $outofoffice->hour_end = \DateTime::createFromFormat('H:i', $hour_end, new \DateTimeZone($timezone));
             }
             $outofoffices[] = $outofoffice;
           }
@@ -375,5 +483,83 @@ class Gestionnaireabsence extends Moncompteobject
       rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
       return false;
     }
+  }
+  
+
+  public static function get_ponctual_dates() {
+		    // Récupération de l'utilisateur
+        $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
+        if ($user->authentification(Moncompte::get_current_user_password(), true))
+        {
+          $user->load(['outofoffices']);
+          $offices = $user->outofoffices;
+          $external_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
+  
+          $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : null;
+          $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : null;
+  
+          if (!isset($start) || !isset($end)) {
+            $external_oof = $external_oof ?? $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
+  
+            $start = isset($external_oof->start) ? $external_oof->start->format('d/m/Y H:i:s') : $start;
+            $end = isset($external_oof->end) ? $external_oof->end->format('d/m/Y H:i:s') : $end;
+          }
+  
+        echo json_encode(['start' => $start,
+                          'end' => $end,
+                          'message' => $external_oof->message ?? '']);
+        }
+        else {
+          rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
+          echo json_encode(['start' => null,
+          'end' => null,
+          'message' => $external_oof->message ?? '']);
+        }
+
+      exit;
+	}
+
+	public static function set_quick_ponctual_dates() {
+    $date_debut = trim(rcube_utils::get_input_value('absence_date_debut', rcube_utils::INPUT_POST));
+    $date_fin = trim(rcube_utils::get_input_value('absence_date_fin', rcube_utils::INPUT_POST));
+    // Récupération de l'utilisateur
+    $user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
+    if ($user->authentification(Moncompte::get_current_user_password(), true))
+    {
+      $user->load(['outofoffices']);
+      echo self::set_ponctual_dates($user, $date_debut, $date_fin);
+    }
+    else {           
+      rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
+      echo false;
+    }
+    exit;
+  }
+
+	private static function set_ponctual_dates(&$user, $start, $end) {
+    $outoffice = $user->outofoffices;
+    $outoffice[Outofoffice::TYPE_INTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_INTERNAL], $start, $end);
+    $outoffice[Outofoffice::TYPE_EXTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_EXTERNAL], $start, $end);
+    $outoffice = self::try_enable_ponctual_date($outoffice);
+    $user->outofoffices = $outoffice;
+    return $user->save();
+  }
+
+  private static function update_ponctual($outoffice, $start, $end) {
+    $outoffice->start = \DateTime::createFromFormat('d/m/Y', $start);
+    $outoffice->end = \DateTime::createFromFormat('d/m/Y', $end);
+    $message = $outoffice->message;
+    $message = preg_replace("/jusqu'au (\d{2}\/\d{2}\/\d{4})/im", "jusqu'au $end", $message);
+
+    $outoffice->message = $message;
+
+    return $outoffice;
+  }
+
+	private static function try_enable_ponctual_date($outoffice) {
+    $outoffice[Outofoffice::TYPE_EXTERNAL]->enable = true;
+    $outoffice[Outofoffice::TYPE_INTERNAL]->enable = true;
+
+    return $outoffice;
   }
 }

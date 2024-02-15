@@ -82,10 +82,17 @@ abstract class ASearchResult
 
     public function html($classes = '')
     {
-        return html::div(['class' => 'mel-block-list '.$classes], 
+        $html = html::div(['class' => 'mel-block-list '.$classes], 
             html::div(['style' => 'display:inline-block;vertical-align:top'], html::tag('span', ['class' => 'icon '.$this->icon ?? 'no-icon'])).$this->_html()
             .(!isset($this->action) ? '' : $this->_html_action())
         );
+
+        $html = str_replace('<script', '&lt;script', $html);
+        $html = str_replace('< script', '&lt; script', $html);
+        $html = str_replace('</script', '&lt;/script', $html);
+        $html = str_replace('</ script', '&lt;/ script', $html);
+
+        return $html;
     }
 
     protected abstract function _html();

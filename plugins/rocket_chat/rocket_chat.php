@@ -66,9 +66,9 @@ class rocket_chat extends rcube_plugin {
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
           // Ajoute le bouton en fonction de la skin
-          $need_button = true;
+          $need_button = 'taskbar';
           if (class_exists("mel_metapage")) {
-            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('chat');
+            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('chat') ? $need_button : 'otherappsbar';;
           }
 
           if ($need_button) {
@@ -88,7 +88,7 @@ class rocket_chat extends rcube_plugin {
                   'innerclass' => 'button-inner',
                   'label' => 'rocket_chat.task',
                   'type'=> 'link'
-              ), 'taskbar');
+              ), $need_button);
             }
           }
 
@@ -116,12 +116,14 @@ class rocket_chat extends rcube_plugin {
             $this,
             'get_log'
           ));
+          $this->register_action('get_status', [$this, 'get_status']);
+          $this->register_action('set_status', [$this, 'set_status']);
           $this->register_action('logout', array(
             $this,
             'logout'
           ));
         }
-        
+
         // Si tache = ariane, on charge l'onglet
         if (($this->rc->task == 'ariane' || $this->rc->task == 'discussion') && isset($_GET['_courrielleur'])) {
           // Ajout du css
@@ -132,6 +134,13 @@ class rocket_chat extends rcube_plugin {
               $this,
               'action_courrielleur'
           ));
+        }
+        else if($this->rc->task === 'settings') {
+          $this->add_hook('settings_actions', array($this, 'settings_actions'));
+          $this->api->register_action('plugin.rocket_chat',$this->ID, [
+            $this,
+            'settings'
+          ]);
         }
         else if ($this->rc->task == 'ariane' || $this->rc->task == 'discussion') {
             // Ajout du css
@@ -762,5 +771,90 @@ EOF;
       $infos = $this->get_rc_client()->room_info($room_name, false);
       $infos["content"] = json_decode($infos["content"]);
       return $infos;
+    }
+
+    public function get_status() {
+      $infos = $this->get_rc_client()->get_user_status();
+      $infos["content"] = json_decode($infos["content"]);
+      echo json_encode($infos);
+      exit;
+    }
+
+    public function set_status(){
+      $status = rcube_utils::get_input_value('_st', rcube_utils::INPUT_POST);
+      $msg = rcube_utils::get_input_value('_msg', rcube_utils::INPUT_POST);
+
+      $return = $this->get_rc_client()->set_user_status($status, $msg);
+      echo json_encode($return);
+      exit;
+    }
+
+  public function settings()
+  {
+
+    $this->rc->output->add_handlers(array(
+      'sectionslist'    => array($this, 'sectionslist'),
+    ));  
+  
+    $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
+    $this->include_script('settings.js');
+    $this->rc->output->set_pagetitle('Paramètres des discussions');
+    $this->rc->output->send('rocket_chat.settings');
+  }
+
+  public function sectionslist($attrib)
+  {
+    $rcmail = $this->rc;
+
+    // add id to message list table if not specified
+    if (empty($attrib['id'])) {
+        $attrib['id'] = 'rcmsectionslist';
+    }
+
+    //list($list, $cols) = self::user_prefs();
+    $cols = ["section"];
+
+    $list = [
+      ["id" => "mel_chat_settings", "section" => "Paramètres généraux"]
+    ];
+
+    $plugin = $this->api->exec_hook('rocket.chat.sectionlist', ['sections' => $list, 'master' => 'plugin.rocket_chat']);
+
+    if (isset($plugin['sections'])) {
+      $list = $plugin['sections'];
+    }
+  
+    // create XHTML table
+    $out = rcmail_action::table_output($attrib, $list, $cols, 'id');
+
+    // set client env
+    $rcmail->output->add_gui_object('sectionslist', $attrib['id']);
+    $rcmail->output->include_script('list.js');
+
+    return $out;
+  }
+
+  /**
+  * Adds Signatures section in Settings
+  */
+  function settings_actions($args)
+  {
+    $args['actions'][] = array(
+      'action' => 'plugin.rocket_chat',
+      'class'  => 'rocketchat',
+      'label'  => 'task',
+      'domain' => 'rocket_chat',
+    );
+    return $args;
+  }
+
+
+    /**
+    * Handler for user preferences form (preferences_list hook)
+    */
+    public function prefs_list($args) {
+      if ($args['section'] === 'mel_chat_settings') {
+
+      }
     }
 }

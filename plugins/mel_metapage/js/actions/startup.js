@@ -1,5 +1,8 @@
 const mm_frame = "mm-frame";
+const IS_FROM = '_is_from';
+const IS_FROM_VALUE = 'iframe';
 rcmail.addEventListener('init', () => {
+    if (window !== top || rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin) return;
     $(document).ready(function() {
         $("#layout-list").addClass(rcmail.env.task + "-frame");
         $("#layout-list").addClass(mm_frame);
@@ -135,6 +138,8 @@ rcmail.addEventListener('init', () => {
         mm_st_ChangeClicks("#otherapps");
 
         rcmail.env.current_task = rcmail.env.task;
+
+        rcmail.triggerEvent('frames.setup.after');
     });
 });
 
@@ -181,6 +186,8 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
                 return;
             if (a.includes("button"))
                 return;
+            if (a.includes("li-"))
+                return;
             cClass = a;
         });
         switch (cClass) {
@@ -226,6 +233,8 @@ function mm_st_getNavClass(element)
         if (a.includes("icon-mel-"))
             return;
         if (a.includes("button"))
+            return;
+        if (a.includes("li-"))
             return;
         cClass = a;
     });
@@ -331,6 +340,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
             metapage_frames.triggerEvent("onload", eClass, changepage, isAriane, querry, id, actions);
             //Actions à faire une fois que l'évènement "onload" est fini.
             metapage_frames.triggerEvent("onload.after", eClass, changepage, isAriane, querry, id);
+
+            (top ?? parent ?? window).rcmail.triggerEvent('frame_loaded', {eClass, changepage, isAriane, querry, id, first_load:true});
         });
 
         if (changepage) //Action à faire après avoir créer la frame, si on change de page.
@@ -350,11 +361,15 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
         metapage_frames.triggerEvent("open", eClass, changepage, isAriane, querry, id, actions);
         metapage_frames.triggerEvent("open.after", eClass, changepage, isAriane, querry, id);
 
+        (top ?? parent ?? window).rcmail.triggerEvent('frame_loaded', {eClass, changepage, isAriane, querry, id, first_load:false});
+
         if (changepage)//Action à faire après avoir ouvert la frame, si on change de page.
             metapage_frames.triggerEvent("changepage.after", eClass, changepage, isAriane, querry, id);
 
         //Action à faire avant de terminer la fonction.
         metapage_frames.triggerEvent("after", eClass, changepage, isAriane, querry, id);
+
+        (top ?? window).rcmail.triggerEvent('frame_loaded', {eClass, changepage, isAriane, querry, id, first_load:false});
 
         return id;
     }
@@ -411,12 +426,12 @@ metapage_frames.addEvent("changepage.before", (eClass) => {
             if (!e.classList.contains("selected"))
                 e.classList.add("selected");
             
-            $(e).attr("aria-disabled", true).attr("tabIndex", "-1");
+            $(e).attr("aria-disabled", true).attr("tabIndex", "-1").attr('aria-current', true);
         }
         else
         {
             e.classList.remove("selected");
-            $(e).attr("aria-disabled", false).attr("tabIndex", "0");
+            $(e).attr("aria-disabled", false).attr("tabIndex", "0").attr('aria-current', false);
         }
     });
 
@@ -477,7 +492,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
 
     $(".a-frame").css("display", "none");
     const url = rcmail.get_task_url((isAriane ? "chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 
-    window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+    window.history.replaceState({}, document.title, url.replace(`${IS_FROM}=${IS_FROM_VALUE}`, ""));
     
     let arianeIsOpen = mel_metapage.PopUp.ariane === undefined || mel_metapage.PopUp.ariane === null ? false : mel_metapage.PopUp.ariane.is_show;
     
@@ -581,9 +596,9 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         args = {};
 
     if (rcmail.env.mel_metapage_const !== undefined)
-        args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+        args[IS_FROM] = IS_FROM_VALUE;
 
-    if (eClass === "addressbook" && (args["_action"] === undefined || args["_action"] === null))
+    if (eClass === "addressbook" && (args["_action"] === undefined || args["_action"] === null) && rcmail.env.annuaire_source)
     {
         args["_action"] = "plugin.annuaire";
         args["_source"] = rcmail.env.annuaire_source;
@@ -594,7 +609,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (args["iframe.src"] !== undefined)
         src = args["iframe.src"];
     else if (eClass === "discussion")
-        src = rcmail.env.rocket_chat_url + "home";
+        src = rcmail.env?.chat_system_url ?? '';//empty;//rcmail.env.rocket_chat_url + "home";
     else
     {
         let task;
@@ -608,7 +623,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
             task = mm_st_CommandContract(eClass);
 
         //Vérification frame
-        if (args[rcmail.env.mel_metapage_const.key] === undefined || args[frameArg.key] === undefined)
+        if (args[IS_FROM] === undefined || args[frameArg.key] === undefined)
             args[frameArg.key] = frameArg.value;
 
         src = mel_metapage.Functions.url(task, "", args);
@@ -623,9 +638,9 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         html += `<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;${(!changepage ? 'display:none;' : '')}">`;
         html += '<div class="card-header-disabled frame-header" >';
         // html += '<span>Ariane</span>';
-        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-popup-cose card-close mel-focus"></a>`;
-        html += `<a class="mel-focus icon-mel-popup-anchor card-anchor" href="anchor_ariane" data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("anchor", "mel_metapage")}" onclick="m_mp_anchor_ariane()"></a>`;
-        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="mel-focus icon-mel-fullscreen-interface card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>`;
+        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="fill-on-hover material-symbols-outlined card-close mel-focus">close</a>`;
+        html += `<a class="mel-focus material-symbols-outlined card-anchor fill-on-hover" href="anchor_ariane" data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("anchor", "mel_metapage")}" onclick="m_mp_anchor_ariane()">right_panel_open</a>`;
+        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="mel-focus material-symbols-outlined fill-on-hover card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()">fullscreen</a>`;
         html += "</div>";
         html += '<div class="card-body-disabled frame-body a-frame" style="height:100%;width:100%;">'
         html += frame;
@@ -645,9 +660,9 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
     try {
-        $('#bnum-loading-div').addClass('loaded');
-        //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
-        let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
+
+        if (changepage) $('#bnum-loading-div').addClass('loaded');
+        let querry_content = $("."+eClass+"-frame")[0].contentWindow;
         const _$ = querry_content.$;
 
         _$("#layout-menu").remove();
@@ -671,19 +686,13 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     rcmail.clear_messages();
     rcmail.env.frame_created = true;
 
-    if (changepage && $("#"+id).data("loaded") != "true")
-        $("#"+id).css("display", "");
+    if (changepage && $("#"+id).data("loaded") != "true") $("#"+id).css("display", "");
 
-    if ($("#"+id).data("loaded") != "true")
-        $("#"+id).data("loaded", "true");
+    if ($("#"+id).data("loaded") != "true") $("#"+id).data("loaded", "true");
     
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
-        mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
-
-    if (eClass === "discussion")
     {
-        rcmail.triggerEvent("init_ariane", id);
-        window.ariane.goLastRoom($("#"+id));
+        mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
     }
 
     if (changepage)
@@ -805,6 +814,8 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
 function m_mp_ChangeLasteFrameInfo(force = false)
 {
+    if (true !== rcmail.env.menu_last_frame_enabled) return;
+
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     const isUndefined = rcmail.env.last_frame_class === undefined || rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
 
@@ -843,13 +854,13 @@ function m_mp_ChangeLasteFrameInfo(force = false)
 
             if ($(selector).length === 0) selector = "#taskmenu ." + mm_st_ClassContract(rcmail.env.last_frame_class);
            
-            m_mp_CreateOrUpdateIcon(selector);
             $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
+            m_mp_CreateOrUpdateIcon(selector);
         }
         else
         {
-            m_mp_CreateOrUpdateIcon(null, "");
             $(".menu-last-frame").addClass("disabled").attr("disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+            m_mp_CreateOrUpdateIcon(null, "");
         }
     } catch (error) {
         
@@ -893,6 +904,8 @@ function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
         content = default_content;
         font = "DWP";
     }
+
+    if (MEL_ELASTIC_UI.css_rules.ruleExist(css_key)) MEL_ELASTIC_UI.css_rules.remove(css_key);
 
     MEL_ELASTIC_UI.css_rules.addAdvanced(css_key, '.menu-last-frame-item:before', 
     `content:"\\${content}"`,

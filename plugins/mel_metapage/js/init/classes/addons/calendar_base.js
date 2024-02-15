@@ -182,10 +182,6 @@ $(document).ready(() => {
         constructor($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent = null)
         {
             super($enablePhone, $phoneNumber, $phonePin, $visioPhonesDatas, parent);
-            // this.$phoneEnabled = $enablePhone;
-            // this.$phoneNumber = $phoneNumber;
-            // this.$phonePin = $phonePin;
-            // this.parentLocation = parent;
         }
 
         /**
@@ -241,11 +237,11 @@ $(document).ready(() => {
                 
                 if (this.$phoneNumber.val() !== '' && parentVal !== '')
                 {
-                    this.$phoneEnabled.css('display', '');
+                    this.$phoneEnabled.parent().css('display', '');
                     this.$phoneDatas.css('display', '');
                 }
                 else {
-                    this.$phoneEnabled.css('display', 'none');
+                    this.$phoneEnabled.parent().css('display', 'none');
                     this.$phoneDatas.css('display', 'none');
                 }
                 
@@ -253,7 +249,7 @@ $(document).ready(() => {
             }
             else 
             {
-                this.$phoneEnabled.css('display', 'none');
+                this.$phoneEnabled.parent().css('display', 'none');
                 this.$phoneDatas.css('display', 'none');
             }
 
@@ -347,14 +343,17 @@ $(document).ready(() => {
 
         async getValue()
         {
+            const type = this.$type.val();
+            let visio_val = EMPTY_STRING;
             let val = await super.getValue();
 
             //if (!!this.visioPhone) this.visioPhone.update();
             
-            switch (this.$type.val()) {
+            switch (type) {
                 case 'intregrated': //visio intégrée
+                    visio_val = this.$visioState.val();
                     let config = {
-                        _key:this.$visioState.val()
+                        _key:visio_val
                     };
 
                     {
@@ -369,7 +368,9 @@ $(document).ready(() => {
                     if (this.$haveWorkspace[0].checked && this.$workspace.val() !== "#none")
                         config["_wsp"] = this.$workspace.val();
 
-                    const tmp = !this.visioPhone.enabled() ? '' : (await this.visioPhone.getValue());
+                    const tmp = !this.visioPhone.enabled() || !this.check() ? '' : (await this.visioPhone.getValue());
+
+                    if (!!this.$visioState.data('pass')) config['_pass'] = this.$visioState.data('pass');
 
                     if (tmp === reload) val = tmp;
                     else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `${visio_phone_start}${tmp}${visio_phone_end}`);
@@ -377,11 +378,26 @@ $(document).ready(() => {
                     break;
 
                 case 'custom':
-                    val += `@visio:${this.$visioCustom.val()}`;
+                    visio_val = this.$visioCustom.val();
+                    val += `@visio:${visio_val}`;
+
+                    this.visioPhone.$phoneNumber.hide();
+                    this.visioPhone.$phonePin.hide();
+                    this.visioPhone.$phoneDatas.hide();
                     break;
 
                 default:
                     break;
+            }
+
+            if (this.has_error() && this.check()) {
+                this._onValid();
+            }
+            else if (0 !== visio_val.length && !this.check()) this._onError();
+            else if (this.visioPhone.$phoneNumber.css('display') === 'none' && this.check() && 'intregrated' === type) {
+                this.visioPhone.$phoneNumber.show();
+                this.visioPhone.$phonePin.show();
+                this.visioPhone.$phoneDatas.show();
             }
 
             return val;
@@ -460,15 +476,29 @@ $(document).ready(() => {
             return true;
         }
 
+        has_error() {
+            return this.$visioState.parent().find('.required-text').length > 0 || this.$visioState.parent().find('.required-text').length > 0;
+        }
+
         //<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>
         _onError() {
             super._onError();
             switch (this.$type.val()) {
                 case 'intregrated': //visio intégrée
                     {
+                        let $parent = this.$visioState.parent();
+                        let $required = $parent.find('.required-text');
+
+                        if ($required.length > 0) $required.remove();
+                        $required = null;
+
                         const val = this.$visioState.val();
                         const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
                         this.$visioState.parent().append(`<span class="required-text" style="color:red;display:block">*${text}</span>`);
+
+                        this.visioPhone.$phoneNumber.hide();
+                        this.visioPhone.$phonePin.hide();
+                        this.visioPhone.$phoneDatas.hide();
                     }
                     break;
 
@@ -484,6 +514,17 @@ $(document).ready(() => {
             super._onValid();
             this.$visioCustom.parent().find('.required-text').remove();
             this.$visioState.parent().find('.required-text').remove();
+
+            if (this.$type.val() === 'integrated') {
+                this.visioPhone.$phoneNumber.show();
+                this.visioPhone.$phonePin.show();
+                this.visioPhone.$phoneDatas.show();
+            }
+            else {
+                this.visioPhone.$phoneNumber.hide();
+                this.visioPhone.$phonePin.hide();
+                this.visioPhone.$phoneDatas.hide();
+            }
         }
     }
 
@@ -738,11 +779,12 @@ $(document).ready(() => {
 
                         if (isRc) //Visio de l'état
                         {
-
+                            const has_pass = currentString.includes('_pass');
                             await init_function($haveWsp, $wsp, update_location, 0, {
                                 visio:{
                                     type:'integrated',
-                                    val:currentString.split("_key=")[1].split("&")[0]
+                                    val:currentString.split("_key=")[1].split("&")[0],
+                                    pass:has_pass ? currentString.split("_pass=")[1].split("&")[0] : null
                                 },
                                 type:'visio'
                             });
@@ -786,11 +828,391 @@ $(document).ready(() => {
         }
     }
 
+    const EMPTY_STRING = '';
+    const EMPTY_OBJECT = {};
+    const ARRAY_JOIN = ',';
+    const CONST_DATE_FORMAT = 'DD/MM/YYYY HH:mm';
+    const CONST_DATE_FORMAT_DATE_ONLY = 'DD/MM/YYYY';
+    const CONST_DATE_START_OF_DAY = 'day';
+    const CONST_REC_COUNT = 'COUNT';
+    const CONST_REC_INTERVAL = 'INTERVAL';
+    const CONST_REC_UNTIL = 'UNTIL';
+    const CONST_REC_BYDAY = 'BYDAY';
+    const CONST_REC_BYMONTH = 'BYMONTH';
+    const CONST_REC_BYMONTHDAY = 'BYMONTHDAY';
+    const CONST_REC_WEEKLY = 'WEEKLY';
+    const CONST_REC_MONTHLY = 'MONTHLY';
+    const CONST_REC_YEARLY = 'YEARLY';
+    /**
+     * Gère l'affichage de la partie "Notification" de la création d'un évent
+     */
+    class EventUserNotified {
+        /**
+         * Constructeur de la classe
+         * @param {*} event Evènement sélectionné 
+         */
+        constructor(event)
+        {
+            this.currentEvent = event;
+            this.users = {};
+            this.startDatas = {
+                startdate:!!event.location ? moment(event.start).format(CONST_DATE_FORMAT) : null,
+                enddate:!!event.location ? moment(event.end).format(CONST_DATE_FORMAT) : null, 
+                local:event.location ?? null,
+                req:!!event.location ? (JSON.parse(JSON.stringify(event.recurrence ?? EMPTY_STRING)) || EMPTY_OBJECT) : null
+            };
+            this.currentDatas = {
+                startdate:$('#mel-metapage-added-input-mel-start-datetime'),
+                enddate:$('#mel-metapage-added-input-mel-end-datetime'),
+                local:$('#edit-location'),
+                req:{
+                    val: () => {
+                        return this._getReccurence();
+                    }
+                }
+            }
+
+            //Mise en forme de la reccurence si il y en a une
+            if (!!this.startDatas.req) {
+                if (!!this.startDatas.req.UNTIL) this.startDatas.req.UNTIL = moment(this.startDatas.req.UNTIL).startOf(CONST_DATE_START_OF_DAY).format(CONST_DATE_FORMAT_DATE_ONLY);
+                delete this.startDatas.req.EXDATE;
+            }
+        }
+
+        /**
+         * Réccupère les données de réccurence de l'évènement en cours
+         * @returns {{} | {FREQ:string, COUNT:string|undefined, INTERVAL:string|undefined, UNTIL:string|undefined, BYDAY:string|undefined, BYMONTHDAY:string|undefined, BYMONTH:string|undefined}}
+         */
+        _getReccurence() {
+            const event = $('#eventedit form').serializeJSON();
+            if (!!event.frequency) {
+                let config = {
+                    FREQ:event.frequency,
+                };
+
+                //Données par défaut
+                if (!!event.times) config[CONST_REC_COUNT] = event.times;
+                if (!!event.interval) config[CONST_REC_INTERVAL] = event.interval;
+                if (!!event.untildate) {
+                    config[CONST_REC_UNTIL] = moment(event.untildate, CONST_DATE_FORMAT_DATE_ONLY).startOf(CONST_DATE_START_OF_DAY).format(CONST_DATE_FORMAT_DATE_ONLY);
+                    
+                    //Il n'y a pas de count si il y until
+                    if (!!config[CONST_REC_COUNT]) delete config[CONST_REC_COUNT];
+                } //Si pour toujour est activé, on supprime le count
+                else if (event.repeat === EMPTY_STRING && !!config[CONST_REC_COUNT]) {
+                    delete config[CONST_REC_COUNT];
+                }
+
+                //Actions à faire en fonction de la fréquence
+                switch (config.FREQ) {
+                    case CONST_REC_WEEKLY:
+                        config[CONST_REC_BYDAY] = this._rec_each('.edit-recurrence-weekly-byday');
+                        break;
+
+                    case CONST_REC_MONTHLY:
+                        if (event.repeatmode === CONST_REC_BYDAY){
+                            config[CONST_REC_BYDAY] = `${$('#edit-recurrence-monthly-prefix').val()}${$('#edit-recurrence-monthly-byday').val()}`;
+                        }
+                        else {
+                            config[CONST_REC_BYMONTHDAY] = this._rec_each('.edit-recurrence-monthly-bymonthday');
+                        }
+                        break;
+
+                    case CONST_REC_YEARLY:
+                        config[CONST_REC_BYMONTH] = this._rec_each('.edit-recurrence-yearly-bymonth');
+
+                        const bd = `${$('#edit-recurrence-yearly-prefix').val()}${$('#edit-recurrence-yearly-byday').val()}`;
+                        if (bd !== EMPTY_STRING) {
+                            config[CONST_REC_BYDAY] = bd;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                return config;
+            }
+            else {
+                return {};
+            }
+        }
+
+        /**
+         * Récupère les données des fréquences "Mensuel, annuel et hebdomadaire".
+         * @param {string} selector Selecteur qui contient les données
+         * @returns {string}
+         */
+        _rec_each(selector) {
+            let array = [];
+            $(selector).each((i, e) => {
+                if (e.checked) array.push($(e).val())
+            });
+
+            return array.join(ARRAY_JOIN);
+        }
+
+        /**
+         * Vérifie si 2 éléments sont identiques, en prenant en compte les tableaux
+         * @param {string | Array} a 
+         * @param {string | Array} b 
+         * @returns {boolean}
+         */
+        _checkElements(a, b) {
+            if (Array.isArray(a) && Array.isArray(b)) {
+                if (a.length !== b.length) return false;
+                else return Enumerable.from(a).where((x, i) => this._checkElements(x, b[i])).all();
+            }
+
+            return a === b;
+        }
+
+        /**
+         * Vérifie si 2 reccurences sont égales
+         * @param {{} | {FREQ:string, COUNT:string|undefined, INTERVAL:string|undefined, UNTIL:string|undefined, BYDAY:string|undefined, BYMONTHDAY:string|undefined, BYMONTH:string|undefined}} a 
+         * @param {{} | {FREQ:string, COUNT:string|undefined, INTERVAL:string|undefined, UNTIL:string|undefined, BYDAY:string|undefined, BYMONTHDAY:string|undefined, BYMONTH:string|undefined}} b 
+         * @returns {boolean}
+         */
+        _reqIsEqual(a, b) {
+            for (const key in a) {
+                if (Object.hasOwnProperty.call(a, key)) {
+                    const element = a[key];
+                    if (!this._checkElements(element, b[key])) return false;
+                }
+            }
+
+            for (const key in b) {
+                if (Object.hasOwnProperty.call(b, key)) {
+                    const element = b[key];
+                    if (!this._checkElements(element, a[key])) return false;
+                }
+            }
+
+            return true;
+        }
+
+        /**
+         * Vérifie si il s'agit d'un nouvel évènement
+         * @returns {boolean}
+         */
+        _isNewEvent() {
+            let allIsNull = true;
+
+            for (const key in this.startDatas) {
+                if (Object.hasOwnProperty.call(this.startDatas, key)) {
+                    const element = this.startDatas[key];
+                    if (element !== null) {
+                        allIsNull = false;
+                        break;
+                    }
+                }
+            }
+
+            return allIsNull;
+        }
+
+        /**
+         * Vérifie si un utilisateur est en accepté ou en refusé
+         * @param {*} user 
+         * @returns {boolean}
+         */
+        _isAcceptedOrRefusedUser(user) {
+            return user.status === 'ACCEPTED' || user.status === 'REFUSED';
+        }
+
+        /**
+         * Vérifie si l'utilisateur est l'organisateur ou non
+         * @param {*} user 
+         * @returns {boolean}
+         */
+        _isNotOrga(user) {
+            let hasNoEmail = true;
+            for (const iterator of rcmail.env.mel_metapage_user_emails) {
+                if (user.email === iterator) {
+                    hasNoEmail = false;
+                    break;
+                }
+            }
+            return hasNoEmail;
+        }
+
+        /**
+         * Vérifie si des données ont changés
+         * @returns {boolean}
+         */
+        _datasChanged() {
+            for (const key in this.startDatas) {
+                if (Object.hasOwnProperty.call(this.startDatas, key)) {
+                    const element = this.startDatas[key];
+                    switch (key) {
+                        case 'req':
+                            if (!this._reqIsEqual(element, this.currentDatas[key].val())) return true;
+                            break;
+                    
+                        default:
+                            if (element !== this.currentDatas[key].val()) return true;
+                            break;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * Met à jours les données des utilisateurs
+         * @returns Chaîne
+         */
+        updateUsers() {
+            if (!!this.currentEvent.attendees) {
+                let iminvited = false;
+                const isNewEvent = this._isNewEvent();
+                const datasChanged = this._datasChanged();
+                for (let index = 0; index < this.currentEvent.attendees.length; ++index) {
+                    const element = this.currentEvent.attendees[index];
+                    if (element.role === 'ORGANIZER') {
+                        if (this._isNotOrga(element)) iminvited = true;
+                        this.users[element.email] = false;
+                    }
+                    else {
+                        const isAcceptedOrRefused = this._isAcceptedOrRefusedUser(element);
+                        this.users[element.email] = iminvited ? false : (isNewEvent || (isAcceptedOrRefused && datasChanged) || !isAcceptedOrRefused);
+                    }
+                }
+
+                if (iminvited) {
+                    for (const key in this.users) {
+                        if (Object.hasOwnProperty.call(this.users, key)) {
+                            this.users[key] = false;
+                        }
+                    }
+                }
+            }
+            return this;
+        }
+
+        /**
+         * Met à jour la table
+         * @returns Chaîne
+         */
+        updateTable() {
+            const PLUGIN = 'mel_metapage';
+            const ICON_OK = 'icofont-check';
+            const ICON_NOK = 'icofont-close';
+            const NOTIFIED_CLASS = 'notified';
+            const OPTIONS_CLASS = 'options';
+            const CLASS_SELECTOR = '.';
+            const NOTIFIED_SELECTOR = CLASS_SELECTOR + NOTIFIED_CLASS;
+            const OPTIONS_SELECTOR = CLASS_SELECTOR + OPTIONS_CLASS;
+            const TITLE_TEXT = rcmail.gettext('custom_calendar_notification_option', PLUGIN);
+            const OK_DESC = rcmail.gettext('custom_calendar_notification_ok_desc', PLUGIN);
+            const NOK_DESC = rcmail.gettext('custom_calendar_notification_nok_desc', PLUGIN);
+            let title;
+            let $notified;
+            let has_ok = false;
+            $('#edit-attendees-table tr').each((i, e) => {
+                e = $(e);
+                $notified = e.find(NOTIFIED_SELECTOR);
+                switch (i) {
+                    case 0:
+                        if ($notified.length === 0) {
+                            e.find(OPTIONS_SELECTOR).before( `<th class="${NOTIFIED_CLASS}">${TITLE_TEXT}</th>`);
+                        }
+                        break;
+                
+                    default:
+                        if ($notified.length === 0) {
+                            e.find(OPTIONS_SELECTOR).before(`<td class="${NOTIFIED_CLASS}" title="${OK_DESC}"><span class="${ICON_OK}"></td>`);
+                            $notified = e.find(NOTIFIED_SELECTOR);
+                        }
+
+                        if (e.find('.role select.edit-attendee-role').val() === 'ORGANIZER') {
+                            $notified.html(`<span class="${ICON_NOK}"></span>`).attr('title', NOK_DESC);
+                        }
+                        else {
+                            title = e.find('.attendee-name').children().first().attr('title');
+                            if (this.users[title] !== null && this.users[title] !== undefined) {
+                                const isOK = this.users[title] === true;
+                                $notified.html(`<span class="${isOK ? ICON_OK : ICON_NOK}"></span>`).attr('title', (isOK ? OK_DESC : NOK_DESC));
+                            }
+                        }
+                        
+                        break;
+                }       
+
+                if (!has_ok && $notified.find('.' + ICON_OK).length > 0) has_ok = true;
+            });
+
+            title = null;
+            $notified = null;
+
+            $('#edit-attendees-notify').css('display', has_ok ? '' : 'none');
+
+            return this;
+        }
+
+        hasNotify() {
+            const ICON_OK = 'icofont-check';
+            const NOTIFIED_CLASS = 'notified';
+            const CLASS_SELECTOR = '.';
+            const NOTIFIED_SELECTOR = CLASS_SELECTOR + NOTIFIED_CLASS;
+
+            return $(`#edit-attendees-table ${NOTIFIED_CLASS} ${CLASS_SELECTOR}${ICON_OK}`).length > 0;
+        }
+
+        /**
+         * Met à jours les données
+         * @returns Chaîne
+         */
+        update() {
+            return this.updateUsers().updateTable();
+        }
+
+        /**
+         * Vide les données
+         * @returns Chaîne
+         */
+        dispose() {
+            this.users = null;
+            this.currentDatas = null;
+            this.currentEvent = null;
+            this.startDatas = null;
+            return this;
+        }
+
+        /**
+         * 
+         * @returns {EventUserNotified}
+         */
+        static CreateInstance(event) {
+            if (!EventUserNotified._instance) EventUserNotified._instance = new EventUserNotified(event);
+            else {
+                EventUserNotified._instance.dispose();
+                EventUserNotified._instance = null;
+                return this.CreateInstance(event);
+            }
+
+            return EventUserNotified._instance;
+        }
+        /**
+         * 
+         * @returns {EventUserNotified | null}
+         */
+        static Instance() {
+            return EventUserNotified._instance;
+        }
+        static Dispose(){
+            if (!!this.Instance()) {
+                this.Instance().dispose();
+                EventUserNotified._instance = null;
+            }
+        }
+    }
+
     /**
      * Sauvegarde l'évènement
      * @returns {boolean} Faux si il y a des champs invalides
      */
-    rcube_calendar_ui.save = function()
+    rcube_calendar_ui.save = async function()
     {
         let canContinue = true;
 
@@ -908,6 +1330,13 @@ $(document).ready(() => {
             canContinue = false;
         }
 
+        {
+            const location_from_js = await window.rcube_calendar_ui.edit._events.getValue();
+            if (canContinue && location_from_js !== $('#edit-location').val()) {
+                $('#edit-location').val(location_from_js);
+            }
+        }
+
         if (canContinue && $('#edit-location').val() === reload)
         {
             const i = setInterval(() => {
@@ -962,6 +1391,8 @@ $(document).ready(() => {
                 });
             }
 
+            EventUserNotified.Dispose();
+
             return true;
         }
         //Si erreur(s)
@@ -970,7 +1401,6 @@ $(document).ready(() => {
     }
 
     window.rcube_calendar_ui._beforeSave = (event) => {
-
         if (event._notify === undefined || event._notify === null)
         {
             let checked = false;
@@ -1008,6 +1438,7 @@ $(document).ready(() => {
      */
     window.rcube_calendar_ui.edit = function(event)
     {
+        EventUserNotified.CreateInstance(event);
         //Récupération de l'évènement mis en mémoire si l'évènement passé en paramètre est vide.
         if (event === "" && rcmail.env.event_prop !== undefined)
         {
@@ -1021,6 +1452,11 @@ $(document).ready(() => {
             else if (event.end === undefined)
                 event.end = moment().add(30, "m");
         }
+
+        const mail_datas = rcmail.env['event_prop.mails'];
+
+        if (!!mail_datas) $('.have-mails').show();
+        else $('.have-mails').hide();
 
         //Initialisation des fonctions
         const shuffle = window.rcube_calendar_ui.shuffle;
@@ -1038,39 +1474,6 @@ $(document).ready(() => {
 
             return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
         };
-        /**
-         * Met à jour le champ de location
-         */
-        // const update_location = function()
-        // {
-        //     if ($("#eb-mm-em-p")[0].checked)
-        //     {
-        //         //Si présentiel
-        //         $("#edit-location").val($("#presential-cal-location").val());
-
-        //     }
-        //     else if ($("#eb-mm-em-v")[0].checked)
-        //     {
-        //         //Visio
-        //         if ($("#eb-mm-wm-e")[0].checked)
-        //         {
-        //             let config = {
-        //                 _key:$("#key-visio-cal").val()
-        //             };
-
-        //             if ($("#wsp-event-all-cal-mm").val() !== "#none")
-        //                 config["_wsp"] = $("#wsp-event-all-cal-mm").val();
-
-        //             $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));
-        //         }
-        //         else
-        //             $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
-        //     }
-        //     else {
-        //         //Audio
-        //         $("#edit-location").val(`${audio_url} : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
-        //     }
-        // };
         
         /**
          * 
@@ -1092,7 +1495,7 @@ $(document).ready(() => {
                     }
                     else if (events.includes('get'))
                     {
-                        return window.rcube_calendar_ui.edit._events;// ?? new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
+                        return window.rcube_calendar_ui.edit._events;
                     }
                 }
                 events = null;
@@ -1104,6 +1507,7 @@ $(document).ready(() => {
             const current_location = window.rcube_calendar_ui.edit._events.addEvent(events);
             const val = await current_location.getValue();
             $("#edit-location").val(val);
+            //EventUserNotified.Instance().update();
         }
         
         /**Met à jour le champs date */
@@ -1114,6 +1518,7 @@ $(document).ready(() => {
             val = $(".input-mel-datetime .input-mel.end").val().split(" ");
             $("#edit-enddate").val(val[0]);
             $("#edit-endtime").val(val[1]);
+            //EventUserNotified.Instance().update();
         };
         /**
          * Actions à faire lors du changement de date
@@ -1170,6 +1575,17 @@ $(document).ready(() => {
                 onChangeDateTime.minTime = min_time;
             }
         };
+
+        const onAlertChange = function onalertChange(){
+            let $edit_alarms = $('#edit-alarms');
+            if ($('#edit-alarm-item').val() === EMPTY_STRING) {
+                $edit_alarms.removeClass('have-options');
+            }
+            else $edit_alarms.addClass('have-options');
+
+            $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte");
+        }
+
         const format = "DD/MM/YYYY HH:mm";
         const have_created_callback = $("#eventedit").data("callbacks") === "ok";
         //Création des actions
@@ -1229,7 +1645,7 @@ $(document).ready(() => {
                 }
             })
 
-            // //Initialisation des localisations
+            //Initialisation des localisations
             // rcube_calendar_ui._init_location($('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
             //Actions à faire lors de l'appuie d'un bouton radio
             $(".form-check-input.event-mode").on("click", (e) => {
@@ -1353,15 +1769,41 @@ $(document).ready(() => {
             });
             //Update visu
             $("#edit-recurrence-frequency").addClass("input-mel");
-            $("#edit-alarm-item").addClass("input-mel");
+            $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte").addClass("input-mel").on('change', () => onAlertChange());
+            $(".edit-alarm-value").attr('title', "Alerte - Nombre de l'alerte");
+            $(".edit-alarm-offset").attr('title', "Alerte - Elle doit se déclencher quand ?");
             $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
             
-            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text)).before($('#showcontacts_edit-attendee-name'));
+            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text)).before($('#showcontacts_edit-attendee-name'))
+            .click(() => {
+                EventUserNotified.Instance().update();
+            });
+
+            let lockedInterval = false;
             $("#edit-attendee-name").attr("placeholder", `${rcmail.gettext('add_user_to_event', plugin_text)}...`).attr("title", rcmail.gettext('add_user_to_event_title', plugin_text))
             .css('border-bottom-right-radius', 0)
-            .css('border-top-right-radius', 0);
+            .css('border-top-right-radius', 0).on('change', () => {
+                if (!lockedInterval) {
+                    lockedInterval = true;
+                    let nbTry = 0;
+                    const rowNumber =  $('#edit-attendees-table tr').length;
+                    const interval = setInterval(() => {
+                            if ($('#edit-attendees-table tr').length !== rowNumber || nbTry++ >= 10) {
+                                EventUserNotified.Instance().update();
+
+                                if (nbTry >= 10) {
+                                    console.warn('/!\\[setInterval]Impossible de trouver l\'état du participant.');
+                                }
+
+                                clearInterval(interval);
+                                nbTry = null;
+                                lockedInterval = false;
+                            }
+                    }, 50);
+                }
+            });
 
             $("#mel-calendar-has-phone-datas").addClass('custom-control-input')
             .click(() => {
@@ -1378,6 +1820,20 @@ $(document).ready(() => {
             $('#edit-recurrence-enddate').on('mousedown',() => {
                 $('#edit-recurrence-repeat-until')[0].checked = true;
             });
+
+            $("#eventedit .nav a.nav-link.attendees").click(() => {
+                EventUserNotified.Instance().update();
+            });
+
+            $('#edit-attendees-donotify').click((e) => {
+                if (e.currentTarget.checked) {
+                    $('.notified').css('display', '');
+                }
+                else {
+                    $('.notified').css('display', 'none');
+                }
+            });
+
             //ok
             $("#eventedit").data("callbacks", "ok");
 
@@ -1540,49 +1996,54 @@ $(document).ready(() => {
                     event.calendar_blocked = "true";
                 }
 
-                if (event.categories !== undefined && event.categories.length > 0)
+                const default_cat_value = '#none';
+                const has_categories = event.categories !== undefined && event.categories.length > 0;
+                if (has_categories && event.categories[0].includes("ws#"))
                 {
-                    if (event.categories[0].includes("ws#"))
+                    $("#edit-wsp")[0].checked = true;
+                    $("#div-events-wsp").css("display", "");
+                    $("#div-events-category").css("display", "none");
+                    $("#wsp-event-all-cal-mm").val(event.categories[0].replace("ws#", ""));
+
+                    if (event.calendar_blocked === "true")
                     {
-                        $("#edit-wsp")[0].checked = true;
-                        $("#div-events-wsp").css("display", "");
-                        $("#div-events-category").css("display", "none");
-                        $("#wsp-event-all-cal-mm").val(event.categories[0].replace("ws#", ""));
-                        if (event.calendar_blocked === "true")
-                        {
-                            $("#wsp-event-all-cal-mm").addClass("disabled").attr("disabled", "disabled");
-                            $("#edit-wsp").addClass("disabled").attr("disabled", "disabled");
-                        }
+                        $("#wsp-event-all-cal-mm").addClass("disabled").attr("disabled", "disabled");
+                        $("#edit-wsp").addClass("disabled").attr("disabled", "disabled");
                     }
-                    else
+                }
+                else
+                {
+                    if (has_categories && $("#edit-wsp")[0].checked)
                     {
-                        if ($("#edit-wsp")[0].checked)
-                        {
-                            $("#edit-wsp").click();
-                            if ($("#wsp-event-all-cal-mm").val() === "#none")
-                                $(".have-workspace").css("display", "none");
-                            else
-                                $(".have-workspace").css("display", "");
-                        }
-                        else {
-                            $("#div-events-wsp").css("display", "none");
-                            $("#div-events-category").css("display", "");
+                        $("#edit-wsp").click();
+                        if ($("#wsp-event-all-cal-mm").val() === "#none")
                             $(".have-workspace").css("display", "none");
-                        }
-                        $("#categories-event-all-cal-mm").val(event.categories[0]);
+                        else
+                            $(".have-workspace").css("display", "");
                     }
-
-                    $("#edit-categories").val(event.categories[0]);
-
+                    else {
+                        const wsp_state = has_categories ? 'none' : EMPTY_STRING; 
+                        const cat_state = has_categories ? EMPTY_STRING : 'none';
+                        $("#div-events-wsp").css("display", wsp_state);
+                        $("#div-events-category").css("display", cat_state);
+                        $(".have-workspace").css("display", "none");
+                    }
+                    $("#categories-event-all-cal-mm").val(event?.categories?.[0] ?? default_cat_value);
                 }
-                else {
-                    $(".have-workspace").css("display", "none");
-                }
+
+                $("#edit-categories").val(event?.categories?.[0] ?? default_cat_value);
 
                 $("#edit-attendees-donotify").addClass("custom-control-input");
             }
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
+            
+            if (!event.attendees || event.attendees.length <= 1) {
+                $('#edit-attendees-notify label').text('Envoyer une notification aux participants ?');
+            }
+
+            $('#edit-attendees-notify').css('display', EventUserNotified.Instance().hasNotify() ? '' : 'none').find('input')[0].checked = true;
             update_location();
+            onAlertChange();
         }, 10);
 
         //Suppression text
@@ -1627,6 +2088,7 @@ $(document).ready(() => {
 
     window.rcube_calendar_ui._init_location = async function($haveWorkspace, $workspaceSelect, update_location, baseId = 0, _default = null)
     {
+        const VISIO_SELECT_TITLE = 'Par visioconférence';  
         const mainDivId = `em-locations-base-id-${baseId}`;
 
         if ($(`#${mainDivId}`).length > 0) return await rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
@@ -1637,10 +2099,14 @@ $(document).ready(() => {
             audio:'Par audio'
         };
 
-        const visioTypeOptions = {
+        let visioTypeOptions = {
             intregrated_selected:rcmail.gettext('mel_metapage.state_tool_conf'),
             custom:rcmail.gettext('mel_metapage.other_tool_conf'),
         };
+
+        if (!rcmail.env.plugin_list_visio && !top.rcmail.env.plugin_list_visio) {
+            delete visioTypeOptions.intregrated_selected;
+        }
 
         let $parentDiv = $('#em-locations').append(`<div id="${mainDivId}" class="row locations"></div>`);
         let $mainDiv = $parentDiv.find(`#${mainDivId}`);
@@ -1687,10 +2153,74 @@ $(document).ready(() => {
                 </div>
             </div>
         </div>`).appendTo($rightCol);
-        let $visioSelect = $('<select class="form-control input-mel"></select>').appendTo($visioDiv.find('.vselect'));
+        let $visioSelect = $('<select class="form-control input-mel" title="Par visioconférence - "></select>').appendTo($visioDiv.find('.vselect'));
         let $visioButton = $('<button type="button" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover btn btn-secondary"><span class="icofont-refresh"></span></button>').click(() => {
             $visioWebconfInput.val(mel_metapage.Functions.generateWebconfRoomName());
         }).appendTo($visioDiv.find('.vinput .vintegrated .vbutton'));
+        let visioButtonLock = new mel_html2('button', {
+            attribs:{
+                class:'mel-button lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                type:'button'
+            },
+            contents:new mel_html('span', {class:'material-symbols-outlined'}, 'lock_open')
+        });
+
+        visioButtonLock.onclick.push(() => {
+            $visioDiv.find('.delete-lock').remove();
+            let $material = $visioDiv.find('.material-symbols-outlined').first();
+
+            if ($material.text() !== 'done') {
+                $material.text('done');
+
+                const room = $visioWebconfInput.val();
+                $visioWebconfInput.css('border-top-left-radius', '60px')
+                                  .css('border-bottom-left-radius', '60px')
+                                  .attr('placeholder', 'Saisir le mot de passe de la visio')
+                                  .data('room', room)
+                                  .val($visioWebconfInput.data('pass') ?? EMPTY_STRING);
+                $visioButton.parent().css('display', 'none');
+            }
+            else {
+                const pass = $visioWebconfInput.val();
+                const room = $visioWebconfInput.data('room');
+                $visioWebconfInput.css('border-top-left-radius', '')
+                                  .css('border-bottom-left-radius', '')
+                                  .attr('placeholder', 'Saisir le nom du salon')
+                                  .data('pass', pass)
+                                  .removeData('room')
+                                  .val(room);
+
+                if (pass.length > 0) {
+                    $material.text('lock');
+
+                    let delete_lock = new mel_html2('button', {
+                        attribs:{
+                            class:'mel-button delete-lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                            type:'button'
+                        },
+                        contents:new mel_html('span', {class:'material-symbols-outlined'}, 'no_encryption')
+                    });
+
+                    delete_lock.onclick.push(() => {
+                        $material.text('lock_open');
+                        $visioWebconfInput.removeData('pass');
+                        $visioDiv.find('.delete-lock').remove();
+                    });
+
+                    delete_lock.create($visioDiv.find('.vinput .vintegrated .viinput .vabutton'));
+                }
+                else {
+                    $visioWebconfInput.removeData('pass');
+                    $material.text('lock_open');
+                }
+
+                $visioWebconfInput.change();
+
+                $visioButton.parent().css('display', '');
+            }
+
+        });
+
         let $visioPhoneDatas = $(`
         <div class='input-group visio-phone-datas'>
             <div class="input-group-prepend" style="max-width:50%">
@@ -1710,7 +2240,9 @@ $(document).ready(() => {
         <input type="text" id="presential-cal-location-${mainDivId}" class="form-control input-mel" placeholder="Nom du lieu" /></div>`).appendTo($rightCol);
         
         let $divSelect = $('<div class="input-group">  <div class="input-group-prepend"></div></div>').appendTo($leftCol);
-        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
+        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').attr('title', "Mode d'évènement - Type de localisation").appendTo($divSelect);
+
+        new mel_html2('div', {attribs:{class:'vabutton input-group-append'}, contents:visioButtonLock}).create($visioDiv.find('.vinput .vintegrated .viinput'));
 
         if (baseId !== 0)
         {
@@ -1741,9 +2273,15 @@ $(document).ready(() => {
         for (const key in visioTypeOptions) {
             if (Object.hasOwnProperty.call(visioTypeOptions, key)) {
                 const element = visioTypeOptions[key];
-                $visioSelect.append(`<option value=${key.replace('_selected', '')} ${(key.includes('_selected') ? 'selected' : '')}>${element}</option>`)
+                const selected = key.includes('_selected');
+                const true_key = selected ? key.replace('_selected', '') : key;
+                $visioSelect.append(`<option value=${true_key} ${(selected ? 'selected' : '')}>${element}</option>`)
+
+                if (selected) $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${element}`);
             }
         }
+
+        if (Object.keys(visioTypeOptions).length === 1) $visioSelect.css('opacity', '0').css('position', 'absolute').css('top', '0').css('pointer-events', 'none');
 
         $visioPhoneDatas.appendTo($leftCol);
 
@@ -1758,10 +2296,36 @@ $(document).ready(() => {
                             break;
 
                         case 'visio':
+                            //visioTypeOptions
+                            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[element.type] ?? visioTypeOptions[`${element.type}_selected`])}`);
                             switch (element.type) {
                                 case 'integrated':
                                     $visioSelect.val('intregrated');
                                     $visioWebconfInput.val(element.val);
+
+                                    if (!!element.pass) {
+                                        const pass = element.pass.includes(' (') ? element.pass.split(' (')[0] : element.pass;
+                                        $visioWebconfInput.data('pass', pass);
+                                        $visioDiv.find('.material-symbols-outlined').text('lock');
+
+                                        let delete_lock = new mel_html2('button', {
+                                            attribs:{
+                                                class:'mel-button delete-lock mel-before-remover btn btn-secondary no-button-margin fill-on-hover',
+                                                type:'button'
+                                            },
+                                            contents:new mel_html('span', {class:'material-symbols-outlined'}, 'no_encryption')
+                                        });
+                    
+                                        delete_lock.onclick.push(() => {
+                                            let $material = $visioDiv.find('.material-symbols-outlined').first();
+                                            $material.text('lock_open');
+                                            $visioWebconfInput.removeData('pass');
+                                            $visioDiv.find('.delete-lock').remove();
+                                        });
+                    
+                                        delete_lock.create($visioDiv.find('.vinput .vintegrated .viinput .vabutton'));
+                                    }
+
                                     break;
 
                                 case 'custom':
@@ -1797,7 +2361,7 @@ $(document).ready(() => {
 
         [$audioCode, $audioPhone, $visioSelect, $visioWebconfInput, $visioCustomInput, $placeInput, $optionSelect].forEach(item => {
             item.on('change', () => {
-                update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
+                if (!item.data('room')) update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
             });
         });
 
@@ -1852,10 +2416,13 @@ $(document).ready(() => {
         });
 
         $visioSelect.on('change', (e) => {
+            const value = $(e.currentTarget).val();
             let $integrated = $visioDiv.find('.vinput .vintegrated').css('display', 'none');
             let $custom = $visioDiv.find('.vinput .vcustom').css('display', 'none');
 
-            switch ($(e.currentTarget).val()) {
+            $visioSelect.attr('title', `${VISIO_SELECT_TITLE} - ${(visioTypeOptions[value] ?? visioTypeOptions[`${value}_selected`])}`);
+
+            switch (value) {
                 case 'intregrated':
                     $integrated.css('display', '');
                     break;
@@ -1895,7 +2462,7 @@ $(document).ready(() => {
         });
 
         rcmail.addEventListener("init", () => {
-            m_mp_action_from_storage('calendar_redirect', SearchResultCalendar.after_loading, true, "¤avoid");
+            window?.m_mp_action_from_storage?.('calendar_redirect', SearchResultCalendar.after_loading, true, "¤avoid");
             rcmail.register_command('calendar-workspace-add-all', () => {
                 mel_metapage.Functions.busy();
                 mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_email_from_ws"), {
@@ -1911,6 +2478,19 @@ $(document).ready(() => {
                     mel_metapage.Functions.busy(false);
                 });
 
+            }, true);
+
+            rcmail.register_command('calendar-mail-add-all', () => {
+                for (const key in rcmail.env['event_prop.mails'] ) {
+                    if (Object.hasOwnProperty.call( rcmail.env['event_prop.mails'] , key)) {
+                        const element =  rcmail.env['event_prop.mails'][key]?.split?.(',');
+
+                        if (!!element) {
+                            $("#edit-attendee-name").val(element);
+                            $("#edit-attendee-add").click();
+                        }
+                    }
+                }
             }, true);
 
             try {            
@@ -2047,12 +2627,15 @@ $(document).ready(() => {
 
         const config = new GlobalModalConfig(rcmail.gettext('create_event', plugin_text), "default", dialog, null);
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
+        kolab_event_dialog_element.footer.buttons.save.removeClass('disabled').removeAttr('disabled');
 
-        kolab_event_dialog_element.footer.buttons.save.click(() => {
+        kolab_event_dialog_element.footer.buttons.save.click(async () => {
             window.event_saved = true;
-            if (kolab_event_dialog_element.modal.find("iframe")[0].contentWindow.rcube_calendar_ui.save())
+            kolab_event_dialog_element.footer.buttons.save.addClass('disabled').attr('disabled', 'disabled');
+            const saved = await kolab_event_dialog_element.modal.find("iframe")[0].contentWindow.rcube_calendar_ui.save();
+            if (!saved)
             {
-
+                kolab_event_dialog_element.footer.buttons.save.removeClass('disabled').removeAttr('disabled');
             }
         }).removeClass("btn-primary")
         .addClass("btn-secondary mel-button");
@@ -2169,15 +2752,29 @@ $(document).ready(() => {
          date = date.add(add, "d").startOf("day");
          rcube_calendar.mel_metapage_misc.SetCalendarDate(jquery_element, date);
 
-         const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
+         //const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
 
-         const array = (storage !== null && storage[date.format('DD/MM/YYYY')] !== undefined ? storage[date.format('DD/MM/YYYY')] : await rcube_calendar.block_change_date(jquery_element, add, where, date));
+         const array = await rcube_calendar.block_change_date(jquery_element, add, where, date);
+
+
 
          if (array !== false)
          {
-            const html = html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
+            const html = await html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
             rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).html(html);
             jquery_element.data("current-date", date.format());
+
+            if (!!html_helper.Calendars.$jquery_array) {
+                const $jquery_array = html_helper.Calendars.$jquery_array;
+
+                html_helper.Calendars.$jquery_array = undefined;
+
+                let $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).find('ul');
+
+                if ($ul.length === 0) $ul = rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element);
+
+                $ul.html($jquery_array);
+            }
          }
 
          rcmail.set_busy(false);
@@ -2443,7 +3040,7 @@ $(document).ready(() => {
 
     rcube_calendar.number_waiting_events = function (events = [], get_number = true)
     {
-        const user = top.rcmail.env.email.toUpperCase();
+        const user = (top ?? window).rcmail.env.email?.toUpperCase?.();
         let numbers = (get_number ? 0 : []);
 
         for (const key in events) {

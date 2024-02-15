@@ -124,14 +124,15 @@ class mel_helper extends rcube_plugin
 
     public static function why_stockage_not_active()
     {
-        if (!self::stockage_active())
-            return self::ST_NO_RIGHTS;
-        else if (!mel::is_internal() 
-        && class_exists('mel_doubleauth')
-        && !mel_doubleauth::is_double_auth_enable())
+        if (self::stockage_active()) return self::ST_ACTIVE;
+        else if (
+            !mel::is_internal() 
+        &&  !mel::is_auth_strong()
+        &&  class_exists('mel_doubleauth')
+        &&  !mel_doubleauth::is_double_auth_enable())
             return self::ST_NO_DOUBLE_AUTH;
 
-        return self::ST_ACTIVE;
+        return self::ST_NO_RIGHTS;
     }
 
     public static function color()
@@ -259,5 +260,105 @@ class mel_helper extends rcube_plugin
         $user->load(['cerbere']);
         return $user->cerbere;
     }
+
+    public static function create_stopwatch()
+    {
+        include_once "lib/Stopwatch.php";
+        return new Stopwatch();
+    }
+
+    public static function last_login($userid) {
+        $user     = rcube_user::query($userid, driver_mel::gi()->getUser($userid)->server_host);
+
+        if (isset($user)) return $user->data['last_login'];
+        else return null;
+    }
+
+    public static function send_mail($subject, $mailbody, $from, $recipient, $html = false, $pictures = [], $custom_headers = []) {
+        $rc = rcmail::get_instance();
+
+        $mailto = rcube_utils::idn_to_ascii($recipient['email']);
+        $to = format_email_recipient($mailto, $recipient['name']);
+        $SENDMAIL = new rcmail_sendmail(null, [
+            'sendmail'      => true,
+            'from'          => $from,
+            'mailto'        => $to,
+            'dsn_enabled'   => false,
+            'charset'       => 'UTF-8',
+        ]);
+
+        $headers = array(
+            'From' => $from,
+            'Date' => $rc->user_date(),
+            'Message-ID' => $rc->gen_message_id(),
+            'X-Sender' => $from,
+            'Subject' => $subject,
+            'To' => $to
+            //'Content-type' => ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8')
+        );
+
+        if (count($custom_headers) > 0) $headers = array_merge($headers, $custom_headers);
+
+        $message = $SENDMAIL->create_message($headers, $mailbody, $html);
+
+        //$message = new Mail_mime("\r\n");
+        // $message->setParam('text_encoding', RCUBE_CHARSET);
+        // $message->setParam('head_encoding', RCUBE_CHARSET);
+        // $message->setParam('head_charset', RCUBE_CHARSET);
+        // $message->setParam('text_charset', RCUBE_CHARSET);
+        // $message->setParam('html_charset', RCUBE_CHARSET);
+
+        if (count($pictures) > 0)
+        {
+            foreach ($pictures as $value) {
+                $message->addHTMLImage($value['path'], $value['type'], '', true, $value['id']);
+            }
+        }
+
+        // compose common headers array
+        // $headers = array(
+        //     'From' => $from,
+        //     'Date' => $rc->user_date(),
+        //     'Message-ID' => $rc->gen_message_id(),
+        //     'X-Sender' => $from,
+        //     //'Content-type' => ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8')
+        // );
+        if ($agent = $rc->config->get('useragent')) {
+            $headers['User-Agent'] = $agent;
+        }
+
+        //$headers['To'] = format_email_recipient($mailto, $recipient['name']);
+        //$headers['Subject'] = $subject;
+
+//        if (count($pictures) <= 0) $headers['Content-type'] = ($html ? 'text/html; charset=UTF-8' : 'text/plain; charset=UTF-8');
+
+
+        // $message->headers($headers);
+        // $message->setHTMLBody($mailbody);
+        // new rcmail_sendmail().
+        $sent = rcmail::get_instance()->deliver_message($message, $headers['X-Sender'], $mailto, $smtp_error);
+
+        return $sent;
+    }
+
+    public static function check_date_past($date_string, $nb_jours) {
+        // Convertir la date en un objet DateTime
+        $date = new DateTime($date_string);
+        
+        // Ajouter le nombre de jours spécifié à la date
+        $date->add(new DateInterval("P{$nb_jours}D"));
+        
+        // Récupérer la date et l'heure actuelles
+        $maintenant = new DateTime();
+        
+        // Comparer la date actuelle avec la date calculée
+        return $maintenant >= $date;
+    }
+
+    public static function include_mail_body()
+    {
+        include_once "lib/mel_mail.php";
+    }
+    
 
 }

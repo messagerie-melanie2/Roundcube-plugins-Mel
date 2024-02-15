@@ -35,6 +35,7 @@
             }
         };
 
+
         $(document).ready(() => {
             if (rcmail.env.mailboxes_display === "unified")
                 $("#folderlist-content ul#mailboxlist").addClass(rcmail.env.mailboxes_display);
@@ -67,113 +68,26 @@
 
             //Definition des functions
             parent.rcmail.mel_metapage_fn = {
-                calendar_updated: function() {
-                    parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
+                async calendar_updated(args) {
+                    if (!!parent.rcmail.mel_metapage_fn.started) return false;
+                    else parent.rcmail.mel_metapage_fn.started = true;
+                    
+                    //const SELECTOR_CLASS_ROUND_CALENDAR = `${CONST_JQUERY_SELECTOR_CLASS}calendar`;
+                    const Loader = (await loadJsModule('mel_metapage', 'calendar_loader', '/js/lib/calendar/')).CalendarLoader.Instance;
+                    const loaded_datas = await Loader.update_agenda_local_datas(args?.force ?? 'random');
+                    //const start_of_day = moment().startOf('day');
 
-                    if (parent.rcmail.env.ev_calendar_url === undefined)
-                        parent.rcmail.env.ev_calendar_url = ev_calendar_url;
-
-                    return $.ajax({ // fonction permettant de faire de l'ajax
-                        type: "GET", // methode de transmission des données au fichier php
-                        url: parent.rcmail.env.ev_calendar_url + `&source=${mceToRcId(rcmail.env.username)}` + '&start=' + dateNow(new Date()) + '&end=' + dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 7)), // url du fichier php
-                        success: function(data) {
-                            try {
-                                let events = [];
-                                data = JSON.parse(data);
-                                //console.log("calendar", data);
-                                //data = Enumerable.from(data).where(x =>  mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
-                                let startMoment;
-                                let endMoment;
-                                let element;
-                                let now = moment().startOf('day');
-
-                                const parse = window.cal !== null && window.cal !== undefined && window.cal.parseISO8601 ? window.cal.parseISO8601 : (item) => item;
-
-                                for (let index = 0; index < data.length; ++index) {
-                                    element = data[index];
-
-                                    if (element.status === "CANCELLED")
-                                        continue;
-
-                                    if (element.allDay)
-                                        element.order = 0;
-                                    else
-                                        element.order = 1;
-
-                                    if (moment(parse(element.end)) < now)
-                                        continue;
-
-                                    if (element.allDay) {
-                                        element.end = moment(parse(element.end)).startOf("day");
-                                        if (element.end.format("YYYY-MM-DD HH:mm:ss") == now.format("YYYY-MM-DD HH:mm:ss") && moment(element.start).startOf("day").format("YYYY-MM-DD HH:mm:ss") != element.end.format("YYYY-MM-DD HH:mm:ss"))
-                                            continue;
-                                        else
-                                            element.end = element.end.format();
-                                    }
-
-                                    events.push(element);
-
-                                }
-
-                                mel_metapage.Storage.set("all_events", Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray());
-                                data = null;
-                                let ids = [];
-
-                                for (let index = 0; index < events.length; index++) {
-                                    const element = events[index];
-                                    //console.log(mceToRcId(rcmail.env.username) !== element._id, rcmail.env.username, mceToRcId(rcmail.env.username), element._id, element)
-                                    if (mceToRcId(rcmail.env.username) !== element.calendar)
-                                        ids.push(element);
-                                    else {
-                                        if (element._instance !== undefined) {
-
-                                            for (let it = 0; it < events.length; it++) {
-                                                const event = events[it];
-
-                                                if (event.uid === element.uid && event._instance === undefined)
-                                                    ids.push(event);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
-                                const today = Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray();
-                                try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
-                                update_badge(Enumerable.from(today).where(x => x.free_busy !== "free" && x.free_busy !== 'telework').count(), mel_metapage.Ids.menu.badge.calendar);
-
-                                mel_metapage.Storage.set(mel_metapage.Storage.calendar, today);
-                                mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
-
-                                const byDays = Enumerable.from(events).orderBy(x => moment(x.start) - moment()).groupBy(x => moment(x.start).format('DD/MM/YYYY')).toJsonDictionnary(x => x.key(), x => x.getSource());
-                                mel_metapage.Storage.set(mel_metapage.Storage.calendar_by_days, byDays);
-                                
-                                try {
-                                    mel_metapage.Storage.set(mel_metapage.Storage.calendars_number_wainting, rcube_calendar.number_waiting_events(byDays));
-                                } catch (error) {
-                                    console.warn('calendar byday', error);                                    
-                                }
-
-                                parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
-
-                            } catch (ex) {
-                                console.error(ex);
-                                //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
-                            }
-                        },
-                        error: function(xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-                            console.error(xhr, ajaxOptions, thrownError);
-                            //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
-                        },
-                    }).always(() => {
-                        // rcmail.set_busy(false);
-                        // rcmail.clear_messages();
-                    });
+                    // try_add_round(SELECTOR_CLASS_ROUND_CALENDAR, mel_metapage.Ids.menu.badge.calendar);
+                    // update_badge(Enumerable.from(loaded_datas).where(x => x.free_busy !== CONST_EVENT_DISPO_FREE && x.free_busy !== CONST_EVENT_DISPO_TELEWORK && Loader.is_date_okay(moment(x.start), moment(x.end), start_of_day)).count(), mel_metapage.Ids.menu.badge.calendar);
+                    
+                    parent.rcmail.mel_metapage_fn.started = false
                 },
-                tasks_updated: function() {
+                tasks_updated: async function() {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.tasks_updated.before);
 
-                    return $.ajax({ // fonction permettant de faire de l'ajax
+                    await $.ajax({ // fonction permettant de faire de l'ajax
                         type: "POST", // methode de transmission des données au fichier php
                         url: '?_task=tasks&_action=fetch&filter=0&_remote=1&_unlock=true&_=1613118450180', //rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                         success: function(data) {
@@ -215,6 +129,7 @@
                                 update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
                                 mel_metapage.Storage.set(mel_metapage.Storage.last_task_update, moment().startOf('day'))
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
+                                MelObject.trigger_event(mel_metapage.EventListeners.tasks_updated.after);
                             } catch (ex) {
                                 console.error(ex, data);
                                 //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
@@ -229,8 +144,10 @@
                         // rcmail.clear_messages();
                     });
                 },
-                mail_updated: function(isFromRefresh = false, new_count = null) {
+                mail_updated: async function(isFromRefresh = false, new_count = null) {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.mails_updated.before);
 
                     mel_metapage.Storage.remove(mel_metapage.Storage.mail);
 
@@ -271,6 +188,7 @@
                                 try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                                 update_badge(data, mel_metapage.Ids.menu.badge.mail);
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
+                                MelObject.trigger_event(mel_metapage.EventListeners.mails_updated.after);
                                 // if ($(".mail-frame").length > 0)
                                 //     Title.update($(".mail-frame")[0].id);
                             } catch (ex) {
@@ -305,9 +223,11 @@
                         }
                     );
                 },
-                wsp_updated()
+                async wsp_updated()
                 {
+                    const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.before);
+                    MelObject.trigger_event(mel_metapage.EventListeners.workspaces_updated.before);
                     mel_metapage.Storage.remove(mel_metapage.Storage.title_workspaces);
 
                     return mel_metapage.Functions.get(
@@ -316,6 +236,7 @@
                         (datas) => {
                             mel_metapage.Storage.set(mel_metapage.Storage.title_workspaces, datas, false);
                             parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.after, datas);
+                            MelObject.trigger_event(mel_metapage.EventListeners.workspaces_updated.after, datas);
                         }
                     )
                 },
@@ -413,15 +334,20 @@
 
                     }
 
-                    parent.rcmail.mel_metapage_fn.wsp_updated();
-                    parent.rcmail.mel_metapage_fn.calendar_updated().always(() => {
-                        parent.rcmail.mel_metapage_fn.tasks_updated();
-                        parent.rcmail.mel_metapage_fn.mail_updated(true);
-                        parent.rcmail.mel_metapage_fn.weather();
-                    });
+                    let promises = 
+                    [parent.rcmail.mel_metapage_fn.wsp_updated(),
+                    parent.rcmail.mel_metapage_fn.calendar_updated(),
+                    parent.rcmail.mel_metapage_fn.tasks_updated(),
+                    parent.rcmail.mel_metapage_fn.mail_updated(true)];
+                    //parent.rcmail.mel_metapage_fn.weather();
 
                     refreshWorkspaceCloudNotification();
                     rcmail.triggerEvent("mel_metapage_refresh");
+
+                    Promise.allSettled(promises).then(async () => {
+                       const MelObject = (await loadJsModule('mel_metapage', 'mel_object')).MelObject.Empty();
+                       MelObject.trigger_event('mel_metapage_refresh');
+                    })
                 }
             };
 
@@ -437,24 +363,7 @@
 
             parent.rcmail.enable_command("my_account", true);
             parent.rcmail.register_command("my_account", () => {
-
-                if ($(".settings-frame").length > 1 && $("iframe.settings-frame").length === 0)
-                    window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-                else {
-
-                    if ($("iframe.settings-frame").length === 0) {
-                        mel_metapage.Functions.change_frame("settings", true, true, {
-                            _action: "plugin.mel_moncompte"
-                        });
-                    } else if ($("iframe.settings-frame").length === 1) {
-                        let config = {};
-                        config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-                        $("iframe.settings-frame")[0].src = mel_metapage.Functions.url("settings", "plugin.mel_moncompte", config);
-                        mel_metapage.Functions.change_frame("settings", true, false);
-                    } else window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
-
-                    rcmail.triggerEvent('intercept.click.ok', {});
-                }
+                mel_metapage.Functions.change_page('settings', 'plugin.mel_moncompte', {}, true, true)
             });
 
 
@@ -478,7 +387,7 @@
             rcmail.register_command("more_options", (e) => {
                 let otherapp = $("#otherapps");
                 if (otherapp.css("display") === "none") {
-                    otherapp.css("display", "");
+                    otherapp.css("display", "flex");
                     otherapp.find("a").first().focus();
                     $("#taskmenu a.more-options").addClass("selected");
 
@@ -520,30 +429,39 @@
                 if (rcmail.env.mel_metapage_chat_visible == undefined || rcmail.env.mel_metapage_chat_visible === true) {
                     if (rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage")) {
                         //console.log("neteoemkd");//width: calc(25% - 60px)
-                        $("#barup-search-col").append(`<div class="row"><div class=col-7></div></div>`)
-                            .find(".search").appendTo("#barup-search-col .col-7");
+                        // $("#barup-search-col").append(`<div class="row"><div class=col-7></div></div>`)
+                        //     .find(".search").appendTo("#barup-search-col .col-7");
 
-                        $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
+                        // $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
 
-                        $("#barup-search-input").attr("placeholder", "Recherche globale...");
+                        // $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
-                        $(".tiny-rocket-chat").appendTo("#chatCore")
-                            .css("position", "sticky")
-                            .css("height", "100%")
-                            .css("width", "100%")
-                            // .css("min-width", "125px")
-                            .css("border-radius", "15px")
-                            .css("z-index", 0)
-                            .css("white-space", "nowrap")
-                            .prepend("<span class=disc>Discussion</span>")
-                            .css("font-size", "1vw")
-                            .find(".tiny-rocket-chat-icon")
-                            .css("position", "initial")
-                            .css("font-size", "1vw")
-                            .css("margin-left", "0.5vw"); //.css("position", "sticky").appendTo($(".barup"));
+                        $('#rcmfd_hide_chat').prop("checked", true);
+
+                        $(".tiny-rocket-chat").prependTo(".hide-button-search").addClass('inbarup transparent-icon-button ml-3');
+
+                        $('#button-help').removeClass('ml-3');
+                            // .css("position", "sticky")
+                            // .css("height", "100%")
+                            // .css("width", "100%")
+                            // // .css("min-width", "125px")
+                            // .css("border-radius", "15px")
+                            // .css("z-index", 0)
+                            // .css("white-space", "nowrap")
+                            //.prepend("<span class=disc>Discussion</span>")
+                            // .css("font-size", "1vw")
+                            // .find(".tiny-rocket-chat-icon")
+                            // .css("position", "initial")
+                            // .css("font-size", "1vw")
+                            // .css("margin-left", "0.5vw"); //.css("position", "sticky").appendTo($(".barup"));
                     }
                 } else {
                     $(".tiny-rocket-chat").addClass("layout-hidden");
+                    $('#rcmfd_hide_chat').prop("checked", false)
+                }
+
+                if (!rcmail.env.plugin_list_chat) {
+                    $("#button-chat").css('display', 'none');
                 }
             }
 
@@ -561,27 +479,32 @@
 
                     // $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
 
-                    $("#barup-search-input").attr("placeholder", "Recherche globale...");
+                    $("#barup-search-input").attr("placeholder", rcmail.gettext("globalsearch", "mel_metapage"));
 
-                    $(".tiny-rocket-chat").appendTo("#layout")
-                        .css("position", "absolute")
-                        .css("height", "")
-                        .css("width", "")
-                        .css("min-width", "")
-                        .css("border-radius", "")
-                        .css("z-index", 999)
-                        .css("white-space", "")
+                    $(".tiny-rocket-chat").removeClass('inbarup').removeClass('transparent-icon-button').removeClass('ml-3').appendTo("#layout")
+                        // .css("position", "absolute")
+                        // .css("height", "")
+                        // .css("width", "")
+                        // .css("min-width", "")
+                        // .css("border-radius", "")
+                        // .css("z-index", 999)
+                        // .css("white-space", "")
                         .find(".tiny-rocket-chat-icon")
-                        .css("position", "")
-                        .css("font-size", "")
-                        .css("margin-left", "")
+                        // .css("position", "")
+                        // .css("font-size", "")
+                        // .css("margin-left", "")
                         .parent()
                         .find(".disc")
                         .remove();
 
                     $("#barup-search-col .row").remove();
+
+                    $('#button-help').addClass('ml-3');
                 }
 
+                if (!rcmail.env.plugin_list_chat) {
+                    $("#button-chat").css('display', 'none');
+                }
             }, true);
 
             ChatSetupConfig();
@@ -601,13 +524,14 @@
                 }
                 let isHidden = false;
 
-                //console.log("scrooll", $("#taskmenu")[0].scrollHeight, window.innerHeight, $("#taskmenu")[0].scrollHeight > window.innerHeight);
-                if ($("#layout-menu").hasClass("hidden")) {
-                    $("#layout-menu").css("opacity", "0").removeClass("hidden");
+                let $querry = $("#layout-menu");
+                if ($querry.length > 0 && $querry.hasClass("hidden")) {
+                    $querry.css("opacity", "0").removeClass("hidden");
                     isHidden = true;
                 }
 
-                if ($("#taskmenu")[0].scrollHeight > window.innerHeight) {
+                $querry = $("#taskmenu");
+                if ($querry.length > 0 && $querry[0].scrollHeight > window.innerHeight) {
                     let items = $("#taskmenu li");
                     let it = items.length;
 
@@ -622,7 +546,7 @@
                         else {
                             const tmp = $(items[it]).clone();
                             $(items[it]).addClass("hiddedli").css("display", "none");
-                            $("#otherapps ul").append(tmp.addClass("resized"));
+                            $("#otherapps #listotherapps").append(tmp.addClass("resized"));
                         }
                     }
                     setTimeout(() => {
@@ -634,24 +558,32 @@
 
                 if (check) {
                     setTimeout(() => {
-                        if ($("#otherapps .selected").length === 0)
-                            $(".more-options").removeClass("selected");
-                        else
-                            $(".more-options").addClass("selected");
+                        let $querry = $(".more-options");
+                        if ($querry.length > 0)
+                        {
+                            if ($("#otherapps .selected").length === 0) $querry.removeClass("selected");
+                            else $querry.addClass("selected");
+                        }
+                        $querry = null;
                     }, 10);
                 }
 
-                if (isHidden) {
-                    $("#layout-menu").css("opacity", "").addClass("hidden");
+                $querry = $("#layout-menu");
+                if (isHidden && $querry.length > 0) {
+                    $querry.css("opacity", "").addClass("hidden");
                     let $html = $("html");
                     if (($html.hasClass("layout-normal") && !$html.hasClass("touch")) || $html.hasClass("layout-large"))
-                        $("#layout-menu").css("opacity", "").removeClass("hidden");
+                    {
+                        $querry.css("opacity", "").removeClass("hidden");
+                    }
                 }
 
-                if ($("#otherapps #listotherapps").children().length === 0)
-                    $("#taskmenu .more-options").parent().css("display", "none");
-                else
-                    $("#taskmenu .more-options").parent().css("display", "block");
+                $querry = $("#taskmenu .more-options");
+                if ($querry.length > 0)
+                {
+                    if ($("#otherapps #listotherapps").children().length === 0) $querry.parent().css("display", "none");
+                    else $querry.parent().css("display", "block");
+                }
 
                 MEL_ELASTIC_UI.setup_other_apps(true);
 
@@ -671,40 +603,42 @@
                     unread_count: mel_metapage.Storage.get(mel_metapage.Storage.mail),
                 },
                 last_update: {
-                    calendar: moment(mel_metapage.Storage.get("mel_metapage.calendar.last_update")),
-                    tasks: moment(mel_metapage.Storage.get("mel_metapage.tasks.last_update"))
+                    calendar: moment(mel_metapage.Storage.get(mel_metapage.Storage.last_calendar_update)),
+                    tasks: moment(mel_metapage.Storage.get('mel_metapage.tasks.last_update'))
                 }
             }
 
-            if (local_storage.last_update.calendar.format() !== moment().startOf("day").format())
-                parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+            if (local_storage.last_update.calendar.startOf("day").format() !== moment().startOf("day").format())
+                parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get, {force:true});
 
             if (local_storage.last_update.tasks.format() !== moment().startOf("day").format())
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
 
-            if (window.alarm_managment !== undefined) {
-                window.alarm_managment.clearTimeouts();
-                setTimeout(async() => {
-                    let it = 0;
-                    await wait(() => {
-                        return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
-                    });
-                    window.alarm_managment.generate(local_storage.calendar);
-                }, 100);
+            // if (window.alarm_managment !== undefined) {
+            //     window.alarm_managment.clearTimeouts();
+            //     setTimeout(async() => {
+            //         let it = 0;
+            //         await wait(() => {
+            //             return rcmail._events["plugin.display_alarms"] === undefined && it++ < 5;
+            //         });
+            //         window.alarm_managment.generate(local_storage.calendar);
+            //     }, 100);
 
-            }
+            // }
 
             // //add
             if (parent === window) //Si on est pas dans une frame
             {
-                init_badge(local_storage.calendar, mel_metapage.Storage.calendar, rcmail.mel_metapage_fn.calendar_updated,
-                    ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
-                        return Enumerable.from(storage).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
-                    });
+                // init_badge(local_storage.calendar, mel_metapage.Storage.calendar, () => rcmail.mel_metapage_fn.calendar_updated({force:true}),
+                //     ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
+                //         return Enumerable.from(storage).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
+                //     });
                 init_badge(local_storage.tasks, mel_metapage.Storage.tasks, rcmail.mel_metapage_fn.tasks_updated,
                     ".tasklist", mel_metapage.Ids.menu.badge.tasks, true);
                 init_badge(local_storage.mails.unread_count, mel_metapage.Storage.mail, rcmail.mel_metapage_fn.mail_updated,
                     ".mail", mel_metapage.Ids.menu.badge.mail, true, true);
+                init_badge(0, null, null,
+                    ".rocket", mel_metapage.Ids.menu.badge.ariane, false, true);
             }
 
 
@@ -806,14 +740,16 @@
         try {
             if (storage === null) {
                 if (isAsyncFunc) {
-                    func().then(() => {
-                        try {
-                            try_add_round(selector, idBadge);
-                            storage = mel_metapage.Storage.get(storage_key);
-                            const val = (isLength ? storage : storage.length);
-                            update_badge((editFunc !== null ? editFunc(storage, val) : val), idBadge);
-                        } catch (error) {
-                            console.error(error);
+                    func().then((data) => {
+                        if (data !== false) {
+                            try {
+                                try_add_round(selector, idBadge);
+                                storage = mel_metapage.Storage.get(storage_key);
+                                const val = (isLength ? storage : storage.length);
+                                update_badge((editFunc !== null ? editFunc(storage, val) : val), idBadge);
+                            } catch (error) {
+                                console.error(error);
+                            }
                         }
                     });
                 } else {
@@ -883,7 +819,7 @@
 })();
 
 $(document).ready(() => {
-    if (parent != window) {
+    if (parent != window || MEL_ELASTIC_UI._hide_main_menu) {
         rcmail.addEventListener("init", function() {
             //$(".mm-frame").css("margin-top", "0");
             if ($("html.iframe").length > 0)

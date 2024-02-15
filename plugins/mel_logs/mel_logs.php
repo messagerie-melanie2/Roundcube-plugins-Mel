@@ -120,6 +120,20 @@ class mel_logs extends rcube_plugin
    * @return boolean
    */
 	public function is_level($level) {
+		$rcmail = rcmail::get_instance();
+
+		// Est-ce qu'on est sur un utilisateur en debug ?
+		if (in_array($level, [self::DEBUG, self::ERROR, self::INFO])
+				&& in_array($rcmail->get_user_name(), $rcmail->config->get('mel_logs_debug_users', []))) {
+			return true;
+		}
+
+		// Est-ce qu'on est sur un utilisateur en trace ?
+		if (in_array($level, [self::TRACE, self::DEBUG, self::ERROR, self::INFO])
+				&& in_array($rcmail->get_user_name(), $rcmail->config->get('mel_logs_trace_users', []))) {
+			return true;
+		}
+
 	    return in_array($level, $this->log_level);
 	}
 
@@ -129,7 +143,14 @@ class mel_logs extends rcube_plugin
 	public function login_after($args)
 	{
 		$method = isset($_SESSION['auth_type']) ? $_SESSION['auth_type'] : "password";
-	    $this->log(self::INFO, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.")");
+		$eidas = $_SESSION['eidas'];
+	    $this->log(self::INFO, "[login] Connexion réussie de l'utilisateur <".rcmail::get_instance()->get_user_name()."> (".$method.") - $eidas");
+
+		// MANTIS 0007937: Logguer les connexions d'une BALP en directe
+		if (!driver_mel::gi()->getUser()->is_individuelle && !driver_mel::gi()->getUser()->is_applicative) {
+			$this->log(self::INFO, "[login] Connexion directe BALP <".rcmail::get_instance()->get_user_name()."> [" . driver_mel::gi()->getUser()->type . "]");
+		}
+
 	    return $args;
 	}
 	/**
@@ -162,20 +183,46 @@ class mel_logs extends rcube_plugin
 	/**
 	 * Appel la methode de log de roundcube
 	 * Log dans un fichier mel
+	 * 
 	 * @param string $level voir mel_log::
 	 * @param string $message
 	 */
 	public function log($level, $message)
 	{
+		// Fichier de log général
 	    if (in_array($level, $this->log_level)) {
-	        $ip = $this->_get_address_ip();
-	        $procid = getmypid();
-	        $username = rcmail::get_instance()->get_user_name();
-	        $provenance = rcmail::get_instance()->config->get('provenance');
-	        $courrielleur = isset($_GET['_courrielleur']) ? " {Courrielleur}" : " {Web}";
-	        $doubleauth = isset($_SESSION['mel_doubleauth_2FA_login']) ? " [doubleauth]" : "";
-	        rcmail::get_instance()->write_log($this->log_file, "[$level] $ip ($provenance)$doubleauth PROC[$procid]$courrielleur $username - $message");
+			$this->write_log($this->log_file, $level, $message);
 	    }
+
+		// Fichier de log spécifique
+		$rcmail = rcmail::get_instance();
+		$username = $rcmail->get_user_name();
+		if (in_array($level, [self::TRACE, self::DEBUG, self::ERROR, self::INFO])
+				&& in_array($username, $rcmail->config->get('mel_logs_trace_users', []))) {
+			$this->write_log($username, $level, $message);
+		}
+		else if (in_array($level, [self::DEBUG, self::ERROR, self::INFO])
+				&& in_array($username, $rcmail->config->get('mel_logs_debug_users', []))) {
+			$this->write_log($username, $level, $message);
+		}
+	}
+
+	/**
+	 * Écriture des logs
+	 * 
+	 * @param string $log_file nom du fichier
+	 * @param string $level voir mel_log::
+	 * @param string $message
+	 */
+	protected function write_log($log_file, $level, $message) 
+	{
+		$ip = $this->_get_address_ip();
+		$procid = getmypid();
+		$username = rcmail::get_instance()->get_user_name();
+		$provenance = rcmail::get_instance()->config->get('provenance');
+		$courrielleur = isset($_GET['_courrielleur']) ? " {Courrielleur}" : " {Web}";
+		$doubleauth = isset($_SESSION['mel_doubleauth_2FA_login']) ? " [doubleauth]" : "";
+		rcmail::get_instance()->write_log($log_file, "[$level] $ip ($provenance)$doubleauth PROC[$procid]$courrielleur $username - $message");
 	}
 
 	/**

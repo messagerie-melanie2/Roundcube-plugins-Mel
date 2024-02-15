@@ -479,9 +479,11 @@ abstract class driver_mel {
    * pour retourner le hostname de connexion IMAP et/ou SMTP
    * 
    * @param array $infos Entry LDAP
+   * @param string $function Nom de la fonction pour personnaliser les retours
+   * 
    * @return string $hostname de routage, null si pas de routage trouvé
    */
-  abstract public function getRoutage($infos);
+  abstract public function getRoutage($infos, $function = '');
   
   /**
    * Positionne des headers pour un message avant de l'envoyer
@@ -609,6 +611,32 @@ abstract class driver_mel {
   public function mceToRcId($mceId) {
     return str_replace(['.', '@', '%'], ['_-P-_', '_-A-_', '_-C-_'], $mceId);
   }
+
+  /**
+   * Retourne l'identité associé au dossier IMAP (pour les BALP par exemple)
+   * 
+   * @param string $mbox
+   * @return array Identité
+   */
+  public function getIdentityFromMbox($mbox) {
+    if (strpos($mbox, $this->BALP_LABEL) === 0) {
+      $delimiter = rcmail::get_instance()->get_storage()->delimiter;
+      foreach (rcmail::get_instance()->user->list_identities() as $id) {
+        $uid = $id['uid'];
+        if (strpos($uid, $this->objectShareDelimiter()) !== false) {
+          $uid = explode($this->objectShareDelimiter(), $uid, 2)[1];
+        }
+        if (strpos($mbox, $this->BALP_LABEL . $delimiter . $uid) === 0) {
+          $identity = $id;
+          break;
+        }
+      }
+    }
+    if (!isset($identity)) {
+      $identity = rcmail::get_instance()->user->list_emails(true);
+    }
+    return $identity;
+  }
   
   /**
    * Retourne le label des balp dans l'arborescence de fichiers IMAP
@@ -658,5 +686,52 @@ abstract class driver_mel {
    */
   public function getMboxTrash() {
     return $this->MBOX_TRASH;
+  }
+
+  /**
+   * Retourne
+   * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+   * user_host === host imap <= adresse serveur imap de la bal
+   * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
+   *
+   *
+   * @param string $mail Mail à traiter peut être un objet de partage ou non, ou un mailroutingaddress
+   * @return array(($user_objet_share, $user_host, $user_bal)
+   */
+  public function getShareUserBalpHostFromMail($mail) {
+    $user_objet_share=$user_host=$user_bal=null;
+    // Split sur @ pour les comptes de boites partagées <username>@<hostname>
+    $inf = explode('@', $mail, 2);
+    // Le username est encodé pour éviter les problèmes avec @
+    $user_objet_share = $user_bal = $inf[0]?urldecode($inf[0]):null;
+    // Récupération du host
+    $user_host = $inf[1] ?: null;
+    return [$user_objet_share, $user_host, $user_bal];
+  }
+
+
+  /**
+   * Retourne les valeurs depuis la session
+   * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+   * user_host === host imap <= adresse serveur imap de la bal
+   * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
+   *
+   * @return array ($user_objet_share, $user_host, $user_bal)
+   */
+  public function getShareUserBalpHostFromSession() {
+    $user_objet_share=$user_host=$user_bal=null;
+    $rc = rcmail::get_instance();
+    $user_objet_share = $user_bal = $rc->user->get_username('local');
+    $user_host = $rc->user->get_username('host');
+    return [$user_objet_share, $user_host, $user_bal];
+  }
+
+  /**
+   *  Récupère un couple login/password pour jouer une authentification externe de type basic
+   * @return array [login,password] for authentification type basic
+   */
+  public function getBasicAuth() {
+    $rc = rcmail::get_instance();
+    return [$rc->user->get_username(),$rc->get_user_password()];
   }
 }

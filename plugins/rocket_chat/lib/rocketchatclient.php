@@ -18,8 +18,7 @@
  * Classe cliente de gestion des API Rocket.Chat
  *
  * @author Thomas Payen <thomas.payen@i-carre.net>
- */
-class RocketChatClient {
+ */class RocketChatClient {
   /**
    * User ID Rocket.Chat
    *
@@ -118,6 +117,8 @@ class RocketChatClient {
   const GROUP_LIST_JOINED = "groups.list";
   const POST_MESSAGE = "chat.sendMessage";
   const ROOM_INFO = "rooms.info";
+  const GET_STATUS = 'users.getStatus';
+  const SET_STATUS = 'users.setStatus';
   const ME = "me";
   /**
    * Relative API URL
@@ -908,6 +909,40 @@ class RocketChatClient {
       $retour = $this->_get_url($this->_api_url.$url, $params, $headers);  
 
     return $retour;
+  }
+
+  public function get_user_status() {
+    $userId = $this->getUserId();
+    $headers = array(
+      "X-Auth-Token: " . $this->getAuthToken(),
+      "X-User-Id: $userId",
+    );
+
+    $params = [
+      "userId" => $userId
+    ];
+
+    $result = $this->_get_url($this->_api_url.self::GET_STATUS, $params, $headers);
+    
+    return $result;
+  }
+
+  public function set_user_status($status, $message){
+    $userId = $this->getUserId();
+    $headers = array(
+      "X-Auth-Token: " . $this->getAuthToken(),
+      "X-User-Id: $userId",
+    );
+
+    $params = [
+      'status' => $status,
+      "userId" => $userId,
+      'message' => $message ?? $status
+    ];
+
+    $result = $this->_post_url($this->_api_url.self::SET_STATUS, $params, null, $headers);
+    
+    return $result;
   }
 
   /**

@@ -190,12 +190,14 @@ class mel_moncompte extends rcube_plugin {
       $this->rc->output->set_env('enable_messtatistiques_mobile', $this->rc->config->get('enable_messtatistiques_mobile', true));
 
       // http post actions
-      $this->register_action('plugin.hide_resource_roundcube', array($this,'hide_resource_roundcube'));
-      $this->register_action('plugin.show_resource_roundcube', array($this,'show_resource_roundcube'));
-      $this->register_action('plugin.sort_resource_roundcube', array($this,'sort_resource_roundcube'));
-      $this->register_action('plugin.synchro_on_mobile', array($this,'synchro_on_mobile'));
-      $this->register_action('plugin.no_synchro_on_mobile', array($this,'no_synchro_on_mobile'));
-      $this->register_action('plugin.set_default_resource', array($this,'set_default_resource'));
+      $this->register_action('plugin.hide_resource_roundcube',  array($this,'hide_resource_roundcube'));
+      $this->register_action('plugin.show_resource_roundcube',  array($this,'show_resource_roundcube'));
+      $this->register_action('plugin.sort_resource_roundcube',  array($this,'sort_resource_roundcube'));
+      $this->register_action('plugin.synchro_on_mobile',        array($this,'synchro_on_mobile'));
+      $this->register_action('plugin.no_synchro_on_mobile',     array($this,'no_synchro_on_mobile'));
+      $this->register_action('plugin.invitation',               array($this,'invitation'));
+      $this->register_action('plugin.no_invitation',            array($this,'no_invitation'));
+      $this->register_action('plugin.set_default_resource',     array($this,'set_default_resource'));
 
       // register actions
       $this->register_action('plugin.mel_resources_bal', array($this,'resources_bal_init'));
@@ -237,6 +239,12 @@ class mel_moncompte extends rcube_plugin {
       $this->register_action('plugin.listes_remove_all', array('Gestionnairelistes','RemoveAllMembers'));
       $this->register_action('plugin.listes_export', array('Gestionnairelistes','ExportMembers'));
       $this->register_action('plugin.listes_upload_csv', array('Gestionnairelistes','uploadCSVMembers'));
+    }
+
+    if (in_array($this->rc->task, ['bnum', 'chat', 'webconf'])) {
+      include_once "moncompte/Gestionnaireabsence.php";
+      $this->register_action('plugin.abs.get_dates', array('Gestionnaireabsence','get_ponctual_dates'));
+      $this->register_action('plugin.abs.set_dates', array('Gestionnaireabsence','set_quick_ponctual_dates'));
     }
 
     $this->ui_initialized = true;
@@ -287,6 +295,10 @@ class mel_moncompte extends rcube_plugin {
         $acl = $this->gettext('gestionnaire');
         // Les boites individuelles et applicatives ne sont pas des vrais partages, le repartage est donc bloqué. A voir si on passe ça en Driver
         $shared = $currentUser == $user->uid || (!$user->is_individuelle && !$user->is_applicative);
+        // hack tordu pour GN, j'ignore comment mieux gérer finement l'affichage ou non d'un tableau
+        if ($user->is_individuelle && !$user->is_objectshare && !$this->rc->config->get('enable_mesressources_bal_share', true)) {
+            $shared = false;
+        }
       }
       else {
         // Si pas gestionnaire on cherche le bon droit a afficher
@@ -311,9 +323,14 @@ class mel_moncompte extends rcube_plugin {
       if ($shared) {
         $this->rc->output->add_handler('usersaclframe', array(new M2mailbox($this->rc->user->get_username()),'acl_frame'));
         $this->rc->output->add_handler('restore_bal', array(new M2mailbox($this->rc->user->get_username()),'restore_bal'));
+        $this->rc->output->add_handler('get_restorable_directories', array(new M2mailbox($this->rc->user->get_username()),'get_restorable_directories'));
+        $this->rc->output->add_handler('get_available_size', array(new M2mailbox($this->rc->user->get_username()),'get_available_size'));
         $this->rc->output->add_handler('restore_bal_expl', array($this ,'restore_bal_expl'));
 
-        if (isset($_POST['nbheures'])) {
+        if (isset($_POST['restore_dir'])) {
+          M2mailbox::restore_dir();
+        }
+        if (isset($_POST['valide']) && isset($_POST['date'])) {
           M2mailbox::unexpunge();
         }
       }
@@ -356,6 +373,7 @@ class mel_moncompte extends rcube_plugin {
           // Chargement des preferences de l'utilisateur
           $value = $user->getCalendarPreference('synchro_mobile');
           $synchro_mobile = isset($value) ? unserialize($value) : [];
+          $no_invitation = $this->rc->config->get('no_invitation_calendars', []);
 
           $default_calendar = $user->getDefaultCalendar();
           $acl = ($calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -367,6 +385,7 @@ class mel_moncompte extends rcube_plugin {
           $this->rc->output->set_env("resource_acl", $acl);
           $this->rc->output->set_env("resource_owner", $calendar->owner);
           $this->rc->output->set_env("resource_default", $default_calendar->id == $calendar->id);
+          $this->rc->output->set_env("resource_invitation", !isset($no_invitation[$calendar->id]));
           if (count($synchro_mobile) == 0) {
             // Si on n'a pas de ressource définie, utilise celle par défaut
             $this->rc->output->set_env("resource_synchro_mobile", $is_default);
@@ -718,6 +737,48 @@ class mel_moncompte extends rcube_plugin {
   }
 
   /**
+   * Utiliser le calendrier dans les invitations
+   */
+  public function invitation() {
+    $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
+
+    if (isset($mbox)) {
+      $conf_name = 'no_invitation_calendars';
+      // Récupération des préférences de l'utilisateur
+      $no_invitation = $this->rc->config->get($conf_name, []);
+      unset($no_invitation[$mbox]);
+      if ($this->rc->user->save_prefs(array($conf_name => $no_invitation)))
+        $this->rc->output->show_message('mel_moncompte.invitation_confirm', 'confirmation');
+      else
+        $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+    else {
+      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Ne pas utiliser le calendrier dans les invitations
+   */
+  public function no_invitation() {
+    $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
+
+    if (isset($mbox)) {
+      $conf_name = 'no_invitation_calendars';
+      // Récupération des préférences de l'utilisateur
+      $no_invitation = $this->rc->config->get($conf_name, []);
+      $no_invitation[$mbox] = 1;
+      if ($this->rc->user->save_prefs(array($conf_name => $no_invitation)))
+        $this->rc->output->show_message('mel_moncompte.no_invitation_confirm', 'confirmation');
+      else
+        $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+    else {
+      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+  }
+
+  /**
    * Récupère les caldav properties de l'utilisateur courant
    * 
    * @return array
@@ -1032,6 +1093,18 @@ class mel_moncompte extends rcube_plugin {
   }
   /**
    * Définition des propriétées de l'utilisateur
+   *
+   *
+   * récupère les infos de la bal via les drivers
+   *
+   * la bal concerné est celle passé en $_GET dans l'url (pemret de switcher sur les bal partagées)
+   *
+   * 3 attributs à récupérer et définir
+   * user_object_share === uid <= identifiant de la bal (donné à getUser(): peut donc etre le radical du mail (mte) ou le mail entier (gn)
+   * user_host === host imap <= adresse serveur imap de la bal
+   * user_bal === uid de la balp associé (idem supra, peut etre le radical du mail ou ce dernier en entier)
+   *
+   * @return void
    */
   private function set_user_properties() {
     // Chargement de l'account passé en Get
@@ -1039,12 +1112,11 @@ class mel_moncompte extends rcube_plugin {
     if (!empty($this->get_account)) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
-      // Split sur @ pour les comptes de boites partagées <username>@<hostname>
-      $inf = explode('@', $this->user_name, 2);
-      // Récupération du host
-      $this->user_host = $inf[1] ?: null;
-      // Le username est encodé pour éviter les problèmes avec @
-      $this->user_objet_share = urldecode($inf[0]);
+      // sam: usage du driver
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromMail($this->user_name);
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
+      $this->user_bal = $user_bal;
       $user = driver_mel::gi()->getUser($this->user_objet_share, false);
       if ($user->is_objectshare) {
         $this->user_bal = $user->objectshare->mailbox_uid;
@@ -1059,17 +1131,21 @@ class mel_moncompte extends rcube_plugin {
             || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
         // Récupération du username depuis la session
         $this->user_name = $this->rc->get_user_name();
-        $this->user_objet_share = $this->rc->user->get_username('local');
-        $this->user_host = $this->rc->user->get_username('host');
-        $this->user_bal = $this->user_objet_share;
+        // sam: usage driver
+        list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromSession();
+        $this->user_objet_share = $user_object_share;
+        $this->user_host = $user_host;
+        $this->user_bal = $user_bal;
       }
     }
     else {
       // Récupération du username depuis la session
       $this->user_name = $this->rc->get_user_name();
-      $this->user_objet_share = $this->rc->user->get_username('local');
-      $this->user_host = $this->rc->user->get_username('host');
-      $this->user_bal = $this->user_objet_share;
+      // sam:usage driver
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromSession();
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
+      $this->user_bal = $user_bal;
     }
   }
 }

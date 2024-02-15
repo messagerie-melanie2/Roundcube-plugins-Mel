@@ -130,7 +130,9 @@ aria.Utils = aria.Utils || {};
    *          first focusable element in the dialog will receive focus.
    */
   aria.Dialog = function (dialogId, focusAfterClosed, focusFirst) {
-    this.dialogNode = document.getElementById(dialogId);
+    if (typeof dialogId !== 'string') this.dialogNode = dialogId;
+    else this.dialogNode = document.getElementById(dialogId);
+    
     if (this.dialogNode === null) {
       throw new Error('No element found with id="' + dialogId + '".');
     }

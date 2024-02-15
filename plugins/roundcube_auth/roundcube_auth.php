@@ -137,6 +137,9 @@ class roundcube_auth extends rcube_plugin
         $this->add_hook('authenticate', array($this, 'authenticate'));
         $this->add_hook('login_after', array($this, 'login_after'));
 
+        // Add OIDC/CAS login button
+        $this->add_hook('template_object_loginform',  array($this, 'loginform'));
+
         // Get variables from config
         if($this->kerb_enabled = $rcmail->config->get('auth_kerb_enabled'))
         {
@@ -155,7 +158,24 @@ class roundcube_auth extends rcube_plugin
         $this->include_script('roundcube_auth.js');
     }
 
+    function loginform($args)
+    {
+        // Get Roundcube instance
+        $rcmail = rcmail::get_instance();
 
+        if($rcmail->config->get('auth_oidc_link_enabled', false))
+        {
+            $name = $rcmail->config->get('auth_oidc_link_name', 'OpenIDConnect');
+
+            $oidcbutton = "<p class='formbuttons'><input id='rcmlogin_oidc' class='button mainaction' type='submit' value='Connexion via $name'></p>";
+            $oidclink = "<p class='formbuttons'><a href='?oidc=1'>Connexion via $name </a></p>";
+
+            // Add the login link
+            $args['content'] = $args['content'] . $oidcbutton . $oidclink;
+        }
+
+        return $args;
+    }
 
     /**
      * @see https://gist.github.com/tott/7684443
@@ -629,9 +649,10 @@ class roundcube_auth extends rcube_plugin
                         explode(" ", $rcmail->config->get('oidc_scope')),
                         false, // host verification (TODO enable)
                         false, // peer verification (TODO enable)
-                        $rcmail->config->get('oidc_proxy')
+                        $rcmail->config->get('oidc_proxy', ''),
+                        $rcmail->config->get('oidc_redirect', '')
                     );
-
+                    
                     // Authenticate
                     $this->oidc_helper->doAuth();
                 }
@@ -709,7 +730,8 @@ class roundcube_auth extends rcube_plugin
             try
             {
                 // Get user information
-                //$user = json_decode(json_encode($this->tokenHelper->getUserInfo()), true);
+                // $user = json_decode(json_encode($this->oidc_helper->getUserInfo()), true);
+                // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - User information : ". json_encode($user));
 
                 // Get ID Token
                 $token = $this->oidc_helper->getOIDC()->getIdTokenPayload();

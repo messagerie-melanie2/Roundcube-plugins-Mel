@@ -1,21 +1,29 @@
 let url = new URL(window.location.href);
 let params = url.searchParams;
 let appointment_duration = 0;
-let owner_name = window.atob(params.get('_name'));
+let owner_name = params.get('_name') ? window.atob(params.get('_name')) : '';
 let response = null;
 let calendar = null;
+let current_datetimepicker_month = null;
+let datetimepicker_fullcalendar = null;
+let disabled_days = [];
 let event_not_loaded = true;
 moment.locale('fr');
+$.datetimepicker.setLocale('fr');
 
 document.addEventListener('DOMContentLoaded', function () {
   display_calendar_name();
   run();
+  setInterval(() => {
+    run_refresh();
+  }, 600000);
 });
 
 function display_calendar_name() {
   document.title = 'Calendrier de ' + owner_name;
   if (owner_name.includes('-')) {
     owner_name = owner_name.split('-')
+    
     document.getElementById('owner_calendar').textContent = owner_name[0];
     document.getElementById('owner_role').textContent = owner_name[1];
   }
@@ -39,15 +47,64 @@ function run() {
         return;
       }
 
+      // Nom du calendrier
+      if (response.calendar_name) {
+        owner_name = response.calendar_name;
+        display_calendar_name();
+      }
+
+      get_disabled_days(response);
+
       show_appointment_duration(response);
 
       add_appointment_place(response);
 
       add_appointment_reason(response)
 
-      display_calendar(response)
+      display_calendar(response);
+
+      display_datetime_fullcalendar(response);
     })
     .catch(err => console.error(err))
+}
+
+function run_refresh() {
+  const options = { method: 'GET', headers: { Accept: 'application/json' } };
+
+  fetch(url.href.replace('fullcalendar/', 'fullcalendar/calendar.php/', options))
+    .then(response => response.json())
+    .then(data => {
+      response = data;
+
+      if (response.error) {
+        $('#error_message').text(response.error);
+        $('#error_message').show();
+        $('#show-calendar').hide();
+        return;
+      }
+
+      get_disabled_days(response);
+
+      show_appointment_duration(response);
+
+      add_appointment_place(response);
+
+      add_appointment_reason(response);
+
+      refresh_calendars();
+    })
+    .catch(err => console.error(err))
+}
+
+function get_disabled_days(response) {
+  let empty = response.range.map(f =>
+    Object.keys(f).filter(k => !("" + f[k]).trim()))
+    .map((f, i) => ({ id: i, f: f.join(',') }))
+    .filter(f => f.f)
+
+  empty.forEach(element => {
+    disabled_days.push(element.id)
+  });
 }
 
 function show_appointment_duration(response) {
@@ -91,6 +148,11 @@ function add_appointment_reason(response) {
   }
 }
 
+function refresh_calendars() {
+  calendar.refetchEvents();
+  datetimepicker_fullcalendar.refetchEvents();
+}
+
 function display_calendar(response) {
   var calendarEl = document.getElementById('calendar');
   calendar = new FullCalendar.Calendar(calendarEl, {
@@ -99,7 +161,6 @@ function display_calendar(response) {
     firstDay: 1,
     initialView: "timeGridWeek",
     allDaySlot: false,
-    lazyFetching: false,
     selectable: true,
     slotDuration: "00:15",
     slotMinTime: getMinBusinessHour(response),
@@ -119,7 +180,7 @@ function display_calendar(response) {
         $('#loader').hide();
         $('#loaded-calendar').css("visibility", "visible");
         setTimeout(() => {
-          generateTimeGap(response)
+          generateTimeGap(response, calendar)
         }, 10);
       }
     },
@@ -140,6 +201,37 @@ function display_calendar(response) {
     businessHours: generateBusinessHours(response),
   });
   calendar.render();
+}
+
+
+function display_datetime_fullcalendar(response) {
+  var datetime_calendar = document.getElementById('datetimepicker_calendar');
+  datetimepicker_fullcalendar = new FullCalendar.Calendar(datetime_calendar, {
+    locale: 'fr',
+    initialView: "dayGridMonth",
+    allDaySlot: false,
+    lazyFetching: false,
+    selectable: true,
+    selectMirror: true,
+    forceEventDuration: true,
+    selectOverlap: false,
+    events: {
+      url: url.href.replace('fullcalendar', 'freebusy'),
+      format: 'ics',
+      display: 'background'
+    },
+    loading: function (loading) {
+      if (!loading) {
+        $('#loader').hide();
+        $('#loaded-calendar').css("visibility", "visible");
+        setTimeout(() => {
+          generateTimeGap(response, datetimepicker_fullcalendar)
+        }, 10);
+      }
+    },
+    businessHours: generateBusinessHours(response),
+  });
+  datetimepicker_fullcalendar.render();
 }
 
 // BusinessHours
@@ -173,42 +265,80 @@ function getMaxBusinessHour(response) {
   let max_ranges = [];
   response.range.forEach((range, index) => {
     if (range != "") {
-      let split_range = range[1].split(':');
-      let max_hour = parseInt(range[1]);
-      //On ajoute une heure si il y a des minutes (18h15 -> on affiche 19h)
-      if (split_range[1] != "00") {
-        max_hour++;
-      }
-      max_ranges.push(max_hour)
+      range.forEach((val) => {        
+        let split_range = val.split(':');
+        let max_hour = parseInt(split_range[0]);
+        //On ajoute une heure si il y a des minutes (18h15 -> on affiche 19h)
+        if (split_range[1] != "00") {
+          max_hour++;
+        }
+        max_ranges.push(max_hour)
+      })
     }
   })
   return Math.max(...max_ranges) + ':00';
 }
 
 function showModal(start, end) {
-  let allowTimes = generateAllowTimes(start);
-
+  let selectedValue = checkToday(roundTimeQuarterHour(new Date()));
+  let allowTimes = generateAllowTimes(start ? start : selectedValue);
   $("#eventModal").modal('show');
   $('#event-time-start').datetimepicker({
     datepicker: start ? false : true,
     step: 15,
-    value: start ? start : roundTimeQuarterHour(new Date()),
+    value: start ? start : selectedValue,
     allowTimes,
+    disabledWeekDays: disabled_days,
+    disabledDates: allDayEvents,
+    // formatDate:'d/m/Y',
+    closeOnDateSelect: false,
+    todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
       })
+    },
+    onSelectDate: function (date) {
+      let [hour, minute] = generateAllowTimes(date)[0].split(':');
+      let first_hour = moment(date).hours(parseInt(hour)).minutes(parseInt(minute));
+      this.setOptions({
+        value: first_hour.toDate(),
+      })
+    },
+    onChangeMonth: function (date) {
+      onChangeDateTimeMonth(date)
+    },
+    onShow: function (date) {
+      datetimepicker_fullcalendar.gotoDate(date);
     }
   });
   $('#event-time-end').datetimepicker({
     datepicker: start ? false : true,
     step: 15,
-    value: end ? end : roundTimeQuarterHour(new Date()).addMinutes(appointment_duration),
+    value: end ? end : selectedValue.addMinutes(appointment_duration),
     allowTimes,
+    disabledWeekDays: disabled_days,
+    disabledDates: allDayEvents,
+    // format:'d/m/Y h:m',
+    closeOnDateSelect: false,
+    todayButton: false,
     onChangeDateTime: function (date) {
       this.setOptions({
         allowTimes: generateAllowTimes(date)
       })
+    },
+    onSelectDate: function (date) {
+      let [hour, minute] = generateAllowTimes(date)[0].split(':');
+      let first_hour = moment(date).hours(parseInt(hour)).minutes(parseInt(minute));
+      this.setOptions({
+        value: first_hour.toDate(),
+      })
+    },
+    onChangeMonth: function (date) {
+      onChangeDateTimeMonth(date)
+    },
+    onShow: function (date) {
+      datetimepicker_fullcalendar.gotoDate(date);
     }
   });
 
@@ -219,7 +349,30 @@ function showModal(start, end) {
   else {
     $('#event-time-end').prop("disabled", true);
   }
+}
 
+function checkToday(selectedValue) {
+  if (allDayEvents.includes(moment(new Date).format('DD.MM.y')) || disabled_days.includes(parseInt(moment(selectedValue).format('d')))) {
+    selectedValue = moment(selectedValue).add(1, 'day').toDate();
+
+    if (allDayEvents.includes(moment(selectedValue).format('DD.MM.y')) || disabled_days.includes(parseInt(moment(selectedValue).format('d')))) {
+      selectedValue = checkToday(selectedValue);
+    }
+  }
+  return selectedValue;
+}
+
+/*
+* Change la date du fullcalendar caché lorsque la valeur change dans le datetimepicker
+*/
+function onChangeDateTimeMonth(date) {
+  if (!current_datetimepicker_month) current_datetimepicker_month = moment(new Date());
+  let new_date = moment(date);
+
+  if (current_datetimepicker_month.isBefore(new_date)) datetimepicker_fullcalendar.next();
+  else  datetimepicker_fullcalendar.prev();
+
+    current_datetimepicker_month = new_date;
 }
 
 function generateAllowTimes(start = new Date()) {
@@ -256,7 +409,7 @@ function generateAllowTimes(start = new Date()) {
     }
   })
 
-  calendar.getEvents().forEach((value) => {
+  datetimepicker_fullcalendar.getEvents().forEach((value) => {
     //On vérifie si un rendez-vous existe aujourd'hui
     if (moment(value.start).startOf('day').toString() == moment(start).startOf('day').toString()) {
       //On enlève les plages horaires qui déborderait sur un rendez-vous déjà existant (temps - durée rdv)
@@ -344,6 +497,7 @@ function user_form_submit(e) {
       $('#waitingToast').toast('hide');
       $('#successToast').toast('show');
       display_confirm_modal(event)
+      refresh_calendars();
     })
     .catch(err => {
       console.log(err);

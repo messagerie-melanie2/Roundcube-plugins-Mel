@@ -5,7 +5,7 @@
         return window.webconf_master_bar !== undefined || parent.webconf_master_bar !== undefined;
     }
 
-    async function go_to_webconf(key = null, wsp = null, ariane = null, show_config_popup = false, locks = null)
+    async function go_to_webconf(key = null, wsp = null, ariane = null, show_config_popup = false, locks = null, pass = null)
     {
         if (!webconf_is_active())
         {
@@ -25,13 +25,20 @@
                 config = {};
                 if (key !== null) config["_key"] = key;
 
-                if (wsp !== null) config["_wsp"] = wsp;
+                if (wsp !== null) {
+                    if (wsp.includes(' (')) wsp = wsp.split(' (')[0];
+                    config["_wsp"] = wsp;
+                }
                 else if (ariane !== null) config["_ariane"] = ariane;
                 
                 if (show_config_popup) config['_need_config'] = 1;
 
                 if (!!locks) {
                     config['_locks'] = locks;
+                }
+
+                if (!!pass) {
+                    config['_pass'] = pass;
                 }
 
                 config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
@@ -50,6 +57,17 @@
         }
     }
 
+    async function go_to_webconf_ex({
+        key = null, 
+        wsp = null,
+        ariane = null,
+        show_config_popup = false,
+        locks = null,
+        pass = null
+    }) {
+        await go_to_webconf(key, wsp, ariane, show_config_popup, locks, pass);
+    }
+
     async function notify(key, uid)
     {
         let $config = {
@@ -66,10 +84,55 @@
         );
     }
 
+    async function voxify_url() {
+        if (!!voxify_url.waiting) {
+            let it = 0;
+            await new Promise((ok, nok) => {
+                const interval = setInterval(() => {
+                    console.debug('Waiting voxify url...');
+                    if (!voxify_url.waiting) {
+                        clearInterval(interval);
+                        console.debug('Voxify url ok !');
+                        ok();
+                    }
+
+                    if (++it > 50) {
+                        voxify_url.waiting = false;
+                        console.debug('Voxify url not ok !');
+                    }
+                }, 100);
+            });
+        }
+
+        let navigator = (top ?? parent ?? window);
+
+        if (!navigator.voxify_url) {
+            voxify_url.waiting = true;
+            console.info('Starting get voxify url !');
+            await mel_metapage.Functions.get(
+                mel_metapage.Functions.url('mel_settings', 'get'),
+                {
+                    _option:'voxify_url',
+                    _default_value:'https://webconf.numerique.gouv.fr/voxapi'
+                },
+                (datas) => {
+                    console.info('Voxify url ok !');
+                    datas = JSON.parse(datas);
+                    navigator.voxify_url = datas;
+                }
+            );
+            console.info('Finishing get voxify url !');
+            voxify_url.waiting = false;
+        }
+
+        return navigator.voxify_url;
+    }
+
     async function getWebconfPhoneNumber(webconf)
     {
-        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        const url = `${await voxify_url()}/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
         let phoneNumber = null;
+        window.disable_x_roundcube = true;
         await mel_metapage.Functions.get(
             url,
             {},
@@ -78,14 +141,16 @@
                 if (!!datas && datas.numbersEnabled && !!datas.numbers[indicator] && datas.numbers[indicator].length > 0) phoneNumber = datas.numbers[indicator][0];
             }
         );
+        window.disable_x_roundcube = false;
 
         return phoneNumber;
     }
 
     async function getWebconfPhonePin(webconf)
     {
-        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        const url = `${await voxify_url()}/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
         let phoneNumber = null;
+        window.disable_x_roundcube = true;
         await mel_metapage.Functions.get(
             url,
             {},
@@ -93,12 +158,14 @@
                 if (!!datas && !!datas.id ) phoneNumber = datas.id;
             }
         );
+        window.disable_x_roundcube = false;
 
         return phoneNumber;
     }
 
     window.webconf_helper = {
         go:go_to_webconf,
+        go_ex:go_to_webconf_ex,
         already:webconf_is_active,
         notify:notify,
         phone:{

@@ -1,8 +1,15 @@
 <?php
 
+// Url pour une réunion audio
+$config['audio_event_url'] = null;
+
+// Ne pas activer le chat par défaut
+$config['chat_startup'] = false;
+
 // Configuration de la recherche dans le menu du haut.
 $config["search"] = [];
-//Vous pouvez commenter les recherches qui ne vous interesse pas, une recheche ce configure comme ceci : 
+
+// Vous pouvez commenter les recherches qui ne vous interesse pas, une recheche ce configure comme ceci : 
 /*
 $config["search"]["module"] = [
     "type" => "type d'action",
@@ -45,7 +52,7 @@ $config["search"]["calendar"] = [
     "endDate" => "now+60"
 ];
 
-//Configuration de la popup d'ariane.
+// Configuration de la popup d'ariane.
 $config["pop_up_ariane"] = [
     //A ne pas supprimer, position par défaut pour toute les pages.
     "all" => ["right" => "50px", "bottom" => "50px"],
@@ -70,8 +77,281 @@ $config["pop_up_ariane"] = [
         "l" => "libre", il est possible de changer l'extention à la création.
 */
 $config["documents_types"] = [
-    ["name" => "Document texte", "icon" => "txt", "default_ext" => "md", "type" => "raw", "tags" => ["l"]],
-    ["name" => "Document office", "icon" => "word", "default_ext" => "odt", "type" => "text"],
-    ["name" => "Feuille de calcul", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
-    ["name" => "Document texte", "icon" => "pp", "default_ext" => "odp", "type" => "presentation"]
+    ["name" => "text_document", "icon" => "txt", "default_ext" => "txt", "type" => "raw", "tags" => ["l"]],
+    ["name" => "text_office_document", "icon" => "word", "default_ext" => "odt", "type" => "text"],
+    ["name" => "worksheet", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
+    ["name" => "presentation", "icon" => "pp", "default_ext" => "odp", "type" => "presentation", "tags" => ["f"]]
+    ["name" => "text_document", "icon" => "txt", "default_ext" => "txt", "type" => "raw", "tags" => ["l"]],
+    ["name" => "text_office_document", "icon" => "word", "default_ext" => "odt", "type" => "text"],
+    ["name" => "worksheet", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
+    ["name" => "presentation", "icon" => "pp", "default_ext" => "odp", "type" => "presentation", "tags" => ["f"]]
 ];
+
+$config["documents_models"] = [
+  "text_office_document" =>
+  [
+    ["name" => "empty"],
+    ["name" => "mtect"],
+    ["name" => "mtect_mte_mer"],
+    ["name" => "transport"]
+  ],
+  "presentation" =>
+  [
+    ["name" => "empty"],
+    ["name" => "mte_ppt_marianne"],
+    ["name" => "mtect_ppt_marianne"],
+    ["name" => "secmer_ppt_marianne"],
+    ["name" => "mct_presentation_arial_16_9"]
+  ]
+];
+
+$config["workspace_services"] = [
+    //["name" => "Liste de diffusion", "icon" => "mail", "type" => "mail"],
+    ["name" => "Canal de discussions", "icon" => "ariane", "type" => "channel", "param" => true],
+    //["name" => "Agenda partagé", "icon" => "agenda", "type" => "calendar"],
+    //["name" => "Flux d'informations", "icon" => "rss", "type" => "flux"],
+    ["name" => "Gestion de documents", "icon" => "nextcloud", "type" => "doc"],
+    //["name" => "Sondage Pégase", "icon" => "survey", "type" => "survey"],
+    ["name" => "Tâches & Kanban", "icon" => "tasks", "type" => "tasks", "param" => true],
+    //["name" => "Favoris", "icon" => "start", "type" => "fav"],
+];
+
+$config["web_conf"] = "";
+$config["webconf_feedback_url"] = '';
+
+/**
+ * Payload pour la génération du token JWT
+ * 
+ * @var array
+ */
+$config['webconf_jwt_payload'] = [
+    "iss" => "", // Identifiant unique fourni par le serveur
+    "exp" => "", // date d'expiration du token en timestamp (j'ai mis date_actuelle + 12h)
+    "aud" => "",
+    "sub" => "",
+    "room" => "", // caractères alphanumériques uniquement. 10 caractères minimum dont au moins 3 chiffres.
+];
+/**
+ * Clé a utiliser pour la génération du token JWT
+ * 
+ * @var string
+ */
+$config['webconf_jwt_key'] = "";
+$config['new_webconf_jwt_key'] = '';
+$config['new_webconf_date'] = '2022-09-09';
+$config['webconf_voxify_indicatif'] = 'FR';
+
+$config['maintenance'] = false;
+$config['maintenance_datas'] = [
+    "show" => false,
+    "day" => "09/12/221",
+    "when" => "après-midi",
+    "before-howmany" => "pendant",
+    "howmany" => "environs moins d'une heure"
+];
+
+$config['search_mail_max'] = 9999;
+$config['search_on_all_bal'] = true;
+$config['search_on_all_bali_folders'] = true;
+
+$config["mel_suspect_url"] = [];
+
+$config['mel_bloqued_url'] = [];
+
+$config['mel_custom_suspected_url'] = [
+	//"url" => ["bloqued" => true"]
+];
+
+$config['mel_official_domain'] = [];
+
+$config['template_navigation_apps'] = [
+  'app_calendar' => [
+		'enabled' => true,
+	],
+	'app_chat' => [
+		'enabled' => true,
+	],
+  'app_workspace' => [
+		'enabled' => true,
+	],
+	'app_documents' => [
+		'enabled' => true,
+	],
+  'app_tasks' => [
+		'enabled' => false,
+	],
+	'app_news' => [
+		'enabled' => false,
+	],
+	'app_ul' => [
+		'enabled' => false,
+	],
+  'app_survey' => [
+		'enabled' => false,
+	],
+	'app_kanban' => [
+		'enabled' => false,
+	],
+	'app_parapheur' => [
+		'enabled' => false,
+	],	
+	'app_rizomo' => [
+		'enabled' => false,
+	],	
+];
+
+$config['navigation_apps'] = $config['template_navigation_apps'];
+
+$config['experimental-settings'] = [];
+
+$config['voxify_url'] = '';
+
+$config['picture-mode'] = false;
+
+$config['trusted_mails'] = [];
+
+
+//Forcer l'état désactiver
+$config['mail_delay_forced_disabled'] = false;
+//En seconde
+$config['mail_delay'] = 5;
+//En seconde
+$config['mail_max_delay'] = 30;
+//Si la barre de navigation principale peut être dépliée ou non
+$config['main_nav_can_deploy'] = true;
+
+////////////METRICS////////////
+$config['metrics_preprod_url'] = '';
+$config['metrics_prod_url'] = '';
+$config['metrics_url'] = $config['metrics_preprod_url'];
+$config['metrics_token'] = '';
+$config['metrics_send_interval'] = 60; //en secondes
+
+$config['visio_enabled'] = true;
+
+$config["workspace_services"] = [
+    ["name" => "Canal de discussions", "icon" => "ariane", "type" => "channel", "param" => true],
+    ["name" => "Gestion de documents", "icon" => "nextcloud", "type" => "doc"],
+    ["name" => "Tâches & Kanban", "icon" => "tasks", "type" => "tasks", "param" => true],
+];
+
+// Configuration de la Webconf de l'État
+$config["web_conf"] = "https://webconf.numerique.gouv.fr";
+$config["webconf_feedback_url"] = 'https://webconf.numerique.gouv.fr/feedback';
+
+/**
+ * Payload pour la génération du token JWT
+ * 
+ * @var array
+ */
+$config['webconf_jwt_payload'] = [
+    "iss" => "", // Identifiant unique fourni par le serveur
+    "exp" => "", // date d'expiration du token en timestamp (j'ai mis date_actuelle + 12h)
+    "aud" => "",
+    "sub" => "webconf.numerique.gouv.fr",
+    "room" => "", // caractères alphanumériques uniquement. 10 caractères minimum dont au moins 3 chiffres.
+];
+/**
+ * Clé a utiliser pour la génération du token JWT
+ * 
+ * @var string
+ */
+$config['webconf_jwt_key'] = "";
+$config['new_webconf_jwt_key'] = '';
+$config['new_webconf_date'] = '2022-09-09';
+$config['voxify_url'] = '';
+$config['webconf_voxify_indicatif'] = 'FR';
+
+// Configuration de la maintenance
+$config['maintenance'] = false;
+$config['maintenance_datas'] = [
+    "show" => false,
+    "day" => "09/12/221",
+    "when" => "après-midi",
+    "before-howmany" => "pendant",
+    "howmany" => "environs moins d'une heure"
+];
+
+// Gestion de la météo (à ne pas activer)
+$config['enable_weather'] = false;
+$config['weather_proxy'] = '';
+
+$config['search_mail_max'] = 9999;
+$config['search_on_all_bal'] = true;
+$config['search_on_all_bali_folders'] = true;
+
+// Afficher un warning sur un mail quand un lien suspect est trouvé
+$config["mel_suspect_url"] = [];
+
+// Bloquer l'affichage du mail quand un lien suspect est trouvé
+$config['mel_bloqued_url'] = [];
+
+$config['mel_custom_suspected_url'] = [
+	//"url" => ["bloqued" => true"]
+];
+
+// Ne pas sécuriser l'ouverture des liens pour les domaines en gouv.fr
+$config['mel_official_domain'] = [
+  'gouv.fr',
+];
+
+$config['template_navigation_apps'] = [
+  'app_calendar' => [
+		'enabled' => true,
+	],
+	'app_chat' => [
+		'enabled' => true,
+	],
+  'app_workspace' => [
+		'enabled' => true,
+	],
+	'app_documents' => [
+		'enabled' => true,
+	],
+    'app_tasks' => [
+		'enabled' => false,
+	],
+	'app_news' => [
+		'enabled' => false,
+	],
+	'app_ul' => [
+		'enabled' => false,
+	],
+    'app_survey' => [
+		'enabled' => false,
+	],
+	'app_kanban' => [
+		'enabled' => false,
+	],
+	'app_parapheur' => [
+		'enabled' => false,
+	],	
+	'app_rizomo' => [
+		'enabled' => false,
+	],	
+];
+
+$config['navigation_apps'] = $config['template_navigation_apps'];
+
+$config['experimental-settings'] = [];
+
+$config['picture-mode'] = false;
+
+// Liste des emails de confiance
+$config['trusted_mails'] = [];
+
+// Gestion du délai avant l'envoi d'un mail
+$config['mail_delay_forced_disabled'] = false;
+// En seconde
+$config['mail_delay'] = 5;
+// En seconde
+$config['mail_max_delay'] = 30;
+// Si la barre de navigation principale peut être dépliée ou non
+$config['main_nav_can_deploy'] = true;
+
+// Configuration des metrics dans Grafana
+$config['metrics_preprod_url'] = null;
+$config['metrics_prod_url'] = null;
+$config['metrics_url'] = $config['metrics_preprod_url'];
+$config['metrics_token'] = '123456789';
+$config['metrics_send_interval'] = 60; // en secondes

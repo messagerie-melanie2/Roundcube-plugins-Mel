@@ -34,35 +34,45 @@ class mel_elastic extends rcube_plugin
     /**
      * Liste des fichiers css à charger.
      */
-    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css"];
+    private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css", "material-symbols.css"];
 
     private $loaded_theme;
     private $themes;
+    private static $default_theme;
 
     function init()
     {
-        $this->skinPath = getcwd()."/skins/mel_elastic";
+        include_once __DIR__.'/classes/html_table_bnum.php';
+        include_once __DIR__.'/program/backgrounds.php';
+        $this->skinPath = self::SkinPath();
         $this->rc = rcmail::get_instance();
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
-            $this->add_hook('preferences_list', array($this, 'prefs_list'));
-            $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+            $this->load_config();
+            // $this->add_hook('preferences_list', array($this, 'prefs_list'));
+            // $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->add_hook('ready', array($this, 'set_theme'));
             $this->register_action('update_theme', array($this, 'update_theme'));
+            $this->register_action('update_theme_picture', array($this, 'update_theme_picture'));
+            $this->register_action('update_custom_picture', array($this, 'update_custom_picture'));
+            $this->register_action('toggle_animations', array($this, 'toggleAnimations'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/dependencies/linq.js');
+            // $this->include_script('js/lib/html.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->rc->output->set_env('mel_themes', $this->mep_themes());
+            $this->rc->output->set_env('mel_themes_pictures', Background::from_path($this->skinPath.'/images/backgrounds/backgrounds.json'));
             $this->load_folders();
             $this->add_texts('localization/', true);
             //$this->add_hook('messages_list', [$this, 'mail_messages_list']);
             $this->rc->output->set_env("button_add", 
-            '<div class="mel-add" onclick="¤¤¤">
-                <span style="position:relative">'.$this->gettext('add').'<span class="icofont-plus-circle plus"></span></span>
-            </div>'
-        );
+                '<div class="mel-add" onclick="¤¤¤">
+                    <span style="position:relative">'.$this->gettext('add').'<span class="icofont-plus-circle plus"></span></span>
+                </div>'
+            );
+            $this->rc->output->set_env('animation_enabled', $this->rc->config->get('mel_metapage_animation_state', null));     
         }
     }
 
@@ -73,13 +83,14 @@ class mel_elastic extends rcube_plugin
             $this->include_stylesheet('/'.$this->css[$i]);
         }
 
-        $this->load_css_font();
+        //$this->load_css_font();
     }
 
     function load_css_font()
     {
         //$this->rc->config->get('custom-font-size', "sm")
-        $this->include_stylesheet("/fonts/fontsize_".$this->rc->config->get('custom-font-size', "lg").".css");
+        // $this->include_stylesheet("/fonts/fontsize.css");
+        // $this->rc->output->set_env('font-size', $this->rc->config->get('custom-font-size', "lg"));
     }
 
     function load_folders()
@@ -110,91 +121,86 @@ class mel_elastic extends rcube_plugin
         return $p;
     }
 
-    public function prefs_list($args) {
+    // public function prefs_list($args) {
 
-        if ($args['section'] == 'general') {
-          // Load localization and configuration
-          $this->add_texts('localization/');
+    //     if ($args['section'] == 'general') {
+    //       // Load localization and configuration
+    //       $this->add_texts('localization/');
     
-          $text_size = "mel-text-size";
+    //       $text_size = "mel-text-size";
     
-          // Check that configuration is not disabled
-          $config = $this->rc->config->get('custom-font-size', 'lg');
+    //       // Check that configuration is not disabled
+    //       $config = $this->rc->config->get('custom-font-size', 'lg');
     
-          $options = [
-                $text_size => [
-                    $this->gettext("smaller", "mel_elastic"),
-                    $this->gettext("normal", "mel_elastic")
-                ],
-            ];
+    //       $options = [
+    //             $text_size => [
+    //                 $this->gettext("smaller", "mel_elastic"),
+    //                 $this->gettext("normal", "mel_elastic")
+    //             ],
+    //         ];
     
-            // $args['blocks']['main']['options'][$text_size] = null;
-        $attrib = [];
+    //         // $args['blocks']['main']['options'][$text_size] = null;
+    //     $attrib = [];
     
-        $attrib['name'] = $text_size;
-        $attrib['id'] = $text_size;
+    //     $attrib['name'] = $text_size;
+    //     $attrib['id'] = $text_size;
     
-        $input = new html_select($attrib);   
-        $input->add($options[$text_size], ["sm", "lg"]);
+    //     $input = new html_select($attrib);   
+    //     $input->add($options[$text_size], ["sm", "lg"]);
         
     
-        unset($attrib['name']);
-        unset($attrib['id']);
-        $attrib["for"] = $text_size;
+    //     unset($attrib['name']);
+    //     unset($attrib['id']);
+    //     $attrib["for"] = $text_size;
     
-        $args['blocks']['main']['options'][$text_size] = array(
-            'title' => html::label($attrib, rcube::Q($this->gettext($text_size, "mel_elastic"))),
-            'content' => $input->show($config),
-          );
+    //     $args['blocks']['main']['options'][$text_size] = array(
+    //         'title' => html::label($attrib, rcube::Q($this->gettext($text_size, "mel_elastic"))),
+    //         'content' => $input->show($config),
+    //       );
         
-          //THEMES
-        //   $args['blocks']['themes']['name'] = 'Thèmes';
-        //   $current_theme = $this->get_current_theme();
-        //   $themes = $this->load_themes();
+    //       //THEMES
+    //     //   $args['blocks']['themes']['name'] = 'Thèmes';
+    //     //   $current_theme = $this->get_current_theme();
+    //     //   $themes = $this->load_themes();
 
-        //   foreach ($themes as $theme) {
-        //     $radio = new html_radiobutton(['name' => 'themes', 'id' => $theme->name, 'value' => $theme->name, 'class' => 'form-check-input themesettingsrb']);
-        //     $args['blocks']['themes']['options'][$theme->name] = [
-        //         //'title' => html::label([], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name),
-        //         'content' => html::div([], html::div(['style' => 'display:inline-block;margin-right:5px;width:150px;'], html::tag('img', ['src' => $theme->picture, 'style' => 'max-width:150px'])).html::div(['class' => 'form-check', 'style' => 'display:inline-block'], $radio->show($current_theme).html::label(['class' => 'form-check-label', 'for' => $theme->name], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name)))
-        //     ];
-        //   }
+    //     //   foreach ($themes as $theme) {
+    //     //     $radio = new html_radiobutton(['name' => 'themes', 'id' => $theme->name, 'value' => $theme->name, 'class' => 'form-check-input themesettingsrb']);
+    //     //     $args['blocks']['themes']['options'][$theme->name] = [
+    //     //         //'title' => html::label([], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name),
+    //     //         'content' => html::div([], html::div(['style' => 'display:inline-block;margin-right:5px;width:150px;'], html::tag('img', ['src' => $theme->picture, 'style' => 'max-width:150px'])).html::div(['class' => 'form-check', 'style' => 'display:inline-block'], $radio->show($current_theme).html::label(['class' => 'form-check-label', 'for' => $theme->name], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name)))
+    //     //     ];
+    //     //   }
 
-        //   $args['blocks']['themes']['options']['hiddenthemes'] = [
-        //     'content' => (new html_hiddenfield(['name' => 'themevalue', 'id' => 'themevalue', 'value' => $current_theme]))->show()
-        //   ];
+    //     //   $args['blocks']['themes']['options']['hiddenthemes'] = [
+    //     //     'content' => (new html_hiddenfield(['name' => 'themevalue', 'id' => 'themevalue', 'value' => $current_theme]))->show()
+    //     //   ];
 
-        }
+    //     }
 
     
-        return $args;
-      }
+    //     return $args;
+    //   }
 
 
-    public function prefs_save($args) {
-        if ($args['section'] == 'general') {
+    // public function prefs_save($args) {
+    //     if ($args['section'] == 'general') {
 
-            $this->add_texts('localization/');
+    //         $this->add_texts('localization/');
 
-            $text_size = "mel-text-size";
+    //         $text_size = "mel-text-size";
 
-            // Check that configuration is not disabled
-            $config = $this->rc->config->get('custom-font-size', 'lg');
+    //         // Check that configuration is not disabled
+    //         $config = $this->rc->config->get('custom-font-size', 'lg');
 
-            $config = rcube_utils::get_input_value($text_size, rcube_utils::INPUT_POST);
+    //         $config = rcube_utils::get_input_value($text_size, rcube_utils::INPUT_POST);
             
 
-            $args['prefs']["custom-font-size"] = $config;
+    //         $args['prefs']["custom-font-size"] = $config;
             
-            // $current_theme = $this->get_current_theme();
-            // $current_theme = rcube_utils::get_input_value('themes', rcube_utils::INPUT_POST);
-            // $args['prefs']['mel_elastic.current'] = $current_theme;
+    //     }
 
-            // $this->rc->output->set_env('current_theme', $current_theme);
-        }
-
-        return $args;
-    }
+    //     return $args;
+    // }
 
     private function load_themes()
     {
@@ -202,13 +208,18 @@ class mel_elastic extends rcube_plugin
         {
             include_once __DIR__.'/program/theme.php';
             $theme_folder = $this->skinPath.'/themes/';
-            $themes = [new Theme($theme_folder.self::DEFAULT_THEME)];
+            $themes = [self::DEFAULT_THEME => new DefaultTheme($theme_folder.self::DEFAULT_THEME, self::DEFAULT_THEME)];
             $folders = scandir($theme_folder);
             
+            $currentTheme = null;
             foreach ($folders as $id => $folder) {
                 if ($folder !== '.' && $folder !== '..' && is_dir($theme_folder.$folder) && $folder !== self::DEFAULT_THEME)
                 {
-                    $themes[] = new Theme($theme_folder.$folder);
+                    $currentTheme = new Theme($theme_folder.$folder);
+
+                    if (!$currentTheme->enabled) continue;
+
+                    $themes[$currentTheme->id] = $currentTheme;
                 }
             }
             $this->themes = $themes;
@@ -223,7 +234,9 @@ class mel_elastic extends rcube_plugin
         $mep = [];
 
         foreach ($themes as $key => $value) {
-            $mep[$value->name] = $value;
+            if ($value->saison->can_be_shown()) {
+                $mep[$key] = $value->prepareToSave();
+            }
         }
 
         return $mep;
@@ -254,14 +267,20 @@ class mel_elastic extends rcube_plugin
 
     public function set_theme($useless)
     {
+        $themes = $this->load_themes();
         if (!$this->is_default_theme())
         {
-            //$this->include_stylesheet('/themes/'.$this->get_current_theme().'/theme.css');
-            $this->rc->output->set_env('current_theme', $this->get_current_theme());
+            $theme = $this->get_current_theme();
+            if ($themes[$theme] !== null) $this->rc->output->set_env('current_theme', $this->get_current_theme());
         }
 
-        foreach ($this->load_themes() as $key => $value) {
-            $this->include_stylesheet('/themes/'.$value->name.'/theme.css');
+        $picture = $this->rc->config->get('mel_elastic.picture.current', null);
+        if (isset($picture)) $this->rc->output->set_env('theme_selected_picture', $picture);
+
+        foreach ($themes as $key => $value) {
+            foreach ($value->styles as $file) {
+                $this->include_stylesheet($file);
+            }
         }
 
         return $useless;
@@ -274,5 +293,41 @@ class mel_elastic extends rcube_plugin
         $this->unload_current_theme();
         echo 'ok';
         exit;
+    }
+
+    public function update_theme_picture(){
+        $picid = rcube_utils::get_input_value('_id', rcube_utils::INPUT_POST);
+        $this->rc->user->save_prefs(array('mel_elastic.picture.current' => $picid));
+        echo 'ok';
+        exit;
+    }
+
+    public function update_custom_picture(){
+        $datas = rcube_utils::get_input_value('_datas', rcube_utils::INPUT_POST);
+        $pref = rcube_utils::get_input_value('_prefid', rcube_utils::INPUT_POST);
+        $this->rc->user->save_prefs(array($pref => $datas));
+        echo 'ok';
+        exit;
+    }
+
+    public function toggleAnimations() {
+        $config = !$this->rc->config->get('mel_metapage_animation_state', $this->mep_themes()[$this->get_current_theme()]["animation_enabled_by_default"]);
+        $this->rc->user->save_prefs(array('mel_metapage_animation_state' => $config));
+    
+        echo json_encode($config);
+        exit;
+    }
+
+    public static function SkinPath() {
+        return getcwd()."/skins/mel_elastic";
+    }
+
+    public static function get_default_theme(){
+        if (!isset(self::$default_theme)) {
+            $theme = new DefaultTheme($theme_folder.self::DEFAULT_THEME, self::DEFAULT_THEME);
+            self::$default_theme = $theme->getDefaultTheme();
+        }
+
+        return self::$default_theme;
     }
 }

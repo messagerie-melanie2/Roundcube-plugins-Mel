@@ -1,0 +1,185 @@
+<div>
+    <p class="sr-only">Liens rapides</p>
+    <!-- <a class="sr-only sr-only-focusable mel-rapid-link" href="#" onclick="mm_st_OpenOrCreateFrame('home', true)">Accueil</a> -->
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#taskmenu"><roundcube:label name='mel_metapage.main_nav' /></a>
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#barup-buttons"><roundcube:label name='mel_metapage.secondary_nav' /></a>
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#" onclick="$('#barup-search-input').focus()"><roundcube:label name='search' /></a>
+    <a class="sr-only sr-only-focusable mel-rapid-link" href="#" onclick="m_mp_focus_current_frame(this)"><roundcube:label name='mel_metapage.main_contents' /></a>
+    <div id="upbar-rapid-links">
+
+    </div>
+</div>
+
+<div class="barup">
+    <div id="barup-wrapper-row" class="wrapper">
+        <div id="barup-buttons" style=" display: inline;">
+            <a id=touchmelmenu class="button icon-mel-menu task-menu-button show-touch" href="#menu" role="button"><span class="inner sr-only"><roundcube:label name='menu' /></span></a>
+            <button id="button-create" class="hide-touch mel-button margin-right-15 no-button-margin mel-focus mel-before-remover" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
+                <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus plus"></span>
+            </button>
+            <button id="button-notes" class="fill-on-hover melv2-sec-nav-correction hide-touch mel-button no-button-margin mel-focus mel-before-remover my_notes margin-right-15" title="Notes">
+                <span class="material-symbols-outlined">
+                    sticky_note_2
+                </span>
+            </button>
+            <!-- <button id="button-shortcut" class="fill-on-hover melv2-sec-nav-correction hide-touch mel-button no-button-margin mel-focus mel-before-remover my_favorites" onclick="m_mp_shortcuts()" title="<roundcube:label name='mel_metapage.shortcuts_help' />">
+                <span class="material-symbols-outlined">
+                    star
+                </span>
+            </button> -->
+            <!-- <button id="button-help" class="hide-touch mel-button bckg no-button-margin  mel-before-remover mel-focus" onclick="m_mp_Help()" title="<roundcube:label name='mel_metapage.help_help' />">
+                <roundcube:label name="mel_metapage.support" /><span class="icon-mel-help plus"></span>
+            </button> -->
+        </div>
+        <!-- <div class="col-lg-0"></div> -->
+        <!-- <div style="> -->
+
+
+      <div id="barup-right-buttons">
+
+        <div id="barup-search-col" role="search" style="display: none; opacity: 0; position: absolute; max-width: 0;">
+          <div class="search" >
+              <div class="input-group">
+                  <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
+                  <input id="barup-search-input" value="<roundcube:object name="word_searched" />" type="text" onmousedown="" onclick="rcmail.command('mel.search.global.show', this)" title="<roundcube:label name='mel_metapage.global_search_title' />" onchange="rcmail.command('mel.search.global', this)" placeholder="<roundcube:label name='mel_metapage.globalsearch' />..." class="form-control mel-focus" />
+                  <div class="input-group-append">
+                      <span class="icofont-search input-group-text"></span>
+                  </div>
+              </div>
+          </div>
+        </div>
+      
+      <span class="hide-button-search">  
+
+        <button id="button-chat" class="transparent-icon-button barup-icons-button ml-3" onclick="mel_metapage.PopUp.open_ariane()"
+          title="<roundcube:label name='mel_metapage.ariane_help' />">
+          <span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
+          <span class="material-symbols-outlined">
+            forum
+          </span>
+        </button>
+
+        <roundcube:if condition="env:plugin_list_help===true"/>
+        <button id="button-help" class="transparent-icon-button barup-icons-button" onclick="m_mp_Help()"
+          title="<roundcube:label name='mel_metapage.help_help' />">
+          <span class="material-symbols-outlined">
+            help
+          </span>
+        </button>
+        <roundcube:endif/>
+      
+        <option/>
+      <roundcube:if condition="env:plugin_list_notifications===true"/>
+        <div id="notification-dropdown" class="dropdown">
+          <button id="button-notifications" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            class="transparent-icon-button barup-icons-button" onclick=""
+            title="<roundcube:label name='mel_metapage.notifications_help' />">
+            <span id="notifications-icon" class="material-symbols-outlined">
+              notifications
+            </span>
+          </button>
+          <div class="dropdown-menu notification-dropdown-menu dropdown-menu-right p-2"
+            aria-labelledby="button-notifications">
+            <div id="notifications-panel"></div>
+          </div>
+        </div>
+      <roundcube:endif/>
+      </span>
+      
+        <button id="button-search" style="margin-top: 14px;" class="btn-circle" onclick="open_research()"
+          title="<roundcube:label name='mel_metapage.to_search' />">
+          <span class="icon-mel-search""></span>
+        </button>
+
+        <div class=" user" id="barup-user" style="padding:0;">
+          <user/>
+        </div>
+    </div>
+  </div>
+
+  <div id="barup-search" class="hidden barup-search">
+    <div class="search-container"></div>
+  </div> 
+</div>
+
+<div id="barup-search-background" class="hidden">
+</div>
+
+
+
+<li style="display: none;" id=menu-small-li>
+<a aria-expanded="false" style="display: block!important;"  aria-haspopup="true" id="menu-small" data-popup="groupoptions-smallmenu" class="menu-small stopAppMenu -normal-touch icofont-navigation-menu" label="actions" role=button href="#"><span class="button-inner inner"><roundcube:label name='mel_metapage.other_actions' /></span></a>
+</li>
+<div id="groupoptions-smallmenu" class="popupmenu">
+	<h3 id="aria-label-groupoptions-smallmenu" class="voice"><roundcube:label name='menu' /></h3>
+	<ul class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-smallmenu">
+		<roundcube:button type="link-menuitem" command="create-modal" title="mel_metapage.create" label="mel_metapage.create" innerclass="restore-font" class="icofont-plus-circle" classAct="" />
+		<roundcube:button type="link-menuitem" command="help-modal" label="mel_metapage.support" class="icofont-question-circle" innerclass="restore-font" classAct="" />
+        <roundcube:button type="link-menuitem" command="fav-modal" label="mel_metapage.my_favorites" class="icofont-favourite fav-color" innerclass="restore-font" classAct="" />
+        <!-- <roundcube:button type="link-menuitem" command="mm-search" label="search" class="icofont-search" innerclass="restore-font" classAct="" /> -->
+		<!-- <roundcube:button type="link-menuitem" command="my_account" title="mel_moncompte.moncompte"  label="mel_moncompte.moncompte" class="settings" classAct="" /> -->
+		<!-- <roundcube:button type="link-menuitem" command="logout" label="logout" class="logout logout-color" classAct="" /> -->
+		<roundcube:container name="groupoptions" id="groupoptionsmenu" />
+	</ul>
+</div>
+<a style=display:none; data-spied="false" data-popup="groupoptions-wsp" role="button" href="#" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-wsp" data-original-title="" style="text-decoration: none;" id=worspace-avatar-a class="dwp-round mel-focus focus-bordered">
+    <span class="sr-only"><roundcube:label name='mel_metapage.choose_avatar' /></span>
+</a>
+<div id="groupoptions-wsp" class="popupmenu">
+	<h3 id="aria-label-groupoptions-wsp" class="voice"><roundcube:label name='mel_metapage.avatars' /></h3>
+	<ul id=ul-wsp class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-wsp">
+		<roundcube:container name="groupoptions" id="groupoptionsmenu2" />
+	</ul>
+</div>
+
+<a style="opacity: 0;position: absolute;" data-popup="groupoptions-createthings" role="button" href="#" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-createthings" data-original-title="" style="text-decoration: none;" id=open-created-popup class="dwp-round mel-focus focus-bordered">
+    <span class="sr-only"><roundcube:label name='mel_metapage.open_create_popup' /></span>
+</a>
+<div id="groupoptions-createthings" class="popupmenu">
+	<h3 id="aria-label-groupoptions-createthings" class="voice"><roundcube:label name='mel_metapage.create_things' /></h3>
+	<ul id=ul-createthings class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-createthings">
+		<roundcube:container name="groupoptionscreatethings" id="groupoptionscreatethings" />
+	</ul>
+</div>
+
+<!-- <div class="tiny-rocket-chat-card card">
+    <div class="card-header">
+        <span>Ariane</span>
+        <a href="close-popup" onclick="ArianePopUp.hide()" class="icofont-close-squared-alt card-close"></a>
+    </div>
+                <!-- <iframe src="./?_task=ariane&_framed=1&_tiny=1"></iframe> --
+    <div class="card-body">
+        <div class="tiny-rocket-chat-frame"></div>
+    </div>
+</div> -->
+<nav style="display: none;flex-direction: column;" id=otherapps class="menu toolbar otherapps">
+    <nav style="flex:1;overflow: auto;">
+        <ul id=listotherapps class="listotherapps ignore-bullet">
+            <roundcube:container name="otherappsbar" id="otherappsbar" />
+        </ul>
+    </nav>
+    <nav>
+        <ul id="otherapp-down" class="ignore-bullet">
+            <roundcube:container name="settingsotherappsbar" id="settingsotherappsbar" />
+        </ul>
+    </nav>
+</nav>
+
+<button id="wmap" class="hidden wsp-toolbar-item conf-more-actions" data-popup="webconfmoreactions" aria-haspopup="true" aria-expanded="false" aria-owns="webconfmoreactions"><span class="material-symbols-outlined icon_item">more_horiz</span><span class="text-item"><roundcube:label name='mel_metapage.more' /></span></button>
+<div id="webconfmoreactions" class="popupmenu">
+	<!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
+	<ul class="menu listing" role="menu" aria-labelledby="wmap">
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_copy_help' />" class="copy active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="copy" data-function="copyUrl" data-click="true"><roundcube:label name='mel_metapage.url' /></a></li>
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_phone_help' />" class="phone active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="call" data-function="get_phone_datas" data-click="true"><roundcube:label name='mel_metapage.webconf_phone' /></a></li>
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_toggle_chat_help' />" class="threads active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="internalChat" data-function="toggleInternalChat"><roundcube:label name='mel_metapage.toggle_chat' /></a></li>
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_toggle_mp_help' />" class="threads active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="mp" data-function="toggle_mp" data-click="true"><roundcube:label name='mel_metapage.toggle_mp' /></a></li>
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_toggle_participantspane_help' />" class="contacts active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="participants" data-function="toggle_participantspane" data-click="true"><roundcube:label name='mel_metapage.toggle_participantspane' /></a></li>
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_bckg_help' />" class="background active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="backgrounds" data-function="open_virtual_background" data-click="true"><roundcube:label name='mel_metapage.bckg' /></a></li>
+        <li role="menuitem"><a title="" class="password active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="password" data-function="open_password" data-click="true">Sécurité</a></li>
+        <!-- <li role="menuitem"><a title="" class="cocopops active" role="button" tabindex="-1" aria-disabled="true" href="#" data-witem="aprilfool" data-aprilfool="fool" data-function="aprilfool" data-click="true">Coco pops</a></li> -->
+        <roundcube:container name="webconfmoreactions-c" id="webconfmoreactions-c" />
+	</ul>
+</div>
+<roundcube:object name="contactepage" />
+
+

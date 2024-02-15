@@ -6,7 +6,7 @@
  *
  * For translation see https://www.transifex.com/projects/p/kolab/resource/tasklist/
  */
-$labels['navtitle'] = 'Mes tâches';
+$labels['navtitle'] = 'Tâches';
 $labels['lists'] = 'Liste des tâches';
 $labels['list'] = 'Liste de tâche';
 $labels['tags'] = 'Étiquettes';
@@ -62,7 +62,7 @@ $labels['next7days'] = '7 prochains jours';
 $labels['later'] = 'Plus tard';
 $labels['assigned'] = 'Affectée';
 $labels['assignedtitle'] = 'Tâches que vous avez affectée à d\'autres';
-$labels['mytasks'] = 'Mes tâches';
+$labels['mytasks'] = 'Mes âches';
 $labels['mytaskstitle'] = 'Tâches qui me sont affectées';
 $labels['nodate'] = 'pas de date';
 $labels['removetag'] = 'Supprimer';

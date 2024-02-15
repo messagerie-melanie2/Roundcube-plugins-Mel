@@ -1,7 +1,10 @@
 .toolbar a.button.archiver::before {
-    content: "\e90d" !important;
-    font-family: DWP !important;
-    font-weight: normal !important;
+    content: "\e149" !important;
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-variation-settings: 'wght' 300, 'opsz' 48;
+    font-size: 17px;
+    transform: scale(1.5);
 }
 
 #form_archivage label {

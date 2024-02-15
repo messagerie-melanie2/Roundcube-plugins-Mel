@@ -1,17 +1,9 @@
-$(document).ready(() => {
-    if (rcmail.env.task === 'rotomecatest') {
+$(document).ready(async () => {
+    const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+    const {RcmailDialog, RcmailDialogChoiceButton} = await loadJsModule('mel_metapage', 'modal.js', '/js/lib/classes/');
 
+    const button1 = new RcmailDialogChoiceButton('Aller à l\'accueil', 'home', {});
+    const button2 = new RcmailDialogChoiceButton('Aller aux paramètres', 'settings', {});
 
-        const from = 0;
-        const to = 100;
-
-        for (let index = from; index <= to; index += 2) {   
-            $('#layout-content').append(`
-            ${index}% { 
-                .mask-conic-gradiant(${Math.round(-index * 3.6)}deg);
-             }
-             <br/>
-            `);
-        }
-    }
+    RcmailDialog.DrawChoice('Test', button1, button2);
 });

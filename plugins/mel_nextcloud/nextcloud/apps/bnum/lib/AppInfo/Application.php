@@ -52,15 +52,10 @@ class Application extends App implements IBootstrap {
 
 		$container = $this->getContainer();
 
-		/** @var IEventDispatcher $dispatcher */
+		// /** @var IEventDispatcher $dispatcher */
 		$dispatcher = $container->query(IEventDispatcher::class);
 
 		$dispatcher->addServiceListener(LoadAdditionalScriptsEvent::class, LoadAdditionalListener::class);
-
-		/**
-		 * Always add bnum script
-		 */
-		Util::addScript(self::APP_ID, 'dist/bnum');
 	}
 
     public function register(IRegistrationContext $context): void {
@@ -68,30 +63,21 @@ class Application extends App implements IBootstrap {
 	}
 
     public function boot(IBootContext $context): void {
-		if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['REQUEST_METHOD'])
+		if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['PATH_INFO'])
 				&& $_SERVER['REQUEST_METHOD'] == 'GET' 
-				&& $_SERVER['PATH_INFO'] == "/apps/files/") {
+				&& trim($_SERVER['PATH_INFO'], '/') == "apps/files") {
 			$context->injectFn(Closure::fromCallable([$this, 'registerNavigation']));
 		}
 	}
 
     private function registerNavigation(IL10N $l10n, IUserSession $userSession, IURLGenerator $urlGenerator, IRootFolder $rootFolder): void {
-		// PAMELA 
-        // \Psr\Container\ContainerInterface::get(\OCA\GroupFolders\Folder\FolderManager::class);
-		$folderManager = $this->getContainer()->query(\OCA\GroupFolders\Folder\FolderManager::class);
 		$user = $userSession->getUser();
-		if (isset($folderManager) && isset($user)) {
-			$folders = $folderManager->getFoldersForUser($user);
+		if (isset($user)) {
 			$userFolder = $rootFolder->getUserFolder($user->getUID());
 
-            // Sort folders by alphabetical order
-			usort($folders, function($a, $b) {
-				if ($a['mount_point'] == $b['mount_point']) {
-					return 0;
-				}
-				return ($a['mount_point'] < $b['mount_point']) ? -1 : 1;
-			});
+			$sharedFolderLabel = 'Partagés avec vous';
 
+			// Personal folders params
 			$personalFoldersSublist = [];
 			$personalFoldersNavBarPosition = 6;
 			$personalFoldersNavBarPositionPosition = $personalFoldersNavBarPosition;
@@ -117,6 +103,8 @@ class Application extends App implements IBootstrap {
 				$link = $urlGenerator->linkToRoute('files.view.index', ['dir' => $dir, 'view' => 'files']);
 
 				$isGroupFolder = $directory->getMountPoint() instanceof \OCA\GroupFolders\Mount\GroupMountPoint;
+				$isShared = $directory->getMountPoint() instanceof \OCA\Files_Sharing\SharedMount 
+							|| $directory->getName() == $sharedFolderLabel;
 				if ($isGroupFolder) {
 					if (strpos($directory->getName(), $entitiesLabel) !== 0 && strpos($directory->getName(), $workspacesLabel) !== 0) {
 						continue;
@@ -141,7 +129,7 @@ class Application extends App implements IBootstrap {
 						$order = $workspacesNavBarPositionPosition;
 					}
 				}
-				else if ($directory->getType() != 'dir') {
+				else if ($isShared || $directory->getType() != 'dir') {
 					continue;
 				}
 				else {

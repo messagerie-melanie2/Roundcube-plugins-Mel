@@ -115,6 +115,11 @@ class mel extends rcube_plugin
     $this->init_ui();
 
     // Configurer les LOG de la librairie Mél
+    $trace_log = function ($message) {
+      $message = "[LibM2] $message";
+      if (mel_logs::is(mel_logs::TRACE))
+        mel_logs::get_instance()->log(mel_logs::TRACE, $message);
+    };
     $debug_log = function ($message) {
       $message = "[LibM2] $message";
       if (mel_logs::is(mel_logs::DEBUG))
@@ -130,6 +135,7 @@ class mel extends rcube_plugin
       if (mel_logs::is(mel_logs::ERROR))
         mel_logs::get_instance()->log(mel_logs::ERROR, $message);
     };
+    LibMelanie\Log\M2Log::InitTraceLog($trace_log);
     LibMelanie\Log\M2Log::InitDebugLog($debug_log);
     LibMelanie\Log\M2Log::InitInfoLog($info_log);
     LibMelanie\Log\M2Log::InitErrorLog($error_log);
@@ -209,7 +215,7 @@ class mel extends rcube_plugin
         $button_array = [
           'label' => 'mel.menumanageresources_mailboxes',
           'type' => 'link',
-          "class" => "settings",
+          "class" => "settings active",
           'classact' => 'settings active',
           'command' => 'plugin.mel_resources_bal'
         ];
@@ -222,6 +228,52 @@ class mel extends rcube_plugin
           'role' => 'menuitem'
         ), $this->api->output->button($button_array));
         $this->api->add_content($content, 'mailboxoptions');
+
+        if (in_array($this->rc->action, ['', 'index'])) {
+          $container = 'messagelistfiltersmenu';
+          $filters = ['all', 'unread', 'followed', 'labels', 'priority', 'attachment', 'noresponses'];
+          //Filtres rapides
+          foreach ($filters as $value) {
+            $config = array(
+              'name' => "quick-filter-$value",
+              'class' => "quick-filter quick-filter-$value btn btn-secondary mel-button no-button-margin no-margin-button bckg true hoverable",
+              'innerclass' => 'inner',
+              'id' => "quick-filter-$value",//tb_label_popup
+              'title' => "title-$value", // gets translated
+              'type' => 'button-menuitem',
+              'label' => "label-$value", // maybe put translated version of "Labels" here?
+              'domain' => 'mel',
+              'data-action' => $this->gettext("filter-data-action-$value")
+            );
+
+            switch ($value) {
+              case 'all':
+                $config['data-filter-start-enabled'] = true;
+                $config['data-filter-default-filter'] = true;
+                $config['data-filter-can-be-multiple'] = 'false';
+                break;
+              case 'labels':
+                $config['data-filter-custom-action'] = 'trigger:quick-filter.labels';
+                $config['data-filter-can-be-multiple'] = true;
+                break;
+
+              case 'priority':
+                $config['data-filter-custom-action'] = 'trigger:quick-filter.priority';
+                $config['data-filter-can-be-multiple'] = true;
+                break;
+
+              default:
+              $config['data-filter-can-be-multiple'] = true;
+                break;
+            }
+
+            $this->add_button($config, $container);
+          }
+
+          $this->include_script('mel_filters.js');
+        }
+
+
       } else if ($this->rc->task == 'calendar') {
         // Link to Settings/Folders
         $content = html::tag('li', array(
@@ -259,6 +311,10 @@ class mel extends rcube_plugin
       $passwordchange_title = '';
       if (
         !isset($_SESSION['plugin.show_password_change'])
+        && $this->rc->task != 'login'
+        && $this->rc->task != 'logout'
+        && $this->rc->task != 'bnum'
+        && $_GET['_is_from'] == 'iframe'
         && !$this->rc->output->get_env('ismobile')
         && driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title)
       ) {
@@ -422,6 +478,9 @@ class mel extends rcube_plugin
           $rc_i['uid'] = $m2_i['uid'];
           $update_identities[$rc_i['identity_id']] = $m2_i;
         }
+        else if (empty(trim($rc_i['name']))) {
+          $update_identities[$rc_i['identity_id']] = ['name' => $m2_i['name']];
+        }
         // Vide le tableau pour lister ensuite les identities à créer
         unset($m2_identities[strtolower($rc_i['email'])]);
       } else {
@@ -459,7 +518,12 @@ class mel extends rcube_plugin
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
     }
 
-    if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0) {
+    if (!isset($this->get_account) && $this->rc->task == 'mail' && $this->rc->action == '') {
+      if (mel_logs::is(mel_logs::DEBUG)) {
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account() cache problem folder");
+      }
+    }
+    else if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0) {
       $bal = driver_mel::gi()->user();
       $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $args['folder']);
       $bal->load();
@@ -838,7 +902,7 @@ class mel extends rcube_plugin
           'value' => $this->rc->gettext('login')
         ), $this->rc->gettext('login')));
         if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
-          $args['content'] .= html::div(array(), html::a(array(
+          $args['content'] .= html::div(array('id' => 'bali-reset-password'), html::a(array(
             "href" => "./changepassword/index.php"
           ), $this->gettext('no bal')));
         }
@@ -1033,9 +1097,10 @@ class mel extends rcube_plugin
     if (!empty($this->get_account) && $this->get_account != $this->rc->get_user_name()) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
-      $inf = explode('@', $this->user_name);
-      $this->user_objet_share = urldecode($inf[0]);
-      $this->user_host = $inf[1] ?: null;
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromMail($this->user_name);
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
+      $this->user_bal = $user_bal;
       $user = driver_mel::gi()->getUser($this->user_objet_share, false);
       if ($user->is_objectshare) {
         $this->user_bal = $user->objectshare->mailbox_uid;
@@ -1044,10 +1109,11 @@ class mel extends rcube_plugin
       }
     } else {
       // Récupération du username depuis la session
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromSession();
       $this->user_name = $this->rc->get_user_name();
-      $this->user_objet_share = $this->rc->user->get_username('local');
-      $this->user_host = $this->rc->user->get_username('host');
-      $this->user_bal = $this->user_objet_share;
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
+      $this->user_bal = $user_bal;
     }
   }
   /**

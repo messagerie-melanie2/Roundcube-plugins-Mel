@@ -61,17 +61,20 @@ class mel_contacts extends rcube_plugin {
       // register hooks
       $this->add_hook('addressbooks_list', array($this,'address_sources'));
       $this->add_hook('addressbook_get', array($this,'get_address_book'));
-      // $this->add_hook('config_get', array($this,'config_get'));
+      $this->add_hook('config_get', array($this,'config_get'));
     }
 
     if ($this->rc->task == 'addressbook') {
-      $this->add_texts('localization');
+      $this->add_texts('localization', true);
       $this->add_hook('contact_form', array($this, 'contact_form'));
       $this->add_hook('saved_search_create', array($this, 'saved_search_create'));
 
       // Plugin actions
       $this->register_action('plugin.book', array($this,'book_actions'));
       $this->register_action('plugin.book-save', array($this,'book_save'));
+
+      //List actions
+      $this->register_action('plugin.get-lists', array($this, 'get_lists'));
 
       // ACL Actions
       $this->register_action('plugin.contacts-acl', array($this,'contacts_acl'));
@@ -215,15 +218,15 @@ class mel_contacts extends rcube_plugin {
         // Supprimer MAIA de la récupération des photos
         unset($p['sources']['annuaire']);
         unset($p['sources']['amande_group']);
-        $p['sources'] = array_merge([$sources[driver_mel::gi()->mceToRcId($this->user->uid)]], $p['sources']);
+        $p['sources'] = array_replace([$sources[driver_mel::gi()->mceToRcId($this->user->uid)]], $p['sources']);
       }
       else if ($this->rc->task == 'addressbook') {
-        $p['sources'] = array_merge($all_source, $p['sources'], $sources);
+        $p['sources'] = array_replace($all_source, $p['sources'], $sources);
       }
       else {
         $annuaire = $p['sources']['annuaire'];
         unset($p['sources']['annuaire']);
-        $p['sources'] = array_merge($all_source, $p['sources'], $sources, [$annuaire]);
+        $p['sources'] = array_replace($all_source, $p['sources'], $sources, [$annuaire]);
       }
       return $p;
     }
@@ -357,7 +360,7 @@ class mel_contacts extends rcube_plugin {
    * Handler for address book create/edit form submit
    */
   public function book_save() {
-    $prop = array('id' => trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST)),'name' => trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST)),'oldname' => trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
+    $prop = array('id' => driver_mel::gi()->rcToMceId(trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST))),'name' => trim(rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST)),'oldname' => trim(rcube_utils::get_input_value('_oldname', rcube_utils::INPUT_POST, true)), // UTF7-IMAP
 'subscribed' => true);
     $type = strlen($prop['oldname']) ? 'update' : 'create';
 
@@ -370,10 +373,13 @@ class mel_contacts extends rcube_plugin {
       }
       else {
         $addressbook->id = md5($prop['name'] . time() . $this->user->uid);
+        $addressbook->owner = $this->user->uid;
       }
 
-      $addressbook->name = $prop['name'];
-      $ret = $addressbook->save();
+      if ($addressbook->owner == $this->user->uid && $addressbook->id != $this->user->uid) {
+        $addressbook->name = $prop['name'];
+        $ret = $addressbook->save();
+      }
       if (is_null($ret)) {
         $error = 'mel_contacts.book' . $type . 'error';
         $this->rc->output->show_message($error, 'error');
@@ -468,5 +474,19 @@ class mel_contacts extends rcube_plugin {
   public function saved_search_create($args) {
     $args['data']['data']['source'] = rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST);
     return $args;
+  }
+
+  // returns list of contacts
+  public function get_lists()
+  {
+    $cid = rcube_utils::get_input_value('cid', rcube_utils::INPUT_POST);
+    $dn = base64_decode(explode('-', $cid, 2)[0]);
+    $user = driver_mel::gi()->getUser(null, true, null, $dn);
+    $lists = $user->getListsIsMember(['dn', 'email']);
+    $list = mel_helper::Enumerable($lists)->select(function ($k, $v) {
+      return $v->email;
+    })->toArray();
+    echo(json_encode($list));
+    exit;
   }
 }

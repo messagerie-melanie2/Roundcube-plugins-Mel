@@ -19,10 +19,10 @@
 $labels = array();
 
 $labels['Send France Transfert title'] = "Envoi France Transfert";
-$labels['Send France Transfert text'] = "La taille du message est trop importante pour un envoi par la messagerie. Si vous continuez, votre message sera envoyé par le service France Transfert et vos destinataires receveront un lien de téléchargement des pièces jointes.";
+$labels['Send France Transfert text'] = "La taille du message est trop importante pour un envoi par la messagerie. Si vous continuez, votre message sera envoyé par le service France Transfert et vos destinataires recevront un lien de téléchargement des pièces jointes.";
 $labels['Send France Transfert keep the file'] = "Conserver les fichiers pendant : ";
 $labels['Send France Transfert days'] = "jours";
-$labels['maxuploadsize'] = 'La taille de fichier maximum autorisée est $size. À partir de %%max_attachments_size%% le message sera envoyé par le service France Transfert.';
+$labels['maxuploadsize'] = 'La taille de fichier maximum autorisée est $size. À partir de %%max_attachments_size%% le message sera envoyé par le service France Transfert sous forme de pli.';
 $labels['cancel'] = "Annuler";
 $labels['send_francetransfert'] = "Envoyer";
 $labels['Over size France Transfert error'] = "La taille totale des pièces jointes ne doit pas dépasser %%max_francetransfert_size%% octets (vous êtes à %%size%% octets)";
@@ -39,3 +39,4 @@ $labels['action fichier'] = "Envoi du fichier %%filename%% au service France Tra
 $labels['action envoi'] = "Envoi du message";
 $labels['action garde'] = "Enregistrement de la durée de garde";
 $labels['pref_max_attachments_size'] = "Taille maximum des pièces jointes avant un envoi par France Transfert";
+$labels['error_message_size_limit'] = "Un message France Transfert ne peux pas dépasser les %%max_message_size%% caractères. Si vous avez faire un Répondre à, pensez à supprimer les citations en dessous de votre texte pour réduire la taille du message.";

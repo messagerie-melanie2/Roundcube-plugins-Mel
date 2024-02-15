@@ -36,9 +36,31 @@ if (window.rcmail) {
         rcmail.enable_command('acl-create', 'acl-save', 'acl-cancel', 'acl-mode-switch', true);
         rcmail.enable_command('acl-delete', 'acl-edit', false);
 
+        rcmail.addEventListener('acl.onclose', rcmail.acl_on_close);
+
         if (rcmail.env.acl_advanced)
             $('#acl-switch').addClass('selected');
     });
+}
+
+rcube_webmail.prototype.acl_on_close = function() {
+    const QUERRY = '#listview-float-right';
+
+    let $querry = $(QUERRY);
+
+    let context = window;
+    if (0 === $querry.length) {
+        let i = 0;
+        while (0 === $querry.length && context !== top) {
+            if (i++ >= 10) break;
+
+            context = parent;
+            $querry = context.$(QUERRY);
+        }
+
+        if (0 !== $querry.length) $querry.css('display', 'none');
+    }
+    else $querry.css('display', 'none');
 }
 
 // Display new-entry form
@@ -395,8 +417,8 @@ rcube_webmail.prototype.acl_init_form = function(id)
 
     var buttons = {}, me = this, body = document.body;
 
-    buttons[this.gettext('save')] = function(e) { me.command('acl-save'); };
-    buttons[this.gettext('cancel')] = function(e) { me.command('acl-cancel'); };
+    buttons[this.gettext('save')] = function(e) { me.command('acl-save');                 rcmail.triggerEvent('acl.onclose');};
+    buttons[this.gettext('cancel')] = function(e) { me.command('acl-cancel');                rcmail.triggerEvent('acl.onclose'); };
 
     var popup_wrapper = $('<div style="width:480px; min-height:280px"></div>');
     this.acl_form.appendTo(popup_wrapper).show();
@@ -415,6 +437,7 @@ rcube_webmail.prototype.acl_init_form = function(id)
                 me.acl_form.appendTo(body).hide();
                 $(this).remove();
                 window.focus(); // focus iframe
+                rcmail.triggerEvent('acl.onclose');
             }
         }
     );

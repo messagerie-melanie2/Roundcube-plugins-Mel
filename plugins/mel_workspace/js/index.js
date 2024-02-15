@@ -1,9 +1,3 @@
-// workspaces.sync.PostToParent({
-//     child:false,
-//     exec:"window.tmp_wsp_epingle = '' + window.wsp_epingle;window.wsp_epingle = undefined;"
-// });
-
-
 function wsp_epingle(id)
 {
     event.preventDefault();
@@ -58,8 +52,6 @@ function wsp_epingle(id)
         console.error(xhr, ajaxOptions, thrownError);
     },
     }).always(() => {
-        // rcmail.set_busy(false);
-        // rcmail.clear_messages();
         workspaces.sync.PostToParent({
             exec:"workspace_enable_epingle(`" + initialId + "`)"
         });
@@ -95,23 +87,30 @@ $(document).ready(() => {
 
     }
 
+    let events_already_created = false;
     rcmail.register_command("workspaces.go", (uid) => {
-        rcmail.set_busy(true, 'loading');
-        let config = {
-            _uid:uid
-        };
+        //debugger;
+        if (!!window.workspace_frame_manager) {
+            if (!events_already_created) {
+                events_already_created = true;
+                workspace_frame_manager.oncreatebefore.push(() => {
+                    top.rcmail.set_busy(true);
+                    top.$('#bnum-loading-div').removeClass('loaded');
+                });
 
-        if (rcmail.env.action === "action")
-            config["_last_location"] = encodeURIComponent(window.location.href);
+                workspace_frame_manager.oncreated.push(() => {
+                    top.$('#bnum-loading-div').addClass('loaded');
+                    top.rcmail.set_busy(false);
+                });
+            }
 
-        if (window.location.href.includes(rcmail.env.mel_metapage_const.value))
-            config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-
-        //console.log("config", config, MEL_ELASTIC_UI.url('workspace','workspace', config));
-        window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);// + '&_uid=' + uid + (parent !== window ? '&_from=iframe' : '');
+            workspace_frame_manager.go(uid);
+        }
     }, true);
     
     new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
+    
+    //window.runModule?.('mel_workspace', 'index', '/js/mel_lib/');
 });
 
 function load_archives(e)
@@ -144,3 +143,45 @@ function update_tasks()
             $(e).find(".wsp-tasks-all").html('<span style="font-size:large">'+(count-datas.length)+'</span> tâches réalisées sur '+count+'</div>');
     });
 }
+
+//SetupToolbar();
+// async function SetupToolbar() {
+//     debugger;
+//     const MODULE_TOOLBAR = await loadJsModule('mel_metapage', 'toolbar');
+//     const MODULE_MATH = await loadJsModule('mel_metapage', 'mel_maths');
+
+//     const Toolbar = MODULE_TOOLBAR.HideOrShowToolbar;
+//     const MaterialToolbarIcon = MODULE_TOOLBAR.MaterialToolbarIcon;
+//     const ToolbarItem = MODULE_TOOLBAR.ToolbarItem;
+//     const Point = MODULE_MATH.Point;
+
+//     /**
+//      * @type {Toolbar}
+//      */
+//     let toolbar = new Toolbar({
+//         $parent:top.$('body'),
+//         height:'60px',
+//         width:'calc(100% - 60px)',
+//         pos: new Point(60, 0),
+//         color:'#2C3054'
+//     });
+
+//     let icon1 = new MaterialToolbarIcon('arrow_back');
+//     let icon2 = new MaterialToolbarIcon('home');
+
+//     const icons = [icon1, icon2];
+//     const texts = ['Retour', 'Accueil'];
+
+//     let it = 0;
+//     for (const icon of icons) {
+//         const item = new ToolbarItem({
+//             icon:icon,
+//             text:texts[it++],
+//             $parent:toolbar.$toolbar
+//         });
+
+//         toolbar.addItem(item.text, item, {updateOrder:true});
+//     }
+// // debugger
+//     toolbar.refresh();
+// }

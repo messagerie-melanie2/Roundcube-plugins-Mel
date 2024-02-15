@@ -1,8 +1,4 @@
-﻿.body{
-  color:#3A3E5E;
-}
-
-/* .button-mel_sondage
+﻿/* .button-mel_sondage
 {
   background: url(images/taskbar_icon.png) 3px 0px no-repeat;
   height: 18px;
@@ -144,8 +140,8 @@
 }
 
 .dwp{
-  padding-left: 200px;
-  padding-right: 200px;
+  padding-left: 60px;
+  padding-right: 60px;
 }
 
 .dwp > center > img{
@@ -306,3 +302,41 @@ html.layout-phone .--row
 	width: 100%;
 	bottom: 2rem;
 } */
+
+.module_Headlines .contents {
+  --alternate-bckg-color: transparent;
+
+}
+
+.module_Headlines .square-contents {
+  padding: 15px;
+}
+
+.module_Headlines .square-contents {
+  padding-top: 0;
+}
+
+
+.module_Headlines .square_div.mel-news .contents {
+  height: 100%!important;
+}
+ 
+.bottom-right {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+}
+
+.bottom-right div {
+  width: 150px;
+  height: 70px;
+  background-image: url('https://jedonnemonavis.numerique.gouv.fr/static/bouton-bleu.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 150px;
+}
+
+html.dark-mode-custom .bottom-right div {
+  background-image: url('https://jedonnemonavis.numerique.gouv.fr/static/bouton-blanc.svg');
+}

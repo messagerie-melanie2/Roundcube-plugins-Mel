@@ -138,7 +138,8 @@ function check_workspace_integrity()
                         datas = JSON.parse(datas);
 
                         if (datas.state === states.invalid) { //Si le service a été supprimer
-                            const text = `Nous ne parvenons pas à trouver des données pour le service "${datas.service}", le service à dût être supprimer par un des administrateurs, création du service en cours....`;
+                            const isCustomState = !!datas.service_state?.state;
+                            const text = isCustomState && !!datas.service_state.text ? datas.service_state.text : `Nous ne parvenons pas à trouver des données pour le service "${rcmail.gettext(datas.service, 'mel_workspace')}", le service a dû être supprimé par un des administrateurs, création du service en cours....`;
                             console.error(`###[checks]${text}`, datas);
                             rcmail.display_message(text, 'error');
 
@@ -147,7 +148,7 @@ function check_workspace_integrity()
                                 {
                                     _id:uid,
                                     _service:datas.service,
-                                    _state:datas.service_state
+                                    _state:(isCustomState ? datas.service_state.custom_args : datas.service_state)
                                 },
                                 (creation_datas) => {
                                     creation_datas = JSON.parse(creation_datas);
@@ -195,7 +196,12 @@ function check_workspace_integrity()
                                             }
                                         }
 
-                                        rcmail.display_message(`Le service ${datas.service} a été créé avec succès !`, 'confirmation');
+                                        let displayedText = EMPTY_STRING;
+                                        
+                                        if (isCustomState && !!datas.service_state.ok_text) displayedText = datas.service_state.ok_text;
+                                        else displayedText = `Le service ${rcmail.gettext(datas.service, 'mel_workspace')} a été créé avec succès !`;
+
+                                        rcmail.display_message(displayedText, 'confirmation');
                                     }
 
                                     if (!!items[datas.service]) set_toolbar_item_valid(items[datas.service].find('span').first())
@@ -225,5 +231,6 @@ function check_workspace_integrity()
 }
 
 $(document).ready(() => {
+    return;
     check_workspace_integrity();
 });

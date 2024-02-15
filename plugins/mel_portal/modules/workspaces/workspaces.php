@@ -47,7 +47,9 @@ class Workspaces extends Module
     // $workspace->shares = $shares;
 
     // $res = $workspace->save();
-    $this->edit_row_size(3);
+    $this->edit_row_size(12);
+    $this->edit_order(6);
+    $this->set_use_custom_style(true);
 
     // $it = 0;
     // foreach ($this->workspaces as $key => $value) {
@@ -58,8 +60,13 @@ class Workspaces extends Module
     // }
   }
 
+  public function enabled() {
+    return class_exists('mel_workspace');
+}
+
   function generate_html()
   {
+    // return '';
     $html = "";
     $it = 0;
     $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
@@ -96,10 +103,12 @@ class Workspaces extends Module
       $html = str_replace("<workspace-epingle/>", "", $html);
       $html = str_replace("<workspace-epingle-title/>", $this->text('tak'), $html);
     }
-    if ($workspace->logo !== null && $workspace->logo !== "false")
-      $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:' . $ws->get_setting($workspace, "color") . '><img alt="" src="' . $workspace->logo . '"></div>', $html);
+
+    $logo = mel_workspace::get_workspace_logo($workspace);
+    if ($logo !== null && $logo !== "false")
+      $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:' . $ws->get_setting($workspace, "color") . '><img alt="" src="' . $logo . '"></div>', $html);
     else
-      $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:" . $ws->get_setting($workspace, "color") . "><span>" . substr($workspace->title, 0, 3) . "</span></div>", $html);
+      $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:" . $ws->get_setting($workspace, "color") . "><span style=color:". $ws->get_badge_text_color($workspace) .">" . substr($workspace->title, 0, 3) . "</span></div>", $html);
     if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
       $html = str_replace("<workspace-#/>", "#" . $workspace->hashtags[0], $html);
     else
@@ -117,7 +126,14 @@ class Workspaces extends Module
           $html_tmp .= '<div class="dwp-circle dwp-user"><span>+' . (count($workspace->shares) - 2) . '</span></div>';
           break;
         }
-        $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
+        
+        if (!$this->rc->plugins->get_plugin('mel_metapage')->get_picture_mode())
+        {
+          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><span style=color:"'. $ws->get_badge_text_color($workspace) .">" . substr($s->user, 0, 2) . '</span></div>';
+        }
+        else {
+          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
+        }
         ++$it;
       }
       $html = str_replace("<workspace-users/>", $html_tmp, $html);
@@ -160,7 +176,7 @@ class Workspaces extends Module
             break;
 
           case mel_workspace::CHANNEL:
-            $tmp_html .= '<button data-channel="' . $ws->get_object($workspace, mel_workspace::CHANNEL)->name . '" onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';
+            $tmp_html .= '<button data-channel="' . $ws->get_object($workspace, mel_workspace::CHANNEL)->name . '" onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="material-symbols-outlined fill-on-hover ariane-icon">forum</button>';
             break;
           default:
             $tmp_html .= '<button onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" title="' . rcmail::get_instance()->gettext('button_title_' . $key, 'mel_portal') . '" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';

@@ -537,26 +537,31 @@ class mel_labels_sync extends rcube_plugin {
       foreach ($this->driver->get_user_labels($this->_get_current_user_name()) as $label) {
         $field_class = 'rcmfd_label_' . $this->_convert_key_to_css($label->key);
         $color = $label->color;
+        //On désactive les labels par défaut pour éviter les modifications (ticket : 0007707)
+        $disabled = in_array($label->key, array_column($this->rc->config->get('default_labels', []), 'key')) ? true : false;
 
         $label_color = new html_inputfield(array(
                 'name' => "_colors[" . $label->key . "]",
                 'class' => "$field_class colors",
-        		'readonly' => 'readonly',
-                'size' => 6
+        		    'readonly' => 'readonly',
+                'size' => 6,
+                'disabled' => $disabled
         ));
 
         $name = $label->tag;
         $label_name = new html_inputfield(array(
                 'name' => "_labels[" . $label->key . "]",
                 'class' => $field_class,
-                'size' => 30
+                'size' => 30,
+                'disabled' => $disabled
         ));
         $label_remove = new html_inputfield(array(
                 'type' => 'button',
                 'value' => 'X',
                 'class' => 'button',
                 'onclick' => '$(this).parent().parent().remove()',
-                'title' => $this->gettext('remove_label')
+                'title' => $this->gettext('remove_label'),
+                'disabled' => $disabled
         ));
         $parent = html::div(["class" => "row"],
           html::div(["class" => "col-5"], $label_name->show($name)).

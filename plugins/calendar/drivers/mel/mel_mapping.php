@@ -296,7 +296,8 @@ class mel_mapping {
             'ACCEPTED'          => Attendee::RESPONSE_ACCEPTED,
             'DECLINED'          => Attendee::RESPONSE_DECLINED,
             'TENTATIVE'         => Attendee::RESPONSE_TENTATIVE,
-            'UNKNOWN'           => Attendee::RESPONSE_IN_PROCESS
+            'UNKNOWN'           => Attendee::RESPONSE_IN_PROCESS,
+            'DELEGATED'         => Attendee::RESPONSE_DELEGATED,
     );
     if (isset($mapping[$attendee_status_rc])) {
       $attendee_status_m2 = $mapping[$attendee_status_rc];
@@ -320,7 +321,8 @@ class mel_mapping {
             Attendee::RESPONSE_ACCEPTED     => 'ACCEPTED',
             Attendee::RESPONSE_DECLINED     => 'DECLINED',
             Attendee::RESPONSE_TENTATIVE    => 'TENTATIVE',
-            Attendee::RESPONSE_IN_PROCESS   => 'UNKNOWN'
+            Attendee::RESPONSE_IN_PROCESS   => 'UNKNOWN',
+            Attendee::RESPONSE_DELEGATED    => 'DELEGATED',
     );
     if (isset($mapping[$attendee_status_m2])) {
       $attendee_status_rc = $mapping[$attendee_status_m2];

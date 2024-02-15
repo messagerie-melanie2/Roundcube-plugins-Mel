@@ -45,8 +45,8 @@ $labels["right_q"] = "Administrateur et publieur";
 $labels["right_a"] = "Administrateur";
 $labels["right_p"] = "Publieur";
 
-$labels['publish'] = 'Publier';
-$labels['publish_flux'] = 'Publier un flux';
+$labels['publish'] = 'Publier une information';
+$labels['publish_flux'] = 'Publier un fil d\'information';
 $labels['filter'] = 'Filtrer';
 $labels['add'] = 'Ajouter';
 $labels['see_more'] = 'Voir plus';

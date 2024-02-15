@@ -4,12 +4,14 @@ class Webconf extends AMel{
     private $key;
     private $ariane;
     private $wsp;
+    private $pass;
     
     public function __construct() {
         parent::__construct();
         $this->key = $this->get_input('_key');
         $this->ariane = $this->get_input('_ariane');
         $this->wsp = $this->get_input('_wsp');
+        $this->pass = $this->get_input('_pass');
     }
 
     public function run(...$args)
@@ -20,6 +22,7 @@ class Webconf extends AMel{
 
             if (!empty($this->ariane)) $config['_ariane'] = $this->ariane;
             if (!empty($this->wsp)) $config['_wsp'] = $this->wsp;
+            if (!empty($this->pass)) $config['_pass'] = $this->pass;
 
             $this->redirect_to_rc('webconf', '', $config);
         }

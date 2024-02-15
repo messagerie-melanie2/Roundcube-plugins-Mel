@@ -36,6 +36,7 @@
 	color: #fff;
 }
 
+#clone-label .toolbarmenu li.labels,
 #tb_label_popup .toolbarmenu li.labels,
 .task-mail #searchfilter option.labels {
 	display: none;
@@ -45,6 +46,7 @@
 	display: block;
 }
 
+#clone-label .toolbarmenu li.labels.show,
 #tb_label_popup .toolbarmenu li.labels.show {
 	display: block;
 }

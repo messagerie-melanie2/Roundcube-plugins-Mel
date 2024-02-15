@@ -1,0 +1,42 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+
+<style>
+.visu {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.visu  > div {
+    display: inline-block;
+    width: 3px;
+    height: 100px;
+    margin: 0 7px;
+    background: currentColor;
+    transform: scaleY( .5 );
+    opacity: .25;
+  }
+
+
+  label {
+    position: absolute;
+    /* bottom: 5px; */
+    /* left: 18%; */
+    background-color: #00000094;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+</style>
+
+<div id="layout-content" style="overflow: auto;">
+
+
+</div>
+<roundcube:include file="includes/footer.html" />

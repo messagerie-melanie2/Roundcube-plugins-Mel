@@ -21,19 +21,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+use OCP\Share\IManager;
+use OCP\Server;
+use OCP\IConfig;
+use OCP\IUserSession;
 
-$config = \OC::$server->getConfig();
-$userSession = \OC::$server->getUserSession();
+$config = Server::get(IConfig::class);
+$userSession = Server::get(IUserSession::class);
 // TODO: move this to the generated config.js
-$publicUploadEnabled = $config->getAppValue('core', 'shareapi_allow_public_upload', 'yes');
+/** @var IManager $shareManager */
+$shareManager = Server::get(IManager::class);
+$publicUploadEnabled = $shareManager->shareApiLinkAllowPublicUpload() ? 'yes' : 'no';
 
 $showgridview = $config->getUserValue($userSession->getUser()->getUID(), 'files', 'show_grid', false);
-$isIE = \OCP\Util::isIE();
 
 // renders the controls and table headers template
 $tmpl = new OCP\Template('bnum', 'list', '');
 
 // gridview not available for ie
-$tmpl->assign('showgridview', $showgridview && !$isIE);
+$tmpl->assign('showgridview', $showgridview);
 $tmpl->assign('publicUploadEnabled', $publicUploadEnabled);
 $tmpl->printPage();

@@ -78,9 +78,9 @@ class mel_larry extends rcube_plugin
    * @var array
    */
   public static $tasks_css_map = [
-    'mail' => 'mail.css',
+    'mail'        => 'mail.css',
     'addressbook' => 'addressbook.css',
-    'settings' => 'settings.css',
+    'settings'    => 'settings.css',
   ];
   /**
    * Map between task and js file

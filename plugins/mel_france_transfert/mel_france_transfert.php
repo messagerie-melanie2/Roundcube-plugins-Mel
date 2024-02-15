@@ -71,6 +71,12 @@ class mel_france_transfert extends rcube_plugin {
               'updateProgressBar'
       ));
 
+      // Draft hooks
+      $this->add_hook('save_message', array(
+        $this,
+        'save_message'
+      ));
+
       // Charger le javascript si on est dans l'écriture d'un message
       if ($this->rc->action == 'compose') {
         $max_attachments_size = $this->rc->config->get('max_attachments_size', 5000000);
@@ -155,6 +161,40 @@ class mel_france_transfert extends rcube_plugin {
       $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
     }
     return $args;
+  }
+
+  /**
+   * Gestion des brouillons
+   */
+  public function save_message($args) {
+    $max_message_size = intval(4/3*intval($this->rc->config->get('max_attachments_size', 5000000)));
+
+    if ($args['is_file']) {
+      $message_size = filesize($args['message']);
+    }
+    else {
+      $message_size = strlen($args['message']);
+    }
+    
+    if ($message_size > $max_message_size) {
+      $args['abort'] = true;
+      $args['return'] = false;
+    }
+
+    return $args;
+  }
+
+  public static function ignore_double_attachments($attaches) {
+    $names = [];
+
+    foreach ($attaches as $id => $a_prop) {
+      if (!in_array($a_prop['name'], $names)) {
+        $names[] = $a_prop['name'];
+        yield $id => $a_prop;
+      }
+    }
+
+    $names = null;
   }
 
   /**
@@ -253,7 +293,7 @@ class mel_france_transfert extends rcube_plugin {
 
       // Parcours des pièces jointes pour les lister
       if (is_array($COMPOSE['attachments'])) {
-        foreach ($COMPOSE['attachments'] as $id => $a_prop) {
+        foreach (self::ignore_double_attachments($COMPOSE['attachments']) as $id => $a_prop) {
           if (!$this->ws->sendFile($COMPOSE_ID, $from, $id, $a_prop['path'], $a_prop['name'])) {
             $success = false;
             break;
@@ -346,6 +386,7 @@ class mel_france_transfert extends rcube_plugin {
             'current_action'  => $COMPOSE['ft_action'] ?: '',
             'current_value'   => $COMPOSE['ft_value'] ?: null,
             'finish'          => $finish,
+            'errorMessage'    => $this->ws->getErrorMessage(),
             'success'         => $success,
     );
     echo json_encode($result);
@@ -438,7 +479,7 @@ class mel_france_transfert extends rcube_plugin {
       else if (preg_match('/<*' . $email_regexp . '>*$/', $item, $matches)) {
         $address = $matches[0];
         $name = trim(str_replace($address, '', $item));
-        if ($name[0] == '"' && $name[count($name) - 1] == '"') {
+        if ($name[0] == '"' && $name[strlen($name) - 1] == '"') {
           $name = substr($name, 1, - 1);
         }
         $name = stripcslashes($name);

@@ -429,7 +429,7 @@ class MelOrder extends Mel_Enumerable {
 
     
     public function getIterator() : Traversable {
-        foreach ($this->tri_fusion(Mel_Enumerable::from($this->array_like)) as $key => $value) {
+        foreach ($this->tri_fusion($this->array_like) as $key => $value) {
             if (is_subclass_of($value, 'IKeyValue')) yield $value->get_key() => $value->get_value();
             else yield $key => $value;
         }
@@ -437,19 +437,38 @@ class MelOrder extends Mel_Enumerable {
 
     function tri_fusion($T)
     {
-        if ($T->count() === 1) yield from $T;
-        else if ($T->count() > 1) {
-            $array = $this->_fusion(Mel_Enumerable::from($T)->where(function($k, $v) use($T) {return $k < $T->count()/2;})->toArray(), Mel_Enumerable::from($T)->where(function($k, $v) use($T) {return $k >= $T->count()/2;})->toArray());
-            yield from $array;
-        }
+        if (!is_array($T)) $T = $T->toArray();
+        usort($T, function($a, $b) {
+            $a = call_user_func($this->selector, 0, $a);
+            $b = call_user_func($this->selector, 0, $b);
+
+            if ($a == $b) return 0;
+            
+            return $a > $b ? 1 : -1;
+        });
+        return $T;
+        // yield from 
+        // $T_len = $T->count();
+        // if ($T_len === 1) yield from $T;
+        // else if ($T_len > 1) {
+        //     $T_len = $T_len/2;
+        //     $array = Mel_Enumerable::from($T)->select(function ($k, $v) {return $v;});
+        //     $array = $this->_fusion($array->where(function($k, $v) use($T_len) {return $k < $T_len;})->toArray(), $array->where(function($k, $v) use($T_len) {return $k >= $T_len;})->toArray());
+        //     yield from $array;
+        // }
     }
 
     function test_fusion($a, $b) {
+        //if (is_string($a) && is_string($b)) return strcmp($a, $b) < 0;
+
         return $a <= $b;
     }
 
     function _fusion($A, $B)
     {
+        $A = array_values($A);
+        $B = array_values($B);
+
         if (count($A) === 0) return $B;
         if (count($B) === 0) return $A;
 

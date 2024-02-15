@@ -1,8 +1,10 @@
+html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
 	border-color: #E1C58F;
-	background-color: #181C28;
+	background-color: #3e4c59;
 }
 
+html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block::before,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
 	top: 2px;
 	left: 3px;
@@ -10,11 +12,12 @@ html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
     content: "\ee81";
 }
 
+html.dark-mode-custom .theme-mode-switch.btn.btn-primary.btn-block::after,
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::after {
-	border: solid #E1C58F thin;
+	/* border: solid #E1C58F thin; */
     background-color: #2E2E2E;
-	top: 0;
-	right: -1px;
+	top: 2px;
+	right: 3px;
 }
 
 /******** Navigation principale ********/
@@ -85,9 +88,13 @@ html.dark-mode #layout-menu span > a:focus > span.inner
 
 html.dark-mode .search-container,
 html.dark-mode #barup-search,
-html.dark-mode div#user-picture,
-html.dark-mode .barup{
+html.dark-mode div#user-picture{
     background-color: #181C28;
+}
+
+html.dark-mode .barup,
+html.dark-mode .barup-background-color{
+    --secondary-nav-background-color:#181C28;
 }
 
 html.dark-mode .search-container
@@ -139,6 +146,8 @@ html.dark-mode .mel-button {
     border-width: thin;
 }
 
+html.dark-mode #message-list-filters li .quick-filter,
+html.dark-mode #message-list-filters li #list-select-mail-choices,
 html.dark-mode .mel-button.bckg.color-for-dark
 {
     color: #E1C58F;
@@ -210,7 +219,10 @@ html.dark-mode .btn:focus
     color: #E1C58F!important;
 }
 
-html.dark-mode .custom-switch .custom-control-label::after,
+html.dark-mode .custom-switch .custom-control-label::after {
+  background-color: #E1C58F!important;
+}
+
 html.dark-mode #groupoptions-user .more-options:hover,
 html.dark-mode .roundbadge.icon-mel-videoconference:hover,
 html.dark-mode .tiny-webconf-menu.dwp-round:hover,
@@ -338,7 +350,9 @@ html.dark-mode .frame-header
     box-shadow: -2px 0px 3px #96b9e745;
 }
 
-html.dark-mode #messagelist-content
+html.dark-mode #messagelist-content,
+html.dark-mode .message-list-filter-container,
+html.dark-mode #message-list-filters-extra
 {
     background-color: #1F2933!important;
     color:#96b9e7!important;
@@ -369,7 +383,8 @@ html.dark-mode .ui.alert.boxinformation.calendar-invitebox i.icon::before
 }
 
 html.dark-mode .messagelist span.threads > div,
-html.dark-mode body div#layout-list .messagelist td.subject a
+html.dark-mode body div#layout-list .messagelist td.subject a,
+html.dark-mode body div#layout-list .messagelist td.subject span.priority
 {
     color:#c7dfff;
 }
@@ -842,19 +857,13 @@ html.dark-mode #eventedit li.nav-item a
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
 html.dark-mode .mel-tab.mel-tabheader{
     color:#E1C58F!important;
-	border-color: #E1C58F!important;
-    border-left: solid thin!important;
-    border-bottom: solid thin!important;
-    border-top: none!important;
-    border-right: none!important;
-    border-top-left-radius: 0!important;
     text-decoration: none!important;
 }
 
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab,
 html.dark-mode .mel-tab.mel-tabheader.last
 {
-    margin-left:5px;
+    /* margin-left:5px; */
 }
 
 html.dark-mode #eventedit li.nav-item a:hover
@@ -872,15 +881,14 @@ html.dark-mode #eventedit li.nav-item a.active
 {
     background-color: #E1C58F;
     color:#2E2E2E;
-	border-color: #2E2E2E;
+	  border-color: #2E2E2E;
 }
 
 html.dark-mode .mel-responsive-tabheader.mel-responsive-tab.selected,
 html.dark-mode .mel-tab.mel-tabheader.active
 {
-    background-color: #E1C58F!important;
-    color:#2E2E2E!important;
-	border-color: #2E2E2E!important;
+    color:#E1C58F!important;
+    border-bottom-color: #E1C58F !important;
 }
 
 html.dark-mode .btn-secondary:focus,
@@ -1002,7 +1010,7 @@ html.dark-mode .custom-switch .custom-control-label::before,
 html.dark-mode .mel-radio-1 span
 {
     border-color: #E1C58F;
-    background-color: black;
+    background-color: #3E4C59;
 }
 
 html.dark-mode .ui-slider .ui-slider-handle,
@@ -1020,7 +1028,7 @@ html.dark-mode .ui-slider .ui-slider-range,
 html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
 html.dark-mode  .mel-radio-1 input[type="checkbox"]:checked + label span
 {
-    background-color: #3e4c59;
+    background-color: #182633;
 }
 
 html.dark-mode #edit-attendees-table
@@ -1257,4 +1265,51 @@ html.dark-mode .mel-selectable.selected {
 
 html.dark-mode optgroup {
     background: #2E2E2E;
+}
+
+html.dark-mode.barup-picture .barup button,
+html.dark-mode.barup-picture .barup #barup-search-input,
+html.dark-mode.barup-picture .barup .search .input-group-append span{
+    background-color: var(--secondary-nav-background-color);
+}
+
+html.dark-mode.barup-picture .barup #button-help {
+    background-color: var(--secondary-nav-background-color);
+}
+
+html.dark-mode #message-list-filters li .quick-filter.active, 
+html.dark-mode #message-list-filters-extra button.active,
+html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active {
+    background-color: #E1C58F;
+    color: black;
+    border-color: #2E2E2E;
+}
+
+html.dark-mode #message-list-filters li .quick-filter.active:focus, 
+html.dark-mode #message-list-filters-extra button.active:focus,
+html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active:focus {
+    color: black!important;
+}
+
+html.dark-mode #message-list-filters li .quick-filter.active.hoverable:hover, 
+html.dark-mode #message-list-filters-extra button.active.hoverable:hover,
+html.dark-mode .mel-tooltip button.mel-button.btn-secondary.active:hover {
+    background-color: #2E2E2E;
+    color: #E1C58F;
+    border-color: #E1C58F;
+}
+
+html.dark-mode .mel-tooltip{
+    background-color: #1F2933;
+    border:1px solid #4d6066;
+}
+
+html.dark-mode .mel-tooltip::before{
+    color: #1F2933;
+    text-shadow: 0px 0px 1px #4d6066;
+}
+
+html.dark-mode #message-list-filters-extra div,
+html.dark-mode .message-list-filter-container{
+    border-color: #4d6066;
 }

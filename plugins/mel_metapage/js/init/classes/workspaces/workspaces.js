@@ -8,7 +8,11 @@ function SynchroniseWorkspaces()
 
 SynchroniseWorkspaces.Post = function (w, data)
 {
-    w.postMessage(data);
+    try {
+        w.postMessage(data);
+    } catch (error) {
+        
+    }
 }
 
 SynchroniseWorkspaces.PostToParent = function (data)
@@ -20,7 +24,9 @@ SynchroniseWorkspaces.PostToParent = function (data)
 SynchroniseWorkspaces.PostToChilds = function (datas)
 {
     $("iframe.mm-frame").each((i,e) => {
-        ////console.error("SynchroniseWorkspaces.PostToChilds", e, datas);
+
+        if ($(e).hasClass('discussion-frame')) return;
+
         try {
             SynchroniseWorkspaces.Post(e.contentWindow, datas)
         } catch (error) {
@@ -52,6 +58,8 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
                 search_action(...args.args);
             break;
         case "update_cal":
+            top.event_reduced = false;
+            top.$('#globalModal .modal-content').css('height', '');
             rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
 
             if (args.args !== undefined)

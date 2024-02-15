@@ -369,7 +369,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 				var gid = node_id.substr(1);
 				this.group2expand[gid] = { name: node.name, input:input.get(0) };
 				
-				this.http_request('group-expand', {_source: $('#rcmrow' + node_id).parent().parent().attr('id').replace(/rcmrow/, ''), _gid: gid}, false);
+				this.http_request('mail/group-expand', {_source: $('#rcmrow' + node_id).parent().parent().attr('id').replace(/rcmrow/, ''), _gid: gid}, false);
 			}
 
 			if (recipients.length && input.length) {
@@ -387,7 +387,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 
 	}
 
-	const action = !!rcmail.env.annuaire_select_actions?.onselect ? rcmail.env.annuaire_select_actions.onselect : null;
+	const action = !!rcmail.env.annuaire_select_actions.onselect ? rcmail.env.annuaire_select_actions.onselect : null;
 	
 	if (!!action) 
 	{

@@ -15,6 +15,10 @@
 	top: 0px !important;
 }
 
+#layout-menu {
+	display: none;
+}
+
 #settingstabpreferences {
 	display: none;
 }
@@ -35,8 +39,16 @@
 	display: none;
 }
 
+#settingstabpluginmelnews {
+	display: none;
+}
+
 #settingstabpluginmelroadmap {
 	display: none;
+}
+
+#settingstabpluginmel_suggestion_box {
+  display: none;
 }
 
 #mel_resources_elements_listbox .boxtitle span {

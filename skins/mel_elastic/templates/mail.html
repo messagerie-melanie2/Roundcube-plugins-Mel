@@ -50,13 +50,12 @@
       </span></a>
     <span style="display: none;" class="header-title"></span>
     <div class="toolbar menu" role="toolbar">
-      <a href="#select" class="select disabled" data-popup="listselect-menu" data-toggle-button="list-toggle-button"
+      <!-- <a href="#select" class="select disabled" data-popup="listselect-menu" data-toggle-button="list-toggle-button"
         title="<roundcube:label name="select" />"><span class="inner">
         <roundcube:label name="select" />
-      </span></a>
+      </span></a> -->
       <roundcube:if condition="env:threads" />
-      <a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="
-        threads" />"><span class="inner">
+      <a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner">
         <roundcube:label name="threads" />
       </span></a>
       <roundcube:endif />
@@ -165,7 +164,17 @@
   <roundcube:add_label name="showunread" />
 
   <!-- <separate></separate> -->
-
+  <div class="message-list-filter-container">
+    <ul id="message-list-filters" class="ignore-bullet">
+      <!-- MANTIS -->
+      <li class="input-group">
+        <input type="checkbox" id="select-mail-state" />
+        <button id="list-select-mail-choices" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner" class="btn mel-button no-button-margin no-margin-button bckg true"><span class="material-symbols-outlined">expand_more</span></button>
+      </li>
+      <roundcube:container name="messagelistfiltersmenu" id="messagelistfiltersmenu" />
+    </ul>
+  </div>
+  <div id="message-list-filters-extra"></div>
   <div id="messagelist-content" class="scroller" tabindex="-1">
     <h2 id="aria-label-messagelist" class="voice">
       <roundcube:label name="arialabelmessagelist" />
@@ -226,8 +235,12 @@
       classAct="purge active" />
     <roundcube:button command="mark-all-read" type="link-menuitem" label="markallread" class="read disabled"
       classAct="read active" />
-    <roundcube:button command="manage_mailbox_folders" type="link-menuitem" label="managefolders" class="folders"
+    <roundcube:button command="manage_mailbox_folders" type="link-menuitem" label="managefolders" class="folders active"
       classAct="folders active" />
+    <roundcube:if condition="template:name != 'message'" />
+			<roundcube:button type="link-menuitem" command="import-messages" label="import" class="import disabled" classAct="import active"
+      name="messageimport" onclick="UI.import_dialog()" />
+    <roundcube:endif />
     <roundcube:container name="mailboxoptions" id="mailboxoptionsmenu" />
   </ul>
 </div>

@@ -17,8 +17,8 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
-class mel_doubleauth extends rcube_plugin {
+include_once __DIR__.'/../mel_metapage/bnum_plugin.php';
+class mel_doubleauth extends bnum_plugin {
     /**
      *
      * @var rcmail
@@ -73,11 +73,30 @@ class mel_doubleauth extends rcube_plugin {
         $this->register_action('mel_doubleauth', array($this, 'mel_doubleauth_init'));
         if ($this->rc->task == 'settings') {
             $this->register_action('plugin.mel_doubleauth-save', array($this, 'mel_doubleauth_save'));
+            $this->register_action('plugin.mel.doubleauth.get', array($this, 'actions_get'));
+            $this->register_action('plugin.mel.doubleauth.set', array($this, 'actions_set'));
+            $this->register_action('plugin.mel.doubleauth.send_otp', array($this, 'send_otp'));
+            $this->register_action('plugin.mel.doubleauth.verify_code', array($this, 'verify_code'));
         }
+        else if ($this->rc->task === 'login') {
+            $this->register_action('plugin.da.try_connect', array($this, 'otp_forgotten_connect'));
+        }
+
         $this->include_script('mel_doubleauth.js');
         $this->include_script('qrcode.min.js');
-    }
-    
+
+        $user = driver_mel::gi()->getUser();
+        if ($user) {
+          $user->load(['double_authentification_forcee', 'double_authentification_date_butoir']);
+          if ($user->double_authentification_forcee) {
+            if (!$this->__isActivated()) {
+            $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
+            $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
+            }
+          }
+        }
+      }
+        
     /**
      * Hook login_after
      * Permet d'afficher la demande de double authentification en js
@@ -88,14 +107,14 @@ class mel_doubleauth extends rcube_plugin {
     public function login_after($args)
     {
         //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_login_after");
-        if ($this->is_auth_strong()) {
-            return $args;
-        }
+        if ($this->is_auth_strong()) return $args;
         
         $_SESSION['mel_doubleauth_login'] = time();
         
         $config_2FA = $this->__get2FAconfig();
         
+        if (!$this->login_after_check_deadline($config_2FA)) return $args;
+
         $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
 
         if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
@@ -150,13 +169,41 @@ class mel_doubleauth extends rcube_plugin {
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         
         $this->add_texts('localization', true);
+        $this->setup_module();
         $this->include_script('mel_doubleauth_form.js');
 
+
+        $this->rc->output->set_env('double_authentification_adresse_recuperation', driver_mel::gi()->getUser()->double_authentification_adresse_recuperation);
        $this->rc->output->set_env("_url", $url);
         
         $this->rc->output->send('login');
     }
 
+    private function login_after_check_deadline($config_2FA, $user = null){
+        $return = true;
+
+        $user = $user ?? driver_mel::gi()->getUser();
+        if ($user) {
+            $user->load(['double_authentification_forcee', 'double_authentification_date_butoir', 'double_authentification_date_grace']);
+            $deadline = $user->double_authentification_date_grace;
+
+            if (!$deadline || $deadline < $user->double_authentification_date_butoir) $deadline = $user->double_authentification_date_butoir;
+
+            if ($user->double_authentification_forcee && 
+                !$config_2FA['activate'] && 
+                (!$deadline || new DateTime() > $deadline)) {
+                $this->__exitSession($this->gettext('logout_2fa_needed_not_secure'));
+                $return = false;
+            }
+        }
+        else {
+            $this->__exitSession($this->gettext('logout_2fa_needed_unknown'));
+            $return = false;
+        }
+
+
+        return $return;
+    }
 
     /**
      * Hook logout_after
@@ -169,6 +216,7 @@ class mel_doubleauth extends rcube_plugin {
 
         if (isset($message)) {
             $this->rc->output->show_message($message);
+            $this->rc->output->set_env('da_logout_message', $message);
         }
 
         return $args;
@@ -286,7 +334,10 @@ class mel_doubleauth extends rcube_plugin {
             $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         }
 
+        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30*60));
+        
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
+        //$this->load_js_page('resend');
         $this->rc->output->send('plugin');
     }
     
@@ -343,8 +394,8 @@ class mel_doubleauth extends rcube_plugin {
         /**
          * Create a bootstrap col in one row
          */
-        function rowcol($content, $rowclass = 'row', $colclass = 'col-sm my-auto') { 
-            return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass"], $content)); 
+        function rowcol($content, $rowclass = 'row', $colclass = 'col-sm my-auto', $rowid = null) { 
+            return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass", 'id' => $rowid], $content)); 
         }
         
         $data = $this->__get2FAconfig();
@@ -388,10 +439,10 @@ class mel_doubleauth extends rcube_plugin {
 
             $hidden_fields .= $html_recovery_codes;
         } else {
-            $html_check_code = '<input type="text" id="2FA_code_to_check" class="form-control" maxlength="10">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
+            $html_check_code = '<input type="text" id="2FA_code_to_check" class="form-control" maxlength="10" aria-labelledby="info_check_code">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
 
             $div_container .= rowcol($this->gettext('info_active_ok'));
-            $div_container .= rowcol($this->gettext('info_check_code'));
+            $div_container .= rowcol($this->gettext('info_check_code'), 'row', 'col-sm my-auto','info_check_code');
             $div_container .= rowcol($html_check_code);
             $div_container .= rowcol('<br>');
 
@@ -406,6 +457,31 @@ class mel_doubleauth extends rcube_plugin {
             }
 
             $div_container .= rowcol($html_recovery_codes);
+            $div_container .= rowcol('<br>');
+
+            if (!!driver_mel::gi()->getUser()->double_authentification_adresse_recuperation && !!driver_mel::gi()->getUser()->double_authentification_adresse_valide) {
+                $div_container .= html::div(['id' => 'mail-group'], 
+                    row(
+                        col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Votre email de récupération : '), 'col-2').
+                        col(html::div(['class' => 'input-group'],
+                        html::tag('input', ['id' => 'mail-da-input', 'style' => 'text-align:center;','class' => 'disabled form-control', 'disabled' => 'disabled', 'value' => driver_mel::gi()->getUser()->double_authentification_adresse_recuperation]).
+                        html::div(['class' => 'input-group-append'],
+                            html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Changer l\'adresse de récupération')
+                        )
+                    ), 'col-4')
+                    )
+                );
+            }
+            else {
+                $div_container .= html::div(['id' => 'mail-group'], 
+                row(
+                    col(html::p(['style' => 'height: 100%;display: flex;align-items: center;'], 'Veuillez entrer une adresse de récupération !'), 'col-3').
+                    col(
+                        html::tag('button', ['id' => 'start-button-modal', 'class' => 'disabled btn btn-primary', 'disabled' => 'disabled'], 'Définir une adresse de récupération !')
+                ))
+            );
+            }
+
             $div_container .= rowcol('<br>');
             $div_container .= rowcol($this->gettext('info_desactiver'));
 
@@ -492,6 +568,112 @@ class mel_doubleauth extends rcube_plugin {
         exit;
     }
     
+    public function actions_get() {
+        $autorized_props = ['double_authentification_adresse_recuperation', 'double_authentification_adresse_valide', 'NUMBER_RECOVERY_CODES'];
+        $prop = rcube_utils::get_input_value('_prop', rcube_utils::INPUT_GET);
+
+        if (in_array($prop, $autorized_props)) {
+            switch ($prop) {
+                case 'NUMBER_RECOVERY_CODES':
+                    $prop = self::NUMBER_RECOVERY_CODES;
+                    break;
+                
+                default:
+                    $prop = driver_mel::gi()->getUser()->$prop;
+                    break;
+            }
+        }
+        else throw new Exception("Denied !", 1);
+
+        echo json_encode($prop);
+        exit;
+    }
+
+    public function actions_set() {
+        $autorized_props = ['double_authentification_adresse_recuperation'];
+        $prop = rcube_utils::get_input_value('_prop', rcube_utils::INPUT_POST);
+        $value = rcube_utils::get_input_value('_val', rcube_utils::INPUT_POST);
+
+        if (in_array($prop, $autorized_props)) {
+            driver_mel::gi()->getUser()->$prop = $value;
+            echo 'true';
+        }
+        else throw new Exception("Denied !", 1);
+
+        exit;
+    }
+
+    public function send_otp() {
+        $this->require_plugin('mel_helper');
+        mel_helper::include_mail_body();
+        $otp = rand(100000, 999999) + '';
+        $expire = $this->rc->config->get('code_expiration', 30*60);
+        $cid = 'bnumlogo';
+        driver_mel::gi()->getUser()->token_otp = $otp;
+        driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
+        driver_mel::gi()->getUser()->double_authentification_adresse_valide = false;
+        $mail = driver_mel::gi()->getUser()->double_authentification_adresse_recuperation;
+
+        $bodymail = new MailBody('mel_doubleauth.email', [
+            'code' => $otp,
+            'bnum.change_password' => 'https://mel.din.developpement-durable.gouv.fr/changepassword/index.php',
+            'url.internal.security' => 'https://mel.din.developpement-durable.gouv.fr/aide/doc/bnum/#15-Configuration:l4GIVl2g7xdGSnhdT7Cdwd',
+            'expiration' => $expire,
+            'logobnum' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
+        ]);
+
+        $subject = $bodymail->subject();
+        $message = $bodymail->body();
+
+        $is_html = true;
+        $sent = mel_helper::send_mail($subject, $message, driver_mel::gi()->getUser()->email, ['email' => $mail, 'name' => driver_mel::gi()->getUser()->name], $is_html, [['path' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'id' => $cid, 'type' => 'image/png']]);
+        
+        echo json_encode(isset($mail) ? $sent : -1);
+        exit;
+    }
+
+    public function verify_code($echo = true) {
+        $return = 0;
+        $token = rcube_utils::get_input_value('_token', rcube_utils::INPUT_GP) + '';
+
+        if (driver_mel::gi()->getUser()->token_otp_expire > time()) {
+            if ($token === driver_mel::gi()->getUser()->token_otp) {
+                driver_mel::gi()->getUser()->double_authentification_adresse_valide = true;
+                $return = 1;
+            }
+        }
+        else $return = -1;
+
+        if ($echo){
+            echo $return;
+            exit;
+        }
+        else {
+            return $return;
+        }
+
+    }
+
+    public function otp_forgotten_connect() {
+        $send_to_page = false;
+        $code = $this->verify_code($send_to_page);
+
+        switch ($code) {
+            case 1:
+                $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth', ['_force_bnum' => 1]);
+                break;
+            case 0:
+                $this->__exitSession('Le code n\'est pas bon !');
+                break;
+            case -1:
+                $this->__exitSession('Le code a expiré !');
+                break;
+            default:
+                $this->__exitSession('Une erreur est survenue....');
+                break;
+        }
+    }
+
     //------------- static methods
     /**
      * Return if the double auth is enable for this session for the user
@@ -655,6 +837,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __checkCode($code)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__checkCode()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_checkCode', true);
@@ -671,9 +854,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->validateOTP($this->rc->user->get_username(), $code);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__checkCode() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__checkCode : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__checkCode() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -686,6 +870,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __isActivated()
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__isActivated()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_isActivated', true);
@@ -702,9 +887,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->isActivated($this->rc->user->get_username());
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__isActivated() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__get2FAconfig : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__isActivated() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -717,6 +903,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __addUser()
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addUser()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_addUser', true);
@@ -735,9 +922,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->addUser($this->rc->user->get_username());
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addUser() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__addUser : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__addUser() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -751,6 +939,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __removeUser()
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_removeUser', true);
@@ -768,9 +957,11 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->removeUser($this->rc->user->get_username());
+
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__removeUser : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__removeUser() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -788,6 +979,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __ValidateCookie($username, $code, $date_validitee, $application)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__ValidateCookie($username, $date_validitee, $application)");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_ValidateCookie', true);
@@ -804,9 +996,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->validateCookie($username, $code, $date_validitee, $application);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__ValidateCookie() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__ValidateCookie : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__ValidateCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -824,6 +1017,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __addCookie($username, $code, $expiration, $application)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addCookie($username, $expiration, $application)");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_addCookie', true);
@@ -842,9 +1036,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->addCookie($username, $code, intval($expiration), $application, $_SERVER['HTTP_USER_AGENT']);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__addCookie() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__addCookie : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "mel_doubleauth::__addCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;
@@ -862,6 +1057,7 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __modifyCookie($username, $code, $expiration, $application)
     {
+        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__modifyCookie($username, $expiration, $application)");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_modifyCookie', true);
@@ -880,9 +1076,10 @@ class mel_doubleauth extends rcube_plugin {
         try {
             // Connexion au serveur de webservice
             $res = $client->modifyCookie($username, $code, intval($expiration), $application, $_SERVER['HTTP_USER_AGENT']);
+            mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__modifyCookie() result:$res");
         }
         catch (Exception $e) {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__modifyCookie : Erreur web service : " . $e->getMessage());
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__modifyCookie() error:" . $e->getMessage());
             $res = false;
         }
         return $res;

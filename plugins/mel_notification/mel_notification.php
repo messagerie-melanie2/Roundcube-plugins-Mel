@@ -54,6 +54,7 @@ class mel_notification extends rcube_plugin
         'notifications_desktop_duration'        => 5,
         'notifications_categories'              => [],
         'notifications_icons'                   => [],
+        'notifications_material_icons'          => [],
         'notifications_set_read_on_click'       => false,
         'notifications_set_read_on_panel_close' => false,
     ];
@@ -87,6 +88,7 @@ class mel_notification extends rcube_plugin
                 $this->rc->output->set_env('notifications_desktop_duration',        $this->rc->config->get('notifications_desktop_duration',        $this->defaults['notifications_desktop_duration']));
                 $this->rc->output->set_env('notifications_categories',              $this->rc->config->get('notifications_categories',              $this->defaults['notifications_categories']));
                 $this->rc->output->set_env('notifications_icons',                   $this->rc->config->get('notifications_icons',                   $this->defaults['notifications_icons']));
+                $this->rc->output->set_env('notifications_material_icons',          $this->rc->config->get('notifications_material_icons',          $this->defaults['notifications_material_icons']));
                 $this->rc->output->set_env('notifications_set_read_on_click',       $this->rc->config->get('notifications_set_read_on_click',       $this->defaults['notifications_set_read_on_click']));
                 $this->rc->output->set_env('notifications_set_read_on_panel_close', $this->rc->config->get('notifications_set_read_on_panel_close', $this->defaults['notifications_set_read_on_panel_close']));
                 $this->rc->output->set_env('notifications_settings',                $this->rc->config->get('notifications_settings',                []));
@@ -148,9 +150,15 @@ class mel_notification extends rcube_plugin
 
     public function test()
     {
-        $a = $this->notify("webconf", "Rotomeca à lancer un test !", "Ceci est un test de notification lancer par rotomeca !", null);
-        echo json_encode($a);
-        exit;
+        $this->notify("suggestion", "GOUBIER Arnaud a ajouté une nouvelle suggestion", "Ceci est un test de notification lancé par rotomeca !", 
+          [
+              'href' => "./?_task=workspace&_action=workspace&_uid=",
+              'text' => $this->gettext("mel_workspace.open"),
+              'title' => $this->gettext("mel_workspace.click_for_open"),
+              'command' => "event.click"
+          ]);
+        // echo json_encode($a);
+        // exit;
     }
 
     public function test_mail()
@@ -441,11 +449,11 @@ class mel_notification extends rcube_plugin
         // Block avancé pour les notifications
         $p['blocks']['list']['name'] = $this->gettext('Notifications settings');
 
-        $table = new html_table(['id' => 'notificationssettings', 'cols' => 4]);
+        $table = new html_table_bnum(['id' => 'notificationssettings', 'cols' => 4]);
 
         // Add headers
         foreach (['notifications', 'inside_notification', 'desktop_notification', 'notifications_center'] as $name) {
-            $table->add_header(['class' => $name], $this->gettext($name));
+            $table->add_header(['class' => $name, 'scope' => 'col'], $this->gettext($name));
         }
 
         $notifications_settings = $this->rc->config->get('notifications_settings', []);
@@ -456,7 +464,7 @@ class mel_notification extends rcube_plugin
             $config = isset($notifications_settings[$key]) ? $notifications_settings[$key] : [];
 
             // Colonne avec le nom du settings
-            $table->add([], $name);
+            $table->add_col_header(['scope' => 'row'], $name, true);
 
             // Parcours les configurations
             foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
@@ -477,7 +485,7 @@ class mel_notification extends rcube_plugin
                 $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
 
                 // Ajouter la BALI
-                $table->add([], $this->gettext('mailbox') . driver_mel::gi()->getUser()->fullname);
+                $table->add_col_header(['scope' => 'row'], $this->gettext('mailbox') . driver_mel::gi()->getUser()->fullname, true);
 
                 // Parcours les configurations
                 foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
@@ -498,7 +506,7 @@ class mel_notification extends rcube_plugin
                     $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
 
                     // Colonne avec le nom du settings
-                    $table->add([], $this->gettext('mailbox') . $object->mailbox->fullname);
+                    $table->add_col_header(['scope' => 'row'], $this->gettext('mailbox') . $object->mailbox->fullname, true);
 
                     // Parcours les configurations
                     foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {

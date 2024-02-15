@@ -49,16 +49,24 @@ class calendar_ui
         }
 
         // add taskbar button
-        $this->cal->add_button([
-                'command'    => 'calendar',
-                'class'      => 'button-calendar',
-                'classsel'   => 'button-calendar button-selected',
-                'innerclass' => 'button-inner',
-                'label'      => 'calendar.calendar',
-                'type'       => 'link'
+        $need_button = 'taskbar';
+        if (class_exists("mel_metapage")) {
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_calendar') ? $need_button : 'otherappsbar';
+        }
+
+        if ($need_button) {
+          $this->cal->add_button(
+            [
+              'command'    => 'calendar',
+              'class'      => 'button-calendar calendar',
+              'classsel'   => 'button-calendar button-selected',
+              'innerclass' => 'button-inner',
+              'label'      => 'calendar.calendar',
+              'type'       => 'link'
             ],
-            'taskbar'
-        );
+            $need_button
+          );
+        }
 
         // load basic client script
         if ($this->rc->action != 'print') {
@@ -736,19 +744,20 @@ class calendar_ui
             . html::div('col-sm-8 input-group', $select->show(0) . $startdate->show())
         );
 
-        $checkbox = new html_checkbox([
-                'name'  => 'attachments',
-                'id'    => 'event-export-attachments',
-                'value' => 1,
-                'class' => 'form-check-input pretty-checkbox'
-        ]);
+        //PAMELLA - MANTIS 0007982
+        // $checkbox = new html_checkbox([
+        //         'name'  => 'attachments',
+        //         'id'    => 'event-export-attachments',
+        //         'value' => 1,
+        //         'class' => 'form-check-input pretty-checkbox'
+        // ]);
 
-        $html .= html::div('form-section form-check row',
-            html::label(['for' => 'event-export-attachments', 'class' => 'col-sm-4 col-form-label'],
-                $this->cal->gettext('exportattachments')
-            )
-            . html::div('col-sm-8', $checkbox->show(1))
-        );
+        // $html .= html::div('form-section form-check row',
+        //     html::label(['for' => 'event-export-attachments', 'class' => 'col-sm-4 col-form-label'],
+        //         $this->cal->gettext('exportattachments')
+        //     )
+        //     . html::div('col-sm-8', $checkbox->show(1))
+        // );
 
         $this->rc->output->add_gui_object('exportform', $attrib['id']);
 

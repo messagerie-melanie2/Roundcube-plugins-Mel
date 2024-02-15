@@ -70,7 +70,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     header: {
       left: '',
       center: 'title',
-      right: 'agendaDay,agendaWeek,month,list'
+      right: 'prevButton,nextButton,agendaDay,agendaWeek,month,list'
     },
     theme: false,
     aspectRatio: 0.85,
@@ -128,9 +128,19 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
       month: rcmail.gettext('month', 'calendar'),
       list: rcmail.gettext('agenda', 'calendar')
     },
-    buttonIcons: {
-     prev: 'left-single-arrow',
-     next: 'right-single-arrow'
+    customButtons: {
+      prevButton: {
+        text: '◄', // Custom HTML for the previous arrow icon (you can use a different Unicode icon if you prefer)
+        click: function() {
+          $('#calendar').fullCalendar('prev'); // Navigate to the previous date
+        }
+      },
+      nextButton: {
+        text: '►', // Custom HTML for the next arrow icon (you can use a different Unicode icon if you prefer)
+        click: function() {
+          $('#calendar').fullCalendar('next'); // Navigate to the next date
+        }
+      }
     },
     eventLimitText: function(num) {
       return rcmail.gettext('andnmore', 'calendar').replace('$nr', num);
@@ -162,7 +172,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         }
       }
 
-      //PAMELA - Show status cancelled
+      // PAMELA - Show status cancelled
       if (event.status === "CANCELLED")
       {
         element.addClass('cal-event-status-cancelled');

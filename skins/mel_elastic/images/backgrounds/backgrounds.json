@@ -1,0 +1,49 @@
+
+{
+    "no-background":{
+        "isThemeColor":true,
+        "isFirst":true,
+        "title":"Pas d'image"
+    },
+    "custom-background":{
+        "isThemeColor":true,
+        "customOrder":1,
+        "userprefid":"custom-2nd-nav-background",
+        "title":"Importer une image"
+    },   
+    "stars-1":{
+        "background":"stars1.jpg",
+        "view":"stars1.jpg",
+        "tags":["ciel", "etoiles", "nature", "blanc", "noir", "nuit"]
+    },
+    "nature-4":{
+        "background":"nature4.jpg",
+        "view":"nature4.jpg",
+        "tags":["ciel", "orange", "vert", "soleil", "jour", "fleurs"]
+    },
+    "nature-1":{
+        "background":"nature1.jpg",
+        "view":"nature1.jpg",
+        "tags":["fantasy", "nature", "plantes", "roches", "couché de soleil", "jour"]
+    },
+    "nature-2":{
+        "background":"nature2.jpg",
+        "view":"nature2.jpg",
+        "tags":["nature", "plantes", "eau", "flou", "jour"]
+    },
+    "nature-3":{
+        "background":"nature3.png",
+        "view":"nature3.jpg",
+        "tags":["nature", "plantes", "eau", "montagnes", "jour"]
+    },
+    "bridge-1":{
+        "background":"bridge1.jpg",
+        "view":"bridge1.jpg",
+        "tags":["nature", "pont", "eau", "couché de soleil", "jour"]
+    },
+    "abstract-2":{
+        "background":"abstract2.jpg",
+        "view":"abstract2.jpg",
+        "tags":["abstrait", "bleu", "gris", "fleurs", "pointillés"]
+    }
+}

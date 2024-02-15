@@ -70,9 +70,9 @@ class mel_useful_link extends rcube_plugin
 
         $this->register_task("useful_links");  
         
-        $need_button = true;
+        $need_button = 'taskbar';
         if (class_exists("mel_metapage")) {
-          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_ul');
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_ul') ? $need_button : 'otherappsbar';
         }
 
         if ($need_button)
@@ -86,7 +86,7 @@ class mel_useful_link extends rcube_plugin
             'title' => '',
             'type'       => 'link',
             'domain' => "mel_useful_link"
-        ), "taskbar");
+        ), $need_button);
         }
 
       $this->include_script('js/classes.js');

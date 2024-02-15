@@ -300,7 +300,9 @@ function rcube_tasklist_ui(settings)
         rcmail.addEventListener('plugin.update_tasklist', update_list);
         rcmail.addEventListener('plugin.destroy_tasklist', destroy_list);
         rcmail.addEventListener('plugin.unlock_saving', unlock_saving);
-        rcmail.addEventListener('plugin.refresh_tagcloud', function() { update_tagcloud(); });
+        rcmail.addEventListener('plugin.refresh_tagcloud', function() { 
+            if ("undefined" !== typeof update_tagcloud) update_tagcloud(); 
+        });
         rcmail.addEventListener('requestrefresh', before_refresh);
         rcmail.addEventListener('plugin.reload_data', function(){
             list_tasks(null, true);
@@ -1457,6 +1459,8 @@ function rcube_tasklist_ui(settings)
 
         if (is_complete(rec))
             div.addClass('complete');
+        if (is_cancelled(rec))
+            div.addClass('cancelled');
         if (rec.flagged)
             div.addClass('flagged');
         if (!rec.date)
@@ -1659,6 +1663,14 @@ function rcube_tasklist_ui(settings)
     function is_complete(rec)
     {
         return ((rec.complete == 1.0 && !rec.status) || rec.status === 'COMPLETED') ? 1 : 0;
+    }
+
+    /**
+     * Determine whether the given task should be displayed as "complete"
+     */
+    function is_cancelled(rec)
+    {
+        return rec.status == "CANCELLED" ? 1 : 0;
     }
 
     /**

@@ -20,7 +20,8 @@ RoundriveCreate.prototype.init = function()
 
     this.inputs={
         name:$("#generated-document-input-mel-metapage"),
-        folder:$("#roundrive-folder-input")
+        folder:$("#roundrive-folder-input"),
+        models:$("#models-input"),
     };
 
     this.create_buttons();
@@ -44,9 +45,8 @@ RoundriveCreate.prototype.create_buttons = function()
         e = $(e);
         this.buttons[e.data("doc")] = e;
     });
-
-
 }
+
 
 /**
  * Selectionne un dossier.
@@ -87,7 +87,8 @@ RoundriveCreate.prototype.create_document = function(goFunc = null)
     const values = {
         type:this.buttons.parent.find("button.active").data("doc"),
         folder:this.inputs.folder.val(),
-        name:this.inputs.name.val()
+        name:this.inputs.name.val(),
+        model:this.inputs.models.val()
     };
 
     let $return = RoundriveCreate.CompletedPromise();
@@ -112,8 +113,15 @@ RoundriveCreate.prototype.create_document = function(goFunc = null)
     else
         this.inputs.name.removeClass("error");
 
-        if (values.folder === "")
-            values.folder = rcmail.gettext("files", "roundrive");
+        if (values.folder === "") values.folder = rcmail.gettext("files", "roundrive");
+
+    const fullpath = `${values.folder}/${values.name}`;
+    if (fullpath.length >= 255) {
+        console.error('La taille du chemin dépasse 255 char !', fullpath);
+        mel_metapage.Functions.call('rcmail.display_message("Impossible de mettre le fichier ici !", "error")');
+        this.inputs.name.addClass("error");
+        $continue = false;
+    }
 
     if ($continue)
     {
@@ -124,7 +132,8 @@ RoundriveCreate.prototype.create_document = function(goFunc = null)
             {
                 _type:values.type,
                 _name:values.name,
-                _folder:values.folder
+                _folder:values.folder,
+                _model:values.model
             },
             (datas) => {
                 datas = JSON.parse(datas);

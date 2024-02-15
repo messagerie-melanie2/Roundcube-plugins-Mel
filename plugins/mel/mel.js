@@ -17,12 +17,12 @@ $(document).on({
   }
 }, "#rcmchangeuserbutton"); //pass the element as an argument to .on
 
-
 if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
     // Initialisation de la liste des pages chargées
     page_loading = {};
     current_page_scroll = 1;
+
     if (rcmail.env['plugin.show_password_change']) {
       show_password_change(this);
     }
@@ -125,6 +125,9 @@ if (window.rcmail) {
         }
       }
     }
+    else if (rcmail.env.task === 'mail' && rcmail.env.action === 'compose') {
+      $("#compose-options select[name=\"_store_target\"]").change();
+    }
     else if (rcmail.env.task == 'settings') {
       // Masquer la skin mobile de l'interface de choix des skins
       if ($('#rcmfd_skinmel_larry_mobile').length) {
@@ -158,6 +161,15 @@ if (window.rcmail) {
     $("#compose-options select[name=\"_store_target\"]").html($(evt.response.select_html).html());
     setTimeout(() => {
       $("#compose-options select[name=\"_store_target\"]").addClass("form-control custom-select pretty-select").change();
+
+      let $select = $("#compose-options select[name=\"_store_target\"]")[0];
+
+      if ('' === $select.value) {
+        $select.value = evt.response.sended_folder;
+      }
+
+      $select = null;
+
     }, 100);  
     $('#_compose_hidden_account').val(rcmail.env.identities_to_bal[rcmail.env.identity]);
   });
@@ -166,7 +178,7 @@ if (window.rcmail) {
 // Open edit folder iframe
 rcube_webmail.prototype.window_edit_folder = function() {
   window.location.hash = 'createfolder';
-  var folder = $('#mailboxlist > li.contextRow').length ? atob($('#mailboxlist > li.contextRow').attr('id').replace('rcmli', '')) : rcmail.env.mailbox;
+  var folder = $('#mailboxlist li.contextRow').length ? atob($('#mailboxlist li.contextRow').attr('id').replace('rcmli', '')) : rcmail.env.mailbox;
   var frame = $('<iframe>').attr('id', 'managemailboxfolder')
     .attr('src', rcmail.url('settings/edit-folder') + '&_framed=1&_path=' + encodeURIComponent(folder))
     .attr('onLoad', "if (this.contentWindow.location.href.indexOf('edit-folder') === -1) {$('#managemailboxfolder').dialog('close'); window.location.reload();} ")
@@ -259,21 +271,15 @@ rcube_webmail.prototype.switch_to_default_task = function() {
 */
 function show_password_change()
 {
-  if (rcmail.is_framed()) {
-    var frame = $('<iframe>').attr('id', 'changepasswordframe')
+  const navigator = (top ?? parent ?? window);
+  if (0 === navigator.$('#changepasswordframe').length)
+  {
+    var frame = navigator.$('<iframe>').attr('id', 'changepasswordframe')
     .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=changepassword&_framed=1')
     .attr('frameborder', '0')
-    .appendTo(parent.document.body);
-  }
-  else {
-    var frame = $('<iframe>').attr('id', 'changepasswordframe')
-    .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=changepassword&_framed=1')
-    .attr('frameborder', '0')
-    .appendTo(document.body);
-  }
+    .appendTo(navigator.document.body);  
   
-  
-  var h = Math.floor($(window).height() * 0.75);
+  //var h = Math.floor($(window).height() * 0.75);
   var buttons = {};
   
   frame.dialog({
@@ -289,6 +295,7 @@ function show_password_change()
     height: 500,
     rcmail: rcmail
   }).width(680);
+  }
 }
 
 if (rcmail

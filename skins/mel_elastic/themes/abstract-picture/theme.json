@@ -1,0 +1,13 @@
+{
+    "parent":"super-classique",
+    "id":"abstract-picture-theme",
+    "display":"white",
+    "description":"desc",
+    "icon":"icon.svg",
+    "enabled":true,
+    "showed":false,
+    "style":"style",
+    "class":"picture-theme",
+    "custom_dark_mode":true,
+    "order":100
+}

@@ -1,0 +1,149 @@
+.task-calendar {
+
+  .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight {
+    background-color: var(--badge-background-color) !important;
+    color: var(--badge-text-color) !important;
+  }
+
+  #layout-sidebar .ui-datepicker.ui-widget-content .ui-state-default {
+    color: var(--calendar-widget-text-color);
+  }
+
+  #layout #layout-content {
+    margin-right: var(--space-margin);
+    #calendar {
+      margin-top: 0px !important;
+    }
+  }
+
+
+  #layout #layout-sidebar .scroller .listing.treelist.iconized li>div {
+    border-radius: var(--secondary-border-radius) !important;
+    overflow: hidden;
+    border-left: 2px solid transparent !important;
+    border-bottom: solid thin var(--invisible) !important;
+  }
+
+  #layout #layout-sidebar .scroller .listing {
+    padding: var(--sidebar-list-padding);
+  }
+
+  #calendar {
+    background-color: var(--calendar-table-background-color);
+  }
+  
+  #datepicker,
+  #datepicker-onoff {
+    background-color: var(--calendar-widget-background-color) !important;
+    color: var(--calendar-widget-text-color) !important;
+
+    #datepicker-onoff:hover {
+      background-color: var(--hover-background-color) !important;
+    }
+  }
+
+  #layout>div>.header a.button {
+    color: var(--calendar-sidebar-header-color);
+  }
+
+  #layout #layout-content>.header {
+    background-color: var(--layout-content-header-background-color) !important;
+
+    a.button:not(.disabled) {
+      color: var(--layout-content-header-text-color) !important;
+
+      &:hover {
+        color: var(--layout-content-header-text-hover-color) !important;
+      }
+    }
+  }
+
+
+  #calendaroptionsmenulink:hover,
+  #calendaroptionsmenulink:focus {
+    background-color: var(--calendar-toolbar-roundcube-hover-background-color) !important;
+  }
+
+  #edit-attendees-table {
+    color: var(--main-text-color);
+  }
+
+  #layout {
+    #layout-content {
+      .searchbar.menu {
+        border: var(--searchbar-border);
+      }
+
+      >.header a.button.reset {
+        color: var(--input-button-text-color) !important;
+
+        &:hover {
+          background-color: var(--hover-background-color) !important;
+          color: var(--hover-close-color) !important;
+        }
+      }
+
+      select.mel-input.calendar,
+      .fc-toolbar.fc-header-toolbar .fc-right button {
+        border: var(--searchbar-border);
+        color: var(--input-button-text-color) !important;
+        background-color: var(--searchbar-background-color);
+      }
+
+      #calendar {
+
+        .fc-day-header,
+        .fc-axis.fc-widget-header {
+          background-color: var(--calendar-table-header);
+        }
+      }
+    }
+  }
+
+  .fc-unthemed .fc-divider {
+    background-color: var(--calendar-table-separator-color) !important;
+  }
+
+  .fc {
+
+    .fc-day-header,
+    .fc-axis {
+      color: var(--calendar-table-text-color) !important;
+    }
+
+    .fc-day.fc-today {
+      background-color: var(--calendar-table-today-background-color) !important;
+    }
+  }
+
+  .calendar-datepicker {
+
+    .ui-datepicker,
+    .ui-datepicker-header,
+    .ui-datepicker-inline .ui-datepicker-activerange {
+      &:extend(.task-calendar #datepicker);
+    }
+  }
+
+  #calendaroptionsmenulink:hover,
+  #calendaroptionsmenulink:focus {
+    background-color: var(--main-bckg-color);
+  }
+
+  button.mel-calendar-button {
+    background-color: transparent;
+    color: var(--secondary-mel-button-text-color)!important;
+
+    &:hover {
+      background-color: var(--mel-button-hover-background-color);
+      --secondary-mel-button-text-color: var(--secondary-mel-button-hover-text-color);
+    }
+
+    &.danger {
+      &:hover {
+        --mel-button-hover-background-color: var(--warning-color);
+        // --mel-button-text-color: var(--tierciary-text-color);
+      }
+    }
+  }
+}

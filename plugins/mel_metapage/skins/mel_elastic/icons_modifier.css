@@ -1,0 +1,107 @@
+.material-symbol-font-family,
+.folderlist li.bnum-updated-home > a::before,
+.folderlist li.bnum-updated-settings > a::before,
+.folderlist li.bnum-updated-favorite > a::before,
+.folderlist li.bnum-updated-bolt > a::before,
+.folderlist li.bnum-updated-key > a::before,
+.folderlist li.bnum-updated-123 > a::before,
+.folderlist li.bnum-updated-saved_search > a::before,
+.folderlist li.bnum-updated-deployed_code > a::before,
+.folderlist li.bnum-updated-person > a::before,
+.folderlist li.bnum-updated-group > a::before,
+.folderlist li.bnum-updated-groups > a::before,
+.folderlist li.bnum-updated-public > a::before,
+.folderlist li.bnum-updated-thumb_down > a::before,
+.folderlist li.bnum-updated-cookie > a::before,
+.folderlist li.bnum-updated-flood > a::before,
+.folderlist li.bnum-updated-calendar_month > a::before,
+.folderlist li.bnum-updated-lock > a::before,
+.folderlist li.bnum-updated-bookmark > a::before,
+.folderlist li.bnum-updated-priority_high > a::before,
+.folderlist li.bnum-updated-label > a::before,
+.folderlist li.bnum-updated-mail > a::before,
+.folderlist li.bnum-updated-alternate_email > a::before,
+.folderlist li.bnum-updated-package > a::before,
+.folderlist li.bnum-updated-local_post_office > a::before,
+.folderlist li.bnum-updated-attach_email > a::before,
+.folderlist li.bnum-updated-markunread_mailbox > a::before {
+  font-family: 'Material Symbols Outlined';
+}
+.folderlist li.bnum-updated-home > a::before {
+  content: "\e88a" !important;
+}
+.folderlist li.bnum-updated-settings > a::before {
+  content: "\e8b8" !important;
+}
+.folderlist li.bnum-updated-favorite > a::before {
+  content: "\e87d" !important;
+}
+.folderlist li.bnum-updated-bolt > a::before {
+  content: "\ea0b" !important;
+}
+.folderlist li.bnum-updated-key > a::before {
+  content: "\e73c" !important;
+}
+.folderlist li.bnum-updated-123 > a::before {
+  content: "\eb8d" !important;
+}
+.folderlist li.bnum-updated-saved_search > a::before {
+  content: "\ea11" !important;
+}
+.folderlist li.bnum-updated-deployed_code > a::before {
+  content: "\f720" !important;
+}
+.folderlist li.bnum-updated-person > a::before {
+  content: "\e7fd" !important;
+}
+.folderlist li.bnum-updated-group > a::before {
+  content: "\e7ef" !important;
+}
+.folderlist li.bnum-updated-groups > a::before {
+  content: "\f233" !important;
+}
+.folderlist li.bnum-updated-public > a::before {
+  content: "\e80b" !important;
+}
+.folderlist li.bnum-updated-thumb_down > a::before {
+  content: "\e8db" !important;
+}
+.folderlist li.bnum-updated-cookie > a::before {
+  content: "\eaac" !important;
+}
+.folderlist li.bnum-updated-flood > a::before {
+  content: "\ebe6" !important;
+}
+.folderlist li.bnum-updated-calendar_month > a::before {
+  content: "\ebcc" !important;
+}
+.folderlist li.bnum-updated-lock > a::before {
+  content: "\e897" !important;
+}
+.folderlist li.bnum-updated-bookmark > a::before {
+  content: "\e866" !important;
+}
+.folderlist li.bnum-updated-priority_high > a::before {
+  content: "\e645" !important;
+}
+.folderlist li.bnum-updated-label > a::before {
+  content: "\e892" !important;
+}
+.folderlist li.bnum-updated-mail > a::before {
+  content: "\e158" !important;
+}
+.folderlist li.bnum-updated-alternate_email > a::before {
+  content: "\e0e6" !important;
+}
+.folderlist li.bnum-updated-package > a::before {
+  content: "\e48f" !important;
+}
+.folderlist li.bnum-updated-local_post_office > a::before {
+  content: "\e554" !important;
+}
+.folderlist li.bnum-updated-attach_email > a::before {
+  content: "\ea5e" !important;
+}
+.folderlist li.bnum-updated-markunread_mailbox > a::before {
+  content: "\e89b" !important;
+}

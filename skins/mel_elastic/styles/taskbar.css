@@ -121,9 +121,9 @@ html.layout-phone #taskmenu a
 
 .menu.toolbar a.mail:before
 {
-    content:"\e91e";
-    font-family: "DWP"!important;
-    font-weight: normal;
+  content:"\e158";
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
 }
 
 
@@ -135,9 +135,9 @@ html.layout-phone #taskmenu a
 .menu.toolbar a.button-calendar:before,
 .menu.toolbar a.calendar:before
 {
-    content:"\e901";
-    font-family: "DWP"!important;
-    font-weight: normal;
+  content:"\ebcc";
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
 }
 
 .button-rocket_chat {
@@ -165,11 +165,27 @@ html.layout-phone #taskmenu a
     order:10;
 }
 
-.menu.toolbar  a.tasklist::before
+.menu.toolbar a.tasklist::before
 {
-    content:"\e932";
-    font-family: "DWP"!important;
+    content:"\e834";
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
+}
+
+#otherapps.menu.toolbar a.icon-mel-custom_taskbar::before
+{
+    content:"\e99b";
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+}
+
+#otherapp-down
+{
+    /* position: fixed;
+    bottom: 0;
+    background-color: var(--main-layout-taskbar-background-color); */
+    /* width: var(--otherapp-size) !important; */
+    margin: 0;
 }
 
 .button-mel_sondage {
@@ -182,8 +198,8 @@ html.layout-phone #taskmenu a
 
 .menu.toolbar  a.contacts::before
 {
-    content:"\e937";
-    font-family: "DWP"!important;
+    content:"\e7fd";
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
 }
 
@@ -196,20 +212,26 @@ html.layout-phone #taskmenu a
     order:15;
 }
 
+.parapheur::before{
+    content:"\e746" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+}
+
 .more-options{
-    order:16;
+    order:18;
 }
 
 .settings{
-    order:17;
+    order:19;
 }
 
 
 
 .menu.toolbar  a.settings::before
 {
-    content:"\e925";
-    font-family: "DWP"!important;
+    content:"\e8b8" !important;
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
 }
 
@@ -261,52 +283,83 @@ html.touch span.menu-last-frame-item {
 
 .menu.toolbar a.wsp.icon-mel-workplace:before
 {
-    content:"\e93a";
-    font-family: "DWP"!important;
+    content:"\e1a0" !important;
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
 }
 
 .menu.toolbar a.more-options.icon-mel-dots:before
 {
-    content:"\e90c";
-    font-family: "DWP"!important;
+    content:"\e5c3";
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
+    font-variation-settings: 'wght' 300;
 }
 
 a.useful_links.icon-mel-link::before
 {
-    content:"\e91c";
-    font-family: "DWP"!important;
+    content:"\e157";
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
 }
 
 .menu.toolbar a.home.icon-mel-home:before
 {
-    content:"\e918";
-    font-family: "DWP"!important;
-    font-weight: normal;
+  content:"\e88a";
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 36px !important;
+  font-weight: normal;
+}
+
+.barup-right-buttons .menu.toolbar a.selected:before,
+.barup-right-buttons .menu.toolbar a:hover:before,
+#layout-menu .menu.toolbar a.selected:before,
+#layout-menu .menu.toolbar a:hover:before,
+#otherapps.menu.toolbar a:hover:before,
+#otherapps.menu.toolbar a.selected:before
+{
+  font-variation-settings: 'FILL' 1;
+}
+
+#layout-menu .menu.toolbar a.selected.icon-mel-dots:before,
+#layout-menu .menu.toolbar a.icon-mel-dots:hover:before
+{
+  font-variation-settings: 'FILL' 1, 'wght' 300;
+}
+
+#layout-menu .menu.toolbar a:before,
+#otherapps.menu.toolbar a:before
+{
+  font-size: 32px;
 }
 
 .menu.toolbar a.mel.icon-mel-sondage:before,
 #otherapps a.icon-mel-sondage:before
 {
-    content:"\e930";
-    font-family: "DWP"!important;
-    font-weight: inherit;
+    content:"\e653" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+}
+
+#otherapps a.icon-mel-sondage:before
+{
+    content:"\e653" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
 }
 
 .menu.toolbar a.icon-mel-message:before
 {
-    content:"\e920";
-    font-family: "DWP"!important;
-    font-weight: inherit;
+    content:"\e0bf";
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
 }
 
 .menu.toolbar a.icon-mel-folder:before
 {
-    content:"\e915";
-    font-family: "DWP"!important;
-    font-weight: inherit;
+    content:"\e2c8" !important;
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
 }
 
 .menu.toolbar a.news.icofont-newspaper:before
@@ -323,14 +376,15 @@ a.menu-small.icofont-navigation-menu:before
 
 a.icon-mel-trello:before
 {
-    content:"\e94c";
-    font-family: "DWP"!important;
+    content:"\eb7f";
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
 }
 
 a.icon-mel-newspaper:before
 {
-    content:"\e91a";
-    font-family: "DWP"!important;
+    content:"\ef42";
+    font-family: 'Material Symbols Outlined' !important;
     font-weight: normal;
 }
 
@@ -406,7 +460,7 @@ html.touch #layout-menu  span > a > span.inner,
     /* overflow: initial; */
     /* padding: 0; */
     /* position: absolute; */
-    width: 120px;
+    width: 140px;
 
     margin: -.45rem 0;
     margin-left: -5px;
@@ -444,10 +498,9 @@ html.touch #layout-menu  span > a > span.inner
     /* padding:0;
     height: 58px; */
 } 
-
 #layout-menu:hover a.wsp:hover > span.inner,
 #layout-menu:hover a.more-options:hover > span.inner {
-	padding-bottom: 0.36rem;
+  border-top: solid thin var(--invisible)
 }
 
 #layout-menu:hover a.menu-last-frame:hover > span.inner {
@@ -544,8 +597,8 @@ nav.otherapps
     left: 60px;
     background-color: #2C3054;
     z-index: 999999;
-    overflow-y: auto;
-    overflow-x: hidden;
+    /* overflow-y: auto;
+    overflow-x: hidden; */
 }
 
 #otherapps a::before
@@ -560,13 +613,14 @@ nav.otherapps
     width:100%!important;
     max-width:100%!important;
     display: flex;
+    position: relative;
 }
 
 #otherapps a span {
 	/* position: absolute; */
 	/* left: 69px; */
 	/* margin-top: -16px; */
-	font-family: Marianne,Roboto,sans-serif;
+	font-family:  Roboto,sans-serif;
 	margin-left: 15px;
 	display: flex;
 	align-items: center;
@@ -624,4 +678,32 @@ li#menu-small-li
 	max-width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+#otherapps a sup {
+	position: absolute;
+	top: 17px;
+	left: 35px;
+}
+
+#otherapps a sup .roundbadge {
+    font-size: smaller;
+    display:block;
+}
+
+#otherapps a:hover sup .roundbadge{
+    background-color: var(--roundbadge-bckg-color)!important;
+}
+
+.menu-last-frame:hover .menu-last-frame-item::before{
+    font-variation-settings: 'FILL' 1;
+}
+
+#layout-menu.main-nav-cannot-deploy:hover {
+    max-width: 60px;
+}
+
+#layout-menu.main-nav-cannot-deploy:hover a .button-inner,
+#layout-menu.main-nav-cannot-deploy:hover a .inner {
+    display: none!important;
 }

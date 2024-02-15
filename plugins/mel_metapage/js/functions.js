@@ -17,46 +17,46 @@ function get_action(text, icon, action) {
     }
 }
 
-function m_mp_create_note()
+async function m_mp_create_note()
 {
-    try {
-        window.create_note()
-    } catch (error1) {
-        console.warn("Impossible de créer des notes : ", error1, window.create_note);
-        try {
-            top.create_note();
-        } catch (error2) {
-            console.warn("Impossible de créer des notes : ", error2, top.create_note);
-            $(document).ready(async () => {
-                let it = 0;
+    if (window.create_popUp !== undefined) {
+        window.create_popUp.close();
+        window.create_popUp = undefined;
+    }
 
-                if (!window.create_note)
-                {
-                    await wait(() => {
-                        if (it++ >= 10) return false;
-        
-                        return !window.create_note;
-                    })
-                }
-    
-                if (it >= 10 && !window.create_note) 
-                {
-                    console.error("Impossible de créer une note, la page des notes n'a probablement pas été charger correctement.", error1, error2, window.create_note, window, '<====== Diverses infos');
-                    if (!m_mp_create_note.ac)
-                    {
-                        m_mp_create_note.ac = true;
-                        console.log("Tentative d'importation.....");
-                        var script = document.createElement('script');
-                        script.onload = function () {
-                            console.log('Tentative...');
-                            m_mp_create_note();
-                        };
-                        script.src = mel_metapage.Functions.url('').split('/?')[0] + '/plugins/mel_metapage/js/program/notes.min.js';
-                    }
-                }
-                else if (!!window.create_note) window.create_note();
+    const init = Object.keys(rcmail.env.mel_metapages_notes);
+
+    const Sticker = (await loadJsModule('mel_metapage', 'sticker', '/js/lib/metapages_actions/notes/')).Sticker;
+
+    await Sticker.new();
+
+    let notes = await loadAction('mel_metapage', 'notes.js', '/js/lib/metapages_actions/');
+
+    if (!!notes) {
+
+        const new_note = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !init.includes(x.key)).firstOrDefault();
+
+        if (!!new_note) {
+            let sticker = Sticker.from(new_note.value);
+
+            await sticker.post('pin', {
+                _uid:sticker.uid,
+                _pin:true
             });
+
+            sticker.pin = true;
+            rcmail.env.mel_metapages_notes[sticker.uid].pin = true;
+
+            sticker.after = () => {
+                sticker.uid = `pin-${sticker.uid}`;
+                sticker.get_html().find("textarea")[0].focus();
+            };
+
+            Sticker.helper.trigger_event('notes.apps.tak', sticker);
         }
+        //notes.select_note_button().click();
+
+        //$('.mel-note').last().find("textarea")[0].focus();
     }
 }
 
@@ -96,9 +96,10 @@ function m_mp_Create() {
 
     //Si la popup n'existe pas, on la créer.
     if (window.create_popUp === undefined) {
+        const canDrive = mel_metapage.Functions.stockage.canDriveActions();
         let haveNextcloud = {
-            style: (window.mel_metapage_tmp === null ? "display:none" : ""),
-            col: (window.mel_metapage_tmp === null) ? "4" : "3"
+            style: (!canDrive ? "display:none" : ""),
+            col: (!canDrive ? "4" : "3")
         };
         let button = function(txt, font, click = "") {
             let disabled = click === "" ? "disabled" : "";
@@ -107,7 +108,7 @@ function m_mp_Create() {
         const _button = function(action, block = true) {
             return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action);
         }
-
+//debugger;
         let workspace = `<li class="col-12" id="workspace" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + _button(actions.espace, false) + '</li>'
         let mail = `<li class="col-sd-4 col-md-4" id="mail" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + _button(actions.mail) + "</li>";
         let reu = `<li class="col-sd-4 col-md-4" id="reu" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + _button(actions.event) + "</li>";
@@ -116,6 +117,48 @@ function m_mp_Create() {
         let document = `<li class="col-md-3" style="${haveNextcloud.style}" id="document" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + _button(actions.documents) + "</li>";
         let blocnote = `<li class="col-md-${haveNextcloud.col}"  id="blocnote" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + _button(actions.notes) + "</li>";
         let pega = `<li class="col-md-${haveNextcloud.col}" id="pega" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
+
+        if (!rcmail.env.plugin_list_workspace) {
+            workspace = '';
+        }
+
+        if (!rcmail.env.plugin_list_agenda) {
+            viso = viso.replace('col-6', 'col-12');
+            viso = viso.replace('col-sd-4 col-md-4', 'col-6');
+            mail = mail.replace('col-6', 'col-12');
+            mail = mail.replace('col-sd-4 col-md-4', 'col-6');
+            reu = '';
+        }
+
+        if (!rcmail.env.plugin_list_visio) {
+            reu = reu.replace('col-6', 'col-12');
+            reu = reu.replace('col-sd-4 col-md-4', 'col-6');
+            mail = mail.replace('col-6', 'col-12');
+            mail = mail.replace('col-sd-4 col-md-4', 'col-6');
+            viso = '';
+        }
+
+        if (!rcmail.env.plugin_list_tache) {
+            document = document.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = pega.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            tache = '';
+        }
+
+        if (!rcmail.env.plugin_list_document) {
+            tache = tache.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = pega.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            document = '';
+        }
+
+        if (!rcmail.env.plugin_list_sondage) {
+            document = document.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            tache = tache.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = '';
+        }
+
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         let create_popUp = new GlobalModal("globalModal", config, !isSmall);
@@ -229,6 +272,16 @@ function m_mp_createworskpace_steps() {
             const mel_metapage_templates_services = rcmail.env.mel_metapage_templates_services;
             for (let index = 0; index < mel_metapage_templates_services.length; ++index) {
                 const element = mel_metapage_templates_services[index];
+
+                switch (element.type) {
+                    case 'doc':
+                        if (!mel_metapage.Functions.stockage.canDriveActions()) continue;
+                        break;
+                
+                    default:
+                        break;
+                }
+
                 html += '<div class="col-md-4" style="position:relative;">';
                 html += '<button type=button aria-pressed=false data-type="' + element.type + '" class="doc-' + element.type + ' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `' + JSON.stringify(element).replace(/"/g, "¤¤¤") + '`)"><span style="display:block;margin-right:0px" class="' + m_mp_CreateDocumentIconContract(element.icon) + '"></span>' + rcmail.gettext(element.name) + '</button>';
                 
@@ -419,18 +472,18 @@ function m_mp_step3_param(type)
                     <option value="default">Un kanban ayant le nom de l'espace sera créé</option>
                     <option value="custom_name">Choisissez le nom du nouveau kanban</option>
                     <option value="already_exist">Lié à un kanban éxistant</option>
-                </select> `);
+                </select> `).attr('title', 'Choisir la méthode de création du kanban');
 
                 if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);
 
                 let $custom_name_div = $(`
                     <div style=margin-top:15px>
-                        <h3 class="span-mel t2 first">Nom personalisé du nouveau kanban</h3>
+                        <h3 id="kanban-custom-name" class="span-mel t2 first">Nom personalisé du nouveau kanban</h3>
                     </div>
                 `).css('display', 'none');
 
                 let $custom_name_input = $(`
-                    <input class="form-control input-mel" value="${default_custom_value || wsp_title}" placeholder="Nom du kanban" maxlength=30 /> 
+                    <input aria-labelledby="kanban-custom-name" class="form-control input-mel" value="${default_custom_value || wsp_title}" placeholder="Nom du kanban" maxlength=30 /> 
                 `).on('input', () => {
                     m_mp_step3_param.datas[type].value = $custom_name_input.val();
                 }).appendTo($custom_name_div);
@@ -442,7 +495,7 @@ function m_mp_step3_param(type)
                 `).css('display', 'none');
 
                 let $linked_kanban_select = $(`
-                    <select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
+                    <select title="Lié à un kanban éxistant - Choisir un kanban parmis la liste" class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
                 `).on('change', () => {
                     m_mp_step3_param.datas[type].value = $linked_kanban_select.val();
                 }).appendTo($linked_kanban_div);
@@ -583,7 +636,6 @@ function m_mp_createworkspace() {
         create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
         mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_create_workspace"), {},
             (datas) => {
-
                 if ($("#globallist").length > 0)
                     return;
 
@@ -593,7 +645,7 @@ function m_mp_createworkspace() {
                     $("#worspace-avatar-a").html("").css("display", "").appendTo($("#tmpavatar"));
 
                 m_mp_switch_step("workspace-step1");
-                rcmail.init_address_input_events($("#workspace-user-list"));
+                rcmail.init_address_input_events($("#_workspace-user-list"));
                 $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
 
                 create_popUp.contents.find('#workspace-title-param').click((e) => {
@@ -646,7 +698,36 @@ function m_mp_createworkspace() {
                 
 
                 setTimeout(() => {
-                    $('#workspace-color').val(MEL_ELASTIC_UI.getRandomColor());
+                    const rdmColor = MEL_ELASTIC_UI.getRandomColor();
+                    $('#workspace-color').val(rdmColor).on('change', (e) => {
+                        const color = $(e.currentTarget).val();
+                        let $span = $('#worspace-avatar-a');
+                        if ($span.length > 0)
+                        {
+                            if(!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'), mel_metapage.Functions.colors.kMel_extractRGB(color))){
+                                $span.attr('style', 'color:white!important');
+                            }
+                            else {
+                                $span.attr('style', 'color:#363A5B!important');
+                            }
+
+                            $span.css('background-color', color);
+                        }
+                        $span = null;
+
+                    });
+                    let $span = $('#worspace-avatar-a');
+                    if ($span.length > 0)
+                    {
+                        if(!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'), mel_metapage.Functions.colors.kMel_extractRGB(rdmColor))){
+                            $span.attr('style', 'color:white!important');
+                        }
+                        else {
+                            $span.attr('style', 'color:#363A5B!important');
+                        }
+                    }
+                    $span.css('background-color', rdmColor);
+                    $span = null;
                     $("#workspace-date-end").datetimepicker({
                         format: 'd/m/Y H:i',
                         dayOfWeekStart: 1,
@@ -755,7 +836,7 @@ async function m_mp_check_w(step, next) {
             $("#wspf .workspace-recipient").each((i, e) => {
                 users.push($(e).find(".email").html());
             });
-            let input = $("#workspace-user-list");
+            let input = $("#_workspace-user-list");
             if (input.val().length > 0)
                 users.push(input.val());
             if (users.length > 0) {
@@ -888,54 +969,79 @@ function m_mp_affiche_hashtag_if_exists(containerSelector = '#list-of-all-hashta
     if (querry.find("button").length > 0) querry.css("display", "");
 }
 
-function m_mp_get_all_hashtag_input(inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
-    if (!!m_mp_get_all_hashtag_input.current)
-    {
-        if (m_mp_get_all_hashtag_input.current.isPending()) m_mp_get_all_hashtag_input.current.abort();
-    }
+async function m_mp_get_all_hashtag_input(inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
+    const Mel_Promise = (await loadJsModule('mel_metapage', 'mel_promise'))?.Mel_Promise;
 
-    m_mp_get_all_hashtag_input.current = new Mel_Promise(m_mp_get_all_hashtag, inputSelector, containerSelector); //m_mp_get_all_hashtag(inputSelector, containerSelector);
+    if (!!Mel_Promise) {
+        if (!!m_mp_get_all_hashtag_input.current)
+        {
+            if (m_mp_get_all_hashtag_input.current.isPending()) m_mp_get_all_hashtag_input.current.abort();
+        }
+    
+        m_mp_get_all_hashtag_input.current = new Mel_Promise(m_mp_get_all_hashtag, inputSelector, containerSelector);
+    }
+    else {
+        console.error('###[m_mp_get_all_hashtag_input]Le module "Mel_Promise" n\'est pas chargé !', Mel_Promise, inputSelector, containerSelector);
+        rcmail.display_message('Impossible de récupérer les thèmes, le module "Mel_Promise" n\'est pas chargé.', 'error');
+    }
 }
 
+/**
+ * 
+ * @param {Mel_Promise} mel_promise 
+ * @param {*} inputSelector 
+ * @param {*} containerSelector 
+ * @returns 
+ */
 async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
     const val = $(inputSelector).val();
     if (val.length > 0) {
         let querry = $(containerSelector).css("display", "");
+        querry.parent().attr('data-visible', true);
         querry.html("<center><span class=spinner-border></span></center>");
 
         if (mel_promise.isCancelled()) return;
-        await mel_metapage.Functions.get(
-            mel_metapage.Functions.url("workspace", "hashtag"), {
-                _hashtag: val
-            }, (datas) => {
-                try {
-                    if (mel_promise.isCancelled()) return;
 
-                    datas = JSON.parse(datas);
-                    if (datas.length > 0) {
-                        html = "<div class=btn-group-vertical style=width:100%>";
-
-                        for (let index = 0; index < datas.length; ++index) {
-                            const element = datas[index];
-                            html += `<button onclick="m_mp_hashtag_select(this, '${inputSelector}', '${containerSelector}')" class="btn-block metapage-wsp-button btn btn-primary"><span class=icon-mel-pin style=margin-right:15px></span><text>${element}</text></button>`;
+        await mel_promise.create_ajax_get_request(
+            {
+                url:mel_metapage.Functions.url("workspace", "hashtag"),
+                success:(datas) => {
+                    try {
+                        if (mel_promise.isCancelled()) return;
+    
+                        datas = JSON.parse(datas);
+                        if (datas.length > 0) {
+                            html = "<div class=btn-group-vertical style=width:100%>";
+    
+                            for (let index = 0; index < datas.length; ++index) {
+                                const element = datas[index];
+                                html += `<button onclick="m_mp_hashtag_select(this, '${inputSelector}', '${containerSelector}')" class="btn-block metapage-wsp-button btn btn-primary"><span class=icon-mel-pin style=margin-right:15px></span><text>${element}</text></button>`;
+                            }
+    
+                            html += "</div>";
+                            if (mel_promise.isCancelled()) return;
+                            querry.html(html);
+                        } else
+                        {
+                            if (mel_promise.isCancelled()) return;
+                            querry.html(`La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`);
                         }
-
-                        html += "</div>";
-                        if (mel_promise.isCancelled()) return;
-                        querry.html(html);
-                    } else
-                    {
-                        if (mel_promise.isCancelled()) return;
-                        querry.html(`La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`);
+    
+                    } catch (error) {
+    
                     }
-
-                } catch (error) {
-
                 }
             }
         ).always(() => {
             rcmail.triggerEvent("onHashtagChange", { input: inputSelector, container: containerSelector });
         });
+
+        mel_promise.onAbort = () => {
+            ajax.abort();
+        };
+
+        await ajax;
+
     } else
         $(containerSelector).css("display", "none");
 
@@ -964,14 +1070,14 @@ async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-has
     };
 
     if (mel_promise.isCancelled()) return;
-    if (!mel_metapage.Functions.handlerExist($("body"), clickFunction))
-        $("body").click(clickFunction);
+
+    if (!mel_metapage.Functions.handlerExist($("body"), clickFunction)) $("body").click(clickFunction);
 
 }
 
 function m_mp_hashtag_select(e, inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
     $(inputSelector).val($(e).find("text").html());
-    $(containerSelector).css("display", "none");
+    $(containerSelector).css("display", "none").parent().attr('data-visible', false);;
 }
 
 function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
@@ -988,7 +1094,7 @@ function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
                 } else
                     target = target.parentElement;
             }
-            querry.css("display", "none");
+            querry.css("display", "none").parent().attr('data-visible', false);
         }
     } catch (error) {}
 }
@@ -1152,7 +1258,7 @@ function m_mp_add_users() {
     users.push($(e).find(".email").html());
   });
 
-  let input = $("#workspace-user-list");
+  let input = $("#_workspace-user-list");
 
   if (input.val().length > 0)
     users.push(input.val().includes('<') ? input.val().split('<')[1].split('>')[0] : input.val());
@@ -1184,7 +1290,7 @@ function m_mp_add_users() {
             html += '<div class="col-10 workspace-users-added">';
             html += `<span class="name">${element.name}</span><br/>`;
             html += `<span class="email">${element.email}</span>`;
-            html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;">Retirer <span class=icon-mel-minus></span></button>`;
+            html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>`;
             html += "</div>";
             html += "</div></li>";
             querry.append(html);
@@ -1206,7 +1312,7 @@ function m_mp_remove_user(e) {
 
 function m_mp_remove_li(event) {
     $(event).parent().remove();
-    $("#workspace-user-list").focus();
+    $("#_workspace-user-list").focus();
 }
 
 // function m_mp_open_contact(e, idInput, actions = null)
@@ -1264,7 +1370,7 @@ function m_mp_openTo(e, idInput, actions = null) {
         return;
     }
 
-    if (rcmail.env.task !== "mail" && rcmail.env.action !== "compose") {
+    if (rcmail.env.action !== "compose") {
         if (!$(e).hasClass("initialized")) {
             $(e).addClass("showcontacts")[0].id = `showcontacts_${idInput}`;
             setTimeout(() => {
@@ -1312,7 +1418,7 @@ function m_mp_on_open_select_calendar_contacts(node, node_id, fieldId)
 {
     console.log(node, fieldId);
 
-    if (node.email === rcmail.env.email)
+    if (!!node.email && !!rcmail.env.email && node.email === rcmail.env.email)
     {
         rcmail.display_message('Vous êtes déjà l\'organisateur !', 'error');
         $('#rcmrow' + node_id).removeClass('added');
@@ -1329,15 +1435,22 @@ function m_mp_on_open_select_calendar_contacts(node, node_id, fieldId)
             }
         });
 
-        if (can)
-        {
-            $(`#edit-attendee-add`).click();
-            $('#compose-contact-close-modal').click();
+        if (node.classes.includes('list')){
+            rcmail.display_message('Chargement de la liste...');
         }
         else {
-            rcmail.display_message('Vous avez déjà ajouté cet utilisateur !', 'error');
-            $('#rcmrow' + node_id).removeClass('added');
+            if (can)
+            {
+                $(`#edit-attendee-add`).click();
+                $('#compose-contact-close-modal').click();
+            }
+            else {
+                rcmail.display_message('Vous avez déjà ajouté cet utilisateur !', 'error');
+                $('#rcmrow' + node_id).removeClass('added');
+            }
         }
+
+
     }
 
 
@@ -1392,6 +1505,8 @@ function m_mp_Help() {
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
 
+    const isTouch = $("html").hasClass("touch");
+
     if (window.create_event === true && !!actions.event) {
         eval(actions.event.action);
         return;
@@ -1435,7 +1550,7 @@ function m_mp_Help() {
         let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
         let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, false) + '</li>'
         let helppage_current = "";
-        if (rcmail.env.help_page_onboarding[(m_mp_DecodeUrl().task).replace('#','')]) {
+        if (rcmail.env.help_page_onboarding[(m_mp_DecodeUrl().task).replace('#','')] && !isTouch) {
             helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
         }
 
@@ -1471,31 +1586,34 @@ function m_mp_Help() {
     }
 
     if (isSmall) {
-        if (!$("#groupoptions-createthings").hasClass("initialized")) {
-            for (const key in actions) {
-                if (Object.hasOwnProperty.call(actions, key)) {
-                    const element = actions[key];
-                    $("#ul-createthings").append(`
-                    <li role="menuitem">
-                        <a class="${element.icon}" role="button" href="#" onclick="${element.action}">
-                            <span class="restore-font">${element.text}</span>
-                        </a>
-                    </li>
-                    `);
-                }
+      if (!$("#groupoptions-createthings").hasClass("initialized")) {
+        for (const key in actions) {
+          if (Object.hasOwnProperty.call(actions, key)) {
+            //On cache l'onboarding sur mobile
+            if (key !== 'helppage_current') {
+              const element = actions[key];
+              $("#ul-createthings").append(`
+                  <li role="menuitem">
+                      <a class="${element.icon}" role="button" href="#" onclick="${element.action}">
+                          <span class="restore-font">${element.text}</span>
+                      </a>
+                  </li>
+              `);
             }
-
-            $("#groupoptions-createthings").addClass("initialized")
-
+          }
         }
-        window.help_popUp.close();
 
-        setTimeout(() => {
-            $("#open-created-popup").click();
-        }, 1);
+        $("#groupoptions-createthings").addClass("initialized")
+
+      }
+      window.help_popUp.close();
+
+      setTimeout(() => {
+        $("#open-created-popup").click();
+      }, 1);
 
     }
-}
+  }
 
 // Ancienne fonction d'aide
 // function m_mp_Help() {
@@ -1731,13 +1849,30 @@ function m_mp_UpdateCreateDoc(json) {
         $("#" + mel_metapage.Ids.create.doc_input_ext).removeClass("disabled").removeAttr("disabled");
     else
         $("#" + mel_metapage.Ids.create.doc_input_ext).addClass("disabled").attr("disabled", "disabled");
+    
+    show_models_input(json.name)
+    
+}
+
+function show_models_input(name) {
+  const models_name = Object.keys(rcmail.env.mel_metapage_templates_models)
+  let $querry = $('#models-input').html('');
+
+  if (models_name.includes(name)) { 
+    $("#models-inputs-group").show();
+
+    for (let i = 0; i < rcmail.env.mel_metapage_templates_models[name].length; i++) {
+      const element = rcmail.env.mel_metapage_templates_models[name][i];
+      $querry.append(new Option(rcmail.gettext("mel_metapage." + element.name),element.name));
+    }
+   }
+  else $("#models-inputs-group").hide()
 }
 
 function m_mp_CreateDocRetour() {
     create_popUp = undefined;
     m_mp_Create();
 }
-
 
 async function m_mp_CreateDoc() {
     let configModifier = function(type, value, path, modifiers = null) {
@@ -2174,6 +2309,13 @@ async function m_mp_shortcuts() {
 
         html += "</div>";
         shortcuts.add_app("items", html);
+
+        if (!!html_helper.Calendars.$jquery_array) {
+            const $jquery_array = html_helper.Calendars.$jquery_array;
+            html_helper.Calendars.$jquery_array = undefined;
+            shortcuts.item.find('.shorcut-calendar ul').html($jquery_array);
+        }
+
         window.shortcuts = shortcuts;
 
         //debugger;
@@ -2251,14 +2393,6 @@ function mm_create_calendar(e, existingEvent = null) {
 
     rcmail.local_storage_set_item("tmp_calendar_event", event);
     return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
-    // m_mp_CreateOrOpenFrame(`calendar`, 
-    // () => {
-    //     m_mp_CreateEvent();
-    //     m_mp_CreateEvent(() => {
-    //         m_mp_set_storage("calendar_category", "ws#" + id, false);
-    //     })
-    // }
-    // , m_mp_CreateEvent_inpage)
 }
 
 function m_mp_NewTask() {
@@ -2273,38 +2407,169 @@ function m_mp_NewTask() {
 }
 
 function open_task(id, config = {}) {
-    if (event !== undefined)
-        event.preventDefault();
+    if (event !== undefined) event.preventDefault();
 
     mel_metapage.Storage.set("task_to_open", id);
     mel_metapage.Functions.change_frame("tasklist", true, false, config);
 
-    if ($("iframe.tasks-frame").length > 0)
-        $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
-    else if ($(".tasks-frame").length > 0)
-        rcmail.triggerEvent("plugin.data_ready");
+    if ($("iframe.tasks-frame").length > 0) $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
+    else if ($(".tasks-frame").length > 0) rcmail.triggerEvent("plugin.data_ready");
 }
 
 /**
  * Permet d'afficher masquer la pop up user Bienvenue
  */
-function m_mp_ToggleGroupOptionsUser(opener) {
-    if ($("#groupoptions-user").is(":visible") == true) {
-        $("#groupoptions-user").hide();
-        $("#groupoptions-user").data('aria-hidden', 'true');
-        $("#groupoptions-user").data('opener', null);
-        $('#menu-gu-black').remove();
+async function m_mp_ToggleGroupOptionsUser(opener) {
+    let $goupoptions_user = $("#groupoptions-user");
+    let $button_settings = $("#button-settings");
+    const state = $goupoptions_user.is(":visible") == true;
+
+    if ($goupoptions_user.is(":visible") == true) {
+        $goupoptions_user.hide();
+        $goupoptions_user.data('aria-hidden', 'true');
+        $goupoptions_user.data('opener', null);
+        $button_settings.removeClass('force-fill');
         $(opener).data('aria-expanded', 'false');
         rcmail.triggerEvent('toggle-options-user', {show: false});
     }
     else {
-        //$("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
-        $("#groupoptions-user").show();
-        $("#groupoptions-user").data('opener', opener);
-        $("#groupoptions-user").data('aria-hidden', 'false');
-        $('<div id="menu-gu-black"></div>').appendTo('#layout');
+      $('.options-custom').css('position', 'relative').css('min-height', '300px').html(window.MEL_ELASTIC_UI.create_loader("options-loader"));
+        $goupoptions_user.show();
+        $goupoptions_user.data('opener', opener);
+        $goupoptions_user.data('aria-hidden', 'false');
+        $button_settings.addClass('force-fill');
         $(opener).data('aria-expanded', 'true');
         rcmail.menu_stack.push("groupoptions-user");
         rcmail.triggerEvent('toggle-options-user', {show: true});
+
+        await mel_metapage.Functions.get(
+          mel_metapage.Functions.url('mel_settings','load'), 
+          {_option: rcmail.env.current_frame_name},
+          (data) => {
+            data = JSON.parse(data)
+            $('.options-custom').html(data.html);
+            for (const [key, value] of Object.entries(data.settings)) {
+              $input = $(`[name="${key}"]`);
+              switch ($input[0].nodeName) {
+                case "INPUT":
+                  switch ($input.attr('type')) {
+                    case 'checkbox':
+                      $input.prop('checked', JSON.parse(value));
+                      break;
+                    case 'radio':
+                      $input.filter(`[data-value="${value}"]`).prop('checked', true)
+                      break;
+                    case 'text':
+                      $input.val(value)
+                      break;
+                    default:
+                      break;
+                  }
+                  break;
+
+                case "SELECT":
+                  $input.val(value)
+                  break;
+              
+                default:
+                  throw 'error';
+              }
+            }
+          }
+        )
     }
+
+    rcmail.triggerEvent('toggle-quick-options.after', {hidden:state, frame:rcmail.env.current_frame_name});
+
+    $goupoptions_user = null;
+    $button_settings = null;
+}
+
+/**
+ * Permet de sauvegarder une option rapide
+ */
+function save_option(_option_name, _option_value, element) {
+  element = $(element);
+  const name = element.attr('name');
+
+  $(`[name="${name}"]`).attr('disabled', 'disabled')
+  const id = rcmail.set_busy(true, 'loading')
+  
+  return mel_metapage.Functions.post(
+    mel_metapage.Functions.url('mel_settings', 'save'),
+    { _option_name, _option_value },
+    (data) => {
+        const parsed_datas = JSON.parse(data);
+        const is_string = 'string' === typeof parsed_datas
+
+        console.log('datas', parsed_datas, is_string);
+
+        $(`[name="${name}"]`).removeAttr('disabled')
+
+        rcmail.set_busy(false, 'loading', id)
+        rcmail.display_message("Enregistré avec succès", 'confirmation')
+
+
+        if (!!(element.data('no-action') || false)) return;
+
+        let func = element.data('function');
+        if (func) eval(`${func}({key:'${_option_name}', value:${is_string ? `'${parsed_datas}'` : data}})`);
+        else {
+            func = element.data('command');
+
+            if (!!func) rcmail.command(func, {key:_option_name, value:parsed_datas});
+            else rcmail.command('refreshFrame')
+        }
+    }
+  )
+}
+
+//0007910: Popup d'information lors du clic sur un lien dans un mail
+function external_link_modal(_url) {
+  let url = new URL(_url);
+  let domain = url.hostname;
+  let html = new mel_html2('div', { attribs: {id:'external-link-modal'},contents: [] });
+  let title = new mel_html('label',{class:'span-mel t2'}, rcmail.gettext('mel_metapage.leaving_bnum'));
+  let link = new mel_html('p',{class:'external_url'}, _url);
+  let warning = new mel_html2('label', { attribs: {class:'text-danger mt-3 warning-label'},contents: [
+    new mel_html('span',{class:'material-symbols-outlined warning-icon-large'}, "warning"),
+    new mel_html('span',{class:'ml-2'}, rcmail.gettext('mel_metapage.warning_external_link'))    
+  ] });
+
+  let custom_switch = new mel_html2('div', { attribs: {class:'custom-control custom-switch no-click-focus'},contents: [
+    new mel_html('input',{name:'_trust_domain', id:'rcmfd_trust_domain', type:'checkbox', value:'false', class:'form-check-input custom-control-input no-click-focus', onchange:'$(this).val(this.checked)'}),
+    new mel_html('label',{for:'rcmfd_trust_domain', class:'custom-control-label option-switch no-click-focus pl-6'}, rcmail.gettext('mel_metapage.always_authorize') + '<span class="external_domain">'+domain+'</span>'),
+  ] });
+
+
+  html.addContent(title);
+  html.addContent(link);
+  html.addContent(custom_switch);
+  html.addContent(warning);
+
+  let buttons = [{
+    text: rcmail.gettext('mel_metapage.back'),
+    'class': 'modal-close-footer btn mel-button btn-danger mel-before-remover px-4',
+    click: function () {
+      $(this).closest('.ui-dialog-content').dialog('close');
+    }
+  },
+  {
+    text: rcmail.gettext('mel_metapage.open_external_link'),
+    'class': 'modal-save-footer btn btn-secondary mel-button px-4',
+    click: function () {
+      if($('#rcmfd_trust_domain').val() === "true") 
+      {
+        mel_metapage.Functions.post(
+          mel_metapage.Functions.url('mel_metapage', 'save_user_pref_domain'),
+          { _domain: domain }
+        );
+      }
+      window.open(_url, '_blank');
+      $(this).closest('.ui-dialog-content').dialog('close');
+    }
+  }
+  ];
+
+  rcmail.show_popup_dialog(html.generate(), rcmail.gettext("mel_metapage.attention"),buttons,{ width: 600, resizable: false, height: 180 });
 }

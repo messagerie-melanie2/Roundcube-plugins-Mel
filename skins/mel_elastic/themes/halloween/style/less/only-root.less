@@ -1,0 +1,645 @@
+@transparency: 93;
+@enable_barup_custom_background: 0;
+@base-color-1:#371B58;
+@base-color-2:#5B4B8A;
+@base-color-2-1: lighten(@base-color-2, 20%);
+@base-color-1-1: darken(@base-color-1, 5%);
+
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-halloween.dark-mode-custom,
+.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-halloween {
+   &:root {
+      --base-1: @base-color-1;
+      --base-1-n-1: @base-color-1-1;
+      --base-2: @base-color-2;
+      --base-2-n-1: @base-color-2-1; 
+      --content-color: var(--base-2);
+      --base-theme-color-1: e("@{base-color-1}@{transparency}");
+      --base-theme-color-2: e("@{base-color-2}@{transparency}");
+      --base-theme-color-2-nucances-1: e("@{base-color-2-1}@{transparency}");
+      --base-theme-color-1-nuances-1: e("@{base-color-1-1}@{transparency}");
+      --button-color-base: #FF5B00;
+      --button-color-base-hover: #F78812;
+      --button-border-color-base: var(--button-color-base);
+      --button-border-color-base-hover: var(--button-color-base-hover);
+      --button-text-color-base:white;
+      --button-text-color-base-hover: var(--button-text-color-base);
+      --modal-da-title-text-color: var(--button-color-base);
+      //     // Main background colors
+      //   --main-bckg-color: #363A5B;
+      //   --secondary-bckg-color: #2C3054;
+      //   --tierciary-bckg-color: #484D7A;
+      //   --default-bckg-color: #FFF;
+         --button-background-color: var(--button-color-base);
+      //   --warning-color: #FC945A;
+      //   --card-background-color: #f0f0f0;
+      //   --active-button-background-color: #F0F0F0;
+        --theme-background-color: var(--base-theme-color-1);
+      
+        --body-background-color: transparent;
+        --framed-body-background-color: var(--body-background-color);
+        
+        --body-picture: url("../images/halloween-bg-light-unsplash.jpg");
+        --framed-body-picture: unset;
+        --compose-body-picture: url("../images/mail-halloween-light.svg");
+      //   //Main text colors
+         --main-text-color: white;
+      //   --secondary-text-color: #FFFFFF;
+         --tierciary-text-color: var(--button-text-color-base);
+      //   --fourth-text-color: #779bd6;
+         --input-button-text-color: var(--input-text-color);
+         --btn-primary-border-color: var(--button-color-base);
+         --btn-primary-border-color-hover: var(--button-color-base-hover);
+         --btn-primary-bckg-color-hover: var(--button-color-base-hover);
+         --background-color-dialog-message: #D7BD8A;
+      //   --header-title-color: var(--main-text-color);
+      //   --default-text-color: var(--secondary-text-color);
+      //   --default-placeholder-text-color: #a8a9b8;
+      //   --hint-text-color: #737677;
+      //   --active-button-text-color: var(--secondary-text-color);
+      
+      //   //Main border radius
+      //   --main-border-radius: 10px;
+      //   --secondary-border-radius: 5px;
+      //   --main-panel-border-radius: 15px;
+      
+      //   //Box shadow
+      //   --main-box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+      
+      //   //Main margin
+      //   --main-margin: 10px 0px;
+      //   --space-margin: 8px;
+      //   --list-between-margin: 5px;
+      //   --separate-margin: 0px;
+      
+      //   //Padding
+      //   --sidebar-list-padding: 0 14px;
+      //   --task-list-padding: 15px;
+      
+      //   //Hover
+         --hover-background-color: var(--button-color-base-hover);
+      //   --secondary-hover-background-color: #f8f9fa;
+      //   --list-hover-background-color:var(--hover-background-color);
+      //   --hover-close-color: red;
+      
+      //   //Adressbook
+      //   --addressbook-list-item-text-color: var(--main-text-color);
+      //   --addressbook-list-item-hover-text-color: var(--main-text-color);
+      //   --addressbook-list-item-selected-text-color: var(--main-text-color);
+      //   --addressbook-list-item-selected-hover-text-color: var(--main-text-color);
+      //   --addressbook-list-item-background-color: var(--theme-background-color);
+      //   --addressbook-list-item-hover-background-color: var(--hover-background-color);
+      //   --addressbook-list-item-selected-background-color: var(--hover-background-color);
+      //   --addressbook-list-item-selected-hover-background-color: var(--hover-background-color);
+         --addressbook-list-pagenav-background-color: var(--list-pagenav-background-color);
+      
+      //   //Badge color
+         --badge-background-color: var(--button-color-base);
+         --badge-text-color: var(--button-text-color-base);
+         --roundbadge-bckg-color: var(--badge-background-color);
+      
+      //   //Barup
+         --barup-search-input-background-color: var(--input-mel-background-color);
+      //   --barup-search-input-border-color: var(--main-border-color);
+      //   --barup-search-input-text-color: var(--input-button-text-color);
+         --barup-create-button-background-color: var(--mel-button-background-color);
+         --barup-create-button-hover-background-color: var(--mel-button-hover-background-color);
+      //   --barup-icon-color: var(--default-text-color);
+      //   --barup-icon-badge-background-color: #aa3333;
+      //   --barup-icon-badge-text-color: var(--secondary-text-color);
+      --note-text-color: black;
+           ---note-text-color: var(--button-text-color-base-hover)!important;
+           ---note-bckg-color-hover: var(--mel-button-hover-background-color)!important;
+
+      
+      //   //Border colors
+      //   --main-border-color: var(--main-text-color);
+      //   --secondary-border-color: #ced4da;
+      //   --main-separator-border-color: transparent;
+      //   --separate: transparent;
+      //   --layout-border: transparent;
+      //   --default-border-color: transparent;
+      //   --layout-list-separate-color:var(--secondary-border-color);
+      
+      //Footer
+        --list-pagenav-background-color: var(--theme-background-color);
+      
+      //   //Bureau
+         --bureau-card-background-color: var(--base-theme-color-2);
+      //   --bureau-card-box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+      //   --bureau-card-border-radius: 10px;
+         --bureau-card-content-background-color: var(--base-1);
+         --bureau-card-content-hover-background-color: var(--button-color-base-hover);
+         --bureau-card-text-color: var(--button-text-color-base);
+         --bureau-card-content-hover-text-color: var(--button-text-color-base-hover);
+      //   --bureau-app-icon-color: var(--secondary-text-color);
+      //   --bureau-app-text-color: var(--main-text-color);
+      
+      //   //Buttons
+         --mel-button-background-color: var(--button-color-base);
+         --mel-button-hover-background-color: var(--button-color-base-hover);
+         --mel-button-border-color: var(--button-border-color-base);
+         --mel-button-hover-border-color: var(--button-border-color-base-hover);
+         --mel-button-text-color: var(--button-text-color-base);
+         --mel-button-hover-text-color: var(--button-text-color-base-hover);
+      
+      //   --secondary-mel-button-background-color: var(--button-background-color);
+         --secondary-mel-button-hover-background-color: var(--mel-button-hover-background-color);
+      //   --secondary-mel-button-border-color: var(--secondary-mel-button-background-color);
+      //   --secondary-mel-button-hover-border-color: var(--main-bckg-color);
+      //   --secondary-mel-button-text-color: var(--main-text-color);
+      //   --secondary-mel-button-hover-text-color: var(--secondary-text-color);
+      
+      //   --mel-button-danger-background-color: var(--warning-color);
+      //   --mel-button-danger-text-color: var(--secondary-text-color);
+      //   --mel-button-danger-hover-background-color: #f7ab82;
+      //   --mel-button-danger-hover-text-color: var(--mel-button-danger-text-color);
+      //   --mel-button-danger-border-color: transparent;
+      //   --mel-button-danger-hover-border-color: transparent;
+      
+      //   --quit-button-background-color: transparent;
+      //   --quit-button-hover-background-color: var(--main-bckg-color);
+      //   --quit-button-border-color: var(--main-border-color);
+      //   --quit-button-hover-border-color: var(--quit-button-border-color);
+      //   --quit-button-text-color: var(--main-text-color);
+      //   --quit-button-hover-text-color: var(--secondary-text-color);
+
+      --modal-da-button-text-color: var(--button-text-color-base);
+      --modal-da-button-hover-text-color: var(--button-text-color-base-hover);
+      --modal-da-button-background-color: var(--button-color-base);
+      --modal-da-button-hover-background-color: var(--button-color-base-hover);
+    
+      --modal-da-next-button-text-color: var(--button-text-color-base);
+      --modal-da-next-button-hover-text-color: var(--button-text-color-base-hover);
+      --modal-da-next-button-background-color: var(--button-color-base);
+      --modal-da-next-button-hover-background-color: var(--button-color-base-hover);
+      
+      //   //Calendar 
+      //   --calendar-list-item-hover-background-color: var(--hover-background-color);
+      //   --calendar-list-item-selected-background-color: var(--hover-background-color);
+      //   --calendar-sidebar-header-bottom-separator-color: var(--main-border-color);
+      //   --calendar-sidebar-header-background-color: var(--theme-background-color);
+         --calendar-widget-background-color: var(--base-1);
+      //   --calendar-widget-text-color: var(--main-text-color);
+      //   --calendar-widget-header-text-color: var(--main-text-color);
+      
+         --calendar-widget-header-background-color: var(--base-theme-color-2);
+      
+      //   --calendar-toolbar-search-icon-color: var(--input-button-text-color);
+      //   --calendar-toolbar-roundcube-hover-background-color: var(--hover-background-color);
+      
+         --calendar-table-header: var(--base-2-n-1);
+      //   --calendar-table-separator-color: var(--calendar-table-header);
+      //   --calendar-table-text-color: var(--main-text-color);
+         --calendar-table-today-background-color: var(--base-1);
+      
+      //   //Dropdown
+         --dropdown-menu-background-color: var(--popover-background-color);
+      //   --dropdown-menu-text-color: var(--main-text-color);
+      //   --dropdown-menu-icon-color: var(--secondary-text-color);
+         --dropdown-item-hover-background-color: var(--button-color-base-hover);
+      
+      //   //Input
+         --input-background-color: var(--input-mel-background-color);
+         --input-focus-background-color: var(--input-background-color);
+         --input-text-color: white;
+      //   --input-border-color: var(--secondary-border-color);
+      
+         --input-mel-background-color: var(--base-1-n-1);
+      //   --input-mel-focus-background-color: var(--input-mel-background-color);
+      //   --input-mel-focus-border-color: var(--main-text-color);
+      //   --input-mel-focus-shadow-color: #C8CDFC59;
+         --input-mel-text-color: var(--input-text-color);
+      //   --input-mel-border-color: var(--input-mel-background-color);
+      
+      //   //Layout menu - Taskbar
+         --layout-menu-background-color: var(--base-2);
+         --layout-menu-background-selected-color: var(--base-1);
+         --layout-menu-background-hover-color: var(--base-1);
+      //   --layout-menu-text-color: var(--main-text-color);
+      //   --layout-menu-text-selected-color: var(--main-text-color);
+      //   --layout-menu-text-hover-color: var(--main-text-color);
+      //   --layout-menu-border-top: solid thin transparent;
+      //   --layout-menu-border-right: transparent;
+      
+      //   //Layout sidebar
+      //   --layout-sidebar-background-color: var(--theme-background-color);
+      //   --layout-sidebar-background-hover-color: var(--hover-background-color);
+         --layout-sidebar-background-selected-color: var(--alternative-layout-list-hover-background-color);
+      //   --layout-sidebar-background-hover-selected-color: var(--layout-sidebar-background-selected-color);
+      //   --layout-sidebar-text-color: var(--main-text-color);
+      //   --layout-sidebar-text-hover-color: var(--main-text-color);
+      //   --layout-sidebar-text-selected-color: var(--main-text-color);
+      //   --layout-sidebar-text-hover-selected-color: var(--layout-sidebar-text-selected-color);
+      //   --layout-sidebar-border-color: transparent;
+      //   --layout-sidebar-border-selected-color: transparent;
+      //   --layout-sidebar-item-border-radius: var(--secondary-border-radius);
+        
+      //   --primary-layout-sidebar-background-color: var(--theme-background-color);
+         --primary-layout-sidebar-background-selected-color: var(--list-hover-background-color);
+      //   --primary-layout-sidebar-text-color: var(--main-text-color);
+      
+      //   //Layout list
+         --layout-list-header-background-color: var(--base-theme-color-2);
+         --layout-list-header-background-hover-color: var(--button-color-base-hover);
+      //   --layout-list-header-text-color: var(--main-text-color);
+         --layout-list-header-text-hover-color: var(--button-text-color-base-hover);
+      //   --layout-list-header-input-text-color: var(--main-text-color);
+      //   --layout-list-pagenav-color: var(--tierciary-text-color);
+      
+      --layout-list-background-color: var(--framed-body-background-color);
+      
+         --alternative-layout-list-background-color: var(--base-theme-color-2);
+         --alternative-layout-list-header-background-color: var(--alternative-layout-list-background-color);
+      //   --alternative-layout-list-text-color: var(--main-text-color);
+         --alternative-layout-list-hover-background-color: var(--base-1);
+      //   --alternative-layout-list-hover-text-color: var(--main-text-color);
+      
+      //   //Layout content
+         --layout-content-header-background-color: var(--layout-list-header-background-color);
+         --alternative-layout-content-header-background-color: var(--alternative-layout-list-header-background-color);
+         --layout-content-header-background-hover-color: var(--button-color-base-hover);
+      //   --layout-content-header-text-color: var(--main-text-color);
+      //   --layout-content-header-text-hover-color: var(--main-text-color);
+      //   --layout-content-text-color: var(--main-text-color);
+         --layout-content-background-color: var(--content-color);
+      //   --layout-content-border-left-color: solid transparent;
+      
+      //   //Mail
+      //   --mail-unread-text-color: var(--main-text-color);
+      //   --mail-unread-flagged-text-color: #15193A;
+      //   --mail-unread-icon-color: #A8ACC0;
+      //   --mail-unread-icon-hover-color: #779BD6;
+      
+      //   --mail-header-layout-list-background-color: var(--theme-background-color);
+      
+         --message-list-quick-filter-background-color: var(--base-theme-color-2);
+         --message-list-quick-filter-active-background-color: var(--button-color-base-hover);
+      //   --message-list-quick-filter-active-text-color: var(--main-text-color);
+      //   --message-list-quick-filter-active-border-color: transparent;
+      
+         --message-list-quick-filter-hover-background-color: var(--message-list-quick-filter-active-background-color);
+      //   --message-list-quick-filter-text-color: var(--main-text-color);
+      //   --message-list-quick-filter-hover-text-color: var(--main-text-color);
+      
+      //   --message-list-quick-filter-button-background-color: transparent;
+      //   --message-list-quick-filter-button-text-color: var(--main-text-color);
+      //   --message-list-quick-filter-button-border-color: transparent;
+         --message-list-quick-filter-button-hover-background-color: var(--message-list-quick-filter-active-background-color);
+      //   --message-list-quick-filter-button-hover-text-color: var(--main-text-color);
+      //   --message-list-quick-filter-button-hover-border-color: transparent;
+      
+         --message-list-content-row-background-color: var(--base-2);
+         --message-list-content-row-alternate-background-color: var(--base-1);
+         --message-list-content-row-background-hover-color: var(--button-color-base-hover);
+      //   --message-list-content-selected-row-background-color: var(--hover-background-color);
+      //   --message-list-content-selected-row-border-color: var(--main-border-color);
+      //   --message-list-border-bottom: solid thin #f0f0f0;
+      //   --mail-quota-widget-text-color: var(--main-text-color);
+      
+      
+      //   //Mail - msgicon, flags
+      //   --message-list-content-mail-button-color: var(--mail-unread-icon-color);
+      //   --message-list-content-mail-button-hover-color: var(--mail-unread-text-color);
+      //   --message-list-content-selected-mail-button-color: var(--main-text-color);
+      //   --message-list-content-selected-mail-button-hover-color: var(--main-text-color);
+      
+      //   //Mail - address
+      //   --message-list-content-mail-address-color: var(--mail-unread-text-color);
+      //   --message-list-content-mail-address-hover-color: var(--mail-unread-text-color);
+      //   --message-list-content-selected-mail-address-color: var(--main-text-color);
+      //   --message-list-content-selected-mail-address-hover-color: var(--main-text-color);
+      
+      //   //Mail - subject, date, size, attachment
+      //   --message-list-content-mail-subject-color: var(--main-text-color);
+      //   --message-list-content-mail-subject-hover-color: var(--main-text-color);
+      //   --message-list-content-selected-mail-subject-color: var(--main-text-color);
+      //   --message-list-content-selected-mail-subject-hover-color: var(--main-text-color);
+      
+      //   --message-list-content-hover-shadow: #26283b47;
+      //   --message-list-content-border-color: #D1D3DD;
+      
+      //   //Mail Panel
+      //   --layout-content-header-right-border-color: var(--main-text-color);
+         --layout-content-contact-address-color: white;
+         --layout-content-message-partheaders: var(--base-1);
+      //   --layout-content-message-partheaders-top-border-color: #f4f4f4;
+      //   --layout-content-message-partheaders-title: var(--hint-text-color);
+      //   --layout-content-message-attachment-text-color: var(--layout-content-contact-address-color);
+      //   --layout-content-message-attachment-size-color: var(--hint-text-color);
+      
+      //   //Modal
+         --modal-background-color: var(--popover-background-color);
+         --modal-text-color: white;
+      //   --modal-title-color: var(--main-text-color);
+      //   --modal-border: solid thin var(--secondary-border-color);
+      
+      //   //Nav tabs 
+      //   --nav-tabs-background-color: var(--modal-background-color);
+      //   --nav-tabs-border-bottom-color: #dee2e6;
+      
+         --nav-item-background-color: var(--button-color-base);
+         --nav-item-active-background-color: var(--button-color-base-hover);
+         --nav-item-hover-background-color: var(--button-color-base-hover);
+      //   --nav-item-text-color: var(--main-text-color);
+      //   --nav-item-active-text-color: var(--nav-item-text-color);
+      //   --nav-item-hover-text-color: var(--nav-item-text-color);
+      //   --nav-item-border-bottom: none;
+      //   --nav-item-active-border-bottom: none;
+      //   --nav-item-hover-border-bottom: none;
+      
+      //   //Option menu
+      //   --option-menu-title-color: var(--main-text-color);
+      
+         --option-menu-button-background-color: var(--button-color-base);
+         --option-menu-button-hover-background-color: var(--button-color-base-hover);
+      //   --option-menu-button-text-color: var(--main-text-color);
+      //   --option-menu-button-border-color: transparent;
+      
+      //   --option-menu-radio-button-background-color: var(--default-bckg-color);
+      //   --option-menu-radio-button-hover-background-color: var(--hover-background-color);
+         --option-menu-radio-button-icon-color: var(--input-text-color);
+      
+      //   //Overlay
+      //   --ui-widget-overlay: rgba(44, 54, 58, .5);
+      
+      //   //Popover
+         --popover-background-color: var(--base-1);
+      //   --popover-hover-background-color: var(--hover-background-color);
+      //   --popover-text-color: var(--main-text-color);
+      //   --popover-hover-text-color: var(--main-text-color);
+      //   --popover-hover-icon-color: var(--main-text-color);
+      //   --popover-box-shadow-color: #f1f3f4;
+      //   --popover-border-color: #d4dbde;
+      //   --popover-focus-border-color: #37beff;
+      //   --popover-icon-color: var(--popover-background-color);
+      
+      //   //Scrollbar 
+      //   --scrollbar-width-moz: thin;
+      //   --scrollbar-handler-color: #cdcdcd;
+      //   --scrollbar-background-color: #f0f0f0;
+      
+      //   //Searchbar
+         --searchbar-background-color: var(--input-mel-background-color);
+        --searchbar-alternate-background-color: var(--input-mel-background-color);
+        --searchbar-text-color: var(--input-text-color);
+      //   --searchbar-text-hover-color: var(--main-text-color);
+      //   --searchbar-border-color: var(--main-border-color);
+      //   --searchbar-alternate-border-color: var(--main-bckg-color);
+      
+      //   //Searchmenu
+      //   --searchmenu-text-color: var(--main-text-color);
+           --searchlist-background-color: var(--theme-background-color);
+      
+      //   //Switch buttons
+      //   --custom-switch-unchecked-background-color: #e8e8e8;
+      //   --custom-switch-checked-background-color: var(--tierciary-bckg-color);
+         --custom-switch-unchecked-dot-color: var(--button-color-base);
+      //   --custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
+      //   --custom-switch-border-color: transparent;
+      
+      //   --alternate-custom-switch-unchecked-background-color: #bfbfbf;
+      //   --alternate-custom-switch-checked-background-color: var(--tierciary-bckg-color);
+      //   --alternate-custom-switch-unchecked-dot-color: #fff;
+      //   --alternate-custom-switch-checked-dot-color: var(--custom-switch-unchecked-dot-color);
+      //   --alternate-custom-switch-border-color: transparent;
+      
+      //   //Tab buttons
+      //   --mel-tabs-background-color: transparent;
+      //   --mel-tabs-active-background-color: transparent;
+      //   --mel-tabs-hover-background-color: var(--hover-background-color);
+      //   --mel-tabs-text-color: var(--main-text-color);
+      //   --mel-tabs-active-text-color: #5069BC;
+      //   --mel-tabs-hover-text-color: null;
+      
+      //   //Tasks
+         --tasklist-row-background-color: var(--base-2);
+         --tasklist-alternate-row-background-color: var(--base-2-n-1);
+      //   --tasklist-row-hover-background-color: var(--hover-background-color);
+      //   --tasklist-row-selected-background-color: var(--hover-background-color);
+      //   --tasklist-row-text-color: var(--main-text-color);
+      //   --tasklist-row-selected-text-color: var(--main-text-color);
+      //   --tasklist-row-hover-text-color: var(--main-text-color);
+      
+      //   //Workspace 
+         --workspace-item-background-color: var(--base-2);
+      //   --workspace-separator-color: var(--secondary-border-color);
+      
+          --contact-background-color: black;
+          --bureau-background-color: transparent;
+          --hover-app-color: var(--button-color-base-hover);
+          --bureau-app-icon-color: var(--button-text-color-base-hover);
+
+          --calendar-list-item-switch-background-color: var(--button-color-base);
+          --main-content-bg-color: var(--base-1);
+          --main-border-color: white;
+
+          --scrollbar-handler-color: var(--button-color-base);
+          --scrollbar-background-color: lighten(@base-color-2, 50%);
+      }
+
+   .barup {
+      if(@enable_barup_custom_background < 1, e('background: none!important;'), e('--barup-var: none;'))
+    }
+
+    #button-notes{
+      --note-bckg-color-hover: var(---note-bckg-color-hover);
+      --note-text-color-hover: var(---note-text-color);
+    }
+
+    .mel-hover:hover {
+      box-shadow: 0 0 0 0.2rem var(--button-color-base-hover);
+      border-radius: 15px;
+   }
+
+   .option_radio_wrapper {
+      .switch-overlay {
+         color: var(--input-text-color);
+      }
+   }
+
+   .theme-saison-date{
+      color: var(--input-text-color);
+      --default-bckg-color: var(--modal-background-color);
+   }
+
+   .task-calendar #layout #layout-content .fc-toolbar.fc-header-toolbar .fc-right button {
+      &:hover {
+         --searchbar-background-color: var(--button-color-base-hover);
+         --input-button-text-color: var(--button-text-color-base-hover);
+      }
+   }
+
+   .task-search{
+      .mel-block-list{
+         background-color: var(--base-2);
+      }
+   }
+
+   #message-list-filters li .quick-filter {
+      color: white;
+   }
+
+   #cloud-frame{
+      button {
+         &:hover {
+            background-color: var(--button-color-base-hover);
+            color: var(--button-text-color-base-hover);
+         }
+      }
+   }
+
+   #wsp-user-rights,
+   #table-apps {
+      tbody {
+         background-color: var(--layout-content-background-color);
+         color: white;
+      }
+   }
+
+   #barup-right-buttons{
+      background: e("linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, @{base-color-1} 100%)");
+   }
+
+   .task-mail.action-compose {
+      background-image: var(--compose-body-picture);
+   }
+
+   .task-mel_metapage.action-dialog-ui{
+      --body-background-color: var(--modal-background-color);
+      --body-picture:none;
+   }
+
+   .webconf-content{
+      .contents{
+         background-color: var(--modal-background-color)!important;
+      }
+   }
+
+   .mel-calendar-button{
+      color: var(--button-text-color-base);
+
+      &:hover {
+         color: var(--button-text-color-base-hover);
+         background-color: var(--button-color-base-hover);
+      }
+   }
+
+   #taskmenu {
+      //--main-text-color: var(--main-layout-taskbar-text-color);
+
+      &.menu.toolbar a.home.icon-mel-home {
+          background-image: url("../images/halloween-pumpkin-empty.svg");
+          background-size: cover;
+
+          &::before{
+              //content: none;
+              display: none;
+          }
+      }
+
+      &.menu.toolbar a.home.icon-mel-home:hover {
+          background-image: url("../images/halloween-pumpkin-full.svg");
+      }
+  }
+
+  .task-calendar .fc-day-header{
+   background-color: var(--calendar-table-header);
+  }
+
+  .print-config{
+      background-color: var(--base-1);
+
+      + .print-content {
+         background-color: var(--layout-content-background-color);
+      }
+  }
+
+  .print-content .fc .fc-header-toolbar{
+      background-color: var(--base-1);
+      h2 {
+         color: white;
+      }
+  }
+
+  .input-group-text.mel,
+  .form-control[readonly],
+  .form-control:disabled{
+   background-color: var(--base-2-n-1)!important;
+  }
+
+  #print-layout {
+   #calendarlist li a {
+      background-color: white;
+      padding: 6px;
+      border-radius: 5px;
+   }
+  }
+
+  #eventfreebusy .attendee {
+   color:white!important;
+  }
+
+  #aclcontainer {
+   .menu.toolbar a{
+      color: var(--button-text-color-base);
+      // background-color: var(--button-color-base);
+   
+      &:hover {
+         color: var(--button-text-color-base-hover);
+         background-color: var(--button-color-base-hover)!important;
+         border-radius: 5px;
+      }
+     }
+  }
+
+  .task-addressbook.action-print {
+	/* color: wheat; */
+	/* backgroun-color: white; */
+	--body-picture: none;
+	--main-text-color: black;
+	--header-title-color: black;
+	--body-background-color: var(--base-2-n-1);
+   }
+
+   .headlines-by.headlines-rss-type {
+      background-color: transparent;
+      color: #30C5B2 !important;
+   }
+
+   .task-useful_links{
+      .link-block.square_div {
+         .contents{
+            color:black;
+         }
+      }
+   }
+
+   html&{
+      body a.filename .attachment-name {
+         color:white;
+      }
+   }
+  
+}
+
+html.theme-super-classique-main.picture-theme.abstract-picture-theme-two-colored.party-halloween.dark-mode-custom{
+   &:root{
+      --input-text-color: var(--default-text-color);
+      --message-list-quick-filter-active-text-color: var(--input-text-color);
+      --input-mel-background-color:#181c28;
+     --body-picture: url("../images/halloween-bg-dark-unsplash.jpg");
+     --compose-body-picture: url("../images/mail-halloween-dark.jpg");
+     --layout-sidebar-background-color: var(--base-theme-color-1-nuances-1);
+     --scrollbar-background-color: var(--base-2-n-1);
+   }
+
+   .task-mail.action-compose {
+      #layout-content{
+         background-color: transparent;
+      }
+   }
+
+   .logo-mel{
+      background-color: black;
+   }
+}

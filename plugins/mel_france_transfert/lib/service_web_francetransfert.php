@@ -140,13 +140,15 @@ class ServiceWebFranceTransfert {
 
     // Parcours des pièces jointes pour les lister
     if (is_array($COMPOSE['attachments'])) {
-      foreach ($COMPOSE['attachments'] as $id => $a_prop) {
+      $attaches = class_exists('mel_france_transfert') ? mel_france_transfert::ignore_double_attachments($COMPOSE['attachments']) : $COMPOSE['attachments'];
+      foreach ($attaches as $id => $a_prop) {
         $fichiers[] = [
           "idFichier"     => $id,
           "nomFichier"    => $a_prop['name'],
           "tailleFichier" => $a_prop['size'],
         ];
       }
+      unset($attaches);
     }
 
     // Paramètres de la requête
@@ -195,7 +197,7 @@ class ServiceWebFranceTransfert {
     }
     else if ($this->_httpCode == 403) {
       $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
-      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlMessageFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::initPli() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
       return false;
     }
     else { // En théorie on a httpcode = 422
@@ -203,14 +205,19 @@ class ServiceWebFranceTransfert {
       if (isset($content->erreurs)) {
         $errors = [];
         foreach ($content->erreurs as $erreur) {
-          $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
+          $errors[] = "Erreur: $erreur->libelleErreur";
         }
         $this->_errorMessage = implode(' / ', $errors);
       }
       else if (isset($content->errors) && isset($content->errors->message)) {
         $this->_errorMessage = $content->errors->message;
       }
-      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlMessageFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::initPli() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      // 0007946: [France Transfert] Gérer le message d'erreur "size must be between 0 and 2500"
+      if ($this->_httpCode == 400 && strpos($this->_errorMessage, 'size must be between') === 0) {
+        $max_message_size = substr($this->_errorMessage, strlen('size must be between 0 and '));
+        $this->_errorMessage = str_replace('%%max_message_size%%', $max_message_size, $this->rc->gettext('error_message_size_limit', 'mel_france_transfert'));
+      }
       return false;
     }
   }
@@ -229,6 +236,13 @@ class ServiceWebFranceTransfert {
   public function sendFile($COMPOSE_ID, $from, $id, $path, $name) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::sendFile($COMPOSE_ID, $name)");
+
+    // Tester si on n'est pas sur une extension interdite
+    // if (in_array(array_pop(explode('.', $name)), $this->rc->config->get('francetransfert_forbidden_extensions', []))) {
+    //   $this->_errorMessage = "Le fichier '$name' n'est pas autorisé. Liste des extensions de fichier interdites : " . implode(', ', $this->rc->config->get('francetransfert_forbidden_extensions', []));
+    //   mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur : " . $this->_errorMessage);
+    //   return false;
+    // }
 
     $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
     $COMPOSE['ft_action'] = "Envoi du fichier '$name' vers France Transfert";
@@ -295,7 +309,7 @@ class ServiceWebFranceTransfert {
         if (isset($content->erreurs)) {
           $errors = [];
           foreach ($content->erreurs as $erreur) {
-            $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
+            $errors[] = "Erreur: $erreur->libelleErreur";
           }
           $this->_errorMessage = implode(' / ', $errors);
         }

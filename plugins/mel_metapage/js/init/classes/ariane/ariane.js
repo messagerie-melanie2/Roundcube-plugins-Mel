@@ -1,3 +1,62 @@
+class ChatHelper {
+    static async _Module() {
+        return await loadJsModule('mel_metapage', 'chatManager', '/js/lib/chat/');
+    }
+
+    static async Manager() {
+        return (await this._Module()).ChatManager.Instance();
+    }
+
+    static async ManagerCallback() {
+        return (await this._Module()).ChatCallback;
+    }
+
+    static async Chat() {
+        return (await this.Manager()).chat();
+    }
+
+    static async Top() {
+        return (await loadJsModule('mel_metapage', 'Top')).Top;
+    }
+
+    static OpenCustomStatusModal() {
+        let html = '<div class="d-flex">'+
+          '<input type="text" id="custom_status_input" placeholder="Que faites-vous en ce moment ?">'+
+          '<select id="custom_status_dropdown">' +
+          '<option value="online">Disponible</option>' +
+          '<option value="away">Absent</option>' +
+          '<option value="busy">Ne pas déranger</option>' +
+          '<option value="offline">Hors ligne</option>' +
+          '</select>'+
+      '</div>';
+
+        let buttons = [
+        {
+          text: 'Annuler',
+          click: function () {
+            $(this).dialog('destroy');
+          }
+        },
+        {
+          text: 'Enregistrer',
+          class: 'btn btn-primary border-0 text-light',
+          click: async function () {
+            const manager = await ChatHelper.Manager();
+            var message = document.getElementById('custom_status_input').value;
+            var status = document.getElementById('custom_status_dropdown').value;
+            manager.setStatus(status, message);
+            $('.user-menu-info').text(message);
+            $(this).dialog('destroy');
+          }
+        }]
+
+        // Display the popup dialog
+        rcmail.show_popup_dialog(html, rcmail.gettext('mel_metapage.change_status'), buttons, {resizable: false, draggable: false});
+
+      }
+}
+
+
 (async () => {
     const delay = ms => new Promise(res => setTimeout(res, ms));
     const isAsync = myFunction => myFunction.constructor.name === "AsyncFunction";
@@ -53,7 +112,7 @@
 
         update_status(status)
         {
-            let querry = $("#user-dispo");
+            let querry = $(".ariane-user-dispo");
             querry.removeClass("logout")
             .removeClass("ok")
             .removeClass("busy")
@@ -186,11 +245,84 @@
                   }, '*');
             }
         }
+
+        async get_status() {
+            let status_datas = {
+                status:undefined,
+                message:''
+            }
+            await mel_metapage.Functions.get(
+                mel_metapage.Functions.url('discussion', 'get_status'),
+                {},
+                (datas) => {
+                    if ("string" === typeof datas) datas = JSON.parse(datas);
+                    console.log('datas', datas);
+                    status_datas.status = datas.content.status;
+                    status_datas.message = datas.content.message || '';
+                }
+            );
+        
+            return status_datas;
+        }
+        
+        async set_status(status, message) {
+            await mel_metapage.Functions.post(
+                mel_metapage.Functions.url('discussion', 'set_status'),
+                {
+                    _st:status,
+                    _msg:message
+                },
+                (datas) => {
+                    if ("string" === typeof datas) datas = JSON.parse(datas);
+                }
+            );
+        }
+
+        async set_update_status(status, message) {
+          await this.set_status(status, message);
+
+          //Change le status dans le bnum
+          this.update_status(status);
+        }
+
+        set_custom_status() {
+          let html = '<div class="d-flex">'+
+            '<input type="text" id="custom_status_input" placeholder="Que faites-vous en ce moment ?">'+
+            '<select id="custom_status_dropdown">' +
+            '<option value="online">Disponible</option>' +
+            '<option value="away">Absent</option>' +
+            '<option value="busy">Ne pas déranger</option>' +
+            '<option value="offline">Hors ligne</option>' +
+            '</select>'+
+        '</div>';
+
+          let buttons = [
+          {
+            text: 'Annuler',
+            click: function () {
+              $(this).dialog('destroy');
+            }
+          },
+          {
+            text: 'Enregistrer',
+            class: 'btn btn-primary border-0 text-light',
+            click: function () {
+              var message = document.getElementById('custom_status_input').value;
+              var status = document.getElementById('custom_status_dropdown').value;
+              ariane.set_update_status(status, message)
+              $(this).dialog('destroy');
+            }
+          }]
+
+          // Display the popup dialog
+          rcmail.show_popup_dialog(html, rcmail.gettext('mel_metapage.change_status'), buttons, {resizable: false, draggable: false});
+
+        }
     }
 
 
-    window.ariane_reinit = () => {return new Ariane(true);};
-    window.new_ariane = (ariane) => new Ariane(false, ariane);
-    window.ariane = new Ariane(true);
+    // window.ariane_reinit = () => {return new Ariane(true);};
+    // window.new_ariane = (ariane) => new Ariane(false, ariane);
+    // window.ariane = new Ariane(true);
 
 })();

@@ -119,7 +119,22 @@ function rcube_libcalendaring(settings)
      */
     this.is_attendee = function(event, role, email)
     {
-        var i, emails = email ? ';' + email.toLowerCase() : settings.identity.emails;
+        // PAMELA - Mode assistantes
+        var i, emails;
+        if (!email && !!this.calendars && this.calendars[event.calendar] && this.calendars[event.calendar]['owner_email']) {
+            email = this.calendars[event.calendar]['owner_email'].toLowerCase();
+
+            // Si c'est l'agenda de l'utilisateur connecté
+            if (settings.identity.emails.indexOf(';' + email) >= 0) {
+                emails = settings.identity.emails;
+            }
+            else {
+                emails = ';' + email;
+            }
+        }
+        else {
+            emails = email ? ';' + email.toLowerCase() : settings.identity.emails;
+        }
 
         for (i=0; event.attendees && i < event.attendees.length; i++) {
             if ((!role || event.attendees[i].role == role) && event.attendees[i].email && emails.indexOf(';'+event.attendees[i].email.toLowerCase()) >= 0) {
@@ -135,7 +150,14 @@ function rcube_libcalendaring(settings)
      */
     this.is_organizer = function(event, email)
     {
-        return this.is_attendee(event, 'ORGANIZER', email) || !event.id;
+        // PAMELA - Mode assistantes
+        if (event['organizer_calendar'] == event['calendar']) {
+            return this.get_organizer(event);
+        }
+        else {
+            return false;
+        }
+        // return this.is_attendee(event, 'ORGANIZER', email) || !event.id;
     };
 
     /**
@@ -723,8 +745,10 @@ function rcube_libcalendaring(settings)
 
         for (i=0; i < alarms.length; i++) {
             alarm = alarms[i];
-            alarm.start = this.parseISO8601(alarm.start);
-            alarm.end = this.parseISO8601(alarm.end);
+
+            // PAMELA - 0007596: Dans les rappels d'évènement, l'heure affichée du rendez-vous est décalée d'une heure
+            alarm.start = moment(alarm.start);
+            alarm.end = moment(alarm.end);
 
             if (alarm.action == 'AUDIO') {
                 audio_alarms.push(alarm);
@@ -742,7 +766,7 @@ function rcube_libcalendaring(settings)
 			{
 				let link;
 				if (alarm.location.includes("@visio")) {
-                    link = `target="_blank" href="${alarm.location.replace("@visio:", "")}"`;
+                    link = `class="external-webconf" target="_blank" href="${alarm.location.replace("@visio:", "")}"`;
                 }
 				else if (alarm.location.includes("#visio")) {
 					let tmp_link = new WebconfLink(alarm.location);
@@ -781,16 +805,30 @@ function rcube_libcalendaring(settings)
             records.push($('<div>').addClass('alarm-item').html(html).append(actions));
 
             // PAMELA - Display alarm notification
-            top.rcmail.triggerEvent('plugin.push_notification', {
+            let notif_config = {
                 uid: 'calendar-' + alarm.id,
-                title: Q(alarm.title),
-                content: Q(this.event_date_text(alarm)),
+                title: Q(alarm.title) + ' : ' + Q(this.event_date_text(alarm)),
                 category: 'agenda',
                 created: Math.floor(Date.now() / 1000),
                 modified: Math.floor(Date.now() / 1000),
                 isread: false,
-                local: true,
-            });
+                local: true
+            };
+
+            if (typeof mel_metapage !== "undefined")
+            {
+                var webconfkey = mel_metapage.Functions.webconf_url(alarm.location);
+                if (!!webconfkey) {
+                    notif_config['action'] = [{
+                        command:'start_webconf',
+                        text:rcmail.gettext('join_visio', 'libcalendaring'),
+                        title:rcmail.gettext('join_visio', 'libcalendaring'),
+                        params: {current:alarm}
+                    }];
+                }
+            }
+
+            top.rcmail.triggerEvent('plugin.push_notification', notif_config);
         }
 
         if (audio_alarms.length)
@@ -1492,7 +1530,50 @@ rcube_libcalendaring.fetch_itip_object_status = function(p)
 {
   p.mbox = rcmail.env.mailbox;
   p.message_uid = rcmail.env.uid;
-  rcmail.http_post(p.task + '/itip-status', { data: p });
+  // PAMELA - Mode assistantes
+  if (p.calendar) {
+    rcmail.http_post(p.task + '/itip-status', { data: p, calid: p.calendar });
+  }
+  else {
+    rcmail.http_post(p.task + '/itip-status', { data: p });
+  }
+};
+
+/**
+ * PAMELA - Mode assistantes
+ */
+rcube_libcalendaring.refetch_itip_object_status = function(p, resp, calid)
+{
+  p.mbox = rcmail.env.mailbox;
+  p.message_uid = rcmail.env.uid;
+  $('#loading-'+resp.id).show();
+  $('.calendar-agenda-preview').hide();
+
+  $(".calendar-agenda-preview .event-row-before").not(':first').remove();
+  $(".calendar-agenda-preview .event-row-before").replaceWith('%before%');
+  $(".calendar-agenda-preview .event-row-after").not(':first').remove();
+  $(".calendar-agenda-preview .event-row-after").replaceWith('%after%');
+    
+  rcmail.http_post(p.task + '/itip-status', { data: p, calid: calid });
+};
+
+/**
+ * PAMELA - Mode assistantes
+ */
+rcube_libcalendaring.remove_label_from_itip_mail = function()
+{
+    var rc = rcmail.is_framed() ? parent.rcmail : rcmail;
+
+    // Add rdvtraite label if plugin mel_labels exist
+    if (typeof rc.mel_label_toggle === "function") {
+        var label = '_-t-_rdvtraite';
+        // Check in rdvtraite isnt already unset
+		if (tb_labels_for_message && jQuery.inArray(label, tb_labels_for_message) !== -1) {
+            rc.mel_label_toggle(label);
+            // Refresh le mail
+            location.reload();
+        }
+    }
 };
 
 /**
@@ -1513,6 +1594,12 @@ rcube_libcalendaring.update_itip_object_status = function(p)
     $('#loading-'+p.id).hide().after(p.html);
   }
 
+  // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée
+  if (tb_labels_for_message && jQuery.inArray('_-t-_rdvtraite', tb_labels_for_message) !== -1) {
+    $('#label-'+p.id).show()
+    return;
+  }
+
   // enable/disable rsvp buttons
   if (p.action == 'rsvp') {
     $('#rsvp-'+p.id+' input.button').prop('disabled', false)
@@ -1520,11 +1607,13 @@ rcube_libcalendaring.update_itip_object_status = function(p)
     rcmail.enable_command('attachment-save-calendar', true);
   }
 
-  // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée
-  if (!tb_labels_for_message || jQuery.inArray('_-t-_rdvtraite', tb_labels_for_message) === -1) {
-    // show rsvp/import buttons (with calendar selector)
-    $('#'+p.action+'-'+p.id).show().find('input.button').last().after(p.select);
+  // PAMELA - On cache le bouton de mise a jour si l'évènement est déjà supprimer
+  if (p.cancelled) {
+    $('#rsvp-'+p.id+' input.button.cancel').hide();
   }
+
+  // show rsvp/import buttons (with calendar selector)
+  $('#'+p.action+'-'+p.id).show().find('input.button').last().after(p.select);
 
   // highlight date if date change detected
   if (p.rescheduled)

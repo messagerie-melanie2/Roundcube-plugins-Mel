@@ -99,7 +99,7 @@
 
                  link.callUpdate(task, action, addonConfig).then((result) => {
                     if (afterCreate !== null)
-                        afterCreate(result);
+                        afterCreate(result, link);
                     else {
 
                       if (result === true)
@@ -237,7 +237,7 @@
 
                 link.callUpdate(task, action, addonConfig).then((result) => {
                    if (afterCreate !== null)
-                       afterCreate(result);
+                       afterCreate(result, link);
                    else {
 
                      if (result === true)
@@ -578,7 +578,7 @@
         }
         );
 
-        if (resultDatas === "override" && confirm("Il s'agit d'un lien personnel venant de l'ancien bureau numérique, si vous continuez, il sera supprimé de l'ancien bureau numérique.\r\nÊtes-vous sûr de vouloir continuer ?"))
+        if (resultDatas === "override"/* && confirm("Il s'agit d'un lien personnel venant de l'ancien bureau numérique, si vous continuez, il sera supprimé de l'ancien bureau numérique.\r\nÊtes-vous sûr de vouloir continuer ?")*/)
         {
 
             config["_forced"] = true;
@@ -682,28 +682,22 @@
  
          if (code === override)
          {
-             if (confirm("Il s'agit d'un lien personnel venant de l'ancien bureau numérique, si vous continuez, il sera supprimé de l'ancien bureau numérique.\r\nÊtes-vous sûr de vouloir continuer ?"))
-             {
-                 config["_force"] = true;
-                 config["_subtitle"] = this.title;
-                 await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {
-                     if (datas === override)
-                     {
-                         notBusy();
-                         success = false;
-                         rcmail.display_message("Une erreur est survenue !", "error");
-                         console.error(datas, this, config);
-                     }
-                 }, (a,b,c) => {
-                     notBusy();
-                     success = false;
-                     rcmail.display_message("Impossible d'ajouter ou de modifier ce lien.", "error");
-                     console.error(a,b,c);
-                 });
-                 
-             }
-             else
-                 success = false;
+            config["_force"] = true;
+            config["_subtitle"] = this.title;
+            await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {
+                if (datas === override)
+                {
+                    notBusy();
+                    success = false;
+                    rcmail.display_message("Une erreur est survenue !", "error");
+                    console.error(datas, this, config);
+                }
+            }, (a,b,c) => {
+                notBusy();
+                success = false;
+                rcmail.display_message("Impossible d'ajouter ou de modifier ce lien.", "error");
+                console.error(a,b,c);
+            });
          }
  
          if (rcmail.busy)
@@ -756,7 +750,8 @@
         {
             link = MelMultiLink.fromLink(link);
             link.links = {};
-            const datas = JSON.parse(id.data("links").replace(/¤/g, '"'));
+            const raw = id.data("links");
+            const datas = typeof raw === 'string' ? JSON.parse(raw.replace(/¤/g, '"')) : {};
 
             for (const key in datas) {
                 if (Object.hasOwnProperty.call(datas, key)) {

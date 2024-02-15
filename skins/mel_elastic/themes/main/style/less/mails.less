@@ -1,0 +1,318 @@
+@mail-var-list: var(--message-list-content-mail-subject-color), var(--message-list-content-mail-address-color), var(--message-list-content-mail-button-color);
+@mail-var-list-hover: var(--message-list-content-mail-subject-hover-color), var(--message-list-content-mail-address-hover-color), var(--message-list-content-mail-button-hover-color);
+@mail-var-list-selected: var(--message-list-content-selected-mail-subject-color), var(--message-list-content-selected-mail-address-color), var(--message-list-content-selected-mail-button-color);
+@mail-var-list-selected-hover: var(--message-list-content-selected-mail-subject-hover-color), var(--message-list-content-selected-mail-address-hover-color), var(--message-list-content-selected-mail-button-hover-color);
+
+@class-mail: e('');
+@class-mail-selected: e('.selected');
+@class-mail-contextrow: e('.contextRow');
+
+.mixin-test(@name, @list, @list-hover) {
+  @subject-color: extract(@list, 1);
+  @subject-color-hover: extract(@list-hover, 1);
+  @address-color: extract(@list, 2);
+  @address-color-hover: extract(@list-hover, 2);
+  @button-color: extract(@list, 3);
+  @button-color-hover: extract(@list-hover, 3);
+
+  table.messagelist {
+    tr@{name} {
+      &.message {
+        span.attachment span::before {
+          color: @subject-color;
+        }
+
+        .flags {
+          color: @address-color;
+        }
+
+        &.flagged {
+          td {
+            color: @address-color;
+          }
+        }
+
+        &:hover {
+          td.subject {
+
+            span.fromto,
+            span.msgicon.status::before {
+              color: @address-color-hover !important;
+            }
+
+            span.msgicon.status:hover::before {
+              color: @button-color-hover !important;
+            }
+
+            span.date,
+            span.size,
+            a {
+              color: @subject-color-hover !important;
+            }
+          }
+
+          span.attachment span::before {
+            color: @subject-color-hover;
+          }
+
+          td.flags {
+            span.flagged:hover::before {
+              color: @button-color-hover !important;
+            }
+          }
+        }
+
+        td {
+          &.subject {
+            span {
+              &.fromto {
+                color: @address-color !important;
+              }
+
+              &.msgicon::before {
+                color: @button-color !important;
+              }
+
+              &.date {
+                color: @subject-color !important;
+              }
+
+              &.size {
+                color: @subject-color !important;
+              }
+            }
+
+            a {
+              color: @subject-color !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.mixin-test(@class-mail, @mail-var-list, @mail-var-list-hover);
+.mixin-test(@class-mail-selected, @mail-var-list-selected, @mail-var-list-selected-hover);
+.mixin-test(@class-mail-contextrow, @mail-var-list-selected, @mail-var-list-selected-hover);
+
+body.task-mail {
+  background-color: var(--theme-background-color);
+}
+
+.task-mail {
+
+  #layout-content .iframe-wrapper {
+    margin-top: 0px !important;
+  }
+
+  #layout-list #messagelist-content {
+    border-top-right-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+    margin-top: 0px !important;
+  }
+
+  #layout-list .message-list-filter-container {
+    border-radius: var(--main-panel-border-radius) var(--main-panel-border-radius) 0 0;
+    background-color: var(--message-list-quick-filter-background-color);
+  }
+
+  #layout-sidebar {
+    .scroller>.listing li.selected a {
+      border-radius: var(--layout-sidebar-selected-item-border-radius);
+    }
+  }
+
+  #messagecontframe {
+    border-radius: var(--main-panel-border-radius);
+  }
+
+  #messagelist-content {
+    background-color: var(--message-list-content-row-background-color) !important;
+
+    table.messagelist:not(.threaded) tbody tr:nth-child(2n) {
+      td {
+        background-color: var(--message-list-content-row-alternate-background-color);
+      }
+
+      &:hover {
+        background-color: var(--message-list-content-row-background-hover-color);
+      }
+    }
+
+    table.messagelist:not(.threaded) tbody tr.unread td {
+      background-color: var(--message-list-content-row-background-color);
+    }
+
+    table.messagelist {
+      tr {
+        &.selected td {
+          background-color: var(--message-list-content-selected-row-background-color) !important;
+        }
+
+        &.message {
+          &.selected:hover {
+            background-color: var(--message-list-content-selected-row-background-hover-color) !important;
+          }
+
+          &:hover {
+            box-shadow: var(--message-list-hover-shadow);
+            background-color: var(--message-list-content-row-background-hover-color) !important;
+
+            td {
+              background-color: var(--message-list-content-row-background-hover-color) !important;
+            }
+
+            td.subject span.msgicon.status:hover::before {
+              color: var(--mail-unread-icon-hover-color) !important;
+            }
+          }
+
+          td {
+            border-bottom: var(--message-list-border-bottom);
+          }
+
+          &.selected>td.selection+td {
+            border-left-color: var(--message-list-content-selected-row-border-color) !important;
+          }
+        }
+
+        &.unread {
+          td.subject span.msgicon::before {
+            color: var(--message-list-content-mail-address-color) !important;
+          }
+
+          &.selected {
+            td.subject span.msgicon::before {
+              color: var(--message-list-content-selected-mail-button-color) !important;
+            }
+          }
+        }
+
+        &.flagged {
+          td.subject span.fromto {
+            color: var(--mail-unread-flagged-text-color) !important;
+          }
+
+          &.selected {
+            td.subject span.fromto {
+              color: var(--message-list-content-selected-mail-address-color) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #layout-sidebar,
+  #layout-sidebar>.header,
+  .upload-form .hint {
+    color: var(--layout-sidebar-text-color) !important;
+  }
+
+  #message-list-filters li .quick-filter.active,
+  #message-list-filters-extra button.active {
+    background-color: var(--message-list-quick-filter-active-background-color);
+    color: var(--message-list-quick-filter-active-text-color);
+    border-color: var(--message-list-quick-filter-active-border-color);
+  }
+
+  #message-list-filters li .quick-filter:hover {
+    color: var(--message-list-quick-filter-hover-text-color);
+    background-color: var(--message-list-quick-filter-hover-background-color);
+  }
+
+  .message-list-filter-container .mel-filter-more .mel-button {
+    background-color: var(--message-list-quick-filter-button-background-color);
+    color: var(--message-list-quick-filter-button-text-color);
+    border-color: var(--message-list-quick-filter-button-border-color);
+    border-top-right-radius: var(--main-panel-border-radius);
+
+    &:hover {
+      background-color: var(--message-list-quick-filter-button-hover-background-color);
+      color: var(--message-list-quick-filter-button-hover-text-color);
+      border-color: var(--message-list-quick-filter-button-hover-border-color);
+    }
+  }
+
+  .quota-widget,
+  .quota-widget .count {
+    color: var(--mail-quota-widget-text-color);
+  }
+
+  #mail-search-border {
+    background-color: var(--searchbar-alternate-background-color);
+  }
+
+  &.action-preview #layout-content {
+    background-color: var(--layout-content-background-color) !important;
+  }
+
+  #layout-content {
+    >.header {
+      background-color: var(--layout-content-header-background-color) !important;
+
+      .parent-close-visu {
+        border-right: var(--layout-content-header-right-border) !important;
+      }
+
+      #toolbar-menu li {
+        a {
+          color: var(--layout-content-header-text-color);
+        }
+
+        .dropbutton {
+          background-color: var(--layout-content-header-background-color);
+        }
+      }
+    }
+
+
+    .attachmentslist {
+      background-color: var(--layout-content-message-partheaders);
+      border-top: solid thin var(--layout-content-message-partheaders-top-border-color) !important;
+      border: none;
+
+      a.filename {
+        .attachment-name {
+          color: var(--layout-content-message-attachment-text-color);
+        }
+
+        .attachment-size {
+          color: var(--layout-content-message-attachment-size-color);
+        }
+      }
+    }
+
+    a.rcmContactAddress {
+      color: var(--layout-content-contact-address-color);
+    }
+
+    .message-partheaders {
+      background-color: var(--layout-content-message-partheaders);
+      border-top: var(--layout-content-partheaders-top-border);
+
+      table.headers-table {
+        color: var(--layout-content-message-partheaders-title);
+      }
+
+    }
+
+    .recipient-input input {
+      color: var(--input-text-color);
+    }
+  }
+}
+
+body.task-mail.action-none #layout-content {
+  border-left: var(--layout-content-border-left-color);
+}
+
+.recipient-input .recipient{
+  background-color: var(--mel-button-background-color);
+  color: var(--mel-button-text-color);
+
+  & *{
+    color: var(--mel-button-text-color)!important;
+  }
+}

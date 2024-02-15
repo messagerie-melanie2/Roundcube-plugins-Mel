@@ -1,0 +1,53 @@
+.task-search {
+  .wsp-header {
+    background-color: var(--bureau-background-color) !important;
+  }
+
+  .mel-input.search-like {
+    background-color: var(--input-mel-background-color);
+    color: var(--input-mel-text-color);
+    border-color: var(--input-mel-border-color);
+
+    &:focus {
+      background-color: var(--input-mel-focus-background-color);
+      box-shadow: 0 0 0 .2rem var(--input-mel-focus-shadow-color);
+      border-color: var(--input-mel-focus-border-color);
+    }
+
+    &::placeholder {
+      color: var(--default-placeholder-text-color);
+    }
+  }
+
+  .melv2-event {
+    background-color: var(--tierciary-bckg-color);
+  }
+
+  .mel-block-list,
+  .wsp-block {
+    background-color: var(--workspace-item-background-color);
+  }
+
+  separate {
+    border-top-color: var(--workspace-separator-color) !important;
+  }
+
+  .mel-search-group>input {
+    border-color: var(--searchbar-alternate-border-color);
+  }
+
+  .mel-search-group .input-group-append>.input-group-text {
+    border-color: var(--searchbar-alternate-border-color);
+  }
+
+  .invite-button.create {
+    background-color: var(--mel-button-background-color);
+    color: var(--mel-button-text-color);
+    border: var(--mel-button-border);
+
+    &:hover {
+      background-color: var(--mel-button-hover-background-color);
+      color: var(--mel-button-hover-text-color);
+    }
+  }
+}

@@ -41,9 +41,10 @@ class mel_news extends rcube_plugin {
     $this->rc = rcmail::get_instance();
     $this->register_task(self::TASK_NAME);
     $this->add_texts('localization/', true);
-    $need_button = true;
+
+    $need_button = 'taskbar';
     if (class_exists("mel_metapage")) {
-      $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_news');
+      $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_news') ? $need_button : 'otherappsbar';
     }
 
     if ($need_button)
@@ -57,7 +58,7 @@ class mel_news extends rcube_plugin {
         'title' => 'my_news',
         'type'       => 'link',
         'domain' => "mel_news"
-    ), "taskbar");
+    ), $need_button);
     }
 
     $this->add_hook('preferences_list', array($this, 'prefs_list'));
@@ -1044,7 +1045,11 @@ class mel_news extends rcube_plugin {
 
     if ($proxy !== null) $proxy = [CURLOPT_PROXY => $proxy];
 
-    $fetched = mel_helper::load_helper($this->rc)->fetch("", $config["verify_peer"], $config["verify_host"])->_get_url($url."/spip.php?page=backend-actu",
+    if(substr($url, -1) === "/") $url = substr($url, 0, -1);
+    
+    $url .= "/spip.php?page=backend-actu";
+
+    $fetched = mel_helper::load_helper($this->rc)->fetch("", $config["verify_peer"], $config["verify_host"])->_get_url($url,
       null,
       null, 
       $proxy

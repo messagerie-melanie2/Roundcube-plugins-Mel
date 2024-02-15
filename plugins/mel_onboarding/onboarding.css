@@ -3,6 +3,7 @@
 :root {
   --circle-size: clamp(1.5rem, 5vw, 2rem);
   --spacing: clamp(0.25rem, 2vw, 0.5rem);
+  --onboarding-image:url('../../skins/mel_elastic/themes/default/images/Computer_default.png');
 }
 
 .ui-dialog-buttonpane {
@@ -86,11 +87,11 @@
 }
 
 html.dark-mode .onboarding-image {
-  background-image: url('../../skins/mel_elastic/images/Computer_dark.png');
+  --onboarding-image: url('../../skins/mel_elastic/images/Computer_dark.png');
 }
 
 .onboarding-image {
-  background-image: url('../../skins/mel_elastic/themes/default/images/Computer_default.png');
+  background-image: var(--onboarding-image);
   height: 130px;
   width: 100%;
   background-repeat: no-repeat;
@@ -342,4 +343,13 @@ html.dark-mode .onboarding-image {
 
 .wsp-toolbar-padding {
   padding-bottom: 12px !important;
+}
+
+.framed-intro {
+  margin-top: 60px;
+  margin-left: 60px;
+}
+
+#accueil:focus-visible {
+  outline: none;
 }

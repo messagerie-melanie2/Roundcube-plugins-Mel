@@ -481,17 +481,6 @@ font-size: 2vw;
     font-size: smaller;
 }
 
-
-.mel-button > span.plus{
-    margin-left: 40px;
-}
-
-.mel-button > span.plus::before {
-	/* font-size: 15px; */
-	display: inline-block;
-	vertical-align: middle;
-}
-
 .invite-button.create{
     background-color: #363A5B;
     color: white;
@@ -1031,12 +1020,6 @@ html.dark-mode .click-master{
     margin-bottom: 0;
 } 
 
-.task-workspace.action-action .joined .mel-button.plus.btn.btn-secondary{
-    position: absolute;
-    top: 45px;
-    right: 0px;  
-}
-
 html.layout-phone .task-workspace.action-workspace .responsiveTabList,
 html.layout-small .task-workspace.action-workspace .responsiveTabList {
     flex-wrap: wrap!important;
@@ -1065,4 +1048,10 @@ body.task-workspace	.table-bordered thead td,
 body.task-workspace	.table-bordered thead th{
     background-color: var(--main-bckg-color);
     color:var(--secondary-text-color);
+}
+
+.toolbar-icons {
+  font-variation-settings: 'wght' 300;
+  font-size: 26px;
+  line-height: 18px;
 }

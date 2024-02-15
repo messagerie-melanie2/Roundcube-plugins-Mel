@@ -2,6 +2,15 @@ if (rcmail)
 {
     (() => { //
 
+         function module_loader() {
+            return window?.loadJsModule ?? parent?.loadJsModule ?? top?.loadJsModule;
+        }
+
+        async function load_helper() {
+            const loader = module_loader();
+            return (await loader('mel_metapage', 'mel_object.js')).MelObject.Empty();
+        }
+
         function change_frame(frame, args = null) {
             
             let config = {
@@ -35,7 +44,15 @@ if (rcmail)
         }, true);
 
         rcmail.register_command("open_suggestion", () => {
-          mel_metapage.Functions.change_page("settings",'plugin.mel_suggestion_box')
+          mel_metapage.Functions.change_page("settings",'plugin.mel_suggestion_box');
+        }, true);
+      
+        rcmail.register_command("open_double_auth", () => {
+          mel_metapage.Functions.change_page('settings','plugin.mel_doubleauth', true, true);
+        }, true);
+        
+        rcmail.register_command("custom_taskbar", () => {
+          mel_metapage.Functions.change_page("settings",'', {'edit-prefs':'general','_open_section':'navigation'})
         }, true);
 
         rcmail.register_command("change_page", (args) => {
@@ -84,7 +101,7 @@ if (rcmail)
 
             rcmail.register_command("edit_model",
             (a,b,c,d) => {
-                setCookie('current_model_id', rcmail.get_single_uid(), 7);
+                melSetCookie('current_model_id', rcmail.get_single_uid(), 7);
                 rcmail.command('use_as_new');
             }, true);
 
@@ -140,10 +157,19 @@ if (rcmail)
                 window.location.href = mel_metapage.Functions.url("mail", null, {_nocache:true});
             }, true);
 
+            rcmail.register_command("start_webconf", (args) => {
+
+                if (top !== window) return top.rcmail.command("start_webconf", args);
+
+                let datas = WebconfLink.create(args.current);
+                window.webconf_helper.go(datas.key, datas.wsp, datas.ariane);
+            }, true);
+
             rcmail.register_command("event-compose", () => {
                 const event = ui_cal.selected_event;
+                const title = `${event.title} - ${moment(event.start).format('DD/MM/YYYY HH:mm')}`;
                 window.current_event_modal.close();
-                parent.rcmail.open_compose_step({to:Enumerable.from(event.attendees).select(x => x.email).toArray().join(','),subject:event.title});
+                parent.rcmail.open_compose_step({to:Enumerable.from(event.attendees).select(x => x.email).toArray().join(','),subject:title});
             }, true);
 
             rcmail.register_command("event-self-invitation", () => {
@@ -255,6 +281,138 @@ if (rcmail)
                 });
             }, true);
 
+            rcmail.register_command('set_custom_abs', async () => {
+                const reset = () => {
+                    $('#user-dropdown .notifications-header').show();
+                    $('#user-dropdown .page-abs').hide();
+                    $('#user-dropdown .user-menu-items').show();
+                };
+                const open = async () => {
+                    await new Promise((ok, nok) => {
+                        setTimeout(() => {
+                            $('#button-user').click();
+                            ok();
+                        }, 10);
+                    });
+                }
+                let $dropdown = $('#user-dropdown');
+                let $header = $dropdown.find('.notifications-header');
+                let $items = $dropdown.find('.user-menu-items');
+                let $abs = $dropdown.find('.page-abs');
+                let $loader = $dropdown.find('#abs-loader');
+
+                if ($abs.length <= 0) {
+
+                    let input_start = new mel_label_input('abs-ponc-start', 'date', 'Démarre le : ');
+                    let input_end = new mel_label_input('abs-ponc-end', 'date', 'Termine le : ');
+                    let button = new mel_button({class:'abs-btn-save'}, 'Enregistrer');
+                    button.onclick.push(() => {
+                        mel_metapage.Functions.post(
+                            mel_metapage.Functions.url('bnum', 'plugin.abs.set_dates'),
+                            {
+                                absence_date_debut:moment($('#user-dropdown .div-first input').val()).format('DD/MM/YYYY'),
+                                absence_date_fin:moment($('#user-dropdown .div-last input').val()).format('DD/MM/YYYY')
+                            },
+                            (datas) => {
+                                console.log('valid', datas);
+                                if (['false', false].includes(datas)) (top ?? parent ?? window).rcmail.display_message('Une erreur est survenue !', 'error');
+                                else (top ?? parent ?? window).rcmail.display_message('Abscence enregistrée !', 'confirmation');
+                            }
+                        )
+                        reset();
+                    });
+
+                    let button_back = new mel_button({class:'abs-btn-back'}, 'Annuler');
+                    button_back.onclick.push(() => {
+                        reset();
+                        open();
+                    });
+
+                    let flex_button = mel_html2.div({
+                        attribs:{class:'abs-flex'},
+                        contents:[button_back, button]
+                    });
+
+                    let see_more_link = new mel_html2('a', {
+                        attribs:{class:'abs-link',href: mel_metapage.Functions.url('settings', 'plugin.mel_moncompte', {_open_section:'gestionnaireabsence'}) },
+                        contents:[new mel_html('span', {}, 'Plus de configuration')]
+                    });
+
+                    see_more_link.onclick.push(reset);
+
+                    let message = new mel_html('p', {style:'margin:0', class:'abs-message alert'});
+
+                    let html_container = new mel_html2('div', {
+                        attribs:{class:'page-abs'},
+                        contents:[new mel_html('h3', {class:'abs-title'}, 'Absence ponctuelle'), message, input_start, input_end, flex_button, see_more_link]
+                    });
+
+                    $abs = html_container.create($dropdown);
+
+                    let $inputs = $abs.find('input');
+                    const len = $inputs.length - 1;
+
+                    $inputs.each((i, e) => {
+                        switch (i) {
+                            case 0:
+                                $(e).parent().addClass('div-first');
+                                break;
+
+                            case len:
+                                $(e).parent().addClass('div-last');
+                                break;
+                        
+                            default:
+                                $(e).parent().addClass(`div-${i}`);
+                                break;
+                        }
+                    });
+
+                    $inputs = null;
+                }
+
+                if ($loader.length <= 0) {
+                    $loader = MEL_ELASTIC_UI.create_loader('abs-loader', true, false).create($dropdown);
+                }
+
+                $abs.hide();
+                $header.hide();
+                $items.hide();
+                $loader.show();
+
+                open();
+
+                mel_metapage.Functions.get(
+                    mel_metapage.Functions.url('bnum', 'plugin.abs.get_dates'),
+                    {},
+                    (datas) => {
+                        datas = JSON.parse(datas);
+
+                        if (/*!!datas.message && EMPTY_STRING !== datas.message && */!!datas.start && EMPTY_STRING !== datas.start) {
+                            $('#user-dropdown .div-first input').val(moment(datas.start, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
+                            $('#user-dropdown .div-last input').val(moment(datas.end, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD'));
+                            $('#user-dropdown .abs-message').hide();
+                            $('.page-abs div').show();
+                        }
+                        else {
+                            $('#user-dropdown .abs-message').addClass('alert-warning').text("Vous n'avez pas encore d'absence, cliquez sur le bouton \"Plus de configuration\" pour en créer !")
+                            
+                            if ($('#user-dropdown .go_back').length <= 0) $('#user-dropdown').append($('<div class="back mel-button bckg true" style="position: absolute;top: 0;right: 0;"><bnum-icon>undo</bnum-icon></div>').click(() => {
+                                reset();
+                                open();
+                            }));
+
+                            $('#user-dropdown .abs-message')
+                            $('.page-abs div').hide();
+                        }
+
+                        $loader.hide();
+                        $abs.show();
+                    }
+                )
+
+            }, true);
+
             rcmail.register_command("mel.search.global", async (event) => {
                 event = $(event);
                 const word = event.val();
@@ -286,10 +444,9 @@ if (rcmail)
                     //top.rcmail.set_busy(false);
                     //rcmail.clear_messages();
                 }
-                
+    
 
-
-
+                await module_helper_mel.Look.SendTask('search');
             }, true);
 
             rcmail.register_command("mel.search.global.show", async (event) => {
@@ -309,6 +466,8 @@ if (rcmail)
                     $('#layout-frames').css('display', 'none');
                     $('.search-frame').css('display', '');
                 }
+
+                await module_helper_mel.Look.SendTask('search');
             }, true);
 
             rcmail.register_command('message_send_error', (args) => {
@@ -329,7 +488,7 @@ if (rcmail)
                 // Frame déjà ouverte
                 if (iframe.length > 0)
                 {
-                    iframe[0].contentWindow.$("body").html('<center><div title="Rechargement de la page" style="height: 20vw;width: 20vw;" class="spinner-grow"><span class="sr-only">Rechargement de la page...</span></div></center>')
+                    iframe[0].contentWindow.$("body").html(MEL_ELASTIC_UI.create_loader('refresh_loading'));
                     if (!iframe[0].contentWindow.location.href.includes("_is_from"))
                         iframe.src = iframe[0].contentWindow.location.href + (iframe[0].contentWindow.location.href[iframe[0].contentWindow.location.href.length - 1] === '&' ? '' : '&') + '_is_from=iframe';
                     else
@@ -379,6 +538,40 @@ if (rcmail)
 
             }, true);
 
+
+            rcmail.register_command("toggleAnimations", async () => {
+                const busy = rcmail.set_busy(true, 'loading');
+                await mel_metapage.Functions.post(
+                    mel_metapage.Functions.url("mel_elastic", "plugin.toggle_animations"),
+                    {},
+                    (datas) => {
+                        //debugger;
+                        rcmail.env.animation_enabled = JSON.parse(datas);
+                        let current = MEL_ELASTIC_UI.themes[MEL_ELASTIC_UI.theme];
+
+                        //rcmail.env.animation_enabled = !(rcmail.env.animation_enabled ?? current.animation_enabled_by_default);
+
+                        for (const key in MEL_ELASTIC_UI.themes) {
+                            if (Object.hasOwnProperty.call(MEL_ELASTIC_UI.themes, key)) {
+                                const element = MEL_ELASTIC_UI.themes[key];
+        
+                                if (!!element.animation_class) $('body').removeClass(element.animation_class);
+                            }
+                        }
+
+                        if (!!current.animation_class){
+                            if (rcmail.env.animation_enabled ?? current.animation_enabled_by_default) {
+                                $('body').addClass(current.animation_class);
+                                $('#rcmfd-toggle-anims')[0].checked = false;
+                            }
+                            else $('#rcmfd-toggle-anims')[0].checked = true;
+                        }
+                    }
+                );
+
+                rcmail.set_busy(false, 'loading', busy);
+            }, true);
+
             rcmail.register_command("toggleChat", () => {
                 mel_metapage.Functions.post(
                     mel_metapage.Functions.url("mel_metapage", "toggleChat"),
@@ -396,8 +589,7 @@ if (rcmail)
                                 rcmail.command("chat.setupConfig");
 
                             $(".tiny-rocket-chat").removeClass("layout-hidden");
-
-                            $(".toggleChatCommand").html("Cacher la bulle de discussion");
+                            $('#rcmfd_hide_chat').prop("checked", true);
                         }
                         //On cache
                         else {
@@ -412,12 +604,125 @@ if (rcmail)
                             }
 
                             $(".tiny-rocket-chat").addClass("layout-hidden");
-                            $(".toggleChatCommand").html("Afficher la bulle de discussion");
+                            $('#rcmfd_hide_chat').prop("checked", false);
                         }
                     }
                 );
             }, true);
 
+            rcmail.register_command('chat-notification-action', async (args) => {
+                const {url, id} = args;
+                const Manager = await ChatHelper.Manager();
+
+                await Manager.change_frame('discussion', {update:false});
+                Manager.goToRoom(`/${url}/${id}`);
+
+            }, true);
+
+            rcmail.register_command('update_mail_css', (args) => {
+                const {key, value} = args;
+
+                MEL_ELASTIC_UI.update_mail_css_async({key, value});
+
+                for (const iterator of top.$('iframe.mm-frame')) {
+                    var $frame = $(iterator);
+
+                    if (!$frame.hasClass('discussion-frame')) {
+                        $frame = null;
+                        if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                            iterator.contentWindow.MEL_ELASTIC_UI.update_mail_css({key, value});
+                        }
+                    }
+
+                    if (!!$frame) $frame = null;
+                }
+
+
+            }, true);
+
+            rcmail.register_command('refresh_extwin', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env.compose_extwin = value;
+
+                let frame_mail = helper.select_frame('mail');
+                if (frame_mail.length > 0) frame_mail[0].contentWindow.rcmail.env.compose_extwin = value;
+
+            }, true);
+
+            rcmail.register_command('set_font_size', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env['font-size'] = value;
+
+                MEL_ELASTIC_UI.set_font_size();
+
+
+                for (const iterator of helper.select_frame_except('discussion')) {
+                    if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                        iterator.contentWindow.rcmail.env['font-size'] = value;
+                        iterator.contentWindow.MEL_ELASTIC_UI.set_font_size();
+                    }
+                }
+            }, true);
+
+            rcmail.register_command('updateMainNavDep', async args => {
+                if (top.$('#layout-menu').hasClass('main-nav-cannot-deploy')) top.rcmail.env.main_nav_can_deploy = true;
+                else top.rcmail.env.main_nav_can_deploy = false;
+                
+                top.MEL_ELASTIC_UI.update_main_nav_meca();
+            }, true);
+
+            rcmail.register_command('updateScollBarMode', async args => {
+                const {key, value} = args;
+                const helper = await load_helper();
+
+                rcmail.env.mel_metapage_mail_configs = value;
+
+                MEL_ELASTIC_UI.updateScollBarMode();
+
+
+                for (const iterator of helper.select_frame_except('discussion')) {
+                    if (!!iterator.contentWindow?.MEL_ELASTIC_UI) {
+                        iterator.contentWindow.rcmail.env.mel_metapage_mail_configs = value;
+                        iterator.contentWindow.MEL_ELASTIC_UI.updateScollBarMode();
+                    }
+                }
+            }, true);
+
+            if ('calendar' === rcmail.env.task)
+            {
+                rcmail.register_command('redraw_aganda', async settings => {
+                    const loader = module_loader();
+                    const helper = await load_helper();
+                    const MelCalendar = (await loader('mel_metapage', 'main.js', '/js/lib/calendar/')).MelCalendar;
+
+                    rcmail.env.calendar_settings = settings;
+                    await MelCalendar.rerender({
+                        helper_object:helper,
+                        action_list:[
+                            MelCalendar.create_action('destroy'),
+                        ]
+                    });
+
+                    cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+                    CalendarPageInit(false);
+                    cal_elastic_mod();
+
+                    await MelCalendar.rerender({helper_object:helper});
+
+                }, true);
+            }
+            else {
+                rcmail.register_command('redraw_aganda', async args => {
+                    const {key, value:settings} = args;
+                    const helper = await load_helper();
+
+                    helper.select_frame('calendar')[0].contentWindow.rcmail.command('redraw_aganda', settings);
+                }, true);
+            }
 
             if (rcmail.env.task === 'mail')
             {
@@ -496,20 +801,6 @@ if (rcmail)
                 }, true);
             }
 
-            // rcmail.drag_menu_action = function(action)
-            // {
-            //   var menu = this.gui_objects.dragmenu;
-            //   if (menu) {
-            //     //   if ($(menu).show)
-            //     //     $(menu).show();
-            //     //   else
-            //         $(menu).removeClass("hidden").css("display", "block");
-
-            //   }
-          
-            //   this.command(action, this.env.drag_target);
-            //   this.env.drag_target = null;
-            // };
 
     })(); //
 }

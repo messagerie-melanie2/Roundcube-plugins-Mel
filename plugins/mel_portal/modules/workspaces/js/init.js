@@ -227,6 +227,7 @@ function update_tasks()
 
 
 $(document).ready(() => {
+    return;
     $('.wsp-focusable-link').each((i,e) => {
         $(e).on("keydown", (event) => {
             if (event.type === "keydown")

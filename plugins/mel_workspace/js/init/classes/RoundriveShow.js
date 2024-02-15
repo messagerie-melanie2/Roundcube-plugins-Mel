@@ -141,7 +141,7 @@ class RoundriveShow
                 },
                 (xhr, ajaxOptions, thrownError) => {
                     console.error(xhr, ajaxOptions, thrownError, this);
-                    this.parent.html("Connexion impossible.");
+                    this.parent.html("Stockage non accessible, si vous venez de rejoindre l'espace de travail merci de réessayer dans quelques minutes.");
                     
                     if (this.showErrors)
                         rcmail.display_message("Impossible de se connecter au stockage !", "error");
@@ -201,6 +201,9 @@ class RoundriveShow
         for (const key in datas) {
             if (Object.hasOwnProperty.call(datas, key)) {
                 const element = datas[key];
+
+                //0007816: Ne pas montrer les fichiers cachés dans Mes documents de l'espace de travail
+                if (decodeURIComponent(element.basename)[0] === '.') continue;
 
                 switch (element.type) {
                     case this.enum.type.directory:
@@ -400,6 +403,8 @@ class RoundriveShow
 
     async checkNews(onlyCheck = false)
     {
+        return;
+        /*
         if (!onlyCheck)
             $("#refresh-nc").find("span").css("display", "none").parent().addClass("disabled").attr("disabled", "disabled").append('<span class="spinner-grow spinner-grow-sm"></span>');
         const folders = this.tree.getFolders(this.wsp, {path:this.config.initFolder});
@@ -481,7 +486,7 @@ class RoundriveShow
 
 
         }
-
+*/
         
     }
 

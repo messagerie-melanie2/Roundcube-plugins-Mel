@@ -18,7 +18,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 use LibMelanie\Ldap\Ldap as Ldap;
 
 include_once __DIR__ . '/../mce/mce.php';
@@ -31,28 +30,28 @@ class mtes_driver_mel extends mce_driver_mel
    * @var string
    */
   protected $BALP_LABEL = 'Boite partag&AOk-e';
-
+  
   /**
    * Dossier pour les brouillons
    * 
    * @var string
    */
   protected $MBOX_DRAFT = "Brouillons";
-
+  
   /**
    * Dossier pour les éléments envoyés
    *  
    * @var string
    */
   protected $MBOX_SENT = "&AMk-l&AOk-ments envoy&AOk-s";
-
+  
   /**
    * Dossier pour les indésirables
    * 
    * @var string
    */
   protected $MBOX_JUNK = "Ind&AOk-sirables";
-
+  
   /**
    * Dossier pour la corbeille
    * 
@@ -64,6 +63,11 @@ class mtes_driver_mel extends mce_driver_mel
    * Namespace for the objets
    */
   protected static $_objectsNS = "\\LibMelanie\\Api\\Mel\\";
+
+  /**
+   * Dossier pour l'utilisation des fichiers pour le unexpunge
+   */
+  protected static $_unexpungeFolder = '/var/pamela/unexpunge/';
 
   /**
    * Liste des valeurs pour un groupe de workspace
@@ -164,6 +168,9 @@ class mtes_driver_mel extends mce_driver_mel
         }
       }
     } else {
+      if ($infos->is_objectshare) {
+        $infos = $infos->objectshare->mailbox;
+      }
       $infos->load(['server_host']);
       $hostname = $infos->server_host;
     }
@@ -277,52 +284,6 @@ class mtes_driver_mel extends mce_driver_mel
   {
     return strpos($user, "mineqRDN=") === 0 && strpos($user, "ou=organisation,dc=equipement,dc=gouv,dc=fr") !== false;
   }
-
-  /**
-   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
-   * Utilisé pour la restauration d'un dossier
-   * 
-   * @param string $mbox Identifiant de la boite concernée par la restauration
-   * @param string $folder Dossier IMAP à restaurer
-   * 
-   * @return boolean true si la commande s'est correctement lancée
-   */
-  public function unexpunge($mbox, $folder, $hours)
-  {
-    $_user = $this->getUser($mbox, false);
-    if ($_user->is_objectshare) {
-      $_user = $_user->objectshare->mailbox;
-    }
-    // Récupération de la configuration de la boite pour l'affichage
-    $host = $this->getRoutage($_user, 'unexpunge');
-    // Ecriture du fichier unexpunge pour le serveur
-    $server = explode('.', $host);
-    $rep = '/var/pamela/unexpunge/' . $server[0];
-    $dossier = str_replace('/', '^', $folder);
-
-    if (isset($dossier)) {
-      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
-    } else {
-      $nom = $rep . '/' . $_user->uid;
-    }
-
-    $fic = fopen($nom, 'w');
-    if (flock($fic, LOCK_EX)) {
-      fputs($fic, 'recuperation:' . $hours);
-      flock($fic, LOCK_UN);
-    } else {
-      return false;
-    }
-    fclose($fic);
-
-    if (file_exists($nom)) {
-      $res = chmod($nom, 0444);
-    } else {
-      return false;
-    }
-    return true;
-  }
-
   /**
    * Méthode permettant de personnaliser l'affichage des contacts
    * 
@@ -339,7 +300,10 @@ class mtes_driver_mel extends mce_driver_mel
       $args['form']['head']['content']['type'] = array('type' => 'text');
     }
     // N'ajouter les informations sur Internet que si la double auth est activé (sinon sur intranet)
-    else if (mel::is_internal() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable()) {
+    else if (mel::is_internal() 
+        || mel::is_auth_strong()
+        || !class_exists('mel_doubleauth') 
+        || mel_doubleauth::is_double_auth_enable()) {
       $plugin = rcmail::get_instance()->plugins->get_plugin('mel_contacts');
       // Add fonction
       $args['form']['function'] = [
@@ -375,7 +339,7 @@ class mtes_driver_mel extends mce_driver_mel
         // Search in LDAP
         $user = $this->user();
         $user->email = $args['record']['email'];
-        $lists = $user->getListsIsMember(['dn', 'email']);
+        $lists = [0];
         if (is_array($lists)) {
           $args['record']['list'] = [];
           foreach ($lists as $list) {
@@ -548,11 +512,13 @@ class mtes_driver_mel extends mce_driver_mel
     $membersList = [];
     $membersEmail = [];
     foreach ($members as $member) {
-      $user = $this->getUser($member);
-      if (isset($user)) {
-        $membersList[] = $user;
+      if (isset($member)) {
+        $user = $this->getUser(null, true, false, null, $member);
+        if (isset($user)) {
+          $membersList[] = $user;
+        }
+        $membersEmail[] = $member;
       }
-      $membersEmail[] = $member;
     }
     $group->members_email = $membersEmail;
     $group->members = $membersList;

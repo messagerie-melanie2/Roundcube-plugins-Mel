@@ -927,6 +927,9 @@ class libvcalendar implements Iterator
      */
     public function datetime_prop($cal, $name, $dt, $utc = false, $dateonly = null, $set_type = false)
     {
+        //PAMELLA
+        if (is_string($dt)) $dt = new DateTime($dt);
+
         if ($utc) {
             $dt->setTimeZone(new \DateTimeZone('UTC'));
             $is_utc = true;

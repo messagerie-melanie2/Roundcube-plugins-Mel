@@ -40,7 +40,7 @@ var nextcloud_document = (() => {
         async init(type)
         {
             await wait(() => window.rcmail === undefined);
-            for (let index = 0; index < window.rcmail.env.mel_metapage_templates_doc.length; index++) {
+            for (let index = 0, len = window?.rcmail?.env?.mel_metapage_templates_doc?.length ?? 0; index < len; index++) {
                 const element = window.rcmail.env.mel_metapage_templates_doc[index];
                 if (element.type === type)
                 {

@@ -1,0 +1,99 @@
+<div class="container">
+  <!-- <div class="row">
+    <div class="col-12">
+      <div class="options-custom-title">
+        <roundcube:label name='mel_elastic.mel-text-size' />
+      </div>
+      <div class="option_radio_wrapper">
+        <div class="col-6 text-center px-1">
+          <input type="radio" data-command="set_font_size" name="custom-font-size" id="custom-font-size-default" data-value="lg"
+            onclick="save_option('custom-font-size', 'lg', this)">
+          <label for="custom-font-size-default" class="option">
+            <span class="material-symbols-outlined icon-large color-icon">
+              text_fields
+            </span>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name="mel_elastic.normal"/>
+        </div>
+        <div class="col-6 text-center px-1">
+          <input type="radio" data-command="set_font_size" name="custom-font-size" id="custom-font-size-smaller" data-value="sm"
+            onclick="save_option('custom-font-size', 'sm', this)">
+          <label for="custom-font-size-smaller" class="option">
+            <span class="material-symbols-outlined icon-small color-icon">
+              text_fields
+            </span>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name="mel_elastic.smaller"/>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <div class="row row-options">
+    <div class="col-12">
+      <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-scrollbar-size' /></div>
+      <div class="option_radio_wrapper">
+        <div class="col-4 text-center px-1">
+          <input data-command="updateScollBarMode" type="radio" name="mel-scrollbar-size" id="mel-scrollbar-size-default" data-value="<roundcube:label name='mel_metapage.default' />"
+            onclick="save_option('mel-scrollbar-size', rcmail.gettext('default', 'mel_metapage'), this)">
+          <label for="mel-scrollbar-size-default" class="option">
+            <div class="option-image scrollbar_default"></div>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.default' />
+        </div>
+        <div class="col-4 text-center px-1">
+          <input type="radio" data-command="updateScollBarMode" name="mel-scrollbar-size" id="mel-scrollbar-size-normal" data-value="<roundcube:label name='mel_metapage.normal'/>"
+            onclick="save_option('mel-scrollbar-size', rcmail.gettext('normal', 'mel_metapage'), this)">
+          <label for="mel-scrollbar-size-normal" class="option">
+            <div class="option-image scrollbar_normal"></div>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.normal' />
+        </div>
+        <div class="col-4 text-center px-1">
+          <input type="radio" data-command="updateScollBarMode" name="mel-scrollbar-size" id="mel-scrollbar-size-large" data-value="<roundcube:label name='mel_metapage.large'/>"
+            onclick="save_option('mel-scrollbar-size', rcmail.gettext('large', 'mel_metapage'), this)">
+          <label for="mel-scrollbar-size-large" class="option">
+            <div class="option-image scrollbar_large"></div>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.large' />
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Barre de navigation -->
+  <div class="row row-options">
+    <div class="col-12">
+      <div class="options-custom-title">
+        Déplier la barre de navigation ?
+        <div class="material-symbols-outlined options-help ml-2" style="vertical-align: top;" title="Si ''Oui'', la barre de navigation se déplie au survol de la souris">
+          help
+        </div>
+      </div>
+      <div class="option_radio_wrapper">
+        <div class="col-6 text-center px-1">
+          <input data-command="updateMainNavDep" type="radio" name="main_nav_can_deploy" id="deploy-nav-default" data-value="true"
+            onclick="save_option('main_nav_can_deploy', true, this)">
+          <label for="deploy-nav-default" class="option">
+            <div class="option-image candeploy"></div>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.yes' />
+        </div>
+        <div class="col-6 text-center px-1">
+          <input data-command="updateMainNavDep" type="radio" name="main_nav_can_deploy" id="deploy-nav-no" data-value="false"
+            onclick="save_option('main_nav_can_deploy', false, this)">
+          <label for="deploy-nav-no" class="option">
+            <div class="option-image cannotdeploy"></div>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.no' />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

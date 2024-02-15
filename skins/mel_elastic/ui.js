@@ -1,5 +1,28 @@
 $(document).ready(() => {
 
+    const CONST_CLASS_THEME_BADGE_SELECTED = 'green-badge';
+    const CONST_THEME_CLASSE_CAN_RESIZE = 'mel-resize-ok';
+    const CONST_SELECTOR_THEME_BADGE_SELECTED = `${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_THEME_BADGE_SELECTED}`;
+    const CONST_THEME_PANEL_ID = 'theme-panel';
+    const CONST_THEME_PANEL_CONTENTS_CLASS = 'contents';
+    const CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID} ${CONST_JQUERY_SELECTOR_CLASS}${CONST_THEME_PANEL_CONTENTS_CLASS}`;
+    const CONST_SELECTOR_THEME_PANEL_TAB_DIV = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID} ${CONST_JQUERY_SELECTOR_CLASS}title`;
+    const CONST_THEME_BUTTON_ID = 'theme-switch-button';
+    const CONST_THEME_ICON_PREFIX = 'icon-theme-';
+    const CONST_CLASS_MEL_RESIZE_OK = 'mel-resize-ok';
+    const CONST_FORMAT_THEME_TITLE = '%1?/( -?(%1?&&%2?||!%1?)? )/%2?';
+    const CONST_TAB_THEME_ID = 'theme-pannel-tab-theme';
+    const CONST_TAB_PICTURE_ID = 'theme-pannel-tab-pictures';
+    const CONST_TABS_LIST = [{
+                                display:'Thèmes',
+                                id:CONST_TAB_THEME_ID,
+                                already:true
+                            }, {
+                                display:'Images',
+                                id:CONST_TAB_PICTURE_ID,
+                                already:false
+                            }]
+
     try {
         Enumerable.from([]);
     } catch (error) {
@@ -7,7 +30,7 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     * Classe qui gère une règle css. Elle pourra Ãªtre ajouter ou supprimer.
      */
     class Mel_CSS_Rule {
         /**
@@ -17,27 +40,32 @@ $(document).ready(() => {
         constructor(rule)
         {
             this.rule = rule;
-            this.id = null;
+            this.styleRule = null;
+        }
+
+        id() {
+            return Enumerable.from(Mel_CSS_Rule.component().cssRules).select((x, i) => [x, i]).where(x => x[0] === this.styleRule).firstOrDefault()[1];
         }
 
         /**
-         * Intègre le style à la page web
-         * @returns {Mel_CSS_Rule} Chaînage
+         * Intègre le style Ã  la page web
+         * @returns {Mel_CSS_Rule} ChaÃ®nage
          */
         set()
         {
-            this.id = Mel_CSS_Rule.component().insertRule(rule, Mel_CSS_Rule.lastIndex());
+            let id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
+            this.styleRule = Mel_CSS_Rule.component().cssRules[id];
             return this;
         }
 
         /**
          * Supprime le style de la page web
-         * @returns {Mel_CSS_Rule} Chaînage
+         * @returns {Mel_CSS_Rule} ChaÃ®nage
          */
         delete()
         {
-            Mel_CSS_Rule.component().deleteRule(this.id);
-            this.id = null;
+            let id = this.id();
+            if (id === 0 || !!id) Mel_CSS_Rule.component().deleteRule(id);
             return this;
         }
 
@@ -56,7 +84,12 @@ $(document).ready(() => {
          */
         static component()
         {
-            return document.styleSheets[0];
+            if (!Mel_CSS_Rule.component._instance) {
+                let style = document.createElement("style");
+                document.head.appendChild(style);
+                Mel_CSS_Rule.component._instance = style.sheet;
+            }
+            return Mel_CSS_Rule.component._instance;
         }
 
         /**
@@ -67,10 +100,14 @@ $(document).ready(() => {
         {
             return Mel_CSS_Rule.component().cssRules.length
         }
+
+        static from_array(rules = []) {
+            return new Mel_CSS_Rule(rules.map(x => x.toString()).join(''));
+        }
     }
 
     /**
-     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     * Classe qui gère une règle css. Elle pourra Ãªtre ajouter ou supprimer.
      * Gère un sélécteur ainsi qu'une liste de modificateur css.
      */
     class Mel_CSS_Advanced_Rule extends Mel_CSS_Rule{
@@ -86,20 +123,21 @@ $(document).ready(() => {
         }
 
         /**
-         * Intègre le style à la page web
-         * @returns {Mel_CSS_Advanced_Rule} Chaînage
+         * Intègre le style Ã  la page web
+         * @returns {Mel_CSS_Advanced_Rule} ChaÃ®nage
          */
         set()
         {
-            this.id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
+            let id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
+            this.styleRule = Mel_CSS_Rule.component().cssRules[id];
             return this;
         }
 
         /**
-         * Ajoute une règle à la liste des règles
-         * @param {string} rule Règle à ajouté (sans les ;)
-         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
-         * @returns Chaînage
+         * Ajoute une règle Ã  la liste des règles
+         * @param {string} rule Règle Ã  ajouté (sans les ;)
+         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
+         * @returns ChaÃ®nage
          */
         add(rule, force_set = true)
         {
@@ -109,7 +147,8 @@ $(document).ready(() => {
 
         _update_rule(force_set = true)
         {
-            if (!!this.id)
+            let id = this.id();
+            if (id === 0 || !!id)
             {
                 this.delete();
 
@@ -121,9 +160,9 @@ $(document).ready(() => {
 
         /**
          * Supprime une règle
-         * @param {number} index Index de la règle à supprimer 
-         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
-         * @returns Chaînage
+         * @param {number} index Index de la règle Ã  supprimer 
+         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
+         * @returns ChaÃ®nage
          */
         remove(index, force_set = true)
         {
@@ -132,11 +171,11 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jour une règle
-         * @param {number} index Index de la règle à modifier
+         * Met Ã  jour une règle
+         * @param {number} index Index de la règle Ã  modifier
          * @param {string} new_rule Nouvelle règle
-         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
-         * @returns Chaînage
+         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
+         * @returns ChaÃ®nage
          */
         update(index, new_rule, force_set = true)
         {
@@ -161,37 +200,79 @@ $(document).ready(() => {
         {
             return `${this.selector}{${this.rule.join(';\r\n')}}`;
         }
+
+    }
+
+    class Mel_CSS_Array_Rule extends Mel_CSS_Rule {
+        constructor(rules) {
+            super(rules);
+
+            this.ids = [];
+            this.styleRule = {};
+        }
+
+        set() {
+            for (let index = 0, len = this.rule.length, id; index < len; ++index) {
+                const element = this.rule[index];
+                id = Mel_CSS_Rule.component().insertRule(element.toString(), Mel_CSS_Rule.lastIndex());
+                this.ids.push(id);
+                this.styleRule[id] = Mel_CSS_Rule.component().cssRules[id];
+            }
+            return this;
+        }
+
+        rule_id(id) {
+            return Enumerable.from(Mel_CSS_Rule.component().cssRules).select((x, i) => [x, i]).where(x => x[0] === this.styleRule[id]).firstOrDefault()[1];
+        } 
+
+        delete()
+        {
+            for (const iterator of this.ids) {
+                Mel_CSS_Rule.component().deleteRule(this.rule_id(iterator));
+            }
+            this.ids.length = 0;
+            this.styleRule = null;
+            return this;
+        }
+
+        toString()
+        {
+            return this.rule.map(x => x.toString()).join(';\r\n');
+        }
     }
 
     /**
-     * Gère les différentes règles qu'on ajoute à cette classe.
+     * Gère les différentes règles qu'on ajoute Ã  cette classe.
      */
     class Mel_CSS_Style_Sheet {
         constructor()
         {
+            /**
+             * @type {{[string]:Mel_CSS_Rule}}
+             */
             this.css = {};
         }
 
         /**
-         * Ajoute une règle à la liste de règles
+         * Ajoute une règle Ã  la liste de règles
          * @param {string} key Clé qui permettra de récupérer la règle ajouté
          * @param {Mel_CSS_Rule} rule Règle qui sera ajouté
-         * @returns {Mel_CSS_Style_Sheet} Chaînage
+         * @returns {Mel_CSS_Style_Sheet} ChaÃ®nage
          */
         _add(key, rule)
         {
-            if (!this.ruleExist()) this.css[key] = rule.set();
+            if (!this.ruleExist(key)) this.css[key] = rule.set();
             else {
-                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe déjà !`);
+                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe déjÃ  !`);
             }
             return this;
         }
 
         /**
-         * Ajoute une règle à la liste de règle
+         * Ajoute une règle Ã  la liste de règle
          * @param {string} key Clé qui permettra de récupérer la règle ajouté
          * @param {string} rule Règle qui sera ajouté (ex : p{color:red;}) 
-         * @returns Chaînage
+         * @returns ChaÃ®nage
          */
         add(key, rule)
         {
@@ -199,11 +280,11 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une règle à la liste des règles.
+         * Ajoute une règle Ã  la liste des règles.
          * @param {string} key  Clé qui permettra de récupérer la règle ajouté
          * @param {string} selector Sélécteur html
          * @param  {...any} rules Liste de règles (ex : 'color:red', 'background-color:blue')
-         * @returns Chaînage
+         * @returns ChaÃ®nage
          */
         addAdvanced(key, selector, ...rules)
         {
@@ -212,8 +293,8 @@ $(document).ready(() => {
 
         /**
          * Ajoute plusieurs règles
-         * @param  {...{key:string, rule:string}} rules Règles à ajouter
-         * @returns Chaînage
+         * @param  {...{key:string, rule:string}} rules Règles Ã  ajouter
+         * @returns ChaÃ®nage
          */
         addRules(...rules)
         {
@@ -230,7 +311,7 @@ $(document).ready(() => {
         /**
          * Supprime une règle
          * @param {string} key 
-         * @returns Chaînage
+         * @returns ChaÃ®nage
          */
         remove(key)
         {
@@ -271,7 +352,7 @@ $(document).ready(() => {
          */
         getKeys()
         {
-            return Enumerable?.from(this.css)?.select(x => x.key)?.toArray() ?? [];
+            return Enumerable.from(this.css).select(x => x.key).toArray() || [];
         }
 
         /**
@@ -280,12 +361,12 @@ $(document).ready(() => {
          */
         getStyleSheet()
         {
-            return Enumerable?.from(this.css)?.select(x => x.value)?.toArray()?.join('\r\n') ?? '';
+            return Enumerable.from(this.css).select(x => x.value).toArray().join('\r\n') || '';
         }
 
         /**
-         * Remise à zéro de la feuille de style
-         * @returns Chaînage
+         * Remise Ã  zéro de la feuille de style
+         * @returns ChaÃ®nage
          */
         reset()
         {
@@ -310,31 +391,60 @@ $(document).ready(() => {
 
     }
 
+    class Mel_Elastic_Storage {
+        static save(key, item) {
+            localStorage.setItem(`${Mel_Elastic_Storage.KEY}_${key}`, JSON.stringify(item));
+        }
+
+        static load(key, _default = null) {
+            return JSON.parse(localStorage.getItem(`${Mel_Elastic_Storage.KEY}_${key}`)) ?? _default;
+        }
+
+        static remove(key) {
+            localStorage.removeItem(`${Mel_Elastic_Storage.KEY}_${key}`);
+        }
+    }
+
+    Mel_Elastic_Storage.KEY = 'MEL_ELASTIC';
+
     /**
-     * Classe qui sert à gérer les différentes interfaces
+     * Classe qui sert Ã  gérer les différentes interfaces
      */
     class Mel_Elastic {
         constructor() {
             this.init()
             .setup()
             .update();
+
+            $('#theme-panel #theme-pannel-tab-pictures').on('click', () => {
+                this._resize_themes();
+            });
+
+            $('.tab-meltheme.mel-tab.mel-tabheader').click(() => {
+                this._resize_themes();
+            })
         }
 
         ////////////************* Inits and setups functions *************///////////
 
         /**
          * Initialise les différentes variables et constantes de la classe.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         init(){
+            this.set_font_size();
+            const ID_THEME_CONTENT = 0;
+            const ID_PICTURES_CONTENT = 1;
             this.screen_type = null;
+            this._hide_main_menu = rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin;
             this.css_rules = new Mel_CSS_Style_Sheet(); 
-            return this.init_const().init_theme().initResponsive();
+            const tabs = this.init_theme_tabs({});
+            return this.init_const().init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`)).init_theme_pictures({picturePannel:`#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`}).initResponsive();
         }
 
         /**
          * Initialise les différentes constantes de la classe.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         init_const()
         {
@@ -395,96 +505,596 @@ $(document).ready(() => {
               return this;
         }
 
-        init_theme($panel = $('#theme-panel .contents'), $force = false, callback_click = null, callback_add = null)
-        {
-            let additionnalThemes = callback_add  ?? [];
+        onthemeclick($parent) {
+            let $green = $parent.find(CONST_SELECTOR_THEME_BADGE_SELECTED);
 
-            let tlength = 0;
-            let html = '';
-            this.theme = rcmail.env.current_theme || 'default';
+            if (0 === $green.length) {
+                new mel_html2(CONST_HTML_DIV, {
+                    attribs:{class:CONST_CLASS_THEME_BADGE_SELECTED, title: $parent.children().attr('title')},
+                    contents:[
+                        new mel_html(CONST_HTML_SPAN, {class:`${CONST_ICON_CHECK} ${CONST_CLASS_ABSOLUTE_CENTER}`})
+                    ]
+                }).create($parent.css(CONST_CSS_POSITION, CONST_CSS_POSITION_RELATIVE));
+            }else $green.css(CONST_CSS_DISPLAY, EMPTY_STRING);
+        }
 
-            if (!!rcmail.env.current_theme) $('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
+        format_text(format, ...values) {
+            for (let index = 0, len = values.length, trueIndex = index + 1, exist, formatted = {index:EMPTY_STRING, conditional_index:EMPTY_STRING, conditional_item:EMPTY_STRING}; index < len; ++index, ++trueIndex) {
+                const element = values[index];
+                formatted.index = `%${trueIndex}`;
+                formatted.conditional_index = `${formatted.index}?`;
+                formatted.conditional_item = `(${formatted.conditional_index})`;
+                exist = 0 === element || !!element;
 
-            if (!!rcmail.env.mel_themes || $force) {
-                const themes = rcmail.env.mel_themes;
-                rcmail.env.mel_themes = null;
-                
-                this.themes = themes || this.themes;
+                if (format.includes(formatted.conditional_item)) {
+                    for (let iterator of this._find_conditionnal_text(format, formatted.conditional_item)) {
+                        format = format.replace(iterator.get(), exist ? iterator.getFormated() : EMPTY_STRING);
+                    }
+                }
+                else if (format.includes(formatted.conditional_index)) {
+                    format = format.replaceAll(formatted.conditional_index, (exist ? element : EMPTY_STRING));
+                }
+                else format = format.replaceAll(formatted.index, element);
+            }
 
-                for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).toArray()) {
-                    const key = iterator.key;
-                        ++tlength;
-                        if (this.themes[key]?.css_path)
-                          this.themes[key].css_path = 'unavailable';                        
+            return format;
+        }
 
-                        if (this.themes[key]?.path)  
-                          this.themes[key].path = 'unavailable';                        
+        * _find_conditionnal_text(format, conditionnal) {
+            let splited = format.split(conditionnal);
+            let text = [];
+            for (let index = 0, len = splited.length; index < len; ++index) {
+                const element = splited[index];
+                if (element.includes('/('))  text.push(element.split('/(')[1]);
+                else if (element.includes(')/')) {
+                    text.push(element.split(')/')[0]);
 
-                        html += `
-                        <div class="row mel-selectable ${iterator.value.name === this.theme ? 'selected' : ''}" data-name="${iterator.value.name}" role="button" aria-pressed="${iterator.value.name === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
-                            <div class="col-4">
-                                <img src="${iterator.value.picture}" style="width:100%;" />
-                            </div>
-                            <div class="col-8" style="display:flex;">
-                                <span style="display: block;
-                                align-self: center;">${(iterator.value.name === 'default' ? 'Par défaut' : iterator.value.name)}</span>
-                            </div>
-                        </div>
-                        `;
+                    yield {
+                        format:conditionnal,
+                        array:text,
+                        joined:EMPTY_STRING,
+                        get() {
+                            if (EMPTY_STRING === this.joined) this.joined = this.array.join(this.format);
+                            return this.joined;
+                        },
+                        getFormated() {
+                            return this.get().replace('/(', EMPTY_STRING).replace('/)', EMPTY_STRING).replace(this.format, EMPTY_STRING);
+                        }
+                    }
+
+                    text.length = 0;
                 }
             }
 
-            let $theme_button = $('#theme-switch-button');
-            if (top === window && $theme_button.length > 0)
+            splited = (text = null, null);
+        }
+
+        /**
+         * TODO FINIR
+         * @param {*} format 
+         * @param {*} values 
+         */
+        _format_replace_conditions(format, values) {
+            const regex = /\?\(([^)]+)\)\?/gm;
+            
+            if (regex.test(format)) {
+                let matches = format.match(regex);
+
+                for (let index = 0, len = matches.length, element, break_first_loop = false; index < len; ++index) {
+                    element = matches[index].replace('?(', EMPTY_STRING).replace(')?', '');
+                    for (let j = 0, values_len = values.length; j < values_len; ++j) {
+                        const value = values[j];
+                        const index_condition = `%${j + 1}?`;
+                        
+                        
+                    }
+
+                    if (break_first_loop) break;
+                }
+            }
+        }
+
+        /**
+         * Initialise la liste des thèles
+         * @param {$} $panel 
+         * @param {boolean} $force 
+         * @param {Function} callback_click 
+         * @param {Function[]} callback_add 
+         * @returns Chaîne
+         */
+        init_theme($panel = $(CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT), $force = false, callback_click = null, callback_add = null)
+        {
+            //CONSTANTES
+            const THEME_BUTTON_CLASS_ACTIVE = 'activated';
+            const THEME_BUTTON_ICON_INACTIVE = 'palette';
+            const THEME_BUTTON_ICON_ACTIVE = 'arrow_back';
+            const STYLE_MAIN_DIV_THEME = 'margin:0;padding:0 5px;';
+            const STYLE_THEME_BUTTON = 'margin:0;margin-bottom:5px;';
+            const STYLE_THEME_BUTTON_PARENT = 'padding:0 5px;';
+            const THEME_CLASS_COL_NUMBER = 6;
+            const THEME_MAIN_CLASS_COL = `${CONST_CLASS_COL}-${THEME_CLASS_COL_NUMBER}`;
+            const SELECTOR_NOTIFICATION_PANEL = `${CONST_JQUERY_SELECTOR_ID}notifications-panel`;
+            const SELECTOR_THEME_PANEL = `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_PANEL_ID}`;
+
+            const DEFAULT_THEME = rcmail.env.mel_themes[CONST_THEME_DEFAULT_ID]?.default_theme ?? CONST_THEME_DEFAULT_ID;
+
+            /**
+             * Thèmes additionnels, générer par le javascript
+             * @type {Function[]}
+             */
+            let additionnalThemes = callback_add || [];
+            /**
+             * Div html qui contient la liste des thèmes
+             * @type {mel_html2}
+             */
+            let html = new mel_html2(CONST_HTML_DIV, {attribs:{class:CONST_CLASS_ROW, style:STYLE_MAIN_DIV_THEME}});
+            this.theme = rcmail.env.current_theme || DEFAULT_THEME;
+
+            if (rcmail.env.current_theme === CONST_THEME_DEFAULT_ID && DEFAULT_THEME !== CONST_THEME_DEFAULT_ID) rcmail.env.current_theme = DEFAULT_THEME;
+
+            //Si il y a un thème courant, on l'applique à la page
+            if (!!rcmail.env.current_theme) {
+                let $html = mel_html.select_html();
+
+                if (!rcmail.env.mel_themes[rcmail.env.current_theme]) {
+                    rcmail.env.current_theme = DEFAULT_THEME;
+                    this.theme = rcmail.env.current_theme;
+                }
+
+                let current = rcmail.env.mel_themes[rcmail.env.current_theme];
+
+                do { //Gestion du multi-thème
+                    $html.addClass(current.class);
+                    current = rcmail.env.mel_themes[current.parent];
+                } while (!!current);
+            }
+
+            //Si il y a des thèmes ou que l'on souhaite forcer une génération de thème
+            if (!!rcmail.env.mel_themes || $force) {
+                const themes = rcmail.env.mel_themes;
+                rcmail.env.mel_themes = null; //Ne plus le rendre disponible via rcmail.env.mel_themes pour éviter les doublons
+                this.themes = themes || this.themes;
+
+                if (0 !== $panel.length) {
+                    /**
+                     * Thème traité
+                     * @type {mel_html}
+                     */
+                    let html_theme;
+                    /**
+                     * Thème selectionné ou non
+                     * @type {boolean}
+                     */
+                    let is_selected;
+                    let html_main_div;;
+                    for (const iterator of Enumerable.from(this.themes).concat(additionnalThemes).where(x => x.value.showed).orderBy(x => x.value.order ?? Infinity)) {
+
+                        if (iterator.value.id === CONST_THEME_DEFAULT_ID && CONST_THEME_DEFAULT_ID !== DEFAULT_THEME) continue;
+
+                        is_selected =  iterator.value.id === this.theme;
+                        //Création du "bouton" du thème
+                        html_theme = new mel_html(CONST_HTML_DIV, 
+                        {
+                            class:`${CONST_THEME_ICON_PREFIX}${iterator.value.id} ${CONST_CLASS_SELECTABLE} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY} ${CONST_CLASS_SELECTABLE_PICTURE_ONLY_WITH_BORDER} ${CONST_CLASS_MEL_RESIZE_OK} ${is_selected ? CONST_CLASS_SELECTED : EMPTY_STRING}`,
+                            style:`${CONST_CSS_BACKGROUND}${CONST_CSS_ASSIGN}${CONST_CSS_BACKGROUND_URL}(${iterator.value.icon})${CONST_CSS_SEPARATOR}${STYLE_THEME_BUTTON}`,
+                            title:`${iterator.value.displayed}${!!iterator.value.desc ? ` - ${iterator.value.desc}` : EMPTY_STRING}`,
+                            role:CONST_ATTRIB_ROLE_BUTTON,
+                            'tab-index':0,
+                            'data-name':iterator.value.id,
+                            'aria-pressed':iterator.value.id === this.theme
+                        });
+                        //Action à faire au clique
+                        html_theme.onclick.push((e) => {
+                            let dosomething = callback_click ? callback_click(e) : true;
+                            if (!dosomething) return;
+
+                            e = $(e.currentTarget);
+                            $panel.find(CONST_SELECTOR_THEME_BADGE_SELECTED).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                            $panel.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`).removeClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, false);
+                            e.addClass(CONST_CLASS_SELECTED).attr(CONST_ATTRIB_ARIA_PRESSED, true);
+
+                            this.onthemeclick(e.parent());
+
+                            this.update_theme(e.data('name'));
+                            this._update_theme_color();
+                            
+                        });
+                        html_main_div = new mel_html2(CONST_HTML_DIV, {attribs:{class:THEME_MAIN_CLASS_COL, style:STYLE_THEME_BUTTON_PARENT}, contents:[html_theme]});
+                        html_main_div.css('position', 'flex');
+
+                        if (!!iterator.value.saison){
+                            html_main_div.addContent(
+                                new mel_html(CONST_HTML_SPAN, {class:'theme-saison-date'}, `${iterator.value.saison.start} - ${iterator.value.saison.end}`)
+                            );
+                        }
+
+                        //Ajouter à la DIV des thèmes, le bouton de thème dans une div "col-6"
+                        html.addContent(
+                            html_main_div
+                        );
+                    }
+
+                    //Après la génération de la liste des thèmes, appliquer les effets visuels sur le thème selectionné.
+                    html.aftergenerate.push((generated) => {
+                        if (0 !== $panel.length) this.onthemeclick(generated.find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTED}`).parent());
+                    });
+                }
+            }
+
+            let $theme_button = $(`${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_BUTTON_ID}`);
+            if (top === window) //Si on est en Top & que le bouton de thème existe
             {
-                if (tlength > 1)
+                if (html.count() > 1) //Si il y + d'un thème, on active les propriétés du bouton
                 {
                   if (!this.theme_button_activated)
                   {
-                      this.theme_button_activated = true;
+                    this.theme_button_activated = true;
                     $theme_button.click(($e) => {
                         $e = $($e.currentTarget);
 
-                        if (!$e.hasClass('activated'))
+                        if (!$e.hasClass(THEME_BUTTON_CLASS_ACTIVE))
                         {
-                            $e.addClass('activated').find('.icon-mel-painting').removeClass('icon-mel-painting').addClass('icon-mel-undo');
-                            $('#notifications-panel').css('display', 'none');
-                            $('#theme-panel').css('display', '');
+                            $e.addClass(THEME_BUTTON_CLASS_ACTIVE).html(THEME_BUTTON_ICON_ACTIVE);
+                            $e.attr({"title" : rcmail.gettext("back_to_notifications", "mel_metapage")});
+                            $(SELECTOR_NOTIFICATION_PANEL).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                            $(SELECTOR_THEME_PANEL).css(CONST_CSS_DISPLAY, EMPTY_STRING);
+                            this._resize_themes();
                         }
                         else {
-                            $e.removeClass('activated').find('.icon-mel-undo').addClass('icon-mel-painting').removeClass('icon-mel-undo');
-                            $('#notifications-panel').css('display', '');
-                            $('#theme-panel').css('display', 'none');
+                            $e.removeClass(THEME_BUTTON_CLASS_ACTIVE).html(THEME_BUTTON_ICON_INACTIVE);
+                            $e.attr({"title" : rcmail.gettext("change_theme", "mel_metapage")});
+                            $(SELECTOR_NOTIFICATION_PANEL).css(CONST_CSS_DISPLAY, EMPTY_STRING);
+                            $(SELECTOR_THEME_PANEL).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
                         }
                     });
                   }
 
-                    $panel.html(html).find('.mel-selectable').click((e) => {
-                        let dosomething = callback_click ? callback_click(e) : true;
-                        if (!dosomething) return;
-
-                        e = $(e.currentTarget);
-                        $panel.find('.mel-selectable').removeClass('selected');
-                        e.addClass('selected');
-
-                        this.update_theme(e.data('name'));
-                        
-
-                        this._update_theme_color();
-                    });
+                  if (0 !== $panel.length) html.create($panel);
 
                 }
                 else {
-                    $theme_button.addClass('disabled').attr('disabled', 'disabled');
+                    //Sinon, on le désactive
+                    $theme_button.addClass(CONST_ATTRIB_DISABLED).attr(CONST_ATTRIB_DISABLED, CONST_ATTRIB_DISABLED);
+                }
+            }
+
+            if ($('#rcmfd-toggle-anims').length > 0) {
+                //Affichage du bouton de thème
+                if (!this.themes[this.theme].animation_class) {
+                    $('#rcmfd-toggle-anims').addClass('disabled').attr('disabled', 'disabled').parent().parent().css({opacity:0, position:'absolute'});
+                }
+                else {
+                    $('#rcmfd-toggle-anims').removeClass('disabled').removeAttr('disabled').parent().parent().css({opacity:'', position:''});
+                }
+
+                let current = this.themes[this.theme];
+
+                if (!!current.animation_class){
+                    if (rcmail.env.animation_enabled ?? current.animation_enabled_by_default) {
+                        $('body').addClass(current.animation_class);
+                        $('#rcmfd-toggle-anims')[0].checked = false;
+                    }
+                    else $('#rcmfd-toggle-anims')[0].checked = true;
                 }
             }
 
             return this._update_theme_color();
         }
 
+        init_theme_tabs({
+            tabs_div_selector=CONST_SELECTOR_THEME_PANEL_TAB_DIV,
+            $themePannel=$(CONST_SELECTOR_THEME_PANEL_CONTENT_DEFAULT),
+            tabs=CONST_TABS_LIST})
+        {
+            const CLASS_TAB = 'mel-tab';
+            const NAMESPACE = 'tab-meltheme';
+            const CLASS_TAB_HEADER = 'mel-tabheader';
+            const CLASS_TAB_CONTENT = 'mel-tab-content';
+            const TAB_ACTIVE = 'active';
+            const TAB_LAST = 'last';
+            const CLASS_CONTENTS = 'themescontents';
+
+            let themeIndex = null;
+            let $tabs = $(tabs_div_selector).html(EMPTY_STRING);
+
+            if (0 === $tabs.length) return tabs;
+
+            for (let index = 0, len = tabs.length; index < len; ++index) {
+                //On génère les onglets
+                const element = tabs[index];
+                new mel_html(CONST_HTML_DIV, {
+                    id:element.id,
+                    class:`${NAMESPACE} ${CLASS_TAB} ${CLASS_TAB_HEADER} ${0 === index ? TAB_ACTIVE : (len - 1 === index ? TAB_LAST : EMPTY_STRING)}`
+                }, element.display).create($tabs);
+
+                if (CONST_TAB_THEME_ID === element.id) themeIndex = index;
+            }
+
+            let $pannelParent = $themePannel.parent();
+            let $contents = new mel_html2(CONST_HTML_DIV, {
+                attribs:{
+                    class:CLASS_CONTENTS,
+                    tabindex:0
+                }
+            });
+
+            //Passer les thèmes dans le panel des thèmes
+            if (themeIndex !== null) {
+                let $divThemes = new mel_html(CONST_HTML_DIV, {
+                    class:`${tabs[themeIndex].id} ${NAMESPACE} ${CLASS_TAB_CONTENT}`
+                });
+                $contents.addContent($divThemes);
+                $divThemes.aftergenerate.push(($generated) => {
+                    $themePannel.appendTo($generated);
+                });
+            }
+
+            //Ajout des onglets et apnneaux supplémentaires
+            for (let index = 0, len = tabs.length; index < len; ++index) {
+                const element = tabs[index];
+                if (!element.already) {
+                    $contents.addContent(new mel_html(CONST_HTML_DIV, {
+                        class:`${element.id} ${NAMESPACE} ${CLASS_TAB_CONTENT}`,
+                        style:`${CONST_CSS_DISPLAY}${CONST_CSS_ASSIGN}${CONST_CSS_NONE}${CONST_CSS_SEPARATOR}`
+                    }));
+                }
+            }
+
+            $contents.create($pannelParent);
+
+            return tabs;
+        }
+
+        init_theme_pictures({
+            picturePannel='#theme-panel .theme-pannel-tab-pictures',
+            picturesToIgnore = [],
+            picturesToAdd = []
+        }) {
+            const CLASS_PARENT_DIV = `${CONST_CLASS_COL}-4`; 
+            const CLASS_PARENT_HOVER = 'hovered';
+            const CUSTOM_THEME_CLASSES = 'input-top-selectable mel-resize-ok half-resize';
+            const CUSTOM_THEME_PARENT_DIV_CLASS = 'div-custom-picture px-1';
+            const CUSTOM_THEME_CLASSES_PIC = 'half-resize';
+            const INPUT_CLASS = 'hidden';
+            const INPUT_ACCEPT = ['.png', '.jpg', '.svg', '.gif'].join(',');
+            const THEME_ATTRIB_DATA_USER_PREF_ID = 'prefid';
+            const THEME_ATTRIB_DATA_PATH = 'picpath';
+            const THEME_ATTRIB_DATA_ID = 'picid';
+            const THEME_ATTRIB_DATA_IS_CUSTOM = 'iscustom';
+            const THEME_DEFAULT_CLASS = 'barup-background-color';
+            const THEME_CLASSES = 'mel-selectable picture mel-resize-ok';
+            const RULE_KEY = 'barup-background';
+            const DATA_PIC_ID = `${CONST_ATTRIB_DATA}-${THEME_ATTRIB_DATA_ID}`;
+            const DATA_PIC_PATH = `${CONST_ATTRIB_DATA}-${THEME_ATTRIB_DATA_PATH}`;
+            const DATA_IS_CUSTOM = `${CONST_ATTRIB_DATA}-${THEME_ATTRIB_DATA_IS_CUSTOM}`;
+            const CONST_SELECTOR_SELECTED = `${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTED}`;
+            const STYLE = 'padding:0 5px;';
+            let $pannel = $(picturePannel);
+
+            if (0 === $pannel.length) return this;
+            const pictures = rcmail.env.mel_themes_pictures;
+            let $item;
+            /**
+             * Contient la liste des images
+             * @type {mel_html2}
+             */
+            let $mainrow = new mel_html2(CONST_HTML_DIV, {
+                attribs:{
+                    class:CONST_CLASS_ROW,
+                    style:STYLE
+                }
+            });
+            this.theme_selected_picture = rcmail.env.theme_selected_picture || null;
+
+            for (const iterator of Enumerable.from(pictures).where(x => !picturesToIgnore.includes(x.key)).concat(picturesToAdd).orderBy(x => true === x.value.isFirst ? Number.NEGATIVE_INFINITY : (x.value.customOrder || Number.POSITIVE_INFINITY))) {
+                //Div de position
+                $item = new mel_html2(CONST_HTML_DIV, {
+                    attribs:{
+                        class:CLASS_PARENT_DIV,
+                        style:STYLE
+                    }
+                }).appendTo($mainrow);
+                //Vrai DIV
+                $item = new mel_html2(CONST_HTML_DIV, {}).appendTo($item);
+
+                //Si c'est on peux choisir une image custom
+                if (!!iterator.value.userprefid) {
+                    /**
+                     * Input caché
+                     * @type {mel_input}
+                     */
+                    var $input = new mel_input({
+                        class:INPUT_CLASS,
+                        type:CONST_ATTRIB_TYPE_FILE,
+                        accept:INPUT_ACCEPT,
+                        'data-prefid':iterator.value.userprefid
+                    });
+
+
+                    //MAJ de l'image
+                    $input.onchange.push((ev) => {
+                        ev = $(ev.currentTarget)
+                        const prefid = ev.data(THEME_ATTRIB_DATA_USER_PREF_ID);
+                        const file = ev[0].files[0];
+                        var reader = new FileReader();
+                        reader.onload =  (e) => {
+                          const picture =  e.target.result;
+                          const size = mel_metapage.Functions.calculateObjectSizeInMo(picture);
+
+                          if (size < 2) {
+                            this.update_custom_picture(picture, prefid);
+                            let $selectable = ev.parent().parent().find(`${CONST_JQUERY_SELECTOR_CLASS}${CONST_CLASS_SELECTABLE}`)
+                            .removeClass(THEME_DEFAULT_CLASS)
+                            .css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${picture})`)
+                            .css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER)
+                            .data(THEME_ATTRIB_DATA_PATH, picture)
+                            .data(THEME_ATTRIB_DATA_IS_CUSTOM, true);
+  
+                            if ($selectable.data(THEME_ATTRIB_DATA_ID) === this.get_theme_picture()) {
+                              this.css_rules.remove(RULE_KEY);
+                              this._add_background(picture, true);
+                            }
+                          }
+                          else {
+                            rcmail.display_message('Votre image est trop lourde !', 'error');
+                          }
+
+
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    //Bouton qui sert à cliquer sur l'input
+                    var $icon = new mel_html('span', {class:'material-symbols-outlined'}, 'upload')
+                    var $button = new mel_button({}, $icon.toString());
+                    $button.onmouseover.push((e) => {
+                        $(e.currentTarget).parent().addClass(CLASS_PARENT_HOVER);
+                    });
+                    $button.onmouseout.push((e) => {
+                        $(e.currentTarget).parent().removeClass(CLASS_PARENT_HOVER);
+                    });
+                    $button.onclick.push((e) => {
+                        $(e.currentTarget).parent().find(CONST_HTML_INPUT).click();
+                    });
+
+                    if (!!iterator.value.title) $button.setAttr('title', iterator.value.title);
+
+                    //Mise en forme
+                    $item.addContent(new mel_html2(CONST_HTML_DIV, {
+                        attribs:{
+                            class:CUSTOM_THEME_CLASSES
+                        },
+                        contents:[$input, $button]
+                    }));
+                    $item.css(CONST_CSS_DISPLAY, CONST_CSS_DISPLAY_FLEX).attribs[CONST_ATTRIB_CLASS] = ($item.attribs[CONST_ATTRIB_CLASS] || EMPTY_STRING) + ` ${CUSTOM_THEME_PARENT_DIV_CLASS}`;
+                    $item = new mel_html2(CONST_HTML_DIV, {
+                        attribs:{
+                            style:`${CONST_CSS_DISPLAY}${CONST_CSS_ASSIGN}${CONST_CSS_DISPLAY_FLEX}`
+                        }
+                    }).addClass(CUSTOM_THEME_CLASSES_PIC).appendTo($item);
+                }
+                else if (!!iterator.value.title) {
+                    $item.setAttr('title', iterator.value.title);
+                }
+
+                //Ajout des classes et du fonctionnement des boutons
+                $item.addClass(THEME_CLASSES);
+                $item.attribs[DATA_PIC_ID] = iterator.key;
+
+                const isCustom = !!iterator.value.userprefid && !!iterator.value.background;
+                if (true === iterator.value.isThemeColor) {
+                    $item.addClass(THEME_DEFAULT_CLASS);
+                }
+                else {
+                    $item.attribs[DATA_PIC_PATH] = iterator.value.background;
+                    $item.css(CONST_CSS_BACKGROUND_IMAGE, `${CONST_CSS_BACKGROUND_URL}(${isCustom ? iterator.value.background : iterator.value.view})`).css(CONST_CSS_BACKGROUND_SIZE, CONST_CSS_BACKGROUND_SIZE_COVER).css(CONST_CSS_BACKGROUND_POSITION, CONST_CSS_BACKGROUND_POSITION_CENTER);
+                    if (isCustom) $item.attribs[DATA_IS_CUSTOM] = true;
+                } 
+
+                $item.onclick.push((e) => {
+                    e = $(e.currentTarget);
+                    $pannel.find(CONST_SELECTOR_THEME_BADGE_SELECTED).css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+                    $pannel.find(CONST_SELECTOR_SELECTED).removeClass(CONST_CLASS_SELECTED);
+                    e.addClass(CONST_CLASS_SELECTED);
+                    const data = e.data(THEME_ATTRIB_DATA_PATH);
+                    const isCustom = e.data(THEME_ATTRIB_DATA_IS_CUSTOM);
+
+                    try {
+                        this.css_rules.remove(RULE_KEY);
+                    } catch (error) {
+                        
+                    }
+                    
+                    if (!!data) {
+                        this._add_background(data, isCustom);
+                        $(CONST_HTML_HTML).addClass(CONST_CLASS_HTML_HAS_PICTURE);
+                    }
+                    else {
+                        $(CONST_HTML_HTML).removeClass(CONST_CLASS_HTML_HAS_PICTURE);
+                    }
+
+                    this.onthemeclick(e.parent());
+
+                    this.set_theme_picture(e.data(THEME_ATTRIB_DATA_ID));
+                });
+
+                //Effectuer les actions de séléction si il s'agit du thèmes en cours
+                if (this.theme_selected_picture === null || iterator.key === this.theme_selected_picture) {
+                    $item.addClass(CONST_CLASS_SELECTED);
+                    $item.parent.aftergenerate.push(($generated) => {
+                        this.onthemeclick($generated)
+                    });
+
+                    if (this.theme_selected_picture === null || !iterator.value.background) {
+                        this.theme_selected_picture = iterator.key;
+                        this.css_rules.remove(RULE_KEY);
+                    }
+                    else {
+                        this._add_background(iterator.value.background, isCustom);
+                        $(CONST_HTML_HTML).addClass(CONST_CLASS_HTML_HAS_PICTURE);
+                    }
+                }
+            }//FIN FOR
+
+            $mainrow.create($pannel);
+
+            return this;
+        }
+
+        _resize_themes() {
+            const size = $('#theme-panel .container').height() + $('#groupoptions-user .container.menu').height() + 60 + 30;
+            $('#theme-panel .themescontents').css('max-height', `${window.innerHeight - size}px`);
+
+        }
+
+        _add_background(path, isRule) {
+            this.css_rules.addAdvanced('barup-background', '.barup',`background-image:url(${isRule ? path : (window.location.origin + window.location.pathname + path.replace('./', '/')).replaceAll('://', '¤').replaceAll('//', '/').replaceAll('¤', '://')})!important`,
+            'background-size: cover !important',
+            'background-position: center !important'
+            );
+            return this;
+        }
+
+        async update_custom_picture(datas, pref) {
+            await mel_metapage.Functions.post(
+                mel_metapage.Functions.url('mel_metapage', 'plugin.update_custom_picture'), {
+                    _datas:datas,
+                    _prefid:pref
+                },
+                (datas) => {
+                    const VALIDATION = 'ok';
+                    if (VALIDATION === datas) {
+                        rcmail.display_message('Image chargée avec succès !', 'confirmation');
+                    }
+                }
+            );
+        }
+
+        async set_theme_picture(id) {
+            this.theme_selected_picture = id || null;
+
+            if (this.theme_selected_picture !== null)
+            {
+                await mel_metapage.Functions.post(
+                    mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme_picture'), {
+                        _id:id
+                    },
+                    (datas) => {
+                        const VALIDATION = 'ok';
+                        if (VALIDATION === datas) {
+                            rcmail.display_message('Image changée avec succès !', 'confirmation');
+                        }
+                    }
+                );
+            }
+        }
+
+        get_theme_picture() {
+            return this.theme_selected_picture;
+        }
+
         /**
-         * Différentes actions à faire après l'initialisation.
-         * @returns {Mel_Elastic} Chaînage
+         * Différentes actions Ã  faire après l'initialisation.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup(){
 
@@ -501,7 +1111,7 @@ $(document).ready(() => {
 
         /**
          * Met en place l'apparence et le fonctionnel de la barre de navigation principale
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_nav()
         {
@@ -516,58 +1126,111 @@ $(document).ready(() => {
                     $("#layout-content").css("margin-left", width);
             }
 
-            if ($("#taskmenu").length > 0)
+            let $taskmenu = $("#taskmenu");
+            if ($taskmenu.length > 0)
             {
-                //On met dans l'ordre les différents boutons de la barre de navigation principale
-                let array = [];
+                if (this._hide_main_menu) {
+                    $('#layout-menu').remove();
+                }
+                else {
+                    //On met dans l'ordre les différents boutons de la barre de navigation principale
+                    let array = [];
+                    $taskmenu.find("a").each((i,e) => {
+                    e = $(e);
 
-                $("#taskmenu").find("a").each((i,e) => {
-                e = $(e);
+                    if (e.parent().hasClass("special-buttons"))
+                        return;
 
-                if (e.parent().hasClass("special-buttons"))
-                    return;
+                    // if (e.hasClass('settings')) {
+                    //     e.css('display', 'none');
+                    //     return;
+                    // }
 
-                const order = e.css("order");
-                const tmp = e.removeAttr("title")[0].outerHTML;
-                e.remove();
-                e = null;
-                array.push({
-                    order:order,
-                    item:$(tmp).keypress((event) => {
+                    const order = e.css("order");
+                    const tmp = e.removeAttr("title")[0].outerHTML;
+                    e.remove();
+                    e = null;
+                    array.push({
+                        order:order,
+                        item:$(tmp).keypress((event) => {
 
-                        if (event.originalEvent.keyCode === 32)
-                            $(event.currentTarget).click();
+                            if (event.originalEvent.keyCode === 32)
+                                $(event.currentTarget).click();
 
-                    })
-                });
+                        })
+                    });
 
-                });
+                    });
 
-                $("#taskmenu").append('<ul class="list-unstyled"></ul>');
+                    $taskmenu.append('<ul class="list-unstyled"></ul>');
 
-                Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
-                    let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
-                    e = e.item;
-                    if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
-                    li.css("display", "none");
+                    let li;
+                    Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
+                        li = $(`<li style="display:block" data-order="${e.order}" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
+                        e.item.attr('data-order', e.order);
+                        e = e.item;
+                        if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose")) li.css("display", "none");
 
-                    e.appendTo(li);
-                    li.appendTo($("#taskmenu ul"));
-                });
+                        e.appendTo(li);
+                        li.appendTo($("#taskmenu ul"));
+                    });
 
-                $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
+                    li = null;
 
-                //On supprime le stockage si on y a pas accès.
-                if (!rcmail.env.is_stockage_active)
-                    $("#taskmenu .stockage").parent().remove();
+                    let $taskMenu = $("#taskmenu .menu-last-frame").attr("tabIndex", "-1");
+
+                    if (true !== rcmail.env.menu_last_frame_enabled) $taskMenu.parent().css(CONST_CSS_DISPLAY, CONST_CSS_NONE);
+
+                    //On supprime le stockage si on y a pas accès.
+                    if (!mel_metapage.Functions.stockage.is_stockage_active()) $("#taskmenu .stockage").parent().remove();
+                }
             }
+
+            return this.update_main_nav_meca();
+        }
+
+        update_main_nav_meca() {
+            let $menu = $('#layout-menu');
+            if ($menu.length > 0) {
+                if(!rcmail.env.main_nav_can_deploy) {
+                    $menu.addClass('main-nav-cannot-deploy').find('a').each((index, element) => {
+                        element = $(element);
+                        element.attr('title', element.find('span').first().text());
+                    });
+                }
+                else {
+                    $menu.removeClass('main-nav-cannot-deploy').find('a').each((index, element) => {
+                        element = $(element);
+                        element.removeAttr('title');
+                    });
+                }
+            }
+
+            $menu = $('#otherapps');
+            if ($menu.length > 0) {
+                if(!rcmail.env.main_nav_can_deploy) {
+                    $menu.find('a').each((index, element) => {
+                        element = $(element);
+                        element.attr('title', element.find('span').first().text());
+                    });
+                }
+                else {
+                    $menu.find('a').each((index, element) => {
+                        element = $(element);
+                        element.removeAttr('title');
+                    });
+                }
+            }
+
+            $menu = null;
+
 
             return this;
         }
 
         /**
-         * Met en place les actions pour les tâches qui en ont besoins.
-         * @returns {Mel_Elastic} Chaînage
+         * Met en place les actions pour les tÃ¢ches qui en ont besoins.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_tasks()
         {
@@ -576,7 +1239,7 @@ $(document).ready(() => {
                 if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
                     $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
 
-                //Revenir à la liste des mails sans rafraîchir la page.
+                //Revenir Ã  la liste des mails sans rafraÃ®chir la page.
                 if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
                 {
                     $(`<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
@@ -604,7 +1267,7 @@ $(document).ready(() => {
 
         /**
          * Met en place les mails.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_mails()
         {
@@ -620,6 +1283,8 @@ $(document).ready(() => {
 
             if (rcmail.env.task === "mail")
             {
+                $('.header-content a.headers').remove();
+
                 $(".task-mail #quotadisplay").prepend(`<span id='stockage-space-text'>Espace de stockage</span><p style="flex-basis: 100%;
                 height: 0;
                 margin: 0;"></p>`);
@@ -640,6 +1305,7 @@ $(document).ready(() => {
                         delete rcmail.env.is_from_scroll;
                     else if ($("#layout-list").hasClass("initial") && show)
                     {
+                        rcmail.triggerEvent('ui.open-mail-visu');
                         //Mise en place du système
                         $("#layout-content").css("display", "").removeClass("hidden layout-hidden");
                         $("#layout-list").removeClass("initial");
@@ -671,16 +1337,20 @@ $(document).ready(() => {
 
                         $("#layout-content ul#toolbar-menu").prepend($back);
 
+                        $('#layout-content .header .move.simplified').css('display', 'none');
+
                         //Fermer la prévisu
-                        rcmail.register_command("close-mail-visu", () => {
-                            $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
+                        rcmail.register_command("close-mail-visu", (args) => {
+                            const {ignore_select} = args;
+
+                            if (!ignore_select) $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
 
                             $("#layout-content").css("display", "none").addClass("hidden layout-hidden");
                             $("#layout-list").addClass("full");
 
                             $("#mailsearchlist").removeClass("hoverable");
 
-                            // $("#messagelist-content .selected .selection input")[0].checked = false;
+                            rcmail.triggerEvent('ui.close-mail-visu');
                             
 
                         }, true)
@@ -693,6 +1363,8 @@ $(document).ready(() => {
                         $("#layout-list").removeClass("full");
 
                         $("#mailsearchlist").addClass("hoverable");
+
+                        rcmail.triggerEvent('ui.open-mail-visu');
                         
                     }
 
@@ -717,7 +1389,7 @@ $(document).ready(() => {
                     $(".btn.btn-primary.send").remove();
                     $("#toolbar-menu").prepend(`
                         <li role="menuitem">
-                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)">Envoyer</a>
+                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)"><span class="inner">Envoyer</span></a>
                         </li>
                     `);
                 }
@@ -752,7 +1424,6 @@ $(document).ready(() => {
                         });
                     });
 
-
                     $('#mailsearchlist .searchbar .reset').click(() => {
                         $('#mailsearchlist .searchbar .flag').removeClass('selected');
                     })
@@ -777,8 +1448,6 @@ $(document).ready(() => {
                         
                         </li>
                     `).append($("#melplusmails").css("display", "")))
-
-                    const mailConfig = rcmail.env.mel_metapage_mail_configs;
 
                     let test = new ResizeObserver(() => {
                         let value = 0;
@@ -813,8 +1482,9 @@ $(document).ready(() => {
                             .removeAttr("aria-hidden");
                         }
 
-                        if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
+                        if (rcmail.env.search_initialized !== true && window.innerWidth < 410  && window.innerWidth > 0)
                         {
+                            console.log('hoverable observer', rcmail.env.search_initialized, window.innerWidth);
                             rcmail.env.search_initialized = true;
                             $("#mailsearchlist").addClass("hoverable").click((e) => {
                                 
@@ -838,10 +1508,10 @@ $(document).ready(() => {
                             }).find("input").on("focusout", (e) => {
                                 if (window.innerWidth < 410)
                                 {
+                                    console.log('hoverable observer', e, window.innerWidth);
                                     let parent = e.relatedTarget === null ? null : $(e.relatedTarget);//e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
                                     while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
                                     {
-                                        //console.log("parent", parent);
                                         parent = parent.parent();
                                     }
 
@@ -862,73 +1532,7 @@ $(document).ready(() => {
                     test.observe($("#layout-list")[0]);
 
                     
-                    if (mailConfig !== null)
-                    {
-                        let _css = "";
-
-                        //Taille des icônes
-                        if (mailConfig["mel-icon-size"] !== rcmail.gettext("normal", "mel_metapage"))
-                        {
-                            _css += `
-                            #toolbar-menu li a,
-                            #messagelist-header a.refresh,
-                            #toolbar-list-menu li a {
-                                font-size: 0.9rem;
-                            }
-    
-                            
-                            `;
-                        }
-
-                        //Espacement des dossiers
-                        if (mailConfig["mel-folder-space"] === rcmail.gettext("larger", "mel_metapage"))
-                            _css += `
-                            
-                            #folderlist-content li {
-                                margin-top: 10px;
-                            }
-                            
-                            `;
-                        else if (mailConfig["mel-folder-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                            _css += `
-                                
-                            #folderlist-content li {
-                                margin-top: -5px;
-                            }
-                            
-                            `;
-
-                        //Espacement des messages
-                        if (mailConfig["mel-message-space"] === rcmail.gettext("larger", "mel_metapage"))
-                            _css += `
-                            
-                            #messagelist tr.message td {
-                                padding-top: 1rem;
-                                padding-bottom: 1rem;
-                            }
-                            
-                            `;
-                        else if (mailConfig["mel-message-space"] === rcmail.gettext("smaller", "mel_metapage"))
-                            _css += `
-                                
-                            #messagelist tr.message td {
-                                padding-top: 0;
-                                padding-bottom:0;
-                            }
-                            
-                            `;
-
-
-                        var style=document.createElement('style');
-                        style.type='text/css';
-
-                        if(style.styleSheet){
-                            style.styleSheet.cssText = _css;
-                        }else{
-                            style.appendChild(document.createTextNode(_css));
-                        }
-                        document.getElementsByTagName('head')[0].appendChild(style);
-                    }
+                    this.update_mail_css({});
 
                     //message_extwin @Rotomeca
                     const alias_mel_rcmail_show_message = rcmail.show_message
@@ -945,7 +1549,7 @@ $(document).ready(() => {
                             new Windows_Like_PopUp(top.$("body"), 
                             {
                                 title:"Ouverture d'un mail...",
-                                content:`<center><div class='spinner-border'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
+                                content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
                                 afterCreatingContent($html, box, popup) {
                                     box.content.find("iframe").on('load', () => {
                                         let $iframe = box.content.find("iframe");
@@ -958,7 +1562,7 @@ $(document).ready(() => {
                                         };
 
                                         box.title.find('h3').html(title);
-                                        box.content.find(".spinner-border").remove();
+                                        box.content.find('#rotomecamelloader').remove();
                                         $iframe.css('display', '');
                                         $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
                                         $iframe[0].contentWindow.rcmail.env.is_in_popup_mail = true;
@@ -978,10 +1582,10 @@ $(document).ready(() => {
                                         }
                                     });
 
-                                    let spinner = box.content.find(".spinner-border").css("width", '30%');
-                                    let spinner_size = Math.round(spinner.width());
-                                    spinner.css("width", `${spinner_size}px`)
-                                    .css('height', `${spinner_size}px`).css('margin', '15px');
+                                    // let spinner = box.content.find(".spinner-border").css("width", '30%');
+                                    // let spinner_size = Math.round(spinner.width());
+                                    // spinner.css("width", `${spinner_size}px`)
+                                    // .css('height', `${spinner_size}px`).css('margin', '15px');
                                     
                                 },
                                 width:"calc(100% - 60px)",
@@ -1068,7 +1672,7 @@ $(document).ready(() => {
                 };
 
                 let testing = (e, _class) => {
-                    const array = Enumerable?.from(e.classList)?.toArray() ?? [];
+                    const array = Enumerable.from(e.classList).toArray() || [];
                     const count = array.length;
                     if (count === 1) action($(e), _class);
                     else if (count === 2 && array.includes(_class) && (array.includes("disabled") || array.includes("active")))
@@ -1093,29 +1697,26 @@ $(document).ready(() => {
 
         /**
          * Met en place la rédaction d'un mail.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_compose()
         {
             //Si on se trouve au bon endroit.
             if (rcmail.env.task === "mail" && rcmail.env.action === "compose")
             {
-                const key = "bnum_last_fields";
+                const key = "bureau_num_last_fields";
                 //Sauvegarder le champs
                 $("a.input-group-text.icon.add").click(() => {
                     $("#headers-menu ul.menu a.recipient.active").each((i,e) => {
                         e = $(e);
                         e.click(() => {
-                            let storage = mel_metapage.Storage.get(key);
-                            
-                            if (storage === undefined || storage === null)
-                                storage = [];
+                            let storage = Mel_Elastic_Storage.load(key, []);
 
                             const field = e.data("target");
                             if (!storage.includes(field))
                             {
                                 storage.push(field);
-                                mel_metapage.Storage.set(key, storage);
+                                Mel_Elastic_Storage.save(key, storage);
                             }
                             
                         });
@@ -1132,17 +1733,19 @@ $(document).ready(() => {
                             $input = e.parent().parent().find("input");
 
                         const field = $input.attr("id").replace("_", "");
-                        let storage = mel_metapage.Storage.get(key);
+                        let storage = Mel_Elastic_Storage.load(key, []);
                         
                         if (storage.includes(field))
                         {
-                            storage = Enumerable?.from(storage)?.where(x => x !== field)?.toArray() ?? [];
-                            mel_metapage.Storage.set(key, storage);
+                            storage = Enumerable.from(storage).where(x => x !== field).toArray() || [];
+
+                            if (storage.length === 0) Mel_Elastic_Storage.remove(key);
+                            else Mel_Elastic_Storage.save(key, storage);
                         }
                     });
                 });
 
-                const storage = mel_metapage.Storage.get(key);
+                const storage = Mel_Elastic_Storage.load(key, []);
 
                 //Afficher les champs
                 if (storage !== null && storage.length > 0)
@@ -1152,6 +1755,9 @@ $(document).ready(() => {
                         $(`#compose_${element}`).removeClass("hidden");
                     }
                 }
+
+                //Suppression du "commenter"
+                $('#mel-comment-mail').css('display', 'none');
 
                 //Gestion des options
                 if (rcmail.env.compose_option !== undefined && rcmail.env.compose_option !== null && rcmail.env.compose_option !== "")
@@ -1270,7 +1876,7 @@ $(document).ready(() => {
                     const url = rcmail.url('mail/compose', p);
                     let config = {
                         title:"Rédaction",
-                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="display:none;width:100%;height:calc(100%);"/>`,
+                        content:`${MEL_ELASTIC_UI.create_loader('rotomecamelloader', true)[0].outerHTML}<iframe class="sr-only" title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
                         onclose(popup) {
                             if (popup.box.close.data('force') == '1') return;
                             if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
@@ -1302,6 +1908,10 @@ $(document).ready(() => {
                             box.close.data('force', '');
                             let frame_context = box.content.find("iframe")[0].contentWindow;
 
+                            frame_context.popup_action = (callback) => {
+                                callback($html, box);
+                            };
+
                             frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
 
                             frame_context.$('#compose-subject').on('input', (e) => {
@@ -1311,10 +1921,10 @@ $(document).ready(() => {
                             });
 
                             box.content.find("#rotomecamelloader").css('display', 'none');
-                            box.content.find("iframe").css('display', '');
+                            box.content.find("iframe").removeClass('sr-only');
                             const obj = frame_context.$('#compose-subject').val();
 
-                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+                            if ((obj || "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
 
                             frame_context.rcmail.addEventListener('message_submited', async (args) => {
                                 if (args.draft !== true)
@@ -1378,7 +1988,7 @@ $(document).ready(() => {
                         fullscreen:true
                     };
             
-                    const popup_class = window.Windows_Like_PopUp ?? top.Windows_Like_PopUp;
+                    const popup_class = window.Windows_Like_PopUp || top.Windows_Like_PopUp;
                     return new popup_class(top.$("body"), config);
                 }
             };
@@ -1406,7 +2016,7 @@ $(document).ready(() => {
 
         /**
          * Met en place certaines actions pour les contacts
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_adressbook()
         {
@@ -1454,55 +2064,66 @@ $(document).ready(() => {
 
         /**
          * Met en place la barre de navigation pour les autres applis.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_other_apps(ignoreStart = false)
         {
             if (!ignoreStart)
             {
+                const CLASS_FOR_LI_PREFIX = 'li-';
                 //Enrobe les "a" par des "li".
-                $("#listotherapps").find("a").each((i,e) => {
-                    let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
-                    $(e).addClass("mel-focus").appendTo(tmp);
-                });
+                let tmp;
+                for (let e of $("#otherapps a")) {
+                    tmp = new mel_html('li', {
+                        style:'width:100%',
+                        class:Enumerable.from(e.classList).where(x => x.includes(CLASS_FOR_LI_PREFIX)).select(x => x.replace(CLASS_FOR_LI_PREFIX, EMPTY_STRING)).toArray()
+                    });
+                    $(e).addClass('mel-focus').appendTo(tmp.create($(e).parent()));
+                }
             }
 
             //Gestion de la barre.
-            $("#listotherapps").find("a").on('focusout', (e) => {
-
+            $("#otherapps").find("a").on('focusout', (e) => {
                 $("#menu-overlay").remove();
-                if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
+                let $parent = $(e.relatedTarget);
+
+                if ($parent.length > 0) {
+                    while(!$parent.hasClass("otherapps") && $parent.length > 0 && $parent[0].nodeName !== 'BODY') {
+                        $parent = $parent.parent();
+                    }
+                }
+
+                if (!$parent.hasClass("otherapps"))
                 {
                     if (!$(e.relatedTarget).hasClass("more-options") && $("#otherapps").css("display") !== "none")
                     {
                         $("a.more-options").click();
                         if ($("html").hasClass("touch"))
                         {
-
                             $("#touchmelmenu").click();
                         }
                     }
                 }
             });
 
-            // rcmail.addEventListener('plugin.message_send_error', ($args) =>
-            // {
-            //     top.rcmail.command('message_send_error', $args);
-            // });
-
             return this;
         }
 
         /**
          * Met en place diverses choses qui concerne les choses invisibles.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setup_html()
         {
+            const ff_check_parent = true;
             try {
                 $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
             } catch (error) {
                 
+            }
+
+            if ((ff_check_parent ? window === parent : true) && typeof InstallTrigger !== 'undefined') {
+                $('html').addClass('navigator-firefox');
             }
 
             return this;
@@ -1564,6 +2185,148 @@ $(document).ready(() => {
                     });
                 }
             }
+
+            return this;
+        }
+
+        update_mail_css({
+            key = null,
+            value = null
+        }){
+
+            if (!!key && !!value && !!value[key] && rcmail.env.mel_metapage_mail_configs[key] !== value[key]) {
+                rcmail.env.mel_metapage_mail_configs[key] = value[key];
+            }
+
+            if (rcmail.env.task !== 'mail') return;
+
+            const mailConfig = rcmail.env.mel_metapage_mail_configs;
+
+            if (mailConfig !== null)
+            {
+                let _css = [];
+
+                const mel_icon_size = 'mel-icon-size';
+                if (this.css_rules.ruleExist(mel_icon_size)) this.css_rules.remove(mel_icon_size);
+                
+                //Taille des icÃ´nes
+                if (mailConfig[mel_icon_size] !== rcmail.gettext("normal", "mel_metapage"))
+                {
+                    this.css_rules.addAdvanced(mel_icon_size, '#toolbar-menu li a,#messagelist-header a.refresh,#toolbar-list-menu li a', 'font-size: 0.9rem;');
+                }
+
+                const mel_folder_space = 'mel-folder-space';
+                if (this.css_rules.ruleExist(mel_folder_space)) this.css_rules.remove(mel_folder_space);
+                
+                //Espacement des dossiers
+                if (mailConfig[mel_folder_space] === rcmail.gettext("larger", "mel_metapage"))
+                    this.css_rules.addAdvanced(mel_folder_space, '#folderlist-content li',
+                        '--settings-mail-folder-margin-top: 30px;',
+                        '--settings-mail-subfolder-margin-top: 5px;',
+                        ' --settings-mail-opened-folder-margin-top: 30px;'
+                    )
+
+                else if (mailConfig[mel_folder_space] === rcmail.gettext("smaller", "mel_metapage"))
+                {
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content li', 
+                        '--settings-mail-folder-margin-top: 0px;',
+                        '--settings-mail-subfolder-margin-top: -5px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li', 
+                        '--settings-mail-folder-margin-top: 0px;',
+                        '--settings-mail-subfolder-margin-top: -5px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content li.mailbox.boite[aria-expanded="true"]', 
+                        '--settings-mail-opened-folder-margin-bottom: 20px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li.mailbox.boite[aria-expanded="true"]', 
+                        '--settings-mail-opened-folder-margin-top: 5px!important;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content .unified li.mailbox[aria-expanded="true"]', 
+                        '--settings-mail-folder-margin-bottom: 20px!important;',
+                        '--settings-mail-folder-margin-top: 5px!important;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type', 
+                        'border: none;',
+                        'margin-top: 0;',
+                        'padding-top: 0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle,#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount', 
+                        'top:0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('#mailboxlist li ul:first-of-type', 
+                        'padding-left: 1.5em;'
+                    ));
+
+                    const rule = new Mel_CSS_Array_Rule(_css);
+
+                    this.css_rules._add(mel_folder_space, rule);
+                    _css = [];
+                }
+                    
+                const mel_message_space = 'mel-message-space';
+                if (this.css_rules.ruleExist(mel_message_space)) this.css_rules.remove(mel_message_space);
+
+                //Espacement des messages
+                if (mailConfig[mel_message_space] === rcmail.gettext("larger", "mel_metapage"))
+                    this.css_rules.addAdvanced(mel_message_space, '#messagelist tr.message td', 'padding-top: 1rem;', 'padding-bottom: 1rem;');
+                else if (mailConfig[mel_message_space] === rcmail.gettext("smaller", "mel_metapage"))
+                {
+                    _css.push(new Mel_CSS_Advanced_Rule('#messagelist tr.message td', 
+                        'padding-top: 0;',
+                        'padding-bottom:0;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('table.messagelist td.subject span.subject', 
+                        'margin-top: -10px;'
+                    ));
+
+                    _css.push(new Mel_CSS_Advanced_Rule('table.messagelist tr.message td.flags span.attachment', 
+                        'margin-top: -7px;',
+                        'pointer-events: none'
+                    ));
+
+                    const rule = new Mel_CSS_Array_Rule(_css);
+
+                    this.css_rules._add(mel_message_space, rule);
+
+                    _css = [];
+                }
+
+
+
+                // var style=document.createElement('style');
+                // style.type='text/css';
+
+                // if(style.styleSheet){
+                //     style.styleSheet.cssText = _css;
+                // }else{
+                //     style.appendChild(document.createTextNode(_css));
+                // }
+                // document.getElementsByTagName('head')[0].appendChild(style);
+            }
+        }
+
+        async update_mail_css_async({
+            key = null,
+            value = null
+        }) {
+            return this.update_mail_css({key, value});
+        }
+
+        set_font_size() {
+            const size = `${rcmail.env['font-size']}-text`;
+            const other_size = `${size === 'sm' ? 'lg' : 'sm'}-text`;
+            let $html = $('html');
+
+            if (!$html.hasClass(size)) $html.removeClass(other_size).addClass(size);
 
             return this;
         }
@@ -1633,8 +2396,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jours la page.
-         * @returns {Mel_Elastic} Chaînage
+         * Met Ã  jours la page.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         update()
         {
@@ -1646,8 +2409,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jours le système d'onglet
-         * @returns {Mel_Elastic} Chaînage
+         * Met Ã  jours le système d'onglet
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         update_tabs()
         {
@@ -1701,8 +2464,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jours le système de pagination.
-         * @returns {Mel_Elastic} Chaînage
+         * Met Ã  jours le système de pagination.
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         update_pagination()
         {
@@ -1724,7 +2487,7 @@ $(document).ready(() => {
 
         /**
          * Gère les étoiles rouges.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         redStars()
         {
@@ -1759,11 +2522,24 @@ $(document).ready(() => {
 
         /**
          * Switch de thème (sombre/light)
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         switch_color()
         {
+            let $html = $('html');
+            if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+            $html = null;
+
+            $('iframe.mm-frame').each((i,e) => {
+                if (!e.classList.contains('discussion-frame')) {
+                    $html = e.contentWindow.$('html');
+                    
+                    if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+                }
+            });
+
             rcmail.triggerEvent("switch_color_theme");
+
             return this._update_theme_color();
         }
 
@@ -1773,23 +2549,45 @@ $(document).ready(() => {
          */
         color_mode()
         {
-            return $('html').hasClass("dark-mode") ? "dark" : "light";
+            return $('html').hasClass("dark-mode") || $('html').hasClass("dark-mode-custom")  ? "dark" : "light";
         }
 
         _update_theme_color()
         {
             let $html = $('html');
 
-            if (this.color_mode() === "dark")
+            if (this.color_mode() === "dark") {
+                if (this.themes[this.theme]?.custom_dark_mode){
+                    if ($html.hasClass('dark-mode')) $html.removeClass('dark-mode');
+                    if (!$html.hasClass('dark-mode-custom')) $html.addClass('dark-mode-custom');
+                }
+                else {
+                    if (!$html.hasClass('dark-mode')) $html.addClass('dark-mode');
+                    if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+                }
+            }
+            else if ($html.hasClass('dark-mode-custom')) $html.removeClass('dark-mode-custom');
+
+            if (this.color_mode() === "dark" && !this.themes[this.theme]?.custom_dark_mode)
             {
-                $html.removeClass(`theme-${this.get_current_theme().toLowerCase()}`);
+                let current = this.themes[this.get_current_theme()];
+                do {
+                    $html.removeClass(current.class);
+                    current = this.themes[current.parent];
+                } while (!!current);
             }
             else if (this.get_current_theme() !== 'default') {
-                $html.addClass(`theme-${this.get_current_theme().toLowerCase()}`);
+                let current = this.themes[this.get_current_theme()];
+                do {
+                    $html.addClass(current.class);
+                    current = this.themes[current.parent];
+                } while (!!current);
             }
             
             $('iframe.mm-frame').each((i,e) => {
-                e.contentWindow.MEL_ELASTIC_UI._update_theme_color();
+                if (!e.classList.contains('discussion-frame')) {
+                    e.contentWindow.MEL_ELASTIC_UI._update_theme_color();
+                }
             });
 
             return this;
@@ -1798,7 +2596,7 @@ $(document).ready(() => {
         ////////////************* Other functions *************///////////
         /**
          * Récupère la classe principale d'un bouton de la barre de navigation
-         * @param {DomElement} button - Ne doit pas être du JQUERY
+         * @param {DomElement} button - Ne doit pas Ãªtre du JQUERY
          * @returns {string} - Classe principale ou "no-class-found" si aucune classe principale trouvé.
          */
         get_nav_button_main_class(button)
@@ -1848,7 +2646,7 @@ $(document).ready(() => {
 
         /**
          * Récupère la différence de 2 réctangles.
-         * @param {DOMRect} rect1 Rectangle à soustraire
+         * @param {DOMRect} rect1 Rectangle Ã  soustraire
          * @param {DOMRect} rect2 Rectangle de soustraction
          * @returns {{top:number, left:number, right:number, bottom:number, rect1:DOMRect, rect2:DOMRect}} Résultats
          */
@@ -1866,7 +2664,7 @@ $(document).ready(() => {
 
         /**
          * Récupère une url correcte
-         * @param {string} task Tâche que l'on souhaite
+         * @param {string} task TÃ¢che que l'on souhaite
          * @param {string} action Action que l'on souhaite
          * @param {JSON} args Arguments supplémentaires
          * @returns {string} Url fonctionnel
@@ -1928,7 +2726,7 @@ $(document).ready(() => {
         /**
          * Créer une selectbox stylisé via un élément
          * @param {JQUERY} event Jquery élément
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         generateSelect(event)
         {
@@ -1999,10 +2797,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Met à jour la valeur du select
+         * Met Ã  jour la valeur du select
          * @param {string} value Nouvelle valeur
          * @param {string} newTitle Nouveau titre associé
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         updateSelectValue(value, newTitle = "")
         {
@@ -2054,8 +2852,8 @@ $(document).ready(() => {
         /**
          * Modifie la valeur d'un select
          * @param {string} new_value Nouvelle valeur
-         * @param {JQUERY} event Élément JQUERY
-         * @returns {Mel_Elastic} Chaînage
+         * @param {JQUERY} event Ã‰lément JQUERY
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         setValue(new_value, event)
         {
@@ -2082,7 +2880,7 @@ $(document).ready(() => {
         /**
          * Change d'onglet
          * @param {DOMElement} event 
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         switchTab(event)
         {
@@ -2112,7 +2910,7 @@ $(document).ready(() => {
             //Activation de la tab
             $(event).addClass("active").attr("aria-selected", true).attr("tabindex", 0);
 
-            //activation des objets lié à la tab
+            //activation des objets lié Ã  la tab
             $("." + id + "." + namespace).css("display", "");
             const onclick = $(event).data("onclick");
 
@@ -2137,7 +2935,7 @@ $(document).ready(() => {
         /**
          * Gère les différents onglets
          * @param {JQUERY | DOMElement} $item Si null, gère la page entière 
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         gestionTabs($item = null)
         {
@@ -2176,6 +2974,11 @@ $(document).ready(() => {
                     item.addClass("mel-ui-tab-system");
 
                 let tabs = item.find("button");
+
+                if (0 === tabs.length) {
+                    tabs = item.children();
+                    tabs.attr('tabindex', 0);
+                }
 
                 tabs.keydown( (event) => {
                     const key = event.keyCode;
@@ -2228,12 +3031,27 @@ $(document).ready(() => {
             return this;
         }
 
-        create_loader(id, absoluteCentered = true) {
-            let $loading = $('<div class="loader-base"><div class="loader-looping"></div></div>');
+        create_loader(id, absoluteCentered = true, generate = true) {
+            let loading = new mel_html2(CONST_HTML_DIV, {
+                attribs:{
+                    class:'loader-base'
+                },
+                contents:[new mel_html(CONST_HTML_DIV, {class:'loader-looping'})]
+            });
 
-            if (absoluteCentered) $loading = $('<div class="absolute-center"></div>').append($loading);
+            if (absoluteCentered) {
+                loading = new mel_html2(CONST_HTML_DIV, {
+                    attribs:{class:CONST_CLASS_ABSOLUTE_CENTER},
+                    contents:[loading]
+                });
+            }
 
-            return $(`<div id="${id}"></div>`).append($loading);
+            loading = new mel_html2(CONST_HTML_DIV, {
+                attribs:{id},
+                contents:[loading]
+            });
+
+            return generate ? loading.generate() : loading;
         }
 
         ////////////************* Pagination functions *************///////////
@@ -2253,7 +3071,7 @@ $(document).ready(() => {
          * @param {DomElement} e Element qui contiendra la pagination 
          * @param {number} count Nombre d'éléments
          * @param {number} current Elément courant
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         set_pagination(e,count, current = null)
         {
@@ -2285,9 +3103,10 @@ $(document).ready(() => {
          * @param {JQUERY} e Elément cliqué 
          * @param {number} number Page
          * @param {boolean} doAction Si on effectue l'action ou non.
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_page(e, number, doAction = true){
+            //debugger;
             const _integer = this._integer;
             e = $(e).parent();
             const count = Math.ceil(e.parent().data("count")/7.0);
@@ -2370,7 +3189,7 @@ $(document).ready(() => {
         /**
          * On affiche la page suivante
          * @param {DOMElement} e Element cliqué
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_next(e) {
             const count = $(e).parent().data("count");
@@ -2386,7 +3205,7 @@ $(document).ready(() => {
         /**
          * On affiche la page précédente
          * @param {DOMElement} e Element cliqué
-         * @returns {Mel_Elastic} Chaînage
+         * @returns {Mel_Elastic} ChaÃ®nage
          */
         pagination_prev(e) {
             const current = $(e).parent().data("current");
@@ -2481,7 +3300,7 @@ $(document).ready(() => {
                         $(e).data('selector-tab'),
                         $(e).data('is-default-tab'),
                         $(e).data('parent-tabs'),
-                        namespace ?? $(e).parent().data('namespace') ?? 'no-namespace'
+                        namespace || $(e).parent().data('namespace') || 'no-namespace'
                     );
 
                     if (!!$tab && $tab.length > 0 && i === size) $tab.addClass('last');
@@ -2501,7 +3320,7 @@ $(document).ready(() => {
 
                 if (datas === small) datas = phone;
 
-                if (this.screen_type !== (datas ?? this.screen_type))
+                if (this.screen_type !== (datas || this.screen_type))
                 {
                     if ((this.screen_type !== phone && this.screen_type !== small) && (datas === phone || datas === small)) //On passe en mode phone
                     {
@@ -2537,7 +3356,7 @@ $(document).ready(() => {
                         }
                     }
 
-                    this.screen_type = datas ?? this.screen_type;
+                    this.screen_type = datas || this.screen_type;
                 }
             });
 
@@ -2579,7 +3398,7 @@ $(document).ready(() => {
             let $tab = null;
 
             //Gestion de l'onglet
-            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est à l'intérieur du corps
+            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est Ã  l'intérieur du corps
             {
                 tabName = item.$tabName[0].innerText;
                 item.$tabName.addClass(header_to_hide);
@@ -2642,31 +3461,94 @@ $(document).ready(() => {
             return this.get_themes()[this.get_current_theme()];
         }
 
-        update_theme(theme)
+        update_theme(theme, post = true)
         {
             theme = theme || 'default'
             if (theme !== this.theme) {
+                const newThemeDatas = this.themes[theme];
+                const oldThemeDatas = this.themes[this.theme];
                 let $html = $('html');
                 
-                if (this.theme !== 'default') $html.removeClass(`theme-${this.theme.toLowerCase()}`);
-                if (theme !== 'default') $('html').addClass(`theme-${theme.toLowerCase()}`);
+                if (this.theme !== 'default') {
+                    let current = oldThemeDatas;
+
+                    do {
+                        $html.removeClass(current.class);
+                        current = this.themes[current.parent];
+                    } while (!!current);
+                    
+                }
+                if (theme !== 'default') {
+                    let current = newThemeDatas;
+
+                    do {
+                        $html.addClass(current.class);
+                        current = this.themes[current.parent];
+                    } while (!!current);
+                }
 
                 this.theme = theme;
+
+                //Désactiver les autres animations
+                for (const key in this.themes) {
+                    if (Object.hasOwnProperty.call(this.themes, key)) {
+                        const element = this.themes[key];
+
+                        if (!!element.animation_class) $('body').removeClass(element.animation_class);
+                    }
+                }
+                
+                if ($('#rcmfd-toggle-anims').length > 0)
+                {
+                    //Afficher ou non un bouton pour activer les animations
+                    if (!this.themes[this.theme].animation_class) {
+                        $('#rcmfd-toggle-anims').addClass('disabled').attr('disabled', 'disabled').parent().parent().css({opacity:0, position:'absolute'});
+                    }
+                    else {
+                        $('#rcmfd-toggle-anims').removeClass('disabled').removeAttr('disabled').parent().parent().css({opacity:'', position:''});
+                    }
+
+                    //Activer ou non les animations du thème
+                    let current = this.themes[this.theme];
+
+                    if (!!current.animation_class){
+                        if (rcmail.env.animation_enabled ?? current.animation_enabled_by_default) {
+                            $('body').addClass(current.animation_class);
+                            $('#rcmfd-toggle-anims')[0].checked = false;
+                        }
+                        else $('#rcmfd-toggle-anims')[0].checked = true;
+                    }
+                }
             }
 
             $('iframe.mm-frame').each((i, e) => {
                 try {
-                        e.contentWindow.MEL_ELASTIC_UI.update_theme(theme);
+                    if (!$(e).hasClass('discussion-frame')) e.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
                 } catch (error) {
-                    
+
                 }
             });
 
-            mel_metapage.Functions.post(
-              mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
-              {_t:theme},
-              (f) => {},
-          );
+            if ('settings' === rcmail.env.task) {
+                try {
+                    let $settings_frames = $('iframe');
+                    for (const iterator of $settings_frames) {
+                        iterator.contentWindow.MEL_ELASTIC_UI.update_theme(theme, false);
+                    }
+                } catch (error) {
+                    
+                }
+            }
+
+            if (post) {
+                mel_metapage.Functions.post(
+                    mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
+                    {_t:theme},
+                    (f) => {},
+                );
+            }
+
+            rcmail.triggerEvent('theme.changed', theme);
 
             return this;
         }
@@ -2677,6 +3559,7 @@ $(document).ready(() => {
 
     }
 
+try {
     /**
      * Contient les fonctions de la classe Mel_Elastic
      */
@@ -2693,36 +3576,8 @@ $(document).ready(() => {
             $(selector).css('display', 'none');
         }
     };
+} catch (error) {
+    console.error('### [BNUM]MEL_ELASTIC_UI : ', error);
+}
 
 });
-
-
-// function tab($item)
-// {
-//     const tab = $item.attr('id');
-//     let other_tabs = $item.parent().parent().find('a');
-
-//     $item.on('show.bs.tab');    
-
-//     let id;
-//     for (let iterator of other_tabs) {
-//         id = iterator.attr('id');
-//         if (id !== tab) {
-//             iterator.removeClass('active');
-//             $(`.tab-pane[aria-labelledby="${id}"]'`).removeClass('active');
-//             iterator.on('hide.bs.tab');
-//         }
-//         else {
-//             iterator.addClass('active');
-//             $(`.tab-pane[aria-labelledby="${id}"]'`).addClass('active');
-//         }
-
-//     }
-
-//     $item.on('shown.bs.tab');   
-// }
-
-// $('#myTab a').on('click', function (e) {
-//     e.preventDefault()
-//     tab($(e.currentTarget));
-// })

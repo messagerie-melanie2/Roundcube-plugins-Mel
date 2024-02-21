@@ -38,11 +38,12 @@ class mel_useful_link extends bnum_plugin
           $this->register_action('update_list', array($this, 'update_list'));
 
           if ($this->rc->action == "index" || $this->rc->action == "")
-            $this->links = $this->get_personal_links();
+            // $this->links = $this->get_personal_links();
             $this->include_uLinks();
             $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
             $this->rc->output->set_env("mul_items", $this->rc->config->get('personal_useful_links', []));
             $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+            $this->rc->output->set_env("modify_order_delay", $this->rc->config->get('modify_order_delay', []));
             include_once "lib/hidden.php";
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
         }
@@ -244,8 +245,8 @@ class mel_useful_link extends bnum_plugin
 
       }
 
-      // return $html;
-      return $html = '';
+      return $html;
+      // return $html = '';
 
     }
 

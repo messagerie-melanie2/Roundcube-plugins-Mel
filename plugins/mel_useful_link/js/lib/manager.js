@@ -89,6 +89,8 @@ export class LinkManager extends MelObject {
 
       linkVisualizer.displayLink().appendTo(".links-items");
     }
+
+    $('<li class="link-space-end"></li>').appendTo('.links-items');
     this.bindRightClickActions();
     rcmail.env.mul_items = links_array;
   }
@@ -167,24 +169,72 @@ export class LinkManager extends MelObject {
       self.deleteMelLink($(e.currentTarget).attr('data-id'));
     });
 
-    $('.links-items').sortable({
-      // delay: 1000,
-      stop:function(event, ui) {
-        rcmail.env.mul_items.find(function(object, index) {
-          if (object.id == ui.item.data('id')) {
-            //On met l'objet dans la bonne position après le déplacement
-            rcmail.env.mul_items.splice(ui.item.index(), 0, rcmail.env.mul_items.splice(index, 1)[0]);
-            //ENVOYER LA VALEUR AU SERVEUR (updateList avec await mel_metapage.Functions.post)
-            return mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "update_list"),
-            { _list: rcmail.env.mul_items },
-            (datas) => {});
-          }
-          else {
-            return false;
-          }
-        });
+
+    
+    document.addEventListener('dragenter', function(event) {
+      if (event.target.classList.contains('link-space-between')) {
+        event.target.classList.add('link-space-hovered');
+      }
+      if (event.target.closest('.link-block')) {
+        event.target.closest('.link-block').classList.add('link-block-hovered');
       }
     });
+    document.addEventListener('dragleave', function(event) {
+      if (event.target.classList.contains('link-space-between')) {
+        event.target.classList.remove('link-space-hovered');
+      }
+      if (event.target.closest('.link-block.link-block-hovered')) {
+        event.target.closest('.link-block.link-block-hovered').classList.remove('link-block-hovered');
+      }
+    });
+    document.addEventListener(
+      "dragover",
+      function (event) {
+        // Empêche le comportement par défaut afin d'autoriser le drop
+        event.preventDefault();
+      },
+      false,
+    );
+
+    document.addEventListener('drop', function(event) {
+      let id = event.dataTransfer.getData("text/plain");
+      let movedElement = $('#link-block-'+ id);
+      let movedSpace = $(movedElement).prev('li');
+
+      //On déplace l'élément 
+      if (event.target.classList.contains('link-space-between')) {
+        event.target.classList.remove('link-space-hovered');
+        $(event.target).after(movedSpace);
+        $(event.target).after(movedElement);
+
+        self.updateList(id, $('li.link-block').index(movedElement));
+      }
+      else if (event.target.classList.contains('link-space-end')) {
+        $(event.target).before(movedSpace);
+        $(event.target).before(movedElement);
+
+        self.updateList(id, $('li.link-block').index(movedElement));
+      }
+      //On créer un dossier 
+      else {
+        event.target.closest('.link-block.link-block-hovered').classList.remove('link-block-hovered');
+      }
+    });
+  }
+
+  updateList(id, newIndex) {
+    const busy = rcmail.set_busy(true, "loading");
+    rcmail.env.mul_items.find(function(object, index) {
+      if (object.id == id) {
+        //On met l'objet dans la bonne position après le déplacement
+        rcmail.env.mul_items.splice(newIndex, 0, rcmail.env.mul_items.splice(index, 1)[0]);
+        return mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "update_list"),
+        { _list: rcmail.env.mul_items },
+        (datas) => {
+          rcmail.set_busy(false, 'loading', busy);
+        });
+      }
+    });   
   }
 
   /**

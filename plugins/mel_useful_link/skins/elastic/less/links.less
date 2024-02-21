@@ -340,12 +340,57 @@ button {
   }
 }
 
+.links-items {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.link-space-end {
+  display: inline-flex;
+  height: 100px;
+  flex: 1;
+}
+
+.link-space-between {
+  width: 50px;
+  height: 105px;
+  display: inline-flex;
+  transition: width 0.1s ease-in-out;
+  vertical-align: bottom;
+}
+
+.link-block-container {
+  width: auto;
+  display: inline-flex;
+}
+
+.ui-droppable-active {
+  margin: 5px 10px !important;
+  padding: 5px 10px !important;
+}
+
+.ui-droppable-hover {
+  background-color:red !important;
+}
+
+.ui-sortable-placeholder {
+  width: 1px !important;
+  background: red !important;
+  visibility: visible !important;
+}
 
 .link-block {
   display: inline-flex;
   flex-direction: column;
-  margin: 10px 20px;
+  // margin: 10px 20px;
+  padding: 0;
   position: relative;
+  transition: width 0.1s ease-in-out;
+  
+  &.link-block-hovered a {
+    width: 90px;
+    height: 90px;
+  }
 
   .link-icon-container {
     width: 75px;
@@ -402,6 +447,11 @@ button {
     text-overflow: ellipsis;
   }
 }
+
+.link-space-hovered {
+  width: 80px;
+}
+
 
 .link-context-menu {
   position: absolute;

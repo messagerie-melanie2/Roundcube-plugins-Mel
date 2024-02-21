@@ -65,6 +65,8 @@ class MelLink extends MelBaseLink {
   }
 
   async callUpdate(task = "useful_links", action = "update") {
+    rcmail.set_busy(true, "loading");
+
     let id = this.id;
     let config = {
       _id: id,
@@ -72,7 +74,12 @@ class MelLink extends MelBaseLink {
       _link: this.link,
     };
 
+    let message = this.id === "" ? "Ajout effectué avec succès !" : "Modification effectuée avec succès !"; 
+
     await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {
+      rcmail.set_busy(false);
+      rcmail.clear_messages();
+      rcmail.display_message(message, "confirmation");
       id = datas;
     }, (a, b, c) => {
       rcmail.display_message("Impossible d'ajouter ou de modifier ce lien.", "error");
@@ -156,6 +163,8 @@ class MelLinkVisualizer extends MelLink {
         },
         set: (value) => {
           _icon = value;
+          $(`.link-block[data-id="${this.id}"] .link-icon-image`).show();
+          $(`#no-image-${this.id}`).css('display', 'initial').text('');
           $(`.link-block[data-id="${this.id}"] .link-icon-image`).attr('src', value);
         }
       },
@@ -177,6 +186,7 @@ class MelLinkVisualizer extends MelLink {
           _link = value;
           //Change en jquery les data url par la nouvelle valeur
           $(`.link-block[data-id="${this.id}"] button`).attr('data-link', value);
+          $(`a#link-id-${this.id}`).attr('href', value);
 
         }
       }
@@ -185,10 +195,19 @@ class MelLinkVisualizer extends MelLink {
     return this;
   }
 
+  _dragStart(ev) {
+    ev = !!ev.dataTransfer ? ev : ev.originalEvent;
+    ev.dataTransfer.dropEffect = "move";
+    ev.dataTransfer.setData("text/plain", this.id);
+  }
+
   displayLink() {
     return MelHtml.start
+    .div({class: 'link-block-container', draggable:true,  ondragstart:this._dragStart.bind(this)})
+      .li({ class: "link-space-between"})
+      .end()  
       .li({ id: "link-block-" + this.id, title: this.title, class: "link-block", "data-id": this.id })
-        .div({ id: "context-menu-" + this.id, class: "link-context-menu" })
+        .div({ id: "context-menu-" + this.id, class: "link-context-menu"})
           .button({ class: "link-context-menu-button copy-link", title: "Copier le lien dans le presse-papier", "data-link": this.link }).removeClass('mel-button').removeClass('no-button-margin').removeClass('no-margin-button').css({ "border": "none", "outline": "none" })
             .icon('content_copy').end()
           .end()
@@ -207,6 +226,8 @@ class MelLinkVisualizer extends MelLink {
         .span({ class: "link-icon-title" })
           .text(this.title)
         .end()
-      .end().generate();
+      .end()
+    .end()
+    .generate();
   }
 }

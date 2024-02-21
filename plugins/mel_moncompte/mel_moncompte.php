@@ -330,7 +330,7 @@ class mel_moncompte extends rcube_plugin {
         if (isset($_POST['restore_dir'])) {
           M2mailbox::restore_dir();
         }
-        if (isset($_POST['valide']) && isset($_POST['date'])) {
+        if (isset($_POST['folder']) && isset($_POST['date'])) {
           M2mailbox::unexpunge();
         }
       }

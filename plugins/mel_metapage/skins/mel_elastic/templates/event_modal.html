@@ -109,11 +109,12 @@
 		<div id="atendee-container" class="set-margin-top-2">
 			<label for="attendee-input" class="set-margin-important-bottom-1 event-subtitle" style="display: block;">Participants</label>
 			<div class="custom-control custom-switch set-margin-bottom-2 set-margin-important-left-0">
-				<input type="checkbox" name="allday" id="notify-users" value="1" class="form-check-input custom-control-input" checked />
+				<input type="checkbox" name="_notify" id="notify-users" value="1" class="form-check-input custom-control-input" checked />
 				<label class="custom-control-label" for="notify-users">
 					 <span class="set-margin-left-1"> Envoyer une notification aux participants </span>
 				</label>
-			</div>
+			</div> 
+			<!-- <roundcube:object name="plugin.edit_attendees_notify" id="edit-attendees-notify" class="dialog-message"/> -->
 
 			<div data-linked="attendee-input" class="form-control input-mel border-bottom-input" style="display: flex;align-items: center;flex-wrap: wrap;height:100%;">
 			<!-- <div class="form-control fake-input input-mel" style="display: flex;align-items: center;"> -->
@@ -140,6 +141,10 @@
 				<!-- <div id="attendees-animators" class="mel-show-attendee" data-linked="attendee-animators"></div> -->
 				<input id="attendee-animators" class="form-control" type="text" placeholder="Animateurs" style="width:unset;flex:auto"/>
 			</div>
+		</div>
+
+		<div id="emel-free-busy" style="margin-top:10px">
+
 		</div>
 
 		<!-- date -->
@@ -234,18 +239,18 @@ Choix de la période
 			Mode d'évènement
 		</div>
 		<div id="events-type">
-			<span>loading....</span>
+			
 		</div>
 
 		<!-- Ordre du jour -->
-		<div class="form-group">
+		<div class="form-group set-margin-top-2">
 			<label for="edit-description" class="span-mel event-subtitle"><roundcube:label name='mel_metapage.day_order' /></label>
 			<!-- <label for="edit-description"><roundcube:label name="calendar.description" /></label> -->
 			<textarea name="description" id="edit-description" placeholder="Ordre du jour" class="form-control input-mel" rows="3" cols="40"></textarea>
 		</div> 
 
 		<!-- Pièces jointes -->
-		<div id="edit-attachments-droparea" class="file-upload">
+		<div id="edit-attachments-droparea" class="file-upload set-margin-top-2">
 			<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
 			<div id="edit-attachments-form" class="upload-form" role="region" aria-labelledby="aria-label-attachmentuploadform">
 				<roundcube:object name="plugin.attachments_form" mode="hint" />
@@ -317,7 +322,7 @@ Choix de la période
 		</fieldset> -->
 
 		<!-- attendees list -->
-		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees" >
+		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees" style="display:none">
 			<span class="have-workspace span-mel t1 low-margins"><roundcube:label name='mel_metapage.add_all_member_from_a_workspace' /></span>
 			<button type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0;margin-bottom:15px" onclick="return rcmail.command('calendar-workspace-add-all')">
 				<span><roundcube:label name='mel_metapage.add_all' /></span>
@@ -366,7 +371,7 @@ Choix de la période
 	</div>
 	<roundcube:object name="plugin.edit_recurrence_sync" id="edit-recurrence-syncstart" class="dialog-message" style="display:none" />
 	<!-- HERE -->
-	<roundcube:object name="plugin.edit_attendees_notify" id="edit-attendees-notify" class="dialog-message"/>
+
 	<roundcube:object name="plugin.edit_recurring_warning" class="dialog-message edit-recurring-warning" style="display:none" />
 	<roundcube:object name="plugin.attachments_form" id="event-attachment-form" mode="smart" />
 	<div id="edit-localchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.localchangeswarning" /></div>

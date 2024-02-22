@@ -1,4 +1,5 @@
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
+import { GuestsPart } from "./guestspart.js";
 import { FakePart, Parts } from "./parts.js";
 
 export class TimePartManager {
@@ -9,6 +10,19 @@ export class TimePartManager {
         this._$end_date = $end_date;
         this.$allDay = $allDay;
         this.base_diff = 0;
+
+        Object.defineProperties(this, {
+            date_start: {
+                get:() => {
+                    return moment(`${this._$start_date.val()} ${this.start._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
+                }
+            },
+            date_end:{
+                get:() => {
+                    return moment(`${this._$end_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
+                }
+            }
+        })
     }
 
     init(event) {
@@ -76,6 +90,8 @@ export class TimePartManager {
 
             if (need_reinit) this.end.reinit(end, this.base_diff, (is_same_day ? start.format('HH:mm') : null));
         }
+
+        GuestsPart.UpdateFreeBusy(this);
 
         this._update_date.started = false;
     }

@@ -426,3 +426,9 @@ $labels['disable-animations-helper'] = "Désactive les animation du thème en co
 $labels['cancel-color-folder'] = 'Restaurer la couleur par défaut';
 $labels['update-color-folder'] = 'Changer la couleur du dossier';
 $labels['update-icon-folder'] = "Changer l'icône du dossier";
+
+$labels['event-location-visio'] = "En visioconférence";
+$labels['event-location-location'] = "En présentiel";
+$labels['event-location-audio'] = "Par audio";
+$labels['event-visio-internal'] = "Wébconférence de l'état";
+$labels['event-visio-external'] = "Wébconférence externe";

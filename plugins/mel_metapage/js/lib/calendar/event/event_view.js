@@ -2,6 +2,7 @@ import { MelEnumerable } from "../../classes/enum.js";
 import { AlarmPart } from "./parts/alarmpart.js";
 import { CategoryPart } from "./parts/categoryparts.js";
 import { GuestsPart } from "./parts/guestspart.js";
+import { LocationPartManager } from "./parts/location_part.js";
 import { SensitivityPart } from "./parts/sensitivitypart.js";
 import { StatePart } from "./parts/statepart.js";
 import { TimePartManager } from "./parts/timepart.js";
@@ -55,8 +56,9 @@ class EventParts {
         this.sensitivity = new SensitivityPart(inputs.select_sensivity, fakes.button_sensivity, fakes.button_sensivity.children().first(), dialog);
         this.alarm = new AlarmPart(inputs.select_alarm, inputs.text_alarm, inputs.select_alarm_offset, fakes.select_alarm);
         this.category = new CategoryPart(inputs.select_category, fakes.select_category, fakes.check_category, fakes.span_category_icon, fakes.button_add_members);
-        this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch);
         this.date = new TimePartManager(inputs.date_startdate, inputs.text_starttime, fakes.select_starttime, inputs.date_enddate, inputs.text_endtime, fakes.select_endtime, inputs.check_all_day);
+        this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch, this.date);
+        this.location = new LocationPartManager(fakes.div_eventtype, this.category);
     }
 }
 
@@ -105,8 +107,9 @@ export class EventView {
         this.parts.sensitivity.onUpdate(!ev.id ? SensitivityPart.STATES.public :  ev.sensitivity);
         this.parts.alarm.init(ev);
         this.parts.category.init(ev);
-        this.parts.guests.init(ev);
         this.parts.date.init(ev);
+        this.parts.location.init(ev);
+        this.parts.guests.init(ev);
     }
 
     static Create(name, selector) {

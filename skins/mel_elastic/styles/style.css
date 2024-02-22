@@ -4281,3 +4281,8 @@ div.all-day input.input-mel {
 div.all-day input.input-mel#edit-enddate {
   width: calc(100% - 34px) !important;
 }
+.event-mel-icon-absolute {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}

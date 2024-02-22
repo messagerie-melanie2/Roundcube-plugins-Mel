@@ -3,7 +3,11 @@ import { EMPTY_STRING } from "../../../constants/constants.js";
 import { BnumException } from "../../../exceptions/bnum_base_exceptions.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../../../mel_events.js";
+import { MelObject } from "../../../mel_object.js";
+import { Mel_Promise } from "../../../mel_promise.js";
+import { FreeBusyGuests } from "./guestspart.free_busy.js";
 import { FakePart, Parts } from "./parts.js";
+import { TimePartManager } from "./timepart.js";
 
 class GuestPartFieldException extends BnumException {
     constructor(part, $field) {
@@ -139,7 +143,7 @@ class Guest {
     toHtml(event) {
         let html = MelHtml.start
         .div({class:'mel-attendee', title:this._formated(), 'data-email':this.email, 'data-name':this.name, draggable:true, ondragstart:this._dragStart.bind(this), ondragend:this._dragEnd.bind(this)})
-            .span({class:'availability'})
+            .span({class:'availability'}).css({'margin-left':'5px', 'margin-right':'5px'})
                 .span({class:'availabilityicon loading'})
                 .end()
             .end()
@@ -158,21 +162,121 @@ class Guest {
         return this._formated();
     }
 
+    toAttendee(role = 'REQ-PARTICIPANT'){
+        return {
+            role,
+            name:this.name,
+            email:this.email
+        }
+    }
+
+    /**
+     * 
+     * @param {*} $attendee 
+     * @param {GuestsPart} parent 
+     */
+    static From($attendee, parent) {
+        return {name:$attendee.attr('data-name'), email:$attendee.attr('data-email'), role:Guest._GuestRole($attendee.attr('data-parent'), parent)};
+    }
+
+    static _GuestRole(id, parent) {
+        let role = EMPTY_STRING;
+
+        switch (id) {
+            case null:
+            case parent._$fakeField.attr('id'):
+                role = 'REQ-PARTICIPANT';
+                break;
+
+            default:
+                role = 'OPT-PARTICIPANT';
+                break;
+
+            case parent._$animators.attr('id'):
+                role = 'CHAIR';
+                break;
+        }
+
+        return role;
+    }
+
 }
 
 export class GuestsPart extends FakePart{
-    constructor($addInput, $neededInput, $optionalInput, $animatorsInput, $switchButton){
+    /**
+     * 
+     * @param {*} $addInput 
+     * @param {*} $neededInput 
+     * @param {*} $optionalInput 
+     * @param {*} $animatorsInput 
+     * @param {*} $switchButton 
+     * @param {TimePartManager} datePart 
+     */
+    constructor($addInput, $neededInput, $optionalInput, $animatorsInput, $switchButton, datePart){
         super($addInput, $neededInput, Parts.MODE.change);
+        GuestsPart.stop = true;
         this._$optionnals = $optionalInput;
         this._$animators = $animatorsInput;
         this._switchButton = new GuestButton($switchButton);
+        this._datePart = datePart;
+        this.cant_modify = false;
+
+        GuestsPart.INSTANCE = this;
+
+        const ids = {
+            start_date:this._datePart._$start_date.attr('id'),
+            end_date:this._datePart._$end_date.attr('id'),
+            start_time:this._datePart.start._$fakeField.attr('id'),
+            end_time:this._datePart.end._$fakeField.attr('id')
+        }
+
+        if (!rcmail.has_guest_dialog_attendees_save)
+        {
+            const fnc = function (date) {
+                const {start, end} = date;
+
+                let update_options = function update_options(select, value) {
+                    if ($(`#${select} [value="${value}"]`).length === 0) 
+                    {
+                        const current = moment(value, 'HH:mm');
+    
+                        for (const e of $(`#${select} option`)) {
+                            if (current < moment($(e).val(), 'HH:mm')) {
+                                $(e).before($('<option>').val(value).text(value));
+                                break;
+                            }
+                        }
+                    }
+                }
+    
+                GuestsPart.can = false;
+                $(`#${this.start_date}`).val(start.date).change();
+                update_options(this.start_time, start.time);
+                $(`#${this.start_time}`).val(start.time).change();
+                $(`#${this.end_date}`).val(end.date).change();
+                update_options(this.end_time, end.time);
+                $(`#${this.end_time}`).val(end.time).change();
+                update_options = null;
+                GuestsPart.can = true;
+
+                GuestsPart.INSTANCE.update_free_busy();
+            };
+
+            rcmail.addEventListener('dialog-attendees-save', fnc.bind(ids));
+
+            rcmail.has_guest_dialog_attendees_save = true;   
+        }
+
     }
 
     init(event){
         let it = 0;
         const fields = [this._$fakeField, this._$optionnals, this._$animators];
         const main_field_index = 0;
+        const cant_modify = (event?.attendees?.length || 0) > 0 && !cal.is_internal_organizer(event);
 
+        $('.mel-attendee').remove();
+        $('#emel-free-busy').html('');
 
         for (const $field of fields) {
             if (0 === $(`[data-linked="${$field.attr('id')}"]`).length) throw new GuestPartFieldException(this, $field);
@@ -183,15 +287,118 @@ export class GuestsPart extends FakePart{
             if (it++ !== main_field_index) this._p_try_add_event($field, 'change', this.onChange.bind(this, $field));
 
             this._p_try_add_event($field, 'input', this.onChange.bind(this, $field));
+
+            if (cant_modify) $field.attr('disabled', 'disabled').addClass('disabled');
+            else $field.removeAttr('disabled').removeClass('disabled');
         }
 
         if (0 === this._switchButton.clicked.count()) {
             this._switchButton.clicked.push(this._on_switch.bind(this));
         }
 
+        if ((event?.attendees?.length ?? 0) > 0) {
+            let $field;
+            for (const iterator of event.attendees) {
+                switch (iterator.role) {
+                    case 'REQ-PARTICIPANT':
+                        $field = this._$fakeField;
+                        break;
+
+                    case 'NON-PARTICIPANT':
+                    case 'OPT-PARTICIPANT':
+                        $field = this._$optionnals;
+                        break;
+
+                    case 'CHAIR':
+                        $field = this._$animators;
+                        break;
+                
+                    default:
+                        continue;
+                }
+
+                $field.before(new Guest(iterator.name, iterator.email).toHtml(event).attr('data-parent', $field.attr('id')));
+            }
+
+            $field = null;
+        }
+
         this._switchButton._state = true;
         this._switchButton.click();
+
+        if (cant_modify) {
+            $('#showcontacts_attendee-input').attr('disabled', 'disabled').addClass('disabled');
+        }
+        else {
+            $('#showcontacts_attendee-input').removeAttr('disabled').removeClass('disabled');
+
+            if ((event?.attendees?.length ?? 0) > 0) this.update_free_busy();
+        }
+        
+        this.cant_modify = cant_modify;
     }  
+
+    async update_free_busy() {
+        await GuestsPart.UpdateFreeBusy(this._datePart);
+    }
+
+    static async UpdateFreeBusy(timePart) {
+        if (GuestsPart.can === false) return;
+
+        if (GuestsPart.stop) GuestsPart.stop = false;
+
+        const start = timePart.date_start;
+        const end = timePart.date_end;
+        const attendees = MelEnumerable.from($('.mel-attendee')).select(x => Guest.From($(x), GuestsPart.INSTANCE)).aggregate([
+            this.GetMe().toAttendee()
+        ]).toArray();
+
+        if (attendees.length > 1 && !GuestsPart.INSTANCE.cant_modify) {
+            let $main_div = $('#emel-free-busy').html($('<center><span class="spinner-border"><span class="sr-only">Loading...</span></span></center>'));
+            let promise = new Mel_Promise(async () => await new FreeBusyGuests().load_freebusy_data({start, end, attendees}));
+
+            while (promise.isPending()) {
+                await Mel_Promise.Sleep(10);
+
+                if (GuestsPart.stop) {
+                    $('#emel-free-busy').html('');
+                    GuestsPart.stop = false;
+                    console.info('Stopped !');
+                    return;
+                }
+            }
+
+            const slots = await promise;
+            promise = null;
+            let $find_next = MelHtml.start        
+            .button({class:'slot', type:'button', onclick:() => $('#edit-attendee-schedule').click()}).css('height', '100%')
+                .text("Trouver d'autres disponibilités")
+            .end().generate();
+    
+            if (slots.length > 0)
+            {
+                $('#emel-free-busy').find('.spinner-border').addClass('text-success');
+                let $div = $('<div>').addClass('row');
+    
+                for (const slot of slots) {
+                    slot.generate(timePart).generate().appendTo($('<div>').addClass('col-md-3').appendTo($div));
+                }
+    
+                $find_next.appendTo($('<div>').addClass('col-md-3').appendTo($div));
+    
+                $main_div.html($div);
+            }
+            else $main_div.html($find_next.appendTo($('<div>').addClass('col-md-3')));
+    
+            $('<div>').addClass('dispo-freebusy-text').text('Premières disponibilité commune').css('margin-bottom', '5px').prependTo($main_div);
+        }
+    }
+
+    static GetMe() {
+        const cal = rcmail.env.calendars[$('#edit-calendar').val()];
+
+        return new Guest((cal?.owner_name || EMPTY_STRING), cal.owner_email);
+    }
 
     onUpdate(val, $field) {
         if (val.includes(',')) {
@@ -211,6 +418,8 @@ export class GuestsPart extends FakePart{
 
             $field.val(EMPTY_STRING);
             $field.focus();
+
+            this.update_free_busy();
         }
     }
 
@@ -280,3 +489,6 @@ export class GuestsPart extends FakePart{
         }
     }
 }
+
+GuestsPart.can = true;
+GuestsPart.stop = false;

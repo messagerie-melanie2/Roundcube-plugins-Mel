@@ -454,3 +454,6 @@
 .set-padding-important-bottom-5 {
   padding-bottom: 40px !important;
 }
+.align-self-center {
+  align-self: center;
+}

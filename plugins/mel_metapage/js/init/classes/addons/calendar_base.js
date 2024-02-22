@@ -1438,6 +1438,7 @@ $(document).ready(() => {
      */
     window.rcube_calendar_ui.edit = async function(event, dialog)
     {
+        debugger;
         const loader = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
 
         const {CalendarEvent} = await loader('mel_metapage', 'edit_event', '/js/lib/calendar/event/');
@@ -2451,8 +2452,11 @@ $(document).ready(() => {
     };
 
         rcmail.addEventListener("calendar-event-dialog", ({dialog}) =>{
+            debugger;
             const event = cal.selected_event;
+
             window.rcube_calendar_ui.edit(event, dialog);
+
         });   
 
         rcmail.addEventListener("dialog-attendees-save", (datetimes) => {
@@ -2474,14 +2478,15 @@ $(document).ready(() => {
             rcmail.register_command('calendar-workspace-add-all', () => {
                 mel_metapage.Functions.busy();
                 mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_email_from_ws"), {
-                    _uid:$("#wsp-event-all-cal-mm").val()
+                    _uid:$("#mel-event-category").val().replace('ws#', '')
                 }, (datas) => {
                     datas = JSON.parse(datas);
+                    let str = '';
                     for (let index = 0; index < datas.length; ++index) {
                         const element = datas[index];
-                        $("#edit-attendee-name").val(element);
-                        $("#edit-attendee-add").click();
+                        str+=`${element},`;
                     }
+                    $("#attendee-input").val(str).change();
                 }).always(() => {
                     mel_metapage.Functions.busy(false);
                 });

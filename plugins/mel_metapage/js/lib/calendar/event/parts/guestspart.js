@@ -267,6 +267,12 @@ export class GuestsPart extends FakePart{
             rcmail.has_guest_dialog_attendees_save = true;   
         }
 
+        $('#edit-attendees-donotify').removeClass('manually-changed').off('change').on('change', () => {
+            if (!$('#edit-attendees-donotify').hasClass('manually-changed')) {
+                $('#edit-attendees-donotify').addClass('manually-changed');
+            }
+        });
+
     }
 
     init(event){
@@ -325,6 +331,7 @@ export class GuestsPart extends FakePart{
 
         this._switchButton._state = true;
         this._switchButton.click();
+        $('#edit-attendees-donotify').prop('checked', false);
 
         if (cant_modify) {
             $('#showcontacts_attendee-input').attr('disabled', 'disabled').addClass('disabled');
@@ -332,7 +339,10 @@ export class GuestsPart extends FakePart{
         else {
             $('#showcontacts_attendee-input').removeAttr('disabled').removeClass('disabled');
 
-            if ((event?.attendees?.length ?? 0) > 0) this.update_free_busy();
+            if ((event?.attendees?.length ?? 0) > 0) {
+                $('#edit-attendees-donotify').prop('checked', true);
+                this.update_free_busy();
+            } 
         }
         
         this.cant_modify = cant_modify;
@@ -416,6 +426,8 @@ export class GuestsPart extends FakePart{
                 else rcmail.display_message(`Le participant ${iterator.name || iterator.email} éxiste déjà !`, 'error');
             }
 
+            if (!$('#edit-attendees-donotify').hasClass('manually-changed')) $('#edit-attendees-donotify').prop('checked', true);
+
             $field.val(EMPTY_STRING);
             $field.focus();
 
@@ -434,6 +446,7 @@ export class GuestsPart extends FakePart{
             data.name = val[0].trim();
             data.email = val[1].replace('>', EMPTY_STRING).trim();
         }
+        else if (val.includes('@')) data.email = val.trim();
 
         return data;
     }

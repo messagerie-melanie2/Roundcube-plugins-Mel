@@ -71,6 +71,9 @@ export class EventView {
             this._dialog.on('dialogbeforeclose', () => {
                 $('#mel-event-form').css('opacity', '0');
                 $('#mel-form-absolute-center-loading-event').css('display', '');
+                this.inputs = null;
+                this.fakes = null;
+                this.parts = null;
             });
         }
 

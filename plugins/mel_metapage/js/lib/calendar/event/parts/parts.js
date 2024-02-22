@@ -54,6 +54,10 @@ export class Parts {
         if (!$._data($field[0], 'events' )?.[event]) {
             $field.on(event, callback);
         }
+        else {
+            $field.off(event);
+            $field.on(event, callback);
+        }
 
         return $field;
     }

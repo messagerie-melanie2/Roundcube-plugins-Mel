@@ -3170,9 +3170,9 @@ class mel_workspace extends bnum_plugin
         foreach ($shares as $key => $value) {
             if ($value->user !== $user)
             {
-                $tmp = driver_mel::gi()->getUser($value->user)->email;
+                $tmp = driver_mel::gi()->getUser($value->user);
 
-                if (isset($tmp)) $array[] = $tmp;
+                if (isset($tmp)) $array[] = "$tmp->fullname<$tmp->email>";
             }
                 
         }

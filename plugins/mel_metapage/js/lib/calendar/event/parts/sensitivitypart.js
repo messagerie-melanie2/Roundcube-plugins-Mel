@@ -7,6 +7,7 @@ export class SensitivityPart extends FakePart {
         this._$icon = $icon;
         this._$dialog = $dialog;
         this._title = this._$dialog.dialog('option', 'title');
+
     }
 
     onUpdate(val) {

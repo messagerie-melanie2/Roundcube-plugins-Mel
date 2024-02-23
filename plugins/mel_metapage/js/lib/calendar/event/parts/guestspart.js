@@ -409,7 +409,7 @@ export class GuestsPart extends FakePart{
     
             $('<div>').addClass('dispo-freebusy-text').text('Premières disponibilité commune').css('margin-bottom', '5px').prependTo($main_div);
         }
-        else (GuestsPart.stop = true, $main_div.html(EMPTY_STRING));
+        else (GuestsPart.stop = true, $('#emel-free-busy').html(EMPTY_STRING));
     }
 
     static GetMe() {

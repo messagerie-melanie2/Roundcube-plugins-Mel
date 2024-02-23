@@ -14,16 +14,18 @@ export class CategoryPart extends FakePart{
     init(event) {
         this._generateCategories()._$wspButton.css('display', 'none');
 
-        if (!!event.categories) {
-            if (event.categories.length > 0) {
-                this._$fakeField.val(event.categories[0]);
+        if (!!event.categories && event.categories.length > 0) {
+            this._$fakeField.val(event.categories[0]);
 
-                if (event.categories[0].includes('ws#')) this._$wspButton.css('display', EMPTY_STRING);
+            if (event.categories[0].includes('ws#')) this._$wspButton.css('display', EMPTY_STRING);
 
-                this._$hasCategory[0].checked = true;
-            }
+            this._$hasCategory[0].checked = true;
         }
-        else this._$hasCategory[0].checked = false;
+        else 
+        {
+            this._$hasCategory[0].checked = false;
+            this._$fakeField.parent().parent().css('display', 'none');
+        }
 
         if (!$._data(this._$hasCategory[0], 'events' )?.click) {
             const event = () => {

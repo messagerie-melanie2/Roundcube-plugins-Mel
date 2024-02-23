@@ -2900,6 +2900,24 @@ function rcube_calendar_ui(settings) {
 
   /*** public methods ***/
 
+  //PAMELA
+  this.edit_update_current_event_attendee = function edit_update_current_event_attendee(attendee, add = true) {
+    if (!!me.selected_event)
+    {
+      if (add) {
+        if (!event_attendees.find(x => x.email === attendee.email)) event_attendees.push(attendee);
+      }
+      else event_attendees = event_attendees.filter(x => x.email !== attendee.email);
+    }
+
+    return event_attendees;
+  };
+
+  //PAMELLA
+  this.edit_clear_attendees = function edit_clear_attendees() {
+    event_attendees.length = 0;
+  };
+
   /**
    * Remove saving lock and free the UI for new input
    */

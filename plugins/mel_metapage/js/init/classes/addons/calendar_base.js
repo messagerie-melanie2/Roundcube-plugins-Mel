@@ -1438,7 +1438,6 @@ $(document).ready(() => {
      */
     window.rcube_calendar_ui.edit = async function(event, dialog)
     {
-        debugger;
         const loader = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
 
         const {CalendarEvent} = await loader('mel_metapage', 'edit_event', '/js/lib/calendar/event/');
@@ -2452,7 +2451,6 @@ $(document).ready(() => {
     };
 
         rcmail.addEventListener("calendar-event-dialog", ({dialog}) =>{
-            debugger;
             const event = cal.selected_event;
 
             window.rcube_calendar_ui.edit(event, dialog);

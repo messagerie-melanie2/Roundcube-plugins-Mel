@@ -119,7 +119,14 @@ class Guest {
     }
 
     _close_button_click(e) {
-        $(`div.mel-attendee[data-email="${$(e.currentTarget).attr('data-parent')}"]`).remove();
+        var $querry = $(`div.mel-attendee[data-email="${$(e.currentTarget).attr('data-parent')}"]`);
+        const add = true;
+        const attendee = this.toAttendee(Guest._GuestRole($querry.attr('data-parent'), GuestsPart.INSTANCE));
+        const attendee_list = cal.edit_update_current_event_attendee(attendee, !add);
+        $querry.remove();
+        $querry = null;
+        GuestsPart.SetAttendeesListOrganizer(attendee_list, attendee);
+        GuestsPart.UpdateFreeBusy(GuestsPart.INSTANCE._datePart);
     }
 
     _formated() {
@@ -402,6 +409,7 @@ export class GuestsPart extends FakePart{
     
             $('<div>').addClass('dispo-freebusy-text').text('Premières disponibilité commune').css('margin-bottom', '5px').prependTo($main_div);
         }
+        else (GuestsPart.stop = true, $main_div.html(EMPTY_STRING));
     }
 
     static GetMe() {
@@ -420,8 +428,13 @@ export class GuestsPart extends FakePart{
                 
                 if (0 === $(`div.mel-attendee[data-email="${iterator.email}"`).length) {
                     var $attendee_field = $attendee_field || $(`.mel-show-attendee[data-linked="${$field.attr('id')}"]`);
-
-                    $field.before(new Guest(iterator.name, iterator.email).toHtml(event).attr('data-parent', $field.attr('id')));
+                    var guest = new Guest(iterator.name, iterator.email);
+                    var role = Guest._GuestRole($field.attr('id'), this);
+                    var attendees = cal.edit_update_current_event_attendee(guest.toAttendee(role));
+                    GuestsPart.SetAttendeesListOrganizer(attendees, guest.toAttendee(role));
+                    $field.before(guest.toHtml(event).attr('data-parent', $field.attr('id')));
+                    $attendee_field = null;
+                    guest = null;
                 }
                 else rcmail.display_message(`Le participant ${iterator.name || iterator.email} éxiste déjà !`, 'error');
             }
@@ -432,6 +445,19 @@ export class GuestsPart extends FakePart{
             $field.focus();
 
             this.update_free_busy();
+        }
+    }
+
+    static SetAttendeesListOrganizer(list, current_guest) {
+        const add = true;
+        if (list.length === 1) {
+            if (!MelEnumerable.from(list).any(x => x.role === 'ORGANIZER'))
+            {
+                cal.edit_update_current_event_attendee(current_guest, !add);
+                cal.edit_update_current_event_attendee(this.GetMe().toAttendee('ORGANIZER'), add);
+                cal.edit_update_current_event_attendee(current_guest, add);
+            }
+            else cal.edit_clear_attendees();
         }
     }
 
@@ -505,3 +531,7 @@ export class GuestsPart extends FakePart{
 
 GuestsPart.can = true;
 GuestsPart.stop = false;
+GuestsPart.event = null;
+Object.defineProperty(GuestsPart, 'event', {
+    get() {return cal.selected_event;}
+});

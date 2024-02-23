@@ -4219,6 +4219,7 @@ bnum-separate {
 .mel-attendee {
   white-space: nowrap;
   max-width: 155px;
+  min-height: 26px;
   background-color: #F0F0F0;
   border-radius: 60px;
   padding: 1px 5px;
@@ -4227,8 +4228,13 @@ bnum-separate {
   display: flex;
   align-items: center;
 }
+.mel-attendee .availability {
+  height: 24px;
+}
 .mel-attendee .availability .availabilityicon {
   margin: 0;
+  display: inline-block;
+  vertical-align: middle;
 }
 .mel-attendee .availability .availabilityicon::before {
   content: '\e836';
@@ -4285,4 +4291,7 @@ div.all-day input.input-mel#edit-enddate {
   position: absolute;
   top: 5px;
   right: 10px;
+}
+#emel-free-busy.full-power {
+  min-height: 101px;
 }

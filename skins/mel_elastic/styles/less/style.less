@@ -5804,8 +5804,7 @@ bnum-separate{
 .mel-attendee{
     white-space: nowrap;
     max-width: 155px;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
+    min-height: 26px;
     background-color: #F0F0F0;
     border-radius: 60px;
     padding: 1px 5px;
@@ -5815,8 +5814,12 @@ bnum-separate{
     align-items: center;
     
     .availability{
+        height:24px;
+
         .availabilityicon{
             margin:0;
+            display: inline-block;
+            vertical-align: middle;
 
             &::before{
                 content: '\e836';
@@ -5898,4 +5901,11 @@ div.all-day {
     position: absolute;
     top: 5px;
     right: 10px;
+}
+
+#emel-free-busy
+{
+    &.full-power{
+        min-height: 101px;
+    }
 }

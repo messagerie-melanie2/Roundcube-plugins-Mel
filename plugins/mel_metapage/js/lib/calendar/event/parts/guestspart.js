@@ -364,6 +364,7 @@ export class GuestsPart extends FakePart{
 
         if (GuestsPart.stop) GuestsPart.stop = false;
 
+        const CLASS_FULL_WIDTH = 'full-power';
         const start = timePart.date_start;
         const end = timePart.date_end;
         const attendees = MelEnumerable.from($('.mel-attendee')).select(x => Guest.From($(x), GuestsPart.INSTANCE)).aggregate([
@@ -371,14 +372,14 @@ export class GuestsPart extends FakePart{
         ]).toArray();
 
         if (attendees.length > 1 && !GuestsPart.INSTANCE.cant_modify) {
-            let $main_div = $('#emel-free-busy').html($('<center><span class="spinner-border"><span class="sr-only">Loading...</span></span></center>'));
+            let $main_div = $('#emel-free-busy').addClass(CLASS_FULL_WIDTH).html($('<div class="absolute-center"><span class="spinner-border"><span class="sr-only">Loading...</span></span></div>'));
             let promise = new Mel_Promise(async () => await new FreeBusyGuests().load_freebusy_data({start, end, attendees}));
 
             while (promise.isPending()) {
                 await Mel_Promise.Sleep(10);
 
                 if (GuestsPart.stop) {
-                    $('#emel-free-busy').html('');
+                    $('#emel-free-busy').removeClass(CLASS_FULL_WIDTH).html('');
                     GuestsPart.stop = false;
                     console.info('Stopped !');
                     return;
@@ -409,7 +410,7 @@ export class GuestsPart extends FakePart{
     
             $('<div>').addClass('dispo-freebusy-text').text('Premières disponibilité commune').css('margin-bottom', '5px').prependTo($main_div);
         }
-        else (GuestsPart.stop = true, $('#emel-free-busy').html(EMPTY_STRING));
+        else (GuestsPart.stop = true, $('#emel-free-busy').removeClass(CLASS_FULL_WIDTH).html(EMPTY_STRING));
     }
 
     static GetMe() {

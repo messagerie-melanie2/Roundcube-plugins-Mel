@@ -58,7 +58,7 @@ class EventParts {
         this.category = new CategoryPart(inputs.select_category, fakes.select_category, fakes.check_category, fakes.span_category_icon, fakes.button_add_members);
         this.date = new TimePartManager(inputs.date_startdate, inputs.text_starttime, fakes.select_starttime, inputs.date_enddate, inputs.text_endtime, fakes.select_endtime, inputs.check_all_day);
         this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch, this.date);
-        this.location = new LocationPartManager(fakes.div_eventtype, this.category);
+        this.location = new LocationPartManager(fakes.div_eventtype, inputs.text_location, this.category);
     }
 }
 

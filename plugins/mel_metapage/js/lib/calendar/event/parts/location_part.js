@@ -1,6 +1,8 @@
 import { MelEnumerable } from "../../../classes/enum.js";
+import { EMPTY_STRING } from "../../../constants/constants.js";
 import { REG_URL } from "../../../constants/regexp.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
+import { BnumEvent } from "../../../mel_events.js";
 import { Mel_Promise } from "../../../mel_promise.js";
 import { CategoryPart } from "./categoryparts.js";
 
@@ -36,6 +38,7 @@ class ALocationPart extends IDestroyable {
         super()
         this.id;
 
+        this.onchange = new BnumEvent();
         Object.defineProperty(this, 'id', {
             value: index,
             writable:false,
@@ -81,7 +84,11 @@ class VisioManager extends ALocationPart {
         if ('' === location || IntegratedVisio.Has(location)) this._current = new IntegratedVisio(location, index, categoryPart);
         else this._current = new ExternalVisio(location, index);
 
+        this._current.onchange.push(this._on_change_action.bind(this));
+        this._on_change_action();
+
         this.categoryPart = categoryPart;
+
     }
 
     _init(location) {
@@ -130,7 +137,17 @@ class VisioManager extends ALocationPart {
             this._current = this._cached[val];
             this._cached[val] = null;
         }
-        else this._current = new ([IntegratedVisio, ExternalVisio].find(x => x.OptionValue() === val))('', this.id, this.categoryPart).generate($(`#visio-${this.id}-container`));
+        else 
+        {
+            this._current = new ([IntegratedVisio, ExternalVisio].find(x => x.OptionValue() === val))('', this.id, this.categoryPart).generate($(`#visio-${this.id}-container`));
+            this._current.onchange.push(this._on_change_action.bind(this));
+        }
+
+        this._on_change_action();
+    }
+
+    _on_change_action() {
+        this.onchange.call();
     }
 
     destroy() {
@@ -157,7 +174,13 @@ class VisioManager extends ALocationPart {
     }
 }
 
-class IntegratedVisio extends ALocationPart {
+class AVisio extends ALocationPart {
+    constructor(location, index) {
+        super(location, index, null);
+    }
+}
+
+class IntegratedVisio extends AVisio {
     /**
      * 
      * @param {*} location 
@@ -172,14 +195,14 @@ class IntegratedVisio extends ALocationPart {
         Object.defineProperty(this, 'location', {
             get:() => { 
                 let config = {
-                    key:location
+                    _key:location
                 };
 
                 if (categoryPart._$fakeField.val().includes('ws#')) {
-                    config['wsp'] = categoryPart._$fakeField.val().replace('ws#', '');
+                    config['_wsp'] = categoryPart._$fakeField.val().replace('ws#', '');
                 }
 
-                if (!!(this._pass || false)) config['pass'] = this._pass;
+                if (!!(this._pass || false)) config['_pass'] = this._pass;
 
                 return `${mel_metapage.Functions.public_url('webconf', config)} ${this.get_phone()}`; 
             },
@@ -195,6 +218,15 @@ class IntegratedVisio extends ALocationPart {
         const link = WebconfLink.create({location});
         this.location = link.key;
         this._pass = link.pass ?? '';
+
+        if (this._pass.includes(' ('))
+        {
+            let split = this._pass.split(' (');
+            this._pass = split[0];
+            split = split[1].split(' | ');
+            this._phone = split[0];
+            this._pin = split[1].replace(')', '');
+        }
     }
 
     _init(location) {
@@ -220,7 +252,7 @@ class IntegratedVisio extends ALocationPart {
                 .end()
                 .col_6({class:'d-flex pl-1'})
                     .icon('lock', {class:'align-self-center'}).end()
-                    .input_text({id: `integrated-pass-${this.id}`, value: this._pass})
+                    .input_text({id: `integrated-pass-${this.id}`, value: this._pass, onchange:this._on_pass_updated.bind(this)})
                     .icon('add', {class:'event-mel-icon-absolute'}).end()
                 .end()
             .end()
@@ -237,6 +269,7 @@ class IntegratedVisio extends ALocationPart {
         .end().generate().appendTo($parent);
 
         this._on_room_updated({currentTarget: this._$div.find(`#integrated-${this.id}`)});
+        this.onchange.call();
         return this;
     }
 
@@ -259,12 +292,14 @@ class IntegratedVisio extends ALocationPart {
             this._$div.find(`#integrated-key-${this.id}`).val(charCode);
         }
 
+        this.onchange.call();
     }
 
     _on_pass_updated(event) {
         event = $(event.currentTarget);
 
         this._pass = event.val();
+        this.onchange.call();
     } 
 
     get_phone() {
@@ -274,7 +309,7 @@ class IntegratedVisio extends ALocationPart {
             const busy = rcmail.set_busy(true, 'loading');
             this._current_promise = new Mel_Promise(async (room) => {
                 try {
-                    await webconf_helper.phone.get(room);
+                    const data = await webconf_helper.phone.get(room);
                     const {number, pin} = data;
 
                     this._phone = number;
@@ -286,6 +321,8 @@ class IntegratedVisio extends ALocationPart {
                     this._pin = '0123456789';
                     rcmail.set_busy(false, 'loading', busy);
                 }
+
+                window.disable_x_roundcube = false;
             }, this._room);
         }
 
@@ -344,6 +381,8 @@ class ExternalVisio extends ALocationPart {
         const val = event.val();
 
         this.location = val;
+
+        this.onchange.call();
     }
 
     static OptionValue() {
@@ -411,6 +450,8 @@ class Phone extends ALocationPart {
 
         if (event.hasClass('field-phone')) this._phone = val;
         else this._pin = val;
+
+        this.onchange.call();
     }
 
     static Has(location) {
@@ -458,10 +499,12 @@ class Location extends ALocationPart {
         const val = $(event.currentTarget).val();
 
         this.location = val;
+
+        this.onchange.call();
     }
 
     static Has(location) {
-        return !VisioManager.Has(location) && !Phone.Has(location);
+        return !Phone.Has(location) && !VisioManager.Has(location);
     }
 
     static OptionValue() {
@@ -474,10 +517,11 @@ class Location extends ALocationPart {
 }
 
 export class LocationPartManager  {
-    constructor($locations, categoryPart) {
+    constructor($locations, $field, categoryPart) {
         this.locations = {};
         this._cached = {};
 
+        this._$field = $field;
         this._$locations = $locations;
         this._category = categoryPart;
     }
@@ -488,7 +532,6 @@ export class LocationPartManager  {
 
         if (!!(event.location || false)) {
             let location = event.location.split(LOCATION_SEPARATOR);
-
 
             for (const location_type of location) {
                 for (const part of LocationPartManager.PARTS) {
@@ -505,6 +548,7 @@ export class LocationPartManager  {
         if (no_location) {
             this.add(Location, '');
         }
+        else this._update_all_selects();
     }
 
     _generateIndex() {
@@ -528,6 +572,7 @@ export class LocationPartManager  {
         let $generated = this._generate_select(id, part.OptionValue());
         //generate_part
         this.locations[id] = new part(location, id, this._category).generate($generated.find('.location-container'));
+        this.locations[id].onchange.push(this._on_change_action.bind(this));
         //Link select link
         $generated.find('select').on('change', this._on_select_changed.bind(this));
 
@@ -581,9 +626,12 @@ export class LocationPartManager  {
             this.locations[id] = this._cached[id][val];
             this._cached[id][val] = null;
         }
-        else this.locations[id] = new (LocationPartManager.PARTS.find(x => x.OptionValue() === val))('', id, this._category).generate($(`#location-${id}-container`));
-    
+        else {
+            this.locations[id] = new (LocationPartManager.PARTS.find(x => x.OptionValue() === val))('', id, this._category).generate($(`#location-${id}-container`));
+            this.locations[id].onchange.push(this._on_change_action.bind(this));
+        }
         this._update_selects(id);
+        this._on_change_action();
     }
 
     _update_selects(id){
@@ -617,6 +665,12 @@ export class LocationPartManager  {
 
         $select = null;
         $tmp = null;
+    }
+
+    _update_all_selects() {
+        for (const iterator of Object.keys(this.locations)) {
+            this._update_selects(iterator);
+        }
     }
 
     _generate_select(id, selected) {
@@ -655,6 +709,17 @@ export class LocationPartManager  {
         return html.generate().appendTo(this._$locations);
     }
 
+    async _on_change_action() {
+        await this.waitComplete();
+        let str = EMPTY_STRING;
+
+        for (const id of Object.keys(this.locations)) {
+            str += this.locations[id].location + LOCATION_SEPARATOR;
+        }
+
+        this._$field.val(str.slice(0, str.length - 1)).change();
+    }
+
     async waitComplete() {
         await Promise.allSettled(MelEnumerable.from(this.locations).where(x => !!x.value.wait).select(x => x.value.wait()));
     }
@@ -663,6 +728,6 @@ export class LocationPartManager  {
 
 LocationPartManager.PARTS = [
     Location,
-    VisioManager,
     Phone,
+    VisioManager,
 ]

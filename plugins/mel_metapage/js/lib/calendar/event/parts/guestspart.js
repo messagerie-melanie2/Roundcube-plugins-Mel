@@ -274,10 +274,15 @@ export class GuestsPart extends FakePart{
             rcmail.has_guest_dialog_attendees_save = true;   
         }
 
-        $('#edit-attendees-donotify').removeClass('manually-changed').off('change').on('change', () => {
+        $('#edit-attendees-donotify').removeClass('manually-changed').off('change').on('change', (e) => {
+            //Lorsque cette checkbox à "manually-changed", le changement de cette checkbox ne pourra plus se faire automatiquement
             if (!$('#edit-attendees-donotify').hasClass('manually-changed')) {
                 $('#edit-attendees-donotify').addClass('manually-changed');
             }
+
+            //Désactiver les autres checkboxes
+            $('#edit-attendees-invite').prop('checked', $(e.currentTarget).prop('checked'));
+            $('input.edit-attendee-reply').prop('checked', $(e.currentTarget).prop('checked'));
         });
 
     }

@@ -39,7 +39,7 @@ $labels['resourcesbal'] = 'Boites aux lettres';
 $labels['manageresourcesbal'] = 'Gérez vos boites aux lettres Mél (affichage, partages, restaurations)';
 $labels['restore_bal'] = "Récupération des courriels";
 $labels['restore_dir'] = "Récupération de dossier";
-$labels['imap_select'] = "Récupérer les courriels effacés depuis %%DATE%% (maximum 168 heures) du dossier ";
+$labels['imap_select'] = "Récupérer les courriels effacés depuis %%DATE%% (maximum 7 jours) du dossier ";
 $labels['restore_bal_expl'] = "Mél vous offre la possibilité de <b>récupérer un ou plusieurs messages supprimés ou perdus</b> à la suite d'un incident survenu au cours des 7 derniers jours.
 <br>
 <br><b>La procédure</b> est la suivante :

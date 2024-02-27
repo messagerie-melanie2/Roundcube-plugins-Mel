@@ -3,6 +3,7 @@ import { AlarmPart } from "./parts/alarmpart.js";
 import { CategoryPart } from "./parts/categoryparts.js";
 import { GuestsPart } from "./parts/guestspart.js";
 import { LocationPartManager } from "./parts/location_part.js";
+import { RecPart } from "./parts/recpart.js";
 import { SensitivityPart } from "./parts/sensitivitypart.js";
 import { StatePart } from "./parts/statepart.js";
 import { TimePartManager } from "./parts/timepart.js";
@@ -59,6 +60,7 @@ class EventParts {
         this.date = new TimePartManager(inputs.date_startdate, inputs.text_starttime, fakes.select_starttime, inputs.date_enddate, inputs.text_endtime, fakes.select_endtime, inputs.check_all_day);
         this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch, this.date);
         this.location = new LocationPartManager(fakes.div_eventtype, inputs.text_location, this.category);
+        this.recurrence = new RecPart(inputs.select_recurrence, fakes.select_recurrence);
     }
 }
 
@@ -113,6 +115,7 @@ export class EventView {
         this.parts.date.init(ev);
         this.parts.location.init(ev);
         this.parts.guests.init(ev);
+        this.parts.recurrence.init(ev);
     }
 
     static Create(name, selector) {
@@ -138,6 +141,7 @@ EventView.true_selectors = [
     EventView.Create('textarea_description', '#edit-description'),
     EventView.Create('select_sensivity', '#edit-sensitivity'),
     EventView.Create('check_all_day', '#edit-allday'),
+    EventView.Create('select_recurrence', '#edit-recurrence-frequency')
 ];
 
 EventView.false_selectors = [

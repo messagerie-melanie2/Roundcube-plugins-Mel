@@ -195,7 +195,7 @@ Choix de la période
 			<div class="col-sm-6">
 				<div class=""><!--Récurence-->
 					<label for="fake-event-rec" class="red-star-after span-mel t1 low-margins sr-only"><roundcube:label name='mel_metapage.reccurence' /></label>
-					<select id="fake-event-rec" class="form-control input-mel ml-2">
+					<select id="fake-event-rec" title="<roundcube:label name='mel_metapage.reccurence' />" class="form-control input-mel ml-2">
 						<option value="" selected=""><roundcube:label name='mel_metapage.never' /></option>
 						<option value="DAILY"><roundcube:label name='mel_metapage.DAILY' /></option>
 						<option value="WEEKLY"><roundcube:label name='mel_metapage.WEEKLY' /></option>
@@ -208,9 +208,9 @@ Choix de la période
 		</div>
 
 		<!-- Récurence -->
-		<div class="row event-real-recs" style="display: none;">
+		<div class="row event-real-recs">
 			<div class="col-12">
-				<div class="form-group row border-after">
+				<div class="form-group row border-after" style="display:none">
 					<roundcube:object name="plugin.recurrence_form" part="frequency" />
 				</div>
 				<div class="recurrence-form border-after" id="recurrence-form-daily">

@@ -2573,3 +2573,17 @@ function external_link_modal(_url) {
 
   rcmail.show_popup_dialog(html.generate(), rcmail.gettext("mel_metapage.attention"),buttons,{ width: 600, resizable: false, height: 180 });
 }
+
+function tchap_options () {
+    let $tchap = $('.tchap-frame');
+    if ($tchap.length > 0){
+        $tchap[0].contentWindow.rcmail.triggerEvent("tchap.options");
+    }
+}
+
+function tchap_disconnect () {
+    let $tchap = $('.tchap-frame');
+    if ($tchap.length > 0){
+        $tchap[0].contentWindow.rcmail.triggerEvent("tchap.disconnect");
+    }
+}

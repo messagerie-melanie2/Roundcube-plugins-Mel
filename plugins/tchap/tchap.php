@@ -16,7 +16,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-class tchap extends rcube_plugin
+class tchap extends bnum_plugin
 {
     /**
      *
@@ -58,9 +58,9 @@ class tchap extends rcube_plugin
         
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($tchap_url, 'tchap');
         // Ajoute le bouton en fonction de la skin
-        $need_button = true;
+        $need_button = 'taskbar';
         if (class_exists("mel_metapage")) {
-          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_tchap');
+          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_tchap') ? $need_button : 'otherappsbar';
         }
 
         if ($need_button)
@@ -72,8 +72,8 @@ class tchap extends rcube_plugin
                 'innerclass' => 'button-inner inner',
                 'label'	=> 'tchap.task',
                 'title' => 'tchap.tchap_title',
-                'type'       => 'link'
-            ), "taskbar");
+                'type' => 'link',
+            ), $need_button);
         }
     }
 
@@ -91,7 +91,7 @@ class tchap extends rcube_plugin
         // Chargement du template d'affichage
         $rcmail->output->set_pagetitle($this->gettext('title'));
         // Chargement du Javascript
-        $this->include_script('tchap.js');
+        $this->load_script_module('tchap.js', '/');
 
         $rcmail->output->send('tchap.tchap');
     }

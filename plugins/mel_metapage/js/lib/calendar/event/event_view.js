@@ -73,6 +73,8 @@ export class EventView {
             this._dialog.on('dialogbeforeclose', () => {
                 $('#mel-event-form').css('opacity', '0');
                 $('#mel-form-absolute-center-loading-event').css('display', '');
+                $('.fix-panel').css('display', 'none').removeClass('clicked-from-button');
+
                 this.inputs = null;
                 this.fakes = null;
                 this.parts = null;
@@ -86,7 +88,9 @@ export class EventView {
 
         $('#mel-event-form').css('opacity', '1');
         $('#mel-form-absolute-center-loading-event').css('display', 'none');
+        $('.fix-panel').css('display', '');
 
+        this._dialog.addClass('mel-custom-event-dialog');
         if (!this._dialog[0].ondrop){
             this._dialog[0].ondrop = (ev) => {
                 const autorized = [this.fakes.text_attendee, this.fakes.text_attedee_optional, this.fakes.text_attendee_animators];

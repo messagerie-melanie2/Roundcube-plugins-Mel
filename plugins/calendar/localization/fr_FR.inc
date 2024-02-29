@@ -36,6 +36,13 @@ $labels['category'] = 'Catégorie';
 $labels['categories'] = 'Catégories';
 $labels['createcalendar'] = 'Créer un nouvel agenda';
 $labels['name'] = 'Nom';
+// PAMELA - Calendar name
+$labels['calendarname'] = 'Nom d\'affichage';
+// PAMELA - External calendars
+$labels['externalcalendar'] = '(Nouveau !) Calendrier externe';
+$labels['externalcalendarlabel'] = 'En activant cette option, ce calendrier passe en lecture seule et se synchronise avec une source externe. Les sources externes actuellement supportées sont : %%sources%%.';
+$labels['enableexternalcalendarcheckbox'] = 'Synchroniser ce calendrier avec une source externe';
+$labels['externalcalendarurl'] = 'Lien vers le calendrier externe';
 $labels['color'] = 'Couleur';
 $labels['day'] = 'Jour';
 // PAMELA - Fullcalendar premium

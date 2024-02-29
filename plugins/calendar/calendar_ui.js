@@ -3120,7 +3120,8 @@ function rcube_calendar_ui(settings) {
 
     rcmail.simple_dialog($dialog, title, save_func, {
       width: 600,
-      height: 400
+      // PAMELA - Augmenter la hauter pour les calendriers externes
+      height: 515
     });
   };
 

@@ -427,6 +427,7 @@ $labels['cancel-color-folder'] = 'Restaurer la couleur par défaut';
 $labels['update-color-folder'] = 'Changer la couleur du dossier';
 $labels['update-icon-folder'] = "Changer l'icône du dossier";
 
+$labels['app_tchap'] = "Tchap";
 $labels['tchap'] = "Tchap";
 $labels['tchap_options'] = "Ouvrir les paramètres de Tchap";
 $labels['tchap_disconnect'] = "Se déconnecter de Tchap";

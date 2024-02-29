@@ -713,7 +713,8 @@ li#menu-small-li
 }
 
 .menu.toolbar a.tchap:before{
-  content:"\e900";
+  content:"\e96b";
   font-family: 'DWP' !important;
+  font-weight: normal;
   /* font-variation-settings: 'wght' 800; */
 }

@@ -4292,6 +4292,9 @@ div.all-day input.input-mel#edit-enddate {
   top: 5px;
   right: 10px;
 }
+#emel-free-busy {
+  position: relative;
+}
 #emel-free-busy.full-power {
   min-height: 101px;
 }

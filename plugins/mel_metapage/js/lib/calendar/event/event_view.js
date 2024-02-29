@@ -63,7 +63,7 @@ class EventParts {
         this.recurrence = new RecPart(inputs.select_recurrence, fakes.select_recurrence);
     }
 
-    init(ev) {
+    init(ev, inputs) {
         this.status.onUpdate(ev.status);
         this.sensitivity.onUpdate(!ev.id ? SensitivityPart.STATES.public :  ev.sensitivity);
         this.alarm.init(ev);
@@ -72,6 +72,9 @@ class EventParts {
         this.location.init(ev);
         this.guests.init(ev);
         this.recurrence.init(ev);
+
+        if (ev.calendar_blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
+        else $(inputs.select_calendar_owner).removeAttr('disabled').removeClass('disabled');
     }
 }
 
@@ -95,7 +98,7 @@ export class EventView {
         this.inputs = new EventManager(...EventView.true_selectors).generate();
         this.fakes = new EventManager(...EventView.false_selectors).generate();
         this.parts = new EventParts(this.inputs, this.fakes, dialog);
-        this.parts.init(event);
+        this.parts.init(event, this.inputs);
 
         $('#mel-event-form').css('opacity', '1');
         $('#mel-form-absolute-center-loading-event').css('display', 'none');
@@ -106,7 +109,7 @@ export class EventView {
             if (!this._dialog[0].ondrop) this._dialog[0].ondrop = this.on_drop.bind(this);
         }
         else {
-            this._dialog.modal.find('.modal-body').on('drop', this.on_drop.bind(this));
+            this._dialog.modal.find('iframe')[0].contentWindow.$('#eventedit').on('drop', this.on_drop.bind(this));
             $('.fix-panel').css('display', 'none');
         }
 

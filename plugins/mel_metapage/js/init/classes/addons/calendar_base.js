@@ -2576,6 +2576,7 @@ $(document).ready(() => {
                 {
                     window.event_saved = false;
                     window.create_event = false;
+                    window.kolab_event_dialog_element?.editBody?.('');
                     window.kolab_event_dialog_element = null;
                     $('#mel-have-something-minified-main-create').remove();
                 }

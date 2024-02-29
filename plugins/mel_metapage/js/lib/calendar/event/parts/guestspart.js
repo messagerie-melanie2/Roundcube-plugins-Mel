@@ -287,6 +287,17 @@ export class GuestsPart extends FakePart{
             $('input.edit-attendee-reply').prop('checked', $(e.currentTarget).prop('checked'));
         });
 
+        if (!!rcmail.env['event_prop.mails']) {
+            $('#event-mail-add-member').off('click').on('click', (e) => {
+                const data = rcmail.env['event_prop.mails'];
+                
+                if (!!data.cc) this._$fakeField.val(`${data.cc},`).change();
+                
+                if (!!data.from) this._$fakeField.val(`${data.from},`).change();
+
+                if (!!data.to) this._$fakeField.val(`${data.to},`).change();
+            }).parent().css('display', '').addClass('d-flex');
+        } else $('#event-mail-add-member').off('click').parent().css('display', 'none').removeClass('d-flex');
     }
 
     init(event){
@@ -399,21 +410,21 @@ export class GuestsPart extends FakePart{
             .button({class:'slot', type:'button', onclick:() => $('#edit-attendee-schedule').click()}).css('height', '100%')
                 .text("Trouver d'autres disponibilités")
             .end().generate();
-    
+
             if (slots.length > 0)
             {
                 $('#emel-free-busy').find('.spinner-border').addClass('text-success');
                 let $div = $('<div>').addClass('row');
     
                 for (const slot of slots) {
-                    slot.generate(timePart).generate().appendTo($('<div>').addClass('col-md-3').appendTo($div));
+                    slot.generate(timePart).generate().appendTo($('<div>').addClass('col-3').appendTo($div));
                 }
     
-                $find_next.appendTo($('<div>').addClass('col-md-3').appendTo($div));
+                $find_next.appendTo($('<div>').addClass('col-3').appendTo($div));
     
                 $main_div.html($div);
             }
-            else $main_div.html($find_next.appendTo($('<div>').addClass('col-md-3')));
+            else $main_div.html($find_next.appendTo($('<div>').addClass('col-3')));
     
             $('<div>').addClass('dispo-freebusy-text').text('Premières disponibilité commune').css('margin-bottom', '5px').prependTo($main_div);
         }
@@ -434,6 +445,8 @@ export class GuestsPart extends FakePart{
             for (const iterator of MelEnumerable.from(val).where(x => x.trim() !== EMPTY_STRING).select(this._slice_user_datas.bind(this))) {
                 if (iterator.email === EMPTY_STRING) throw new GuessPartAddException(this, iterator.email);
                 
+                if (iterator.email === GuestsPart.GetMe().email) continue;
+
                 if (0 === $(`div.mel-attendee[data-email="${iterator.email}"`).length) {
                     var $attendee_field = $attendee_field || $(`.mel-show-attendee[data-linked="${$field.attr('id')}"]`);
                     var guest = new Guest(iterator.name, iterator.email);

@@ -707,3 +707,13 @@ li#menu-small-li
 #layout-menu.main-nav-cannot-deploy:hover a .inner {
     display: none!important;
 }
+
+.tchap {
+    order: 18;
+}
+
+.menu.toolbar a.tchap:before{
+  content:"\e264";
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'wght' 800;
+}

@@ -426,3 +426,7 @@ $labels['disable-animations-helper'] = "Désactive les animation du thème en co
 $labels['cancel-color-folder'] = 'Restaurer la couleur par défaut';
 $labels['update-color-folder'] = 'Changer la couleur du dossier';
 $labels['update-icon-folder'] = "Changer l'icône du dossier";
+
+$labels['tchap'] = "Tchap";
+$labels['tchap_options'] = "Ouvrir les options tchap";
+$labels['tchap_disconnect'] = "Se déconnecter de tchap";

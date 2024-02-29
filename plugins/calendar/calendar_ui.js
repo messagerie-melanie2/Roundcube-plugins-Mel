@@ -241,6 +241,10 @@ function rcube_calendar_ui(settings) {
         else if (String(event.status).toLowerCase() == 'telework') {
           time_element.prepend('<i class="fc-icon-' + String(event.status).toLowerCase() + '"></i>');
         }
+        // MANTIS 0008012: Ajouter un statut "Congés"
+        else if (String(event.status).toLowerCase() == 'vacation') {
+          time_element.prepend('<i class="fc-icon-' + String(event.status).toLowerCase() + '"></i>');
+        }
       // }
       if (event.status) {
         element.addClass('cal-event-status-' + String(event.status).toLowerCase());
@@ -1830,7 +1834,8 @@ function rcube_calendar_ui(settings) {
   // update free-busy grid with status loaded from server
   var update_freebusy_display = function (email) {
     // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
-    var status_classes = ['unknown', 'free', 'busy', 'tentative', 'out-of-office', 'telework'];
+    // MANTIS 0008012: Ajouter un statut "Congés"
+    var status_classes = ['unknown', 'free', 'busy', 'tentative', 'out-of-office', 'telework', 'vacation'];
     var domid = String(email).replace(rcmail.identifier_expr, '');
     var row = $('#fbrow' + domid);
     var rowall = $('#fbrowall').children();

@@ -103,6 +103,9 @@ $labels['status-tentative'] = 'Provisoire';
 // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
 $labels['telework'] = 'Télétravail';
 $labels['status-telework'] = 'Télétravail';
+// MANTIS 0008012: Ajouter un statut "Congés"
+$labels['vacation'] = 'Congé';
+$labels['status-vacation'] = 'Congé';
 $labels['priority'] = 'Priorité';
 $labels['sensitivity'] = 'Diffusion';
 $labels['public'] = 'publique';
@@ -185,6 +188,8 @@ $labels['availunknown'] = 'Inconnu';
 $labels['availtentative'] = 'Provisoire';
 // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
 $labels['availtelework'] = 'Télétravail';
+// MANTIS 0008012: Ajouter un statut "Congés"
+$labels['availvacation'] = 'Congé';
 $labels['availoutofoffice'] = 'Absent';
 $labels['scheduletime'] = 'Trouver les disponibilités';
 $labels['sendinvitations'] = 'Envoyer les invitations';

@@ -2861,6 +2861,7 @@ class mel_driver extends calendar_driver {
           'outofoffice' => calendar::FREEBUSY_OOF,
           'busy'        => calendar::FREEBUSY_BUSY,
           'telework'    => calendar::FREEBUSY_TELEWORK,
+          'vacation'    => calendar::FREEBUSY_VACATION,
         ];
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
         $events = $this->load_events($start, $end, null, $user->uid, 1, null, true);

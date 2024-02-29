@@ -173,7 +173,7 @@
             pin:getWebconfPhonePin,
             async getAll(webconf){
                 const datas = await Promise.allSettled([this.get(webconf), this.pin(webconf)]);
-
+                window.disable_x_roundcube = false;
                 return {
                     number:datas[0].value,
                     pin:datas[1].value

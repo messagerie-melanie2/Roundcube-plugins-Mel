@@ -1,0 +1,48 @@
+//compress:false
+@size: 0, 5, 15, 25, 30, 40;
+
+.set-things(@name, @prop, @index, @px)
+{
+    .set-@{name}-{
+        &all-@{index} {
+            @{prop}: e('@{px}px');
+        }
+
+        &left-@{index} {
+            @{prop}-left: e('@{px}px');
+        }
+
+        &right-@{index} {
+            @{prop}-right: e('@{px}px');
+        }
+
+        &between-@{index} {
+            @{prop}-right: e('@{px}px');
+            @{prop}-left: e('@{px}px');
+        }
+
+        &top-@{index} {
+            @{prop}-top: e('@{px}px');
+        }
+
+        
+        &bottom-@{index} {
+            @{prop}-bottom: e('@{px}px');
+        }
+    }
+}
+
+each(@size, {
+    .set-things(margin, margin ,e(%('%a', @key - 1)), @value);
+    .set-things(padding, padding ,e(%('%a', @key - 1)), @value);
+
+    .set-things(margin-important, margin ,e(%('%a', @key - 1)), @value)!important;
+    .set-things(padding-important, padding ,e(%('%a', @key - 1)), @value)!important;
+});
+
+
+.align-self-{
+    &center {
+        align-self: center;
+    }
+}

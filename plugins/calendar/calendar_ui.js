@@ -41,6 +41,9 @@ function rcube_calendar_ui(settings) {
   this.calendars = {};
   this.quickview_sources = [];
 
+  //Pamela
+  /** Contst private vars */
+  const width_modal_event = 700;
 
   /***  private vars  ***/
   var DAY_MS = 86400000;
@@ -946,13 +949,16 @@ function rcube_calendar_ui(settings) {
 
     // init dialog buttons
     var buttons = [],
-      save_func = function () {
+    //PAMELLA => ADDING ASYNC
+      save_func = async function () {
         var start = allday.checked ? '12:00' : $.trim(starttime.val()),
           end = allday.checked ? '13:00' : $.trim(endtime.val()),
           re = /^((0?[0-9])|(1[0-9])|(2[0-3])):([0-5][0-9])(\s*[ap]\.?m\.?)?$/i;
 
         if (!re.test(start) || !re.test(end)) {
           rcmail.alert_dialog(rcmail.gettext('invalideventdates', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
         }
 
@@ -961,12 +967,28 @@ function rcube_calendar_ui(settings) {
 
         if (!title.val()) {
           rcmail.alert_dialog(rcmail.gettext('emptyeventtitle', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
         }
 
         if (start.getTime() > end.getTime()) {
           rcmail.alert_dialog(rcmail.gettext('invalideventdates', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
+        }
+
+        //PAMELA Ajout de ce qu'il y a entre accolades
+        {
+          let trigger_result = rcmail.triggerEvent('calendar.save_event');
+
+          if (!!trigger_result?.then) trigger_result = await trigger_result;
+
+          if (false === (trigger_result ?? true)) {
+            rcmail.triggerEvent('calendar.not_saved');
+            return false;
+          }  
         }
 
         // post data to server
@@ -1108,11 +1130,11 @@ function rcube_calendar_ui(settings) {
         },
         buttons: buttons,
         minWidth: 500,
-        width: 600
+        width: width_modal_event
       }).append(editform.show());  // adding form content AFTERWARDS massively speeds up opening on IE6
 
       // set dialog size according to form content
-      me.dialog_resize($dialog.get(0), editform.height() + (bw.ie ? 20 : 0), 550);
+      me.dialog_resize($dialog.get(0), editform.height() + (bw.ie ? 20 : 0), width_modal_event);
 
       rcmail.triggerEvent('calendar-event-dialog', { dialog: $dialog });
     }
@@ -2030,6 +2052,9 @@ function rcube_calendar_ui(settings) {
       if (event_attendees)
         freebusy_ui.needsupdate = true;
       $('#edit-startdate').data('duration', Math.round((me.selected_event.end.getTime() - me.selected_event.start.getTime()) / 1000));
+
+      //PAMELLA
+      rcmail.triggerEvent('calendar.event_times_changed', {selected:me.selected_event});
     }
   };
 
@@ -2893,6 +2918,24 @@ function rcube_calendar_ui(settings) {
 
 
   /*** public methods ***/
+
+  //PAMELA
+  this.edit_update_current_event_attendee = function edit_update_current_event_attendee(attendee, add = true) {
+    if (!!me.selected_event)
+    {
+      if (add) {
+        if (!event_attendees.find(x => x.email === attendee.email)) event_attendees.push(attendee);
+      }
+      else event_attendees = event_attendees.filter(x => x.email !== attendee.email);
+    }
+
+    return event_attendees;
+  };
+
+  //PAMELLA
+  this.edit_clear_attendees = function edit_clear_attendees() {
+    event_attendees.length = 0;
+  };
 
   /**
    * Remove saving lock and free the UI for new input

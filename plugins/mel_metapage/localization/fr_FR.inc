@@ -114,7 +114,7 @@ $labels["mosaik"] = "Mosaïque";
 $labels["url"] = "Url";
 
 $labels["required_fields"] = "Champs obligatoires";
-$labels["event_name"] = "Nom de l'évènement";
+$labels["event_name"] = "Ajoutez un titre";
 $labels["date_choice"] = "Choix de la période";
 $labels["event_start"] = "Début de l'évènement";
 $labels["event_end"] = "Fin de l'évènement";
@@ -430,3 +430,8 @@ $labels['update-icon-folder'] = "Changer l'icône du dossier";
 $labels['tchap'] = "Tchap";
 $labels['tchap_options'] = "Ouvrir les options tchap";
 $labels['tchap_disconnect'] = "Se déconnecter de tchap";
+$labels['event-location-visio'] = "En visioconférence";
+$labels['event-location-location'] = "En présentiel";
+$labels['event-location-audio'] = "Par audio";
+$labels['event-visio-internal'] = "Wébconférence de l'état";
+$labels['event-visio-external'] = "Wébconférence externe";

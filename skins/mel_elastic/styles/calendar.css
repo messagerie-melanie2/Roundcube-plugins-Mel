@@ -861,3 +861,65 @@ body.quickview-active .fc .fc-scroller {
 #recurrence-form-monthly .recurrence-onevery select {
   width: 45%;
 }
+#eventedit .nav.nav-tabs {
+  display: none;
+}
+.edit-radio,
+.edit-radio-free,
+.edit-radio-busy,
+.edit-radio-wait,
+.edit-radio-telework {
+  font-variation-settings: 'FILL' 1;
+}
+.edit-radio-free {
+  color: #1ac01a;
+}
+.edit-radio-busy {
+  color: red;
+}
+.edit-radio-wait {
+  color: #e0a80c;
+}
+.edit-radio-telework {
+  color: #0f9cfa;
+}
+.mel-button.slot {
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px;
+}
+.mel-button.slot .slot-date {
+  align-items: center;
+}
+.mel-button.slot .slot-date:first-of-type {
+  margin-bottom: 5px;
+}
+.fix-panel {
+  --background-color-dialog-message: var(--warning-color);
+  position: absolute;
+  bottom: 66px;
+  background-color: var(--warning-color);
+  max-width: 100%;
+  left: 0;
+  padding-right: 55px;
+}
+.fix-panel .mel-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  line-height: 0;
+  border-radius: 100%;
+  height: 46px;
+}
+.fix-panel.clicked-from-button {
+  position: unset;
+  background-color: transparent;
+  padding: 0;
+}
+.fix-panel.clicked-from-button .mel-button {
+  display: none!important;
+}
+.mel-custom-event-dialog {
+  position: unset!important;
+}

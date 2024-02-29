@@ -27,6 +27,10 @@ class RotomecaHtml {
         return this;
     }
 
+    disable() {
+        return this.addClass('disabed').attr('disabled', 'disabled');
+    }
+
     css(key_or_attrib, value = '') {
         if (typeof key_or_attrib === 'string') {
             let navigator = this._update_attribs()._updated_balise()._update_css();

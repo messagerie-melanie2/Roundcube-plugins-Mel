@@ -5,6 +5,7 @@ class WebconfLink
         this.key = "";
         this.ariane = null;
         this.wsp = null;
+        this.pass = null;
 
         if (link.includes("#visio:"))
         {
@@ -23,6 +24,8 @@ class WebconfLink
             }
 
             if (this.key.includes(' ')) this.key = this.key.split(' ')[0];
+
+            if (link.includes('_pass=')) this.pass = link.split('_pass=')[1].split('&_')[0];
         }
     }
 
@@ -55,6 +58,8 @@ class IntegratedWebconfLink extends WebconfLink
         if (Array.isArray(category) && category.length > 0) category = category[0];
         
         if (!!category && category.includes('ws#')) this.wsp = category.replace('ws#', '');
+
+        if (location.includes('_pass=')) this.pass = location.split('_pass=')[1].split('&_')[0];
     }
 }
 

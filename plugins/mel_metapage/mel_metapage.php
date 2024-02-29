@@ -1681,7 +1681,6 @@ class mel_metapage extends bnum_plugin
 
     function create_calendar_event()
     {
-
         $calendar = $this->rc->plugins->get_plugin('calendar');
         $calendar->add_texts('localization/', true);
         $calendar->ui->init();
@@ -1708,7 +1707,8 @@ class mel_metapage extends bnum_plugin
         else
             $event = rcube_utils::get_input_value("_event", rcube_utils::INPUT_POST);
 
-        $this->include_script('../mel_workspace/js/setup_event.js');
+        // $this->include_script('../mel_workspace/js/setup_event.js');
+        $this->load_script_module('edit_event', '/js/lib/calendar/event/');
 
         // $event["attendees"] = [
         //     ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
@@ -1733,6 +1733,8 @@ class mel_metapage extends bnum_plugin
             'aria-label' => $this->gettext('roleorganizer'),
             'class'      => 'form-control custom-select',
         )));
+
+        $this->rc->output->set_env('calendar_categories', $calendar->__get('driver')->list_categories());
 
         if (rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET) !== null)
         {
@@ -2775,7 +2777,7 @@ class mel_metapage extends bnum_plugin
         $rcmail = $this->rc ?? rcmail::get_instance();
         $item = $rcmail->config->get('navigation_apps', null);
 
-        if (isset($item)) return $item[$app]['enabled'] ?? true;
+        if (isset($item)) return $item[$app]['enabled'] ?? $rcmail->config->get('template_navigation_apps', null)[$app]['enabled'] ?? true;
         
         return true;
     }

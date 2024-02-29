@@ -76,6 +76,7 @@ $labels['title'] = 'Résumé';
 $labels['description'] = 'Description';
 // PAMELA
 $labels['all-day'] = 'Journée';
+$labels['all-day-long'] = 'Journée entière';
 $labels['export'] = 'Exporter';
 $labels['exporttitle'] = 'Exporter vers iCalendar';
 $labels['exportrange'] = 'Événements depuis';

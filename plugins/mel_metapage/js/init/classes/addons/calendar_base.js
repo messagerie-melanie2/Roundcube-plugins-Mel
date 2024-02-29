@@ -1240,135 +1240,6 @@ $(document).ready(() => {
                 $("#edit-title").parent().find(".required-text").remove();
         }
 
-        /**
-         * Données des dates
-         */
-        let date = {
-            /**Date de début */
-            start:{
-                querry:$("#mel-metapage-added-input-mel-start-datetime"),
-                val:null,
-                text_id:"edit-start-error-text"
-            },
-            /**Date de fin */
-            end:{
-                querry:$("#mel-metapage-added-input-mel-end-datetime"),
-                val:null,
-                text_id:"edit-end-error-text"
-            }
-        }
-
-        date.start.val = date.start.querry.val();
-        date.end.val = date.end.querry.val();
-
-        //Si la date de début n'est pas valide
-        if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
-        {
-            //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur
-            canContinue = false;
-            $('li > a[href="#event-panel-summary"]').click();
-            date.start.querry.focus();
-
-            const text_id = date.start.text_id;
-            let parent = date.start.querry.parent();
-
-            if ($(`#${text_id}`).length > 0)
-                $(`#${text_id}`).remove();
-
-            const text = date.start.val === "" ? rcmail.gettext('startdate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
-            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
-        }
-        //Suppression du message d'erreur
-        else if ($(`#${date.start.text_id}`).length > 0) $(`#${date.start.text_id}`).remove();
-
-        //Si la date de fin est invalide
-        if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
-        {
-            //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur
-            $('li > a[href="#event-panel-summary"]').click();
-            canContinue = false;
-            date.end.querry.focus();
-
-            const text_id = date.end.text_id;
-            let parent = date.end.querry.parent();
-            if ($(`#${text_id}`).length > 0)
-                $(`#${text_id}`).remove();
-
-            const text = date.end.val === "" ? rcmail.gettext('enddate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
-            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
-        }
-        //Suppression du message d'erreur
-        else if ($(`#${date.end.text_id}`).length > 0) $(`#${date.end.text_id}`).remove();
-
-        // //Si la visio de l'état est activée
-        // if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
-        // {
-        //     //On supprime le message d'erreur est on récupère les données.
-        //     const text_id = "key-error-cal";
-        //     let val = $("#key-visio-cal").val();
-
-        //     $(`#${text_id}`).remove();
-
-        //     //Si l'url est invalide
-        //     if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
-        //     {      
-        //         //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur   
-        //         $('li > a[href="#event-panel-detail"]').click();
-
-        //         const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
-                
-        //         $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-        //         canContinue = false;
-        //     }
-        // }
-  
-        if (!window.rcube_calendar_ui.edit._events.checkError().check())
-        {
-            $('li > a[href="#event-panel-detail"]').click();
-            canContinue = false;
-        }
-
-        {
-            const location_from_js = await window.rcube_calendar_ui.edit._events.getValue();
-            if (canContinue && location_from_js !== $('#edit-location').val()) {
-                $('#edit-location').val(location_from_js);
-            }
-        }
-
-        if (canContinue && $('#edit-location').val() === reload)
-        {
-            const i = setInterval(() => {
-                if ($('#edit-location').val() !== reload)
-                {
-                    clearInterval(i);
-                    rcube_calendar_ui.save();
-                }
-            }, 10);
-            canContinue = false;
-        }
-        else if (canContinue && $('#edit-location').val().includes( mel_metapage.Functions.public_url('webconf', '')))
-        {
-            const link = new IntegratedWebconfLink($('#edit-location').val());
-
-            if (link.key === '')
-            {
-                let interval_link = null;
-                const i = setInterval(() => {
-                    interval_link = new IntegratedWebconfLink($('#edit-location').val());
-                    if (interval_link.key !== '')
-                    {
-                        interval_link = null;
-                        clearInterval(i);
-                        rcube_calendar_ui.save();
-                    }
-                }, 10);
-                canContinue = false;
-
-            }
-        }
-
         //Si il n'y a pas d'erreurs
         if (canContinue)
         {
@@ -1436,8 +1307,15 @@ $(document).ready(() => {
      * Affiche la modale d'édition d'un évènement
      * @param {JSON} event Event plugin calendar
      */
-    window.rcube_calendar_ui.edit = function(event)
+    window.rcube_calendar_ui.edit = async function(event, dialog)
     {
+        const loader = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+
+        const {CalendarEvent} = await loader('mel_metapage', 'edit_event', '/js/lib/calendar/event/');
+
+        new CalendarEvent(event, dialog);
+
+        return;
         EventUserNotified.CreateInstance(event);
         //Récupération de l'évènement mis en mémoire si l'évènement passé en paramètre est vide.
         if (event === "" && rcmail.env.event_prop !== undefined)
@@ -1772,7 +1650,7 @@ $(document).ready(() => {
             $("#edit-alarm-item").attr('title', "Alerte - Type d'alerte").addClass("input-mel").on('change', () => onAlertChange());
             $(".edit-alarm-value").attr('title', "Alerte - Nombre de l'alerte");
             $(".edit-alarm-offset").attr('title', "Alerte - Elle doit se déclencher quand ?");
-            $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
+            //$("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
             
@@ -2443,8 +2321,11 @@ $(document).ready(() => {
         return $mainDiv;
     };
 
-        rcmail.addEventListener("edit-event", (event) =>{
-            window.rcube_calendar_ui.edit(event);
+        rcmail.addEventListener("calendar-event-dialog", ({dialog}) =>{
+            const event = cal.selected_event;
+
+            window.rcube_calendar_ui.edit(event, dialog);
+
         });   
 
         rcmail.addEventListener("dialog-attendees-save", (datetimes) => {
@@ -2466,14 +2347,15 @@ $(document).ready(() => {
             rcmail.register_command('calendar-workspace-add-all', () => {
                 mel_metapage.Functions.busy();
                 mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_email_from_ws"), {
-                    _uid:$("#wsp-event-all-cal-mm").val()
+                    _uid:$("#mel-event-category").val().replace('ws#', '')
                 }, (datas) => {
                     datas = JSON.parse(datas);
+                    let str = '';
                     for (let index = 0; index < datas.length; ++index) {
                         const element = datas[index];
-                        $("#edit-attendee-name").val(element);
-                        $("#edit-attendee-add").click();
+                        str+=`${element},`;
                     }
+                    $("#attendee-input").val(str).change();
                 }).always(() => {
                     mel_metapage.Functions.busy(false);
                 });
@@ -2695,6 +2577,7 @@ $(document).ready(() => {
                 {
                     window.event_saved = false;
                     window.create_event = false;
+                    window.kolab_event_dialog_element?.editBody?.('');
                     window.kolab_event_dialog_element = null;
                     $('#mel-have-something-minified-main-create').remove();
                 }
@@ -3090,6 +2973,16 @@ $(document).ready(() => {
             return rcube_calendar.number_waiting_events(mel_metapage.Storage.exists(events) ? events : [], get_number);
         } 
     };
+
+    rcmail.addEventListener('calendar.not_saved', () => {
+        let navigator = window.kolab_event_dialog_element ?? parent.kolab_event_dialog_element ?? top.kolab_event_dialog_element;
+        if (!!navigator) {
+            setTimeout(() => {
+                navigator.footer.buttons.save.removeClass('disabled').removeAttr('disabled');
+                navigator.autoHeight();
+            }, 10);
+        }
+    });
 
 });
 

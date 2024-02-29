@@ -60,7 +60,7 @@ class tchap extends bnum_plugin
         // Ajoute le bouton en fonction de la skin
         $need_button = 'taskbar';
         if (class_exists("mel_metapage")) {
-          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_tchap') ? $need_button : 'otherappsbar';
+          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_tchap', true) ? $need_button : 'otherappsbar';
         }
 
         if ($need_button)

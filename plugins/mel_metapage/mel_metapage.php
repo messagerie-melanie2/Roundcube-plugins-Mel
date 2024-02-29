@@ -2777,7 +2777,7 @@ class mel_metapage extends bnum_plugin
         $rcmail = $this->rc ?? rcmail::get_instance();
         $item = $rcmail->config->get('navigation_apps', null);
 
-        if (isset($item)) return $item[$app]['enabled'] ?? true;
+        if (isset($item)) return $item[$app]['enabled'] ?? $rcmail->config->get('template_navigation_apps', null)[$app]['enabled'] ?? true;
         
         return true;
     }

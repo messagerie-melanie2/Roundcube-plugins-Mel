@@ -44,13 +44,15 @@ export class CategoryPart extends FakePart{
 
         this.updateIcon();
 
-        if (event.calendar_blocked) {
+        const blocked = 'true' === event.calendar_blocked;
+
+        if (blocked) {
             this._$fakeField.attr('disabled', 'disabled').addClass('disabled');
             this._$hasCategory.attr('disabled', 'disabled').addClass('disabled');
         } 
         else {
-            this._$fakeField.removeAttr('disabled', 'disabled').removeClass('disabled');
-            this._$hasCategory.removeAttr('disabled', 'disabled').removeClass('disabled');
+            this._$fakeField.removeAttr('disabled').removeClass('disabled');
+            this._$hasCategory.removeAttr('disabled').removeClass('disabled');
         }
     }
 

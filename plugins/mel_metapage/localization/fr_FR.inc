@@ -427,11 +427,13 @@ $labels['cancel-color-folder'] = 'Restaurer la couleur par défaut';
 $labels['update-color-folder'] = 'Changer la couleur du dossier';
 $labels['update-icon-folder'] = "Changer l'icône du dossier";
 
+$labels['app_tchap'] = "Tchap";
 $labels['tchap'] = "Tchap";
-$labels['tchap_options'] = "Ouvrir les options tchap";
-$labels['tchap_disconnect'] = "Se déconnecter de tchap";
+$labels['tchap_options'] = "Ouvrir les paramètres de Tchap";
+$labels['tchap_disconnect'] = "Se déconnecter de Tchap";
 $labels['event-location-visio'] = "En visioconférence";
 $labels['event-location-location'] = "En présentiel";
 $labels['event-location-audio'] = "Par audio";
 $labels['event-visio-internal'] = "Wébconférence de l'état";
 $labels['event-visio-external'] = "Wébconférence externe";
+

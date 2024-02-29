@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from "../../../constants/constants.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { GuestsPart } from "./guestspart.js";
 import { FakePart, Parts } from "./parts.js";
@@ -32,6 +33,22 @@ export class TimePartManager {
             this.$allDay[0].checked = true;
         }
         else {
+            if (!event.start || !event.end) {
+                const now = moment();
+                
+                if (!event.start) event.start = now;
+
+                if (!event.end) {
+                    event.end = moment(event.start).add(TimePart.INTERVAL, 'm');
+
+                    if (event.start.format('DD/MM/YYYY') !== event.end.format('DD/MM/YYYY')) {
+                        event.end = moment(event.start).endOf('d');
+
+                        if (event.start.format('DD/MM/YYYY HH:mm') === event.end.format('DD/MM/YYYY HH:mm')) event.start = event.start.remove(1, 'm');
+                    }
+                }
+            }
+
             this.start.init(moment(event.start), this.base_diff);
             this.end.reinit(moment(event.end), this.base_diff, (moment(event.start).format('DD/MM/YYYY') === moment(event.end).format('DD/MM/YYYY') ? moment(event.start).format('HH:mm')  : null));
             this.$allDay[0].checked = false;
@@ -62,6 +79,37 @@ export class TimePartManager {
         Object.defineProperty(this, 'base_diff', {
             get() {return _base_diff;}
         });
+    }
+
+    is_valid() {
+        return this.start.is_valid() && this.end.is_valid() && moment(this._$start_date.val(), 'DD/MM/YYYY').isValid() && moment(this._$end_date.val(), 'DD/MM/YYYY').isValid()
+    }
+
+    invalid_action() {
+        this._invalid_action_date(this._$start_date, 'début') || 
+        this._invalid_action_date(this._$end_date, 'fin') ||
+        this._invalid_action_time(this.start, 'début') ||
+        this._invalid_action_time(this.end, 'fin');
+    }
+
+    _invalid_action_date($field, word) {
+        if (!moment($field.val(), 'DD/MM/YYYY').isValid()) {
+            rcmail.display_message(`Le date de ${word} n'est pas valide !`, 'error');
+            $field.focus();
+            return true;
+        }
+
+        return false;
+    }
+
+    _invalid_action_time(part, word) {
+        if (!part.is_valid()) {
+            rcmail.display_message(`L'heure de ${word} n'est pas valide !`, 'error');
+            part._$fakeField.focus();
+            return true;
+        }
+
+        return false;
     }
 
     _update_date() {
@@ -95,6 +143,11 @@ export class TimePartManager {
 
         this._update_date.started = false;
     }
+
+    static UpdateOption(select, value) {
+        TimePart.UpdateOption(select, value);
+    }
+
 }
 
 class TimePart extends FakePart{
@@ -127,8 +180,28 @@ class TimePart extends FakePart{
         val = this._toTimeMoment(val);
         min = !!min ? this._toTimeMoment(min) : null;
         const formatted = !!min && val <= min ? moment(min).add(base_interval).format('HH:mm') : val.format('HH:mm');
+
+        TimePart.UpdateOption(this._$fakeField.attr('id'), formatted);
+
         $(`#${this._$fakeField.attr('id')}`).val(formatted);
 
+        if (this._$field.val() !== $(`#${this._$fakeField.attr('id')}`).val()) {
+            this._$field.val(formatted);
+        }
+    }
+
+    static UpdateOption(select, value) {
+        if ($(`#${select} [value="${value}"]`).length === 0) 
+        {
+            const current = moment(value, 'HH:mm');
+
+            for (const e of $(`#${select} option`)) {
+                if (current < moment($(e).val(), 'HH:mm')) {
+                    $(e).before($('<option>').val(value).text(value));
+                    break;
+                }
+            }
+        }
     }
 
     _toTimeMoment(val) {
@@ -142,6 +215,10 @@ class TimePart extends FakePart{
 
     onChange(e) {
 
+    }
+
+    is_valid() {
+        return this._$fakeField.val() !== EMPTY_STRING;
     }
 }
 

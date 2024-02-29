@@ -60,6 +60,12 @@ class ALocationPart extends IDestroyable {
         return this;
     }
 
+    is_valid() {
+        return false;
+    }
+
+    invalid_action() {}
+
     static Has(location) {
         return false;
     }
@@ -161,6 +167,14 @@ class VisioManager extends ALocationPart {
         this.categoryPart = null;
     }
 
+    is_valid() {
+        return this._current.is_valid();
+    }
+
+    invalid_action() {
+        this._current.invalid_action();
+    }
+
     static Has(location) {
         return IntegratedVisio.Has(location) || ExternalVisio.Has(location)
     }
@@ -237,6 +251,26 @@ class IntegratedVisio extends AVisio {
         this._pin = '';
         this._$div = null;
         this._current_promise = Mel_Promise.Resolved();
+    }
+
+    is_valid() {
+        return EMPTY_STRING !== this._room && !(this._room.length < 10 || MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(this.location));
+    }
+
+    invalid_action() {
+        if (EMPTY_STRING === this._room) {
+            rcmail.display_message('Le nom de la visioconférence ne doit être vide !', 'error');
+        }
+        else if (this._room.length < 10)
+        {
+            rcmail.display_message('Le nom de la visioconférence doit avoir au moins 10 charactères !', 'error');
+        }
+        else if (MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(this._room)){
+            rcmail.display_message('Le nom de la visioconférence doit avoir au moins 3 chiffres !', 'error');
+        }
+        else rcmail.display_message('Erreur inconnue !', 'error');
+
+        this._$div.find(`#integrated-${this.id}`).focus();
     }
 
     generate($parent) {
@@ -385,6 +419,17 @@ class ExternalVisio extends ALocationPart {
         this.onchange.call();
     }
 
+    is_valid() {
+        return  EMPTY_STRING !== this.location;
+    }
+
+    invalid_action() {
+        rcmail.display_message('Le nom de la visioconférence ne doit être vide !', 'error');
+
+        $(`#external-${this.id}`).focus();
+    }
+
+
     static OptionValue() {
         return 'visio-external';
     }
@@ -415,6 +460,16 @@ class Phone extends ALocationPart {
         Object.defineProperty(this, 'location', {
             get:() => `${Phone.Url()} : ${this._phone} - ${this._pin}`
         });
+    }
+
+    is_valid() {
+        return  EMPTY_STRING !== this._phone;
+    }
+
+    invalid_action() {
+        rcmail.display_message('Le numéro de téléphone ne doit être vide !', 'error');
+
+        $(`#phone-${this.id}`).focus();
     }
 
     generate($parent) {
@@ -501,6 +556,13 @@ class Location extends ALocationPart {
         this.location = val;
 
         this.onchange.call();
+    }
+
+    is_valid() {
+        return true;
+    }
+
+    invalid_action() {
     }
 
     static Has(location) {
@@ -707,6 +769,22 @@ export class LocationPartManager  {
         .end();
 
         return html.generate().appendTo(this._$locations);
+    }
+
+    is_valid() {
+        return !MelEnumerable.from(this.locations).any(x => !x.value.is_valid());
+    }
+
+    invalid_action() {
+        for (const key in this.locations) {
+            if (Object.hasOwnProperty.call(this.locations, key)) {
+                const element = this.locations[key];
+                if (!element.is_valid()) {
+                    element.invalid_action();
+                    break;
+                }
+            }
+        }
     }
 
     async _on_change_action() {

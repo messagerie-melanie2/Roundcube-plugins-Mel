@@ -6,7 +6,8 @@ export class SensitivityPart extends FakePart {
 
         this._$icon = $icon;
         this._$dialog = $dialog;
-        this._title = this._$dialog.dialog('option', 'title');
+        this._title = this._$dialog.dialog('option', 'title') || 'Créer un évènement';
+
 
     }
 
@@ -28,10 +29,15 @@ export class SensitivityPart extends FakePart {
     }
 
     update_dialog_title(title) {
-        try {
-            this._$dialog.dialog('option', 'title', title);
-        } catch (error) {
-            this._$dialog.parent().parent().find('ui-dialog-titlebar .ui-dialog-title').text(title);
+        if (!this._$dialog.on_click_minified) {
+            try {
+                this._$dialog.dialog('option', 'title', title);
+            } catch (error) {
+                this._$dialog.parent().parent().find('ui-dialog-titlebar .ui-dialog-title').text(title);
+            }
+        }
+        else {
+            this._$dialog.editTitle(title);
         }
     }
 

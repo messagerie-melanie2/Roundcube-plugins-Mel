@@ -258,10 +258,12 @@ export class GuestsPart extends FakePart{
     
                 GuestsPart.can = false;
                 $(`#${this.start_date}`).val(start.date).change();
-                update_options(this.start_time, start.time);
+                //update_options(this.start_time, start.time);
+                TimePartManager.UpdateOption(this.start_time, start.time);
                 $(`#${this.start_time}`).val(start.time).change();
                 $(`#${this.end_date}`).val(end.date).change();
-                update_options(this.end_time, end.time);
+                //update_options(this.end_time, end.time);
+                TimePartManager.UpdateOption(this.end_time, end.time);
                 $(`#${this.end_time}`).val(end.time).change();
                 update_options = null;
                 GuestsPart.can = true;

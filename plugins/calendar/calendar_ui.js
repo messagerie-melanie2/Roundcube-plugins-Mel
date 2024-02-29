@@ -949,13 +949,16 @@ function rcube_calendar_ui(settings) {
 
     // init dialog buttons
     var buttons = [],
-      save_func = function () {
+    //PAMELLA => ADDING ASYNC
+      save_func = async function () {
         var start = allday.checked ? '12:00' : $.trim(starttime.val()),
           end = allday.checked ? '13:00' : $.trim(endtime.val()),
           re = /^((0?[0-9])|(1[0-9])|(2[0-3])):([0-5][0-9])(\s*[ap]\.?m\.?)?$/i;
 
         if (!re.test(start) || !re.test(end)) {
           rcmail.alert_dialog(rcmail.gettext('invalideventdates', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
         }
 
@@ -964,12 +967,28 @@ function rcube_calendar_ui(settings) {
 
         if (!title.val()) {
           rcmail.alert_dialog(rcmail.gettext('emptyeventtitle', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
         }
 
         if (start.getTime() > end.getTime()) {
           rcmail.alert_dialog(rcmail.gettext('invalideventdates', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
+        }
+
+        //PAMELA Ajout de ce qu'il y a entre accolades
+        {
+          let trigger_result = rcmail.triggerEvent('calendar.save_event');
+
+          if (!!trigger_result?.then) trigger_result = await trigger_result;
+
+          if (false === (trigger_result ?? true)) {
+            rcmail.triggerEvent('calendar.not_saved');
+            return false;
+          }  
         }
 
         // post data to server

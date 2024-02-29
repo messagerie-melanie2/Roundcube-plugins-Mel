@@ -62,6 +62,17 @@ class EventParts {
         this.location = new LocationPartManager(fakes.div_eventtype, inputs.text_location, this.category);
         this.recurrence = new RecPart(inputs.select_recurrence, fakes.select_recurrence);
     }
+
+    init(ev) {
+        this.status.onUpdate(ev.status);
+        this.sensitivity.onUpdate(!ev.id ? SensitivityPart.STATES.public :  ev.sensitivity);
+        this.alarm.init(ev);
+        this.category.init(ev);
+        this.date.init(ev);
+        this.location.init(ev);
+        this.guests.init(ev);
+        this.recurrence.init(ev);
+    }
 }
 
 export class EventView {
@@ -69,7 +80,7 @@ export class EventView {
         this._event = event;
         this._dialog = dialog;
 
-        if (!$._data(this._dialog[0], 'events' )?.dialogbeforeclose){
+        if (!this._dialog.on_click_minified && !$._data(this._dialog[0], 'events' )?.dialogbeforeclose){
             this._dialog.on('dialogbeforeclose', () => {
                 $('#mel-event-form').css('opacity', '0');
                 $('#mel-form-absolute-center-loading-event').css('display', '');
@@ -84,42 +95,54 @@ export class EventView {
         this.inputs = new EventManager(...EventView.true_selectors).generate();
         this.fakes = new EventManager(...EventView.false_selectors).generate();
         this.parts = new EventParts(this.inputs, this.fakes, dialog);
-        this.InitializeView();
+        this.parts.init(event);
 
         $('#mel-event-form').css('opacity', '1');
         $('#mel-form-absolute-center-loading-event').css('display', 'none');
-        $('.fix-panel').css('display', '');
 
-        this._dialog.addClass('mel-custom-event-dialog');
-        if (!this._dialog[0].ondrop){
-            this._dialog[0].ondrop = (ev) => {
-                const autorized = [this.fakes.text_attendee, this.fakes.text_attedee_optional, this.fakes.text_attendee_animators];
-                ev = !!ev.dataTransfer ? ev : ev.originalEvent;
-                let data = JSON.parse(ev.dataTransfer.getData('text/plain'));
-
-                ev.preventDefault();
-                if (MelEnumerable.from(autorized).select(x => x.attr('id')).where(x => ev.target.id === x).any()) {
-                    $(`.mel-attendee[data-email="${data.email}"]`).remove();
-                    $(ev.target).val(`${data.string},`).change();
-                }
-
-                $('.mel-show-attendee-container, [data-linked="attendee-input"]').removeClass('mel-guest-drag-started');
-            };
+        if (!this._dialog.on_click_minified) {
+            $('.fix-panel').css('display', '');
+            this._dialog.addClass('mel-custom-event-dialog');
+            if (!this._dialog[0].ondrop) this._dialog[0].ondrop = this.on_drop.bind(this);
         }
+        else {
+            this._dialog.modal.find('.modal-body').on('drop', this.on_drop.bind(this));
+            $('.fix-panel').css('display', 'none');
+        }
+
+        if((rcmail._events?.['calendar.save_event']?.length ?? 0) > 0) delete rcmail._events['calendar.save_event'];
+
+        rcmail.addEventListener('calendar.save_event', this.before_save.bind(this));
     }
 
-    InitializeView() {
-        const ev = this._event;
-        // this.inputs.text_title.val(ev.title);
-        // this.inputs.select_calendar_owner.val(ev.calendar);
-        this.parts.status.onUpdate(ev.status);
-        this.parts.sensitivity.onUpdate(!ev.id ? SensitivityPart.STATES.public :  ev.sensitivity);
-        this.parts.alarm.init(ev);
-        this.parts.category.init(ev);
-        this.parts.date.init(ev);
-        this.parts.location.init(ev);
-        this.parts.guests.init(ev);
-        this.parts.recurrence.init(ev);
+    on_drop(ev) {
+        const autorized = [this.fakes.text_attendee, this.fakes.text_attedee_optional, this.fakes.text_attendee_animators];
+        ev = !!ev.dataTransfer ? ev : ev.originalEvent;
+        let data = JSON.parse(ev.dataTransfer.getData('text/plain'));
+
+        ev.preventDefault();
+        if (MelEnumerable.from(autorized).select(x => x.attr('id')).where(x => ev.target.id === x).any()) {
+            $(`.mel-attendee[data-email="${data.email}"]`).remove();
+            $(ev.target).val(`${data.string},`).change();
+        }
+
+        $('.mel-show-attendee-container, [data-linked="attendee-input"]').removeClass('mel-guest-drag-started');
+    }
+
+    async before_save() {
+        let is_valid = true;
+        await this.parts.location.waitComplete();
+
+        if (!this.parts.location.is_valid()) {
+            this.parts.location.invalid_action();
+            is_valid = false;
+        }
+        else if (!this.parts.date.is_valid()) {
+            this.parts.date.invalid_action();
+            is_valid = false;
+        }
+
+        return is_valid;
     }
 
     static Create(name, selector) {

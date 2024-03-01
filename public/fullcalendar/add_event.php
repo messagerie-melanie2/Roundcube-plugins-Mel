@@ -101,8 +101,8 @@ function SendOrganizerNotification($user, $attendee_post, $appointment)
   $notification = new LibMelanie\Api\Mce\Notification($user);
 
   $notification->category = "agenda";
-  $notification->title = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' à pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'];
-  $notification->content = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' à pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'] . ' pour "' . $appointment['object'] . '"';
+  $notification->title = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' a pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'];
+  $notification->content = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' a pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'] . ' pour "' . $appointment['object'] . '"';
   $notification->action = serialize([
     [
       'text' => "Ouvrir mon agenda",

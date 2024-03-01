@@ -1867,15 +1867,15 @@ class mel_metapage extends bnum_plugin
     public function preferences_sections_list($p)
     {
         $dir = __DIR__;
-        if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
-        {
-            $p['list']['globalsearch'] = [
-                'id'      => 'globalsearch',
-                'section' => $this->gettext('globalsearch', 'mel_metapage'),
-            ];
-        }
-         
-        if (is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php"))
+        // if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
+        // {
+        //     $p['list']['globalsearch'] = [
+        //         'id'      => 'globalsearch',
+        //         'section' => $this->gettext('globalsearch', 'mel_metapage'),
+        //     ];
+        // }
+
+        if ($this->visio_enabled() && is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php"))
         {
             $p['list']['visio'] = [
                 'id'      => 'visio',

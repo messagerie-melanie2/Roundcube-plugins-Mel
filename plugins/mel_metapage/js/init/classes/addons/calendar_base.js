@@ -2555,7 +2555,7 @@ $(document).ready(() => {
                 }
             };
             // create_popUp.close();
-            window.event_reduced = true;
+            //window.event_reduced = true;
             window.kolab_event_dialog_element.setBeforeTitle(`<a href=# title="${rcmail.gettext('back')}" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$('iframe#kolabcalendarinlinegui').remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>${rcmail.gettext('create_modal_back', plugin_text)}</span></a>`);
             window.kolab_event_dialog_element.haveReduced().on_click_minified = () => {
                 window.event_reduced = true;
@@ -2565,6 +2565,7 @@ $(document).ready(() => {
             };
             window.kolab_event_dialog_element.on_click_exit = () => {
                 window.kolab_event_dialog_element.close();
+                window.event_reduced = false;
                 window.event_saved = false;
                 window.create_event = false;
                 window.event_reduced = false;

@@ -73,7 +73,9 @@ class EventParts {
         this.guests.init(ev);
         this.recurrence.init(ev);
 
-        if (ev.calendar_blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
+        const blocked = 'true' === ev.calendar_blocked;
+
+        if (blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
         else $(inputs.select_calendar_owner).removeAttr('disabled').removeClass('disabled');
     }
 }

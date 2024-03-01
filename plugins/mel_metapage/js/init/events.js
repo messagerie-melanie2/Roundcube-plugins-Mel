@@ -1277,7 +1277,7 @@ if (rcmail && window.mel_metapage)
                 );
         }));
 
-        if (rcmail.env.calendars[event.calendar].editable && event.editable !== false)
+        if (rcmail.env.calendars[event.calendar].editable /*&& event.editable !== false*/)
         {
             modal.footer.querry.append($(`<button class="mel-calendar-button danger" id="-mel-delete-event"><span class="icon-mel-trash"></span><span class=inner>Supprimer</span></button>`).click(() => {
                 datas.object.delete_event(event);

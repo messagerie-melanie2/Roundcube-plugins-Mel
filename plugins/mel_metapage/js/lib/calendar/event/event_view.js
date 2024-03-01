@@ -106,7 +106,8 @@ export class EventView {
         $('#mel-form-absolute-center-loading-event').css('display', 'none');
 
         if (!this._dialog.on_click_minified) {
-            $('.fix-panel').css('display', '');
+            const panel_is_display = $('#edit-recurring-warning').css('display') !== 'none' || $('#edit-localchanges-warning').css('display') !== 'none' || $('#edit-internallocalchanges-warning').css('display') !== 'none'
+            $('.fix-panel').css('display', (panel_is_display ? '' : 'none'));
             this._dialog.addClass('mel-custom-event-dialog');
             if (!this._dialog[0].ondrop) this._dialog[0].ondrop = this.on_drop.bind(this);
         }

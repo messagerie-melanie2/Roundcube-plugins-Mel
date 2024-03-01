@@ -441,9 +441,16 @@ export class GuestsPart extends FakePart{
         if (val.includes(',')) {
             const event = cal.selected_event;
             val = val.split(',');
+            let has_invalid_email = false;
+            let invalids = [];
 
             for (const iterator of MelEnumerable.from(val).where(x => x.trim() !== EMPTY_STRING).select(this._slice_user_datas.bind(this))) {
-                if (iterator.email === EMPTY_STRING) throw new GuessPartAddException(this, iterator.email);
+                if (iterator.email === EMPTY_STRING) {
+                    has_invalid_email = true;
+                    invalids.push(iterator);
+                    continue;
+                }
+                    //throw new GuessPartAddException(this, iterator.email);
                 
                 if (iterator.email === GuestsPart.GetMe().email) continue;
 
@@ -458,6 +465,11 @@ export class GuestsPart extends FakePart{
                     guest = null;
                 }
                 else rcmail.display_message(`Le participant ${iterator.name || iterator.email} éxiste déjà !`, 'error');
+            }
+
+            if (has_invalid_email) {
+                rcmail.display_message('Impossible d\'ajouter certains participants !', 'warning');
+                console.warn('/!\\[onUpdate]', invalids);
             }
 
             if (!$('#edit-attendees-donotify').hasClass('manually-changed')) $('#edit-attendees-donotify').prop('checked', true);

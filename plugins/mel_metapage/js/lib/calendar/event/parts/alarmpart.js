@@ -103,6 +103,10 @@ export class AlarmPart extends FakePart {
         super($alarm_offset, $alarm, Parts.MODE.change);
         this._$fieldAlarmType = $alarm_type;
         this._$fieldAlarmOffsetType = $alarf_offset_type;
+
+        this._$fakeField.tooltip({
+            content:() => this._$fakeField.attr('title') || this._$fakeField.attr('data-original-title')
+        });
     }
 
     init(event) {

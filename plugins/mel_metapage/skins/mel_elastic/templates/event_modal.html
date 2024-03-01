@@ -31,13 +31,13 @@
 
 		<div class="row no-label-row set-margin-bottom-2">
 			<!-- Idéalement 15px entre chaque et pas au début -->
-			<div class="form-group col-5 set-padding-left-0 set-padding-right-1 " id="calendar-select">
+			<div class="form-group col-5 set-padding-left-0 set-padding-right-2 " id="calendar-select">
 				<label for="edit-calendar" class="red-star-after span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_calendar' /></label>
 				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
 					<span class="material-symbols-outlined">
 						calendar_month
 					</span>
-					<roundcube:object name="plugin.calendar_select" id="edit-calendar" style="background-color: transparent;border:none;display: inline-block; margin-top: 1px;" />
+					<roundcube:object title="Définir un calendrier" name="plugin.calendar_select" id="edit-calendar" style="background-color: transparent;border:none;display: inline-block; margin-top: 1px;" />
 				</div>
 
 			</div>
@@ -47,7 +47,7 @@
 						alarm
 					</span>
 					<label class="sr-only" for="mel-calendar-alarm">Définir une alarme</label>
-					<select class="form-control input-mel" id="mel-calendar-alarm" style="background-color: transparent;border:none;display: inline-block">
+					<select title="Définir un rappel" class="form-control input-mel" id="mel-calendar-alarm" style="background-color: transparent;border:none;display: inline-block">
 						<option value="">Aucune</option>
 					</select>	
 				</div>
@@ -58,13 +58,13 @@
 						radio_button_unchecked
 					</span>
 					<label for="edit-event-status" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_event_state' /></label>
-					<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control input-mel" style="background-color: transparent;border:none;display: inline-block"/>
+					<roundcube:object title="Status de l'évènement" name="plugin.status_select" id="edit-event-status" class="form-control input-mel" style="background-color: transparent;border:none;display: inline-block"/>
 				</div>
 			</div>
 			<div class="col-1 set-padding-important-all-0">
 				<div class="form-control input-mel fake-input d-flex align-items-center justify-content-center">
 					<label for="update-sensivity" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
-					<button type="button" id="update-sensivity" aria-valuenow="busy" class="mel-button no-button-margin no-margin-button button-icon-hover">
+					<button type="button" id="update-sensivity" title="Sensibilitée de l'évènement" aria-valuenow="busy" class="mel-button no-button-margin no-margin-button button-icon-hover">
 						<span class=material-symbols-outlined>
 							lock
 						</span>
@@ -169,17 +169,17 @@ Choix de la période
 		<div class="col-12 datetime row">
 			<div class="col-6" style="display: flex;">
 				<!-- symbol horloge -->
-				<span class="material-symbols-outlined icon-weight-400 icon-front-col">
+				<span class="material-symbols-outlined icon-weight-400 icon-front-col mr-2">
 					schedule
 				</span>
 				<div class="relative icon-datepicker">
-					<input type="text" name="startdate" id="edit-startdate" class="form-control input-mel" required="true"/> &nbsp;
+					<input type="text" title="Date de début" name="startdate" id="edit-startdate" class="form-control input-mel" required="true"/> &nbsp;
 					<span class="material-symbols-outlined icon-weight-300">
 					calendar_month
 					</span>
 				</div>
 				<input style="display: none;" type="text" name="starttime" size="6" id="edit-starttime" class="form-control hidden" aria-label="<roundcube:label name='calendar.starttime' />" /> 
-				<select id="mel-edit-starttime" class="form-control input-mel hour-select">
+				<select id="mel-edit-starttime" title="Heure de début" class="form-control input-mel hour-select">
 				</select>	
 			</div>
 
@@ -192,19 +192,25 @@ Choix de la période
 		<div class="form-group row">
 			<div class="col-sm-6 datetime">
         <div class="relative icon-datepicker">
-				<input type="text" name="enddate" id="edit-enddate" class="form-control input-mel no-icon-front-col" required="true"/> &nbsp;
+				<input type="text" name="enddate" title="Date de fin" id="edit-enddate" class="form-control input-mel no-icon-front-col" required="true"/> &nbsp;
         <span class="material-symbols-outlined icon-weight-300">
           calendar_month
         </span>
       </div>
 				<input style="display: none;" type="text" name="endtime" size="6" id="edit-endtime" class="form-control hidden" aria-label="<roundcube:label name='calendar.endtime' />" />
-				<select id="mel-edit-endtime" class="form-control input-mel hour-select">
+				<select id="mel-edit-endtime" title="Heure de fin" class="form-control input-mel hour-select">
 				</select>
         </div>  
 			<div class="col-sm-6">
-				<div class=""><!--Récurence-->
+				<div class="" style="position:relative"><!--Récurence-->
+					<span class="material-symbols-outlined icon-weight-300" style="position: absolute;
+					top: 5px;
+					left: 15px;
+					pointer-events: none;">
+						cached
+					  </span>
 					<label for="fake-event-rec" class="red-star-after span-mel t1 low-margins sr-only"><roundcube:label name='mel_metapage.reccurence' /></label>
-					<select id="fake-event-rec" title="<roundcube:label name='mel_metapage.reccurence' />" class="form-control input-mel ml-2">
+					<select id="fake-event-rec" title="<roundcube:label name='mel_metapage.reccurence' />" class="form-control input-mel ml-2" style="padding-left: 35px;">
 						<option value="" selected=""><roundcube:label name='mel_metapage.never' /></option>
 						<option value="DAILY"><roundcube:label name='mel_metapage.DAILY' /></option>
 						<option value="WEEKLY"><roundcube:label name='mel_metapage.WEEKLY' /></option>

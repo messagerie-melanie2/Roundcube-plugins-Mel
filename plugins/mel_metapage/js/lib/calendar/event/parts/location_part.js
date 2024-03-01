@@ -282,21 +282,21 @@ class IntegratedVisio extends AVisio {
                 .col_6({class:'d-flex pr-1'}).css('position:relative')
                     .icon('match_case', {class:'align-self-center'}).end()
                     .input_text({id: `integrated-${this.id}`, value:(this._room || mel_metapage.Functions.generateWebconfRoomName()), onchange: this._on_room_updated.bind(this)})
-                    .icon('edit', {class:'event-mel-icon-absolute'}).end()
+                    .icon('edit', {class:'event-mel-icon-absolute mr-2'}).end()
                 .end()
                 .col_6({class:'d-flex pl-1'})
                     .icon('lock', {class:'align-self-center'}).end()
                     .input_text({id: `integrated-pass-${this.id}`, value: this._pass, onchange:this._on_pass_updated.bind(this)})
-                    .icon('add', {class:'event-mel-icon-absolute'}).end()
+                    .icon('add', {class:'event-mel-icon-absolute mr-2'}).end()
                 .end()
             .end()
             .row({class:'mt-2'})
                 .col_6({class:'d-flex pr-1'})
-                    .icon('call', {class:'align-self-center'}).end()
+                    .icon('call', {class:'align-self-center mr-2'}).end()
                     .input_text({id: `integrated-phone-${this.id}`, value: this._phone}).disable()
                 .end()
                 .col_6({class:'d-flex pl-1'})
-                    .icon('key', {class:'align-self-center'}).end()
+                    .icon('key', {class:'align-self-center mr-2'}).end()
                     .input_text({id: `integrated-key-${this.id}`, value: this._pin}).disable()
                 .end()
             .end()
@@ -401,7 +401,7 @@ class ExternalVisio extends ALocationPart {
 
         MelHtml.start
         .div({class: 'visio-mode d-flex', 'data-locationmode': this.option_value()}).css('position', 'relative')
-            .icon('link', {class:'align-self-center'}).end()
+            .icon('link', {class:'align-self-center mr-2'}).end()
             .input_text({id: `external-${this.id}`, value: this.location, onchange: this._on_update.bind(this)})
             .icon('edit', {class:'event-mel-icon-absolute'}).end()
         .end().generate().appendTo($parent);
@@ -485,11 +485,11 @@ class Phone extends ALocationPart {
             .end()
             .row({class:'mt-2'})
                 .div({class: 'col-md-6 d-flex pl-0 pr-1'})
-                    .icon('call', {class:'align-self-center'}).end()
+                    .icon('call', {class:'align-self-center mr-2'}).end()
                     .input_text({id: `phone-${this.id}`, class:'field-phone', value: this._phone, onchange: this._on_update.bind(this)})
                 .end()
                 .div({class: 'col-md-6 d-flex pl-1 pr-0'})
-                .icon('pin', {class:'align-self-center'}).end()
+                .icon('pin', {class:'align-self-center mr-2'}).end()
                     .input_text({id: `phone-pin-${this.id}`, class:'field-pin', value: this._pin, onchange: this._on_update.bind(this)})
                 .end()
             .end('row')
@@ -542,7 +542,7 @@ class Location extends ALocationPart {
         if (0 === this._$field.length) {
             this._$field = MelHtml.start
             .div({class: 'location-mode d-flex', 'data-locationmode': this.option_value()})
-                .icon('location_on', {class:'align-self-center'}).end()
+                .icon('location_on', {class:'align-self-center mr-2'}).end()
                 .input({type: 'text', id: `location-text-${this.id}`, value: this.location, onchange: this._on_update.bind(this)})
             .end().generate().appendTo($parent);
         }
@@ -756,7 +756,7 @@ export class LocationPartManager  {
                         return html.end();
                     }, ...LocationPartManager.PARTS)
                 .end()
-                .button({type:'button', class:'no-background'}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
+                .button({type:'button', class:'no-background ml-2'}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
                     .attr('onclick', (e) => {
                         if ('delete' === $(e.currentTarget).children().first().html()) this.remove($(e.currentTarget).parent().find('select').data('id'));
                         else this.add(Location, '');

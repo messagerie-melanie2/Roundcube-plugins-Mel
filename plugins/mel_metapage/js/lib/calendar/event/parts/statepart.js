@@ -5,6 +5,10 @@ export class StatePart extends Parts {
         super($select, Parts.MODE.change);
 
         this._$icon = $icon;
+
+        this._$field.tooltip({
+            content:() => this._$field.attr('title') || this._$field.attr('data-original-title'),
+        });
     }
 
     onUpdate(val) {

@@ -932,9 +932,7 @@ html.layout-phone #datepicker-onoff {
   color: var(--main-text-color) !important;
 }
 .fc-event.cal-event-status-confirmed .fc-time::before,
-.fc-event.cal-event-status-confirmed .fc-time span,
-.fc-event.cal-event-status-vacation .fc-time::before,
-.fc-event.cal-event-status-vacation .fc-time span {
+.fc-event.cal-event-status-confirmed .fc-time span {
   font-weight: bold;
 }
 .fc-event.cal-event-partstat-declined .fc-time::before,
@@ -4227,6 +4225,7 @@ bnum-separate {
   padding: 1px 5px;
   margin-right: 5px;
   margin-top: 5px;
+  margin-bottom: 5px;
   display: flex;
   align-items: center;
 }

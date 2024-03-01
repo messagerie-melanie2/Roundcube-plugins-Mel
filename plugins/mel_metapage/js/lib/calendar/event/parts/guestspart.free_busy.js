@@ -75,7 +75,6 @@ export class FreeBusyGuests {
                 url: rcmail.get_task_url("calendar&_action=freebusy-times"),// rcmail.url('freebusy-times'),
                 data: { email, interval, start: date2servertime(clone_date(start, 1)), end: date2servertime(clone_date(end, 2)), _remote: 1 },
                 success: function (data) {
-                    console.log('free_busy', data);
                     // find attendee
                     var i, attendee = null;
                     for (i = 0; i < event_attendees.length; i++) {
@@ -127,7 +126,6 @@ class Slots {
     }
 
     getNextFreeSlots(how_many, start_date_corrector = null) {
-        //debugger;
         let array = [];
 
         if (this.slots.length > 0) {
@@ -135,7 +133,7 @@ class Slots {
 
             if (!!start_date_corrector) array = array.where(x => x.start >= start_date_corrector);
 
-            array = array.where(x => x.isFree).take(how_many).toArray();
+            array = array.where(x => x.isFree && !x._is_in_working_hour).take(how_many).toArray();
         }
 
         return array;
@@ -165,6 +163,10 @@ class Slot {
         });
         Object.defineProperty(this, 'state', {
             get:() => state
+        });
+        this._is_in_working_hour;
+        Object.defineProperty(this, '_is_in_working_hour', {
+            get:() => !!cal.settings.work_start && !!cal.settings.work_end && !(this.start >= moment(this.start).startOf('d').add(cal.settings.work_start, 'h') && this.start < moment(this.start).startOf('d').add(cal.settings.work_end, 'h')) || this.start.format('d') === '0' || this.start.format('d') === '6'
         });
     }
 

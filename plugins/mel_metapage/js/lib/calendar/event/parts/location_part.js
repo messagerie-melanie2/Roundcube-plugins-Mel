@@ -343,7 +343,7 @@ class IntegratedVisio extends AVisio {
             const busy = rcmail.set_busy(true, 'loading');
             this._current_promise = new Mel_Promise(async (room) => {
                 try {
-                    const data = await webconf_helper.phone.get(room);
+                    const data = await webconf_helper.phone.getAll(room);
                     const {number, pin} = data;
 
                     this._phone = number;

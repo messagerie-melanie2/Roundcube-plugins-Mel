@@ -2,7 +2,7 @@
 import { RcmailDialog, RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal.js";
 import { MelHtml } from "../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js";
 import { MelObject } from "../../../mel_metapage/js/lib/mel_object.js";
-import { MelLink, MelLinkVisualizer } from "./mel_link.js";
+import { MelLink, MelLinkVisualizer, MelFolderLink } from "./mel_link.js";
 
 
 export class LinkManager extends MelObject {
@@ -19,7 +19,7 @@ export class LinkManager extends MelObject {
   }
 
   /**
-   * Créé la modale de création d'un nouveau lien
+   * Créé la modale de modification d'un nouveau lien
    */
   openLinkModal(id = null, title = null, url = null) {
     if (this.newLinkModal) {
@@ -30,50 +30,74 @@ export class LinkManager extends MelObject {
     }
     else {
       const html = MelHtml.start
-      .row({class: 'mx-2'})
-        .span({ class: "text-danger" })
-          .text('*')
-        .end()
-        .text(rcmail.gettext('required_fields', 'mel_useful_link'))
-      .end()
-      .input({id: "mulc-id", type: 'hidden', value: id})
-      .row({class: 'mx-2'})
-        .label({class: "span-mel t1 first", for:'mulc-title'})
+        .row({class: 'mx-2'})
           .span({ class: "text-danger" })
             .text('*')
           .end()
-          .text(rcmail.gettext('link_name', 'mel_useful_link'))
+          .text(rcmail.gettext('required_fields', 'mel_useful_link'))
         .end()
-        .input({id: "mulc-title", class: 'form-control input-mel required', required:true, placeholder: rcmail.gettext('link_title','mel_useful_link'), value: title})
-      .end()
-      .row({class: 'mx-2'})
-        .label({class: "span-mel t1 first", for:'mulc-url'})
-          .span({ class: "text-danger" })
-            .text('*')
+        .input({id: "mulc-id", type: 'hidden', value: id})
+        .row({class: 'mx-2'})
+          .label({class: "span-mel t1 first", for:'mulc-title'})
+            .span({ class: "text-danger" })
+              .text('*')
+            .end()
+            .text(rcmail.gettext('link_name', 'mel_useful_link'))
           .end()
-          .text(rcmail.gettext('link_url','mel_useful_link'))
+          .input({id: "mulc-title", class: 'form-control input-mel required', required:true, placeholder: rcmail.gettext('link_title','mel_useful_link'), value: title})
         .end()
-        .input({id: "mulc-url", class: 'form-control input-mel required', required:true, placeholder: 'URL', value: url})
-      .end()
-      .row({class: 'mr-1 mt-3'})
-        .div({class: 'link-block'})
-          .div({class: 'link-icon-container'})
-            .img({ id: 'icon-image', class: 'link-icon-image', src: '', onerror: "imgError(this.id, 'no-image')", style: "display:none"})
-              .span({id: 'no-image', class: 'link-icon-no-image'})
-              .end()
+        .row({class: 'mx-2'})
+          .label({class: "span-mel t1 first", for:'mulc-url'})
+            .span({ class: "text-danger" })
+              .text('*')
+            .end()
+            .text(rcmail.gettext('link_url','mel_useful_link'))
           .end()
-        .end()  
-      .end()
+          .input({id: "mulc-url", class: 'form-control input-mel required', required:true, placeholder: 'URL', value: url})
+        .end()
+        .row({class: 'mr-1 mt-3 mx-2'})
+          .div({class: 'link-block'})
+            .div({class: 'link-icon-container'})
+              .img({ id: 'icon-image', class: 'link-icon-image', src: '', onerror: "imgError(this.id, 'no-image')", style: "display:none"})
+                .span({id: 'no-image', class: 'link-icon-no-image'})
+                .end()
+            .end()
+          .end()  
+        .end()
       .generate();
 
       this.newLinkModal = new RcmailDialog(html, {
-        title: rcmail.gettext('create_new_link','mel_useful_link'), buttons: [
-          new RcmailDialogButton( id ? rcmail.gettext('update','mel_useful_link') : rcmail.gettext('add','mel_useful_link'), { id: 'add-mel-link', classes: 'add-mel-link mel-button btn btn-secondary', click: () => { this.addMelLink(); } }),
+        title: id ? rcmail.gettext('update_new_link', 'mel_useful_link') : rcmail.gettext('create_new_link', 'mel_useful_link'), buttons: [
+          new RcmailDialogButton(id ? rcmail.gettext('update', 'mel_useful_link') : rcmail.gettext('add', 'mel_useful_link'), { id: 'add-mel-link', classes: 'add-mel-link mel-button btn btn-secondary', click: () => { this.addMelLink(); } }),
         ]
       });
-      if(url) {this.displayIcon(url);}
+      if (url) { this.displayIcon(url); }
       this.bindModalActions();
     }
+  }
+
+  /**
+   * Créé la modale de modification d'un dossier
+   */
+  openFolderModal(id = null, title = null) {
+    const html = MelHtml.start
+      .input({id: "mulc-id", type: 'hidden', value: id})
+        .row({class: 'mx-2'})
+          .label({class: "span-mel t1 first", for:'mulc-title'})
+            .span({ class: "text-danger" })
+              .text('*')
+            .end()
+            .text(rcmail.gettext('folder_name', 'mel_useful_link'))
+          .end()
+          .input({id: "mulc-title", class: 'form-control input-mel required', required:true, placeholder: rcmail.gettext('link_title','mel_useful_link'), value: title})
+        .end()
+      .generate();
+
+    this.newFolderModal = new RcmailDialog(html, {
+      title: rcmail.gettext(rcmail.gettext('update_new_folder', 'mel_useful_link'), 'mel_useful_link'), buttons: [
+        new RcmailDialogButton(rcmail.gettext('update', 'mel_useful_link'), { id: 'modify-mel-folder', classes: 'modify-mel-folder mel-button btn btn-secondary', click: () => { this.updateFolder(id) } }),
+      ]
+    });
   }
 
   /**
@@ -84,10 +108,24 @@ export class LinkManager extends MelObject {
     for (const links in rcmail.env.mul_items) {
       let link = rcmail.env.mul_items[links];
       link = JSON.parse(link);
-      const linkVisualizer = new MelLinkVisualizer(link.configKey, link.title, link.link, this.fetchIcon(link.link));
+      let linkVisualizer;
+
+      // this.deleteMelLink(link.id)
+      if (link.links) {
+        linkVisualizer = new MelFolderLink(link.id, link.title, link.links);
+        linkVisualizer.displayFolder().appendTo(".links-items");
+        for (const key in linkVisualizer.links) {
+          let subLink = linkVisualizer.links[key];
+          let subLinkVisualizer = new MelLinkVisualizer(subLink.id, subLink.title, subLink.link, this.fetchIcon(subLink.link));
+          subLinkVisualizer.displaySubLink().appendTo(`#links-container-${linkVisualizer.id}`);
+        }
+      }
+      else {
+        linkVisualizer = new MelLinkVisualizer(link.id, link.title, link.link, this.fetchIcon(link.link));
+        linkVisualizer.displayLink().appendTo(".links-items");
+      }
       links_array.push(linkVisualizer);
 
-      linkVisualizer.displayLink().appendTo(".links-items");
     }
 
     $('<li class="link-space-end"></li>').appendTo('.links-items');
@@ -100,16 +138,34 @@ export class LinkManager extends MelObject {
    */
   displayLink(link) {
     const linkVisualizer = new MelLinkVisualizer(link.id, link.title, link.link, this.fetchIcon(link.link));
-    linkVisualizer.displayLink().appendTo(".links-items");
+    linkVisualizer.displayLink().insertBefore(".link-space-end");
 
     this.bindRightClickActions(linkVisualizer.id);
     this.bindActions(linkVisualizer.id);
     rcmail.env.mul_items.push(linkVisualizer)
   }
 
+  /**
+   * Affiche un dossier sur la page web
+   */
+  displayFolder(link) {
+    const linkFolder = new MelFolderLink(link.id, link.title, link.links);
+    linkFolder.displayFolder().insertBefore(".link-space-end");
+
+    for (const key in link.links) {
+      let subLink = link.links[key];
+      let subLinkVisualizer = new MelLinkVisualizer(subLink.id, subLink.title, subLink.link, this.fetchIcon(subLink.link));
+      subLinkVisualizer.displaySubLink().appendTo(`#links-container-${linkFolder.id}`);
+    }
+
+    this.bindRightClickActions(linkFolder.id);
+    this.bindActions(linkFolder.id);
+    rcmail.env.mul_items.push(linkFolder)
+  }
+
 
   addMelLink() {
-    let link = rcmail.env.mul_items.find(function(objet) {
+    let link = rcmail.env.mul_items.find(function (objet) {
       if ($(LinkManager.SELECTOR_MODAL_ID).val()) {
         return objet.id === $(LinkManager.SELECTOR_MODAL_ID).val();
       }
@@ -124,11 +180,10 @@ export class LinkManager extends MelObject {
     else {
       link.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
       link.link = $(LinkManager.SELECTOR_MODAL_URL).val();
-      link.icon =  this.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+      link.icon = this.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
     }
-    // link.callUpdate();
     link.callUpdate().then((data) => {
-      if(data !== link.id) {
+      if (data !== link.id) {
         link.id = data;
         this.displayLink(link);
       }
@@ -143,7 +198,19 @@ export class LinkManager extends MelObject {
       link.callDelete();
     }
   }
-  
+
+  updateFolder(id) {
+    let folder = rcmail.env.mul_items.find(function (objet) {
+        return objet.id === id;
+    });
+
+    folder.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
+
+    folder.callFolderUpdate().then((data) => {
+      this.newFolderModal.destroy();
+    });
+  }
+
   /**
    * Bind des actions liés aux liens
    */
@@ -151,7 +218,7 @@ export class LinkManager extends MelObject {
     let self = this;
     let _id = id ? `#link-block-${id} ` : '';
 
-    if (!id) { 
+    if (!id) {
       $(LinkManager.CREATE_BUTTON).on('click', function () {
         self.openLinkModal();
       });
@@ -164,14 +231,22 @@ export class LinkManager extends MelObject {
     $(_id + LinkManager.MODIFY_LINK).on('click', function (e) {
       self.openLinkModal($(e.currentTarget).attr('data-id'), $(e.currentTarget).attr('data-title'), $(e.currentTarget).attr('data-link'));
     });
-    
+
     $(_id + LinkManager.DELETE_LINK).on('click', function (e) {
       self.deleteMelLink($(e.currentTarget).attr('data-id'));
     });
 
+    $(_id + LinkManager.MODIFY_FOLDER).on('click', function (e) {
+      self.openFolderModal($(e.currentTarget).attr('data-id'), $(e.currentTarget).attr('data-title'));
+    });
 
-    
-    document.addEventListener('dragenter', function(event) {
+    $(_id + LinkManager.DELETE_FOLDER).on('click', function (e) {
+      self.deleteMelLink($(e.currentTarget).attr('data-id'));
+    });
+
+
+
+    document.addEventListener('dragenter', function (event) {
       if (event.target.classList.contains('link-space-between')) {
         event.target.classList.add('link-space-hovered');
       }
@@ -179,7 +254,7 @@ export class LinkManager extends MelObject {
         event.target.closest('.link-block').classList.add('link-block-hovered');
       }
     });
-    document.addEventListener('dragleave', function(event) {
+    document.addEventListener('dragleave', function (event) {
       if (event.target.classList.contains('link-space-between')) {
         event.target.classList.remove('link-space-hovered');
       }
@@ -196,9 +271,11 @@ export class LinkManager extends MelObject {
       false,
     );
 
-    document.addEventListener('drop', function(event) {
+    document.addEventListener('drop', function (event) {
+      event.preventDefault();
+
       let id = event.dataTransfer.getData("text/plain");
-      let movedElement = $('#link-block-'+ id);
+      let movedElement = $('#link-block-' + id);
       let movedSpace = $(movedElement).prev('li');
 
       //On déplace l'élément 
@@ -215,26 +292,36 @@ export class LinkManager extends MelObject {
 
         self.updateList(id, $('li.link-block').index(movedElement));
       }
-      //On créer un dossier 
+      //On créé un dossier 
       else {
         event.target.closest('.link-block.link-block-hovered').classList.remove('link-block-hovered');
+        let targetIndex = $('.link-block-container').index($(event.target).closest('.link-block-container'));
+        let elementIndex = $('.link-block-container').index(movedElement.closest('.link-block-container'));
+
+        let _melFolder = new MelFolderLink("", "Nouveau dossier", [rcmail.env.mul_items[elementIndex], rcmail.env.mul_items[targetIndex]]);
+        _melFolder.callFolderUpdate().then((data) => {
+          if (data !== _melFolder.id) {
+            _melFolder.id = data;
+            self.displayFolder(_melFolder);
+          }
+        });
       }
     });
   }
 
   updateList(id, newIndex) {
     const busy = rcmail.set_busy(true, "loading");
-    rcmail.env.mul_items.find(function(object, index) {
+    rcmail.env.mul_items.find(function (object, index) {
       if (object.id == id) {
         //On met l'objet dans la bonne position après le déplacement
         rcmail.env.mul_items.splice(newIndex, 0, rcmail.env.mul_items.splice(index, 1)[0]);
         return mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "update_list"),
-        { _list: rcmail.env.mul_items },
-        (datas) => {
-          rcmail.set_busy(false, 'loading', busy);
-        });
+          { _list: rcmail.env.mul_items },
+          (datas) => {
+            rcmail.set_busy(false, 'loading', busy);
+          });
       }
-    });   
+    });
   }
 
   /**
@@ -243,7 +330,7 @@ export class LinkManager extends MelObject {
   bindModalActions() {
     let self = this;
     $(`${LinkManager.SELECTOR_MODAL_URL},${LinkManager.SELECTOR_MODAL_TITLE}`).on('change', function () {
-      if($(LinkManager.SELECTOR_MODAL_URL).val()) self.displayIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+      if ($(LinkManager.SELECTOR_MODAL_URL).val()) self.displayIcon($(LinkManager.SELECTOR_MODAL_URL).val());
     });
 
     $(LinkManager.SELECTOR_MODAL_IMAGE).on('error', function () {
@@ -255,7 +342,7 @@ export class LinkManager extends MelObject {
     let _id = id ? `#link-block-${id}` : '';
     let contextMenuOpened = false;
     // Open the context menu on right-click
-    $(_id + '.link-block').on('contextmenu', function (event) {
+    $(`${_id}.link-block, .multilink-close`).on('contextmenu', function (event) {
       event.preventDefault();
 
       const contextMenu = $('#context-menu-' + $(this).data('id'));
@@ -274,7 +361,7 @@ export class LinkManager extends MelObject {
           contextMenuOpened = false;
         }
       });
-    });  
+    });
   }
 
   /**
@@ -293,11 +380,11 @@ export class LinkManager extends MelObject {
       $(LinkManager.SELECTOR_MODAL_IMAGE).css("display", "none");
     }
 
-    if(id) {
-      $('.add-mel-link').text(rcmail.gettext('update','mel_useful_link'));
+    if (id) {
+      $('.add-mel-link').text(rcmail.gettext('update', 'mel_useful_link'));
     }
     else {
-      $('.add-mel-link').text(rcmail.gettext('add','mel_useful_link'));
+      $('.add-mel-link').text(rcmail.gettext('add', 'mel_useful_link'));
     }
   }
 
@@ -309,7 +396,7 @@ export class LinkManager extends MelObject {
 
     $(LinkManager.SELECTOR_MODAL_NO_IMAGE).css("display", "none");
     $(LinkManager.SELECTOR_MODAL_IMAGE).css("display", "flex");
-    
+
 
     const validProtocol = /^https?:\/\//i;
 
@@ -372,3 +459,5 @@ LinkManager.CREATE_BUTTON = '#mulba';
 LinkManager.COPY_LINK = '.copy-link';
 LinkManager.MODIFY_LINK = '.modify-link';
 LinkManager.DELETE_LINK = '.delete-link';
+LinkManager.MODIFY_FOLDER = '.modify-folder';
+LinkManager.DELETE_FOLDER = '.delete-folder';

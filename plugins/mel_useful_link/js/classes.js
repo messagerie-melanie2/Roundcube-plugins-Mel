@@ -15,12 +15,12 @@ const MULTILINK_TITLE_OPEN = "multilink-title-open";
      return GetLinkPopUp.popup;
  }
 
- function openMultilink(id) {
-  $('#link-id-'+id).addClass('multilink-open');
-  $('.link-inside-'+id).addClass('multilink-icon-open');
-  $('#multilink-title-'+id).addClass('multilink-title-open');
-  $('#multilink-menu-'+id).show(); 
- }
+//  function openMultilink(id) {
+//   $('#link-id-'+id).addClass('multilink-open');
+//   $('.link-inside-'+id).addClass('multilink-icon-open');
+//   $('#multilink-title-'+id).addClass('multilink-title-open');
+//   $('#multilink-menu-'+id).show(); 
+//  }
 
  function closeMultilink(id) {
   $('#link-id-'+id).removeClass('multilink-open');

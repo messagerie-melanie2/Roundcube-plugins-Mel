@@ -96,6 +96,11 @@ class calendar extends rcube_plugin
         }
 
         $this->add_hook('user_delete', [$this, 'user_delete']);
+
+        //PAMELLA
+        if ('' !== $this->rc->config->get('calendar_default_alarm_type') && $this->rc->task === 'calendar' && 'GET' === $_SERVER['REQUEST_METHOD']) {
+            $this->rc->output->set_env('calendar_default_alarm_offset', $this->rc->config->get('calendar_default_alarm_offset'));
+        }
     }
 
     /**

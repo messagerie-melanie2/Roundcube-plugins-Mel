@@ -59,26 +59,55 @@ class AlarmData {
 
     toString() {
         let val = this.getTime(true);
+
         let offset = EMPTY_STRING;
         const has_s = val > 1;
 
         switch (this.offset) {
             case '-W':
                 offset = `semaine${has_s ? 's' : ''}`;
+
+                if (~~val !== val) {
+                    const tmp = Math.round((val - (~~val)) * 7);
+                    val = ~~val;
+
+                    if (1 === val) offset = offset.slice(0, offset.length-1);
+
+                    offset += ` et ${tmp} jour${tmp >= 2 ? 's' : ''}`;
+                }
+
                 break;
             case '-D':
                 offset = `jour${val > 1 ? 's' : ''}`;
+
+                if (~~val !== val) {
+                    const tmp = Math.round((val - (~~val)) * 24);
+                    val = ~~val;
+
+                    if (1 === val) offset = offset.slice(0, offset.length-1);
+
+                    offset += ` et ${tmp} heure${tmp >= 2 ? 's' : ''}`;
+                }
                 break;
             case '-H':
                 offset = `heure${val > 1 ? 's' : ''}`;
+
+                if (~~val !== val) {
+                    const tmp = Math.round((val - (~~val)) * 60);
+                    val = ~~val;
+
+                    if (1 === val) offset = offset.slice(0, offset.length-1);
+
+                    offset += ` et ${tmp} minute${tmp >= 2 ? 's' : ''}`;
+                }
+                break;
         
             default:
                 offset = `minute${val > 1 ? 's' : ''}`;
                 break;
         }
 
-        const include_week = true;
-        return `${this.getTime(include_week)} ${offset}`;
+        return `${val} ${offset}`;
     }
 
     static From(val, offset) {
@@ -124,13 +153,19 @@ export class AlarmPart extends FakePart {
 
                 if (!MelEnumerable.from(AlarmPart.PREDEFINED).where(x => x.value === time).any()) {
                     const data = new AlarmData(time);
+                    const str = data.toString();
                     options_alarms = MelEnumerable.from(options_alarms).aggregate({
                         value:data.value,
-                        label:data.toString()
-                    });
+                        label:str
+                    }).orderBy(x => -1 === x.value ? Number.POSITIVE_INFINITY : x.value);
                 }
             } 
 
+        }
+        else if (!!rcmail.env.calendar_default_alarm_offset) {
+            event.alarms = rcmail.env.calendar_default_alarm_offset;
+            event.alarms = `${event.alarms[0]}PT${event.alarms.slice(1)}:DISPLAY`;
+            return this.init(event);
         }
 
         let $option;

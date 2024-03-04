@@ -1,5 +1,5 @@
-import { MelHtml } from "../html/JsHtml/MelHtml";
-import { NotifierObject } from "./NotifierObject";
+import { MelHtml } from "../html/JsHtml/MelHtml.js";
+import { NotifierObject } from "./NotifierObject.js";
 
 /**
  * Permet de visualiser un "NotifierObject".

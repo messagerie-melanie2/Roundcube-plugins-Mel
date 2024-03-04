@@ -1108,7 +1108,7 @@ if (rcmail && window.mel_metapage)
             try {
                 // PAMELA - Mode assistantes
                 const me = Enumerable.from(event.attendees).where(x => x.email === datas.calendar.owner_email.toLowerCase()).first();
-                if (datas.calendar.editable && me.status !== undefined && event.editable !== false)
+                if (datas.calendar.editable && me.status !== undefined /*&& event.editable !== false*/)
                 {
                     html += `<div class="row" id="event-dialog-invited-row" style="margin-top:15px"><div class=col-4><span style="margin-right:11px" class="mel-cal-icon attendee ${me.status === undefined ? me.role.toLowerCase() : me.status.toLowerCase()}"></span><span style=vertical-align:text-top><b>${rcmail.gettext(`answer`, "calendar")}</b> : ${rcmail.gettext(`status${me.status.toLowerCase()}`, "libcalendaring")}</span>
                     ${me.status === "NEEDS-ACTION" || isInvited ? "" : '<button id="event-status-editor" class="btn btn-secondary dark-no-border-default mel-button" style="margin-top:0;margin-left:5px;padding:10px;line-height:0"><span class="icon-mel-pencil"></span></button>'}

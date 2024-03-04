@@ -1,4 +1,4 @@
-import { EventView } from "./event_view";
+import { EventView } from "./event_view.js";
 
 export class CalendarEvent {
     constructor(event, dialog) {

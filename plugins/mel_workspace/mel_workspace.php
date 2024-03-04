@@ -1503,8 +1503,9 @@ class mel_workspace extends bnum_plugin
     {
         $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
         $shares = $this->sort_user($this->currentWorkspace->shares); 
+        $nbuser = count($shares);
 
-        $html .= '<h2>Liste des membres</h2>';
+        $html .= "<h2>Liste des membres ($nbuser)</h2>";
         $html .= '<div class="wsp-block">';
 
         foreach ($shares as $key => $value) {

@@ -746,7 +746,6 @@
                 const conf = this.generate_webconf();
                 const key = `${conf.letters}${rcmail.env.current_workspace_uid.replaceAll("-", "").toUpperCase()}${conf.numbers}`;
                 await top.webconf_helper.go(key, rcmail.env.current_workspace_uid, null);
-                await top.webconf_helper.notify(key, rcmail.env.current_workspace_uid);
             }
             else
                 await top.webconf_helper.go("", rcmail.env.current_workspace_uid, null, true, [1]);  

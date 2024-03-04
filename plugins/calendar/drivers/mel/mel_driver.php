@@ -2191,7 +2191,7 @@ class mel_driver extends calendar_driver {
     $_event['uid'] = $event->uid;
     $_event['calendar-name'] = $this->_format_calendar_name($this->calendars[$event->calendar]->name);
     $_event['calendar_token'] = $this->calendars[$event->calendar]->getCTag();
-    $_event['editable'] = !isset($event->source);
+    $_event['editable'] = empty($event->source);
 
     // Evenement supprimé
     if ($event->deleted) {

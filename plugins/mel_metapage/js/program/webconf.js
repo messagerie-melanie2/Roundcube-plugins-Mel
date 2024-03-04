@@ -1611,7 +1611,7 @@ class Webconf{
         mel_metapage.Storage.remove("webconf_token");
 
         this.jitsii.executeCommand('avatarUrl', `${rcmail.env.rocket_chat_url}avatar/${rcmail.env.username}`);
-        debugger
+
         if (this.wsp.have_workspace()){
             top.webconf_helper.notify(this.key, this.wsp.uid);
         }

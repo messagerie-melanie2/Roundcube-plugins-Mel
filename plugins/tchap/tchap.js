@@ -9,7 +9,10 @@ export class tchap_manager extends MelObject {
 		const url = rcmail.env.tchap_startup_url != null && rcmail.env.tchap_startup_url !== undefined ? rcmail.env.tchap_startup_url : rcmail.env.tchap_url;
 		let $tchap = $('#tchap_frame').attr('src', url);
 		if (navigator.appName == "Microsoft Internet Explorer") $tchap[0].contentWindow.location.reload(true);
-
+		
+		MEL_ELASTIC_UI.create_loader('tchaploader', true)[0].outerHTML;
+		$("body").append('#tchaploader');
+		$("#wait_box").hide();
 		await Mel_Promise.wait(() => 
 			$('#tchap_frame')[0].contentWindow.document.querySelector('.mx_QuickSettingsButton') !== null, 60
 		);
@@ -17,7 +20,7 @@ export class tchap_manager extends MelObject {
 			this.change_theme();
 		}
 		$('#tchap_frame')[0].contentWindow.document.querySelector('.mx_SpacePanel').style.display = 'none';
-		$("#wait_box").hide();
+		$("#tchaploader").hide();
 
 		this.rcmail().addEventListener('switched_color_theme', this.change_theme.bind(this));
 		this.rcmail().addEventListener('tchap.options', this.tchap_options.bind(this));

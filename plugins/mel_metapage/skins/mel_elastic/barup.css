@@ -252,6 +252,7 @@ html.layout-small .ariane-card {
   margin-top: 59px;
   border-top: none;
   border-right: none;
+  z-index: 0; /*0007991: SKIN : lorsque la bulle de discussion est active sur la droite, les autres boutons inactifs ou visu arrière plan*/
 }
 
 /* html.touch .ariane-card

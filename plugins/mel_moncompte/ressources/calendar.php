@@ -338,11 +338,11 @@ class M2calendar {
       $pref = driver_mel::gi()->getUser()->getCalendarPreference('external_calendars');
 
       if (isset($pref)) {
-        $external_calendars = json_decode($pref);
+        $external_calendars = json_decode($pref, true);
         $save_external = false;
 
         foreach ($external_calendars as $key => $external_calendar) {
-          if ($external_calendar->calendar_id == $this->calendar->id) {
+          if ($external_calendar['calendar_id'] == $this->calendar->id) {
             unset($external_calendars[$key]);
             $save_external = true;
           }

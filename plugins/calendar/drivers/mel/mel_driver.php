@@ -709,11 +709,11 @@ class mel_driver extends calendar_driver {
         $pref = driver_mel::gi()->getUser()->getCalendarPreference('external_calendars');
 
         if (isset($pref)) {
-          $external_calendars = json_decode($pref);
+          $external_calendars = json_decode($pref, true);
           $save_external = false;
 
           foreach ($external_calendars as $key => $external_calendar) {
-            if ($external_calendar->calendar_id == $id) {
+            if ($external_calendar['calendar_id'] == $id) {
               unset($external_calendars[$key]);
               $save_external = true;
             }
@@ -3342,10 +3342,10 @@ class mel_driver extends calendar_driver {
         $urls = [];
 
         if (isset($pref)) {
-          $external_calendars = json_decode($pref);
+          $external_calendars = json_decode($pref, true);
 
           foreach ($external_calendars as $external_calendar) {
-            if ($external_calendar->calendar_id == $calendar['id']) {
+            if ($external_calendar['calendar_id'] == $calendar['id']) {
               $is_external_calendar = true;
               $urls[] = $external_calendar->url;
             }

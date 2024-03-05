@@ -3,6 +3,7 @@ import { html_events } from "../../../../mel_metapage/js/lib/html/html_events.js
 import { BaseStorage } from "../../../../mel_metapage/js/lib/classes/base_storage.js";
 import { BnumLog } from "../../../../mel_metapage/js/lib/classes/bnum_log.js";
 import { BaseModule } from "../../../js/lib/module.js";
+import { MelEnumerable } from "../../../../mel_metapage/js/lib/classes/enum.js";
 
 const TOP_KEY = 'my_day_listeners';
 const LISTENER_KEY = mel_metapage.EventListeners.calendar_updated.after;
@@ -52,7 +53,7 @@ class ModuleMyDay extends BaseModule{
 
     async generate() {
         const now = moment();
-        const events = Enumerable.from((await this.check_storage_datas()) ?? []).where(x => moment(x.end) > now).orderBy(x => moment(x.start)).take(this.max_size);
+        const events = MelEnumerable.from((await this.check_storage_datas()) ?? []).where(x => moment(x.end) > now && 'free' !== x.free_busy).orderBy(x => moment(x.start)).take(this.max_size);
         let $contents = this.select_module_content().html(EMPTY_STRING);
 
         if (events.any()) {

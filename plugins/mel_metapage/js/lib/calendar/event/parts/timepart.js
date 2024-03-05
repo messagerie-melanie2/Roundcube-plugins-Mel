@@ -116,6 +116,11 @@ export class TimePartManager {
         if (true === this._update_date.started) return;
         else this._update_date.started = true;
 
+        if (this.start._$fakeField.val() === '-1' || this.end._$fakeField.val() === '-1') {
+            this._update_date.started = false;
+            return;
+        }
+
         let start = moment(`${this._$start_date.val()} ${this.start._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
         let end = moment(`${this._$end_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
 
@@ -188,6 +193,10 @@ class TimePart extends FakePart{
         if (this._$field.val() !== $(`#${this._$fakeField.attr('id')}`).val()) {
             this._$field.val(formatted);
         }
+
+        if (0 === this._$fakeField.find('option[value="-1"]').length) {
+            this._$fakeField.append(MelHtml.start.option({value:-1}).text('Personnalisé').end().generate());
+        }
     }
 
     static UpdateOption(select, value) {
@@ -216,7 +225,18 @@ class TimePart extends FakePart{
     onChange(e) {
         const val = $(e.currentTarget).val();
 
-        this._$field.val(val);
+        if ('-1' === val) {
+            $(`#fake-${this._$fakeField.attr('id')}`).css('display', '').val(this._$field.val()).off('change').on('change', (e) => {
+
+                const val = $(e.currentTarget).val();
+                if (val.includes(':') && moment(val, 'HH:mm').isValid()) {
+                    $(`#fake-${this._$fakeField.attr('id')}`).css('display', 'none').off('change');
+                    this.init(moment(val, 'HH:mm'), TimePart.INTERVAL);
+                    this._$fakeField.css('display', '').val(val).change();
+                }
+            });
+            this._$fakeField.css('display', 'none');
+        } else this._$field.val(val);
     }
 
     is_valid() {

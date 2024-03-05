@@ -9,7 +9,7 @@ export class SensitivityPart extends FakePart {
         this._title = this._$dialog.dialog('option', 'title') || 'Créer un évènement';
 
         this._$fakeField.tooltip({
-            content:() => this._$fakeField.attr('title') || this._$fakeField.attr('data-original-title')
+            trigger:'hover'
         });
     }
 

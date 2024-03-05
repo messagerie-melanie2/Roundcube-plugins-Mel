@@ -7,7 +7,7 @@ export class StatePart extends Parts {
         this._$icon = $icon;
 
         this._$field.tooltip({
-            content:() => this._$field.attr('title') || this._$field.attr('data-original-title'),
+            trigger:'hover'
         });
     }
 

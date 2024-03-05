@@ -78,7 +78,7 @@ class EventParts {
         if (blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
         else $(inputs.select_calendar_owner).removeAttr('disabled').removeClass('disabled');
 
-        $(inputs.select_calendar_owner).tooltip();
+        $(inputs.select_calendar_owner).tooltip({trigger:'hover'});
     }
 }
 

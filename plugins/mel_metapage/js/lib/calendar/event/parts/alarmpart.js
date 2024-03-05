@@ -133,14 +133,15 @@ export class AlarmPart extends FakePart {
         this._$fieldAlarmType = $alarm_type;
         this._$fieldAlarmOffsetType = $alarf_offset_type;
 
-        this._$fakeField.tooltip(/*{
+        this._$fakeField.tooltip({
             title:() => {
                 const val = this._$fakeField.val();
                 
-                if (!!(val || false)) return `Rappel de ${this._$fakeField.find('option:selected').text()}`;
-                else return this._$fakeField.attr('title') || this._$fakeField.attr('data-original-title')
-            }
-        }*/);
+                if (!!(val || false) && 0 !== val && '0' !== val) return `Rappel de ${this._$fakeField.find('option:selected').text()} avant`;
+                else return 'Aucun rappel';
+            },
+            trigger:'hover'
+        });
     }
 
     init(event) {

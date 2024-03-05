@@ -12,4 +12,13 @@ export class CalendarEvent {
     main(calEvent, $dialog) {
         new EventView(calEvent, $dialog);
     }
+
+    static Exist(func_name) {
+        return !!window.rcube_calendar_ui?.[func_name]
+    }
+
+    static CalendarExtends(func_name, callback) {
+        if (!this.Exist(func_name)) window.rcube_calendar_ui[func_name] = callback.bind(window.rcube_calendar_ui);
+    }
 }
+

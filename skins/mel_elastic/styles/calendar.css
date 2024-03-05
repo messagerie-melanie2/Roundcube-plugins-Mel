@@ -934,6 +934,9 @@ body.quickview-active .fc .fc-scroller {
 .fix-panel.clicked-from-button .mel-button {
   display: none!important;
 }
+.fix-panel .dialog-message {
+  color: var(--main-text-color);
+}
 .mel-custom-event-dialog {
   position: unset!important;
 }

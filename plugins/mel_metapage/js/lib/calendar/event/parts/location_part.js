@@ -254,7 +254,7 @@ class IntegratedVisio extends AVisio {
     }
 
     is_valid() {
-        return EMPTY_STRING !== this._room && !(this._room.length < 10 || MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(this.location));
+        return EMPTY_STRING !== this._room && !(this._room.length < 10 || MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(this._room));
     }
 
     invalid_action() {
@@ -265,7 +265,7 @@ class IntegratedVisio extends AVisio {
         {
             rcmail.display_message('Le nom de la visioconférence doit avoir au moins 10 charactères !', 'error');
         }
-        else if (MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(this._room)){
+        else if (MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || /^[0-9a-zA-Z]+$/.test(this._room)){
             rcmail.display_message('Le nom de la visioconférence doit avoir au moins 3 chiffres !', 'error');
         }
         else rcmail.display_message('Erreur inconnue !', 'error');

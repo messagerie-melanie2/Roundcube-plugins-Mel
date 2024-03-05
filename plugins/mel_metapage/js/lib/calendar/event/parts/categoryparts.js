@@ -125,5 +125,5 @@ class CategoryData {
 
 CategoryPart.PARTS = {
     default: CategoryData.Part('Catégorie', 'label', null),
-    wsp: CategoryData.Part('Espaces de travails', 'workspaces', x => x.includes('ws#'), x => x.replace('ws#', EMPTY_STRING)),
+    wsp: CategoryData.Part('Espaces de travail', 'workspaces', x => x.includes('ws#'), x => x.replace('ws#', EMPTY_STRING)),
 }

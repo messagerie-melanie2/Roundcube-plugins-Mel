@@ -32,7 +32,8 @@ StatePart.CLASSES = {
     green:'edit-radio-free',
     red:'edit-radio-busy',
     yellow:'edit-radio-wait',
-    blue:'edit-radio-telework'
+    blue:'edit-radio-telework',
+    orange:'edit-radio-noworking'
 };
 
 StatePart.ICONS_CLASSES = {
@@ -41,4 +42,5 @@ StatePart.ICONS_CLASSES = {
     TENTATIVE:StatePart.CLASSES.yellow,
     FREE:StatePart.CLASSES.green,
     TELEWORK:StatePart.CLASSES.blue,
+    VACATION:StatePart.CLASSES.orange
 };

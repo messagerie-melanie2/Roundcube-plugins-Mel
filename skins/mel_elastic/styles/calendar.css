@@ -875,7 +875,8 @@ body.quickview-active .fc .fc-scroller {
 .edit-radio-free,
 .edit-radio-busy,
 .edit-radio-wait,
-.edit-radio-telework {
+.edit-radio-telework,
+.edit-radio-noworking {
   font-variation-settings: 'FILL' 1;
 }
 .edit-radio-free {
@@ -889,6 +890,9 @@ body.quickview-active .fc .fc-scroller {
 }
 .edit-radio-telework {
   color: #0f9cfa;
+}
+.edit-radio-noworking {
+  color: #fa7900;
 }
 .mel-button.slot {
   border-radius: 10px;

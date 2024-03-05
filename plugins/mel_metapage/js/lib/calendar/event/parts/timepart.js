@@ -120,9 +120,9 @@ export class TimePartManager {
         let end = moment(`${this._$end_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');
 
         if (start >= end) {
-            end = moment(`${this._$start_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm');//.add(TimePart.INTEVERVAL, 'm');
+            end = moment(start).add(this.base_diff);
             this.end.reinit(end, this.base_diff, start.format('HH:mm'));
-            this._$end_date.val(start.format('DD/MM/YYYY')).change();
+            this._$end_date.val(end.format('DD/MM/YYYY')).change();
 
             if (!(this.end._$fakeField.val() || false)) {
                 end = start.add(1, 'd').startOf('d').add(this.base_diff);
@@ -214,7 +214,9 @@ class TimePart extends FakePart{
     } 
 
     onChange(e) {
+        const val = $(e.currentTarget).val();
 
+        this._$field.val(val);
     }
 
     is_valid() {

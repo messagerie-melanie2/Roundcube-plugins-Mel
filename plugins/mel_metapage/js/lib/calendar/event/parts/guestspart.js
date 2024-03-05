@@ -150,6 +150,7 @@ class Guest {
     toHtml(event) {
         let html = MelHtml.start
         .div({class:'mel-attendee', title:this._formated(), 'data-email':this.email, 'data-name':this.name, draggable:true, ondragstart:this._dragStart.bind(this), ondragend:this._dragEnd.bind(this)})
+            .input({type:'hidden', class:'edit-attendee-reply', value:this.email, checked:'checked'})
             .span({class:'availability'}).css({'margin-left':'5px', 'margin-right':'5px'})
                 .span({class:'availabilityicon loading'})
                 .end()

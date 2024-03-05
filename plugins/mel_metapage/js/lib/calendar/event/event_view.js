@@ -1,4 +1,6 @@
 import { MelEnumerable } from "../../classes/enum.js";
+import { EMPTY_STRING } from "../../constants/constants.js";
+import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
 import { AlarmPart } from "./parts/alarmpart.js";
 import { CategoryPart } from "./parts/categoryparts.js";
 import { GuestsPart } from "./parts/guestspart.js";
@@ -7,6 +9,115 @@ import { RecPart } from "./parts/recpart.js";
 import { SensitivityPart } from "./parts/sensitivitypart.js";
 import { StatePart } from "./parts/statepart.js";
 import { TimePartManager } from "./parts/timepart.js";
+
+/**
+ * Gère le panel d'avertissement
+ * @class 
+ * @classdesc Gère la visibilité du panel d'avertissement
+ */
+class WarningPanel {
+    /**
+     * Sélecteur du panel d'avertissement
+     * @constructor
+     * @param {string} selector La valeur par défaut est {@link WARNING_PANEL_SELECTOR}
+     * @see {@link WARNING_PANEL_SELECTOR}
+     */
+    constructor(selector = WARNING_PANEL_SELECTOR) {
+        this._init()._setup(selector);
+    }
+
+    /**
+     * Initialise les variables membres de la classe
+     * @private
+     * @returns {WarningPanel} Chaîne
+     */
+    _init() {
+        /**
+         * Warning panel (Element jquery)
+         * @readonly
+         * @member
+         * @type {$}
+         */
+        this.panel = null;
+
+        return this;
+    }
+
+    /**
+     * Assigne les variables membres de classe
+     * @private
+     * @param {string} selector Sélecteur du panel 
+     * @returns {WarningPanel} Chaîne
+     */
+    _setup(selector) {
+        Object.defineProperty(this, 'panel', {
+            get() {return $(selector);}
+        });
+
+        return this;
+    }
+
+    /**
+     * Affiche le panel
+     * @returns {WarningPanel} Chaîne
+     */
+    show() {
+        this.panel.css('display', EMPTY_STRING);
+        return this;
+    }
+
+    /**
+     * Cache le panel
+     * @returns {WarningPanel} Chaîne
+     */
+    hide() {
+        this.panel.css('display', 'none');
+        return this;
+    }
+
+    /**
+     * Si le panel est affiché ou non
+     * @returns {Boolean}
+     */
+    is_display() {
+        return MelEnumerable.from(WarningPanel.CHILDS_ITEMS_SELECTORS).select(x => $(x)).where(x => x.css('display') !== 'none').any();
+    }
+    
+    /**
+     * Récupère le panel par défaut
+     * @static
+     * @returns {WarningPanel} 
+     */
+    static Get() {
+        return new WarningPanel();
+    }
+
+    /**
+     * Réinitialise le panel par défaut
+     * 
+     * Cache le panel et enlève la classe {@link WARNING_PANEL_CLICKED_CLASS}
+     * @static
+     * @returns {WarningPanel} Pannel par défaut
+     * @see {@link WARNING_PANEL_CLICKED_CLASS}
+     */
+    static Reinit() {
+        let panel = this.Get();
+        panel.panel.css('display', 'none').removeClass(WARNING_PANEL_CLICKED_CLASS);
+        return panel;
+    }
+}
+
+/**
+ * Liste des sélecteurs des enfants du panel d'avertissement
+ * @static
+ * @readonly
+ * @type {string[]}
+ */
+WarningPanel.CHILDS_ITEMS_SELECTORS = [
+    RECURRING_WARNING_SELECTOR,
+    LOCAL_CHANGE_WARNING_SELECTOR,
+    INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR
+];
 
 class EventField {
     constructor(name, selector) {
@@ -73,6 +184,10 @@ class EventParts {
         this.guests.init(ev);
         this.recurrence.init(ev);
 
+        this._init_no_modified(ev, inputs);
+    }
+
+    _init_no_modified(ev, inputs) {
         const blocked = 'true' === ev.calendar_blocked;
 
         if (blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
@@ -84,43 +199,110 @@ class EventParts {
 
 export class EventView {
     constructor(event, dialog) {
+        this._init()._setup(event, dialog)._main(event);
+    }
+
+    _init() {
+        /**
+         * Evènement du plugin `calendar`
+         * @private
+         * @member
+         * @type {*}
+         */
+        this._event = null;
+        /**
+         * Dialog jquery ou GlobalModal
+         * @private
+         * @member
+         * @type {$ | GlobalModal}
+         */
+        this._dialog = null;
+        /**
+         * Liste des inputs de la vue.
+         * 
+         * Les inputs sont des éléments de la fenêtre de dialog qui sont utilisés pour récupérer des données.
+         * @member
+         * @type {EventManager}
+         */
+        this.inputs = null;
+        /**
+         * Liste des faux inputs de la vue.
+         * 
+         * Ces inputs la sont seulement visuels et modifieront les "vrais" inputs.
+         * @member 
+         * @type {EventManager}
+         */
+        this.fakes = null;
+        /**
+         * Liste des parties de la vue.
+         * @member 
+         * @type {EventParts}
+         */
+        this.parts = null;
+
+        return this;
+    }
+
+    _setup(event, dialog) {
         this._event = event;
         this._dialog = dialog;
-
-        if (!this._dialog.on_click_minified && !$._data(this._dialog[0], 'events' )?.dialogbeforeclose){
-            this._dialog.on('dialogbeforeclose', () => {
-                $('#mel-event-form').css('opacity', '0');
-                $('#mel-form-absolute-center-loading-event').css('display', '');
-                $('.fix-panel').css('display', 'none').removeClass('clicked-from-button');
-
-                this.inputs = null;
-                this.fakes = null;
-                this.parts = null;
-            });
-        }
 
         this.inputs = new EventManager(...EventView.true_selectors).generate();
         this.fakes = new EventManager(...EventView.false_selectors).generate();
         this.parts = new EventParts(this.inputs, this.fakes, dialog);
+
+        return this;
+    }
+
+    _main(event) {
+        let warning_panel = WarningPanel.Get();
         this.parts.init(event, this.inputs);
 
-        $('#mel-event-form').css('opacity', '1');
-        $('#mel-form-absolute-center-loading-event').css('display', 'none');
+        this._generate_dialog_events();
 
-        if (!this._dialog.on_click_minified) {
-            const panel_is_display = $('#edit-recurring-warning').css('display') !== 'none' || $('#edit-localchanges-warning').css('display') !== 'none' || $('#edit-internallocalchanges-warning').css('display') !== 'none'
-            $('.fix-panel').css('display', (panel_is_display ? '' : 'none'));
-            this._dialog.addClass('mel-custom-event-dialog');
+        $(MAIN_FORM_SELECTOR).css('opacity', '1');
+        $(LOADER_SELECTOR).css('display', 'none');
+
+        if (this.is_jquery_dialog()) {
+            if (warning_panel.is_display()) warning_panel.show();
+            else warning_panel.hide();
+
+            this._dialog.addClass(CUSTOM_DIALOG_CLASS);
+
             if (!this._dialog[0].ondrop) this._dialog[0].ondrop = this.on_drop.bind(this);
         }
         else {
-            this._dialog.modal.find('iframe')[0].contentWindow.$('#eventedit').on('drop', this.on_drop.bind(this));
-            $('.fix-panel').css('display', 'none');
+            this._dialog.modal.find('iframe')[0].contentWindow.$(MAIN_DIV_SELECTOR).on('drop', this.on_drop.bind(this));
+            warning_panel.hide();
         }
 
-        if((rcmail._events?.['calendar.save_event']?.length ?? 0) > 0) delete rcmail._events['calendar.save_event'];
+        this._generate_listeners();
+    }
 
-        rcmail.addEventListener('calendar.save_event', this.before_save.bind(this));
+    _generate_dialog_events() {
+        if (this.is_jquery_dialog() && !$._data(this._dialog[0], 'events' )?.dialogbeforeclose){
+            this._dialog.on('dialogbeforeclose', this.on_dialog_before_close.bind(this));
+        }
+    }
+
+    _generate_listeners() {
+        if((rcmail._events?.[LISTENER_SAVE_EVENT]?.length ?? 0) > 0) delete rcmail._events[LISTENER_SAVE_EVENT];
+
+        rcmail.addEventListener(LISTENER_SAVE_EVENT, this.before_save.bind(this));
+    }
+
+    is_jquery_dialog() {
+        return !this._dialog.on_click_minified;
+    }
+
+    on_dialog_before_close() {
+        $(MAIN_FORM_SELECTOR).css('opacity', '0');
+        $(LOADER_SELECTOR).css('display', EMPTY_STRING);
+        WarningPanel.Reinit();
+
+        this.inputs = null;
+        this.fakes = null;
+        this.parts = null;
     }
 
     on_drop(ev) {
@@ -130,11 +312,11 @@ export class EventView {
 
         ev.preventDefault();
         if (MelEnumerable.from(autorized).select(x => x.attr('id')).where(x => ev.target.id === x).any()) {
-            $(`.mel-attendee[data-email="${data.email}"]`).remove();
+            $(ATTENDEE_SELECTOR.replaceAll(FIRST_ARGUMENT, data.email)).remove();
             $(ev.target).val(`${data.string},`).change();
         }
 
-        $('.mel-show-attendee-container, [data-linked="attendee-input"]').removeClass('mel-guest-drag-started');
+        $(`${ATTENDEE_CONTAINER_SELECTOR}, [data-linked="attendee-input"]`).removeClass(GUEST_DRAGG_CLASS);
     }
 
     async before_save() {
@@ -151,6 +333,10 @@ export class EventView {
         }
 
         return is_valid;
+    }
+
+    static Start(event, dialog) {
+        return new EventView(event, dialog);
     }
 
     static Create(name, selector) {

@@ -1,24 +1,48 @@
 import { EventView } from "./event_view.js";
 
+/**
+ * Classe qui génère la fenêtre de dialogue pour la création ou la modification d'un événement.
+ * @class 
+ * @classdesc Met en forme les données utiles à la fenêtre de dialog avant d'ouvrir la dialog. Mettre le code lié dans la fonction `_main`.
+ * @see {@link CalendarEvent~_main}
+ */
 export class CalendarEvent {
+    /**
+     * 
+     * @param {*} event Objet évènement du plugin calendar 
+     * @param {$ | GlobalModal} dialog Dialog jquery ou GlobalModal 
+     */
     constructor(event, dialog) {
-
-        if (!event) event = cal.selected_event;
-        if (!dialog) dialog = window.kolab_event_dialog_element ?? parent.kolab_event_dialog_element ?? top.kolab_event_dialog_element;
-
-        this.main(event, dialog);
+        /**
+         * @member
+         * @type {EventView} Vue de l'évènement
+         */
+        this.view = this._main(event, dialog);
     }   
 
-    main(calEvent, $dialog) {
-        new EventView(calEvent, $dialog);
+    /**
+     * C'est ici que l'on va éffectuer toute les actions nécessaires à la création de la fenêtre de dialog.
+     * @private
+     * @param {*} calEvent Objet évènement du plugin calendar 
+     * @param {$ | GlobalModal} $dialog Dialog jquery ou GlobalModal
+     * @returns {EventView} Vue créée
+     */
+    _main(calEvent, $dialog) {
+        if (!calEvent) calEvent = cal.selected_event;
+        if (!$dialog) $dialog = window.kolab_event_dialog_element ?? parent.kolab_event_dialog_element ?? top.kolab_event_dialog_element;
+
+        return EventView.Start(calEvent, $dialog);
     }
 
-    static Exist(func_name) {
-        return !!window.rcube_calendar_ui?.[func_name]
-    }
-
-    static CalendarExtends(func_name, callback) {
-        if (!this.Exist(func_name)) window.rcube_calendar_ui[func_name] = callback.bind(window.rcube_calendar_ui);
+    /**
+     * Lance une dialogue d'évènement
+     * @static
+     * @param {*} event Objet évènement du plugin calendar 
+     * @param {$ | GlobalModal} dialog Dialog jquery ou GlobalModal 
+     * @returns {CalendarEvent}
+     */
+    static Start(event, dialog) {
+        return new CalendarEvent(event, dialog);
     }
 }
 

@@ -349,7 +349,7 @@ class M2calendar {
         }
 
         if ($save_external) {
-          driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode($external_calendars));
+          driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode(array_values($external_calendars)));
         }
       }
 

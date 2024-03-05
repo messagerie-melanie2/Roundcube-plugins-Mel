@@ -540,7 +540,7 @@ class mel_driver extends calendar_driver {
             'url'         => $_cal['_external_calendar_url'],
           ];
 
-          driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode($external_calendars));
+          driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode(array_values($external_calendars)));
 
           // Positionner le calendrier en lecture seule
           $calendar->load();
@@ -720,7 +720,7 @@ class mel_driver extends calendar_driver {
           }
 
           if ($save_external) {
-            driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode($external_calendars));
+            driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode(array_values($external_calendars)));
           }
         }
 

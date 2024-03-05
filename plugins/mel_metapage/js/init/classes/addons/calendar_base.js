@@ -95,7 +95,7 @@ $(document).ready(() => {
 
         const {CalendarEvent} = await loader('mel_metapage', 'edit_event', '/js/lib/calendar/event/');
 
-        return new CalendarEvent(event, dialog);
+        return CalendarEvent.Start(event, dialog);
     }
 
 

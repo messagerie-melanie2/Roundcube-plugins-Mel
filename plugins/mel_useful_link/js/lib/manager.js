@@ -30,41 +30,41 @@ export class LinkManager extends MelObject {
     }
     else {
       const html = MelHtml.start
-        .row({class: 'mx-2'})
-          .span({ class: "text-danger" })
-            .text('*')
-          .end()
-          .text(rcmail.gettext('required_fields', 'mel_useful_link'))
+        .row({ class: 'mx-2' })
+        .span({ class: "text-danger" })
+        .text('*')
         .end()
-        .input({id: "mulc-id", type: 'hidden', value: id})
-        .row({class: 'mx-2'})
-          .label({class: "span-mel t1 first", for:'mulc-title'})
-            .span({ class: "text-danger" })
-              .text('*')
-            .end()
-            .text(rcmail.gettext('link_name', 'mel_useful_link'))
-          .end()
-          .input({id: "mulc-title", class: 'form-control input-mel required', required:true, placeholder: rcmail.gettext('link_title','mel_useful_link'), value: title})
+        .text(rcmail.gettext('required_fields', 'mel_useful_link'))
         .end()
-        .row({class: 'mx-2'})
-          .label({class: "span-mel t1 first", for:'mulc-url'})
-            .span({ class: "text-danger" })
-              .text('*')
-            .end()
-            .text(rcmail.gettext('link_url','mel_useful_link'))
-          .end()
-          .input({id: "mulc-url", class: 'form-control input-mel required', required:true, placeholder: 'URL', value: url})
+        .input({ id: "mulc-id", type: 'hidden', value: id })
+        .row({ class: 'mx-2' })
+        .label({ class: "span-mel t1 first", for: 'mulc-title' })
+        .span({ class: "text-danger" })
+        .text('*')
         .end()
-        .row({class: 'mr-1 mt-3 mx-2'})
-          .div({class: 'link-block'})
-            .div({class: 'link-icon-container'})
-              .img({ id: 'icon-image', class: 'link-icon-image', src: '', onerror: "imgError(this.id, 'no-image')", style: "display:none"})
-                .span({id: 'no-image', class: 'link-icon-no-image'})
-                .end()
-            .end()
-          .end()  
+        .text(rcmail.gettext('link_name', 'mel_useful_link'))
         .end()
-      .generate();
+        .input({ id: "mulc-title", class: 'form-control input-mel required', required: true, placeholder: rcmail.gettext('link_title', 'mel_useful_link'), value: title })
+        .end()
+        .row({ class: 'mx-2' })
+        .label({ class: "span-mel t1 first", for: 'mulc-url' })
+        .span({ class: "text-danger" })
+        .text('*')
+        .end()
+        .text(rcmail.gettext('link_url', 'mel_useful_link'))
+        .end()
+        .input({ id: "mulc-url", class: 'form-control input-mel required', required: true, placeholder: 'URL', value: url })
+        .end()
+        .row({ class: 'mr-1 mt-3 mx-2' })
+        .div({ class: 'link-block' })
+        .div({ class: 'link-icon-container' })
+        .img({ id: 'icon-image', class: 'link-icon-image', src: '', onerror: "imgError(this.id, 'no-image')", style: "display:none" })
+        .span({ id: 'no-image', class: 'link-icon-no-image' })
+        .end()
+        .end()
+        .end()
+        .end()
+        .generate();
 
       this.newLinkModal = new RcmailDialog(html, {
         title: id ? rcmail.gettext('update_new_link', 'mel_useful_link') : rcmail.gettext('create_new_link', 'mel_useful_link'), buttons: [
@@ -81,16 +81,16 @@ export class LinkManager extends MelObject {
    */
   openFolderModal(id = null, title = null) {
     const html = MelHtml.start
-      .input({id: "mulc-id", type: 'hidden', value: id})
-        .row({class: 'mx-2'})
-          .label({class: "span-mel t1 first", for:'mulc-title'})
-            .span({ class: "text-danger" })
-              .text('*')
-            .end()
-            .text(rcmail.gettext('folder_name', 'mel_useful_link'))
-          .end()
-          .input({id: "mulc-title", class: 'form-control input-mel required', required:true, placeholder: rcmail.gettext('link_title','mel_useful_link'), value: title})
-        .end()
+      .input({ id: "mulc-id", type: 'hidden', value: id })
+      .row({ class: 'mx-2' })
+      .label({ class: "span-mel t1 first", for: 'mulc-title' })
+      .span({ class: "text-danger" })
+      .text('*')
+      .end()
+      .text(rcmail.gettext('folder_name', 'mel_useful_link'))
+      .end()
+      .input({ id: "mulc-title", class: 'form-control input-mel required', required: true, placeholder: rcmail.gettext('link_title', 'mel_useful_link'), value: title })
+      .end()
       .generate();
 
     this.newFolderModal = new RcmailDialog(html, {
@@ -201,7 +201,7 @@ export class LinkManager extends MelObject {
 
   updateFolder(id) {
     let folder = rcmail.env.mul_items.find(function (objet) {
-        return objet.id === id;
+      return objet.id === id;
     });
 
     folder.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
@@ -274,9 +274,15 @@ export class LinkManager extends MelObject {
     document.addEventListener('drop', function (event) {
       event.preventDefault();
 
-      let id = event.dataTransfer.getData("text/plain");
+      let data = JSON.parse(event.dataTransfer.getData("text/plain"));
+
+      let id = data.id;
+debugger
       let movedElement = $('#link-block-' + id);
       let movedSpace = $(movedElement).prev('li');
+
+      let targetIndex = $('.link-block-container').index($(event.target).closest('.link-block-container'));
+      let elementIndex = $('.link-block-container').index(movedElement.closest('.link-block-container'));
 
       //On déplace l'élément 
       if (event.target.classList.contains('link-space-between')) {
@@ -292,11 +298,25 @@ export class LinkManager extends MelObject {
 
         self.updateList(id, $('li.link-block').index(movedElement));
       }
+      //On le rajoute dans un dossier
+      else if (event.target.classList.contains('multilink-icon-container') ||
+               event.target.classList.contains('sublink') ||
+               event.target.classList.contains('multilink-container')) {
+
+        let _melFolder = rcmail.env.mul_items[targetIndex];
+        _melFolder.addLink(rcmail.env.mul_items[elementIndex])
+        _melFolder.callFolderUpdate().then((data) => {
+
+          $(event.target).closest('.link-block-container').remove();
+          // self.displayFolder(_melFolder);
+
+          rcmail.env.mul_items.splice(elementIndex, 1)
+          movedElement.closest('.link-block-container').remove();
+         });
+      }
       //On créé un dossier 
       else {
         event.target.closest('.link-block.link-block-hovered').classList.remove('link-block-hovered');
-        let targetIndex = $('.link-block-container').index($(event.target).closest('.link-block-container'));
-        let elementIndex = $('.link-block-container').index(movedElement.closest('.link-block-container'));
 
         let _melFolder = new MelFolderLink("", "Nouveau dossier", [rcmail.env.mul_items[elementIndex], rcmail.env.mul_items[targetIndex]]);
         _melFolder.callFolderUpdate().then((data) => {
@@ -304,6 +324,10 @@ export class LinkManager extends MelObject {
             _melFolder.id = data;
             self.displayFolder(_melFolder);
           }
+          rcmail.env.mul_items.splice(elementIndex, 1)
+          movedElement.closest('.link-block-container').remove();
+          rcmail.env.mul_items.splice(targetIndex, 1)
+          $(event.target).closest('.link-block-container').remove();
         });
       }
     });
@@ -342,8 +366,11 @@ export class LinkManager extends MelObject {
     let _id = id ? `#link-block-${id}` : '';
     let contextMenuOpened = false;
     // Open the context menu on right-click
-    $(`${_id}.link-block, .multilink-close`).on('contextmenu', function (event) {
+    $(`${_id}.link-block`).on('contextmenu', function (event) {
       event.preventDefault();
+
+      if ($(this).hasClass('multilink-open'))
+        return;
 
       const contextMenu = $('#context-menu-' + $(this).data('id'));
 

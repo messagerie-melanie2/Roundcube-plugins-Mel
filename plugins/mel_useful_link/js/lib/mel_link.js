@@ -156,7 +156,7 @@ class MelFolderLink extends MelBaseLink {
 
     return this;
   }
-
+  
   async callFolderUpdate(task = "useful_links", action = "update") {
     const busy = rcmail.set_busy(true, "loading");
 
@@ -184,13 +184,13 @@ class MelFolderLink extends MelBaseLink {
   _dragStart(ev) {
     ev = !!ev.dataTransfer ? ev : ev.originalEvent;
     ev.dataTransfer.dropEffect = "move";
-    ev.dataTransfer.setData("text/plain", this.id);
+    ev.dataTransfer.setData("text/plain", JSON.stringify({id: this.id, multifolder: true}));
   }
 
   openMultilink() { 
-    $('#link-id-'+this.id).toggleClass('multilink-close');
-    $('#link-id-'+this.id).toggleClass('multilink-open');
-    $(`#link-id-${this.id} li.link-block`).toggleClass('sublink');
+    $('#link-block-'+this.id).toggleClass('multilink-close');
+    $('#link-block-'+this.id).toggleClass('multilink-open');
+    $(`#link-block-${this.id} li.link-block`).toggleClass('sublink');
   }
 
   displayFolder() {
@@ -198,7 +198,7 @@ class MelFolderLink extends MelBaseLink {
     .div({class: 'link-block-container', draggable:true,  ondragstart:this._dragStart.bind(this)})
       .li({ class: "link-space-between"})
       .end()  
-      .li({ id: "link-block-" + this.id, title: this.title, class: "link-block multilink-block", "data-id": this.id  })
+      .li({ id: "link-block-" + this.id, title: this.title, class: "link-block multilink-block multilink-close", "data-id": this.id  })
         .div({ id: "context-menu-" + this.id, class: "link-context-menu folder-context-menu"})
           .button({ class: "link-context-menu-button modify-folder", title: "Modifier le nom du dossier", "data-id": this.id, "data-title": this.title}).removeClass('mel-button').removeClass('no-button-margin').removeClass('no-margin-button').css({ "border": "none", "outline": "none" })
             .icon('edit').end()
@@ -207,7 +207,7 @@ class MelFolderLink extends MelBaseLink {
             .icon('delete').end()
           .end()
         .end()
-        .div({ id: "link-id-" + this.id, class: "multilink-icon-container multilink-close", onclick: this.openMultilink.bind(this)})
+        .div({ id: "link-id-" + this.id, class: "multilink-icon-container", onclick: this.openMultilink.bind(this)})
           .ul({ id: "links-container-" + this.id, class: "multilink-container m-2 p-0" })
           .end()
         .end()
@@ -277,15 +277,15 @@ class MelLinkVisualizer extends MelLink {
     return this;
   }
 
-  _dragStart(ev) {
+  _dragStart(link, ev) {
     ev = !!ev.dataTransfer ? ev : ev.originalEvent;
     ev.dataTransfer.dropEffect = "move";
-    ev.dataTransfer.setData("text/plain", this.id);
+    ev.dataTransfer.setData("text/plain", JSON.stringify({id: this.id, multifolder: false, link: link}));
   }
 
   displayLink() {
     return MelHtml.start
-    .div({class: 'link-block-container', draggable:true,  ondragstart:this._dragStart.bind(this)})
+    .div({class: 'link-block-container', draggable:true,  ondragstart:this._dragStart.bind(this, 'link')})
       .li({ class: "link-space-between"})
       .end()  
       .li({ id: "link-block-" + this.id, title: this.title, class: "link-block", "data-id": this.id })
@@ -315,7 +315,7 @@ class MelLinkVisualizer extends MelLink {
 
   displaySubLink() {
     return MelHtml.start
-      .li({ id: "link-block-" + this.id, title: this.title, class: "link-block sublink", "data-id": this.id })
+      .li({ id: "link-block-" + this.id, title: this.title, class: "link-block sublink", "data-id": this.id, draggable:true,  ondragstart:this._dragStart.bind(this, 'sublink') })
         .div({ id: "context-menu-" + this.id, class: "link-context-menu"})
           .button({ class: "link-context-menu-button copy-link", title: "Copier le lien dans le presse-papier", "data-link": this.link }).removeClass('mel-button').removeClass('no-button-margin').removeClass('no-margin-button').css({ "border": "none", "outline": "none" })
             .icon('content_copy').end()

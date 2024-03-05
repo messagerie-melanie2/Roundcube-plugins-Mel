@@ -339,14 +339,14 @@ class mel_useful_link extends bnum_plugin
 
         include_once "lib/link.php";
 
-        //Suppression de l'ancien lien 
-        if ($config[$id] !== null)
-        {
-          //$this->child_old_links_to_new_link($config, $id);
-          unset($config[$id]);
-          $id = null;
-          $this->rc->user->save_prefs(array('portail_personal_items' => $config));
-        }
+        // //Suppression de l'ancien lien 
+        // if ($config[$id] !== null)
+        // {
+        //   //$this->child_old_links_to_new_link($config, $id);
+        //   unset($config[$id]);
+        //   $id = null;
+        //   $this->rc->user->save_prefs(array('portail_personal_items' => $config));
+        // }
 
         $config = $this->rc->config->get('new_personal_useful_links', []);
         $melLink;
@@ -368,6 +368,13 @@ class mel_useful_link extends bnum_plugin
             $melLink = new MelFolderLink($id, $title, $link);
           else 
             $melLink = new MelLink($id, $title, $link);
+        }
+
+        //On supprime les anciens liens
+        if ($isMultiLink) {
+         foreach ($link as $key => $value) {
+          unset($config[$key]);
+         }
         }
 
         $config[$id] = $melLink->serialize();

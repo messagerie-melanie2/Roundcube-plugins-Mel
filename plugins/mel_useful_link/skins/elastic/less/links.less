@@ -209,31 +209,6 @@ button {
   }
 }
 
-// .multilink-block {
-//   box-shadow: var(--bureau-card-box-shadow) !important;
-//   background-color: var(--bureau-card-background-color) !important;
-//   border-radius: 10px !important;
-//   width: 420px !important;
-//   height: 350px !important;
-
-//   .multilink-button {
-//     background-color: var(--bureau-card-content-background-color);
-//     border-radius: 50%;
-//     color: var(--layout-content-text-color);
-//     border: none;
-//     padding: 0 0;
-//     width: 30px;
-//     height: 30px;
-
-//     display: inline-flex;
-//     justify-content: center;
-//     align-items: center;
-
-//     &:hover {
-//       background-color: var(--bureau-card-content-hover-background-color);
-//     }
-//   }
-// }
 .multilink-block {
   display: inline-flex;
   flex-direction: column;
@@ -244,7 +219,7 @@ button {
     height: 75px;
     border-radius: 15px;
     box-shadow: var(--bureau-card-box-shadow);
-    background-color: var(--bureau-card-background-color);
+    // background-color: var(--bureau-card-background-color);
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
@@ -252,6 +227,7 @@ button {
     cursor: pointer;
     justify-content: space-between;
     background-color: var(--bureau-card-content-hover-background-color);
+    overflow: hidden;
 
     &::after {
       content: '';
@@ -271,32 +247,45 @@ button {
       background-color: rgba(0, 0, 0, 0.5);
       opacity: 1;
     }
+
+    .link-multilink-menu {
+      text-align: right;
+      margin: 5px;
+      position: absolute;
+      bottom: 0;
+      right: 3px;
+      
+    }
   }
 
-  .multilink-open {
-    width: 360px !important;
-    height: 350px !important;
-    background-color: var(--bureau-card-background-color);
+  &:not(.multilink-open) {
+    .link-icon-container {
+      pointer-events: none;
+    }
+  }
 
-    &::after {
-      display: none;
+  &.multilink-open {
+    .multilink-container {
+      padding: 5px !important;
+      justify-content: start;
+      .link-block {
+        margin-left: 28px;
+        margin-top: 2px;
+      }
     }
 
-  }
-
-  .multilink-icon-open {
-    width: 75px !important;
-    height: 75px !important;
-    margin: 10px 20px !important;
-    border-radius: 15px;
-    box-shadow: var(--bureau-card-box-shadow);
-    background-color: var(--bureau-card-background-color);
-
-
-    img {
-      width: 75px !important;
-      height: 75px !important;
-      border-radius: 15px !important;
+    .multilink-icon-container{
+      width: 360px !important;
+      height: 350px !important;
+      position: relative;
+      overflow-y: auto;
+  
+      &::after {
+        display: none;
+      }
+    }
+    .multilink-icon-title {
+      max-width: 360px;
     }
   }
 
@@ -315,26 +304,6 @@ button {
   .multilink-menu-button {
     text-align: end;
     margin: 5px;
-  }
-
-  .multilink-button {
-    margin: 3px;
-    background-color: var(--bureau-card-content-background-color);
-    border-radius: 50%;
-    color: var(--layout-content-text-color);
-    border: none;
-    padding: 0 0;
-    width: 30px;
-    height: 30px;
-
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-
-
-    &:hover {
-      background-color: var(--bureau-card-content-hover-background-color);
-    }
   }
 }
 
@@ -449,35 +418,43 @@ button {
 
 .multilink-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-evenly;
 
-  .link-block.sublink {
-    display: inline-flex;
-    flex-direction: column;
-
-    .link-icon-container {
-      width: 25px;
-      height: 25px;
-      border-radius: 5px;
-      box-shadow: var(--bureau-card-box-shadow);
-      background-color: var(--bureau-card-background-color);
-      transition: filter 0.1s ease;
-      margin: 4px;
-      text-decoration: none;
-
-      .link-icon-image {
-        width: inherit;
-        height: inherit;
+  .link-block {
+    &.sublink {
+      display: inline-flex;
+      flex-direction: column;
+      margin: -2px;
+  
+      .link-icon-container {
+        width: 25px;
+        height: 25px;
         border-radius: 5px;
-      }
+        box-shadow: none;
+        background-color: var(--bureau-card-background-color);
+        transition: filter 0.1s ease;
+        margin: 4px;
+        text-decoration: none;
+  
+        .link-icon-image {
+          width: inherit;
+          height: inherit;
+          border-radius: 5px;
+        }
 
-      &:hover::after {
-        opacity: 0;
+        .link-icon-no-image {
+          font-size: 18px;
+        }
+  
+        &:hover::after {
+          opacity: 0;
+        }
       }
-    }
-
-    .link-icon-title {
-      display: none;
+  
+      .link-icon-title {
+        display: none;
+      }
     }
   }
 }

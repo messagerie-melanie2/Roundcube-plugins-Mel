@@ -144,7 +144,6 @@ html.layout-phone .joinedtitle {
   height: 75px;
   border-radius: 15px;
   box-shadow: var(--bureau-card-box-shadow);
-  background-color: var(--bureau-card-background-color);
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
@@ -152,6 +151,7 @@ html.layout-phone .joinedtitle {
   cursor: pointer;
   justify-content: space-between;
   background-color: var(--bureau-card-content-hover-background-color);
+  overflow: hidden;
 }
 .multilink-block .multilink-icon-container::after {
   content: '';
@@ -170,26 +170,35 @@ html.layout-phone .joinedtitle {
   background-color: rgba(0, 0, 0, 0.5);
   opacity: 1;
 }
-.multilink-block .multilink-open {
+.multilink-block .multilink-icon-container .link-multilink-menu {
+  text-align: right;
+  margin: 5px;
+  position: absolute;
+  bottom: 0;
+  right: 3px;
+}
+.multilink-block:not(.multilink-open) .link-icon-container {
+  pointer-events: none;
+}
+.multilink-block.multilink-open .multilink-container {
+  padding: 5px !important;
+  justify-content: start;
+}
+.multilink-block.multilink-open .multilink-container .link-block {
+  margin-left: 28px;
+  margin-top: 2px;
+}
+.multilink-block.multilink-open .multilink-icon-container {
   width: 360px !important;
   height: 350px !important;
-  background-color: var(--bureau-card-background-color);
+  position: relative;
+  overflow-y: auto;
 }
-.multilink-block .multilink-open::after {
+.multilink-block.multilink-open .multilink-icon-container::after {
   display: none;
 }
-.multilink-block .multilink-icon-open {
-  width: 75px !important;
-  height: 75px !important;
-  margin: 10px 20px !important;
-  border-radius: 15px;
-  box-shadow: var(--bureau-card-box-shadow);
-  background-color: var(--bureau-card-background-color);
-}
-.multilink-block .multilink-icon-open img {
-  width: 75px !important;
-  height: 75px !important;
-  border-radius: 15px !important;
+.multilink-block.multilink-open .multilink-icon-title {
+  max-width: 360px;
 }
 .multilink-block .multilink-icon-title {
   text-align: center;
@@ -204,22 +213,6 @@ html.layout-phone .joinedtitle {
 .multilink-block .multilink-menu-button {
   text-align: end;
   margin: 5px;
-}
-.multilink-block .multilink-button {
-  margin: 3px;
-  background-color: var(--bureau-card-content-background-color);
-  border-radius: 50%;
-  color: var(--layout-content-text-color);
-  border: none;
-  padding: 0 0;
-  width: 30px;
-  height: 30px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-.multilink-block .multilink-button:hover {
-  background-color: var(--bureau-card-content-hover-background-color);
 }
 .links-items {
   display: flex;
@@ -315,17 +308,19 @@ html.layout-phone .joinedtitle {
 }
 .multilink-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-evenly;
 }
 .multilink-container .link-block.sublink {
   display: inline-flex;
   flex-direction: column;
+  margin: -2px;
 }
 .multilink-container .link-block.sublink .link-icon-container {
   width: 25px;
   height: 25px;
   border-radius: 5px;
-  box-shadow: var(--bureau-card-box-shadow);
+  box-shadow: none;
   background-color: var(--bureau-card-background-color);
   transition: filter 0.1s ease;
   margin: 4px;
@@ -335,6 +330,9 @@ html.layout-phone .joinedtitle {
   width: inherit;
   height: inherit;
   border-radius: 5px;
+}
+.multilink-container .link-block.sublink .link-icon-container .link-icon-no-image {
+  font-size: 18px;
 }
 .multilink-container .link-block.sublink .link-icon-container:hover::after {
   opacity: 0;

@@ -529,7 +529,7 @@ class mel_driver extends calendar_driver {
           $pref = driver_mel::gi()->getUser()->getCalendarPreference('external_calendars');
 
           if (isset($pref)) {
-            $external_calendars = json_decode($pref);
+            $external_calendars = json_decode($pref, true);
           }
           else {
             $external_calendars = [];

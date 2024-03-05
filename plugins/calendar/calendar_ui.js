@@ -4153,7 +4153,8 @@ function rcube_calendar_ui(settings) {
     if (node && node.id && me.calendars[node.id]) {
       me.select_calendar(node.id, true);
       rcmail.enable_command('calendar-edit', 'calendar-showurl', 'calendar-appointment', 'calendar-showfburl', true);
-      rcmail.enable_command('calendar-delete', me.calendars[node.id].editable);
+      // PAMELA - Différencier editable et deletable
+      rcmail.enable_command('calendar-delete', me.calendars[node.id].deletable);
       rcmail.enable_command('calendar-remove', me.calendars[node.id] && me.calendars[node.id].removable);
       // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
       rcmail.enable_command('calendar-delete-all', true);

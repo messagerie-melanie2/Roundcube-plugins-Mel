@@ -293,6 +293,7 @@ export class AlarmPart extends FakePart {
     /**
      * Action qui sera effectué lors de la mise à jour du champ visuel
      * @param {string} val Valeur du select
+     * @override
      */
     onUpdate(val) {
         switch (val) {
@@ -323,6 +324,7 @@ export class AlarmPart extends FakePart {
      * Appele la fonction @see {@link AlarmPart~onUpdate}
      * @param  {...any} args 
      * @event
+     * @override
      */
     onChange(...args) {
         let $e = $(args[0].currentTarget);

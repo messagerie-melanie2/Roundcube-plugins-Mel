@@ -1,6 +1,6 @@
 import { BnumEvent } from "../../mel_events.js";
 
-export {JsHtml}
+export {JsHtml, RotomecaHtml as ____JsHtml}
 
 class RotomecaHtml {
     constructor(balise, parent, attribs = {}) {

@@ -1,6 +1,7 @@
 import { MelEnumerable } from "../../../classes/enum.js";
 import { EMPTY_STRING } from "../../../constants/constants.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
+import { TAG_WSP_CATEGORY } from "./parts.constants.js";
 import { FakePart, Parts } from "./parts.js";
 
 /**
@@ -52,7 +53,7 @@ export class CategoryPart extends FakePart{
         if (!!event.categories && event.categories.length > 0) {
             this._$fakeField.val(event.categories[0]);
 
-            if (event.categories[0].includes('ws#')) this._$wspButton.css('display', EMPTY_STRING);
+            if (event.categories[0].includes(TAG_WSP_CATEGORY)) this._$wspButton.css('display', EMPTY_STRING);
 
             this._$hasCategory[0].checked = true;
         }
@@ -94,29 +95,10 @@ export class CategoryPart extends FakePart{
     }
 
     /**
-     * Met à jour l'icône en fonction de la catégorie sélectionné
+     * Génère les catégories du select du champ visuel
+     * @private
+     * @returns {CategoryPart} Chaîne
      */
-    updateIcon() {
-        let icon = this._$fakeField.find(":selected").data('icon')
-
-        if (!!(icon || false)) this._$icon.html(icon);
-        else this._$icon.html('label_off');
-    }
-
-    onUpdate(val) {
-        if (val.includes('ws#')) this._$wspButton.css('display', EMPTY_STRING);
-        else this._$wspButton.css('display', 'none');
-
-        this._$field.val(val).change();
-        this.updateIcon();
-    }
-
-    onChange(...args) {
-        let $e = $(args[0].currentTarget);
-
-        this.onUpdate($e.val());
-    }
-
     _generateCategories() {
         if (0 === this._$fakeField.children().length) {
             let html = MelHtml.start.option({value:''}).text('Aucune').end();
@@ -133,16 +115,85 @@ export class CategoryPart extends FakePart{
 
         return this;
     }
+
+    /**
+     * Met à jour l'icône en fonction de la catégorie sélectionné
+     */
+    updateIcon() {
+        let icon = this._$fakeField.find(":selected").data('icon')
+
+        if (!!(icon || false)) this._$icon.html(icon);
+        else this._$icon.html('label_off');
+    }
+
+    /**
+     * Action qui sera effectué lors de la mise à jour du champ visuel
+     * @param {string} val Valeur du select
+     * @override
+     */
+    onUpdate(val) {
+        if (val.includes('ws#')) this._$wspButton.css('display', EMPTY_STRING);
+        else this._$wspButton.css('display', 'none');
+
+        this._$field.val(val).change();
+        this.updateIcon();
+    }
+
+    /**
+     * Action qui sera appelé lors de la mise à jour du champ visuel
+     * 
+     * Appele la fonction @see {@link CategoryPart~onUpdate}
+     * @param  {...any} args 
+     * @event
+     * @override
+     */
+    onChange(...args) {
+        let $e = $(args[0].currentTarget);
+
+        this.onUpdate($e.val());
+    }
 }
 
+/**
+ * Contient les données d'un groupe de catégorie
+ * @class
+ * @classdesc Contient les données d'un groupe de catégorie, ce groupe à un nom, une icône, et 2 fonctions qui vont gérer comment fonctionne se groupe.
+ */
 class CategoryData {
+    /**
+     * 
+     * @param {string} name Nom du groupe.
+     * @param {string} icon Icône du groupe, il sera affiché lorsque la catégorie est sélectionné.
+     * @param {function} callback Défini quels catégories sont dans ce groupe, la fonction retourne un booléen.
+     * @param {function | null} show_callback Défini le texte qui sera affiché dans le select, si null alors le texte sera le même que la catégorie.
+     */
     constructor(name, icon, callback, show_callback = null) {
+        /**
+         * Nom du groupe
+         * @type {string}
+         */
         this.name = name;
+        /**
+         * Fonction qui défini quel catégorie est dans le groupe
+         * @type {function}
+         */
         this.callback = callback ?? this._default_callback();
+        /**
+         * Défini le texte qui sera affiché dans le select
+         * @type {function}
+         */
         this.show_callback = show_callback ?? (x => x);
+        /**
+         * Icône du groupe
+         * @type {string}
+         */
         this.icon = icon;
     }
 
+    /**
+     * Sera appelé si aucun callback n'a été défini dans le constructeur.
+     * @returns {(x:string)=>boolean} Callback qui sera appelé ultérieurement, probablement dans une fonction `where`
+     */
     _default_callback() {
         return x => {
             let bool = true;
@@ -158,12 +209,23 @@ class CategoryData {
         };
     }
 
+    /**
+     * Génère un groupe de catégorie. Améliore la lisibilité du code.
+     * @param {string} name Nom du groupe.
+     * @param {string} icon Icône du groupe, il sera affiché lorsque la catégorie est sélectionné.
+     * @param {function} callback Défini quels catégories sont dans ce groupe, la fonction retourne un booléen.
+     * @param {function | null} show_callback Défini le texte qui sera affiché dans le select, si null alors le texte sera le même que la catégorie.
+     * @returns {CategoryData}
+     */
     static Part(name, icon, callback, show_callback) {
         return new CategoryData(name, icon, callback, show_callback);
     }
 }
 
+/**
+ * Contient les données des groupes de catégories
+ */
 CategoryPart.PARTS = {
     default: CategoryData.Part('Catégorie', 'label', null),
-    wsp: CategoryData.Part('Espaces de travail', 'workspaces', x => x.includes('ws#'), x => x.replace('ws#', EMPTY_STRING)),
+    wsp: CategoryData.Part('Espaces de travail', 'workspaces', x => x.includes(TAG_WSP_CATEGORY), x => x.replace(TAG_WSP_CATEGORY, EMPTY_STRING)),
 }

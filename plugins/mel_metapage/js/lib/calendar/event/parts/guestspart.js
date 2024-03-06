@@ -19,16 +19,6 @@ class GuestPartFieldException extends BnumException {
     }
 }
 
-class GuessPartAddException extends BnumException {
-    constructor(part, value) {
-        super(part, `Une adresse email est obligatoire !`);
-        this.value = null;
-        Object.defineProperty(this, 'value', {
-            get() { return value; }
-        });
-    }
-}
-
 class GuestButton extends Parts {
     constructor($button) {
         super($button, Parts.MODE.click);
@@ -185,6 +175,29 @@ class Guest {
      */
     static From($attendee, parent) {
         return {name:$attendee.attr('data-name'), email:$attendee.attr('data-email'), role:Guest._GuestRole($attendee.attr('data-parent'), parent)};
+    }
+
+    static async GetDispo($attendee, start, end, allDay = false) {
+        const email = $attendee.attr('data-email');
+
+        return await (new Guest(EMPTY_STRING, email)).get_dispo(start, end, allDay);
+    }
+
+    static async UpdateDispo($attendee, start, end, allDay = false) {
+        let $avail = $attendee.find('.availabilityicon');
+        let tmp = MelEnumerable.from($avail[0].classList).toArray();
+        for (const iterator of tmp) {
+            console.log('it',$attendee.attr('data-email'), iterator, 'availabilityicon' !== iterator);
+            if (!['availabilityicon', 'loading'].includes(iterator)) $avail.removeClass(iterator);
+        }
+
+        $avail.attr('title', EMPTY_STRING).addClass('loading');
+
+        const dispo = await this.GetDispo($attendee, start, end, allDay);
+        console.log('it after', dispo);
+        $avail.addClass(dispo).removeClass('loading').attr('title', rcmail.gettext('avail' + dispo, 'calendar'));
+
+        return dispo;
     }
 
     static _GuestRole(id, parent) {
@@ -560,6 +573,27 @@ export class GuestsPart extends FakePart{
                 }
             }
         }
+    }
+
+    static async UpdateDispos(start, end, allDay = false) {
+        if (!!this.UpdateDispos.promises) {
+            if (this.UpdateDispos.promises.start.format() !== start.format() || 
+                this.UpdateDispos.promises.end.format() !== end.format()   ||
+                this.UpdateDispos.promises.allDay !== allDay) await this.UpdateDispos.promises.promises;
+            else return;
+        };
+
+        let promises = [];
+        for (const iterator of $('.mel-attendee')) {
+            promises.push(Guest.UpdateDispo($(iterator), start, end, allDay));
+        }
+
+        promises = Promise.allSettled(promises);
+
+        this.UpdateDispos.promises = {promises, start, end, allDay};
+        await this.UpdateDispos.promises.promises;
+
+        this.UpdateDispos.promises = null;
     }
 }
 

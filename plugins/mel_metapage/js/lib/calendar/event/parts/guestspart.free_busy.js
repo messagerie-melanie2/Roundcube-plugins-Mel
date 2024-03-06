@@ -86,7 +86,7 @@ export class FreeBusyGuests {
 
                     if (attendee.role !== 'OPT-PARTICIPANT') {
                         let slots = new Slots(data);
-                        valid_slots.push(...slots.getNextFreeSlots(3, moment(event.start)));
+                        valid_slots.push(slots);
                     }
                 }
                 });
@@ -98,7 +98,18 @@ export class FreeBusyGuests {
         await Promise.allSettled(promises);
 
         if (valid_slots.length > 0) {
-            valid_slots = MelEnumerable.from(valid_slots).distinct().take(3).toArray();
+            //valid_slots = MelEnumerable.from(valid_slots).distinct().take(3).toArray();
+            let next;
+            let nexts = [];
+            for (let index = MelEnumerable.from(valid_slots[0].slots).select((x, index) => {return {start:x.start, index};}).where(x => x.start >= moment(event.start)).select((item) => item.index).first(), len = MelEnumerable.from(valid_slots).select(x => x.slots.length).min(); index < len; ++index) {
+                if (nexts.length >= 3) break;
+
+                next = MelEnumerable.from(valid_slots).select(x => x.slots[index]);
+
+                if (next.any() && !next.any(x => !x.isFree)) nexts.push(next.first());
+            }
+
+            valid_slots = nexts;
         }
 
         return valid_slots;

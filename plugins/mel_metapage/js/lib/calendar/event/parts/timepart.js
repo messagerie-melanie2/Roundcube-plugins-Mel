@@ -58,6 +58,12 @@ export class TimePartManager {
             this.start._$fakeField.on('change', this._update_date.bind(this));
         }
 
+        if (($._data(this.end._$fakeField[0], 'events' )?.change?.length ?? 0) <= 1) {
+            this.end._$fakeField.on('change', () => {
+                GuestsPart.UpdateDispos(this.date_start, this.date_end, this.$allDay.prop('checked'));
+            });
+        }
+
         if (($._data(this.$allDay[0], 'events' )?.change?.length ?? 0) === 0) {
             this.$allDay.on('change', (e) => {
                 if ($(e.currentTarget)[0].checked) {
@@ -144,6 +150,7 @@ export class TimePartManager {
             if (need_reinit) this.end.reinit(end, this.base_diff, (is_same_day ? start.format('HH:mm') : null));
         }
 
+        GuestsPart.UpdateDispos(start, end, this.$allDay.prop('checked'));
         GuestsPart.UpdateFreeBusy(this);
 
         this._update_date.started = false;

@@ -119,9 +119,30 @@ WarningPanel.CHILDS_ITEMS_SELECTORS = [
     INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR
 ];
 
+/**
+ * Structure qui donne un nom à un sélecteur d'un champ
+ * @class
+ * @classdesc Structure qui donne un nom à un sélecteur d'un champ pour l'EventManager. L'idée est de générer les variables membres de l'EventManager à partir de cette classe.
+ * @see {@link EventManager}
+ */
 class EventField {
+    /**
+     * 
+     * @param {string} name Nom qui sera appeler pour récupérer le sélécteur dans l'EventManager
+     * @param {string} selector Selecteur
+     * @see {@link EventManager}
+     */
     constructor(name, selector) {
+        /**
+         * Nom qui sera appeler pour récupérer le sélécteur dans l'EventManager
+         * @member
+         * @type {string}
+         */
         this.name = null;
+        /**
+         * @member
+         * @type {string}
+         */
         this.selector = null;
         Object.defineProperties(this, {
             name:{
@@ -132,19 +153,35 @@ class EventField {
             }
         })
     }
-
-
 }
 
+/**
+ * Contient tout les sélécteurs de la vue
+ * @class
+ * @classdesc Utilise une liste d'EventField pour générer ses variables membres. l'EventManager contient tout les sélécteurs des champs de la vue.
+ * @see {@link EventField}
+ */
 class EventManager {
+    /**
+     * 
+     * @param  {...EventField} events EventField qui vont générer les variables membres de cette instance
+     */
     constructor(...events) {
         this._events = events ?? [];
     }
 
+    /**
+     * Ajoute un EventField
+     * @param {EventField} event Ajoute un EventField qui va générer une variable membre 
+     */
     add(event) {
         this._events.push(event);
     }
 
+    /**
+     * Génère les variables membres à partir des EventField
+     * @returns {EventManager} Chaîne
+     */
     generate() {
         let config = {};
 
@@ -162,7 +199,18 @@ class EventManager {
     }
 }
 
+/**
+ * Structure qui contient les parties de la vue
+ * @class
+ * @classdesc Structure qui contient les parties de la vue. La class doit être initialisé via la fonction {@link EventParts~init}
+ */
 class EventParts {
+    /**
+     * 
+     * @param {EventManager} inputs Champs de la vue qui seront utiliser par le plugin calendar pour envoyer les données au serveur.
+     * @param {EventManager} fakes Champs visuels qui modifieront les "vrai" champs de la vue.
+     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     */
     constructor(inputs, fakes, dialog) {
         this.status = new StatePart(inputs.select_status, inputs.select_status.parent().find('span.material-symbols-outlined'));
         this.sensitivity = new SensitivityPart(inputs.select_sensivity, fakes.button_sensivity, fakes.button_sensivity.children().first(), dialog);
@@ -174,6 +222,11 @@ class EventParts {
         this.recurrence = new RecPart(inputs.select_recurrence, fakes.select_recurrence);
     }
 
+    /**
+     * Initialise les parties de la vue
+     * @param {*} ev Evènement du plugin `calendar` 
+     * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
+     */
     init(ev, inputs) {
         this.status.onUpdate(ev.status ?? '');
         this.sensitivity.onUpdate(!ev?.id ? SensitivityPart.STATES.public :  (ev?.sensitivity ?? SensitivityPart.STATES.public));
@@ -187,6 +240,12 @@ class EventParts {
         this._init_no_modified(ev, inputs);
     }
 
+    /**
+     * Initialise les parties de la vue qui ne sont pas altéré par rapport à la vue par défaut du plugin calendar
+     * @private
+     * @param {*} ev Evènement du plugin `calendar` 
+     * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
+     */
     _init_no_modified(ev, inputs) {
         const blocked = 'true' === ev.calendar_blocked;
 
@@ -197,11 +256,26 @@ class EventParts {
     }
 }
 
+/**
+ * Gère les parties de la vue ainsi que le comportement de la dialog
+ * @class
+ * @classdesc Initialise la vue et gère le comportement de la dialog
+ */
 export class EventView {
+    /**
+     * 
+     * @param {*} event Evènement du plugin `calendar` 
+     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     */
     constructor(event, dialog) {
         this._init()._setup(event, dialog)._main(event);
     }
 
+    /**
+     * Initialise les variables membres de la classe
+     * @private
+     * @returns {EventView} Chaîne
+     */
     _init() {
         /**
          * Evènement du plugin `calendar`
@@ -243,6 +317,13 @@ export class EventView {
         return this;
     }
 
+    /**
+     * Assigne les variables membres de la classe
+     * @private
+     * @param {*} event Evènement du plugin `calendar` 
+     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     * @returns {EventView} Chaîne
+     */
     _setup(event, dialog) {
         this._event = event;
         this._dialog = dialog;
@@ -254,6 +335,11 @@ export class EventView {
         return this;
     }
 
+    /**
+     * C'est ici que l'on va éffectuer toute les actions nécessaires à la création et l'initialisation de la fenêtre de dialog.
+     * @private
+     * @param {*} event Evènement du plugin `calendar` 
+     */
     _main(event) {
         let warning_panel = WarningPanel.Get();
         this.parts.init(event, this.inputs);
@@ -279,22 +365,40 @@ export class EventView {
         this._generate_listeners();
     }
 
+    /**
+     * Génère les évènements de la dialog
+     * @private
+     */
     _generate_dialog_events() {
         if (this.is_jquery_dialog() && !$._data(this._dialog[0], 'events' )?.dialogbeforeclose){
             this._dialog.on('dialogbeforeclose', this.on_dialog_before_close.bind(this));
         }
     }
 
+    /**
+     * Génère les listeners de la vue
+     * @private
+     */
     _generate_listeners() {
         if((rcmail._events?.[LISTENER_SAVE_EVENT]?.length ?? 0) > 0) delete rcmail._events[LISTENER_SAVE_EVENT];
 
         rcmail.addEventListener(LISTENER_SAVE_EVENT, this.before_save.bind(this));
     }
 
+    /**
+     * Si la dialog est une dialog jquery ou GlobalModal
+     * @return {Boolean}
+     */
     is_jquery_dialog() {
         return !this._dialog.on_click_minified;
     }
 
+    /**
+     * Est appelé lorsque la dialog est sur le point de se fermer
+     * 
+     * Remet la modal dans son état d'origine et libère les variables.
+     * @event
+     */
     on_dialog_before_close() {
         $(MAIN_FORM_SELECTOR).css('opacity', '0');
         $(LOADER_SELECTOR).css('display', EMPTY_STRING);
@@ -305,6 +409,11 @@ export class EventView {
         this.parts = null;
     }
 
+    /**
+     * Est appelé lorsque l'on drop un élément dans la dialog
+     * @event
+     * @param {DragEvent} ev 
+     */
     on_drop(ev) {
         const autorized = [this.fakes.text_attendee, this.fakes.text_attedee_optional, this.fakes.text_attendee_animators];
         ev = !!ev.dataTransfer ? ev : ev.originalEvent;
@@ -319,6 +428,12 @@ export class EventView {
         $(`${ATTENDEE_CONTAINER_SELECTOR}, [data-linked="attendee-input"]`).removeClass(GUEST_DRAGG_CLASS);
     }
 
+    /**
+     * Est appelé avant que l'on sauvegarde l'évènement
+     * @event
+     * @async
+     * @returns {Boolean} Si l'on peut sauvegarder ou non
+     */
     async before_save() {
         let is_valid = true;
         await this.parts.location.waitComplete();
@@ -335,15 +450,33 @@ export class EventView {
         return is_valid;
     }
 
+    /**
+     * Génère une EventView. Permet d'améliorer la lisibilité du code.
+     * @param {*} event Evènement du plugin `calendar` 
+     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     * @returns {EventView}
+     */
     static Start(event, dialog) {
         return new EventView(event, dialog);
     }
 
+    /**
+     * Génère un EventField. Permet d'améliorer la lisibilité du code.
+     * @param {string} name Nom qui sera appeler pour récupérer le sélécteur dans l'EventManager
+     * @param {string} selector Selecteur
+     * @returns {EventField}
+     */
     static Create(name, selector) {
         return new EventField(name, selector);
     }
 }
 
+/**
+ * Liste des sélecteurs de la vue.
+ * 
+ * Se sont les sélecteurs des champs qui seront utiliser pour sauvegarder les données et qui seront envoyé au serveur.
+ * @type {EventField[]}
+ */
 EventView.true_selectors = [
     EventView.Create('select_calendar_owner', '#edit-calendar'),
     EventView.Create('select_alarm', '#edit-alarm-item'),
@@ -365,6 +498,12 @@ EventView.true_selectors = [
     EventView.Create('select_recurrence', '#edit-recurrence-frequency')
 ];
 
+/**
+ * Liste des sélecteurs de la vue.
+ * 
+ * Se sont les sélecteurs des champs visuels qui seront utiliser pour modifier les "vrais" champs.
+ * @type {EventField[]}
+ */
 EventView.false_selectors = [
     EventView.Create('select_alarm', '#mel-calendar-alarm'),
     EventView.Create('check_category', '#edit-wsp'),

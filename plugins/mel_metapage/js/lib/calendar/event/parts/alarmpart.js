@@ -6,9 +6,31 @@ import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { Alarm } from "../../alarms.js";
 import { FakePart, Parts } from "./parts.js";
 
+/**
+ * Contient les données d'un rappel
+ * @class
+ * @classdesc Contient les données d'un rappel. Sa valeur et son "unitée" (minutes, heures, jours etc....) 
+ */
 class AlarmData {
+    /**
+     * 
+     * @param {number} value Durée en minutes
+     */
     constructor(value) {
+        /**
+         * Durée en minutes
+         * @member
+         * @type {number}
+         */
         this.value = value;
+        /**
+         * Unitée de la durée 
+         * 
+         * Peut être : ``-W`` pour semaine, ``-D`` pour jour, ``-H`` pour heure, ``-M`` pour minute
+         * @member
+         * @readonly
+         * @type {string}
+         */
         this.offset = EMPTY_STRING;
 
         Object.defineProperty(this, 'offset', {
@@ -29,6 +51,11 @@ class AlarmData {
         });
     }
 
+    /**
+     * Récupère le temps convertit à partir de l'unitée.
+     * @param {boolean} include_week Par défaut : ``false``. Si ``true``, inclut les semaines dans le calcul. 
+     * @returns {number}
+     */
     getTime(include_week = false) {
         let val;
         switch (this.offset) {
@@ -57,6 +84,10 @@ class AlarmData {
         return val;
     }
 
+    /**
+     * Affiche la donnée en texte lisible et compréhensible pour un être humain.
+     * @returns {string}
+     */
     toString() {
         let val = this.getTime(true);
 
@@ -110,6 +141,14 @@ class AlarmData {
         return `${val} ${offset}`;
     }
 
+    /**
+     * Créer une instance de ``AlarmData`` à partir d'une durée et d'une unitée.
+     * @static
+     * @param {number} val Durée en minutes 
+     * @param {string} offset Unitée de la durée. Peut être : ``-W`` pour semaine, ``-D`` pour jour, ``-H`` pour heure, ``-M`` pour minute
+     * @returns {AlarmData}
+     * @see {@link AlarmData.OFFSETS}
+     */
     static From(val, offset) {
         switch (offset) {
             case '-W':
@@ -127,12 +166,48 @@ class AlarmData {
     }
 }
 
+/**
+ * Enumerable des unitées
+ * @static
+ * @readonly
+ * @enum {string}
+ * @see {@link AlarmData.From}
+ */
+AlarmData.OFFSETS = {
+    WEEK:'-W',
+    DAY:'-D',
+    HOUR:'-H',
+    MINUTE:'-M'
+}
+
+/**
+ * Partie de la vue qui gère les rappels
+ * @class
+ * @classdesc Partie de la vue qui gère les rappels, elle fait le lien entre le champs de base qui est un ensemble de 3 champs et le champ visuel qui est un `select`
+ * @extends FakePart
+ */
 export class AlarmPart extends FakePart {
+    /**
+     * 
+     * @param {$} $alarm_type Champ qui gère le type d'alarme
+     * @param {$} $alarm_offset Champ qui gère la durée de l'alarme
+     * @param {$} $alarf_offset_type Champ qui gère l'unitée de l'alarme
+     * @param {$} $alarm Champ visuel qui sera afficher à la place du champ de base
+     */
     constructor($alarm_type, $alarm_offset, $alarf_offset_type, $alarm) {
         super($alarm_offset, $alarm, Parts.MODE.change);
+        /**
+         * Champ qui gère le type d'alarme
+         * @type {$}
+         */
         this._$fieldAlarmType = $alarm_type;
+        /**
+         * Champ qui gère l'unitée de l'alarme
+         * @type {$}
+         */
         this._$fieldAlarmOffsetType = $alarf_offset_type;
 
+        //Génère le tooltip du champs
         this._$fakeField.tooltip({
             title:() => {
                 const val = this._$fakeField.val();
@@ -144,11 +219,17 @@ export class AlarmPart extends FakePart {
         });
     }
 
+    /**
+     * Initialise la classe par rapport à l'évènement
+     * @param {*} event Evènement de plugin `calendar` 
+     * @returns {AlarmPart} Chaînage
+     */
     init(event) {
         this._$fakeField.html(EMPTY_STRING);
         let options_alarms = AlarmPart.PREDEFINED
         let val = 0;
 
+        // Ajoute une option si une alarm existe déjà
         if (!!event.alarms)
         {
             const alarm = new Alarm(event.alarms);
@@ -169,11 +250,13 @@ export class AlarmPart extends FakePart {
 
         }
         else if (!!rcmail.env.calendar_default_alarm_offset) {
+            //Si il y a un rappel par défaut et pas de rappel dans l'évènement, on le rajoute
             event.alarms = rcmail.env.calendar_default_alarm_offset;
             event.alarms = `${event.alarms[0]}PT${event.alarms.slice(1)}:DISPLAY`;
             return this.init(event);
         }
 
+        //Génère les options du select
         let $option;
         for (const alarm of options_alarms) {
             $option = MelHtml.start.option({value:alarm.value}).text(alarm.label).end().generate().appendTo(this._$fakeField);
@@ -189,6 +272,10 @@ export class AlarmPart extends FakePart {
         return this;
     }
 
+    /**
+     * Action qui sera effectué lors de la mise à jour du champ visuel
+     * @param {string} val Valeur du select
+     */
     onUpdate(val) {
         switch (val) {
             case undefined:
@@ -212,12 +299,23 @@ export class AlarmPart extends FakePart {
         }
     }
 
+    /**
+     * Action qui sera appelé lors de la mise à jour du champ visuel
+     * 
+     * Appele la fonction @see {@link AlarmPart~onUpdate}
+     * @param  {...any} args 
+     * @event
+     */
     onChange(...args) {
         let $e = $(args[0].currentTarget);
 
         this.onUpdate(+($e.val()));
     }
 
+    /**
+     * Ouvre une boîte de dialogue pour choisir une alarme personnalisée
+     * @private
+     */
     _startModalCustomAlarm() {
         let $dialog = new RcmailDialog(custom_alarm_dialog, {
             title:'Alarme personnalisée',
@@ -261,6 +359,10 @@ export class AlarmPart extends FakePart {
     }
 }
 
+/**
+ * Liste des rappels prédéfinis
+ * @type {Array<{label:string, value:number}>}
+ */
 AlarmPart.PREDEFINED = [
     {label:'Aucune', value:0},
     {label:'5 minutes', value:5},

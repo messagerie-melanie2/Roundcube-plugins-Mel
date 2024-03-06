@@ -1,4 +1,8 @@
-export {isNullOrUndefined, isArrayLike, Classes, toHex};
+export {isNullOrUndefined, isArrayLike, Classes, toHex, isDecimal};
+
+function isDecimal(number) {
+    return ~~number !== number;
+}
 
 /**
  * Renvoie vrai si la variable vaut `null` ou `undefined`.

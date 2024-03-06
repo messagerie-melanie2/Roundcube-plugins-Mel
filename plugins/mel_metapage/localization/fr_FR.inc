@@ -438,3 +438,27 @@ $labels['event-location-audio'] = "Par audio";
 $labels['event-visio-internal'] = "Wébconférence de l'état";
 $labels['event-visio-external'] = "Wébconférence externe";
 
+$labels['week'] = 'semaine';
+$labels['week_plurial'] = $labels['week'].'s';
+$labels['week_after'] = ' et %0 jour';
+$labels['week_after_plurial'] = $labels['week_after'].'s';
+
+$labels['day'] = 'jour';
+$labels['day_plurial'] = $labels['day'].'s';
+$labels['day_after'] = ' et %0 heure';
+$labels['day_after_plurial'] = $labels['day_after'].'s';
+
+$labels['hour'] = 'heure';
+$labels['hour_plurial'] = $labels['hour'].'s';
+$labels['hour_after'] = ' et %0 minute';
+$labels['hour_after_plurial'] = $labels['hour_after'].'s';
+
+$labels['minute'] = 'minute';
+$labels['minute_plurial'] = $labels['minute'].'s';
+$labels['minute_after'] = ' et %0 seconde';
+$labels['minute_after_plurial'] = $labels['minute_after'].'s';
+
+$labels['rappel_of'] = 'Rappel de %0 avant';
+$labels['no_rappel'] = 'Aucun rappel';
+$labels['custom_alarm_title'] = 'Alarme personnalisée';
+$labels['validate'] = 'Valider';

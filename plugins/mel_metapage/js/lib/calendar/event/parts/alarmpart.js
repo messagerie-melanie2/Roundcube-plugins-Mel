@@ -3,6 +3,7 @@ import { MelEnumerable } from "../../../classes/enum.js";
 import { RcmailDialog, RcmailDialogButton } from "../../../classes/modal.js";
 import { EMPTY_STRING } from "../../../constants/constants.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
+import { isDecimal } from "../../../mel.js";
 import { Alarm } from "../../alarms.js";
 import { FakePart, Parts } from "./parts.js";
 
@@ -52,6 +53,44 @@ class AlarmData {
     }
 
     /**
+     * Récupère le texte d'une valeur sous format : x unite et x sous unités.
+     * 
+     * Prend en compte les pluriels.
+     * 
+     * Dans la localization du plugin, il doit y avoir les clés suivantes : `text_key`, `text_key_plurial`, `text_key_after`, `text_key_after_plurial`.
+     * 
+     * (Remplacez ``text_key`` par le nom de la clé que vous voulez utiliser, exemple : ``week`` pour la semaine, ``day`` pour la journée etc...)
+     * 
+     * `_plurial` signifie le pluriel
+     * 
+     * `_after` signifie l'affichage de la deuxième unitée de temps. Celle ci doit contenir `%0`.
+     * 
+     * example : `hour` => heure, `hour_plurial` => heures, `hour_after` =>  et %0 minute, `hour_after_plurial` =>  et %0 minutes
+     * 
+     * @private
+     * @param {number} multiplier Le multiplier qui permet de déduire le nombre de sous unitées sous forme entière (ex: 7 pour les semaines, 24 pour les jours etc...)
+     * @param {number} val Valeur du rappel en minute
+     * @param {string} text_key Clé qui sera utiliser par `rcmail.gettext()`
+     * @returns {{text:string, value:number}}
+     */
+    _getText(val, multiplier, text_key) {
+        let has_s = val > 1;
+        let offset = rcmail.gettext(`${text_key}${has_s ? '_plurial' : EMPTY_STRING}`, 'mel_metapage');
+
+        if (isDecimal(val)) {
+            const tmp = Math.round((val - (~~val)) * multiplier);
+            val = ~~val;
+            has_s = tmp > 1;
+
+            if (1 === val) offset = offset.slice(0, offset.length - 1);
+
+            offset += rcmail.gettext(`${text_key}_after${has_s ? '_plurial' : EMPTY_STRING}`, 'mel_metapage').replaceAll('%0', tmp);
+        }
+
+        return {text:offset, value:val};
+    }
+
+    /**
      * Récupère le temps convertit à partir de l'unitée.
      * @param {boolean} include_week Par défaut : ``false``. Si ``true``, inclut les semaines dans le calcul. 
      * @returns {number}
@@ -90,53 +129,32 @@ class AlarmData {
      */
     toString() {
         let val = this.getTime(true);
-
-        let offset = EMPTY_STRING;
-        const has_s = val > 1;
+        let text_key = EMPTY_STRING;
+        let multiplier = 0;
 
         switch (this.offset) {
             case AlarmData.OFFSETS.WEEK:
-                offset = `semaine${has_s ? 's' : ''}`;
-
-                if (~~val !== val) {
-                    const tmp = Math.round((val - (~~val)) * 7);
-                    val = ~~val;
-
-                    if (1 === val) offset = offset.slice(0, offset.length-1);
-
-                    offset += ` et ${tmp} jour${tmp >= 2 ? 's' : ''}`;
-                }
+                text_key = 'week';
+                multiplier = 7;
 
                 break;
             case AlarmData.OFFSETS.DAY:
-                offset = `jour${val > 1 ? 's' : ''}`;
-
-                if (~~val !== val) {
-                    const tmp = Math.round((val - (~~val)) * 24);
-                    val = ~~val;
-
-                    if (1 === val) offset = offset.slice(0, offset.length-1);
-
-                    offset += ` et ${tmp} heure${tmp >= 2 ? 's' : ''}`;
-                }
+                text_key = 'day';
+                multiplier = 24;
                 break;
             case AlarmData.OFFSETS.HOUR:
-                offset = `heure${val > 1 ? 's' : ''}`;
-
-                if (~~val !== val) {
-                    const tmp = Math.round((val - (~~val)) * 60);
-                    val = ~~val;
-
-                    if (1 === val) offset = offset.slice(0, offset.length-1);
-
-                    offset += ` et ${tmp} minute${tmp >= 2 ? 's' : ''}`;
-                }
+                text_key = 'hour';
+                multiplier = 60;
                 break;
         
             default:
-                offset = `minute${val > 1 ? 's' : ''}`;
+                text_key = 'minutes';
                 break;
         }
+
+        const {text, value} = this._getText(val, multiplier, text_key);
+        const offset = text;
+        val = value;
 
         return `${val} ${offset}`;
     }
@@ -212,8 +230,8 @@ export class AlarmPart extends FakePart {
             title:() => {
                 const val = this._$fakeField.val();
                 
-                if (!!(val || false) && 0 !== val && '0' !== val) return `Rappel de ${this._$fakeField.find('option:selected').text()} avant`;
-                else return 'Aucun rappel';
+                if (!!(val || false) && 0 !== val && '0' !== val) return rcmail.gettext('rappel_of', 'mel_metapage').replaceAll('%0', this._$fakeField.find('option:selected').text());
+                else return rcmail.gettext('no_rappel', 'mel_metapage');
             },
             trigger:'hover'
         });
@@ -318,9 +336,9 @@ export class AlarmPart extends FakePart {
      */
     _startModalCustomAlarm() {
         let $dialog = new RcmailDialog(custom_alarm_dialog, {
-            title:'Alarme personnalisée',
+            title:rcmail.gettext('custom_alarm_title', 'mel_metapage'),
             'buttons':[
-                new RcmailDialogButton('Valider', {
+                new RcmailDialogButton(rcmail.gettext('validate'), {
                     click:() => {
                         let offset = $dialog._$dialog.find('select').attr('disabled', 'disabled').addClass('disabled').val();
                         let value = +($dialog._$dialog.find('input').attr('disabled', 'disabled').addClass('disabled').val());

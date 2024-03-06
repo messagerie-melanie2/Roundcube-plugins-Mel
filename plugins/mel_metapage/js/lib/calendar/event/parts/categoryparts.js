@@ -3,17 +3,52 @@ import { EMPTY_STRING } from "../../../constants/constants.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { FakePart, Parts } from "./parts.js";
 
+/**
+ * Gère la partie lié aux catégories
+ * @extends FakePart
+ * @class 
+ * @classdesc Gère la partie lié aux catégories, il y a une amélioration de l'affichage entre les catégories et les espaces de travails. De plus ajoute des actions lié aux espaces de travails.
+ */
 export class CategoryPart extends FakePart{
+    /**
+     * 
+     * @param {$} $trueCategorySelect Champ select pour les catégories
+     * @param {$} $falseCategorySelect Champ select visuel pour les cétagories
+     * @param {$} $falseCheck Checkbox visuel pour afficher ou non le champs des catégories
+     * @param {$} $icon Icône avant le champ visuel des catégories
+     * @param {$} $addWorkspaceUserButton Button qui sera afficher si une catégorie est lié à un espace de travail
+     */
     constructor($trueCategorySelect, $falseCategorySelect, $falseCheck, $icon, $addWorkspaceUserButton) {
         super($trueCategorySelect, $falseCategorySelect, Parts.MODE.change);
+        /**
+         * Button qui sera afficher si une catégorie est lié à un espace de travail.
+         * 
+         * Lors du clique il devra ajouter les utilisateurs de l'espace de travail dans le champs des participants.
+         * @type {$}
+         */
         this._$wspButton = $addWorkspaceUserButton;
+        /**
+         * Checkbox visuel pour afficher ou non le champs des catégories
+         * @type {$}
+         */
         this._$hasCategory = $falseCheck;
+        /**
+         * Icône avant le champ visuel des catégories
+         * 
+         * Elle change en fonction du type de catégorie
+         * @type {$}
+         */
         this._$icon = $icon;
     }
 
+    /**
+     * Initialise la partie.
+     * @param {*} event Evènement du plugin `calendar`
+     */
     init(event) {
         this._generateCategories()._$wspButton.css('display', 'none');
 
+        //Si il y a des catégories
         if (!!event.categories && event.categories.length > 0) {
             this._$fakeField.val(event.categories[0]);
 
@@ -27,6 +62,7 @@ export class CategoryPart extends FakePart{
             this._$fakeField.parent().parent().css('display', 'none');
         }
 
+        //Gestion de l'évènement du checkbox
         if (!$._data(this._$hasCategory[0], 'events' )?.click) {
             const event = () => {
                 if (!this._$hasCategory[0].checked) {
@@ -44,6 +80,7 @@ export class CategoryPart extends FakePart{
 
         this.updateIcon();
 
+        //Si on a pas l'autorisation de modifier la catégorie
         const blocked = 'true' === event.calendar_blocked;
 
         if (blocked) {
@@ -56,6 +93,9 @@ export class CategoryPart extends FakePart{
         }
     }
 
+    /**
+     * Met à jour l'icône en fonction de la catégorie sélectionné
+     */
     updateIcon() {
         let icon = this._$fakeField.find(":selected").data('icon')
 

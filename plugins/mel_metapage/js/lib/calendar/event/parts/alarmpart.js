@@ -36,16 +36,16 @@ class AlarmData {
         Object.defineProperty(this, 'offset', {
             get:() => {
                 if (this.value >= (60*24*7)) {
-                    return '-W';
+                    return AlarmData.OFFSETS.WEEK;
                 }
                 else if (this.value >= (60*24)) {
-                    return '-D';
+                    return  AlarmData.OFFSETS.DAY;
                 }
                 else if (this.value >= 60) {
-                    return '-H';
+                    return  AlarmData.OFFSETS.HOUR;
                 }
                 else {
-                    return '-M';
+                    return  AlarmData.OFFSETS.MINUTE;
                 }
             }
         });
@@ -59,20 +59,20 @@ class AlarmData {
     getTime(include_week = false) {
         let val;
         switch (this.offset) {
-            case '-W':
+            case AlarmData.OFFSETS.WEEK:
                 if (include_week) {
                     val = this.value/60/24/7;
                     break;
                 }
-            case '-D':
+            case AlarmData.OFFSETS.DAY:
                 val = this.value/60/24;
                 break;
         
-            case '-H':
+            case AlarmData.OFFSETS.HOUR:
                 val = this.value/60;
                 break;
 
-            case '-M':
+            case AlarmData.OFFSETS.MINUTE:
                 val = this.value;
                 break;
 
@@ -95,7 +95,7 @@ class AlarmData {
         const has_s = val > 1;
 
         switch (this.offset) {
-            case '-W':
+            case AlarmData.OFFSETS.WEEK:
                 offset = `semaine${has_s ? 's' : ''}`;
 
                 if (~~val !== val) {
@@ -108,7 +108,7 @@ class AlarmData {
                 }
 
                 break;
-            case '-D':
+            case AlarmData.OFFSETS.DAY:
                 offset = `jour${val > 1 ? 's' : ''}`;
 
                 if (~~val !== val) {
@@ -120,7 +120,7 @@ class AlarmData {
                     offset += ` et ${tmp} heure${tmp >= 2 ? 's' : ''}`;
                 }
                 break;
-            case '-H':
+            case AlarmData.OFFSETS.HOUR:
                 offset = `heure${val > 1 ? 's' : ''}`;
 
                 if (~~val !== val) {
@@ -151,11 +151,11 @@ class AlarmData {
      */
     static From(val, offset) {
         switch (offset) {
-            case '-W':
+            case AlarmData.OFFSETS.WEEK:
                 val *= 7;
-            case '-D':
+            case AlarmData.OFFSETS.DAY:
                 val *= 24;
-            case '-H':
+            case AlarmData.OFFSETS.HOUR:
                 val *= 60;
 
             default:
@@ -283,7 +283,7 @@ export class AlarmPart extends FakePart {
             case 0:
                 this._$field.val(0);
                 this._$fieldAlarmType.val(EMPTY_STRING).change();
-                this._$fieldAlarmOffsetType.val('-M').change();         
+                this._$fieldAlarmOffsetType.val(AlarmData.OFFSETS.MINUTE).change();         
                 break;
 
             case -1:
@@ -294,7 +294,7 @@ export class AlarmPart extends FakePart {
                 const alarm = new AlarmData(val);
                 this._$fieldAlarmType.val('DISPLAY').change();
                 this._$field.val(alarm.getTime());
-                this._$fieldAlarmOffsetType.val('-W' === alarm.offset ? '-D' : alarm.offset).change();
+                this._$fieldAlarmOffsetType.val(AlarmData.OFFSETS.WEEK === alarm.offset ? AlarmData.OFFSETS.DAY : alarm.offset).change();
                 break;
         }
     }
@@ -325,8 +325,8 @@ export class AlarmPart extends FakePart {
                         let offset = $dialog._$dialog.find('select').attr('disabled', 'disabled').addClass('disabled').val();
                         let value = +($dialog._$dialog.find('input').attr('disabled', 'disabled').addClass('disabled').val());
 
-                        if ('-W' === offset) {
-                            offset = '-D';
+                        if (AlarmData.OFFSETS.WEEK === offset) {
+                            offset = AlarmData.OFFSETS.DAY;
                             value *= 7;
                         }
 

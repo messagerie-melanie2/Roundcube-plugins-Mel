@@ -284,6 +284,12 @@ html {
         }
     }
 
+    &#toolbar-menu{
+        a{
+            color: var(--main-text-color)!important;
+        }
+    }
+
     // .responses {
     //     display: none!important;
     // }
@@ -1408,6 +1414,15 @@ body {
         .mel-secondary-colors-important();
     }
 }
+#mailvelope-warning{
+    &.ui{
+        &.alert{
+            span{
+                color: var(--main-text-color);
+            }
+        }
+    }
+}
 
 .mm-agenda-icon
 {
@@ -1624,6 +1639,9 @@ select {
             color:var(--main-text-color);
         }
     }
+}
+.form-control:disabled, .form-control[readonly]{
+    background-color: var(--input-mel-disabled-background-color);
 }
 
 /** CUSTOM HTML **/
@@ -5910,5 +5928,16 @@ div.all-day {
 
     &.full-power{
         min-height: 101px;
+    }
+}
+#preferences-details{
+    .btn-group-vertical>.btn:not(:last-child):not(.dropdown-toggle) {
+        border-bottom-right-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+        margin-bottom: 5px;
+    }
+    .btn-group-vertical>.btn-group:not(:first-child)>.btn, .btn-group-vertical>.btn:not(:first-child) {
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
     }
 }

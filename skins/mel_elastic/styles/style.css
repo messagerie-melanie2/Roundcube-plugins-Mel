@@ -262,6 +262,9 @@ body.task-tasks .menu.pagenav.pagenav-list .pagenav-text {
   content: "\ed1b" !important;
   font-family: var(--secondary-icon-font) !important;
 }
+.menu#toolbar-menu a {
+  color: var(--main-text-color) !important;
+}
 #toolbar-menu a.icon-mel-undo::before {
   content: "\e936" !important;
   font-family: var(--main-icon-font) !important;
@@ -875,6 +878,9 @@ body.task-calendar .popup.ui-dialog-content #showcontacts {
   background-color: var(--secondary-bckg-color) !important;
   color: var(--secondary-text-color) !important;
 }
+#mailvelope-warning.ui.alert span {
+  color: var(--main-text-color);
+}
 .mm-agenda-icon {
   font-size: x-large;
   position: relative;
@@ -1021,6 +1027,10 @@ select.mel-select.form-control {
   background-color: var(--alternate-bckg-color);
   border: none;
   color: var(--main-text-color);
+}
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: var(--input-mel-disabled-background-color);
 }
 /** CUSTOM HTML **/
 /* SEPARATE */
@@ -4298,4 +4308,14 @@ div.all-day input.input-mel#edit-enddate {
 }
 #emel-free-busy.full-power {
   min-height: 101px;
+}
+#preferences-details .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle) {
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  margin-bottom: 5px;
+}
+#preferences-details .btn-group-vertical > .btn-group:not(:first-child) > .btn,
+#preferences-details .btn-group-vertical > .btn:not(:first-child) {
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
 }

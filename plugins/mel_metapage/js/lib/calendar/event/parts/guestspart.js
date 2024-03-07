@@ -3,7 +3,6 @@ import { EMPTY_STRING } from "../../../constants/constants.js";
 import { BnumException } from "../../../exceptions/bnum_base_exceptions.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../../../mel_events.js";
-import { MelObject } from "../../../mel_object.js";
 import { Mel_Promise } from "../../../mel_promise.js";
 import { FreeBusyGuests } from "./guestspart.free_busy.js";
 import { FakePart, Parts } from "./parts.js";

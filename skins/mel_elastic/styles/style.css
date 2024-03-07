@@ -265,6 +265,9 @@ body.task-tasks .menu.pagenav.pagenav-list .pagenav-text {
 .menu#toolbar-menu a {
   color: var(--main-text-color) !important;
 }
+#acllist-footer a {
+  color: var(--main-text-color) !important;
+}
 #toolbar-menu a.icon-mel-undo::before {
   content: "\e936" !important;
   font-family: var(--main-icon-font) !important;

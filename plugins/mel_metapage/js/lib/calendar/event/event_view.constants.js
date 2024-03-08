@@ -1,7 +1,7 @@
 export const FIRST_ARGUMENT = '%0';
 export const ID_SELECTOR = '#';
 export const CLASS_SELECTOR = '.';
-export const WARNING_PANEL_SELECTOR = `${ID_SELECTOR}fix-panel`;
+export const WARNING_PANEL_SELECTOR = `${CLASS_SELECTOR}fix-panel`;
 export const RECURRING_WARNING_SELECTOR = `${ID_SELECTOR}edit-recurring-warning`;
 export const LOCAL_CHANGE_WARNING_SELECTOR = `${ID_SELECTOR}edit-localchanges-warning`;
 export const INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR = `${ID_SELECTOR}edit-internallocalchanges-warning`;

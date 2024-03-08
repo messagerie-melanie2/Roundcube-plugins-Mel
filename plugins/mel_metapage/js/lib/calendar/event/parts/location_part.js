@@ -241,6 +241,11 @@ class IntegratedVisio extends AVisio {
             this._phone = split[0];
             this._pin = split[1].replace(')', '');
         }
+        else if (this.location.includes(' (')) {
+            let split = this.location.split(' (').split(' | ');
+            this._phone = split[0];
+            this._pin = split[1].replace(')', EMPTY_STRING);
+        };
     }
 
     _init(location) {

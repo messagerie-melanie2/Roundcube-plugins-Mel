@@ -311,6 +311,8 @@ export class GuestsPart extends FakePart{
                 if (!!data.to) this._$fakeField.val(`${data.to},`).change();
             }).parent().css('display', '').addClass('d-flex');
         } else $('#event-mail-add-member').off('click').parent().css('display', 'none').removeClass('d-flex');
+
+        $('#emel-free-busy').removeClass('full-power');
     }
 
     init(event){

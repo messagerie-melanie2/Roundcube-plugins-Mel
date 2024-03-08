@@ -1,6 +1,11 @@
 import { MelObject } from "../mel_metapage/js/lib/mel_object.js";
 import { Mel_Promise } from "../mel_metapage/js/lib/mel_promise.js";
 
+/**
+ * @class tchap_manager
+ * @classdesc Classe de gestion de tchap en JS
+ * @extends MelObject
+ */
 export class tchap_manager extends MelObject { 
 	constructor(){
 		super();
@@ -27,6 +32,9 @@ export class tchap_manager extends MelObject {
 		this.rcmail().addEventListener('tchap.disconnect', this.tchap_disconnect.bind(this));
 	}
 
+	/**
+	 * Change le thème de tchap
+	 */
 	change_theme() {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;
 		frame_doc.querySelector('.mx_QuickSettingsButton').click();  
@@ -34,12 +42,18 @@ export class tchap_manager extends MelObject {
 		frame_doc.querySelector(`#mx_QuickSettingsButton_themePickerDropdown__${this.get_skin().color_mode()}`).click();
 	}
 
+	/**
+	 * Ouvre les paramètres de tchap
+	 */
 	tchap_options() {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;
 		frame_doc.querySelector('.mx_QuickSettingsButton').click();
 		frame_doc.querySelector('.mx_ContextualMenu > div > .mx_AccessibleButton_kind_primary_outline').click();
 	}
 
+	/**
+	 * Deconnecte de tchap
+	 */
 	tchap_disconnect() {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;
 		frame_doc.querySelector('.mx_UserMenu_contextMenuButton').click();

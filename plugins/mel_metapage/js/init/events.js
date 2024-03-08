@@ -2062,7 +2062,19 @@ $(document).ready(() => {
                               //On ouvre une modal pour prévenir d'un lien externe
                               let domain = new URL(url).hostname;
                               let open_modal = true;
+                              let suspect_url = false;
                               
+                              rcmail.env.mel_suspect_url.forEach(item => {
+                                if (url.includes(item) && !suspect_url) {
+                                  suspect_url = true;
+                                }
+                              })
+                              if (suspect_url) { 
+                                event.preventDefault();
+                                top.external_link_modal(url, suspect_url);
+                                return;
+                              }
+
                               rcmail.env.mel_official_domain.forEach(item => {
                                 if (domain.endsWith(item)) {
                                   open_modal = false;

@@ -330,6 +330,7 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("matomo_tracking_popup", $this->rc->config->get("matomo_tracking_popup", false));
 
         $this->rc->output->set_env("mel_official_domain",  array_merge($this->rc->config->get("mel_official_domain", []),$this->rc->config->get('mel_user_domain',[])));
+        $this->rc->output->set_env("mel_suspect_url",  $this->rc->config->get("mel_suspect_url", []));
 
         //$this->rc->output->set_env("compose_extwin", true);
         $config = $this->rc->config->get("mel_metapage_chat_visible", true);

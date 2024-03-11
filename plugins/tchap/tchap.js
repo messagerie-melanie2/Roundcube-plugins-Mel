@@ -1,3 +1,12 @@
+/**
+ * @namespace Tchap
+ * @property {module:TchapManager} Manager
+ */
+
+/**
+ * @module TchapManager
+ */
+
 import { MelObject } from "../mel_metapage/js/lib/mel_object.js";
 import { Mel_Promise } from "../mel_metapage/js/lib/mel_promise.js";
 
@@ -10,6 +19,11 @@ export class tchap_manager extends MelObject {
 	constructor(){
 		super();
 	}
+
+	/**
+	 * @async
+	 * @private
+	 */
 	async main() {
 		const url = rcmail.env.tchap_startup_url != null && rcmail.env.tchap_startup_url !== undefined ? rcmail.env.tchap_startup_url : rcmail.env.tchap_url;
 		let $tchap = $('#tchap_frame').attr('src', url);

@@ -1305,7 +1305,7 @@ html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-lis
   display: none!important;
 }
 body.task-settings.action-plugin-managesieve #layout-list .menu.toolbar a {
-  color: var(--secondary-text-color) !important;
+  color: var(--alternative-layout-list-text-color) !important;
 }
 body.task-settings.action-plugin-mel_statistics_mobile #layout-list .listing tbody td {
   color: var(--secondary-text-color);

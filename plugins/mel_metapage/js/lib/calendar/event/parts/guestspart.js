@@ -452,7 +452,23 @@ export class GuestsPart extends FakePart{
         return new Guest((cal?.owner_name || EMPTY_STRING), cal.owner_email);
     }
 
+    /**
+     * 
+     * @param {string} val 
+     * @param {*} $field 
+     */
     onUpdate(val, $field) {
+        {
+            const regex = /\((.*?)\)/g;
+            const match = val.match(regex);
+
+            if (!!match && match.length > 0) {
+                for (const iterator of match) {
+                    val = val.replaceAll(iterator, iterator.replace(',', '¤'));
+                }
+            }
+        }
+
         if (val.includes(',')) {
             const event = cal.selected_event;
             val = val.split(',');
@@ -465,7 +481,6 @@ export class GuestsPart extends FakePart{
                     invalids.push(iterator);
                     continue;
                 }
-                    //throw new GuessPartAddException(this, iterator.email);
                 
                 if (iterator.email === GuestsPart.GetMe().email) continue;
 
@@ -510,6 +525,8 @@ export class GuestsPart extends FakePart{
     }
 
     _slice_user_datas(val) {
+        if (val.includes('¤')) val = val.replaceAll('¤', ',');
+
         let data = {
             name:EMPTY_STRING,
             email:EMPTY_STRING

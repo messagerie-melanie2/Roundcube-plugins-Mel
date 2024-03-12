@@ -4255,6 +4255,7 @@ bnum-separate {
   margin-bottom: 5px;
   display: flex;
   align-items: center;
+  cursor: move;
 }
 .mel-attendee .availability {
   height: 24px;

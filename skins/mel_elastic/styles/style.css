@@ -262,7 +262,7 @@ body.task-tasks .menu.pagenav.pagenav-list .pagenav-text {
   content: "\ed1b" !important;
   font-family: var(--secondary-icon-font) !important;
 }
-.menu#toolbar-menu a {
+.task-settings .menu#toolbar-menu a {
   color: var(--main-text-color) !important;
 }
 #acllist-footer a {
@@ -2618,6 +2618,20 @@ html.layout-small .hide-on-small {
 }
 .multilink-sub:hover .multilink-sub-copy {
   color: var(--main-text-color) !important;
+}
+button.btn.import:before {
+  content: "\f090" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48;
+  font-size: 17px;
+  transform: scale(1.5) !important;
+}
+button.btn.export:before {
+  content: "\f09b" !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'wght' 400, 'opsz' 48;
+  font-size: 17px;
+  transform: scale(1.5) !important;
 }
 .display-inline-block {
   display: inline-block;

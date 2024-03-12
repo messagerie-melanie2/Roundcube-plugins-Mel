@@ -283,19 +283,21 @@ html {
             font-family: var(--secondary-icon-font)!important;
         }
     }
-
-    &#toolbar-menu{
-        a{
-            color: var(--main-text-color)!important;
-        }
-    }
-    
-
     // .responses {
     //     display: none!important;
     // }
 
 }
+.task-settings{
+    .menu{
+        &#toolbar-menu{
+            a{
+                color: var(--main-text-color)!important;
+            }
+        }
+    }    
+}
+
 #acllist-footer{
     a{
         color: var(--main-text-color)!important;
@@ -3985,6 +3987,26 @@ a.rcmContactAddress {
 
         .multilink-sub-copy{
             color: var(--main-text-color)!important;
+        }
+    }
+}
+
+
+button{
+    &.btn{
+        &.import:before{
+            content: "\f090" !important;
+            font-family: 'Material Symbols Outlined' !important;
+            font-variation-settings: 'wght' 400, 'opsz' 48;
+            font-size: 17px;
+            transform: scale(1.5) !important;
+        }
+        &.export:before{
+            content: "\f09b" !important;
+            font-family: 'Material Symbols Outlined' !important;
+            font-variation-settings: 'wght' 400, 'opsz' 48;
+            font-size: 17px;
+            transform: scale(1.5) !important;
         }
     }
 }

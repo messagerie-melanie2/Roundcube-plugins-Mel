@@ -9,20 +9,21 @@
 
 import { MelObject } from "../mel_metapage/js/lib/mel_object.js";
 import { Mel_Promise } from "../mel_metapage/js/lib/mel_promise.js";
+export {tchap_manager};
 
 /**
- * @class tchap_manager
+ * @class
  * @classdesc Classe de gestion de tchap en JS
- * @extends MelObject
+ * @extends {MelObject}
  */
-export class tchap_manager extends MelObject { 
+class tchap_manager extends MelObject { 
 	constructor(){
 		super();
 	}
 
 	/**
 	 * @async
-	 * @private
+	 * @package
 	 */
 	async main() {
 		const url = rcmail.env.tchap_startup_url != null && rcmail.env.tchap_startup_url !== undefined ? rcmail.env.tchap_startup_url : rcmail.env.tchap_url;
@@ -48,6 +49,8 @@ export class tchap_manager extends MelObject {
 
 	/**
 	 * Change le thème de tchap
+	 * @public
+	 * @method
 	 */
 	change_theme() {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;
@@ -58,6 +61,8 @@ export class tchap_manager extends MelObject {
 
 	/**
 	 * Ouvre les paramètres de tchap
+	 * @public
+	 * @method
 	 */
 	tchap_options() {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;
@@ -67,6 +72,8 @@ export class tchap_manager extends MelObject {
 
 	/**
 	 * Deconnecte de tchap
+	 * @public
+	 * @method
 	 */
 	tchap_disconnect() {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;

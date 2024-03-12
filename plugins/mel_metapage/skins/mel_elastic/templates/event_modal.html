@@ -37,7 +37,7 @@
 					<span class="material-symbols-outlined">
 						calendar_month
 					</span>
-					<roundcube:object title="Définir un calendrier" name="plugin.calendar_select" id="edit-calendar" style="background-color: transparent;border:none;display: inline-block; margin-top: 1px;" />
+					<roundcube:object title="Définir un calendrier" name="plugin.calendar_select" id="edit-calendar" class="input-mel" style="background-color: transparent;border:none;display: inline-block; margin-top: 1px;" />
 				</div>
 
 			</div>
@@ -129,7 +129,7 @@
 			<!-- <div class="form-control fake-input input-mel" style="display: flex;align-items: center;"> -->
 				<div style="flex:1;display:flex;flex-wrap: wrap;  align-items: baseline;">
 					<!-- <div id="attendees" class="mel-show-attendee" data-linked="attendee-input"></div> -->
-				<input id="attendee-input" class="form-control" type="text" placeholder="Ajoutez des participants" style="flex: auto;width: unset;"/>
+				<input id="attendee-input" class="form-control input-mel" type="text" placeholder="Ajoutez des participants" style="flex: auto;width: unset;"/>
 				</div>
 				<button onclick="m_mp_openTo(this, 'attendee-input', {onselect:m_mp_on_open_select_calendar_contacts})" type="button" class="no-background" type="button">
 					<span class="material-symbols-outlined">
@@ -169,12 +169,12 @@ Choix de la période
 		<div class="col-12 datetime row">
 			<div class="col-6" style="display: flex;">
 				<!-- symbol horloge -->
-				<span class="material-symbols-outlined icon-weight-400 icon-front-col mr-2">
+				<span class="material-symbols-outlined icon-weight-300 icon-front-col mr-2">
 					schedule
 				</span>
 				<div class="relative icon-datepicker">
 					<input type="text" title="Date de début" name="startdate" id="edit-startdate" class="form-control input-mel" required="true"/> &nbsp;
-					<span class="material-symbols-outlined icon-weight-300">
+					<span class="material-symbols-outlined icon-weight-300 input-mel-color">
 					calendar_month
 					</span>
 				</div>
@@ -185,7 +185,7 @@ Choix de la période
 			</div>
 
 			<div class="col-6">
-				<label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox" /><roundcube:label name="calendar.all-day-long" /></label>
+				<label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox before-margin-right" /><roundcube:label name="calendar.all-day-long" /></label>
 			</div>
 			
 		</div>
@@ -194,7 +194,7 @@ Choix de la période
 			<div class="col-sm-6 datetime">
         <div class="relative icon-datepicker">
 				<input type="text" name="enddate" title="Date de fin" id="edit-enddate" class="form-control input-mel no-icon-front-col" required="true"/> &nbsp;
-        <span class="material-symbols-outlined icon-weight-300">
+        <span class="material-symbols-outlined icon-weight-300 input-mel-color">
           calendar_month
         </span>
       </div>
@@ -205,7 +205,7 @@ Choix de la période
         </div>  
 			<div class="col-sm-6">
 				<div class="" style="position:relative"><!--Récurence-->
-					<span class="material-symbols-outlined icon-weight-300" style="position: absolute;
+					<span class="material-symbols-outlined icon-weight-300 input-mel-color" style="position: absolute;
 					top: 5px;
 					left: 15px;
 					pointer-events: none;">

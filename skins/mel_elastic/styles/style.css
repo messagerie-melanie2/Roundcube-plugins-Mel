@@ -4129,6 +4129,7 @@ bnum-separate {
 .input-mel.border-bottom-input:focus {
   box-shadow: none;
   border-color: var(--mel-button-border-color) !important;
+  color: var(--input-mel-text-color) !important;
 }
 .input-mel.border-bottom-input input {
   border: none;
@@ -4205,7 +4206,7 @@ bnum-separate {
 #update-sensivity {
   background: none;
   border: none;
-  color: var(--main-text-color);
+  color: var(--input-mel-text-color);
   margin-top: 4px;
 }
 .button-icon-hover:hover span {
@@ -4220,9 +4221,13 @@ bnum-separate {
   display: flex;
   align-items: center;
   margin-right: 10px;
+  color: var(--input-mel-text-color);
 }
 .no-icon-front-col {
-  margin-left: 34px;
+  margin-left: 31px;
+}
+.input-mel-color {
+  color: var(--input-mel-text-color);
 }
 .relative {
   position: relative;
@@ -4286,19 +4291,20 @@ bnum-separate {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+  color: var(--main-text-color);
 }
 .mel-show-attendee-container {
   display: flex;
 }
 .no-background {
-  color: var(--main-text-color);
+  color: var(--input-button-text-color);
   border: none !important;
   background: none !important;
   padding: 0;
 }
 .no-background:hover,
 .no-background:active {
-  color: var(--main-text-color) !important;
+  color: var(--input-button-hover-text-color) !important;
   background: none !important;
   border-color: none !important;
 }
@@ -4338,4 +4344,11 @@ div.all-day input.input-mel#edit-enddate {
 #preferences-details .btn-group-vertical > .btn:not(:first-child) {
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
+}
+.before-margin-right:before {
+  margin-right: 5px;
+}
+.location-container .material-symbols-outlined {
+  color: var(--input-mel-text-color);
+  font-variation-settings: 'wght' 300;
 }

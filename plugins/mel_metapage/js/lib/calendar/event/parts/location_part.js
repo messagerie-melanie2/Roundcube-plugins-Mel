@@ -761,7 +761,7 @@ export class LocationPartManager  {
                         return html.end();
                     }, ...LocationPartManager.PARTS)
                 .end()
-                .button({type:'button', class:'no-background ml-2'}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
+                .button({type:'button', class:'no-background ml-2', title:(has_locations ? 'Supprimer' : 'Ajouter')}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
                     .attr('onclick', (e) => {
                         if ('delete' === $(e.currentTarget).children().first().html()) this.remove($(e.currentTarget).parent().find('select').data('id'));
                         else this.add(Location, '');

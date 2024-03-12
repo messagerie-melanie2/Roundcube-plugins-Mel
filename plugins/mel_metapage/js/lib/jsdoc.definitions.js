@@ -9,6 +9,7 @@
  * @property {module:Color} Color
  * @property {module:Log} Log
  * @property {module:BaseStorage} BaseStorage
+ * @property {module:Mel/UsefulFunctions} Functions
  */
 
 /**

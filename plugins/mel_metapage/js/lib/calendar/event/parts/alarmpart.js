@@ -222,11 +222,13 @@ export class AlarmPart extends FakePart {
         /**
          * Champ qui gère le type d'alarme
          * @type {$}
+         * @package
          */
         this._$fieldAlarmType = $alarm_type;
         /**
          * Champ qui gère l'unitée de l'alarme
          * @type {$}
+         * @package
          */
         this._$fieldAlarmOffsetType = $alarf_offset_type;
 
@@ -328,7 +330,6 @@ export class AlarmPart extends FakePart {
      * 
      * Appele la fonction @see {@link AlarmPart~onUpdate}
      * @param  {...any} args 
-     * @event
      * @override
      */
     onChange(...args) {
@@ -339,7 +340,7 @@ export class AlarmPart extends FakePart {
 
     /**
      * Ouvre une boîte de dialogue pour choisir une alarme personnalisée
-     * @private
+     * @package
      */
     _startModalCustomAlarm() {
         let $dialog = new RcmailDialog(custom_alarm_dialog, {
@@ -385,8 +386,15 @@ export class AlarmPart extends FakePart {
 }
 
 /**
+ * Structure qui contient le label de l'option et sa valeur en minute.
+ * @typedef PredefinedOption 
+ * @property {string} label Sera affiché
+ * @property {number} value Valeur en minute
+ */
+
+/**
  * Liste des rappels prédéfinis
- * @type {Array<{label:string, value:number}>}
+ * @type {Array<PredefinedOption>}
  */
 AlarmPart.PREDEFINED = [
     {label:'Aucune', value:0},

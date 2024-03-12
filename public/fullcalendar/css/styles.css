@@ -108,6 +108,7 @@ body {
   background-color: #F0F0F0;
   border-color: #F0F0F0;
   font-size: 14px;
+  appearance: auto;
 }
 
 .input-mel:focus,

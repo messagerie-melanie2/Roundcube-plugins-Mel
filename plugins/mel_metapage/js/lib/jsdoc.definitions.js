@@ -12,5 +12,11 @@
  */
 
 /**
+ * @namespace Calendar
+ * @property {EventView} EventView
+ * 
+ */
+
+/**
  * @typedef {!string | !Symbol | !Number} Key 
  */

@@ -1,3 +1,7 @@
+/**
+ * @module EventView/Parts/Alarm
+ */
+
 import { custom_alarm_dialog } from "../../../../../skins/mel_elastic/js_templates/custom_alarm.js";
 import { MelEnumerable } from "../../../classes/enum.js";
 import { RcmailDialog, RcmailDialogButton } from "../../../classes/modal.js";
@@ -11,6 +15,7 @@ import { FakePart, Parts } from "./parts.js";
  * Contient les données d'un rappel
  * @class
  * @classdesc Contient les données d'un rappel. Sa valeur et son "unitée" (minutes, heures, jours etc....) 
+ * @package
  */
 class AlarmData {
     /**
@@ -340,7 +345,7 @@ export class AlarmPart extends FakePart {
         let $dialog = new RcmailDialog(custom_alarm_dialog, {
             title:rcmail.gettext('custom_alarm_title', 'mel_metapage'),
             'buttons':[
-                new RcmailDialogButton(rcmail.gettext('validate'), {
+                new RcmailDialogButton(rcmail.gettext('validate', 'mel_metapage'), {
                     click:() => {
                         let offset = $dialog._$dialog.find('select').attr('disabled', 'disabled').addClass('disabled').val();
                         let value = +($dialog._$dialog.find('input').attr('disabled', 'disabled').addClass('disabled').val());

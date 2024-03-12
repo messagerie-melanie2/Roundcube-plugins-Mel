@@ -1,3 +1,14 @@
+/**
+ * @namespace EventView
+ * @property {module:EventView} View
+ * @property {module:EventView/Parts/Alarm} Alarms
+ * @property {module:EventView/Parts/Categories} Categories
+ */
+
+/**
+ * @module EventView
+ */
+
 import { MelEnumerable } from "../../classes/enum.js";
 import { EMPTY_STRING } from "../../constants/constants.js";
 import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
@@ -14,6 +25,7 @@ import { TimePartManager } from "./parts/timepart.js";
  * Gère le panel d'avertissement
  * @class 
  * @classdesc Gère la visibilité du panel d'avertissement
+ * @package
  */
 class WarningPanel {
     /**
@@ -124,6 +136,7 @@ WarningPanel.CHILDS_ITEMS_SELECTORS = [
  * @class
  * @classdesc Structure qui donne un nom à un sélecteur d'un champ pour l'EventManager. L'idée est de générer les variables membres de l'EventManager à partir de cette classe.
  * @see {@link EventManager}
+ * @package
  */
 class EventField {
     /**
@@ -160,6 +173,7 @@ class EventField {
  * @class
  * @classdesc Utilise une liste d'EventField pour générer ses variables membres. l'EventManager contient tout les sélécteurs des champs de la vue.
  * @see {@link EventField}
+ * @package
  */
 class EventManager {
     /**
@@ -203,6 +217,7 @@ class EventManager {
  * Structure qui contient les parties de la vue
  * @class
  * @classdesc Structure qui contient les parties de la vue. La class doit être initialisé via la fonction {@link EventParts~init}
+ * @package
  */
 class EventParts {
     /**

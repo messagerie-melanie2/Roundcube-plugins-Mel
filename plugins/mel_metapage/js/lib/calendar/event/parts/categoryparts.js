@@ -1,3 +1,7 @@
+/**
+ * @module EventView/Parts/Categories
+ */
+
 import { MelEnumerable } from "../../../classes/enum.js";
 import { EMPTY_STRING } from "../../../constants/constants.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
@@ -158,6 +162,7 @@ export class CategoryPart extends FakePart{
  * Contient les données d'un groupe de catégorie
  * @class
  * @classdesc Contient les données d'un groupe de catégorie, ce groupe à un nom, une icône, et 2 fonctions qui vont gérer comment fonctionne se groupe.
+ * @package
  */
 class CategoryData {
     /**

@@ -1,10 +1,10 @@
 /**
  * @namespace Tchap
- * @property {module:TchapManager} Manager
+ * @property {module:Tchap} Module
  */
 
 /**
- * @module TchapManager
+ * @module Tchap
  */
 
 import { MelObject } from "../mel_metapage/js/lib/mel_object.js";

@@ -606,27 +606,30 @@ $(document).ready(async () => {
         {
             if (id === null || id === "")
             {
-                this.modal.editTitle(rcmail.gettext('personal_create_title', plugin_text));
+              //Api de twitter ne marche plus
+              this.showStep2(new MelNews(null).setType(MelNews.type.intranet));
+              
+                // this.modal.editTitle(rcmail.gettext('personal_create_title', plugin_text));
 
-                let $flex = $('<div style="display:flex"></div>')
-                // Intranet
-                .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-intranet"></span>${rcmail.gettext('intranet_website', plugin_text)}</button>`).click(() => {
-                        this.showStep2(new MelNews(null).setType(MelNews.type.intranet));
-                    })
-                )               
-                // Twitter
-                .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-twitter"></span>${rcmail.gettext('twitter_account', plugin_text)}</button>`).click(() => {
-                        this.showStep2(new MelNews(null).setType(MelNews.type.twitter));
-                    })
-                )
-                // Internet
-                // .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-rss"></span>Flux RSS externe</button>`).click(() => {
-                //         this.showStep2(new MelNews(null).setType(MelNews.type.internet));
+                // let $flex = $('<div style="display:flex"></div>')
+                // // Intranet
+                // .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-intranet"></span>${rcmail.gettext('intranet_website', plugin_text)}</button>`).click(() => {
+                //         this.showStep2(new MelNews(null).setType(MelNews.type.intranet));
                 //     })
-                // );
+                // )               
+                // // Twitter
+                // .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-twitter"></span>${rcmail.gettext('twitter_account', plugin_text)}</button>`).click(() => {
+                //         this.showStep2(new MelNews(null).setType(MelNews.type.twitter));
+                //     })
+                // )
+                // // Internet
+                // // .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-rss"></span>Flux RSS externe</button>`).click(() => {
+                // //         this.showStep2(new MelNews(null).setType(MelNews.type.internet));
+                // //     })
+                // // );
 
-                this.modal.editBody($flex);
-                this.modal.footer.querry.html("");
+                // this.modal.editBody($flex);
+                // this.modal.footer.querry.html("");
                 this.modal.show();
             }
             else{
@@ -1315,7 +1318,6 @@ $(document).ready(async () => {
     MelNews.type = {
         internet:"internet",
         intranet:"intranet",
-        twitter:"twitter"
     };
 
     class MelCustomNews extends MelNews

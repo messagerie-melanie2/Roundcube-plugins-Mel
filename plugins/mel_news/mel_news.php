@@ -763,6 +763,8 @@ class mel_news extends rcube_plugin {
       $args = ["datas" => [], "check" => []];
 
     foreach ($news as $new) {
+      if($new->source === 'twitter')
+        continue;
       
       if ($nbRows > 0 && $col >= 12*$nbRows) break;
 

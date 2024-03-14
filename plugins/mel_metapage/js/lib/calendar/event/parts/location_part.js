@@ -4,6 +4,8 @@
  * @module EventView/Parts/Location
  * @local IDestroyable
  * @local ALocationPart
+ * @local VisioManager
+ * @local AVisio
  */
 
 import { MelEnumerable } from "../../../classes/enum.js";
@@ -88,6 +90,10 @@ class ALocationPart extends IDestroyable {
      * @private
      */
     _init(location) {
+        /**
+         * Données de cette partie de localisation
+         * @type {!string}
+         */
         this.location = location;
     }
 
@@ -186,10 +192,26 @@ class VisioManager extends ALocationPart {
 
     }
 
+    /**
+     * @inheritdoc
+     * @override
+     */
     _init(location) {
         super._init(location);
 
+        /**
+         * Localisation de type visioconférence
+         * @private
+         * @type {AVisio}
+         * @member
+         */
         this._current = null;
+        /**
+         * Localisation de type visioconférence qui ont été généré et mis en cache si jamais on change de localisation.
+         * @private
+         * @type {!Object<string, AVisio>}
+         * @member
+         */
         this._cached = {};
 
         /**
@@ -205,30 +227,11 @@ class VisioManager extends ALocationPart {
         });
     }
 
-    generate($parent) {
-        super.generate($parent);
-
-        let $tmp = MelHtml.start
-        .div({class: 'location-mode', 'data-locationmode': this.option_value()})
-            .select({id: `visio-${this.id}`, onchange: this._on_select_change.bind(this)})
-                .option({value: IntegratedVisio.OptionValue()}).text(`event-${IntegratedVisio.OptionValue()}`).end()
-                .option({value: ExternalVisio.OptionValue()}).text(`event-${ExternalVisio.OptionValue()}`).end()
-            .end()
-            .div({id: `visio-${this.id}-container`, class:'visio-container mt-2'})
-            .end()
-        .end().generate().appendTo($parent);
-
-        $tmp.find('select').val(this._current.option_value());
-
-        this._current.generate($tmp.find('.visio-container'));
-
-        return this;
-    }
-
-    async wait() {
-        if (!!this._current.wait) await this._current.wait()
-    }
-
+    /**
+     * Change le type de visio courant pour correspondre à ce qui est affiché sur le select lié.
+     * @private
+     * @param {Event} event
+     */
     _on_select_change(event) {
         const val = $(event.currentTarget).val();
 
@@ -249,10 +252,54 @@ class VisioManager extends ALocationPart {
         this._on_change_action();
     }
 
+    /**
+     * Appelle l'évènement "onchange"
+     * @private
+     */
     _on_change_action() {
         this.onchange.call();
     }
 
+
+    /**
+     * Génère cette partie de la localisation sous forme html
+     * @override
+     * @param {external:jQuery} $parent Parent qui contiendra le html 
+     * @returns {VisioManager} Chaîne
+     */
+    generate($parent) {
+        super.generate($parent);
+
+        let $tmp = MelHtml.start
+        .div({class: 'location-mode', 'data-locationmode': this.option_value()})
+            .select({id: `visio-${this.id}`, onchange: this._on_select_change.bind(this)})
+                .option({value: IntegratedVisio.OptionValue()}).text(`event-${IntegratedVisio.OptionValue()}`).end()
+                .option({value: ExternalVisio.OptionValue()}).text(`event-${ExternalVisio.OptionValue()}`).end()
+            .end()
+            .div({id: `visio-${this.id}-container`, class:'visio-container mt-2'})
+            .end()
+        .end().generate().appendTo($parent);
+
+        $tmp.find('select').val(this._current.option_value());
+
+        this._current.generate($tmp.find('.visio-container'));
+
+        return this;
+    }
+
+    /**
+     * Attend que les données d'un type de visio soit chargée.
+     * @async
+     * @return {Promise<void>}
+     */
+    async wait() {
+        if (!!this._current.wait) await this._current.wait()
+    }
+
+    /**
+     * Libère les données en mémoire.
+     * @override
+     */
     destroy() {
         this._current = this._current.destroy();
 
@@ -264,44 +311,105 @@ class VisioManager extends ALocationPart {
         this.categoryPart = null;
     }
 
+    /**
+     * Si la localisation est valide et correspond à ce que l'on attend
+     * @return {Boolean}
+     * @see {@link IntegratedVisio}
+     * @see {@link ExternalVisio}
+     */
     is_valid() {
         return this._current.is_valid();
     }
 
+    /**
+     * Action à faire si la localisation n'est pas valide
+     * @see {@link IntegratedVisio}
+     * @see {@link ExternalVisio}
+     */
     invalid_action() {
         this._current.invalid_action();
     }
 
+    /**
+     * Si la localisation est de type "Visioconférence"
+     * @return {Boolean}
+     * @override
+     * @static
+     */
     static Has(location) {
         return IntegratedVisio.Has(location) || ExternalVisio.Has(location)
     }
 
+    /**
+     * Valeur de l'option qui désigne cette classe.
+     * @overload
+     * @returns {string}
+     * @default 'visio'
+     */
     static OptionValue() {
         return 'visio';
     }
 
+    /**
+     * Nombre maximum de cette classe qui peut être utilisé
+     * @override
+     * @return {number}
+     * @default 1
+     */
     static Max() {
         return 1;
     }
 }
 
+/**
+ * @abstract
+ * @class
+ * @classdesc Représente une partie de la localisation d'un évènement qui est une visioconférence.
+ * @extends {ALocationPart}
+ * @package
+ */
 class AVisio extends ALocationPart {
     constructor(location, index) {
         super(location, index, null);
     }
+
+    /**
+     * Attend que les données de la visioconférence soit chargée.
+     * @async
+     * @returns {Promise<void>}
+     */
+    async wait() {}
 }
 
+/**
+ * @class
+ * @classdesc Représente une partie de la localisation d'un évènement qui est une visioconférence interne.
+ * @augments AVisio
+ * @package
+ */
 class IntegratedVisio extends AVisio {
     /**
      * 
-     * @param {*} location 
-     * @param {*} index 
-     * @param {CategoryPart} categoryPart 
+     * @param {string} location Localisation de l'évènement 
+     * @param {number} index Id de la partie
+     * @param {CategoryPart} categoryPart Partie 
      */
     constructor(location, index, categoryPart) {
         super(location, index);
 
+        /**
+         * Nom de la room
+         * @package
+         * @type {string}
+         * @readonly
+         */
         this._room;
+        /**
+         * @inheritdoc
+         * @type {string}
+         * @readonly
+         */
+        this.location;
 
         Object.defineProperty(this, 'location', {
             get:() => { 

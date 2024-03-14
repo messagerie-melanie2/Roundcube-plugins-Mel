@@ -614,6 +614,11 @@ html body a.filename .attachment-name {
 body.task-mail.action-compose a.filename .attachment-name {
   color: var(--secondary-text-color);
 }
+@media screen and (max-width: 997px) {
+  body.task-mail.action-compose #layout-content .header .menu.toolbar a {
+    font-size: 1rem;
+  }
+}
 body.task-mail.action-none #layout-content {
   border-left: solid #484D7A;
 }

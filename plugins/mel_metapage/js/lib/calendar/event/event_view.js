@@ -248,7 +248,7 @@ class EventParts {
      * @param {*} ev Evènement du plugin `calendar` 
      * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
      */
-    init(ev, inputs) {
+    init(ev, inputs, fakes) {
         this.status.onUpdate(ev.status ?? '');
         this.sensitivity.onUpdate(!ev?.id ? SensitivityPart.STATES.public :  (ev?.sensitivity ?? SensitivityPart.STATES.public));
         this.alarm.init(ev);
@@ -258,7 +258,7 @@ class EventParts {
         this.guests.init(ev);
         this.recurrence.init(ev);
 
-        this._init_no_modified(ev, inputs);
+        this._init_no_modified(ev, inputs, fakes);
     }
 
     /**
@@ -267,13 +267,24 @@ class EventParts {
      * @param {*} ev Evènement du plugin `calendar` 
      * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
      */
-    _init_no_modified(ev, inputs) {
+    _init_no_modified(ev, inputs, fakes) {
         const blocked = 'true' === ev.calendar_blocked;
 
         if (blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
         else $(inputs.select_calendar_owner).removeAttr('disabled').removeClass('disabled');
 
         $(inputs.select_calendar_owner).tooltip({trigger:'hover'});
+
+        fakes.button_erase_title.click(this._onButtonTitleClicked.bind(inputs.text_title));
+    }
+
+    /**
+     * Est appelé lorsque l'on clique sur le bouton pour effacer le titre
+     * @package
+     * @this {external:jQuery}
+     */
+    _onButtonTitleClicked() {
+        this.val(EMPTY_STRING);
     }
 }
 
@@ -363,7 +374,7 @@ export class EventView {
      */
     _main(event) {
         let warning_panel = WarningPanel.Get();
-        this.parts.init(event, this.inputs);
+        this.parts.init(event, this.inputs, this.fakes);
 
         this._generate_dialog_events();
 
@@ -590,4 +601,5 @@ EventView.false_selectors = [
     EventView.Create('select_recurrence', '#fake-event-rec'),
     EventView.Create('div_eventtype', '#events-type'),
     EventView.Create('button_sensivity', '#update-sensivity'),
+    EventView.Create('button_erase_title', '#reset-title-button'),
 ];

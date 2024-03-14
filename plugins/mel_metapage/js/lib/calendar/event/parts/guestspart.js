@@ -1,16 +1,59 @@
+/**
+ * @module EventView/Parts/Guests
+ */
+
 import { MelEnumerable } from "../../../classes/enum.js";
+import { DATE_HOUR_FORMAT } from "../../../constants/constants.dates.js";
 import { EMPTY_STRING } from "../../../constants/constants.js";
+import { REG_BETWEEN_PARENTHESIS } from "../../../constants/regexp.js";
 import { BnumException } from "../../../exceptions/bnum_base_exceptions.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../../../mel_events.js";
 import { Mel_Promise } from "../../../mel_promise.js";
 import { FreeBusyGuests } from "./guestspart.free_busy.js";
+import { CLASS_MANUALLY_CHANGED, GUEST_SEPARATOR, REPLACE_CHAR, ROLE_ATTENDEE_OPTIONNAL, SELECTOR_CHECKBOX_NOTIFY } from "./parts.constants.js";
 import { FakePart, Parts } from "./parts.js";
 import { TimePartManager } from "./timepart.js";
 
+/**
+ * @typedef User 
+ * @property {string} name
+ * @property {string} email
+ */
+
+/**
+ * @typedef Attendee
+ * @property {Role} role
+ * @property {string} name
+ * @property {string} email
+ */
+
+/**
+ * Contient les mêmes informations que Attendee mais avec l'information de la partie parente.
+ * @typedef AttendeeEx
+ * @property {Role} role
+ * @property {string} name
+ * @property {string} email
+ * @property {GuestsPart} parent
+ * @see {@link Attendee}
+ */
+
+/**
+ * @class
+ * @classdesc Exception envoyé lorsque le champ lié aux participants ne fonctionne pas correctement.
+ * @extends BnumException
+ * @package
+ */
 class GuestPartFieldException extends BnumException {
     constructor(part, $field) {
         super(part, `Le champ ${$field.attr('id') || 'sans identifiant'} ne possède pas de parent !`);
+
+        /**
+         * Champ qui pose problème
+         * @type {external:jQuery}
+         * @readonly
+         * @member 
+         */
         this.$field = null;
         Object.defineProperty(this, '$field', {
             get() { return $field; }
@@ -18,13 +61,36 @@ class GuestPartFieldException extends BnumException {
     }
 }
 
+/**
+ * @class
+ * @classdesc Bouton qui affiche ou non les différents champs liés aux participants. 
+ * @extends Parts
+ * @package
+ */
 class GuestButton extends Parts {
     constructor($button) {
         super($button, Parts.MODE.click);
+
+        /**
+         * Sera appelé lorsque l'on cliquera sur le bouton
+         * @event
+         * @member
+         * @type {BnumEvent}
+         */
         this.clicked = new BnumEvent();
+        /**
+         * Etat du bouton
+         * @private
+         * @member
+         * @type {boolean}
+         */
         this._state = false;
     }
 
+    /**
+     * Met à jour la visibilité des champs et change l'état interne du bouton.
+     * @override
+     */
     onUpdate(){
         this._state = !this._state;
 
@@ -32,28 +98,64 @@ class GuestButton extends Parts {
         else this._$field.find('span').html('expand_more');
     }
 
-    onClick(...args) {
+    /**
+     * Action éxecuter lors du clique sur le bouton.
+     * @override
+     * @overload
+     */
+    onClick() {
         this.clicked.call(!this._state);
         this.onUpdate();
     }
 
+    /**
+     * Simule un clique sur le bouton
+     */
     click() {
         this.onClick();
     }
 }
 
+/**
+ * @class
+ * @classdesc Représente un participant
+ * @package
+ */
 class Guest {
     constructor(name, email) {
         this._init()._setup(name, email);
     }
 
+    /**
+     * Initialise les membres de la classe
+     * @private
+     * @return {Guest}
+     */
     _init() {
+        /**
+         * Nom du participant
+         * @type {string}
+         * @member
+         * @readonly
+         */
         this.name = EMPTY_STRING;
+        /**
+         * Email du participant
+         * @type {string}
+         * @member
+         * @readonly
+         */
         this.email = EMPTY_STRING;
 
         return this;
     }
 
+    /**
+     * Assigne les membres de la classe
+     * @private
+     * @param {string} name 
+     * @param {string} email 
+     */
     _setup(name, email) {
         Object.defineProperties(this, {
             name: {
@@ -65,6 +167,14 @@ class Guest {
         });
     }
 
+    /**
+     * Récupère la disponibilité du participant
+     * @async
+     * @param {Date | external:moment} start Date de début de l'évènement
+     * @param {Date | external:moment} end Date de fin de l'évènement
+     * @param {!boolean} allDay Si l'évènement dure la journée entière ou non. `false` par défaut. 
+     * @return {Promise<string>}
+     */
     async get_dispo(start, end, allDay = false) {
         let dispo = EMPTY_STRING;
         const date2servertime = cal.date2ISO8601;
@@ -107,6 +217,11 @@ class Guest {
           return dispo;
     }
 
+    /**
+     * Appeler lorsque que l'on clique sur le bouton "supprimer" lié au participant.
+     * @package
+     * @param {Event} e 
+     */
     _close_button_click(e) {
         var $querry = $(`div.mel-attendee[data-email="${$(e.currentTarget).attr('data-parent')}"]`);
         const add = true;
@@ -118,12 +233,22 @@ class Guest {
         GuestsPart.UpdateFreeBusy(GuestsPart.INSTANCE._datePart);
     }
 
+    /**
+     * Renvoie le participant sous forme de texte.
+     * @private
+     * @return {string}
+     */
     _formated() {
         if (!!(this.name || false)) return `${this.name} <${this.email}>`;
 
         else return this.email;
     }
 
+    /**
+     * Appeler lorsque l'on démarre un drag and drop sur le participant.
+     * @package
+     * @param {DragEvent} ev 
+     */
     _dragStart(ev) {
         ev = !!ev.dataTransfer ? ev : ev.originalEvent;
         ev.dataTransfer.dropEffect = "move";
@@ -132,10 +257,20 @@ class Guest {
         $('.mel-show-attendee-container, [data-linked="attendee-input"]').addClass('mel-guest-drag-started');
     } 
 
+    /**
+     * Appeler lorsque l'on termine le drag and drop sur le participant.
+     * @package
+     * @param {DragEvent} ev 
+     */
     _dragEnd(ev) {
         $('.mel-show-attendee-container, [data-linked="attendee-input"]').removeClass('mel-guest-drag-started');
     }
 
+    /**
+     * Convertit le participant sous une représentation html avec son comportement.
+     * @param {*} event Evènement du plugin `Calendar` 
+     * @return {____JsHtml}
+     */
     toHtml(event) {
         let html = MelHtml.start
         .div({class:'mel-attendee', title:this._formated(), 'data-email':this.email, 'data-name':this.name, draggable:true, ondragstart:this._dragStart.bind(this), ondragend:this._dragEnd.bind(this)})
@@ -155,11 +290,20 @@ class Guest {
         return html;
     }
 
+    /**
+     * Affiche le participant sous forme de texte.
+     * @return {string}
+     */
     toString() {
         return this._formated();
     }
 
-    toAttendee(role = 'REQ-PARTICIPANT'){
+    /**
+     * Change le participant en un objet qui sera lisible pour d'autre fonctions.
+     * @param {!Role} role Roe du participant. "Requis" par défaut.
+     * @return {!Attendee}
+     */
+    toAttendee(role = GuestsPart.ROLES.required){
         return {
             role,
             name:this.name,
@@ -168,52 +312,79 @@ class Guest {
     }
 
     /**
-     * 
-     * @param {*} $attendee 
+     * Récupère l'email, le nom et le rôle d'un participant à partir de son html.
+     * @static
+     * @param {external:jQuery} $attendee 
      * @param {GuestsPart} parent 
+     * @return {AttendeeEx}
      */
     static From($attendee, parent) {
         return {name:$attendee.attr('data-name'), email:$attendee.attr('data-email'), role:Guest._GuestRole($attendee.attr('data-parent'), parent)};
     }
 
+    /**
+     * Récupère la dispnobilitée d'un participant à partir de son html.
+     * @param {external:jQuery} $attendee 
+     * @param {Date | external:moment} start Date de l'évènement
+     * @param {Date | external:moment} end Date de fin de l'évènement
+     * @param {!boolean} allDay Si l'évènement dure toute la journée ou non. `false` par défaut.
+     * @return {Promise<string>}
+     * @async
+     * @static
+     */
     static async GetDispo($attendee, start, end, allDay = false) {
         const email = $attendee.attr('data-email');
 
         return await (new Guest(EMPTY_STRING, email)).get_dispo(start, end, allDay);
     }
 
+    /**
+     * Met à jour la disponibilitée d'un participant à partir de son html.
+     * @param {external:jQuery} $attendee 
+     * @param {Date | external:moment} start Date de l'évènement
+     * @param {Date | external:moment} end Date de fin de l'évènement
+     * @param {!boolean} allDay Si l'évènement dure toute la journée ou non. `false` par défaut.
+     * @return {Promise<string>}
+     * @async
+     * @static
+     */
     static async UpdateDispo($attendee, start, end, allDay = false) {
         let $avail = $attendee.find('.availabilityicon');
         let tmp = MelEnumerable.from($avail[0].classList).toArray();
         for (const iterator of tmp) {
-            console.log('it',$attendee.attr('data-email'), iterator, 'availabilityicon' !== iterator);
             if (!['availabilityicon', 'loading'].includes(iterator)) $avail.removeClass(iterator);
         }
 
         $avail.attr('title', EMPTY_STRING).addClass('loading');
 
         const dispo = await this.GetDispo($attendee, start, end, allDay);
-        console.log('it after', dispo);
+
         $avail.addClass(dispo).removeClass('loading').attr('title', rcmail.gettext('avail' + dispo, 'calendar'));
 
         return dispo;
     }
 
+    /**
+     * @private
+     * @param {string} id 
+     * @param {string} parent 
+     * @return {Role}
+     */
     static _GuestRole(id, parent) {
         let role = EMPTY_STRING;
 
         switch (id) {
             case null:
             case parent._$fakeField.attr('id'):
-                role = 'REQ-PARTICIPANT';
+                role = GuestsPart.ROLES.required;
                 break;
 
             default:
-                role = 'OPT-PARTICIPANT';
+                role = GuestsPart.ROLES.optional;
                 break;
 
             case parent._$animators.attr('id'):
-                role = 'CHAIR';
+                role = GuestsPart.ROLES.chair;
                 break;
         }
 
@@ -222,25 +393,59 @@ class Guest {
 
 }
 
+/**
+ * @class
+ * @classdesc Représente la partie des participants.
+ * @extends FakePart
+ */
 export class GuestsPart extends FakePart{
     /**
      * 
-     * @param {*} $addInput 
-     * @param {*} $neededInput 
-     * @param {*} $optionalInput 
-     * @param {*} $animatorsInput 
-     * @param {*} $switchButton 
+     * @param {external:jQuery} $addInput 
+     * @param {external:jQuery} $neededInput 
+     * @param {external:jQuery} $optionalInput 
+     * @param {external:jQuery} $animatorsInput 
+     * @param {external:jQuery} $switchButton 
      * @param {TimePartManager} datePart 
      */
     constructor($addInput, $neededInput, $optionalInput, $animatorsInput, $switchButton, datePart){
         super($addInput, $neededInput, Parts.MODE.change);
         GuestsPart.stop = true;
+        /**
+         * Champ lié aux participants optionnels
+         * @type {external:jquery}
+         * @package
+         */
         this._$optionnals = $optionalInput;
+        /**
+         * Champ lié aux participants qui dirige la réunion
+         * @type {external:jquery}
+         * @package
+         */
         this._$animators = $animatorsInput;
+        /**
+         * Bouton qui permet d'afficher tout les champs ou non.
+         * @type {GuestButton}
+         * @package
+         */
         this._switchButton = new GuestButton($switchButton);
+        /**
+         * Partie lié aux dates
+         * @type {TimePartManager}
+         * @package
+         */
         this._datePart = datePart;
+        /**
+         * Si on peut modifier les participants ou non.
+         * @type {boolean}
+         */
         this.cant_modify = false;
 
+        /**
+         * Instance de l'évènement en cours
+         * @static
+         * @type {GuestsPart}
+         */
         GuestsPart.INSTANCE = this;
 
         const ids = {
@@ -250,6 +455,7 @@ export class GuestsPart extends FakePart{
             end_time:this._datePart.end._$fakeField.attr('id')
         }
 
+        //Action à faire lorsque l'on quitte la dialogue "freebusy"
         if (!rcmail.has_guest_dialog_attendees_save)
         {
             const fnc = function (date) {
@@ -258,10 +464,10 @@ export class GuestsPart extends FakePart{
                 let update_options = function update_options(select, value) {
                     if ($(`#${select} [value="${value}"]`).length === 0) 
                     {
-                        const current = moment(value, 'HH:mm');
+                        const current = moment(value, DATE_HOUR_FORMAT);
     
                         for (const e of $(`#${select} option`)) {
-                            if (current < moment($(e).val(), 'HH:mm')) {
+                            if (current < moment($(e).val(), DATE_HOUR_FORMAT)) {
                                 $(e).before($('<option>').val(value).text(value));
                                 break;
                             }
@@ -271,11 +477,9 @@ export class GuestsPart extends FakePart{
     
                 GuestsPart.can = false;
                 $(`#${this.start_date}`).val(start.date).change();
-                //update_options(this.start_time, start.time);
                 TimePartManager.UpdateOption(this.start_time, start.time);
                 $(`#${this.start_time}`).val(start.time).change();
                 $(`#${this.end_date}`).val(end.date).change();
-                //update_options(this.end_time, end.time);
                 TimePartManager.UpdateOption(this.end_time, end.time);
                 $(`#${this.end_time}`).val(end.time).change();
                 update_options = null;
@@ -289,32 +493,20 @@ export class GuestsPart extends FakePart{
             rcmail.has_guest_dialog_attendees_save = true;   
         }
 
-        $('#edit-attendees-donotify').removeClass('manually-changed').off('change').on('change', (e) => {
-            //Lorsque cette checkbox à "manually-changed", le changement de cette checkbox ne pourra plus se faire automatiquement
-            if (!$('#edit-attendees-donotify').hasClass('manually-changed')) {
-                $('#edit-attendees-donotify').addClass('manually-changed');
-            }
+        //Ajout des actions sur certains boutons.
+        $(SELECTOR_CHECKBOX_NOTIFY).removeClass(CLASS_MANUALLY_CHANGED).off('change').on('change', this.onNotificationChanged.bind(this));
 
-            //Désactiver les autres checkboxes
-            $('#edit-attendees-invite').prop('checked', $(e.currentTarget).prop('checked'));
-            $('input.edit-attendee-reply').prop('checked', $(e.currentTarget).prop('checked'));
-        });
-
-        if (!!rcmail.env['event_prop.mails']) {
-            $('#event-mail-add-member').off('click').on('click', (e) => {
-                const data = rcmail.env['event_prop.mails'];
-                
-                if (!!data.cc) this._$fakeField.val(`${data.cc},`).change();
-                
-                if (!!data.from) this._$fakeField.val(`${data.from},`).change();
-
-                if (!!data.to) this._$fakeField.val(`${data.to},`).change();
-            }).parent().css('display', '').addClass('d-flex');
-        } else $('#event-mail-add-member').off('click').parent().css('display', 'none').removeClass('d-flex');
+        if (!!rcmail.env['event_prop.mails']) $('#event-mail-add-member').off('click').on('click', this.onButtonMailClicked.bind(this)).parent().css('display', '').addClass('d-flex');
+        else $('#event-mail-add-member').off('click').parent().css('display', 'none').removeClass('d-flex');
 
         $('#emel-free-busy').removeClass('full-power');
     }
 
+    /**
+     * Initialise la partie
+     * @param {*} event Evènement du plugin `Calendar`
+     * @override 
+     */
     init(event){
         let it = 0;
         const fields = [this._$fakeField, this._$optionnals, this._$animators];
@@ -346,16 +538,16 @@ export class GuestsPart extends FakePart{
             let $field;
             for (const iterator of event.attendees) {
                 switch (iterator.role) {
-                    case 'REQ-PARTICIPANT':
+                    case GuestsPart.ROLES.required:
                         $field = this._$fakeField;
                         break;
 
                     case 'NON-PARTICIPANT':
-                    case 'OPT-PARTICIPANT':
+                    case GuestsPart.ROLES.optional:
                         $field = this._$optionnals;
                         break;
 
-                    case 'CHAIR':
+                    case GuestsPart.ROLES.chair:
                         $field = this._$animators;
                         break;
                 
@@ -371,7 +563,7 @@ export class GuestsPart extends FakePart{
 
         this._switchButton._state = true;
         this._switchButton.click();
-        $('#edit-attendees-donotify').prop('checked', false);
+        $(SELECTOR_CHECKBOX_NOTIFY).prop('checked', false);
 
         if (cant_modify) {
             $('#showcontacts_attendee-input').attr('disabled', 'disabled').addClass('disabled');
@@ -380,7 +572,7 @@ export class GuestsPart extends FakePart{
             $('#showcontacts_attendee-input').removeAttr('disabled').removeClass('disabled');
 
             if ((event?.attendees?.length ?? 0) > 0) {
-                $('#edit-attendees-donotify').prop('checked', true);
+                $(SELECTOR_CHECKBOX_NOTIFY).prop('checked', true);
                 this.update_free_busy();
             } 
         }
@@ -388,10 +580,244 @@ export class GuestsPart extends FakePart{
         this.cant_modify = cant_modify;
     }  
 
+    /**
+     * Récupère l'email et le nom d'un participant mis dans un champ
+     * @private
+     * @param {string} val Valeur récupérer dans le champ
+     * @return {User}
+     */
+    _slice_user_datas(val) {
+        if (val.includes(REPLACE_CHAR)) val = val.replaceAll(REPLACE_CHAR, GUEST_SEPARATOR);
+
+        let data = {
+            name:EMPTY_STRING,
+            email:EMPTY_STRING
+        };
+
+        if (val.includes('<')) {
+            val = val.split('<');
+            data.name = val[0].trim();
+            data.email = val[1].replace('>', EMPTY_STRING).trim();
+        }
+        else if (val.includes('@')) data.email = val.trim();
+
+        return data;
+    }
+
+    /**
+     * Met en forme les arguments pour les fonctions de la classe.
+     * @private
+     * @param {*[]} args 
+     * @return {Array}
+     */
+    _get_args(args) {
+        let [event, $field] = args;
+
+        if (!!event.val) {
+            return [$field, event];
+        }
+
+        return args;
+    }
+
+    /**
+     * Ajoute les focus et focusout sur un champ si ils n'existent pas.
+     * @private
+     * @param {external:jQuery} $field
+     */
+    _add_focus_if_not_exist($field) {
+        if (!$._data($field[0], 'events' )?.focus) $field.on('focus', (e) => {
+            $(`[data-linked="${$(e.currentTarget).attr('id')}"]`).addClass('forced-focus');
+        });
+
+        if (!$._data($field[0], 'events' )?.focusout) $field.on('focusout', (e) => {
+            $(`[data-linked="${$(e.currentTarget).attr('id')}"]`).removeClass('forced-focus');
+        });
+        return this;
+    }
+
+    /**
+     * Action qui sera éffectuer lorsque l'on cliquera sur le bouton qui déplie ou non les champs
+     * @param {boolean} state
+     * @package 
+     */
+    _on_switch(state) {
+        if (state) {
+            //Affiche "Participants obligatoires"
+            this._$fakeField.attr('placeholder', rcmail.gettext('req_guest', 'mel_metapage')); 
+            this._$optionnals.parent().css('display', EMPTY_STRING);
+            this._$animators.parent().css('display', EMPTY_STRING);
+
+            for (const iterator of this._$fakeField.parent().find('.mel-attendee')) {
+                $(`#${$(iterator).attr('data-parent')}`).before($(iterator));
+            }
+        }
+        else {
+            //Affiche "Ajouter des participants"
+            this._$fakeField.attr('placeholder', rcmail.gettext('add_guests', 'mel_metapage')); 
+            this._$optionnals.parent().css('display', 'none');
+            this._$animators.parent().css('display', 'none');    
+
+            const fields = [this._$optionnals, this._$animators];
+
+            for (const $field of fields) {
+                for (const iterator of $field.parent().find('.mel-attendee')) {
+                    this._$fakeField.before($(iterator));
+                }
+            }
+        }
+    }
+
+    /**
+     * Met à jour les disponibilitées des participants
+     * @async
+     * @return {Promise<void>}
+     */
     async update_free_busy() {
         await GuestsPart.UpdateFreeBusy(this._datePart);
     }
 
+
+    /**
+     * Met à jours les données liés aux participants lorsqu'un champ a été modifié
+     * @param {string} val 
+     * @param {external:jQuery} $field 
+     * @override
+     */
+    onUpdate(val, $field) {
+        {
+            const regex = REG_BETWEEN_PARENTHESIS;
+            const match = val.match(regex);
+
+            if (!!match && match.length > 0) {
+                for (const iterator of match) {
+                    val = val.replaceAll(iterator, iterator.replace(GUEST_SEPARATOR, REPLACE_CHAR));
+                }
+            }
+        }
+
+        if (val.includes(GUEST_SEPARATOR)) {
+            const event = cal.selected_event;
+            val = val.split(GUEST_SEPARATOR);
+            let has_invalid_email = false;
+            let invalids = [];
+
+            //Itère sur chaque participant, ils sont sous la forme nom<email>
+            for (const iterator of MelEnumerable.from(val).where(x => x.trim() !== EMPTY_STRING).select(this._slice_user_datas.bind(this))) {
+                if (iterator.email === EMPTY_STRING) {
+                    has_invalid_email = true;
+                    invalids.push(iterator);
+                    continue;
+                }
+                
+                if (iterator.email === GuestsPart.GetMe().email) continue;
+
+                if (0 === $(`div.mel-attendee[data-email="${iterator.email}"`).length) {
+                    //On créer un participant, on lui met son rôle 
+                    var $attendee_field = $attendee_field || $(`.mel-show-attendee[data-linked="${$field.attr('id')}"]`);
+                    var guest = new Guest(iterator.name, iterator.email);
+                    var role = Guest._GuestRole($field.attr('id'), this);
+                    //Met à jours les participants dans le plugin "Calendar" pour qu'ils soient sauvegardés
+                    var attendees = cal.edit_update_current_event_attendee(guest.toAttendee(role));
+                    //Gère si il y a un organisateur
+                    GuestsPart.SetAttendeesListOrganizer(attendees, guest.toAttendee(role));
+                    //Ajoute au champs
+                    $field.before(guest.toHtml(event).attr('data-parent', $field.attr('id')));
+                    //On vide les variables
+                    $attendee_field = null;
+                    guest = null;
+                    role = null;
+                    attendees = null;
+                }
+                else rcmail.display_message(rcmail.gettext('existing_guest', 'mel_metapage').replaceAll('%0', (iterator.name || iterator.email)), 'error');
+            }
+
+            if (has_invalid_email) {
+                rcmail.display_message(rcmail.gettext('invalid_guests', 'mel_metapage'), 'warning');
+                console.warn('/!\\[onUpdate]', invalids);
+            }
+
+            if (!$(SELECTOR_CHECKBOX_NOTIFY).hasClass(CLASS_MANUALLY_CHANGED)) $(SELECTOR_CHECKBOX_NOTIFY).prop('checked', true);
+
+            $field.val(EMPTY_STRING);
+            $field.focus();
+
+            this.update_free_busy();
+        }
+    }
+
+    /**
+     * Action qui sera appelé lorsque l'un des champs changera de valeur
+     * @param  {...any} args
+     * @override 
+     */
+    onChange(...args) {
+        const [e, $field] = this._get_args(args);
+        this.onUpdate($(e.currentTarget).val(), ($field?.click ? $field : null) ?? this._$fakeField);
+    }
+
+    /**
+     * Appeler lorsque l'on change l'état de la checkbox de notification des participants
+     * @param {Event} e 
+     */
+    onNotificationChanged(e) {
+        e = $(e.currentTarget);
+        let $querry = $(SELECTOR_CHECKBOX_NOTIFY);
+        //Lorsque cette checkbox à "manually-changed", le changement de cette checkbox ne pourra plus se faire automatiquement
+        if (!$querry.hasClass(CLASS_MANUALLY_CHANGED)) {
+            $querry.addClass(CLASS_MANUALLY_CHANGED);
+        }
+
+        //Désactiver les autres checkboxes
+        $('#edit-attendees-invite').prop('checked', e.prop('checked'));
+        $('input.edit-attendee-reply').prop('checked', e.prop('checked'));
+
+        $querry = null;
+        e = null;
+    } 
+
+    /**
+     * Appeler Lorsque l'on clique sur le bouton qui permet d'ajouter les déstinataires d'un mail dans les participants
+     * @param {Event} e 
+     */
+    onButtonMailClicked(e) {
+        const data = rcmail.env['event_prop.mails'];
+                
+        if (!!data.cc) this._$fakeField.val(`${data.cc},`).change();
+        
+        if (!!data.from) this._$fakeField.val(`${data.from},`).change();
+
+        if (!!data.to) this._$fakeField.val(`${data.to},`).change();
+    }
+
+    /**
+     * Gère les participants en supprimant ou en ajoutant l'organisateur.
+     * 
+     * Cela permet d'avoir l'organisateur dans la dialogue de disponibilitée.
+     * @param {Attendee[]} list 
+     * @param {Attendee} current_guest 
+     * @static
+     */
+    static SetAttendeesListOrganizer(list, current_guest) {
+        const add = true;
+        if (list.length === 1) {
+            if (!MelEnumerable.from(list).any(x => x.role === 'ORGANIZER'))
+            {
+                cal.edit_update_current_event_attendee(current_guest, !add);
+                cal.edit_update_current_event_attendee(this.GetMe().toAttendee('ORGANIZER'), add);
+                cal.edit_update_current_event_attendee(current_guest, add);
+            }
+            else cal.edit_clear_attendees();
+        }
+    }
+
+    /**
+     * Ajout ou met à jours les créneaux de disponibilités des participants
+     * @param {TimePartManager} timePart Pour récupérer la date et l'heure de début et de fin de l'évènement 
+     * @return {Promise<void>}
+     * @static
+     * @async
+     */
     static async UpdateFreeBusy(timePart) {
         if (GuestsPart.can === false) return;
 
@@ -446,6 +872,11 @@ export class GuestsPart extends FakePart{
         else (GuestsPart.stop = true, $('#emel-free-busy').removeClass(CLASS_FULL_WIDTH).html(EMPTY_STRING));
     }
 
+    /**
+     * Récupère les informations de l'utilisateur courant, parmis ses calendriers.
+     * @return {Guest}
+     * @static
+     */
     static GetMe() {
         const cal = rcmail.env.calendars[$('#edit-calendar').val()];
 
@@ -453,148 +884,16 @@ export class GuestsPart extends FakePart{
     }
 
     /**
-     * 
-     * @param {string} val 
-     * @param {*} $field 
+     * Met à jours les disponibilités des participants
+     * @param {external:moment} start Date de début de l'évènement
+     * @param {external:moment} end Date de fin de l'évènement
+     * @param {boolean} allDay Si l'évènement dure la journée entière ou non
+     * @return {Promise<void>}
      */
-    onUpdate(val, $field) {
-        {
-            const regex = /\((.*?)\)/g;
-            const match = val.match(regex);
-
-            if (!!match && match.length > 0) {
-                for (const iterator of match) {
-                    val = val.replaceAll(iterator, iterator.replace(',', '¤'));
-                }
-            }
-        }
-
-        if (val.includes(',')) {
-            const event = cal.selected_event;
-            val = val.split(',');
-            let has_invalid_email = false;
-            let invalids = [];
-
-            for (const iterator of MelEnumerable.from(val).where(x => x.trim() !== EMPTY_STRING).select(this._slice_user_datas.bind(this))) {
-                if (iterator.email === EMPTY_STRING) {
-                    has_invalid_email = true;
-                    invalids.push(iterator);
-                    continue;
-                }
-                
-                if (iterator.email === GuestsPart.GetMe().email) continue;
-
-                if (0 === $(`div.mel-attendee[data-email="${iterator.email}"`).length) {
-                    var $attendee_field = $attendee_field || $(`.mel-show-attendee[data-linked="${$field.attr('id')}"]`);
-                    var guest = new Guest(iterator.name, iterator.email);
-                    var role = Guest._GuestRole($field.attr('id'), this);
-                    var attendees = cal.edit_update_current_event_attendee(guest.toAttendee(role));
-                    GuestsPart.SetAttendeesListOrganizer(attendees, guest.toAttendee(role));
-                    $field.before(guest.toHtml(event).attr('data-parent', $field.attr('id')));
-                    $attendee_field = null;
-                    guest = null;
-                }
-                else rcmail.display_message(`Le participant ${iterator.name || iterator.email} éxiste déjà !`, 'error');
-            }
-
-            if (has_invalid_email) {
-                rcmail.display_message('Impossible d\'ajouter certains participants !', 'warning');
-                console.warn('/!\\[onUpdate]', invalids);
-            }
-
-            if (!$('#edit-attendees-donotify').hasClass('manually-changed')) $('#edit-attendees-donotify').prop('checked', true);
-
-            $field.val(EMPTY_STRING);
-            $field.focus();
-
-            this.update_free_busy();
-        }
-    }
-
-    static SetAttendeesListOrganizer(list, current_guest) {
-        const add = true;
-        if (list.length === 1) {
-            if (!MelEnumerable.from(list).any(x => x.role === 'ORGANIZER'))
-            {
-                cal.edit_update_current_event_attendee(current_guest, !add);
-                cal.edit_update_current_event_attendee(this.GetMe().toAttendee('ORGANIZER'), add);
-                cal.edit_update_current_event_attendee(current_guest, add);
-            }
-            else cal.edit_clear_attendees();
-        }
-    }
-
-    _slice_user_datas(val) {
-        if (val.includes('¤')) val = val.replaceAll('¤', ',');
-
-        let data = {
-            name:EMPTY_STRING,
-            email:EMPTY_STRING
-        };
-
-        if (val.includes('<')) {
-            val = val.split('<');
-            data.name = val[0].trim();
-            data.email = val[1].replace('>', EMPTY_STRING).trim();
-        }
-        else if (val.includes('@')) data.email = val.trim();
-
-        return data;
-    }
-
-    onChange(...args) {
-        const [e, $field] = this._get_args(args);
-        this.onUpdate($(e.currentTarget).val(), ($field?.click ? $field : null) ?? this._$fakeField);
-    }
-
-    _get_args(args) {
-        let [event, $field] = args;
-
-        if (!!event.val) {
-            return [$field, event];
-        }
-
-        return args;
-    }
-
-    _add_focus_if_not_exist($field) {
-        if (!$._data($field[0], 'events' )?.focus) $field.on('focus', (e) => {
-            $(`[data-linked="${$(e.currentTarget).attr('id')}"]`).addClass('forced-focus');
-        });
-
-        if (!$._data($field[0], 'events' )?.focusout) $field.on('focusout', (e) => {
-            $(`[data-linked="${$(e.currentTarget).attr('id')}"]`).removeClass('forced-focus');
-        });
-        return this;
-    }
-
-    _on_switch(state) {
-        if (state) {
-            this._$fakeField.attr('placeholder', 'Participants obligatoires');
-            this._$optionnals.parent().css('display', EMPTY_STRING);
-            this._$animators.parent().css('display', EMPTY_STRING);
-
-            for (const iterator of this._$fakeField.parent().find('.mel-attendee')) {
-                $(`#${$(iterator).attr('data-parent')}`).before($(iterator));
-            }
-        }
-        else {
-            this._$fakeField.attr('placeholder', 'Ajoutez des participants');
-            this._$optionnals.parent().css('display', 'none');
-            this._$animators.parent().css('display', 'none');    
-
-            const fields = [this._$optionnals, this._$animators];
-
-            for (const $field of fields) {
-                for (const iterator of $field.parent().find('.mel-attendee')) {
-                    this._$fakeField.before($(iterator));
-                }
-            }
-        }
-    }
-
     static async UpdateDispos(start, end, allDay = false) {
+        //Si une mise à jours est déjà en cours, on attend qu'elle se termine
         if (!!this.UpdateDispos.promises) {
+            //Si une mise à jours est différente de la précédente, on attend l'ancienne puis on fait la nouvelle
             if (this.UpdateDispos.promises.start.format() !== start.format() || 
                 this.UpdateDispos.promises.end.format() !== end.format()   ||
                 this.UpdateDispos.promises.allDay !== allDay) await this.UpdateDispos.promises.promises;
@@ -615,9 +914,58 @@ export class GuestsPart extends FakePart{
     }
 }
 
+/**
+ * @typedef DispoPromise 
+ * @property {external:moment} start
+ * @property {external:moment} end
+ * @property {Promise} promises
+ */
+
+/**
+ * Contient les promesses de la modification de date en cours.
+ * 
+ * Cela permet de ne pas faire de requêtes inutiles.
+ * @type {?DispoPromise}
+ * @static
+ * @package
+ */
+GuestsPart.UpdateDispos.promises = undefined;
+
+/**
+ * Si l'on peut mettre à jour les créneaux ou non.
+ * @see {@link GuestsPart.UpdateFreeBusy}
+ * @type {boolean}
+ * @static
+ */
 GuestsPart.can = true;
+/**
+ * Si l'on doit arrêter la mise à jours des créneaux ou non.
+ * @see {@link GuestsPart.UpdateFreeBusy}
+ * @type {boolean}
+ * @static
+ */
 GuestsPart.stop = false;
+/**
+ * Instance de l'évènement en cours
+ * @static
+ * @readonly
+ */
 GuestsPart.event = null;
 Object.defineProperty(GuestsPart, 'event', {
     get() {return cal.selected_event;}
 });
+
+/**
+ * @typedef {string} Role
+ */
+
+/**
+ * @enum {Role}
+ * @static
+ * @readonly
+ */
+GuestsPart.ROLES = {
+    required: 'REQ-PARTICIPANT',
+    optional: ROLE_ATTENDEE_OPTIONNAL,
+    chair: 'CHAIR'
+}

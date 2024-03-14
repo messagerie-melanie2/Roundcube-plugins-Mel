@@ -1,3 +1,7 @@
+/**
+ * @module EventView/Constants
+ */
+
 export const FIRST_ARGUMENT = '%0';
 export const ID_SELECTOR = '#';
 export const CLASS_SELECTOR = '.';

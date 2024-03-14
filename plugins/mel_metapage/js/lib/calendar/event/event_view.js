@@ -1,8 +1,13 @@
 /**
  * @namespace EventView
  * @property {module:EventView} View
+ * @property {module:EventView/Constants} Constants
  * @property {module:EventView/Parts/Alarm} Alarms
  * @property {module:EventView/Parts/Categories} Categories
+ * @property {module:EventView/Parts/Guests} Guests
+ * @property {module:EventView/Parts/Guests/FreeBusy} FreeBusy
+ * @property {module:EventView/Parts/Location} Location
+ * @property {module:EventView/Parts/Constants} PartsConstants
  */
 
 /**

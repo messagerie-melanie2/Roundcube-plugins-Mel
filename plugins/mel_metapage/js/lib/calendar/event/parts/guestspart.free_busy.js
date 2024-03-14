@@ -1,3 +1,7 @@
+/**
+ * @module EventView/Parts/Guests/FreeBusy
+ */
+
 import { MelEnumerable } from "../../../classes/enum.js";
 import { DATE_FORMAT, DATE_HOUR_FORMAT, DATE_TIME_FORMAT } from "../../../constants/constants.dates.js";
 import { ____JsHtml } from "../../../html/JsHtml/JsHtml.js";
@@ -7,15 +11,26 @@ import { MAX_SLOT, ROLE_ATTENDEE_OPTIONNAL } from "./parts.constants.js";
 import { TimePartManager } from "./timepart.js";
 
 /**
+ * @typedef FreeBusyTimesData
+ * @property {string} email Email du participant
+ * @property {string} start Date de début 
+ * @property {string} end Date de fin
+ * @property {number} interval Interval entre chaque créneaux horaires
+ * @property {string} slots Liste des différents crénaux avec leurs disponibilités
+ */
+
+/**
  * Un jour en millisecondes
  * @constant
  * @type {number}
+ * @package
  */
 const DAY_MS = 86400000;
 /**
  * Une heure en millisecondes
  * @constant
  * @type {number}
+ * @package
  */
 const HOUR_MS = 3600000;
 
@@ -157,8 +172,8 @@ export class FreeBusyGuests {
 
     /**
      * Récupère les 3 premiers créneaux disponibles
-     * @param {moment} start 
-     * @param {moment} end 
+     * @param {external:moment} start 
+     * @param {external:moment} end 
      * @param {*} attendees 
      * @returns {Promise<Slot[]>}
      */
@@ -182,7 +197,7 @@ FreeBusyGuests.can = true;
 class Slots {
     /**
      * 
-     * @param {{email:string, start:string, end:string, interval:number}} data Données récupérer par le serveur
+     * @param {FreeBusyTimesData} data Données récupérer par le serveur
      */
     constructor(data) {
         /**
@@ -246,7 +261,7 @@ class Slots {
 class Slot {
     /**
      * 
-     * @param {string | moment | date | number} start Date de début
+     * @param {string | external:moment | date | number} start Date de début
      * @param {number} interval Interval entre chaque créneau
      * @param {number} index Index du créneau
      * @param {string} state Etat du créneau
@@ -254,12 +269,12 @@ class Slot {
     constructor(start, interval, index, state) {
         /**
          * Date de début du créneaux
-         * @type {moment}
+         * @type {external:moment}
          */
         this.start = moment(start).add(interval * index, 'm');
         /**
          * Date de fin du créneau
-         * @type {moment}
+         * @type {external:moment}
          * @readonly
          */
         this.end;
@@ -372,7 +387,7 @@ class Slot {
 /**
  * Liste des disponibilités
  * @static
- * @enum
+ * @enum {string}
  */
 Slot.STATES = {
     unknown:'0',

@@ -1,6 +1,8 @@
 /**
  * @namespace MelMetapage
  * @property {Utilities} Utilities
+ * @property {Constants} Constants
+ * @property {module:Exceptions} Exceptions
  */
 
 /**
@@ -10,6 +12,11 @@
  * @property {module:Log} Log
  * @property {module:BaseStorage} BaseStorage
  * @property {module:Mel/UsefulFunctions} Functions
+ */
+
+/**
+ * @namespace Constants
+ * @property {module:Constants/RegEx} RegEx
  */
 
 /**

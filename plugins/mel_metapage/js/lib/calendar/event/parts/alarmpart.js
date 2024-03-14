@@ -212,22 +212,22 @@ AlarmData.OFFSETS = {
 export class AlarmPart extends FakePart {
     /**
      * 
-     * @param {$} $alarm_type Champ qui gère le type d'alarme
-     * @param {$} $alarm_offset Champ qui gère la durée de l'alarme
-     * @param {$} $alarf_offset_type Champ qui gère l'unitée de l'alarme
-     * @param {$} $alarm Champ visuel qui sera afficher à la place du champ de base
+     * @param {external:jQuery} $alarm_type Champ qui gère le type d'alarme
+     * @param {external:jQuery} $alarm_offset Champ qui gère la durée de l'alarme
+     * @param {external:jQuery} $alarf_offset_type Champ qui gère l'unitée de l'alarme
+     * @param {external:jQuery} $alarm Champ visuel qui sera afficher à la place du champ de base
      */
     constructor($alarm_type, $alarm_offset, $alarf_offset_type, $alarm) {
         super($alarm_offset, $alarm, Parts.MODE.change);
         /**
          * Champ qui gère le type d'alarme
-         * @type {$}
+         * @type {external:jQuery}
          * @package
          */
         this._$fieldAlarmType = $alarm_type;
         /**
          * Champ qui gère l'unitée de l'alarme
-         * @type {$}
+         * @type {external:jQuery}
          * @package
          */
         this._$fieldAlarmOffsetType = $alarf_offset_type;

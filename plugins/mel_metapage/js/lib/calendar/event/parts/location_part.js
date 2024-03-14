@@ -6,16 +6,17 @@
  * @local ALocationPart
  * @local VisioManager
  * @local AVisio
+ * @local IntegratedVisio
  */
 
 import { MelEnumerable } from "../../../classes/enum.js";
 import { EMPTY_STRING } from "../../../constants/constants.js";
-import { REG_URL } from "../../../constants/regexp.js";
+import { REG_ALPHANUM, REG_NUMBER, REG_URL } from "../../../constants/regexp.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../../../mel_events.js";
 import { Mel_Promise } from "../../../mel_promise.js";
 import { CategoryPart } from "./categoryparts.js";
-import { LOCATION_SEPARATOR } from "./parts.constants.js";
+import { INTEGRATED_VISIO_MIN_NUMBER_COUNT, INTEGRATED_VISIO_MIN_SIZE, LOCATION_AUDIO_OPTION_VALUE, LOCATION_OPTION_VALUE, LOCATION_SEPARATOR, LOCATION_VISIO_EXTERNAL_OPTION_VALUE, LOCATION_VISIO_INTERNAL_OPTION_VALUE, LOCATION_VISIO_OPTION_VALUE, SEPARATOR_AUDIO_PIN, SEPARATOR_AUDIO_URL_LOCATION, SEPARATOR_END_LOCATION_VISIO_INTEGRATED_PHONE, SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE, SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE, TAG_WSP_CATEGORY } from "./parts.constants.js";
 
 MelHtml.start.constructor.prototype.foreach = function() {
     return MelHtml.start;
@@ -345,9 +346,10 @@ class VisioManager extends ALocationPart {
      * @overload
      * @returns {string}
      * @default 'visio'
+     * @see {@link LOCATION_VISIO_OPTION_VALUE}
      */
     static OptionValue() {
-        return 'visio';
+        return LOCATION_VISIO_OPTION_VALUE;
     }
 
     /**
@@ -355,6 +357,7 @@ class VisioManager extends ALocationPart {
      * @override
      * @return {number}
      * @default 1
+     * @static
      */
     static Max() {
         return 1;
@@ -408,6 +411,7 @@ class IntegratedVisio extends AVisio {
          * @inheritdoc
          * @type {string}
          * @readonly
+         * @override
          */
         this.location;
 
@@ -417,8 +421,8 @@ class IntegratedVisio extends AVisio {
                     _key:location
                 };
 
-                if (categoryPart._$fakeField.val().includes('ws#')) {
-                    config['_wsp'] = categoryPart._$fakeField.val().replace('ws#', '');
+                if (categoryPart._$fakeField.val().includes(TAG_WSP_CATEGORY)) {
+                    config['_wsp'] = categoryPart._$fakeField.val().replace(TAG_WSP_CATEGORY, EMPTY_STRING);
                 }
 
                 if (!!(this._pass || false)) config['_pass'] = this._pass;
@@ -436,53 +440,102 @@ class IntegratedVisio extends AVisio {
 
         const link = WebconfLink.create({location});
         this.location = link.key;
-        this._pass = link.pass ?? '';
+        this._pass = link.pass ?? EMPTY_STRING;
 
-        if (this._pass.includes(' ('))
+        if (this._pass.includes(SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE))
         {
-            let split = this._pass.split(' (');
+            let split = this._pass.split(SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE);
             this._pass = split[0];
-            split = split[1].split(' | ');
+            split = split[1].split(SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE);
             this._phone = split[0];
-            this._pin = split[1].replace(')', '');
+            this._pin = split[1].replace(SEPARATOR_END_LOCATION_VISIO_INTEGRATED_PHONE, EMPTY_STRING);
         }
-        else if (this.location.includes(' (')) {
-            let split = this.location.split(' (').split(' | ');
+        else if (this.location.includes(SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE)) {
+            let split = this.location.split(SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE).split(SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE);
             this._phone = split[0];
-            this._pin = split[1].replace(')', EMPTY_STRING);
+            this._pin = split[1].replace(SEPARATOR_END_LOCATION_VISIO_INTEGRATED_PHONE, EMPTY_STRING);
         };
     }
 
+    /**
+     * @inheritdoc
+     * @override
+     */
     _init(location) {
         super._init(location);
-        this._last_room = '';
-        this._pass = '';
-        this._phone = '';
-        this._pin = '';
+
+        /**
+         * Ancienne nom de la room
+         * @type {string}
+         * @package
+         */
+        this._last_room = EMPTY_STRING;
+        /**
+         * Mot de passe de la room
+         * @type {string}
+         * @package
+         */
+        this._pass = EMPTY_STRING;
+        /**
+         * Numéro de téléphone de la room
+         * @type {string}
+         * @package
+         */
+        this._phone = EMPTY_STRING;
+        /**
+         * Code pin de la room
+         * @type {string}
+         * @package
+         */
+        this._pin = EMPTY_STRING;
+        /**
+         * Div qui contient les champs de la visioconférence
+         * @type {external:jQuery}
+         * @package
+         */
         this._$div = null;
+        /**
+         * Contient une promesse qui sera résolu ultérieurement
+         * @type {Mel_Promise}
+         * @package
+         */
         this._current_promise = Mel_Promise.Resolved();
     }
 
+    /**
+     * Si la localisation est valide et correspond à ce que l'on attend
+     * @returns {boolean}
+     * @override
+     */
     is_valid() {
         return EMPTY_STRING !== this._room && !(this._room.length < 10 || MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(this._room));
     }
-
+    /**
+     * Action à faire si la localisation n'est pas valide
+     * @override
+     */
     invalid_action() {
         if (EMPTY_STRING === this._room) {
-            rcmail.display_message('Le nom de la visioconférence ne doit être vide !', 'error');
+            rcmail.display_message(rcmail.gettext('error_empty_event_visio_room', 'mel_metapage'), 'error');
         }
-        else if (this._room.length < 10)
+        else if (this._room.length < INTEGRATED_VISIO_MIN_SIZE)
         {
-            rcmail.display_message('Le nom de la visioconférence doit avoir au moins 10 charactères !', 'error');
+            rcmail.display_message(rcmail.gettext('error_too_small_event_visio_room', 'mel_metapage'), 'error');
         }
-        else if (MelEnumerable.from(this._room).where(x => /\d/.test(x)).count() < 3 || /^[0-9a-zA-Z]+$/.test(this._room)){
-            rcmail.display_message('Le nom de la visioconférence doit avoir au moins 3 chiffres !', 'error');
+        else if (MelEnumerable.from(this._room).where(x => REG_NUMBER.test(x)).count() < INTEGRATED_VISIO_MIN_NUMBER_COUNT || REG_ALPHANUM.test(this._room)){
+            rcmail.display_message(rcmail.gettext('error_less_number_event_visio_room', 'mel_metapage'), 'error');
         }
-        else rcmail.display_message('Erreur inconnue !', 'error');
+        else rcmail.display_message(rcmail.gettext('unknown_error', 'mel_metapage'), 'error');
 
         this._$div.find(`#integrated-${this.id}`).focus();
     }
 
+    /**
+     * Génère cette partie de la localisation sous forme html
+     * @param {external:jQuery} $parent Parent qui contiendra le html
+     * @returns {IntegratedVisio} Chaînage
+     * @override
+     */
     generate($parent) {
         super.generate($parent);
 
@@ -517,6 +570,15 @@ class IntegratedVisio extends AVisio {
         return this;
     }
 
+    /**
+     * Est appelé lorsque le champ de room est modifié.
+     * 
+     * Change la localisation et récupère le code pin et le numéro de téléphone de la visio.
+     * @async
+     * @param {Event} event 
+     * @returns {Promise<void>}
+     * @package
+     */
     async _on_room_updated(event) {
         event = $(event.currentTarget);
 
@@ -539,6 +601,11 @@ class IntegratedVisio extends AVisio {
         this.onchange.call();
     }
 
+    /**
+     * Est appelé lorsque le champs mot de passe est modifié.
+     * @param {Event} event
+     * @package 
+     */
     _on_pass_updated(event) {
         event = $(event.currentTarget);
 
@@ -546,6 +613,12 @@ class IntegratedVisio extends AVisio {
         this.onchange.call();
     } 
 
+    /**
+     * Récupère le numéro de téléphone et le code pin de la visioconférence.
+     * 
+     * Si ils ne sont pas encore chargé, et qu'on souhaite attendre qu'ils soient chargés, il faudra appeler {@link IntegratedVisio~wait}.
+     * @returns {string}
+     */
     get_phone() {
         if (this._last_room !== this._room) 
         {
@@ -574,29 +647,60 @@ class IntegratedVisio extends AVisio {
         else return `(${this._phone} | ${this._pin})`;
     }
 
+    /**
+     * Libère les données en mémoire
+     * @override
+     */
     destroy() {
         this._$div = null;
         this._current_promise = null;
     }
 
+    /**
+     * @inheritdoc
+     */
     async wait() {
         await this._current_promise;
     }
 
+    /**
+     * Valeur de l'option qui désigne cette classe.
+     * @static
+     * @returns {string}
+     * @override
+     * @default 'visio-internal'
+     * @see {@link LOCATION_VISIO_INTERNAL_OPTION_VALUE}
+     */
     static OptionValue() {
-        return 'visio-internal';
+        return LOCATION_VISIO_INTERNAL_OPTION_VALUE;
     }
 
+    /**
+     * Vérifie si la localisation est de ce type
+     * @static
+     * @param {string} location — Localisation de l'évènement
+     * @returns {boolean}
+     * @override
+     */
     static Has(location) {
         return !!(WebconfLink.create({location}).key || false)
     }
 }
 
-class ExternalVisio extends ALocationPart {
+/**
+ * @class
+ * @classdesc Représente une partie de la localisation d'un évènement qui est une visioconférence externe.
+ * @augments AVisio
+ * @package
+ */
+class ExternalVisio extends AVisio {
     constructor(location, index) {
         super(location, index);
     }
 
+    /**
+     * @inheritdoc
+     */
     _init(location) {
         super._init(location);
 
@@ -606,6 +710,9 @@ class ExternalVisio extends ALocationPart {
         });
     }
 
+    /**
+     * @inheritdoc
+     */
     generate($parent) {
         super.generate($parent);
 
@@ -620,6 +727,13 @@ class ExternalVisio extends ALocationPart {
         return this;
     }
 
+    /**
+     * Est appelé lorsque le champs de la visioconférence externe est modifié.
+     * 
+     * Change la localisation par la nouvelle donnée.
+     * @param {Event} event 
+     * @package
+     */
     _on_update(event) {
         event = $(event.currentTarget);
         const val = event.val();
@@ -629,59 +743,113 @@ class ExternalVisio extends ALocationPart {
         this.onchange.call();
     }
 
+    /**
+     * Si la localisation est valide et correspond à ce que l'on attend
+     * @override
+     * @returns {boolean}
+     */
     is_valid() {
         return  EMPTY_STRING !== this.location;
     }
 
+    /**
+     * Action à faire si la localisation n'est pas valide
+     * @override
+     */
     invalid_action() {
-        rcmail.display_message('Le nom de la visioconférence ne doit être vide !', 'error');
+        rcmail.display_message(rcmail.gettext('error_empty_event_visio_room', 'mel_metapage'), 'error');
 
         $(`#external-${this.id}`).focus();
     }
 
-
+    /**
+     * Valeur de l'option qui désigne cette classe.
+     * @static
+     * @returns {string}
+     * @override
+     * @default 'visio-external'
+     * @see {@link LOCATION_VISIO_EXTERNAL_OPTION_VALUE}
+     */
     static OptionValue() {
-        return 'visio-external';
+        return LOCATION_VISIO_EXTERNAL_OPTION_VALUE;
     }
 
+    /**
+     * Vérifie si la localisation est de ce type
+     * @static
+     * @param {string} location — Localisation de l'évènement
+     * @returns {boolean}
+     * @override
+     */
     static Has(location) {
         return !IntegratedVisio.Has(location) && (location.includes('@visio') || location.match(new RegExp(REG_URL))); 
     }
 }
 
+/**
+ * @class
+ * @classdesc Représente une partie de la localisation d'un évènement qui est une audioconférence
+ * @augments ALocationPart
+ * @package
+ */
 class Phone extends ALocationPart {
     constructor(location, index) {
         super(location, index);
 
         if (location.includes(Phone.Url())) {
-            let data = location.split(' : ')[1];
-            const [phone, pin] = data.split(' - ');
+            let data = location.split(SEPARATOR_AUDIO_URL_LOCATION)[1];
+            const [phone, pin] = data.split(SEPARATOR_AUDIO_PIN);
             this._phone = phone;
-            this._pin = pin || '';
+            this._pin = pin || EMPTY_STRING;
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     _init(location) {
         super._init(location);
 
-        this._phone = '';
-        this._pin = '';
+        /**
+         * Numéro de téléphone
+         * @type {string}
+         * @package
+         */
+        this._phone = EMPTY_STRING;
+        /**
+         * Code pin
+         * @type {string}
+         * @package
+         */
+        this._pin = EMPTY_STRING;
 
         Object.defineProperty(this, 'location', {
-            get:() => `${Phone.Url()} : ${this._phone} - ${this._pin}`
+            get:() => `${Phone.Url()}${SEPARATOR_AUDIO_URL_LOCATION}${this._phone}${SEPARATOR_AUDIO_PIN}${this._pin}`
         });
     }
 
+    /**
+     * Si la localisation est valide et correspond à ce que l'on attend
+     * @override
+     * @returns {boolean}
+     */
     is_valid() {
         return  EMPTY_STRING !== this._phone;
     }
 
+    /**
+     * Action à faire si la localisation n'est pas valide
+     * @override
+     */
     invalid_action() {
-        rcmail.display_message('Le numéro de téléphone ne doit être vide !', 'error');
+        rcmail.display_message(rcmail.gettext('error_empty_event_audio', 'mel_metapage'), 'error');
 
         $(`#phone-${this.id}`).focus();
     }
 
+    /**
+     * @inheritdoc
+     */
     generate($parent) {
         super.generate($parent);
 
@@ -689,7 +857,7 @@ class Phone extends ALocationPart {
         .div({class: 'location-mode', 'data-locationmode': this.option_value()})
             .row()
                 .a({class:'mel-button no-button-margin col-md-6', href: Phone.Url(), target: '_blank'}).css({display:'flex', 'align-items':'center', 'justify-content':'space-between'})
-                    .text('Réserver une audio-conférence')
+                    .text('mel_metapage.found_audio_date')
                     .icon('open_in_new').css('font-size', '21px').end()
                 .end()
             .end()
@@ -709,6 +877,13 @@ class Phone extends ALocationPart {
         return this;
     }
 
+    /**
+     * Est appelé lorsqu'un champ de l'audioconférence a été modifié.
+     * 
+     * Change la localisation par la nouvelle donnée.
+     * @param {Event} event 
+     * @package
+     */
     _on_update(event) {
         event = $(event.currentTarget);
         const val = event.val();
@@ -719,33 +894,72 @@ class Phone extends ALocationPart {
         this.onchange.call();
     }
 
+    /**
+     * Vérifie si la localisation est de ce type
+     * @static
+     * @param {string} location — Localisation de l'évènement
+     * @returns {boolean}
+     * @override
+     */
     static Has(location) {
         return location.includes(this.Url());
     }
 
+    /**
+     * Valeur de l'option qui désigne cette classe.
+     * @static
+     * @returns {string}
+     * @override
+     * @default 'audio'
+     * @see {@link LOCATION_AUDIO_OPTION_VALUE}
+     */
     static OptionValue() {
-        return 'audio';
+        return LOCATION_AUDIO_OPTION_VALUE;
     }
 
+    /**
+     * Nombre maximum de cette classe qui peut être utilisé
+     * @override
+     * @return {number}
+     * @default 1
+     * @static
+     */
     static Max() {
         return 1;
     }
 
+    /**
+     * Récupère l'url du site qui permet de réserver l'audio conférence.
+     * @static 
+     * @returns {string}
+     */
     static Url() {
         return rcmail.env.mel_metapage_audio_url;
     }
 }
 
+/**
+ * @class
+ * @classdesc Représente une partie de la localisation d'un évènement qui est un emplacement.
+ * @augments ALocationPart
+ * @package
+ */
 class Location extends ALocationPart {
     constructor(location, index) {
         super(location, index);
         this._$field = $(`#location-text-${index}`);
     }
 
+    /**
+     * @inheritdoc 
+     */
     _init(location) {
         super._init(location);
     }
 
+    /**
+     * @inheritdoc
+     */
     generate($parent) {
         super.generate($parent);
 
@@ -760,6 +974,13 @@ class Location extends ALocationPart {
         return this;
     }
 
+    /**
+     * Est appelé lorsque le champ de l'emplacement.
+     * 
+     * Change la localisation par la nouvelle donnée.
+     * @param {Event} event 
+     * @package
+     */
     _on_update(event) {
         const val = $(event.currentTarget).val();
 
@@ -768,39 +989,119 @@ class Location extends ALocationPart {
         this.onchange.call();
     }
 
+    /**
+     * Si la localisation est valide et correspond à ce que l'on attend
+     * 
+     * Un emplacement est TOUJOURS valide.
+     * @returns {boolean}
+     * @override
+     * @default true
+     */
     is_valid() {
         return true;
     }
 
+    /**
+     * Action à faire si la localisation n'est pas valide
+     * @override
+     */
     invalid_action() {
     }
 
+    /**
+     * Vérifie si la localisation est de se type
+     * @param {string} location 
+     * @returns {boolean}
+     * @static
+     */
     static Has(location) {
         return !Phone.Has(location) && !VisioManager.Has(location);
     }
 
+    /**
+     * Valeur de l'option qui désigne cette classe.
+     * @static
+     * @returns {string}
+     * @override
+     * @default 'location'
+     * @see {@link LOCATION_OPTION_VALUE}
+     */
     static OptionValue() {
-        return 'location';
+        return LOCATION_OPTION_VALUE;
     }
 
+    /**
+     * Nombre maximum de cette classe qui peut être utilisé
+     * @override
+     * @return {number}
+     * @default Number.POSITIVE_INFINITY
+     * @static
+     */
     static Max() {
         return Number.POSITIVE_INFINITY;
     }
 }
 
+/**
+ * @class
+ * @classdesc Gère l'emplacement de la réunion avec les différents types d'emplacement. Les emplacements sont cumulables, il peut en avoir des différents.
+ */
 export class LocationPartManager  {
+    /**
+     * 
+     * @param {external:jQuery} $locations Div qui contient les emplacements
+     * @param {external:jQuery} $field Champ qui contient l'emplacement et qui sera sauvegardé
+     * @param {CategoryPart} categoryPart Partie de la catégorie
+     */
     constructor($locations, $field, categoryPart) {
+        /**
+         * Contient les données des différents emplacements
+         * @type {Object<string, ALocationPart>}
+         * @member
+         */
         this.locations = {};
+        /**
+         * Contient les données des différents emplacements qui ont été généré et mis en cache si jamais on change de localisation.
+         * @type {Object<string, Object<string, ALocationPart>>}
+         * @member
+         * @package
+         */
         this._cached = {};
 
+        /**
+         * Champ qui contient l'emplacement et qui sera sauvegardé
+         * @type {external:jQuery}
+         * @package
+         * @member
+         */
         this._$field = $field;
+        /**
+         * Div qui contient les emplacements
+         * @type {external:jQuery}
+         * @package
+         * @member
+         */
         this._$locations = $locations;
+        /**
+         * Partie de la catégorie
+         * @type {CategoryPart}
+         * @package
+         * @member
+         */
         this._category = categoryPart;
     }
 
+    /**
+     * Initialise la partie.
+     * 
+     * Si un ou plusieurs emplacements existent déjà, les parties d'emplacements (hérite de {@link ALocationPart}) seront générer.
+     * 
+     * Sinon, un emplacement de type {@link Location} sera généré.
+     * @param {*} event Evènement du plugin `Calendar`
+     */
     init(event) {
         let no_location = true;
-        this._$locations.html('');
+        this._$locations.html(EMPTY_STRING);
 
         if (!!(event.location || false)) {
             let location = event.location.split(LOCATION_SEPARATOR);
@@ -818,7 +1119,7 @@ export class LocationPartManager  {
         }
 
         if (no_location) {
-            this.add(Location, '');
+            this.add(Location, EMPTY_STRING);
         }
         else this._update_all_selects();
     }
@@ -966,7 +1267,7 @@ export class LocationPartManager  {
                         return html.end();
                     }, ...LocationPartManager.PARTS)
                 .end()
-                .button({type:'button', class:'no-background ml-2', title:(has_locations ? 'Supprimer' : 'Ajouter')}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
+                .button({type:'button', class:'no-background ml-2', title:(has_locations ? rcmail.gettext('mel_metapage.delete') : rcmail.gettext('mel_metapage.add'))}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
                     .attr('onclick', (e) => {
                         if ('delete' === $(e.currentTarget).children().first().html()) this.remove($(e.currentTarget).parent().find('select').data('id'));
                         else this.add(Location, '');
@@ -1014,6 +1315,11 @@ export class LocationPartManager  {
 
 }
 
+/**
+ * Liste des différentes classes qui gère les différentes parties des emplacements
+ * @type {Array<Class>}
+ * @static
+ */
 LocationPartManager.PARTS = [
     Location,
     Phone,

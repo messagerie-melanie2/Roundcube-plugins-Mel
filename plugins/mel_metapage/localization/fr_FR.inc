@@ -469,3 +469,13 @@ $labels['existing_guest'] = 'Le participant %0 éxiste déjà !';
 
 $labels['add_guests'] = 'Ajoutez des participants';
 $labels['req_guest'] = 'Participants obligatoires';
+
+$labels['error_empty_event_visio_room'] = 'Le nom de la visioconférence ne doit être vide !';
+$labels['error_too_small_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 10 charactères !';
+$labels['error_less_number_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 3 chiffres !';
+$labels['unknown_error'] = 'Erruer inconnue !';
+$labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vide !';
+
+$labels['found_audio_date'] = 'Réserver une audio-conférence';
+$labels['add'] = 'Ajouter';
+$labels['delete'] = 'Supprimer';

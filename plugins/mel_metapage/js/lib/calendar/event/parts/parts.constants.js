@@ -62,6 +62,19 @@ export const CHECK_BOX_NOTIFY = 'edit-attendees-donotify';
 export const SELECTOR_CHECKBOX_NOTIFY = `${ID_SELECTOR}${CHECK_BOX_NOTIFY}`;
 /**
  * @constant
- * @string
+ * @type {string}
+ * @default String.fromCharCode('8199')
  */
 export const LOCATION_SEPARATOR = String.fromCharCode('8199');
+export const LOCATION_VISIO_OPTION_VALUE = 'visio';
+export const LOCATION_VISIO_INTERNAL_OPTION_VALUE = 'visio-internal';
+export const LOCATION_VISIO_EXTERNAL_OPTION_VALUE = 'visio-external';
+export const LOCATION_AUDIO_OPTION_VALUE = 'audio';
+export const LOCATION_OPTION_VALUE = 'location';
+export const SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE = ' (';
+export const SEPARATOR_END_LOCATION_VISIO_INTEGRATED_PHONE = ')';
+export const SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE = ' | ';
+export const INTEGRATED_VISIO_MIN_SIZE = 10;
+export const INTEGRATED_VISIO_MIN_NUMBER_COUNT = 3;
+export const SEPARATOR_AUDIO_URL_LOCATION = ' : ';
+export const SEPARATOR_AUDIO_PIN = ' | ';

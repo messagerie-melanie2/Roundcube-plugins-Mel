@@ -49,6 +49,10 @@ html.layout-large .task-mail #layout-sidebar > .header {
   width: 100%!important;
   flex: 0 1 auto!important;
 }
+.task-mail.action-compose #layout #layout-content > .header a.button,
+.task-mail.action-compose #layout #layout-content > .header span {
+  color: var(--layout-content-header-text-color);
+}
 .task-mail #messagelist-content {
   background-color: var(--layout-content-background-color) !important;
 }

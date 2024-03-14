@@ -1634,6 +1634,7 @@ html.dark-mode .fc-event.cal-event-status-telework {
             right: -43px;
         }
     }
+    
 }
 
 /** FORM **/
@@ -5680,15 +5681,25 @@ bnum-separate{
     }
 }
 
-.mel-button>span.plus {
-  margin-left: 40px;
+.mel-button{
+    & > span.plus {
+        margin-left: 40px;
+      
+        &::before {
+          /* font-size: 15px; */
+          display: inline-block;
+          vertical-align: middle;
+          margin-bottom: 3px;
+        }
+    }
 
-  &::before {
-    /* font-size: 15px; */
-    display: inline-block;
-    vertical-align: middle;
-    margin-bottom: 3px;
-  }
+    & > .plus {
+        &:extend(.mel-button > span.plus);
+
+        &::before {
+            &:extend(.mel-button > span.plus::before);
+        }
+    }
 }
 
 .input-mel.border-bottom-input {

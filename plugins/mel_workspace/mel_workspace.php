@@ -95,9 +95,9 @@ class mel_workspace extends bnum_plugin
         {
         $this->add_button(array(
             'command' => "workspace",
-            'class'	=> 'button-wsp icon-mel-workplace',
-            'classsel' => 'button-wsp button-selected icon-mel-workplace',
-            'innerclass' => 'button-inner',
+            'class'	=> 'wsp button-wsp icon-mel-workplace',
+            'classsel' => 'wsp button-wsp button-selected icon-mel-workplace',
+            'innerclass' => 'wsp button-inner',
             'label'	=> 'my_workspaces',
             'title' => 'my_workspaces',
             'type'       => 'link',

@@ -4106,10 +4106,12 @@ bnum-separate {
   margin-bottom: 20px;
   display: block;
 }
-.mel-button > span.plus {
+.mel-button > span.plus,
+.mel-button > .plus {
   margin-left: 40px;
 }
-.mel-button > span.plus::before {
+.mel-button > span.plus::before,
+.mel-button > .plus::before {
   /* font-size: 15px; */
   display: inline-block;
   vertical-align: middle;

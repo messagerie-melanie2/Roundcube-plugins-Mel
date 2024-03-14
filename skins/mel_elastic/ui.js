@@ -603,14 +603,15 @@ $(document).ready(() => {
         init_const()
         {
             /**
-             * ¤¤¤
              * @type {string}
              * @constant
+             * @default '¤¤¤'
              */
             this.JSON_CHAR_REPLACE;
             /**
              * @type {string}
              * @constant
+             * @default '<value/>'
              */
             this.SELECT_VALUE_REPLACE;
             /**
@@ -626,9 +627,10 @@ $(document).ready(() => {
              */
             this.FROM_INFOS;
             /**
-             * @type {8}
+             * @type {number}
              * @constant
              * @package
+             * @default 8
              */  
             this._integer;
 
@@ -646,7 +648,7 @@ $(document).ready(() => {
 
             /**
              * @type {Keys}
-             * @constant
+             * @readonly
              * @package
              * @see {@link Keys}
              */  

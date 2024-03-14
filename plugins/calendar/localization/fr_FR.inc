@@ -25,6 +25,8 @@ $labels['aftertrash'] = 'Déplacer dans la corbeille';
 $labels['afterdelete'] = 'Supprimer ce message';
 $labels['afterflagdeleted'] = 'Marquer comme supprimer';
 $labels['aftermoveto'] = 'Déplacer vers...';
+//PAMELLA
+$labels['emptyeventtitle'] = 'Le titre de l\'évènement ne peut pas être vide !';
 // PAMELA - Read after itip mail
 $labels['afterread'] = 'Passer en lu et RdvTraité';
 $labels['itipoptions'] = 'Invitations à l\'événement';

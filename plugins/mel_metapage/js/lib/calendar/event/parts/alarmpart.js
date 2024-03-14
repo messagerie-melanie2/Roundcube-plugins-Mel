@@ -1,3 +1,7 @@
+/**
+ * @module EventView/Parts/Alarm
+ */
+
 import { custom_alarm_dialog } from "../../../../../skins/mel_elastic/js_templates/custom_alarm.js";
 import { MelEnumerable } from "../../../classes/enum.js";
 import { RcmailDialog, RcmailDialogButton } from "../../../classes/modal.js";
@@ -11,6 +15,7 @@ import { FakePart, Parts } from "./parts.js";
  * Contient les données d'un rappel
  * @class
  * @classdesc Contient les données d'un rappel. Sa valeur et son "unitée" (minutes, heures, jours etc....) 
+ * @package
  */
 class AlarmData {
     /**
@@ -207,21 +212,23 @@ AlarmData.OFFSETS = {
 export class AlarmPart extends FakePart {
     /**
      * 
-     * @param {$} $alarm_type Champ qui gère le type d'alarme
-     * @param {$} $alarm_offset Champ qui gère la durée de l'alarme
-     * @param {$} $alarf_offset_type Champ qui gère l'unitée de l'alarme
-     * @param {$} $alarm Champ visuel qui sera afficher à la place du champ de base
+     * @param {external:jQuery} $alarm_type Champ qui gère le type d'alarme
+     * @param {external:jQuery} $alarm_offset Champ qui gère la durée de l'alarme
+     * @param {external:jQuery} $alarf_offset_type Champ qui gère l'unitée de l'alarme
+     * @param {external:jQuery} $alarm Champ visuel qui sera afficher à la place du champ de base
      */
     constructor($alarm_type, $alarm_offset, $alarf_offset_type, $alarm) {
         super($alarm_offset, $alarm, Parts.MODE.change);
         /**
          * Champ qui gère le type d'alarme
-         * @type {$}
+         * @type {external:jQuery}
+         * @package
          */
         this._$fieldAlarmType = $alarm_type;
         /**
          * Champ qui gère l'unitée de l'alarme
-         * @type {$}
+         * @type {external:jQuery}
+         * @package
          */
         this._$fieldAlarmOffsetType = $alarf_offset_type;
 
@@ -323,7 +330,6 @@ export class AlarmPart extends FakePart {
      * 
      * Appele la fonction @see {@link AlarmPart~onUpdate}
      * @param  {...any} args 
-     * @event
      * @override
      */
     onChange(...args) {
@@ -334,13 +340,13 @@ export class AlarmPart extends FakePart {
 
     /**
      * Ouvre une boîte de dialogue pour choisir une alarme personnalisée
-     * @private
+     * @package
      */
     _startModalCustomAlarm() {
         let $dialog = new RcmailDialog(custom_alarm_dialog, {
             title:rcmail.gettext('custom_alarm_title', 'mel_metapage'),
             'buttons':[
-                new RcmailDialogButton(rcmail.gettext('validate'), {
+                new RcmailDialogButton(rcmail.gettext('validate', 'mel_metapage'), {
                     click:() => {
                         let offset = $dialog._$dialog.find('select').attr('disabled', 'disabled').addClass('disabled').val();
                         let value = +($dialog._$dialog.find('input').attr('disabled', 'disabled').addClass('disabled').val());
@@ -380,8 +386,15 @@ export class AlarmPart extends FakePart {
 }
 
 /**
+ * Structure qui contient le label de l'option et sa valeur en minute.
+ * @typedef PredefinedOption 
+ * @property {string} label Sera affiché
+ * @property {number} value Valeur en minute
+ */
+
+/**
  * Liste des rappels prédéfinis
- * @type {Array<{label:string, value:number}>}
+ * @type {Array<PredefinedOption>}
  */
 AlarmPart.PREDEFINED = [
     {label:'Aucune', value:0},

@@ -1,6 +1,12 @@
 import { Parts } from "./parts.js";
+export {StatePart}
 
-export class StatePart extends Parts {
+/**
+ * @class
+ * @classdesc Représentation de l'état de l'évènement
+ * @memberof EventView
+ */
+class StatePart extends Parts {
     constructor($select, $icon) {
         super($select, Parts.MODE.change);
 

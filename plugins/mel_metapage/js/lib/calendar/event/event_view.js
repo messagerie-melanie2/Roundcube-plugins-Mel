@@ -1,6 +1,23 @@
+/**
+ * @namespace EventView
+ * @property {module:EventView} View
+ * @property {module:EventView/Constants} Constants
+ * @property {module:EventView/Parts/Alarm} Alarms
+ * @property {module:EventView/Parts/Categories} Categories
+ * @property {module:EventView/Parts/Guests} Guests
+ * @property {module:EventView/Parts/Guests/FreeBusy} FreeBusy
+ * @property {module:EventView/Parts/Location} Location
+ * @property {module:EventView/Parts/Constants} PartsConstants
+ */
+
+/**
+ * @module EventView
+ */
+
 import { MelEnumerable } from "../../classes/enum.js";
 import { EMPTY_STRING } from "../../constants/constants.js";
-import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
+import { MelHtml } from "../../html/JsHtml/MelHtml.js";
+import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, GUEST_DRAGG_CLASS, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
 import { AlarmPart } from "./parts/alarmpart.js";
 import { CategoryPart } from "./parts/categoryparts.js";
 import { GuestsPart } from "./parts/guestspart.js";
@@ -14,6 +31,7 @@ import { TimePartManager } from "./parts/timepart.js";
  * Gère le panel d'avertissement
  * @class 
  * @classdesc Gère la visibilité du panel d'avertissement
+ * @package
  */
 class WarningPanel {
     /**
@@ -124,6 +142,7 @@ WarningPanel.CHILDS_ITEMS_SELECTORS = [
  * @class
  * @classdesc Structure qui donne un nom à un sélecteur d'un champ pour l'EventManager. L'idée est de générer les variables membres de l'EventManager à partir de cette classe.
  * @see {@link EventManager}
+ * @package
  */
 class EventField {
     /**
@@ -160,6 +179,7 @@ class EventField {
  * @class
  * @classdesc Utilise une liste d'EventField pour générer ses variables membres. l'EventManager contient tout les sélécteurs des champs de la vue.
  * @see {@link EventField}
+ * @package
  */
 class EventManager {
     /**
@@ -203,6 +223,7 @@ class EventManager {
  * Structure qui contient les parties de la vue
  * @class
  * @classdesc Structure qui contient les parties de la vue. La class doit être initialisé via la fonction {@link EventParts~init}
+ * @package
  */
 class EventParts {
     /**
@@ -356,6 +377,8 @@ export class EventView {
             this._dialog.addClass(CUSTOM_DIALOG_CLASS);
 
             if (!this._dialog[0].ondrop) this._dialog[0].ondrop = this.on_drop.bind(this);
+
+            this._update_dialog_buttons();
         }
         else {
             this._dialog.modal.find('iframe')[0].contentWindow.$(MAIN_DIV_SELECTOR).on('drop', this.on_drop.bind(this));
@@ -373,6 +396,53 @@ export class EventView {
         if (this.is_jquery_dialog() && !$._data(this._dialog[0], 'events' )?.dialogbeforeclose){
             this._dialog.on('dialogbeforeclose', this.on_dialog_before_close.bind(this));
         }
+    }
+
+    /**
+     * Met à jour les boutons de la dialog
+     * @private
+     */
+    _update_dialog_buttons() {
+        let $save_button = this._dialog.parent().find('.ui-dialog-buttonpane .save').hide();
+        let $cancel_button = this._dialog.parent().find('.ui-dialog-buttonpane .cancel').hide();
+
+        this._update_dialog_button($save_button, 'Sauvegarder', 'arrow_right_alt')
+            ._update_dialog_button($cancel_button, 'Annuler', 'cancel');
+
+        if (!$save_button.hasClass('moved')) {
+            $cancel_button.after($save_button);
+        }
+
+        $save_button.show();
+        $cancel_button.show();
+    }
+
+    /**
+     * Met à jour un bouton pour qu'il corresponde au visuel voulu
+     * @param {external:jQuery} $button Boutton que l'on souhaite modifier
+     * @param {string} text Texte du boutton 
+     * @param {string} icon Icon du bouton 
+     * @see {@link https://fonts.google.com/icons | Icons}
+     * @returns {EventView} Chaînage
+     * @private
+     */
+    _update_dialog_button($button, text, icon) {
+        if (!$button.hasClass('mel-button')) {
+            const jshtml = MelHtml.start
+            .span()
+                .text(text)
+            .end()
+            .icon(icon).addClass('plus').end();
+            $button.removeClass('save').removeClass('cancel').addClass('mel-button').html(jshtml.generate())
+            .css({
+                display: 'flex',
+                'align-items': 'center'
+            }); 
+
+            if ($button.hasClass('btn-secondary')) $button.removeClass('btn-secondary').addClass('btn-danger');
+        }
+
+        return this;
     }
 
     /**

@@ -1,3 +1,7 @@
+/**
+ * @module EventView/Parts/Categories
+ */
+
 import { MelEnumerable } from "../../../classes/enum.js";
 import { EMPTY_STRING } from "../../../constants/constants.js";
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
@@ -13,11 +17,11 @@ import { FakePart, Parts } from "./parts.js";
 export class CategoryPart extends FakePart{
     /**
      * 
-     * @param {$} $trueCategorySelect Champ select pour les catégories
-     * @param {$} $falseCategorySelect Champ select visuel pour les cétagories
-     * @param {$} $falseCheck Checkbox visuel pour afficher ou non le champs des catégories
-     * @param {$} $icon Icône avant le champ visuel des catégories
-     * @param {$} $addWorkspaceUserButton Button qui sera afficher si une catégorie est lié à un espace de travail
+     * @param {external:jQuery} $trueCategorySelect Champ select pour les catégories
+     * @param {external:jQuery} $falseCategorySelect Champ select visuel pour les cétagories
+     * @param {external:jQuery} $falseCheck Checkbox visuel pour afficher ou non le champs des catégories
+     * @param {external:jQuery} $icon Icône avant le champ visuel des catégories
+     * @param {external:jQuery} $addWorkspaceUserButton Button qui sera afficher si une catégorie est lié à un espace de travail
      */
     constructor($trueCategorySelect, $falseCategorySelect, $falseCheck, $icon, $addWorkspaceUserButton) {
         super($trueCategorySelect, $falseCategorySelect, Parts.MODE.change);
@@ -25,19 +29,19 @@ export class CategoryPart extends FakePart{
          * Button qui sera afficher si une catégorie est lié à un espace de travail.
          * 
          * Lors du clique il devra ajouter les utilisateurs de l'espace de travail dans le champs des participants.
-         * @type {$}
+         * @type {external:jQuery}
          */
         this._$wspButton = $addWorkspaceUserButton;
         /**
          * Checkbox visuel pour afficher ou non le champs des catégories
-         * @type {$}
+         * @type {external:jQuery}
          */
         this._$hasCategory = $falseCheck;
         /**
          * Icône avant le champ visuel des catégories
          * 
          * Elle change en fonction du type de catégorie
-         * @type {$}
+         * @type {external:jQuery}
          */
         this._$icon = $icon;
     }
@@ -158,6 +162,7 @@ export class CategoryPart extends FakePart{
  * Contient les données d'un groupe de catégorie
  * @class
  * @classdesc Contient les données d'un groupe de catégorie, ce groupe à un nom, une icône, et 2 fonctions qui vont gérer comment fonctionne se groupe.
+ * @package
  */
 class CategoryData {
     /**
@@ -191,8 +196,15 @@ class CategoryData {
     }
 
     /**
+     * Callback qui prend en paramètre un string. Celui ci sera tester dans le callback et retournera soit vrai, soit faux.
+     * @callback StringWhereCallback
+     * @param {string} x Elément que l'on souhaite tester
+     * @return {boolean} 
+     */
+
+    /**
      * Sera appelé si aucun callback n'a été défini dans le constructeur.
-     * @returns {(x:string)=>boolean} Callback qui sera appelé ultérieurement, probablement dans une fonction `where`
+     * @returns {StringWhereCallback} Callback qui sera appelé ultérieurement, probablement dans une fonction `where`
      */
     _default_callback() {
         return x => {
@@ -224,6 +236,8 @@ class CategoryData {
 
 /**
  * Contient les données des groupes de catégories
+ * @enum {CategoryData}
+ * @static
  */
 CategoryPart.PARTS = {
     default: CategoryData.Part('Catégorie', 'label', null),

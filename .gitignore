@@ -3,6 +3,11 @@
 .vscode/*
 /.settings/
 **/config.inc.php
+node_modules/*
+package.json
+package-lock.json
+jsdoc-config.json
+yarn.lock
 
 aide/config.php
 aide/custom.css

@@ -1,3 +1,11 @@
+
+/**
+ * @fileoverview test
+ * @module EventView/Parts/Location
+ * @local IDestroyable
+ * @local ALocationPart
+ */
+
 import { MelEnumerable } from "../../../classes/enum.js";
 import { EMPTY_STRING } from "../../../constants/constants.js";
 import { REG_URL } from "../../../constants/regexp.js";
@@ -5,6 +13,7 @@ import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../../../mel_events.js";
 import { Mel_Promise } from "../../../mel_promise.js";
 import { CategoryPart } from "./categoryparts.js";
+import { LOCATION_SEPARATOR } from "./parts.constants.js";
 
 MelHtml.start.constructor.prototype.foreach = function() {
     return MelHtml.start;
@@ -19,25 +28,51 @@ MelHtml.extend('foreach', function(callback, ...items) {
     return self;
 });
 
-/*
-=> Location
-=> Audio
-=> Visio
-==> Phone
+/**
+ * Interface pour les classes qui doivent être détruites à la fin de leurs utilisations.
+ * @interface
+ * @package
+ * @hideconstructor
  */
-const LOCATION_SEPARATOR = String.fromCharCode('8199');
-
 class IDestroyable {
     constructor() {}
 
+    /**
+     * Libère les données en mémoire
+     * @abstract
+     */
     destroy() {}
 }
 
+/**
+ * @abstract
+ * @class
+ * @classdesc Représente une partie de la localisation d'un évènement.
+ * @implements {IDestroyable}
+ * @package
+ */
 class ALocationPart extends IDestroyable {
+    /**
+     * 
+     * @param {string} location Localisation de l'évènement 
+     * @param {number} index Id de la localisation
+     */
     constructor(location, index) {
         super()
+        /**
+         * Id de la localisation
+         * @type {string}
+         * @readonly
+         * @member
+         */
         this.id;
 
+        /**
+         * Sera appelé lorsque la localisation change
+         * @event
+         * @type {BnumEvent}
+         * @member
+         */
         this.onchange = new BnumEvent();
         Object.defineProperty(this, 'id', {
             value: index,
@@ -48,46 +83,100 @@ class ALocationPart extends IDestroyable {
         this._init(location);
     }
 
+    /**
+     * Initialise la localisation
+     * @private
+     */
     _init(location) {
         this.location = location;
     }
 
+    /**
+     * Récupère la valeur qui sera utilisé dans l'option pour le select 
+     * @returns {string} Valeur de l'option
+     */
     option_value() {
         return this.constructor.OptionValue();
     }
 
+    /**
+     * Génère cette partie de la localisation sous forme html
+     * @virtual
+     * @param {external:jQuery} $parent Parent qui contiendra le html 
+     * @returns {ALocationPart} Chaîne
+     */
     generate($parent) {
         return this;
     }
 
+    /**
+     * Si la localisation est valide et correspond à ce que l'on attend
+     * @virtual
+     * @returns {boolean} 
+     */
     is_valid() {
         return false;
     }
 
+    /**
+     * Action à faire si la localisation n'est pas valide
+     * @virtual
+     */
     invalid_action() {}
 
+    /**
+     * Libère les données en mémoire
+     * @abstract
+     * @override
+     */
+    destroy() {}
+
+    /**
+     * Vérifie si la localisation est de se type
+     * @virtual
+     * @static
+     * @param {string} location Localisation de l'évènement
+     * @returns {boolean}
+     */
     static Has(location) {
         return false;
     }
 
+    /**
+     * Valeur de l'option qui désigne cette classe.
+     * @abstract
+     * @static
+     * @returns {string}
+     */
     static OptionValue() {}
 
+    /**
+     * Nombre maximum de cette classe qui peut être utilisé
+     * @virtual
+     * @returns {number}
+     */
     static Max() {
         return 0;
     }
 }
 
+/**
+ * @class
+ * @classdesc Représente la partie de la localisation qui gère les visioconférences.
+ * @augments ALocationPart
+ * @package
+ */
 class VisioManager extends ALocationPart {
     /**
      * 
-     * @param {*} location 
-     * @param {*} index 
-     * @param {CategoryPart} categoryPart 
+     * @param {string} location Localisation de l'évènement
+     * @param {number} index Id de la partie
+     * @param {CategoryPart} categoryPart Partie lié à la catégorie
      */
     constructor(location, index, categoryPart) {
         super(location, index);
 
-        if ('' === location || IntegratedVisio.Has(location)) this._current = new IntegratedVisio(location, index, categoryPart);
+        if (EMPTY_STRING === location || IntegratedVisio.Has(location)) this._current = new IntegratedVisio(location, index, categoryPart);
         else this._current = new ExternalVisio(location, index);
 
         this._current.onchange.push(this._on_change_action.bind(this));
@@ -103,8 +192,16 @@ class VisioManager extends ALocationPart {
         this._current = null;
         this._cached = {};
 
+        /**
+         * Données de cette partie de localisation
+         * @override
+         * @type {string}
+         * @readonly
+         */
+        this.location = EMPTY_STRING;
+
         Object.defineProperty(this, 'location', {
-            get() { return this._current?.location ?? ''; }
+            get() { return this._current?.location ?? EMPTY_STRING; }
         });
     }
 
@@ -761,7 +858,7 @@ export class LocationPartManager  {
                         return html.end();
                     }, ...LocationPartManager.PARTS)
                 .end()
-                .button({type:'button', class:'no-background ml-2'}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
+                .button({type:'button', class:'no-background ml-2', title:(has_locations ? 'Supprimer' : 'Ajouter')}).removeClass('mel-button').removeClass('no-margin-button').removeClass('no-button-margin')
                     .attr('onclick', (e) => {
                         if ('delete' === $(e.currentTarget).children().first().html()) this.remove($(e.currentTarget).parent().find('select').data('id'));
                         else this.add(Location, '');

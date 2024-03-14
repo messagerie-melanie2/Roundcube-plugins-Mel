@@ -275,11 +275,14 @@ class EventParts {
 
         $(inputs.select_calendar_owner).tooltip({trigger:'hover'});
 
+        //Le bouton appèle la fonction _onButtonTitleClicked au click avec le contexte de l'élément jquery qui représente le champ du titre.
         fakes.button_erase_title.click(this._onButtonTitleClicked.bind(inputs.text_title));
     }
 
     /**
      * Est appelé lorsque l'on clique sur le bouton pour effacer le titre
+     * 
+     * Est bind dans la fonction {@link EventParts~_init_no_modified} par l'élément jquery qui représente le champ du titre.
      * @package
      * @this {external:jQuery}
      */

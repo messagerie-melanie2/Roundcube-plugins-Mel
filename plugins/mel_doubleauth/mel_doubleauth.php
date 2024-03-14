@@ -959,7 +959,7 @@ class mel_doubleauth extends bnum_plugin {
             $res = $client->removeUser($this->rc->user->get_username());
 
             // On supprime le cookie de double auth
-            setcookie($_COOKIE['roundcube_doubleauth'], '', -1, '/');
+            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
 
             mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser() result:$res");
         }

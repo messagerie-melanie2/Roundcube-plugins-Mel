@@ -942,6 +942,7 @@ class mel_doubleauth extends bnum_plugin {
         mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__removeUser()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
             return $this->rc->config->get('dynalogin_bouchon_removeUser', true);
         }
 
@@ -1107,7 +1108,7 @@ class mel_doubleauth extends bnum_plugin {
      */
     private function is_auth_strong() 
     {
-        return mel::is_auth_strong();
+      return mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true);
     }
     
     /**

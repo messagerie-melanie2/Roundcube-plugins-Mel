@@ -1080,7 +1080,6 @@ class mel_metapage extends bnum_plugin
                     'categories-wsp'    => $categories,
                 ));
                 $args["content"] = str_replace($textToReplace, $this->rc->output->parse("mel_metapage.event_modal", false, false), $content);
-                
                 // $textes = [
                 //     'roleorganizer',
                 //     'rolerequired',

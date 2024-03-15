@@ -1,6 +1,5 @@
 
 /**
- * @fileoverview test
  * @module EventView/Parts/Location
  * @local IDestroyable
  * @local ALocationPart
@@ -1044,7 +1043,7 @@ class Location extends ALocationPart {
 
 /**
  * @class
- * @classdesc Gère l'emplacement de la réunion avec les différents types d'emplacement. Les emplacements sont cumulables, il peut en avoir des différents.
+ * @classdesc Gère l'emplacement de la réunion avec les différents types d'emplacement. Les emplacements sont cumulables, il peut en avoir des différents. Les différents select et différentes valeurs du select seront générer via les différentes classes qui héritent de {@link ALocationPart} et qui se trouve dans le tableau {@link LocationPartManager.PARTS}.
  */
 export class LocationPartManager  {
     /**

@@ -57,11 +57,6 @@ class Webconf extends Program
                     'title'   => html::label($askOnEnd, rcube::Q($this->plugin->gettext($askOnEnd))),
                     'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
                 ];
-
-                $args['blocks']['general']['options'][$visio_audio_video_parameters] = $this->create_pref_select($visio_audio_video_parameters, $visio_audio_video_parameters_config, [
-                        $this->plugin->gettext("compact", "mel_metapage"),
-                        $this->plugin->gettext("large", "mel_metapage"),
-                ], ['compact', 'large']);
             }
 
             return $args;

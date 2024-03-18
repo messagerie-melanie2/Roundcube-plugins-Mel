@@ -50,6 +50,7 @@ class roundrive_files_engine
      * @var Filesystem
      */
     protected $filesystem;
+    protected $client;
     protected $collabora;
 
     const API_VERSION = 2;
@@ -76,6 +77,7 @@ class roundrive_files_engine
         $adapter = new WebDAVAdapter($client, str_replace('USERNAME', $this->rc->user->get_username(), $this->rc->config->get('driver_webdav_prefix')));
         $this->filesystem = new Filesystem($adapter);
         $this->collabora = new roundrive_collabora($plugin, $this->filesystem);
+        $this->client = $client;
     }
 
     /**
@@ -838,6 +840,44 @@ class roundrive_files_engine
         // @TODO: update quota indicator, make this optional in case files aren't stored in IMAP
 
         $this->rc->output->send();
+    }
+
+    protected function action_attach_link() {
+        $files      = rcube_utils::get_input_value('files', rcube_utils::INPUT_POST);
+        $links = [];
+
+        // clear all stored output properties (like scripts and env vars)
+        $this->rc->output->reset();
+
+        foreach ($files as $file) {
+            // decode filename
+            $file = urldecode($file);
+            $file = str_replace($this->plugin->gettext('files'), '/', $file);
+
+            $file = $this->encoderawpath($file);
+            $location = $this->filesystem->getAdapter()->applyPathPrefix($file);
+
+            try {
+                $result = $this->client->propFind($location, [
+                    '{DAV:}displayname',
+                    '{http://owncloud.org/ns}fileid'
+                ]);
+    
+                $result = [
+                    'name' => $result['{DAV:}displayname'],
+                    'id' => $result['{http://owncloud.org/ns}fileid']
+                ];
+            } catch (Exception $e) {
+                $result = false;
+            }
+
+            if ($result !== false) {
+                $links[] = $result;
+            }
+        }
+
+        echo json_encode($links);
+        exit;
     }
 
     /**

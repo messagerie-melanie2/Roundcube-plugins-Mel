@@ -283,6 +283,65 @@ function roundrive_selector_dialog()
     }
   };
 
+  buttons[rcmail.gettext('roundrive.linksel')] = async function () {
+    const busy = rcmail.set_busy(true, 'loading');
+
+    var list = [];
+    $('#filelist tr.selected').each(function() {
+      list.push($(this).data('file'));
+    });
+
+    const data = {
+      act: 'attach-link',
+      files: list
+    };
+
+    await $.ajax({
+      type: 'POST', url: rcmail.url('plugin.roundrive'), data, dataType: 'json',
+      success: function(data) { 
+        const encode = (str, is_html) => {
+          return is_html ? str.replaceAll('é', '&eacute;') : str;
+        }
+
+        const is_html = !!rcmail.editor.editor; 
+        const return_symbol = is_html ? '<br />' : '\n';
+        const INDICATOR = '-- ' + encode(rcmail.gettext('roundrive.shareddocuments'), is_html) + ' :';
+        const END = `${return_symbol}//---------------------//`;
+        if (typeof data === 'string') data = JSON.parse(data);
+
+        let content = rcmail.editor.get_content();
+
+        if (!content.includes(INDICATOR)) content = INDICATOR + END + content;
+
+          content = content.split(INDICATOR);
+
+          if (content[1].includes(END)) {
+            content[1] = content[1].split(END);
+            var cache = content[1][1];
+            content[1] = content[1][0];
+          }
+          
+          let html = '';
+          for (const iterator of data) {
+            var url = rcmail.get_task_url(`stockage&_params=${encodeURIComponent('/f/' + iterator.id)}`, window.location.origin + window.location.pathname);
+            html += is_html ? `${return_symbol}<a href="${url}">${iterator.name}</a>` : `${return_symbol}${url}`
+          }
+
+          content[1] += html + END + return_symbol + (cache || '');
+
+          content = content.join(INDICATOR);
+        
+          rcmail.editor.set_content(content);
+
+          content = null;
+
+          $('.ui-dialog-titlebar-close').click();
+      },
+    });
+
+    rcmail.set_busy(false, 'loading', busy);
+  }
+
   buttons[rcmail.gettext('roundrive.cancel')] = function () {
     roundrive_dialog_close(this);
   };
@@ -291,7 +350,7 @@ function roundrive_selector_dialog()
   roundrive_dialog_show(dialog, {
     title: rcmail.gettext('roundrive.selectfiles'),
     buttons: buttons,
-    button_classes: ['mainaction mel-button button-white float-right icon-mel-arrow-right-after', 'mel-button button-white float-left icon-mel-undo-after'],
+    button_classes: ['mainaction mel-button button-white float-right icon-mel-arrow-right-after', 'mel-button button-white float-right icon-mel-arrow-right-after', 'mel-button button-white float-left icon-mel-undo-after'],
     minWidth: 500,
     minHeight: 300,
     width: 700,

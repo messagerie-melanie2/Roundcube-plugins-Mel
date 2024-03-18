@@ -1949,8 +1949,8 @@ class mel_driver extends calendar_driver {
   /**
    * Get events from source.
    *
-   * @param integer Event's new start (unix timestamp)
-   * @param integer Event's new end (unix timestamp)
+   * @param integer Event''s new start (unix timestamp)
+   * @param integer Event''s new end (unix timestamp)
    * @param string Search query (optional)
    * @param mixed List of calendar IDs to load events from (either as array or comma-separated string)
    * @param boolean Include virtual events (optional)
@@ -2453,9 +2453,15 @@ class mel_driver extends calendar_driver {
           $_event['x_moz_lastack'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
         }
 
-        // Traiter le lastack
+        // Traiter le lastack 
         if (isset($_event['x_moz_lastack'])) {
-          $_event["alarm_dismissed"] = ($_event['start']->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
+          $start = $_event['start'];
+
+          if ($_event['allday'] == 1) {
+            $start = DateTime::createFromFormat('Y-m-d H:i', $start->format('Y-m-d').' 00:00');
+          }
+
+          $_event["alarm_dismissed"] = ($start->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
         }
       }
     }

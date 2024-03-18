@@ -7,6 +7,7 @@
  * @module Tchap
  */
 
+import { MainNav } from "../mel_metapage/js/lib/classes/main_nav.js";
 import { MelObject } from "../mel_metapage/js/lib/mel_object.js";
 import { Mel_Promise } from "../mel_metapage/js/lib/mel_promise.js";
 export {tchap_manager};
@@ -45,8 +46,18 @@ class tchap_manager extends MelObject {
 		this.rcmail().addEventListener('switched_color_theme', this.change_theme.bind(this));
 		this.rcmail().addEventListener('tchap.options', this.tchap_options.bind(this));
 		this.rcmail().addEventListener('tchap.disconnect', this.tchap_disconnect.bind(this));
+		this.notificationhandler();
 	}
 
+	async notificationhandler() {
+		while (true) {
+		MainNav.try_add_round('button-tchap','tchap_badge');
+		MainNav.update_badge(+$(".mx_NotificationBadge_count").innerHTML, 'tchap_badge')
+		await delay(15000)
+		}
+	}
+	
+	
 	/**
 	 * Change le thème de tchap
 	 * @public

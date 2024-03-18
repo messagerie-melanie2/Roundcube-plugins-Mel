@@ -78,6 +78,8 @@ export class TimePartManager {
             });
         }
 
+        this.$allDay.change();
+
         rcmail.addEventListener('calendar.event_times_changed', this._update_date.bind(this));
 
         const _base_diff = (moment(`${this._$end_date.val()} ${this.end._$fakeField.val()}`, 'DD/MM/YYYY HH:mm') - moment(`${this._$start_date.val()} ${this.start._$fakeField.val()}`, 'DD/MM/YYYY HH:mm'));///60/1000;

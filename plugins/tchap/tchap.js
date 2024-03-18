@@ -68,6 +68,8 @@ class tchap_manager extends MelObject {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;
 		frame_doc.querySelector('.mx_QuickSettingsButton').click();
 		frame_doc.querySelector('.mx_ContextualMenu > div > .mx_AccessibleButton_kind_primary_outline').click();
+		top.m_mp_ToggleGroupOptionsUser();
+
 	}
 
 	/**
@@ -79,5 +81,7 @@ class tchap_manager extends MelObject {
 		let frame_doc = $('#tchap_frame')[0].contentWindow.document;
 		frame_doc.querySelector('.mx_UserMenu_contextMenuButton').click();
 		frame_doc.querySelector('.mx_UserMenu_iconSignOut').click();
+		top.m_mp_ToggleGroupOptionsUser();
+
 	}
 }

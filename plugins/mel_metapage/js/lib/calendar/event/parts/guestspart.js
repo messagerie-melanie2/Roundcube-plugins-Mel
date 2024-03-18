@@ -43,6 +43,7 @@ import { TimePartManager } from "./timepart.js";
  * @classdesc Exception envoyé lorsque le champ lié aux participants ne fonctionne pas correctement.
  * @extends BnumException
  * @package
+ * @frommodule Exceptions
  */
 class GuestPartFieldException extends BnumException {
     constructor(part, $field) {
@@ -65,6 +66,7 @@ class GuestPartFieldException extends BnumException {
  * @class
  * @classdesc Bouton qui affiche ou non les différents champs liés aux participants. 
  * @extends Parts
+ * @frommodule EventView/Parts
  * @package
  */
 class GuestButton extends Parts {
@@ -397,6 +399,7 @@ class Guest {
  * @class
  * @classdesc Représente la partie des participants.
  * @extends FakePart
+ * @frommodule EventView/Parts
  */
 export class GuestsPart extends FakePart{
     /**

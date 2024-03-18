@@ -17,6 +17,7 @@ import { Mel_Promise } from "../../../mel_promise.js";
 import { CategoryPart } from "./categoryparts.js";
 import { INTEGRATED_VISIO_MIN_NUMBER_COUNT, INTEGRATED_VISIO_MIN_SIZE, LOCATION_AUDIO_OPTION_VALUE, LOCATION_OPTION_VALUE, LOCATION_SEPARATOR, LOCATION_VISIO_EXTERNAL_OPTION_VALUE, LOCATION_VISIO_INTERNAL_OPTION_VALUE, LOCATION_VISIO_OPTION_VALUE, SEPARATOR_AUDIO_PIN, SEPARATOR_AUDIO_URL_LOCATION, SEPARATOR_END_LOCATION_VISIO_INTEGRATED_PHONE, SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE, SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE, TAG_WSP_CATEGORY } from "./parts.constants.js";
 
+
 MelHtml.start.constructor.prototype.foreach = function() {
     return MelHtml.start;
 };
@@ -63,7 +64,7 @@ class ALocationPart extends IDestroyable {
         super()
         /**
          * Id de la localisation
-         * @type {string}
+         * @type {number}
          * @readonly
          * @member
          */
@@ -177,7 +178,7 @@ class VisioManager extends ALocationPart {
      * 
      * @param {string} location Localisation de l'évènement
      * @param {number} index Id de la partie
-     * @param {CategoryPart} categoryPart Partie lié à la catégorie
+     * @param {CategoryPart} categoryPart Partie lié à la catégorie 
      */
     constructor(location, index, categoryPart) {
         super(location, index);
@@ -371,6 +372,11 @@ class VisioManager extends ALocationPart {
  * @package
  */
 class AVisio extends ALocationPart {
+    /**
+     * 
+     * @param {string} location Emplacement de l'évènement
+     * @param {number} index Id de la partie
+     */
     constructor(location, index) {
         super(location, index, null);
     }
@@ -693,6 +699,11 @@ class IntegratedVisio extends AVisio {
  * @package
  */
 class ExternalVisio extends AVisio {
+    /**
+     * 
+     * @param {string} location Emplacement de l'évènement
+     * @param {number} index Id de la partie
+     */
     constructor(location, index) {
         super(location, index);
     }
@@ -792,6 +803,11 @@ class ExternalVisio extends AVisio {
  * @package
  */
 class Phone extends ALocationPart {
+    /**
+     * 
+     * @param {string} location Emplacement de l'évènement
+     * @param {index} index Id de la partie 
+     */
     constructor(location, index) {
         super(location, index);
 
@@ -944,6 +960,11 @@ class Phone extends ALocationPart {
  * @package
  */
 class Location extends ALocationPart {
+    /**
+     * 
+     * @param {string} location Localisation de l'évènement
+     * @param {number} index Id de la partie
+     */
     constructor(location, index) {
         super(location, index);
         this._$field = $(`#location-text-${index}`);
@@ -1055,13 +1076,13 @@ export class LocationPartManager  {
     constructor($locations, $field, categoryPart) {
         /**
          * Contient les données des différents emplacements
-         * @type {Object<string, ALocationPart>}
+         * @type {Object<number, ALocationPart>}
          * @member
          */
         this.locations = {};
         /**
          * Contient les données des différents emplacements qui ont été généré et mis en cache si jamais on change de localisation.
-         * @type {Object<string, Object<string, ALocationPart>>}
+         * @type {Object<number, Object<number, ALocationPart>>}
          * @member
          * @package
          */
@@ -1123,6 +1144,11 @@ export class LocationPartManager  {
         else this._update_all_selects();
     }
 
+    /**
+     * Génère un index pour les emplacements.
+     * @package
+     * @returns {number}
+     */
     _generateIndex() {
         let index;
         let length = MelEnumerable.from(this.locations).count();
@@ -1134,9 +1160,11 @@ export class LocationPartManager  {
     }
 
     /**
+     * Ajoute un emplacement.
      * 
-     * @param {ALocationPart} part 
-     * @param {string} location 
+     * L'emplacement sera générer le html et les données seront sauvegardé dans {@link LocationPartManager.locations}.
+     * @param {Class} part Classe qui hérite de {@link ALocationPart} et qui se trouve dans le tableau {@link LocationPartManager.PARTS}
+     * @param {string} location Emplacement de l'évènement lié à la classe correspondante
      */
     add(part, location) {
         const id = this._generateIndex();
@@ -1151,6 +1179,12 @@ export class LocationPartManager  {
         $generated = null;
     }
 
+    /**
+     * Supprime un emplacement.
+     * 
+     * Supprime le html et les données sauvegardé liés ainsi que les données liés en cache si elles existent.
+     * @param {number} id Id de l'emplacement à supprimer 
+     */
     remove(id) {
         $(`#location-${id}`).parent().parent().remove();
         this.locations[id].destroy();
@@ -1165,6 +1199,15 @@ export class LocationPartManager  {
         this._update_selects(id);
     }
 
+    /**
+     * Est appelé lorsque le select d'un emplacement est modifié.
+     * 
+     * Cache les emplacements qui ne sont pas séléctionné et affiche celui qui est séléctionné.
+     * 
+     * Désactive les options des sélects qui ont atteint leur nombre maximum d'utilisation. Ou réactive les options si possible.
+     * @param {Event} event 
+     * @package
+     */
     _on_select_changed(event) {
         const VISIBLE = '';
 
@@ -1202,10 +1245,18 @@ export class LocationPartManager  {
             this.locations[id] = new (LocationPartManager.PARTS.find(x => x.OptionValue() === val))('', id, this._category).generate($(`#location-${id}-container`));
             this.locations[id].onchange.push(this._on_change_action.bind(this));
         }
+
         this._update_selects(id);
         this._on_change_action();
     }
 
+    /**
+     * On désactives les options des selects qui ont atteind leurs nombre maximale d'utilisation et on réactive celles qui ne l'ont pas atteinte. 
+     * 
+     * Les selects n'ayant qu'une seule option seront désactivés.
+     * @package
+     * @param {number} id Index du select qui est modifié. Celui-ci ne pourra pas être désactivé.
+     */
     _update_selects(id){
         let $select;
         let $tmp;
@@ -1218,13 +1269,16 @@ export class LocationPartManager  {
                 {
                     $tmp.addClass('disabled').attr('disabled', 'disabled');
                 }
-                else $tmp.removeClass('disabled').removeAttr('disabled'); //$select.append($('<option>').val(part.OptionValue()).text(part.OptionValue()));
+                else $tmp.removeClass('disabled').removeAttr('disabled');;
             }
+
             $select.removeClass('disabled').removeAttr('disabled'); 
+
             if ($select.data('id') !== id) {    
                 const nb_infinity = MelEnumerable.from(LocationPartManager.PARTS).where(x => Number.POSITIVE_INFINITY === x.Max()).count();  
                 const val = $select[0].value;
 
+                //Désactive le select si il ne lui reste qu'une seule option disponible.
                 if (1 === nb_infinity && 
                     nb_infinity === ($select.children().length - $select.find('.disabled').length) &&
                     MelEnumerable.from(LocationPartManager.PARTS).where(x => x.OptionValue() === val).first().Max() === Number.POSITIVE_INFINITY) 
@@ -1239,21 +1293,33 @@ export class LocationPartManager  {
         $tmp = null;
     }
 
+    /**
+     * Met à jour les selects.
+     * @package
+     */
     _update_all_selects() {
         for (const iterator of Object.keys(this.locations)) {
             this._update_selects(iterator);
         }
     }
 
+    /**
+     * Génère le select en htm
+     * @param {number} id Id du select
+     * @param {string} selected Valeur par défaut
+     * @returns {external:jQuery}
+     */
     _generate_select(id, selected) {
         const has_locations = MelEnumerable.from(this.locations).count() >= 1; 
+        let is_selected;
+        let is_disabled;
         let html = MelHtml.start
         .div({class:(has_locations ? 'mt-2' : 'mel-placeholder-div')})
             .div({class: 'd-flex'})
                 .select({id: `location-${id}`, class:'event-location-select', 'data-id': id})
                     .foreach((html, item) => {
-                        let is_selected = false;
-                        let is_disabled = true;
+                        is_selected = false;
+                        is_disabled = true;
                         if (MelEnumerable.from(this.locations).where(x => x.value.option_value() === item.OptionValue()).count() < item.Max()) {
                             is_selected = item.OptionValue() === selected;
                             is_disabled = false;
@@ -1281,10 +1347,17 @@ export class LocationPartManager  {
         return html.generate().appendTo(this._$locations);
     }
 
+    /**
+     * Si les emplacements sont correspondent à leurs valeurs attendus ou non.
+     * @returns {boolean}
+     */
     is_valid() {
         return !MelEnumerable.from(this.locations).any(x => !x.value.is_valid());
     }
 
+    /**
+     * Action à faire si un des emplacements n'est pas valide.
+     */
     invalid_action() {
         for (const key in this.locations) {
             if (Object.hasOwnProperty.call(this.locations, key)) {
@@ -1297,6 +1370,16 @@ export class LocationPartManager  {
         }
     }
 
+    /**
+     * Est appelé lorsqu'un champ ou un select est modifié.
+     * 
+     * Ecrit et formatte les données des champ visuels dans le champ de sauvegarde.
+     * 
+     * Attend que toutes les promesses liés aux différents champs soient résolus.
+     * @package
+     * @async
+     * @returns {Promise<void>}
+     */
     async _on_change_action() {
         await this.waitComplete();
         let str = EMPTY_STRING;
@@ -1308,6 +1391,11 @@ export class LocationPartManager  {
         this._$field.val(str.slice(0, str.length - 1)).change();
     }
 
+    /**
+     * Attend que toutes les promesses liés aux différents champs soient résolus.
+     * @async
+     * @returns {Promise<void>}
+     */
     async waitComplete() {
         await Promise.allSettled(MelEnumerable.from(this.locations).where(x => !!x.value.wait).select(x => x.value.wait()));
     }

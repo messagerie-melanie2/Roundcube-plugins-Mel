@@ -2,6 +2,7 @@
  * @namespace EventView
  * @property {module:EventView} View
  * @property {module:EventView/Constants} Constants
+ * @property {module:EventView/Parts} AbstractClassesParts
  * @property {module:EventView/Parts/Alarm} Alarms
  * @property {module:EventView/Parts/Categories} Categories
  * @property {module:EventView/Parts/Guests} Guests

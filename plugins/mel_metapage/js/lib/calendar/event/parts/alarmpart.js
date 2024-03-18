@@ -208,6 +208,7 @@ AlarmData.OFFSETS = {
  * @class
  * @classdesc Partie de la vue qui gère les rappels, elle fait le lien entre le champs de base qui est un ensemble de 3 champs et le champ visuel qui est un `select`
  * @extends FakePart
+ * @frommodule EventView/Parts
  */
 export class AlarmPart extends FakePart {
     /**

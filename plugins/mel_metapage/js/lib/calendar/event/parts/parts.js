@@ -1,3 +1,9 @@
+/**
+ * @module EventView/Parts
+ * @local Parts
+ * @local FakePart
+ */
+
 export {Parts, FakePart}
 
 /**

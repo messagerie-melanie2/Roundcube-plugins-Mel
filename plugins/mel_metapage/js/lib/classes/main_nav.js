@@ -60,7 +60,11 @@ MainNav.helper = null;
 Object.defineProperties(MainNav, {
     helper: {
         get: function() {
-            return MelObject.Empty();
+            return {
+                select(selector) {
+                    return top.$(selector);
+                }
+            }
         },
         configurable: true
     }

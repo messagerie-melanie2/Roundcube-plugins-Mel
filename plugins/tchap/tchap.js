@@ -35,29 +35,47 @@ class tchap_manager extends MelObject {
 		$("body").append('#tchaploader');
 		$("#wait_box").hide();
 		await Mel_Promise.wait(() => 
-			$('#tchap_frame')[0].contentWindow.document.querySelector('.mx_QuickSettingsButton') !== null, 60
+			this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null, 60
 		);
-		if ($('#tchap_frame')[0].contentWindow.document.querySelector('.mx_QuickSettingsButton') !== null) {
+		if (this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null) {
 			this.change_theme();
 		}
-		$('#tchap_frame')[0].contentWindow.document.querySelector('.mx_SpacePanel').style.display = 'none';
+		this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
 		$("#tchaploader").hide();
 
 		this.rcmail().addEventListener('switched_color_theme', this.change_theme.bind(this));
 		this.rcmail().addEventListener('tchap.options', this.tchap_options.bind(this));
 		this.rcmail().addEventListener('tchap.disconnect', this.tchap_disconnect.bind(this));
-		this.notificationhandler();
+		this._notificationhandler();
 	}
 
-	async notificationhandler() {
+	/**
+	 * Gestion des notifications sur la barre de gauche
+	 * @private
+	 * @return {Promise<void>}
+	 */
+	async _notificationhandler() {
 		while (true) {
-		MainNav.try_add_round('button-tchap','tchap_badge');
-		MainNav.update_badge(+$(".mx_NotificationBadge_count").innerHTML, 'tchap_badge')
-		await delay(15000)
+			MainNav.try_add_round('.button-tchap','tchap_badge');
+			if(this.tchap_frame().querySelector('.mx_NotificationBadge_count') === null){
+				MainNav.update_badge( 0, 'tchap_badge');
+			} else {
+				MainNav.update_badge(+this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML, 'tchap_badge');
+			}
+			
+			await delay(30000);
 		}
 	}
 	
-	
+	/**
+	 * Retourne la frame de tchap
+	 * @public
+	 * @returns {Document}
+	 */
+	tchap_frame(){
+		return $('#tchap_frame')[0].contentWindow.document;
+	}
+
 	/**
 	 * Change le thème de tchap
 	 * @public

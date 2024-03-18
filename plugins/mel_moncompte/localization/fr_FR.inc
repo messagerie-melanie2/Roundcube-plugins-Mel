@@ -253,8 +253,8 @@ $labels['acces_internet_enable_ok'] = "Votre accès internet a bien été activ�
 $labels['acces_internet_disable_ok'] = "Votre accès internet a bien été désactivé";
 $labels['acces_internet_nok'] = "Une erreur s'est produite lors de la modification de votre accès internet, veuillez contacter votre service informatique.";
 
-$labels['acces_internet_doubleauth'] = "Sécurité renforcée avec la double authentification";
-$labels['acces_internet_doubleauth_link'] = "Accéder a la configuration de la double authentification";
+$labels['acces_internet_doubleauth'] = "Sécurité renforcée avec l'authentification double facteur ";
+$labels['acces_internet_doubleauth_link'] = "Accéder a la configuration de l'authentification double facteur";
 
 // Gestionnaire d'absence
 $labels['gestionnaireabsence'] = 'Gestionnaire d\'absence';

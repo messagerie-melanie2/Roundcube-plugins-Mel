@@ -858,14 +858,14 @@ export class GuestsPart extends FakePart{
                 let $div = $('<div>').addClass('row');
     
                 for (const slot of slots) {
-                    slot.generate(timePart).generate().appendTo($('<div>').addClass('col-3').css('padding', '0 5px').appendTo($div));
+                    slot.generate(timePart).generate().appendTo($('<div>').addClass('col-6 col-md-3').css('padding', '5px').appendTo($div));
                 }
     
-                $find_next.appendTo($('<div>').addClass('col-3').css('padding', '0 5px').appendTo($div));
+                $find_next.appendTo($('<div>').addClass('col-6 col-md-3').css('padding', '5px').appendTo($div));
     
                 $main_div.html($div);
             }
-            else $main_div.html($find_next.appendTo($('<div>').addClass('col-3').css('padding', '0 5px')));
+            else $main_div.html($find_next.appendTo($('<div>').addClass('col-6 col-md-3').css('padding', '5px')));
     
             $('<div>').addClass('dispo-freebusy-text').text('Premières disponibilité commune').css('margin-bottom', '5px').prependTo($main_div);
         }

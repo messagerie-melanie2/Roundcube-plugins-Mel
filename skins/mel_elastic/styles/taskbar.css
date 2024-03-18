@@ -79,11 +79,6 @@ html.touch #taskmenu a::before{
 	line-height: 4rem;
 }
 
-html.layout-phone #taskmenu a
-{
-    color: white!important;
-}
-
 /* @media screen and (max-width: 1024px) and (min-width: 481px)
 {
 #taskmenu a.selected, #taskmenu a:hover, #taskmenu a.selected:hover, #taskmenu .action-buttons a:hover

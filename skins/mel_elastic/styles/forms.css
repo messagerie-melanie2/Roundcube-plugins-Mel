@@ -285,6 +285,11 @@ textarea.input-mel{
 	margin: 0 30px;
 }
 
+html.layout-small #eventedit,
+html.layout-phone #eventedit {
+  margin: 0 10px;
+  }  
+
 #eventedit .have-options #edit-alarm-item {
 	border-bottom-right-radius: 0;
 	border-top-right-radius: 0;  

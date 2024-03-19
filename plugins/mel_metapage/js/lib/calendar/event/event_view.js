@@ -2,7 +2,8 @@
  * @namespace EventView
  * @property {module:EventView} View
  * @property {module:EventView/Constants} Constants
- * @property {module:EventView/Parts} AbstractClassesParts
+ * @property {module:EventView/Parts} AbstractClassesParts  
+ * @property {module:EventView/Parts/CalendarOwner} CalendarOwner
  * @property {module:EventView/Parts/Alarm} Alarms
  * @property {module:EventView/Parts/Categories} Categories
  * @property {module:EventView/Parts/Guests} Guests
@@ -24,6 +25,7 @@ import { EMPTY_STRING } from "../../constants/constants.js";
 import { MelHtml } from "../../html/JsHtml/MelHtml.js";
 import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, GUEST_DRAGG_CLASS, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
 import { AlarmPart } from "./parts/alarmpart.js";
+import { CalendarOwner } from "./parts/calendarparts.js";
 import { CategoryPart } from "./parts/categoryparts.js";
 import { GuestsPart } from "./parts/guestspart.js";
 import { LocationPartManager } from "./parts/location_part.js";
@@ -246,6 +248,7 @@ class EventParts {
         this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch, this.date);
         this.location = new LocationPartManager(fakes.div_eventtype, inputs.text_location, this.category);
         this.recurrence = new RecPart(inputs.select_recurrence, fakes.select_recurrence);
+        this.owner = null;
     }
 
     /**
@@ -254,6 +257,7 @@ class EventParts {
      * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
      */
     init(ev, inputs, fakes) {
+        this.owner = new CalendarOwner(inputs.select_calendar_owner, inputs.select_calendar_owner.parent().find('span'), ev?.calendar_blocked ?? false);
         this.status.onUpdate(ev.status ?? '');
         this.sensitivity.onUpdate(!ev?.id ? SensitivityPart.STATES.public :  (ev?.sensitivity ?? SensitivityPart.STATES.public));
         this.alarm.init(ev);
@@ -273,13 +277,6 @@ class EventParts {
      * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
      */
     _init_no_modified(ev, inputs, fakes) {
-        const blocked = 'true' === ev.calendar_blocked;
-
-        if (blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
-        else $(inputs.select_calendar_owner).removeAttr('disabled').removeClass('disabled');
-
-        $(inputs.select_calendar_owner).tooltip({trigger:'hover'});
-
         //Le bouton appèle la fonction _onButtonTitleClicked au click avec le contexte de l'élément jquery qui représente le champ du titre.
         fakes.button_erase_title.click(this._onButtonTitleClicked.bind(inputs.text_title));
     }

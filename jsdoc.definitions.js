@@ -1,4 +1,10 @@
 /**
+ * @namespace Plugins
+ * @property {MelMetapage} MelMetapage
+ * @property {Tchap} Tchap
+ */
+
+/**
  * @namespace Skins 
  * @property {module:MEL_ELASTIC_UI} mel_elastic
  */

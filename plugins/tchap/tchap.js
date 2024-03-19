@@ -29,17 +29,21 @@ class tchap_manager extends MelObject {
 	async main() {
 		const url = rcmail.env.tchap_startup_url != null && rcmail.env.tchap_startup_url !== undefined ? rcmail.env.tchap_startup_url : rcmail.env.tchap_url;
 		let $tchap = $('#tchap_frame').attr('src', url);
+
 		if (navigator.appName == "Microsoft Internet Explorer") $tchap[0].contentWindow.location.reload(true);
 		
 		MEL_ELASTIC_UI.create_loader('tchaploader', true)[0].outerHTML;
 		$("body").append('#tchaploader');
 		$("#wait_box").hide();
+
 		await Mel_Promise.wait(() => 
 			this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null, 60
 		);
+
 		if (this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null) {
 			this.change_theme();
 		}
+		
 		this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
 		$("#tchaploader").hide();
 

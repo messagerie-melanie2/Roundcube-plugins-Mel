@@ -138,3 +138,9 @@ export const SEPARATOR_AUDIO_URL_LOCATION = ' : ';
  * @default ' | '
  */
 export const SEPARATOR_AUDIO_PIN = SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE;
+/**
+ * @constant
+ * @type {string}
+ * @default 'add-day'
+ */
+export const CLASS_ALL_DAY = 'all-day';

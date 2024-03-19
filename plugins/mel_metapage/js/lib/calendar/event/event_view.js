@@ -8,6 +8,10 @@
  * @property {module:EventView/Parts/Guests} Guests
  * @property {module:EventView/Parts/Guests/FreeBusy} FreeBusy
  * @property {module:EventView/Parts/Location} Location
+ * @property {module:EventView/Parts/Reccursivity} Reccursivity
+ * @property {module:EventView/Parts/Sensitivity} Sensitivity
+ * @property {module:EventView/Parts/State} State
+ * @property {module:EventView/Parts/DateTime} DateTime
  * @property {module:EventView/Parts/Constants} PartsConstants
  */
 

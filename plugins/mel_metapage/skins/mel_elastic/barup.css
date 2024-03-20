@@ -114,9 +114,6 @@ html.touch .barup {
 html.layout-phone.touch #barup-user,
 html.layout-small.touch #barup-user {
   max-width: 70px;
-  position: absolute;
-  right: 0;
-  margin-right: 20px;
 }
 
 #layout-sidebar,
@@ -342,6 +339,12 @@ html.layout-phone .hide-small,
 html.layout-normal .hide-normal,
 html.touch .hide-touch {
   display: none !important;
+}
+
+html.touch #button-create {
+  margin-left: 60px;
+  margin-right: 0;
+  width: 90px;
 }
 
 .show-row-touch,
@@ -720,12 +723,13 @@ html.dark-mode #button-search.btn.btn-secondary {
 }
 
 #barup-right-buttons {
-  float: right;
-  margin-top: -15px;
-  margin-right: -14px;
-  padding-right: 14px;
   padding-left: 14px;
+  padding-right: 14px;
   height: 61px;
+  /* Empeche le bouton créer de renvoyer cet element a la ligne */
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 #barup-right-buttons .user,
@@ -766,7 +770,7 @@ html.dark-mode #barup-right-buttons button {
 
 html.layout-small #barup-right-buttons,
 html.layout-phone #barup-right-buttons {
-  padding-right: 80px;
+  padding-right: 1px;
 }
 
 #barup-search-input {

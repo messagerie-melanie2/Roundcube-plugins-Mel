@@ -111,6 +111,17 @@
             }
         }
     }
+
+    .mail-floating-button {
+      z-index: 999;
+      position: absolute;
+      bottom: 18px;
+      right: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 15px;
+    }
 }
 
 /*Liste des messages*/
@@ -739,6 +750,10 @@ table.messagelist{
     position: absolute;
     right: 0;
 
+    html.touch & {
+      position: initial;
+    }
+
     .searchbar{
         a{
             html body.task-mail &{
@@ -778,6 +793,10 @@ table.messagelist{
 
     &.hoverable{
         right:20px;
+
+        html.touch & {
+          margin-right: 15px;
+        }
 
         .searchbar{
             &.menu{

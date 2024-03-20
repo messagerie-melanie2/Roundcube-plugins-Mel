@@ -77,6 +77,10 @@
                 color:#e2e8e9;
             }
 
+            html.layout-phone &{
+              margin: 15px;
+            }
+
             &:focus{
                 .modal-top-right-buttons-focus();
             }
@@ -104,6 +108,11 @@
         margin-top: 30px;
         margin-left: 30px;
         white-space: break-spaces!important;
+
+        html.layout-phone & {
+          margin: 0;
+          font-size: 3rem;
+        }
     }
 
     &-body{
@@ -113,6 +122,10 @@
 
     &-footer{
         border: none;
+
+        html.layout-phone & {          
+          margin-bottom: 50px !important;
+        }
     }
 
     &-top-right-actions{

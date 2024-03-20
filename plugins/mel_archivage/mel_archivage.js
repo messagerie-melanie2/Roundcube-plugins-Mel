@@ -160,6 +160,9 @@ rcube_webmail.prototype.plugin_archiver = function () {
         .appendTo(document.body);
 
     var buttons = {};
+    buttons['Annuler'] = function(e) {
+      frame.dialog('close', e);
+    };
 
     frame.dialog({
         modal: true,

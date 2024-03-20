@@ -80,6 +80,16 @@ html.layout-large .task-mail #layout-sidebar > .header {
 html body.task-mail.action-show #layout-content {
   overflow: auto;
 }
+.task-mail .mail-floating-button {
+  z-index: 999;
+  position: absolute;
+  bottom: 18px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 15px;
+}
 /*Liste des messages*/
 table.messagelist tr.unread {
   background-color: var(--alternate-bckg-color);
@@ -423,6 +433,9 @@ table.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
   position: absolute;
   right: 0;
 }
+html.touch #mailsearchlist {
+  position: initial;
+}
 html body.task-mail #mailsearchlist .searchbar a {
   color: var(--main-text-color);
 }
@@ -444,6 +457,9 @@ html body.task-mail #mailsearchlist .searchbar a {
 }
 #mailsearchlist.hoverable {
   right: 20px;
+}
+html.touch #mailsearchlist.hoverable {
+  margin-right: 15px;
 }
 #mailsearchlist.hoverable .searchbar.menu {
   width: 0;

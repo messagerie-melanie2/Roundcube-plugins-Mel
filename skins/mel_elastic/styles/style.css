@@ -1123,6 +1123,10 @@ framed_item > .framed_item {
   color: var(--tierciary-text-color) !important;
   background-color: var(--invisible) !important;
 }
+html.layout-phone .task-addressbook #layout-content,
+html.layout-small .task-addressbook #layout-content {
+  margin-left: var(--space-margin) !important;
+}
 .task-addressbook.action-plugin-annuaire .searchbar form:after {
   content: none!important;
 }
@@ -3377,6 +3381,10 @@ html.dark-mode .mel-note.dragover::before {
   right: 15px;
   top: 15px;
 }
+html.layout-phone .elastic-contact-qr-button-code,
+html.layout-small .elastic-contact-qr-button-code {
+  top: 30px;
+}
 .new-note-button {
   margin: 10px;
   border: none;
@@ -4356,4 +4364,45 @@ div.all-day input.input-mel#edit-enddate {
 .location-container .material-symbols-outlined {
   color: var(--input-mel-text-color);
   font-variation-settings: 'wght' 300;
+}
+.menu.toolbar a {
+  color: var(--calendar-sidebar-header-color);
+}
+@media screen and (max-width: 480px) {
+  .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset button.btn-primary {
+    color: var(--quit-button-text-color);
+  }
+}
+#layout > div > .header a.button.mel-circle-icon-button {
+  background: var(--calendar-header-folder-button-background) !important;
+  border-radius: 100%;
+  margin: 8px !important;
+  margin-right: 15px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  color: var(--mel-button-text-color) !important;
+  border: solid thin var(--default-border-color);
+}
+#layout > div > .header a.button.mel-circle-icon-button:hover {
+  background-color: var(--tierciary-bckg-color) !important;
+  color: var(--mel-button-text-color) !important;
+}
+#layout > div > .header a.button.mel-circle-icon-button:before {
+  font-size: 16px !important;
+  margin-top: -2px;
+}
+html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons {
+  display: block;
+}
+html.layout-phone .task-mail .popover .menu .dropbutton a.dropdown {
+  background: transparent;
+}
+html.layout-phone .task-mail .popover .menu li a[aria-haspopup].dropdown::after {
+  color: var(--popover-text-color);
+}
+.wlp_box,
+.wlp_contents {
+  border: none;
 }

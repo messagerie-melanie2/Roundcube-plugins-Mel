@@ -102,6 +102,9 @@
                     }
 
                     .header-title{
+                      margin-bottom: 6px;
+                      margin-top: -5px;
+                      
                         span{
                             color:var(--calendar-sidebar-header-color);
                         }
@@ -115,18 +118,22 @@
 
                 html@{layout-phone} &{
                     max-width: calc(100%);
+                    margin-left: var(--space-margin) !important;
                 }
 
                 html@{layout-small} &{
                     max-width: calc(100%);
+                    margin-left: var(--space-margin) !important;
                 }
 
                 html@{layout-phone}.framed &{
                     max-width: calc(100%);
+                    margin-left: var(--space-margin) !important;
                 }
 
                 html@{layout-small}.framed &{
                     max-width: calc(100%);
+                    margin-left: var(--space-margin) !important;
                 }
             }
 
@@ -448,10 +455,6 @@
                                 //text-shadow: 0px 0px 1px black;
                                 -webkit-text-stroke: var(--calendar-list-item-switch-tick-stroke);
                                 text-stroke: var(--calendar-list-item-switch-tick-stroke);
-
-                                html@{touch} &{
-                                    transform: translateX(10px);
-                                }
                             }
                         }
                     }

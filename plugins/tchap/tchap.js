@@ -66,8 +66,12 @@ class tchap_manager extends MelObject {
 			} else {
 				MainNav.update_badge(+this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML, 'tchap_badge');
 			}
+			if (this.get_env('current_frame_name') === 'tchap'){
+				await delay(10000);
+			}else{
+				await delay(30000);
+			}
 			
-			await delay(30000);
 		}
 	}
 	

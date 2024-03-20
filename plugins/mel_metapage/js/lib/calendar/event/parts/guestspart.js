@@ -525,6 +525,7 @@ export class GuestsPart extends FakePart{
             if (it++ !== main_field_index) this._p_try_add_event($field, 'change', this.onChange.bind(this, $field));
 
             this._p_try_add_event($field, 'input', this.onInput.bind(this, $field));
+            this._p_try_add_event($field, 'keyup', this.onKeyUp.bind(this, $field));
 
             if (cant_modify) $field.attr('disabled', 'disabled').addClass('disabled');
             else $field.removeAttr('disabled').removeClass('disabled');
@@ -750,6 +751,18 @@ export class GuestsPart extends FakePart{
         }
 
         return false;
+    }
+
+    /**
+     * Met à jour les données lorsque l'on appuyer sur "entrer"
+     * @param  {...any} args 
+     */
+    onKeyUp(...args) {
+        const [e, $field] = this._get_args(args);
+
+        if (e.keyCode === 13) {
+            this.onUpdate($(e.currentTarget).val(), $field);
+        }
     }
 
     /**

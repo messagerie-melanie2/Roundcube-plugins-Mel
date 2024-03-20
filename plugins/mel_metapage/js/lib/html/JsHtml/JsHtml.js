@@ -1,8 +1,23 @@
+/**
+ * @module MelHtml
+ */
+
 import { BnumEvent } from "../../mel_events.js";
 
 export {JsHtml, RotomecaHtml as ____JsHtml}
 
+/**
+ * @class
+ * @classdesc Permet de générer du html en javascript et décrire du javascript sous forme html.
+ * @alias ____JsHtml
+ */
 class RotomecaHtml {
+    /**
+     * 
+     * @param {string} balise 
+     * @param {RotomecaHtml} parent 
+     * @param {Object<string, string | function | number>} attribs 
+     */
     constructor(balise, parent, attribs = {}) {
         this.balise = balise;
         this.attribs = attribs;
@@ -10,16 +25,31 @@ class RotomecaHtml {
         this._parent = parent;
     }
 
+    /**
+     * Ajoute une classe à la balise
+     * @param {string} class_to_add Classe à ajouter
+     * @returns {RotomecaHtml}
+     */
     addClass(class_to_add) {
         let navigator = this._updated_balise();
         if (!navigator.hasClass(class_to_add)) navigator.attribs.class.push(class_to_add);
         return this;
     }
 
+    /**
+     * Si la balise à une classe ou non
+     * @param {string} class_to_verify Classe à vérifier
+     * @returns {RotomecaHtml}
+     */
     hasClass(class_to_verify) {
         return this._updated_balise()._update_class().attribs.class.includes(class_to_verify);
     }
 
+    /**
+     * Supprime une classe à la balise
+     * @param {string} class_to_remove Classe à supprimer 
+     * @returns {RotomecaHtml}
+     */
     removeClass(class_to_remove){
         let navigator = this._updated_balise();
         if (navigator.hasClass(class_to_remove)) navigator.attribs.class = navigator.attribs.class.filter(x => x !== class_to_remove);
@@ -27,10 +57,22 @@ class RotomecaHtml {
         return this;
     }
 
+    /**
+     * Désactive la balise.
+     * 
+     * Ajoute la classe `disabled` et l'attribut `disabled`
+     * @returns {RotomecaHtml}
+     */
     disable() {
         return this.addClass('disabed').attr('disabled', 'disabled');
     }
 
+    /**
+     * Ajoute un attribut css à la balise
+     * @param {string | Object<string, string>} key_or_attrib Clé ou attributs
+     * @param {!string} value Valeur de la propriété css si il ne s'agit pas d'un attribut.
+     * @returns {RotomecaHtml}
+     */
     css(key_or_attrib, value = '') {
         if (typeof key_or_attrib === 'string') {
             let navigator = this._update_attribs()._updated_balise()._update_css();
@@ -49,7 +91,8 @@ class RotomecaHtml {
     }
 
     /**
-     * 
+     * Récupère la bonne balise.
+     * @private
      * @returns {RotomecaHtml}
      */
     _updated_balise() {
@@ -61,10 +104,21 @@ class RotomecaHtml {
         return this;
     }
 
+    /**
+     * Si un attribut existe ou non
+     * @param {string} name Nom de l'attribut 
+     * @returns {boolean}
+     */
     hasAttr(name) {
         return !!this._updated_balise().attribs[name]
     }
 
+    /**
+     * Attribut à rajouter à la balise
+     * @param {string} name Nom de la balise
+     * @param {string} value valeur de l'attribut
+     * @returns {RotomecaHtml}
+     */
     attr(name, value) {
         let navigator = this._updated_balise();
 

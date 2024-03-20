@@ -2930,6 +2930,10 @@ function rcube_calendar_ui(settings) {
     {
       if (add) {
         if (!event_attendees.find(x => x.email === attendee.email)) event_attendees.push(attendee);
+        else {
+          this.edit_update_current_event_attendee(attendee, false);
+          this.edit_update_current_event_attendee(attendee);
+        }
       }
       else event_attendees = event_attendees.filter(x => x.email !== attendee.email);
     }

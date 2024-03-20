@@ -61,10 +61,12 @@ class tchap_manager extends MelObject {
 	async _notificationhandler() {
 		while (true) {
 			MainNav.try_add_round('.button-tchap','tchap_badge');
-			if(this.tchap_frame().querySelector('.mx_NotificationBadge_count') === null){
-				MainNav.update_badge( 0, 'tchap_badge');
-			} else {
+			if(this.tchap_frame().querySelector('.mx_NotificationBadge_count') !== null && this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML !== ''){
 				MainNav.update_badge(+this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML, 'tchap_badge');
+			} else if(this.tchap_frame().querySelector('.mx_NotificationBadge') !== null){
+				MainNav.update_badge_text( '●', 'tchap_badge');
+			} else {
+				MainNav.update_badge( 0, 'tchap_badge');
 			}
 			if (this.get_env('current_frame_name') === 'tchap'){
 				await delay(10000);

@@ -143,7 +143,7 @@ $labels["add_file"] = "Ajouter une pièce jointe";
 $labels["day_order"] = "Ordre du jour";
 
 $labels["attach_the_event_to"] = "Rattacher l'évènement à";
-$labels["choose_calendar"] = "Choisissez un calendrier";
+$labels["choose_calendar"] = "Choisissez un agenda";
 $labels["choose_event_state"] = "Choisissez le statut de l'évènement";
 $labels["choose_sensivity"] = "Choisissez la sensibilité de l'évènement";
 $labels["attach_to_workspace_or_category"] = "Lier à un espace de travail ou une catégorie";

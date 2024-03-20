@@ -492,6 +492,15 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   top: 15px;
   left: 14px;
 }
+.task-calendar #annuaire-list > li > .treetoggle {
+  left: 15px!important;
+}
+.task-calendar #annuaire-list ul {
+  margin-left: 10px;
+}
+.task-calendar #annuaire-list .folder .name {
+  margin-left: 20px;
+}
 #datepicker {
   background-color: #31365B !important;
 }

@@ -220,12 +220,22 @@ class Guest {
     }
 
     /**
+     * Supprime le participant de la liste des participants de sauvegarde.
+     * @param {string} email email du participant à supprimer
+     */
+    _remove_from_table(email) {
+        $(`#edit-attendees-table .attendee-name [title="${email}"]`).closest('tr').remove();
+    }
+
+    /**
      * Appeler lorsque que l'on clique sur le bouton "supprimer" lié au participant.
      * @package
      * @param {Event} e 
      */
     _close_button_click(e) {
-        var $querry = $(`div.mel-attendee[data-email="${$(e.currentTarget).attr('data-parent')}"]`);
+        const email = $(e.currentTarget).attr('data-parent');
+        this._remove_from_table(email);
+        var $querry = $(`div.mel-attendee[data-email="${email}"]`);
         const add = true;
         const attendee = this.toAttendee(Guest._GuestRole($querry.attr('data-parent'), GuestsPart.INSTANCE));
         const attendee_list = cal.edit_update_current_event_attendee(attendee, !add);

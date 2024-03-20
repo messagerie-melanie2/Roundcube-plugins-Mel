@@ -724,6 +724,7 @@ html.dark-mode #button-search.btn.btn-secondary {
 
 #barup-right-buttons {
   padding-left: 14px;
+  padding-right: 14px;
   height: 61px;
   /* Empeche le bouton créer de renvoyer cet element a la ligne */
   position: absolute;

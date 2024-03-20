@@ -50,34 +50,13 @@
     background-color: var(--layout-content-header-background-color) !important;
 
     a.button:not(.disabled) {
-      color: var(--layout-content-header-text-color) !important;
+      color: var(--layout-content-header-text-color);
 
       &:hover {
         color: var(--layout-content-header-text-hover-color) !important;
       }
     }
 
-    .back-sidebar-button.folders.hidden-big {
-      background: var(--calendar-header-folder-button-background);
-      border-radius: 100%;
-      margin: 8px !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 42px;
-      color: var(--mel-button-text-color) !important;
-      border: solid thin var(--default-border-color);
-
-      &:hover {
-        background-color: var(--tierciary-bckg-color) !important;
-        color: var(--mel-button-text-color) !important;
-      }
-
-      &:before {
-        font-size: 16px !important;
-        margin-top: -2px;
-      }
-    }
     .transparent-icon-button {
       color: var(--calendar-header-transparent-button-color);
     }

@@ -524,7 +524,7 @@ export class GuestsPart extends FakePart{
 
             if (it++ !== main_field_index) this._p_try_add_event($field, 'change', this.onChange.bind(this, $field));
 
-            this._p_try_add_event($field, 'input', this.onChange.bind(this, $field));
+            this._p_try_add_event($field, 'input', this.onInput.bind(this, $field));
 
             if (cant_modify) $field.attr('disabled', 'disabled').addClass('disabled');
             else $field.removeAttr('disabled').removeClass('disabled');
@@ -682,10 +682,12 @@ export class GuestsPart extends FakePart{
      * Met à jours les données liés aux participants lorsqu'un champ a été modifié
      * @param {string} val 
      * @param {external:jQuery} $field 
-     * @override
+     * @package
+     * @returns {boolean}
      */
-    onUpdate(val, $field) {
+    _onUpdate(val, $field) {
         {
+            //On vérifie si il y a des virgules entre parenthèses puis on les gères.
             const regex = REG_BETWEEN_PARENTHESIS;
             const match = val.match(regex);
 
@@ -743,7 +745,31 @@ export class GuestsPart extends FakePart{
             $field.focus();
 
             this.update_free_busy();
+
+            return true;
         }
+
+        return false;
+    }
+
+    /**
+     * Met à jours les données liés aux participants lorsqu'un champ a été modifié
+     * @param {string} val 
+     * @param {external:jQuery} $field 
+     * @override
+     */
+    onUpdate(val, $field) {
+        if (!this._onUpdate(val??'', $field)) this._onUpdate(`${val}${GUEST_SEPARATOR}`, $field);
+    }
+
+    /**
+     * Met à jours les données liés aux participants lorsqu'un champ a été modifié
+     * @param  {...any} args
+     * @override
+     */
+    onInput(...args) {
+        const [e, $field] = this._get_args(args);
+        this._onUpdate($(e.currentTarget).val(), ($field?.click ? $field : null) ?? this._$fakeField);
     }
 
     /**

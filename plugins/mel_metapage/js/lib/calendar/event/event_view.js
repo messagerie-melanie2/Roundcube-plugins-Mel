@@ -505,7 +505,7 @@ export class EventView {
 
         ev.preventDefault();
         if (MelEnumerable.from(autorized).select(x => x.attr('id')).where(x => ev.target.id === x).any()) {
-            $(ATTENDEE_SELECTOR.replaceAll(FIRST_ARGUMENT, data.email)).remove();
+            $(ATTENDEE_SELECTOR.replaceAll(FIRST_ARGUMENT, data.email)).find('button').click();
             $(ev.target).val(`${data.string},`).change();
         }
 

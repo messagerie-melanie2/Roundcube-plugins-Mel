@@ -5,6 +5,8 @@
  * @local Selector
  */
 
+import { EMPTY_STRING } from "../constants/constants.js";
+
 export {MainNav}
 
 /**
@@ -66,7 +68,7 @@ class MainNav {
      * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
      * @frommodulereturn MainNav {@membertype . }
      */
-    static update_badge(size, idBadge) {
+    static update_badge_number(size, idBadge) {
         const helper = this.helper;
         let querry = helper.select(`#${idBadge}`);
 
@@ -75,11 +77,51 @@ class MainNav {
             if (size > 999) {
                 size = "999+";
                 querry.css("font-size", "6px");
-            } else querry.css("font-size", "");
+            } else querry.css("font-size", EMPTY_STRING);
 
             querry.html(size);
-            querry.css("display", "");
+            querry.css("display", EMPTY_STRING);
         }
+
+        return this;
+    }
+
+    /**
+     * Met à jours un badge.
+     * 
+     * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
+     * @param {string} text Nombre à afficher sur le badge.
+     * @param {string} idBadge Id du badge à modifier.
+     * @returns {MainNav} Chaînage
+     * @see {@link MainNav.try_add_round}
+     * @static
+     * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
+     * @frommodulereturn MainNav {@membertype . }
+     */
+    static update_badge_text(text, idBadge) {
+        let $querry = this.helper.select(`#${idBadge}`).css('font-size', EMPTY_STRING);
+
+        if (!!(text || false)) $querry.html(text).css('display', EMPTY_STRING);
+        else $querry.css('display', 'none');
+
+        return this;
+    }
+
+    /**
+     * Met à jours un badge.
+     * 
+     * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
+     * @param {string | number} data 
+     * @param {string} idBadge 
+     * @returns {MainNav} Chaînage
+     * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
+     * @frommodulereturn MainNav {@membertype . }
+     */
+    static update_badge(data, idBadge) {
+        data = data ?? 0;
+
+        if (+data === data) this.update_badge_number(data, idBadge);
+        else this.update_badge_text(data, idBadge);
 
         return this;
     }

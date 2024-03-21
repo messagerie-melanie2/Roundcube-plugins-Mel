@@ -18,6 +18,7 @@
 
 /**
  * @namespace Constants
+ * @property {module:Constants} Constants
  * @property {module:Constants/RegEx} RegEx
  * @property {module:EventView/Constants} EventViewConstants
  * @property {module:EventView/Parts/Constants} EventViewPartsConstants

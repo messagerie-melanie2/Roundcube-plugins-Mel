@@ -1,21 +1,23 @@
 /**
- * @module MelHtml
+ * @module JsHtml
+ * @local JsHtml
+ * @local ____JsHtml
  */
 
 import { BnumEvent } from "../../mel_events.js";
 
-export {JsHtml, RotomecaHtml as ____JsHtml}
+export {JsHtml, ____JsHtml}
 
 /**
  * @class
  * @classdesc Permet de générer du html en javascript et décrire du javascript sous forme html.
- * @alias ____JsHtml
+ * @package
  */
-class RotomecaHtml {
+class ____JsHtml {
     /**
      * 
      * @param {string} balise 
-     * @param {RotomecaHtml} parent 
+     * @param {____JsHtml} parent 
      * @param {Object<string, string | function | number>} attribs 
      */
     constructor(balise, parent, attribs = {}) {
@@ -28,7 +30,7 @@ class RotomecaHtml {
     /**
      * Ajoute une classe à la balise
      * @param {string} class_to_add Classe à ajouter
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     addClass(class_to_add) {
         let navigator = this._updated_balise();
@@ -39,7 +41,7 @@ class RotomecaHtml {
     /**
      * Si la balise à une classe ou non
      * @param {string} class_to_verify Classe à vérifier
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     hasClass(class_to_verify) {
         return this._updated_balise()._update_class().attribs.class.includes(class_to_verify);
@@ -48,7 +50,7 @@ class RotomecaHtml {
     /**
      * Supprime une classe à la balise
      * @param {string} class_to_remove Classe à supprimer 
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     removeClass(class_to_remove){
         let navigator = this._updated_balise();
@@ -61,7 +63,7 @@ class RotomecaHtml {
      * Désactive la balise.
      * 
      * Ajoute la classe `disabled` et l'attribut `disabled`
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     disable() {
         return this.addClass('disabed').attr('disabled', 'disabled');
@@ -71,7 +73,7 @@ class RotomecaHtml {
      * Ajoute un attribut css à la balise
      * @param {string | Object<string, string>} key_or_attrib Clé ou attributs
      * @param {!string} value Valeur de la propriété css si il ne s'agit pas d'un attribut.
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     css(key_or_attrib, value = '') {
         if (typeof key_or_attrib === 'string') {
@@ -93,7 +95,7 @@ class RotomecaHtml {
     /**
      * Récupère la bonne balise.
      * @private
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     _updated_balise() {
         if (this.childs.length > 0) {
@@ -117,7 +119,7 @@ class RotomecaHtml {
      * Attribut à rajouter à la balise
      * @param {string} name Nom de la balise
      * @param {string} value valeur de l'attribut
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     attr(name, value) {
         let navigator = this._updated_balise();
@@ -470,7 +472,7 @@ class RotomecaHtml {
     /**
      * 
      * @param {*} debug 
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     end(debug = null) {
         let end = this._parent._create(`/${this.balise}`, this._parent, null, true);
@@ -494,7 +496,7 @@ class RotomecaHtml {
      * @param {*} parent 
      * @param {*} attribs 
      * @param {*} isend 
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     _create(balise, parent, attribs, isend) {
         this.childs.push(new this.constructor(balise, parent, attribs));
@@ -555,13 +557,13 @@ class RotomecaHtml {
                     id = $item.attr('data-on-id');
 
                     if (!!id) {
-                        for (const key in RotomecaHtml.actions[id]) {
-                            if (Object.hasOwnProperty.call(RotomecaHtml.actions[id], key)) {
-                                const element = RotomecaHtml.actions[id][key];
+                        for (const key in ____JsHtml.actions[id]) {
+                            if (Object.hasOwnProperty.call(____JsHtml.actions[id], key)) {
+                                const element = ____JsHtml.actions[id][key];
                                 $item.on(key.replace('on', ''), (element instanceof BnumEvent ? element.call.bind(element) : element));
                             }
                         }
-                        RotomecaHtml.remove_id(id);
+                        ____JsHtml.remove_id(id);
                         id = null;
                     }
 
@@ -641,9 +643,9 @@ class RotomecaHtml {
                             }
                         }
                         else if (this._isOn(key)) {
-                            var id = id || RotomecaHtml.generate_ids();
+                            var id = id || ____JsHtml.generate_ids();
                             balise.push(`data-on-id="${id}"`);
-                            RotomecaHtml.add_action(id, key, this._getOn(key));
+                            ____JsHtml.add_action(id, key, this._getOn(key));
                         }
                     }
                 }
@@ -687,7 +689,7 @@ class RotomecaHtml {
     }
 
     static start() {
-        return new RotomecaHtml('start', null);
+        return new ____JsHtml('start', null);
     }
 
     static create_alias(alias, {
@@ -697,7 +699,7 @@ class RotomecaHtml {
         after_callback = null,
         tag = 'div'
     }) {
-        RotomecaHtml.prototype[alias] = function (attribs = {}, ...args) {
+        ____JsHtml.prototype[alias] = function (attribs = {}, ...args) {
             if (!!before_callback) {
                 const before = before_callback(attribs, ...args);
 
@@ -711,7 +713,7 @@ class RotomecaHtml {
             if (!!after_callback) {
                 const call = after_callback(html, attribs, ...args);
 
-                if (!!call && call instanceof RotomecaHtml) html = call;
+                if (!!call && call instanceof ____JsHtml) html = call;
             }
 
             return html;
@@ -721,8 +723,8 @@ class RotomecaHtml {
     }
 }
 
-RotomecaHtml.actions = {};
-RotomecaHtml.generate_ids = function makeid(length = 5) {
+____JsHtml.actions = {};
+____JsHtml.generate_ids = function makeid(length = 5) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -732,32 +734,38 @@ RotomecaHtml.generate_ids = function makeid(length = 5) {
       counter += 1;
     }
 
-    if (Object.keys(this.actions).includes(result)) result = RotomecaHtml.generate_ids(~~(Math.random()*100));
+    if (Object.keys(this.actions).includes(result)) result = ____JsHtml.generate_ids(~~(Math.random()*100));
 
     return result;
 }
-RotomecaHtml.remove_id = function (id) {
-    RotomecaHtml.actions[id] = null;
+____JsHtml.remove_id = function (id) {
+    ____JsHtml.actions[id] = null;
 }
-RotomecaHtml.add_action = function(id, action, callback) {
-    if (!RotomecaHtml.actions[id]) RotomecaHtml.actions[id] = {}
+____JsHtml.add_action = function(id, action, callback) {
+    if (!____JsHtml.actions[id]) ____JsHtml.actions[id] = {}
 
-    if (!RotomecaHtml.actions[id][action]) RotomecaHtml.actions[id][action] = new BnumEvent();
+    if (!____JsHtml.actions[id][action]) ____JsHtml.actions[id][action] = new BnumEvent();
 
-    RotomecaHtml.actions[id][action] = callback;
+    ____JsHtml.actions[id][action] = callback;
 }
 
+/**
+ * @class
+ * @classdesc Englobe les fonctions de la classe ____JsHtml
+ * @package 
+ */
 class ____js_html___ {
     constructor() {
         /**
          * Commence un texte html en javascript
-         * @type {RotomecaHtml}
+         * @type {____JsHtml}
+         * @readonly
          */
         this.start = null;
         Object.defineProperties(this, {
             start: {
                 get() {
-                    return RotomecaHtml.start();
+                    return ____JsHtml.start();
                 },
                 configurable: false,
                 enumerable: false,
@@ -783,7 +791,7 @@ class ____js_html___ {
         after_callback = null,
         tag = 'div'
     }) {
-        return RotomecaHtml.create_alias(alias, {
+        return ____JsHtml.create_alias(alias, {
             online, 
             before_callback,
             generate_callback,
@@ -798,7 +806,7 @@ class ____js_html___ {
      * @param {function} callback Fonction qui sera appelé 
      */
     extend(name, callback) {
-        RotomecaHtml.prototype[name] = callback;
+        ____JsHtml.prototype[name] = callback;
     }
 
     /**
@@ -807,8 +815,8 @@ class ____js_html___ {
      * @param {function} callback Nouvelle fonction arg1 => this, arg2 => ancienne fonction, arg3 => arguments de la fonction
      */
     update(name, callback) {
-        const old = RotomecaHtml.prototype[name];
-        RotomecaHtml.prototype[name] = function (...args) {
+        const old = ____JsHtml.prototype[name];
+        ____JsHtml.prototype[name] = function (...args) {
             return callback(this, old, ...args);
         }
     }
@@ -817,7 +825,7 @@ class ____js_html___ {
      * Ecrit une page en js html
      * @param {function} callback Function qui contient le js html.
      * @param  {...any} args Arguments de la fonction `callback`
-     * @returns {RotomecaHtml}
+     * @returns {____JsHtml}
      */
     write(callback, ...args) {
         return callback(this.start, ...args);
@@ -829,7 +837,7 @@ class ____js_html___ {
      * @param {string} name Nom du fichier 
      * @param {string} plugin Nom du plugin qui contient le fichier 
      * @param {string} skin Nom de la skin
-     * @returns {Promise<null | RotomecaHtml>}
+     * @returns {Promise<null | ____JsHtml>}
      */
     async load_page(name, plugin = 'mel_metapage', skin = (window?.rcmail?.env?.skin ?? '')) {
         const load = top?.loadJsModule ?? parent?.loadJsModule ?? window?.loadJsModule;
@@ -847,4 +855,9 @@ class ____js_html___ {
     }
 }
 
+/**
+ * @memberof module:JsHtml
+ * @type {____js_html___}
+ * @description Permet de générer du html en javascript et d'écrire du javascript sous forme html.
+ */
 const JsHtml = new ____js_html___();

@@ -52,6 +52,12 @@ class tchap_manager extends MelObject {
 		this.rcmail().addEventListener('tchap.options', this.tchap_options.bind(this));
 		this.rcmail().addEventListener('tchap.disconnect', this.tchap_disconnect.bind(this));
 		this._notificationhandler();
+
+		//Mettre à jours les messages quand on vient sur le frame.
+		const top = true;
+		this.rcmail(top).addEventListener('frame_loaded', (eClass, changepage, isAriane, querry, id, first_load) => {
+			if (eClass === 'tchap') this.update_badge();
+		});
 	}
 
 	/**
@@ -60,22 +66,38 @@ class tchap_manager extends MelObject {
 	 * @return {Promise<void>}
 	 */
 	async _notificationhandler() {
+		this.update_badge();
+
 		while (true) {
-			MainNav.try_add_round('.button-tchap','tchap_badge');
-			if(this.tchap_frame().querySelector('.mx_NotificationBadge_count') !== null && this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML !== EMPTY_STRING){
-				MainNav.update_badge(+this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML, 'tchap_badge');
-			} else if(this.tchap_frame().querySelector('.mx_NotificationBadge') !== null){
-				MainNav.update_badge_text( TCHAT_UNREAD, 'tchap_badge');
-			} else {
-				MainNav.update_badge( 0, 'tchap_badge');
-			}
-			if (this.get_env('current_frame_name') === 'tchap'){
-				await delay(10000);
-			}else{
-				await delay(30000);
-			}
-			
+			if (this.get_env('current_frame_name') === 'tchap') await delay(10000);
+			else                                                await delay(30000);
+
+			this._update_badge();
 		}
+	}
+
+	/**
+	 * Met à jour le badge de notification du bouton lié à ce plugin de la barre de navigation principale.
+	 * @private
+	 */
+	_update_badge() {
+		if(this.tchap_frame().querySelector('.mx_NotificationBadge_count') !== null && this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML !== EMPTY_STRING){
+			MainNav.update_badge(+this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML, 'tchap_badge');
+		} else if(this.tchap_frame().querySelector('.mx_NotificationBadge') !== null){
+			MainNav.update_badge_text( TCHAT_UNREAD, 'tchap_badge');
+		} else {
+			MainNav.update_badge( 0, 'tchap_badge');
+		}
+	}
+
+	/**
+	 * Met à jour le badge de notification du bouton lié à ce plugin de la barre de navigation principale.
+	 * 
+	 * Initialise le badge si besoin.
+	 */
+	update_badge() {
+		MainNav.try_add_round('.button-tchap','tchap_badge');
+		this._update_badge();
 	}
 	
 	/**

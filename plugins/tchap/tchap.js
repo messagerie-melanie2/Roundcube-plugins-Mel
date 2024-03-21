@@ -8,6 +8,7 @@
  */
 
 import { MainNav } from "../mel_metapage/js/lib/classes/main_nav.js";
+import { EMPTY_STRING, TCHAT_UNREAD } from "../mel_metapage/js/lib/constants/constants.js";
 import { MelObject } from "../mel_metapage/js/lib/mel_object.js";
 import { Mel_Promise } from "../mel_metapage/js/lib/mel_promise.js";
 export {tchap_manager};
@@ -61,10 +62,10 @@ class tchap_manager extends MelObject {
 	async _notificationhandler() {
 		while (true) {
 			MainNav.try_add_round('.button-tchap','tchap_badge');
-			if(this.tchap_frame().querySelector('.mx_NotificationBadge_count') !== null && this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML !== ''){
+			if(this.tchap_frame().querySelector('.mx_NotificationBadge_count') !== null && this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML !== EMPTY_STRING){
 				MainNav.update_badge(+this.tchap_frame().querySelector('.mx_NotificationBadge_count').innerHTML, 'tchap_badge');
 			} else if(this.tchap_frame().querySelector('.mx_NotificationBadge') !== null){
-				MainNav.update_badge_text( '●', 'tchap_badge');
+				MainNav.update_badge_text( TCHAT_UNREAD, 'tchap_badge');
 			} else {
 				MainNav.update_badge( 0, 'tchap_badge');
 			}

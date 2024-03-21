@@ -6,6 +6,19 @@
 
 var current_desktop_notification = 0;
 
+/**
+ * @typedef MelNotification 
+ * @property {string} category
+ * @property {string} content
+ * @property {number} created
+ * @property {string} event
+ * @property {boolean} isread
+ * @property {boolean} local
+ * @property {number} modified
+ * @property {string} title
+ * @property {string} uid
+ */
+
 // Initialise les notifications et lance le timeout
 // Pas de traitement si on est pas dans la metapage
 if (window.rcmail) {
@@ -332,7 +345,7 @@ function m_mp_NotificationSettings(key, notification) {
 /**
  * Affichage d'une notification
  * 
- * @param {*} notification 
+ * @param {MelNotification} notification 
  */
 function m_mp_ShowNotification(notification) {
     // Gérer les notifications multiples
@@ -352,13 +365,32 @@ function m_mp_ShowNotification(notification) {
 
         // Envoyer la notification sur le desktop
         m_mp_ShowDesktopNotification(notification);
+
+        switch (notification.category) {
+            case 'mail':
+                if (!!rcmail.env.notifications_sound_on_new_mail) PlaySound();
+                break;
+        
+            default:
+                break;
+        }
     }, current_desktop_notification++ * 1000);
+}
+
+function PlaySound(sound = 'sound', ext = 'mp3'){
+    var audio = new Audio(window.location.origin + window.location.pathname + `/plugins/mel_notification/${sound}.${ext}`);
+    audio.addEventListener('ended', () => {
+        audio.remove();
+        audio = null;
+    });
+
+    audio.play();  
 }
 
 /**
  * Affiche une notification sur le bureau
  * 
- * @param {*} notification 
+ * @param {MelNotification} notification 
  */
 function m_mp_ShowDesktopNotification(notification) {
     if (m_mp_NotificationSettings('desktop_notification', notification)) {

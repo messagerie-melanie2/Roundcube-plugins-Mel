@@ -23,13 +23,11 @@ export class UIMailHeaderManager extends MailModule {
             }
         ).reverse();
 
-        // $(ll_search_selector).before(JsHtml.start.div({id:selected_action_list_id, style:'display:none'}).ul({class:'menu toolbar listing iconized'}).end().end().generate_html({}));
-        $(ll_search_selector).before(JsHtml.start.ul({id:selected_action_list_id, class:'menu toolbar listing iconized'}).end().generate_html({}));
+        $(ll_search_selector).before(JsHtml.start.div({id:selected_action_list_id, style:'display:none'}).ul({class:'menu toolbar listing iconized'}).end().end().generate_html({}));
 
-        let $list = $(`#${selected_action_list_id}`);
-        // let $list = $(`ul#toolbar-list-menu`);
+        let $list = $(`#${selected_action_list_id} ul`);
         for (const iterator of header_actions) {
-            $list.append($('<li>').append($(iterator).clone().removeClass('disabled').removeAttr('aria-disabled')));
+            $list.append($('<li>').append($(iterator).clone().removeClass('disabled').removeAttr('aria-disabled').removeAttr('id')));
         }
 
         //generate clone popup

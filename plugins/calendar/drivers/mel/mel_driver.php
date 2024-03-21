@@ -334,6 +334,7 @@ class mel_driver extends calendar_driver {
             'history'     => false,
             'virtual'     => false,
             'editable'    => $cal_is_writable,
+            'name_editable' => $this->_is_external($cal->id) ? true : $cal_is_writable,
             'deletable'   => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
             'principal'   => $cal->owner == $cal->id,
             'rights'      => $rights,
@@ -3284,6 +3285,24 @@ class mel_driver extends calendar_driver {
       return false;
     }
     return false;
+  }
+
+  private function _is_external($id) {
+    // Récupération des prefs external calendar de l'utilisateur
+    $pref = driver_mel::gi()->getUser()->getCalendarPreference("external_calendars");
+    $is_external_calendar = false;
+
+    if (isset($pref)) {
+      $external_calendars = json_decode($pref, true);
+
+      foreach ($external_calendars as $external_calendar) {
+        if ($external_calendar['calendar_id'] == $id) {
+          $is_external_calendar = true;
+        }
+      }
+    }
+
+    return $is_external_calendar;
   }
 
   /**

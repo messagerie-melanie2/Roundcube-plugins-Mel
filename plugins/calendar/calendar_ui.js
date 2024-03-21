@@ -3132,7 +3132,7 @@ function rcube_calendar_ui(settings) {
       $dialog = $('<iframe>').attr('src', rcmail.url('calendar', params)).on('load', function () {
         var contents = $(this).contents();
         contents.find('#calendar-name')
-          .prop('disabled', !calendar.editable)
+          .prop('disabled', !calendar.editable && !(calendar.name_editable ?? false))
           .val(calendar.editname || calendar.name)
           .select();
         contents.find('#calendar-color')

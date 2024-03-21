@@ -20,6 +20,6 @@ export const TYPE_STRING = 'string';
 /**
  * @constant
  * @type {string}
- * @default '●'
+ * @default '•'
  */
-export const TCHAT_UNREAD = '●';
+export const TCHAT_UNREAD = '•';

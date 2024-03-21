@@ -386,6 +386,11 @@ class mel_moncompte extends rcube_plugin {
           $this->rc->output->set_env("resource_owner", $calendar->owner);
           $this->rc->output->set_env("resource_default", $default_calendar->id == $calendar->id);
           $this->rc->output->set_env("resource_invitation", !isset($no_invitation[$calendar->id]));
+
+          if ($acl === $this->gettext('read_only') || M2calendar::is_external($calendar->id)) {
+            $this->rc->output->set_env("show_invitations", false);
+          }
+
           if (count($synchro_mobile) == 0) {
             // Si on n'a pas de ressource définie, utilise celle par défaut
             $this->rc->output->set_env("resource_synchro_mobile", $is_default);

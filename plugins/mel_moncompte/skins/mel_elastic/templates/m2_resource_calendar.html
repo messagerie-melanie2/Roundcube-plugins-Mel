@@ -79,6 +79,7 @@
 						'calendar')"></td>
 					<roundcube:endif />
 				</tr>
+				<roundcube:if condition="env:show_invitations !== false" />
 				<tr>
 					<td class="title"><label for="rcmfd_invitation"><roundcube:label
 								name="mel_moncompte.invitation" /></label></td>
@@ -94,6 +95,7 @@
 						'calendar')"></td>
 					<roundcube:endif />
 				</tr>
+				</roundcube:endif />
 			</table>
 			<br>
 			<br>

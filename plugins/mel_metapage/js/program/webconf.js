@@ -1477,7 +1477,7 @@ class Webconf{
                     default:
                         break;
                 }
-
+                this.from_creator = true;
                 this.startup();
             };
         }
@@ -1612,7 +1612,7 @@ class Webconf{
 
         this.jitsii.executeCommand('avatarUrl', `${rcmail.env.rocket_chat_url}avatar/${rcmail.env.username}`);
 
-        if (this.wsp.have_workspace()){
+        if (this.wsp.have_workspace() && !!this.from_creator){
             top.webconf_helper.notify(this.key, this.wsp.uid);
         }
         let ongo_config = {

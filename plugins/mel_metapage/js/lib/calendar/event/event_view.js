@@ -306,6 +306,7 @@ export class EventView {
      */
     constructor(event, dialog) {
         this._init()._setup(event, dialog)._main(event);
+        EventView.INSTANCE = this;
     }
 
     /**
@@ -493,6 +494,7 @@ export class EventView {
         this.inputs = null;
         this.fakes = null;
         this.parts = null;
+        EventView.INSTANCE = null;
     }
 
     /**
@@ -556,6 +558,13 @@ export class EventView {
         return new EventField(name, selector);
     }
 }
+
+/**
+ * Instance de la vue en cours
+ * @type {EventView}
+ * @static
+ */
+EventView.INSTANCE = null;
 
 /**
  * Liste des sélecteurs de la vue.

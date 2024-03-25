@@ -95,7 +95,7 @@ table.messagelist tr.unread {
   background-color: var(--alternate-bckg-color);
 }
 table.messagelist tr.unread > td:first-child {
-  border-left: 2px solid var(--primary-border-color) !important;
+  border-left: 2px solid var(--message-list-unread-border-left) !important;
 }
 table.messagelist tr.unread td {
   background-color: var(--invisible);
@@ -412,7 +412,7 @@ table.messagelist .unread.selected td.subject span.date {
   color: var(--secondary-text-color);
 }
 table.messagelist:not(.withselection) tr.unread > td.selection + td {
-  border-left: 2px solid var(--primary-border-color) !important;
+  border-left: 2px solid var(--message-list-unread-border-left) !important;
 }
 table.messagelist:not(.threaded) tbody tr:nth-child(2n) td {
   background-color: var(--default-background-lighter);

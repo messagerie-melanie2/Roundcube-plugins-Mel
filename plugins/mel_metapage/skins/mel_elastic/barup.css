@@ -946,6 +946,7 @@ html.dark-mode .barup-icons-button:hover {
 #notifications-panel .content a,
 .user-dropdown-menu .user-menu-items a {
   cursor: pointer;
+  color: var(--dropdown-menu-text-color);
 } 
 
 .tiny-rocket-chat.inbarup span.disc {

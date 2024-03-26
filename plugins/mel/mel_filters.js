@@ -702,6 +702,26 @@ les propriétés « nom » et « valeur ».
     
         $('#toolbar-list-menu .select').parent().remove();
 
+        function interval_on_change(start, end) {
+            const DATE_FORMAT = 'DD/MM/YYYY';
+            const SERVER_FORMAT = 'DD-MMM-YYYY';
+            const server_start = moment(start, DATE_FORMAT).format(SERVER_FORMAT);
+            const server_end = moment(end, DATE_FORMAT).add(1, 'd').format(SERVER_FORMAT);
+            const val =`SINCE ${server_start} BEFORE ${server_end}`;
+
+            if (0 === $('#searchfilter .customdate').length) {
+                $('#searchfilter').append($('<option>').val(val).text('Date personnalisée').addClass('customdate'));
+            }
+
+            $('#searchfilter .customdate').val(val).text(rcmail.gettext('from_to', 'mel').replace('%0', start).replace('%1', end));
+
+            $('#searchfilter').val(val);
+
+            $('#s_interval').val('');
+
+            if (moment(start, DATE_FORMAT) > moment($('#s_interval_end').val(), DATE_FORMAT) || ($('#s_interval_end').val() || '') === '') $('#s_interval_end').val(moment(start, DATE_FORMAT).add(1, 'd').format(DATE_FORMAT)).change();
+        }
+
         rcmail.addEventListener('init', () => {
             rcmail.message_list.addEventListener('select', () => {
                 mel_selector.get_checkbox().update_selected_check();
@@ -742,39 +762,15 @@ les propriétés « nom » et « valeur ».
                             `);
 
                             $tmp.find('#s_interval_start').on('change', (e) => {
-                                const start = moment(e.currentTarget.value, 'DD/MM/YYYY').format('DD-MMM-YYYY');
-                                const end = moment($('#s_interval_end').val(), 'DD/MM/YYYY').add(1, 'd').format('DD-MMM-YYYY');
-                                const val =`SINCE ${start} BEFORE ${end}`;
-
-                                if (0 === $('#searchfilter .customdate').length) {
-                                    $('#searchfilter').append($('<option>').val(val).text('Date personnalisée').addClass('customdate'));
-                                }
-
-                                $('#searchfilter .customdate').val(val);
-
-                                $('#searchfilter').val(val);
-
-                                $('#s_interval').val('');
-
-                                if (moment(e.currentTarget.value, 'DD/MM/YYYY') > moment($('#s_interval_end').val(), 'DD/MM/YYYY') || ($('#s_interval_end').val() || '') === '') $('#s_interval_end').val(moment(e.currentTarget.value, 'DD/MM/YYYY').add(1, 'd').format('DD/MM/YYYY')).change();
+                                const start = e.currentTarget.value;
+                                const end = $('#s_interval_end').val();
+                                interval_on_change(start, end);
                             }).datepicker();
 
                             $tmp.find('#s_interval_end').on('change', (e) => {
-                                const start = moment($('#s_interval_start').val(), 'DD/MM/YYYY').format('DD-MMM-YYYY');
-                                const end = moment(e.currentTarget.value, 'DD/MM/YYYY').add(1, 'd').format('DD-MMM-YYYY');
-                                const val =`SINCE ${start} BEFORE ${end}`;
-
-                                if (0 === $('#searchfilter .customdate').length) {
-                                    $('#searchfilter').append($('<option>').val(val).text('Date personnalisée').addClass('customdate'));
-                                }
-
-                                $('#searchfilter .customdate').val(val);
-
-                                $('#searchfilter').val(val);
-
-                                $('#s_interval').val('');
-
-                                if (moment($('#s_interval_start').val(), 'DD/MM/YYYY') > moment(e.currentTarget.value, 'DD/MM/YYYY')  || ($('#s_interval_end').val() || '') === '') $('#s_interval_end').val(moment(e.currentTarget.value, 'DD/MM/YYYY').add(1, 'd').format('DD/MM/YYYY')).change();
+                                const end = e.currentTarget.value;
+                                const start = $('#s_interval_start').val();
+                                interval_on_change(start, end);
                             }).datepicker();
 
                             $tmp.find('button').click(() => {
@@ -784,6 +780,7 @@ les propriétés « nom » et « valeur ».
                             });
 
                             $('#s_interval').parent().after($tmp);
+                            $tmp = null;
                         } 
                         else $('#s_custom_interval').show();
                     }

@@ -127,3 +127,5 @@ $labels['default_pref_text'] = "Default";
 $labels['subfolders_pref_text'] = "Group Folders";
 $labels['unified_pref_text'] = "Unified Folders";
 $labels['subfolders'] = 'Folders';
+
+$labels['from_to'] = 'From %0 to %1';

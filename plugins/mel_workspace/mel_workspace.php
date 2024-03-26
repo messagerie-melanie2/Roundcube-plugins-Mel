@@ -1983,9 +1983,9 @@ class mel_workspace extends bnum_plugin
             $bodymail->user_email = driver_mel::gi()->getUser()->email;
             $bodymail->wsp_name = $workspace->title;
             $bodymail->wsp_creator = $workspace->creator;
-            $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Créer le' : 'Mise à jour';
+            $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour';
             $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
-            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'png');
+            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
             $bodymail->url = 'https://mel.din.developpement-durable.gouv.fr/bureau/?_task=workspace&_action=workspace&_uid='.$workspace->uid;
 

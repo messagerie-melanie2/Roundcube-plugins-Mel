@@ -1,0 +1,135 @@
+:root {
+    --blue: #4254AA;
+    --red: #f50059;
+    --green: #39a845;
+}
+body {
+    color: #333;
+    font-family: Marianne,arial,sans-serif;
+    background-color: white;
+}
+html, body {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    overflow-x: hidden;
+}
+#MCE_ERROR #header > div > div {
+  display: inline-block;
+  vertical-align: top;
+}
+#MCE_ERROR #logoMi, #MCE_ERROR #logoMCE{
+  width: 20vw;
+}
+#MCE_ERROR #logoMi{
+  text-align: left;
+}
+#MCE_ERROR #header{
+  text-align: center;
+  border-bottom: 1px solid #cecece;
+}
+#MCE_ERROR #header > div{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+#MCE_ERROR #header div.title{
+  width: 50vw;
+}
+#MCE_ERROR #logoMi img.logo, #MCE_ERROR #logoMCE img.logo{
+  max-height: 100px;
+}
+#MCE_ERROR #contents{
+  z-index: 1;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  overflow: auto;
+  max-height: calc(100vh - 205px);
+  scrollbar-color: var(--blue) white;
+  scrollbar-width: thin;
+  width: 100vw;
+}
+#MCE_ERROR #contents > div{
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: 600px;
+}
+#MCE_ERROR #contents p {
+  text-align: center;
+  margin: 20px;
+}
+#MCE_ERROR #contents button{
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid var(--blue);
+  transition: all 0.3s;
+  padding: 5px;
+  border-radius: 5px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+#MCE_ERROR #contents button.red{
+  border: 1px solid var(--red);
+}
+#MCE_ERROR #contents button:hover{
+  background-color: var(--blue);
+  color: white;
+}
+#MCE_ERROR #contents button.red:hover{
+  background-color: var(--red);
+  color: white;
+}
+#footer > div {
+  display: inline-block;
+  width: calc(50vw - 10px);
+  position: relative;
+  top: 0;
+  text-align: right;
+  vertical-align: bottom;
+  font-size: 0.8em;
+}
+#footer > div:first-child{
+  text-align: left;
+}
+#footer > div span{
+  display: block;
+  margin-bottom: 2px;
+  color: #777;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+h1{
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+}
+#footer{
+  height: 20px;
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  overflow: hidden;
+  background-color: white;
+  text-align: center;
+  border-top: 2px solid var(--blue);
+  padding: 11px 5px;
+  font-size: 1rem;
+}
+a, a:hover, a:focus, a:link {
+    text-decoration: none;
+    color: var(--blue);
+    border-bottom: 2px solid transparent;
+}
+a:hover, a:focus {
+    border-bottom-color: var(--red);
+}
+@media (max-width: 700px){
+  #MCE_ERROR #logoMi img.logo, #MCE_ERROR #logoMCE img.logo{
+    max-height: 40px;
+  }
+  #MCE_ERROR #contents{
+    max-height: calc(100vh - 168px);
+  }
+}

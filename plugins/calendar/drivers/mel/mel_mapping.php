@@ -59,6 +59,7 @@ class mel_mapping {
             'TENTATIVE'         => Event::STATUS_TENTATIVE, 
             'FREE'              => Event::STATUS_NONE,
             'TELEWORK'          => Event::STATUS_TELEWORK,
+            'VACATION'          => Event::STATUS_VACATION,
     );
     if (isset($mapping[$status_rc])) {
       $status_m2 = $mapping[$status_rc];
@@ -83,6 +84,7 @@ class mel_mapping {
             Event::STATUS_CANCELLED => 'CANCELLED',
             Event::STATUS_TENTATIVE => 'TENTATIVE',
             Event::STATUS_TELEWORK  => 'TELEWORK',
+            Event::STATUS_VACATION  => 'VACATION',
     );
     if (isset($mapping[$status_m2])) {
       $status_rc = $mapping[$status_m2];
@@ -107,6 +109,7 @@ class mel_mapping {
             'outofoffice' => Event::STATUS_CONFIRMED,
             'tentative'   => Event::STATUS_TENTATIVE,
             'telework'    => Event::STATUS_TELEWORK,
+            'vacation'    => Event::STATUS_VACATION,
             self::DEFAULT_VALUE => Event::STATUS_CONFIRMED
     );
     if (isset($mapping[$free_busy_rc])) {
@@ -132,6 +135,7 @@ class mel_mapping {
             'outofoffice'           => 'outofoffice',
             Event::STATUS_TENTATIVE => 'tentative',
             Event::STATUS_TELEWORK  => 'telework',
+            Event::STATUS_VACATION  => 'vacation',
             self::DEFAULT_VALUE     => 'busy'
     );
     if (isset($mapping[$free_busy_m2])) {

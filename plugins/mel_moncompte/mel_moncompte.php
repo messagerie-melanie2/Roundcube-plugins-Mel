@@ -377,7 +377,7 @@ class mel_moncompte extends rcube_plugin {
 
           $default_calendar = $user->getDefaultCalendar();
           $acl = ($calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
-          $shared = $user->uid != $calendar->owner;
+          $shared = $user->uid != $calendar->owner || !$calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE);
           $is_default = $default_calendar->id == $calendar->id;
           $this->rc->output->set_env("resource_id", $id);
           $this->rc->output->set_env("resource_name", $shared ? "(" . $calendar->owner . ") " . $calendar->name : $calendar->name);

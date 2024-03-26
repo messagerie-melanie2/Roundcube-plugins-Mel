@@ -41,6 +41,9 @@ function rcube_calendar_ui(settings) {
   this.calendars = {};
   this.quickview_sources = [];
 
+  //Pamela
+  /** Contst private vars */
+  const width_modal_event = 700;
 
   /***  private vars  ***/
   var DAY_MS = 86400000;
@@ -239,6 +242,10 @@ function rcube_calendar_ui(settings) {
         if (event.attendee_partstart && ['accepted', 'tentative'].indexOf(String(event.attendee_partstart).toLowerCase()) === -1)
           time_element.prepend('<i class="fc-icon-' + String(event.attendee_partstart).toLowerCase() + '"></i>');
         else if (String(event.status).toLowerCase() == 'telework') {
+          time_element.prepend('<i class="fc-icon-' + String(event.status).toLowerCase() + '"></i>');
+        }
+        // MANTIS 0008012: Ajouter un statut "Congés"
+        else if (String(event.status).toLowerCase() == 'vacation') {
           time_element.prepend('<i class="fc-icon-' + String(event.status).toLowerCase() + '"></i>');
         }
       // }
@@ -946,13 +953,16 @@ function rcube_calendar_ui(settings) {
 
     // init dialog buttons
     var buttons = [],
-      save_func = function () {
+    //PAMELLA => ADDING ASYNC
+      save_func = async function () {
         var start = allday.checked ? '12:00' : $.trim(starttime.val()),
           end = allday.checked ? '13:00' : $.trim(endtime.val()),
           re = /^((0?[0-9])|(1[0-9])|(2[0-3])):([0-5][0-9])(\s*[ap]\.?m\.?)?$/i;
 
         if (!re.test(start) || !re.test(end)) {
           rcmail.alert_dialog(rcmail.gettext('invalideventdates', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
         }
 
@@ -961,12 +971,28 @@ function rcube_calendar_ui(settings) {
 
         if (!title.val()) {
           rcmail.alert_dialog(rcmail.gettext('emptyeventtitle', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
         }
 
         if (start.getTime() > end.getTime()) {
           rcmail.alert_dialog(rcmail.gettext('invalideventdates', 'calendar'));
+          //PAMELLA => adding trigger on not save
+          rcmail.triggerEvent('calendar.not_saved');
           return false;
+        }
+
+        //PAMELA Ajout de ce qu'il y a entre accolades
+        {
+          let trigger_result = rcmail.triggerEvent('calendar.save_event');
+
+          if (!!trigger_result?.then) trigger_result = await trigger_result;
+
+          if (false === (trigger_result ?? true)) {
+            rcmail.triggerEvent('calendar.not_saved');
+            return false;
+          }  
         }
 
         // post data to server
@@ -1108,11 +1134,11 @@ function rcube_calendar_ui(settings) {
         },
         buttons: buttons,
         minWidth: 500,
-        width: 600
+        width: width_modal_event
       }).append(editform.show());  // adding form content AFTERWARDS massively speeds up opening on IE6
 
       // set dialog size according to form content
-      me.dialog_resize($dialog.get(0), editform.height() + (bw.ie ? 20 : 0), 550);
+      me.dialog_resize($dialog.get(0), editform.height() + (bw.ie ? 20 : 0), width_modal_event);
 
       rcmail.triggerEvent('calendar-event-dialog', { dialog: $dialog });
     }
@@ -1830,7 +1856,8 @@ function rcube_calendar_ui(settings) {
   // update free-busy grid with status loaded from server
   var update_freebusy_display = function (email) {
     // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
-    var status_classes = ['unknown', 'free', 'busy', 'tentative', 'out-of-office', 'telework'];
+    // MANTIS 0008012: Ajouter un statut "Congés"
+    var status_classes = ['unknown', 'free', 'busy', 'tentative', 'out-of-office', 'telework', 'vacation'];
     var domid = String(email).replace(rcmail.identifier_expr, '');
     var row = $('#fbrow' + domid);
     var rowall = $('#fbrowall').children();
@@ -2030,6 +2057,9 @@ function rcube_calendar_ui(settings) {
       if (event_attendees)
         freebusy_ui.needsupdate = true;
       $('#edit-startdate').data('duration', Math.round((me.selected_event.end.getTime() - me.selected_event.start.getTime()) / 1000));
+
+      //PAMELLA
+      rcmail.triggerEvent('calendar.event_times_changed', {selected:me.selected_event});
     }
   };
 
@@ -2894,6 +2924,28 @@ function rcube_calendar_ui(settings) {
 
   /*** public methods ***/
 
+  //PAMELA
+  this.edit_update_current_event_attendee = function edit_update_current_event_attendee(attendee, add = true) {
+    if (!!me.selected_event)
+    {
+      if (add) {
+        if (!event_attendees.find(x => x.email === attendee.email)) event_attendees.push(attendee);
+        else {
+          this.edit_update_current_event_attendee(attendee, false);
+          this.edit_update_current_event_attendee(attendee);
+        }
+      }
+      else event_attendees = event_attendees.filter(x => x.email !== attendee.email);
+    }
+
+    return event_attendees;
+  };
+
+  //PAMELLA
+  this.edit_clear_attendees = function edit_clear_attendees() {
+    event_attendees.length = 0;
+  };
+
   /**
    * Remove saving lock and free the UI for new input
    */
@@ -3120,7 +3172,8 @@ function rcube_calendar_ui(settings) {
 
     rcmail.simple_dialog($dialog, title, save_func, {
       width: 600,
-      height: 400
+      // PAMELA - Augmenter la hauter pour les calendriers externes
+      height: 515
     });
   };
 
@@ -4104,7 +4157,8 @@ function rcube_calendar_ui(settings) {
     if (node && node.id && me.calendars[node.id]) {
       me.select_calendar(node.id, true);
       rcmail.enable_command('calendar-edit', 'calendar-showurl', 'calendar-appointment', 'calendar-showfburl', true);
-      rcmail.enable_command('calendar-delete', me.calendars[node.id].editable);
+      // PAMELA - Différencier editable et deletable
+      rcmail.enable_command('calendar-delete', me.calendars[node.id].deletable);
       rcmail.enable_command('calendar-remove', me.calendars[node.id] && me.calendars[node.id].removable);
       // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
       rcmail.enable_command('calendar-delete-all', true);

@@ -1,6 +1,6 @@
 import { BnumEvent } from "../../mel_events.js";
 
-export {JsHtml}
+export {JsHtml, RotomecaHtml as ____JsHtml}
 
 class RotomecaHtml {
     constructor(balise, parent, attribs = {}) {
@@ -25,6 +25,10 @@ class RotomecaHtml {
         if (navigator.hasClass(class_to_remove)) navigator.attribs.class = navigator.attribs.class.filter(x => x !== class_to_remove);
 
         return this;
+    }
+
+    disable() {
+        return this.addClass('disabed').attr('disabled', 'disabled');
     }
 
     css(key_or_attrib, value = '') {

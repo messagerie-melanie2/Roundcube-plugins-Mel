@@ -1,3 +1,6 @@
+/** 
+ * @module Color
+ */
 import { Random } from "./random.js";
 
 export {Color, ColorRGBA, ColorFromVariable};

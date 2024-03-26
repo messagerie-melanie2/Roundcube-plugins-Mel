@@ -1,3 +1,7 @@
+/**
+ * @module MEL_ELASTIC_UI
+ */
+
 $(document).ready(() => {
 
     const CONST_CLASS_THEME_BADGE_SELECTED = 'green-badge';
@@ -30,26 +34,43 @@ $(document).ready(() => {
     }
 
     /**
-     * Classe qui gère une règle css. Elle pourra Ãªtre ajouter ou supprimer.
+     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     * @class
+     * @classdesc Représente une règle CSS et est utilisé par `Mel_CSS_Style_Sheet`
+     * @example new Mel_CSS_Rule('p{color:red;}')
+     * @see {@link Mel_CSS_Style_Sheet}
+     * @package
      */
     class Mel_CSS_Rule {
         /**
          * 
-         * @param {string} rule Règle css style "p{color:red;}"
+         * @param {!string} rule Règle css style `p{color:red;}`
          */
         constructor(rule)
         {
+            /**
+             * Règle css
+             * @type {!string}
+             */
             this.rule = rule;
+            /**
+             * Lien de la règle dans le stylesheet associé
+             * @type {?CSSStyleRule}
+             */
             this.styleRule = null;
         }
 
+        /**
+         * Récupère l'id de la règle dans la stylesheet
+         * @returns {number}
+         */
         id() {
             return Enumerable.from(Mel_CSS_Rule.component().cssRules).select((x, i) => [x, i]).where(x => x[0] === this.styleRule).firstOrDefault()[1];
         }
 
         /**
-         * Intègre le style Ã  la page web
-         * @returns {Mel_CSS_Rule} ChaÃ®nage
+         * Intègre le style à la page web
+         * @returns {Mel_CSS_Rule} Chaînage
          */
         set()
         {
@@ -60,12 +81,14 @@ $(document).ready(() => {
 
         /**
          * Supprime le style de la page web
-         * @returns {Mel_CSS_Rule} ChaÃ®nage
+         * @returns {Mel_CSS_Rule} Chaînage
          */
         delete()
         {
             let id = this.id();
+
             if (id === 0 || !!id) Mel_CSS_Rule.component().deleteRule(id);
+
             return this;
         }
 
@@ -79,8 +102,11 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère la première feuille de style du document
-         * @returns {StyleSheetList}
+         * Récupère la feuille de style lié à cette classe.
+         * 
+         * Si elle n'éxiste pas, elle sera créée.
+         * @static
+         * @returns {!CSSStyleSheet}
          */
         static component()
         {
@@ -95,20 +121,32 @@ $(document).ready(() => {
         /**
          * Récupère le prochain index de la feuille de style
          * @returns {number}
+         * @static
          */
         static lastIndex()
         {
             return Mel_CSS_Rule.component().cssRules.length
         }
 
+        /**
+         * Génère une règle css à partir d'un tableau de règles
+         * @param {Mel_CSS_Rule[]} rules 
+         * @returns {Mel_CSS_Rule}
+         * @static
+         */
         static from_array(rules = []) {
             return new Mel_CSS_Rule(rules.map(x => x.toString()).join(''));
         }
     }
 
     /**
-     * Classe qui gère une règle css. Elle pourra Ãªtre ajouter ou supprimer.
+     * Classe qui gère une règle css. 
      * Gère un sélécteur ainsi qu'une liste de modificateur css.
+     * @class
+     * @classdesc Représentation d'une règle css avec un sélecteur et c'est différentes propriétés css.
+     * @extends Mel_CSS_Rule
+     * @package
+     * @example new Mel_CSS_Advanced_Rule('p', 'color:red', 'background-color:blue'); 
      */
     class Mel_CSS_Advanced_Rule extends Mel_CSS_Rule{
         /**
@@ -118,13 +156,23 @@ $(document).ready(() => {
          */
         constructor(selector, ...rules)
         {
-            super(rules),
+            super(rules);
+            /**
+             * Liste des propriétés css
+             * @type {string[]}
+             */
+            this.rule = this.rule;
+            /**
+             * Sélécteur
+             * @type {string}
+             */
             this.selector = selector;
         }
 
         /**
-         * Intègre le style Ã  la page web
-         * @returns {Mel_CSS_Advanced_Rule} ChaÃ®nage
+         * Intègre le style à la page web
+         * @returns {Mel_CSS_Advanced_Rule} Chaînage
+         * @override
          */
         set()
         {
@@ -134,10 +182,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une règle Ã  la liste des règles
-         * @param {string} rule Règle Ã  ajouté (sans les ;)
-         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
-         * @returns ChaÃ®nage
+         * Ajoute une propriété à la règle
+         * @param {string} rule Règle à ajouter (sans les `;`)
+         * @param {!boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
          */
         add(rule, force_set = true)
         {
@@ -145,6 +193,12 @@ $(document).ready(() => {
             return this._update_rule(force_set);
         }
 
+        /**
+         * Supprime la règle. 
+         * @private
+         * @param {!boolean} force_set Si vrai, ajoute la règle dans la page web
+         * @returns {Mel_CSS_Advanced_Rule} Chaînage
+         */
         _update_rule(force_set = true)
         {
             let id = this.id();
@@ -159,10 +213,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Supprime une règle
-         * @param {number} index Index de la règle Ã  supprimer 
-         * @param {boolean} force_set Si vrai, met Ã  jour la règle dans la page web
-         * @returns ChaÃ®nage
+         * Supprime une propriétée
+         * @param {!number} index Index de la propriété à supprimer 
+         * @param {!boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
          */
         remove(index, force_set = true)
         {
@@ -195,6 +249,7 @@ $(document).ready(() => {
         /**
          * Retourne la règle css sous forme de string
          * @returns {string}
+         * @override
          */
         toString()
         {
@@ -203,14 +258,34 @@ $(document).ready(() => {
 
     }
 
+    /**
+     * Classe qui représente une liste de règle css
+     * @extends Mel_CSS_Rule
+     * @class 
+     * @classdesc Représente une liste de règle css
+     * @package
+     */
     class Mel_CSS_Array_Rule extends Mel_CSS_Rule {
         constructor(rules) {
             super(rules);
 
+            /**
+             * Liste des ids des règles par rapport à leurs stylesheet
+             * @type {number[]}
+             */
             this.ids = [];
+            /**
+             * Liste des règles css
+             * @type {CSSStyleRule[]}
+             */
             this.styleRule = {};
         }
 
+        /**
+         * Ajoute les règles à la liste de règles
+         * @override
+         * @returns {Mel_CSS_Array_Rule} Chaînage
+         */
         set() {
             for (let index = 0, len = this.rule.length, id; index < len; ++index) {
                 const element = this.rule[index];
@@ -221,10 +296,20 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Récupère l'id de la règle dans la stylesheet à partir de son id dans ce tableau
+         * @param {!number} id 
+         * @returns {number}
+         */
         rule_id(id) {
             return Enumerable.from(Mel_CSS_Rule.component().cssRules).select((x, i) => [x, i]).where(x => x[0] === this.styleRule[id]).firstOrDefault()[1];
         } 
 
+        /**
+         * Supprime la règle
+         * @overload
+         * @returns {Mel_CSS_Array_Rule} Chaînage
+         */
         delete()
         {
             for (const iterator of this.ids) {
@@ -235,6 +320,11 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Convertit en string
+         * @returns {string}
+         * @override
+         */
         toString()
         {
             return this.rule.map(x => x.toString()).join(';\r\n');
@@ -242,19 +332,24 @@ $(document).ready(() => {
     }
 
     /**
-     * Gère les différentes règles qu'on ajoute Ã  cette classe.
+     * Gère les différentes règles d'une feuille de style.
+     * @class
+     * @classdesc Représente une feuille de style et gère les règles qui se trouvent à l'intérieur.
+     * @package
      */
     class Mel_CSS_Style_Sheet {
         constructor()
         {
             /**
-             * @type {{[string]:Mel_CSS_Rule}}
+             * Dictionnaire de règle css
+             * @type {Object.<string, Mel_CSS_Rule>}
              */
             this.css = {};
         }
 
         /**
          * Ajoute une règle Ã  la liste de règles
+         * @private
          * @param {string} key Clé qui permettra de récupérer la règle ajouté
          * @param {Mel_CSS_Rule} rule Règle qui sera ajouté
          * @returns {Mel_CSS_Style_Sheet} ChaÃ®nage
@@ -269,10 +364,10 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une règle Ã  la liste de règle
-         * @param {string} key Clé qui permettra de récupérer la règle ajouté
-         * @param {string} rule Règle qui sera ajouté (ex : p{color:red;}) 
-         * @returns ChaÃ®nage
+         * Ajoute une règle à la liste
+         * @param {!string} key Clé qui permettra de récupérer la règle ajouté
+         * @param {!string} rule Règle qui sera ajouté (ex : p{color:red;}) 
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
          */
         add(key, rule)
         {
@@ -280,11 +375,13 @@ $(document).ready(() => {
         }
 
         /**
-         * Ajoute une règle Ã  la liste des règles.
+         * Ajoute une règle à la liste
+         * 
+         * Cette fonction permet d'ajouter une règle avec un sélécteur et une liste de propriétés.
          * @param {string} key  Clé qui permettra de récupérer la règle ajouté
          * @param {string} selector Sélécteur html
-         * @param  {...any} rules Liste de règles (ex : 'color:red', 'background-color:blue')
-         * @returns ChaÃ®nage
+         * @param  {...string} rules Liste de propriétés (ex : 'color:red', 'background-color:blue')
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
          */
         addAdvanced(key, selector, ...rules)
         {
@@ -292,9 +389,16 @@ $(document).ready(() => {
         }
 
         /**
+         * @typedef RuleKeyValuePair
+         * @property {string} key
+         * @property {string} rule
+         */
+
+        /**
          * Ajoute plusieurs règles
-         * @param  {...{key:string, rule:string}} rules Règles Ã  ajouter
-         * @returns ChaÃ®nage
+         * @param  {...RuleKeyValuePair} rules Règles à ajouter
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
+         * @see {@link RuleKeyValuePair}
          */
         addRules(...rules)
         {
@@ -310,8 +414,8 @@ $(document).ready(() => {
 
         /**
          * Supprime une règle
-         * @param {string} key 
-         * @returns ChaÃ®nage
+         * @param {!string} key 
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
          */
         remove(key)
         {
@@ -324,6 +428,11 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Supprime plusieurs règles
+         * @param  {...string} keys 
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
+         */
         removeRules(...keys)
         {
             for (const key in keys) {
@@ -339,7 +448,7 @@ $(document).ready(() => {
         /**
          * Vérifie si une règle éxiste
          * @param {string} key 
-         * @returns 
+         * @returns {boolean}
          */
         ruleExist(key)
         {
@@ -356,7 +465,7 @@ $(document).ready(() => {
         }
 
         /**
-         * Récupère la feuille de styme
+         * Récupère la feuille de style
          * @returns {string}
          */
         getStyleSheet()
@@ -365,8 +474,8 @@ $(document).ready(() => {
         }
 
         /**
-         * Remise Ã  zéro de la feuille de style
-         * @returns ChaÃ®nage
+         * Vide la feuille de style
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
          */
         reset()
         {
@@ -391,24 +500,55 @@ $(document).ready(() => {
 
     }
 
+    /**
+     * @class
+     * @classdesc Gère la sauvegarde de données dans le stockage local pour ce fichier js
+     * @static
+     * @package
+     * @hideconstructor
+     */
     class Mel_Elastic_Storage {
+        /**
+         * Sauvegarde dans le stockage local
+         * @param {!string} key Clé qui permettra de retrouver la données plus tard 
+         * @param {*} item Item à sauvegarder, si ce n'est pas un `string` il sera serialiser.
+         */
         static save(key, item) {
             localStorage.setItem(`${Mel_Elastic_Storage.KEY}_${key}`, JSON.stringify(item));
         }
 
+        /**
+         * Charge une donnée sauvegardé dans le stockage local
+         * @param {!string} key Clé qui permet de retrouver la données 
+         * @param {?any} _default Si la données n'éxiste pas, cette valeur sera retournée.
+         * @returns {?any}
+         */
         static load(key, _default = null) {
             return JSON.parse(localStorage.getItem(`${Mel_Elastic_Storage.KEY}_${key}`)) ?? _default;
         }
 
+        /**
+         * Supprime une donnée dans le stockage local
+         * @param {!string} key Clé qui permet de retrouver la données 
+         */
         static remove(key) {
             localStorage.removeItem(`${Mel_Elastic_Storage.KEY}_${key}`);
         }
     }
 
+    /**
+     * Texte qui sera ajouté devant chaque clé dans le stockage local de la classe `Mel_Elastic_Storage`
+     * @static
+     * @readonly
+     * @type {string}
+     */
     Mel_Elastic_Storage.KEY = 'MEL_ELASTIC';
 
     /**
-     * Classe qui sert Ã  gérer les différentes interfaces
+     * Classe qui sert à gérer les différentes interfaces
+     * @class
+     * @classdesc Gère le visuel du bnum. Donne aussi des fonctions utiles lié au visuel du Bnum.
+     * @package
      */
     class Mel_Elastic {
         constructor() {
@@ -429,14 +569,28 @@ $(document).ready(() => {
 
         /**
          * Initialise les différentes variables et constantes de la classe.
-         * @returns {Mel_Elastic} ChaÃ®nage
+         * @returns {Mel_Elastic} Chaînage
+         * @package
          */
         init(){
             this.set_font_size();
             const ID_THEME_CONTENT = 0;
             const ID_PICTURES_CONTENT = 1;
+            /**
+             * Type d'écran
+             * @type {string}
+             */
             this.screen_type = null;
+            /**
+             * Si on cache les menu ou non
+             * @type {boolean}
+             * @package
+             */
             this._hide_main_menu = rcmail.env.mel_metapage_is_from_iframe || rcmail.env.extwin;
+            /**
+             * Feuille du style css
+             * @type {Mel_CSS_Style_Sheet}
+             */
             this.css_rules = new Mel_CSS_Style_Sheet(); 
             const tabs = this.init_theme_tabs({});
             return this.init_const().init_theme($(`#theme-panel .${tabs[ID_THEME_CONTENT].id}`)).init_theme_pictures({picturePannel:`#theme-panel .${tabs[ID_PICTURES_CONTENT].id}`}).initResponsive();
@@ -448,6 +602,58 @@ $(document).ready(() => {
          */
         init_const()
         {
+            /**
+             * @type {string}
+             * @constant
+             * @default '¤¤¤'
+             */
+            this.JSON_CHAR_REPLACE;
+            /**
+             * @type {string}
+             * @constant
+             * @default '<value/>'
+             */
+            this.SELECT_VALUE_REPLACE;
+            /**
+             * Si l'url contient extwin
+             * @type {boolean}
+             * @constant
+             */
+            this.IS_EXTERNE;
+            /**
+             * Si l'url contient _is_from
+             * @type {boolean}
+             * @constant
+             */
+            this.FROM_INFOS;
+            /**
+             * @type {number}
+             * @constant
+             * @package
+             * @default 8
+             */  
+            this._integer;
+
+            /**
+             * @typedef Keys
+             * @property {35} end
+             * @property {36} home
+             * @property {37} left
+             * @property {38} up
+             * @property {39} right
+             * @property {40} down
+             * @property {41} delete
+             * @package
+             */
+
+            /**
+             * @type {Keys}
+             * @readonly
+             * @package
+             * @see {@link Keys}
+             */  
+            this.keys;
+
             Object.defineProperty(this, 'JSON_CHAR_REPLACE', {
                 enumerable: false,
                 configurable: false,

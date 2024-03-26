@@ -595,6 +595,13 @@
                         font-weight: normal;
                         font-style: normal;
                     }
+
+                    &.fc-icon-vacation:before {
+                        content: "\e967";
+                        font-family: "DWP";
+                        font-weight: normal;
+                        font-style: normal;
+                    }
                 }
             }
 
@@ -777,8 +784,8 @@
                     li {
                         div{
                             &.treetoggle{
-                                top: 10px;
-                                left: 14px;
+                                top: 0px;
+                                left: 0px;
 
                                 .cal-space-old&{
                                     top: 0px;
@@ -800,6 +807,26 @@
                 }
             }
         }
+
+
+        #annuaire-list {
+            > li {
+                > .treetoggle {
+                    left: 15px!important;
+                }
+            }
+
+            ul {
+                margin-left: 10px;
+            }
+
+            .folder {
+                .name {
+                    margin-left: 20px;
+                }
+            }
+        }
+
     }
 }
 
@@ -876,10 +903,12 @@
         &.import{
             &::before{
                 content: "\f090"!important;
-                font-family: 'Material Symbols Outlined';
-                font-weight: normal;
+                font-family: 'Material Symbols Outlined'!important;
+                font-weight: normal!important;
                 font-variation-settings: 'wght' 300, 'opsz' 48;
-                font-size: 22px;
+                font-size: 17px;
+                transform: scale(1.5) !important;
+                
             }
         }
 
@@ -1345,4 +1374,97 @@ body.quickview-active {
   .recurrence-onevery select {
     width: 45%;
   }
+}
+
+#eventedit{
+    .nav.nav-tabs {
+        display: none;
+    }
+}
+
+.edit-radio {
+    font-variation-settings: 'FILL' 1;
+
+    &-free {
+        &:extend(.edit-radio);
+        color: rgb(26, 192, 26);
+    }
+
+    &-busy {
+        &:extend(.edit-radio);
+        color: red;
+    }
+
+    &-wait {
+        &:extend(.edit-radio);
+        color: rgb(224, 168, 12);
+    }
+
+    &-telework {
+        &:extend(.edit-radio);
+        color: rgb(15, 156, 250);
+    }
+
+    &-noworking {
+        &:extend(.edit-radio);
+        color: rgb(250, 121, 0);
+    }
+}
+
+.mel-button {
+    &.slot{
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 5px;
+        padding: 10px;
+
+        .slot-date{
+            align-items: center;
+
+            &:first-of-type{
+                margin-bottom: 5px;
+            }
+        }
+
+        bnum-icon{
+            margin-right: 5px;
+        }
+    }
+}
+
+.fix-panel {
+    --background-color-dialog-message: var(--warning-color);
+    position: absolute;
+    bottom: 66px;
+    background-color: var(--warning-color);
+    max-width: 100%;
+    left:0;
+    padding-right: 55px;
+
+    .mel-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        line-height: 0;
+        border-radius: 100%;
+        height: 46px;
+    }
+
+    &.clicked-from-button{
+        position: unset;
+        background-color: transparent;
+        padding: 0;
+
+        .mel-button {
+            display:none!important;
+        }
+    }
+
+    .dialog-message{
+        color: var(--main-text-color);
+    }
+}
+
+.mel-custom-event-dialog {
+    position:unset!important;
 }

@@ -32,6 +32,8 @@ class calendar extends rcube_plugin
     const FREEBUSY_OOF       = 4;
     // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
     const FREEBUSY_TELEWORK  = 5;
+    // MANTIS 0008012: Ajouter un statut "Congés"
+    const FREEBUSY_VACATION  = 6;
 
     const SESSION_KEY = 'calendar_temp';
 
@@ -94,6 +96,11 @@ class calendar extends rcube_plugin
         }
 
         $this->add_hook('user_delete', [$this, 'user_delete']);
+
+        //PAMELLA
+        if ('' !== $this->rc->config->get('calendar_default_alarm_type') && $this->rc->task === 'calendar' && 'GET' === $_SERVER['REQUEST_METHOD']) {
+            $this->rc->output->set_env('calendar_default_alarm_offset', $this->rc->config->get('calendar_default_alarm_offset'));
+        }
     }
 
     /**
@@ -2934,6 +2941,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
             // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
             calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
+            // MANTIS 0008012: Ajouter un statut "Congés"
+            calendar::FREEBUSY_VACATION  => 'VACATION',
         ];
 
         // if the backend has free-busy information

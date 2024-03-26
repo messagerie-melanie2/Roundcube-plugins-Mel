@@ -1,8 +1,22 @@
-export {isNullOrUndefined, isArrayLike, Classes, toHex};
+/**
+ * @module Mel/UsefulFunctions
+ */
+
+export {isNullOrUndefined, isArrayLike, Classes, toHex, isDecimal};
+
+/**
+ * Vérivie si un nombre est un nombre entier ou décimal.
+ * @param {number} number 
+ * @returns {boolean} Si vrai, alors il s'agit d'un nombre décimal.
+ * @example const state = isDecimal(value) ? 1 : 0;
+ */
+function isDecimal(number) {
+    return ~~number !== number;
+}
 
 /**
  * Renvoie vrai si la variable vaut `null` ou `undefined`.
- * @param {*} item Variable à tester
+ * @param {?*} item Variable à tester
  * @returns {boolean}
  */
 function isNullOrUndefined(item)
@@ -37,6 +51,24 @@ function toHex(number) {
     return number.toString(16);
 }
 
+/**
+ * @typedef Class
+ * Indique qu'il s'agit d'un objet qui est une classe. Le mot clé "new" peut être utiliser.
+ */
+
+/**
+ * @typedef Classes
+ * Indique qu'il s'agit d'un mélange de plusieurs classes. Le mot clé "new" peut être utiliser.
+ */
+
+/**
+ * Permet de créer une "fusion" de deux classes.
+ * 
+ * Cela permet d'avoir une classe qui hérite de 2 classe.
+ * @param {Class} baseClass Classe de base
+ * @param  {...Classes} mixins Autres classes
+ * @returns {}
+ */
 var Classes = (baseClass, ...mixins) => {
   class base extends baseClass {
       constructor (...args) {

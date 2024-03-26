@@ -1612,6 +1612,9 @@ class Webconf{
 
         this.jitsii.executeCommand('avatarUrl', `${rcmail.env.rocket_chat_url}avatar/${rcmail.env.username}`);
 
+        if (this.wsp.have_workspace()){
+            top.webconf_helper.notify(this.key, this.wsp.uid);
+        }
         let ongo_config = {
             _room:this.key
         };

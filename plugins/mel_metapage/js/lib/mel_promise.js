@@ -272,6 +272,19 @@ class Mel_Promise {
     static wait(whatIWait, timeout = 5){
         return new WaitSomething(whatIWait, timeout);
     }
+
+    static Sleep(ms) {
+        return new Mel_Promise((current) => {
+            current.start_resolving();
+            setTimeout(() => {
+                current.resolve();
+            }, ms);
+        });
+    }
+
+    static Resolved() {
+        return new Mel_Promise(() => {});
+    }
 }
 
 class Mel_Ajax extends Mel_Promise{

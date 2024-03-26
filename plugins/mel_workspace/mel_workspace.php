@@ -95,9 +95,9 @@ class mel_workspace extends bnum_plugin
         {
         $this->add_button(array(
             'command' => "workspace",
-            'class'	=> 'button-wsp icon-mel-workplace',
-            'classsel' => 'button-wsp button-selected icon-mel-workplace',
-            'innerclass' => 'button-inner',
+            'class'	=> 'wsp button-wsp icon-mel-workplace',
+            'classsel' => 'wsp button-wsp button-selected icon-mel-workplace',
+            'innerclass' => 'wsp button-inner',
             'label'	=> 'my_workspaces',
             'title' => 'my_workspaces',
             'type'       => 'link',
@@ -1503,8 +1503,9 @@ class mel_workspace extends bnum_plugin
     {
         $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
         $shares = $this->sort_user($this->currentWorkspace->shares); 
+        $nbuser = count($shares);
 
-        $html .= '<h2>Liste des membres</h2>';
+        $html .= "<h2>Liste des membres ($nbuser)</h2>";
         $html .= '<div class="wsp-block">';
 
         foreach ($shares as $key => $value) {
@@ -1704,9 +1705,12 @@ class mel_workspace extends bnum_plugin
 
         $icon_delete = "icon-mel-trash";
 
+        $shares = $this->sort_user($this->currentWorkspace->shares); 
+        $nbuser = count($shares);
+
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
         $html .= "<thead>";
-        $html .= '<tr><td>Utilisateur</td><td class="mel-fit-content">Droits d\'accès</td><td class="mel-fit-content">Supprimer</td></tr>';
+        $html .= "<tr><td>Utilisateur ($nbuser) </td><td class=\"mel-fit-content\">Droits d\'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
         $html .= "</thead>";
         $share = $this->sort_user($workspace->shares);
         $current_user = driver_mel::gi()->getUser();
@@ -3172,9 +3176,9 @@ class mel_workspace extends bnum_plugin
         foreach ($shares as $key => $value) {
             if ($value->user !== $user)
             {
-                $tmp = driver_mel::gi()->getUser($value->user)->email;
+                $tmp = driver_mel::gi()->getUser($value->user);
 
-                if (isset($tmp)) $array[] = $tmp;
+                if (isset($tmp)) $array[] = "$tmp->fullname<$tmp->email>";
             }
                 
         }

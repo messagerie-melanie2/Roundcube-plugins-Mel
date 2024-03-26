@@ -330,6 +330,7 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("matomo_tracking_popup", $this->rc->config->get("matomo_tracking_popup", false));
 
         $this->rc->output->set_env("mel_official_domain",  array_merge($this->rc->config->get("mel_official_domain", []),$this->rc->config->get('mel_user_domain',[])));
+        $this->rc->output->set_env("mel_suspect_url",  $this->rc->config->get("mel_suspect_url", []));
 
         //$this->rc->output->set_env("compose_extwin", true);
         $config = $this->rc->config->get("mel_metapage_chat_visible", true);
@@ -1079,7 +1080,6 @@ class mel_metapage extends bnum_plugin
                     'categories-wsp'    => $categories,
                 ));
                 $args["content"] = str_replace($textToReplace, $this->rc->output->parse("mel_metapage.event_modal", false, false), $content);
-                
                 // $textes = [
                 //     'roleorganizer',
                 //     'rolerequired',
@@ -1681,7 +1681,6 @@ class mel_metapage extends bnum_plugin
 
     function create_calendar_event()
     {
-
         $calendar = $this->rc->plugins->get_plugin('calendar');
         $calendar->add_texts('localization/', true);
         $calendar->ui->init();
@@ -1708,7 +1707,8 @@ class mel_metapage extends bnum_plugin
         else
             $event = rcube_utils::get_input_value("_event", rcube_utils::INPUT_POST);
 
-        $this->include_script('../mel_workspace/js/setup_event.js');
+        // $this->include_script('../mel_workspace/js/setup_event.js');
+        $this->load_script_module('edit_event', '/js/lib/calendar/event/');
 
         // $event["attendees"] = [
         //     ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
@@ -1733,6 +1733,8 @@ class mel_metapage extends bnum_plugin
             'aria-label' => $this->gettext('roleorganizer'),
             'class'      => 'form-control custom-select',
         )));
+
+        $this->rc->output->set_env('calendar_categories', $calendar->__get('driver')->list_categories());
 
         if (rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET) !== null)
         {
@@ -1865,15 +1867,15 @@ class mel_metapage extends bnum_plugin
     public function preferences_sections_list($p)
     {
         $dir = __DIR__;
-        if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
-        {
-            $p['list']['globalsearch'] = [
-                'id'      => 'globalsearch',
-                'section' => $this->gettext('globalsearch', 'mel_metapage'),
-            ];
-        }
-         
-        if (is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php"))
+        // if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
+        // {
+        //     $p['list']['globalsearch'] = [
+        //         'id'      => 'globalsearch',
+        //         'section' => $this->gettext('globalsearch', 'mel_metapage'),
+        //     ];
+        // }
+
+        if ($this->visio_enabled() && is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php"))
         {
             $p['list']['visio'] = [
                 'id'      => 'visio',
@@ -2775,7 +2777,7 @@ class mel_metapage extends bnum_plugin
         $rcmail = $this->rc ?? rcmail::get_instance();
         $item = $rcmail->config->get('navigation_apps', null);
 
-        if (isset($item)) return $item[$app]['enabled'] ?? true;
+        if (isset($item)) return $item[$app]['enabled'] ?? $rcmail->config->get('template_navigation_apps', null)[$app]['enabled'] ?? true;
         
         return true;
     }

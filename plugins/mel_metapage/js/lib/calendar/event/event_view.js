@@ -294,6 +294,10 @@ class EventParts {
 }
 
 /**
+ * @typedef {GlobalModal | external:jQuery} EventViewDialog
+ */
+
+/**
  * Gère les parties de la vue ainsi que le comportement de la dialog
  * @class
  * @classdesc Initialise la vue et gère le comportement de la dialog
@@ -302,7 +306,7 @@ export class EventView {
     /**
      * 
      * @param {*} event Evènement du plugin `calendar` 
-     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     * @param {EventViewDialog} dialog Modal qui contient la vue.
      */
     constructor(event, dialog) {
         this._init()._setup(event, dialog)._main(event);
@@ -327,7 +331,7 @@ export class EventView {
          * Dialog jquery ou GlobalModal
          * @private
          * @member
-         * @type {$ | GlobalModal}
+         * @type {EventViewDialog}
          */
         this._dialog = null;
         /**
@@ -360,7 +364,7 @@ export class EventView {
      * Assigne les variables membres de la classe
      * @private
      * @param {*} event Evènement du plugin `calendar` 
-     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     * @param {EventViewDialog} dialog Modal qui contient la vue.
      * @returns {EventView} Chaîne
      */
     _setup(event, dialog) {
@@ -481,6 +485,10 @@ export class EventView {
         return !this._dialog.on_click_minified;
     }
 
+    /**
+     * Récupère la dialog.
+     * @returns {EventViewDialog}
+     */
     get_dialog() {
         return this._dialog;
     }

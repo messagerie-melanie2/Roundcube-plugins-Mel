@@ -650,7 +650,7 @@ class IntegratedVisio extends AVisio {
         {
             this._last_room = this._room;
             const busy = rcmail.set_busy(true, 'loading');
-            this._current_promise = new Mel_Promise(async (room) => {
+            this._current_promise = new Mel_Promise(async (current, room) => {
                 try {
                     const data = await webconf_helper.phone.getAll(room);
                     const {number, pin} = data;
@@ -666,6 +666,8 @@ class IntegratedVisio extends AVisio {
                 }
 
                 window.disable_x_roundcube = false;
+
+                return current;
             }, this._room);
         }
 

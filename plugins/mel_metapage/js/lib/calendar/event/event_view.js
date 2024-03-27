@@ -18,6 +18,7 @@
 
 /**
  * @module EventView
+ * @local EventViewDialog
  */
 
 import { MelEnumerable } from "../../classes/enum.js";

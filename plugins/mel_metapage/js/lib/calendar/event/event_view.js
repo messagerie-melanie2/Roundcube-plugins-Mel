@@ -23,7 +23,7 @@
 import { MelEnumerable } from "../../classes/enum.js";
 import { EMPTY_STRING } from "../../constants/constants.js";
 import { MelHtml } from "../../html/JsHtml/MelHtml.js";
-import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, GUEST_DRAGG_CLASS, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
+import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, GUEST_DRAGG_CLASS, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_DIV_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
 import { AlarmPart } from "./parts/alarmpart.js";
 import { CalendarOwner } from "./parts/calendarparts.js";
 import { CategoryPart } from "./parts/categoryparts.js";
@@ -307,6 +307,7 @@ export class EventView {
     constructor(event, dialog) {
         this._init()._setup(event, dialog)._main(event);
         EventView.INSTANCE = this;
+        console.log('instance');
     }
 
     /**
@@ -480,6 +481,10 @@ export class EventView {
         return !this._dialog.on_click_minified;
     }
 
+    get_dialog() {
+        return this._dialog;
+    }
+
     /**
      * Est appelé lorsque la dialog est sur le point de se fermer
      * 
@@ -524,6 +529,7 @@ export class EventView {
      */
     async before_save() {
         let is_valid = true;
+
         await this.parts.location.waitComplete();
 
         if (!this.parts.location.is_valid()) {

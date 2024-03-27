@@ -14,6 +14,7 @@ import { REG_ALPHANUM, REG_NUMBER, REG_URL } from "../../../constants/regexp.js"
 import { MelHtml } from "../../../html/JsHtml/MelHtml.js";
 import { BnumEvent } from "../../../mel_events.js";
 import { Mel_Promise } from "../../../mel_promise.js";
+import { EventView } from "../event_view.js";
 import { CategoryPart } from "./categoryparts.js";
 import { INTEGRATED_VISIO_MIN_NUMBER_COUNT, INTEGRATED_VISIO_MIN_SIZE, LOCATION_AUDIO_OPTION_VALUE, LOCATION_OPTION_VALUE, LOCATION_SEPARATOR, LOCATION_VISIO_EXTERNAL_OPTION_VALUE, LOCATION_VISIO_INTERNAL_OPTION_VALUE, LOCATION_VISIO_OPTION_VALUE, SEPARATOR_AUDIO_PIN, SEPARATOR_AUDIO_URL_LOCATION, SEPARATOR_END_LOCATION_VISIO_INTEGRATED_PHONE, SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE, SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE, TAG_WSP_CATEGORY } from "./parts.constants.js";
 
@@ -549,7 +550,7 @@ class IntegratedVisio extends AVisio {
             .row()
                 .col_6({class:'d-flex pr-1'}).css('position:relative')
                     .icon('match_case', {class:'align-self-center'}).end()
-                    .input_text({id: `integrated-${this.id}`, value:(this._room || mel_metapage.Functions.generateWebconfRoomName()), onchange: this._on_room_updated.bind(this)})
+                    .input_text({id: `integrated-${this.id}`, value:(this._room || mel_metapage.Functions.generateWebconfRoomName()), onchange: this._on_room_updated.bind(this), oninput:this._on_room_input.bind(this)})
                     .icon('edit', {class:'event-mel-icon-absolute mr-2'}).end()
                 .end()
                 .col_6({class:'d-flex pl-1'})
@@ -573,6 +574,17 @@ class IntegratedVisio extends AVisio {
         this._on_room_updated({currentTarget: this._$div.find(`#integrated-${this.id}`)});
         this.onchange.call();
         return this;
+    }
+
+    _on_room_input(event) {
+        let dialog = EventView.INSTANCE.get_dialog();
+
+        if (EventView.INSTANCE.is_jquery_dialog()) {
+            dialog.parent().find('.ui-dialog-buttonset .mainaction').attr('disabled', 'disabled').addClass('disabled');
+        }
+        else {
+            dialog.footer.buttons.save.attr('disabled', 'disabled').addClass('disabled');
+        }
     }
 
     /**
@@ -604,6 +616,15 @@ class IntegratedVisio extends AVisio {
         }
 
         this.onchange.call();
+
+        let dialog = EventView.INSTANCE.get_dialog();
+
+        if (EventView.INSTANCE.is_jquery_dialog()) {
+            dialog.parent().find('.ui-dialog-buttonset .mainaction').removeAttr('disabled').removeClass('disabled');
+        }
+        else {
+            dialog.footer.buttons.save.removeAttr('disabled').removeClass('disabled');
+        }
     }
 
     /**

@@ -40,9 +40,12 @@ class Locks {
 	 * @private
 	 */
 	_setup() {
-		const _room = rcmail.env['webconf.locks'].includes(LOCKS.room);
-		const _channel = rcmail.env['webconf.locks'].includes(LOCKS.mode);
-		const _password = rcmail.env['webconf.locks'].includes(LOCKS.password);
+		const _room =
+			rcmail.env['webconf.locks']?.includes?.(LOCKS.room) ?? this.room;
+		const _channel =
+			rcmail.env['webconf.locks']?.includes?.(LOCKS.mode) ?? this.channel;
+		const _password =
+			rcmail.env['webconf.locks']?.includes?.(LOCKS.password) ?? this.password;
 		Object.defineProperties(this, {
 			room: {
 				value: _room,

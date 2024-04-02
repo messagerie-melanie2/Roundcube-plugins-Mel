@@ -16,12 +16,12 @@ class ACheckBox extends IVisioPart {
 	 */
 	constructor(selector) {
 		super();
-		this._A_init()._A_setup(selector);
+		this._A_init()._A_setup(selector)._A_main();
 	}
 
 	/**
 	 * @private
-	 * @returns
+	 * @returns {ACheckBox}
 	 */
 	_A_init() {
 		/**
@@ -44,7 +44,7 @@ class ACheckBox extends IVisioPart {
 	/**
 	 * @private
 	 * @param {*} selector
-	 * @returns
+	 * @returns {ACheckBox}
 	 */
 	_A_setup(selector) {
 		Object.defineProperty(this, '_p_$checkbox', {
@@ -52,6 +52,15 @@ class ACheckBox extends IVisioPart {
 				return $(selector);
 			},
 		});
+		return this;
+	}
+
+	/**
+	 * @private
+	 * @returns {ACheckBox}
+	 */
+	_A_main() {
+		this._p_$checkbox.on('change', this._on_change.bind(this));
 		return this;
 	}
 
@@ -122,5 +131,12 @@ class ACheckBox extends IVisioPart {
 	value() {
 		super.value();
 		return this.is_checked();
+	}
+
+	/**
+	 * @private
+	 */
+	_on_change() {
+		this._p_on_change.call(this.is_checked());
 	}
 }

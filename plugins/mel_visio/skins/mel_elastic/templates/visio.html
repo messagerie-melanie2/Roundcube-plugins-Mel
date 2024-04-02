@@ -1,0 +1,47 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+
+<h1 class="voice"><roundcube:label name="webconf" /></h1>
+
+<div id="layout-content" class="webconf-content" role="main">
+	<div class="webconf-frame" id="mm-webconf" style="display: none">
+		<div class="absolute-center">
+			<p class="loading-visio-text">Chargement de la visio....</p>
+			<center><span class="spinner-border spiner-border-lg"></span></center>
+		</div>
+	</div>
+	<iframe class="webconf-frame" id="mm-ariane" style="display: none"></iframe>
+	<div class="webconf-frame" id="mm-ariane-loading" style="display: none">
+		<div class="absolute-center">
+			<p>Chargement du chat....</p>
+			<center><span class="spinner-border"></span></center>
+		</div>
+	</div>
+	<div
+		onclick=""
+		class="webconf-fullscreen roundbadge large"
+		style="display: none; margin-top: 6px"
+	>
+		<span class="icon-mel-expand"></span>
+	</div>
+
+	<div
+		onclick=""
+		class="webconf-minimize roundbadge large"
+		style="display: none; margin-top: 6px; top: 5px"
+	>
+		<span class="icon-mel-undo"></span>
+	</div>
+</div>
+<div id="visio-right-pannel-util">
+	<h2 class="title"></h2>
+	<div id="html-pannel"></div>
+	<center class="back-button">
+		<button
+			class="btn btn-secondary mel-button"
+			onclick="$('#visio-right-pannel-util').removeClass('visible-mode')"
+		>
+			Fermer <span class="plus icon-mel-close"></span>
+		</button>
+	</center>
+</div>

@@ -75,8 +75,24 @@ class mel_visio extends bnum_plugin
         }
 
         $this->include_css("webconf.css");
+        $this->load_script_module('index');
 
         $this->rc()->output->send('mel_visio.index');
+    }
+
+    function page_visio() {
+        $is_from_config = rcube_utils::get_input_value('_from_config', rcube_utils::INPUT_GET);
+
+        if ($is_from_config !== true) $is_from_config = $is_from_config === 'true';
+
+        if (class_exists('mel_notification') && $is_from_config && !!$this->data->wsp()) {
+            //TODO Notify
+        }
+
+        $this->include_css("webconf.css");
+        $this->rc()->output->set_env('visio.data', $this->data->serialize());
+
+        $this->rc()->output->send('mel_visio.visio');
     }
 
     public function get_ariane_rooms($classes = "", $ownerOnly = false, $only = 0)

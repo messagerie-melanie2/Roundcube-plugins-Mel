@@ -8,6 +8,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Locks } from './classes/locks.js';
 import { VisioView } from './classes/view.js';
 import { SELECTOR_BUTTON_START } from './consts.js';
+import { VisioFunctions } from './helpers.js';
 export { VisioCreator };
 
 /**
@@ -25,6 +26,7 @@ export { VisioCreator };
  * @property {?string} _wsp
  * @property {?string} _channel
  * @property {?string} _pass
+ * @property {!boolean} _from_config
  */
 
 /**
@@ -47,9 +49,9 @@ class VisioCreator extends MelObject {
 		this._init()._setup();
 
 		//Mettre les données par défauts
-		if (this.data.need_config) {
+		if (this.data?.need_config) {
 			this.view.$room.val(
-				this.data.room ?? mel_metapage.Functions.generateWebconfRoomName(),
+				this.data.room ?? VisioFunctions.generateWebconfRoomName(),
 			);
 
 			if (this.data.wsp) this.view.linked_to.check();
@@ -135,10 +137,12 @@ class VisioCreator extends MelObject {
 	get_config() {
 		let config = {
 			_key: this.view.$room.val(),
+			_from_config: true,
 		};
 
-		config[this.view.linked_to.is_checked() ? '_wsp' : '_channel'] =
-			this.view.linked_to.value();
+		if (this.view.linked_to.value() !== 'home')
+			config[this.view.linked_to.is_checked() ? '_wsp' : '_channel'] =
+				this.view.linked_to.value();
 
 		if (this.view.password.is_checked())
 			config._pass = this.view.password.value();

@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import {
 	SELECTOR_CHECKBOX_CHANNEL,
 	SELECTOR_DIV_CHANNEL,
@@ -52,8 +53,32 @@ class ChannelPart extends ACheckBox {
 	 * @private
 	 */
 	_main() {
-		this._p_on_change.bind(this._on_checkbox_change.bind(this));
+		this._p_on_change.push(this._on_checkbox_change.bind(this));
 		this._p_on_change.call(this.is_checked());
+
+		//Gestion des champs si les plugins n'éxistent pas
+		if (
+			rcmail.env['visio.has_channel'] !== true ||
+			rcmail.env['visio.has_wsp'] !== true
+		) {
+			this._p_$checkbox.parent().hide();
+
+			if (rcmail.env['visio.has_channel'] !== true) {
+				$(SELECTOR_DIV_CHANNEL).remove();
+				this._p_$checkbox.prop('checked', true);
+			}
+
+			if (rcmail.env['visio.has_wsp'] !== true) {
+				this._p_$checkbox.prop('checked', false);
+				$(SELECTOR_DIV_WSP).remove();
+			}
+
+			try {
+				this.value();
+			} catch (error) {
+				this.value = () => EMPTY_STRING;
+			}
+		}
 	}
 
 	/**
@@ -96,6 +121,6 @@ class ChannelPart extends ACheckBox {
 	 * @returns {string}
 	 */
 	value() {
-		return this.$field.val();
+		return this.$field?.val?.() || EMPTY_STRING;
 	}
 }

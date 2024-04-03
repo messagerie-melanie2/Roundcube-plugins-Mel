@@ -68,6 +68,7 @@ class mel_useful_link extends bnum_plugin
         $newMelLinks[$id] = $temp->serialize();
       }
       
+      // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
       $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
       $this->rc->user->save_prefs(array('personal_useful_links' => []));
     }
@@ -353,7 +354,8 @@ class mel_useful_link extends bnum_plugin
         
         if ($id === null)
         {
-          $id = $this->generate_id($title, $config);
+          // $id = $this->generate_id($title, $config);
+          $id = uniqid();
 
           if($isMultiLink) 
             $melLink = new MelFolderLink($id, $title, $link);
@@ -666,17 +668,18 @@ class mel_useful_link extends bnum_plugin
       {
           $title = "";
           for ($i=0; $i < count($text); $i++) { 
-              if ($i >= $max)
+              if ($i >= $max) 
                   break;
               $title.= $text[$i];
           }
           $text = $title;
       }
       $it = 0;
+
       try {
         do {
           ++$it;
-      } while ($config[$text."-".$it] !== null);
+      } while ($config[$text."-".$it] !== null && json_decode($config[$text. "-" .$it])->id );
       } catch (\Throwable $th) {
         $it = 0;
         do {

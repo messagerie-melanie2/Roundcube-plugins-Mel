@@ -19,6 +19,9 @@ $labels['required_fields'] = 'Champs obligatoires';
 $labels['link_name'] = 'Nom du lien';
 $labels['link_title'] = 'Titre du lien';
 $labels['link_url'] = 'Adresse de la page';
+$labels['preview'] = 'Prévisualisation';
+$labels['web_link'] = 'Lien Web';
+$labels['folder_link'] = 'Lien vers un fichier';
 
 $labels['add'] = 'Ajouter';
 $labels['update'] = 'Modifier';

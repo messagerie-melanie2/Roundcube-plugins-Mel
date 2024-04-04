@@ -729,7 +729,7 @@ les propriétés « nom » et « valeur ».
             });
 
             if (0 === $('#s_interval .multidates').length) {
-                $('#s_interval').append($('<option>').addClass('multidates').val('custom').text('Choisir un interval')).on('change', (e) => {
+                $('#s_interval').append($('<option>').addClass('multidates').val('custom').text('Choisir un intervalle')).on('change', (e) => {
                     e = $(e.currentTarget);
 
                     if ('custom' === e.val()) {

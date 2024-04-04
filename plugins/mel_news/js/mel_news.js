@@ -873,7 +873,7 @@ $(document).ready(async () => {
             const filters = {
                 type:{
                     name:rcmail.gettext('by_type', plugin_text),
-                    array:[{value:"intranet", text:rcmail.gettext('intranet_websites', plugin_text), id:"mel-new-filter-1"}, {value:"twitter", text:rcmail.gettext('twitter_accounts', plugin_text), id:"mel-new-filter-2"}/*, {value:"rss", text:"Flux RSS", id:"mel-new-filter-3"}*/]
+                    array:[{value:"intranet", text:rcmail.gettext('intranet_websites', plugin_text), id:"mel-new-filter-1"}/*, {value:"rss", text:"Flux RSS", id:"mel-new-filter-3"}*/]
                 },
                 category:{
                     name:rcmail.gettext('by_category', plugin_text),

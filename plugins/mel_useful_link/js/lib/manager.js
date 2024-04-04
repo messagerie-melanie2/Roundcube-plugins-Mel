@@ -372,13 +372,13 @@ export class LinkManager extends MelObject {
 	deleteMelLink(id) {
 		const link = this.findLinkById(id);
 
-		if (
+    if (
 			confirm(rcmail.gettext('confirm_delete_link_element', 'mel_useful_link'))
 		) {
 			if (this.isInFolder(link)) {
 				let folder = this.findParentFolder(link);
 				folder.removeLink(link);
-				this.callFolderUpdate().then(() => {
+				folder.callFolderUpdate().then(() => {
 					$('#link-block-' + link.id).remove();
 				});
 			} else {
@@ -507,6 +507,10 @@ export class LinkManager extends MelObject {
         if (event.target.classList.contains('multilink-icon-container'))
           event.target.classList.remove('multilink-block-hovered');
         
+        const sublink = event.target.classList.contains('sublink');
+        if (sublink) {
+          event.target.closest('.multilink-icon-container').classList.add('multilink-block-hovered');
+        }
 			});
 
 			document.addEventListener(
@@ -608,6 +612,7 @@ export class LinkManager extends MelObject {
 					} 
           //Si on ajoute un lien dans un dossier
           else {
+            targetElement.removeClass('multilink-block-hovered');
 						if (!rcmail.env.mul_items[elementIndex].links) {
 							self.updateFolderLink(
 								rcmail.env.mul_items[targetIndex],
@@ -672,7 +677,7 @@ export class LinkManager extends MelObject {
 		$(`${_id}.link-block`).on('contextmenu', function (event) {
 			event.preventDefault();
 
-			if ($(this).hasClass('multilink-open')) return;
+			if ($(this).hasClass('multilink-open') || $(this).hasClass('sublink')) return;
 
 			const contextMenu = $('#context-menu-' + $(this).data('id'));
 

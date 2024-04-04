@@ -137,7 +137,14 @@ button {
 }
 
 #mulba {
-	.mulb();
+  margin-top: 0;
+  display: inline-flex;
+  gap: 30px;
+  align-items: center;
+
+  .material-symbols-outlined {
+    font-size: 23px;
+  }
 
 	html@{layout-phone} &,
 	html@{layout-small} & {
@@ -152,6 +159,17 @@ button {
 			margin: 0 !important;
 		}
 	}
+}
+
+.mel-button-icon {
+  margin-top: 0;
+  border-radius: 100px;
+  padding: 5px;
+  margin-left: 5px;
+
+  .material-symbols-outlined {
+    vertical-align: middle;
+  }
 }
 
 .hidden-link {

@@ -84,7 +84,12 @@ html body #mulsah span::before {
 }
 #mulba {
   margin-top: 0;
-  float: right;
+  display: inline-flex;
+  gap: 30px;
+  align-items: center;
+}
+#mulba .material-symbols-outlined {
+  font-size: 23px;
 }
 html.layout-phone #mulba,
 html.layout-small #mulba {
@@ -98,6 +103,15 @@ html.layout-small #mulba .add {
 html.layout-phone #mulba .plus,
 html.layout-small #mulba .plus {
   margin: 0 !important;
+}
+.mel-button-icon {
+  margin-top: 0;
+  border-radius: 100px;
+  padding: 5px;
+  margin-left: 5px;
+}
+.mel-button-icon .material-symbols-outlined {
+  vertical-align: middle;
 }
 .hidden-link.tak,
 .tools .hidden-link {

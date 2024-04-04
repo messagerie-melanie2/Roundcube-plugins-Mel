@@ -377,4 +377,39 @@ body.iframe.mail #filter-form
 	background-color: var(--settings-warn-bg-color);
 }
 
+#progress{
+  height: 6px;
+}
+
+.tmdp-A{
+  border: solid 1px var(--password-A);
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 5px;
+}
+.tmdp-B{
+  border: solid 1px var(--password-B);
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 5px;
+}
+.tmdp-C{
+  border: solid 1px var(--password-C);
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 5px;
+}
+.tmdp-D{
+  border: solid 1px var(--password-D);
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 5px;
+}
+.tmdp-E{
+  border: solid 1px var(--password-E);
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 5px;
+}
+
 

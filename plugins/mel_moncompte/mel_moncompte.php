@@ -120,6 +120,7 @@ class mel_moncompte extends rcube_plugin {
     // load localization
     $this->add_texts('localization/', true);
     $this->include_script('moncompte.js');
+    $this->include_script('passwordcheck.js');
 
     if ($this->api->output->type == 'html') {
       // Link to Settings/Mon compte

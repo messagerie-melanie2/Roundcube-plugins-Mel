@@ -2057,7 +2057,7 @@ $(document).ready(() => {
                                 }
                             }
                             
-                            if (!url.includes('/?_task=') && !/^data:/i.test(url)) 
+                            if (!url.includes('/?_task=') && !/^data:/i.test(url) && rcmail.env.task !== 'useful_links') 
                             {
                               //On ouvre une modal pour prévenir d'un lien externe
                               let domain = new URL(url).hostname;

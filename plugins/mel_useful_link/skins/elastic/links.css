@@ -251,6 +251,10 @@ html.layout-phone .joinedtitle {
   width: 90px;
   height: 90px;
 }
+.multilink-block-hovered {
+  width: 90px !important;
+  height: 90px !important;
+}
 .link-block:not(.sublink) {
   display: inline-flex;
   flex-direction: column;
@@ -342,6 +346,13 @@ html.layout-phone .joinedtitle {
 }
 .link-space-hovered {
   width: 80px;
+}
+.multilink-container li:nth-child(-n+3) .link-context-menu {
+  top: 82px;
+}
+.multilink-container li:nth-child(-n+3) .link-context-menu::after {
+  top: -6px;
+  rotate: 180deg;
 }
 .link-context-menu {
   position: absolute;

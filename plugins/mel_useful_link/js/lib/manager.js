@@ -62,40 +62,6 @@ export class LinkManager extends MelObject {
 				.end()
 				.text(rcmail.gettext('link_url', 'mel_useful_link'))
 				.end()
-				.div({ id: 'link-tabs', class: 'title mb-2 mel-ui-tab-system' })
-				.div({
-					id: 'hiddendivweb',
-					class: 'hidden',
-					onclick: this.changeTab.bind(this, 'web'),
-				})
-				.end()
-				.div({
-					id: 'web-link-tab',
-					class: 'tab-mel mel-tab mel-tabheader flex-tab active',
-					tabindex: '0',
-					'data-onclick': '$(\'#hiddendivweb\').click()',
-				})
-				.icon('captive_portal')
-				.end()
-				.text(rcmail.gettext('web_link', 'mel_useful_link'))
-				.end()
-				.div({
-					id: 'hiddendivfolder',
-					class: 'hidden',
-					onclick: this.changeTab.bind(this, 'folder'),
-				})
-				.end()
-				.div({
-					id: 'folder-link-tab',
-					class: 'tab-mel mel-tab mel-tabheader flex-tab last',
-					tabindex: '-1',
-					'data-onclick': '$(\'#hiddendivfolder\').click()',
-				})
-				.icon('link')
-				.end()
-				.text(rcmail.gettext('folder_link', 'mel_useful_link'))
-				.end()
-				.end()
 				.input({
 					id: 'mulc-url',
 					class: 'form-control input-mel required',
@@ -511,21 +477,24 @@ export class LinkManager extends MelObject {
 		});
 
 		if (!id) {
-			document.addEventListener('dragenter', function (event) {
-				if (event.target.classList.contains('link-space-between')) {
-					event.target.classList.add('link-space-hovered');
-				}
-				if (event.target.closest('.link-block:not(.multilink-open)')) {
-					if (
-						!event.target
-							.closest('.link-block')
-							.parentElement.classList.contains('multilink-container')
-					)
-						event.target
-							.closest('.link-block')
-							.classList.add('link-block-hovered');
-				}
-			});
+      document.addEventListener('dragenter', function (event) {
+        if (event.target.classList.contains('link-space-between')) {
+          event.target.classList.add('link-space-hovered');
+        }
+        const linkBlock = event.target.closest('.link-block:not(.multilink-open)');
+        if (linkBlock && !linkBlock.parentElement.classList.contains('multilink-container')) {
+          linkBlock.classList.add('link-block-hovered');
+        }
+        const multilinkIconContainer = event.target.closest('.multilink-icon-container');
+        if (multilinkIconContainer) {
+          multilinkIconContainer.classList.add('multilink-block-hovered');
+        }
+        const sublink = event.target.classList.contains('sublink');
+        if (sublink) {
+          event.target.closest('.multilink-icon-container').classList.add('multilink-block-hovered');
+        }
+      });
+
 			document.addEventListener('dragleave', function (event) {
 				if (event.target.classList.contains('link-space-between')) {
 					event.target.classList.remove('link-space-hovered');
@@ -535,7 +504,11 @@ export class LinkManager extends MelObject {
 						.closest('.link-block.link-block-hovered')
 						.classList.remove('link-block-hovered');
 				}
+        if (event.target.classList.contains('multilink-icon-container'))
+          event.target.classList.remove('multilink-block-hovered');
+        
 			});
+
 			document.addEventListener(
 				'dragover',
 				function (event) {
@@ -551,48 +524,54 @@ export class LinkManager extends MelObject {
 				let data = JSON.parse(event.dataTransfer.getData('text/plain'));
 
 				let id = data.id;
-
+        
 				let movedElement = $('#link-block-' + id);
-				let movedContainer = $(movedElement).closest('.link-block-container');
+				let movedContainer = movedElement.closest('.link-block-container');
 
-				let targetIndex = $('.link-block-container').index(
-					$(event.target).closest('.link-block-container'),
-				);
-				let elementIndex = $('.link-block-container').index(
-					movedElement.closest('.link-block-container'),
-				);
+        let targetElement = $(event.target);
+        let targetContainer = targetElement.closest('.link-block-container');
 
-				//On sort un lien d'un dossier
+				let targetIndex = $('.link-block-container').index(targetContainer);
+				let elementIndex = $('.link-block-container').index(movedContainer);
+
+        //Si on déplace un element d'un dossier non ouvert
+        if (movedElement.hasClass('sublink')){
+          targetElement.removeClass('multilink-block-hovered');
+          return;
+        }
+
+				//Si on sort un lien d'un dossier
 				if (data.inFolder) {
 					let link = self.findLinkById(id);
 					let folder = self.findParentFolder(link);
 					self.TakeOutLinkFromFolder(
 						folder,
 						link,
-						$(event.target).closest('.link-block-container'),
+						targetElement.hasClass('link-space-end') ? null : targetContainer,
 					);
 					return;
 				}
 
-				//On déplace l'élément
-				if (event.target.classList.contains('link-space-between')) {
-					event.target.classList.remove('link-space-hovered');
-					$(event.target)
-						.closest('.link-block-container')
-						.before(movedContainer);
+				//Si on déplace l'élément
+				if (targetElement.hasClass('link-space-between')) {
+					targetElement.removeClass('link-space-hovered');
+					targetContainer.before(movedContainer);
 
 					self.updateList(id, targetIndex);
-				} else if (event.target.classList.contains('link-space-end')) {
-					$(event.target).before(movedContainer);
+				} 
+        if (targetElement.hasClass('link-space-end')) {
+					targetElement.before(movedContainer);
 
 					self.updateList(id, targetIndex);
 				}
-				//On le rajoute dans un dossier
-				else if (
-					event.target.classList.contains('multilink-icon-container') ||
-					event.target.classList.contains('sublink') ||
-					event.target.classList.contains('multilink-container')
+
+				//Si on le rajoute dans un dossier
+				if (
+					targetElement.hasClass('multilink-icon-container') ||
+					targetElement.hasClass('sublink') ||
+					targetElement.hasClass('multilink-container')
 				) {
+          targetElement.removeClass('multilink-block-hovered');
 					if (!rcmail.env.mul_items[elementIndex].links) {
 						self.updateFolderLink(
 							rcmail.env.mul_items[targetIndex],
@@ -600,7 +579,8 @@ export class LinkManager extends MelObject {
 						);
 					}
 				}
-				//On crée un dossier
+
+				//Si on crée un dossier
 				else {
 					event.target
 						.closest('.link-block.link-block-hovered')
@@ -608,6 +588,10 @@ export class LinkManager extends MelObject {
 
 					//Si le target n'est pas déjà un dossier
 					if (!rcmail.env.mul_items[targetIndex].links) {
+
+            //Si on déplace un dossier dans un dossier
+            if (rcmail.env.mul_items[elementIndex].links) return;
+
 						let _melFolder = new MelFolderLink('', 'Dossier', [
 							rcmail.env.mul_items[elementIndex],
 							rcmail.env.mul_items[targetIndex],
@@ -617,11 +601,13 @@ export class LinkManager extends MelObject {
 								_melFolder.id = data;
 								self.displayFolder(
 									_melFolder,
-									$(event.target).closest('.link-block-container'),
+									targetContainer
 								);
 							}
 						});
-					} else {
+					} 
+          //Si on ajoute un lien dans un dossier
+          else {
 						if (!rcmail.env.mul_items[elementIndex].links) {
 							self.updateFolderLink(
 								rcmail.env.mul_items[targetIndex],
@@ -677,7 +663,6 @@ export class LinkManager extends MelObject {
 		});
 
 		MEL_ELASTIC_UI.update_tabs();
-		$(LinkManager.SELECTOR_MODAL_URL).val('https://');
 	}
 
 	bindRightClickActions(id = null) {
@@ -798,14 +783,6 @@ export class LinkManager extends MelObject {
 	/**
 	 * Helpers functions
 	 */
-
-	changeTab(tab) {
-		if (tab === 'web') {
-			$(LinkManager.SELECTOR_MODAL_URL).val('https://');
-		} else if (tab === 'folder') {
-			$(LinkManager.SELECTOR_MODAL_URL).val('file://');
-		}
-	}
 
 	removeContainer(target) {
 		target.closest('.link-block-container').remove();

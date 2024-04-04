@@ -350,6 +350,11 @@ button {
 	}
 }
 
+.multilink-block-hovered {
+  width: 90px !important;
+  height: 90px !important;
+}
+
 .link-block:not(.sublink) {
 	display: inline-flex;
 	flex-direction: column;
@@ -459,6 +464,15 @@ button {
 
 .link-space-hovered {
 	width: 80px;
+}
+
+.multilink-container li:nth-child(-n+3) .link-context-menu {
+ top: 82px;
+
+ &::after {
+    top: -6px;
+    rotate: 180deg;
+}
 }
 
 .link-context-menu {

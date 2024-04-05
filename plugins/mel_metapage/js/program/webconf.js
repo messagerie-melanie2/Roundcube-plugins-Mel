@@ -33,7 +33,7 @@ const class_to_add_to_top = 'webconf-started';
 const enum_privacy_name = 'eprivacy';
 const enum_created_state = 'ewstate';
 const enum_screen_mode = 'ewsmode';
-const enum_locks = 'enum_webconf_locks'
+    const enum_locks = 'enum_webconf_locks';
 //Constantes de texte
 const PLUGIN = 'mel_metapage';
 const KEY_TEXT_VISIO_LOCKED = 'visio_locked';

@@ -365,7 +365,7 @@ class Webconf extends Program
     /**
      * Génère le code jwt
      */
-    public static function jwt() {
+    public static function jwtwebconf_jwt_key() {
         $rcmail = rcmail::get_instance();
         $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);

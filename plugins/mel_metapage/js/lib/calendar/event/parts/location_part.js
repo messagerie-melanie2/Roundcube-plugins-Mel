@@ -204,7 +204,10 @@ class VisioManager extends ALocationPart {
 	constructor(location, index, categoryPart) {
 		super(location, index);
 
-		if (EMPTY_STRING === location || IntegratedVisio.Has(location))
+		if (
+			(EMPTY_STRING === location || IntegratedVisio.Has(location)) &&
+			IntegratedVisio.VisioEnabled()
+		)
 			this._current = new IntegratedVisio(location, index, categoryPart);
 		else this._current = new ExternalVisio(location, index);
 
@@ -315,6 +318,8 @@ class VisioManager extends ALocationPart {
 			.appendTo($parent);
 
 		$tmp.find('select').val(this._current.option_value());
+
+		if (!IntegratedVisio.VisioEnabled()) $tmp.find('select').hide();
 
 		this._current.generate($tmp.find('.visio-container'));
 
@@ -813,6 +818,12 @@ class IntegratedVisio extends AVisio {
 	 */
 	static Has(location) {
 		return !!(WebconfLink.create({ location }).key || false);
+	}
+
+	static VisioEnabled() {
+		return (
+			!!rcmail.env.plugin_list_visio || !!parent.rcmail.env.plugin_list_visio
+		);
 	}
 }
 

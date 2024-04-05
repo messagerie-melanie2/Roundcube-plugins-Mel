@@ -1,4 +1,6 @@
-export { Locks, LOCKS };
+import { LOCKS } from '../enums.js';
+
+export { Locks };
 
 /**
  * @class
@@ -65,12 +67,3 @@ class Locks {
 		});
 	}
 }
-
-/**
- * @enum {number}
- */
-const LOCKS = {
-	room: 0,
-	mode: 1,
-	password: 2,
-};

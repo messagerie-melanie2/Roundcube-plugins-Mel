@@ -8,8 +8,8 @@ $(document).ready(function() {
 	    },
 	   crossDomain: true,
 	   success: function (data) {
-			const loader = MEL_ELASTIC_UI.create_loader('pegaseloader', true);
-			$("body").append(loader);
+			// const loader = MEL_ELASTIC_UI.create_loader('pegaseloader', true);
+			// $("body").append(loader);
 			$("#wait_box").hide();
 
 		   const url = rcmail.env.sondage_startup_url != null && rcmail.env.sondage_startup_url !== undefined ? rcmail.env.sondage_startup_url : rcmail.env.sondage_gotourl;

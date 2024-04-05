@@ -240,7 +240,7 @@ class Webconf extends Program
         // Metapage sans workspace
         if (class_exists("mel_workspace"))
         {
-            $plugin = $this->get_plugin("mel_workspace");
+            $plugin = $this->rc->plugins->get_plugin("mel_workspace");
             $plugin->load_workspaces();
             $workspaces = $plugin->workspaces;
         }
@@ -365,7 +365,7 @@ class Webconf extends Program
     /**
      * Génère le code jwt
      */
-    public static function jwt() {
+    public static function jwtwebconf_jwt_key() {
         $rcmail = rcmail::get_instance();
         $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
@@ -399,4 +399,4 @@ class Webconf extends Program
     }
 }
 
-Program::add_class_to_load('Webconf');
+//Program::add_class_to_load('Webconf');

@@ -45,7 +45,7 @@ class tchap_manager extends MelObject {
 			this.change_theme();
 		}
 		
-		this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
+		if (this.tchap_frame().querySelector('.mx_SpaceTreeLevel').children.length < 2) this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
 		$("#tchaploader").hide();
 
 		this.rcmail().addEventListener('switched_color_theme', this.change_theme.bind(this));

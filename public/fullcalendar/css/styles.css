@@ -11,6 +11,10 @@ body {
   font-size: 18px;
 }
 
+.allday-background-event {
+  background-color: red !important;
+}
+
 #owner_role {
   margin: 30px;
   font-size: 14px;

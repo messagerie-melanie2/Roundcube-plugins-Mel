@@ -54,9 +54,10 @@ function generateTimeGap(response, calendar) {
         allDayEvents.push(moment(event.start).format('DD.MM.y'))
       }
 
+      let eventEnd = moment(event.end);
       event.setAllDay(false);
       event.setStart(event.start);
-      event.setEnd(moment(event.end).add(22, 'hour').toDate())
+      event.setEnd(eventEnd.add(22, 'hour').subtract(1, 'days').toDate())
     }
     else {
       event.setStart(moment(event.start).subtract(response.time_before_select, 'minute').toDate());

@@ -461,6 +461,9 @@ html body.task-mail #mailsearchlist .searchbar a {
 html.touch #mailsearchlist.hoverable {
   margin-right: 15px;
 }
+html.touch #mailsearchlist.hoverable .searchbar.menu {
+  width: auto;
+}
 #mailsearchlist.hoverable .searchbar.menu {
   width: 0;
 }
@@ -1623,4 +1626,8 @@ body.task-mail.action-compose a.removelink {
 }
 #selected-action-list ul li a {
   color: var(--layout-list-header-text-color) !important;
+}
+html.layout-phone #selected-action-list ul li a.disabled,
+html.layout-small #selected-action-list ul li a.disabled {
+  display: none;
 }

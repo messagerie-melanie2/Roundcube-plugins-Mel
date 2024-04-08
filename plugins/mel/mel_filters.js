@@ -260,24 +260,19 @@ les propriétés « nom » et « valeur ».
             }
 
             static get_selected_menu() {
-                return new mel_selector($('#selected-action-list'));
+                return new mel_selector($('#mailsearchlist'));
             }
 
             toggle_selected_menu() {
               if ($('html').hasClass('touch')) {
               let $menu = this.$item;
-              let $search = $('#mailsearchlist')
               let list = rcmail.message_list;
               //Si pas sélectionné
                 if (0 === list.selection.length) {
-                  if (!$menu.hasClass('popupmenu')) $menu.addClass('popupmenu');
-                  
-                  if ($search.hasClass('popupmenu')) $search.removeClass('popupmenu').removeClass('hoverable');
+                  if ($menu.hasClass('popupmenu')) $menu.removeClass('popupmenu').removeClass('hoverable');
                 }
                 else {
-                  if ($menu.hasClass('popupmenu')) $menu.removeClass('popupmenu');
-
-                  if (!$search.hasClass('popupmenu')) $search.addClass('popupmenu');
+                  if (!$menu.hasClass('popupmenu')) $menu.addClass('popupmenu');
                 }
               }
             }

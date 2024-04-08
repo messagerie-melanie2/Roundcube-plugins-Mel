@@ -4,11 +4,15 @@
  * @local VisioCreator
  */
 
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Locks } from './classes/locks.js';
+import { ConfigVisioData } from './classes/structures/data.js';
 import { VisioView } from './classes/view.js';
 import { SELECTOR_BUTTON_START } from './consts.js';
+import { ePage } from './enums.js';
 import { VisioFunctions } from './helpers.js';
+import { VisioPageManager } from './pages.js';
 export { VisioCreator };
 
 /**
@@ -63,6 +67,8 @@ class VisioCreator extends MelObject {
 				this.view.password.check();
 				this.view.password.$field.val(this.data.password);
 			}
+		} else if (this.view.value() === EMPTY_STRING) {
+			this.view.$room.val(VisioFunctions.generateWebconfRoomName());
 		}
 
 		//Désactivé les champs qui ont besoins d'être désactivés
@@ -132,28 +138,28 @@ class VisioCreator extends MelObject {
 
 	/**
 	 * Récupère la configuration de la visio
-	 * @returns {AjaxVisioData}
+	 * @returns {ConfigVisioData}
 	 */
 	get_config() {
 		let config = {
-			_key: this.view.$room.val(),
-			_from_config: true,
+			key: this.view.$room.val(),
+			from_config: true,
 		};
 
 		if (this.view.linked_to.value() !== 'home')
-			config[this.view.linked_to.is_checked() ? '_wsp' : '_channel'] =
+			config[this.view.linked_to.is_checked() ? 'wsp' : 'channel'] =
 				this.view.linked_to.value();
 
 		if (this.view.password.is_checked())
-			config._pass = this.view.password.value();
+			config.pass = this.view.password.value();
 
-		return config;
+		return new ConfigVisioData(config);
 	}
 
 	/**
 	 * Action à faire au clique sur le bouton de validation
 	 */
 	_on_button_click() {
-		window.location.href = this.url('webconf', { params: this.get_config() });
+		VisioPageManager.ChangePage(ePage.visio, this.get_config());
 	}
 }

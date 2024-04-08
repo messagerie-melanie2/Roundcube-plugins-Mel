@@ -36,42 +36,6 @@ class mel_visio extends bnum_plugin
         else if ('calendar' === $this->get_current_task()) {
             $this->send_visio_config();
         }
-        else if ('settings' === $this->get_current_task()) {
-            $askOnEnd = self::ASK_ON_END_PARAM;
-            $visio_audio_video_parameters = self::VA_PARAM;
-            $visio_audio_video_parameters_default = self::DEFAULT_VA_PARAM;
-
-            $this->add_parameters(function ($args) use($askOnEnd, $visio_audio_video_parameters, $visio_audio_video_parameters_default) {
-                if ($args['section'] == 'visio')
-                {
-                    $this->add_texts('localization/');
-                    $askOnEnd_config = $this->rc()->config->get($askOnEnd, true);
-                    $visio_audio_video_parameters_config = $this->rc()->config->get($visio_audio_video_parameters, $visio_audio_video_parameters_default);
-        
-                    $askOnEnd_check = new html_checkbox(['name' => $askOnEnd, 'id' => $askOnEnd, 'value' => 1]);
-                    $args['blocks']['general']['options'][$askOnEnd] = [
-                        'title'   => html::label($askOnEnd, rcube::Q($this->gettext($askOnEnd))),
-                        'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
-                    ];
-                }
-
-                return $args;
-            }, function ($args) use($askOnEnd, $visio_audio_video_parameters, $visio_audio_video_parameters_default) {
-                if ($args['section'] == 'visio')
-                {
-                    $this->add_texts('localization/');
-                    $askOnEnd_config = $this->rc()->config->get($askOnEnd, true);
-                    $askOnEnd_config = rcube_utils::get_input_value($askOnEnd, rcube_utils::INPUT_POST) === '1';
-                    $args['prefs'][$askOnEnd] = $askOnEnd_config;
-
-                    $visio_audio_video_parameters_config = $this->rc()->config->get($visio_audio_video_parameters, $visio_audio_video_parameters_default);
-                    $visio_audio_video_parameters_config = rcube_utils::get_input_value($visio_audio_video_parameters, rcube_utils::INPUT_POST);
-                    $args['prefs'][$visio_audio_video_parameters] = $visio_audio_video_parameters_config;
-                }
-                
-                return $args;
-            });
-        }
     }
 
     function index() {

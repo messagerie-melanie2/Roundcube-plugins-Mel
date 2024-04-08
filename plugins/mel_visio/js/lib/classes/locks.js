@@ -1,4 +1,4 @@
-import { LOCKS } from '../enums.js';
+import { eLocks } from '../enums.js';
 
 export { Locks };
 
@@ -43,11 +43,11 @@ class Locks {
 	 */
 	_setup() {
 		const _room =
-			rcmail.env['webconf.locks']?.includes?.(LOCKS.room) ?? this.room;
+			rcmail.env['webconf.locks']?.includes?.(eLocks.room) ?? this.room;
 		const _channel =
-			rcmail.env['webconf.locks']?.includes?.(LOCKS.mode) ?? this.channel;
+			rcmail.env['webconf.locks']?.includes?.(eLocks.mode) ?? this.channel;
 		const _password =
-			rcmail.env['webconf.locks']?.includes?.(LOCKS.password) ?? this.password;
+			rcmail.env['webconf.locks']?.includes?.(eLocks.password) ?? this.password;
 		Object.defineProperties(this, {
 			room: {
 				value: _room,

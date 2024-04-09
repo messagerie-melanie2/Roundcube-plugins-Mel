@@ -4393,6 +4393,9 @@ div.all-day input.input-mel#edit-enddate {
   font-size: 16px !important;
   margin-top: -2px;
 }
+html.layout-large.hidden-large {
+  display: none !important;
+}
 html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons {
   display: block;
 }

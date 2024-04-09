@@ -87,6 +87,9 @@ class Webconf extends Program
         $key_invalid = false;
         $need_config = $this->get_input("_need_config") ?? false;
         $locks = $this->get_input("_locks") ?? [];
+        $notify = $this->get_input("_notify") ?? false;
+
+        $notify = $notify === 'true' || $notify === true;
 
         if (is_string($locks))
         {
@@ -158,6 +161,8 @@ class Webconf extends Program
         $this->set_env_var("webconf.feedback_url", $this->get_config("webconf_feedback_url"));
         $this->set_env_var("webconf.have_feed_back", $this->get_config("visio_ask_on_end", true));
         $this->set_env_var("webconf.audio_style_params", $this->get_config(self::VA_PARAM, self::DEFAULT_VA_PARAM));
+        $this->set_env_var('webconf.notify', $notify);
+
         $this->rc->output->set_pagetitle("Visioconférence");
         $this->send("webconf");
     }

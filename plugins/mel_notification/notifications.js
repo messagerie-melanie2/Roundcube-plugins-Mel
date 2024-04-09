@@ -901,14 +901,13 @@ class html_notification extends mel_html2 {
                 const action = notification.action[key];
                 this.attribs['href'] = action.href ?? '#',
                 this.onclick.push((e) => {
+                    m_mp_NotificationsAction('read', [btoa(notification.uid)]);
                     if (!!action.command) { 
                       rcmail.command(action.command, action.params ?? '', e);
-                      m_mp_NotificationsAction('read', [btoa(notification.uid)]);
                      }
                     else if (!!action.click) {
                       _action.click(e);
-                      m_mp_NotificationsAction('read', [btoa(notification.uid)]);}
-
+                    }
                     e.stopPropagation();
                 })
                 this.attribs['title'] = rcmail.get_label('mel_notification.Action title');

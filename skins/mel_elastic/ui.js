@@ -2395,7 +2395,7 @@ $(document).ready(() => {
 								return 'break';
 							}
 						},
-						afterCreatingContent($html, box) {
+						afterCreatingContent($html, box, popup) {
 							box.close.data('force', '1');
 							box.content.find('iframe').on('load', () => {
 								box.close.data('force', '');
@@ -2483,6 +2483,13 @@ $(document).ready(() => {
 											"Impossible d'envoyer le mail !",
 											'error',
 										);
+										if (
+											popup.box.minifier
+												.find('span')
+												.hasClass(popup.settings.icon_expend)
+										)
+											popup.expand();
+
 										box.close.removeClass('disabled').removeAttr('disabled');
 										box.get.find('iframe').css('display', '');
 										box.title
@@ -2496,6 +2503,18 @@ $(document).ready(() => {
 										box.content
 											.find('#rotomecamelloader')
 											.css('display', 'none');
+
+										if (frame_context.$('#mail-send-loader').length > 0) {
+											frame_context.$('#mail-send-loader').remove();
+											frame_context
+												.$('#layout-sidebar, #layout-content')
+												.css('display', '');
+											setTimeout(() => {
+												if (frame_context.$('#mail-send-loader').length > 0) {
+													frame_context.$('#mail-send-loader').remove();
+												}
+											}, 10);
+										}
 									},
 								);
 

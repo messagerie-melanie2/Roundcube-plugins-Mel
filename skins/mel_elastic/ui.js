@@ -2325,6 +2325,8 @@ $(document).ready(() => {
 
 			const alias_mel_rcmail_open_compose_step = rcmail.open_compose_step;
 			rcmail.open_compose_step = function (p) {
+				if (parent !== window) return parent.rcmail.open_compose_step(p);
+
 				if (window.create_popUp !== undefined) create_popUp.close();
 
 				if (

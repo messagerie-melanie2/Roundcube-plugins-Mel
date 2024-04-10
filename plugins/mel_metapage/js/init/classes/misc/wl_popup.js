@@ -106,31 +106,31 @@ class Windows_Like_PopUp extends MetapageObject {
 		this.box.get = this.parent.find(`${jid}`);
 		this.box.close = this.parent
 			.find(`${jid} .${class_close}`)
-			.on('click', () => {
-				this.close();
-			});
+			.on('click', this.close.bind(this));
 		this.box.minifier = this.parent
 			.find(`${jid} .${class_size}`)
-			.on('click', () => {
-				let span = this.box.minifier.find('span');
-				if (span.hasClass(this.settings.icon_minify)) {
-					//minify
-					if (this.settings.onminify !== null) this.settings.onminify(this);
-
-					this.minify();
-				} else {
-					//expand
-					if (this.settings.onexpand !== null) this.settings.onexpand(this);
-
-					this.expand();
-				}
-			});
+			.on('click', this._minify_on_click.bind(this));
 
 		//Ajout de actions
 		if (settings.afterCreatingContent !== null)
 			settings.afterCreatingContent(this.parent.find(jid), this.box, this);
 
 		return this;
+	}
+
+	_minify_on_click() {
+		let span = this.box.minifier.find('span');
+		if (span.hasClass(this.settings.icon_minify)) {
+			//minify
+			if (this.settings.onminify !== null) this.settings.onminify(this);
+
+			this.minify();
+		} else {
+			//expand
+			if (this.settings.onexpand !== null) this.settings.onexpand(this);
+
+			this.expand();
+		}
 	}
 
 	minify() {
@@ -178,6 +178,7 @@ class Windows_Like_PopUp extends MetapageObject {
 	}
 
 	destroy() {
+		console.log('!!!!!!!!!!!!!!!! DESTROY');
 		try {
 			this.settings.context.$(`#minified-${this.id}`).remove();
 		} catch (error) {}

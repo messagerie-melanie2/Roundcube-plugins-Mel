@@ -13,17 +13,25 @@
 		show_config_popup = false,
 		locks = null,
 		pass = null,
+		extra = null,
 	) {
 		if (!webconf_is_active()) {
 			try {
 				top.m_mp_close_ariane();
-			} catch (error) {}
+			} catch (error) {
+				console.warn('Impossible de fermer le tchat !');
+			}
 
 			if ((parent !== window ? parent : window).$('.webconf-frame').length > 0)
 				(parent !== window ? parent : window).$('.webconf-frame').remove();
 
 			let config = null;
-			if (key != null || wsp !== null || ariane !== null || show_config_popup) {
+			if (
+				key !== null ||
+				wsp !== null ||
+				ariane !== null ||
+				show_config_popup
+			) {
 				config = {};
 				if (key !== null) config['_key'] = key;
 
@@ -50,9 +58,17 @@
 				'ArianeButton.default().hide_button()',
 				false,
 			);
+
 			mel_metapage.Functions.call(() => {
 				if (window.create_popUp !== undefined) window.create_popUp.close();
 			}, false);
+
+			if (extra && Object.keys(extra).length > 0) {
+				for (const iterator of Object.keys(extra)) {
+					config[`_${iterator}`] = extra[iterator];
+				}
+			}
+
 			await mel_metapage.Functions.change_frame('webconf', true, true, config);
 		} else {
 			rcmail.display_message(
@@ -69,8 +85,17 @@
 		show_config_popup = false,
 		locks = null,
 		pass = null,
+		extra = null,
 	}) {
-		await go_to_webconf(key, wsp, ariane, show_config_popup, locks, pass);
+		await go_to_webconf(
+			key,
+			wsp,
+			ariane,
+			show_config_popup,
+			locks,
+			pass,
+			extra,
+		);
 	}
 
 	async function notify(key, uid) {
@@ -106,6 +131,7 @@
 					if (++it > 50) {
 						voxify_url.waiting = false;
 						console.debug('Voxify url not ok !');
+						nok();
 					}
 				}, 100);
 			});

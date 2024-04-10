@@ -796,6 +796,12 @@ table.messagelist{
 
         html.touch & {
           margin-right: 15px;
+
+          .searchbar{
+            &.menu{
+                width: auto;
+            }
+        }
         }
 
         .searchbar{
@@ -2142,6 +2148,13 @@ body.task-mail.action-compose a.removelink
         li {
             a{
                 color: var(--layout-list-header-text-color) !important;
+            }
+
+            a.disabled {
+              html.layout-phone &,
+              html.layout-small & {
+                display: none;
+              }
             }
         }
     }

@@ -458,7 +458,14 @@ class mel_notification extends rcube_plugin
                 'title'   => html::label($field_id, rcube::Q($this->gettext('notifications_sound_on_new_mail'))),
                 'content' => $checkbox->show($default ? 1 : 0),
             ];
-        }       
+        }    
+        
+        $p['blocks']['general']['options']['test_sound'] = [
+            'title' => '<div style="display: flex;height: 100%;"><span style="align-self: center;">Tester le son de notification d\'un nouveau mail</span></div>',
+            'content' => '<div id="notification-sound-container">test</div>'
+        ];
+
+        $this->include_script('sound.js');
 
         // Block avancé pour les notifications
         $p['blocks']['list']['name'] = $this->gettext('Notifications settings');

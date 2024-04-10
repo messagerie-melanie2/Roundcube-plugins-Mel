@@ -178,7 +178,6 @@ class Windows_Like_PopUp extends MetapageObject {
 	}
 
 	destroy() {
-		console.log('!!!!!!!!!!!!!!!! DESTROY');
 		try {
 			this.settings.context.$(`#minified-${this.id}`).remove();
 		} catch (error) {}

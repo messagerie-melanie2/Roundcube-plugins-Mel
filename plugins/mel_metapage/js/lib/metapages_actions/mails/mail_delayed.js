@@ -45,7 +45,7 @@ export class MetapageMailDelayedModule extends MetapageModule {
 					let self = this;
 
 					let html = mel_cancellable_html_timer.Success(delay, {
-						cancel_icon: 'cancel_schedule_send',
+						cancel_icon: 'undo',
 						contents: new mel_html(
 							'span',
 							{},
@@ -92,6 +92,11 @@ export class MetapageMailDelayedModule extends MetapageModule {
 							'confirmation',
 						);
 						$(window).resize();
+					});
+
+					html.onstart.push(e => {
+						e = $(e.currentTarget).parent();
+						e.skip_timer();
 					});
 
 					if (navigator.$('#messagestack').length <= 0) {

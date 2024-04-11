@@ -46,6 +46,7 @@ class mel_workspace extends bnum_plugin
         $this->require_plugin('mel_helper');
         $this->setup();
         $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
+        $this->include_stylesheet('../mel_useful_link/skins/elastic/links.css');
         $this->include_script('js/init/classes/WSPNotifications.js');
         $this->include_script('js/init/classes/RoundriveShow.js');
         $this->include_script('js/init/classes/WorkspaceDrive.js');
@@ -117,6 +118,7 @@ class mel_workspace extends bnum_plugin
     {
         $this->include_css();
         $this->include_js();
+
         $this->register_action('index', array($this, 'index'));
         $this->register_action('action', array($this, 'show_actions'));
         $this->register_action('workspace', array($this, 'show_workspace'));
@@ -1326,6 +1328,7 @@ class mel_workspace extends bnum_plugin
 
                 if ($services[self::LINKS])
                 {
+                     $this->get_workspace_ulinks();
                     
                     $before_body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
                         // html::tag("button", ["title" => "Actualiser","id" => "refresh-nc", "onclick" => "rcmail.env.wsp_roundrive_show.checkNews()", "class" => "mel-button btn btn-secondary"],
@@ -1393,16 +1396,8 @@ class mel_workspace extends bnum_plugin
 
                 if ($services[self::LINKS]){
 
-                    $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
-                    $body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤"],
-                    ($links['pined'] === '' && $links['joined'] === '' ? "<center>Aucun liens épinglés.</center>" : $links["pined"].$links['joined'])
-                    //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
-                    // html::tag('center', ["id" => "spinner-grow-center"],
-                    // html::tag('span', ["class" => "spinner-grow"], html::tag('p', ["class" => "sr-only"], "Chargement des documents..."))).    
-                    // html::tag("div", 
-                    //     [ "id" => "cloud-frame", "style" => "overflow:auto;width:100%;max-height:500px;display:none;"]
-                    //     )
-                     );
+                    // $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
+                    $body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content links-items", "style" => "¤¤¤"]);
                 }
 
                 if ($have_surveys)
@@ -3915,15 +3910,13 @@ class mel_workspace extends bnum_plugin
         exit;
     }
 
-    function update_html_ulinks()
-    {
-        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+    function get_workspace_ulinks() {
+      $this->load_script_module_from_plugin('mel_useful_link', 'manager');
 
-        $workspace = $this->get_workspace($wid);
-        $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($workspace, $this, true);
+    
+      $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
 
-        echo $links["pined"].$links['joined'];
-        exit;
+      $this->rc->output->set_env("mul_items", $links);
     }
 
     function refresh_documents()

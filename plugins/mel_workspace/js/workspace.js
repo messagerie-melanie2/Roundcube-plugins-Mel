@@ -1061,7 +1061,7 @@ async function InitLinks()
     {
 
         rcmail.addEventListener("mel_metapage_refresh", () => {
-            refreshUsefulLinks();
+            // refreshUsefulLinks();
         });
 
         if (!rcmail.env.current_workspace_services.doc || !rcmail.env.is_stockage_active) //Si nextcloud n'est pas activé

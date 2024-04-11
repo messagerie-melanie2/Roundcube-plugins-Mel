@@ -68,7 +68,6 @@ class mel_useful_link extends bnum_plugin
         $newMelLinks[$id] = $temp->serialize();
       }
       
-      // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
       $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
       $this->rc->user->save_prefs(array('personal_useful_links' => []));
     }
@@ -225,7 +224,7 @@ class mel_useful_link extends bnum_plugin
       exit;
     }
 
-    function get_workspace_link($workspace, $plugin, $getHtml = false)
+    function get_workspace_link($workspace, $plugin)
     {
       include_once "lib/link.php";
 
@@ -233,19 +232,12 @@ class mel_useful_link extends bnum_plugin
 
       $links = [];
       foreach ($serialized_links as $key => $value) {
-        $links[] = mel_link::fromConfig($value);
+        $value = json_decode($value);
+        $temp = new MelLink($id, $value->title, $value->link);
+        $links[] = $temp->serialize();
       }
 
-      if ($getHtml)
-      {
-        $this->links = $links;
-        return [
-          "pined" => $this->index_show(true, 1),
-          "joined" => $this->index_show(false, 1)
-        ];
-      }
-      else
-        return $links;
+      return $links;
     }
 
     function get_personal_links($showHidden = false)

@@ -146,19 +146,6 @@ button {
     font-size: 23px;
   }
 
-	html@{layout-phone} &,
-	html@{layout-small} & {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
-
-		.add {
-			display: none;
-		}
-
-		.plus {
-			margin: 0 !important;
-		}
-	}
 }
 
 .mel-button-icon {
@@ -293,6 +280,7 @@ button {
 			height: 350px !important;
 			position: relative;
 			overflow-y: auto;
+      max-width: 70vw;
 
 			&::after {
 				display: none;
@@ -417,7 +405,7 @@ button {
 		.link-icon-image {
 			width: inherit;
 			height: inherit;
-			border-radius: 15px;
+			border-radius: 18px;
 		}
 
 		.link-icon-no-image {

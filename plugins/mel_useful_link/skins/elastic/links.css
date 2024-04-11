@@ -91,19 +91,6 @@ html body #mulsah span::before {
 #mulba .material-symbols-outlined {
   font-size: 23px;
 }
-html.layout-phone #mulba,
-html.layout-small #mulba {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-html.layout-phone #mulba .add,
-html.layout-small #mulba .add {
-  display: none;
-}
-html.layout-phone #mulba .plus,
-html.layout-small #mulba .plus {
-  margin: 0 !important;
-}
 .mel-button-icon {
   margin-top: 0;
   border-radius: 100px;
@@ -207,6 +194,7 @@ html.layout-phone .joinedtitle {
   height: 350px !important;
   position: relative;
   overflow-y: auto;
+  max-width: 70vw;
 }
 .multilink-block.multilink-open .multilink-icon-container::after {
   display: none;
@@ -309,7 +297,7 @@ html.layout-phone .joinedtitle {
 .link-block:not(.sublink) .link-icon-container .link-icon-image {
   width: inherit;
   height: inherit;
-  border-radius: 15px;
+  border-radius: 18px;
 }
 .link-block:not(.sublink) .link-icon-container .link-icon-no-image {
   width: inherit;

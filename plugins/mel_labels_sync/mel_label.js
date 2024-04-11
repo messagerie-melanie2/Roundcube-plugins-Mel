@@ -311,7 +311,7 @@ function rcm_tb_label_init_onclick(selector = '#tb_label_popup li a', closeActio
 			$(this).click(function() {
 				var toggle_label;// = $(this).parent().attr('id').split('_b_')[0];
 				try {
-					toggle_label = $(this).parent().attr('id').split('_b_')[0];
+					toggle_label = $(this).parent().attr('id').split('_b_')[0].replace(/(<([^>]+)>)/gi, "");
 				} catch (error) {
 					toggle_label = Enumerable.from(this.classList).where(x => x.includes("label_")).first().replace("label_", "");
 				}

@@ -541,13 +541,15 @@ export class LinkManager extends MelObject {
         //Si on déplace un element d'un dossier non ouvert
         if (movedElement.hasClass('sublink')){
           targetElement.removeClass('multilink-block-hovered');
-          return;
+          movedElement = movedElement.closest('.multilink-block');
+          data.inFolder = false;
         }
 
 				//Si on sort un lien d'un dossier
 				if (data.inFolder) {
 					let link = self.findLinkById(id);
 					let folder = self.findParentFolder(link);
+          //TODO Mettre à jours rcmail.env.mul_items 
 					self.TakeOutLinkFromFolder(
 						folder,
 						link,

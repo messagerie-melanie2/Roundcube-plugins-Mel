@@ -176,13 +176,11 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
 * Le guide d'utilisation de la double authentification est disponible à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr/aide/doc/melweb/index.html#7-Double_authentification" . ($ldap_error ? "\r\n\r\nPour le PNE:\r\nUne erreur LDAP ($ldap_error) s'est produite, le mot de passe n'a pas pu être grillé automatiquement, merci de le faire au plus vite." : "");
 
             // Envoi du message d'information
-            @mail($mail_dest, utf8_decode($mail_subject), $mail_text, implode("\r\n", $headers));
-            if ($ldap_error) {
-              // On detruit la session pour deconnecter l'utilisateur
-              unset($_SESSION);
-              session_destroy();
-              $_SESSION = array();
-            }
+            \LibMelanie\Mail\Mail::mail($mail_dest, $mail_subject, $mail_text, $headers, null, 'bnum');
+            // On detruit la session pour deconnecter l'utilisateur
+            unset($_SESSION);
+            session_destroy();
+            $_SESSION = array();
             break;
           }
         }

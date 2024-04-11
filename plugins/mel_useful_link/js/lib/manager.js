@@ -399,12 +399,11 @@ export class LinkManager extends MelObject {
 		});
 	}
 
-	TakeOutLinkFromFolder(folder, link, location = null) {
+	TakeOutLinkFromFolder(folder, link, location = null, id, targetIndex) {
 		folder.removeLink(link);
 
 		if (Object.keys(folder.links).length === 0) {
 			link.callUpdate().then(() => {
-				//TODO le mettre au bon emplacement
 				if (!location) {
 					link.displayLink().insertBefore('.link-space-end');
 				} else {
@@ -418,12 +417,15 @@ export class LinkManager extends MelObject {
 				link.callUpdate().then(() => {
 					$('#link-block-' + link.id).remove();
 
-					if (!location) {
+          if (!location) {
 						link.displayLink().insertBefore('.link-space-end');
 					} else {
 						link.displayLink().insertBefore(location);
 					}
 					this.saveLink(link);
+
+          this.updateList(id, targetIndex);
+
 				});
 				//Si il ne reste plus qu'un lien dans le dossier, on le sort et supprime le dossier
 				// if (Object.keys(folder.links).length === 1) {
@@ -544,16 +546,17 @@ export class LinkManager extends MelObject {
           movedElement = movedElement.closest('.multilink-block');
           data.inFolder = false;
         }
-
 				//Si on sort un lien d'un dossier
 				if (data.inFolder) {
 					let link = self.findLinkById(id);
 					let folder = self.findParentFolder(link);
           //TODO Mettre à jours rcmail.env.mul_items 
 					self.TakeOutLinkFromFolder(
-						folder,
+            folder,
 						link,
 						targetElement.hasClass('link-space-end') ? null : targetContainer,
+            id,
+            targetIndex
 					);
 					return;
 				}

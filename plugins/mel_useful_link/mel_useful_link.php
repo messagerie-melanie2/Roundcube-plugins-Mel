@@ -68,6 +68,7 @@ class mel_useful_link extends bnum_plugin
         $newMelLinks[$id] = $temp->serialize();
       }
       
+      // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
       $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
       $this->rc->user->save_prefs(array('personal_useful_links' => []));
     }

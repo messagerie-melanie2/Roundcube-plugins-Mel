@@ -75,11 +75,18 @@ $event_ics = $event->ics;
 
 $event_response = $event->save();
 
+$user_prefs = json_decode($data['user']->getCalendarPreference("appointment_properties"));
+
 if (!is_null($event_response)) {
 
   Mail::SendAttendeeAppointmentMail($organizer, $attendee_post, $appointment, $event_ics);
 
-  SendOrganizerNotification($data['user'], $attendee_post, $appointment);
+  if ($user_prefs->notification_type === "mail") {
+    Mail::SendOrganizerAppointmentMail($organizer, $attendee_post, $appointment);
+  }
+  else {
+    SendOrganizerNotification($data['user'], $attendee_post, $appointment);
+  }
   header('Content-Type: application/json; charset=utf-8');
   echo json_encode(["success" => "Validation de l'enregistrement"]);
 } else {

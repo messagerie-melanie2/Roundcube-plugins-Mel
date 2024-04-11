@@ -527,7 +527,7 @@
   </div>
 </div>
 
-<div id="appointmentbox" class="popupmenu" style="min-height: 450px;">
+<div id="appointmentbox" class="popupmenu">
   <form id="appointmentpropform" action="#" method="POST">
 
     <div id="activate_appointment" class="mt-1">
@@ -590,12 +590,25 @@
                 <span class="slider round"></span>
               </label>
               <roundcube:label name='calendar.letuserchoosetimeduration' />
+              <div id="notification">
+                <div class="form-group row">
+                  <label class="col-3 col-form-label">
+                    <roundcube:label name='calendar.notification' /> :
+                  </label>
+                  <div class="col-9">
+                    <select id="notification_select" name="notification_select" class="form-control" onchange="toggle_custom_time()">
+                      <option value="notification">Notification Bnum</option>
+                      <option value="mail">Mail</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
               <div id="time">
                 <div class="form-group row">
-                  <label class="col-2 col-form-label">
+                  <label class="col-3 col-form-label">
                     <roundcube:label name='calendar.duration' /> :
                   </label>
-                  <div class="col-10">
+                  <div class="col-9">
                     <select id="time_select" name="time_select" class="form-control" onchange="toggle_custom_time()">
                       <option value="15">15 min</option>
                       <option value="30">30 min</option>

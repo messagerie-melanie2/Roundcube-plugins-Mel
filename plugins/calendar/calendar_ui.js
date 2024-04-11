@@ -3573,6 +3573,14 @@ function rcube_calendar_ui(settings) {
         }
       }
 
+      if (user_pref.notification_type) {
+        form.find('#notification_select').val(user_pref.notification_type);
+      }
+      else {
+        form.find('#notification_select').val("notification");
+      }
+
+
       if (user_pref.place) {
         user_pref.place.forEach(element => {
           switch (element.type) {
@@ -3695,6 +3703,8 @@ function rcube_calendar_ui(settings) {
         appointment.time_select = form.find('#custom_time_input').val();
       }
     }
+
+    appointment.notification_type = form.find('#notification_select').val();
 
     let error_message = "Ce champs est obligatoire";
     let error = false;

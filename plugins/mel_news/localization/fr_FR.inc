@@ -98,7 +98,7 @@ $labels['twitter_accounts'] = 'Comptes twitter';
 $labels['small_format'] = 'Petit format';
 $labels['large_format'] = 'Grand format';
 
-$labels['intra_edit_alert'] = 'Toutes les vignettes liées à cet adresse seront impactées !';
+$labels['intra_edit_alert'] = 'Toutes les vignettes liées à cette adresse seront impactées !';
 
 $labels['personal_add_intranet_title'] = "Ajouter les informations d'un site intranet";
 $labels['personal_edit_intranet_title'] = "Modifier les informations d'un site intranet";

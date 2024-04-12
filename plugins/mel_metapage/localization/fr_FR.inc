@@ -436,8 +436,8 @@ $labels['tchap_disconnect'] = "Se déconnecter de Tchap";
 $labels['event-location-visio'] = "En visioconférence";
 $labels['event-location-location'] = "En présentiel";
 $labels['event-location-audio'] = "Par audio";
-$labels['event-visio-internal'] = "Wébconférence de l'état";
-$labels['event-visio-external'] = "Wébconférence externe";
+$labels['event-visio-internal'] = "Webconférence de l'État";
+$labels['event-visio-external'] = "Webconférence externe";
 
 $labels['week'] = 'semaine';
 $labels['week_plurial'] = $labels['week'].'s';

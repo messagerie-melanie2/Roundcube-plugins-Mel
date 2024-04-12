@@ -531,6 +531,15 @@ class mel_workspace extends bnum_plugin
         $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
         $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
         $this->rc->output->set_env("current_workspace_back", rcube_utils::get_input_value('_last_location', rcube_utils::INPUT_GPC));
+        $this->rc->output->set_env('current_workspace_is_public', $this->currentWorkspace->ispublic);
+
+        if (!$this->currentWorkspace->ispublic) {
+            $this->rc->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
+            $this->rc->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');
+            $this->rc->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
+            $this->rc->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
+            $this->rc->output->set_env("wsp_shares", $this->get_mails_from_workspace($this->currentWorkspace));
+        }
         
         if (self::is_in_workspace($this->currentWorkspace))
             $this->rc->output->set_env("wsp_is_in", "yes");
@@ -575,6 +584,7 @@ class mel_workspace extends bnum_plugin
         $this->include_stylesheet($this->local_skin_path().'/links.css');
 
         $this->include_script('js/workspace_frame_manager.js');
+        $this->load_script_module('workspace', '/js/mel_lib/');
 
         $this->rc->output->set_env("current_workspace_page", rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC));
         $this->rc->output->set_env("current_settings", json_decode($this->currentWorkspace->settings));

@@ -24,3 +24,4 @@ export const DATE_FORMAT = 'DD/MM/YYYY';
  * @default 'DD/MM/YYYY HH:mm'
  */
 export const DATE_TIME_FORMAT = `${DATE_FORMAT} ${DATE_HOUR_FORMAT}`;
+export const DATE_SERVER_FORMAT = 'YYYY-MM-DDTHH:mm';

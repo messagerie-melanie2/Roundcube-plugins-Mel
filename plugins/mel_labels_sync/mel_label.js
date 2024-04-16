@@ -262,7 +262,7 @@ function rcm_tb_label_init_onclick()
 			// TODO check if click event is defined instead of unbinding?
 			$(this).unbind('click');
 			$(this).click(function() {
-				rcmail.mel_label_toggle($(this).parent().attr('id').split('_b_')[0]);
+				rcmail.mel_label_toggle($(this).parent().attr('id').split('_b_')[0].replace(/(<([^>]+)>)/gi, ""));
 			});
 		});
 	}

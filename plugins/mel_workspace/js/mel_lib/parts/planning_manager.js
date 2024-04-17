@@ -2,66 +2,107 @@ import { CalendarLoader } from '../../../../mel_metapage/js/lib/calendar/calenda
 import { Slot } from '../../../../mel_metapage/js/lib/calendar/event/parts/guestspart.free_busy.js';
 import { FreeBusyLoader } from '../../../../mel_metapage/js/lib/calendar/free_busy_loader.js';
 import { MelEnumerable } from '../../../../mel_metapage/js/lib/classes/enum.js';
-import { DATE_FORMAT } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
+import {
+	DATE_FORMAT,
+	DATE_HOUR_FORMAT,
+} from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
+import { ID_RESOURCES_WSP } from '../constants.js';
 import { Workspace } from '../workspace.js';
-import { PartManager } from './part_manager.js';
+export { PlanningManager };
 
-export class PlanningManager extends PartManager {
-	static async Start() {
+/**
+ * @typedef FullCalendarEvent
+ * @property {string} title
+ * @property {moment} start
+ * @property {moment} end
+ * @property {string} color
+ * @property {string} resourceId
+ */
+
+/**
+ * @typedef FullCalendarResource
+ * @property {string} id
+ * @property {string} title
+ * @property {Slot} slot
+ */
+
+/**
+ * @class
+ * @classdesc Gestionnaire de planning des espaces de travail
+ * @extends MelObject
+ */
+class PlanningManager extends MelObject {
+	constructor() {
+		super();
+	}
+
+	main() {
+		super.main();
+		this.start();
+	}
+
+	/**
+	 * Démarre le gestionnaire de planning
+	 *
+	 * Fonctionne seulement si l'espace de travail n'est pas public
+	 * @return {Promise<void>}
+	 */
+	async start() {
 		if (!Workspace.IsPublic()) {
 			this.freebusy = {};
 			this.events = {};
 			this.loading = [];
+			this.calendar = null;
 			let $body = $('#wsp-block-calendar .block-body').html(EMPTY_STRING);
 			const settings = cal.settings;
 
 			let calendar = new FullCalendar.Calendar($body, {
-				resources: await this.LoadResources(),
+				resources: await this.loadResources(),
 				defaultView: 'timelineDay',
 				schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
 				height: 200,
 				slotDuration: { minutes: 60 / settings.timeslots },
 				locale: 'fr',
-				axisFormat: 'HH:mm',
-				slotLabelFormat: 'HH:mm',
+				axisFormat: DATE_HOUR_FORMAT,
+				slotLabelFormat: DATE_FORMAT,
 				eventSources: [
 					{
 						events: async function (start, end, timezone, callback) {
 							var go = true;
-							var data = PlanningManager.freebusy[start.format(DATE_FORMAT)];
+							var data = this.freebusy[start.format(DATE_FORMAT)];
 
 							if (!data) {
 								go = false;
-								PlanningManager.loading.push(true);
+								this.loading.push(true);
 								$('#wsp-block-calendar .block-header .btn-arrow')
 									.addClass('disabled')
 									.attr('disabled');
-								data = await PlanningManager.GenerateEvents(start);
-								PlanningManager.freebusy[start.format(DATE_FORMAT)] = data;
+								data = await this.generateEvents(start);
+								this.freebusy[start.format(DATE_FORMAT)] = data;
 							}
 
 							callback(data);
 
-							if (!go) PlanningManager.loading.pop();
+							if (!go) this.loading.pop();
 
-							if (PlanningManager.loading.length === 0) {
+							if (this.loading.length === 0) {
 								$('#wsp-block-calendar .block-header .btn-arrow')
 									.removeClass('disabled')
 									.removeAttr('disabled');
 							}
-						},
+						}.bind(this),
 						id: 'resources',
 					},
 					{
 						events: async function (start, end, timezone, callback) {
 							var go = true;
-							let events = PlanningManager.events[start.format(DATE_FORMAT)];
+							let events = this.events[start.format(DATE_FORMAT)];
 
 							if (!events) {
 								go = false;
-								PlanningManager.loading.push(true);
+								this.loading.push(true);
 								$('#wsp-block-calendar .block-header .btn-arrow')
 									.addClass('disabled')
 									.attr('disabled');
@@ -69,13 +110,6 @@ export class PlanningManager extends PartManager {
 									start.format(DATE_FORMAT) === moment().format(DATE_FORMAT)
 								) {
 									events = CalendarLoader.Instance.load_all_events();
-
-									if (events.length > 0) {
-										events =
-											await CalendarLoader.Instance.update_agenda_local_datas(
-												true,
-											);
-									}
 								} else {
 									events = await mel_metapage.Functions.update_calendar(
 										start,
@@ -85,7 +119,7 @@ export class PlanningManager extends PartManager {
 									events = JSON.parse(events);
 								}
 
-								events = MelEnumerable.from(events)
+								events = MelEnumerable.from(events || [])
 									.where(
 										x =>
 											!!x.categories &&
@@ -98,7 +132,7 @@ export class PlanningManager extends PartManager {
 											title: x.title,
 											start: x.start,
 											end: x.end,
-											resourceId: 'wsp',
+											resourceId: ID_RESOURCES_WSP,
 											color: rcmail.env.current_settings.color,
 											textColor:
 												mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
@@ -115,19 +149,19 @@ export class PlanningManager extends PartManager {
 									})
 									.toArray();
 
-								PlanningManager.events[start.format(DATE_FORMAT)] = events;
+								this.events[start.format(DATE_FORMAT)] = events;
 							}
 
 							callback(events);
 
-							if (!go) PlanningManager.loading.pop();
+							if (!go) this.loading.pop();
 
-							if (PlanningManager.loading.length === 0) {
+							if (this.loading.length === 0) {
 								$('#wsp-block-calendar .block-header .btn-arrow')
 									.removeClass('disabled')
 									.removeAttr('disabled');
 							}
-						},
+						}.bind(this),
 						id: 'events',
 					},
 				],
@@ -163,28 +197,33 @@ export class PlanningManager extends PartManager {
 				calendar.render();
 			});
 
-			MelObject.Empty()
-				.get_custom_rules()
-				.addAdvanced(
-					'planning',
-					'#wsp-block-calendar .fc-left h2',
-					'display:none',
-				);
+			this.get_custom_rules().addAdvanced(
+				'planning',
+				'#wsp-block-calendar .fc-left h2',
+				'display:none',
+			);
 
 			$('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
+
+			this.calendar = calendar;
+
+			this.addListeners();
 		}
 	}
 
-	static async GenerateEvents(date = moment()) {
-		// const resources =
-		// 	date.format(DATE_FORMAT) === moment().format(DATE_FORMAT)
-		// 		? await this.LoadResources()
-		// 		: await this.GenerateResources(date);
+	/**
+	 * Récupère les status des membres de l'espace pour une date donnée. Si la date correspond à la date du jours, les données seront dans un premier temp, charger depuis le stockage local.
+	 *
+	 * Sauvegarde les ressources pour fullcalendar dans la propriété `last_resources`
+	 * @param {external:moment} date
+	 * @returns {Promise<FullCalendarEvent[]>}
+	 */
+	async generateEvents(date = moment()) {
 		let resources;
 
 		if (date.format(DATE_FORMAT) === moment().format(DATE_FORMAT))
-			resources = await this.LoadResources();
-		else resources = await this.GenerateResources(date);
+			resources = await this.loadResources();
+		else resources = await this.generateResources(date);
 
 		let events = [];
 		for (const iterator of resources) {
@@ -211,14 +250,21 @@ export class PlanningManager extends PartManager {
 		return events;
 	}
 
-	static async LoadResources() {
+	/**
+	 * Récupère les données de disponibilités.
+	 *
+	 * Si la date correspond à la date du jours, les données seront dans un premier temp, charger depuis le stockage local, si ils existent.
+	 * @returns {Promise<FullCalendarResource[]>}
+	 */
+	async loadResources() {
 		let resources = FreeBusyLoader.Instance.load_from_memory(
 			rcmail.env.wsp_shares,
 			FreeBusyLoader.Instance.interval,
+			moment(),
 		);
 
 		if (!resources || Object.keys(resources).length === 0) {
-			resources = await this.GenerateResources();
+			resources = await this.generateResources();
 		} else {
 			resources = MelEnumerable.from(resources)
 				.select(x => x.value)
@@ -228,7 +274,7 @@ export class PlanningManager extends PartManager {
 
 			resources = MelEnumerable.from([
 				{
-					id: 'wsp',
+					id: ID_RESOURCES_WSP,
 					title: $('.header-wsp').text(),
 				},
 			])
@@ -243,11 +289,16 @@ export class PlanningManager extends PartManager {
 		return resources;
 	}
 
-	static async GenerateResources(date = moment()) {
+	/**
+	 * Récupère les données de disponibilités pour une date donnée
+	 * @param {external:moment} date
+	 * @returns {Promise<FullCalendarResource[]>}
+	 */
+	async generateResources(date = moment()) {
 		let resources = [];
 
 		resources.push({
-			id: 'wsp',
+			id: ID_RESOURCES_WSP,
 			title: $('.header-wsp').text(),
 		});
 
@@ -270,8 +321,39 @@ export class PlanningManager extends PartManager {
 		return resources;
 	}
 
-	static AddListeners() {
-		// This is a placeholder for the add listeners method
+	/**
+	 * Ajoute les écouteurs d'événements
+	 */
+	addListeners() {
+		MelObject.Empty().add_event_listener(
+			mel_metapage.EventListeners.calendar_updated.after,
+			this._refresh_callback.bind(this),
+			{
+				callback_key: `planning-${parent.workspace_frame_manager.getActiveFrame().get().attr('id')}`,
+			},
+		);
+	}
+
+	/**
+	 * Met à jours les évènements du planning
+	 * @package
+	 * @returns {void}
+	 */
+	_refresh_callback() {
+		if (!this.calendar) return;
+
+		this.freebusy = {};
+		this.events = {};
+		this.calendar.refetchEvents();
+	}
+
+	/**
+	 * Lance un planning
+	 * @static
+	 * @returns {PlanningManager}
+	 */
+	static Start() {
+		return new PlanningManager();
 	}
 
 	static AddCommands() {

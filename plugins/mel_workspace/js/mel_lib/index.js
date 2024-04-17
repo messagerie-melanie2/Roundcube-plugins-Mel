@@ -14,6 +14,13 @@ export class MainWorkspace extends MelObject {
 			iterator.AddListeners();
 			iterator.Start();
 		}
+
+		this.rcmail().addEventListener('wsp.frame.remove', frame => {
+			this._listener.remove_callback(
+				mel_metapage.EventListeners.calendar_updated.after,
+				`planning-${frame.get().attr('id')}`,
+			);
+		});
 	}
 }
 

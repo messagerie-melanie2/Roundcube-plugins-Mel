@@ -9,7 +9,6 @@ class Workspace extends MelObject {
 
 	main() {
 		super.main();
-
 		PlanningManager.Start();
 	}
 

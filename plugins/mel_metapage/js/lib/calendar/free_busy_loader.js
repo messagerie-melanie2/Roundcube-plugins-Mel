@@ -73,9 +73,9 @@ class FreeBusyLoader extends MelObject {
 	 * @param {*} users
 	 * @param {*} interval
 	 */
-	_save(slots, users, interval) {
+	_save(slots, users, interval, start) {
 		const key = 'free_busy';
-		const current_key = `${users.join(EMPTY_STRING)}${interval}`;
+		const current_key = `${users.join(EMPTY_STRING)}${interval}${start.format(DATE_FORMAT)}`;
 
 		let data = this.load(key, {});
 		data[current_key] = MelEnumerable.from(slots)
@@ -85,11 +85,11 @@ class FreeBusyLoader extends MelObject {
 		this.save(key, data);
 	}
 
-	_load(users, interval) {
+	_load(users, interval, start) {
 		var return_data = {};
 
 		const key = 'free_busy';
-		const current_key = `${users.join(EMPTY_STRING)}${interval}`;
+		const current_key = `${users.join(EMPTY_STRING)}${interval}${start.format(DATE_FORMAT)}`;
 
 		let data = this.load(key, {})[current_key] || [];
 
@@ -132,7 +132,7 @@ class FreeBusyLoader extends MelObject {
 			yield iterator;
 		}
 
-		if (save) this._save(data, users, interval);
+		if (save) this._save(data, users, interval, start);
 	}
 
 	async get(
@@ -152,13 +152,14 @@ class FreeBusyLoader extends MelObject {
 				.toArray(),
 			users,
 			interval,
+			start,
 		);
 
 		return data;
 	}
 
-	load_from_memory(users, interval) {
-		return this._load(users, interval);
+	load_from_memory(users, interval, start) {
+		return this._load(users, interval, start);
 	}
 
 	clear_in_memory() {

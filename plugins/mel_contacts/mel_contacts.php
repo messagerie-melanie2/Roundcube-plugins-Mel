@@ -482,9 +482,9 @@ class mel_contacts extends rcube_plugin {
     $cid = rcube_utils::get_input_value('cid', rcube_utils::INPUT_POST);
     $dn = base64_decode(explode('-', $cid, 2)[0]);
     $user = driver_mel::gi()->getUser(null, true, null, $dn);
-    $lists = $user->getListsIsMember(['dn', 'email']);
+    $lists = $user->getListsIsMember(['dn', 'email','name']);
     $list = mel_helper::Enumerable($lists)->select(function ($k, $v) {
-      return $v->email;
+      return ['email' => $v->email, 'dn' => $v->dn, 'name' => $v->name, 'url' => $this->rc->url(['action' => 'show', 'cid' => base64_encode($v->dn), 'source' => 'amande'])];
     })->toArray();
     echo(json_encode($list));
     exit;

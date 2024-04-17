@@ -2253,6 +2253,7 @@ $(document).ready(() => {
 				return;
 			else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
 				return;
+			else if ($target.attr('target') === '_blank') return;
 
 			//On ferme la modal
 			$('#globalModal').modal('hide');

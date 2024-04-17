@@ -32,6 +32,8 @@ class calendar extends rcube_plugin
     const FREEBUSY_OOF       = 4;
     // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
     const FREEBUSY_TELEWORK  = 5;
+    // MANTIS 0008012: Ajouter un statut "Congés"
+    const FREEBUSY_VACATION  = 6;
 
     const SESSION_KEY = 'calendar_temp';
 
@@ -94,6 +96,11 @@ class calendar extends rcube_plugin
         }
 
         $this->add_hook('user_delete', [$this, 'user_delete']);
+
+        //PAMELLA
+        if ('' !== $this->rc->config->get('calendar_default_alarm_type') && $this->rc->task === 'calendar' && 'GET' === $_SERVER['REQUEST_METHOD']) {
+            $this->rc->output->set_env('calendar_default_alarm_offset', $this->rc->config->get('calendar_default_alarm_offset'));
+        }
     }
 
     /**
@@ -113,7 +120,7 @@ class calendar extends rcube_plugin
         // load localizations
         $this->add_texts('localization/', $this->rc->task == 'calendar' && (!$this->rc->action || $this->rc->action == 'print'));
 
-        require($this->home . '/lib/calendar_ui.php');
+        require_once($this->home . '/lib/calendar_ui.php');
         $this->ui = new calendar_ui($this);
     }
 
@@ -1518,7 +1525,9 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                 // refresh all calendars
                 if ($event['calendar'] != $ev['calendar']) {
-                    $this->rc->output->command('plugin.refresh_calendar', ['source' => null, 'refetch' => true]);
+                    // PAMELA - Gestion du cache dans le calendrier
+                    $cals = $this->driver->list_calendars(calendar_driver::FILTER_ACTIVE);
+                    $this->rc->output->command('plugin.refresh_calendar', ['source' => null, 'refetch' => true, 'cals' => $cals]);
                     $reload = 0;
                 }
             }
@@ -1665,6 +1674,8 @@ $("#rcmfd_new_category").keypress(function(event) {
         if ($reload && empty($_REQUEST['_framed'])) {
             $args = ['source' => $event['calendar']];
             if ($reload > 1) {
+                // PAMELA - Gestion du cache dans le calendrier
+                $args['cals'] = $this->driver->list_calendars(calendar_driver::FILTER_ACTIVE);
                 $args['refetch'] = true;
             }
             else if ($success && $action != 'remove') {
@@ -1796,6 +1807,12 @@ $("#rcmfd_new_category").keypress(function(event) {
         $query  = rcube_utils::get_input_value('q', rcube_utils::INPUT_GET);
         $source = rcube_utils::get_input_value('source', rcube_utils::INPUT_GET);
 
+        // PAMELA - Gestion du cache
+        $token  = rcube_utils::get_input_value('token', rcube_utils::INPUT_GET);
+        if (isset($token)) {
+            rcmail::get_instance()->output->future_expire_header();
+        }
+
         $events = $this->driver->load_events($start, $end, $query, $source);
         echo $this->encode($events, !empty($query));
         exit;
@@ -1875,8 +1892,11 @@ $("#rcmfd_new_category").keypress(function(event) {
     public function refresh($attr)
     {
         // refresh the entire calendar every 10th time to also sync deleted events
-        if (rand(0, 10) == 10) {
-            $this->rc->output->command('plugin.refresh_calendar', ['refetch' => true]);
+        // if (rand(0, 10) == 10) {
+        if (true) {
+            // PAMELA - Gestion du cache dans le calendrier
+            $cals = $this->driver->list_calendars(calendar_driver::FILTER_ACTIVE);
+            $this->rc->output->command('plugin.refresh_calendar', ['refetch' => true, 'cals' => $cals]);
             return;
         }
 
@@ -2921,6 +2941,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
             // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
             calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
+            // MANTIS 0008012: Ajouter un statut "Congés"
+            calendar::FREEBUSY_VACATION  => 'VACATION',
         ];
 
         // if the backend has free-busy information
@@ -4155,6 +4177,14 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $mailto = $organizer['name'] ? $organizer['name'] : $organizer['email'];
                 $msg    = $this->gettext(['name' => 'sentresponseto', 'vars' => ['mailto' => $mailto]]);
                 $this->rc->output->command('display_message', $msg, 'confirmation');
+
+                // PAMELA - 0007719: Agenda: Lorsqu'on répond à un organisateur suite à une invitation, le mail de retour ne se retrouve pas dans les éléments envoyé
+                $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [
+                    'orga' =>  $attendee,
+                    'attendees' => [$organizer],
+                    'message' => $itip->last_message,
+                    'event' => $event
+                ]);
             }
             else {
                 $this->rc->output->command('display_message', $this->gettext('itipresponseerror'), 'error');

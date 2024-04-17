@@ -11,6 +11,10 @@ class Headlines extends Module
         //$this->load_config();
     }
 
+    public function enabled() {
+        return class_exists('mel_news');
+    }
+
     function generate_html()
     {
         $this->plugin->require_plugin('mel_helper');

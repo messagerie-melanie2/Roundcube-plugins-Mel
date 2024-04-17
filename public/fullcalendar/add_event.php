@@ -75,11 +75,18 @@ $event_ics = $event->ics;
 
 $event_response = $event->save();
 
+$user_prefs = json_decode($data['user']->getCalendarPreference("appointment_properties"));
+
 if (!is_null($event_response)) {
 
   Mail::SendAttendeeAppointmentMail($organizer, $attendee_post, $appointment, $event_ics);
 
-  SendOrganizerNotification($data['user'], $attendee_post, $appointment);
+  if ($user_prefs->notification_type === "mail") {
+    Mail::SendOrganizerAppointmentMail($organizer, $attendee_post, $appointment);
+  }
+  else {
+    SendOrganizerNotification($data['user'], $attendee_post, $appointment);
+  }
   header('Content-Type: application/json; charset=utf-8');
   echo json_encode(["success" => "Validation de l'enregistrement"]);
 } else {
@@ -101,8 +108,8 @@ function SendOrganizerNotification($user, $attendee_post, $appointment)
   $notification = new LibMelanie\Api\Mce\Notification($user);
 
   $notification->category = "agenda";
-  $notification->title = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' à pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'];
-  $notification->content = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' à pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'] . ' pour "' . $appointment['object'] . '"';
+  $notification->title = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' a pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'];
+  $notification->content = $attendee_post['firstname'] . ' ' . $attendee_post['name'] . ' a pris rendez-vous avec vous le ' . $appointment['date_day'] . ' à ' . $appointment['date_time'] . ' pour "' . $appointment['object'] . '"';
   $notification->action = serialize([
     [
       'text' => "Ouvrir mon agenda",

@@ -14,8 +14,8 @@
     <div id="barup-wrapper-row" class="wrapper">
         <div id="barup-buttons" style=" display: inline;">
             <a id=touchmelmenu class="button icon-mel-menu task-menu-button show-touch" href="#menu" role="button"><span class="inner sr-only"><roundcube:label name='menu' /></span></a>
-            <button id="button-create" class="hide-touch mel-button margin-right-15 no-button-margin mel-focus mel-before-remover" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
-                <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus plus"></span>
+            <button id="button-create" class="mel-button margin-right-15 no-button-margin" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
+                <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus"></span>
             </button>
             <button id="button-notes" class="fill-on-hover melv2-sec-nav-correction hide-touch mel-button no-button-margin mel-focus mel-before-remover my_notes margin-right-15" title="Notes">
                 <span class="material-symbols-outlined">
@@ -37,7 +37,7 @@
 
       <div id="barup-right-buttons">
 
-        <div id="barup-search-col" role="search">
+        <!-- <div id="barup-search-col" role="search" style="display: none; opacity: 0; position: absolute; max-width: 0;">
           <div class="search" >
               <div class="input-group">
                   <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
@@ -47,18 +47,29 @@
                   </div>
               </div>
           </div>
-        </div>
+        </div> -->
       
       <span class="hide-button-search">  
-        <button id="button-help" class="transparent-icon-button barup-icons-button ml-3" onclick="m_mp_Help()"
+
+        <button id="button-chat" class="transparent-icon-button barup-icons-button ml-3 hide-touch" onclick="mel_metapage.PopUp.open_ariane()"
+          title="<roundcube:label name='mel_metapage.ariane_help' />">
+          <span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
+          <span class="material-symbols-outlined">
+            forum
+          </span>
+        </button>
+
+        <roundcube:if condition="env:plugin_list_help===true"/>
+        <button id="button-help" class="transparent-icon-button barup-icons-button" onclick="m_mp_Help()"
           title="<roundcube:label name='mel_metapage.help_help' />">
           <span class="material-symbols-outlined">
             help
           </span>
         </button>
+        <roundcube:endif/>
       
         <option/>
-      
+      <roundcube:if condition="env:plugin_list_notifications===true"/>
         <div id="notification-dropdown" class="dropdown">
           <button id="button-notifications" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
             class="transparent-icon-button barup-icons-button" onclick=""
@@ -72,13 +83,8 @@
             <div id="notifications-panel"></div>
           </div>
         </div>
+      <roundcube:endif/>
       </span>
-      
-        <button id="button-search" style="margin-top: 14px;" class="btn-circle" onclick="open_research()"
-          title="<roundcube:label name='mel_metapage.to_search' />">
-          <span class="icon-mel-search""></span>
-        </button>
-
         <div class=" user" id="barup-user" style="padding:0;">
           <user/>
         </div>
@@ -93,9 +99,7 @@
 <div id="barup-search-background" class="hidden">
 </div>
 
-<button title="<roundcube:label name='mel_metapage.ariane_help' />" class="fill-on-hover tiny-rocket-chat hide-touch show-normal" style="z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
-    <span class="tiny-rocket-chat-icon material-symbols-outlined">forum</span><span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
-</button>
+
 
 <li style="display: none;" id=menu-small-li>
 <a aria-expanded="false" style="display: block!important;"  aria-haspopup="true" id="menu-small" data-popup="groupoptions-smallmenu" class="menu-small stopAppMenu -normal-touch icofont-navigation-menu" label="actions" role=button href="#"><span class="button-inner inner"><roundcube:label name='mel_metapage.other_actions' /></span></a>

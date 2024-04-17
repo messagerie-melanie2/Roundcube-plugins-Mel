@@ -285,6 +285,11 @@ textarea.input-mel{
 	margin: 0 30px;
 }
 
+html.layout-small #eventedit,
+html.layout-phone #eventedit {
+  margin: 0 10px;
+  }  
+
 #eventedit .have-options #edit-alarm-item {
 	border-bottom-right-radius: 0;
 	border-top-right-radius: 0;  
@@ -368,6 +373,11 @@ textarea.input-mel{
 select.input-mel.custom-select
 {
 	background-image: url("../fonts/mel_icons/Chevron_down.svg");
+}
+
+html.dark-mode-custom #edit-alarm-item,
+html.dark-mode-custom select.input-mel.custom-select {
+	background-image: url("../fonts/mel_icons/Chevron_down_dark.svg");
 }
 
 a.button.icon.discard::before, button.btn.discard::before, a.button.icon.delete::before, button.btn.delete::before

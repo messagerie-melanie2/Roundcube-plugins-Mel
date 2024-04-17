@@ -17,7 +17,7 @@ pour gérer son état et son comportement. */
         class mel_filter {
             /**
              * Constructeur de la classe
-             * @param {$} $item Item jquery qui représente le filtre
+             * @param {external:jQuery} $item Item jquery qui représente le filtre
              * @param {string} action Action du filtre (ALL, etc...)
              * @param {Object} param2
              * @param {boolean} param2.enabled Indique si le filtre est activé ou non 
@@ -48,12 +48,13 @@ pour gérer son état et son comportement. */
 
             /**
              * Assigne les variables de la classe
-             * @param {$} $item 
+             * @param {external:jQuery} $item 
              * @param {string} action 
              * @param {boolean} enabled 
              * @param {boolean} default_filter 
              * @param {boolean} can_be_multiple 
              * @param {string|function} custom_action 
+             * @private
              * @returns Chaîne
              */
             _setup($item, action, enabled, default_filter, can_be_multiple, custom_action) {
@@ -69,6 +70,7 @@ pour gérer son état et son comportement. */
 
             /**
              * Initialise les fonctionnalités des membres de la classe
+             * @package
              */
             _start() {
                 let callback;
@@ -257,6 +259,23 @@ les propriétés « nom » et « valeur ».
                 return new mel_selector($('#list-select-mail-choices'));
             }
 
+            static get_selected_menu() {
+                return new mel_selector($('#mailsearchlist'));
+            }
+
+            toggle_selected_menu() {
+              if ($('html').hasClass('touch')) {
+              let $menu = this.$item;
+              let list = rcmail.message_list;
+              //Si pas sélectionné
+                if (0 === list.selection.length) {
+                  if ($menu.hasClass('popupmenu')) $menu.removeClass('popupmenu').removeClass('hoverable');
+                }
+                else {
+                  if (!$menu.hasClass('popupmenu')) $menu.addClass('popupmenu');
+                }
+              }
+            }
 
         }
 
@@ -678,10 +697,90 @@ les propriétés « nom » et « valeur ».
     
         $('#toolbar-list-menu .select').parent().remove();
 
+        function interval_on_change(start, end) {
+            const DATE_FORMAT = 'DD/MM/YYYY';
+            const SERVER_FORMAT = 'DD-MMM-YYYY';
+            const server_start = moment(start, DATE_FORMAT).format(SERVER_FORMAT);
+            const server_end = moment(end, DATE_FORMAT).add(1, 'd').format(SERVER_FORMAT);
+            const val =`SINCE ${server_start} BEFORE ${server_end}`;
+
+            if (0 === $('#searchfilter .customdate').length) {
+                $('#searchfilter').append($('<option>').val(val).text('Date personnalisée').addClass('customdate'));
+            }
+
+            $('#searchfilter .customdate').val(val).text(rcmail.gettext('from_to', 'mel').replace('%0', start).replace('%1', end));
+
+            $('#searchfilter').val(val);
+
+            $('#s_interval').val('');
+
+            if (moment(start, DATE_FORMAT) > moment($('#s_interval_end').val(), DATE_FORMAT) || ($('#s_interval_end').val() || '') === '') $('#s_interval_end').val(moment(start, DATE_FORMAT).add(1, 'd').format(DATE_FORMAT)).change();
+        }
+
         rcmail.addEventListener('init', () => {
             rcmail.message_list.addEventListener('select', () => {
                 mel_selector.get_checkbox().update_selected_check();
+                mel_selector.get_selected_menu().toggle_selected_menu();
             });
+
+            if (0 === $('#s_interval .multidates').length) {
+                $('#s_interval').append($('<option>').addClass('multidates').val('custom').text('Choisir un intervalle')).on('change', (e) => {
+                    e = $(e.currentTarget);
+
+                    if ('custom' === e.val()) {
+                        e.parent().hide();
+
+                        if (0 === $('#s_custom_interval').length) {
+                            let $tmp = $(`
+                                <div class="row" id="s_custom_interval">
+                                    <div class='col-5' style="padding:0">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <label for="s_interval_start" class="input-group-text">Début</label>
+                                            </div>
+                                            <input type="text" class="form-control" id="s_interval_start" />
+                                        </div>
+                                    </div>
+                                    <div class='col-5'>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <label for="s_interval_end" class="input-group-text">Fin</label>
+                                            </div>
+                                            <input type="text" class="form-control" id="s_interval_end" />
+                                        </div>
+                                    </div>
+                                    <div class='col-2'>
+                                        <button class="btn btn-secondary mel-button no-margin-button no-button-margin" style="width:100%;padding-bottom: 0;
+                                        margin-bottom: 8px;
+                                        padding-top: 0;"><span class="material-symbols-outlined">reply</span></button>
+                                    </div>
+                            `);
+
+                            $tmp.find('#s_interval_start').on('change', (e) => {
+                                const start = e.currentTarget.value;
+                                const end = $('#s_interval_end').val();
+                                interval_on_change(start, end);
+                            }).datepicker();
+
+                            $tmp.find('#s_interval_end').on('change', (e) => {
+                                const end = e.currentTarget.value;
+                                const start = $('#s_interval_start').val();
+                                interval_on_change(start, end);
+                            }).datepicker();
+
+                            $tmp.find('button').click(() => {
+                                $('#s_custom_interval').hide();
+                                $('#s_interval').parent().show();
+                                $('#s_interval').val('');
+                            });
+
+                            $('#s_interval').parent().after($tmp);
+                            $tmp = null;
+                        } 
+                        else $('#s_custom_interval').show();
+                    }
+                });
+            }
         });
 
         const { MelEnumerable } = await loadJsModule('mel_metapage', 'enum.js', '/js/lib/classes/');

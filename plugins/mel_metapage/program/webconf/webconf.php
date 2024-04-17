@@ -57,11 +57,6 @@ class Webconf extends Program
                     'title'   => html::label($askOnEnd, rcube::Q($this->plugin->gettext($askOnEnd))),
                     'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
                 ];
-
-                $args['blocks']['general']['options'][$visio_audio_video_parameters] = $this->create_pref_select($visio_audio_video_parameters, $visio_audio_video_parameters_config, [
-                        $this->plugin->gettext("compact", "mel_metapage"),
-                        $this->plugin->gettext("large", "mel_metapage"),
-                ], ['compact', 'large']);
             }
 
             return $args;
@@ -92,6 +87,9 @@ class Webconf extends Program
         $key_invalid = false;
         $need_config = $this->get_input("_need_config") ?? false;
         $locks = $this->get_input("_locks") ?? [];
+        $notify = $this->get_input("_notify") ?? false;
+
+        $notify = $notify === 'true' || $notify === true;
 
         if (is_string($locks))
         {
@@ -163,6 +161,8 @@ class Webconf extends Program
         $this->set_env_var("webconf.feedback_url", $this->get_config("webconf_feedback_url"));
         $this->set_env_var("webconf.have_feed_back", $this->get_config("visio_ask_on_end", true));
         $this->set_env_var("webconf.audio_style_params", $this->get_config(self::VA_PARAM, self::DEFAULT_VA_PARAM));
+        $this->set_env_var('webconf.notify', $notify);
+
         $this->rc->output->set_pagetitle("Visioconférence");
         $this->send("webconf");
     }
@@ -242,21 +242,20 @@ class Webconf extends Program
 
     public function get_all_workspaces()
     {
-        $replace = "¤¤¤¤¤¤¤¤";
-
-        $plugin = $this->get_plugin("mel_workspace");
-        $plugin->load_workspaces();
-        $workspaces = $plugin->workspaces;
+        // Metapage sans workspace
+        if (class_exists("mel_workspace"))
+        {
+            $plugin = $this->rc->plugins->get_plugin("mel_workspace");
+            $plugin->load_workspaces();
+            $workspaces = $plugin->workspaces;
+        }
+        else {
+            $workspaces = [];
+        }
+        
         $html = '<select class="wsp_select input-mel">';
 
-        foreach ($workspaces as $key => $workspace) {
-            // $wsp = [
-            //     "objects" => json_decode($workspace->objects), 
-            //     "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $workspace->uid, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
-            //         ,"title" => $workspace->title,
-            //         "color" => json_decode($workspace->settings)->color
-            //         ]
-            //     ];
+        foreach ($workspaces as $workspace) {
             $html .= '<option '.($this->get_input("_wsp") !== null && $this->get_input("_wsp") === $workspace->uid ? "selected" : "" ).' value="'.$workspace->uid.'">'.$workspace->title.'</option>';
         }
         $html .= "</select>";
@@ -371,7 +370,7 @@ class Webconf extends Program
     /**
      * Génère le code jwt
      */
-    public static function jwt() {
+    public static function jwtwebconf_jwt_key() {
         $rcmail = rcmail::get_instance();
         $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
@@ -405,4 +404,4 @@ class Webconf extends Program
     }
 }
 
-Program::add_class_to_load('Webconf');
+//Program::add_class_to_load('Webconf');

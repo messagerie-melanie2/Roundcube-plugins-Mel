@@ -4,20 +4,20 @@
 $labels = array();
 $labels['activate'] = 'Activer';
 $labels['desactivate'] = 'Désactiver';
-$labels['label_activate'] = "Activez la double authentification";
-$labels['mel_doubleauth'] = 'Double authentification';
+$labels['label_activate'] = "Activez l'authentification à deux facteurs";
+$labels['mel_doubleauth'] = 'Authentification à deux facteurs';
 $labels['code'] = 'Google Authenticator Code';
 
-$labels['two_step_verification_form'] = 'La double authentification est activée pour votre compte.
+$labels['two_step_verification_form'] = 'L\'authentification à deux facteurs est activée pour votre compte.
 <br>Veuillez saisir le code généré par votre téléphone mobile.';
 
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = "Scanner l`image ci-dessous";
 // $labels['msg_infor'] = 'Vous pouvez ajouter un <i>secret</i> généré avec <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> et l\'utiliser';
-$labels['msg_infor'] = '<p>La double authentification renforce la sécurité de votre compte Mél en exigeant,
+$labels['msg_infor'] = '<p>L\'authentification à deux facteurs renforce la sécurité de votre compte Mél en exigeant,
 pour toute connexion à Mél web depuis Internet, la saisie d’un code à usage unique généré par votre téléphone mobile en plus de
 votre mot de passe.</p>
-<p>Pour activer la double authentification, vous devez disposer au préalable sur votre téléphone de l'."'".'application FreeOTP Authenticator,
+<p>Pour activer l\'authentification à deux facteurs, vous devez disposer au préalable sur votre téléphone de l'."'".'application FreeOTP Authenticator ou Google Authenticator,
 disponible sur <a target="_blank" href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr">Android</a> et
 <a target="_blank" href="https://itunes.apple.com/fr/app/freeotp-authenticator/id872559395?mt=8">iOS</a>, ou d’une autre application compatible.</p>';
 
@@ -27,9 +27,9 @@ $labels['info_activer'] = '<p>
 
 $labels['info_desactiver'] = '<p>
 Pour reconfigurer votre téléphone actuel ou configurer un nouveau téléphone,
-vous pouvez désactiver la double authentification puis la réactiver.
+vous pouvez désactiver l\'authentification à deux facteurs puis la réactiver.
 </p><p>
-<b>Attention</b> : si vous désactivez la double authentification,
+<b>Attention</b> : si vous désactivez l\'authentification à deux facteurs,
 la configuration que vous avez réalisée sur votre téléphone sera inopérante.
 </p>';
 
@@ -63,14 +63,14 @@ $labels['info_check_code'] = "
 Pour vérifier que votre téléphone est correctement configuré,
 tapez le code donné par votre téléphone puis cliquez sur &laquo; Vérifier &raquo;
 .";
-$labels['info_active_ok'] = "La double authentification est activée pour votre compte.";
+$labels['info_active_ok'] = "L'authentification à deux facteurs est activée pour votre compte.";
 
 
 
 $labels['check_code_to_activate'] = 'Pour sauvegarder vous devez valider un code au préalable';
 
-$labels['logout_2fa_needed'] = "La double authentification est obligatoire pour votre compte.";
-$labels['logout_2fa_needed_not_secure'] = "La double authentification est obligatoire pour vous connecter depuis internet !";
+$labels['logout_2fa_needed'] = "L'authentification à deux facteurs est obligatoire pour votre compte.";
+$labels['logout_2fa_needed_not_secure'] = "L'authentification à deux facteurs est obligatoire pour vous connecter depuis internet !";
 $labels['logout_2fa_needed_unknown'] = "Utilisateur incconnu !";
 
 // Messages used for the different portions of the plugin

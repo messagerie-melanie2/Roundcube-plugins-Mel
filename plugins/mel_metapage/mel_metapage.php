@@ -330,6 +330,7 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("matomo_tracking_popup", $this->rc->config->get("matomo_tracking_popup", false));
 
         $this->rc->output->set_env("mel_official_domain",  array_merge($this->rc->config->get("mel_official_domain", []),$this->rc->config->get('mel_user_domain',[])));
+        $this->rc->output->set_env("mel_suspect_url",  $this->rc->config->get("mel_suspect_url", []));
 
         //$this->rc->output->set_env("compose_extwin", true);
         $config = $this->rc->config->get("mel_metapage_chat_visible", true);
@@ -476,7 +477,7 @@ class mel_metapage extends bnum_plugin
 
             $this->mm_include_plugin();
             //$this->rc->get_storage();
-            if ($this->rc->task === "webconf")
+            if ($this->rc->task === "webconf" && $this->visio_enabled())
                 $this->register_task("webconf");
             else if ($this->rc->task === 'search')
                 $this->register_task("search");
@@ -1009,7 +1010,7 @@ class mel_metapage extends bnum_plugin
         $pos = strpos($content,'<div id="eventedit"');
         if ($pos !== false)
         {
-            include_once "../calendar/calendar_ui.php";
+            require_once(__DIR__ . "/../calendar/lib/calendar_ui.php");
             $size = strlen($content);
             $textToReplace = "";
             $final_start = false;
@@ -1039,12 +1040,20 @@ class mel_metapage extends bnum_plugin
                 $ui->init_templates();
                 $w = function ()
                 {
-                    $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-                    $wsp->load_workspaces();
-                    $workpaces = mel_helper::Enumerable($wsp->workspaces)->orderBy(function ($k, $v) { return $v->title; });
+                    // Metapage sans workspace
+                    if (class_exists("mel_workspace"))
+                    {
+                        $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                        $wsp->load_workspaces();
+                        $workspaces = mel_helper::Enumerable($wsp->workspaces)->orderBy(function ($k, $v) { return $v->title; });
+                    }
+                    else {
+                        $workspaces = [];
+                    }
+                    
                     $html = '<select id=wsp-event-all-cal-mm class="form-control input-mel">';
                     $html .= "<option value=\"#none\">".$this->gettext('none')."</option>";
-                    foreach ($workpaces as $key => $value) {
+                    foreach ($workspaces as $key => $value) {
                         $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
                     }
                     $html .= "</select>";
@@ -1071,7 +1080,6 @@ class mel_metapage extends bnum_plugin
                     'categories-wsp'    => $categories,
                 ));
                 $args["content"] = str_replace($textToReplace, $this->rc->output->parse("mel_metapage.event_modal", false, false), $content);
-                
                 // $textes = [
                 //     'roleorganizer',
                 //     'rolerequired',
@@ -1163,12 +1171,13 @@ class mel_metapage extends bnum_plugin
         $added_users = [];
         foreach ($users as $key => $value) {
             $tmp = driver_mel::gi()->getUser(null, true, false, null, $value);
-            if ($tmp->uid === null)
+
+            if ($tmp->uid === null && !$tmp->is_list)
                 $unexisting_users[] = $value;
             else{
                 $added_users[] = [
                     "name" => $tmp->name,
-                    "uid" => $tmp->uid,
+                    "uid" => ($tmp->is_list ? $value : $tmp->uid),
                     "email" => $value
                 ];
             }
@@ -1330,10 +1339,17 @@ class mel_metapage extends bnum_plugin
 
     public function get_wsp_unread_mails_count()
     {
-        $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-        $wsp->load_workspaces();
-        $workpaces = $wsp->workspaces;
-
+        // Metapage sans workspace
+        if (class_exists("mel_workspace"))
+        {
+            $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+            $wsp->load_workspaces();
+            $workspaces = $wsp->workspaces;
+        }
+        else {
+            $workspaces = [];
+        }
+            
         $datas = [];
 
         $msgs = $this->rc->get_storage()->list_messages();
@@ -1346,7 +1362,7 @@ class mel_metapage extends bnum_plugin
         $first = true;
         $annuaire_exists = false;
         //$annuaires = [];
-        foreach ($workpaces as $key => $value) {
+        foreach ($workspaces as $value) {
 
             try {
                 $mail = mel_workspace::get_wsp_mail($value->uid);
@@ -1614,12 +1630,20 @@ class mel_metapage extends bnum_plugin
     {
         $w = function ()
         {
-            $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-            $wsp->load_workspaces();
-            $workpaces = $wsp->workspaces;
+            // Metapage sans workspace
+            if (class_exists("mel_workspace"))
+            {
+                $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                $wsp->load_workspaces();
+                $workspaces = $wsp->workspaces;
+            }
+            else {
+                $workspaces = [];
+            }
+            
             $html = '<select class="form-control input-mel">';
             $html .= "<option value=none>".$this->gettext('none')."</option>";
-            foreach ($workpaces as $key => $value) {
+            foreach ($workspaces as $key => $value) {
                 $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
             }
             $html .= "</select>";
@@ -1657,7 +1681,6 @@ class mel_metapage extends bnum_plugin
 
     function create_calendar_event()
     {
-
         $calendar = $this->rc->plugins->get_plugin('calendar');
         $calendar->add_texts('localization/', true);
         $calendar->ui->init();
@@ -1684,7 +1707,8 @@ class mel_metapage extends bnum_plugin
         else
             $event = rcube_utils::get_input_value("_event", rcube_utils::INPUT_POST);
 
-        $this->include_script('../mel_workspace/js/setup_event.js');
+        // $this->include_script('../mel_workspace/js/setup_event.js');
+        $this->load_script_module('edit_event', '/js/lib/calendar/event/');
 
         // $event["attendees"] = [
         //     ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
@@ -1709,6 +1733,8 @@ class mel_metapage extends bnum_plugin
             'aria-label' => $this->gettext('roleorganizer'),
             'class'      => 'form-control custom-select',
         )));
+
+        $this->rc->output->set_env('calendar_categories', $calendar->__get('driver')->list_categories());
 
         if (rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET) !== null)
         {
@@ -1824,8 +1850,10 @@ class mel_metapage extends bnum_plugin
 
         switch ($program_name) {
             case 'webconf':
-                include_once "program/webconf/webconf.php";
-                $program = new Webconf($this->rc, $this);            
+                if ($this->visio_enabled()) {
+                    include_once "program/webconf/webconf.php";
+                    $program = new Webconf($this->rc, $this);
+                }            
                 break;
             
             default:
@@ -1839,15 +1867,15 @@ class mel_metapage extends bnum_plugin
     public function preferences_sections_list($p)
     {
         $dir = __DIR__;
-        if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
-        {
-            $p['list']['globalsearch'] = [
-                'id'      => 'globalsearch',
-                'section' => $this->gettext('globalsearch', 'mel_metapage'),
-            ];
-        }
-         
-        if (is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php"))
+        // if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
+        // {
+        //     $p['list']['globalsearch'] = [
+        //         'id'      => 'globalsearch',
+        //         'section' => $this->gettext('globalsearch', 'mel_metapage'),
+        //     ];
+        // }
+
+        if ($this->visio_enabled() && is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php"))
         {
             $p['list']['visio'] = [
                 'id'      => 'visio',
@@ -2749,7 +2777,7 @@ class mel_metapage extends bnum_plugin
         $rcmail = $this->rc ?? rcmail::get_instance();
         $item = $rcmail->config->get('navigation_apps', null);
 
-        if (isset($item)) return $item[$app]['enabled'] ?? true;
+        if (isset($item)) return $item[$app]['enabled'] ?? $rcmail->config->get('template_navigation_apps', null)[$app]['enabled'] ?? true;
         
         return true;
     }
@@ -2975,8 +3003,49 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("bnum.init_action", $init_action);
         }
 
+        if (class_exists('mel_workspace')) {
+            $this->rc->output->set_env("plugin_list_workspace", true);
+        }
+
+        if (class_exists('calendar')) {
+            $this->rc->output->set_env("plugin_list_agenda", true);
+        }
+
+        if (class_exists('tasklist')) {
+            $this->rc->output->set_env("plugin_list_tache", true);
+        }
+
+        if (class_exists('mel_nextcloud')) {
+            $this->rc->output->set_env("plugin_list_document", true);
+        }
+
+        if (class_exists('mel_sondage')) {
+            $this->rc->output->set_env("plugin_list_sondage", true);
+        }
+
+        if (class_exists('rocket_chat')) {
+            $this->rc->output->set_env("plugin_list_chat", true);
+        }
+
+        
+        if (class_exists('mel_notification')) {
+            $this->rc->output->set_env("plugin_list_notifications", true);
+        }
+
+        if (class_exists('mel_help')) {
+            $this->rc->output->set_env("plugin_list_help", true);
+        }
+
+        if (class_exists('mel_visio')) {
+            $this->rc->output->set_env("plugin_list_visio", true);
+        }
+
         $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
         $this->rc->output->send('mel_metapage.empty');
+    }
+
+    public function visio_enabled() {
+        return $this->rc->config->get('visio_enabled', false);
     }
 
     public function get_folder_email_from_id($id) {

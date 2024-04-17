@@ -290,7 +290,7 @@ class mel_driver extends calendar_driver {
         if ($cal->id == $this->user->uid) {
           $rights = 'lrswiktev';
         }
-        else if ($cal->owner == $this->user->uid) {
+        else if ($cal->owner == $this->user->uid && $cal_is_writable) {
           $rights = 'lrswikxteav';
         }
         else if ($cal_is_writable) {
@@ -334,12 +334,15 @@ class mel_driver extends calendar_driver {
             'history'     => false,
             'virtual'     => false,
             'editable'    => $cal_is_writable,
+            'name_editable' => $this->_is_external($cal->id) ? true : $cal_is_writable,
             'deletable'   => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
             'principal'   => $cal->owner == $cal->id,
             'rights'      => $rights,
             'group'       => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
             'class'       => 'user',
     				'caldavurl'   => $this->get_caldav_url($cal),
+            'cache'       => true,
+            'token'       => $cal->getCTag($this->rc->action != 'refresh' && $this->rc->action != 'event'),
         );
         
         if (isset($tree)) {
@@ -521,6 +524,42 @@ class mel_driver extends calendar_driver {
         }
         $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'active_calendars' => $active_calendars,'alarm_calendars' => $alarm_calendars));
 
+        // Gérer le fait que c'est un calendrier externe
+        $_cal = rcube_utils::get_input_value('c', rcube_utils::INPUT_GPC);
+        if (isset($_cal) && isset($_cal['_enable_external_calendar']) && !empty($_cal['_external_calendar_url'])) {
+          $pref = driver_mel::gi()->getUser()->getCalendarPreference('external_calendars');
+
+          if (isset($pref)) {
+            $external_calendars = json_decode($pref, true);
+          }
+          else {
+            $external_calendars = [];
+          }
+
+          $external_calendars[] = [
+            'calendar_id' => $calendar->id,
+            'url'         => $_cal['_external_calendar_url'],
+          ];
+
+          driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode(array_values($external_calendars)));
+
+          // Positionner le calendrier en lecture seule
+          $calendar->load();
+          $share = driver_mel::gi()->share([$calendar]);
+          $share->type = LibMelanie\Api\Defaut\Share::TYPE_USER;
+          $share->name = $this->user->uid;
+          $share->acl = LibMelanie\Api\Defaut\Share::ACL_READ
+                      | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
+          $share->save();
+
+          // Executer la commande de synchro ?
+          $command = $this->rc->config->get('calendar_external_command', '');
+          if (!empty($command)) {
+            $command = str_replace('%%username%%', $this->user->uid, $command);
+            exec($command, $output);
+          }
+        }
+
         // Return the calendar id
         return $calendar->id;
       }
@@ -666,6 +705,27 @@ class mel_driver extends calendar_driver {
         unset($color_calendars[$id]);
         unset($alarm_calendars[$id]);
         $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'active_calendars' => $active_calendars,'alarm_calendars' => $alarm_calendars,'hidden_calendars' => $hidden_calendars));
+
+        // Recherche si une configuration externe existe
+        $pref = driver_mel::gi()->getUser()->getCalendarPreference('external_calendars');
+
+        if (isset($pref)) {
+          $external_calendars = json_decode($pref, true);
+          $save_external = false;
+
+          foreach ($external_calendars as $key => $external_calendar) {
+            if ($external_calendar['calendar_id'] == $id) {
+              unset($external_calendars[$key]);
+              $save_external = true;
+            }
+          }
+
+          if ($save_external) {
+            driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode(array_values($external_calendars)));
+          }
+        }
+
+        // Suppression du calendrier
         return $this->calendars[$id]->delete();
       }
     }
@@ -968,6 +1028,8 @@ class mel_driver extends calendar_driver {
             $this->remove_attachment($attachment, $_event->uid);
           }
         }
+        // Actualiser le ctag du calendrier
+        $this->calendars[$_event->calendar]->getCTag(false);
         return $result;
       }
     }
@@ -1294,6 +1356,8 @@ class mel_driver extends calendar_driver {
           }
         }
         if ($_event->save() !== null) {
+          // Actualiser le ctag du calendrier
+          $this->calendars[$_event->calendar]->getCTag(false);
           return $result;
         }
       }
@@ -1886,8 +1950,8 @@ class mel_driver extends calendar_driver {
   /**
    * Get events from source.
    *
-   * @param integer Event's new start (unix timestamp)
-   * @param integer Event's new end (unix timestamp)
+   * @param integer Event''s new start (unix timestamp)
+   * @param integer Event''s new end (unix timestamp)
    * @param string Search query (optional)
    * @param mixed List of calendar IDs to load events from (either as array or comma-separated string)
    * @param boolean Include virtual events (optional)
@@ -2127,6 +2191,8 @@ class mel_driver extends calendar_driver {
     $_event['id'] = driver_mel::gi()->mceToRcId($event->calendar) . self::CALENDAR_SEPARATOR . $event->uid;
     $_event['uid'] = $event->uid;
     $_event['calendar-name'] = $this->_format_calendar_name($this->calendars[$event->calendar]->name);
+    $_event['calendar_token'] = $this->calendars[$event->calendar]->getCTag();
+    $_event['editable'] = empty($event->source);
 
     // Evenement supprimé
     if ($event->deleted) {
@@ -2388,9 +2454,15 @@ class mel_driver extends calendar_driver {
           $_event['x_moz_lastack'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
         }
 
-        // Traiter le lastack
+        // Traiter le lastack 
         if (isset($_event['x_moz_lastack'])) {
-          $_event["alarm_dismissed"] = ($_event['start']->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
+          $start = $_event['start'];
+
+          if ($_event['allday'] == 1) {
+            $start = DateTime::createFromFormat('Y-m-d H:i', $start->format('Y-m-d').' 00:00');
+          }
+
+          $_event["alarm_dismissed"] = ($start->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
         }
       }
     }
@@ -2796,6 +2868,7 @@ class mel_driver extends calendar_driver {
           'outofoffice' => calendar::FREEBUSY_OOF,
           'busy'        => calendar::FREEBUSY_BUSY,
           'telework'    => calendar::FREEBUSY_TELEWORK,
+          'vacation'    => calendar::FREEBUSY_VACATION,
         ];
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
         $events = $this->load_events($start, $end, null, $user->uid, 1, null, true);
@@ -3214,6 +3287,24 @@ class mel_driver extends calendar_driver {
     return false;
   }
 
+  private function _is_external($id) {
+    // Récupération des prefs external calendar de l'utilisateur
+    $pref = driver_mel::gi()->getUser()->getCalendarPreference("external_calendars");
+    $is_external_calendar = false;
+
+    if (isset($pref)) {
+      $external_calendars = json_decode($pref, true);
+
+      foreach ($external_calendars as $external_calendar) {
+        if ($external_calendar['calendar_id'] == $id) {
+          $is_external_calendar = true;
+        }
+      }
+    }
+
+    return $is_external_calendar;
+  }
+
   /**
    * Callback function to produce driver-specific calendar create/edit form
    *
@@ -3232,59 +3323,85 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
       $calendar['id'] = driver_mel::gi()->rcToMceId($calendar['id']);
 
       if ($calendar['id'] && ($cal = $this->calendars[$calendar['id']])) {
         $folder = $cal->name; // UTF7
-        $color_calendars = $this->rc->config->get('color_calendars', array());
-        if (isset($color_calendars[$cal->id]))
-          $color = $color_calendars[$cal->id];
-        else
-          $color = '';
       }
       else {
         $folder = '';
-        $color = '';
       }
 
       $hidden_fields[] = array('name' => 'oldname','value' => $folder);
-
-      $storage = $this->rc->get_storage();
-      $delim = $storage->get_hierarchy_delimiter();
       $form = array();
-
-      if (strlen($folder)) {
-        $path_imap = explode($delim, $folder);
-        array_pop($path_imap); // pop off name part
-        $path_imap = implode($path_imap, $delim);
-
-        $options = $storage->folder_info($folder);
-      }
-      else {
-        $path_imap = '';
-      }
 
       // General tab
       $form['props'] = array('name' => $this->rc->gettext('properties'));
 
       // Disable folder name input
-      if ($action != 'form-new' && $cal->owner != $this->user->uid) {
+      if ($action != 'form-new' && ($cal->owner != $this->user->uid || $calendar['id'] == $this->user->uid)) {
         $input_name = new html_hiddenfield(array('name' => 'name','id' => 'calendar-name'));
         $formfields['name']['value'] = $folder . $input_name->show($folder);
       }
 
       // calendar name (default field)
-      $form['props']['fieldsets']['location'] = array('name' => $this->rc->gettext('location'),'content' => array('name' => $formfields['name']));
+      $form['props']['fieldsets']['location'] = [
+        'name' => $this->rc->gettext('settings'),
+        'content' => [
+          'name'        => $formfields['name'],
+          'color'       => $formfields['color'],
+          'showalarms'  => $formfields['showalarms']
+        ]
+      ];
 
       // calendar color (default field)
-      $form['props']['fieldsets']['settings'] = array('name' => $this->rc->gettext('settings'),'content' => array('color' => $formfields['color'],'showalarms' => $formfields['showalarms']));
+      // $form['props']['fieldsets']['settings'] = array('name' => $this->rc->gettext('settings'),'content' => array('color' => $formfields['color'],'showalarms' => $formfields['showalarms']));
 
       if ($action != 'form-new' && $cal->owner == $this->user->uid) {
-        $form['sharing'] = array('name' => $this->Q($this->cal->gettext('tabsharing')),'content' => html::tag('iframe', array('src' => $this->cal->rc->url(array('_action' => 'calendar-acl','id' => $calendar['id'],'framed' => 1)),'width' => '100%','height' => 275,'border' => 0,'style' => 'border:0'), ''));
-        $form['groupsharing'] = array('name' => $this->Q($this->cal->gettext('tabsharinggroup')),'content' => html::tag('iframe', array('src' => $this->cal->rc->url(array('_action' => 'calendar-acl-group','id' => $calendar['id'],'framed' => 1)),'width' => '100%','height' => 275,'border' => 0,'style' => 'border:0'), ''));
+        // Récupération des prefs external calendar de l'utilisateur
+        $pref = driver_mel::gi()->getUser()->getCalendarPreference("external_calendars");
+        $is_external_calendar = false;
+        $urls = [];
+
+        if (isset($pref)) {
+          $external_calendars = json_decode($pref, true);
+
+          foreach ($external_calendars as $external_calendar) {
+            if ($external_calendar['calendar_id'] == $calendar['id']) {
+              $is_external_calendar = true;
+              $urls[] = $external_calendar->url;
+            }
+          }
+        }
+
+        if ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
+          // Gérer les partages sur le calendrier
+          $form['sharing'] = array('name' => $this->Q($this->cal->gettext('tabsharing')), 'content' => html::tag('iframe', array('src' => $this->cal->rc->url(array('_action' => 'calendar-acl','id' => $calendar['id'],'framed' => 1)),'width' => '100%','height' => 275,'border' => 0,'style' => 'border:0'), ''));
+          $form['groupsharing'] = array('name' => $this->Q($this->cal->gettext('tabsharinggroup')), 'content' => html::tag('iframe', array('src' => $this->cal->rc->url(array('_action' => 'calendar-acl-group','id' => $calendar['id'],'framed' => 1)),'width' => '100%','height' => 275,'border' => 0,'style' => 'border:0'), ''));
+        }
+        if ($is_external_calendar) {
+          // external calendar
+          $form['props']['fieldsets']['external'] = [
+            'name' => $this->cal->gettext('externalcalendar'),
+            'content' => $this->external_calendar_form(true, $urls)
+          ];
+        }
+      }
+      else if ($action == 'form-new') {
+        // include js
+        $this->cal->include_script('drivers/mel/external_calendar.js');
+
+        // Add env
+        $this->rc->output->set_env('external_calendars_url', $this->rc->config->get('calendar_external_urls', ''));
+
+        // external calendar
+        $form['props']['fieldsets']['external'] = [
+          'name' => $this->cal->gettext('externalcalendar'),
+          'content' => $this->external_calendar_form()
+        ];
       }
 
       $this->form_html = '';
@@ -3297,7 +3414,7 @@ class mel_driver extends calendar_driver {
 
       // Create form output
       foreach ($form as $tab) {
-        if (! empty($tab['fieldsets']) && is_array($tab['fieldsets'])) {
+        if (!empty($tab['fieldsets']) && is_array($tab['fieldsets'])) {
           $content = '';
           foreach ($tab['fieldsets'] as $fieldset) {
             $subcontent = $this->get_form_part($fieldset);
@@ -3327,6 +3444,45 @@ class mel_driver extends calendar_driver {
       return false;
     }
     return false;
+  }
+
+  /**
+   * Return html form for external calendar form configuration
+   * 
+   * @return string $html
+   */
+  private function external_calendar_form($disabled = false, $urls = ['']) {
+    // Gestion du calendrier externe
+    $external_table = new html_table(['cols' => 2, 'class' => 'table']);
+    
+    $external_checkbox = new html_checkbox([
+      'name'      => '_enable_external_calendar', 
+      'id'        => 'cfgexternalcalendarcheckbox',
+      'disabled'  => $disabled ? 'disabled' : '',
+      'value'     => 1, 
+    ]);
+
+    $external_table->add('title', html::label('_enable_external_calendar', $this->cal->gettext('enableexternalcalendarcheckbox')));
+    $external_table->add(['style' => 'min-width: 233px;'], $external_checkbox->show($disabled ? 1 : 0));
+
+    foreach ($urls as $url) {
+      $external_input = new html_inputfield([
+        'name'  => '_external_calendar_url', 
+        'id'    => 'cfgexternalcalendarinput',
+        'disabled'  => $disabled ? 'disabled' : '',
+      ]);
+  
+      $external_table->add_row('external_calendar_url');
+      $external_table->add('title', html::label('_external_calendar_url', $this->cal->gettext('externalcalendarurl')));
+      $external_table->add(null, $external_input->show($url));
+    }
+
+    $sources = array_keys($this->rc->config->get('calendar_external_urls', []));
+    
+    return html::div('form-group', 
+      ($disabled ? '' : html::div('', str_replace('%%sources%%', implode(', ', $sources), $this->cal->gettext('externalcalendarlabel')))) . 
+      $external_table->show()
+    );
   }
 
   /**

@@ -234,7 +234,7 @@ export class RcmailDialog extends MelObject {
     show() {
         let $contents = !!this.contents.generate ? this.contents.generate() : this.contents;
 
-        this._$dialog = this.rcmail().show_popup_dialog($contents, this.title, this.buttons.map(x => x.generate()));
+        this._$dialog = this.rcmail().show_popup_dialog($contents[0], this.title, this.buttons.map(x => x.generate()), this.options);
         return this;
     }
 

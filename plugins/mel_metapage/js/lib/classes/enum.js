@@ -1,12 +1,57 @@
+/** 
+ * @module MelLinq
+ */
+
 import { isArrayLike } from "../mel.js";
 
-export {RotomecaEnumerable as MelEnumerable, RotomecaKeyValuePair as MelKeyValuePair};
-class RotomecaKeyValuePair {
+export {MelEnumerable, MelKeyValuePair};
+/**
+ * @callback WhereCallback
+ * @param {*} item
+ * @param {number} index
+ * @returns {Boolean}
+ */
+
+/**
+ * @callback SelectCallback
+ * @param {*} item
+ * @param {number} index
+ * @returns {*}
+ */
+
+/**
+ * @callback SelectorCallback
+ * @param {*} item
+ * @returns {*}
+ */
+
+/**
+ * @class
+ * @classdesc Représentation d'un valeur et de sa clé
+ */
+class MelKeyValuePair {
+    /**
+     * 
+     * @param {!string | !number} key Clé qui est lié à la valeur
+     * @param {*} value Valeur
+     */
     constructor(key, value)
     {
         let _key = key;
         let _value = value;
 
+        /**
+         * Clé qui est lié à la valeur
+         * @type {!string | !number}
+         * @readonly
+         */
+        this.key;
+        /**
+         * Valeur qui est lié à une clé
+         * @type {*}
+         * @readonly
+         */
+        this.value;
         Object.defineProperties(this, {
             key: {
                 get: () => {
@@ -357,13 +402,13 @@ class RotomecaGroupedItems {
         let star_parent = this.iterable;
 
         for (const iterator of star_parent) {
-            yield new RotomecaKeyValuePair(this.key, iterator);
+            yield new MelKeyValuePair(this.key, iterator);
         }
     }
 
     get_values(try_get_array = true)
     {
-        if (try_get_array && this.iterable instanceof RotomecaEnumerable)
+        if (try_get_array && this.iterable instanceof MelEnumerable)
         {
             if (Array.isArray(this.iterable.generator())) return this.iterable.generator();
             else if (this.iterable.generator() instanceof RotomecaGenerator && Array.isArray(this.iterable.generator().iterable)) return this.iterable.generator().iterable;
@@ -395,7 +440,7 @@ class RotomecaGroupByGenerator extends ARotomecaKeyValueSelector {
         for (const key in datas) {
             if (Object.hasOwnProperty.call(datas, key)) {
                 const element = datas[key];
-                yield new RotomecaGroupedItems(key, RotomecaEnumerable.from(element));
+                yield new RotomecaGroupedItems(key, MelEnumerable.from(element));
             }
         }
     }
@@ -656,7 +701,7 @@ class RotomecaDistinctGenerator extends ARotomecaCallbackGenerator
 class RotomecaExceptGenerator extends ARotomecaItemModifierGenerator
 {
     constructor(iterable, array) {
-        super(iterable, RotomecaEnumerable.from(array).generator());
+        super(iterable, MelEnumerable.from(array).generator());
     }
 
     *next() {
@@ -730,7 +775,7 @@ class RotomecaReverseGenerator extends RotomecaGenerator
     }
 
     *next() {
-        let order = RotomecaEnumerable.from(super.next()).toArray();
+        let order = MelEnumerable.from(super.next()).toArray();
 
         for (let len = order.length, index = len - 1; index >= 0; --index) {
             yield order[index];
@@ -761,30 +806,46 @@ class RotomecaTakeGenerator extends ARotomecaItemModifierGenerator
 class ObjectKeyEnumerable extends RotomecaGenerator {
     constructor(object) {
         super();
-        this.iterable = RotomecaEnumerable.from(this._generate.bind(this, object));
+        this.iterable = MelEnumerable.from(this._generate.bind(this, object));
     }
 
     * _generate(object) {
         for (const key in object) {
             if (Object.hasOwnProperty.call(object, key)) {
                 const element = object[key];
-                yield new RotomecaKeyValuePair(key, element);
+                yield new MelKeyValuePair(key, element);
             }
         }
     }
 }
 
 /**
+ * @callback RGenerator
+ * @returns {MelEnumerable}
+ */
+
+/**
  * Classe principale des enumerations.
  * 
  * Permet d'avoir un comportement semblable à System.Linq du C#
+ * @class
+ * @see {@link https://docs.microsoft.com/en-us/dotnet/api/system.linq}
+ * @hideconstructor
  */
-class RotomecaEnumerable
+class MelEnumerable
 {
+    /**
+     * @param {Generator | Array | MelEnumerable | RotomecaGenerator | JSON} generator 
+     */
     constructor(generator)
     {
         let _generator = generator;
 
+        /**
+         * Récupère le générateur.
+         * @readonly
+         * @type {RGenerator}
+         */
         this.generator = undefined;
         Object.defineProperty(this, 'generator', {
             enumerable: false,
@@ -795,171 +856,185 @@ class RotomecaEnumerable
             }
           });
     }
-
-    generator() {
-        return new RotomecaEnumerable([]);
-    }
-
+    
     /**
      * Récupère que les éléments dont callback retourne "vrai"
-     * @param {(item:any, index:number) => boolean} callback Fonction qui servira à tester les éléments
-     * @returns {RotomecaEnumerable}
+     * @param {WhereCallback} callback Fonction qui servira à tester les éléments
+     * @generator
+     * @returns {MelEnumerable}
      */
     where(callback) {
-        return new RotomecaEnumerable(this.generator().where(callback));
+        return new MelEnumerable(this.generator().where(callback));
     }
 
     /**
      * Sélectionne une donnée à partir des éléments de l'énumération
-     * @param {(item:any, index:number) => any} selector 
-     * @returns {RotomecaEnumerable}
+     * @param {SelectCallback} selector 
+     * @generator
+     * @returns {MelEnumerable}
      */
     select(selector) {
-        return new RotomecaEnumerable(this.generator().select(selector));
+        return new MelEnumerable(this.generator().select(selector));
     }
 
     /**
      * Groupe les données par clé et par valeur.
-     * @param {(item:any) => any} key_selector Génère les différentes clés
-     * @param {(item:any) => any | null} value_selector Génère les différentes valeurs, l'élément entier est pris si null
-     * @returns {RotomecaEnumerable}
+     * @param {SelectorCallback} key_selector Génère les différentes clés
+     * @param {?SelectorCallback} value_selector Génère les différentes valeurs, l'élément entier est pris si null
+     * @returns {MelEnumerable}
+     * @generator
      */
     groupBy(key_selector, value_selector = null)
     {
-        return new RotomecaEnumerable(this.generator().groupBy(key_selector, value_selector));
+        return new MelEnumerable(this.generator().groupBy(key_selector, value_selector));
     }
 
     /**
      * Tri les données (croissant)
-     * @param {(item:any) => any} selector 
-     * @returns {RotomecaEnumerable}
+     * @param {SelectorCallback} selector 
+     * @returns {MelEnumerable}
+     * @generator
      */
     orderBy(selector) {
-        return new RotomecaEnumerable(this.generator().orderBy(selector));
+        return new MelEnumerable(this.generator().orderBy(selector));
     }
 
     /**
      * Tri les données (décroissant)
-     * @param {(item:any) => any} selector 
-     * @returns {RotomecaEnumerable}
+     * @param {SelectorCallback} selector 
+     * @returns {MelEnumerable}
+     * @generator
      */
     orderByDescending(selector) {
-        return new RotomecaEnumerable(this.generator().orderByDescending(selector));
+        return new MelEnumerable(this.generator().orderByDescending(selector));
     }
 
     /**
      * Tri les données (croissant), à utiliser après orderBy
-     * @param {(item:any) => any} selector 
-     * @returns {RotomecaEnumerable}
+     * @param {SelectorCallback} selector 
+     * @returns {MelEnumerable}
+     * @generator
      */
     then(selector) {
-        return new RotomecaEnumerable(this.generator().then(selector));
+        return new MelEnumerable(this.generator().then(selector));
     }
 
     /**
      * Tri les données (décroissant), à utiliser après orderBy
-     * @param {(item:any) => any} selector 
-     * @returns {RotomecaEnumerable}
+     * @param {SelectorCallback} selector 
+     * @returns {MelEnumerable}
+     * @generator
      */
     thenDescending(selector) {
-        return new RotomecaEnumerable(this.generator().thenDescending(selector));
+        return new MelEnumerable(this.generator().thenDescending(selector));
     }
 
     /**
      * Ajoute un objet à l'énumération
      * @param {*} item 
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     add(item) {
-        return new RotomecaEnumerable(this.generator().add(item));
+        return new MelEnumerable(this.generator().add(item));
     }
 
     /**
      * Ajoute un itérable à l'énumération
-     * @param {*[]} iterable 
-     * @returns {RotomecaEnumerable}
+     * @param {Array | Generator} iterable 
+     * @returns {MelEnumerable}
+     * @generator
      */
     aggregate(iterable) {
-        return new RotomecaEnumerable(this.generator().aggregate(iterable));
+        return new MelEnumerable(this.generator().aggregate(iterable));
     }
 
     /**
      * Supprime un objet à l'énumération si il est présent
      * @param {*} item 
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     remove(item) {
-        return new RotomecaEnumerable(this.generator().remove(item));
+        return new MelEnumerable(this.generator().remove(item));
     }
 
     /**
      * Supprime un objet à un index de l'énumération si il est présent
      * @param {number} index 
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     removeAt(index) {
-        return new RotomecaEnumerable(this.generator().removeAt(index));
+        return new MelEnumerable(this.generator().removeAt(index));
     }
 
     /**
      * Empèche d'avoir 2 valeurs identiques dans l'énumération
-     * @param {(item:any) => any | null} selector 
-     * @returns {RotomecaEnumerable}
+     * @param {?SelectorCallback} selector 
+     * @returns {MelEnumerable}
+     * @generator
      */
     distinct(selector = null) {
-        return new RotomecaEnumerable(this.generator().distinct(selector));
+        return new MelEnumerable(this.generator().distinct(selector));
     }
 
     /**
      * Empèche d'avoir les valeurs du tableau dans l'énumération
-     * @param {any[]} array 
-     * @returns {RotomecaEnumerable}
+     * @param {any[] | Generator} array 
+     * @returns {MelEnumerable}
+     * @generator
      */
     except(array){
-        return new RotomecaEnumerable(this.generator().except(array));
+        return new MelEnumerable(this.generator().except(array));
     }
 
     /**
      * Empèche d'avoir les valeurs en commun du tableau dans l'énumération
-     * @param {any[]} array 
-     * @returns {RotomecaEnumerable}
+     * @param {any[] | Generator} array 
+     * @returns {MelEnumerable}
+     * @generator
      */
     intersect(array) {
-        return new RotomecaEnumerable(this.generator().intersect(array));
+        return new MelEnumerable(this.generator().intersect(array));
     }
 
     /**
      * Fusionne les 2 tableaux
-     * @param {any[]} array 
-     * @param {(item:any) => any | null} selector 
-     * @returns {RotomecaEnumerable}
+     * @param {any[] | Generator} array 
+     * @param {?SelectorCallback} selector 
+     * @returns {MelEnumerable}
+     * @generator
      */
     union(array, selector = null) {
-        return new RotomecaEnumerable(this.generator().union(array, selector));
+        return new MelEnumerable(this.generator().union(array, selector));
     }
 
     /**
      * Renvoie l'énumération à l'envers
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     reverse() {
-        return new RotomecaEnumerable(this.generator().reverse());
+        return new MelEnumerable(this.generator().reverse());
     }
 
     /**
      * Prend les x premiers éléments
      * @param {number} howMany x premiers éléments à prendre
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     take(howMany)
     {
-        return new RotomecaEnumerable(this.generator().take(howMany));
+        return new MelEnumerable(this.generator().take(howMany));
     }
 
     /**
      * Retourne vrai si il y a au moins un élément dans l'énumération.
-     * @param {(item:any, index:number) => boolean | null} callback where
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le any.
      * @returns {boolean}
+     * @see {@link MelEnumerable~where}
      */
     any(callback = null)
     {
@@ -968,8 +1043,9 @@ class RotomecaEnumerable
 
     /**
      * Retourne vrai si tout les éléments existent dans l'énumération.
-     * @param {(item:any, index:number) => boolean | null} callback where
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le all.
      * @returns {boolean}
+     * @see {@link MelEnumerable~where}
      */
     all(callback = null)
     {
@@ -987,9 +1063,9 @@ class RotomecaEnumerable
 
     /**
      * Retourne le premier élément dans l'énumération.
-     * @param {(item:any, index:number) => boolean | null} callback where
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le first.
      * @returns {*}
-     * @throws If empty
+     * @throws If null
      */
     first(callback = null)
     {
@@ -998,8 +1074,8 @@ class RotomecaEnumerable
 
     /**
      * Retourne le premier élément dans l'énumération.
-     * @param {any | null} default_value Valeur par défaut si on ne trouve rien
-     * @param {(item:any, index:number) => boolean | null} callback where
+     * @param {?any} default_value Valeur par défaut si on ne trouve rien
+     * @param {?WhereCallback} callback Si défini, éffectue un `where` avant de faire le firstOrDefault.
      * @returns {*}
      */
     firstOrDefault(default_value = null, callback = null)
@@ -1010,7 +1086,7 @@ class RotomecaEnumerable
     /**
      * La fonction `last` renvoie le dernier élément d'un générateur, éventuellement filtré par une
      * condition.
-     * @param {null | Function} where - Le paramètre "where" est une fonction qui détermine si un élément doit être
+     * @param {?WhereCallback} where - Le paramètre "where" est une fonction qui détermine si un élément doit être
      * inclus ou non dans la recherche. Il permet de filtrer les éléments avant de retrouver le dernier. Si
      * la fonction "where" renvoie vrai pour un élément, celui-ci sera inclus dans la recherche ; sinon, ce
      * sera
@@ -1024,8 +1100,8 @@ class RotomecaEnumerable
      * La fonction renvoie le dernier élément d'un générateur ou une valeur par défaut si le générateur est
      * vide.
      * @param {Object} param0 
-     * @param {any} [param0.default_value=null] Valeur par défaut si on ne trouve rien
-     * @param {null | Function} [param0.where=null] Fonction where qui sera appliqué avant de récupérer le dernier élément
+     * @param {?any} [param0.default_value=null] Valeur par défaut si on ne trouve rien
+     * @param {?WhereCallback} [param0.where=null] Fonction where qui sera appliqué avant de récupérer le dernier élément
      * @returns La fonction lastOrDefault renvoie le résultat de l'appel de la fonction lastOrDefault du
      * générateur avec les paramètres fournis.
      */
@@ -1035,10 +1111,11 @@ class RotomecaEnumerable
 
     /**
      * Si il y a des tableaux dans les tableaux, transforme tout en un seul tableau
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     flat() {
-        return new RotomecaEnumerable(this.generator().flat());
+        return new MelEnumerable(this.generator().flat());
     }
 
     *[Symbol.iterator]() {
@@ -1058,9 +1135,13 @@ class RotomecaEnumerable
 
     /**
      * Fait la somme des éléments de l'énumération
-     * @param {{where: (item:any, index:number) => boolean | null, selector: (item:any, index:number) => any | null}} param0
+     * @param {Object} param0 Si défini, le `where` sera pris en compte avant le `select`
+     * @param {?WhereCallback} where Prendre seulement ce qui nous intéresse dans le sum
+     * @param {?SelectCallback} selector Séléctionner le membre sur lequel on veut faire un sum
      * @returns {number}
      * @throws Si selector retourne autre chose qu'un nombre
+     * @see {@link WhereCallback}
+     * @see {@link SelectCallback}
      */
     sum({where = null, selector = null}) {
         return this.generator().sum({where, selector});
@@ -1076,7 +1157,7 @@ class RotomecaEnumerable
 
     /**
      * Récupère la valeur maximale de l'énumération
-     * @param {null | function} selector Séléctionne la valeur à comparer
+     * @param {?SelectorCallback} selector Séléctionne la valeur à comparer
      * @returns {number}
      */
     max(selector = null) {
@@ -1085,7 +1166,7 @@ class RotomecaEnumerable
 
     /**
      * Récupère la valeur minimale de l'énumération
-     * @param {null | function} selector Séléctionne la valeur à comparer
+     * @param {?SelectorCallback} selector Séléctionne la valeur à comparer
      * @returns {number}
      */
     min(selector = null) {
@@ -1094,7 +1175,7 @@ class RotomecaEnumerable
 
     /**
      * Transforme en tableau
-     * @returns {*[]}
+     * @returns {Array}
      */
     toArray() {
         return this.generator().toArray();
@@ -1102,8 +1183,8 @@ class RotomecaEnumerable
 
     /**
      * Convertit en objet
-     * @param {(item:any, index:number) => *} key_selector 
-     * @param {(item:any, index:number) => *} value_selector 
+     * @param {SelectCallback} key_selector 
+     * @param {SelectCallback} value_selector 
      * @returns {{}} style {index1:value1 etc....}
      */
     toJsonObject(key_selector, value_selector)
@@ -1113,30 +1194,32 @@ class RotomecaEnumerable
 
     /**
      * Convertit un objet/un tableau en enumerable
-     * @param {Array | RotomecaGenerator | RotomecaEnumerable | {}} item Objet à convertir en enumerable
-     * @returns {RotomecaEnumerable}
+     * @generator
+     * @param {Array | RotomecaGenerator | MelEnumerable | {} | Generator} item Objet à convertir en enumerable
+     * @returns {MelEnumerable}
      */
     static from(item)
     {
         const is_array_like = isArrayLike(item);
-        if (Array.isArray(item) || (typeof item[Symbol.iterator] === 'function' && !is_array_like)) return new RotomecaEnumerable(new RotomecaGenerator(item));
-        else if (item instanceof RotomecaGenerator) return new RotomecaEnumerable(item);
+        if (Array.isArray(item) || (typeof item[Symbol.iterator] === 'function' && !is_array_like)) return new MelEnumerable(new RotomecaGenerator(item));
+        else if (item instanceof RotomecaGenerator) return new MelEnumerable(item);
         else if (typeof item === 'object' && !is_array_like){
             return this.from(new ObjectKeyEnumerable(item));
         } 
-        else if (is_array_like) return new RotomecaEnumerable(new RotomecaGenerator(Array.from(item)));
-        else if ('function' === typeof item && !!item.prototype.next) return new RotomecaEnumerable(new RotomecaGenerator(item));
-        else return new RotomecaEnumerable(new RotomecaGenerator([item]));
+        else if (is_array_like) return new MelEnumerable(new RotomecaGenerator(Array.from(item)));
+        else if ('function' === typeof item && !!item.prototype.next) return new MelEnumerable(new RotomecaGenerator(item));
+        else return new MelEnumerable(new RotomecaGenerator([item]));
     }
 
     /**
      * Récupère des éléments au hasard dans un tableau
-     * @param {Array | RotomecaGenerator | RotomecaEnumerable | {}} item 
+     * @param {Array | RotomecaGenerator | MelEnumerable | {} | Generator} item 
      * @param  {...any} args Autres objets qui seront pris au hasard
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     static choice(item, ...args) {
-        item = RotomecaEnumerable.from(item).aggregate(args || []).toArray();
+        item = MelEnumerable.from(item).aggregate(args || []).toArray();
         const min = 0;
         const max = item.length - 1;
 
@@ -1146,17 +1229,18 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return MelEnumerable.from(generator);
     }
 
     /**
      * Génère les éléments sous forme d'un cycle.
-     * @param {Array | RotomecaGenerator | RotomecaEnumerable | {}} item Initialisateur
+     * @param {Array | RotomecaGenerator | MelEnumerable | {} | Generator} item Initialisateur
      * @param  {...any} args Initialisateurs
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     static cycle(item, ...args) {
-        item = RotomecaEnumerable.from(item).aggregate(args || []).toArray();
+        item = MelEnumerable.from(item).aggregate(args || []).toArray();
         let it = 0;
 
         const generator = function* () {
@@ -1167,15 +1251,16 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return MelEnumerable.from(generator);
     }
 
     /**
      * Génère un énumérable vide
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     static empty() {
-        return RotomecaEnumerable.from([]);
+        return MelEnumerable.from([]);
     }
 
     /**
@@ -1185,7 +1270,8 @@ class RotomecaEnumerable
      * @param {number} start Valeur de départ
      * @param {number} count Pendant combien d'itérations ?
      * @param {number} step pas
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     static range(start, count, step = 1) {
         let it = 0;
@@ -1197,7 +1283,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return MelEnumerable.from(generator);
     }
 
     /**
@@ -1207,32 +1293,35 @@ class RotomecaEnumerable
      * @param {number} start Valeur de départ
      * @param {number} count Pendant combien d'itérations ?
      * @param {number} step pas
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     static rangeDown(start, count, step = 1) {
-        return RotomecaEnumerable.range(start, count, -step);
+        return MelEnumerable.range(start, count, -step);
     }
 
     /**
      * Génère des valeurs commençant par "start" indéfiniment par pas de "step"
      * @param {number} start Valeur de départ
      * @param {number} step pas
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     static toInfinity(start = 0, step = 1)
     {
-        return RotomecaEnumerable.range(start, Number.POSITIVE_INFINITY, step);
+        return MelEnumerable.range(start, Number.POSITIVE_INFINITY, step);
     }
 
     /**
      * Génère des valeurs commençant par "start" indéfiniment par pas de "step" (décroissant)
      * @param {number} start Valeur de départ
      * @param {number} step pas
-     * @returns {RotomecaEnumerable}
+     * @returns {MelEnumerable}
+     * @generator
      */
     static toNegativeInfinity(start = 0, step = 1)
     {
-        return RotomecaEnumerable.toInfinity(start, -step);
+        return MelEnumerable.toInfinity(start, -step);
     }
 
     static generate(callback) {
@@ -1242,7 +1331,7 @@ class RotomecaEnumerable
             }
         };
 
-        return RotomecaEnumerable.from(generator);
+        return MelEnumerable.from(generator);
     }
 
     /**
@@ -1250,10 +1339,11 @@ class RotomecaEnumerable
      * @param {number} min 
      * @param {number} max 
      * @returns 
+     * @generator
      */
     static random(min = 0, max = 1000)
     {
-        return RotomecaEnumerable.generate(() => {
+        return MelEnumerable.generate(() => {
             return Math.random() * (max - min + 1) + min;
         });
     }
@@ -1267,7 +1357,6 @@ class RotomecaEnumerable
             arr.push(next.value);
         }
 
-        return RotomecaEnumerable.from(arr);
+        return MelEnumerable.from(arr);
     }
 }
-

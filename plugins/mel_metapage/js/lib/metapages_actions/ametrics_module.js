@@ -21,11 +21,13 @@ export class AMetricsModule extends module_bnum {
      }
 
     exec() {
-        $(this.selector()).on(this.action(), (event) => {
-            const before =  this.before(event);
-
-            if (before !== AMetricsModule.BREAK) this.send_callback().call(Look, ...this.args(event));
-        });
+        if (!!(Look.URL || false)) {
+            $(this.selector()).on(this.action(), (event) => {
+                const before =  this.before(event);
+    
+                if (before !== AMetricsModule.BREAK) this.send_callback().call(Look, ...this.args(event));
+            });
+        }
 
         return this;
     }

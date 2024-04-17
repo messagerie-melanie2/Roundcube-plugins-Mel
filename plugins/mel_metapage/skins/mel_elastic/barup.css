@@ -114,9 +114,6 @@ html.touch .barup {
 html.layout-phone.touch #barup-user,
 html.layout-small.touch #barup-user {
   max-width: 70px;
-  position: absolute;
-  right: 0;
-  margin-right: 20px;
 }
 
 #layout-sidebar,
@@ -252,6 +249,7 @@ html.layout-small .ariane-card {
   margin-top: 59px;
   border-top: none;
   border-right: none;
+  z-index: 0; /*0007991: SKIN : lorsque la bulle de discussion est active sur la droite, les autres boutons inactifs ou visu arrière plan*/
 }
 
 /* html.touch .ariane-card
@@ -341,6 +339,12 @@ html.layout-phone .hide-small,
 html.layout-normal .hide-normal,
 html.touch .hide-touch {
   display: none !important;
+}
+
+html.touch #button-create {
+  margin-left: 60px;
+  margin-right: 0;
+  width: 90px;
 }
 
 .show-row-touch,
@@ -647,6 +651,11 @@ html.dark-mode .barup-icon-button:focus .barup-icon-button.btn-secondary:active,
   box-shadow: none !important;
 }
 
+#barup-right-buttons #button-chat {
+  padding-top: 20px;
+  color: #FDCF42 !important;
+}
+
 .barup-icon-button,
 .barup-icon-button:hover {
   color: #2c3054;
@@ -714,17 +723,19 @@ html.dark-mode #button-search.btn.btn-secondary {
 }
 
 #barup-right-buttons {
-  float: right;
-  margin-top: -15px;
-  margin-right: -14px;
-  padding-right: 14px;
   padding-left: 14px;
+  padding-right: 14px;
   height: 61px;
+  /* Empeche le bouton créer de renvoyer cet element a la ligne */
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 #barup-right-buttons .user,
 #barup-right-buttons #button-search,
 #barup-right-buttons #notification-dropdown,
+#barup-right-buttons #button-chat,
 #barup-right-buttons #button-help,
 #barup-right-buttons #button-settings,
 #barup-right-buttons #barup-search-col {
@@ -759,7 +770,7 @@ html.dark-mode #barup-right-buttons button {
 
 html.layout-small #barup-right-buttons,
 html.layout-phone #barup-right-buttons {
-  padding-right: 80px;
+  padding-right: 1px;
 }
 
 #barup-search-input {
@@ -935,6 +946,7 @@ html.dark-mode .barup-icons-button:hover {
 #notifications-panel .content a,
 .user-dropdown-menu .user-menu-items a {
   cursor: pointer;
+  color: var(--dropdown-menu-text-color);
 } 
 
 .tiny-rocket-chat.inbarup span.disc {

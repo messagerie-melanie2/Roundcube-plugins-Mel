@@ -101,6 +101,24 @@ class M2calendar {
     }
   }
 
+  static function is_external($id) {
+    $pref = driver_mel::gi()->getUser()->getCalendarPreference("external_calendars");
+    $is_external_calendar = false;
+
+    if (isset($pref)) {
+      $external_calendars = json_decode($pref, true);
+
+      foreach ($external_calendars as $external_calendar) {
+        if ($external_calendar['calendar_id'] == $id) {
+          $is_external_calendar = true;
+          break;
+        }
+      }
+    }
+
+    return $is_external_calendar;
+  }
+
   /**
    * Getter de l'objet calendar
    * 
@@ -333,6 +351,26 @@ class M2calendar {
       foreach ($events as $event) {
         $event->delete();
       }
+
+      // Recherche si une configuration externe existe
+      $pref = driver_mel::gi()->getUser()->getCalendarPreference('external_calendars');
+
+      if (isset($pref)) {
+        $external_calendars = json_decode($pref, true);
+        $save_external = false;
+
+        foreach ($external_calendars as $key => $external_calendar) {
+          if ($external_calendar['calendar_id'] == $this->calendar->id) {
+            unset($external_calendars[$key]);
+            $save_external = true;
+          }
+        }
+
+        if ($save_external) {
+          driver_mel::gi()->getUser()->saveCalendarPreference('external_calendars', json_encode(array_values($external_calendars)));
+        }
+      }
+
       // Supprime le calendrier
       return $this->calendar->delete();
     }

@@ -17,6 +17,7 @@
 		margin-bottom: 0;
 	}
 </style>
+<link rel="stylesheet" type="text/css" href="plugins/mel_moncompte/jquery.datetimepicker.css">
 <framed_item>
 <div class="framed_item">
 	<div id="preferences-details" class="boxcontent">
@@ -35,6 +36,7 @@
 			</tr>
 		</table>
 		<br>
+		<roundcube:object name="plugin.mailbox_additional_action" />
 		<br>
 	
 		<roundcube:if condition="env:resource_shared == false" />
@@ -52,10 +54,90 @@
 				<roundcube:label name="mel_moncompte.restore_bal" />
 			</div>
 			<roundcube:object name="restore_bal"/>
+			<script src="plugins/mel_moncompte/jquery.datetimepicker.full.min.js"></script>
+			<script>
+			$(function () {
+
+				const MAX_DELAY = 168;
+				function rangeHours(from, to) {
+					return Array.from({length: to - from + 1}, (_, i) => `${from + i}:00`);
+				}
+				function updateDatetimePickerHours() {
+					let maxDate = new Date();
+					let minDate = new Date();
+					// Recule d'une heure pour avoir minimum 1h et pas 0
+					maxDate.setHours(maxDate.getHours() - 1, 0, 0, 0)
+					minDate.setHours(maxDate.getHours() - MAX_DELAY, 0, 0, 0);
+
+					let options = {
+						minDate: minDate,
+						maxDate: maxDate,
+					};
+					let selectedDate = $('#datetimepicker').datetimepicker('getValue');
+					if (!selectedDate) {
+						selectedDate = new Date();
+					}
+					selectedDate.setHours(0, 0, 0, 0);
+					let minHours = 0;
+					let maxHours = 23;
+					if (minDate.getDate() == selectedDate.getDate()) {
+						minHours = minDate.getHours();
+						selectedDate.setHours(minDate.getHours())
+					}
+					if (maxDate.getDate() == selectedDate.getDate()) {
+						maxHours = maxDate.getHours();
+						selectedDate.setHours(maxDate.getHours())
+					}
+					console.log(rangeHours(minHours, maxHours));
+					options.allowTimes = rangeHours(minHours, maxHours);
+					options.value = selectedDate;
+					$('#datetimepicker').datetimepicker(options);
+
+					// Fix liste des heures ne scroll pas quand on choisit une date
+					// Voir https://github.com/xdan/datetimepicker/issues/280
+					setTimeout(() => {
+						var timeboxparent = $('.xdsoft_time_box').eq(0);
+						timeboxparent.trigger('resize_scroll.xdsoft_scroller');
+					}, 100);
+				}
+				$('#datetimepicker').datetimepicker(
+					{
+						onSelectDate: updateDatetimePickerHours,
+					}
+				);
+				updateDatetimePickerHours();
+			});
+			</script>
 			<br /> <input type="submit" class="btn btn-primary button mainaction"
 				value="<roundcube:label name="mel_moncompte.restore_mail" />" />
 				&nbsp;
 		</form>
+		<roundcube:endif />
+		<roundcube:if condition="env:resource_shared == false and config:enable_mesressources_dir_restore == true" />
+		<br>
+		<script>
+			function change() {
+				let restoreDirTable = document.getElementById("restorable_directories");
+				let restorableDirectories = Array.from(restoreDirTable.getElementsByTagName("tr")).slice(1);
+				let restoreSize = 0;
+				let anyChecked = restorableDirectories.some(element => element.getElementsByTagName("input")[0].checked);
+				let submitButton = document.getElementById("submit_restore_dir");
+				submitButton.disabled = !anyChecked;
+			}
+		</script>
+			
+		<form name="restore_dir" action="#" method="post" class="propform" onchange="change()" >
+			<div class="legend">
+				<roundcube:label name="mel_moncompte.restore_dir" />
+			</div>
+			<roundcube:object name="get_restorable_directories" />
+			<br /> <input id="submit_restore_dir" type="submit" name="restore_dir" class="button mainaction"
+				value="<roundcube:label name="mel_moncompte.restore_dir_btn" />" disabled />
+				&nbsp;
+		</form>
+		<roundcube:endif />
+
+		<roundcube:if condition="env:resource_shared == false and config:enable_mesressources_mail_restore == true" />
 		<div class="restore_bal_expl">
 			<roundcube:object name="restore_bal_expl" />
 		</div>

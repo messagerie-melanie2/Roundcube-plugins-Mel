@@ -750,22 +750,24 @@ class mel_option extends mel_html{
 }
 
 class amel_form_item extends mel_html {
-	constructor(tag, attribs = {}, content = EMPTY_STRING)
+	constructor(tag, attribs = {}, content = EMPTY_STRING, ignore_default_action = false)
 	{
 		super(tag, attribs, content);
 
-		if (!this.attribs[CONST_ATTRIB_CLASS]) this.attribs[CONST_ATTRIB_CLASS] = EMPTY_STRING;
+		if (!ignore_default_action) {
+			if (!this.attribs[CONST_ATTRIB_CLASS]) this.attribs[CONST_ATTRIB_CLASS] = EMPTY_STRING;
 
-		if (!this.attribs[CONST_ATTRIB_VALUE]) {
-			this.attribs[CONST_ATTRIB_VALUE] = `${amel_form_item.CLASS_FORM_BASE} ${amel_form_item.CLASS_FORM_MEL}`;
+			if (!this.attribs[CONST_ATTRIB_VALUE]) {
+				this.attribs[CONST_ATTRIB_VALUE] = `${amel_form_item.CLASS_FORM_BASE} ${amel_form_item.CLASS_FORM_MEL}`;
+			}
+			
+			if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_BASE))
+			{
+				this.attribs[CONST_ATTRIB_CLASS] += ` ${amel_form_item.CLASS_FORM_BASE}`;
+			}
+			
+			if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_MEL)) this.attribs[CONST_ATTRIB_CLASS] += ` ${amel_form_item.CLASS_FORM_MEL}`;
 		}
-		
-		if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_BASE))
-		{
-			this.attribs[CONST_ATTRIB_CLASS] += ` ${amel_form_item.CLASS_FORM_BASE}`;
-		}
-		
-		if (!this.attribs[CONST_ATTRIB_CLASS].includes(amel_form_item.CLASS_FORM_MEL)) this.attribs[CONST_ATTRIB_CLASS] += ` ${amel_form_item.CLASS_FORM_MEL}`;
 
 		this.onfocusout = new MelEvent();
 		this.onfocus = new MelEvent();
@@ -844,6 +846,14 @@ Object.defineProperty(amel_form_item, 'CLASS_INPUT_FORM_FLOATING_NOT_EMPTY', {
 	writable: false,
 	value:CONST_CLASS_INPUT_FORM_FLOATING_NOT_EMPTY
 });
+
+class mel_field extends amel_form_item {
+	constructor(tag, attribs = {})
+	{
+		super(tag, attribs, '', true);
+	}
+}
+
 
 class mel_select extends amel_form_item{
 	constructor(attribs = {}, options = [])

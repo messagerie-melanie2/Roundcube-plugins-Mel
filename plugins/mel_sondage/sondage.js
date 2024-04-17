@@ -8,6 +8,10 @@ $(document).ready(function() {
 	    },
 	   crossDomain: true,
 	   success: function (data) {
+			// const loader = MEL_ELASTIC_UI.create_loader('pegaseloader', true);
+			// $("body").append(loader);
+			$("#wait_box").hide();
+
 		   const url = rcmail.env.sondage_startup_url != null && rcmail.env.sondage_startup_url !== undefined ? rcmail.env.sondage_startup_url : rcmail.env.sondage_gotourl;
 		   if (navigator.appName == "Microsoft Internet Explorer"){
 			   window.document.getElementById('mel_sondage_frame').src = url;
@@ -17,7 +21,7 @@ $(document).ready(function() {
 			} else {
 			   window.document.getElementById('mel_sondage_frame').src = url;
 			}
-		   $("#wait_box").hide();
+			$("#tchaploader").hide();
 		   top.rcmail.env.sondage_loaded = true;
 		   console.log('Login success !', data);
 	   },

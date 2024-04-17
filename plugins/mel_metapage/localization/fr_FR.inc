@@ -114,12 +114,13 @@ $labels["mosaik"] = "Mosaïque";
 $labels["url"] = "Url";
 
 $labels["required_fields"] = "Champs obligatoires";
-$labels["event_name"] = "Nom de l'évènement";
+$labels["event_name"] = "Ajoutez un titre";
 $labels["date_choice"] = "Choix de la période";
 $labels["event_start"] = "Début de l'évènement";
 $labels["event_end"] = "Fin de l'évènement";
 $labels["reccurence"] = "Récurrence";
 $labels["never"] = "jamais";
+$labels["norecc"] = "pas de récurrence";
 $labels["DAILY"] = "quotidienne";
 $labels["WEEKLY"] = "hebdomadaire";
 $labels["MONTHLY"] = "mensuelle";
@@ -142,7 +143,7 @@ $labels["add_file"] = "Ajouter une pièce jointe";
 $labels["day_order"] = "Ordre du jour";
 
 $labels["attach_the_event_to"] = "Rattacher l'évènement à";
-$labels["choose_calendar"] = "Choisissez un calendrier";
+$labels["choose_calendar"] = "Choisissez un agenda";
 $labels["choose_event_state"] = "Choisissez le statut de l'évènement";
 $labels["choose_sensivity"] = "Choisissez la sensibilité de l'évènement";
 $labels["attach_to_workspace_or_category"] = "Lier à un espace de travail ou une catégorie";
@@ -392,17 +393,18 @@ $labels['main_nav_can_deploy'] = 'Déplier la barre de navigation au survol ?';
 $labels['attention'] = 'Attention';
 $labels['leaving_bnum'] = 'Vous êtes sur le point de quitter le Bnum pour aller sur le site suivant :';
 $labels['always_authorize'] = 'Toujours autoriser les liens provenant de ';
+$labels['warning_suspect_url'] = ' est référencé comme risque potentiel de phishing. Je reconnais que je ne donnerai pas mes identifiants Bnum.';
 $labels['warning_external_link'] = 'Attention, ne jamais donner vos identifiants ou mots de passe Bnum ou Mél sur le site que vous allez visiter';
 $labels['open_external_link'] = 'Visiter le site';
 
 $labels['informations'] = 'Informations';
 $labels['double_authentication'] = 'Authentification à deux facteurs';
-$labels['double_authentication_notification'] = 'Configurez la double authentification pour sécuriser votre accès au Bnum';
+$labels['double_authentication_notification'] = 'Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum';
 $labels['introduction_text'] = 'À partir de %%date%%, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum.';
 $labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas où vous perdez votre téléphone par exemple, veuillez entrer une adresse e-mail de récupération :';
-$labels['verification_email_text'] = 'Rentrer le code de validation reçu par mail';
+$labels['verification_email_text'] = 'Rentrer le code de vérification reçu par mail';
 $labels['verification_application_text'] = 'Rentrer le code de validation affiché sur l’application';
-$labels['application_text'] = 'Télécharger une application de double authentification comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a> pour scanner ce QR Code. <a href="#">En savoir plus</a>';
+$labels['application_text'] = 'Télécharger une application de l\'authentification à deux facteurs comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a> pour scanner ce QR Code. <a href="#">En savoir plus</a>';
 $labels['add_key'] = 'Ou ajouter cette clé dans votre application :';
 $labels['show_me'] = 'Configurer maintenant';
 $labels['later'] = 'Plus tard';
@@ -414,11 +416,11 @@ $labels['code_expired'] = 'Le code à expiré';
 $labels['wrong_code'] = 'Le code est erroné';
 $labels['error'] = 'Erreur';
 $labels['doubleauth-error'] = 'Erreur lors de la configuration de l\'authentification double facteur';
-$labels['doubleauth_not_activated'] = 'La double authentification n\'a pas été activée';
+$labels['doubleauth_not_activated'] = 'L\'authentification à deux facteurs n\'a pas été activée';
 $labels['enter_code'] = 'Merci de rentrer un code valide';
 $labels['send_email_error'] = 'Erreur serveur lors de l\'envoi du mail';
 
-$labels['introduction_text_without_date'] = 'Nous allons commencer à configurer le reforcement de la sécurité sur votre compte. Cliquez sur "'.$labels['show_me'] .'" pour continuer !';
+$labels['introduction_text_without_date'] = 'Nous allons commencer à configurer le renforcement de la sécurité sur votre compte. Cliquez sur "'.$labels['show_me'] .'" pour continuer !';
 $labels['set-to-favorite'] = 'Ajouter aux favoris';
 $labels['unset-to-favorite'] = 'Retirer des favoris';
 $labels['disable-animations'] = 'Désactiver les animations';
@@ -426,3 +428,54 @@ $labels['disable-animations-helper'] = "Désactive les animation du thème en co
 $labels['cancel-color-folder'] = 'Restaurer la couleur par défaut';
 $labels['update-color-folder'] = 'Changer la couleur du dossier';
 $labels['update-icon-folder'] = "Changer l'icône du dossier";
+
+$labels['app_tchap'] = "Tchap";
+$labels['tchap'] = "Tchap";
+$labels['tchap_options'] = "Ouvrir les paramètres de Tchap";
+$labels['tchap_disconnect'] = "Se déconnecter de Tchap";
+$labels['event-location-visio'] = "En visioconférence";
+$labels['event-location-location'] = "En présentiel";
+$labels['event-location-audio'] = "Par audio";
+$labels['event-visio-internal'] = "Wébconférence de l'état";
+$labels['event-visio-external'] = "Wébconférence externe";
+
+$labels['week'] = 'semaine';
+$labels['week_plurial'] = $labels['week'].'s';
+$labels['week_after'] = ' et %0 jour';
+$labels['week_after_plurial'] = $labels['week_after'].'s';
+
+$labels['day'] = 'jour';
+$labels['day_plurial'] = $labels['day'].'s';
+$labels['day_after'] = ' et %0 heure';
+$labels['day_after_plurial'] = $labels['day_after'].'s';
+
+$labels['hour'] = 'heure';
+$labels['hour_plurial'] = $labels['hour'].'s';
+$labels['hour_after'] = ' et %0 minute';
+$labels['hour_after_plurial'] = $labels['hour_after'].'s';
+
+$labels['minute'] = 'minute';
+$labels['minute_plurial'] = $labels['minute'].'s';
+$labels['minute_after'] = ' et %0 seconde';
+$labels['minute_after_plurial'] = $labels['minute_after'].'s';
+
+$labels['rappel_of'] = 'Rappel de %0 avant';
+$labels['no_rappel'] = 'Aucun rappel';
+$labels['custom_alarm_title'] = 'Alarme personnalisée';
+$labels['validate'] = 'Valider';
+
+$labels['invalid_guests'] = 'Impossible d\'ajouter certains participants !';
+$labels['existing_guest'] = 'Le participant %0 éxiste déjà !';
+
+$labels['add_guests'] = 'Ajoutez des participants';
+$labels['req_guest'] = 'Participants obligatoires';
+
+$labels['error_empty_event_visio_room'] = 'Le nom de la visioconférence ne doit être vide !';
+$labels['error_too_small_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 10 charactères !';
+$labels['error_less_number_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 3 chiffres !';
+$labels['unknown_error'] = 'Erruer inconnue !';
+$labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vide !';
+
+$labels['found_audio_date'] = 'Réserver une audio-conférence';
+$labels['add'] = 'Ajouter';
+$labels['delete'] = 'Supprimer';

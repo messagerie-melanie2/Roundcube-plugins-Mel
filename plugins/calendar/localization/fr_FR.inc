@@ -25,6 +25,8 @@ $labels['aftertrash'] = 'Déplacer dans la corbeille';
 $labels['afterdelete'] = 'Supprimer ce message';
 $labels['afterflagdeleted'] = 'Marquer comme supprimer';
 $labels['aftermoveto'] = 'Déplacer vers...';
+//PAMELLA
+$labels['emptyeventtitle'] = 'Le titre de l\'évènement ne peut pas être vide !';
 // PAMELA - Read after itip mail
 $labels['afterread'] = 'Passer en lu et RdvTraité';
 $labels['itipoptions'] = 'Invitations à l\'événement';
@@ -36,6 +38,13 @@ $labels['category'] = 'Catégorie';
 $labels['categories'] = 'Catégories';
 $labels['createcalendar'] = 'Créer un nouvel agenda';
 $labels['name'] = 'Nom';
+// PAMELA - Calendar name
+$labels['calendarname'] = 'Nom d\'affichage';
+// PAMELA - External calendars
+$labels['externalcalendar'] = '(Nouveau !) Calendrier externe';
+$labels['externalcalendarlabel'] = 'En activant cette option, ce calendrier passe en lecture seule et se synchronise avec une source externe. Les sources externes actuellement supportées sont : %%sources%%.';
+$labels['enableexternalcalendarcheckbox'] = 'Synchroniser ce calendrier avec une source externe';
+$labels['externalcalendarurl'] = 'Lien vers le calendrier externe';
 $labels['color'] = 'Couleur';
 $labels['day'] = 'Jour';
 // PAMELA - Fullcalendar premium
@@ -69,6 +78,7 @@ $labels['title'] = 'Résumé';
 $labels['description'] = 'Description';
 // PAMELA
 $labels['all-day'] = 'Journée';
+$labels['all-day-long'] = 'Journée entière';
 $labels['export'] = 'Exporter';
 $labels['exporttitle'] = 'Exporter vers iCalendar';
 $labels['exportrange'] = 'Événements depuis';
@@ -96,6 +106,9 @@ $labels['status-tentative'] = 'Provisoire';
 // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
 $labels['telework'] = 'Télétravail';
 $labels['status-telework'] = 'Télétravail';
+// MANTIS 0008012: Ajouter un statut "Congés"
+$labels['vacation'] = 'Congé';
+$labels['status-vacation'] = 'Congé';
 $labels['priority'] = 'Priorité';
 $labels['sensitivity'] = 'Diffusion';
 $labels['public'] = 'publique';
@@ -178,6 +191,8 @@ $labels['availunknown'] = 'Inconnu';
 $labels['availtentative'] = 'Provisoire';
 // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
 $labels['availtelework'] = 'Télétravail';
+// MANTIS 0008012: Ajouter un statut "Congés"
+$labels['availvacation'] = 'Congé';
 $labels['availoutofoffice'] = 'Absent';
 $labels['scheduletime'] = 'Trouver les disponibilités';
 $labels['sendinvitations'] = 'Envoyer les invitations';
@@ -350,8 +365,8 @@ $labels['appointmentreason'] = 'Motif de rendez-vous';
 $labels['letusercustomreason'] = 'Laisser la possibilité à l\'utilisateur de choisir un motif personnalisé';
 $labels['see_direct_page'] = 'Voir la page de direct';
 $labels['__bdays__'] = $labels['birthdays'];
-//PAMELA
-$labels['attendeeneeds-action'] = 'Une action est attendu de votre part.';
+// PAMELA
+$labels['attendeeneeds-action'] = 'Une action est attendue de votre part.';
 $labels['itipchanges'] = 'Modifications : '; 
 $labels['changetitle'] = 'Titre'; 
 $labels['changestart'] = 'Date de début'; 
@@ -360,4 +375,5 @@ $labels['changeattendees'] = 'Liste des participants';
 $labels['changelocation'] = 'Lieu'; 
 $labels['changedescription'] = 'Description'; 
 $labels['changerecurrence'] = 'Ancienne répétition'; 
+$labels['notification'] = 'Notification'; 
 ?>

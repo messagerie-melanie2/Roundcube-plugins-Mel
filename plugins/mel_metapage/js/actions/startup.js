@@ -598,7 +598,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (rcmail.env.mel_metapage_const !== undefined)
         args[IS_FROM] = IS_FROM_VALUE;
 
-    if (eClass === "addressbook" && (args["_action"] === undefined || args["_action"] === null))
+    if (eClass === "addressbook" && (args["_action"] === undefined || args["_action"] === null) && rcmail.env.annuaire_source)
     {
         args["_action"] = "plugin.annuaire";
         args["_source"] = rcmail.env.annuaire_source;

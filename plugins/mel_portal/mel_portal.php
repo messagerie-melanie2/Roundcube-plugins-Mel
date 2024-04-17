@@ -144,9 +144,16 @@ class mel_portal extends bnum_plugin
                 include_once "modules/$v/$v.php";
                 $classname = ucfirst($v);
                 $classname = new $classname($v, $this, $k);
-                $classname->init();
                 return $classname;
-            })->orderBy(function ($k, $v) {return $v->order();})
+            })
+            ->where(function ($k, $v) {
+                return $v->enabled();
+            })
+            ->select(function ($k, $v) {
+                $v->init();
+                return $v;
+            })
+            ->orderBy(function ($k, $v) {return $v->order();})
             ->select(function ($k, $object) use(&$confModule, &$existing) {
                 //$confModule = $this->rc()->config->get($config[$pageName]["modules"][$i]);
 

@@ -478,6 +478,9 @@ class mel extends rcube_plugin
           $rc_i['uid'] = $m2_i['uid'];
           $update_identities[$rc_i['identity_id']] = $m2_i;
         }
+        else if (empty(trim($rc_i['name']))) {
+          $update_identities[$rc_i['identity_id']] = ['name' => $m2_i['name']];
+        }
         // Vide le tableau pour lister ensuite les identities à créer
         unset($m2_identities[strtolower($rc_i['email'])]);
       } else {
@@ -1094,9 +1097,10 @@ class mel extends rcube_plugin
     if (!empty($this->get_account) && $this->get_account != $this->rc->get_user_name()) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
-      $inf = explode('@', $this->user_name);
-      $this->user_objet_share = urldecode($inf[0]);
-      $this->user_host = $inf[1] ?: null;
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromMail($this->user_name);
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
+      $this->user_bal = $user_bal;
       $user = driver_mel::gi()->getUser($this->user_objet_share, false);
       if ($user->is_objectshare) {
         $this->user_bal = $user->objectshare->mailbox_uid;
@@ -1105,10 +1109,11 @@ class mel extends rcube_plugin
       }
     } else {
       // Récupération du username depuis la session
+      list($user_object_share, $user_host, $user_bal) = driver_mel::gi()->getShareUserBalpHostFromSession();
       $this->user_name = $this->rc->get_user_name();
-      $this->user_objet_share = $this->rc->user->get_username('local');
-      $this->user_host = $this->rc->user->get_username('host');
-      $this->user_bal = $this->user_objet_share;
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
+      $this->user_bal = $user_bal;
     }
   }
   /**

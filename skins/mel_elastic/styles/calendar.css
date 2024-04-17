@@ -14,6 +14,9 @@
  * by keeping credits to the original authors in the README.md file.
  * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
  */
+.form-control-plaintext {
+  color: var(--main-text-color);
+}
 .task-calendar #layout > div > .header {
   background-color: var(--calendar-base-header-background-color) !important;
 }
@@ -56,6 +59,10 @@
 .task-calendar #layout #layout-content > .header #toolbar-menu {
   text-align: left;
 }
+.task-calendar #layout #layout-content > .header .header-title {
+  margin-bottom: 6px;
+  margin-top: -5px;
+}
 .task-calendar #layout #layout-content > .header .header-title span {
   color: var(--calendar-sidebar-header-color);
 }
@@ -65,15 +72,19 @@ html.layout-large .task-calendar #layout #layout-content > .header {
 }
 html.layout-phone .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html.layout-small .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html.layout-phone.framed .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html.layout-small.framed .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html .task-calendar #layout .ui-datepicker-year {
   display: inline-block !important;
@@ -261,9 +272,6 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   -webkit-text-stroke: var(--calendar-list-item-switch-tick-stroke);
   text-stroke: var(--calendar-list-item-switch-tick-stroke);
 }
-html.touch .task-calendar .listing .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
-  transform: translateX(10px);
-}
 .task-calendar .searchbar.menu {
   border-radius: 15px;
   margin-top: 14px;
@@ -357,6 +365,13 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
 .task-calendar .fc .fc-content i.fc-icon-telework:before,
 .task-calendar .fc .fc-time i.fc-icon-telework:before {
   content: "\e918";
+  font-family: "DWP";
+  font-weight: normal;
+  font-style: normal;
+}
+.task-calendar .fc .fc-content i.fc-icon-vacation:before,
+.task-calendar .fc .fc-time i.fc-icon-vacation:before {
+  content: "\e967";
   font-family: "DWP";
   font-weight: normal;
   font-style: normal;
@@ -462,8 +477,8 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   margin: 0;
 }
 .task-calendar ul.treelist.iconized li div.treetoggle {
-  top: 10px;
-  left: 14px;
+  top: 0px;
+  left: 0px;
 }
 .cal-space-old.task-calendar ul.treelist.iconized li div.treetoggle {
   top: 0px;
@@ -476,6 +491,15 @@ html.layout-phone .task-calendar select.mel-input.calendar {
 .cal-space-larger.task-calendar ul.treelist.iconized li div.treetoggle {
   top: 15px;
   left: 14px;
+}
+.task-calendar #annuaire-list > li > .treetoggle {
+  left: 15px!important;
+}
+.task-calendar #annuaire-list ul {
+  margin-left: 10px;
+}
+.task-calendar #annuaire-list .folder .name {
+  margin-left: 20px;
 }
 #datepicker {
   background-color: #31365B !important;
@@ -527,10 +551,11 @@ html.layout-phone .task-calendar select.mel-input.calendar {
 .menu a.import::before,
 .menu a.upload::before {
   content: "\f090" !important;
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal!important;
   font-variation-settings: 'wght' 300, 'opsz' 48;
-  font-size: 22px;
+  font-size: 17px;
+  transform: scale(1.5) !important;
 }
 .menu a.download::before,
 .menu a.download.eml::before,
@@ -857,4 +882,76 @@ body.quickview-active .fc .fc-scroller {
 }
 #recurrence-form-monthly .recurrence-onevery select {
   width: 45%;
+}
+#eventedit .nav.nav-tabs {
+  display: none;
+}
+.edit-radio,
+.edit-radio-free,
+.edit-radio-busy,
+.edit-radio-wait,
+.edit-radio-telework,
+.edit-radio-noworking {
+  font-variation-settings: 'FILL' 1;
+}
+.edit-radio-free {
+  color: #1ac01a;
+}
+.edit-radio-busy {
+  color: red;
+}
+.edit-radio-wait {
+  color: #e0a80c;
+}
+.edit-radio-telework {
+  color: #0f9cfa;
+}
+.edit-radio-noworking {
+  color: #fa7900;
+}
+.mel-button.slot {
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px;
+}
+.mel-button.slot .slot-date {
+  align-items: center;
+}
+.mel-button.slot .slot-date:first-of-type {
+  margin-bottom: 5px;
+}
+.mel-button.slot bnum-icon {
+  margin-right: 5px;
+}
+.fix-panel {
+  --background-color-dialog-message: var(--warning-color);
+  position: absolute;
+  bottom: 66px;
+  background-color: var(--warning-color);
+  max-width: 100%;
+  left: 0;
+  padding-right: 55px;
+}
+.fix-panel .mel-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  line-height: 0;
+  border-radius: 100%;
+  height: 46px;
+}
+.fix-panel.clicked-from-button {
+  position: unset;
+  background-color: transparent;
+  padding: 0;
+}
+.fix-panel.clicked-from-button .mel-button {
+  display: none!important;
+}
+.fix-panel .dialog-message {
+  color: var(--main-text-color);
+}
+.mel-custom-event-dialog {
+  position: unset!important;
 }

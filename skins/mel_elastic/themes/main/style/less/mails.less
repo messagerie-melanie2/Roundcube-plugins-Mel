@@ -248,6 +248,15 @@ body.task-mail {
     background-color: var(--layout-content-background-color) !important;
   }
 
+  #layout-sidebar {
+    > .header {
+        a.button {
+          color: var(--mail-header-button-color) !important;
+        }
+      }
+    }
+  
+
   #layout-content {
     >.header {
       background-color: var(--layout-content-header-background-color) !important;
@@ -263,6 +272,14 @@ body.task-mail {
 
         .dropbutton {
           background-color: var(--layout-content-header-background-color);
+        }
+      }
+
+      .header-title,
+      a.button {
+        html.layout-phone &,
+        html.layout-small & {
+          color: var(--mail-header-button-color) !important;
         }
       }
     }

@@ -39,7 +39,13 @@ class Alarm{
                 if (string[0] == "+") //Après, avant sinon
                     this.type = Alarm.enums.type.after;
 
-                this.time = parseInt(string.split("PT")[1].split("M")[0]);
+                let splitted = string.split("PT")[1];
+                this.time = parseInt(splitted.split("M")[0]);
+
+                if (splitted.includes(':')) splitted = splitted.split(":")[0];
+
+                if (splitted.includes("H")) this.time *= 60;
+                else if (splitted.includes("D")) this.time *= 60 * 24;
 
                 //console.log("string", string, string.includes("DISPLAY"))
                 if (string.includes("DISPLAY")) //Type d'alarme

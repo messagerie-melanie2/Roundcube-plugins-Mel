@@ -1,0 +1,16 @@
+{
+    "name": "mi/mi_auth",
+    "autoload": {
+        "psr-4": {
+            "Mi\\MiAuth\\": "lib/"
+        }
+    },
+    "authors": [
+        {
+            "name": "I. GENOT"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.4"
+    }
+}

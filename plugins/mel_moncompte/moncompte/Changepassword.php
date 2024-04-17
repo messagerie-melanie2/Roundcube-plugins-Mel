@@ -36,6 +36,8 @@ class Changepassword extends Moncompteobject {
 	* Chargement des données de l'utilisateur depuis l'annuaire
 	*/
 	public static function load($plugin = null) {
+		//chargement du script d'évaluation de solidité de mdp
+		if (isset($plugin)) $plugin->include_script('passwordcheck.js');
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.changepassword');
 		// Chargement des informations supplémenaires nécessaires

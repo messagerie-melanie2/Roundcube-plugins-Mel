@@ -94,7 +94,7 @@ class double_auth_modal extends module_bnum {
 
     const mois = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
-    const date = !(rcmail.env.double_authentification_date_butoir?.date ? null : moment(rcmail.env.double_authentification_date_butoir?.date))
+    const date = (!(rcmail.env.double_authentification_date_butoir?.date) ? null : moment(rcmail.env.double_authentification_date_butoir?.date));
     let displayDate = !!date ? mois[date.format('M') - 1] + ' ' + date.format('YYYY') : '';
 
     const html = MelHtml.start

@@ -23,6 +23,8 @@ export class ProgressiveWebApp extends module_bnum{
         if (ENABLE) {
             this.registerServiceWorker();
             window.addEventListener("beforeinstallprompt", this.beforeInstallPromptEventHandler.bind(this), this.beforeInstallPromptErrorHandler.bind(this));
+
+            this.rcmail().register_command('install_pwa', this.installPromptTrigger.bind(this), true);
         }
 
         return this;
@@ -31,7 +33,7 @@ export class ProgressiveWebApp extends module_bnum{
     registerServiceWorker () {
         // enregistre le script sw avec les navigateurs qui le gèrent
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register(`/sw.js`, {scope: '/'}).then((registration) => {
+            navigator.serviceWorker.register(`${window.location.origin + window.location.pathname}sw.js`, {scope: window.location.pathname}).then((registration) => {
                 BnumLog.info('registerServiceWorker', 'Service Worker enregistré correctement, scope : ', registration.scope);
     
             }).catch(error => {

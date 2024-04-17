@@ -96,9 +96,9 @@ class mel_workspace extends bnum_plugin
         {
         $this->add_button(array(
             'command' => "workspace",
-            'class'	=> 'button-wsp icon-mel-workplace',
-            'classsel' => 'button-wsp button-selected icon-mel-workplace',
-            'innerclass' => 'button-inner',
+            'class'	=> 'wsp button-wsp icon-mel-workplace',
+            'classsel' => 'wsp button-wsp button-selected icon-mel-workplace',
+            'innerclass' => 'wsp button-inner',
             'label'	=> 'my_workspaces',
             'title' => 'my_workspaces',
             'type'       => 'link',
@@ -139,6 +139,8 @@ class mel_workspace extends bnum_plugin
         $this->register_action('PARAMS_update_services', array($this, 'update_services'));
         $this->register_action('PARAMS_update_end_date', array($this, 'update_end_date_setting'));
         $this->register_action('PARAMS_change_primary', array($this, 'update_primary_parameters'));
+        $this->register_action('sync_list_member', [$this, 'synchronize_list']);
+        $this->register_action('delete_list', [$this, 'delete_list']);
         $this->register_action('join_user', array($this, 'join_user'));
         $this->register_action('leave_workspace', array($this, 'leave_workspace'));
         $this->register_action('delete_workspace', array($this, 'delete_workspace'));
@@ -1394,7 +1396,7 @@ class mel_workspace extends bnum_plugin
                 }
 
 
-                if ($services[self::LINKS]){
+                if ($services[self::LINKS] && class_exists('mel_useful_link')) {
 
                     // $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
                     $body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content links-items", "style" => "¤¤¤"]);
@@ -1496,8 +1498,9 @@ class mel_workspace extends bnum_plugin
     {
         $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
         $shares = $this->sort_user($this->currentWorkspace->shares); 
+        $nbuser = count($shares);
 
-        $html .= '<h2>Liste des membres</h2>';
+        $html .= "<h2>Liste des membres ($nbuser)</h2>";
         $html .= '<div class="wsp-block">';
 
         foreach ($shares as $key => $value) {
@@ -1697,16 +1700,20 @@ class mel_workspace extends bnum_plugin
 
         $icon_delete = "icon-mel-trash";
 
+        $shares = $this->sort_user($this->currentWorkspace->shares); 
+        $nbuser = count($shares);
+
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
         $html .= "<thead>";
-        $html .= '<tr><td>Utilisateur</td><td class="mel-fit-content">Droits d\'accès</td><td class="mel-fit-content">Supprimer</td></tr>';
+        $html .= "<tr><td>Utilisateur ($nbuser) </td><td class=\"mel-fit-content\">Droits d\'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
         $html .= "</thead>";
         $share = $this->sort_user($workspace->shares);
         $current_user = driver_mel::gi()->getUser();
 
         foreach ($share as $key => $value) {
+            $from_list = $this->_check_if_is_in_list($workspace, $value->user);
             $html .= "<tr>";
-            $html .= "<td>". driver_mel::gi()->getUser($value->user)->fullname."</td>";
+            $html .= '<td>'.(count($from_list) > 0 ? '<span style="margin-right:5px;vertical-align: bottom;" class="material-symbols-outlined" title="'.$this->_list_to_title($from_list).'">groups</span>' : ''). driver_mel::gi()->getUser($value->user)->fullname."</td>";
             
             $html .= "<td>".$this->setup_params_value($icons_rights, $options_title, $current_title, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)
@@ -1716,6 +1723,27 @@ class mel_workspace extends bnum_plugin
             
             $html .= "</tr>";
         }
+        unset($from_list);
+
+        $lists = $this->get_setting($workspace, "lists") ?? [];
+
+        if (!is_array($lists)) $lists = get_object_vars($lists);
+
+        if (count($lists) > 0) {
+            $html .= "<thead>";
+            $html .= '<tr><td>Listes</td><td class="mel-fit-content">Synchroniser</td><td class="mel-fit-content">Supprimer</td></tr>';
+            $html .= "</thead>";
+
+            foreach ($lists as $key => $value) {
+                $html .= "<tr>";
+                $html .= "<td>". driver_mel::gi()->getUser(null, true, false, null, $key)->fullname."</td>";
+                $html .= "<td><button style=\"float:right\" onclick=\"rcmail.command(`workspace.sync_list`, `".$key."`);\" class=\"btn btn-primary mel-button no-button-margin without-text px45\"><span class=\"material-symbols-outlined\">sync</span></button></td>";
+                $html .= "<td><button style=\"float:right\" onclick=\"rcmail.command(`workspace.remove_list`, `".$key."`);\" class=\"btn btn-danger mel-button no-button-margin without-text px45\"><span class=\"material-symbols-outlined\">delete</span></button></td>";
+                $html .= "</tr>";
+            }
+        }
+
+
 
         $html .= "</table>";
 
@@ -1809,8 +1837,6 @@ class mel_workspace extends bnum_plugin
     function create()
     {
         try {
-                        //rcube_utils::INPUT_POST custom_uid
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Récupération des inputs....");
             $datas = [
                 "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
                 "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
@@ -1824,8 +1850,6 @@ class mel_workspace extends bnum_plugin
                 "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
                 "service_params" => rcube_utils::get_input_value("_services_params", rcube_utils::INPUT_POST),
             ];
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs ok");
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs : ".json_encode($datas));
 
             $retour = [
                 "errored_user" => [],
@@ -1834,7 +1858,6 @@ class mel_workspace extends bnum_plugin
 
             $user = driver_mel::gi()->getUser();
             $workspace = driver_mel::gi()->workspace([$user]);
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création d'un espace...");
             $workspace->uid = $datas["uid"] === null || $datas["uid"] === "" ? self::generate_uid($datas["title"], $this->rc) : $datas["uid"];//uniqid(md5(time()), true);
             $workspace->title = $datas["title"];
             $workspace->logo = $datas["avatar"];
@@ -1850,11 +1873,8 @@ class mel_workspace extends bnum_plugin
 
             $this->add_setting($workspace, "color", $datas["color"]);
             $this->add_setting($workspace, "end_date", $datas["end_date"]);
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Première sauvegarde...");
             $res = $workspace->save();
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Premier chargement...");
             $workspace->load();
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Ajout des utilisateurs...");
             $shares = [];
             $share = driver_mel::gi()->workspace_share([$workspace]);
             $share->user = $user->uid;
@@ -1864,38 +1884,36 @@ class mel_workspace extends bnum_plugin
             $count = count($datas["users"]);
 
             for ($i=0; $i < $count; ++$i) { 
-                $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid;
+                $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i]);
 
-                if ($tmp_user === null)
-                    $retour["errored_user"][] = $datas["users"][$i];
-                else if ($tmp_user === $user->uid)
-                    continue;
+                if ($tmp_user->uid === null && !$tmp_user->is_list) $retour["errored_user"][] = $datas["users"][$i];
                 else {
-                    $retour["existing_users"][] = $tmp_user;
-                    $share = driver_mel::gi()->workspace_share([$workspace]);
-                    $share->user = $tmp_user;
-                    $share->rights = Share::RIGHT_WRITE;
-                    $shares[] = $share;   
-
-                    if (class_exists("mel_notification"))
-                    {
-                        $this->_notify_user($tmp_user, $workspace, $tmp_user);
-                    }           
+                    foreach ($this->_add_internal_user($workspace, $tmp_user) as $added_user) {
+                        if ($added_user !== $user->uid && $added_user !== null)
+                        {
+                            $retour["existing_users"][] = $added_user;
+                            $share = driver_mel::gi()->workspace_share([$workspace]);
+                            $share->user = $added_user;
+                            $share->rights = Share::RIGHT_WRITE;
+                            $shares[] = $share;   
+    
+                            if (class_exists("mel_notification"))
+                            {
+                                $this->_notify_user($added_user, $workspace, $added_user);
+                            }           
+                        }
+                    }
                 }
             }
 
             $workspace->shares = $shares;
-
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création des services...");
-
             $datas["services"] = $this->create_services($workspace, $datas["services"], null, true, false, $datas['service_params']);
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Sauvegarde...");
+            
             $res = $workspace->save();
 
             $retour["workspace_uid"] = $workspace->uid;
 
             $retour["uncreated_services"] = $datas["services"];
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Retour...");
             echo json_encode($retour);
             exit;
         } catch (\Throwable $th) {
@@ -1906,6 +1924,29 @@ class mel_workspace extends bnum_plugin
             echo json_encode($th);
             exit;
         }
+    }
+
+    private function _add_internal_user(&$workspace, $user) {
+        if ($user->is_list) {
+            $list = [];
+
+            foreach ($user->list->members as $value) {
+                $value = $value->uid;
+                $list[] = $value;
+                yield $value;
+            }
+
+            $lists = $this->get_setting($workspace, 'lists') ?? [];
+
+            if (is_array($lists)) $lists[$user->mail[0]] = $list;
+            else {
+                $user = $user->mail[0];
+                $lists->$user = $list;
+            }
+
+            $this->add_setting($workspace, 'lists', $lists);
+        } 
+        else yield $user->uid;
     }
 
     private function _notify_user($userid, $workspace, $tmp_user = null) {
@@ -1937,9 +1978,9 @@ class mel_workspace extends bnum_plugin
             $bodymail->user_email = driver_mel::gi()->getUser()->email;
             $bodymail->wsp_name = $workspace->title;
             $bodymail->wsp_creator = $workspace->creator;
-            $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Créer le' : 'Mise à jour';
+            $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour';
             $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
-            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/mel_elastic/pictures/logobnum.png', 'png');
+            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png');
             $bodymail->bnum_base__url = 'http://mtes.fr/2';
             $bodymail->url = 'https://mel.din.developpement-durable.gouv.fr/bureau/?_task=workspace&_action=workspace&_uid='.$workspace->uid;
 
@@ -2626,18 +2667,24 @@ class mel_workspace extends bnum_plugin
         //get input
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
+        //
+        $workspace = self::get_workspace($uid);
         //get users
         $count = count($users);
         $tmp_users = $users;
         $users = [];
         $unexistingUsers = [];
         foreach ($tmp_users as $key => $value) {
-            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value)->uid;
-            if ($tmp_user !== null)
-                $users[] = $tmp_user;
-            else
-                $unexistingUsers[] = $value;
+            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
+
+            if ($tmp_user->uid !== null || $tmp_user->is_list) {
+                foreach ($this->_add_internal_user($workspace, $tmp_user) as $cuser) {
+                    $users[] = $cuser;
+                }
+            }
+            else $unexistingUsers[] = $value;
         }
+
         if (count($users) === 0)
         {
             echo "no one was found";
@@ -2645,7 +2692,6 @@ class mel_workspace extends bnum_plugin
         }
         else {
             //get workspace
-            $workspace = self::get_workspace($uid);
             if (self::is_admin($workspace))
             {
                 $this->_add_users($workspace, $users);
@@ -2655,9 +2701,9 @@ class mel_workspace extends bnum_plugin
                 //end
                 echo json_encode($unexistingUsers);
             }
-            else
-                echo "denied";
-            exit;
+            else echo "denied";
+
+            if (!rcube_utils::get_input_value("_not_exist", rcube_utils::INPUT_POST)) exit;
         }
     }
 
@@ -2849,7 +2895,9 @@ class mel_workspace extends bnum_plugin
                 if ($user_to_delete === driver_mel::gi()->getUser()->uid)
                 {
                     echo "you are the alone";
-                    exit;
+
+                    if ($exit) exit;
+                    else return;
                 }
             }
 
@@ -3123,9 +3171,9 @@ class mel_workspace extends bnum_plugin
         foreach ($shares as $key => $value) {
             if ($value->user !== $user)
             {
-                $tmp = driver_mel::gi()->getUser($value->user)->email;
+                $tmp = driver_mel::gi()->getUser($value->user);
 
-                if (isset($tmp)) $array[] = $tmp;
+                if (isset($tmp)) $array[] = "$tmp->fullname<$tmp->email>";
             }
                 
         }
@@ -4474,6 +4522,92 @@ class mel_workspace extends bnum_plugin
         return $id;
     }
 
+    public function synchronize_list() {
+        $echo = null;
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $wsp = self::get_workspace($uid); 
+
+        if (self::is_admin($wsp)){
+            $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+
+            $loaded_list = driver_mel::gi()->getUser(null, true, false, null, $list);
+            $list_members = $loaded_list->list->members;
+            $all_saved_list_data = $this->get_setting($wsp, 'lists');
+            $current_saved_list_data = $all_saved_list_data->$list;
+            $shared = $wsp->shares;
+    
+            $_POST['_users'] = [];
+    
+            $has_new = false;
+            foreach ($list_members as $value) {
+                if (!in_array($value->uid, $current_saved_list_data) || !isset($shared[$value->uid]))    
+                {
+                    $value->load();
+
+                    if (!in_array($value->uid, $current_saved_list_data)) $current_saved_list_data[] = $value->uid;
+
+                    $_POST['_users'][] = $value->email;
+
+                    if(!$has_new) $has_new = true;
+                }
+            }
+    
+            if (count($_POST['_users']) > 0) {
+                $_POST['_not_exist'] = true;
+                $this->add_users();
+                unset($_POST['_not_exist']);
+            }
+    
+            $has_deleted = false;
+            $valid = [];
+            foreach ($current_saved_list_data as $value) {
+                if (isset($list_members[$value])) $valid[] = $value;
+                else {
+                    $this->delete_user($uid, $value, false);
+
+                    if (!$has_deleted) $has_deleted = true;
+                }
+            }
+
+            if ($has_deleted || $has_new) {
+                $all_saved_list_data->$list = $valid;
+                $this->add_setting($wsp, 'lists', $all_saved_list_data);
+                $wsp->save();
+            }
+
+            $echo = 'ok';
+        }
+        else $echo = 'denied';
+
+        echo $echo;
+        exit;
+
+    }
+
+    public function delete_list() {
+        $echo = null;
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $wsp = self::get_workspace($uid); 
+
+        if (self::is_admin($wsp)){
+            $list = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+            $all_saved_list_data = $this->get_setting($wsp, 'lists');
+            $current_saved_list_data = $all_saved_list_data->$list;
+
+            for ($i=0, $len=count($current_saved_list_data); $i < $len; ++$i) { 
+                $this->delete_user($uid, $current_saved_list_data[$i], false);
+            }
+
+            unset($all_saved_list_data->$list);
+            $this->add_setting($wsp, 'lists', $all_saved_list_data);
+            $wsp->save();
+
+        }
+        else echo 'denied';
+
+        exit;
+    }
+
     public static function notify($workspace, $title, $content, $action = null, $include_current = false)
     {
         $users = $workspace->shares;
@@ -4490,6 +4624,27 @@ class mel_workspace extends bnum_plugin
         } catch (\Throwable $th) {
             //throw $th;
         }
+    }
+
+    private function _check_if_is_in_list($wsp, $user_id) {
+        $array = [];
+        $lists = $this->get_setting($wsp, 'lists') ?? [];
+
+        foreach ($lists as $key => $value) {
+            if (in_array($user_id, $value)) $array[] = $key;
+        }
+
+        return $array;
+    }
+
+    private function _list_to_title($lists) {
+        $txt = '';
+        foreach ($lists as $key => $value) {
+            $value = driver_mel::gi()->getUser(null, true, false, null, $value);
+            $txt .= $value->fullname . "\n";
+        }
+
+        return $txt;
     }
 
   private function is_one_admin($workspace)

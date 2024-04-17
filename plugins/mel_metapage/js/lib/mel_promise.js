@@ -1,4 +1,17 @@
 export { Mel_Promise, Mel_Ajax, WaitSomething }
+
+/**
+ * @callback MelPromiseCallback
+ * @param {Mel_Promise} current_promise
+ * @param {...any} Arguments
+ * @returns {* | Promise<*>}
+ */
+
+/**
+ * @callback WaitCallback
+ * @returns {boolean} Si vrai, la boucle s'arrête.
+ */
+
 /**
  * Ajoute des fonctionnalités aux promesses déjà existantes.
  * Pour que les fonctions asynchrones soient complètement compatible, le premier argument doit être la promesse elle même.
@@ -7,7 +20,7 @@ export { Mel_Promise, Mel_Ajax, WaitSomething }
 class Mel_Promise {
     /**
      * 
-     * @param {Function} callback Fonction qui sera appelé 
+     * @param {MelPromiseCallback} callback Fonction qui sera appelé 
      * @param  {...any} args Arguments de la fonction
      */
     constructor(callback, ...args) {
@@ -269,8 +282,27 @@ class Mel_Promise {
         return callback(current, ...args);
     }
 
+    /**
+     * 
+     * @param {WaitCallback} whatIWait 
+     * @param {number} timeout second 
+     * @returns 
+     */
     static wait(whatIWait, timeout = 5){
         return new WaitSomething(whatIWait, timeout);
+    }
+
+    static Sleep(ms) {
+        return new Mel_Promise((current) => {
+            current.start_resolving();
+            setTimeout(() => {
+                current.resolve();
+            }, ms);
+        });
+    }
+
+    static Resolved() {
+        return new Mel_Promise(() => {});
     }
 }
 
@@ -289,6 +321,11 @@ class Mel_Ajax extends Mel_Promise{
 }
 
 class WaitSomething extends Mel_Promise {
+    /**
+     * 
+     * @param {WaitCallback} whatIWait 
+     * @param {number} timeout en secondes 
+     */
     constructor(whatIWait, timeout = 5) {
         let promise = new Mel_Promise((current) => {
             current.start_resolving();

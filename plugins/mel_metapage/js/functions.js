@@ -108,7 +108,7 @@ function m_mp_Create() {
         const _button = function(action, block = true) {
             return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action);
         }
-
+//debugger;
         let workspace = `<li class="col-12" id="workspace" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + _button(actions.espace, false) + '</li>'
         let mail = `<li class="col-sd-4 col-md-4" id="mail" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + _button(actions.mail) + "</li>";
         let reu = `<li class="col-sd-4 col-md-4" id="reu" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + _button(actions.event) + "</li>";
@@ -117,6 +117,48 @@ function m_mp_Create() {
         let document = `<li class="col-md-3" style="${haveNextcloud.style}" id="document" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + _button(actions.documents) + "</li>";
         let blocnote = `<li class="col-md-${haveNextcloud.col}"  id="blocnote" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + _button(actions.notes) + "</li>";
         let pega = `<li class="col-md-${haveNextcloud.col}" id="pega" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
+
+        if (!rcmail.env.plugin_list_workspace) {
+            workspace = '';
+        }
+
+        if (!rcmail.env.plugin_list_agenda) {
+            viso = viso.replace('col-6', 'col-12');
+            viso = viso.replace('col-sd-4 col-md-4', 'col-6');
+            mail = mail.replace('col-6', 'col-12');
+            mail = mail.replace('col-sd-4 col-md-4', 'col-6');
+            reu = '';
+        }
+
+        if (!rcmail.env.plugin_list_visio) {
+            reu = reu.replace('col-6', 'col-12');
+            reu = reu.replace('col-sd-4 col-md-4', 'col-6');
+            mail = mail.replace('col-6', 'col-12');
+            mail = mail.replace('col-sd-4 col-md-4', 'col-6');
+            viso = '';
+        }
+
+        if (!rcmail.env.plugin_list_tache) {
+            document = document.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = pega.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            tache = '';
+        }
+
+        if (!rcmail.env.plugin_list_document) {
+            tache = tache.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = pega.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            document = '';
+        }
+
+        if (!rcmail.env.plugin_list_sondage) {
+            document = document.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            blocnote = blocnote.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            tache = tache.replace('col-md-6', 'col-md-12').replace('col-md-4', 'col-md-6').replace('col-md-3', 'col-md-4');
+            pega = '';
+        }
+
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         let create_popUp = new GlobalModal("globalModal", config, !isSmall);
@@ -2482,7 +2524,7 @@ function save_option(_option_name, _option_value, element) {
 }
 
 //0007910: Popup d'information lors du clic sur un lien dans un mail
-function external_link_modal(_url) {
+function external_link_modal(_url, isSuspect = false) {
   let url = new URL(_url);
   let domain = url.hostname;
   let html = new mel_html2('div', { attribs: {id:'external-link-modal'},contents: [] });
@@ -2492,12 +2534,28 @@ function external_link_modal(_url) {
     new mel_html('span',{class:'material-symbols-outlined warning-icon-large'}, "warning"),
     new mel_html('span',{class:'ml-2'}, rcmail.gettext('mel_metapage.warning_external_link'))    
   ] });
-
-  let custom_switch = new mel_html2('div', { attribs: {class:'custom-control custom-switch no-click-focus'},contents: [
-    new mel_html('input',{name:'_trust_domain', id:'rcmfd_trust_domain', type:'checkbox', value:'false', class:'form-check-input custom-control-input no-click-focus', onchange:'$(this).val(this.checked)'}),
-    new mel_html('label',{for:'rcmfd_trust_domain', class:'custom-control-label option-switch no-click-focus pl-6'}, rcmail.gettext('mel_metapage.always_authorize') + '<span class="external_domain">'+domain+'</span>'),
-  ] });
-
+  let disableButton = false;
+  let custom_switch = null;
+  
+  if (!isSuspect) { 
+    custom_switch = new mel_html2('div', { attribs: {class:'custom-control custom-switch no-click-focus'},contents: [
+      new mel_html('input',{name:'_trust_domain', id:'rcmfd_trust_domain', type:'checkbox', value:'false', class:'form-check-input custom-control-input no-click-focus', onchange:'$(this).val(this.checked)'}),
+      new mel_html('label',{for:'rcmfd_trust_domain', class:'custom-control-label option-switch no-click-focus pl-6'}, rcmail.gettext('mel_metapage.always_authorize') + '<span class="external_domain">'+domain+'</span>'),
+    ] });
+  }
+  else {
+    disableButton = true;
+    let check = new mel_field('input', {name:'warning_suspect_url', id:'warning_suspect_url', type:'checkbox', value:'false', class:'form-check-input custom-control-input no-click-focus'});
+    check.onchange.push(( e ) => {
+      e.currentTarget.checked ? $('#modal-save-footer').removeClass('disabled') : $('#modal-save-footer').addClass('disabled');
+    });
+    
+    custom_switch = new mel_html2('div', { attribs: {class:'custom-control custom-switch no-click-focus'},contents: [
+      check,
+      new mel_html('label',{for:'warning_suspect_url', class:'custom-control-label option-switch no-click-focus pl-6'}, '<span class="external_domain">'+domain+'</span>' + rcmail.gettext('mel_metapage.warning_suspect_url') ),
+    ] });
+  }
+    
 
   html.addContent(title);
   html.addContent(link);
@@ -2506,14 +2564,15 @@ function external_link_modal(_url) {
 
   let buttons = [{
     text: rcmail.gettext('mel_metapage.back'),
-    'class': 'modal-close-footer btn mel-button btn-danger mel-before-remover px-4',
+    'class': 'modal-close-footer btn mel-button btn-danger mel-before-remover px-4 ',
     click: function () {
       $(this).closest('.ui-dialog-content').dialog('close');
     }
   },
   {
+    id: 'modal-save-footer',
     text: rcmail.gettext('mel_metapage.open_external_link'),
-    'class': 'modal-save-footer btn btn-secondary mel-button px-4',
+    'class': 'modal-save-footer btn btn-secondary mel-button px-4 ' + (disableButton ? 'disabled' : ''),
     click: function () {
       if($('#rcmfd_trust_domain').val() === "true") 
       {
@@ -2528,5 +2587,19 @@ function external_link_modal(_url) {
   }
   ];
 
-  rcmail.show_popup_dialog(html.generate(), rcmail.gettext("mel_metapage.attention"),buttons,{ width: 600, resizable: false, height: 180 });
+  rcmail.show_popup_dialog(html.generate(), rcmail.gettext("mel_metapage.attention"),buttons,{ width: 600, resizable: false, height: 210 });
+}
+
+function tchap_options () {
+    let $tchap = $('.tchap-frame');
+    if ($tchap.length > 0){
+        $tchap[0].contentWindow.rcmail.triggerEvent("tchap.options");
+    }
+}
+
+function tchap_disconnect () {
+    let $tchap = $('.tchap-frame');
+    if ($tchap.length > 0){
+        $tchap[0].contentWindow.rcmail.triggerEvent("tchap.disconnect");
+    }
 }

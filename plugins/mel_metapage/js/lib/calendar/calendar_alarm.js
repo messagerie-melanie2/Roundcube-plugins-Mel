@@ -52,6 +52,10 @@ export class Calendar_Alarm extends MelObject
         }
     }
 
+    _generate_listeners() {
+        this.rcmail().addEventListener()
+    }
+
     /**
      * Créer un timeout qui va afficher l'alarme lié à l'évènement.
      * @param {JSON} event Evènement de l'agenda
@@ -211,7 +215,6 @@ export class Calendar_Alarm extends MelObject
      */
     generate(events = [])
     {
-        
         if (events === undefined || events === null) return;
         else if (window !== parent) return;
 
@@ -237,8 +240,6 @@ export class Calendar_Alarm extends MelObject
                 this.show(time);
             }, iterator, iterator);
         }
-
-        console.trace();
     }
 
     is_alarm_valid(event) {

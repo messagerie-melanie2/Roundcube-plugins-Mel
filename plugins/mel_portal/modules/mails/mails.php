@@ -7,7 +7,7 @@ class Mails extends Module
     function init() {
         $this->edit_row_size(4);
         $this->edit_order(0);
-        $this->set_name('Courrier récents');
+        $this->set_name('Courriers récents');
         $this->set_icon('mail');
     }
 

@@ -1,4 +1,5 @@
 export {loader as CalendarLoader};
+import { MelEnumerable } from "../classes/enum.js";
 import { MainNav } from "../classes/main_nav.js";
 import { MelObject } from "../mel_object.js";
 
@@ -81,7 +82,7 @@ class CalendarLoader extends MelObject{
         const events = loaded_events ?? this.load_all_events();
 
         if (0 !== events.length) {
-            return_datas = Enumerable.from(events).where(x => this.is_date_okay(moment(x.start), moment(x.end), day)).toArray();
+            return_datas = MelEnumerable.from(events).where(x => this.is_date_okay(moment(x.start), moment(x.end), day)).toArray();
         }
 
         return return_datas;
@@ -95,12 +96,12 @@ class CalendarLoader extends MelObject{
      * @param {Object} options Options de cette fonction
      * @param {boolean} options.enumerable Si on récupère un énumerable ou non
      * @param {Array<Object> | null} options.loaded_events Si ce paramètre vaut null, les données seront chargés depuis le stockage local
-     * @returns {Generator | Array<Object>}
+     * @returns {MelEnumerable | Array<Object>}
      */
     get_next_events_day(day, {enumerable = true, loaded_events = null}) {
         const now = moment();
-        let enum_var = Enumerable.from(this.get_from_day(day, loaded_events)).where(x => moment(x.end) > now 
-                                                                                         && x.free_busy !== CONST_EVENT_DISPO_FREE 
+        let enum_var = MelEnumerable.from(this.get_from_day(day, loaded_events)).where(x => moment(x.end) > now 
+                                                                                         && x.free_busy !== CONST_EVENT_DISPO_FREE
                                                                                          && x.free_busy !== CONST_EVENT_DISPO_TELEWORK).orderBy(x => moment(x.start));
 
         return enumerable ? enum_var : enum_var.toArray();
@@ -187,7 +188,7 @@ class CalendarLoader extends MelObject{
             }
 
             const now = moment().startOf('day');
-            let all_events = Enumerable.from(loadedEvents).where(x => x !== null).orderBy(x => x.order).thenBy(x => moment(x.start));
+            let all_events = MelEnumerable.from(loadedEvents).where(x => x !== null).orderBy(x => x.order).then(x => moment(x.start));
             all_events = this._events_remove_moment(all_events).toArray();
             this.save(mel_metapage.Storage.calendar_all_events, all_events);
             this.save(mel_metapage.Storage.last_calendar_update, moment().format(CONST_DATE_FORMAT_BNUM));

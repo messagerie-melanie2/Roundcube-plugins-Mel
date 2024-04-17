@@ -7,6 +7,8 @@ import {
 	DATE_HOUR_FORMAT,
 } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { html_events } from '../../../../mel_metapage/js/lib/html/html_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { ID_RESOURCES_WSP } from '../constants.js';
 import { Workspace } from '../workspace.js';
@@ -66,7 +68,7 @@ class PlanningManager extends MelObject {
 				slotDuration: { minutes: 60 / settings.timeslots },
 				locale: 'fr',
 				axisFormat: DATE_HOUR_FORMAT,
-				slotLabelFormat: DATE_FORMAT,
+				slotLabelFormat: DATE_HOUR_FORMAT,
 				eventSources: [
 					{
 						events: async function (start, end, timezone, callback) {
@@ -129,6 +131,7 @@ class PlanningManager extends MelObject {
 									)
 									.select(x => {
 										return {
+											initial_data: x,
 											title: x.title,
 											start: x.start,
 											end: x.end,
@@ -165,6 +168,42 @@ class PlanningManager extends MelObject {
 						id: 'events',
 					},
 				],
+				eventRender: function (eventObj, $el) {
+					if (
+						eventObj.initial_data &&
+						!!(WebconfLink.create(eventObj.initial_data)?.key || false)
+					) {
+						$el
+							.click(() => {
+								const start = eventObj.initial_data.start.toDate
+									? eventObj.initial_data.start
+									: moment(eventObj.initial_data.start);
+								const date = start.toDate().getTime() / 1000.0;
+								html_events._action_click(
+									eventObj.initial_data.calendar,
+									date,
+									eventObj.initial_data,
+								);
+							})
+							.css('cursor', 'pointer')
+							.attr('title', eventObj.initial_data.title)
+							.tooltip()
+							.find('.fc-content')
+							.prepend(
+								MelHtml.start
+									.icon('videocam')
+									.css({
+										display: 'inline-block',
+										'vertical-align': 'middle',
+										'font-size': '18px',
+									})
+									.end()
+									.generate(),
+							);
+					} else {
+						$el.attr('title', eventObj.title).tooltip();
+					}
+				},
 			});
 			calendar.render();
 
@@ -329,7 +368,7 @@ class PlanningManager extends MelObject {
 			mel_metapage.EventListeners.calendar_updated.after,
 			this._refresh_callback.bind(this),
 			{
-				callback_key: `planning-${parent.workspace_frame_manager.getActiveFrame().get().attr('id')}`,
+				callback_key: `planning-${parent.workspace_frame_manager?.getActiveFrame?.()?.get?.()?.attr?.('id') || 0}`,
 			},
 		);
 	}

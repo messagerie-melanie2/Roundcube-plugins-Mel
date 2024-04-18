@@ -1511,6 +1511,7 @@ class mel_workspace extends bnum_plugin
 
     function setup_user_page()
     {
+        $env = [];
         $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
         $shares = $this->sort_user($this->currentWorkspace->shares); 
         $nbuser = count($shares);
@@ -1519,7 +1520,8 @@ class mel_workspace extends bnum_plugin
         $html .= '<div class="wsp-block">';
 
         foreach ($shares as $key => $value) {
-            $tmp = driver_mel::gi()->getUser($value->user)->name;
+            $user = driver_mel::gi()->getUser($value->user); 
+            $tmp = $user->name;
             
             if (isset($tmp) || $tmp !== '')
             {
@@ -1534,11 +1536,14 @@ class mel_workspace extends bnum_plugin
                     "<br/>".
                     html::tag("span", ["class" => "email"], driver_mel::gi()->getUser($value->user)->email ?? 'Adresse inconnue')
                 )
-            );
+                );
+                $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname];
             }
         }
 
         $html .= "</div></div>";
+
+        $this->rc->output->set_env('current_workspace_users', $env);
 
         return $html;
 
@@ -1714,7 +1719,7 @@ class mel_workspace extends bnum_plugin
         ];
 
         $icon_delete = "icon-mel-trash";
-
+        $env = [];
         $shares = $this->sort_user($this->currentWorkspace->shares); 
         $nbuser = count($shares);
 
@@ -1726,9 +1731,10 @@ class mel_workspace extends bnum_plugin
         $current_user = driver_mel::gi()->getUser();
 
         foreach ($share as $key => $value) {
+            $user =driver_mel::gi()->getUser($value->user);
             $from_list = $this->_check_if_is_in_list($workspace, $value->user);
             $html .= "<tr>";
-            $html .= '<td>'.(count($from_list) > 0 ? '<span style="margin-right:5px;vertical-align: bottom;" class="material-symbols-outlined" title="'.$this->_list_to_title($from_list).'">groups</span>' : ''). driver_mel::gi()->getUser($value->user)->fullname."</td>";
+            $html .= '<td>'.(count($from_list) > 0 ? '<span style="margin-right:5px;vertical-align: bottom;" class="material-symbols-outlined" title="'.$this->_list_to_title($from_list).'">groups</span>' : ''). $user->fullname."</td>";
             
             $html .= "<td>".$this->setup_params_value($icons_rights, $options_title, $current_title, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)
@@ -1737,7 +1743,11 @@ class mel_workspace extends bnum_plugin
                 $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger mel-button no-button-margin"><span class='.$icon_delete.'></span></button></td>';
             
             $html .= "</tr>";
+            $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname];
         }
+
+        $this->rc->output->set_env('current_workspace_users', $env);
+        unset($env);
         unset($from_list);
 
         $lists = $this->get_setting($workspace, "lists") ?? [];

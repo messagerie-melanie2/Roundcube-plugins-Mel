@@ -60,8 +60,14 @@ class FreeBusyLoader extends MelObject {
 			params: {
 				interval,
 				email: user,
-				start: sd.format(DATE_SERVER_FORMAT),
-				end: ed.format(DATE_SERVER_FORMAT),
+				start: sd
+					.format(DATE_SERVER_FORMAT)
+					.replaceAll('P', 'T')
+					.replaceAll('M', 'T'),
+				end: ed
+					.format(DATE_SERVER_FORMAT)
+					.replaceAll('P', 'T')
+					.replaceAll('M', 'T'),
 				_remote: 1,
 			},
 		});

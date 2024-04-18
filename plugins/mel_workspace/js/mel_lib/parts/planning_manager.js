@@ -57,14 +57,18 @@ class PlanningManager extends MelObject {
 			this.events = {};
 			this.loading = [];
 			this.calendar = null;
-			let $body = $('#wsp-block-calendar .block-body').html(EMPTY_STRING);
+			let $body = $('#wsp-block-calendar .block-body')
+				.css('margin-top', '5px')
+				.html(EMPTY_STRING);
 			const settings = cal.settings;
 
 			let calendar = new FullCalendar.Calendar($body, {
 				resources: await this.loadResources(),
 				defaultView: 'timelineDay',
 				schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
-				height: 200,
+				height: 210,
+				firstHour: settings.first_hour,
+				scrollTime: settings.first_hour + ':00',
 				slotDuration: { minutes: 60 / settings.timeslots },
 				locale: 'fr',
 				axisFormat: DATE_HOUR_FORMAT,
@@ -76,24 +80,15 @@ class PlanningManager extends MelObject {
 							var data = this.freebusy[start.format(DATE_FORMAT)];
 
 							if (!data) {
-								go = false;
-								this.loading.push(true);
-								$('#wsp-block-calendar .block-header .btn-arrow')
-									.addClass('disabled')
-									.attr('disabled');
+								go = this._set_busy();
+
 								data = await this.generateEvents(start);
 								this.freebusy[start.format(DATE_FORMAT)] = data;
 							}
 
 							callback(data);
 
-							if (!go) this.loading.pop();
-
-							if (this.loading.length === 0) {
-								$('#wsp-block-calendar .block-header .btn-arrow')
-									.removeClass('disabled')
-									.removeAttr('disabled');
-							}
+							this._unset_busy(go);
 						}.bind(this),
 						id: 'resources',
 					},
@@ -103,11 +98,8 @@ class PlanningManager extends MelObject {
 							let events = this.events[start.format(DATE_FORMAT)];
 
 							if (!events) {
-								go = false;
-								this.loading.push(true);
-								$('#wsp-block-calendar .block-header .btn-arrow')
-									.addClass('disabled')
-									.attr('disabled');
+								go = this._set_busy();
+
 								if (
 									start.format(DATE_FORMAT) === moment().format(DATE_FORMAT)
 								) {
@@ -157,22 +149,13 @@ class PlanningManager extends MelObject {
 
 							callback(events);
 
-							if (!go) this.loading.pop();
-
-							if (this.loading.length === 0) {
-								$('#wsp-block-calendar .block-header .btn-arrow')
-									.removeClass('disabled')
-									.removeAttr('disabled');
-							}
+							this._unset_busy(go);
 						}.bind(this),
 						id: 'events',
 					},
 				],
 				eventRender: function (eventObj, $el) {
-					if (
-						eventObj.initial_data &&
-						!!(WebconfLink.create(eventObj.initial_data)?.key || false)
-					) {
+					if (eventObj.initial_data) {
 						$el
 							.click(() => {
 								const start = eventObj.initial_data.start.toDate
@@ -186,31 +169,47 @@ class PlanningManager extends MelObject {
 								);
 							})
 							.css('cursor', 'pointer')
-							.attr('title', eventObj.initial_data.title)
-							.tooltip()
-							.find('.fc-content')
-							.prepend(
-								MelHtml.start
-									.icon('videocam')
-									.css({
-										display: 'inline-block',
-										'vertical-align': 'middle',
-										'font-size': '18px',
-									})
-									.end()
-									.generate(),
-							);
+							.attr('title', eventObj.initial_data.title);
+						if (WebconfLink.create(eventObj.initial_data)?.key) {
+							$el
+								.tooltip()
+								.find('.fc-content')
+								.prepend(
+									MelHtml.start
+										.icon('videocam')
+										.css({
+											display: 'inline-block',
+											'vertical-align': 'middle',
+											'font-size': '18px',
+										})
+										.end()
+										.generate(),
+								);
+						}
 					} else {
 						$el.attr('title', eventObj.title).tooltip();
 					}
 				},
+				resourceRender: function (resourceObj, labelTds) {
+					if (resourceObj.id !== ID_RESOURCES_WSP) {
+						labelTds
+							.attr(
+								'title',
+								this.get_env('current_workspace_users')?.[resourceObj.id]
+									?.fullname || resourceObj.title,
+							)
+							.tooltip();
+					}
+				}.bind(this),
 			});
 			calendar.render();
 
 			change_date = () => {};
 
+			$('#wsp-block-calendar').css('position', 'relative');
 			$('#wsp-block-calendar .block-header .btn-arrow').each((i, e) => {
 				e = $(e);
+				e.css('float', EMPTY_STRING).parent().css('justify-content', 'center');
 				switch (i) {
 					case 0:
 						e.off('click').on('click', async () => {
@@ -219,6 +218,65 @@ class PlanningManager extends MelObject {
 								$('#wsp-block-calendar .fc-left h2').text(),
 							);
 						});
+
+						e.parent().after(
+							MelHtml.start
+								.div({ class: 'btn-group col-6' })
+								.css('justify-content', 'center')
+								.button({
+									class: 'btn btn-secondary',
+									onclick: () => {
+										calendar.today();
+										$('.swp-agenda-date').text(
+											$('#wsp-block-calendar .fc-left h2').text(),
+										);
+									},
+								})
+								.text("Aujourd'hui")
+								.end()
+								.button({
+									class: 'btn btn-secondary',
+									id: 'ojdbtn',
+									onclick: () => {
+										let tmp = $('<input>')
+											.on('change', () => {
+												calendar.gotoDate(moment(tmp.val(), 'DD/MM/YYYY'));
+												tmp.remove();
+												tmp = null;
+												$('.swp-agenda-date').text(
+													$('#wsp-block-calendar .fc-left h2').text(),
+												);
+											})
+											.css({ position: 'absolute', opacity: 0, top: 0 })
+											.appendTo('body')
+											.datepicker()
+											.click();
+									},
+								})
+								.icon('arrow_drop_down')
+								.css('font-size', 'unset')
+								.end()
+								.end()
+								.end()
+								.generate(),
+						);
+
+						e.parent()
+							.parent()
+							.parent()
+							.parent()
+							.find('.col-6')
+							.first()
+							.removeClass('col-6')
+							.addClass('col-4');
+						$(e.parent().parent().parent().parent().find('.col-4')[1])
+							.removeClass('col-4')
+							.addClass('col-6');
+
+						e.parent()
+							.removeClass('col-6')
+							.addClass('col-2')
+							.css('display', 'flex');
 						break;
 
 					case 1:
@@ -228,6 +286,10 @@ class PlanningManager extends MelObject {
 								$('#wsp-block-calendar .fc-left h2').text(),
 							);
 						});
+						e.parent()
+							.removeClass('col-6')
+							.addClass('col-2')
+							.css('display', 'flex');
 						break;
 
 					default:
@@ -238,15 +300,79 @@ class PlanningManager extends MelObject {
 
 			this.get_custom_rules().addAdvanced(
 				'planning',
-				'#wsp-block-calendar .fc-left h2',
+				'#wsp-block-calendar .fc-left h2, #wsp-block-calendar .fc-header-toolbar',
 				'display:none',
 			);
 
-			$('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
+			this.get_custom_rules().addAdvanced(
+				'planning2',
+				'.block-header .row button, .swp-agenda-date, .wsp-agenda-icon',
+				'align-self: center',
+			);
+
+			this.get_custom_rules().addAdvanced(
+				'planning3',
+				'#planningmelloader .absolute-center',
+				'z-index:2',
+			);
+
+			$('.swp-agenda-date')
+				.css({
+					display: 'block',
+					'margin-top': '4px',
+				})
+				.text($('#wsp-block-calendar .fc-left h2').text())
+				.parent()
+				.css('display', 'flex');
+			$('.wsp-agenda-icon').parent().css('display', 'flex');
 
 			this.calendar = calendar;
 
 			this.addListeners();
+		}
+	}
+
+	_set_busy() {
+		this.loading.push(true);
+		$('#wsp-block-calendar .block-header button')
+			.addClass('disabled')
+			.attr('disabled');
+
+		if ($('#planningmelloader').length === 0)
+			this.get_skin()
+				.create_loader('planningmelloader', true, true)
+				.appendTo($('#wsp-block-calendar'));
+
+		if (!$('#planningblackloader').length) {
+			MelHtml.start
+				.div({ id: 'planningblackloader' })
+				.css({
+					position: 'absolute',
+					top: 0,
+					left: 0,
+					width: '100%',
+					height: '100%',
+					'background-color': '#00000082',
+					'z-index': 1,
+				})
+				.end()
+				.generate()
+				.appendTo($('#wsp-block-calendar'));
+		}
+
+		return false;
+	}
+
+	_unset_busy(go) {
+		if (!go) this.loading.pop();
+
+		if (this.loading.length === 0) {
+			$('#wsp-block-calendar .block-header button')
+				.removeClass('disabled')
+				.removeAttr('disabled');
+
+			$('#planningmelloader').remove();
+			$('#planningblackloader').remove();
 		}
 	}
 
@@ -308,7 +434,12 @@ class PlanningManager extends MelObject {
 			resources = MelEnumerable.from(resources)
 				.select(x => x.value)
 				.select(x => {
-					return { id: x.email, title: x.email, slot: x };
+					return {
+						id: x.email,
+						title:
+							rcmail.env.current_workspace_users?.[x.email]?.name || x.email,
+						slot: x,
+					};
 				});
 
 			resources = MelEnumerable.from([
@@ -325,7 +456,9 @@ class PlanningManager extends MelObject {
 			this.memory_clear = true;
 		}
 
-		return resources;
+		return MelEnumerable.from(resources)
+			.orderBy(x => (x.id === ID_RESOURCES_WSP ? 'A' : x.title))
+			.toArray();
 	}
 
 	/**
@@ -352,7 +485,9 @@ class PlanningManager extends MelObject {
 		)) {
 			resources.push({
 				id: iterator.email,
-				title: iterator.email,
+				title:
+					this.get_env('current_workspace_users')?.[iterator.email]?.name ||
+					iterator.email,
 				slot: iterator,
 			});
 		}

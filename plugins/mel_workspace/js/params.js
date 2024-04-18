@@ -1440,7 +1440,6 @@
 	});
 
 	$(document).ready(() => {
-		rcmail.addEventListener('init', () => {
 			rcmail.env.WSP_Param = new Workspace_Param(
 				rcmail.env.current_workspace_uid,
 			);
@@ -1682,6 +1681,6 @@
 					rcmail.env.WSP_Param.paramUpdated($('#wsp-param-btn-hashtag'));
 				}
 			});
-		}); //init end
+		 //init end
 	});
 })();

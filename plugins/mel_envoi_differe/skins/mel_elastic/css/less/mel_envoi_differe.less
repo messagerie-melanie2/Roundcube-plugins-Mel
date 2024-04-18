@@ -1,0 +1,124 @@
+//compress:false
+
+/*Affichage du bouton*/
+.toolbar{
+    a.button.mel_envoie_differe {
+        background-position: 10px center !important;
+        color: var(--labels-text-color);
+        text-indent: 0;
+        font-weight: bold;
+        font-size: 13px;
+        width: 125px;
+        line-height: 30px;
+        padding-left: 30px;
+        
+        &.enable{
+            border-color: #3ec400;
+        }
+    }
+}
+
+/*Affichage du dialog*/
+body.envoidiffere {
+	background: #fff !important;
+	background: var(--main-content-bg-color) !important;
+}
+
+#envoidiffere_date {
+    width: 140px;
+    margin-right: 10px;
+}
+
+#info_message {
+    position: absolute;
+    bottom: 20px;
+}
+
+#error_message {
+    margin-top: 20px;
+    color: var(--settings-disconnect-text-color);
+}
+
+#envoidiffere_time {
+    width: 120px;
+}
+
+#envoidiffere-details{
+    .warning{
+        margin-top: 5px;
+        padding: 10px 15px;
+        color: var(--box-warning-text-color);
+        border: 1px solid #d8cebc;
+        border-color: var(--box-warning-border-color);
+        background-color: #ffe1e0;
+        background-color: var(--box-warning-bg-color);
+    }
+    .margin{
+        margin: 30px 0;
+        display: grid;
+        grid-template-columns: max-content max-content max-content max-content;
+        grid-gap: 5px;
+
+        label{
+            line-height: 32px;
+        }
+    }
+    .saving{
+        margin-bottom: 30px;
+        display: grid;
+        grid-template-areas:    "a b"
+                                "c c";
+        grid-gap: 5px;
+        grid-template-columns: 30px 1fr;
+        .checkbox{
+            grid-area: a;
+        }
+        .checkbox_label{
+            grid-area: b;
+        }
+        .checkbox_description{
+            display: block;
+            grid-area: c;
+        }
+    }
+    .ui-menu{
+        max-height: 200px;
+        .ui-menu-item {
+            a {
+                color: #363A5B;
+            }
+        }
+    }
+}
+
+#disconnection_popup{
+    span {
+        display: block;
+        margin: 10px 0;
+        &.title{
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+    }   
+}
+
+.ui-dialog.disconnection_popup{
+    .ui-dialog-buttonpane{
+        height: 9rem;
+    }
+    .ui-dialog-buttonset {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+.layout-phone{
+    .ui-dialog-buttonpane{
+        height: auto!important;
+    }
+    .ui-dialog-buttonset{
+        .btn-secondary{
+            color: var(--quit-button-text-color)!important;
+        }
+    }
+}

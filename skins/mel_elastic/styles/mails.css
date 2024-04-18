@@ -81,7 +81,7 @@ html body.task-mail.action-show #layout-content {
   overflow: auto;
 }
 .task-mail .mail-floating-button {
-  z-index: 999;
+  z-index: 101;
   position: absolute;
   bottom: 18px;
   right: 8px;

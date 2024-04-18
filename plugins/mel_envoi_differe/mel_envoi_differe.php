@@ -111,7 +111,7 @@ class mel_envoi_differe extends rcube_plugin
         if ($deconnection_enabled
                 && $rcmail->output->type == 'html' 
                 && !$rcmail->output->env['framed']) {
-            $this->add_texts('localization/', ['disco_popup_title', 'disco_popup_description', 
+            $this->add_texts('localization/', ['disco_popup_text','disco_popup_title', 'disco_popup_description', 
                 'disco_button_continue', 'disco_button_continue_with_remise_differe',
                 'disco_button_disconnect'
             ]);
@@ -131,7 +131,7 @@ class mel_envoi_differe extends rcube_plugin
     function refresh() 
     {
         if ($this->is_deconnection_right_enable()) {
-            $this->add_texts('localization/', ['disco_popup_title', 'disco_popup_description', 
+            $this->add_texts('localization/', ['disco_popup_text','disco_popup_title', 'disco_popup_description', 
                 'disco_button_continue', 'disco_button_continue_with_remise_differe',
                 'disco_button_disconnect'
             ]);

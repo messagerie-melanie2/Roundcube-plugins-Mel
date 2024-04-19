@@ -4420,3 +4420,6 @@ html.layout-phone .task-mail .popover .menu li a[aria-haspopup].dropdown::after 
 .wlp_contents {
   border: none;
 }
+.wsp-block-calendar {
+  position: relative;
+}

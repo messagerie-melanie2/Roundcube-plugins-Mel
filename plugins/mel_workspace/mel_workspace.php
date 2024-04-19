@@ -584,7 +584,7 @@ class mel_workspace extends bnum_plugin
         $this->include_stylesheet($this->local_skin_path().'/links.css');
 
         $this->include_script('js/workspace_frame_manager.js');
-        $this->load_script_module('workspace', '/js/mel_lib/');
+        //$this->load_script_module('workspace', '/js/mel_lib/');
 
         $this->rc->output->set_env("current_workspace_page", rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC));
         $this->rc->output->set_env("current_settings", json_decode($this->currentWorkspace->settings));

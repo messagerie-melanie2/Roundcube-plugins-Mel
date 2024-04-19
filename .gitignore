@@ -10,6 +10,7 @@ jsdoc-config.json
 yarn.lock
 .eslintrc.json
 .prettierrc.json
+.prettierc.json
 
 aide/config.php
 aide/custom.css

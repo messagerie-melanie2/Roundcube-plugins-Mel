@@ -87,6 +87,8 @@ class PlanningManager extends MelObject {
     change_date = () => {};
 
     this.calendar = this._generate_calendar($body, settings, resources);
+    window.pc = this.calendar;
+    $('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
   }
 
   /**
@@ -214,6 +216,70 @@ class PlanningManager extends MelObject {
       .parent()
       .css('display', 'flex');
     $('.wsp-agenda-icon').parent().css('display', 'flex');
+
+    this._update_visuals();
+  }
+
+  _update_visuals() {
+    if ($('#wsp-block-tasks').length) {
+      $('#wsp-block-tasks')
+        .hide()
+        .parent()
+        .removeClass('col-md-6')
+        .addClass('col-12');
+      $('.tasks').hide();
+      $('.reunions').text('Mes évènements').after(this._generate_tabs());
+      $('#wsp-block-calendar')
+        .parent()
+        .removeClass('col-md-6')
+        .addClass('col-12');
+    }
+  }
+
+  _generate_tabs() {
+    return MelHtml.start
+      .row({ class: 'mel-ui-tab-system' })
+      .css('padding-bottom', '15px')
+      .div({
+        id: 'tab-events-planning',
+        class: 'tab-events mel-tab mel-tabheader active',
+        tabindex: 0,
+        onclick: () => {
+          $('#tab-events-tasks').removeClass('active').attr('tabindex', -1);
+          $('#tab-events-planning').addClass('active').attr('tabindex', 0);
+          $('#wsp-block-calendar').show();
+          $('#wsp-block-tasks').hide();
+          this.calendar.render();
+        },
+        onkeydown: (e) => {
+          if (e.originalEvent.keyCode === 39) {
+            $('#tab-events-tasks').click().focus();
+          }
+        },
+      })
+      .text('Planning')
+      .end()
+      .div({
+        id: 'tab-events-tasks',
+        class: 'tab-events mel-tab mel-tabheader last',
+        tabindex: -1,
+        onclick: () => {
+          $('#tab-events-planning').removeClass('active').attr('tabindex', -1);
+          $('#tab-events-tasks').addClass('active').attr('tabindex', 0);
+          $('#wsp-block-calendar').hide();
+          $('#wsp-block-tasks').show();
+          this.calendar.render();
+        },
+        onkeydown: (e) => {
+          if (e.originalEvent.keyCode === 37) {
+            $('#tab-events-planning').click().focus();
+          }
+        },
+      })
+      .text('Mes tâches')
+      .end()
+      .end()
+      .generate();
   }
 
   /**
@@ -226,6 +292,7 @@ class PlanningManager extends MelObject {
     $btn.parent().after(
       MelHtml.start
         .div({ class: 'btn-group col-6' })
+        .css('max-width', '180px')
         .css('justify-content', 'center')
         .button({
           class: 'btn btn-secondary',
@@ -259,7 +326,13 @@ class PlanningManager extends MelObject {
       .removeClass('col-4')
       .addClass('col-6');
 
-    $btn.parent().removeClass('col-6').addClass('col-2').css('display', 'flex');
+    $btn
+      .parent()
+      .removeClass('col-6')
+      .addClass('col-2')
+      .css('display', 'flex')
+      .parent()
+      .css('justify-content', 'end');
   }
 
   /**
@@ -340,11 +413,7 @@ class PlanningManager extends MelObject {
     for (const iterator of resources) {
       if (!iterator.slot) continue;
       for (const slot of iterator.slot) {
-        if (
-          [Slot.STATES.telework, Slot.STATES.leave, Slot.STATES.oof].includes(
-            slot.state,
-          )
-        ) {
+        if (![Slot.STATES.free, Slot.STATES.unknown].includes(slot.state)) {
           events.push({
             title: Slot.TEXTES[slot.state],
             start: slot.start,
@@ -523,7 +592,7 @@ class PlanningManager extends MelObject {
           return {
             initial_data: x,
             title: x.title,
-            start: x.start,
+            start: x.allDay ? moment(x.start).startOf('day') : x.start,
             end: x.end,
             resourceId: ID_RESOURCES_WSP,
             color: rcmail.env.current_settings.color,

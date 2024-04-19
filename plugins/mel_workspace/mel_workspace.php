@@ -1183,8 +1183,9 @@ class mel_workspace extends bnum_plugin
                     $col["left"] = $col["right"];
                     $col["right"] = "";
                 }
+
                 $html_return .= html::div(["class" => "row"], 
-                    html::div(["class" => "col-md-6 ta-left mel-responsive-tab-content",                    
+                    html::div(["class" => ($col['right'] === '' ? 'col-md-12' : 'col-md-6')." ta-left mel-responsive-tab-content",                    
                         "data-selector-tab" => '.ta-left',
                         'data-is-default-tab' => true,
                         'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'
@@ -1193,7 +1194,7 @@ class mel_workspace extends bnum_plugin
                     "data-selector-tab" => '.ta-right',
                     'data-is-default-tab' => false,
                     'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'], $col["right"]))
-                );
+                );                
             }
     
             $email = self::get_wsp_mail($uid);

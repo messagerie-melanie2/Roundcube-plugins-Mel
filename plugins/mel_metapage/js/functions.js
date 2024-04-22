@@ -1195,7 +1195,6 @@ function m_mp_autocomplete_startup($element, val = '')
 }
 
 function m_mp_autocoplete(element, action_after = null, append = true) {
-//debugger;
     element = element.val === undefined ? ("#" + element.id) : ("#" + element[0].id);
 
     let val = $(element).val();

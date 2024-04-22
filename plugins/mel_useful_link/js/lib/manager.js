@@ -492,14 +492,6 @@ export class LinkManager extends MelObject {
         if (linkBlock && !linkBlock.parentElement.classList.contains('multilink-container')) {
           linkBlock.classList.add('link-block-hovered');
         }
-        // const multilinkIconContainer = event.target.closest('.multilink-icon-container');
-        // if (multilinkIconContainer) {
-        //   multilinkIconContainer.classList.add('multilink-block-hovered');
-        // }
-        // const sublink = event.target.classList.contains('sublink');
-        // if (sublink) {
-        //   event.target.closest('.multilink-icon-container').classList.add('multilink-block-hovered');
-        // }
       });
 
 			document.addEventListener('dragleave', function (event) {
@@ -511,13 +503,6 @@ export class LinkManager extends MelObject {
 						.closest('.link-block.link-block-hovered')
 						.classList.remove('link-block-hovered');
 				}
-        // if (event.target.classList.contains('multilink-icon-container'))
-        //   event.target.classList.remove('multilink-block-hovered');
-        
-        // const sublink = event.target.classList.contains('sublink');
-        // if (sublink) {
-        //   event.target.closest('.multilink-icon-container').classList.add('multilink-block-hovered');
-        // }
 			});
 
 			document.addEventListener(

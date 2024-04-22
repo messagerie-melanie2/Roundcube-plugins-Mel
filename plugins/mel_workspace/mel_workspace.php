@@ -778,14 +778,6 @@ class mel_workspace extends bnum_plugin
                     if ($is_admin || $services[self::LINKS])
                         $html .= $vseparate;
                 }
-
-                if ($services[self::LINKS])
-                {
-                    $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('links', this)" ,"class" => "$add_classes wsp-toolbar-item wsp-links"], "<span class='".$icons_class."'>".$icons["links"]."</span><span class=text-item>".$this->rc->gettext("useful_links", "mel_workspace")."</span>");
-                    
-                    if ($is_admin)
-                        $html .= $vseparate;
-                }
         
                 if ($is_admin)
                     $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('params', this)","class" => "$add_classes wsp-toolbar-item wsp-item-params"], "<span class='".$icons_class."'>".$icons["params"]."</span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
@@ -1336,9 +1328,6 @@ class mel_workspace extends bnum_plugin
                      $this->get_workspace_ulinks();
                     
                     $before_body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
-                        html::tag("button", ["onclick" => "$('.wsp-toolbar-item.wsp-links').click()", "class" => "mel-button btn btn-secondary white mel-before-remover", "style" => "    margin: 0 10px;"], 
-                            '<span>Voir tout</span><span class="icon-mel-external plus"></span>'
-                        ).
                         html::tag("button", ["id" => "mulba", "class" => "mel-button btn btn-secondary"], 
                             '<span>Créer</span><span class="icon-mel-plus plus"></span>'
                         )

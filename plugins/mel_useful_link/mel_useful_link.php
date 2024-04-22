@@ -75,6 +75,7 @@ class mel_useful_link extends bnum_plugin
 
     public function update_list() {
       $newOrder = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
+      $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_POST);
 
       $newList = array();
       foreach ($newOrder as $object) {
@@ -89,7 +90,10 @@ class mel_useful_link extends bnum_plugin
         }
     }
 
-      $this->rc->user->save_prefs(array('new_personal_useful_links' => $newList));
+      if(!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $newList])['done']) 
+      {
+        $this->rc->user->save_prefs(array('new_personal_useful_links' => $newList));
+      }
     }
 
     public function include_uLinks()
@@ -233,9 +237,14 @@ class mel_useful_link extends bnum_plugin
 
       $links = [];
       foreach ($serialized_links as $key => $value) {
-        $value = json_decode($value);
-        $temp = new MelLink($id, $value->title, $value->link);
-        $links[] = $temp->serialize();
+        $decoded_value = json_decode($value);
+        if ($decoded_value->configKey) {
+          $temp = new MelLink($decoded_value->configKey, $decoded_value->title, $decoded_value->link);
+          $links[] = $temp->serialize();
+        }
+        else {
+          $links[] = $value;
+        }
       }
 
       return $links;
@@ -313,71 +322,63 @@ class mel_useful_link extends bnum_plugin
         return $links;
     }
 
+    //NEW
     function update_link()
     {
-      $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
-      $title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_GPC);
-      $link = rcube_utils::get_input_value("_link", rcube_utils::INPUT_GPC);
+      include_once "lib/link.php";
+  
+      $link = rcube_utils::get_input_value("link", rcube_utils::INPUT_GPC);
+      $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_GPC);
 
-      $isMultiLink = is_array($link) || strpos($link, '{') !== false;
-
-      // if ($isMultiLink) $link = json_decode($link);
-
+      $id = $link['_id'];
+      $title = $link['_title'];
+      $link = $link['_link'];
+      $config = [];
+      $melLink;
+  
       if ($id === "")
         $id = null;
-
-      //Vérification des anciens
-      $config = $id === null ? [
-
-      ] : $this->rc->config->get('portail_personal_items', []);
-
-        include_once "lib/link.php";
-
-        // //Suppression de l'ancien lien 
-        // if ($config[$id] !== null)
-        // {
-        //   //$this->child_old_links_to_new_link($config, $id);
-        //   unset($config[$id]);
-        //   $id = null;
-        //   $this->rc->user->save_prefs(array('portail_personal_items' => $config));
-        // }
-
-        $config = $this->rc->config->get('new_personal_useful_links', []);
-        $melLink;
-        
-        if ($id === null)
-        {
-          // $id = $this->generate_id($title, $config);
-          $id = uniqid();
-
-          if($isMultiLink) 
-            $melLink = new MelFolderLink($id, $title, $link);
-          else 
-            $melLink = new MelLink($id, $title, $link);
+  
+  
+      $isMultiLink = is_array($link) || strpos($link, '{') !== false;
+  
+      $external_links = get_object_vars($this->rc->plugins->exec_hook('get_external_ulink', ['key' => $key])['links']);
+  
+      $config = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
+  
+      if ($id === null) {
+        $id = uniqid();
+  
+        if ($isMultiLink)
+          $melLink = new MelFolderLink($id, $title, $link);
+        else
+          $melLink = new MelLink($id, $title, $link);
+      } 
+      else {
+        $melLink = json_decode($config[$id]);
+  
+        if ($isMultiLink)
+          $melLink = new MelFolderLink($id, $title, $link);
+        else
+          $melLink = new MelLink($id, $title, $link);
+      }
+  
+      //On supprime les anciens liens
+      if ($isMultiLink) {
+        foreach ($link as $link_key => $value) {
+          unset($config[$link_key]);
         }
-        else 
-        {
-          $melLink = json_decode($config[$id]);
+      }
+  
+      $config[$id] = $melLink->serialize();
 
-          if($isMultiLink) 
-            $melLink = new MelFolderLink($id, $title, $link);
-          else 
-            $melLink = new MelLink($id, $title, $link);
-        }
-
-        //On supprime les anciens liens
-        if ($isMultiLink) {
-         foreach ($link as $key => $value) {
-          unset($config[$key]);
-         }
-        }
-
-        $config[$id] = $melLink->serialize();
+      if(!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $config])['done']) 
+      {
         $this->rc->user->save_prefs(array('new_personal_useful_links' => $config));
-      
+      }
+
       echo $id;
       exit;
-
     }
 
     public function update_default_color()
@@ -536,32 +537,21 @@ class mel_useful_link extends bnum_plugin
         }
     }
 
+    //NEW
     function delete_link()
     {
       $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
-      $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC) ?? false;
-      $isSubItem = false;
+      $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_GPC);
+
+      $external_links = get_object_vars($this->rc->plugins->exec_hook('get_external_ulink', ['key' => $key])['links']);
       
-      //Supression chez les anciens
-      $config = $this->rc->config->get('portail_personal_items', []);
-      if ($config[$id] !== null && !$isSubItem)
+      $links = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
+
+      unset($links[$id]);
+
+      if(!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $links])['done']) 
       {
-        //$this->child_old_links_to_new_link($config, $id);
-        unset($config[$id]);
-        $this->rc->user->save_prefs(array('portail_personal_items' => $config));
-      }
-      else if($isSubItem)
-      {
-        $parent = rcube_utils::get_input_value("_subparent", rcube_utils::INPUT_GPC);
-        $child = rcube_utils::get_input_value("_subid", rcube_utils::INPUT_GPC);
-        $isButton = $config[$parent]["links"] === null;
-        unset($config[$parent][$isButton ? "buttons" : "links"][$child]);
-        $this->rc->user->save_prefs(array('portail_personal_items' => $config));
-      }
-      else {
-        $config = $this->rc->config->get('new_personal_useful_links', []);
-        unset($config[$id]);
-        $this->rc->user->save_prefs(array('new_personal_useful_links' => $config));
+        $this->rc->user->save_prefs(array('new_personal_useful_links' => $links));
       }
 
       echo true;

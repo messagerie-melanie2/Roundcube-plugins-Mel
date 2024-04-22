@@ -84,7 +84,10 @@ class mel_workspace extends bnum_plugin
         $this->include_script('js/epingle.js');
 
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
-        $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+        $this->add_hook('preferences_save',  array($this, 'prefs_save'));
+        $this->add_hook('get_external_ulink', array($this, 'get_workspace_ulinks_by_id'));
+        $this->add_hook('save_external_ulinks', array($this, 'save_workspace_ulinks'));
+
 
         // Ajoute le bouton en fonction de la skin
         $need_button = 'taskbar';
@@ -1333,15 +1336,10 @@ class mel_workspace extends bnum_plugin
                      $this->get_workspace_ulinks();
                     
                     $before_body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
-                        // html::tag("button", ["title" => "Actualiser","id" => "refresh-nc", "onclick" => "rcmail.env.wsp_roundrive_show.checkNews()", "class" => "mel-button btn btn-secondary"],
-                        //     '<span class="icofont-refresh"><p class="sr-only">Actualiser la visualisation du stockage</p></span>'
-                        // ).
-                        html::tag("button", ["onclick" => "$('.wsp-toolbar-item.wsp-links').click()", "class" => "mel-button btn btn-secondary white mel-before-remover", "style" => "    margin: 0 10px;
-                    margin-top: 15px;
-                    "], 
+                        html::tag("button", ["onclick" => "$('.wsp-toolbar-item.wsp-links').click()", "class" => "mel-button btn btn-secondary white mel-before-remover", "style" => "    margin: 0 10px;"], 
                             '<span>Voir tout</span><span class="icon-mel-external plus"></span>'
                         ).
-                        html::tag("button", ["id" => "button-create-new-ulink", "class" => "mel-button btn btn-secondary"], 
+                        html::tag("button", ["id" => "mulba", "class" => "mel-button btn btn-secondary"], 
                             '<span>Créer</span><span class="icon-mel-plus plus"></span>'
                         )
                     );
@@ -3830,142 +3828,52 @@ class mel_workspace extends bnum_plugin
     public function get_uLinks()
     {
         $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
-
-        $uLinks = $this->rc->plugins->get_plugin('mel_useful_link');
-        $uLinks->include_uLinks();
-
-        //$htmls = $uLinks->get_workspace_link(self::get_workspace($id), $this, true);
-
-        $pined = function ()
-        {
-            return $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link(self::get_workspace(rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC)), $this, true)["pined"];
-        };
-
-        $joined = function () {
-            return $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link(self::get_workspace(rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC)), $this, true)["joined"];
-        };
-
-        $this->rc->output->add_handlers(array(
-            'epingle'    => $pined,
-        ));
-        $this->rc->output->add_handlers(array(
-            'joined'    => $joined,
-        ));
-
-        $this->include_script('js/addons/updated_links.js');
-        $this->rc->output->set_env("current_workspace_id", $id);
+        
+        $this->get_workspace_ulinks(self::get_workspace($id));
 
         $this->rc->output->send('mel_useful_link.index');
     }
 
-    function update_ulink()
-    {
-        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
-        $title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_GPC);
-        $link = rcube_utils::get_input_value("_link", rcube_utils::INPUT_GPC);
-        $from = rcube_utils::get_input_value("_from", rcube_utils::INPUT_GPC);
-        $showWhen = rcube_utils::get_input_value("_sw", rcube_utils::INPUT_GPC);
-        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
-        $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
-        $textColor = rcube_utils::get_input_value("_text_color", rcube_utils::INPUT_GPC);
-
-        $isMultiLink = is_array($link) || strpos($link, '{') !== false;
-
-        if ($isMultiLink) $link = json_decode($link);
-
-        $workspace = $this->get_workspace($wid);
-        $config = $this->get_object($workspace, self::LINKS);
-
-        if ($id === "")
-            $id = null;
-
-        if ($config->$id === null)
-        {
-            $id = $this->rc->plugins->get_plugin('mel_useful_link')->generate_id($title, $config);
-            if (is_array($config))
-                $config[$id] = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color,  $textColor, $isMultiLink)->serialize();
-            else
-                $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color,  $textColor, $isMultiLink)->serialize();
-        
-            self::notify($workspace, (driver_mel::gi()->getUser()->name." a ajouté le lien : $title"), str_replace('<wsp/>', $workspace->title, $this->gettext("mel_workspace.notification_content2")),                  [    [
-                'href' => "./?_task=workspace&_action=workspace&_page=links&_uid=".$workspace->uid,
-                'text' => $this->gettext("mel_workspace.open"),
-                'title' => $this->gettext("mel_workspace.click_for_open"),
-                'command' => "event.click"
-            ]]);
-        }
-        else {
-            $newLink = mel_useful_link::toLink($config->$id);
-            $newLink->title = $title;
-
-            if ($isMultiLink)
-            {
-                $newLink->links = [];
-                foreach ($link as $key => $value) {
-                    $newLink->addLink($key, $value);
-                }
-            }else             $newLink->link = $link;
-
-
-            $newLink->from = $from;
-            $newLink->showWhen = $showWhen;
-            $newLink->color = $color;
-            $config->$id = $newLink->serialize();
-        }
-
-        $this->save_object($workspace, self::LINKS, $config);
-
-        self::edit_modified_date($workspace, false);
-        $workspace->save();
-
-        echo true;
-        exit;
-
-    }
-
-    function delete_ulink()
-    {
-        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
-        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
-
-        $workspace = $this->get_workspace($wid);
-        $config = $this->get_object($workspace, self::LINKS);
-
-        unset($config->$id);
-
-        $this->save_object($workspace, self::LINKS, $config);
-        self::edit_modified_date($workspace, false);
-        $workspace->save();
-    }
-
-    function pin_ulink()
-    {
-        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
-        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
-
-        $workspace = $this->get_workspace($wid);
-        $config = $this->get_object($workspace, self::LINKS);
-
-        $link = mel_useful_link::toLink($config->$id);
-        $link->pin = !$link->pin;
-        $config->$id = $link->serialize();
-
-        $this->save_object($workspace, self::LINKS, $config);
-        self::edit_modified_date($workspace, false);
-        $workspace->save();
-
-        echo true;
-        exit;
-    }
-
-    function get_workspace_ulinks() {
+    function get_workspace_ulinks($workspace = null) {
+      $workspace = $workspace ?? $this->currentWorkspace;
       $this->load_script_module_from_plugin('mel_useful_link', 'manager');
 
-    
-      $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
+      $links_plugin = $this->rc->plugins->get_plugin('mel_useful_link');
+      $links_plugin->load_config();
+
+      $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+
+      $links = $links_plugin->get_workspace_link($workspace, $this, true);
 
       $this->rc->output->set_env("mul_items", $links);
+      $this->rc->output->set_env("mul_items_key", 'ws#'.$workspace->uid);
     }
+
+    function get_workspace_ulinks_by_id($args) {
+      if (substr($args['key'], 0, 3) === "ws#") {
+        $workspace_id = substr($args['key'], 3);
+        $workspace = self::get_workspace($workspace_id);
+        $args['links'] = $this->get_object($workspace, self::LINKS);
+      }
+
+      return $args;
+    }
+
+    function save_workspace_ulinks($args) {
+      if (substr($args['key'], 0, 3) === "ws#") {
+        $workspace_id = substr($args['key'], 3);
+        $workspace = $this->get_workspace($workspace_id);
+
+        $this->save_object($workspace, self::LINKS, $args['links']);
+        $workspace->save();
+        $args['done'] = true;
+
+        return $args;
+      }
+      $args['done'] = false;
+      return $args;
+    }
+
 
     function refresh_documents()
     {

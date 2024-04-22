@@ -26,6 +26,7 @@ export class LinkManager extends MelObject {
 	 */
 	openLinkModal(id = null, title = null, url = null) {
 		let self = this;
+
 		if (this.newLinkModal) {
 			this.newLinkModal.show();
 			this.getModalValue(id, title, url);
@@ -33,19 +34,20 @@ export class LinkManager extends MelObject {
 			this.bindModalActions();
 		} else {
 			const html = MelHtml.start
+      .div()
 				.row({ class: 'mx-2' })
-				.span({ class: 'text-danger' })
-				.text('*')
-				.end()
-				.text(rcmail.gettext('required_fields', 'mel_useful_link'))
+          .span({ class: 'text-danger' })
+            .text('*')
+          .end()
+				  .text(rcmail.gettext('required_fields', 'mel_useful_link'))
 				.end()
 				.input({ id: 'mulc-id', type: 'hidden', value: id })
 				.row({ class: 'mx-2' })
-				.label({ class: 'span-mel t1 first', for: 'mulc-title' })
-				.span({ class: 'text-danger' })
-				.text('*')
-				.end()
-				.text(rcmail.gettext('link_name', 'mel_useful_link'))
+          .label({ class: 'span-mel t1 first', for: 'mulc-title' })
+          .span({ class: 'text-danger' })
+            .text('*')
+          .end()
+          .text(rcmail.gettext('link_name', 'mel_useful_link'))
 				.end()
 				.input({
 					id: 'mulc-title',
@@ -88,6 +90,7 @@ export class LinkManager extends MelObject {
 				.end()
 				.end()
 				.end()
+				.end()
 				.generate();
 
 			this.newLinkModal = new RcmailDialog(html, {
@@ -121,22 +124,24 @@ export class LinkManager extends MelObject {
 	 */
 	openFolderModal(id = null, title = null) {
 		const html = MelHtml.start
-			.input({ id: 'mulc-id', type: 'hidden', value: id })
-			.row({ class: 'mx-2' })
-			.label({ class: 'span-mel t1 first', for: 'mulc-title' })
-			.span({ class: 'text-danger' })
-			.text('*')
-			.end()
-			.text(rcmail.gettext('folder_name', 'mel_useful_link'))
-			.end()
-			.input({
-				id: 'mulc-title',
-				class: 'form-control input-mel required',
-				required: true,
-				placeholder: rcmail.gettext('link_title', 'mel_useful_link'),
-				value: title,
-			})
-			.end()
+      .div()
+        .input({ id: 'mulc-id', type: 'hidden', value: id })
+        .row({ class: 'mx-2' })
+        .label({ class: 'span-mel t1 first', for: 'mulc-title' })
+        .span({ class: 'text-danger' })
+        .text('*')
+        .end()
+        .text(rcmail.gettext('folder_name', 'mel_useful_link'))
+        .end()
+        .input({
+          id: 'mulc-title',
+          class: 'form-control input-mel required',
+          required: true,
+          placeholder: rcmail.gettext('link_title', 'mel_useful_link'),
+          value: title,
+        })
+        .end()
+      .end()
 			.generate();
 
 		this.newFolderModal = new RcmailDialog(html, {
@@ -642,7 +647,7 @@ export class LinkManager extends MelObject {
 				);
 				return mel_metapage.Functions.post(
 					mel_metapage.Functions.url('useful_links', 'update_list'),
-					{ _list: rcmail.env.mul_items },
+					{ _list: rcmail.env.mul_items, _key:rcmail.env.mul_items_key },
 					() => {
 						rcmail.set_busy(false, 'loading', busy);
 					},

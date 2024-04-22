@@ -1084,18 +1084,18 @@ async function InitLinks()
             }
         });
 
-        $("#button-create-new-ulink").click(() =>{
-            GetLinkPopUp().setLinkEditor(new MelLink(), "workspace", "update_ulink", {_workspace_id:rcmail.env.current_workspace_uid}, async (result) => {
+        // $("#button-create-new-ulink").click(() =>{
+        //     GetLinkPopUp().setLinkEditor(new MelLink(), "workspace", "update_ulink", {_workspace_id:rcmail.env.current_workspace_uid}, async (result) => {
                 
-                if (result)
-                { 
-                    await mel_metapage.Functions.callAsync(`$(".links-frame").remove()`, false);
-                    $(".wsp-toolbar-item.wsp-links").click();
-                }
+        //         if (result)
+        //         { 
+        //             await mel_metapage.Functions.callAsync(`$(".links-frame").remove()`, false);
+        //             $(".wsp-toolbar-item.wsp-links").click();
+        //         }
 
-                GetLinkPopUp().hide();
-            }).show();
-        });
+        //         GetLinkPopUp().hide();
+        //     }).show();
+        // });
         
     }
 }
@@ -1113,19 +1113,6 @@ function PaperClipCopy(link)
     const url = link[0].href;
     copyOnClick(url);
     rcmail.display_message(`${url} copié dans le presse-papier.`, "confirmation")
-}
-
-function refreshUsefulLinks()
-{
-    if (rcmail.env.current_workspace_services["useful-links"]) 
-    {
-        mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "refresh_html_ulinks"), {
-            _workspace_id:rcmail.env.current_workspace_uid
-        }, (datas) => {
-            $(".wsp-block.wsp-left.wsp-resources .ressources-links").html(datas);
-        });
-        //$(".ressources-links")
-    }
 }
 
 function setup_params()

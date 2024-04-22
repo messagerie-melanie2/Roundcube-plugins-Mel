@@ -518,6 +518,10 @@ class PlanningManager extends MelObject {
         callback_key: `planning-${parent.workspace_frame_manager?.getActiveFrame?.()?.get?.()?.attr?.('id') || 0}`,
       },
     );
+
+    this.rcmail().addEventListener('frame_opened', () => {
+      if (this.calendar) this.calendar.render();
+    });
   }
 
   //           BINDS         //

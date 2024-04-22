@@ -670,7 +670,7 @@ export class LinkManager extends MelObject {
 		});
 
 		$(LinkManager.SELECTOR_MODAL_IMAGE).on('error', function () {
-			self.imgError(
+			imgError(
 				$(this).attr('id'),
 				'no-image',
 				$(LinkManager.SELECTOR_MODAL_TITLE).val(),
@@ -772,28 +772,7 @@ export class LinkManager extends MelObject {
 		}
 
 		return rcmail.env.external_icon_url + domain;
-	}
-
-	/**
-	 * Affiche la première lettre si l'image n'est pas trouvée
-	 * @param {string} iconId Id de l'image
-	 * @param {string} iconId Id de l'overlay si l'image n'est pas chargée
-	 * @param {string} title Titre du lien
-	 */
-	imgError(iconId = null, noImageId = null, title) {
-		let iconImage = $('#' + iconId);
-		let noImage = $('#' + noImageId);
-
-		const firstLetter = title
-			? title[0].toUpperCase()
-			: $(LinkManager.SELECTOR_MODAL_TITLE).val()
-				? $(LinkManager.SELECTOR_MODAL_TITLE).val()[0].toUpperCase()
-				: null;
-
-		iconImage.hide();
-		noImage.html(firstLetter);
-		noImage.css('display', 'flex');
-	}
+	}	
 
 	/**
 	 * Helpers functions

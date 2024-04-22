@@ -1,24 +1,20 @@
-// $(document).ready(function () {
-//   let contextMenuOpened = false;
-//   // Open the context menu on right-click
-//   $('.link-block').on('contextmenu', function (event) {
-//     event.preventDefault();
+/**
+	 * Affiche la première lettre si l'image n'est pas trouvée
+	 * @param {string} iconId Id de l'image
+	 * @param {string} iconId Id de l'overlay si l'image n'est pas chargée
+	 * @param {string} title Titre du lien
+	 */
+function imgError(iconId = null, noImageId = null, title) {
+  let iconImage = $('#' + iconId);
+  let noImage = $('#' + noImageId);
 
-//     const contextMenu = $('#context-menu-' + $(this).data('id'));
+  const firstLetter = title
+    ? title[0].toUpperCase()
+    : $('#mulc-title').val()
+      ? $('#mulc-title').val()[0].toUpperCase()
+      : null;
 
-//     if (contextMenuOpened) {
-//       contextMenuOpened.hide();
-//     }
-
-//     // Show the context menu
-//     contextMenu.show();
-//     contextMenuOpened = contextMenu;
-
-//     $(document).on('click', function () {
-//       if (!contextMenu.is(event.target) && contextMenu.has(event.target).length === 0) {
-//         contextMenu.hide();
-//         contextMenuOpened = false;
-//       }
-//     });
-//   });  
-// });
+  iconImage.hide();
+  noImage.html(firstLetter);
+  noImage.css('display', 'flex');
+}

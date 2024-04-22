@@ -64,13 +64,33 @@ class mel_useful_link extends bnum_plugin
       
       foreach ($mul_items as $id => $item) {
         $item = json_decode($item);
-        $temp = new MelLink($id, $item->title, $item->link);
+        if ($item->links) {
+          $links = [];
+          foreach ($item->links as $key => $value) {
+            $links[] = new MelLink(uniqid(), $value, $this->validate_url($key));
+          }
+          $temp = new MelFolderLink($id, $item->title, $links);
+         }
+        else
+          $temp = new MelLink($id, $item->title, $this->validate_url($item->link));
+
         $newMelLinks[$id] = $temp->serialize();
       }
       
       // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
       $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
       $this->rc->user->save_prefs(array('personal_useful_links' => []));
+    }
+
+    public function validate_url($url) {
+      if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+        if (strpos($url, "http") === false) {
+          $url = "http://".$url;
+        }
+      }
+
+      return $url;
     }
 
     public function update_list() {
@@ -347,7 +367,7 @@ class mel_useful_link extends bnum_plugin
       $config = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
   
       if ($id === null) {
-        $id = uniqid();
+      $id = uniqid();
   
         if ($isMultiLink)
           $melLink = new MelFolderLink($id, $title, $link);

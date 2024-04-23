@@ -1,8 +1,0 @@
-fieldset.website_buttons.expandable table.propform {
-    margin-left: 50px;
-    width: 70%;
-}
-
-fieldset.website_buttons.expandable.collapsed > div.buttons {
-    display: none;
-}

@@ -1,7 +1,0 @@
-{
-	"name": "Mél",
-	"author": "Mél/PNE Annuaire et Messagerie basée sur la skin Larry by FLINT",
-	"license": "Creative Commons Attribution-ShareAlike",
-	"license-url": "http://creativecommons.org/licenses/by-sa/3.0/",
-	"extends": "larry"
-}

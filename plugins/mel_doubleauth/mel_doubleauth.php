@@ -334,7 +334,7 @@ class mel_doubleauth extends bnum_plugin {
             $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         }
 
-        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30));
+        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30*60));
         
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         //$this->load_js_page('resend');
@@ -607,7 +607,7 @@ class mel_doubleauth extends bnum_plugin {
         $this->require_plugin('mel_helper');
         mel_helper::include_mail_body();
         $otp = rand(100000, 999999) + '';
-        $expire = $this->rc->config->get('code_expiration', 30);
+        $expire = $this->rc->config->get('code_expiration', 30*60);
         $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;
@@ -618,7 +618,7 @@ class mel_doubleauth extends bnum_plugin {
             'code' => $otp,
             'bnum.change_password' => 'https://mel.din.developpement-durable.gouv.fr/changepassword/index.php',
             'url.internal.security' => 'https://mel.din.developpement-durable.gouv.fr/aide/doc/bnum/#15-Configuration:l4GIVl2g7xdGSnhdT7Cdwd',
-            'expiration' => $expire,
+            'expiration' => $expire/60,
             'logobnum' => __DIR__.'/skins/mel_elastic/pictures/logobnum.png'//MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png')
         ]);
 

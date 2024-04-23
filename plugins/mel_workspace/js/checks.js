@@ -4,7 +4,7 @@
  */
 function set_toolbar_item_valid($item) {
   const tmpClass = Enumerable.from($item[0].classList)
-    .where((x) => !x.includes('spinner-grow'))
+    .where((x) => !x.includes('spinner-grow') && x[0] === '-')
     .first()
     .slice(1);
   $item.addClass(tmpClass).removeClass(`-${tmpClass}`);

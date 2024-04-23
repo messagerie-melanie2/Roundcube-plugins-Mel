@@ -334,7 +334,7 @@ class mel_doubleauth extends bnum_plugin {
             $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));
         }
 
-        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30*60));
+        $this->rc->output->set_env('email_code_expiration', $this->rc->config->get('code_expiration', 30));
         
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         //$this->load_js_page('resend');
@@ -607,7 +607,7 @@ class mel_doubleauth extends bnum_plugin {
         $this->require_plugin('mel_helper');
         mel_helper::include_mail_body();
         $otp = rand(100000, 999999) + '';
-        $expire = $this->rc->config->get('code_expiration', 30*60);
+        $expire = $this->rc->config->get('code_expiration', 30);
         $cid = 'bnumlogo';
         driver_mel::gi()->getUser()->token_otp = $otp;
         driver_mel::gi()->getUser()->token_otp_expire = time() + $expire;

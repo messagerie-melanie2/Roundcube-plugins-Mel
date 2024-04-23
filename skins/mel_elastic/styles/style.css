@@ -4423,3 +4423,8 @@ html.layout-phone .task-mail .popover .menu li a[aria-haspopup].dropdown::after 
 .wsp-block-calendar {
   position: relative;
 }
+.qrcode_frame {
+  box-shadow: var(--secondary-box-shadow);
+  border-radius: 5px;
+  padding: 15px;
+}

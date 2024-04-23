@@ -160,6 +160,9 @@ class double_auth_modal extends module_bnum {
             .p()
               .text(rcmail.gettext('mel_metapage.secondary_email_text'))
             .end()
+            .p({class:'d-inline-flex align-items-center'})
+              .icon('info', {class:'mr-2'}).end().text(rcmail.gettext('mel_metapage.different_email'))
+            .end()
           .end()
           .row({ class: "mb-4" })
             .input({ type: "email", id: "email", class: "form control", placeholder: "Adresse e-mail..." })
@@ -204,7 +207,7 @@ class double_auth_modal extends module_bnum {
   .end('div')
   .generate();
 
-  rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 210 });
+  rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 245 });
 
   this.createProgressPoint(1)
 
@@ -308,6 +311,66 @@ class double_auth_modal extends module_bnum {
     rcmail.env.continueWithUser = false;
 
     const html = MelHtml.start
+    .div({ id: "application-modal", tabindex: "0", class: "double-auth-modal mx-5 mt-n4" })
+      .row()
+        .col_12()
+          .row({ class: "justify-content-center" })
+            .p({ class: "title" })
+              .text(rcmail.gettext('mel_metapage.double_authentication'))
+            .end()
+          .end()
+          .row({ class: "my-2 justify-content-center" })
+            .p({class: "text-center"})
+              .text(rcmail.gettext('mel_metapage.application_text'))
+            .end()
+          .end()
+          .row({ class: "my-2" })
+            .col_6({class: 'col-6 d-flex justify-content-center'})
+              .div({class:'qrcode_frame'})
+                .p()
+                  .text('Google Authenticator')
+                .end()
+                .img({ src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/authenticator_link.svg`})
+              .end()
+            .end()
+            .col_6({class: 'col-6 d-flex justify-content-center'})
+              .div({class:'qrcode_frame'})
+                .p()
+                  .text('FreeOTP Authenticator')
+                .end()
+                .img({ src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/freeotp_link.svg`})
+              .end()
+            .end()
+          .end()
+        .end()
+      .end()
+      .row({ class: "custom-tooltipbuttons justify-content-between mt-4" })
+        .close_button({action:'verification_mail_modal'})
+          .text(rcmail.gettext('mel_metapage.back'))
+        .end()
+        .button({ id: "modal-custom-button", class: "next-button",
+          onclick:function () {
+            rcmail.env.continueWithUser = true;
+            self.closeDialog($('#modal-custom-button')[0]);
+            self.add_key_modal();
+          }
+        })
+          .text(rcmail.gettext('mel_metapage.continue'))
+        .end('button')
+      .end('row')
+    .end('div')
+    .generate();
+
+    rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 370, close:function (event, ui) { $(this).remove(); self.checkBeforeClose() } })
+
+    this.createProgressPoint(3);
+  }
+
+  add_key_modal() {
+    const self = this;
+    rcmail.env.continueWithUser = false;
+
+    const html = MelHtml.start
     .div({ id: "application-email", tabindex: "0", class: "double-auth-modal mx-5 mt-n4" })
       .row()
         .col_12()
@@ -317,8 +380,8 @@ class double_auth_modal extends module_bnum {
             .end()
           .end()
           .row({ class: "my-2 justify-content-center" })
-            .p()
-              .text(rcmail.gettext('mel_metapage.application_text'))
+            .p({class:"text-center"})
+              .text(rcmail.gettext('mel_metapage.scan_authentication_code'))
             .end()
           .end()
           .row({ class: "justify-content-center" })
@@ -359,7 +422,7 @@ class double_auth_modal extends module_bnum {
         .end()
       .end()
       .row({ class: "custom-tooltipbuttons justify-content-between" })
-        .close_button({action:'verification_mail_modal'})
+        .close_button({action:'application_modal'})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
         .button({ id: "modal-custom-button", class: "next-button",
@@ -461,7 +524,7 @@ class double_auth_modal extends module_bnum {
           onclick:function () {
             rcmail.env.continueWithUser = true;
             self.closeDialog($('#modal-custom-button')[0]);
-            self.application_modal();
+            self.add_key_modal();
           }
         })
           .text(rcmail.gettext('mel_metapage.back'))

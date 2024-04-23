@@ -3507,7 +3507,7 @@ class mel_workspace extends bnum_plugin
                         case self::LINKS:
 
                             $this->create_service_links($workspace);
-
+                            $needUpdate = true;
                             break;
                         
                         default:

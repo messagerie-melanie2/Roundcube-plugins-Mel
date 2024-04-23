@@ -86,8 +86,8 @@ function check_workspace_integrity() {
   let ajax_call = null;
   for (const key in workspace_services) {
     if (Object.hasOwnProperty.call(workspace_services, key)) {
-      const element = workspace_services[key];
-      if (element || always_enabled_services.includes(key)) {
+      //const element = workspace_services[key];
+      if (always_enabled_services.includes(key)) {
         //Si on a le service
         //Récupération de la classe de l'item de la toolbar
         switch (key) {

@@ -11,6 +11,7 @@ $labels['update_new_link'] = 'Modification d\'un nouveau lien';
 $labels['modify_link_element'] = 'Modifier l\'élément';
 $labels['delete_link_element'] = 'Supprimer l\'élément';
 $labels['confirm_delete_link_element'] = 'Voulez-vous supprimer ce lien ?';
+$labels['confirm_delete_link_folder'] = 'Voulez-vous supprimer ce dossier ?';
 
 $labels['update_new_folder'] = 'Modification d\'un dossier';
 $labels['folder_name'] = 'Nom du dossier';

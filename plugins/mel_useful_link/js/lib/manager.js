@@ -378,7 +378,7 @@ export class LinkManager extends MelObject {
 		const link = this.findLinkById(id);
 
     if (
-			confirm(rcmail.gettext('confirm_delete_link_element', 'mel_useful_link'))
+			confirm(link.links ? rcmail.gettext('confirm_delete_link_folder', 'mel_useful_link') : rcmail.gettext('confirm_delete_link_element', 'mel_useful_link'))
 		) {
 			if (this.isInFolder(link)) {
 				let folder = this.findParentFolder(link);

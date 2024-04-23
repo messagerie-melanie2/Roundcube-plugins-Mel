@@ -433,6 +433,7 @@ $labels['app_tchap'] = "Tchap";
 $labels['tchap'] = "Tchap";
 $labels['tchap_options'] = "Ouvrir les paramètres de Tchap";
 $labels['tchap_disconnect'] = "Se déconnecter de Tchap";
+$labels['tchap_sidebar'] = "Afficher la barre latérale de Tchap";
 $labels['event-location-visio'] = "En visioconférence";
 $labels['event-location-location'] = "En présentiel";
 $labels['event-location-audio'] = "Par audio";

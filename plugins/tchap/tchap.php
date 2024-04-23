@@ -44,13 +44,16 @@ class tchap extends bnum_plugin
         // ajout de la tache
         $this->register_task('tchap');
 
-        if ($rcmail->task == "tchap"){
-            $this->register_action('index', array(
+        if ($rcmail->task === "tchap"){
+            $this->register_action('index', [
                 $this,
                 'action'
-            ));
+            ]);
+            $this->register_action('sidebar', [
+                $this,
+                'sidebar'
+            ]);
         }
-
         
         $tchap_url = $rcmail->config->get('tchap_url');
     	
@@ -112,6 +115,7 @@ class tchap extends bnum_plugin
     	$rcmail->output->set_env('contentframe', $attrib['name']);
     	$rcmail->output->set_env('blankpage', $attrib['src'] ?
         $rcmail->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
+        $rcmail->output->set_env('display_tchap_sidebar', $rcmail->config->get('display_tchap_sidebar', null));
 
     	return $rcmail->output->frame($attrib);
     }
@@ -121,5 +125,10 @@ class tchap extends bnum_plugin
      */
     function refresh($args) {
       return array('abort' => true);
+    }
+    function sidebar()
+    {
+        $data = $this->get_input_post('_showsidebar');
+        $this->rc()->user->save_prefs(['display_tchap_sidebar' => $data]);
     }
 }

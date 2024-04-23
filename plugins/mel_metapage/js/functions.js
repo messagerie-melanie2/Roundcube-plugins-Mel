@@ -2603,3 +2603,10 @@ function tchap_disconnect () {
         $tchap[0].contentWindow.rcmail.triggerEvent("tchap.disconnect");
     }
 }
+
+function tchap_sidebar () {
+    let $tchap = $('.tchap-frame');
+    if ($tchap.length > 0){
+        $tchap[0].contentWindow.rcmail.triggerEvent("tchap.sidebar");
+    }
+}

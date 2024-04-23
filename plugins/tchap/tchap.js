@@ -43,18 +43,19 @@ class tchap_manager extends MelObject {
 
 		if (this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null) {
 			this.change_theme();
-		}
-		
-		if (this.tchap_frame().querySelectorAll('.mx_SpaceItem').length < 2) this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
+		} 
 		$("#tchaploader").hide();
 
 		this.rcmail().addEventListener('switched_color_theme', this.change_theme.bind(this));
 		this.rcmail().addEventListener('tchap.options', this.tchap_options.bind(this));
+		this.rcmail().addEventListener('tchap.sidebar', this.tchap_sidebar.bind(this));
 		this.rcmail().addEventListener('tchap.disconnect', this.tchap_disconnect.bind(this));
 		this._notificationhandler();
-
+		if (rcmail.env.display_tchap_sidebar === 'false') this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
+		
 		//Mettre à jours les messages quand on vient sur le frame.
 		const top = true;
+		
 		this.rcmail(top).addEventListener('frame_loaded', (eClass, changepage, isAriane, querry, id, first_load) => {
 			if (eClass === 'tchap') this.update_badge();
 		});
@@ -132,6 +133,21 @@ class tchap_manager extends MelObject {
 		frame_doc.querySelector('.mx_ContextualMenu > div > .mx_AccessibleButton_kind_primary_outline').click();
 		top.m_mp_ToggleGroupOptionsUser();
 
+	}
+
+	/**
+	 * Options gérant l'affichage de la barre latérale de tchap
+	 * @public
+	 * @method
+	 */
+	tchap_sidebar() {
+		let mavaleur = top.$('#tchap_sidebar').prop('checked');
+		this.http_internal_post({task:'tchap',action:'sidebar',params:{'_showsidebar': mavaleur}});
+		if (mavaleur) {
+			this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'flex';
+		} else {
+			this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
+		}
 	}
 
 	/**

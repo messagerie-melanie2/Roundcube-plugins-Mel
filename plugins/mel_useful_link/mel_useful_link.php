@@ -54,27 +54,55 @@ class mel_useful_link extends bnum_plugin
     public function convert_old_links() {
       include_once "lib/link.php";
 
-      $mul_items = $this->rc->config->get('personal_useful_links', []);
-      $newMelLinks = $this->rc->config->get('new_personal_useful_links', []);
-      
-      foreach ($mul_items as $id => $item) {
-        $item = json_decode($item);
-        if ($item->links) {
-          $links = [];
-          foreach ($item->links as $key => $value) {
-            $links[] = new MelLink(uniqid(), $value, $this->validate_url($key));
+      if (!$this->rc->config->get('new_personal_useful_links', [])) {
+        
+        $mul_items = $this->rc->config->get('personal_useful_links', []);
+        $newMelLinks = $this->rc->config->get('new_personal_useful_links', []);
+        
+        foreach ($mul_items as $id => $item) {
+          $item = json_decode($item);
+          if ($item->links) {
+            $links = [];
+            foreach ($item->links as $key => $value) {
+              $links[] = new MelLink(uniqid(), $value, $this->validate_url($key));
+            }
+            $temp = new MelFolderLink($id, $item->title, $links);
           }
-          $temp = new MelFolderLink($id, $item->title, $links);
-         }
-        else
-          $temp = new MelLink($id, $item->title, $this->validate_url($item->link));
+          else
+            $temp = new MelLink($id, $item->title, $this->validate_url($item->link));
 
+          $newMelLinks[$id] = $temp->serialize();
+        }
+        
+        $newMelLinks = array_merge($newMelLinks, $this->convert_default_link());
+
+        // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
+        $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
+        $this->rc->user->save_prefs(array('personal_useful_links' => []));
+     }
+    }
+    
+    public function convert_default_link() {      
+      $items = $this->getCardsConfiguration(driver_mel::gi()->getUser()->dn);
+      $items = array_merge($items, $this->rc->config->get('portail_items_list', []));
+      $newMelLinks = [];
+
+      foreach ($items as $item) {
+        $id = uniqid();
+        if (!$item['links']) {
+          $temp = new MelLink($id, $item['name'], $this->validate_url($item['url']));
+        }
+        else {
+          $links = [];
+          foreach ($item['links'] as $key => $value) {
+            $links[] = new MelLink(uniqid(), $value['title'], $this->validate_url($value['url']));
+          }
+          $temp = new MelFolderLink($id, $item['name'], $links);
+        }
         $newMelLinks[$id] = $temp->serialize();
       }
-      
-      // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
-      $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
-      $this->rc->user->save_prefs(array('personal_useful_links' => []));
+
+      return $newMelLinks;
     }
 
     public function validate_url($url) {

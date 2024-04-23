@@ -494,8 +494,7 @@ class MelLinkVisualizer extends MelLink {
         id: 'link-block-icon-image-' + this.id,
         class: 'link-icon-image',
         src: this.icon,
-        onerror:
-          'imgError(this.id, \'no-image-' + this.id + '\', \'' + this.title + '\')',
+        onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0].toUpperCase + '`)',
       })
       .span({ id: 'no-image-' + this.id, class: 'link-icon-no-image' })
       .end()
@@ -568,8 +567,7 @@ class MelLinkVisualizer extends MelLink {
         id: 'link-block-icon-image-' + this.id,
         class: 'link-icon-image',
         src: this.icon,
-        onerror:
-          'imgError(this.id, \'no-image-' + this.id + '\', \'' + this.title + '\')',
+        onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0].toUpperCase + '`)',
       })
       .span({ id: 'no-image-' + this.id, class: 'link-icon-no-image' })
       .end()

@@ -151,7 +151,7 @@ html.layout-phone .joinedtitle {
   text-decoration: none;
   cursor: pointer;
   justify-content: space-between;
-  background-color: var(--bureau-card-content-hover-background-color);
+  background-color: var(--folder-background-color);
   overflow: hidden;
 }
 .multilink-block .multilink-icon-container::after {
@@ -397,7 +397,7 @@ html.layout-phone .joinedtitle {
   align-items: center;
 }
 .link-context-menu .link-context-menu-button:hover {
-  background-color: var(--bureau-card-content-hover-background-color);
+  background-color: var(--link-context-menu-hover-background-color);
 }
 .flex-tab {
   display: inline-flex;

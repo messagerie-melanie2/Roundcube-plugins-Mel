@@ -39,7 +39,6 @@ class mel_useful_link extends bnum_plugin
             $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
             $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
             $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
-            $this->rc->output->set_env("modify_order_delay", $this->rc->config->get('modify_order_delay', []));
             include_once "lib/hidden.php";
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
         }
@@ -72,7 +71,7 @@ class mel_useful_link extends bnum_plugin
           else
             $temp = new MelLink($id, $item->title, $this->validate_url($item->link));
 
-          $newMelLinks[$id] = $temp->serialize();
+          $newMelLinks[] = $temp->serialize();
         }
         
         $newMelLinks = array_merge($newMelLinks, $this->convert_default_link());
@@ -100,7 +99,7 @@ class mel_useful_link extends bnum_plugin
           }
           $temp = new MelFolderLink($id, $item['name'], $links);
         }
-        $newMelLinks[$id] = $temp->serialize();
+        $newMelLinks[] = $temp->serialize();
       }
 
       return $newMelLinks;

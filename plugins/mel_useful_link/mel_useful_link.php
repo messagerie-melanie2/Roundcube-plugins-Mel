@@ -57,6 +57,7 @@ class mel_useful_link extends bnum_plugin
       if (!$this->rc->config->get('new_personal_useful_links', [])) {
         
         $mul_items = $this->rc->config->get('personal_useful_links', []);
+        $this->rc->user->save_prefs(array('save_personal_useful_links' => $mul_items));
         $newMelLinks = $this->rc->config->get('new_personal_useful_links', []);
         
         foreach ($mul_items as $id => $item) {

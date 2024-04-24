@@ -10,8 +10,26 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
 import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { html_events } from '../../../../mel_metapage/js/lib/html/html_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
-import { ID_RESOURCES_WSP } from '../constants.js';
+import {
+  CONFIG_FIRST_LETTER,
+  ID_BACKGROUND_LOADER,
+  ID_LOADER,
+  ID_RESOURCES_WSP,
+  SELECTOR_BLOCK,
+  SELECTOR_BLOCK_BODY,
+  SELECTOR_BTN_NAVIGATORS,
+  SELECTOR_CHOOSE_DATE_BUTTON,
+  SELECTOR_FULLCALENDAR_DATE,
+  SELECTOR_HEADER_BTNS,
+  SELECTOR_PLANNING_CURRENT_DATE,
+  SELECTOR_PLANNING_ICON,
+  SELECTOR_SEARCH_ICON,
+  SELECTOR_SEARCH_INPUT,
+  SELECTOR_SEARCH_RESET_BUTTON,
+  SELECTOR_TODAY_BUTTON,
+} from './planning_manager.constants.js';
 import { Workspace } from '../workspace.js';
+import { WspHelper } from '../helpers.js';
 export { PlanningManager };
 
 /**
@@ -40,6 +58,9 @@ class PlanningManager extends MelObject {
     super();
   }
 
+  /**
+   * Méthode principale
+   */
   main() {
     super.main();
 
@@ -68,11 +89,13 @@ class PlanningManager extends MelObject {
     /**
      * Cache des données libre par dates
      * @type {Object<string, boolean>}
+     * @member
      */
     this.freebusy = {};
     /**
      * Cache des données d'évènements par dates
      * @type {Object<string, boolean>}
+     * @member
      */
     this.events = {};
     /**
@@ -80,8 +103,14 @@ class PlanningManager extends MelObject {
      *
      * Lorsque une donnée a fini de chargé, une valeur est supprimé de ce tableau
      * @type {string[]}
+     * @member
      */
     this.loading = [];
+    /**
+     * Calendrier "Fullcalendar"
+     * @type {FullCalendar.Calendar}
+     * @member
+     */
     this.calendar = null;
   }
 
@@ -92,40 +121,16 @@ class PlanningManager extends MelObject {
   _start() {
     this._generate_visuals();
     //Gagner de la place
-    let $body = $('#wsp-block-calendar .block-body')
-      .css('margin-top', '5px')
-      .html(EMPTY_STRING);
+    let $body = $(SELECTOR_BLOCK_BODY).html(EMPTY_STRING);
+    //Calendrier
     const settings = window.cal?.settings || top.cal.settings;
     const resources = this.calendar_resources();
+    this.calendar = this._generate_calendar($body, settings, resources);
+    //MAJ du texte
+    this.refresh_planning_date();
+
     //N'est plus utilisé
     change_date = () => {};
-
-    this.calendar = this._generate_calendar($body, settings, resources);
-    window.pc = this.calendar;
-    $('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
-  }
-
-  /**
-   * Retourne les resources de l'agenda
-   * @returns {FullCalendarResource[]}
-   */
-  calendar_resources() {
-    return MelEnumerable.from([
-      {
-        id: ID_RESOURCES_WSP,
-        title: $('.header-wsp').text(),
-      },
-    ])
-      .aggregate(
-        MelEnumerable.from(rcmail.env.wsp_shares).select((x) => {
-          return {
-            id: x,
-            title: rcmail.env.current_workspace_users?.[x]?.name || x,
-          };
-        }),
-      )
-      .orderBy((x) => (x.id === ID_RESOURCES_WSP ? 'A' : x.title))
-      .toArray();
   }
 
   /**
@@ -176,7 +181,7 @@ class PlanningManager extends MelObject {
    */
   _generate_visuals() {
     //Changement de fonctionnalités des boutons
-    $('#wsp-block-calendar .block-header .btn-arrow').each((i, e) => {
+    $(SELECTOR_BTN_NAVIGATORS).each((i, e) => {
       e = $(e);
       e.css('float', EMPTY_STRING).parent().css('justify-content', 'center');
       switch (i) {
@@ -186,10 +191,6 @@ class PlanningManager extends MelObject {
 
         case 1:
           e.off('click').on('click', this._next.bind(this));
-          e.parent()
-            .removeClass('col-6')
-            .addClass('col-2')
-            .css('display', 'flex');
           break;
 
         default:
@@ -197,74 +198,26 @@ class PlanningManager extends MelObject {
       }
     });
 
-    //TODO : Passer dans le less
-    this.get_custom_rules().addAdvanced(
-      'planning',
-      '#wsp-block-calendar .fc-left h2, #wsp-block-calendar .fc-header-toolbar',
-      'display:none',
-    );
-
-    this.get_custom_rules().addAdvanced(
-      'planning2',
-      '.block-header .row button, .swp-agenda-date, .wsp-agenda-icon',
-      'align-self: center',
-    );
-
-    this.get_custom_rules().addAdvanced(
-      'planning3',
-      '#planningmelloader .absolute-center',
-      'z-index:2',
-    );
-
     //Changement de textes + passages
-    $('.swp-agenda-date')
-      .css({
-        display: 'block',
-        'margin-top': '4px',
-      })
-      .text($('#wsp-block-calendar .fc-left h2').text())
-      .parent()
-      .css('display', 'flex');
-    $('.wsp-agenda-icon').parent().css('display', 'flex');
-    $('#melplanningbtn').click(() => {
-      $('#planning-filter').val(EMPTY_STRING).change();
-    });
-    $('#planning-filter')
+    $(SELECTOR_PLANNING_CURRENT_DATE).parent().css('display', 'flex');
+    $(SELECTOR_PLANNING_ICON).parent().css('display', 'flex');
+    $(SELECTOR_SEARCH_RESET_BUTTON).click(
+      this._event_on_remove_search_click.bind(this),
+    );
+    $(SELECTOR_SEARCH_INPUT)
       .on('input', this._on_search.bind(this))
       .on('change', this._on_search.bind(this));
 
     this._set_today_button();
   }
 
-  _on_search() {
-    const value = $('#planning-filter').val() || null;
-
-    if (value) {
-      this.calendar.option('filterResourcesWithEvents', true);
-      $('#melplanningiconsearch').css('display', 'none');
-      $('#melplanningbtn').css('display', EMPTY_STRING);
-    } else {
-      this.calendar.option('filterResourcesWithEvents', false);
-      $('#melplanningiconsearch').css('display', EMPTY_STRING);
-      $('#melplanningbtn').css('display', 'none');
-    }
-
-    this.calendar.refetchEvents();
-  }
-
   /**
-   * Génère le bouton de date "aujourd'hui" et de selection de date
-   * @param {external:jQuery} $btn Bouton "précédent"
-   * @todo Améliorer pour passer par PHP et le css
+   * Génère les actions du bouton bouton de date "aujourd'hui" et de selection de date
    * @package
    */
   _set_today_button() {
-    $('#ojdbtn')
-      .click(this._show_calendar.bind(this))
-      .parent()
-      .find('button')
-      .first()
-      .click(this._today.bind(this));
+    $(SELECTOR_CHOOSE_DATE_BUTTON).click(this._show_calendar.bind(this));
+    $(SELECTOR_TODAY_BUTTON).click(this._today.bind(this));
   }
 
   /**
@@ -276,20 +229,18 @@ class PlanningManager extends MelObject {
     if (this.loading) this.loading.push(true);
 
     //Désactive les boutons
-    $('#wsp-block-calendar .block-header button')
-      .addClass('disabled')
-      .attr('disabled');
+    $(SELECTOR_HEADER_BTNS).addClass('disabled').attr('disabled');
 
     //Génère un loader
-    if ($('#planningmelloader').length === 0)
+    if ($(`#${ID_LOADER}`).length === 0)
       this.get_skin()
-        .create_loader('planningmelloader', true, true)
-        .appendTo($('#wsp-block-calendar'));
+        .create_loader(ID_LOADER, true, true)
+        .appendTo($(SELECTOR_BLOCK));
 
     //Génère un fond noir
-    if (!$('#planningblackloader').length) {
+    if (!$(`#${ID_BACKGROUND_LOADER}`).length) {
       MelHtml.start
-        .div({ id: 'planningblackloader' })
+        .div({ id: ID_BACKGROUND_LOADER })
         .css({
           position: 'absolute',
           top: 0,
@@ -301,7 +252,7 @@ class PlanningManager extends MelObject {
         })
         .end()
         .generate()
-        .appendTo($('#wsp-block-calendar'));
+        .appendTo($(SELECTOR_BLOCK));
     }
 
     return false;
@@ -310,6 +261,7 @@ class PlanningManager extends MelObject {
   /**
    * Active les boutons et supprime une icône de chargement
    * @param {boolean} go Si on avait chargée des données ou non
+   * @package
    */
   _unset_busy(go) {
     if (!go) this.loading.pop();
@@ -317,14 +269,57 @@ class PlanningManager extends MelObject {
     //Si tous les appels ont été terminés
     if (this.loading.length === 0) {
       //On active les boutons
-      $('#wsp-block-calendar .block-header button')
-        .removeClass('disabled')
-        .removeAttr('disabled');
+      $(SELECTOR_HEADER_BTNS).removeClass('disabled').removeAttr('disabled');
 
       //On supprime les loaders
-      $('#planningmelloader').remove();
-      $('#planningblackloader').remove();
+      $(`#${ID_LOADER}`).remove();
+      $(`#${ID_BACKGROUND_LOADER}`).remove();
     }
+  }
+
+  /**
+   * Callback qui gère l'ordre des ressources de fullcalendar
+   * @param {FullCalendarResource} x Resource en cours
+   * @returns {boolean}
+   * @package
+   */
+  _resources_order(x) {
+    return x.id === ID_RESOURCES_WSP ? CONFIG_FIRST_LETTER : x.title;
+  }
+
+  //                  PUBLICS              //
+
+  /**
+   * Met à jours le texte de la date du planning
+   * @returns {string}
+   */
+  refresh_planning_date() {
+    const text = $(SELECTOR_FULLCALENDAR_DATE).text();
+    $(SELECTOR_PLANNING_CURRENT_DATE).text(text);
+    return text;
+  }
+
+  /**
+   * Retourne les resources de l'agenda
+   * @returns {FullCalendarResource[]}
+   */
+  calendar_resources() {
+    return MelEnumerable.from([
+      {
+        id: ID_RESOURCES_WSP,
+        title: WspHelper.GetWorkspaceTitle(),
+      },
+    ])
+      .aggregate(
+        MelEnumerable.from(rcmail.env.wsp_shares).select((x) => {
+          return {
+            id: x,
+            title: rcmail.env.current_workspace_users?.[x]?.name || x,
+          };
+        }),
+      )
+      .orderBy(this._resources_order.bind(this))
+      .toArray();
   }
 
   /**
@@ -333,6 +328,7 @@ class PlanningManager extends MelObject {
    * Sauvegarde les ressources pour fullcalendar dans la propriété `last_resources`
    * @param {external:moment} date
    * @returns {Promise<FullCalendarEvent[]>}
+   * @async
    */
   async generateEvents(date = moment()) {
     let resources;
@@ -365,6 +361,7 @@ class PlanningManager extends MelObject {
    *
    * Si la date correspond à la date du jours, les données seront dans un premier temp, charger depuis le stockage local, si ils existent.
    * @returns {Promise<FullCalendarResource[]>}
+   * @async
    */
   async loadResources() {
     let resources = FreeBusyLoader.Instance.load_from_memory(
@@ -391,7 +388,7 @@ class PlanningManager extends MelObject {
       resources = MelEnumerable.from([
         {
           id: ID_RESOURCES_WSP,
-          title: $('.header-wsp').text(),
+          title: WspHelper.GetWorkspaceTitle(),
         },
       ])
         .aggregate(resources)
@@ -401,7 +398,7 @@ class PlanningManager extends MelObject {
     }
 
     return MelEnumerable.from(resources)
-      .orderBy((x) => (x.id === ID_RESOURCES_WSP ? 'A' : x.title))
+      .orderBy(this._resources_order.bind(this))
       .toArray();
   }
 
@@ -409,13 +406,14 @@ class PlanningManager extends MelObject {
    * Récupère les données de disponibilités pour une date donnée
    * @param {external:moment} date
    * @returns {Promise<FullCalendarResource[]>}
+   * @async
    */
   async generateResources(date = moment()) {
     let resources = [];
 
     resources.push({
       id: ID_RESOURCES_WSP,
-      title: $('.header-wsp').text(),
+      title: WspHelper.GetWorkspaceTitle(),
     });
 
     for await (const iterator of FreeBusyLoader.Instance.generate_and_save(
@@ -440,6 +438,22 @@ class PlanningManager extends MelObject {
   }
 
   /**
+   * Récupère une clé unique. Elle permettra de retrouver/supprimer la listener qui y est lié.
+   * @returns {!string}
+   */
+  get_callback_key() {
+    return `planning-${parent.workspace_frame_manager?.getActiveFrame?.()?.get?.()?.attr?.('id') || 0}`;
+  }
+
+  /**
+   * Récupère la valeur de la recherche
+   * @returns {?string}
+   */
+  get_search_value() {
+    return $(SELECTOR_SEARCH_INPUT).val() || null;
+  }
+
+  /**
    * Ajoute les écouteurs d'événements
    */
   addListeners() {
@@ -447,7 +461,7 @@ class PlanningManager extends MelObject {
       mel_metapage.EventListeners.calendar_updated.after,
       this._refresh_callback.bind(this),
       {
-        callback_key: `planning-${parent.workspace_frame_manager?.getActiveFrame?.()?.get?.()?.attr?.('id') || 0}`,
+        callback_key: this.get_callback_key(),
       },
     );
 
@@ -458,28 +472,41 @@ class PlanningManager extends MelObject {
 
   //           BINDS         //
 
+  /**
+   * Passe au jour précédent
+   * @event
+   * @package
+   */
   _prev() {
     this.calendar.prev();
-    $('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
+    this.refresh_planning_date();
   }
 
+  /**
+   * Passe au jour suivant
+   * @event
+   * @package
+   */
   _next() {
     this.calendar.next();
-    $('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
+    this.refresh_planning_date();
   }
 
+  /**
+   * Passe au jour actuel
+   * @event
+   * @package
+   */
   _today() {
     this.calendar.today();
-    $('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
+    this.refresh_planning_date();
   }
 
-  _accept_calendar(tmp) {
-    this.calendar.gotoDate(moment(tmp.val(), DATE_FORMAT));
-    tmp.remove();
-    tmp = null;
-    $('.swp-agenda-date').text($('#wsp-block-calendar .fc-left h2').text());
-  }
-
+  /**
+   * Affiche la fenêtre de sélection de date.
+   * @event
+   * @package
+   */
   _show_calendar() {
     let tmp = $('<input>')
       .css({ position: 'absolute', opacity: 0, top: 0 })
@@ -490,9 +517,49 @@ class PlanningManager extends MelObject {
   }
 
   /**
+   * Action à faire lorsque l'on a séléctionner une date.
+   * @param {external:jQuery} tmp Input de qui provient la fenêtre de sélection de date.
+   * @see {@link _show_calendar}
+   * @event
+   * @package
+   */
+  _accept_calendar(tmp) {
+    this.calendar.gotoDate(moment(tmp.val(), DATE_FORMAT));
+    tmp.remove();
+    tmp = null;
+    this.refresh_planning_date();
+  }
+
+  /**
+   * Action faite lors de la recherche.
+   *
+   * Si une valeur est présente, on filtre les ressources, sinon on les affiches tous.
+   * @package
+   * @event
+   */
+  _on_search() {
+    const value = this.get_search_value();
+
+    if (value) {
+      //On affiche les ressources qui ont des évènements et on cache les autres.
+      this.calendar.option('filterResourcesWithEvents', true);
+      $(SELECTOR_SEARCH_ICON).css('display', 'none');
+      $(SELECTOR_SEARCH_RESET_BUTTON).css('display', EMPTY_STRING);
+    } else {
+      //On affiche toute les ressources.
+      this.calendar.option('filterResourcesWithEvents', false);
+      $(SELECTOR_SEARCH_ICON).css('display', EMPTY_STRING);
+      $(SELECTOR_SEARCH_RESET_BUTTON).css('display', 'none');
+    }
+
+    this.calendar.refetchEvents();
+  }
+
+  /**
    * Met à jours les évènements du planning
    * @package
    * @returns {void}
+   * @event
    */
   _refresh_callback() {
     if (!this.calendar) return;
@@ -502,6 +569,19 @@ class PlanningManager extends MelObject {
     this.calendar.refetchEvents();
   }
 
+  /**
+   * Récupère les données des évènements du calendrier lié à l'espace de travail en cours.
+   *
+   * Les données sont mises en cache pour chaque jours.
+   * @param {external:moment} start
+   * @param {external:moment} end
+   * @param {string} timezone
+   * @param {function} callback
+   * @return {Promise<void>}
+   * @async
+   * @package
+   * @event
+   */
   async _source_events(start, end, timezone, callback) {
     var go = true;
     let events = this.events[start.format(DATE_FORMAT)];
@@ -522,7 +602,8 @@ class PlanningManager extends MelObject {
           (x) =>
             !!x.categories &&
             x.categories.length > 0 &&
-            x.categories[0] === `ws#${rcmail.env.current_workspace_uid}`,
+            x.categories[0] ===
+              `${WspHelper.GetWspPrefix()}${rcmail.env.current_workspace_uid}`,
         )
         .select((x) => {
           return {
@@ -552,11 +633,24 @@ class PlanningManager extends MelObject {
     this._unset_busy(go);
   }
 
+  /**
+   * Récupère les données des status des participants lié à l'espace de travail en cours.
+   *
+   * Les données sont mises en cache pour chaque jours.
+   * @param {external:moment} start
+   * @param {external:moment} end
+   * @param {string} timezone
+   * @param {function} callback
+   * @return {Promise<void>}
+   * @async
+   * @package
+   * @event
+   */
   async _source_freebusy(start, end, timezone, callback) {
     var go = true;
     var data = this.freebusy[start.format(DATE_FORMAT)];
 
-    const value = $('#planning-filter').val()?.toUpperCase?.() || null;
+    const value = this.get_search_value()?.toUpperCase?.();
 
     if (!data) {
       go = this._set_busy();
@@ -600,6 +694,13 @@ class PlanningManager extends MelObject {
     this._unset_busy(go);
   }
 
+  /**
+   * Gère le rendu des évènement
+   * @param {*} eventObj Objet évènement
+   * @param {external:jQuery} $el Element du dom (jQuery)
+   * @package
+   * @event
+   */
   _event_render(eventObj, $el) {
     if (eventObj.initial_data) {
       $el
@@ -627,6 +728,13 @@ class PlanningManager extends MelObject {
     }
   }
 
+  /**
+   * Gère le rendu des ressources
+   * @param {*} resourceObj Objet resource
+   * @param {external:jQuery} labelTds Element du dom (jQuery)
+   * @package
+   * @event
+   */
   _resources_render(resourceObj, labelTds) {
     if (resourceObj.id !== ID_RESOURCES_WSP) {
       labelTds
@@ -639,6 +747,12 @@ class PlanningManager extends MelObject {
     }
   }
 
+  /**
+   * Lorsque l'on clique sur un évènement => ouvre un évènement dans l'agenda
+   * @param {*} eventObj Objet évènement
+   * @package
+   * @event
+   */
   _event_on_click(eventObj) {
     const start = eventObj.initial_data.start.toDate
       ? eventObj.initial_data.start
@@ -649,6 +763,15 @@ class PlanningManager extends MelObject {
       date,
       eventObj.initial_data,
     );
+  }
+
+  /**
+   * Lorsque l'on clique sur un le bouton reset de la recherche => réinitialise la recherche
+   * @package
+   * @event
+   */
+  _event_on_remove_search_click() {
+    $(SELECTOR_SEARCH_INPUT).val(EMPTY_STRING).change();
   }
 
   /**

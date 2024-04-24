@@ -35,4 +35,12 @@ export class WspHelper {
       `&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}` +
       +'&_force_bnum=1';
   }
+
+  static GetWorkspaceTitle() {
+    return $('.header-wsp').text();
+  }
+
+  static GetWspPrefix() {
+    return 'ws#';
+  }
 }

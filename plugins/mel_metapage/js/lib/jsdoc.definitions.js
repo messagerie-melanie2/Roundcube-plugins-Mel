@@ -1,5 +1,5 @@
 /**
- * @namespace MelMetapage
+ * @namespace Plugin.MelMetapage
  * @property {MainObjects} MainObjects
  * @property {Utilities} Utilities
  * @property {Constants} Constants
@@ -28,9 +28,9 @@
  * @namespace Calendar
  * @property {module:CalendarEvent} CalendarEvent
  * @property {EventView} EventView
- * 
+ *
  */
 
 /**
- * @typedef {!string | !Symbol | !Number} Key 
+ * @typedef {!string | !Symbol | !Number} Key
  */

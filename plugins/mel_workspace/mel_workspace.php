@@ -1108,90 +1108,128 @@ class mel_workspace extends bnum_plugin
             //Agenda ou tâches
             if ($services[self::AGENDA] || $services[self::TASKS])
             {
-                $col = [
-                    "left" => "",
-                    "right" => ""
-                ];
-        
-                //Service agenda/calendrier
-                if ($services[self::AGENDA])
+                if ($this->currentWorkspace->ispublic)
                 {
-                    $arrow = [
-                        "left" => '<button class="btn-mel-invisible btn-arrow" style="float:right" onclick="change_date(-1)"><span class="'.$icons["arrow_left"].'"><span class="sr-only">'.$this->rc->gettext("last_day", "mel_workspace").'</span></span></button>',
-                        "right" => '<button class="btn-mel-invisible btn-arrow" style="float:left" onclick="change_date(1)"><span class="'.$icons["arrow_right"].'"><span class="sr-only">'.$this->rc->gettext("next_day", "mel_workspace").'</span></span></button>'
+                    $col = [
+                        "left" => "",
+                        "right" => ""
                     ];
-    
-                    $header = html::div(["class" => "row"], 
-                        html::div(["class" => "col-2"], 
-                            html::tag("span", ["class" => $icons[self::AGENDA]." wsp-agenda-icon"])).
-                        html::div(["class" => "col-6"],
-                            html::tag("span", ["class" => "swp-agenda-date"])).
-                        html::div(["class" => "col-4"],
-                            html::div(["class" => "row"], 
-                                html::div(["class" => "col-6"], $arrow["left"]).
-                                html::div(["class" => "col-6"], $arrow["right"])
-                        ))
-                    );
-    
-                    $body = "";
-                    $agenda = self::AGENDA;
-                    $col["right"].= html::tag("h2", ["class"=> "reunions responsive-tab-name"], "Mes réunions");
-                    $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)", $this->rc->gettext("create_event", "mel_workspace"));
-                }
-    
-                //Service tâches
-                if($services[self::TASKS])
-                {
-                    $affiche_urgence = false;
-    
-                    $header = html::div(["class" => "row", "style" => "justify-content: center;"],
-                        html::div(["id" => "wsp-task-urgence", "class" => "col-6 tab-task mel-tab mel-tabheader ".($affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
-                            html::tag("span", [], "Tâches urgentes")
-                        ).
-                        html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
-                            html::tag("span", [], "Tâches en cours")
-                    ));
-                    $header.=   html::div(["class" => "wsp-task-urgence nb-task tab-task mel-tab-content","style" => ($affiche_urgence ? "" : "display:none")], 
-                    html::tag("span", ["class" => $icons["warning"]." roundbadge large warning"]).
-                    html::tag("span", [], 
-                        html::tag("span", ["class" => "danger-task"]).
-                        '<span class="nb-danger-task nb font-size-large" tâches urgentes'
-                    )                
-                    ).           html::div(["id" => "nb-waiting-task","class" => "nb-task wsp-task-classik tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none")], 
-                    html::tag("span", ["class" => $icons["waiting"]." roundbadge large clear"]).
-                    html::tag("span", [], 
-                        html::tag("span", ["class" => "waiting-task"]).
-                        '<span class="nb-waiting-task nb font-size-large"></span> tâches en cours'
-                    )
-                    );
-                    $body = html::div(["id" => "danger-task", "class" => "wsp-task-urgence tab-task mel-tab-content", "style" => ($affiche_urgence ? "" : "display:none;")]).
-                            html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
-    
-                    $tasks = self::TASKS;
-                    $col["left"].= html::tag("h2", ["class" => "tasks responsive-tab-name"], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
-                }
-                
-                $tmp = $col["left"];
-                $col["left"] = $col["right"];
-                $col["right"] = $tmp;
-    
-                if ($col["left"] === "")
-                {
+            
+                    //Service agenda/calendrier
+                    if ($services[self::AGENDA])
+                    {
+                        $arrow = [
+                            "left" => '<button class="btn-mel-invisible btn-arrow" style="float:right" onclick="change_date(-1)"><span class="'.$icons["arrow_left"].'"><span class="sr-only">'.$this->rc->gettext("last_day", "mel_workspace").'</span></span></button>',
+                            "right" => '<button class="btn-mel-invisible btn-arrow" style="float:left" onclick="change_date(1)"><span class="'.$icons["arrow_right"].'"><span class="sr-only">'.$this->rc->gettext("next_day", "mel_workspace").'</span></span></button>'
+                        ];
+        
+                        $header = html::div(["class" => "row"], 
+                            html::div(["class" => "col-2"], 
+                                html::tag("span", ["class" => $icons[self::AGENDA]." wsp-agenda-icon"])).
+                            html::div(["class" => "col-6"],
+                                html::tag("span", ["class" => "swp-agenda-date"])).
+                            html::div(["class" => "col-4"],
+                                html::div(["class" => "row"], 
+                                    html::div(["class" => "col-6"], $arrow["left"]).
+                                    html::div(["class" => "col-6"], $arrow["right"])
+                            ))
+                        );
+        
+                        $body = "";
+                        $agenda = self::AGENDA;
+                        $col["right"].= html::tag("h2", ["class"=> "reunions responsive-tab-name"], "Mes réunions");
+                        $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)", $this->rc->gettext("create_event", "mel_workspace"));
+                    }
+        
+                    //Service tâches
+                    if($services[self::TASKS])
+                    {
+                        $affiche_urgence = false;
+        
+                        $header = html::div(["class" => "row", "style" => "justify-content: center;"],
+                            html::div(["id" => "wsp-task-urgence", "class" => "col-6 tab-task mel-tab mel-tabheader ".($affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
+                                html::tag("span", [], "Tâches urgentes")
+                            ).
+                            html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
+                                html::tag("span", [], "Tâches en cours")
+                        ));
+                        $header.=   html::div(["class" => "wsp-task-urgence nb-task tab-task mel-tab-content","style" => ($affiche_urgence ? "" : "display:none")], 
+                        html::tag("span", ["class" => $icons["warning"]." roundbadge large warning"]).
+                        html::tag("span", [], 
+                            html::tag("span", ["class" => "danger-task"]).
+                            '<span class="nb-danger-task nb font-size-large" tâches urgentes'
+                        )                
+                        ).           html::div(["id" => "nb-waiting-task","class" => "nb-task wsp-task-classik tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none")], 
+                        html::tag("span", ["class" => $icons["waiting"]." roundbadge large clear"]).
+                        html::tag("span", [], 
+                            html::tag("span", ["class" => "waiting-task"]).
+                            '<span class="nb-waiting-task nb font-size-large"></span> tâches en cours'
+                        )
+                        );
+                        $body = html::div(["id" => "danger-task", "class" => "wsp-task-urgence tab-task mel-tab-content", "style" => ($affiche_urgence ? "" : "display:none;")]).
+                                html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
+        
+                        $tasks = self::TASKS;
+                        $col["left"].= html::tag("h2", ["class" => "tasks responsive-tab-name"], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
+                    }
+                    
+                    $tmp = $col["left"];
                     $col["left"] = $col["right"];
-                    $col["right"] = "";
+                    $col["right"] = $tmp;
+        
+                    if ($col["left"] === "")
+                    {
+                        $col["left"] = $col["right"];
+                        $col["right"] = "";
+                    }
+
+                    $html_return .= html::div(["class" => "row"], 
+                        html::div(["class" => ($col['right'] === '' ? 'col-md-12' : 'col-md-6')." ta-left mel-responsive-tab-content",                    
+                            "data-selector-tab" => '.ta-left',
+                            'data-is-default-tab' => true,
+                            'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'
+                        ], $col["left"]).
+                        ($col["right"] === "" ? "" : html::div(["class" => "col-md-6 ta-right mel-responsive-tab-content",                         
+                        "data-selector-tab" => '.ta-right',
+                        'data-is-default-tab' => false,
+                        'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'], $col["right"]))
+                    );                
+                }
+                else {
+                    $html_return .= html::div(['class' => 'row'], $this->rc->output->parse("mel_workspace.planning", false, false));
+                    if($services[self::TASKS])
+                    {
+                        $affiche_urgence = false;
+        
+                        $header = html::div(["class" => "row", "style" => "justify-content: center;"],
+                            html::div(["id" => "wsp-task-urgence", "class" => "col-6 tab-task mel-tab mel-tabheader ".($affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
+                                html::tag("span", [], "Tâches urgentes")
+                            ).
+                            html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
+                                html::tag("span", [], "Tâches en cours")
+                        ));
+                        $header.=   html::div(["class" => "wsp-task-urgence nb-task tab-task mel-tab-content","style" => ($affiche_urgence ? "" : "display:none")], 
+                        html::tag("span", ["class" => $icons["warning"]." roundbadge large warning"]).
+                        html::tag("span", [], 
+                            html::tag("span", ["class" => "danger-task"]).
+                            '<span class="nb-danger-task nb font-size-large" tâches urgentes'
+                        )                
+                        ).           html::div(["id" => "nb-waiting-task","class" => "nb-task wsp-task-classik tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none")], 
+                        html::tag("span", ["class" => $icons["waiting"]." roundbadge large clear"]).
+                        html::tag("span", [], 
+                            html::tag("span", ["class" => "waiting-task"]).
+                            '<span class="nb-waiting-task nb font-size-large"></span> tâches en cours'
+                        )
+                        );
+                        $body = html::div(["id" => "danger-task", "class" => "wsp-task-urgence tab-task mel-tab-content", "style" => ($affiche_urgence ? "" : "display:none;")]).
+                                html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
+        
+                        $tasks = self::TASKS;
+                        $col["left"] = $this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
+                        $html_return .= html::div(['class' => 'row tab-events-tasks tab-events mel-tab-content', 'style' => 'display:none'], html::div(['class' => 'col-12'], $col["left"]));
+                    }
                 }
 
-                $html_return .= html::div(["class" => "row"], 
-                    html::div(["class" => ($col['right'] === '' ? 'col-md-12' : 'col-md-6')." ta-left mel-responsive-tab-content",                    
-                        "data-selector-tab" => '.ta-left',
-                        'data-is-default-tab' => true,
-                        'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'
-                    ], $col["left"]).
-                    ($col["right"] === "" ? "" : html::div(["class" => "col-md-6 ta-right mel-responsive-tab-content",                         
-                    "data-selector-tab" => '.ta-right',
-                    'data-is-default-tab' => false,
-                    'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'], $col["right"]))
-                );                
             }
     
             $email = self::get_wsp_mail($uid);

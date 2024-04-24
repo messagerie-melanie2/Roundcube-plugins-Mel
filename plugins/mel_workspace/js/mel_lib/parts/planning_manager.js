@@ -65,8 +65,22 @@ class PlanningManager extends MelObject {
    * @package
    */
   _init() {
+    /**
+     * Cache des données libre par dates
+     * @type {Object<string, boolean>}
+     */
     this.freebusy = {};
+    /**
+     * Cache des données d'évènements par dates
+     * @type {Object<string, boolean>}
+     */
     this.events = {};
+    /**
+     * Contient le nombre de données en cours de chargement
+     *
+     * Lorsque une donnée a fini de chargé, une valeur est supprimé de ce tableau
+     * @type {string[]}
+     */
     this.loading = [];
     this.calendar = null;
   }
@@ -168,10 +182,6 @@ class PlanningManager extends MelObject {
       switch (i) {
         case 0:
           e.off('click').on('click', this._prev.bind(this));
-
-          //Ajout des boutons "aujourd'hui" et choix de la date
-          this._generate_today_button(e);
-
           break;
 
         case 1:
@@ -216,70 +226,30 @@ class PlanningManager extends MelObject {
       .parent()
       .css('display', 'flex');
     $('.wsp-agenda-icon').parent().css('display', 'flex');
+    $('#melplanningbtn').click(() => {
+      $('#planning-filter').val(EMPTY_STRING).change();
+    });
+    $('#planning-filter')
+      .on('input', this._on_search.bind(this))
+      .on('change', this._on_search.bind(this));
 
-    this._update_visuals();
+    this._set_today_button();
   }
 
-  _update_visuals() {
-    if ($('#wsp-block-tasks').length) {
-      $('#wsp-block-tasks')
-        .hide()
-        .parent()
-        .removeClass('col-md-6')
-        .addClass('col-12');
-      $('.tasks').hide();
-      $('.reunions').text('Mes évènements').after(this._generate_tabs());
-      $('#wsp-block-calendar')
-        .parent()
-        .removeClass('col-md-6')
-        .addClass('col-12');
+  _on_search() {
+    const value = $('#planning-filter').val() || null;
+
+    if (value) {
+      this.calendar.option('filterResourcesWithEvents', true);
+      $('#melplanningiconsearch').css('display', 'none');
+      $('#melplanningbtn').css('display', EMPTY_STRING);
+    } else {
+      this.calendar.option('filterResourcesWithEvents', false);
+      $('#melplanningiconsearch').css('display', EMPTY_STRING);
+      $('#melplanningbtn').css('display', 'none');
     }
-  }
 
-  _generate_tabs() {
-    return MelHtml.start
-      .row({ class: 'mel-ui-tab-system' })
-      .css('padding-bottom', '15px')
-      .div({
-        id: 'tab-events-planning',
-        class: 'tab-events mel-tab mel-tabheader active',
-        tabindex: 0,
-        onclick: () => {
-          $('#tab-events-tasks').removeClass('active').attr('tabindex', -1);
-          $('#tab-events-planning').addClass('active').attr('tabindex', 0);
-          $('#wsp-block-calendar').show();
-          $('#wsp-block-tasks').hide();
-          this.calendar.render();
-        },
-        onkeydown: (e) => {
-          if (e.originalEvent.keyCode === 39) {
-            $('#tab-events-tasks').click().focus();
-          }
-        },
-      })
-      .text('Planning')
-      .end()
-      .div({
-        id: 'tab-events-tasks',
-        class: 'tab-events mel-tab mel-tabheader last',
-        tabindex: -1,
-        onclick: () => {
-          $('#tab-events-planning').removeClass('active').attr('tabindex', -1);
-          $('#tab-events-tasks').addClass('active').attr('tabindex', 0);
-          $('#wsp-block-calendar').hide();
-          $('#wsp-block-tasks').show();
-          this.calendar.render();
-        },
-        onkeydown: (e) => {
-          if (e.originalEvent.keyCode === 37) {
-            $('#tab-events-planning').click().focus();
-          }
-        },
-      })
-      .text('Mes tâches')
-      .end()
-      .end()
-      .generate();
+    this.calendar.refetchEvents();
   }
 
   /**
@@ -288,51 +258,13 @@ class PlanningManager extends MelObject {
    * @todo Améliorer pour passer par PHP et le css
    * @package
    */
-  _generate_today_button($btn) {
-    $btn.parent().after(
-      MelHtml.start
-        .div({ class: 'btn-group col-6' })
-        .css('max-width', '180px')
-        .css('justify-content', 'center')
-        .button({
-          class: 'btn btn-secondary',
-          onclick: this._today.bind(this),
-        })
-        .text("Aujourd'hui")
-        .end()
-        .button({
-          class: 'btn btn-secondary',
-          id: 'ojdbtn',
-          onclick: this._show_calendar.bind(this),
-        })
-        .icon('arrow_drop_down')
-        .css('font-size', 'unset')
-        .end()
-        .end()
-        .end()
-        .generate(),
-    );
-
-    $btn
+  _set_today_button() {
+    $('#ojdbtn')
+      .click(this._show_calendar.bind(this))
       .parent()
-      .parent()
-      .parent()
-      .parent()
-      .find('.col-6')
+      .find('button')
       .first()
-      .removeClass('col-6')
-      .addClass('col-4');
-    $($btn.parent().parent().parent().parent().find('.col-4')[1])
-      .removeClass('col-4')
-      .addClass('col-6');
-
-    $btn
-      .parent()
-      .removeClass('col-6')
-      .addClass('col-2')
-      .css('display', 'flex')
-      .parent()
-      .css('justify-content', 'end');
+      .click(this._today.bind(this));
   }
 
   /**
@@ -624,11 +556,43 @@ class PlanningManager extends MelObject {
     var go = true;
     var data = this.freebusy[start.format(DATE_FORMAT)];
 
+    const value = $('#planning-filter').val()?.toUpperCase?.() || null;
+
     if (!data) {
       go = this._set_busy();
 
       data = await this.generateEvents(start);
       this.freebusy[start.format(DATE_FORMAT)] = data;
+    }
+
+    if (value) {
+      const resources = this.calendar_resources();
+      data = MelEnumerable.from(data)
+        .where((x) =>
+          rcmail.env.current_workspace_users[x.resourceId].name
+            .toUpperCase()
+            .includes(value),
+        )
+        .aggregate(
+          MelEnumerable.from(resources)
+            .where(
+              (x) =>
+                x.id === ID_RESOURCES_WSP ||
+                rcmail.env.current_workspace_users[x.id].name
+                  .toUpperCase()
+                  .includes(value),
+            )
+            .select((x) => {
+              return {
+                title: 'tmp',
+                start: moment(start).startOf('day'),
+                end: moment(start).startOf('day').add('1', 'm'),
+                resourceId: x.id,
+                color: 'transparent',
+              };
+            }),
+        )
+        .toArray();
     }
 
     callback(data);

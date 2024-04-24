@@ -3467,6 +3467,11 @@ function rcube_calendar_ui(settings) {
         if (v.role != 'ORGANIZER') {
           v.status = 'NEEDS-ACTION';
         }
+        // PAMELA - Ne pas conserver l'organisateur lors d'un copy
+        // PAMELA - 0006910: Modification des fonctionnalités de copie d'un événement depuis l'agenda d'un tiers
+        else {
+          v.role = 'REQ-PARTICIPANT';
+        }
       });
 
       setTimeout(function () { event_edit_dialog('new', copy); }, 50);
@@ -4883,6 +4888,7 @@ window.rcmail && rcmail.addEventListener('init', function (evt) {
   rcmail.register_command('calendar-showfburl', function () { cal.showfburl(); }, false);
   rcmail.register_command('event-download', function () { console.log("d", cal.selected_event, cal); cal.event_download(cal.selected_event); }, true);
   rcmail.register_command('event-sendbymail', function (p, obj, e) { cal.event_sendbymail(cal.selected_event, e); }, true);
+  // PAMELA - 0006910: Modification des fonctionnalités de copie d'un événement depuis l'agenda d'un tiers
   rcmail.register_command('event-copy', function () { cal.event_copy(cal.selected_event); }, true);
   rcmail.register_command('event-history', function (p, obj, e) { cal.event_history_dialog(cal.selected_event); }, false);
 

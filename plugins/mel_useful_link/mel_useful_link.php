@@ -96,7 +96,7 @@ class mel_useful_link extends bnum_plugin
         else {
           $links = [];
           foreach ($item['links'] as $key => $value) {
-            $links[] = new MelLink(uniqid(), $value['title'], $this->validate_url($value['url']));
+            $links[] = new MelLink(uniqid(), $key, $this->validate_url($value['url']));
           }
           $temp = new MelFolderLink($id, $item['name'], $links);
         }

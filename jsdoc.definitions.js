@@ -1,12 +1,18 @@
 /**
  * @namespace Plugins
- * @property {MelMetapage} MelMetapage
- * @property {Tchap} Tchap
+ * @property {Plugin.MelMetapage} MelMetapage
+ * @property {Plugin.Tchap} Tchap
+ * @property {Plugin.Workspace} Tchap
  */
 
 /**
- * @namespace Skins 
+ * @namespace Skins
  * @property {module:MEL_ELASTIC_UI} mel_elastic
+ */
+
+/**
+ * @namespace Callbacks
+ * @property {module:MelIconPrevisualiserCallbacks} MelIconPrevisualiser
  */
 
 /* Externals */

@@ -1,174 +1,248 @@
 import { MelEnumerable } from './classes/enum.js';
 
 export {
-	RotomecaEvent as BnumEvent,
-	MelConditionnalEventItem,
-	MelConditionnalEvent,
+  RotomecaEvent as BnumEvent,
+  MelConditionnalEventItem,
+  MelConditionnalEvent,
 };
 
+/**
+ * @class
+ * @classdesc Représente un évènement. On lui ajoute ou supprime des callbacks, et on les appelle les un après les autres.
+ * @alias BnumEvent
+ * @template T
+ */
 class RotomecaEvent {
-	constructor() {
-		this.events = {};
-		this._count = 0;
-	}
+  constructor() {
+    /**
+     * Liste des évènements à appeler
+     * @type {Object<string, T>}
+     * @member
+     */
+    this.events = {};
+    /**
+     *	Compteur d'évènements
+     * @type {number}
+     * @private
+     */
+    this._count = 0;
+  }
 
-	push(event, ...args) {
-		const key = this._generateKey();
-		this.events[key] = { args, callback: event };
-		++this._count;
-		return key;
-	}
+  /**
+   * Ajoute un callback
+   * @param {T} event Callback qui sera appelé lors de l'appel de l'évènement
+   * @param  {...any} args Liste des arguments qui seront passé aux callback
+   * @returns {string} Clé créée
+   */
+  push(event, ...args) {
+    const key = this._generateKey();
+    this.events[key] = { args, callback: event };
+    ++this._count;
+    return key;
+  }
 
-	add(key, event, ...args) {
-		if (!this.events[key]) ++this._count;
+  /**
+   * Ajoute un callback avec un clé qui permet de le retrouver plus tard
+   * @param {string} key Clé de l'évènement
+   * @param {T} event Callback qui sera appelé lors de l'appel de l'évènement
+   * @param  {...any} args Liste des arguments qui seront passé aux callback
+   */
+  add(key, event, ...args) {
+    if (!this.events[key]) ++this._count;
 
-		this.events[key] = { args, callback: event };
-	}
+    this.events[key] = { args, callback: event };
+  }
 
-	has(key) {
-		return !!this.events[key];
-	}
+  /**
+   * Vérifie si une clé éxiste
+   * @param {string} key
+   * @returns {boolean}
+   */
+  has(key) {
+    return !!this.events[key];
+  }
 
-	remove(key) {
-		this.events[key] = null;
+  /**
+   * Supprime un callback
+   * @param {string} key Clé
+   */
+  remove(key) {
+    this.events[key] = null;
 
-		--this._count;
-	}
+    --this._count;
+  }
 
-	rebase() {
-		let rebased = MelEnumerable.from(this.events).where(x => !!x?.value);
+  /**
+   * Met les count à jours si il y a des modification directement via `events`
+   * @returns {RotomecaEvent<T>}
+   */
+  rebase() {
+    let rebased = MelEnumerable.from(this.events).where((x) => !!x?.value);
 
-		this.events = rebased.toJsonDictionnary(
-			x => x.key,
-			x => x.value,
-		);
-		this._count = rebased.count();
+    this.events = rebased.toJsonDictionnary(
+      (x) => x.key,
+      (x) => x.value,
+    );
+    this._count = rebased.count();
 
-		rebased = null;
-		return this;
-	}
+    rebased = null;
+    return this;
+  }
 
-	haveEvents() {
-		return this.count() > 0;
-	}
+  /**
+   * Renvoie si il y a des évènements ou non.
+   * @returns {boolean}
+   */
+  haveEvents() {
+    return this.count() > 0;
+  }
 
-	count() {
-		return this._count;
-	}
+  /**
+   * Affiche le nombre d'évènements
+   * @returns {number}
+   */
+  count() {
+    return this._count;
+  }
 
-	_generateKey() {
-		const g_key =
-			window?.mel_metapage?.Functions?.generateWebconfRoomName?.() ||
-			Math.random() * (this._count + 10);
+  /**
+   * Génère une clé pour l'évènement
+   * @private
+   * @returns {string}
+   */
+  _generateKey() {
+    const g_key =
+      window?.mel_metapage?.Functions?.generateWebconfRoomName?.() ||
+      Math.random() * (this._count + 10);
 
-		let ae = false;
-		for (const key in this.events) {
-			if (Object.hasOwnProperty.call(this.events, key)) {
-				if (key === g_key) {
-					ae = true;
-					break;
-				}
-			}
-		}
+    let ae = false;
+    for (const key in this.events) {
+      if (Object.hasOwnProperty.call(this.events, key)) {
+        if (key === g_key) {
+          ae = true;
+          break;
+        }
+      }
+    }
 
-		if (ae) return this._generateKey();
-		else return g_key;
-	}
+    if (ae) return this._generateKey();
+    else return g_key;
+  }
 
-	call(...params) {
-		let results = {};
-		const keys = Object.keys(this.events);
+  /**
+   * Appèle les callbacks
+   * @param  {...any} params Paramètres à envoyer aux callbacks
+   * @returns {null | any | Array}
+   */
+  call(...params) {
+    let results = {};
+    const keys = Object.keys(this.events);
 
-		if (0 !== keys.length) {
-			for (let index = 0, len = keys.length; index < len; ++index) {
-				const key = keys[index];
-				const { args, callback } = this.events[key];
+    if (keys.length !== 0) {
+      for (let index = 0, len = keys.length; index < len; ++index) {
+        const key = keys[index];
+        const { args, callback } = this.events[key];
 
-				if (callback)
-					results[key] = this._call_callback(callback, ...[...args, ...params]);
-			}
-		}
+        if (callback)
+          results[key] = this._call_callback(callback, ...[...args, ...params]);
+      }
+    }
 
-		switch (Object.keys(results).length) {
-			case 0:
-				return null;
-			case 1:
-				return results[Object.keys(results)[0]];
-			default:
-				return results;
-		}
-	}
+    switch (Object.keys(results).length) {
+      case 0:
+        return null;
+      case 1:
+        return results[Object.keys(results)[0]];
+      default:
+        return results;
+    }
+  }
 
-	_call_callback(callback, ...args) {
-		return callback(...args);
-	}
+  /**
+   * Lance un callback
+   * @param {T} callback Callback à appeler
+   * @param  {...any} args Paramètres à envoyer aux callbacks
+   * @returns {*}
+   */
+  _call_callback(callback, ...args) {
+    return callback(...args);
+  }
 
-	async asyncCall(...params) {
-		let asyncs = [];
-		for (const key in this.events) {
-			if (Object.hasOwnProperty.call(this.events, key)) {
-				const { args, callback } = this.events[key];
-				if (callback)
-					asyncs.push(this._call_callback(callback, ...[...args, ...params]));
-			}
-		}
+  /**
+   * Appèle les callbacks
+   * @param  {...any} params Paramètres à envoyer aux callbacks
+   * @returns {Promise<null | any | Array>}
+   * @async
+   */
+  async asyncCall(...params) {
+    let asyncs = [];
+    for (const key in this.events) {
+      if (Object.hasOwnProperty.call(this.events, key)) {
+        const { args, callback } = this.events[key];
+        if (callback)
+          asyncs.push(this._call_callback(callback, ...[...args, ...params]));
+      }
+    }
 
-		await Promise.allSettled(asyncs);
-	}
+    await Promise.allSettled(asyncs);
+  }
 
-	clear() {
-		this.events = {};
-		this._count = 0;
-	}
+  /**
+   * Vide la classe
+   */
+  clear() {
+    this.events = {};
+    this._count = 0;
+  }
 }
 
 class MelConditionnalEventItem {
-	constructor({ action = (...args) => args, aditionnalDatas = null }) {
-		this._init()._setup(action, aditionnalDatas);
-	}
+  constructor({ action = (...args) => args, aditionnalDatas = null }) {
+    this._init()._setup(action, aditionnalDatas);
+  }
 
-	_init() {
-		this.action = (...args) => args;
-		this.datas = null;
-		return this;
-	}
+  _init() {
+    this.action = (...args) => args;
+    this.datas = null;
+    return this;
+  }
 
-	_setup(...args) {
-		const { action, datas } = args;
-		this.action = action;
-		this.datas = datas;
-		return this;
-	}
+  _setup(...args) {
+    const { action, datas } = args;
+    this.action = action;
+    this.datas = datas;
+    return this;
+  }
 }
 
 class MelConditionnalEvent extends RotomecaEvent {
-	constructor() {
-		super();
-	}
+  constructor() {
+    super();
+  }
 
-	*yieldCall(validCondition, ...params) {
-		const keys = Object.keys(this.events);
+  *yieldCall(validCondition, ...params) {
+    const keys = Object.keys(this.events);
 
-		if (0 !== keys.length) {
-			for (let index = 0, len = keys.length; index < len; ++index) {
-				const key = keys[index];
-				const { args, callback } = this.events[key];
+    if (keys.length !== 0) {
+      for (let index = 0, len = keys.length; index < len; ++index) {
+        const key = keys[index];
+        const { args, callback } = this.events[key];
 
-				if (!!callback && validCondition(key, callback.datas))
-					yield callback.action(...[...args, ...params]);
-			}
-		}
-	}
+        if (!!callback && validCondition(key, callback.datas))
+          yield callback.action(...[...args, ...params]);
+      }
+    }
+  }
 
-	call(validCondition, ...args) {
-		[...this.yieldCall(validCondition, ...args)];
-	}
+  call(validCondition, ...args) {
+    [...this.yieldCall(validCondition, ...args)];
+  }
 
-	pushConditionnalItem({
-		action = (...args) => args,
-		additionnalDatas = null,
-	}) {
-		this.push(new MelConditionnalEventItem(action, additionnalDatas));
-		return this;
-	}
+  pushConditionnalItem({
+    action = (...args) => args,
+    additionnalDatas = null,
+  }) {
+    this.push(new MelConditionnalEventItem(action, additionnalDatas));
+    return this;
+  }
 }

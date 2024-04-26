@@ -1,0 +1,216 @@
+//compress:true
+
+#annuaire-list{
+	ul{
+		margin: 0;
+		padding: 0;
+		margin-top: 6px;
+	}
+	li{
+		padding: 10px 0px 8px 15px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		cursor: pointer;
+		&.addressbook, &.annuaire{
+			padding: 10px 0px 8px 20px;
+		}
+		&.selected{
+			background-color: #dee9f6;
+			background-color: var(--sublistitem-selected-bg-color);	
+			> .name{
+				font-weight: bold;
+			}
+			> .gototree {
+				background-color: #dee9f6;
+				background-color: var(--sublistitem-selected-bg-color);
+			}
+		}
+		&.folder{
+			div.treetoggle{
+				top: 10px;
+    			left: 2px;
+			}
+		}
+		> .name{
+			font-size: 12px;
+			font-weight: normal;
+			color: #000;
+			color: var(--listbox-text-color);
+			padding: 0 4px 0 18px;
+		}
+		> .icon{
+			position: absolute;
+			height: 18px;
+			width: 18px;
+		}
+		> .gototree {
+			position: absolute;
+			display: none;
+			background: url(images/goto.png?v=e784.5000) center center no-repeat #fff;
+			background-image: var(--image-gototree);
+			background-color: var(--sublistitem-bg-color);
+			left: 0;
+			top: 0;
+			height: 33px;
+			width: 33px;
+		}
+		&:hover{
+			> .gototree {
+				display: inline-block;
+			}
+		}
+		&.object::before{
+  			content: " ";
+		}
+	}
+	.added > .name{
+		font-weight: bold;
+	}
+	.folder {
+		> .name{
+			font-weight: bold;
+		}
+		> .description {
+			font-size: 12px;
+			font-weight: normal;
+		  color: #757575;
+		}
+		&.annuaire {
+			background: url(images/annuaire.png?v=e784.5000) 17px 18px no-repeat;
+		}
+		&.addressbook {
+			background: url(images/carnet.png?v=e784.5000) 17px 19px no-repeat;
+			/* background-image: var(--image-carnet); */
+		}
+		&.legend {
+			background: none;
+			border-top: 1px solid #d8d8d8;
+			border-color: var(--annuaire-border-color);
+			padding-left: 20px;
+			display: none;
+			> .name {
+				padding-left: 10px;
+			}
+			> div.treetoggle {
+				display: none;
+			}
+		}
+		> .description {
+			margin-top: -15px;
+			margin-bottom: -15px;
+			display: block;
+			color: white !important;
+			padding-left: 18px;
+		}
+	}
+	.list {
+		background: url(images/list.png?v=e784.5000) 14px 20px no-repeat;
+	}
+	.person {
+		background: url(images/person.png?v=e784.5000) 14px 20px no-repeat;
+	}
+	.nophoto {
+		background: url(images/nophoto.png?v=e784.5000) 14px 20px no-repeat;
+	}
+	.service {
+		background: url(images/service.png?v=e784.5000) 18px 22px no-repeat;
+	}
+	.function {
+		background: url(images/function.png?v=e784.5000) 18px 19px no-repeat;
+	}
+	.unit {
+		background: url(images/unit.png?v=e784.5000) 18px 20px no-repeat;
+	}
+	.resource {
+		background: url(images/resource.png?v=e784.5000) 18px 20px no-repeat;
+	}
+	.application {
+		background: url(images/application.png?v=e784.5000) 18px 20px no-repeat;
+	}
+	.added {
+		background: url(images/ajoute.png?v=e784.5000) 16px 23px no-repeat;
+		font-weight: bold;
+	}
+	& [aria-expanded="true"]
+	{
+		background-color: #2C3054;
+	}
+}
+#annuaireselector{
+	ul {
+		border-radius: 4px;
+		border: solid 1px #d5d5d5;
+		border-color: var(--inputs-border-color);
+		background-color: #eaeaea;
+		background-color: var(--input-selector-bg-color);
+		height: 30px;
+		padding: 0;
+		margin: 0;
+		li {
+			font-size: 11px;
+			padding: 0;
+			height: 30px;
+			line-height: 30px;
+			display: inline-block;
+			position: relative;
+			&.selected{
+				a{
+					color: #464646;
+					color: var(--input-selector-text-color);
+					font-weight: bold;
+					background: #fff;
+					background-color: var(--input-selector-selected-bg-color);
+					text-shadow: none;
+					border-radius: 4px;
+					box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
+				}
+			}
+		}
+	}
+	li{
+		a {
+			color: #464646;
+			color: var(--input-selector-text-color);
+			padding: 0 15px;
+			border: none;
+			display: inline-block;
+			text-align: center;
+			text-decoration: none;
+			overflow: hidden;
+			.inner {
+				overflow: hidden;
+				display: block;
+			}
+		}
+		&.inactive{
+			a{
+				color: #464646;
+				color: var(--input-selector-text-color);
+				opacity: 0.5;
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 1480px) {
+  #annuaireselector ul li a {
+	max-width: 45px;
+  }
+}
+
+@media screen and (max-width: 1410px) {
+  #annuaireselector ul li a {
+	max-width: 28px;
+  }
+}
+
+@media screen and (max-width: 1300px) {
+  #annuaireselector {
+  	left: 260px;
+	ul li a {
+		max-width: 7px;
+		text-overflow: clip;
+	}
+  }
+}

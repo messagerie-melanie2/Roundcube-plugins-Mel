@@ -71,7 +71,7 @@ class mel_useful_link extends bnum_plugin
           else
             $temp = new MelLink($id, $item->title, $this->validate_url($item->link));
 
-          $newMelLinks[] = $temp->serialize();
+          $newMelLinks[$id] = $temp->serialize();
         }
         
         $newMelLinks = array_merge($newMelLinks, $this->convert_default_link());
@@ -99,7 +99,7 @@ class mel_useful_link extends bnum_plugin
           }
           $temp = new MelFolderLink($id, $item['name'], $links);
         }
-        $newMelLinks[] = $temp->serialize();
+        $newMelLinks[$id] = $temp->serialize();
       }
 
       return $newMelLinks;

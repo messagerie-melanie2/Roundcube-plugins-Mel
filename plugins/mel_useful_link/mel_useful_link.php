@@ -24,6 +24,9 @@ class mel_useful_link extends bnum_plugin
 
         if ($this->rc->task === "useful_links")
         {
+          // bloquer les refresh
+          $this->rc->output->set_env('refresh_interval', 0);
+
           $this->register_action('index', array($this, 'index'));  
           $this->register_action('mel_widget', [$this, 'mel_widget']);
           $this->register_action('gpl', array($this, 'get_personal_links')); 

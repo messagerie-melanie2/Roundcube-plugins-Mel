@@ -33,6 +33,7 @@ class mel_useful_link extends bnum_plugin
           $this->register_action('update_list', array($this, 'update_list'));
 
           if ($this->rc->action == "index" || $this->rc->action == "")
+          {
             $this->include_uLinks();
 
             $this->convert_old_links();
@@ -41,6 +42,7 @@ class mel_useful_link extends bnum_plugin
             $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
             include_once "lib/hidden.php";
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
+          }
         }
         else if (class_exists('mel_metapage') && mel_metapage::can_add_widget())
         {

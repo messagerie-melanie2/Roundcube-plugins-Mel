@@ -46,6 +46,7 @@ export { MelIconPrevisualiser };
  * @classdesc Fourni une popup qui permet de prévisualiser et de changer l'icône d'un élément.
  * @class
  * @extends MelListingPrevisualiser
+ * @tutorial icon-previsualiser-tutorial
  */
 class MelIconPrevisualiser extends MelListingPrevisualiser {
   /**
@@ -506,6 +507,8 @@ MelIconPrevisualiser.ICONS = [
   'attach_email',
   'markunread_mailbox',
 ];
+
+window.MelIconPrevisualiser = MelIconPrevisualiser;
 
 /* EXEMPLE : */
 const start_exemple = false;

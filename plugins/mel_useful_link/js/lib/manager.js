@@ -422,6 +422,8 @@ export class LinkManager extends MelObject {
         this.saveLink(link);
       });
       folder.callFolderDelete();
+      
+      this.updateList(id, targetIndex);
     } else {
       folder.callFolderUpdate().then(() => {
         link.callUpdate().then(() => {

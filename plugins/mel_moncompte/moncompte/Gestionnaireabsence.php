@@ -21,6 +21,7 @@
 require_once 'Moncompteobject.php';
 
 use LibMelanie\Api\Defaut\Users\Outofoffice;
+use Sabre\CalDAV\Schedule\Outbox;
 
 /**
  * Classe de modification de l'absence de l'utilisateur
@@ -538,8 +539,10 @@ class Gestionnaireabsence extends Moncompteobject
 
 	private static function set_ponctual_dates(&$user, $start, $end) {
     $outoffice = $user->outofoffices;
-    $outoffice[Outofoffice::TYPE_INTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_INTERNAL], $start, $end);
-    $outoffice[Outofoffice::TYPE_EXTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_EXTERNAL], $start, $end);
+    if ($outoffice[Outofoffice::TYPE_INTERNAL] !== null)
+      $outoffice[Outofoffice::TYPE_INTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_INTERNAL], $start, $end);
+    if ($outoffice[Outofoffice::TYPE_EXTERNAL] !== null)
+      $outoffice[Outofoffice::TYPE_EXTERNAL] = self::update_ponctual($user->outofoffices[Outofoffice::TYPE_EXTERNAL], $start, $end);
     $outoffice = self::try_enable_ponctual_date($outoffice);
     $user->outofoffices = $outoffice;
     return $user->save();
@@ -557,9 +560,11 @@ class Gestionnaireabsence extends Moncompteobject
   }
 
 	private static function try_enable_ponctual_date($outoffice) {
-    $outoffice[Outofoffice::TYPE_EXTERNAL]->enable = true;
-    $outoffice[Outofoffice::TYPE_INTERNAL]->enable = true;
-
+    if ($outoffice[Outofoffice::TYPE_EXTERNAL] === null & $outoffice[Outofoffice::TYPE_INTERNAL] === null) {
+      $outoffice[Outofoffice::TYPE_EXTERNAL]->enable = true;
+      $outoffice[Outofoffice::TYPE_INTERNAL]->enable = true;
+    }
+    
     return $outoffice;
   }
 }

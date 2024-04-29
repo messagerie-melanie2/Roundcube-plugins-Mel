@@ -13,12 +13,12 @@ import { BnumEvent } from '../../mel_events.js';
 export { JsHtml, ____JsHtml };
 
 /**
- * Une chaîne de charactère, une fonction ou un nombre
+ * [(string | function | number)]Une chaîne de charactère, une fonction ou un nombre. (ex : 'test', test.bind(this), 5)
  * @typedef {(string | function | number)} AttribData
  */
 
 /**
- * Une chaîne de charactère ou un objet
+ * [(string | Object<string, AttribData>)]Une chaîne de charactère ou un objet (ex : 'class:test', {class:'test'})
  * @typedef {(string | Object<string, AttribData>)} Attribs
  */
 

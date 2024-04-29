@@ -6026,3 +6026,13 @@ html.layout-phone .task-mail {
   border-radius: 5px;
   padding: 15px;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(22%) sepia(19%) saturate(1076%) hue-rotate(195deg) brightness(93%) contrast(93%);
+}
+
+html.dark-mode-custom {
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: brightness(0) saturate(100%) invert(80%) sepia(47%) saturate(262%) hue-rotate(358deg) brightness(93%) contrast(89%);
+  }
+}

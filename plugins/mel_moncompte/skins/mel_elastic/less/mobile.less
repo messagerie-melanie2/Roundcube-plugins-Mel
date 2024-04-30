@@ -1,0 +1,127 @@
+//compress:false
+e('@CHARSET "UTF-8";')
+#body {
+	font: 12px "Lucida Grande",Helvetica,Arial,sans-serif;
+}
+
+#mel_mobiles_list_listbox
+{
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 180px;
+}
+
+#mel_statistics_mobile_box
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 192px;
+}
+
+#mel_statistics_mobile_frame
+{
+  width: 100%;
+  table-layout: fixed; 
+  tbody {
+    td {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    tr {
+      &.disabled {
+        td {
+          color: #87A3AA;
+        }
+      }
+      &.filtermoveup {
+        td {
+          border-top: 2px dotted #555;
+          padding-top: 5px;
+        }
+      }
+      &.filtermovedown {
+        td {
+          border-bottom: 2px dotted #555;
+          padding-bottom: 4px;
+        }
+      }
+    }
+  }
+}
+
+#mobile_actions {
+	font-size: 12px;
+  > div {
+    margin-bottom: 5px; 
+  }
+  a {
+    color: #3B6EBF;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.m2_stats_device_table {
+	margin-top: 0px;
+	width: 100%;
+  background-color: #FFF;
+  background-color: var(--table-body-bg-color);
+	border: 1px solid #000;
+	border-spacing: 0px;
+	empty-cells: show;
+	margin-bottom: 30px;
+	font-size: 12px;
+  thead {
+    td {
+      background-color: #005D76;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      text-align: center;
+      font-weight: bold;
+      color: #FFF;
+      height: 20px;    
+    }
+  }
+  td {
+    font-size: inherit;
+    margin: 0px;
+    overflow: visible;
+    padding: 6px 12px;
+    border-width: 0px 0px 1px;
+    border-bottom: 1px solid #CBCBCB;
+    border-bottom-color: var(--table-body-border-color);
+    background-color: #FAFAFA;
+    background-color: var(--table-body-bg-color);
+    text-align: center;
+  }
+  tbody {
+    td {
+      &.mel_moncompte\ {
+        &.resync {
+          background-image: url("images/1411751212_refresh.png");
+          background-repeat: no-repeat;
+          background-position: center;
+          &:HOVER{
+            cursor: pointer;
+          }
+        }
+        &.remove  {
+          background-image: url("images/1411751862_error.png");
+          background-repeat: no-repeat;
+          background-position: center;
+          &:HOVER{
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}
+

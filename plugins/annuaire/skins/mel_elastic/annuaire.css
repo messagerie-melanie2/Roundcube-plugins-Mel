@@ -43,6 +43,10 @@
 	text-overflow: ellipsis;
 }
 
+#annuaire-list li > .description {
+	color: var(--listbox-text-color);
+}
+
 #annuaire-list li.selected > .name {
 	font-weight: bold;
 }
@@ -96,7 +100,8 @@
 	background: url(images/carnet.png?v=e784.5000) 17px 14px no-repeat;
 }
 
-html.dark-mode #annuaire-list .folder.addressbook {
+html.dark-mode #annuaire-list .folder.addressbook,
+html.dark-mode-custom #annuaire-list .folder.addressbook {
 	background: url(images/carnet-dark.png) 17px 14px no-repeat;
 }
 

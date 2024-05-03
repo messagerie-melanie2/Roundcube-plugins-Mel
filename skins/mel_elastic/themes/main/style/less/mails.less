@@ -153,6 +153,9 @@ body.task-mail {
         &.message {
           &.selected:hover {
             background-color: var(--message-list-content-selected-row-background-hover-color) !important;
+            html.dark-mode-custom &{
+              background-color: var(--message-list-content-row-background-hover-color) !important;
+            }
           }
 
           &:hover {

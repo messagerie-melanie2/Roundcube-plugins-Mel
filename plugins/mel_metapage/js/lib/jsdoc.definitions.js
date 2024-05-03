@@ -5,6 +5,7 @@
  * @property {Constants} Constants
  * @property {module:Exceptions} Exceptions
  * @property {module:MainNav} MainNav
+ * @property {module:Modal} Modale
  */
 
 /**
@@ -32,5 +33,34 @@
  */
 
 /**
+ * [(!string | !Symbol | !Number)] Représente une clé
  * @typedef {!string | !Symbol | !Number} Key
+ */
+
+/**
+ * Callback d'un évènement au clique
+ * @callback EventClickCallback
+ * @param {MouseEvent} e Evènement reçu
+ * @returns {void}
+ */
+
+/**
+ * Callback d'un évènement au survol
+ * @callback EventHoverCallback
+ * @param {MouseEvent} e Evènement reçu
+ * @returns {void}
+ */
+
+/**
+ * Callback d'un évènement d'un évènement à l'entrée de la souris
+ * @callback EventMouseEnterCallback
+ * @param {MouseEvent} e Evènement reçu
+ * @returns {void}
+ */
+
+/**
+ * Callback d'un évènement d'un évènement à la sortie de la souris
+ * @callback EventMouseLeaveCallback
+ * @param {MouseEvent} e Evènement reçu
+ * @returns {void}
  */

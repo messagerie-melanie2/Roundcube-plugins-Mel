@@ -517,6 +517,7 @@ class mel_metapage extends bnum_plugin
 
             if ($this->rc->task === "rotomecatest")
             {
+                $this->setup_module();
                 $this->register_action('index', array($this, 'debug_and_test'));
             }
 

@@ -2967,6 +2967,19 @@ $("#rcmfd_new_category").keypress(function(event) {
         exit;
     }
 
+    private function compare_freebusy($a, $b){
+        $arr =  [
+            self::FREEBUSY_FREE => 0, 
+            self::FREEBUSY_BUSY => 4, 
+            self::FREEBUSY_TENTATIVE => 2, 
+            self::FREEBUSY_OOF => 3, 
+            self::FREEBUSY_TELEWORK => 1, 
+            self::FREEBUSY_VACATION => 5];
+        
+
+        return $arr[$a] > $arr[$b] ? $a : $b;
+    }
+
     /**
      * Return a list of free/busy time slots within the given period
      * Echo data in JSON encoding
@@ -3005,6 +3018,7 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
         }
 
+        $max_freebusy = self::FREEBUSY_FREE;
         // build a list from $start till $end with blocks representing the fb-status
         for ($s = 0, $t = $start; $t <= $end; $s++) {
             $t_end = $t + $interval * 60;
@@ -3020,21 +3034,27 @@ $("#rcmfd_new_category").keypress(function(event) {
 
                     if ($from < $t_end && $to > $t) {
                         $status = isset($type) ? $type : self::FREEBUSY_BUSY;
-                        if ($status == self::FREEBUSY_BUSY) {
-                            // can't get any worse :-)
-                            break;
-                        }
+                        // if ($status == self::FREEBUSY_VACATION) {
+                        //     // can't get any worse :-)
+                        //     break;
+                        // }
+                        $max_freebusy = $this->compare_freebusy($status, $max_freebusy);
                     }
                 }
             }
             else {
-                $status = self::FREEBUSY_UNKNOWN;
+                $max_freebusy = self::FREEBUSY_UNKNOWN;
             }
+
+            $status = $max_freebusy;
+            $max_freebusy = self::FREEBUSY_FREE;
 
             // use most compact format, assume $status is one digit/character
             $slots .= $status;
             $t = $t_end;
         }
+
+        unset($max_freebusy);
 
         $dte = new DateTime('@'.$t_end);
         $dte->setTimezone($this->timezone);

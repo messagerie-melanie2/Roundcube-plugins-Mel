@@ -15,6 +15,7 @@ export {
 };
 
 /**
+ * Contient les classes utiles pour la création d'une dialogue.
  * @module Modal
  * @local DialogButtonConfig
  * @local SwitchPageCallback

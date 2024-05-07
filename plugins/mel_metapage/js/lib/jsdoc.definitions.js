@@ -38,6 +38,11 @@
  */
 
 /**
+ * Template type
+ * @typedef {Object} Tt
+ */
+
+/**
  * Callback d'un évènement au clique
  * @callback EventClickCallback
  * @param {MouseEvent} e Evènement reçu

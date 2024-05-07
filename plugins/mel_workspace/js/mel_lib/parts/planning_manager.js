@@ -465,16 +465,35 @@ class PlanningManager extends MelObject {
       },
     );
 
-    this.rcmail().addEventListener('frame_opened', () => {
-      if (this.calendar) this.calendar.render();
-    });
+    this.rcmail().addEventListener('frame_opened', this._rerender.bind(this));
   }
 
   //           BINDS         //
 
   /**
+   * Actualise le rendu du calendrier
+   * @returns {number} Numéro du timeout
+   * @package
+   */
+  _rerender() {
+    return setTimeout(() => {
+      this._rerender_action();
+      setTimeout(this._rerender_action.bind(this), 500);
+    }, 100);
+  }
+
+  /**
+   * Actualise le rendu du calendrier
+   *
+   * Est appelé par {@link _rerender}
+   * @package
+   */
+  _rerender_action() {
+    if (this.calendar) this.calendar.render();
+  }
+
+  /**
    * Passe au jour précédent
-   * @event
    * @package
    */
   _prev() {
@@ -484,7 +503,6 @@ class PlanningManager extends MelObject {
 
   /**
    * Passe au jour suivant
-   * @event
    * @package
    */
   _next() {
@@ -494,7 +512,6 @@ class PlanningManager extends MelObject {
 
   /**
    * Passe au jour actuel
-   * @event
    * @package
    */
   _today() {
@@ -504,7 +521,6 @@ class PlanningManager extends MelObject {
 
   /**
    * Affiche la fenêtre de sélection de date.
-   * @event
    * @package
    */
   _show_calendar() {
@@ -520,7 +536,6 @@ class PlanningManager extends MelObject {
    * Action à faire lorsque l'on a séléctionner une date.
    * @param {external:jQuery} tmp Input de qui provient la fenêtre de sélection de date.
    * @see {@link _show_calendar}
-   * @event
    * @package
    */
   _accept_calendar(tmp) {
@@ -535,7 +550,6 @@ class PlanningManager extends MelObject {
    *
    * Si une valeur est présente, on filtre les ressources, sinon on les affiches tous.
    * @package
-   * @event
    */
   _on_search() {
     const value = this.get_search_value();
@@ -559,7 +573,6 @@ class PlanningManager extends MelObject {
    * Met à jours les évènements du planning
    * @package
    * @returns {void}
-   * @event
    */
   _refresh_callback() {
     if (!this.calendar) return;
@@ -580,7 +593,6 @@ class PlanningManager extends MelObject {
    * @return {Promise<void>}
    * @async
    * @package
-   * @event
    */
   async _source_events(start, end, timezone, callback) {
     var go = true;
@@ -644,7 +656,6 @@ class PlanningManager extends MelObject {
    * @return {Promise<void>}
    * @async
    * @package
-   * @event
    */
   async _source_freebusy(start, end, timezone, callback) {
     var go = true;
@@ -699,7 +710,6 @@ class PlanningManager extends MelObject {
    * @param {*} eventObj Objet évènement
    * @param {external:jQuery} $el Element du dom (jQuery)
    * @package
-   * @event
    */
   _event_render(eventObj, $el) {
     if (eventObj.initial_data) {
@@ -733,7 +743,6 @@ class PlanningManager extends MelObject {
    * @param {*} resourceObj Objet resource
    * @param {external:jQuery} labelTds Element du dom (jQuery)
    * @package
-   * @event
    */
   _resources_render(resourceObj, labelTds) {
     if (resourceObj.id !== ID_RESOURCES_WSP) {
@@ -751,7 +760,6 @@ class PlanningManager extends MelObject {
    * Lorsque l'on clique sur un évènement => ouvre un évènement dans l'agenda
    * @param {*} eventObj Objet évènement
    * @package
-   * @event
    */
   _event_on_click(eventObj) {
     const start = eventObj.initial_data.start.toDate
@@ -768,11 +776,12 @@ class PlanningManager extends MelObject {
   /**
    * Lorsque l'on clique sur un le bouton reset de la recherche => réinitialise la recherche
    * @package
-   * @event
    */
   _event_on_remove_search_click() {
     $(SELECTOR_SEARCH_INPUT).val(EMPTY_STRING).change();
   }
+
+  //                 STATICS           //
 
   /**
    * Lance un planning

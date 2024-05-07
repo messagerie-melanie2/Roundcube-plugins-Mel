@@ -2976,6 +2976,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             self::FREEBUSY_TELEWORK => 1, 
             self::FREEBUSY_VACATION => 5];
         
+        if ($arr[$a] === null) $a = self::FREEBUSY_FREE;
+        if ($arr[$b] === null) $b = self::FREEBUSY_FREE;
 
         return $arr[$a] > $arr[$b] ? $a : $b;
     }

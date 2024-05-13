@@ -508,10 +508,10 @@
             }, true);
 
             ChatSetupConfig();
-
             if (rcmail.env.launch_chat_frame_at_startup === true)
             {
                 mel_metapage.Functions.change_frame('rocket', false);
+                mel_metapage.Functions.change_frame('tchap', false);
             }
 
             //Ajustement de la barre des tâches

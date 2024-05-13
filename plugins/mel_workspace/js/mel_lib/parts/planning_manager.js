@@ -489,7 +489,7 @@ class PlanningManager extends MelObject {
    * @package
    */
   _rerender_action() {
-    if (this.calendar) this.calendar.render();
+    if (this.calendar) this.calendar.rerenderEvents();
   }
 
   /**

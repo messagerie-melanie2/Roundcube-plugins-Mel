@@ -556,4 +556,104 @@ class mtes_driver_mel extends mce_driver_mel
       return null;
     }
   }
+
+  /**
+   * Lister les localités disponibles pour les ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 
+   */
+  public function resources_localities() {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_localities()");
+
+    return (new LibMelanie\Api\Mel\Resources\Locality())->listAllLocalities();
+  }
+
+  /**
+   * Lister les ressources Flex Office disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_flex_office($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_flex_office($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_FLEX_OFFICE);
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Lister les ressources Salle disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_salle($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_salle($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_SALLE);
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Lister les ressources Véhicule disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_vehicule($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_vehicule($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_VEHICULE);
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Lister les ressources Matériel disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_materiel($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_materiel($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_MATERIEL);
+    }
+    else {
+      return [];
+    }
+  }
 }

@@ -494,8 +494,60 @@ class mce_driver_mel extends driver_mel {
    * @return null|\LibMelanie\Api\Defaut\Group
    */
   public function get_workspace_group($workspace_id)
-  {
-    
+  { 
     return null;
+  }
+
+  /**
+   * Lister les localités disponibles pour les ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 
+   */
+  public function resources_localities() {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Flex Office disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_flex_office($locality_uid) {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Salle disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_salle($locality_uid) {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Véhicule disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_vehicule($locality_uid) {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Matériel disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_materiel($locality_uid) {
+    return [];
   }
 }

@@ -557,6 +557,49 @@ abstract class driver_mel {
   abstract public function get_workspace_group($workspace_id);
 
   /**
+   * Lister les localités disponibles pour les ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 
+   */
+  abstract public function resources_localities();
+
+  /**
+   * Lister les ressources Flex Office disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  abstract public function resources_flex_office($locality_uid);
+
+  /**
+   * Lister les ressources Salle disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  abstract public function resources_salle($locality_uid);
+
+  /**
+   * Lister les ressources Véhicule disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  abstract public function resources_vehicule($locality_uid);
+
+  /**
+   * Lister les ressources Matériel disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  abstract public function resources_materiel($locality_uid);
+
+  /**
    * Génération d'un uuid au format v4
    * 
    * @return string $uuid

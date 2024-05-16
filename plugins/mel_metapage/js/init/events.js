@@ -2261,6 +2261,7 @@ $(document).ready(() => {
         return;
       else if (
         !!Enumerable &&
+        !!$target.parent()[0] &&
         Enumerable.from($target.parent()[0].classList).any((x) =>
           x.includes('listitem'),
         )
@@ -2543,6 +2544,8 @@ function sendMessageToAriane(data) {
     'https://rcube.preprod.m2.e2.rie.gouv.fr/tchap',
   ];
 
+  const pegaze_url = rcmail.env.sondage_url || parent.rcmail.env.sondage_url || top.rcmail.env.sondage_url;
+
   const suggestionUrl = 'suggestionUrl'; //type/value
   const suggestionId = 'suggestionId';
 
@@ -2558,13 +2561,29 @@ function sendMessageToAriane(data) {
         mel_metapage.Frames.back();
       }
     } else if (chat_urls_origin.includes(event.origin)) {
+      //Evènement venant du chat
       const datas_accepted = 'isBNumEmbedded';
+      const datas_url_accepted = 'taskLink';
       if (event.data === datas_accepted) {
+        //Rocketchat
         sendMessageToAriane({
           bNumEmbedded: true,
           isDarkTheme: new Roundcube_Mel_Color().isDarkMode(),
         });
+      } else if (event.data[datas_url_accepted]) {
+        //Url au clique
+        let link = event.data[datas_url_accepted];
+
+        if (link.includes(pegaze_url))
+          link = mel_metapage.Functions.url('sondage', null, { _url: link });
+        
+        $('<a>')
+          .attr('href', link)
+          .click((e) => rcmail.triggerEvent('event.click', { e }))
+          .click()
+          .remove();
       }
+
       if (event.data && event.data.webconfRoom) {
         window.webconf_helper.go(
           (key = event.data.webconfRoom),

@@ -151,6 +151,44 @@ class RcmailDialogButton extends NotifierObject {
       mouseleave: this.mouseleave.call.bind(this.mouseleave),
     };
   }
+
+  /**
+   * Génère un bouton qui permettra de sauvegarder les données
+   * @static
+   * @param {Object} param0
+   * @param {string=} param0.text Texte du bouton
+   * @param {?BnumEvent=} param0.click Callback appelé lorsqu'on clique sur le bouton
+   * @param {?BnumEvent=} param0.mouseenter Callback appelé lorsqu'on entre dans le bouton
+   * @param {?BnumEvent=} param0.mouseleave Callback appelé lorsqu'on sort du bouton
+   * @returns {RcmailDialogButton}
+   */
+  static ButtonSave({
+    text = 'Enregistrer',
+    click = null,
+    mouseenter = null,
+    mouseleave = null,
+  }) {
+    return new RcmailDialogButton(text, {
+      classes: 'mel-button no-button-margin no-margin-button',
+      click: click?.call?.bind?.(click),
+      mouseenter: mouseenter?.call?.bind?.(mouseenter),
+      mouseleave: mouseleave?.call?.bind?.(mouseleave),
+    });
+  }
+
+  static ButtonCancel({
+    text = 'Annuler',
+    click = null,
+    mouseenter = null,
+    mouseleave = null,
+  }) {
+    return new RcmailDialogButton(text, {
+      classes: 'mel-button no-button-margin no-margin-button btn btn-danger',
+      click: click?.call?.bind?.(click),
+      mouseenter: mouseenter?.call?.bind?.(mouseenter),
+      mouseleave: mouseleave?.call?.bind?.(mouseleave),
+    });
+  }
 }
 
 /**

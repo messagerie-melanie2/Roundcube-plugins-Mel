@@ -174,6 +174,9 @@ class mel_ldap_auth extends rcube_plugin {
             }
             // Toujours valider la connexion pour éviter les erreurs csrf sur l'auth
             $args['valid'] = true;
+          } else if ($_user_mce->is_external) {
+            // Toujours valider la connexion pour éviter les erreurs csrf sur l'auth
+            $args['valid'] = true;
           } else {
             $args['abort'] = true;
             $args['error'] = 49;

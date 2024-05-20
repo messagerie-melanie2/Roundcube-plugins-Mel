@@ -48,7 +48,7 @@ rcube_webmail.prototype.deconnection_right_popup = function() {
     }
     // HTML
     let html = '<div id="disconnection_popup">';
-    html += '<span class="title">' + this.gettext('disco_popup_title', 'mel_envoi_differe') + '</span>';
+    html += '<span class="title">' + this.gettext('disco_popup_text', 'mel_envoi_differe') + '</span>';
     html += '<span class="description">' + this.gettext('disco_popup_description', 'mel_envoi_differe') + '</span>';
     html += '</div>';
 

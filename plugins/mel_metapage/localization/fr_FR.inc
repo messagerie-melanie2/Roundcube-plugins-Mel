@@ -398,13 +398,15 @@ $labels['warning_external_link'] = 'Attention, ne jamais donner vos identifiants
 $labels['open_external_link'] = 'Visiter le site';
 
 $labels['informations'] = 'Informations';
-$labels['double_authentication'] = 'Authentification à deux facteurs';
+$labels['double_authentication'] = 'Authentification';
 $labels['double_authentication_notification'] = 'Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum';
 $labels['introduction_text'] = 'À partir de %%date%%, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum.';
 $labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas où vous perdez votre téléphone par exemple, veuillez entrer une adresse e-mail de récupération :';
-$labels['verification_email_text'] = 'Rentrer le code de vérification reçu par mail';
+$labels['different_email'] = 'L\'email de récupération doit être distinct de l\'email professionnel.';
+$labels['verification_email_text'] = 'Saisissez le code de vérification reçu par mail';
 $labels['verification_application_text'] = 'Rentrer le code de validation affiché sur l’application';
-$labels['application_text'] = 'Télécharger une application de l\'authentification à deux facteurs comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a> pour scanner ce QR Code. <a href="#">En savoir plus</a>';
+$labels['application_text'] = 'Télécharger une application de l\'authentification à deux facteurs comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a>.';
+$labels['scan_authentication_code'] = 'Vous pouvez maintenant scanner ce QR Code pour enregistrer le bnum dans votre application.';
 $labels['add_key'] = 'Ou ajouter cette clé dans votre application :';
 $labels['show_me'] = 'Configurer maintenant';
 $labels['later'] = 'Plus tard';
@@ -433,11 +435,12 @@ $labels['app_tchap'] = "Tchap";
 $labels['tchap'] = "Tchap";
 $labels['tchap_options'] = "Ouvrir les paramètres de Tchap";
 $labels['tchap_disconnect'] = "Se déconnecter de Tchap";
+$labels['tchap_sidebar'] = "Afficher la barre latérale de Tchap";
 $labels['event-location-visio'] = "En visioconférence";
 $labels['event-location-location'] = "En présentiel";
 $labels['event-location-audio'] = "Par audio";
-$labels['event-visio-internal'] = "Wébconférence de l'état";
-$labels['event-visio-external'] = "Wébconférence externe";
+$labels['event-visio-internal'] = "Webconférence de l'État";
+$labels['event-visio-external'] = "Webconférence externe";
 
 $labels['week'] = 'semaine';
 $labels['week_plurial'] = $labels['week'].'s';
@@ -469,3 +472,13 @@ $labels['existing_guest'] = 'Le participant %0 éxiste déjà !';
 
 $labels['add_guests'] = 'Ajoutez des participants';
 $labels['req_guest'] = 'Participants obligatoires';
+
+$labels['error_empty_event_visio_room'] = 'Le nom de la visioconférence ne doit être vide !';
+$labels['error_too_small_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 10 charactères !';
+$labels['error_less_number_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 3 chiffres !';
+$labels['unknown_error'] = 'Erruer inconnue !';
+$labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vide !';
+
+$labels['found_audio_date'] = 'Réserver une audio-conférence';
+$labels['add'] = 'Ajouter';
+$labels['delete'] = 'Supprimer';

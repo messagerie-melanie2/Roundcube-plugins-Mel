@@ -101,6 +101,24 @@ class M2calendar {
     }
   }
 
+  static function is_external($id) {
+    $pref = driver_mel::gi()->getUser()->getCalendarPreference("external_calendars");
+    $is_external_calendar = false;
+
+    if (isset($pref)) {
+      $external_calendars = json_decode($pref, true);
+
+      foreach ($external_calendars as $external_calendar) {
+        if ($external_calendar['calendar_id'] == $id) {
+          $is_external_calendar = true;
+          break;
+        }
+      }
+    }
+
+    return $is_external_calendar;
+  }
+
   /**
    * Getter de l'objet calendar
    * 

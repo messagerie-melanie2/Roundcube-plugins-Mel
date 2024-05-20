@@ -375,4 +375,5 @@ $labels['changeattendees'] = 'Liste des participants';
 $labels['changelocation'] = 'Lieu'; 
 $labels['changedescription'] = 'Description'; 
 $labels['changerecurrence'] = 'Ancienne répétition'; 
+$labels['notification'] = 'Notification'; 
 ?>

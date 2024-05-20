@@ -29,7 +29,7 @@ if (window.rcmail) {
               const content = datas.map(data => {
                 return new mel_html2('div', {
                   attribs: { class: 'row' },
-                  contents: [new mel_html('a', { href: data, target: "_blank" }, data)]
+                  contents: [new mel_html('a', { href: data.url, target: "_blank" }, data.name)]
                 });
               });
 

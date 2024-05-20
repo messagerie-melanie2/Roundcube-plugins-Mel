@@ -80,3 +80,8 @@ html.dark-mode ul.toolbarmenu li.separator_above
   margin-top: 2px;
   padding-top: 2px;
 }
+
+#contacttabs {
+  height: 70%;
+  overflow: auto;
+}

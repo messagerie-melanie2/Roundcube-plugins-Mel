@@ -62,6 +62,85 @@ export const CHECK_BOX_NOTIFY = 'edit-attendees-donotify';
 export const SELECTOR_CHECKBOX_NOTIFY = `${ID_SELECTOR}${CHECK_BOX_NOTIFY}`;
 /**
  * @constant
- * @string
+ * @type {string}
+ * @default String.fromCharCode('8199')
  */
 export const LOCATION_SEPARATOR = String.fromCharCode('8199');
+/**
+ * @constant
+ * @type {string}
+ * @default 'visio'
+ */
+export const LOCATION_VISIO_OPTION_VALUE = 'visio';
+/**
+ * @constant
+ * @type {string}
+ * @default 'visio-internal'
+ */
+export const LOCATION_VISIO_INTERNAL_OPTION_VALUE = 'visio-internal';
+/**
+ * @constant
+ * @type {string}
+ * @default 'visio-external'
+ */
+export const LOCATION_VISIO_EXTERNAL_OPTION_VALUE = 'visio-external';
+/**
+ * @constant
+ * @type {string}
+ * @default 'audio'
+ */
+export const LOCATION_AUDIO_OPTION_VALUE = 'audio';
+/**
+ * @constant
+ * @type {string}
+ * @default 'location'
+ */
+export const LOCATION_OPTION_VALUE = 'location';
+/**
+ * @constant
+ * @type {string}
+ * @default ' ('
+ */
+export const SEPARATOR_LOCATION_VISIO_INTEGRATED_PHONE = ' (';
+/**
+ * @constant
+ * @type {string}
+ * @default ')'
+ */
+export const SEPARATOR_END_LOCATION_VISIO_INTEGRATED_PHONE = ')';
+/**
+ * @constant
+ * @type {string}
+ * @default ' | '
+ */
+export const SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE = ' | ';
+/**
+ * @constant
+ * @type {number}
+ * @default 10
+ */
+export const INTEGRATED_VISIO_MIN_SIZE = 10;
+/**
+ * @constant
+ * @type {number}
+ * @default 3
+ */
+export const INTEGRATED_VISIO_MIN_NUMBER_COUNT = 3;
+/**
+ * @constant
+ * @type {string}
+ * @default ' : '
+ */
+export const SEPARATOR_AUDIO_URL_LOCATION = ' : ';
+/**
+ * @constant
+ * @type {string}
+ * @default ' | '
+ */
+export const SEPARATOR_AUDIO_PIN = SEPARATOR_LOCATION_VISIO_INTEGRATED_PIN_PHONE;
+/**
+ * @constant
+ * @type {string}
+ * @default 'add-day'
+ */
+export const CLASS_ALL_DAY = 'all-day';

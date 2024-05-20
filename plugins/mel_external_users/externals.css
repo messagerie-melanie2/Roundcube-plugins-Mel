@@ -1,0 +1,16 @@
+@CHARSET "UTF-8";
+
+#taskmenu .button-home,
+#taskmenu .button-mail,
+#taskmenu .button-calendar,
+#taskmenu .button-contacts {
+	display: none !important;
+}
+
+#taskmenu .button-wsp {
+	order: 1;
+}
+
+#button-create {
+	display: none !important;
+}

@@ -3132,7 +3132,7 @@ function rcube_calendar_ui(settings) {
       $dialog = $('<iframe>').attr('src', rcmail.url('calendar', params)).on('load', function () {
         var contents = $(this).contents();
         contents.find('#calendar-name')
-          .prop('disabled', !calendar.editable)
+          .prop('disabled', !calendar.editable && !(calendar.name_editable ?? false))
           .val(calendar.editname || calendar.name)
           .select();
         contents.find('#calendar-color')
@@ -3467,6 +3467,11 @@ function rcube_calendar_ui(settings) {
         if (v.role != 'ORGANIZER') {
           v.status = 'NEEDS-ACTION';
         }
+        // PAMELA - Ne pas conserver l'organisateur lors d'un copy
+        // PAMELA - 0006910: Modification des fonctionnalités de copie d'un événement depuis l'agenda d'un tiers
+        else {
+          v.role = 'REQ-PARTICIPANT';
+        }
       });
 
       setTimeout(function () { event_edit_dialog('new', copy); }, 50);
@@ -3572,6 +3577,14 @@ function rcube_calendar_ui(settings) {
           form.find(`#time_select option[value="${user_pref.time_select}"]`).prop('selected', true);
         }
       }
+
+      if (user_pref.notification_type) {
+        form.find('#notification_select').val(user_pref.notification_type);
+      }
+      else {
+        form.find('#notification_select').val("notification");
+      }
+
 
       if (user_pref.place) {
         user_pref.place.forEach(element => {
@@ -3695,6 +3708,8 @@ function rcube_calendar_ui(settings) {
         appointment.time_select = form.find('#custom_time_input').val();
       }
     }
+
+    appointment.notification_type = form.find('#notification_select').val();
 
     let error_message = "Ce champs est obligatoire";
     let error = false;
@@ -4873,6 +4888,7 @@ window.rcmail && rcmail.addEventListener('init', function (evt) {
   rcmail.register_command('calendar-showfburl', function () { cal.showfburl(); }, false);
   rcmail.register_command('event-download', function () { console.log("d", cal.selected_event, cal); cal.event_download(cal.selected_event); }, true);
   rcmail.register_command('event-sendbymail', function (p, obj, e) { cal.event_sendbymail(cal.selected_event, e); }, true);
+  // PAMELA - 0006910: Modification des fonctionnalités de copie d'un événement depuis l'agenda d'un tiers
   rcmail.register_command('event-copy', function () { cal.event_copy(cal.selected_event); }, true);
   rcmail.register_command('event-history', function (p, obj, e) { cal.event_history_dialog(cal.selected_event); }, false);
 

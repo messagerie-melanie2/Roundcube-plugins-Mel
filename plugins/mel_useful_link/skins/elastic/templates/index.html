@@ -1,59 +1,71 @@
 <roundcube:include file="includes/layout.html" />
 <roundcube:include file="includes/menu.html" />
 
-<h1 class="voice"><roundcube:label name="workspaces" /></h1>
+<h1 class="voice">
+  <roundcube:label name="workspaces" />
+</h1>
 
 <!-- contact details frame -->
 <div id="layout-content" class="wsp-content wsp-index only-content" style="overflow: auto;" role="main">
-	<!-- <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>-->
-	<div class="wsp-header not-widget" style="background-color: white;height: auto;color: inherit;display:block;text-align: center;" >
-        <div class=row>
-            <div class=col-12>
-                <div class="header-wsp">
-                    <span class="icon-mel-link no-weight roundbadge"></span>
-                    <h1><roundcube:label name="mel_useful_link.My_useful_links" /></h1>
-                </div>
-            </div>
+  <!-- <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>-->
+  <div class="wsp-header not-widget"
+    style="background-color: white;height: auto;color: inherit;display:block;text-align: center;">
+    <div class=row>
+      <div class=col-12>
+        <div class="header-wsp">
+          <span class="icon-mel-link no-weight roundbadge"></span>
+          <h1>
+            <roundcube:label name="mel_useful_link.My_useful_links" />
+          </h1>
         </div>
-        <div class=row>
-            <div class=col-12>
-                <div class="wsp-search-wsp">
-                    <label for="wsp-search-input" class="title-wsp text-header bold"><roundcube:label name="mel_useful_link.find_useful_link" /></label>
-                    <div class="input-group mel-search-group mel-centered">
-                        <input id="wsp-search-input" oninput="SearchLinks(this)" onchange="PublicCommands(this)" type="text" onmousedown="" class="form-control mel-max-width-500" />
-                        <div class="input-group-append">
-                            <span class="icon-mel-search input-group-text"></span>
-                        </div>
-                    </div>
-                </div>
+      </div>
+    </div>
+    <div class=row>
+      <div class=col-12>
+        <div class="wsp-search-wsp">
+          <label for="wsp-search-input" class="title-wsp text-header bold">
+            <roundcube:label name="mel_useful_link.find_useful_link" />
+          </label>
+          <div class="input-group mel-search-group mel-centered">
+            <input id="wsp-search-input" oninput="SearchLinks(this)" onchange="PublicCommands(this)" type="text"
+              onmousedown="" class="form-control mel-max-width-500" />
+            <div class="input-group-append">
+              <span class="icon-mel-search input-group-text"></span>
             </div>
+          </div>
         </div>
-	</div> 
-	<!-- <h2 id="aria-label-contact-frame" class="voice"><roundcube:label name="contactproperties" /></h2> -->
-    <img class="logo-mel startup not-widget" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
-	<div class="body" style="padding-bottom: 15px;">
-        <div class="epingle">
-            <h2 class="title-wsp bold not-widget">
-                <roundcube:label name="mel_useful_link.pined_links" />
-            </h2>
-            <div class="ulinks-epingle">
-                <roundcube:object name="epingle" />
-            </div>
-            <!-- <div class=wsp-others></div> -->
-            <separate class="not-widget"></separate>
+      </div>
+    </div>
+  </div>
+  <!-- <h2 id="aria-label-contact-frame" class="voice"><roundcube:label name="contactproperties" /></h2> -->
+  <img class="logo-mel startup not-widget" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg"
+    data-src-small="0" id="logo" alt="Logo" />
+  <div class="body" style="padding-bottom: 15px;">
+    <div class="joined">
+      <h2 class="title-wsp bold not-widget joinedtitle d-flex justify-content-between">
+        <roundcube:label name="mel_useful_link.all_useful_links" />
+        <div class="right_button">
+          <button id="mulba" class="mel-button">
+            <span class="add">Ajouter</span>
+            <span class="material-symbols-outlined">
+              add_circle
+            </span>
+          </button>
+          <!-- <button id="useful_links_apps" class="mel-button mel-button-icon">
+            <span class="material-symbols-outlined">
+              widgets
+            </span>
+          </button> -->
         </div>
-        <div class="joined">
-            <h2 class="title-wsp bold not-widget joinedtitle">
-                <roundcube:label name="mel_useful_link.all_useful_links" />
-                <button onclick="CreateLink()" id="mulba" class="mel-button"><span class="add">Ajouter</span> <span class="plus icon-mel-plus"></span></button>
-                <roundcube:object name="showahl" />
-            </h2> 
-            <div class="links-items widget-links">
-                <roundcube:object name="joined" />
-            </div>
-        </div>
+        <!-- <button onclick="CreateLink()" id="mulba" class="mel-button"><span class="add">Ajouter</span> <span class="plus icon-mel-plus"></span></button> -->
+        <!-- <roundcube:object name="showahl" /> -->
+      </h2>
+      <span class="d-inline-flex align-items-center my-2">Utilisez la fonctionnalité de glisser-déposer pour déplacer des éléments et fusionner deux liens afin de constituer un dossier.</span>
+      <ul id="links-items" class="links-items widget-links p-0">
+      </ul>
+    </div>
 
-	</div>
+  </div>
 </div>
 
 <roundcube:include file="includes/footer.html" />

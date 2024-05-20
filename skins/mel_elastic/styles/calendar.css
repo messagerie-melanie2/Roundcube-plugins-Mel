@@ -59,6 +59,10 @@
 .task-calendar #layout #layout-content > .header #toolbar-menu {
   text-align: left;
 }
+.task-calendar #layout #layout-content > .header .header-title {
+  margin-bottom: 6px;
+  margin-top: -5px;
+}
 .task-calendar #layout #layout-content > .header .header-title span {
   color: var(--calendar-sidebar-header-color);
 }
@@ -68,15 +72,19 @@ html.layout-large .task-calendar #layout #layout-content > .header {
 }
 html.layout-phone .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html.layout-small .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html.layout-phone.framed .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html.layout-small.framed .task-calendar #layout #layout-content {
   max-width: calc(100%);
+  margin-left: var(--space-margin) !important;
 }
 html .task-calendar #layout .ui-datepicker-year {
   display: inline-block !important;
@@ -263,9 +271,6 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label {
   font-size: 8px;
   -webkit-text-stroke: var(--calendar-list-item-switch-tick-stroke);
   text-stroke: var(--calendar-list-item-switch-tick-stroke);
-}
-html.touch .task-calendar .listing .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
-  transform: translateX(10px);
 }
 .task-calendar .searchbar.menu {
   border-radius: 15px;

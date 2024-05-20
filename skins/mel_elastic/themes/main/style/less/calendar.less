@@ -50,11 +50,15 @@
     background-color: var(--layout-content-header-background-color) !important;
 
     a.button:not(.disabled) {
-      color: var(--layout-content-header-text-color) !important;
+      color: var(--layout-content-header-text-color);
 
       &:hover {
         color: var(--layout-content-header-text-hover-color) !important;
       }
+    }
+
+    .transparent-icon-button {
+      color: var(--calendar-header-transparent-button-color);
     }
   }
 
@@ -85,9 +89,14 @@
 
       select.mel-input.calendar,
       .fc-toolbar.fc-header-toolbar .fc-right button {
-        border: var(--searchbar-border);
         color: var(--input-button-text-color) !important;
         background-color: var(--searchbar-background-color);
+
+        html.layout-small &,
+        html.layout-phone & {
+        border: none;
+        border-radius: var(--main-panel-border-radius) var(--main-panel-border-radius) 0 0 !important;
+        }
       }
 
       #calendar {
@@ -162,3 +171,17 @@
     }
   }
 }
+
+  #mel-event-form {
+    html.layout-phone & {
+      #mel-calendar-alarm,
+      #edit-event-status,
+      #edit-calendar {     
+        width: 5px;
+      }    
+
+      .md-mt-2 {
+        margin-top: 10px;
+      }
+    }
+  }

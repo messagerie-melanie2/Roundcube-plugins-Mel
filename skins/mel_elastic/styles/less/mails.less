@@ -63,6 +63,17 @@
         }
     }
 
+    &.action-compose {
+      #layout { 
+        #layout-content > .header {
+          a.button,
+          span {
+            color: var(--layout-content-header-text-color);
+          }
+        }
+      }
+    }
+
     #messagelist-content{
         background-color: var(--layout-content-background-color)!important;
     }
@@ -100,6 +111,17 @@
             }
         }
     }
+
+    .mail-floating-button {
+      z-index: 101;
+      position: absolute;
+      bottom: 18px;
+      right: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 15px;
+    }
 }
 
 /*Liste des messages*/
@@ -110,7 +132,7 @@ table.messagelist{
 
             & > td {
                 &:first-child{
-                    border-left: 2px solid var(--primary-border-color) !important;
+                    border-left: 2px solid var(--message-list-unread-border-left) !important;
                 }
             }
 
@@ -675,7 +697,7 @@ table.messagelist{
                 & > td {
                     &.selection {
                         & + td{
-                            border-left: 2px solid var(--primary-border-color) !important;
+                            border-left: 2px solid var(--message-list-unread-border-left) !important;
                         }
                     }
                 }
@@ -728,6 +750,10 @@ table.messagelist{
     position: absolute;
     right: 0;
 
+    html.touch & {
+      position: initial;
+    }
+
     .searchbar{
         a{
             html body.task-mail &{
@@ -767,6 +793,16 @@ table.messagelist{
 
     &.hoverable{
         right:20px;
+
+        html.touch & {
+          margin-right: 15px;
+
+          .searchbar{
+            &.menu{
+                width: auto;
+            }
+        }
+        }
 
         .searchbar{
             &.menu{
@@ -2112,6 +2148,13 @@ body.task-mail.action-compose a.removelink
         li {
             a{
                 color: var(--layout-list-header-text-color) !important;
+            }
+
+            a.disabled {
+              html.layout-phone &,
+              html.layout-small & {
+                display: none;
+              }
             }
         }
     }

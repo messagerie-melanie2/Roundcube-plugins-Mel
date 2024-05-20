@@ -4,6 +4,7 @@
   --secondary-bckg-color: #2C3054;
   --tierciary-bckg-color: #484D7A;
   --default-bckg-color: #FFF;
+  --default-background: var(--default-bckg-color);
   --button-background-color: #F0F0F0;
   --warning-color: #FC945A;
   --card-background-color: #f0f0f0;
@@ -27,13 +28,14 @@
   --modal-da-title-text-color: #5C5CFF;
 
 
-  //Main border raidus
+  //Main border radius
   --main-border-radius: 0px;
   --secondary-border-radius: 0px;
   --main-panel-border-radius: 0;
 
   //Main box shadow
   --main-box-shadow: none;
+  --secondary-box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
 
   //Main margin
   --main-margin: 0px;
@@ -49,7 +51,7 @@
   --secondary-hover-background-color: #f8f9fa;
   --hover-close-color: red;
   --list-hover-background-color:var(--secondary-bckg-color);
-
+  --input-button-hover-text-color: rgb(113, 117, 152);
   //Adressbook
   --addressbook-list-item-text-color: var(--secondary-text-color);
   --addressbook-list-item-hover-text-color: var(--secondary-text-color);
@@ -159,6 +161,9 @@
   --calendar-table-background-color: var(--body-background-color);
   --calendar-table-today-background-color: #f2faf9;
 
+  --calendar-header-folder-button-background:var(--tierciary-bckg-color);
+  --calendar-header-transparent-button-color:var(--default-text-color);
+
   //Dropdown
   --dropdown-menu-background-color: var(--default-bckg-color);
   --dropdown-menu-text-color: var(--main-text-color);
@@ -260,7 +265,10 @@
   --message-list-content-selected-row-background-hover-color: var(--secondary-bckg-color);
   --message-list-content-selected-row-border-color: transparent;
   --message-list-border-bottom: 1px solid var(--message-list-content-border-color);
+  --message-list-unread-border-left: var(--primary-border-color);
   --mail-quota-widget-text-color: var(--secondary-text-color);
+
+  --mail-header-button-color: var(--secondary-text-color);
 
   //Mail - msgicon, flags
   --message-list-content-mail-button-color: var(--mail-unread-icon-color);
@@ -389,4 +397,15 @@
   //Workspace 
   --workspace-item-background-color: var(--button-background-color);
   --workspace-separator-color: var(--secondary-border-color);
+
+  //Moncompte
+  --password-E: #e63e11;
+  --password-D: #ee8100;
+  --password-C: #c19c1f;
+  --password-B: #85bb2f;
+  --password-A: #038141;
+
+  //Useful links
+  --folder-background-color: var(--card-background-color);
+  --link-context-menu-hover-background-color : var( --folder-background-color);
 }

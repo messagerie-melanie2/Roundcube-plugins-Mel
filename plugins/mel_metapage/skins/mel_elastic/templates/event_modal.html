@@ -29,9 +29,9 @@
 			<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control input-mel" style="background-color: transparent;border:none;display: inline-block" />
 		</bnum-hidden>
 
-		<div class="row no-label-row set-margin-bottom-2">
+		<div class="row no-label-row set-margin-bottom-2 justify-content-between">
 			<!-- Idéalement 15px entre chaque et pas au début -->
-			<div class="form-group col-5 set-padding-left-0 set-padding-right-2 " id="calendar-select">
+			<div class="form-group col-3 col-md-5 set-padding-left-0 set-padding-right-2 " id="calendar-select">
 				<label for="edit-calendar" class="red-star-after span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_calendar' /></label>
 				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
 					<span class="material-symbols-outlined">
@@ -61,7 +61,7 @@
 					<roundcube:object title="Statut de l'évènement" name="plugin.status_select" id="edit-event-status" class="form-control input-mel" style="background-color: transparent;border:none;display: inline-block"/>
 				</div>
 			</div>
-			<div class="col-1 set-padding-important-all-0">
+			<div class="col-2 col-md-1 set-padding-important-all-0">
 				<div class="form-control input-mel fake-input d-flex align-items-center justify-content-center">
 					<label for="update-sensivity" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
 					<button type="button" id="update-sensivity" title="Sensibilité de l'évènement" aria-valuenow="busy" class="mel-button no-button-margin no-margin-button button-icon-hover">
@@ -129,7 +129,7 @@
 			<!-- <div class="form-control fake-input input-mel" style="display: flex;align-items: center;"> -->
 				<div style="flex:1;display:flex;flex-wrap: wrap;  align-items: baseline;">
 					<!-- <div id="attendees" class="mel-show-attendee" data-linked="attendee-input"></div> -->
-				<input id="attendee-input" class="form-control" type="text" placeholder="Ajoutez des participants" style="flex: auto;width: unset;"/>
+				<input id="attendee-input" class="form-control input-mel" type="text" placeholder="Ajoutez des participants" style="flex: auto;width: unset;"/>
 				</div>
 				<button onclick="m_mp_openTo(this, 'attendee-input', {onselect:m_mp_on_open_select_calendar_contacts})" type="button" class="no-background" type="button">
 					<span class="material-symbols-outlined">
@@ -167,14 +167,14 @@ Choix de la période
         </span>
       </label> -->
 		<div class="col-12 datetime row">
-			<div class="col-6" style="display: flex;">
+			<div class="col-12 col-md-6" style="display: flex;">
 				<!-- symbol horloge -->
-				<span class="material-symbols-outlined icon-weight-400 icon-front-col mr-2">
+				<span class="material-symbols-outlined icon-weight-300 icon-front-col mr-2">
 					schedule
 				</span>
 				<div class="relative icon-datepicker">
 					<input type="text" title="Date de début" name="startdate" id="edit-startdate" class="form-control input-mel" required="true"/> &nbsp;
-					<span class="material-symbols-outlined icon-weight-300">
+					<span class="material-symbols-outlined icon-weight-300 input-mel-color">
 					calendar_month
 					</span>
 				</div>
@@ -184,17 +184,17 @@ Choix de la période
 				</select>	
 			</div>
 
-			<div class="col-6">
-				<label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox" /><roundcube:label name="calendar.all-day-long" /></label>
+			<div class="col-12 col-md-6">
+				<label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox before-margin-right" /><roundcube:label name="calendar.all-day-long" /></label>
 			</div>
 			
 		</div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-6 datetime">
+			<div class="col-12 col-md-6 datetime">
         <div class="relative icon-datepicker">
 				<input type="text" name="enddate" title="Date de fin" id="edit-enddate" class="form-control input-mel no-icon-front-col" required="true"/> &nbsp;
-        <span class="material-symbols-outlined icon-weight-300">
+        <span class="material-symbols-outlined icon-weight-300 input-mel-color">
           calendar_month
         </span>
       </div>
@@ -203,9 +203,9 @@ Choix de la période
 				<select id="mel-edit-endtime" title="Heure de fin" class="form-control input-mel hour-select">
 				</select>
         </div>  
-			<div class="col-sm-6">
+			<div class="col-12 col-md-6 md-mt-2">
 				<div class="" style="position:relative"><!--Récurence-->
-					<span class="material-symbols-outlined icon-weight-300" style="position: absolute;
+					<span class="material-symbols-outlined icon-weight-300 input-mel-color" style="position: absolute;
 					top: 5px;
 					left: 15px;
 					pointer-events: none;">

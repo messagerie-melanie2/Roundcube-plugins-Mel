@@ -57,6 +57,7 @@ class mel_notification extends rcube_plugin
         'notifications_material_icons'          => [],
         'notifications_set_read_on_click'       => false,
         'notifications_set_read_on_panel_close' => false,
+        'notifications_sound_on_new_mail'       => false
     ];
     
     /**
@@ -91,6 +92,7 @@ class mel_notification extends rcube_plugin
                 $this->rc->output->set_env('notifications_material_icons',          $this->rc->config->get('notifications_material_icons',          $this->defaults['notifications_material_icons']));
                 $this->rc->output->set_env('notifications_set_read_on_click',       $this->rc->config->get('notifications_set_read_on_click',       $this->defaults['notifications_set_read_on_click']));
                 $this->rc->output->set_env('notifications_set_read_on_panel_close', $this->rc->config->get('notifications_set_read_on_panel_close', $this->defaults['notifications_set_read_on_panel_close']));
+                $this->rc->output->set_env('notifications_sound_on_new_mail',       $this->rc->config->get('notifications_sound_on_new_mail',       $this->defaults['notifications_sound_on_new_mail']));
                 $this->rc->output->set_env('notifications_settings',                $this->rc->config->get('notifications_settings',                []));
                 
                 // Charger le js
@@ -446,6 +448,25 @@ class mel_notification extends rcube_plugin
             ];
         }
 
+        if (!isset($no_override['notifications_sound_on_new_mail'])) {
+            $field_id = 'rcmfd_notifications_sound_on_new_mail';
+            $default = $this->rc->config->get('notifications_sound_on_new_mail', $this->defaults['notifications_sound_on_new_mail'] ?? false);
+
+            $checkbox = new html_checkbox(['name' => '_notifications_sound_on_new_mail', 'id' => $field_id, 'value' => 1]);
+
+            $p['blocks']['general']['options']['notifications_sound_on_new_mail'] = [
+                'title'   => html::label($field_id, rcube::Q($this->gettext('notifications_sound_on_new_mail'))),
+                'content' => $checkbox->show($default ? 1 : 0),
+            ];
+        }    
+        
+        $p['blocks']['general']['options']['test_sound'] = [
+            'title' => '<div style="display: flex;height: 100%;"><span style="align-self: center;">Tester le son de notification d\'un nouveau mail</span></div>',
+            'content' => '<div id="notification-sound-container">test</div>'
+        ];
+
+        $this->include_script('sound.js');
+
         // Block avancé pour les notifications
         $p['blocks']['list']['name'] = $this->gettext('Notifications settings');
 
@@ -546,6 +567,8 @@ class mel_notification extends rcube_plugin
             $p['prefs']['notifications_desktop_duration'] = intval(rcube_utils::get_input_value('_desktop_duration', rcube_utils::INPUT_POST));
             $p['prefs']['notifications_set_read_on_panel_close'] = rcube_utils::get_input_value('_set_read_on_panel_close', rcube_utils::INPUT_POST) == "1";
             $p['prefs']['notifications_set_read_on_click'] = rcube_utils::get_input_value('_set_read_on_click', rcube_utils::INPUT_POST) == "1";
+            $p['prefs']['notifications_sound_on_new_mail'] = rcube_utils::get_input_value('_notifications_sound_on_new_mail', rcube_utils::INPUT_POST) == "1";
+
 
             // Paramètres spécifiques des notifications
             $p['prefs']['notifications_settings'] = [];

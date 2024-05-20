@@ -1,3 +1,9 @@
+/**
+ * @module EventView/Parts
+ * @local Parts
+ * @local FakePart
+ */
+
 export {Parts, FakePart}
 
 /**
@@ -8,7 +14,7 @@ export {Parts, FakePart}
 class Parts {
     /**
      * Constructeur de la classe. Il demande le champs qui sera gérer ainsi que son "mode de fonctionnement". (cad, si il est actionner par un clique ou un changement d'état)
-     * @param {$} $field Champs qui sera gérer par cette classe.
+     * @param {external:jQuery} $field Champs qui sera gérer par cette classe.
      * @param  {...Parts.MODE} modes Mode de fonctionnement.
      */
     constructor($field, ...modes) {
@@ -16,7 +22,7 @@ class Parts {
          * Champ qui sera gérer par cette partie. Ce champ sera utiliser pour sauvegarder les données qui lui sont liés.
          * @protected
          * @member
-         * @type {$}
+         * @type {external:jQuery}
          */
         this._$field = $field;
         this._p_initField(modes);
@@ -67,7 +73,7 @@ class Parts {
     /**
      * Récupère le champ
      * @protected
-     * @returns {$} 
+     * @returns {external:jQuery} 
      */
     _p_get_field() {
         return this._$field;
@@ -113,10 +119,10 @@ class Parts {
     /**
      * Essaye d'ajouter l'évènement lié aux modes au champ
      * @protected
-     * @param {$} $field 
+     * @param {external:jQuery} $field 
      * @param {string} event Nom de l'évènement que l'on souhaite ajouter {exemple : 'click'}
      * @param {EventCallback} callback 
-     * @returns {$} Champ modifié
+     * @returns {external:jQuery} Champ modifié
      */
     _p_try_add_event($field, event, callback) {
         if (!$._data($field[0], 'events' )?.[event]) {
@@ -140,9 +146,9 @@ class Parts {
 class FakePart extends Parts {
     /**
      * 
-     * @param {$} $fields 
-     * @param {*} $fakeField 
-     * @param  {...Parts.MODE} modes 
+     * @param {external:jQuery} $field Champ qui sera modifier par le champ visuel.
+     * @param {externam:jQuery} $fakeField Champ visuel qui modifiera le champ de sauvegarde
+     * @param  {...Parts.MODE} modes Mode de fonctionnement.
      */
     constructor($fields, $fakeField, ...modes) {
         super($fields, ...modes);
@@ -162,7 +168,7 @@ class FakePart extends Parts {
     /**
      * Récupère le champ principal
      * @protected
-     * @returns {$}
+     * @returns {external:jQuery}
      */
     _p_get_field() {
         return this._$fakeField;

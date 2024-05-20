@@ -13,7 +13,8 @@ import { FakePart, Parts } from "./parts.js";
  * @extends FakePart
  * @class 
  * @classdesc Gère la partie lié aux catégories, il y a une amélioration de l'affichage entre les catégories et les espaces de travails. De plus ajoute des actions lié aux espaces de travails.
- */
+ * @frommodule EventView/Parts
+*/
 export class CategoryPart extends FakePart{
     /**
      * 

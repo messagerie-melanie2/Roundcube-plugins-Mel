@@ -23,7 +23,7 @@
 	<h2><?php p($l->t('No entries found in this folder')); ?></h2>
 	<p></p>
 </div>
-<table class="files-filestable list-container <?php p($_['showgridview'] ? 'view-grid' : '') ?>" data-allow-public-upload="<?php p($_['publicUploadEnabled'])?>" data-preview-x="250" data-preview-y="250">
+<table class="files-filestable list-container <?php p($_['showgridview'] ? 'view-grid' : '') ?>" data-preview-x="250" data-preview-y="250">
 	<thead>
 		<tr>
 			<th class="hidden column-selection">

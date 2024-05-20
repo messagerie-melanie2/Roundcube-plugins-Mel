@@ -334,6 +334,7 @@ class mel_driver extends calendar_driver {
             'history'     => false,
             'virtual'     => false,
             'editable'    => $cal_is_writable,
+            'name_editable' => $this->_is_external($cal->id) ? true : $cal_is_writable,
             'deletable'   => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
             'principal'   => $cal->owner == $cal->id,
             'rights'      => $rights,
@@ -1949,8 +1950,8 @@ class mel_driver extends calendar_driver {
   /**
    * Get events from source.
    *
-   * @param integer Event's new start (unix timestamp)
-   * @param integer Event's new end (unix timestamp)
+   * @param integer Event''s new start (unix timestamp)
+   * @param integer Event''s new end (unix timestamp)
    * @param string Search query (optional)
    * @param mixed List of calendar IDs to load events from (either as array or comma-separated string)
    * @param boolean Include virtual events (optional)
@@ -2453,9 +2454,15 @@ class mel_driver extends calendar_driver {
           $_event['x_moz_lastack'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
         }
 
-        // Traiter le lastack
+        // Traiter le lastack 
         if (isset($_event['x_moz_lastack'])) {
-          $_event["alarm_dismissed"] = ($_event['start']->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
+          $start = $_event['start'];
+
+          if ($_event['allday'] == 1) {
+            $start = DateTime::createFromFormat('Y-m-d H:i', $start->format('Y-m-d').' 00:00');
+          }
+
+          $_event["alarm_dismissed"] = ($start->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
         }
       }
     }
@@ -3278,6 +3285,24 @@ class mel_driver extends calendar_driver {
       return false;
     }
     return false;
+  }
+
+  private function _is_external($id) {
+    // Récupération des prefs external calendar de l'utilisateur
+    $pref = driver_mel::gi()->getUser()->getCalendarPreference("external_calendars");
+    $is_external_calendar = false;
+
+    if (isset($pref)) {
+      $external_calendars = json_decode($pref, true);
+
+      foreach ($external_calendars as $external_calendar) {
+        if ($external_calendar['calendar_id'] == $id) {
+          $is_external_calendar = true;
+        }
+      }
+    }
+
+    return $is_external_calendar;
   }
 
   /**

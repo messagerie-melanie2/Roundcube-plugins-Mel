@@ -62,3 +62,4 @@ $labels['inside_notification'] = "Notification dans le Bnum";
 $labels['desktop_notification'] = "Notification sur le bureau";
 $labels['notifications_center'] = "Centre de notifications";
 $labels['mailbox'] = "Boîte : ";
+$labels['notifications_sound_on_new_mail'] = 'Jouer un son lors de la notification d\'un message ?';

@@ -14,8 +14,8 @@
     <div id="barup-wrapper-row" class="wrapper">
         <div id="barup-buttons" style=" display: inline;">
             <a id=touchmelmenu class="button icon-mel-menu task-menu-button show-touch" href="#menu" role="button"><span class="inner sr-only"><roundcube:label name='menu' /></span></a>
-            <button id="button-create" class="hide-touch mel-button margin-right-15 no-button-margin mel-focus mel-before-remover" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
-                <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus plus"></span>
+            <button id="button-create" class="mel-button margin-right-15 no-button-margin" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
+                <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus"></span>
             </button>
             <button id="button-notes" class="fill-on-hover melv2-sec-nav-correction hide-touch mel-button no-button-margin mel-focus mel-before-remover my_notes margin-right-15" title="Notes">
                 <span class="material-symbols-outlined">
@@ -37,7 +37,7 @@
 
       <div id="barup-right-buttons">
 
-        <div id="barup-search-col" role="search" style="display: none; opacity: 0; position: absolute; max-width: 0;">
+        <!-- <div id="barup-search-col" role="search" style="display: none; opacity: 0; position: absolute; max-width: 0;">
           <div class="search" >
               <div class="input-group">
                   <label class="sr-only" for="barup-search-input"><roundcube:label name='mel_metapage.to_search' /></label>
@@ -47,11 +47,11 @@
                   </div>
               </div>
           </div>
-        </div>
+        </div> -->
       
       <span class="hide-button-search">  
 
-        <button id="button-chat" class="transparent-icon-button barup-icons-button ml-3" onclick="mel_metapage.PopUp.open_ariane()"
+        <button id="button-chat" class="transparent-icon-button barup-icons-button ml-3 hide-touch" onclick="mel_metapage.PopUp.open_ariane()"
           title="<roundcube:label name='mel_metapage.ariane_help' />">
           <span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
           <span class="material-symbols-outlined">

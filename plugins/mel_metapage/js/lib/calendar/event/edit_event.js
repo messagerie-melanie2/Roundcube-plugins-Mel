@@ -1,3 +1,7 @@
+/**
+ * @module CalendarEvent
+ */
+
 import { EventView } from "./event_view.js";
 
 /**
@@ -10,7 +14,7 @@ export class CalendarEvent {
     /**
      * 
      * @param {*} event Objet évènement du plugin calendar 
-     * @param {$ | GlobalModal} dialog Dialog jquery ou GlobalModal 
+     * @param {external:jQuery | GlobalModal} dialog Dialog jquery ou GlobalModal 
      */
     constructor(event, dialog) {
         /**
@@ -24,7 +28,7 @@ export class CalendarEvent {
      * C'est ici que l'on va éffectuer toute les actions nécessaires à la création de la fenêtre de dialog.
      * @private
      * @param {*} calEvent Objet évènement du plugin calendar 
-     * @param {$ | GlobalModal} $dialog Dialog jquery ou GlobalModal
+     * @param {external:jQuery | GlobalModal} $dialog Dialog jquery ou GlobalModal
      * @returns {EventView} Vue créée
      */
     _main(calEvent, $dialog) {
@@ -38,7 +42,7 @@ export class CalendarEvent {
      * Lance une dialogue d'évènement
      * @static
      * @param {*} event Objet évènement du plugin calendar 
-     * @param {$ | GlobalModal} dialog Dialog jquery ou GlobalModal 
+     * @param {external:jQuery | GlobalModal} dialog Dialog jquery ou GlobalModal 
      * @returns {CalendarEvent}
      */
     static Start(event, dialog) {

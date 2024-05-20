@@ -45,7 +45,8 @@ $labels['max_days_error'] = 'Erreur : le message n\'a pas été envoyé, la remi
 $labels['saving_remise'] = 'Conserver la remise différée pour les envois suivants';
 $labels['saving_remise_description'] = 'En cochant cette case le paramètrage de la remise différée sera conservée pour les prochains envois, jusqu\'a ce qu\'elle soit désactivée ou que la date choisie soit dépassée.';
 
-$labels['disco_popup_title'] = 'Vous travaillez actuellement durant une heure non ouvrée, pensez à respecter le droit à la déconnexion de votre correspondant, pour cela utilisez la remise différée des messages.';
+$labels['disco_popup_title'] = 'Droit à la déconnexion';
+$labels['disco_popup_text'] = 'Vous travaillez actuellement durant une heure non ouvrée, pensez à respecter le droit à la déconnexion de votre correspondant, pour cela utilisez la remise différée des messages.';
 $labels['disco_popup_description'] = 'Vous avez la possibilité de quitter Mel mais également de continuer votre travail :
 <ul>
 <li>Soit en mode différé, chaque message sera remis à son destinataire à la prochaine heure ouvrée et respectera ainsi son droit à la déconnexion.</li>

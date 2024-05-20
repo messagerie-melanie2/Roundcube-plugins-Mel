@@ -1,10 +1,9 @@
-
 /**
  * @module BaseStorage
  */
 
 /**
- * Callback qui ajoute un item sous une clé précise 
+ * Callback qui ajoute un item sous une clé précise
  * @callback Add
  * @param {Key} key Clé qui permettra de retrouver l'item
  * @param {any} item Item à stocker
@@ -45,54 +44,54 @@
  * @classdesc Représente un dictionnaire avec les fonctions de base de celui-ci. Le stockage est privée est n'est accéssible que via l'itérateur.
  */
 export class BaseStorage {
-    constructor() {
-        let storage = {};
+	constructor() {
+		let storage = {};
 
-        /**
-         * Ajoute un item sous une clé précise
-         * @type {Add}
-         */
-        this.add = (key, item) => {
-            storage[key] = item;
-            return this;
-        };
-        /** 
-         * Récupère un item à partir d'une clé
-         * @type {Get}
-        */
-        this.get = (key, default_value = null) => storage[key] ?? default_value;
-        /** 
-         * Supprime un item à partir d'une clé
-         * @type {Remove}
-        */
-        this.remove = (key) => {
-            storage[key] = null;
-            return this;
-        };
+		/**
+		 * Ajoute un item sous une clé précise
+		 * @type {Add}
+		 */
+		this.add = (key, item) => {
+			storage[key] = item;
+			return this;
+		};
+		/**
+		 * Récupère un item à partir d'une clé
+		 * @type {Get}
+		 */
+		this.get = (key, default_value = null) => storage[key] ?? default_value;
+		/**
+		 * Supprime un item à partir d'une clé
+		 * @type {Remove}
+		 */
+		this.remove = key => {
+			storage[key] = null;
+			return this;
+		};
 
-        /** 
-         * Vérifie si une clé est associé à un objet
-         * @type {Has}
-        */
-        this.has = (key) => !!storage[key] || storage[key] === false || storage[key] === 0;
+		/**
+		 * Vérifie si une clé est associé à un objet
+		 * @type {Has}
+		 */
+		this.has = key =>
+			!!storage[key] || storage[key] === false || storage[key] === 0;
 
-        /** 
-         * Vide le dictionnaire
-         * @type {Clear}
-        */
-        this.clear = () => {
-            storage = {};
-            return this;
-        }
+		/**
+		 * Vide le dictionnaire
+		 * @type {Clear}
+		 */
+		this.clear = () => {
+			storage = {};
+			return this;
+		};
 
-        this[Symbol.iterator] = function *() {
-            for (const key in storage) {
-                if (Object.hasOwnProperty.call(storage, key)) {
-                    const value = storage[key];
-                    yield {key, value};
-                }
-            }
-        };
-
-    }
+		this[Symbol.iterator] = function* () {
+			for (const key in storage) {
+				if (Object.hasOwnProperty.call(storage, key)) {
+					const value = storage[key];
+					yield { key, value };
+				}
+			}
+		};
+	}
 }

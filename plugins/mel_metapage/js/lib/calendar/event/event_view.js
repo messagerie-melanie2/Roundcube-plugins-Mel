@@ -2,23 +2,31 @@
  * @namespace EventView
  * @property {module:EventView} View
  * @property {module:EventView/Constants} Constants
+ * @property {module:EventView/Parts} AbstractClassesParts  
+ * @property {module:EventView/Parts/CalendarOwner} CalendarOwner
  * @property {module:EventView/Parts/Alarm} Alarms
  * @property {module:EventView/Parts/Categories} Categories
  * @property {module:EventView/Parts/Guests} Guests
  * @property {module:EventView/Parts/Guests/FreeBusy} FreeBusy
  * @property {module:EventView/Parts/Location} Location
+ * @property {module:EventView/Parts/Reccursivity} Reccursivity
+ * @property {module:EventView/Parts/Sensitivity} Sensitivity
+ * @property {module:EventView/Parts/State} State
+ * @property {module:EventView/Parts/DateTime} DateTime
  * @property {module:EventView/Parts/Constants} PartsConstants
  */
 
 /**
  * @module EventView
+ * @local EventViewDialog
  */
 
 import { MelEnumerable } from "../../classes/enum.js";
 import { EMPTY_STRING } from "../../constants/constants.js";
 import { MelHtml } from "../../html/JsHtml/MelHtml.js";
-import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, GUEST_DRAGG_CLASS, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
+import { ATTENDEE_CONTAINER_SELECTOR, ATTENDEE_SELECTOR, CUSTOM_DIALOG_CLASS, FIRST_ARGUMENT, GUEST_DRAGG_CLASS, INTERNAL_LOCAL_CHANGE_WARNING_SELECTOR, LISTENER_SAVE_EVENT, LOADER_SELECTOR, LOCAL_CHANGE_WARNING_SELECTOR, MAIN_DIV_SELECTOR, MAIN_FORM_SELECTOR, RECURRING_WARNING_SELECTOR, WARNING_PANEL_CLICKED_CLASS, WARNING_PANEL_SELECTOR } from "./event_view.constants.js";
 import { AlarmPart } from "./parts/alarmpart.js";
+import { CalendarOwner } from "./parts/calendarparts.js";
 import { CategoryPart } from "./parts/categoryparts.js";
 import { GuestsPart } from "./parts/guestspart.js";
 import { LocationPartManager } from "./parts/location_part.js";
@@ -241,6 +249,7 @@ class EventParts {
         this.guests = new GuestsPart(inputs.form_attendee, fakes.text_attendee, fakes.text_attedee_optional, fakes.text_attendee_animators, fakes.button_attendee_switch, this.date);
         this.location = new LocationPartManager(fakes.div_eventtype, inputs.text_location, this.category);
         this.recurrence = new RecPart(inputs.select_recurrence, fakes.select_recurrence);
+        this.owner = null;
     }
 
     /**
@@ -249,6 +258,7 @@ class EventParts {
      * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
      */
     init(ev, inputs, fakes) {
+        this.owner = new CalendarOwner(inputs.select_calendar_owner, inputs.select_calendar_owner.parent().find('span'), ev?.calendar_blocked ?? false);
         this.status.onUpdate(ev.status ?? '');
         this.sensitivity.onUpdate(!ev?.id ? SensitivityPart.STATES.public :  (ev?.sensitivity ?? SensitivityPart.STATES.public));
         this.alarm.init(ev);
@@ -268,13 +278,6 @@ class EventParts {
      * @param {EventManager} inputs Champs visuels qui modifieront les "vrai" champs de la vue.
      */
     _init_no_modified(ev, inputs, fakes) {
-        const blocked = 'true' === ev.calendar_blocked;
-
-        if (blocked) $(inputs.select_calendar_owner).attr('disabled', 'disabled').addClass('disabled');
-        else $(inputs.select_calendar_owner).removeAttr('disabled').removeClass('disabled');
-
-        $(inputs.select_calendar_owner).tooltip({trigger:'hover'});
-
         //Le bouton appèle la fonction _onButtonTitleClicked au click avec le contexte de l'élément jquery qui représente le champ du titre.
         fakes.button_erase_title.click(this._onButtonTitleClicked.bind(inputs.text_title));
     }
@@ -292,6 +295,10 @@ class EventParts {
 }
 
 /**
+ * @typedef {GlobalModal | external:jQuery} EventViewDialog
+ */
+
+/**
  * Gère les parties de la vue ainsi que le comportement de la dialog
  * @class
  * @classdesc Initialise la vue et gère le comportement de la dialog
@@ -300,10 +307,12 @@ export class EventView {
     /**
      * 
      * @param {*} event Evènement du plugin `calendar` 
-     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     * @param {EventViewDialog} dialog Modal qui contient la vue.
      */
     constructor(event, dialog) {
         this._init()._setup(event, dialog)._main(event);
+        EventView.INSTANCE = this;
+        console.log('instance');
     }
 
     /**
@@ -323,7 +332,7 @@ export class EventView {
          * Dialog jquery ou GlobalModal
          * @private
          * @member
-         * @type {$ | GlobalModal}
+         * @type {EventViewDialog}
          */
         this._dialog = null;
         /**
@@ -356,7 +365,7 @@ export class EventView {
      * Assigne les variables membres de la classe
      * @private
      * @param {*} event Evènement du plugin `calendar` 
-     * @param {$ | GlobalModal} dialog Modal qui contient la vue.
+     * @param {EventViewDialog} dialog Modal qui contient la vue.
      * @returns {EventView} Chaîne
      */
     _setup(event, dialog) {
@@ -478,6 +487,14 @@ export class EventView {
     }
 
     /**
+     * Récupère la dialog.
+     * @returns {EventViewDialog}
+     */
+    get_dialog() {
+        return this._dialog;
+    }
+
+    /**
      * Est appelé lorsque la dialog est sur le point de se fermer
      * 
      * Remet la modal dans son état d'origine et libère les variables.
@@ -491,6 +508,7 @@ export class EventView {
         this.inputs = null;
         this.fakes = null;
         this.parts = null;
+        EventView.INSTANCE = null;
     }
 
     /**
@@ -520,6 +538,7 @@ export class EventView {
      */
     async before_save() {
         let is_valid = true;
+
         await this.parts.location.waitComplete();
 
         if (!this.parts.location.is_valid()) {
@@ -554,6 +573,13 @@ export class EventView {
         return new EventField(name, selector);
     }
 }
+
+/**
+ * Instance de la vue en cours
+ * @type {EventView}
+ * @static
+ */
+EventView.INSTANCE = null;
 
 /**
  * Liste des sélecteurs de la vue.

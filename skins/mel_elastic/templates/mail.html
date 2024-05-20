@@ -41,11 +41,18 @@
 <!-- messages list -->
 <div id="layout-list" class="initial listbox selected">
 
+  <button type="button" class="mail-floating-button mel-button hidden-big" onclick="return rcmail.command('mel-compose','',this,event)">
+    Nouveau
+    <span class="material-symbols-outlined">
+      edit
+    </span>
+  </button>
+
   <div id="messagelist-header" class="header">
     <a class="button icon task-menu-button" href="#menu"><span class="inner">
         <roundcube:label name="menu" />
       </span></a>
-    <a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner">
+    <a class="button icon back-sidebar-button folders mel-circle-icon-button hidden-large" href="#sidebar"><span class="inner">
         <roundcube:label name="mailboxlist" />
       </span></a>
     <span style="display: none;" class="header-title"></span>
@@ -62,8 +69,7 @@
       <roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
       <roundcube:container name="listcontrols" id="listcontrols" />
     </div>
-    <roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh" label="refresh"
-      title="checkmail" innerclass="inner" />
+    <roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh" label="refresh" title="checkmail" innerclass="inner" />
     <a id="mel-added-list-menu" class="button icon toolbar-menu-button" href="#list-menu"><span class="inner">
         <roundcube:label name="menu" />
       </span></a>

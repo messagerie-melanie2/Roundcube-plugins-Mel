@@ -121,15 +121,6 @@ class ResourcesBase extends MelObject {
     return page;
   }
 
-  /**
-   * @private
-   * @param {____JsHtml} jshtml
-   * @param {FilterBase} filter
-   */
-  async _generate_filters(jshtml, filter) {
-    return jshtml.add_child(await filter.generate());
-  }
-
   _generate_ui($fc) {
     const settings = window.cal?.settings || top.cal.settings;
 
@@ -237,7 +228,11 @@ class ResourcesBase extends MelObject {
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
   }
-  _on_data_changed(value, filter) {}
+  _on_data_changed() {
+    console.log('[_on_data_changed]Changement de filtre');
+    this._$calendar.fullCalendar('refetchResources');
+    this._$calendar.fullCalendar('refetchEvents');
+  }
 
   render() {
     this._$calendar.fullCalendar('rerender');

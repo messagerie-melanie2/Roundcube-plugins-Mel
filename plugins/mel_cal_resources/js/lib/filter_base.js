@@ -201,7 +201,7 @@ class FilterBase extends MelObject {
    * @returns {FilterBase} Chaîne
    */
   push_event_data_changed(event) {
-    this.event_on_data_loaded.push(event);
+    this.event_on_data_changed.push(event);
     return this;
   }
 
@@ -271,6 +271,18 @@ class FilterBase extends MelObject {
   }
 
   filter(resource) {
-    return !!resource;
+    if (!(this._$filter.val() || false)) return true;
+    else {
+      switch (this._input_type) {
+        case 'multi-select':
+          break;
+
+        default:
+          return (
+            resource.data[this._name].toUpperCase() ===
+            this._$filter.find(`[value="${this.value}"]`).text().toUpperCase()
+          );
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ import { ResourcesBase } from './lib/resource_base.js';
 /**
  * @typedef ResourceConfig
  * @property {string} name
+ * @property  {bool} is_option
  */
 
 /**
@@ -49,25 +50,23 @@ export class test_class extends MelObject {
       }
     }
 
-    if (this.page) {
-      this.dialog = new MelDialog(this.page, {
-        width: 800,
-        height: 500,
-      });
-      this.dialog.show();
-      setTimeout(() => {
-        MelEnumerable.from(this.ressources).first().value.render();
-        MelEnumerable.from(this.ressources)
-          .first()
-          .value._$calendar.fullCalendar('render');
+    this.dialog = new MelDialog(this.page, {
+      width: 800,
+      height: 500,
+    });
+    this.dialog.show();
+    setTimeout(() => {
+      MelEnumerable.from(this.ressources).first().value.render();
+      MelEnumerable.from(this.ressources)
+        .first()
+        .value._$calendar.fullCalendar('render');
 
-        this.dialog._$dialog.find('[datepicker="true"]').each((i, e) => {
-          $(e).datepicker({
-            defaultDate: new Date(),
-            firstday: 1,
-          });
+      this.dialog._$dialog.find('[datepicker="true"]').each((i, e) => {
+        $(e).datepicker({
+          defaultDate: new Date(),
+          firstday: 1,
         });
-      }, 100);
-    }
+      });
+    }, 100);
   }
 }

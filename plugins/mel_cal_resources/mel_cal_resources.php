@@ -31,7 +31,8 @@ class mel_cal_resources extends bnum_plugin {
             'filters' => $filters
         ]);
 
-        $this->load_script_module('add_resources', '/js/');
+        $this->include_script('js/waiting_events.js');
+        $this->load_script_module('main', '/js/');
     }
 
     function load_element() {

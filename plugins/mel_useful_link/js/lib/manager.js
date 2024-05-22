@@ -1,15 +1,15 @@
 /* eslint-disable no-undef */
-
 import {
   RcmailDialog,
   RcmailDialogButton,
 } from '../../../mel_metapage/js/lib/classes/modal.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
-import { MelLinkVisualizer, MelFolderLink } from './mel_link.js';
+import { MelLinkVisualizer, MelFolderLink, MelStoreLink } from './mel_link.js';
+import { MelIconPrevisualiser } from '../../../mel_metapage/skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
 
 export class LinkManager extends MelObject {
-  constructor() {
+  constructor () {
     super();
   }
 
@@ -19,17 +19,22 @@ export class LinkManager extends MelObject {
     this.displayLinks();
 
     this.bindActions();
+
+    window.linkManager = this;
   }
 
   /**
-   * Créé la modale de modification d'un nouveau lien
+   * Créé la modale de création/modification d'un nouveau lien
+   * @param {string} id
+   * @param {string} title
+   * @param {string} url
    */
-  openLinkModal(id = null, title = null, url = null) {
+  openLinkModal(id = null, title = null, url = null, icon = null) {
     let self = this;
 
     if (this.newLinkModal) {
       this.newLinkModal.show();
-      this.getModalValue(id, title, url);
+      this.getModalValue(id, title, url, icon);
 
       this.bindModalActions();
     } else {
@@ -72,25 +77,29 @@ export class LinkManager extends MelObject {
           value: url,
         })
         .end()
-        .row({ class: 'mr-1 mt-3 mx-2' })
+        .row({ class: 'mr-1 mt-3 mx-2 align-items-center' })
         .label({ class: 'span-mel t1 first', for: 'mulc-url' })
         .text(rcmail.gettext('preview', 'mel_useful_link'))
         .end()
         .div({ class: 'link-block' })
-        .div({ class: 'link-icon-container' })
+        .div({ class: 'link-icon-container no-after' })
         .img({
           id: 'icon-image',
           class: 'link-icon-image',
           src: '',
-          onerror: "imgError(this.id, 'no-image')",
+          onerror: 'imgError(this.id, \'no-image\')',
           style: 'display:none',
         })
-        .span({ id: 'no-image', class: 'link-icon-no-image' })
-        .end()
-        .end()
-        .end()
-        .end()
-        .end()
+        .span({ id: 'no-image', class: `link-icon-no-image ${icon && icon.startsWith('icon:') ? 'material-symbols-outlined' : ''}` }).text(icon && icon.startsWith('icon:') ? icon.substring(5) : '', 'pluginquinexistepas')
+        .end('span')
+        .end('div')
+        .end('div')
+        .button({ id: 'change_icon', class: '' })
+        .text(rcmail.gettext('change_icon', 'mel_useful_link'))
+        .icon('edit').end()
+        .end('button')
+        .end('row')
+        .end('div')
         .generate();
 
       this.newLinkModal = new RcmailDialog(html, {
@@ -112,7 +121,7 @@ export class LinkManager extends MelObject {
           ),
         ],
       });
-      if (url) {
+      if (url && !icon) {
         this.displayIcon(url);
       }
       this.bindModalActions();
@@ -162,10 +171,241 @@ export class LinkManager extends MelObject {
   }
 
   /**
+   * Créé la modale de bibliothèque d'application
+   */
+  openStoreModal() {
+    const html = MelHtml.start
+      .div({ class: 'container' })
+      .row({ class: 'mx-2' })
+      .div({ class: 'border-bottom-input-icon mb-2' })
+      .input({
+        type: 'text', placeholder: 'Rechercher', class: 'form-control input-mel border-bottom-input large-input', id: 'search-app', oninput: () => {
+          this.searchInStore($('#search-app').val());
+        }
+      })
+      .button({ id: 'reset-search', class: 'border-bottom-input-button close-button btn btn-secondary border-0' }).removeClass('mel-button')
+      .icon('close').end()
+      .end('button')
+      .end('div')
+      .end('row')
+      .row({ class: 'm-2 list-filter-container' })
+      .span({ class: 'font-weight-bold' })
+      .text(rcmail.gettext('category_filter', 'mel_useful_link'))
+      .end('span')
+      .div({ id: 'list-filters-container' })
+      .end('div')
+      .end('row')
+      .row({ class: 'mx-2' })
+      .span({ id: 'not-found-app', class: 'w-100 text-center font-weight-bold' })
+      .end()
+      .ul({ id: 'list-store-app' })
+      .end('ul')
+      .end('row')
+      .end().generate();
+
+    this.newStoreModal = new RcmailDialog(html, {
+      title: rcmail.gettext('app_store_title', 'mel_useful_link'),
+      options: { height: 600, minWidth: 700 }
+    });
+    this.loadStoreDialog();
+  }
+
+
+  /**
+   * Ajoute un lien de la bibliothèque d'application dans les liens de l'utilisateur
+   * @param {MelLinkVisualizer} link 
+   */
+  addStoreLink(link) {
+    link.callUpdate().then((data) => {
+      if (data === link.id) {
+        this.displayLink(link);
+        this.loadStoreApp();
+      }
+    });
+  }
+
+  /**
+   * Charge la bibliothèque d'application et ses fonctions 
+   */
+  loadStoreDialog() {
+    $('#reset-search').on('click', () => {
+      $('#search-app').val('');
+      this.filterList('all');
+    });
+    this.loadStoreApp();
+
+    this.activeStoreCategories = [];
+    this.loadStoreFilters();
+  }
+
+  /**
+   * Fonction pour la recherche dans le store d'application
+   * @param {string} input 
+   */
+  searchInStore(input) {
+    let foundLinks = [];
+    Object.keys(rcmail.env.default_links).forEach(key => {
+      if (rcmail.env.default_links[key].name.toLowerCase().includes(input.toLowerCase())) {
+        foundLinks.push(key);
+      }
+    });
+    this.removeFilter();
+    this.loadStoreApp([], foundLinks);
+  }
+
+  /**
+   * Charge les applications de la bibliothèque
+   * @param {Array} filter
+   * @param {Array} foundLinks
+   */
+  loadStoreApp(filter = [], foundLinks = null) {
+    $('#list-store-app').empty();
+    this.storeCategories = [];
+    let isLinks = false;
+
+    for (const item in rcmail.env.default_links) {
+      console.log(rcmail.env.default_links);
+      if (Object.hasOwnProperty.call(rcmail.env.default_links, item)) {
+        const link = rcmail.env.default_links[item];
+
+        if (foundLinks) {
+          if (foundLinks.indexOf(item) !== -1) {
+
+            let foundLink = new MelStoreLink(
+              item,
+              link.name,
+              link.url,
+              link.icon,
+              link.description,
+              this.linksIdList.includes(item) ? true : false
+            );
+
+            foundLink.displayStoreLink().appendTo('#list-store-app');
+            isLinks = true;
+          }
+          continue;
+        }
+
+
+        let filterPass = (filter.length === 0) ? true : false;
+        if (link.categories) {
+          link.categories.forEach(value => {
+            if (this.storeCategories.indexOf(value) === -1) {
+              this.storeCategories.push(value);
+            }
+            if (filter.length !== 0) {
+              filterPass = (filter.includes(value)) ? true : false;
+            }
+          });
+        }
+
+        if (filterPass) {
+          let storeLink = new MelStoreLink(
+            item,
+            link.name,
+            link.url,
+            link.icon,
+            link.description,
+            this.linksIdList.includes(item) ? true : false
+          );
+          storeLink.displayStoreLink().appendTo('#list-store-app');
+          isLinks = true;
+        }
+      }
+    }
+
+    !isLinks ? $('#not-found-app').text(rcmail.gettext('not_found_link', 'mel_useful_link')) : $('#not-found-app').text('');
+  }
+
+  /**
+   * Charge les filtres de la bibliothèque d'application
+   */
+  loadStoreFilters() {
+    if (this.storeCategories) {
+      let html = MelHtml.start.ul({ id: 'list-filters' })
+      html.li()
+        .button({
+          class: 'list-filter active', id: 'all', onclick: () => {
+            this.filterList('all');
+          }
+        })
+        .text('Tout')
+        .end()
+        .end('li')
+
+      for (const categorie of this.storeCategories) {
+        html.li()
+          .button({
+            class: 'list-filter', id: `${categorie}`, onclick: () => {
+              this.filterList(categorie);
+            }
+          })
+          .text(categorie)
+          .end()
+          .end('li')
+      }
+      html.end('ul');
+
+      $('#list-filters-container').append(html.generate());
+    }
+  }
+
+  /**
+   * Filtre les applications de la bibliothèque d'application
+   * @param {string} filter 
+   */
+  filterList(filter) {
+    if (filter === 'all') {
+      this.activeStoreCategories = [];
+    }
+    else {
+      const index = this.activeStoreCategories.indexOf(filter);
+      if (index === -1) {
+        this.activeStoreCategories.push(filter);
+      }
+      else {
+        this.activeStoreCategories.splice(index, 1);
+      }
+    }
+    this.loadStoreApp(this.activeStoreCategories);
+    this.displayActiveCategories();
+  }
+
+  /**
+   * Affiche les catégories actives dans le store d'application
+   */
+  displayActiveCategories() {
+    let self = this;
+    let active = false;
+    $('#list-filters li button').each(function () {
+      if (self.activeStoreCategories.includes($(this).attr('id'))) {
+        $(this).addClass('active');
+        active = true;
+      }
+      else {
+        $(this).removeClass('active');
+      }
+    });
+
+    if (!active) {
+      $('#list-filters li button#all').addClass('active');
+    }
+  }
+
+  /**
+   * Supprime les filtres actifs
+   */
+  removeFilter() {
+    this.activeStoreCategories = [];
+    this.displayActiveCategories();
+  }
+
+  /**
    * Affiche les liens sur la page web
    */
   displayLinks() {
     let links_array = [];
+    this.linksIdList = [];
     for (const links in rcmail.env.mul_items) {
       let link = rcmail.env.mul_items[links];
       link = JSON.parse(link);
@@ -180,33 +420,38 @@ export class LinkManager extends MelObject {
             subLink.id,
             subLink.title,
             subLink.link,
-            this.fetchIcon(subLink.link),
+            subLink.icon ?? LinkManager.fetchIcon(subLink.link),
             true,
           );
           linkVisualizer.links[key]
             .displaySubLink()
             .appendTo(`#links-container-${linkVisualizer.id}`);
+
+          this.linksIdList.push(subLink.id);
         }
       } else {
         linkVisualizer = new MelLinkVisualizer(
           link.id,
           link.title,
           link.link,
-          this.fetchIcon(link.link),
+          link.icon ?? LinkManager.fetchIcon(link.link),
         );
         linkVisualizer.displayLink().appendTo('.links-items');
+
+        this.linksIdList.push(link.id);
       }
       links_array.push(linkVisualizer);
     }
 
     $('<li class="link-space-end"></li>').appendTo('.links-items');
     this.bindRightClickActions();
-    debugger;
+
     rcmail.env.mul_items = links_array;
   }
 
   /**
    * Affiche un lien sur la page web
+   * @param {MelLinkVisualizer} link
    */
   displayLink(link) {
     link.displayLink().insertBefore('.link-space-end');
@@ -217,12 +462,13 @@ export class LinkManager extends MelObject {
     this.bindRightClickActions(link.id);
     this.bindActions(link.id);
     rcmail.env.mul_items.push(link);
+    this.linksIdList.push(link.id);
   }
 
   /**
    * Affiche un dossier sur la page web
-   *
    * @param {MelFolderLink} folder
+   * @param {HTMLElement} location
    */
   displayFolder(folder, location = null) {
     const indexes = [];
@@ -246,11 +492,12 @@ export class LinkManager extends MelObject {
       this.bindRightClickActions(subLink.id);
       this.bindActions(subLink.id);
     }
-    debugger;
+    // debugger
+
     rcmail.env.mul_items = rcmail.env.mul_items.filter(
       (value, index) => !indexes.includes(index),
     );
-    rcmail.env.mul_items.push(folder);
+    rcmail.env.mul_items.splice(indexes[0], 0, folder);
 
     this.bindRightClickActions(folder.id);
     this.bindActions(folder.id);
@@ -258,7 +505,6 @@ export class LinkManager extends MelObject {
 
   /**
    * Ajoute ou retire un lien d'un dossier
-   *
    * @param {MelFolderLink} folder
    * @param {MelLinkVisualizer} link
    */
@@ -279,6 +525,9 @@ export class LinkManager extends MelObject {
     });
   }
 
+  /**
+   * Ajoute un lien dans la liste des liens de l'utilisateur
+   */
   addMelLink() {
     let linkId = $(LinkManager.SELECTOR_MODAL_ID).val();
     let link;
@@ -288,7 +537,7 @@ export class LinkManager extends MelObject {
         linkId,
         $(LinkManager.SELECTOR_MODAL_TITLE).val(),
         $(LinkManager.SELECTOR_MODAL_URL).val(),
-        this.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val()),
+        LinkManager.SELECTEDICON ? `icon:${LinkManager.SELECTEDICON}` : LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val()),
       );
 
       link.callUpdate().then((data) => {
@@ -306,7 +555,8 @@ export class LinkManager extends MelObject {
 
           link.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
           link.link = $(LinkManager.SELECTOR_MODAL_URL).val();
-          link.icon = this.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+          link.icon = this.getDisplayedImage() ?? LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+          // link.icon = LinkManager.SELECTEDICON ? `icon:${LinkManager.SELECTEDICON}` : LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val()),
 
           link.callUpdate().then(() => {
             this.newLinkModal.hide();
@@ -317,9 +567,7 @@ export class LinkManager extends MelObject {
           if (findLink) {
             findLink.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
             findLink.link = $(LinkManager.SELECTOR_MODAL_URL).val();
-            findLink.icon = this.fetchIcon(
-              $(LinkManager.SELECTOR_MODAL_URL).val(),
-            );
+            findLink.icon = this.getDisplayedImage() ?? LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
 
             item.callFolderUpdate().then(() => {
               this.newLinkModal.hide();
@@ -331,6 +579,11 @@ export class LinkManager extends MelObject {
     }
   }
 
+  /**
+   * Retourne un lien par son id
+   * @param {string} id 
+   * @returns {MelLinkVisualizer | boolean} Return le lien ou false si pas trouvé
+   */
   findLinkById(id) {
     for (const key in rcmail.env.mul_items) {
       const item = rcmail.env.mul_items[key];
@@ -348,6 +601,11 @@ export class LinkManager extends MelObject {
     return false;
   }
 
+  /**
+   * Trouve le dossier parent d'un lien
+   * @param {MelLinkVisualizer} link 
+   * @returns {MelFolderLink | boolean} Return le dossier ou false si pas trouvé
+   */
   findParentFolder(link) {
     for (const key in rcmail.env.mul_items) {
       const item = rcmail.env.mul_items[key];
@@ -363,18 +621,32 @@ export class LinkManager extends MelObject {
     return false;
   }
 
+  /**
+   * Vérifie si un lien est un dossier
+   * @param {MelLinkVisualizer | MelFolderLink} link 
+   * @returns {Boolean}
+   */
   isFolder(link) {
     if (link.links) return true;
 
     return false;
   }
 
+  /**
+    * Vérifie si un lien est dans un dossier
+    * @param {MelLinkVisualizer | MelFolderLink} link 
+    * @returns {Boolean}
+    */
   isInFolder(link) {
     if (link.inFolder) return true;
 
     return false;
   }
 
+  /**
+   * Supprime un lien
+   * @param {string} id 
+   */
   deleteMelLink(id) {
     const link = this.findLinkById(id);
 
@@ -393,10 +665,15 @@ export class LinkManager extends MelObject {
         });
       } else {
         link.callDelete();
+        this.linksIdList = this.linksIdList.filter((item) => item !== id);
       }
     }
   }
 
+  /**
+   * Met a jour le titre d'une modale
+   * @param {string} id 
+   */
   updateFolder(id) {
     let folder = rcmail.env.mul_items.find(function (objet) {
       return objet.id === id;
@@ -409,7 +686,15 @@ export class LinkManager extends MelObject {
     });
   }
 
-  TakeOutLinkFromFolder(folder, link, location = null, id, targetIndex) {
+  /**
+   * Retire un lien d'un dossier pour l'ajouter dans la liste de l'utilisateur
+   * @param {MelFolderLink} folder 
+   * @param {MelLinkVisualizer} link 
+   * @param {string} id 
+   * @param {int} targetIndex 
+   * @param {?HTMLElement} location 
+   */
+  TakeOutLinkFromFolder(folder, link, id, targetIndex, location = null) {
     folder.removeLink(link);
 
     if (Object.keys(folder.links).length === 0) {
@@ -422,7 +707,7 @@ export class LinkManager extends MelObject {
         this.saveLink(link);
       });
       folder.callFolderDelete();
-      
+
       this.updateList(id, targetIndex);
     } else {
       folder.callFolderUpdate().then(() => {
@@ -451,6 +736,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Bind des actions liés aux liens
+   * @param {?string} id on met l'id si on active les actions pour un nouveau lien
    */
   bindActions(id = null) {
     let self = this;
@@ -459,6 +745,9 @@ export class LinkManager extends MelObject {
     if (!id) {
       $(LinkManager.CREATE_BUTTON).on('click', function () {
         self.openLinkModal();
+      });
+      $(LinkManager.APP_STORE).on('click', function () {
+        self.openStoreModal();
       });
     }
 
@@ -471,6 +760,7 @@ export class LinkManager extends MelObject {
         $(e.currentTarget).attr('data-id'),
         $(e.currentTarget).attr('data-title'),
         $(e.currentTarget).attr('data-link'),
+        $(e.currentTarget).attr('data-icon'),
       );
     });
 
@@ -555,9 +845,9 @@ export class LinkManager extends MelObject {
           self.TakeOutLinkFromFolder(
             folder,
             link,
-            targetElement.hasClass('link-space-end') ? null : targetContainer,
             id,
             targetIndex,
+            targetElement.hasClass('link-space-end') ? null : targetContainer
           );
           return;
         }
@@ -568,11 +858,13 @@ export class LinkManager extends MelObject {
           targetContainer.before(movedContainer);
 
           self.updateList(id, targetIndex);
+          return;
         }
         if (targetElement.hasClass('link-space-end')) {
           targetElement.before(movedContainer);
 
           self.updateList(id, targetIndex);
+          return;
         }
 
         //Si on le rajoute dans un dossier
@@ -592,9 +884,7 @@ export class LinkManager extends MelObject {
 
         //Si on crée un dossier
         else {
-          event.target
-            .closest('.link-block.link-block-hovered')
-            .classList.remove('link-block-hovered');
+          targetElement.closest('.link-block.link-block-hovered').removeClass('link-block-hovered');
 
           //Si le target n'est pas déjà un dossier
           if (!rcmail.env.mul_items[targetIndex].links) {
@@ -627,6 +917,11 @@ export class LinkManager extends MelObject {
     }
   }
 
+  /**
+   * Met a jour l'ordre des liens
+   * @param {string} id 
+   * @param {int} newIndex Nouvelle position de l'icone dans le DOM
+   */
   updateList(id, newIndex) {
     const busy = rcmail.set_busy(true, 'loading');
     rcmail.env.mul_items.find(function (object, index) {
@@ -655,7 +950,7 @@ export class LinkManager extends MelObject {
     let self = this;
 
     $(
-      `${LinkManager.SELECTOR_MODAL_URL},${LinkManager.SELECTOR_MODAL_TITLE}`,
+      `${LinkManager.SELECTOR_MODAL_URL}, ${LinkManager.SELECTOR_MODAL_TITLE}`,
     ).on('change', function () {
       if ($(LinkManager.SELECTOR_MODAL_URL).val())
         self.displayIcon($(LinkManager.SELECTOR_MODAL_URL).val());
@@ -669,9 +964,17 @@ export class LinkManager extends MelObject {
       );
     });
 
+    $(LinkManager.ADD_STORE_BUTTON).on('click', () => {
+      LinkManager.previsualiser.create_popup('Changer d\'icone');
+    });
+
     MEL_ELASTIC_UI.update_tabs();
   }
 
+  /**
+   * Bind des actions au clique droit pour les liens (suppression, modification...)
+   * @param {string} id on met l'id pour un nouveau lien
+   */
   bindRightClickActions(id = null) {
     let _id = id ? `#link-block-${id}` : '';
     let contextMenuOpened = false;
@@ -706,13 +1009,17 @@ export class LinkManager extends MelObject {
 
   /**
    * Reset les informations précédentes de la modale
+   * @param {string} id
+   * @param {string} title
+   * @param {string} url
    */
-  getModalValue(id = null, title = null, url = null) {
+  getModalValue(id = null, title = null, url = null, icon = null) {
     $(LinkManager.SELECTOR_MODAL_ID).val(id);
     $(LinkManager.SELECTOR_MODAL_TITLE).val(title);
     $(LinkManager.SELECTOR_MODAL_URL).val(url);
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text(icon && icon.startsWith('icon:') ? icon.substring(5) : '');
 
-    if (url) {
+    if (url && !icon) {
       this.displayIcon(url);
     } else {
       $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', '');
@@ -745,7 +1052,7 @@ export class LinkManager extends MelObject {
 
     $(LinkManager.SELECTOR_MODAL_URL).val(url);
 
-    const apiUrl = this.fetchIcon(url);
+    const apiUrl = LinkManager.fetchIcon(url);
 
     $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', apiUrl);
   }
@@ -753,9 +1060,9 @@ export class LinkManager extends MelObject {
   /**
    * Récupère le nom de domaine de l'url pour retourner l'url de l'icone
    * @param {string} url Url du lien
-   * @returns Url de l'icone
+   * @return {string} Url de l'icone
    */
-  fetchIcon(url) {
+  static fetchIcon(url) {
     let domain = '';
     try {
       domain = new URL(url).hostname;
@@ -770,11 +1077,14 @@ export class LinkManager extends MelObject {
   /**
    * Helpers functions
    */
-
   removeContainer(target) {
     target.closest('.link-block-container').remove();
   }
 
+  /**
+   * Vérifie si les champs de la modale ne sont pas vides
+   * @return {boolean}
+   */
   checkEmptyInputs() {
     const titleInput = $(LinkManager.SELECTOR_MODAL_TITLE);
     const urlInput = $(LinkManager.SELECTOR_MODAL_URL);
@@ -795,16 +1105,260 @@ export class LinkManager extends MelObject {
 
     return true;
   }
+
+  getDisplayedImage() {
+    let icon_text = $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text();
+    if (icon_text && icon_text.length > 1) return `icon:${icon_text}`;
+
+    return null;
+  }
 }
 
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#mulc-id'
+ */
 LinkManager.SELECTOR_MODAL_ID = '#mulc-id';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#mulc-title'
+ */
 LinkManager.SELECTOR_MODAL_TITLE = '#mulc-title';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#mulc-url'
+ */
 LinkManager.SELECTOR_MODAL_URL = '#mulc-url';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#icon-image'
+ */
 LinkManager.SELECTOR_MODAL_IMAGE = '#icon-image';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#no-image'
+ */
 LinkManager.SELECTOR_MODAL_NO_IMAGE = '#no-image';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#mulba'
+ */
 LinkManager.CREATE_BUTTON = '#mulba';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#app_store'
+ */
+LinkManager.APP_STORE = '#app_store';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '.add-store-link'
+ */
+LinkManager.ADD_STORE_LINK = '.add-store-link';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#change_icon'
+ */
+LinkManager.ADD_STORE_BUTTON = '#change_icon';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '.copy-link'
+ */
 LinkManager.COPY_LINK = '.copy-link';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '.modify-link'
+ */
 LinkManager.MODIFY_LINK = '.modify-link';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '.delete-link'
+ */
 LinkManager.DELETE_LINK = '.delete-link';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '.modify-folder'
+ */
 LinkManager.MODIFY_FOLDER = '.modify-folder';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '.delete-folder'
+ */
 LinkManager.DELETE_FOLDER = '.delete-folder';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default 'null'
+ */
+LinkManager.SELECTEDICON = null;
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default 'null'
+ */
+LinkManager.DISPLAYIMAGE = null;
+
+/**
+ * @static
+ * @const
+ * @type {Array}
+ */
+LinkManager.preview_icon = [
+  'home',
+  'settings',
+  'favorite',
+  'search',
+  'check',
+  'check_box',
+  'add',
+  'delete',
+  'star',
+  'more_vert',
+  'more_horiz',
+  'apps',
+  'bolt',
+  'autorenew',
+  'key',
+  'block',
+  'shopping_cart',
+  'undo',
+  'fullscreen',
+  'settings_accessibility',
+  'terminal',
+  'dataset',
+  'file_open',
+  'create_new_folder',
+  'token',
+  'heart_plus',
+  'mail'
+];
+
+/**
+ * @static
+ * @type {MelIconPrevisualiser}
+ */
+LinkManager.previsualiser = new MelIconPrevisualiser({
+  add_default_action_default_buttons: true,
+  add_defaults_actions: true,
+  generate_defaults_icons: false,
+});
+
+LinkManager.previsualiser.addCustomIcons(LinkManager.preview_icon);
+
+LinkManager.previsualiser.on_create_default_items.push(() => {
+  let image_url = LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+  return MelHtml.start
+    .div()
+    .button({ class: 'image-preview' }).css({ 'background-image': `url('${image_url}')` })
+    .attr('onmouseenter', () => {
+      $('#bnum-folder-main-icon').css({
+        'background-image': 'url(' + image_url + ')',
+        'background-size': 'contain',
+      });
+      $('#bnum-folder-main-icon .material-symbols-outlined').hide();
+    })
+    .attr('onmouseleave', () => {
+      if (!LinkManager.DISPLAYIMAGE) {
+        $('#bnum-folder-main-icon').css('background-image', 'none');
+        $('#bnum-folder-main-icon .material-symbols-outlined').show();
+      }
+    })
+    .attr('onclick', function (e) {
+      LinkManager.previsualiser._on_default_click(e);
+      setTimeout(() => {
+        $('#bnum-folder-main-icon').css({
+          'background-image': 'url(' + image_url + ')',
+          'background-size': 'contain',
+        });
+      }, 50);
+      LinkManager.DISPLAYIMAGE = image_url;
+    })
+    .icon(' ').css({ 'display': 'none' }).end()
+    .end()
+    .end();
+});
+
+LinkManager.previsualiser.on_button_click.push(() => {
+  LinkManager.DISPLAYIMAGE = null;
+  if ($('#bnum-folder-main-icon').css('background-image')) {
+    $('#bnum-folder-main-icon').css('background-image', 'none');
+  }
+});
+
+LinkManager.previsualiser.on_button_hover.push(() => {
+  if (LinkManager.DISPLAYIMAGE) {
+    $('#bnum-folder-main-icon').css('background-image', 'none');
+  }
+});
+
+LinkManager.previsualiser.on_button_leave.push(() => {
+  if (LinkManager.DISPLAYIMAGE) {
+    $('#bnum-folder-main-icon').css('background-image', 'url(' + LinkManager.DISPLAYIMAGE + ')');
+  }
+});
+
+LinkManager.previsualiser.on_create_show_selected.push(() => {
+  return '';
+});
+
+LinkManager.previsualiser.on_save.push((popup, $dialog) => {
+  LinkManager.SELECTEDICON = null;
+  if (popup.get_selected_icon() !== ' ') {
+    LinkManager.SELECTEDICON = popup.get_selected_icon();
+    $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', '');
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).addClass('material-symbols-outlined');
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text(popup.get_selected_icon());
+  } else {
+    $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', LinkManager.DISPLAYIMAGE).css('display', 'block');
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).removeClass('material-symbols-outlined');
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text('');
+  }
+
+  LinkManager.DISPLAYIMAGE = null;
+
+  $($dialog).dialog('close');
+});

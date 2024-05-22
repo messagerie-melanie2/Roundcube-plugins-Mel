@@ -1,7 +1,7 @@
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 
-export { MelLink, MelFolderLink, MelLinkVisualizer };
+export { MelLink, MelFolderLink, MelLinkVisualizer, MelStoreLink };
 
 class MelBaseLink {
   constructor (id, title) {
@@ -89,41 +89,6 @@ class MelLink extends MelBaseLink {
     this.inFolder = inFolder;
 
     return this;
-  }
-
-  async callUpdate(task = 'useful_links', action = 'update') {
-    const busy = rcmail.set_busy(true, 'loading');
-
-    let id = this.id;
-    let link = {
-      _id: id,
-      _title: this.title,
-      _link: this.link,
-    };
-
-    let message =
-      this.id === ''
-        ? 'Ajout effectué avec succès !'
-        : 'Modification effectuée avec succès !';
-
-    await mel_metapage.Functions.post(
-      mel_metapage.Functions.url(task, action),
-      { link, _key: rcmail.env.mul_items_key },
-      datas => {
-        rcmail.set_busy(false, 'loading', busy);
-        rcmail.display_message(message, 'confirmation');
-        id = datas;
-      },
-      (a, b, c) => {
-        rcmail.display_message(
-          'Impossible d\'ajouter ou de modifier ce lien.',
-          'error',
-        );
-        console.error(a, b, c);
-      },
-    );
-
-    return id;
   }
 }
 
@@ -364,10 +329,6 @@ class MelLinkVisualizer extends MelLink {
     return this;
   }
 
-  linkTransform() {
-    return new MelLink(this.id, this.title, this.link);
-  }
-
   _setup_icon(icon) {
     let _icon = icon;
     let _title = this.title;
@@ -380,12 +341,20 @@ class MelLinkVisualizer extends MelLink {
         },
         set: value => {
           _icon = value;
-          $(`.link-block[data-id="${this.id}"] .link-icon-image`).show();
-          $(`#no-image-${this.id}`).css('display', 'initial').text('');
-          $(`.link-block[data-id="${this.id}"] .link-icon-image`).attr(
-            'src',
-            value,
-          );
+          if (_icon.startsWith('icon:')) {
+            $(`.link-block[data-id="${this.id}"] .link-icon-image`).hide();
+            $(`#no-image-${this.id}`).addClass('material-symbols-outlined');
+            $(`#no-image-${this.id}`).css('display', 'flex').text(_icon.substring(5));
+          }
+          else {
+            $(`.link-block[data-id="${this.id}"] .link-icon-image`).show();
+            $(`#no-image-${this.id}`).css('display', 'initial').text('');
+            $(`#no-image-${this.id}`).removeClass('material-symbols-outlined');
+            $(`.link-block[data-id="${this.id}"] .link-icon-image`).attr(
+              'src',
+              value,
+            );
+          }
         },
       },
       title: {
@@ -418,6 +387,42 @@ class MelLinkVisualizer extends MelLink {
     });
 
     return this;
+  }
+
+  async callUpdate(task = 'useful_links', action = 'update') {
+    const busy = rcmail.set_busy(true, 'loading');
+
+    let id = this.id;
+    let link = {
+      _id: id,
+      _title: this.title,
+      _link: this.link,
+      _icon: this.icon,
+    };
+
+    let message =
+      this.id === ''
+        ? 'Ajout effectué avec succès !'
+        : 'Modification effectuée avec succès !';
+
+    await mel_metapage.Functions.post(
+      mel_metapage.Functions.url(task, action),
+      { link, _key: rcmail.env.mul_items_key },
+      datas => {
+        rcmail.set_busy(false, 'loading', busy);
+        rcmail.display_message(message, 'confirmation');
+        id = datas;
+      },
+      (a, b, c) => {
+        rcmail.display_message(
+          'Impossible d\'ajouter ou de modifier ce lien.',
+          'error',
+        );
+        console.error(a, b, c);
+      },
+    );
+
+    return id;
   }
 
   _dragStart(link, ev) {
@@ -463,6 +468,7 @@ class MelLinkVisualizer extends MelLink {
         'data-id': this.id,
         'data-title': this.title,
         'data-link': this.link,
+        'data-icon': this.icon,
       })
       .removeClass('mel-button')
       .removeClass('no-button-margin')
@@ -496,7 +502,7 @@ class MelLinkVisualizer extends MelLink {
         src: this.icon,
         onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0] + '`)',
       })
-      .span({ id: 'no-image-' + this.id, class: 'link-icon-no-image' })
+      .span({ id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon.startsWith('icon:') ? 'material-symbols-outlined' : ''}` }).text(this.icon.startsWith('icon:') ? this.icon.substring(5) : '', 'pluginquinexistepas')
       .end()
       .end()
       .span({ class: 'link-icon-title' })
@@ -569,13 +575,74 @@ class MelLinkVisualizer extends MelLink {
         src: this.icon,
         onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0] + '`)',
       })
-      .span({ id: 'no-image-' + this.id, class: 'link-icon-no-image' })
+      .span({ id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon.startsWith('icon:') ? 'material-symbols-outlined' : ''}` }).text(this.icon.startsWith('icon:') ? this.icon.substring(5) : '', 'pluginquinexistepas')
       .end()
       .end()
       .span({ class: 'link-icon-title' })
       .text(this.title)
       .end()
       .end()
+      .generate();
+  }
+}
+
+class MelStoreLink extends MelLinkVisualizer {
+  constructor (id, title, link, icon, description, inLinks = false) {
+    super(id, title, link, icon);
+    this._setup_vars(description, link, inLinks);
+  }
+
+  _init() {
+    super._init();
+    this.description = '';
+    this.inLinks = false;
+
+    return this;
+  }
+
+  _setup_vars(description, link, inLinks) {
+    super._setup_vars(link, false)
+    this.description = description;
+    this.inLinks = inLinks;
+
+    return this;
+  }
+
+  displayStoreLink() {
+    return MelHtml.start
+      .li({
+        id: 'store-link-block-' + this.id,
+        title: this.title,
+        class: 'store-link-block',
+        'data-id': this.id,
+      })
+      .div({ class: 'store-link-icon-container' })
+      .span({ id: 'no-image-' + this.id, class: 'link-icon-store material-symbols-outlined' }).text(this.icon.substring(5), 'pluginquinexistepas').end()
+      .end('div')
+      .div({ class: 'store-link-text' })
+      .a({
+        id: 'store-link-id-' + this.id,
+        class: 'store-link-icon-title',
+        href: this.link,
+        target: '_blank',
+      })
+      .text(this.title)
+      .end('a')
+      .span({ class: 'store-link-icon-description' })
+      .text(this.description)
+      .end('span')
+      .end('div')
+      .button({
+        class: `add-store-link mel-btn mel-btn-icon ${this.inLinks ? 'disabled' : ''}`, onclick: () => {
+          window.linkManager.addStoreLink(this);
+        }
+      })
+      .span()
+      .text(this.inLinks ? 'Ajouté ' : 'Ajouter')
+      .end('span')
+      .icon(this.inLinks ? 'check_circle' : 'add_circle', { class: 'ml-4 fs-23' }).end()
+      .end('button')
+      .end('li')
       .generate();
   }
 }

@@ -43,6 +43,8 @@ class mel_useful_link extends bnum_plugin
             $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
             $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
             $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+            $this->rc->output->set_env("default_links", $this->getFilteredDn(driver_mel::gi()->getUser()->dn));
+            
             include_once "lib/hidden.php";
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
           }
@@ -52,11 +54,12 @@ class mel_useful_link extends bnum_plugin
             mel_metapage::add_widget("all_links" ,"useful_links");
             mel_metapage::add_widget("not_taked_links" ,"useful_links", 'joined');
         }
-
     }
 
     public function convert_old_links() {
       include_once "lib/link.php";
+
+      // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
 
       if (!$this->rc->config->get('new_personal_useful_links', [])) {
         
@@ -81,26 +84,24 @@ class mel_useful_link extends bnum_plugin
         
         $newMelLinks = array_merge($newMelLinks, $this->convert_default_link());
 
-        // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
         $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
         $this->rc->user->save_prefs(array('personal_useful_links' => []));
      }
     }
     
-    public function convert_default_link() {      
+    public function convert_default_link() {
       $items = $this->getCardsConfiguration(driver_mel::gi()->getUser()->dn);
       $items = array_merge($items, $this->rc->config->get('portail_items_list', []));
       $newMelLinks = [];
 
-      foreach ($items as $item) {
-        $id = uniqid();
+      foreach ($items as $id => $item) {
         if (!$item['links']) {
-          $temp = new MelLink($id, $item['name'], $this->validate_url($item['url']));
+          $temp = new MelLink($id, $item['name'], $this->validate_url($item['url']), $item['icon']);
         }
         else {
           $links = [];
           foreach ($item['links'] as $key => $value) {
-            $links[] = new MelLink(uniqid(), $key, $this->validate_url($value['url']));
+            $links[] = new MelLink(uniqid(), $key, $this->validate_url($value['url']), $item['icon']);
           }
           $temp = new MelFolderLink($id, $item['name'], $links);
         }
@@ -122,6 +123,8 @@ class mel_useful_link extends bnum_plugin
     }
 
     public function update_list() {
+      include_once "lib/link.php";
+
       $newOrder = rcube_utils::get_input_value("_list", rcube_utils::INPUT_POST);
       $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_POST);
 
@@ -130,7 +133,7 @@ class mel_useful_link extends bnum_plugin
         if (isset($object['id'])) {
             $id = $object['id'];
             if ($object['link'])
-              $temp = new MelLink($id, $object['title'], $object['link']);
+              $temp = new MelLink($id, $object['title'], $object['link'], $object['icon']);
             else if($object['links'])
               $temp = new MelFolderLink($id, $object['title'], $object['links']);
             
@@ -204,7 +207,7 @@ class mel_useful_link extends bnum_plugin
       foreach ($serialized_links as $key => $value) {
         $decoded_value = json_decode($value);
         if ($decoded_value->configKey) {
-          $temp = new MelLink($decoded_value->configKey, $decoded_value->title, $decoded_value->link);
+          $temp = new MelLink($decoded_value->configKey, $decoded_value->title, $decoded_value->link, $decoded_value->icon);
           $links[] = $temp->serialize();
         }
         else {
@@ -291,12 +294,13 @@ class mel_useful_link extends bnum_plugin
     {
       include_once "lib/link.php";
   
-      $link = rcube_utils::get_input_value("link", rcube_utils::INPUT_GPC);
+      $input_link = rcube_utils::get_input_value("link", rcube_utils::INPUT_GPC);
       $key = rcube_utils::get_input_value("_key", rcube_utils::INPUT_GPC);
 
-      $id = $link['_id'];
-      $title = $link['_title'];
-      $link = $link['_link'];
+      $id = $input_link['_id'];
+      $title = $input_link['_title'];
+      $link = $input_link['_link'];
+      $icon = $input_link['_icon'];
       $config = [];
       $melLink;
   
@@ -311,12 +315,12 @@ class mel_useful_link extends bnum_plugin
       $config = $key ? $external_links : $this->rc->config->get('new_personal_useful_links', []);
   
       if ($id === null) {
-      $id = uniqid();
+        $id = uniqid();
   
         if ($isMultiLink)
           $melLink = new MelFolderLink($id, $title, $link);
         else
-          $melLink = new MelLink($id, $title, $link);
+          $melLink = new MelLink($id, $title, $link, $icon);
       } 
       else {
         $melLink = json_decode($config[$id]);
@@ -324,17 +328,29 @@ class mel_useful_link extends bnum_plugin
         if ($isMultiLink)
           $melLink = new MelFolderLink($id, $title, $link);
         else
-          $melLink = new MelLink($id, $title, $link);
+          $melLink = new MelLink($id, $title, $link, $icon);
       }
   
       //On supprime les anciens liens
+      $index;
       if ($isMultiLink) {
         foreach ($link as $link_key => $value) {
+          $index = array_search($link_key, array_keys($config));
           unset($config[$link_key]);
         }
+        
+        //On met le nouveau lien à la place des anciens
+        $config = array_merge(
+          array_slice($config, 0, $index),
+          array($id => $melLink->serialize()),
+          array_slice($config, $index)
+        );
       }
-  
-      $config[$id] = $melLink->serialize();
+      else {
+        $config[$id] = $melLink->serialize();
+      }
+
+      
 
       if(!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $config])['done']) 
       {
@@ -410,7 +426,6 @@ class mel_useful_link extends bnum_plugin
       exit;
 
     }
-
 
     /************* USEFUL FUNCTIONS **************/
     /**
@@ -510,5 +525,103 @@ class mel_useful_link extends bnum_plugin
       }
     }
     return $configuration;
+  }
+
+  
+    /**
+     * Filter if the user dn match the item dn
+     * 
+     * @param string $user_dn
+     * @param string|array $item_dn
+     * 
+     * @return boolean true si le dn match, false sinon
+     */
+    private function filter_dn($user_dn, $item_dn) {
+      if (is_array($item_dn)) {
+      $res = false;
+      $res_neg = null;
+      $res_eq = null;
+      // C'est un tableau, appel récursif
+      foreach ($item_dn as $dn) {
+          $_res = self::filter_dn($user_dn, $dn);
+          if (strpos($dn, '=') === 0) {
+              if (is_null($res_eq)) {
+                  $res_eq = $_res;
+              }
+              else {
+                  $res_eq = $res_eq || $_res;
+              }
+          }
+          else if (strpos($dn, '!') === 0) {
+              if (is_null($res_neg)) {
+                  $res_neg = $_res;
+              }
+              else {
+                  $res_neg = $res_neg && $_res;
+              }
+          }
+          else {
+              $res = $res || $_res;
+          }
+      }
+      // Validation des resultats
+      if (!is_null($res_eq)) {
+          if (!is_null($res_neg) && $res_neg === false) {
+              $res = $res_neg;
+          }
+          else {
+              $res = $res_eq;
+          }
+      }
+      else if (!is_null($res_neg)) {
+          $res = $res_neg;
+      }
+      }
+      else {
+          if (strpos($item_dn, '!') === 0) {
+              // DN doit être différent
+              $_item_dn = substr($item_dn, 1, strlen($item_dn) - 1);
+              $res = strpos($user_dn, $_item_dn) === false;
+          }
+          else if (strpos($item_dn, '=') === 0) {
+              // DN exactement égal
+              $_item_dn = substr($item_dn, 1, strlen($item_dn) - 1);
+              if (strpos($_item_dn, 'ou') === 0) {
+                  $_user_dn = explode(',', $user_dn, 2);
+                  $res = $_user_dn[1] == $_item_dn;
+              }
+              else {
+                  $res = $user_dn == $_item_dn;
+              }
+          }
+          else {
+              // DN contient
+              $res = strpos($user_dn, $item_dn) !== false;
+          }
+      }
+      return $res;
+  }
+
+  private function getFilteredDn($user_dn, $config_file = '/config.json') {
+    $filtered_dn = [];
+    $configurations = $this->getCardsConfiguration($user_dn, $config_file);
+
+    foreach ($configurations as $key => $value) {
+      if(isset($value['links'])) {
+          foreach ($value['links'] as $link_key => $link) {
+              if ($link['dn'] && $this->filter_dn($user_dn, $link['dn'])) {
+                  $filtered_dn[$link_key] = $link;
+              }
+              else {
+                  $filtered_dn[$link_key] = $link;
+              }
+          }
+      } else if(isset($value['dn']) && $this->filter_dn($user_dn, $value['dn'])) {
+          $filtered_dn[$key] = $value;
+      } else {
+          $filtered_dn[$key] = $value;
+      }
+    }  
+  return $filtered_dn;
   }
 }

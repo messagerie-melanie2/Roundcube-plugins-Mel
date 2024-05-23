@@ -6025,6 +6025,11 @@ html.layout-phone .task-mail {
   box-shadow: var(--secondary-box-shadow);
   border-radius: 5px;
   padding: 15px;
+  border: 1px solid var(--alt-default-border-color);
+
+  img {
+    border-radius: 5px;
+  }
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -6035,4 +6040,9 @@ html.dark-mode-custom {
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: brightness(0) saturate(100%) invert(80%) sepia(47%) saturate(262%) hue-rotate(358deg) brightness(93%) contrast(89%);
   }
+}
+
+.download_app {
+  margin: 0;
+  font-weight: bold;
 }

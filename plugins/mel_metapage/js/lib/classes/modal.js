@@ -284,6 +284,166 @@ class RcmailDialogChoiceButtonVisualiser extends VisualiserObject {
 
 /**
  * @class
+ * @classdesc Affiche une dialog en utilisant Rcmail (déprécier, utilisez plutôt {@link MelDialog})
+ * @extends MelObject
+ * @deprecated
+ * @tutorial modal
+ *
+ */
+class RcmailDialog extends MelObject {
+  /**
+   * Constructeur de la classe
+   * @deprecated
+   * @param {(____JsHtml | external:jQuery)} contents html en jshtml ou jquery
+   * @param {Object} param1 Configuration de la dialog
+   * @param {string} param1.title Titre de la dialog
+   * @param {RcmailDialogButton[]} param1.buttons Boutons de la dialog
+   * @param {Object} param2.options Options de la boite de dialogue. Voir {@link https://api.jqueryui.com/dialog/}
+   * @frommoduleparam JsHtml contents {@linkto ____JsHtml}
+   *
+   */
+  constructor(contents, { title = EMPTY_STRING, buttons = [], options = {} }) {
+    super(contents, title, buttons, options);
+  }
+
+  _init() {
+    /**
+     * Contenu de la dialog
+     * @type {____JsHtml}
+     * @frommodule JsHtml
+     */
+    this.contents = MelHtml.start;
+    /**
+     * Titre de la dialog
+     * @type {string}
+     */
+    this.title = EMPTY_STRING;
+    /**
+     * Boutons de la dialog
+     * @type {RcmailDialogButton[]}
+     */
+    this.buttons = [];
+    /**
+     * Options de la dialog
+     * @type {Object}
+     */
+    this.options = {};
+    /**
+     * Dialog
+     * @type {external:jQuery}
+     * @package
+     */
+    this._$dialog = $();
+
+    return this;
+  }
+
+  _setup(contents, title, buttons, options) {
+    Object.defineProperties(this, {
+      contents: {
+        get() {
+          return contents;
+        },
+      },
+      title: {
+        get() {
+          return title;
+        },
+      },
+      buttons: {
+        get() {
+          return buttons;
+        },
+      },
+      options: {
+        get() {
+          return options;
+        },
+      },
+    });
+
+    return this;
+  }
+
+  /**
+   * Actions principales
+   * @param  {...any} args Arguments envoyé par le constructeur
+   */
+  main(...args) {
+    {
+      super.main(...args);
+      const [contents, title, buttons, options] = args;
+      this._init()._setup(contents, title, buttons, options);
+    }
+
+    this.show();
+  }
+
+  /**
+   * Cache la dialog
+   * @returns {RcmailDialog} Chaînage
+   */
+  hide() {
+    return this.destroy();
+  }
+
+  /**
+   * Affiche la dialog
+   * @returns {RcmailDialog} Chaînage
+   */
+  show() {
+    let $contents = this.contents.generate
+      ? this.contents.generate()
+      : this.contents;
+
+    this._$dialog = this.rcmail().show_popup_dialog(
+      $contents[0],
+      this.title,
+      this.buttons.map((x) => x.generate()),
+      this.options,
+    );
+    return this;
+  }
+
+  /**
+   * Supprime la dialog
+   * @returns {RcmailDialog} Chaînage
+   */
+  destroy() {
+    this._$dialog.dialog('destroy');
+    return this;
+  }
+
+  /**
+   * Affiche X boutons qui permettront de faire certaines actions
+   * @param {string} title Titre de la modale
+   * @param  {...RcmailDialogChoiceButton} buttons Bouttons qui seront affichés
+   * @returns {RcmailDialog}
+   */
+  static DrawChoices(title, ...buttons) {
+    let $html = MelHtml.start.flex_container().end().generate();
+
+    for (const iterator of buttons) {
+      $html.append(new RcmailDialogChoiceButtonVisualiser(iterator).$ref);
+    }
+
+    return new RcmailDialog($html, { title });
+  }
+
+  /**
+   * Affiche 2 boutons qui permettront de faire certaines actions
+   * @param {string} title Titre de la modale
+   * @param {RcmailDialogChoiceButton} button1 Option 1
+   * @param {RcmailDialogChoiceButton} button2 Option 2
+   * @returns {RcmailDialog}
+   */
+  static DrawChoice(title, button1, button2) {
+    return this.DrawChoices(title, button1, button2);
+  }
+}
+
+/**
+ * @class
  * @classdesc Données d'une page de dialog
  * @tutorial meldialog
  */
@@ -762,161 +922,12 @@ class MelDialog {
 }
 
 /**
- * @class
- * @classdesc Affiche une dialog en utilisant Rcmail (déprécier, utilisez plutôt {@link MelDialog})
- * @extends MelObject
- * @deprecated
- * @tutorial modal
- *
+ * Transforme en MelDialog
+ * @returns {MelDialog}
  */
-class RcmailDialog extends MelObject {
-  /**
-   * Constructeur de la classe
-   * @deprecated
-   * @param {(____JsHtml | external:jQuery)} contents html en jshtml ou jquery
-   * @param {Object} param1 Configuration de la dialog
-   * @param {string} param1.title Titre de la dialog
-   * @param {RcmailDialogButton[]} param1.buttons Boutons de la dialog
-   * @param {Object} param2.options Options de la boite de dialogue. Voir {@link https://api.jqueryui.com/dialog/}
-   * @frommoduleparam JsHtml contents {@linkto ____JsHtml}
-   *
-   */
-  constructor(contents, { title = EMPTY_STRING, buttons = [], options = {} }) {
-    super(contents, title, buttons, options);
-  }
-
-  _init() {
-    /**
-     * Contenu de la dialog
-     * @type {____JsHtml}
-     * @frommodule JsHtml
-     */
-    this.contents = MelHtml.start;
-    /**
-     * Titre de la dialog
-     * @type {string}
-     */
-    this.title = EMPTY_STRING;
-    /**
-     * Boutons de la dialog
-     * @type {RcmailDialogButton[]}
-     */
-    this.buttons = [];
-    /**
-     * Options de la dialog
-     * @type {Object}
-     */
-    this.options = {};
-    /**
-     * Dialog
-     * @type {external:jQuery}
-     * @package
-     */
-    this._$dialog = $();
-
-    return this;
-  }
-
-  _setup(contents, title, buttons, options) {
-    Object.defineProperties(this, {
-      contents: {
-        get() {
-          return contents;
-        },
-      },
-      title: {
-        get() {
-          return title;
-        },
-      },
-      buttons: {
-        get() {
-          return buttons;
-        },
-      },
-      options: {
-        get() {
-          return options;
-        },
-      },
-    });
-
-    return this;
-  }
-
-  /**
-   * Actions principales
-   * @param  {...any} args Arguments envoyé par le constructeur
-   */
-  main(...args) {
-    {
-      super.main(...args);
-      const [contents, title, buttons, options] = args;
-      this._init()._setup(contents, title, buttons, options);
-    }
-
-    this.show();
-  }
-
-  /**
-   * Cache la dialog
-   * @returns {RcmailDialog} Chaînage
-   */
-  hide() {
-    return this.destroy();
-  }
-
-  /**
-   * Affiche la dialog
-   * @returns {RcmailDialog} Chaînage
-   */
-  show() {
-    let $contents = this.contents.generate
-      ? this.contents.generate()
-      : this.contents;
-
-    this._$dialog = this.rcmail().show_popup_dialog(
-      $contents[0],
-      this.title,
-      this.buttons.map((x) => x.generate()),
-      this.options,
-    );
-    return this;
-  }
-
-  /**
-   * Supprime la dialog
-   * @returns {RcmailDialog} Chaînage
-   */
-  destroy() {
-    this._$dialog.dialog('destroy');
-    return this;
-  }
-
-  /**
-   * Affiche X boutons qui permettront de faire certaines actions
-   * @param {string} title Titre de la modale
-   * @param  {...RcmailDialogChoiceButton} buttons Bouttons qui seront affichés
-   * @returns {RcmailDialog}
-   */
-  static DrawChoices(title, ...buttons) {
-    let $html = MelHtml.start.flex_container().end().generate();
-
-    for (const iterator of buttons) {
-      $html.append(new RcmailDialogChoiceButtonVisualiser(iterator).$ref);
-    }
-
-    return new RcmailDialog($html, { title });
-  }
-
-  /**
-   * Affiche 2 boutons qui permettront de faire certaines actions
-   * @param {string} title Titre de la modale
-   * @param {RcmailDialogChoiceButton} button1 Option 1
-   * @param {RcmailDialogChoiceButton} button2 Option 2
-   * @returns {RcmailDialog}
-   */
-  static DrawChoice(title, button1, button2) {
-    return this.DrawChoices(title, button1, button2);
-  }
-}
+RcmailDialog.prototype.to_mel_dialog = function to_mel_dialog() {
+  return MelDialog.Create('index', this.contents, {
+    title: this.title,
+    buttons: this.buttons,
+  });
+};

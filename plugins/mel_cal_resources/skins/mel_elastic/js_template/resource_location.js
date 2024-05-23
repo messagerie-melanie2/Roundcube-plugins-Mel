@@ -1,15 +1,21 @@
 import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
-import { test_class } from '../../../js/add_resources.js';
+import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
+import { ResourceDialog } from '../../../js/add_resources.js';
 
 export { page };
 
 function page(resaData, resource, resource_only = null) {
-  debugger;
+  page.dialog = new ResourceDialog(null, resaData, resource_only);
     return MelHtml.start
         .div({
           class: 'location-mode d-flex',
             'data-locationmode': resource.option_value(),
-            onclick: () => new test_class()
+          async onclick() {
+            await (await page.dialog.try_init()).show();
+            page.onclickafter.call();
+          }
         })
         .button({ type: 'button', }).text(resaData || false ? resaData.name : 'Reserver une ressource').end();
 }
+
+page.onclickafter = new BnumEvent();

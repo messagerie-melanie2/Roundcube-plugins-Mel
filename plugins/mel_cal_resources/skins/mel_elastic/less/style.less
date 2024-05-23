@@ -1,0 +1,40 @@
+#mel-planify {
+  &::before {
+    content: '\e878';
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal !important;
+    font-variation-settings:
+      'wght' 300,
+      'opsz' 48 !important;
+    font-size: 17px !important;
+    transform: scale(1.5) !important;
+  }
+}
+
+.star-button-parent {
+  flex: 1;
+  text-align: right;
+
+  .mel-button {
+    &.star-button {
+      background-color: transparent !important;
+      border: unset !important;
+      color: var(--main-text-color);
+      padding: 0;
+      height: 100%;
+
+      &:hover {
+        color: var(--royal-color);
+      }
+
+      &[data-favorite='true'] {
+        color: var(--royal-color);
+        font-variation-settings: 'FILL' 1;
+
+        &:hover {
+          color: var(--main-text-color);
+        }
+      }
+    }
+  }
+}

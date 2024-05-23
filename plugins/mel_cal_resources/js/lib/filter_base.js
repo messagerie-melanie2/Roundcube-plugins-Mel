@@ -9,7 +9,7 @@ export { FilterBase };
 
 /**
  * @callback LoadDataCallback
- * @param {any[]} data
+ * @param {ResourceData[]} data
  * @param {FilterBase} filter
  * @returns {void}
  */
@@ -20,12 +20,12 @@ export { FilterBase };
  */
 class FilterBase extends MelObject {
   /**
-   *
-   * @param {string} name
-   * @param {number} size
-   * @param {!Object} destructured
-   * @param {?string} [destructured.load_data_on_change=null]
-   * @param {?string} [destructured.load_data_on_start=null]
+   *COnstructeur du filtre
+   * @param {string} name Nom du filtre
+   * @param {number} size Taille de la colonne du filtre (de 1 à 12)
+   * @param {!Object} destructured Paramètres du filtre
+   * @param {?string} [destructured.load_data_on_change=null] Si on charge les données à chaque changement
+   * @param {?string} [destructured.load_data_on_start=null] Si on charge les données
    * @param {string} [destructured.input_type='select']
    */
   constructor(
@@ -143,6 +143,13 @@ class FilterBase extends MelObject {
     });
   }
 
+  /**
+   * Génère le select du filtre
+   * @private
+   * @param {*} jshtml
+   * @param  {...any} args
+   * @returns {any}
+   */
   _generate_select(jshtml, ...args) {
     const [localities] = args;
     switch (this._input_type) {
@@ -186,8 +193,8 @@ class FilterBase extends MelObject {
   }
 
   /**
-   *
-   * @param {LoadDataCallback} event
+   * Ajoute un évènement qui sera appelé lors du chargement des premières données
+   * @param {LoadDataCallback} event Évènement à ajouter qui sera appelé
    * @returns {FilterBase} Chaîne
    */
   push_event(event) {
@@ -196,8 +203,8 @@ class FilterBase extends MelObject {
   }
 
   /**
-   *
-   * @param {LoadDataCallback} event
+   *Ajoute un évènement qui sera appelé lors du chargement des données
+   * @param {LoadDataCallback} event Évènement à ajouter qui sera appelé
    * @returns {FilterBase} Chaîne
    */
   push_event_data_changed(event) {
@@ -205,11 +212,20 @@ class FilterBase extends MelObject {
     return this;
   }
 
+  /**
+   * Évènement appelé lors du changement de la valeur du filtre
+   */
   on_select_change() {
     if (this._load_data_on_change) this._load_data();
     else this.event_on_data_changed.call(this.value, this);
   }
 
+  /**
+   *
+   * @private
+   * @returns {Promise<*>}
+   * @async
+   */
   async _load_first_data() {
     let return_data = [];
     await this.http_internal_post({
@@ -228,6 +244,11 @@ class FilterBase extends MelObject {
     return return_data;
   }
 
+  /**
+   * Récupère les données du filtre lors du changement de la valeur du filtre
+   * @returns {Promise<*>}
+   * @async
+   */
   async _load_data() {
     let return_data = [];
     await this.http_internal_post({
@@ -249,6 +270,12 @@ class FilterBase extends MelObject {
     return return_data;
   }
 
+  /**
+   * Génère le filtre
+   * @async
+   * @returns {Promise<____JsHtml>}
+   * @frommodulereturn {JsHtml} {@linkto ____JsHtml}
+   */
   async generate() {
     const localities = this._load_data_on_start
       ? await this._load_first_data()
@@ -259,6 +286,10 @@ class FilterBase extends MelObject {
       .end();
   }
 
+  /**
+   * Génère un id
+   * @returns {string}
+   */
   _generate_id() {
     const id = MelEnumerable.random(0, Random.intRange(5, 9))
       .take(Random.intRange(1, 15))
@@ -270,8 +301,13 @@ class FilterBase extends MelObject {
     else return id;
   }
 
+  /**
+   * Vérifie si une resource réuni les conditions du filtre
+   * @param {{data:ResourcesBase}} resource Resource à vérifier
+   * @returns {boolean}
+   */
   filter(resource) {
-    if (!(this._$filter.val() || false)) return true;
+    if (!(this._$filter.val() || false) || this.value === '/') return true;
     else {
       switch (this._input_type) {
         case 'multi-select':

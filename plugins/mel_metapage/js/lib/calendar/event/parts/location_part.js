@@ -5,6 +5,7 @@
  * @local VisioManager
  * @local AVisio
  * @local IntegratedVisio
+ * @local AExternalLocationPart
  */
 
 import { MelEnumerable } from '../../../classes/enum.js';
@@ -1350,7 +1351,7 @@ class Location extends ALocationPart {
  * @class
  * @classdesc Gère l'emplacement de la réunion avec les différents types d'emplacement. Les emplacements sont cumulables, il peut en avoir des différents. Les différents select et différentes valeurs du select seront générer via les différentes classes qui héritent de {@link ALocationPart} et qui se trouve dans le tableau {@link LocationPartManager.PARTS}.
  */
-export class LocationPartManager {
+export class LocationPartManager extends IDestroyable {
   /**
    *
    * @param {external:jQuery} $locations Div qui contient les emplacements
@@ -1358,6 +1359,7 @@ export class LocationPartManager {
    * @param {CategoryPart} categoryPart Partie de la catégorie
    */
   constructor($locations, $field, categoryPart) {
+    super();
     /**
      * Contient les données des différents emplacements
      * @type {Object<number, ALocationPart>}
@@ -1721,6 +1723,15 @@ export class LocationPartManager {
   }
 
   /**
+   * Change ma vaeur du premier select trouver
+   * @param {string} val
+   * @returns {external:jQuery}
+   */
+  update_first_location(val) {
+    return this._$locations.find('select').first().val(val).change();
+  }
+
+  /**
    * Est appelé lorsqu'un champ ou un select est modifié.
    *
    * Ecrit et formatte les données des champ visuels dans le champ de sauvegarde.
@@ -1752,6 +1763,18 @@ export class LocationPartManager {
         .where((x) => !!x.value.wait)
         .select((x) => x.value.wait()),
     );
+  }
+
+  destroy() {
+    for (const id of Object.keys(this.locations)) {
+      this.locations[id].destroy();
+      delete this.locations[id];
+
+      for (const iterator of Object.keys(this._cached)) {
+        this._cached[iterator]?.destroy?.();
+      }
+      delete this._cached[id];
+    }
   }
 
   /**

@@ -12,6 +12,23 @@ class mel_cal_resources extends bnum_plugin {
             ($this->get_current_task() === 'calendar' && $this->is_index_action()) || 
             $this->get_current_action() === 'dialog-ui'
             ) {
+
+            if ($this->is_index_action())
+            {
+                $this->add_texts('localization/', true);
+                $this->add_button(array(
+                    'command' => 'calendar-planify',
+                    'class' => 'mel-cal-resource-planify',
+                    'innerclass' => 'inner',
+                    'id' => 'mel-planify',//tb_label_popup
+                    'title' => 'planify', // gets translated
+                    'type' => 'link',
+                    'label' => 'planify', // maybe put translated version of "Labels" here?
+                    'domain' => 'mel_cal_resources'
+                ), 'toolbar');
+                $this->include_css('style.css');
+            }
+
             $this->load_data();
         }
         else if ($this->get_current_task() === 'mel_cal_resources') {

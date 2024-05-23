@@ -4,6 +4,8 @@ import {
   RcmailDialogButton,
 } from '../../../mel_metapage/js/lib/classes/modal.js';
 import { DATE_HOUR_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { template_resource } from '../../skins/mel_elastic/js_template/resource.js';
@@ -11,6 +13,34 @@ import { FilterBase } from './filter_base.js';
 
 export { ResourcesBase };
 
+/**
+ * @typedef ResourceData
+ * @property {string} bal
+ * @property {string} batiment
+ * @property {?number} capacite
+ * @property {?string} caracteristiques
+ * @property {?string} description
+ * @property {string} dn
+ * @property {string} email
+ * @property {string[]} email_list
+ * @property {string} etage
+ * @property {string} fullname
+ * @property {string} locality
+ * @property {string} name
+ * @property {string} postal_code
+ * @property {string} room_number
+ * @property {?string} service
+ * @property {string} street
+ * @property {?string} title
+ * @property {string} type
+ * @property {string} uid
+ */
+
+/**
+ * @class
+ * @classdesc Représente une ressource
+ * @extends MelObject
+ */
 class ResourcesBase extends MelObject {
   constructor(name, filters) {
     super(name, filters);
@@ -23,7 +53,7 @@ class ResourcesBase extends MelObject {
   _init() {
     /**
      * @protected
-     * @type {Array}
+     * @type {Array<FilterBase>}
      * @description Contient la liste des filtres qui est possible d'appliquer
      */
     this._p_filters = [];
@@ -77,8 +107,16 @@ class ResourcesBase extends MelObject {
      */
     this.end = null;
 
+    /**
+     * Calendrier
+     * @type {external:jQuery}
+     */
     this._$calendar = null;
 
+    /**
+     * Action à faire lors du clique du bouton "Sauvegarder"
+     * @type {BnumEvent<function>}
+     */
     this.event_on_save = new BnumEvent();
     return this;
   }
@@ -98,6 +136,11 @@ class ResourcesBase extends MelObject {
     );
   }
 
+  /**
+   * Créer une page de dialog à partir de cette ressource
+   * @returns {Promise<DialogPage>}
+   * @async
+   */
   async create_page() {
     const button_save = RcmailDialogButton.ButtonSave({
       click: this.event_on_save,
@@ -127,6 +170,71 @@ class ResourcesBase extends MelObject {
     try {
       $fc.fullCalendar({
         resources: this._fetch_resources.bind(this),
+        resourceRender: function (resourceObj, labelTds, bodyTds) {
+          console.log('rc', resourceObj, labelTds, bodyTds);
+
+          if (resourceObj.id !== 'resources') {
+            labelTds
+              .css('display', 'flex')
+              .prepend(
+                $(
+                  `<input type="radio" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.uid}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
+                ),
+              )
+              .append(
+                MelHtml.start
+                  .div({ class: 'star-button-parent' })
+                  .button({
+                    class: 'star-button',
+                    id: `button-${resourceObj.data.uid}`,
+                    onclick: (e) => {
+                      $(e.currentTarget).attr(
+                        'data-favorite',
+                        !JSON.parse(
+                          $(e.currentTarget).attr('data-favorite') ?? false,
+                        ),
+                      );
+                    },
+                  })
+                  .icon('star')
+                  .end()
+                  .end()
+                  .end()
+                  .generate(),
+              );
+
+            labelTds = labelTds.find('.fc-cell-text');
+            let parent = labelTds.parent();
+            let text = labelTds.text();
+            labelTds.remove();
+            parent.html(
+              $(`<label for="radio-${resourceObj.data.uid}"></label>`)
+                .data('id', resourceObj.data.uid)
+                .text(text)
+                .css('margin', 0)
+                .css('padding', 0)
+                .click((e) => {
+                  console.log('rcs', this._p_resources, e);
+                  for (let i = 0; i < this._p_resources.length; ++i) {
+                    this._p_resources[i].data.selected = false;
+                  }
+
+                  e = $(e.currentTarget);
+                  if (!e.attr('for'))
+                    e = $(
+                      `label[for="${e.attr('id').replace('radio', EMPTY_STRING)}"`,
+                    );
+
+                  const id = e.data('id');
+                  const index = MelEnumerable.from(this._p_resources)
+                    .select((x, i) => ({ x, i }))
+                    .where((x) => x.x.id === id)
+                    .first().i;
+                  this._p_resources[index].data.selected = true;
+                }),
+            );
+          }
+        }.bind(this),
         defaultView: 'timelineDay',
         schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
         height: 210,
@@ -153,7 +261,11 @@ class ResourcesBase extends MelObject {
     return $fc;
   }
 
-  // eslint-disable-next-line no-unused-vars
+  /**
+   * Récupère les données pour le fullcalendar
+   * @package
+   * @param {function} callback
+   */
   _fetch_resources(callback) {
     const data = this._p_resources.filter(
       (x) => !MelEnumerable.from(this._p_filters).any((f) => !f.filter(x)),
@@ -163,6 +275,12 @@ class ResourcesBase extends MelObject {
     );
   }
 
+  /**
+   * Fonction get pour la page de dialog retournée
+   * @package
+   * @param {Function} old Ancienne fonction get bind
+   * @returns {external:jQuery}
+   */
   _get(old) {
     let $rtn = old();
 
@@ -173,6 +291,12 @@ class ResourcesBase extends MelObject {
     return $rtn;
   }
 
+  /**
+   * Action appelé lorsque les données d'un filtre on été chargés
+   * @package
+   * @param {ResourceData[]} rcs
+   * @param {FilterBase} filter
+   */
   _on_data_loaded(rcs, filter) {
     console.log(
       '[_on_data_changed]Génération des filtres',
@@ -183,12 +307,15 @@ class ResourcesBase extends MelObject {
     let values;
     for (let index = 0, len = this._p_filters.length; index < len; ++index) {
       if (this._p_filters[index]._name !== filter._name) {
-        this._p_filters[index]._$filter.html(
-          $('<option value=""></option>')
-            .text(this._p_filters[index]._name)
-            .css('display', 'none'),
-        );
+        this._p_filters[index]._$filter
+          .html(
+            $('<option value="/"></option>')
+              .text(this._p_filters[index]._name)
+              .css('display', 'none'),
+          )
+          .append($('<option value=""></option>').text(EMPTY_STRING));
         values = {};
+
         for (const iterator of rcs) {
           if (
             !values[iterator[this._p_filters[index]._name]] &&
@@ -228,12 +355,19 @@ class ResourcesBase extends MelObject {
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
   }
+
+  /**
+   * Action à faire lorsq'un filtre à changer de valeur
+   */
   _on_data_changed() {
     console.log('[_on_data_changed]Changement de filtre');
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
   }
 
+  /**
+   * Dessine le calendrier
+   */
   render() {
     this._$calendar.fullCalendar('rerender');
   }

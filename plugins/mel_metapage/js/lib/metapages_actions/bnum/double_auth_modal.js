@@ -326,7 +326,10 @@ class double_auth_modal extends module_bnum {
           .end()
           .row({ class: "my-2" })
             .col_6({class: 'col-6 d-flex justify-content-center'})
-              .div({class:'qrcode_frame'})
+              .div({class:'qrcode_frame text-center'})
+                .p({class:'download_app'})
+                  .text(rcmail.gettext('mel_metapage.download_app'))
+                .end()
                 .p()
                   .text('Google Authenticator')
                 .end()
@@ -334,7 +337,10 @@ class double_auth_modal extends module_bnum {
               .end()
             .end()
             .col_6({class: 'col-6 d-flex justify-content-center'})
-              .div({class:'qrcode_frame'})
+              .div({class:'qrcode_frame text-center'})
+                .p({class:'download_app'})
+                  .text(rcmail.gettext('mel_metapage.download_app'))
+                .end()
                 .p()
                   .text('FreeOTP Authenticator')
                 .end()
@@ -342,9 +348,10 @@ class double_auth_modal extends module_bnum {
               .end()
             .end()
           .end()
+          .p({class:'text-center mt-4'}).text(rcmail.gettext('mel_metapage.code_step_after')).end()
         .end()
       .end()
-      .row({ class: "custom-tooltipbuttons justify-content-between mt-4" })
+      .row({ class: "custom-tooltipbuttons justify-content-between mt-3" })
         .close_button({action:'verification_mail_modal'})
           .text(rcmail.gettext('mel_metapage.back'))
         .end()
@@ -361,7 +368,7 @@ class double_auth_modal extends module_bnum {
     .end('div')
     .generate();
 
-    rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 370, close:function (event, ui) { $(this).remove(); self.checkBeforeClose() } })
+    rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 460, close:function (event, ui) { $(this).remove(); self.checkBeforeClose() } })
 
     this.createProgressPoint(3);
   }

@@ -407,7 +407,9 @@ $labels['verification_email_text'] = 'Saisissez le code de vérification reçu p
 $labels['verification_application_text'] = 'Rentrer le code de validation affiché sur l’application';
 $labels['application_text'] = 'Télécharger une application de l\'authentification à deux facteurs comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a>.';
 $labels['scan_authentication_code'] = 'Vous pouvez maintenant scanner ce QR Code pour enregistrer le bnum dans votre application.';
+$labels['code_step_after'] = 'Après avoir installé l\'application, vous pourrez scanner le code de l\'étape suivante pour enregistrer le bnum dans votre application.';
 $labels['add_key'] = 'Ou ajouter cette clé dans votre application :';
+$labels['download_app'] = 'Télécharger l\'application';
 $labels['show_me'] = 'Configurer maintenant';
 $labels['later'] = 'Plus tard';
 $labels['close_double_auth'] = 'Fermer';

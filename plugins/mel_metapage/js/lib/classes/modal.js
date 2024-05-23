@@ -298,7 +298,7 @@ class RcmailDialog extends MelObject {
    * @param {Object} param1 Configuration de la dialog
    * @param {string} param1.title Titre de la dialog
    * @param {RcmailDialogButton[]} param1.buttons Boutons de la dialog
-   * @param {Object} param2.options Options de la boite de dialogue. Voir {@link https://api.jqueryui.com/dialog/}
+   * @param {Object} param2.options Options de la boite de dialogue. Voir {@link https://api.jqueryui.com/dialog/}. `disable_show_on_start` désactive l'affichage à la création si vrai.
    * @frommoduleparam JsHtml contents {@linkto ____JsHtml}
    *
    */
@@ -376,7 +376,7 @@ class RcmailDialog extends MelObject {
       this._init()._setup(contents, title, buttons, options);
     }
 
-    this.show();
+    if (!this.options?.disable_show_on_start) this.show();
   }
 
   /**

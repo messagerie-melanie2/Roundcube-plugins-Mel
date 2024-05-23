@@ -929,5 +929,6 @@ RcmailDialog.prototype.to_mel_dialog = function to_mel_dialog() {
   return MelDialog.Create('index', this.contents, {
     title: this.title,
     buttons: this.buttons,
+    options: this.options,
   });
 };

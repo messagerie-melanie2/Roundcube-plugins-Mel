@@ -479,7 +479,6 @@ export class LinkManager extends MelObject {
    * @param {HTMLElement} location
    */
   displayFolder(folder, location = null) {
-    debugger
     const indexes = [];
 
     if (!location) {

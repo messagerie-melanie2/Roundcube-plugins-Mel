@@ -317,13 +317,15 @@ class MelFolderLink extends MelBaseLink {
 }
 
 class MelLinkVisualizer extends MelLink {
-  constructor (id, title, link, icon, inFolder = false) {
+  constructor (id, title, link, image, inFolder = false, icon = null) {
     super(id, title, link, inFolder);
+    this._setup_image(image);
     this._setup_icon(icon);
   }
 
   _init() {
     super._init();
+    this.image = '';
     this.icon = '';
 
     return this;
@@ -331,8 +333,6 @@ class MelLinkVisualizer extends MelLink {
 
   _setup_icon(icon) {
     let _icon = icon;
-    let _title = this.title;
-    let _link = this.link;
 
     Object.defineProperties(this, {
       icon: {
@@ -341,21 +341,44 @@ class MelLinkVisualizer extends MelLink {
         },
         set: value => {
           _icon = value;
-          if (_icon.startsWith('icon:')) {
-            $(`.link-block[data-id="${this.id}"] .link-icon-image`).hide();
-            $(`#no-image-${this.id}`).addClass('material-symbols-outlined');
-            $(`#no-image-${this.id}`).css('display', 'flex').text(_icon.substring(5));
+          if (value) {
+            $(`.link-block[data-id="${this.id}"] .link-icon-image`).addClass('hidden');
+            $(`#no-image-${this.id}`).addClass('hidden');
+            $(`#link-icon-${this.id}`).removeClass('hidden');
+            $(`#link-icon-${this.id}`).text(value);
           }
           else {
-            $(`.link-block[data-id="${this.id}"] .link-icon-image`).show();
-            $(`#no-image-${this.id}`).css('display', 'initial').text('');
-            $(`#no-image-${this.id}`).removeClass('material-symbols-outlined');
-            $(`.link-block[data-id="${this.id}"] .link-icon-image`).attr(
-              'src',
-              value,
-            );
+            $(`.link-block[data-id="${this.id}"] .link-icon-image`).removeClass('hidden');
+            $(`#no-image-${this.id}`).removeClass('hidden');
+            $(`#link-icon-${this.id}`).addClass('hidden');
           }
+          $(`.link-block[data-id="${this.id}"] button`).attr(
+            'data-icon',
+            value,
+          );
+        }
+      }
+    });
+  }
+
+  _setup_image(image) {
+    let _image = image;
+    let _title = this.title;
+    let _link = this.link;
+
+    Object.defineProperties(this, {
+      image: {
+        get() {
+          return _image;
         },
+        set: value => {
+          $(`.link-block[data-id="${this.id}"] .link-icon-image`).show();
+          $(`#no-image-${this.id}`).css('display', 'initial').text('');
+          $(`.link-block[data-id="${this.id}"] .link-icon-image`).attr(
+            'src',
+            value,
+          );
+        }
       },
       title: {
         get() {
@@ -397,6 +420,7 @@ class MelLinkVisualizer extends MelLink {
       _id: id,
       _title: this.title,
       _link: this.link,
+      _image: this.image,
       _icon: this.icon,
     };
 
@@ -435,14 +459,14 @@ class MelLinkVisualizer extends MelLink {
   }
 
   displayLink() {
-    return MelHtml.start
+    let html = MelHtml.start
       .div({
         class: 'link-block-container',
         draggable: true,
         ondragstart: this._dragStart.bind(this, 'link'),
       })
       .li({ class: 'link-space-between' })
-      .end()
+      .end('li')
       .li({
         id: 'link-block-' + this.id,
         title: this.title,
@@ -460,8 +484,8 @@ class MelLinkVisualizer extends MelLink {
       .removeClass('no-margin-button')
       .css({ border: 'none', outline: 'none' })
       .icon('content_copy')
-      .end()
-      .end()
+      .end('icon')
+      .end('button')
       .button({
         class: 'link-context-menu-button modify-link',
         title: 'Modifier le lien',
@@ -475,8 +499,8 @@ class MelLinkVisualizer extends MelLink {
       .removeClass('no-margin-button')
       .css({ border: 'none', outline: 'none' })
       .icon('edit')
-      .end()
-      .end()
+      .end('icon')
+      .end('button')
       .button({
         class: 'link-context-menu-button delete-link',
         title: 'Supprimer le lien',
@@ -487,9 +511,9 @@ class MelLinkVisualizer extends MelLink {
       .removeClass('no-margin-button')
       .css({ border: 'none', outline: 'none' })
       .icon('delete')
-      .end()
-      .end()
-      .end()
+      .end('icon')
+      .end('button')
+      .end('div')
       .a({
         id: 'link-id-' + this.id,
         class: 'link-icon-container',
@@ -498,19 +522,25 @@ class MelLinkVisualizer extends MelLink {
       })
       .img({
         id: 'link-block-icon-image-' + this.id,
-        class: 'link-icon-image',
-        src: this.icon,
+        class: `link-icon-image ${this.icon ? 'hidden' : ''}`,
+        src: this.image,
         onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0] + '`)',
       })
-      .span({ id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon.startsWith('icon:') ? 'material-symbols-outlined' : ''}` }).text(this.icon.startsWith('icon:') ? this.icon.substring(5) : '', 'pluginquinexistepas')
-      .end()
-      .end()
+      .span({
+        id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`
+      })
+      .end('span')
+      .icon(this.icon ?? '', {
+        id: 'link-icon-' + this.id, class: `link-with-icon ${!this.icon ? 'hidden' : ''}`
+      }).end('icon')
+      .end('a')
       .span({ class: 'link-icon-title' })
       .text(this.title)
-      .end()
-      .end()
-      .end()
-      .generate();
+      .end('span')
+      .end('li')
+      .end('div');
+
+    return html.generate();
   }
 
   displaySubLink(isOpen = false) {
@@ -571,12 +601,17 @@ class MelLinkVisualizer extends MelLink {
       })
       .img({
         id: 'link-block-icon-image-' + this.id,
-        class: 'link-icon-image',
-        src: this.icon,
+        class: `link-icon-image ${this.icon ? 'hidden' : ''}`,
+        src: this.image,
         onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0] + '`)',
       })
-      .span({ id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon.startsWith('icon:') ? 'material-symbols-outlined' : ''}` }).text(this.icon.startsWith('icon:') ? this.icon.substring(5) : '', 'pluginquinexistepas')
-      .end()
+      .span({
+        id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`
+      })
+      .end('span')
+      .icon(this.icon ?? '', {
+        id: 'link-icon-' + this.id, class: `link-with-icon ${!this.icon ? 'hidden' : ''}`
+      }).end('icon')
       .end()
       .span({ class: 'link-icon-title' })
       .text(this.title)
@@ -588,7 +623,7 @@ class MelLinkVisualizer extends MelLink {
 
 class MelStoreLink extends MelLinkVisualizer {
   constructor (id, title, link, icon, description, inLinks = false) {
-    super(id, title, link, icon);
+    super(id, title, link, null, null, icon);
     this._setup_vars(description, link, inLinks);
   }
 
@@ -601,7 +636,7 @@ class MelStoreLink extends MelLinkVisualizer {
   }
 
   _setup_vars(description, link, inLinks) {
-    super._setup_vars(link, false)
+    super._setup_vars(link, false);
     this.description = description;
     this.inLinks = inLinks;
 
@@ -617,7 +652,7 @@ class MelStoreLink extends MelLinkVisualizer {
         'data-id': this.id,
       })
       .div({ class: 'store-link-icon-container' })
-      .span({ id: 'no-image-' + this.id, class: 'link-icon-store material-symbols-outlined' }).text(this.icon.substring(5), 'pluginquinexistepas').end()
+      .icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' }).end('icon')
       .end('div')
       .div({ class: 'store-link-text' })
       .a({

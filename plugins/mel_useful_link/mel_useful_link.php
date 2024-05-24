@@ -96,12 +96,12 @@ class mel_useful_link extends bnum_plugin
 
       foreach ($items as $id => $item) {
         if (!$item['links']) {
-          $temp = new MelLink($id, $item['name'], $this->validate_url($item['url']), $item['icon']);
+          $temp = new MelLink($id, $item['name'], $this->validate_url($item['url']), null, $item['icon']);
         }
         else {
           $links = [];
           foreach ($item['links'] as $key => $value) {
-            $links[] = new MelLink(uniqid(), $key, $this->validate_url($value['url']), $item['icon']);
+            $links[] = new MelLink(uniqid(), $key, $this->validate_url($value['url']),  null, $item['icon']);
           }
           $temp = new MelFolderLink($id, $item['name'], $links);
         }
@@ -133,7 +133,7 @@ class mel_useful_link extends bnum_plugin
         if (isset($object['id'])) {
             $id = $object['id'];
             if ($object['link'])
-              $temp = new MelLink($id, $object['title'], $object['link'], $object['icon']);
+              $temp = new MelLink($id, $object['title'], $object['link'], $object['image'], $object['icon']);
             else if($object['links'])
               $temp = new MelFolderLink($id, $object['title'], $object['links']);
             
@@ -300,7 +300,9 @@ class mel_useful_link extends bnum_plugin
       $id = $input_link['_id'];
       $title = $input_link['_title'];
       $link = $input_link['_link'];
+      $image = $input_link['_image'];
       $icon = $input_link['_icon'];
+
       $config = [];
       $melLink;
   
@@ -320,7 +322,7 @@ class mel_useful_link extends bnum_plugin
         if ($isMultiLink)
           $melLink = new MelFolderLink($id, $title, $link);
         else
-          $melLink = new MelLink($id, $title, $link, $icon);
+          $melLink = new MelLink($id, $title, $link, $image, $icon);
       } 
       else {
         $melLink = json_decode($config[$id]);
@@ -328,7 +330,7 @@ class mel_useful_link extends bnum_plugin
         if ($isMultiLink)
           $melLink = new MelFolderLink($id, $title, $link);
         else
-          $melLink = new MelLink($id, $title, $link, $icon);
+          $melLink = new MelLink($id, $title, $link, $image, $icon);
       }
   
       //On supprime les anciens liens

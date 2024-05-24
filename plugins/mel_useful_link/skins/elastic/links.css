@@ -316,10 +316,14 @@ html.layout-phone .joinedtitle {
   justify-content: center;
   font-size: 48px;
 }
-.link-block:not(.sublink) .link-icon-container .link-icon-no-image.material-symbols-outlined {
+.link-block:not(.sublink) .link-icon-container .link-with-icon {
+  display: flex;
+  width: inherit;
+  height: inherit;
+  justify-content: center;
+  align-items: center;
   font-size: 54px;
   font-variation-settings: 'wght' 400;
-  align-items: center;
   color: var(--main-text-color);
 }
 .link-block:not(.sublink) .link-icon-title {
@@ -356,6 +360,9 @@ html.layout-phone .joinedtitle {
 }
 .multilink-container .link-block.sublink .link-icon-container .link-icon-no-image {
   font-size: 18px;
+}
+.multilink-container .link-block.sublink .link-icon-container .link-with-icon {
+  font-size: 24px;
 }
 .multilink-container .link-block.sublink .link-icon-container:hover::after {
   opacity: 0;
@@ -432,7 +439,7 @@ html.layout-phone .joinedtitle {
   align-items: center;
   position: relative;
 }
-#list-store-app .store-link-block .store-link-icon-container .link-icon-store {
+#list-store-app .store-link-block .store-link-icon-container .link-with-icon {
   display: flex;
   width: inherit;
   height: inherit;

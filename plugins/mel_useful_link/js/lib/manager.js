@@ -36,7 +36,7 @@ export class LinkManager extends MelObject {
       this.newLinkModal.show();
       this.getModalValue(id, title, url, icon);
 
-      this.bindModalActions();
+      // this.bindModalActions();
     } else {
       const html = MelHtml.start
         .div()
@@ -85,13 +85,16 @@ export class LinkManager extends MelObject {
         .div({ class: 'link-icon-container no-after' })
         .img({
           id: 'icon-image',
-          class: 'link-icon-image',
+          class: `link-icon-image ${icon ? 'hidden' : ''}`,
           src: '',
           onerror: 'imgError(this.id, \'no-image\')',
           style: 'display:none',
         })
-        .span({ id: 'no-image', class: `link-icon-no-image ${icon && icon.startsWith('icon:') ? 'material-symbols-outlined' : ''}` }).text(icon && icon.startsWith('icon:') ? icon.substring(5) : '', 'pluginquinexistepas')
+        .span({ id: 'no-image', class: `link-icon-no-image ${icon ? 'hidden' : ''}` })
         .end('span')
+        .icon(icon ?? '', {
+          id: 'link-icon', class: `link-with-icon ${!icon ? 'hidden' : ''}`
+        }).end('icon')
         .end('div')
         .end('div')
         .button({ id: 'change_icon', class: '' })
@@ -120,7 +123,10 @@ export class LinkManager extends MelObject {
             },
           ),
         ],
+        options: { disable_show_on_start: true, height: 430 }
       });
+      this.newLinkModal = this.newLinkModal.to_mel_dialog();
+      this.newLinkModal.show();
       if (url && !icon) {
         this.displayIcon(url);
       }
@@ -264,7 +270,6 @@ export class LinkManager extends MelObject {
     let isLinks = false;
 
     for (const item in rcmail.env.default_links) {
-      console.log(rcmail.env.default_links);
       if (Object.hasOwnProperty.call(rcmail.env.default_links, item)) {
         const link = rcmail.env.default_links[item];
 
@@ -420,8 +425,9 @@ export class LinkManager extends MelObject {
             subLink.id,
             subLink.title,
             subLink.link,
-            subLink.icon ?? LinkManager.fetchIcon(subLink.link),
+            subLink.image,
             true,
+            subLink.icon
           );
           linkVisualizer.links[key]
             .displaySubLink()
@@ -434,7 +440,9 @@ export class LinkManager extends MelObject {
           link.id,
           link.title,
           link.link,
-          link.icon ?? LinkManager.fetchIcon(link.link),
+          link.image,
+          false,
+          link.icon
         );
         linkVisualizer.displayLink().appendTo('.links-items');
 
@@ -471,6 +479,7 @@ export class LinkManager extends MelObject {
    * @param {HTMLElement} location
    */
   displayFolder(folder, location = null) {
+    debugger
     const indexes = [];
 
     if (!location) {
@@ -492,12 +501,11 @@ export class LinkManager extends MelObject {
       this.bindRightClickActions(subLink.id);
       this.bindActions(subLink.id);
     }
-    // debugger
 
     rcmail.env.mul_items = rcmail.env.mul_items.filter(
       (value, index) => !indexes.includes(index),
     );
-    rcmail.env.mul_items.splice(indexes[0], 0, folder);
+    rcmail.env.mul_items.splice(Math.min(...indexes), 0, folder);
 
     this.bindRightClickActions(folder.id);
     this.bindActions(folder.id);
@@ -537,7 +545,9 @@ export class LinkManager extends MelObject {
         linkId,
         $(LinkManager.SELECTOR_MODAL_TITLE).val(),
         $(LinkManager.SELECTOR_MODAL_URL).val(),
-        LinkManager.SELECTEDICON ? `icon:${LinkManager.SELECTEDICON}` : LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val()),
+        LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val()),
+        null,
+        LinkManager.SELECTEDICON
       );
 
       link.callUpdate().then((data) => {
@@ -555,8 +565,8 @@ export class LinkManager extends MelObject {
 
           link.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
           link.link = $(LinkManager.SELECTOR_MODAL_URL).val();
-          link.icon = this.getDisplayedImage() ?? LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
-          // link.icon = LinkManager.SELECTEDICON ? `icon:${LinkManager.SELECTEDICON}` : LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val()),
+          link.image = LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+          link.icon = LinkManager.SELECTEDICON;
 
           link.callUpdate().then(() => {
             this.newLinkModal.hide();
@@ -567,7 +577,8 @@ export class LinkManager extends MelObject {
           if (findLink) {
             findLink.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
             findLink.link = $(LinkManager.SELECTOR_MODAL_URL).val();
-            findLink.icon = this.getDisplayedImage() ?? LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+            findLink.image = LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+            findLink.icon = LinkManager.SELECTEDICON;
 
             item.callFolderUpdate().then(() => {
               this.newLinkModal.hide();
@@ -577,6 +588,8 @@ export class LinkManager extends MelObject {
         }
       }
     }
+
+    LinkManager.SELECTEDICON = null;
   }
 
   /**
@@ -662,8 +675,17 @@ export class LinkManager extends MelObject {
         folder.removeLink(link);
         folder.callFolderUpdate().then(() => {
           $('#link-block-' + link.id).remove();
+          this.linksIdList = this.linksIdList.filter((item) => item !== id);
         });
-      } else {
+      }
+      else if (this.isFolder(link)) {
+        for (const key in link.links) {
+          const element = link.links[key];
+          this.linksIdList = this.linksIdList.filter((item) => item !== element.id);
+        }
+        link.callDelete();
+      }
+      else {
         link.callDelete();
         this.linksIdList = this.linksIdList.filter((item) => item !== id);
       }
@@ -1017,14 +1039,19 @@ export class LinkManager extends MelObject {
     $(LinkManager.SELECTOR_MODAL_ID).val(id);
     $(LinkManager.SELECTOR_MODAL_TITLE).val(title);
     $(LinkManager.SELECTOR_MODAL_URL).val(url);
-    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text(icon && icon.startsWith('icon:') ? icon.substring(5) : '');
+    $(LinkManager.SELECTOR_MODAL_ICON).text('');
 
-    if (url && !icon) {
+    if (url) {
       this.displayIcon(url);
     } else {
       $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', '');
       $(LinkManager.SELECTOR_MODAL_IMAGE).css('display', 'none');
     }
+
+    if (icon) {
+      LinkManager.toggleIcon(icon);
+    }
+
 
     if (id) {
       $('.add-mel-link').text(rcmail.gettext('update', 'mel_useful_link'));
@@ -1038,8 +1065,9 @@ export class LinkManager extends MelObject {
    * @param {string} url Url du lien
    */
   displayIcon(url) {
-    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).css('display', 'none');
     $(LinkManager.SELECTOR_MODAL_IMAGE).css('display', 'flex');
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).css('display', 'none');
+    LinkManager.toggleImage();
 
     const validProtocol = /^https?:\/\//i;
 
@@ -1077,6 +1105,19 @@ export class LinkManager extends MelObject {
   /**
    * Helpers functions
    */
+  static toggleIcon(icon = null) {
+    $(LinkManager.SELECTOR_MODAL_IMAGE).addClass('hidden');
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).addClass('hidden');
+    $(LinkManager.SELECTOR_MODAL_ICON).removeClass('hidden');
+    if (icon) $(LinkManager.SELECTOR_MODAL_ICON).text(icon);
+  }
+
+  static toggleImage() {
+    $(LinkManager.SELECTOR_MODAL_IMAGE).removeClass('hidden');
+    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).removeClass('hidden');
+    $(LinkManager.SELECTOR_MODAL_ICON).addClass('hidden');
+  }
+
   removeContainer(target) {
     target.closest('.link-block-container').remove();
   }
@@ -1104,13 +1145,6 @@ export class LinkManager extends MelObject {
     }
 
     return true;
-  }
-
-  getDisplayedImage() {
-    let icon_text = $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text();
-    if (icon_text && icon_text.length > 1) return `icon:${icon_text}`;
-
-    return null;
   }
 }
 
@@ -1153,6 +1187,14 @@ LinkManager.SELECTOR_MODAL_IMAGE = '#icon-image';
  * @default '#no-image'
  */
 LinkManager.SELECTOR_MODAL_NO_IMAGE = '#no-image';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#link-icon'
+ */
+LinkManager.SELECTOR_MODAL_ICON = '#link-icon';
 
 /**
  * @static
@@ -1251,30 +1293,62 @@ LinkManager.preview_icon = [
   'home',
   'settings',
   'favorite',
+  'mail',
+  'calendar_month',
+  'forum',
+  'workspaces',
+  'folder_open',
+  'chat',
+  'call',
   'search',
+  'description',
+  'folder',
   'check',
   'check_box',
+  'verified_user',
   'add',
   'delete',
+  'person',
+  'manage_accounts',
+  'group',
+  'contacts',
+  'share',
+  'thumb_up',
+  'public',
+  'language',
+  'account_circle',
+  'info',
+  'visibility',
+  'calendar_today',
+  'schedule',
+  'help',
+  'error',
+  'bookmark',
+  'notifications',
+  'edit',
+  'photo_camera',
+  'image',
+  'location_on',
+  'map',
+  'explore',
   'star',
-  'more_vert',
-  'more_horiz',
   'apps',
-  'bolt',
-  'autorenew',
-  'key',
-  'block',
-  'shopping_cart',
-  'undo',
+  'music_note',
+  'picture_as_pdf',
   'fullscreen',
-  'settings_accessibility',
   'terminal',
-  'dataset',
   'file_open',
   'create_new_folder',
   'token',
   'heart_plus',
-  'mail'
+  'monitoring',
+  'database',
+  'sell',
+  'work',
+  'view_kanban',
+  'sync_saved_locally',
+  'eco',
+  'lock',
 ];
 
 /**
@@ -1347,18 +1421,14 @@ LinkManager.previsualiser.on_create_show_selected.push(() => {
 
 LinkManager.previsualiser.on_save.push((popup, $dialog) => {
   LinkManager.SELECTEDICON = null;
+  LinkManager.DISPLAYIMAGE = null;
   if (popup.get_selected_icon() !== ' ') {
     LinkManager.SELECTEDICON = popup.get_selected_icon();
-    $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', '');
-    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).addClass('material-symbols-outlined');
-    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text(popup.get_selected_icon());
-  } else {
-    $(LinkManager.SELECTOR_MODAL_IMAGE).attr('src', LinkManager.DISPLAYIMAGE).css('display', 'block');
-    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).removeClass('material-symbols-outlined');
-    $(LinkManager.SELECTOR_MODAL_NO_IMAGE).text('');
+    LinkManager.toggleIcon(LinkManager.SELECTEDICON);
   }
-
-  LinkManager.DISPLAYIMAGE = null;
+  else {
+    LinkManager.toggleImage();
+  }
 
   $($dialog).dialog('close');
 });

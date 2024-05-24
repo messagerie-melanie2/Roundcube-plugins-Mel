@@ -422,13 +422,17 @@ button {
       height: inherit;
       justify-content: center;
       font-size: 48px;
+    }
 
-      &.material-symbols-outlined {
-        font-size: 54px;
-        font-variation-settings: 'wght' 400;
-        align-items: center;
-        color: var(--main-text-color);
-      }
+    .link-with-icon {
+      display: flex;
+      width: inherit;
+      height: inherit;
+      justify-content: center;
+      align-items: center;
+      font-size: 54px;
+      font-variation-settings: 'wght' 400;
+      color: var(--main-text-color);
     }
   }
 
@@ -470,6 +474,10 @@ button {
 
         .link-icon-no-image {
           font-size: 18px;
+        }
+
+        .link-with-icon {
+          font-size: 24px;
         }
 
         &:hover::after {
@@ -567,7 +575,7 @@ button {
     .store-link-icon-container {
       &:extend(.link-block:not(.sublink) .link-icon-container);
 
-      .link-icon-store {
+      .link-with-icon {
         display: flex;
         width: inherit;
         height: inherit;

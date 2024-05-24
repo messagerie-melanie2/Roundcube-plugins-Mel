@@ -13,12 +13,14 @@ class MelBaseLink {
 
 class MelLink extends MelBaseLink {
   public $link;
+  public $image;
   public $icon;
 
-  public function __construct($id, $title, $link, $icon = null)
+  public function __construct($id, $title, $link, $image = null, $icon = null)
   {
       parent::__construct($id, $title);
       $this->link = $link;
+      $this->image = $image;
       $this->icon = $icon;
   }
 

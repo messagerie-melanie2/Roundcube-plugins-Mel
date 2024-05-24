@@ -564,6 +564,16 @@ abstract class driver_mel {
   abstract public function resources_localities();
 
   /**
+   * Lister les ressources par uid ou email
+   * 
+   * @param string[] $uids Liste des uids des ressources
+   * @param string[] $emails Liste des emails des ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources
+   */
+  abstract public function resources($uids = null, $emails = null);
+
+  /**
    * Lister les ressources Flex Office disponibles pour une localité
    * 
    * @param string $locality_uid Identifiant de la localité

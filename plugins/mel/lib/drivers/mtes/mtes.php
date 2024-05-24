@@ -570,6 +570,21 @@ class mtes_driver_mel extends mce_driver_mel
   }
 
   /**
+   * Lister les ressources par uid ou email
+   * 
+   * @param string[] $uids Liste des uids des ressources
+   * @param string[] $emails Liste des emails des ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources
+   */
+  public function resources($uids = null, $emails = null) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources()");
+
+    return (new LibMelanie\Api\Mel\Resources\Locality())->listResources(null, $uids, $emails);
+  }
+
+  /**
    * Lister les ressources Flex Office disponibles pour une localité
    * 
    * @param string $locality_uid Identifiant de la localité

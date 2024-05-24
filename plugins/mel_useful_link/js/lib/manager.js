@@ -25,9 +25,10 @@ export class LinkManager extends MelObject {
 
   /**
    * Créé la modale de création/modification d'un nouveau lien
-   * @param {string} id
-   * @param {string} title
-   * @param {string} url
+   * @param {?string} id
+   * @param {?string} title
+   * @param {?string} url
+   * @param {?string} icon
    */
   openLinkModal(id = null, title = null, url = null, icon = null) {
     let self = this;
@@ -136,6 +137,8 @@ export class LinkManager extends MelObject {
 
   /**
    * Créé la modale de modification d'un dossier
+   * @param {?string} id 
+   * @param {?string} title 
    */
   openFolderModal(id = null, title = null) {
     const html = MelHtml.start
@@ -466,6 +469,10 @@ export class LinkManager extends MelObject {
     this.saveLink(link);
   }
 
+  /**
+   * Sauvegarde un lien
+   * @param {MelLinkVisualizer} link 
+   */
   saveLink(link) {
     this.bindRightClickActions(link.id);
     this.bindActions(link.id);
@@ -1104,6 +1111,11 @@ export class LinkManager extends MelObject {
   /**
    * Helpers functions
    */
+
+  /**
+   * Affiche l'icone et cache l'image
+   * @param {string} icon 
+   */
   static toggleIcon(icon = null) {
     $(LinkManager.SELECTOR_MODAL_IMAGE).addClass('hidden');
     $(LinkManager.SELECTOR_MODAL_NO_IMAGE).addClass('hidden');
@@ -1111,12 +1123,19 @@ export class LinkManager extends MelObject {
     if (icon) $(LinkManager.SELECTOR_MODAL_ICON).text(icon);
   }
 
+  /**
+   * Affiche l'image et cache l'icone
+   */
   static toggleImage() {
     $(LinkManager.SELECTOR_MODAL_IMAGE).removeClass('hidden');
     $(LinkManager.SELECTOR_MODAL_NO_IMAGE).removeClass('hidden');
     $(LinkManager.SELECTOR_MODAL_ICON).addClass('hidden');
   }
 
+  /**
+   * Supprime le container le plus proche de l'élément passé en paramètre
+   * @param {HTMLElement} target 
+   */
   removeContainer(target) {
     target.closest('.link-block-container').remove();
   }

@@ -44,6 +44,11 @@ class MelBaseLink {
     return this;
   }
 
+  /**
+   * Appel Ajax pour supprimer un lien dans les préférences de l'utilisateur
+   * @param {string} task 
+   * @param {string} action 
+   */
   callDelete(task = 'useful_links', action = 'delete') {
     const busy = rcmail.set_busy(true, 'loading');
 
@@ -165,6 +170,11 @@ class MelFolderLink extends MelBaseLink {
     return this;
   }
 
+  /**
+   * Appel Ajax pour mettre à jour les liens d'un dossier
+   * @param {string} task 
+   * @param {string} action  
+   */
   async callFolderUpdate(task = 'useful_links', action = 'update') {
     const busy = rcmail.set_busy(true, 'loading');
 
@@ -200,6 +210,11 @@ class MelFolderLink extends MelBaseLink {
     return id;
   }
 
+  /**
+   * Appel Ajax pour supprimer un ou des liens d'un dossier
+   * @param {string} task 
+   * @param {string} action 
+   */
   callFolderDelete(task = 'useful_links', action = 'delete') {
     const busy = rcmail.set_busy(true, 'loading');
 
@@ -225,6 +240,10 @@ class MelFolderLink extends MelBaseLink {
     );
   }
 
+  /**
+   * Fait passer l'id au moment du déplacement du lien
+   * @param {Event} ev 
+   */
   _dragStart(ev) {
     ev = ev.dataTransfer ? ev : ev.originalEvent;
     ev.dataTransfer.dropEffect = 'move';
@@ -244,6 +263,9 @@ class MelFolderLink extends MelBaseLink {
     }
   }
 
+  /**
+   * Ouvre/Ferme un dossier
+   */
   openMultilink() {
     $('#link-block-' + this.id).toggleClass('multilink-close');
     $('#link-block-' + this.id).toggleClass('multilink-open');
@@ -251,6 +273,9 @@ class MelFolderLink extends MelBaseLink {
     this.isOpen = !this.isOpen;
   }
 
+  /**
+   * Affichage d'un dossier 
+   */
   displayFolder() {
     return MelHtml.start
       .div({
@@ -412,6 +437,11 @@ class MelLinkVisualizer extends MelLink {
     return this;
   }
 
+  /**
+   * Ajoute/Met à jour un lien
+   * @param {string} task 
+   * @param {string} action 
+   */
   async callUpdate(task = 'useful_links', action = 'update') {
     const busy = rcmail.set_busy(true, 'loading');
 
@@ -449,6 +479,11 @@ class MelLinkVisualizer extends MelLink {
     return id;
   }
 
+  /**
+   * Fait passer l'id au moment du déplacement du lien
+   * @param {MelLinkVisualizer} link 
+   * @param {Event} ev 
+   */
   _dragStart(link, ev) {
     ev = ev.dataTransfer ? ev : ev.originalEvent;
     ev.dataTransfer.dropEffect = 'move';
@@ -458,6 +493,9 @@ class MelLinkVisualizer extends MelLink {
     );
   }
 
+  /**
+   * Affiche le lien dans l'interface
+   */
   displayLink() {
     let html = MelHtml.start
       .div({
@@ -543,6 +581,10 @@ class MelLinkVisualizer extends MelLink {
     return html.generate();
   }
 
+  /**
+   * Affiche un lien dans un dossier
+   * @param {boolean} isOpen 
+   */
   displaySubLink(isOpen = false) {
     return MelHtml.start
       .li({
@@ -643,6 +685,9 @@ class MelStoreLink extends MelLinkVisualizer {
     return this;
   }
 
+  /**
+   * Affiche un lien dans la modale de bibliothèque d'application
+   */
   displayStoreLink() {
     return MelHtml.start
       .li({

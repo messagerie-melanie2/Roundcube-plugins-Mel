@@ -196,49 +196,82 @@ class mel_mapping {
   /**
    * Mapping du type d'un participant RoundCube vers Mél
    *
-   * @param string $attendee_type_rc
+   * @param array $rc_attendee RoundCube Attendee
+   * 
    * @return string
    */
-  public static function rc_to_m2_attendee_type($attendee_type_rc) {
-    $mapping = array(
-            self::DEFAULT_VALUE    => Attendee::TYPE_INDIVIDUAL,
-            ICS::CUTYPE_INDIVIDUAL => Attendee::TYPE_INDIVIDUAL,
-            ICS::CUTYPE_GROUP      => Attendee::TYPE_GROUP,
-            ICS::CUTYPE_RESOURCE   => Attendee::TYPE_RESOURCE,
-            ICS::CUTYPE_ROOM       => Attendee::TYPE_ROOM,
-            ICS::CUTYPE_UNKNOWN    => Attendee::TYPE_UNKNOWN,
-    );
-    if (isset($mapping[$attendee_type_rc])) {
-      $attendee_type_m2 = $mapping[$attendee_type_rc];
+  public static function rc_to_m2_attendee_cutype($rc_attendee) {
+    $mappingCuType = [
+        self::DEFAULT_VALUE    => Attendee::TYPE_INDIVIDUAL,
+        ICS::CUTYPE_INDIVIDUAL => Attendee::TYPE_INDIVIDUAL,
+        ICS::CUTYPE_GROUP      => Attendee::TYPE_GROUP,
+        ICS::CUTYPE_RESOURCE   => Attendee::TYPE_RESOURCE,
+        ICS::CUTYPE_ROOM       => Attendee::TYPE_ROOM,
+        ICS::CUTYPE_UNKNOWN    => Attendee::TYPE_UNKNOWN,
+    ];
+
+    $mappingRessourceType = [
+        ICS::CUTYPE_RESOURCE    => Attendee::TYPE_RESOURCE,
+        ICS::CUTYPE_ROOM        => Attendee::TYPE_ROOM,
+        ICS::CUTYPE_UNKNOWN     => Attendee::TYPE_UNKNOWN,
+        ICS::CUTYPE_FLEX_OFFICE => Attendee::TYPE_FLEX_OFFICE,
+        ICS::CUTYPE_HARDWARE    => Attendee::TYPE_HARDWARE,
+    ];
+
+    if (isset($rc_attendee['resource_type']) && isset($mappingRessourceType[$rc_attendee['resource_type']])) {
+      $type = $mappingRessourceType[$rc_attendee['resource_type']];
+    }
+    else if (isset($rc_attendee['cutype']) && isset($mappingCuType[$rc_attendee['cutype']])) {
+      $type = $mappingCuType[$rc_attendee['cutype']];
     }
     else {
-      $attendee_type_m2 = $mapping[self::DEFAULT_VALUE];
+      $type = $mappingCuType[self::DEFAULT_VALUE];
     }
-    return $attendee_type_m2;
+
+    return $type;
   }
 
   /**
    * Mapping du type d'un participant Mél vers RoundCube
    *
+   * @param array $_event_attendee
    * @param string $attendee_type_m2
    * @return string
    */
-  public static function m2_to_rc_attendee_type($attendee_type_m2) {
-    $mapping = array(
-            self::DEFAULT_VALUE       => ICS::CUTYPE_INDIVIDUAL,
-            Attendee::TYPE_INDIVIDUAL => ICS::CUTYPE_INDIVIDUAL,
-            Attendee::TYPE_GROUP      => ICS::CUTYPE_GROUP,
-            Attendee::TYPE_RESOURCE   => ICS::CUTYPE_RESOURCE,
-            Attendee::TYPE_ROOM       => ICS::CUTYPE_ROOM,
-            Attendee::TYPE_UNKNOWN    => ICS::CUTYPE_UNKNOWN,
-    );
-    if (isset($mapping[$attendee_type_m2])) {
-      $attendee_type_rc = $mapping[$attendee_type_m2];
+  public static function m2_to_rc_attendee_cutype($_event_attendee, $attendee_type_m2) {
+    $mappingCuType = [
+        self::DEFAULT_VALUE         => ICS::CUTYPE_INDIVIDUAL,
+        Attendee::TYPE_INDIVIDUAL   => ICS::CUTYPE_INDIVIDUAL,
+        Attendee::TYPE_GROUP        => ICS::CUTYPE_GROUP,
+        Attendee::TYPE_RESOURCE     => ICS::CUTYPE_RESOURCE,
+        Attendee::TYPE_ROOM         => ICS::CUTYPE_RESOURCE,
+        Attendee::TYPE_UNKNOWN      => ICS::CUTYPE_RESOURCE,
+        Attendee::TYPE_FLEX_OFFICE  => ICS::CUTYPE_RESOURCE,
+        Attendee::TYPE_HARDWARE     => ICS::CUTYPE_RESOURCE,
+    ];
+
+    $mappingRessourceType = [
+        Attendee::TYPE_RESOURCE     => ICS::CUTYPE_RESOURCE,
+        Attendee::TYPE_ROOM         => ICS::CUTYPE_ROOM,
+        Attendee::TYPE_UNKNOWN      => ICS::CUTYPE_UNKNOWN,
+        Attendee::TYPE_FLEX_OFFICE  => ICS::CUTYPE_FLEX_OFFICE,
+        Attendee::TYPE_HARDWARE     => ICS::CUTYPE_HARDWARE,
+    ];
+
+    if (isset($mappingCuType[$attendee_type_m2])) {
+      $attendee_cutype_rc = $mappingCuType[$attendee_type_m2];
+
+      if ($attendee_cutype_rc == ICS::CUTYPE_RESOURCE) {
+        $_event_attendee['resource_type'] = $mappingRessourceType[$attendee_type_m2];
+      }
     }
     else {
-      $attendee_type_rc = $mapping[self::DEFAULT_VALUE];
+      $attendee_cutype_rc = $mappingCuType[self::DEFAULT_VALUE];
     }
-    return $attendee_type_rc;
+
+    $_event_attendee['cutype'] = $attendee_cutype_rc;
+
+    return $_event_attendee;
   }
 
   /**

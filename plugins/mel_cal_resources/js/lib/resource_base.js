@@ -279,7 +279,10 @@ class ResourcesBase extends MelObject {
 
     if (data.length) {
       callback(data);
-    } else {
+    } else if (
+      this._p_filters.filter((x) => x.name === 'locality')?.[0]?.value ===
+      EMPTY_STRING
+    ) {
       const busy = rcmail.set_busy(true, 'loading');
       this.http_internal_post({
         task: 'mel_cal_resources',
@@ -303,10 +306,7 @@ class ResourcesBase extends MelObject {
           } else callback([{ id: 'resources', title: 'Aucune ressource' }]);
         },
       });
-    }
-    // callback(
-    //   data.length ? data : [{ id: 'resources', title: 'Aucune ressource' }],
-    // );
+    } else callback([{ id: 'resources', title: 'Aucune ressource' }]);
   }
 
   /**

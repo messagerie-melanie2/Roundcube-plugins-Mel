@@ -1,5 +1,8 @@
 <?php
 class mel_cal_resources extends bnum_plugin {
+    public const CONFIG_KEY_FAVORITE = 'mcr_favorites';
+
+
     /**
      * Contient la task associé au plugin
      * @var string
@@ -35,6 +38,8 @@ class mel_cal_resources extends bnum_plugin {
             $this->register_task('mel_cal_resources');
             $this->register_action('load_element', [$this, 'load_element']);
             $this->register_action('load', [$this, 'load_resources']);
+            $this->register_action('set_favorite', [$this, 'change_favorite']);
+            $this->register_action('load_favorites', [$this, 'load_favorites']);  
         }
     }
 
@@ -47,6 +52,8 @@ class mel_cal_resources extends bnum_plugin {
             'resources' => $resources,
             'filters' => $filters
         ]);
+
+        $this->rc()->output->set_env('fav_resources', $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []));
 
         $this->include_script('js/waiting_events.js');
         $this->load_script_module('main', '/js/');
@@ -79,6 +86,68 @@ class mel_cal_resources extends bnum_plugin {
         })->toArray();
 
         echo json_encode($data);
+        exit;
+    }
+
+    function load_all_resources() {
+        include_once __DIR__.'/lib/Resource.php';
+        include_once __DIR__.'/lib/Locality.php';
+        $fnc = $this->get_input_post('_function') ?? 'resources_flex_office';
+
+        $localities = driver_mel::gi()->resources_localities();
+        $localities = mel_helper::Enumerable($localities)->select(function($key, $value) {
+            if (strpos(get_class($value), 'Locality') !== false) return new Locality($value);
+            else return $value;
+        });
+
+        $data = mel_helper::Enumerable([]);
+        foreach ($localities as $value) {
+            $data = $data->aggregate(
+                mel_helper::Enumerable(call_user_func([driver_mel::gi(), $fnc], $value->uid))->select(function($key, $value) {
+                    return new Resource($value);
+                })
+            );
+        }
+
+        echo json_encode([
+            'resources' => $data->toArray(),
+            'localities' => $localities->toArray(),
+        ]);
+        exit;
+    }
+
+    function load_favorites() {
+        include_once __DIR__.'/lib/Resource.php';
+        $favorites = [];
+        $config = $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []);
+
+        if (count($config) > 0) {
+            $config = mel_helper::Enumerable($config)->where(function ($k, $v) {
+                                                        return strpos($k, '@') !== false;
+                                                    })->select(function($k, $v) {
+                                                        return $k;
+                                                    })->toArray();
+            $favorites = driver_mel::gi()->resources(null, $config);
+            unset($config);
+
+            if (count($favorites) > 0) $favorites = mel_helper::Enumerable($favorites)->select(function($key, $value) {
+                                                        return new Resource($value);
+                                                    })->toArray();
+        }
+
+        echo json_encode($favorites);
+        exit;
+    }
+
+    function change_favorite() {
+        $uid = $this->get_input_post('_uid');
+        $favorite = $this->get_input_post('_favorite');
+        $favorite = $favorite === true || $favorite === 'true';
+
+        $favs = $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []);
+
+        $favs[$uid] = $favorite;
+        $this->rc()->user->save_prefs([self::CONFIG_KEY_FAVORITE => $favs]);
         exit;
     }
 }

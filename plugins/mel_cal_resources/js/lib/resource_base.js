@@ -10,6 +10,7 @@ import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { template_resource } from '../../skins/mel_elastic/js_template/resource.js';
 import { FilterBase } from './filter_base.js';
+import { ResourceBaseFunctions } from './resources_functions.js';
 
 export { ResourcesBase };
 
@@ -114,6 +115,11 @@ class ResourcesBase extends MelObject {
     this._$calendar = null;
 
     /**
+     * @type {ResourceBaseFunctions}
+     */
+    this._functions = new ResourceBaseFunctions(this);
+
+    /**
      * Action à faire lors du clique du bouton "Sauvegarder"
      * @type {BnumEvent<function>}
      */
@@ -170,7 +176,7 @@ class ResourcesBase extends MelObject {
     try {
       $fc.fullCalendar({
         resources: this._fetch_resources.bind(this),
-        resourceRender: function (resourceObj, labelTds, bodyTds) {
+        resourceRender: (resourceObj, labelTds, bodyTds) => {
           console.log('rc', resourceObj, labelTds, bodyTds);
 
           if (resourceObj.id !== 'resources') {
@@ -178,7 +184,7 @@ class ResourcesBase extends MelObject {
               .css('display', 'flex')
               .prepend(
                 $(
-                  `<input type="radio" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.uid}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
+                  `<input type="radio" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
                 ),
               )
               .append(
@@ -187,14 +193,11 @@ class ResourcesBase extends MelObject {
                   .button({
                     class: 'star-button',
                     id: `button-${resourceObj.data.uid}`,
-                    onclick: (e) => {
-                      $(e.currentTarget).attr(
-                        'data-favorite',
-                        !JSON.parse(
-                          $(e.currentTarget).attr('data-favorite') ?? false,
-                        ),
-                      );
-                    },
+                    onclick: this._functions.on_star_clicked.bind(this),
+                    'data-favorite':
+                      this.get_env('fav_resources')[resourceObj.data.email] ??
+                      false,
+                    'data-email': resourceObj.data.email,
                   })
                   .icon('star')
                   .end()
@@ -234,7 +237,7 @@ class ResourcesBase extends MelObject {
                 }),
             );
           }
-        }.bind(this),
+        },
         defaultView: 'timelineDay',
         schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
         height: 210,
@@ -267,12 +270,43 @@ class ResourcesBase extends MelObject {
    * @param {function} callback
    */
   _fetch_resources(callback) {
-    const data = this._p_resources.filter(
-      (x) => !MelEnumerable.from(this._p_filters).any((f) => !f.filter(x)),
-    );
-    callback(
-      data.length ? data : [{ id: 'resources', title: 'Aucune ressource' }],
-    );
+    const data = MelEnumerable.from(this._p_resources)
+      .where(
+        (x) => !MelEnumerable.from(this._p_filters).any((f) => !f.filter(x)),
+      )
+      .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
+      .toArray();
+
+    if (data.length) {
+      callback(data);
+    } else {
+      const busy = rcmail.set_busy(true, 'loading');
+      this.http_internal_post({
+        task: 'mel_cal_resources',
+        action: 'load_favorites',
+        on_success: (rcs) => {
+          if (typeof rcs === 'string') rcs = JSON.parse(rcs);
+
+          rcmail.set_busy(false, 'loading', busy);
+
+          if (rcs && rcs.length) {
+            this._p_resources.length = 0;
+            for (const iterator of rcs) {
+              this._p_resources.push({
+                id: iterator.uid,
+                title: iterator.name,
+                parentid: 'resources',
+                data: iterator,
+              });
+            }
+            this._fetch_resources(callback);
+          } else callback([{ id: 'resources', title: 'Aucune ressource' }]);
+        },
+      });
+    }
+    // callback(
+    //   data.length ? data : [{ id: 'resources', title: 'Aucune ressource' }],
+    // );
   }
 
   /**

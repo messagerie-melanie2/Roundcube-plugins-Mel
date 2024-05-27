@@ -498,6 +498,10 @@ class mce_driver_mel extends driver_mel {
     return null;
   }
 
+  public function resources($uids = NULL, $emails = NULL) {
+    return [];
+  }
+
   /**
    * Lister les localités disponibles pour les ressources
    * 

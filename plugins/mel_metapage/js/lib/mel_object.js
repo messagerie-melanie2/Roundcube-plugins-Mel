@@ -153,7 +153,7 @@ class MelObject {
    * Récupère "rcmail" | les fonctions utiles à roundcube
    * @param {boolean} top Si on doit récupérer rcmail sur frame principale ou non
    * @returns {rcube_webmail}
-   * @protected
+   *
    */
   rcmail(top = false) {
     return top && !!Top.top()?.rcmail ? Top.top().rcmail : window.rcmail;
@@ -164,7 +164,7 @@ class MelObject {
    * @param {string} key_text Clé
    * @param {!string} plugin Plugin d'où provient le texte traduit
    * @returns {string}
-   * @protected
+   *
    */
   gettext(key_text, plugin = '') {
     return this.rcmail().gettext(key_text, plugin);
@@ -177,7 +177,7 @@ class MelObject {
    * @param {Object} param2 Si on doit récupérer rcmail sur frame principale ou non
    * @param {?string} param2.callback_key Clé du callback
    * @param {!boolean} param2.condition Si on doit éxécuter ou non le listener
-   * @protected
+   *
    */
   add_event_listener(key, callback, { callback_key = null, condition = true }) {
     let can_call = typeof condition === 'function' ? condition() : condition;
@@ -190,7 +190,7 @@ class MelObject {
    * @param {string} key Clé qui appelera tout les écouteurs lié à cette clé
    * @param {any} args  Arguments qui sera donnée aux écouteurs
    * @returns {MelEventManager}
-   * @protected
+   *
    */
   trigger_event(key, args) {
     return this._listener.call(key, args);
@@ -202,7 +202,7 @@ class MelObject {
    * @param {Object} options Options de la fonction
    * @param {?string} options.frame any pour toute n'importe quelle frame, sinon mettre le nom de la frame
    * @param {?function} options.condition Condition custom pour charger la frame
-   * @protected
+   *
    */
   on_frame_loaded(
     callback,
@@ -232,7 +232,7 @@ class MelObject {
    * @param {Function} callback Fonction à appeller
    * @param {Object} options Options de la fonction
    * @param {?string} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
-   * @protected
+   *
    */
   on_refresh(callback, { callback_key = null }) {
     this.add_event_listener('mel_metapage_refresh', callback, {
@@ -246,7 +246,7 @@ class MelObject {
    * @param {string} frame Nom de la frame
    * @param {Object} param2
    * @param {?string} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
-   * @protected
+   *
    */
   on_frame_refresh(callback, frame, { callback_key = null }) {
     this.add_event_listener(
@@ -268,7 +268,7 @@ class MelObject {
    * Récupère une variable d'environnement de roundcube
    * @param {string} key Nom de la variable
    * @returns {?any}
-   * @protected
+   *
    */
   get_env(key) {
     return rcmail.env[key] ?? top?.rcmail?.env?.[key];
@@ -283,7 +283,7 @@ class MelObject {
    * @param {!boolean} param1.update
    * @param {!boolean} param1.force_update
    * @async
-   * @protected
+   *
    * @return {Promise<void>}
    */
   async change_frame(
@@ -303,7 +303,7 @@ class MelObject {
    * Vérifie si une frame est déjà chargée ou non
    * @param {string} frame Nom de la frame
    * @returns {boolean}
-   * @protected
+   *
    */
   have_frame(frame) {
     return this.select_frame(frame).length > 0;
@@ -313,7 +313,7 @@ class MelObject {
    * Selectionne une frame
    * @param {string} frame Nom de la frame
    * @returns {external:jQuery}
-   * @protected
+   *
    */
   select_frame(frame) {
     const $ = (top ?? window).$;
@@ -327,7 +327,7 @@ class MelObject {
    * @generator
    * @yield {Node}
    * @return {Generator<Node>}
-   * @protected
+   *
    */
   *select_frame_except(...frames) {
     const $ = (top ?? parent ?? window).$;
@@ -345,7 +345,7 @@ class MelObject {
    * @param {!string} param1.action => Nom de l'action (index si non renseigné)
    * @param {?Object<string, string>} Autres paramètres
    * @returns {string}
-   * @protected
+   *
    */
   url(task, { action = EMPTY_STRING, params = null }) {
     return mel_metapage.Functions.url(task, action, params);
@@ -360,7 +360,7 @@ class MelObject {
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
    * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
    * @returns {Mel_Ajax}
-   * @protected
+   *
    */
   http_call({
     url,
@@ -390,7 +390,7 @@ class MelObject {
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
    * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
    * @returns {Mel_Ajax}
-   * @protected
+   *
    */
   http_internal_call({
     task,
@@ -423,7 +423,7 @@ class MelObject {
    * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
    * @returns {Mel_Ajax}
-   * @protected
+   *
    */
   http_internal_post({
     task,
@@ -453,7 +453,7 @@ class MelObject {
    * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
    * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
    * @returns {Mel_Ajax}
-   * @protected
+   *
    */
   http_internal_get({
     task,
@@ -479,7 +479,7 @@ class MelObject {
    * @param {string} key Clé qui permettra de retrouver les données sauvegarder
    * @param {*} contents Données qui seront sauvegarder
    * @returns {MelObject} Chaînage
-   * @protected
+   *
    */
   save(key, contents) {
     mel_metapage.Storage.set(key, JSON.stringify(contents));
@@ -491,7 +491,7 @@ class MelObject {
    * @param {string} key Clé qui permet de retrouver les données
    * @param {?any} default_value Valeur par défaut si la donnée n'éxiste pas
    * @returns {?any}
-   * @protected
+   *
    */
   load(key, default_value = null) {
     try {
@@ -504,7 +504,7 @@ class MelObject {
   /**
    * Décharge une donnée dans le stockage local
    * @param {string} key clé dans le stockage
-   * @protected
+   *
    */
   unload(key) {
     mel_metapage.Storage.remove(key);
@@ -513,7 +513,7 @@ class MelObject {
   /**
    * Récupère l'objet UI de la skin elastic
    * @returns {Mel_Elastic}
-   * @protected
+   *
    */
   get_skin() {
     return window.MEL_ELASTIC_UI;
@@ -522,7 +522,7 @@ class MelObject {
   /**
    * Récupère un objet Mel_CSS_Style_Sheet pour ajouter du css custom
    * @returns {Mel_CSS_Style_Sheet}
-   * @protected
+   *
    */
   get_custom_rules() {
     return this.get_skin().css_rules;
@@ -533,7 +533,7 @@ class MelObject {
    * @param {string} id id du loader
    * @param {!boolean} absoluteCentered Centrer verticalement et horizontalement ?
    * @returns {mel_html}
-   * @protected
+   *
    */
   generate_loader(id, absoluteCentered = true) {
     return this.get_skin().create_loader(id, absoluteCentered, false);
@@ -543,7 +543,7 @@ class MelObject {
    * Séléctionne un document dom au format jquery
    * @param {string} selector Selecteur au format jquery
    * @returns {external:jQuery}
-   * @protected
+   *
    */
   select(selector) {
     return $(selector);
@@ -553,7 +553,7 @@ class MelObject {
    * Copy un texte dans le press(papier)
    * @param {!string} text Texte à mettre dans le presse papier
    * @returns {MelObject} Chaînage
-   * @protected
+   *
    */
   copy_to_clipboard(text) {
     mel_metapage.Functions.copy(text);
@@ -567,7 +567,7 @@ class MelObject {
    * @param {Date | false} expire Date d'expiration, false pour aucune
    * @returns {Cookie} Cookie créer
    * @frommodulereturn Cookies {@membertype .}
-   * @protected
+   *
    */
   cookie_set(key, name, expire = false) {
     return Cookie.set_cookie(key, name, expire);
@@ -578,7 +578,7 @@ class MelObject {
    * @param {string} key Indentifiant de la donnée
    * @returns {Cookie}
    * @frommodulereturn Cookies {@membertype .}
-   * @protected
+   *
    */
   cookie_get(key) {
     return Cookie.get_cookie(key);
@@ -589,7 +589,7 @@ class MelObject {
    * @param {string} key Indentifiant du cookie à supprimer
    * @returns {Cookie} Cookie supprimer
    * @frommodulereturn Cookies {@membertype .}
-   * @protected
+   *
    */
   cookie_remove(key) {
     return Cookie.remove_cookie(key);
@@ -599,7 +599,7 @@ class MelObject {
    * Renvoie vrai si la variable vaut `null` ou `undefined`.
    * @param {?any} item Variable à tester
    * @returns {boolean}
-   * @protected
+   *
    */
   isNullOrUndefined(item) {
     return isNullOrUndefined(item);
@@ -608,7 +608,7 @@ class MelObject {
   /**
    * Envoie une notification BNUM
    * @param {*} notification
-   * @protected
+   *
    */
   send_notification(notification) {
     this.rcmail().triggerEvent('plugin.push_notification', notification);

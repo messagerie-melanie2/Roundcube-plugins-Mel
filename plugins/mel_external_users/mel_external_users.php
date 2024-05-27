@@ -54,16 +54,18 @@ class mel_external_users extends rcube_plugin {
    * Les externes ne peuvent pas se connecter a toutes les tasks
    */
   public function startup($args) {
-    if ($this->rc->task == 'bnum') {
-        $task = rcube_utils::get_input_value('_initial_task', rcube_utils::INPUT_GPC);
-    }
-    else {
-        $task = $this->rc->task;
-    }
+    if (driver_mel::gi()->getUser($args['user'])->is_external) {
+      if ($this->rc->task == 'bnum') {
+          $task = rcube_utils::get_input_value('_initial_task', rcube_utils::INPUT_GPC);
+      }
+      else {
+          $task = $this->rc->task;
+      }
 
-    if (in_array($task, array('mail', 'calendar', 'bureau', 'addressbook'))) {
-        header('Location: ' . $this->rc->url(['task' => 'workspace']));
-        exit;
+      if (in_array($task, array('mail', 'calendar', 'bureau', 'addressbook'))) {
+          header('Location: ' . $this->rc->url(['task' => 'workspace']));
+          exit;
+      }
     }
     return $args;
   }

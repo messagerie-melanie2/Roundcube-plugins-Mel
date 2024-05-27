@@ -2540,11 +2540,14 @@ function sendMessageToAriane(data) {
   const chat_urls_origin = [
     'https://ariane.preprod.m2.e2.rie.gouv.fr',
     'https://ariane.din.developpement-durable.gouv.fr',
-    'https://mel.din.developpement-durable.gouv.fr/tchap',
-    'https://rcube.preprod.m2.e2.rie.gouv.fr/tchap',
+    'https://mel.din.developpement-durable.gouv.fr',
+    'https://rcube.preprod.m2.e2.rie.gouv.fr',
   ];
 
-  const pegaze_url = rcmail.env.sondage_url || parent.rcmail.env.sondage_url || top.rcmail.env.sondage_url;
+  const pegaze_url =
+    rcmail.env.sondage_url ||
+    parent.rcmail.env.sondage_url ||
+    top.rcmail.env.sondage_url;
 
   const suggestionUrl = 'suggestionUrl'; //type/value
   const suggestionId = 'suggestionId';
@@ -2576,7 +2579,7 @@ function sendMessageToAriane(data) {
 
         if (link.includes(pegaze_url))
           link = mel_metapage.Functions.url('sondage', null, { _url: link });
-        
+
         $('<a>')
           .attr('href', link)
           .click((e) => rcmail.triggerEvent('event.click', { e }))

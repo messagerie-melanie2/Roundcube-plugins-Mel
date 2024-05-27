@@ -45,8 +45,7 @@ class mel_workspace extends bnum_plugin
     {
         $this->require_plugin('mel_helper');
         $this->setup();
-        $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
-        $this->include_stylesheet('../mel_useful_link/skins/elastic/links.css');
+        $this->include_stylesheet($this->local_skin_path().'/workspaces.css');        
         $this->include_script('js/init/classes/WSPNotifications.js');
         $this->include_script('js/init/classes/RoundriveShow.js');
         $this->include_script('js/init/classes/WorkspaceDrive.js');
@@ -1374,6 +1373,7 @@ class mel_workspace extends bnum_plugin
 
                 if ($services[self::LINKS])
                 {
+                  $this->include_stylesheet('../mel_useful_link/skins/elastic/links.css');
                      $this->get_workspace_ulinks();
                     
                     $before_body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],

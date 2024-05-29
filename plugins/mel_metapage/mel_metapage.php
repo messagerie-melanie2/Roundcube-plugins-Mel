@@ -1220,7 +1220,7 @@ class mel_metapage extends bnum_plugin
     /**
      * Récupère le css utile pour ce plugin.
      */
-    function include_css()
+    function include_css($path, $local = false)
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/barup.css');

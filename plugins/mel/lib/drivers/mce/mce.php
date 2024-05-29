@@ -503,6 +503,18 @@ class mce_driver_mel extends driver_mel {
   }
 
   /**
+   * Lister les ressources par uid ou email
+   * 
+   * @param string[] $uids Liste des uids des ressources
+   * @param string[] $emails Liste des emails des ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources
+   */
+  public function resources($uids = null, $emails = null) {
+    return [];
+  }
+
+  /**
    * Lister les localités disponibles pour les ressources
    * 
    * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 

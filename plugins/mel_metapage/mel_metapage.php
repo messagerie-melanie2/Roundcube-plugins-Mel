@@ -526,6 +526,9 @@ class mel_metapage extends bnum_plugin
                 $this->include_script('js/secondary-nav.js');
                 $this->register_action('index', array($this, 'bnum_page'));
             }
+            else {
+                $this->set_plugin_env_exist();
+            }
 
             //$this->rc->output->set_env('navigation_apps', $this->rc->config->get('navigation_apps', null));
 
@@ -937,7 +940,7 @@ class mel_metapage extends bnum_plugin
 
         //listcontrols
         $this->include_depedencies();
-        $this->include_css();
+        $this->include_metapage_css();
         $this->include_js();
         $this->setup_env_js_vars();
     }
@@ -1220,7 +1223,7 @@ class mel_metapage extends bnum_plugin
     /**
      * Récupère le css utile pour ce plugin.
      */
-    function include_css()
+    function include_metapage_css()
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/barup.css');
@@ -3004,6 +3007,14 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("bnum.init_action", $init_action);
         }
 
+        $this->set_plugin_env_exist();
+
+        $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
+        $this->rc->output->send('mel_metapage.empty');
+    }
+
+    private function set_plugin_env_exist() {
+        
         if (class_exists('mel_workspace')) {
             $this->rc->output->set_env("plugin_list_workspace", true);
         }
@@ -3040,9 +3051,6 @@ class mel_metapage extends bnum_plugin
         if (class_exists('mel_visio')) {
             $this->rc->output->set_env("plugin_list_visio", true);
         }
-
-        $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
-        $this->rc->output->send('mel_metapage.empty');
     }
 
     public function visio_enabled() {

@@ -1,5 +1,6 @@
 import { DialogPage } from "../../../../mel_metapage/js/lib/classes/modal";
 import { DATE_FORMAT, DATE_HOUR_FORMAT, DATE_TIME_FORMAT } from "../../../../mel_metapage/js/lib/constants/constants.dates.js";
+import { EMPTY_STRING } from "../../../../mel_metapage/js/lib/constants/constants.js";
 import { FilterBase } from "../../../js/lib/filter_base";
 import { ResourcesBase } from "../../../js/lib/resource_base.js";
 
@@ -30,12 +31,24 @@ function get_page(page, filters, resource) {
                     .div()
                         .icon('schedule').end()
                     .end()
-                    .input_text({ datepicker: true, value:date.format(DATE_FORMAT) })
-                    .input_time({ value:date.format(DATE_HOUR_FORMAT) })
+                    .input_text({ class:'input-date-start', datepicker: true, value:date.format(DATE_FORMAT) })
+                    .input_time({ class:'input-time-start', value:date.format(DATE_HOUR_FORMAT) }).css('display', resource.all_day ? 'none' : EMPTY_STRING)
                 .end()
                 .col_6()
                     .div({ class:'custom-control custom-switch' })
                         .input_checkbox({ id:'rc-allday', name: 'allday', value:'1', class:'pretty-checkbox before-margin-right form-check-input custom-control-input' }).removeClass('form-control')
+                            .attr('onclick', (e) => {
+                                e = $(e.currentTarget);
+
+                                if (e.prop('checked')) {
+                                    $('.input-time-start').css('display', 'none');
+                                    $('.input-time-end').css('display', 'none');
+                                }
+                                else {
+                                    $('.input-time-start').css('display', EMPTY_STRING);
+                                    $('.input-time-end').css('display', EMPTY_STRING);
+                                }
+                            }).attr(resource.all_day ? 'checked' : 'notallday', resource.all_day)
                         .label({ for:'rc-allday', class:'custom-control-label' }).text('All day').end()
                     .end()
                 .end()
@@ -45,8 +58,8 @@ function get_page(page, filters, resource) {
                     .div()
                         .icon('schedule').css('opacity', 0).end()
                     .end()
-                    .input_text({ datepicker: true, value:end_date.format(DATE_FORMAT) })
-                    .input_time({ value:end_date.format(DATE_HOUR_FORMAT) })
+                    .input_text({ class:'input-date-end', datepicker: true, value:end_date.format(DATE_FORMAT) })
+                    .input_time({ class:'input-time-end', value:end_date.format(DATE_HOUR_FORMAT) }).css('display', resource.all_day ? 'none' : EMPTY_STRING)
                 .end()
                 .col_6()
                 .end()

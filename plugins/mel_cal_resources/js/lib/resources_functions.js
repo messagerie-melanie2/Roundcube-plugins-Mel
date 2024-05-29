@@ -71,4 +71,17 @@ class ResourceBaseFunctions extends MelObject {
       },
     });
   }
+
+  /**
+   * @this ResourcesBase
+   * @param {*} start
+   * @param {*} end
+   * @param {*} jsEvent
+   * @param {*} view
+   * @param {*} resource
+   */
+  on_selected(start, end, jsEvent, view, resource) {
+    this.start = start;
+    this.end = end;
+  }
 }

@@ -1,3 +1,4 @@
+import { EventView } from '../../../../mel_metapage/js/lib/calendar/event/event_view.js';
 import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { ResourceDialog } from '../../../js/add_resources.js';
@@ -5,7 +6,7 @@ import { ResourceDialog } from '../../../js/add_resources.js';
 export { page };
 
 function page(resaData, resource, resource_only = null) {
-  page.dialog = new ResourceDialog(null, resaData, resource_only);
+  page.dialog = new ResourceDialog(EventView.INSTANCE.parts.date, resaData, resource_only);
     return MelHtml.start
         .div({
           class: 'location-mode d-flex',

@@ -3,7 +3,11 @@ import {
   DialogPage,
   RcmailDialogButton,
 } from '../../../mel_metapage/js/lib/classes/modal.js';
-import { DATE_HOUR_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
+import {
+  DATE_FORMAT,
+  DATE_HOUR_FORMAT,
+  DATE_TIME_FORMAT,
+} from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
@@ -109,6 +113,12 @@ class ResourcesBase extends MelObject {
     this.end = null;
 
     /**
+     * @type {boolean}
+     * @readonly
+     */
+    this.all_day = false;
+
+    /**
      * Calendrier
      * @type {external:jQuery}
      */
@@ -140,6 +150,56 @@ class ResourcesBase extends MelObject {
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
     );
+
+    let _allday;
+
+    Object.defineProperties(this, {
+      start: {
+        get: () => {
+          if (this.all_day) return moment(this._p_startDate, DATE_FORMAT);
+          else
+            return this._p_startDate && this._p_startTime
+              ? moment(
+                  `${this._p_startDate} ${this._p_startTime}`,
+                  DATE_TIME_FORMAT,
+                )
+              : null;
+        },
+        set: (value) => {
+          this._p_startDate = value.format(DATE_FORMAT);
+          this._p_startTime = value.format(DATE_HOUR_FORMAT);
+
+          $('.input-date-start').val(this._p_startDate);
+          $('.input-time-start').val(this._p_startTime);
+        },
+      },
+      end: {
+        get: () => {
+          if (this.all_day) return moment(this._p_endDate, DATE_FORMAT);
+          else
+            return this._p_endDate && this._p_endTime
+              ? moment(
+                  `${this._p_endDate} ${this._p_endTime}`,
+                  DATE_TIME_FORMAT,
+                )
+              : null;
+        },
+        set: (value) => {
+          this._p_endDate = value.format(DATE_FORMAT);
+          this._p_endTime = value.format(DATE_HOUR_FORMAT);
+
+          $('.input-date-end').val(this._p_endDate);
+          $('.input-time-end').val(this._p_endTime);
+        },
+      },
+      all_day: {
+        get: () => $('#rc-allday')?.prop?.('checked') ?? _allday,
+        set: (value) => {
+          if ($('#rc-allday').length) $('#rc-allday').prop('checked', value);
+          else _allday = value;
+        },
+      },
+    });
   }
 
   /**
@@ -247,6 +307,9 @@ class ResourcesBase extends MelObject {
         locale: 'fr',
         axisFormat: DATE_HOUR_FORMAT,
         slotLabelFormat: DATE_HOUR_FORMAT,
+        selectable: true,
+        selectHelper: true,
+        select: this._functions.on_selected.bind(this),
         eventSources: [
           // {
           //   events: this._source_freebusy.bind(this),

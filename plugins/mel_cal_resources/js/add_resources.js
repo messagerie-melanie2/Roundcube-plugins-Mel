@@ -1,3 +1,4 @@
+import { TimePartManager } from '../../mel_metapage/js/lib/calendar/event/parts/timepart.js';
 import { MelEnumerable } from '../../mel_metapage/js/lib/classes/enum.js';
 import { MelDialog } from '../../mel_metapage/js/lib/classes/modal';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
@@ -56,9 +57,18 @@ export class ResourceDialog extends MelObject {
     const [resource_type, date, resource] = args;
 
     this._resource_type = resource_type;
+    /**
+     * @private
+     * @type {TimePartManager}
+     */
     this._date = date;
     this._resource = resource;
     this._initialized = false;
+
+    this.start = null;
+    this.end = null;
+    this.all_day = null;
+    this.selected_resource = null;
   }
 
   async _init() {
@@ -72,6 +82,10 @@ export class ResourceDialog extends MelObject {
           rcmail.env.cal_resources.filters[this._resource_type],
         ),
       );
+
+      resources[resources.length - 1].all_day = this._date.is_all_day;
+      resources[resources.length - 1].start = this._date.date_start;
+      resources[resources.length - 1].end = this._date.date_end;
       page = await resources[resources.length - 1].create_page();
     } else {
       return this.main('flex-office', this._date, this._resource);
@@ -104,10 +118,10 @@ export class ResourceDialog extends MelObject {
 
       this.dialog.show();
       setTimeout(() => {
-        MelEnumerable.from(this.resources).first().render();
+        MelEnumerable.from(this.resources).first().rerender();
         MelEnumerable.from(this.resources)
           .first()
-          ._$calendar.fullCalendar('render');
+          ._$calendar.fullCalendar('rerender');
 
         this.dialog._$dialog
           .find('[datepicker="true"]')

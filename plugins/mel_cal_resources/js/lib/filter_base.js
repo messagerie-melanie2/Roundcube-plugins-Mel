@@ -162,6 +162,7 @@ class FilterBase extends MelObject {
             class: localities.length ? 'placeholder' : 'disabled',
             onchange: this.on_select_change.bind(this),
           })
+          .addClass('pretty-select')
           .attr(
             localities.length ? 'enabled' : 'disabled',
             localities.length ? 'enabled' : 'disabled',

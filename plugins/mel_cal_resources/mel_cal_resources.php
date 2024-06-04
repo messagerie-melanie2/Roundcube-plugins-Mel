@@ -38,6 +38,7 @@ class mel_cal_resources extends bnum_plugin {
             $this->register_task('mel_cal_resources');
             $this->register_action('load_element', [$this, 'load_element']);
             $this->register_action('load', [$this, 'load_resources']);
+            $this->register_action('load_custom', [$this, 'load_custom_resources']);
             $this->register_action('set_favorite', [$this, 'change_favorite']);
             $this->register_action('load_favorites', [$this, 'load_favorites']);  
         }
@@ -86,6 +87,19 @@ class mel_cal_resources extends bnum_plugin {
         })->toArray();
 
         echo json_encode($data);
+        exit;
+    }
+
+    function load_custom_resources() {
+        include_once __DIR__.'/lib/Resource.php';
+        $emails = $this->get_input_post('_resources');
+        $rcs = driver_mel::gi()->resources(null, $emails);
+
+        if (count($rcs) > 0) $rcs = mel_helper::Enumerable($rcs)->select(function($key, $value) {
+            return new Resource($value);
+        })->toArray();
+
+        echo json_encode($rcs ?? []);
         exit;
     }
 

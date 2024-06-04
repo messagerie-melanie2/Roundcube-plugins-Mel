@@ -1409,7 +1409,7 @@ export class LocationPartManager extends IDestroyable {
     let no_location = true;
     this._$locations.html(EMPTY_STRING);
 
-    if (event.location || false) {
+    if (event.location?.trim?.() || false) {
       let location = event.location.split(LOCATION_SEPARATOR);
 
       for (const location_type of location) {
@@ -1430,6 +1430,7 @@ export class LocationPartManager extends IDestroyable {
         if (no_location) no_location = false;
 
         tmp = ExtraPart.Instantiate(event);
+
         for (const tuple of tmp) {
           this.add(tuple.item1, tuple.item2);
         }
@@ -1475,7 +1476,10 @@ export class LocationPartManager extends IDestroyable {
     );
     this.locations[id].onchange.push(this._on_change_action.bind(this));
     //Link select link
-    $generated.find('select').on('change', this._on_select_changed.bind(this));
+    $generated
+      .find('select')
+      .on('change', this._on_select_changed.bind(this))
+      .val(Part.OptionValue());
 
     $generated = null;
   }
@@ -1746,10 +1750,17 @@ export class LocationPartManager extends IDestroyable {
     let str = EMPTY_STRING;
 
     for (const id of Object.keys(this.locations)) {
-      str += this.locations[id].location + LOCATION_SEPARATOR;
+      if (
+        (this.locations[id].location + LOCATION_SEPARATOR).trim() !==
+        EMPTY_STRING
+      )
+        str += this.locations[id].location + LOCATION_SEPARATOR;
     }
 
-    this._$field.val(str.slice(0, str.length - 1)).change();
+    if (str.trim() === EMPTY_STRING) str = EMPTY_STRING;
+    else str = str.slice(0, str.length - 1);
+
+    this._$field.val(str).change();
   }
 
   /**

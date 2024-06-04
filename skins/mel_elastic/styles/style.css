@@ -4432,13 +4432,17 @@ html.layout-phone .task-mail .popover .menu li a[aria-haspopup].dropdown::after 
 .qrcode_frame img {
   border-radius: 5px;
 }
-input[type="date"]::-webkit-calendar-picker-indicator {
+input[type='date']::-webkit-calendar-picker-indicator {
   filter: brightness(0) saturate(100%) invert(22%) sepia(19%) saturate(1076%) hue-rotate(195deg) brightness(93%) contrast(93%);
 }
-html.dark-mode-custom input[type="date"]::-webkit-calendar-picker-indicator {
+html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
   filter: brightness(0) saturate(100%) invert(80%) sepia(47%) saturate(262%) hue-rotate(358deg) brightness(93%) contrast(89%);
 }
 .download_app {
   margin: 0;
   font-weight: bold;
+}
+.material-symbols-outlined.clock-loader.animate::before {
+  content: '';
+  animation: materialsymbolclockanimate 1s infinite;
 }

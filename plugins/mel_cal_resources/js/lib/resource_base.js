@@ -130,6 +130,11 @@ class ResourcesBase extends MelObject {
     this._functions = new ResourceBaseFunctions(this);
 
     /**
+     * @type {ResourceData}
+     */
+    this.selected_resource = null;
+
+    /**
      * Action à faire lors du clique du bouton "Sauvegarder"
      * @type {BnumEvent<function>}
      */
@@ -212,7 +217,7 @@ class ResourcesBase extends MelObject {
       click: this.event_on_save,
     });
     const button_cancel = RcmailDialogButton.ButtonCancel({});
-    let page = new DialogPage('index', {
+    let page = new DialogPage(this._name, {
       title: this._name,
       buttons: [button_save, button_cancel],
     });
@@ -230,6 +235,35 @@ class ResourcesBase extends MelObject {
     return page;
   }
 
+  try_add_resource(rc, refetch = true) {
+    if (!this._p_resources.filter((x) => x.data.email === rc.email).length) {
+      rc.selected = rc.email === this.selected_resource?.email;
+      this._p_resources.push({
+        id: rc.uid,
+        title: rc.name,
+        parentid: 'resources',
+        data: rc,
+      });
+
+      // Object.defineProperty(
+      //   this._p_resources[this._p_resources.len - 1],
+      //   'selected',
+      //   {
+      //     get: function (self) {
+      //       return this.data.email === self.selected_resource?.email;
+      //     }.bind(this._p_resources[this._p_resources.len - 1], this),
+      //   },
+      // );
+
+      if (refetch) {
+        this._$calendar.fullCalendar('refetchResources');
+        this._$calendar.fullCalendar('refetchEvents');
+      }
+    }
+
+    return this;
+  }
+
   _generate_ui($fc) {
     const settings = window.cal?.settings || top.cal.settings;
 
@@ -245,7 +279,15 @@ class ResourcesBase extends MelObject {
               .prepend(
                 $(
                   `<input type="radio" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
-                ),
+                ).click((e) => {
+                  e = $(e.currentTarget);
+                  console.log('radio', e);
+                  const id = e.attr('id').replace('radio-', EMPTY_STRING);
+
+                  this.selected_resource = MelEnumerable.from(this._p_resources)
+                    .where((x) => x.data.uid === id)
+                    .firstOrDefault()?.data;
+                }),
               )
               .append(
                 MelHtml.start
@@ -340,11 +382,14 @@ class ResourcesBase extends MelObject {
       .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
       .toArray();
 
-    if (data.length) {
+    /*if (data.length) {
       callback(data);
-    } else if (
+    } else */
+    if (
       this._p_filters.filter((x) => x.name === 'locality')?.[0]?.value ===
-      EMPTY_STRING
+        EMPTY_STRING &&
+      (!data.length ||
+        (this._p_resources.length === 1 && this._p_resources[0].data.selected))
     ) {
       const busy = rcmail.set_busy(true, 'loading');
       this.http_internal_post({
@@ -358,18 +403,20 @@ class ResourcesBase extends MelObject {
           if (rcs && rcs.length) {
             this._p_resources.length = 0;
             for (const iterator of rcs) {
-              this._p_resources.push({
-                id: iterator.uid,
-                title: iterator.name,
-                parentid: 'resources',
-                data: iterator,
-              });
+              // this._p_resources.push({
+              //   id: iterator.uid,
+              //   title: iterator.name,
+              //   parentid: 'resources',
+              //   data: iterator,
+              // });
+              this.try_add_resource(iterator, false);
             }
             this._fetch_resources(callback);
           } else callback([{ id: 'resources', title: 'Aucune ressource' }]);
         },
       });
-    } else callback([{ id: 'resources', title: 'Aucune ressource' }]);
+    } else if (data.length) callback(data);
+    else callback([{ id: 'resources', title: 'Aucune ressource' }]);
   }
 
   /**
@@ -441,12 +488,13 @@ class ResourcesBase extends MelObject {
     console.log('[_on_data_changed]Génération des resources', rcs);
     this._p_resources.length = 0;
     for (const iterator of rcs) {
-      this._p_resources.push({
-        id: iterator.uid,
-        title: iterator.name,
-        parentid: 'resources',
-        data: iterator,
-      });
+      // this._p_resources.push({
+      //   id: iterator.uid,
+      //   title: iterator.name,
+      //   parentid: 'resources',
+      //   data: iterator,
+      // });
+      this.try_add_resource(iterator, false);
     }
 
     this._$calendar.fullCalendar('refetchResources');

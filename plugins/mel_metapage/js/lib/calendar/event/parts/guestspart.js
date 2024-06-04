@@ -375,6 +375,23 @@ class Guest {
     return html;
   }
 
+  checkValid($html, parent) {
+    if (
+      $html.data('hiddenrole') &&
+      $html.data('hiddenrole') !==
+        Guest._GuestRole($html.attr('data-parent'), parent)
+    ) {
+      $html
+        .attr('draggable', false)
+        .css('cursor', 'not-allowed')
+        .find('.close-button')
+        .remove();
+      $html[0].ondragstart = null;
+    }
+
+    return $html;
+  }
+
   /**
    * Affiche le participant sous forme de texte.
    * @return {string}
@@ -862,7 +879,20 @@ export class GuestsPart extends FakePart {
             $attendee_field ||
             $(`.mel-show-attendee[data-linked="${$field.attr('id')}"]`);
           guest = new Guest(iterator.name, iterator.email);
-          role = Guest._GuestRole($field.attr('id'), this);
+
+          if (
+            (guest.name || false) &&
+            guest.name.includes('=') &&
+            guest.name.includes(':')
+          ) {
+            if (guest.name.includes('role=')) {
+              role = guest.name.split('role=')[1].split(':')[0];
+              guest = new Guest(guest.name.split(':')[1], guest.email);
+              guest.aer = true;
+            }
+          }
+
+          if (!guest.aer) role = Guest._GuestRole($field.attr('id'), this);
           //Met à jours les participants dans le plugin "Calendar" pour qu'ils soient sauvegardés
           attendees = cal.edit_update_current_event_attendee(
             guest.toAttendee(role),
@@ -874,7 +904,10 @@ export class GuestsPart extends FakePart {
           );
           //Ajoute au champs
           $field.before(
-            guest.toHtml(event).attr('data-parent', $field.attr('id')),
+            guest
+              .toHtml(event)
+              .attr('data-parent', $field.attr('id'))
+              .attr('data-hiddenrole', role),
           );
           //On vide les variables
           $attendee_field = null;

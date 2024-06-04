@@ -391,8 +391,9 @@ export class EventView {
    * @param {EventViewDialog} dialog Modal qui contient la vue.
    */
   constructor(event, dialog) {
-    this._init()._setup(event, dialog)._main(event);
     EventView.INSTANCE = this;
+    this._init()._setup(event, dialog)._main(event);
+    //EventView.INSTANCE = this;
     console.log('instance');
   }
 

@@ -3,11 +3,21 @@ import {
   AExternalLocationPart,
   LocationPartManager,
 } from '../../../mel_metapage/js/lib/calendar/event/parts/location_part.js';
+import { BnumLog } from '../../../mel_metapage/js/lib/classes/bnum_log.js';
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { Tuple } from '../../../mel_metapage/js/lib/classes/tuple.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { page } from '../../skins/mel_elastic/js_template/resource_location.js';
+
+export { ResourceLocation };
 
 /**
  * @class
@@ -39,13 +49,76 @@ class ResourceLocation extends AExternalLocationPart {
     super.generate($parent);
 
     page.onclickafter.push(this.onclickafter.call.bind(this.onclickafter));
-    this._$page = page(null, this, this?.resource_type?.())
+    this._$page = page(this._attendee, this, this?.resource_type?.())
       .generate()
       .appendTo($parent);
 
+    if (this._attendee) {
+      this._update_old_attendees();
+      this._load_attendee_data();
+    }
     return this;
   }
 
+  async _load_attendee_data() {
+    BnumMessage.SetBusyLoading();
+
+    await MelObject.Empty().http_internal_post({
+      task: 'mel_cal_resources',
+      action: 'load_custom',
+      params: {
+        _resources: [this._attendee.email],
+      },
+      on_success: (data) => {
+        if (typeof data === 'string') data = JSON.parse(data);
+
+        if (data && data.length && this._$page && this._$page.length) {
+          const current_resource = data[0];
+          this._$page
+            .find('button')
+            .html(
+              $('<span>')
+                .css('vertical-align', 'super')
+                .text(
+                  `${current_resource.name} - ${current_resource.street} ${current_resource.postalcode} ${current_resource.locality}`,
+                ),
+            )
+            .prepend(
+              MelHtml.start
+                .icon('ads_click')
+                .css('color', 'var(--mel-button-text-color)')
+                .css('margin-right', '5px')
+                .end()
+                .generate(),
+            )
+            .attr('resource', current_resource.email)
+            .removeAttr('disabled')
+            .removeClass('disabled');
+
+          if (!window.selected_resources) window.selected_resources = {};
+
+          window.selected_resources[this.id] = current_resource;
+        }
+      },
+    });
+
+    BnumMessage.StopBusyLoading();
+  }
+
+  async _update_old_attendees() {
+    await ResourceLocation.SetAttendeeMechanics(this._attendee.email);
+  }
+
+  static async SetAttendeeMechanics(email) {
+    await Mel_Promise.wait(
+      () => $(`.mel-attendee[data-email="${email}"]`).length,
+    );
+    $(`.mel-attendee[data-email="${email}"]`)
+      .attr('draggable', false)
+      .css('cursor', 'not-allowed')
+      .find('.close-button')
+      .css('display', 'none');
+  }
   /**
    * Force le click sur le bouton générer par cette classe
    */
@@ -54,13 +127,48 @@ class ResourceLocation extends AExternalLocationPart {
   }
 
   /**
+   * Si la localisation est valide et correspond à ce que l'on attend
+   *
+   * Un emplacement est TOUJOURS valide.
+   * @returns {boolean}
+   * @override
+   */
+  is_valid() {
+    return !!this._$page.find('button').attr('resource');
+  }
+
+  /**
+   * Action à faire si la localisation n'est pas valide
+   * @override
+   */
+  invalid_action() {
+    BnumMessage.DisplayMessage(
+      'Please select a resource for this event.',
+      eMessageType.Error,
+    );
+
+    this._$page.find('button').focus();
+  }
+
+  /**
    * Libère les données en mémoire.
    * @override
    */
   destroy() {
-    page.dialog.destroy();
-    page.dialog = null;
-    page.onclickafter.clear();
+    if (window.selected_resources[this.id])
+      delete window.selected_resources[this.id];
+
+    if (page.dialog) {
+      try {
+        page.dialog.destroy();
+      } catch (error) {
+        BnumLog.warning('ResourceLocation/destory', 'Already deleted');
+      }
+
+      page.dialog = null;
+    }
+
+    if (page) page.onclickafter.clear();
   }
 
   /**
@@ -73,7 +181,7 @@ class ResourceLocation extends AExternalLocationPart {
   static Instantiate(event) {
     if (event.attendees && event.attendees.length) {
       return MelEnumerable.from(event.attendees)
-        .where((a) => a.role === GuestsPart.ROLES.resource)
+        .where((a) => a.cutype === GuestsPart.ROLES.resource)
         .select((x) => new Tuple(ResourceLocation, x))
         .toArray();
     } else return [];
@@ -90,7 +198,7 @@ class ResourceLocation extends AExternalLocationPart {
       event.attendees &&
       event.attendees.length &&
       MelEnumerable.from(event.attendees).any(
-        (a) => a.role === GuestsPart.ROLES.resource,
+        (a) => a.cutype === GuestsPart.ROLES.resource,
       )
     );
   }
@@ -153,14 +261,22 @@ class ResourceLocation extends AExternalLocationPart {
             return (
               ResourceLocation.Has(event) &&
               MelEnumerable.from(event.attendees).any(
-                (x) => x.resource_type === this.resource_type,
+                (x) =>
+                  x.resource_type === `X-${this.resource_type.toUpperCase()}`,
               )
             );
           }.bind(tmp);
           tmp.Instantiate = function (event) {
-            return MelEnumerable.from(ResourceLocation.Instantiate(event))
-              .where((x) => x.item2.resource_type === this.resource_type)
-              .toArray();
+            if (event.attendees && event.attendees.length) {
+              return MelEnumerable.from(event.attendees)
+                .where((a) => a.cutype === GuestsPart.ROLES.resource)
+                .where(
+                  (x) =>
+                    x.resource_type === `X-${this.resource_type.toUpperCase()}`,
+                )
+                .select((x) => new Tuple(this, x))
+                .toArray();
+            } else return [];
           }.bind(tmp);
           tmp.Max = ResourceLocation.Max.bind(tmp);
           eval(`tmp.prototype.resource_type = () => '${key}'`);
@@ -171,11 +287,13 @@ class ResourceLocation extends AExternalLocationPart {
   }
 }
 
-//Ajoute les resources au select
-if (rcmail.env.cal_resources.enable_all)
-  LocationPartManager.AddExtraLocationType(ResourceLocation);
+if (!window.mel_cal_resource_loaded) {
+  if (rcmail.env.cal_resources.enable_all)
+    //Ajoute les resources au select
+    LocationPartManager.AddExtraLocationType(ResourceLocation);
 
-ResourceLocation.GerateUniqueResources();
+  ResourceLocation.GerateUniqueResources();
 
-//Signifie que les données de ce plugin sont chargés
-window.mel_cal_resource_loaded = true;
+  //Signifie que les données de ce plugin sont chargés
+  window.mel_cal_resource_loaded = true;
+}

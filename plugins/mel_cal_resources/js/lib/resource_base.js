@@ -124,6 +124,8 @@ class ResourcesBase extends MelObject {
      */
     this._$calendar = null;
 
+    this._cache = {};
+
     /**
      * @type {ResourceBaseFunctions}
      */
@@ -239,7 +241,7 @@ class ResourcesBase extends MelObject {
     if (!this._p_resources.filter((x) => x.data.email === rc.email).length) {
       rc.selected = rc.email === this.selected_resource?.email;
       this._p_resources.push({
-        id: rc.uid,
+        id: rc.email,
         title: rc.name,
         parentid: 'resources',
         data: rc,
@@ -270,76 +272,7 @@ class ResourcesBase extends MelObject {
     try {
       $fc.fullCalendar({
         resources: this._fetch_resources.bind(this),
-        resourceRender: (resourceObj, labelTds, bodyTds) => {
-          console.log('rc', resourceObj, labelTds, bodyTds);
-
-          if (resourceObj.id !== 'resources') {
-            labelTds
-              .css('display', 'flex')
-              .prepend(
-                $(
-                  `<input type="radio" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
-                ).click((e) => {
-                  e = $(e.currentTarget);
-                  console.log('radio', e);
-                  const id = e.attr('id').replace('radio-', EMPTY_STRING);
-
-                  this.selected_resource = MelEnumerable.from(this._p_resources)
-                    .where((x) => x.data.uid === id)
-                    .firstOrDefault()?.data;
-                }),
-              )
-              .append(
-                MelHtml.start
-                  .div({ class: 'star-button-parent' })
-                  .button({
-                    class: 'star-button',
-                    id: `button-${resourceObj.data.uid}`,
-                    onclick: this._functions.on_star_clicked.bind(this),
-                    'data-favorite':
-                      this.get_env('fav_resources')[resourceObj.data.email] ??
-                      false,
-                    'data-email': resourceObj.data.email,
-                  })
-                  .icon('star')
-                  .end()
-                  .end()
-                  .end()
-                  .generate(),
-              );
-
-            labelTds = labelTds.find('.fc-cell-text');
-            let parent = labelTds.parent();
-            let text = labelTds.text();
-            labelTds.remove();
-            parent.html(
-              $(`<label for="radio-${resourceObj.data.uid}"></label>`)
-                .data('id', resourceObj.data.uid)
-                .text(text)
-                .css('margin', 0)
-                .css('padding', 0)
-                .click((e) => {
-                  console.log('rcs', this._p_resources, e);
-                  for (let i = 0; i < this._p_resources.length; ++i) {
-                    this._p_resources[i].data.selected = false;
-                  }
-
-                  e = $(e.currentTarget);
-                  if (!e.attr('for'))
-                    e = $(
-                      `label[for="${e.attr('id').replace('radio', EMPTY_STRING)}"`,
-                    );
-
-                  const id = e.data('id');
-                  const index = MelEnumerable.from(this._p_resources)
-                    .select((x, i) => ({ x, i }))
-                    .where((x) => x.x.id === id)
-                    .first().i;
-                  this._p_resources[index].data.selected = true;
-                }),
-            );
-          }
-        },
+        resourceRender: this._functions.resource_render,
         defaultView: 'timelineDay',
         schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
         height: 210,
@@ -351,12 +284,13 @@ class ResourcesBase extends MelObject {
         slotLabelFormat: DATE_HOUR_FORMAT,
         selectable: true,
         selectHelper: true,
-        select: this._functions.on_selected.bind(this),
+        defaultDate: this.start,
+        select: this._functions.on_selected_date,
         eventSources: [
-          // {
-          //   events: this._source_freebusy.bind(this),
-          //   id: 'resources',
-          // },
+          {
+            events: this._functions.event_loader,
+            id: 'resources',
+          },
         ],
       });
 
@@ -369,12 +303,17 @@ class ResourcesBase extends MelObject {
     return $fc;
   }
 
+  _get_key_format(start, end) {
+    return `${start.format(DATE_TIME_FORMAT)}-${end.format(DATE_TIME_FORMAT)}-${this._p_filters.filter((x) => x._load_data_on_start)?.[0].name ?? 'unknown'}`;
+  }
+
   /**
    * Récupère les données pour le fullcalendar
    * @package
    * @param {function} callback
    */
   _fetch_resources(callback) {
+    console.log('1');
     const data = MelEnumerable.from(this._p_resources)
       .where(
         (x) => !MelEnumerable.from(this._p_filters).any((f) => !f.filter(x)),
@@ -401,17 +340,20 @@ class ResourcesBase extends MelObject {
           rcmail.set_busy(false, 'loading', busy);
 
           if (rcs && rcs.length) {
-            this._p_resources.length = 0;
+            if (
+              !(
+                this._p_resources.length === 1 &&
+                this._p_resources[0].data.selected
+              )
+            )
+              this._p_resources.length = 0;
+
             for (const iterator of rcs) {
-              // this._p_resources.push({
-              //   id: iterator.uid,
-              //   title: iterator.name,
-              //   parentid: 'resources',
-              //   data: iterator,
-              // });
               this.try_add_resource(iterator, false);
             }
+
             this._fetch_resources(callback);
+            this._$calendar.fullCalendar('refetchEvents');
           } else callback([{ id: 'resources', title: 'Aucune ressource' }]);
         },
       });

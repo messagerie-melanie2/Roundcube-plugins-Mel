@@ -15,7 +15,7 @@ import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
-import { page } from '../../skins/mel_elastic/js_template/resource_location.js';
+import { ResourceDialogPage } from '../../skins/mel_elastic/js_template/resource_location.js';
 
 export { ResourceLocation };
 
@@ -36,6 +36,7 @@ class ResourceLocation extends AExternalLocationPart {
 
     this._attendee = attendee;
     this._$page = null;
+    this._page = null;
     this.onclickafter = new BnumEvent();
   }
 
@@ -48,10 +49,13 @@ class ResourceLocation extends AExternalLocationPart {
   generate($parent) {
     super.generate($parent);
 
-    page.onclickafter.push(this.onclickafter.call.bind(this.onclickafter));
-    this._$page = page(this._attendee, this, this?.resource_type?.())
-      .generate()
-      .appendTo($parent);
+    this.page = new ResourceDialogPage(
+      this._attendee,
+      this,
+      this?.resource_type?.(),
+    );
+    this.page.onclickafter.push(this.onclickafter.call.bind(this.onclickafter));
+    this._$page = this.page.get().generate().appendTo($parent);
 
     if (this._attendee) {
       this._update_old_attendees();
@@ -158,17 +162,17 @@ class ResourceLocation extends AExternalLocationPart {
     if (window.selected_resources[this.id])
       delete window.selected_resources[this.id];
 
-    if (page.dialog) {
+    if (this.page.dialog) {
       try {
-        page.dialog.destroy();
+        this.page.dialog.destroy();
       } catch (error) {
         BnumLog.warning('ResourceLocation/destory', 'Already deleted');
       }
 
-      page.dialog = null;
+      this.page.dialog = null;
     }
 
-    if (page) page.onclickafter.clear();
+    if (this.page) this.page.onclickafter.clear();
   }
 
   /**

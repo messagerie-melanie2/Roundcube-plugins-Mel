@@ -137,7 +137,7 @@ class mel_cal_resources extends bnum_plugin {
 
         if (count($config) > 0) {
             $config = mel_helper::Enumerable($config)->where(function ($k, $v) {
-                                                        return strpos($k, '@') !== false;
+                                                        return strpos($k, '@') !== false && isset($v) && $v;
                                                     })->select(function($k, $v) {
                                                         return $k;
                                                     })->toArray();

@@ -48,6 +48,8 @@ function get_page(page, filters, resource) {
                                     $('.input-time-start').css('display', EMPTY_STRING);
                                     $('.input-time-end').css('display', EMPTY_STRING);
                                 }
+
+                                if (resource._$calendar) resource._$calendar.fullCalendar('refetchEvents');
                             }).attr(resource.all_day ? 'checked' : 'notallday', resource.all_day)
                         .label({ for:'rc-allday', class:'custom-control-label' }).text('All day').end()
                     .end()

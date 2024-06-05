@@ -204,6 +204,8 @@ class ResourcesBase extends MelObject {
         set: (value) => {
           if ($('#rc-allday').length) $('#rc-allday').prop('checked', value);
           else _allday = value;
+
+          if (this._$calendar) this._$calendar.fullCalendar('refetchEvents');
         },
       },
     });

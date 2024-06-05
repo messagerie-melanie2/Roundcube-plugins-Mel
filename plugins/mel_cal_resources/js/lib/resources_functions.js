@@ -273,6 +273,39 @@ class ResourceBaseFunctions {
     callback(return_data);
     //FreeBusyLoader.Instance.get()
   }
+
+  /**
+   * @this {ResourcesBase}
+   */
+  on_date_changed($e, html_class) {
+    const val = $e.val();
+    $(html_class).each((i, e) => {
+      $(e).val(val);
+    });
+
+    const start = `${$('.input-date-start').val()} ${$('.input-time-start').val()}`;
+    const end = `${$('.input-date-end').val()} ${$('.input-time-end').val()}`;
+    this.start = moment(start, DATE_TIME_FORMAT);
+    this.end = moment(end, DATE_TIME_FORMAT);
+
+    this._$calendar.fullCalendar('refetchEvents');
+  }
+
+  /**
+   * @this {ResourcesBase}
+   */
+  on_date_start_changed(e) {
+    this._functions.on_date_changed($(e.currentTarget), '.input-date-start');
+  }
+  on_date_end_changed(e) {
+    this._functions.on_date_changed($(e.currentTarget), '.input-date-end');
+  }
+  on_time_start_changed(e) {
+    this._functions.on_date_changed($(e.currentTarget), '.input-time-start');
+  }
+  on_time_end_changed(e) {
+    this._functions.on_date_changed($(e.currentTarget), '.input-time-end');
+  }
 }
 
 class MaBoy {

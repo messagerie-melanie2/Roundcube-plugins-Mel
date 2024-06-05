@@ -181,6 +181,10 @@ export class ResourceDialog extends MelObject {
     if (this.dialog._$dialog) {
       this._set_date('start', start)._set_date('end', end);
       $('#rc-allday').prop('checked', all_day);
+      if (this.get_current_page_resource()._$calendar)
+        this.get_current_page_resource()._$calendar.fullCalendar(
+          'refetchEvents',
+        );
 
       if (all_day) {
         this.dialog._$dialog.find('.input-time-start').hide();
@@ -246,8 +250,6 @@ export class ResourceDialog extends MelObject {
   }
 
   _on_save() {
-    console.log('onsave', this);
-
     if (this._selected_resource) {
       $(
         `.mel-attendee[data-email="${this._selected_resource.email}"] .close-button`,
@@ -292,21 +294,32 @@ export class ResourceDialog extends MelObject {
         .change();
 
       ResourceLocation.SetAttendeeMechanics(current_resource.email);
-
-      this.dialog.hide();
     } else if (!current_resource) {
       BnumMessage.DisplayMessage(
         'Veuillez séléctionner une ressource !',
         eMessageType.Error,
       );
-    } else if (
-      $(`.mel-attendee[data-email="${current_resource.email}"]`).length
-    ) {
-      BnumMessage.DisplayMessage(
-        'La ressource a déjà été séléctionnée !',
-        eMessageType.Error,
-      );
     }
+
+    GuestsPart.can = false;
+    const cr = this.get_current_page_resource();
+    this._date._$start_date.val(cr.start.format(DATE_FORMAT)).change();
+    TimePartManager.UpdateOption(
+      this._date.start._$fakeField.attr('id'),
+      cr.start.format(DATE_HOUR_FORMAT),
+    );
+    this._date.start._$fakeField
+      .val(cr.start.format(DATE_HOUR_FORMAT))
+      .change();
+    this._date._$end_date.val(cr.end.format(DATE_FORMAT)).change();
+    TimePartManager.UpdateOption(
+      this._date.end._$fakeField.attr('id'),
+      cr.end.format(DATE_HOUR_FORMAT),
+    );
+    GuestsPart.can = true;
+    this._date.end._$fakeField.val(cr.end.format(DATE_HOUR_FORMAT)).change();
+
+    this.dialog.hide();
   }
 
   destroy() {

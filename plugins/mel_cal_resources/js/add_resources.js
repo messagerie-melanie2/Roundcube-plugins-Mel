@@ -11,6 +11,7 @@ import {
   DATE_FORMAT,
   DATE_HOUR_FORMAT,
 } from '../../mel_metapage/js/lib/constants/constants.dates.js';
+import { EMPTY_STRING } from '../../mel_metapage/js/lib/constants/constants.js';
 import { MelHtml } from '../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
@@ -123,6 +124,9 @@ export class ResourceDialog extends MelObject {
     this.dialog = new MelDialog(page, {
       width: 800,
       height: 500,
+      close: () => {
+        $('#eventedit').css('opacity', EMPTY_STRING);
+      },
     });
 
     this.resources = resources;
@@ -130,6 +134,10 @@ export class ResourceDialog extends MelObject {
 
   async try_init() {
     if (!this._initialized) {
+      $('#eventedit').css('opacity', 0);
+      this.get_skin()
+        .create_loader('rtc-show-event', true, true)
+        .appendTo($('#eventedit').parent());
       await this._init();
       this._initialized = true;
     }
@@ -147,6 +155,15 @@ export class ResourceDialog extends MelObject {
       current_promise.start_resolving();
 
       this.dialog.show();
+      if (!this._selected_resource)
+        this._selected_resource = this.get_selected_resource();
+
+      if (
+        this._selected_resource !== window.selected_resources[this._location.id]
+      ) {
+        $(`#radio-${window.selected_resources[this._location.id].uid}`).click();
+      }
+
       setTimeout(() => {
         MelEnumerable.from(this.resources).first().render();
         MelEnumerable.from(this.resources)
@@ -171,6 +188,11 @@ export class ResourceDialog extends MelObject {
 
         this._event_on_show.call();
         this._event_on_show.clear();
+
+        if ($('#eventedit').css('opacity') === '0') {
+          $('#rtc-show-event').remove();
+          $('#eventedit').css('opacity', 0.5);
+        }
 
         current_promise.resolve(true);
       }, 100);
@@ -260,11 +282,11 @@ export class ResourceDialog extends MelObject {
      * @type {?import('./lib/resource_base.js').ResourceData}
      */
     const current_resource = this.get_selected_resource();
-
     if (
       current_resource &&
       !$(`.mel-attendee[data-email="${current_resource.email}"]`).length
     ) {
+      window.selected_resources[this._location.id] = current_resource;
       if (typeof this._caller_button === 'function')
         this._caller_button = this._caller_button();
 

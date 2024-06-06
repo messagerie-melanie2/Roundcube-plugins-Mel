@@ -393,8 +393,6 @@ export class EventView {
   constructor(event, dialog) {
     EventView.INSTANCE = this;
     this._init()._setup(event, dialog)._main(event);
-    //EventView.INSTANCE = this;
-    console.log('instance');
   }
 
   /**
@@ -616,6 +614,7 @@ export class EventView {
     $(MAIN_FORM_SELECTOR).css('opacity', '0');
     $(LOADER_SELECTOR).css('display', EMPTY_STRING);
     WarningPanel.Reinit();
+    this.dialog_closed = true;
     this.parts.destroy();
 
     this.inputs = null;

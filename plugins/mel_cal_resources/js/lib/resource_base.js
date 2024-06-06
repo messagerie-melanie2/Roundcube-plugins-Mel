@@ -152,7 +152,7 @@ class ResourcesBase extends MelObject {
       new FilterBase(x.name, x.size, {
         load_data_on_change: x.load_data_on_change,
         load_data_on_start: x.load_data,
-        input_type: x.input_type,
+        input_type: x.type,
       })
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
@@ -315,7 +315,6 @@ class ResourcesBase extends MelObject {
    * @param {function} callback
    */
   _fetch_resources(callback) {
-    console.log('1');
     const data = MelEnumerable.from(this._p_resources)
       .where(
         (x) => !MelEnumerable.from(this._p_filters).any((f) => !f.filter(x)),
@@ -372,6 +371,10 @@ class ResourcesBase extends MelObject {
   _get(old) {
     let $rtn = old();
 
+    // $rtn.find('[multiple="true"]').each((i, e) => {
+    //   $(e).multiselect();
+    // });
+
     let $fc = $rtn.find('[fullcalendar="true"]');
 
     if ($fc.length) this._$calendar = this._generate_ui($fc);
@@ -386,12 +389,6 @@ class ResourcesBase extends MelObject {
    * @param {FilterBase} filter
    */
   _on_data_loaded(rcs, filter) {
-    console.log(
-      '[_on_data_changed]Génération des filtres',
-      this._p_filters,
-      filter,
-    );
-
     let values;
     for (let index = 0, len = this._p_filters.length; index < len; ++index) {
       if (this._p_filters[index]._name !== filter._name) {
@@ -429,15 +426,8 @@ class ResourcesBase extends MelObject {
       }
     }
 
-    console.log('[_on_data_changed]Génération des resources', rcs);
     this._p_resources.length = 0;
     for (const iterator of rcs) {
-      // this._p_resources.push({
-      //   id: iterator.uid,
-      //   title: iterator.name,
-      //   parentid: 'resources',
-      //   data: iterator,
-      // });
       this.try_add_resource(iterator, false);
     }
 
@@ -449,7 +439,6 @@ class ResourcesBase extends MelObject {
    * Action à faire lorsq'un filtre à changer de valeur
    */
   _on_data_changed() {
-    console.log('[_on_data_changed]Changement de filtre');
     this._$calendar.fullCalendar('refetchResources');
     this._$calendar.fullCalendar('refetchEvents');
   }

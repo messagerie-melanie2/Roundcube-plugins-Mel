@@ -189,8 +189,8 @@ export class ResourceDialog extends MelObject {
         this._event_on_show.call();
         this._event_on_show.clear();
 
+        $('#rtc-show-event').remove();
         if ($('#eventedit').css('opacity') === '0') {
-          $('#rtc-show-event').remove();
           $('#eventedit').css('opacity', 0.5);
         }
 
@@ -290,7 +290,6 @@ export class ResourceDialog extends MelObject {
       if (typeof this._caller_button === 'function')
         this._caller_button = this._caller_button();
 
-      console.log('current_resource', current_resource);
       this._caller_button.html(
         $('<span>')
           .css('vertical-align', 'super')

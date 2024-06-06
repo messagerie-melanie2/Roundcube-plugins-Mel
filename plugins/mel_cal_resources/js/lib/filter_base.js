@@ -152,36 +152,41 @@ class FilterBase extends MelObject {
    */
   _generate_select(jshtml, ...args) {
     const [localities] = args;
+    //debugger;
     switch (this._input_type) {
       case 'multi-select':
-        break;
-
       case 'select':
-        return jshtml
-          .select({
-            class: localities.length ? 'placeholder' : 'disabled',
-            onchange: this.on_select_change.bind(this),
-          })
-          .addClass('pretty-select')
-          .attr(
-            localities.length ? 'enabled' : 'disabled',
-            localities.length ? 'enabled' : 'disabled',
-          )
-          .option({ value: '' })
-          .css('display', 'none')
-          .text(this._name)
-          .end()
-          .attr('id', `filter-${this._id}`)
-          .each(
-            (jhtml, locality) => {
-              return jhtml
-                .option({ value: locality.uid })
-                .text(locality.name)
-                .end();
-            },
-            ...localities,
-          )
-          .end();
+        return (
+          jshtml
+            .select({
+              class: localities.length ? 'placeholder' : 'disabled',
+              onchange: this.on_select_change.bind(this),
+            })
+            /*.attr(
+            this._input_type === 'multi-select' ? 'multiple' : 'single',
+            true,
+          )*/
+            .addClass('pretty-select')
+            .attr(
+              localities.length ? 'enabled' : 'disabled',
+              localities.length ? 'enabled' : 'disabled',
+            )
+            .option({ value: '' })
+            .css('display', 'none')
+            .text(this._name)
+            .end()
+            .attr('id', `filter-${this._id}`)
+            .each(
+              (jhtml, locality) => {
+                return jhtml
+                  .option({ value: locality.uid })
+                  .text(locality.name)
+                  .end();
+              },
+              ...localities,
+            )
+            .end()
+        );
 
       default:
         return jshtml.input({
@@ -312,6 +317,7 @@ class FilterBase extends MelObject {
     else {
       switch (this._input_type) {
         case 'multi-select':
+          return true;
           break;
 
         default:

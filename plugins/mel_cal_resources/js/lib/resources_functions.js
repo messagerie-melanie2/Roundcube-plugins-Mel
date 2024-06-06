@@ -188,9 +188,22 @@ class ResourceBaseFunctions {
       labelTds
         .css('display', 'flex')
         .prepend(
+          MelHtml.start
+            .icon('', {
+              id: `loader-${resourceObj.data.ui}`,
+              class: 'clock-loader animate',
+              style: 'align-self:center',
+              'data-email': resourceObj.data.email,
+            })
+            .end()
+            .generate(),
+        )
+        .prepend(
           $(
-            `<input type="radio" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
-          ).click(this._functions.on_resource_selected),
+            `<input type="radio" class="resource-radio" data-email="${resourceObj.data.email}" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
+          )
+            .click(this._functions.on_resource_selected)
+            .css('display', 'none'),
         )
         .append(
           MelHtml.start
@@ -214,14 +227,21 @@ class ResourceBaseFunctions {
       let parent = labelTds.parent();
       let text = labelTds.text();
       labelTds.remove();
-      parent.html(
-        $(`<label for="radio-${resourceObj.data.uid}"></label>`)
-          .data('id', resourceObj.data.uid)
-          .text(text)
-          .css('margin', 0)
-          .css('padding', 0)
-          .click(this._functions.on_resource_label_clicked),
-      );
+      parent
+        .html(
+          $(`<label for="radio-${resourceObj.data.uid}"></label>`)
+            .data('id', resourceObj.data.uid)
+            .text(text)
+            .css('margin', '0 0 0 5px')
+            .css('padding', 0)
+            .click(this._functions.on_resource_label_clicked),
+        )
+        .css({
+          height: '100%',
+          display: 'flex',
+          'align-items': 'center',
+          padding: 0,
+        });
     }
   }
 
@@ -253,6 +273,12 @@ class ResourceBaseFunctions {
             return_data.push(new MaBoy(slot, slots.email));
           }
         }
+
+        $(`.clock-loader[data-email="${slots.email}"]`).remove();
+        $(`.resource-radio[data-email="${slots.email}"]`).css(
+          'display',
+          EMPTY_STRING,
+        );
       }
 
       this._cache[cache_key] = MaBoy.Serialise(return_data);

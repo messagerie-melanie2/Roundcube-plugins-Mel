@@ -37,6 +37,7 @@ $(document).ready(() => {
           $('#eventedit').css('opacity', 1);
           location.onclickafter.clear();
           rcmail.set_busy(false, 'loading', busy);
+          $('#rtc-show-event').remove();
         });
         location?.force_click?.();
       }

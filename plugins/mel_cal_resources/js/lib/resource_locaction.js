@@ -1,3 +1,4 @@
+import { EventView } from '../../../mel_metapage/js/lib/calendar/event/event_view.js';
 import { GuestsPart } from '../../../mel_metapage/js/lib/calendar/event/parts/guestspart.js';
 import {
   AExternalLocationPart,
@@ -159,6 +160,12 @@ class ResourceLocation extends AExternalLocationPart {
    * @override
    */
   destroy() {
+    if (!EventView.INSTANCE.dialog_closed) {
+      $(
+        `.mel-attendee[data-email="${window.selected_resources[this.id].email}"] .close-button`,
+      ).click();
+    }
+
     if (window.selected_resources[this.id])
       delete window.selected_resources[this.id];
 

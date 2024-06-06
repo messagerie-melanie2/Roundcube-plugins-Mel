@@ -235,6 +235,10 @@ class ResourceLocation extends AExternalLocationPart {
     return 'resource';
   }
 
+  static PluginName() {
+    return 'mel_cal_resources';
+  }
+
   /**
    * Génère les ResourceLocations individuels.
    *

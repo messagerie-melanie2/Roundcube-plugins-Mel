@@ -152,7 +152,6 @@ class FilterBase extends MelObject {
    */
   _generate_select(jshtml, ...args) {
     const [localities] = args;
-    //debugger;
     switch (this._input_type) {
       case 'multi-select':
       case 'select':
@@ -173,7 +172,7 @@ class FilterBase extends MelObject {
             )
             .option({ value: '' })
             .css('display', 'none')
-            .text(this._name)
+            .text(rcmail.gettext(this._name, 'mel_cal_resources'))
             .end()
             .attr('id', `filter-${this._id}`)
             .each(

@@ -255,9 +255,11 @@ class ResourceBaseFunctions {
   async event_loader(start, end, timezone, callback) {
     const cache_key = this._get_key_format(start, end);
     let return_data = [];
-    if (this._cache[cache_key])
+    if (this._cache[cache_key]) {
       return_data = MaBoy.Deserialize(this._cache[cache_key]);
-    else if (this._p_resources && this._p_resources.length) {
+      $('.clock-loader').remove();
+      $('.resource-radio').css('display', EMPTY_STRING);
+    } else if (this._p_resources && this._p_resources.length) {
       let rcs = FreeBusyLoader.Instance.generate(
         this._p_resources.map((x) => x.data.email),
         {
@@ -266,6 +268,19 @@ class ResourceBaseFunctions {
           interval: FreeBusyLoader.Instance.interval,
         },
       );
+
+      //debugger;
+      for (const iterator of MelEnumerable.from(this._cache)
+        .select((x) => MaBoy.Deserialize(x.value))
+        .flat()
+        .select((x) => x.resourceId)
+        .distinct((x) => x)) {
+        $(`.clock-loader[data-email="${iterator}"]`).remove();
+        $(`.resource-radio[data-email="${iterator}"]`).css(
+          'display',
+          EMPTY_STRING,
+        );
+      }
 
       for await (const slots of rcs) {
         for (const slot of slots) {

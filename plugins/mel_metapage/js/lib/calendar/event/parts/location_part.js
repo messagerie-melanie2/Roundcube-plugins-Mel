@@ -277,6 +277,15 @@ class AExternalLocationPart extends ALocationPart {
   static Max() {
     return 0;
   }
+
+  /**
+   * Plugin qui contient la localisation
+   * @virtual
+   * @returns {string}
+   */
+  static PluginName() {
+    return 'mel_metapage';
+  }
 }
 
 /**
@@ -1662,7 +1671,7 @@ export class LocationPartManager extends IDestroyable {
             .text(
               rcmail.gettext(
                 `event-location-${item.OptionValue()}`,
-                'mel_metapage',
+                item.PluginName?.() ?? 'mel_metapage',
               ),
             );
 

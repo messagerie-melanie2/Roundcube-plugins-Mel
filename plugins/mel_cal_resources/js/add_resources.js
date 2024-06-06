@@ -96,7 +96,7 @@ export class ResourceDialog extends MelObject {
     if (this._resource_type) {
       resources.push(
         new ResourcesBase(
-          'index',
+          rcmail.gettext(this._resource_type, 'mel_cal_resources'),
           rcmail.env.cal_resources.filters[this._resource_type],
         ),
       );

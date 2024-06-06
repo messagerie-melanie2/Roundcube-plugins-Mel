@@ -249,16 +249,6 @@ class ResourcesBase extends MelObject {
         data: rc,
       });
 
-      // Object.defineProperty(
-      //   this._p_resources[this._p_resources.len - 1],
-      //   'selected',
-      //   {
-      //     get: function (self) {
-      //       return this.data.email === self.selected_resource?.email;
-      //     }.bind(this._p_resources[this._p_resources.len - 1], this),
-      //   },
-      // );
-
       if (refetch) {
         this._$calendar.fullCalendar('refetchResources');
         this._$calendar.fullCalendar('refetchEvents');
@@ -306,7 +296,7 @@ class ResourcesBase extends MelObject {
   }
 
   _get_key_format(start, end) {
-    return `${start.format(DATE_TIME_FORMAT)}-${end.format(DATE_TIME_FORMAT)}-${this._p_filters.filter((x) => x._load_data_on_start)?.[0].name ?? 'unknown'}`;
+    return `${start.format(DATE_TIME_FORMAT)}-${end.format(DATE_TIME_FORMAT)}-${this._p_filters.filter((x) => x._load_data_on_start)?.[0].value ?? 'unknown'}`;
   }
 
   /**
@@ -322,12 +312,10 @@ class ResourcesBase extends MelObject {
       .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
       .toArray();
 
-    /*if (data.length) {
-      callback(data);
-    } else */
     if (
-      this._p_filters.filter((x) => x.name === 'locality')?.[0]?.value ===
-        EMPTY_STRING &&
+      this._p_filters.filter(
+        (x) => x.name === rcmail.gettext('locality', 'mel_cal_resources'),
+      )?.[0]?.value === EMPTY_STRING &&
       (!data.length ||
         (this._p_resources.length === 1 && this._p_resources[0].data.selected))
     ) {
@@ -395,7 +383,12 @@ class ResourcesBase extends MelObject {
         this._p_filters[index]._$filter
           .html(
             $('<option value="/"></option>')
-              .text(this._p_filters[index]._name)
+              .text(
+                rcmail.gettext(
+                  this._p_filters[index]._name,
+                  'mel_cal_resources',
+                ),
+              )
               .css('display', 'none'),
           )
           .append($('<option value=""></option>').text(EMPTY_STRING));

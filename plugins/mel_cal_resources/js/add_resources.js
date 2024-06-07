@@ -17,7 +17,7 @@ import { BnumEvent } from '../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../mel_metapage/js/lib/mel_promise.js';
 import { ResourcesBase } from './lib/resource_base.js';
-import { ResourceLocation } from './lib/resource_locaction.js';
+import { ResourceLocation } from './lib/resource_location.js';
 
 /**
  * @typedef ResourceConfig

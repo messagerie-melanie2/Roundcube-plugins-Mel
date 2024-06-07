@@ -271,6 +271,7 @@ if (window.rcmail) {
         .addClass('tablink mel resources')),
         (button = $('<a>')
           .attr('href', '#')
+          .attr('role', 'button')
           .attr('title', rcmail.gettext('mel_moncompte.manageresources'))
           .html(rcmail.gettext('mel_moncompte.resources'))
           .appendTo(tab));
@@ -539,6 +540,7 @@ if (window.rcmail) {
         .addClass('tablink mel moncompte')),
         (button = $('<a>')
           .attr('href', rcmail.env.comm_path + '&_action=plugin.mel_moncompte')
+          .attr('role', 'button')
           .attr('title', rcmail.gettext('mel_moncompte.managemoncompte'))
           .html(rcmail.gettext('mel_moncompte.moncompte'))
           .appendTo(tab));
@@ -577,6 +579,7 @@ if (window.rcmail) {
         .addClass('tablink mel statistics')),
         (button = $('<a>')
           .attr('href', '#')
+          .attr('roble', 'button')
           .attr('title', rcmail.gettext('mel_moncompte.managestatistics'))
           .html(rcmail.gettext('mel_moncompte.statistics'))
           .appendTo(tab));

@@ -399,6 +399,7 @@ $labels['open_external_link'] = 'Visiter le site';
 
 $labels['informations'] = 'Informations';
 $labels['double_authentication'] = 'Authentification';
+$labels['download_application'] = 'Télécharger l\'application';
 $labels['double_authentication_notification'] = 'Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum';
 $labels['introduction_text'] = 'À partir de %%date%%, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum.';
 $labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas où vous perdez votre téléphone par exemple, veuillez entrer une adresse e-mail de récupération :';

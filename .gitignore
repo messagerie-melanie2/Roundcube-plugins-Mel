@@ -13,6 +13,8 @@ yarn.lock
 .prettierc.json
 jsdoc-tutorials
 */jsdoc-tutorials/*
+**/.vscode/*
+**/launch.json
 
 aide/config.php
 aide/custom.css

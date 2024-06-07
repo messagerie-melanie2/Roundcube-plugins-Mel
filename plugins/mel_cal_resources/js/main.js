@@ -1,1 +1,1 @@
-import './lib/resource_locaction';
+import './lib/resource_locaction.js';

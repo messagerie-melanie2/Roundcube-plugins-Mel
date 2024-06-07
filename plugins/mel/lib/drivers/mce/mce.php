@@ -486,6 +486,17 @@ class mce_driver_mel extends driver_mel {
     return false;
   }
 
+   /**
+   * Méthode pour vérifier si groupe existe déjà 
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return boolean
+   */
+  public function if_group_exist($workspace_id) {
+    return false;
+  }
+
   /**
    * Méthode de récupération d'un groupe associé à un workspace
    * 

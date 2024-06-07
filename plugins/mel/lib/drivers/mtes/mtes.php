@@ -533,6 +533,24 @@ class mtes_driver_mel extends mce_driver_mel
   }
 
   /**
+   * Méthode pour vérifier si groupe existe déjà 
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return boolean
+   */
+  public function if_group_exist($workspace_id)
+  {
+    $group = $this->group([null, 'webmail.workspace']);
+
+    // On test si le groupe existe déjà
+    $group->dn = str_replace(['%%workspace%%'], [$workspace_id], self::WS_GROUP['dn']);
+
+    return $group->load();
+  }
+
+
+  /**
    * Méthode de récupération d'un groupe associé à un workspace
    * 
    * @param string $workspace_id Identifiant du workspace

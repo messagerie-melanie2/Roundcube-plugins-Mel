@@ -3641,6 +3641,12 @@ class mel_workspace extends bnum_plugin
             $workspace = driver_mel::gi()->workspace();
             $workspace->uid = $text."-".(++$it);
         } while ($workspace->exists());
+        
+        do {
+            $workspace = driver_mel::gi()->workspace();
+            $workspace->uid = $text."-".(++$it);
+        } while (driver_mel::gi()->if_group_exist($workspace->uid));
+
         return $text."-".$it;
     }
 

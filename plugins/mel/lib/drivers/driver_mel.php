@@ -548,6 +548,15 @@ abstract class driver_mel {
   abstract public function workspace_group($workspace_id, $members = [], $mdrive = true);
 
   /**
+   * Méthode pour vérifier si groupe existe déjà 
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return boolean
+   */
+  abstract public function if_group_exist($workspace_id);
+
+  /**
    * Méthode de récupération d'un groupe associé à un workspace
    * 
    * @param string $workspace_id Identifiant du workspace

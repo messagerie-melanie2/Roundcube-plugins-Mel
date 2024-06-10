@@ -6,7 +6,7 @@ import {
   eMessageType,
 } from '../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelEnumerable } from '../../mel_metapage/js/lib/classes/enum.js';
-import { MelDialog } from '../../mel_metapage/js/lib/classes/modal';
+import { MelDialog } from '../../mel_metapage/js/lib/classes/modal.js';
 import {
   DATE_FORMAT,
   DATE_HOUR_FORMAT,

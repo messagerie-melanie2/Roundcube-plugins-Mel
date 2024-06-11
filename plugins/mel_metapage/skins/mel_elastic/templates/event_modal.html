@@ -31,6 +31,7 @@
 
 		<div class="row no-label-row set-margin-bottom-2 justify-content-between">
 			<!-- Idéalement 15px entre chaque et pas au début -->
+			 <!--part:owner-->
 			<div class="form-group col-3 col-md-5 set-padding-left-0 set-padding-right-2 " id="calendar-select">
 				<label for="edit-calendar" class="red-star-after span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_calendar' /></label>
 				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
@@ -41,6 +42,8 @@
 				</div>
 
 			</div>
+			<!--enpart:owner-->
+			<!--part:alarm-->
 			<div class="col-3 set-padding-important-left-0 set-padding-important-right-2">
 				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
 					<span class="material-symbols-outlined">
@@ -52,6 +55,8 @@
 					</select>	
 				</div>
 			</div>
+			<!--endpart:alarm-->
+			<!--part:radio-->
 			<div class="col-3 set-padding-important-left-0 set-padding-important-right-2">
 				<div class="form-control input-mel fake-input" style="display:flex; align-items: center;">
 					<span class="material-symbols-outlined">
@@ -61,6 +66,8 @@
 					<roundcube:object title="Statut de l'évènement" name="plugin.status_select" id="edit-event-status" class="form-control input-mel" style="background-color: transparent;border:none;display: inline-block"/>
 				</div>
 			</div>
+			<!--endpart:radio-->
+			<!--part:locked-->
 			<div class="col-2 col-md-1 set-padding-important-all-0">
 				<div class="form-control input-mel fake-input d-flex align-items-center justify-content-center">
 					<label for="update-sensivity" class="span-mel t1 sr-only"><roundcube:label name='mel_metapage.choose_sensivity' /></label>
@@ -71,10 +78,11 @@
 					</button>
 				</div>
 			</div>
+			<!--endpart:locked-->
 		</div>
 
 		<!-- Titre -->
-		<!-- <label for="edit-title" class="red-star-after span-mel t1 first sr-only"><roundcube:label name='mel_metapage.event_name' /></label> -->
+		<!--part:title-->
     <div class="border-bottom-input-icon">
       <input type="text" placeholder="<roundcube:label name='mel_metapage.event_name' />" class="form-control input-mel border-bottom-input large-input" name="title" id="edit-title" required="true" />
       <button id="reset-title-button" class="border-bottom-input-button close-button" type="button">
@@ -83,8 +91,10 @@
         </span>
       </button>
     </div>
-
+	   <!--endpart:title-->
 		<!-- Destinataires -->
+		 <!--part:categorie-->
+		 <!--part:mail-->
 		<div class="d-flex" style="align-items: center;margin-top:15px">
 			<span class="material-symbols-outlined" style="margin-right:15px">mail</span>
 			<button id="event-mail-add-member" type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0px;" onclick="return rcmail.command('calendar-workspace-add-all')">
@@ -92,6 +102,7 @@
 				<span class="icofont-plus-circle set-margin-left-1"></span>
 			</button>
 		</div>
+		<!--endpart:mail-->
 
 		<!-- Catégorie -->
 		<div class="custom-control custom-switch set-margin-top-2 set-margin-bottom-2 set-margin-important-left-0">
@@ -113,8 +124,10 @@
 				</button>
 			</div>
 		</div>
+		<!--endpart:categorie-->
 
 		<!-- Participants -->
+		 <!--part:guests-->
 		<div id="atendee-container" class="set-margin-top-2">
 			<label for="attendee-input" class="set-margin-important-bottom-1 event-subtitle" style="display: block;">Participants</label>
 			<div class="custom-control custom-switch set-margin-bottom-2 set-margin-important-left-0">
@@ -155,8 +168,8 @@
 		<div id="emel-free-busy" style="margin-top:10px">
 
 		</div>
-
-		<!-- date -->
+		<!--endpart:guests-->
+		<!--part:date-->
 		<div class="set-margin-top-5 set-margin-bottom-3 event-subtitle">
 Choix de la période
 		</div>
@@ -224,6 +237,7 @@ Choix de la période
 			
 		</div>
 
+		<!--part:rec-->
 		<!-- Récurence -->
 		<div class="row event-real-recs">
 			<div class="col-12">
@@ -250,7 +264,10 @@ Choix de la période
 				</div>
 			</div>
 		</div>
+		<!--endpart:rec-->
+		<!--endpart:date-->
 
+		<!--part:locations-->
 		<!-- Mode d'évènements -->
 		<div class="set-margin-top-5 set-margin-bottom-3 event-subtitle">
 			Mode d'évènement
@@ -258,14 +275,16 @@ Choix de la période
 		<div id="events-type">
 			
 		</div>
-
+		<!--endpart:locations-->
+		<!--part:desc-->
 		<!-- Ordre du jour -->
 		<div class="form-group set-margin-top-2">
 			<label for="edit-description" class="span-mel event-subtitle"><roundcube:label name='mel_metapage.day_order' /></label>
 			<!-- <label for="edit-description"><roundcube:label name="calendar.description" /></label> -->
 			<textarea name="description" id="edit-description" placeholder="Ordre du jour" class="form-control input-mel" rows="3" cols="40"></textarea>
 		</div> 
-
+		<!--endpart:desc-->
+		<!--part:pj-->
 		<!-- Pièces jointes -->
 		<div id="edit-attachments-droparea" class="file-upload set-margin-top-2">
 			<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
@@ -287,6 +306,7 @@ Choix de la période
 			<roundcube:object name="plugin.resources_form" id="edit-resources-form" />
 			<roundcube:include file="/templates/freebusylegend.html" />
 		</div>
+		<!--endpart:pj-->
 
 		<!-- basic info -->
 		<!-- <fieldset id="event-panel-summary">

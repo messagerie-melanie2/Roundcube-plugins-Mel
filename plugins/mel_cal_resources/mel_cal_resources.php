@@ -30,6 +30,7 @@ class mel_cal_resources extends bnum_plugin {
                     'domain' => 'mel_cal_resources'
                 ), 'toolbar');
                 $this->include_css('style.css');
+                $this->add_hook('send_page', [$this, 'render_page']);
             }
 
             $this->load_data();
@@ -163,5 +164,13 @@ class mel_cal_resources extends bnum_plugin {
         $favs[$uid] = $favorite;
         $this->rc()->user->save_prefs([self::CONFIG_KEY_FAVORITE => $favs]);
         exit;
+    }
+
+    public function render_page($args) {
+        if (($this->get_current_task() === 'calendar' || $this->get_current_task() === 'ui-dialog') && $this->is_index_action()) {
+            $args['content'] = mel_helper::HtmlPartManager($args['content'])->switch_part('date', 'locations')->get();
+        }
+
+        return $args;
     }
 }

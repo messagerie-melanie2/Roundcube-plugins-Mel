@@ -64,6 +64,17 @@ export class MetapageMailDelayedModule extends MetapageModule {
 						}
 						rcmail_submit_messageform.call(self, ...args);
 						MetapageMailDelayedModule.elements.remove($element.data('uid'));
+
+						if (rcmail.env.extwin === 1) {
+							const interval = setInterval(() => {
+								if ($('#messagestack .error').length) {
+									$('#mail-send-loader').remove();
+									$('#layout-content').show();
+									$('#layout-sidebar').attr('style', EMPTY_STRING);
+									clearInterval(interval);
+								}
+							}, 10);
+						}
 					});
 
 					html.oncancel.push(e => {

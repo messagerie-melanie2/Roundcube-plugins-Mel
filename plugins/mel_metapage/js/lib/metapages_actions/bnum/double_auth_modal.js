@@ -427,78 +427,62 @@ class double_auth_modal extends module_bnum {
         class: 'double-auth-modal mx-5 mt-n4',
       })
       .row()
-      .col_12()
-      .row({ class: 'justify-content-center' })
-      .p({ class: 'title' })
-      .text(rcmail.gettext('mel_metapage.download_application'))
+        .col_12()
+          .row({ class: "justify-content-center" })
+            .p({ class: "title" })
+              .text(rcmail.gettext('mel_metapage.double_authentication'))
+            .end()
+          .end()
+          .row({ class: "my-2 justify-content-center" })
+            .p({class: "text-center"})
+              .text(rcmail.gettext('mel_metapage.application_text'))
+            .end()
+          .end()
+          .row({ class: "my-2" })
+            .col_6({class: 'col-6 d-flex justify-content-center'})
+              .div({class:'qrcode_frame text-center'})
+                .p({class:'download_app'})
+                  .text(rcmail.gettext('mel_metapage.download_app'))
+                .end()
+                .p()
+                  .text('Google Authenticator')
+                .end()
+                .img({ src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/authenticator_link.svg`})
+              .end()
+            .end()
+            .col_6({class: 'col-6 d-flex justify-content-center'})
+              .div({class:'qrcode_frame text-center'})
+                .p({class:'download_app'})
+                  .text(rcmail.gettext('mel_metapage.download_app'))
+                .end()
+                .p()
+                  .text('FreeOTP Authenticator')
+                .end()
+                .img({ src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/freeotp_link.svg`})
+              .end()
+            .end()
+          .end()
+          .p({class:'text-center mt-4'}).text(rcmail.gettext('mel_metapage.code_step_after')).end()
+        .end()
       .end()
-      .end()
-      .row({ class: 'my-2 justify-content-center' })
-      .p({ class: 'text-center' })
-      .text(rcmail.gettext('mel_metapage.application_text'))
-      .end()
-      .end()
-      .row({ class: 'my-2' })
-      .col_6({ class: 'col-6 d-flex justify-content-center' })
-      .div({ class: 'qrcode_frame text-center' })
-      .p({ class: 'download_app' })
-      .text(rcmail.gettext('mel_metapage.download_app'))
-      .end()
-      .p()
-      .text('Google Authenticator')
-      .end()
-      .img({
-        src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/authenticator_link.svg`,
-      })
-      .end()
-      .end()
-      .col_6({ class: 'col-6 d-flex justify-content-center' })
-      .div({ class: 'qrcode_frame text-center' })
-      .p({ class: 'download_app' })
-      .text(rcmail.gettext('mel_metapage.download_app'))
-      .end()
-      .p()
-      .text('FreeOTP Authenticator')
-      .end()
-      .img({
-        src: `plugins/mel_metapage/skins/${rcmail.env.skin}/images/freeotp_link.svg`,
-      })
-      .end()
-      .end()
-      .end()
-      .p({ class: 'text-center mt-4' })
-      .text(rcmail.gettext('mel_metapage.code_step_after'))
-      .end()
-      .end()
-      .end()
-      .row({ class: 'custom-tooltipbuttons justify-content-between mt-3' })
-      .close_button({ action: 'verification_mail_modal' })
-      .text(rcmail.gettext('mel_metapage.back'))
-      .end()
-      .button({
-        id: 'modal-custom-button',
-        class: 'next-button',
-        onclick: function () {
-          rcmail.env.continueWithUser = true;
-          self.closeDialog($('#modal-custom-button')[0]);
-          self.add_key_modal();
-        },
-      })
-      .text(rcmail.gettext('mel_metapage.continue'))
-      .end('button')
+      .row({ class: "custom-tooltipbuttons justify-content-between mt-3" })
+        .close_button({action:'verification_mail_modal'})
+          .text(rcmail.gettext('mel_metapage.back'))
+        .end()
+        .button({ id: "modal-custom-button", class: "next-button",
+          onclick:function () {
+            rcmail.env.continueWithUser = true;
+            self.closeDialog($('#modal-custom-button')[0]);
+            self.add_key_modal();
+          }
+        })
+          .text(rcmail.gettext('mel_metapage.continue'))
+        .end('button')
       .end('row')
       .end('div')
       .generate();
 
-    rcmail.show_popup_dialog(html, '', null, {
-      width: 600,
-      resizable: false,
-      height: 460,
-      close: function (event, ui) {
-        $(this).remove();
-        self.checkBeforeClose();
-      },
-    });
+    rcmail.show_popup_dialog(html, "", null, { width: 600, resizable: false, height: 460, close:function (event, ui) { $(this).remove(); self.checkBeforeClose() } })
 
     this.createProgressPoint(3);
   }

@@ -274,7 +274,7 @@ body {
     border-left-width: 2px;
     margin: 5px 0;
     position: relative;
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
     & > .text-item {
       position: absolute;
       font-size: 13px;
@@ -353,7 +353,7 @@ html {
   &.layout-phone,
   &.layout-small {
     body.task-workspace .wsp-toolbar-item,
-    .wsp-toolbar-edited button.wsp-toolbar-item{
+    .wsp-toolbar-edited button.wsp-toolbar-item {
       & > .text-item {
         display: none;
       }
@@ -621,7 +621,7 @@ html {
 }
 
 separate {
-  &.wsp{
+  &.wsp {
     border-top-width: medium;
     margin-right: 0px;
     margin-left: 0px;
@@ -692,7 +692,11 @@ separate {
   }
   &.active,
   &:hover {
-    background: radial-gradient(circle, #42548f 48%, rgba(255, 255, 255, 0) 48%);
+    background: radial-gradient(
+      circle,
+      #42548f 48%,
+      rgba(255, 255, 255, 0) 48%
+    );
     color: white;
   }
 }
@@ -817,7 +821,6 @@ separate {
     margin-left: 15px;
   }
 }
-
 
 html.layout-phone .wsp-toolbar v_separate,
 html.layout-small .wsp-toolbar v_separate,
@@ -945,7 +948,8 @@ body.task-workspace {
   }
   .table-bordered {
     thead {
-      td, th {
+      td,
+      th {
         background-color: var(--main-bckg-color);
         color: var(--secondary-text-color);
       }
@@ -980,4 +984,8 @@ body.task-workspace {
 .tab-events-planning .swp-agenda-date {
   display: 'block';
   margin-top: '4px';
+}
+
+#tmp-id-wsp {
+  color: var(--main-text-color);
 }

@@ -32,7 +32,7 @@ class tchap_manager extends MelObject {
    */
   async main() {
     const url =
-      rcmail.env.tchap_startup_url != null &&
+      rcmail.env.tchap_startup_url !== null &&
       rcmail.env.tchap_startup_url !== undefined
         ? rcmail.env.tchap_startup_url
         : rcmail.env.tchap_url;

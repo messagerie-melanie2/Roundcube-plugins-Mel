@@ -65,7 +65,7 @@ class mel_useful_link extends bnum_plugin
         
         $mul_items = $this->rc->config->get('personal_useful_links', []);
         $this->rc->user->save_prefs(array('save_personal_useful_links' => $mul_items));
-        $newMelLinks = $this->rc->config->get('new_personal_useful_links', []);
+        $new_mel_links = $this->rc->config->get('new_personal_useful_links', []);
         
         foreach ($mul_items as $id => $item) {
           $item = json_decode($item);
@@ -79,14 +79,43 @@ class mel_useful_link extends bnum_plugin
           else
             $temp = new MelLink($id, $item->title, $this->validate_url($item->link));
 
-          $newMelLinks[$id] = $temp->serialize();
+          $new_mel_links[$id] = $temp->serialize();
         }
         
-        $newMelLinks = array_merge($newMelLinks, $this->convert_default_link());
+        $new_mel_links = array_merge($new_mel_links, $this->convert_default_link());
 
-        $this->rc->user->save_prefs(array('new_personal_useful_links' => $newMelLinks));
+        $this->rc->user->save_prefs(array('new_personal_useful_links' => $new_mel_links));
         $this->rc->user->save_prefs(array('personal_useful_links' => []));
      }
+     else {
+      //On converti les icon qui contiennent des images
+      $mel_links = $this->rc->config->get('new_personal_useful_links', []);
+
+      foreach ($mel_links as $id => $item) {
+        $item = json_decode($item);
+        if ($item->links) {
+          foreach ($item->links as $key => $value) {
+            if(strpos($value->icon, '://')) {
+              $item->links->$key = self::convert_image($value, $id);
+            }
+          }
+          $temp = new MelFolderLink($id, $item->title, $item->links);
+          $mel_links[$id] = $temp->serialize();
+        }
+        else if(strpos($item->icon, '://')) {
+          $mel_links[$id] = self::convert_image($item, $id)->serialize();
+        }
+      }
+      $this->rc->user->save_prefs(array('new_personal_useful_links' => $mel_links));
+
+      }
+    }
+
+    private function convert_image($link, $id) {
+      $link->image = $link->icon;
+      $link->icon = "";
+      $temp = new MelLink($id, $link->title, $link->link, $link->image, $link->icon);
+      return $temp;
     }
     
     public function convert_default_link() {

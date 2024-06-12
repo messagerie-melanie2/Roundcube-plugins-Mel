@@ -792,3 +792,6 @@ body.task-workspace .table-bordered thead th {
   display: 'block';
   margin-top: '4px';
 }
+#tmp-id-wsp {
+  color: var(--main-text-color);
+}

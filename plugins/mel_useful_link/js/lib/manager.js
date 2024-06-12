@@ -9,7 +9,7 @@ import { MelLinkVisualizer, MelFolderLink, MelStoreLink } from './mel_link.js';
 import { MelIconPrevisualiser } from '../../../mel_metapage/skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
 
 export class LinkManager extends MelObject {
-  constructor () {
+  constructor() {
     super();
   }
 
@@ -88,19 +88,25 @@ export class LinkManager extends MelObject {
           id: 'icon-image',
           class: `link-icon-image ${icon ? 'hidden' : ''}`,
           src: '',
-          onerror: 'imgError(this.id, \'no-image\')',
+          onerror: "imgError(this.id, 'no-image')",
           style: 'display:none',
         })
-        .span({ id: 'no-image', class: `link-icon-no-image ${icon ? 'hidden' : ''}` })
+        .span({
+          id: 'no-image',
+          class: `link-icon-no-image ${icon ? 'hidden' : ''}`,
+        })
         .end('span')
         .icon(icon ?? '', {
-          id: 'link-icon', class: `link-with-icon ${!icon ? 'hidden' : ''}`
-        }).end('icon')
+          id: 'link-icon',
+          class: `link-with-icon ${!icon ? 'hidden' : ''}`,
+        })
+        .end('icon')
         .end('div')
         .end('div')
         .button({ id: 'change_icon', class: '' })
         .text(rcmail.gettext('change_icon', 'mel_useful_link'))
-        .icon('edit').end()
+        .icon('edit')
+        .end()
         .end('button')
         .end('row')
         .end('div')
@@ -124,7 +130,7 @@ export class LinkManager extends MelObject {
             },
           ),
         ],
-        options: { disable_show_on_start: true, height: 430 }
+        options: { disable_show_on_start: true, height: 430 },
       });
       this.newLinkModal = this.newLinkModal.to_mel_dialog();
       this.newLinkModal.show();
@@ -137,8 +143,8 @@ export class LinkManager extends MelObject {
 
   /**
    * Créé la modale de modification d'un dossier
-   * @param {?string} id 
-   * @param {?string} title 
+   * @param {?string} id
+   * @param {?string} title
    */
   openFolderModal(id = null, title = null) {
     const html = MelHtml.start
@@ -188,12 +194,22 @@ export class LinkManager extends MelObject {
       .row({ class: 'mx-2' })
       .div({ class: 'border-bottom-input-icon mb-2' })
       .input({
-        type: 'text', placeholder: 'Rechercher', class: 'form-control input-mel border-bottom-input large-input', id: 'search-app', oninput: () => {
+        type: 'text',
+        placeholder: 'Rechercher',
+        class: 'form-control input-mel border-bottom-input large-input',
+        id: 'search-app',
+        oninput: () => {
           this.searchInStore($('#search-app').val());
-        }
+        },
       })
-      .button({ id: 'reset-search', class: 'border-bottom-input-button close-button btn btn-secondary border-0' }).removeClass('mel-button')
-      .icon('close').end()
+      .button({
+        id: 'reset-search',
+        class:
+          'border-bottom-input-button close-button btn btn-secondary border-0',
+      })
+      .removeClass('mel-button')
+      .icon('close')
+      .end()
       .end('button')
       .end('div')
       .end('row')
@@ -205,24 +221,27 @@ export class LinkManager extends MelObject {
       .end('div')
       .end('row')
       .row({ class: 'mx-2' })
-      .span({ id: 'not-found-app', class: 'w-100 text-center font-weight-bold' })
+      .span({
+        id: 'not-found-app',
+        class: 'w-100 text-center font-weight-bold',
+      })
       .end()
       .ul({ id: 'list-store-app' })
       .end('ul')
       .end('row')
-      .end().generate();
+      .end()
+      .generate();
 
     this.newStoreModal = new RcmailDialog(html, {
       title: rcmail.gettext('app_store_title', 'mel_useful_link'),
-      options: { height: 600, minWidth: 700 }
+      options: { height: 600, minWidth: 700 },
     });
     this.loadStoreDialog();
   }
 
-
   /**
    * Ajoute un lien de la bibliothèque d'application dans les liens de l'utilisateur
-   * @param {MelLinkVisualizer} link 
+   * @param {MelLinkVisualizer} link
    */
   addStoreLink(link) {
     link.callUpdate().then((data) => {
@@ -234,7 +253,7 @@ export class LinkManager extends MelObject {
   }
 
   /**
-   * Charge la bibliothèque d'application et ses fonctions 
+   * Charge la bibliothèque d'application et ses fonctions
    */
   loadStoreDialog() {
     $('#reset-search').on('click', () => {
@@ -249,12 +268,16 @@ export class LinkManager extends MelObject {
 
   /**
    * Fonction pour la recherche dans le store d'application
-   * @param {string} input 
+   * @param {string} input
    */
   searchInStore(input) {
     let foundLinks = [];
-    Object.keys(rcmail.env.default_links).forEach(key => {
-      if (rcmail.env.default_links[key].name.toLowerCase().includes(input.toLowerCase())) {
+    Object.keys(rcmail.env.default_links).forEach((key) => {
+      if (
+        rcmail.env.default_links[key].name
+          .toLowerCase()
+          .includes(input.toLowerCase())
+      ) {
         foundLinks.push(key);
       }
     });
@@ -278,14 +301,13 @@ export class LinkManager extends MelObject {
 
         if (foundLinks) {
           if (foundLinks.indexOf(item) !== -1) {
-
             let foundLink = new MelStoreLink(
               item,
               link.name,
               link.url,
               link.icon,
               link.description,
-              this.linksIdList.includes(item) ? true : false
+              this.linksIdList.includes(item) ? true : false,
             );
 
             foundLink.displayStoreLink().appendTo('#list-store-app');
@@ -294,15 +316,14 @@ export class LinkManager extends MelObject {
           continue;
         }
 
-
-        let filterPass = (filter.length === 0) ? true : false;
+        let filterPass = filter.length === 0 ? true : false;
         if (link.categories) {
-          link.categories.forEach(value => {
+          link.categories.forEach((value) => {
             if (this.storeCategories.indexOf(value) === -1) {
               this.storeCategories.push(value);
             }
             if (filter.length !== 0) {
-              filterPass = (filter.includes(value)) ? true : false;
+              filterPass = filter.includes(value) ? true : false;
             }
           });
         }
@@ -314,7 +335,7 @@ export class LinkManager extends MelObject {
             link.url,
             link.icon,
             link.description,
-            this.linksIdList.includes(item) ? true : false
+            this.linksIdList.includes(item) ? true : false,
           );
           storeLink.displayStoreLink().appendTo('#list-store-app');
           isLinks = true;
@@ -322,7 +343,11 @@ export class LinkManager extends MelObject {
       }
     }
 
-    !isLinks ? $('#not-found-app').text(rcmail.gettext('not_found_link', 'mel_useful_link')) : $('#not-found-app').text('');
+    !isLinks
+      ? $('#not-found-app').text(
+          rcmail.gettext('not_found_link', 'mel_useful_link'),
+        )
+      : $('#not-found-app').text('');
   }
 
   /**
@@ -330,27 +355,33 @@ export class LinkManager extends MelObject {
    */
   loadStoreFilters() {
     if (this.storeCategories) {
-      let html = MelHtml.start.ul({ id: 'list-filters' })
-      html.li()
+      let html = MelHtml.start.ul({ id: 'list-filters' });
+      html
+        .li()
         .button({
-          class: 'list-filter active', id: 'all', onclick: () => {
+          class: 'list-filter active',
+          id: 'all',
+          onclick: () => {
             this.filterList('all');
-          }
+          },
         })
         .text('Tout')
         .end()
-        .end('li')
+        .end('li');
 
       for (const categorie of this.storeCategories) {
-        html.li()
+        html
+          .li()
           .button({
-            class: 'list-filter', id: `${categorie}`, onclick: () => {
+            class: 'list-filter',
+            id: `${categorie}`,
+            onclick: () => {
               this.filterList(categorie);
-            }
+            },
           })
           .text(categorie)
           .end()
-          .end('li')
+          .end('li');
       }
       html.end('ul');
 
@@ -360,18 +391,16 @@ export class LinkManager extends MelObject {
 
   /**
    * Filtre les applications de la bibliothèque d'application
-   * @param {string} filter 
+   * @param {string} filter
    */
   filterList(filter) {
     if (filter === 'all') {
       this.activeStoreCategories = [];
-    }
-    else {
+    } else {
       const index = this.activeStoreCategories.indexOf(filter);
       if (index === -1) {
         this.activeStoreCategories.push(filter);
-      }
-      else {
+      } else {
         this.activeStoreCategories.splice(index, 1);
       }
     }
@@ -389,8 +418,7 @@ export class LinkManager extends MelObject {
       if (self.activeStoreCategories.includes($(this).attr('id'))) {
         $(this).addClass('active');
         active = true;
-      }
-      else {
+      } else {
         $(this).removeClass('active');
       }
     });
@@ -430,7 +458,7 @@ export class LinkManager extends MelObject {
             subLink.link,
             subLink.image,
             true,
-            subLink.icon
+            subLink.icon,
           );
           linkVisualizer.links[key]
             .displaySubLink()
@@ -445,7 +473,7 @@ export class LinkManager extends MelObject {
           link.link,
           link.image,
           false,
-          link.icon
+          link.icon,
         );
         linkVisualizer.displayLink().appendTo('.links-items');
 
@@ -471,7 +499,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Sauvegarde un lien
-   * @param {MelLinkVisualizer} link 
+   * @param {MelLinkVisualizer} link
    */
   saveLink(link) {
     this.bindRightClickActions(link.id);
@@ -553,7 +581,7 @@ export class LinkManager extends MelObject {
         $(LinkManager.SELECTOR_MODAL_URL).val(),
         LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val()),
         null,
-        LinkManager.SELECTEDICON
+        LinkManager.SELECTEDICON,
       );
 
       link.callUpdate().then((data) => {
@@ -568,26 +596,44 @@ export class LinkManager extends MelObject {
         const item = rcmail.env.mul_items[key];
         if (item.id === linkId) {
           link = item;
+          let savelink = { ...link };
 
           link.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
           link.link = $(LinkManager.SELECTOR_MODAL_URL).val();
-          link.image = LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+          link.image = LinkManager.fetchIcon(
+            $(LinkManager.SELECTOR_MODAL_URL).val(),
+          );
           link.icon = LinkManager.SELECTEDICON;
 
-          link.callUpdate().then(() => {
+          link.callUpdate().then((data) => {
             this.newLinkModal.hide();
+            if (!data) {
+              link.title = savelink.title;
+              link.link = savelink.link;
+              link.image = savelink.image;
+              link.icon = savelink.icon;
+            }
           });
           break;
         } else if (this.isFolder(item)) {
           let findLink = item.getLink(linkId);
           if (findLink) {
+            let savelink = { ...findLink };
             findLink.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
             findLink.link = $(LinkManager.SELECTOR_MODAL_URL).val();
-            findLink.image = LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+            findLink.image = LinkManager.fetchIcon(
+              $(LinkManager.SELECTOR_MODAL_URL).val(),
+            );
             findLink.icon = LinkManager.SELECTEDICON;
 
-            item.callFolderUpdate().then(() => {
+            item.callFolderUpdate().then((data) => {
               this.newLinkModal.hide();
+              if (!data) {
+                findLink.title = savelink.title;
+                findLink.link = savelink.link;
+                findLink.image = savelink.image;
+                findLink.icon = savelink.icon;
+              }
             });
             break;
           }
@@ -600,7 +646,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Retourne un lien par son id
-   * @param {string} id 
+   * @param {string} id
    * @returns {MelLinkVisualizer | boolean} Return le lien ou false si pas trouvé
    */
   findLinkById(id) {
@@ -622,7 +668,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Trouve le dossier parent d'un lien
-   * @param {MelLinkVisualizer} link 
+   * @param {MelLinkVisualizer} link
    * @returns {MelFolderLink | boolean} Return le dossier ou false si pas trouvé
    */
   findParentFolder(link) {
@@ -642,7 +688,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Vérifie si un lien est un dossier
-   * @param {MelLinkVisualizer | MelFolderLink} link 
+   * @param {MelLinkVisualizer | MelFolderLink} link
    * @returns {Boolean}
    */
   isFolder(link) {
@@ -652,10 +698,10 @@ export class LinkManager extends MelObject {
   }
 
   /**
-    * Vérifie si un lien est dans un dossier
-    * @param {MelLinkVisualizer | MelFolderLink} link 
-    * @returns {Boolean}
-    */
+   * Vérifie si un lien est dans un dossier
+   * @param {MelLinkVisualizer | MelFolderLink} link
+   * @returns {Boolean}
+   */
   isInFolder(link) {
     if (link.inFolder) return true;
 
@@ -664,7 +710,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Supprime un lien
-   * @param {string} id 
+   * @param {string} id
    */
   deleteMelLink(id) {
     const link = this.findLinkById(id);
@@ -683,15 +729,15 @@ export class LinkManager extends MelObject {
           $('#link-block-' + link.id).remove();
           this.linksIdList = this.linksIdList.filter((item) => item !== id);
         });
-      }
-      else if (this.isFolder(link)) {
+      } else if (this.isFolder(link)) {
         for (const key in link.links) {
           const element = link.links[key];
-          this.linksIdList = this.linksIdList.filter((item) => item !== element.id);
+          this.linksIdList = this.linksIdList.filter(
+            (item) => item !== element.id,
+          );
         }
         link.callDelete();
-      }
-      else {
+      } else {
         link.callDelete();
         this.linksIdList = this.linksIdList.filter((item) => item !== id);
       }
@@ -700,7 +746,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Met a jour le titre d'une modale
-   * @param {string} id 
+   * @param {string} id
    */
   updateFolder(id) {
     let folder = rcmail.env.mul_items.find(function (objet) {
@@ -716,11 +762,11 @@ export class LinkManager extends MelObject {
 
   /**
    * Retire un lien d'un dossier pour l'ajouter dans la liste de l'utilisateur
-   * @param {MelFolderLink} folder 
-   * @param {MelLinkVisualizer} link 
-   * @param {string} id 
-   * @param {int} targetIndex 
-   * @param {?HTMLElement} location 
+   * @param {MelFolderLink} folder
+   * @param {MelLinkVisualizer} link
+   * @param {string} id
+   * @param {int} targetIndex
+   * @param {?HTMLElement} location
    */
   TakeOutLinkFromFolder(folder, link, id, targetIndex, location = null) {
     folder.removeLink(link);
@@ -875,7 +921,7 @@ export class LinkManager extends MelObject {
             link,
             id,
             targetIndex,
-            targetElement.hasClass('link-space-end') ? null : targetContainer
+            targetElement.hasClass('link-space-end') ? null : targetContainer,
           );
           return;
         }
@@ -883,15 +929,12 @@ export class LinkManager extends MelObject {
         //Si on déplace l'élément
         if (targetElement.hasClass('link-space-between')) {
           targetElement.removeClass('link-space-hovered');
-          targetContainer.before(movedContainer);
 
-          self.updateList(id, targetIndex);
+          self.updateList(id, targetIndex, targetContainer, movedContainer);
           return;
         }
         if (targetElement.hasClass('link-space-end')) {
-          targetElement.before(movedContainer);
-
-          self.updateList(id, targetIndex);
+          self.updateList(id, targetIndex, targetElement, movedContainer);
           return;
         }
 
@@ -912,7 +955,9 @@ export class LinkManager extends MelObject {
 
         //Si on crée un dossier
         else {
-          targetElement.closest('.link-block.link-block-hovered').removeClass('link-block-hovered');
+          targetElement
+            .closest('.link-block.link-block-hovered')
+            .removeClass('link-block-hovered');
 
           //Si le target n'est pas déjà un dossier
           if (!rcmail.env.mul_items[targetIndex].links) {
@@ -947,10 +992,10 @@ export class LinkManager extends MelObject {
 
   /**
    * Met a jour l'ordre des liens
-   * @param {string} id 
+   * @param {string} id
    * @param {int} newIndex Nouvelle position de l'icone dans le DOM
    */
-  updateList(id, newIndex) {
+  updateList(id, newIndex, targetContainer = null, movedContainer = null) {
     const busy = rcmail.set_busy(true, 'loading');
     rcmail.env.mul_items.find(function (object, index) {
       if (object.id === id) {
@@ -960,11 +1005,22 @@ export class LinkManager extends MelObject {
           0,
           rcmail.env.mul_items.splice(index, 1)[0],
         );
+
         return mel_metapage.Functions.post(
           mel_metapage.Functions.url('useful_links', 'update_list'),
           { _list: rcmail.env.mul_items, _key: rcmail.env.mul_items_key },
-          () => {
+          (data) => {
             rcmail.set_busy(false, 'loading', busy);
+            if (data != 1) {
+              rcmail.display_message(
+                "Erreur lors de l'enregistrement",
+                'error',
+              );
+            } else {
+              if (targetContainer && movedContainer) {
+                targetContainer.before(movedContainer);
+              }
+            }
           },
         );
       }
@@ -993,7 +1049,7 @@ export class LinkManager extends MelObject {
     });
 
     $(LinkManager.ADD_STORE_BUTTON).on('click', () => {
-      LinkManager.previsualiser.create_popup('Changer d\'icone');
+      LinkManager.previsualiser.create_popup("Changer d'icone");
     });
 
     MEL_ELASTIC_UI.update_tabs();
@@ -1058,7 +1114,6 @@ export class LinkManager extends MelObject {
       LinkManager.toggleIcon(icon);
     }
 
-
     if (id) {
       $('.add-mel-link').text(rcmail.gettext('update', 'mel_useful_link'));
     } else {
@@ -1114,7 +1169,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Affiche l'icone et cache l'image
-   * @param {string} icon 
+   * @param {string} icon
    */
   static toggleIcon(icon = null) {
     $(LinkManager.SELECTOR_MODAL_IMAGE).addClass('hidden');
@@ -1134,7 +1189,7 @@ export class LinkManager extends MelObject {
 
   /**
    * Supprime le container le plus proche de l'élément passé en paramètre
-   * @param {HTMLElement} target 
+   * @param {HTMLElement} target
    */
   removeContainer(target) {
     target.closest('.link-block-container').remove();
@@ -1382,10 +1437,13 @@ LinkManager.previsualiser = new MelIconPrevisualiser({
 LinkManager.previsualiser.addCustomIcons(LinkManager.preview_icon);
 
 LinkManager.previsualiser.on_create_default_items.push(() => {
-  let image_url = LinkManager.fetchIcon($(LinkManager.SELECTOR_MODAL_URL).val());
+  let image_url = LinkManager.fetchIcon(
+    $(LinkManager.SELECTOR_MODAL_URL).val(),
+  );
   return MelHtml.start
     .div()
-    .button({ class: 'image-preview' }).css({ 'background-image': `url('${image_url}')` })
+    .button({ class: 'image-preview' })
+    .css({ 'background-image': `url('${image_url}')` })
     .attr('onmouseenter', () => {
       $('#bnum-folder-main-icon').css({
         'background-image': 'url(' + image_url + ')',
@@ -1409,7 +1467,9 @@ LinkManager.previsualiser.on_create_default_items.push(() => {
       }, 50);
       LinkManager.DISPLAYIMAGE = image_url;
     })
-    .icon(' ').css({ 'display': 'none' }).end()
+    .icon(' ')
+    .css({ display: 'none' })
+    .end()
     .end()
     .end();
 });
@@ -1429,7 +1489,10 @@ LinkManager.previsualiser.on_button_hover.push(() => {
 
 LinkManager.previsualiser.on_button_leave.push(() => {
   if (LinkManager.DISPLAYIMAGE) {
-    $('#bnum-folder-main-icon').css('background-image', 'url(' + LinkManager.DISPLAYIMAGE + ')');
+    $('#bnum-folder-main-icon').css(
+      'background-image',
+      'url(' + LinkManager.DISPLAYIMAGE + ')',
+    );
   }
 });
 
@@ -1443,8 +1506,7 @@ LinkManager.previsualiser.on_save.push((popup, $dialog) => {
   if (popup.get_selected_icon() !== ' ') {
     LinkManager.SELECTEDICON = popup.get_selected_icon();
     LinkManager.toggleIcon(LinkManager.SELECTEDICON);
-  }
-  else {
+  } else {
     LinkManager.toggleImage();
   }
 

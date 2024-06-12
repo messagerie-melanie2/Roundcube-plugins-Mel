@@ -13,6 +13,7 @@ import {
 } from '../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../mel_metapage/js/lib/constants/constants.js';
 import { MelHtml } from '../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { getRelativePos } from '../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../mel_metapage/js/lib/mel_promise.js';
@@ -159,16 +160,15 @@ export class ResourceDialog extends MelObject {
         this._selected_resource = this.get_selected_resource();
 
       if (
-        this._selected_resource !== window.selected_resources[this._location.id]
+        window.selected_resources && this._selected_resource !== window.selected_resources[this._location.id]
       ) {
         $(`#radio-${window.selected_resources[this._location.id].uid}`).click();
       }
 
       setTimeout(() => {
-        MelEnumerable.from(this.resources).first().render();
-        MelEnumerable.from(this.resources)
-          .first()
-          ._$calendar.fullCalendar('render');
+        let resource = MelEnumerable.from(this.resources).first();
+        resource.render();
+        resource._$calendar.fullCalendar('render');
 
         this.dialog._$dialog
           .find('[datepicker="true"]')
@@ -179,6 +179,16 @@ export class ResourceDialog extends MelObject {
             });
           })
           .attr('datepicker', 'initialized');
+
+        this.dialog._$dialog.find('[multiple="true"]').each((i, e) => {
+          $(e).find('option[value="/"]').remove();
+          $(e).find('option[value=""]').remove();
+          $(e).multiselect({
+            nonSelectedText: $(e).attr('data-fname'),
+            inheritClass: true,
+            buttonWidth: '100%'
+          }).attr('multiple', 'initialized').multiselect('rebuild');
+        });
 
         this.set_date(
           this._date.date_start,
@@ -192,6 +202,13 @@ export class ResourceDialog extends MelObject {
         $('#rtc-show-event').remove();
         if ($('#eventedit').css('opacity') === '0') {
           $('#eventedit').css('opacity', 0.5);
+        }
+        if (!this._scrolled) {
+          const element = resource._$calendar.find(`.fc-widget-header[data-date="${moment().startOf('day').add(cal.settings.first_hour, 'h').format('YYYY-MM-DD HH:mm').replace(' ', 'T')}:00"]`)[0];
+          const element_pos = getRelativePos(element);
+          resource._$calendar.find('.fc-body .fc-time-area .fc-scroller').first()[0].scrollLeft = element_pos.left;
+
+          this._scrolled = true;
         }
 
         current_promise.resolve(true);

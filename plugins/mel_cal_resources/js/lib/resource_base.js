@@ -9,7 +9,6 @@ import {
   DATE_TIME_FORMAT,
 } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { template_resource } from '../../skins/mel_elastic/js_template/resource.js';
@@ -153,6 +152,7 @@ class ResourcesBase extends MelObject {
         load_data_on_change: x.load_data_on_change,
         load_data_on_start: x.load_data,
         input_type: x.type,
+        icon: x.icon
       })
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
@@ -258,36 +258,52 @@ class ResourcesBase extends MelObject {
     return this;
   }
 
+
+  /**
+   * Met à jours le texte de la date du planning
+   * @returns {string}
+   */
+  refresh_calendar_date() {
+    let $div = this._$calendar.parent();
+    const text = $div.find('.fc-left h2').text();
+    $div.find('.fo-date').text(text);
+    return text;
+  }
+
   _generate_ui($fc) {
     const settings = window.cal?.settings || top.cal.settings;
-
+    const config = {
+      resources: this._fetch_resources.bind(this),
+      resourceRender: this._functions.resource_render,
+      defaultView: 'timelineDay',
+      schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+      height: 200,
+      firstHour: settings.first_hour,
+      scrollTime:  {hours:settings.first_hour},
+      slotDuration: { minutes: 60 / settings.timeslots },
+      locale: 'fr',
+      axisFormat: DATE_HOUR_FORMAT,
+      slotLabelFormat: DATE_HOUR_FORMAT,
+      selectable: true,
+      selectHelper: true,
+      //stickyFooterScrollbar:true,
+      slotWidth: 50,
+      defaultDate: this.start,
+      select: this._functions.on_selected_date,
+      eventSources: [
+        {
+          events: this._functions.event_loader,
+          id: 'resources',
+        },
+      ],
+    }
     try {
-      $fc.fullCalendar({
-        resources: this._fetch_resources.bind(this),
-        resourceRender: this._functions.resource_render,
-        defaultView: 'timelineDay',
-        schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
-        height: 210,
-        firstHour: settings.first_hour,
-        scrollTime: settings.first_hour + ':00',
-        slotDuration: { minutes: 60 / settings.timeslots },
-        locale: 'fr',
-        axisFormat: DATE_HOUR_FORMAT,
-        slotLabelFormat: DATE_HOUR_FORMAT,
-        selectable: true,
-        selectHelper: true,
-        defaultDate: this.start,
-        select: this._functions.on_selected_date,
-        eventSources: [
-          {
-            events: this._functions.event_loader,
-            id: 'resources',
-          },
-        ],
-      });
-
-      $fc.fullCalendar('option', 'height', 210);
+      $fc.css('width', '100%').fullCalendar(config);
       $fc.fullCalendar('render');
+
+
+      //$fc.fullCalendar('option', 'height', 200);
+      //$fc.fullCalendar('render');
     } catch (error) {
       console.error(error);
     }
@@ -367,6 +383,8 @@ class ResourcesBase extends MelObject {
 
     if ($fc.length) this._$calendar = this._generate_ui($fc);
 
+    this.refresh_calendar_date();
+
     return $rtn;
   }
 
@@ -392,6 +410,9 @@ class ResourcesBase extends MelObject {
               .css('display', 'none'),
           )
           .append($('<option value=""></option>').text(EMPTY_STRING));
+
+        if (this._p_filters[index]._input_type === 'multi-select') this._p_filters[index]._$filter.html(EMPTY_STRING);
+
         values = {};
 
         for (const iterator of rcs) {
@@ -399,12 +420,27 @@ class ResourcesBase extends MelObject {
             !values[iterator[this._p_filters[index]._name]] &&
             iterator[this._p_filters[index]._name]
           ) {
-            values[iterator[this._p_filters[index]._name]] = true;
-            this._p_filters[index]._$filter.append(
-              $(
-                `<option value="${iterator[this._p_filters[index]._name]}">${iterator[this._p_filters[index]._name]}</option>`,
-              ),
-            );
+            if (this._p_filters[index]._input_type === 'multi-select') {
+              for (const filter of Object.keys(JSON.parse(iterator[this._p_filters[index]._name]))) {
+                if(!values[filter]) {
+                  values[filter] = true;
+                  this._p_filters[index]._$filter.append(
+                    $(
+                      `<option value="${filter}">${filter}</option>`,
+                    ),
+                  );
+                }
+              }
+            }
+            else {
+              values[iterator[this._p_filters[index]._name]] = true;
+              this._p_filters[index]._$filter.append(
+                $(
+                  `<option value="${iterator[this._p_filters[index]._name]}">${iterator[this._p_filters[index]._name]}</option>`,
+                ),
+              );
+            }
+
           }
         }
 
@@ -416,6 +452,13 @@ class ResourcesBase extends MelObject {
           this._p_filters[index]._$filter
             .attr('disabled', 'disabled')
             .removeClass('disabled');
+      }
+
+      if (this._p_filters[index]._input_type === 'multi-select') {
+        if (this._p_filters[index]._$filter.children().length) this._p_filters[index]._$filter.multiselect('enable');
+        else this._p_filters[index]._$filter.multiselect('disable');
+
+        this._p_filters[index]._$filter.multiselect('rebuild');
       }
     }
 
@@ -441,5 +484,48 @@ class ResourcesBase extends MelObject {
    */
   render() {
     this._$calendar.fullCalendar('rerender');
+  }
+}
+
+export class ResourceSettings {
+  constructor(setting) {
+    //debugger;
+    this._setting = typeof setting === 'string' ? JSON.parse(setting) : setting;
+    this._has = false;
+  }
+
+  toString() {
+    return ResourceSettings.ToString();
+  }
+
+  is(ressource) {
+    if (!this._setting?.length) return true;
+    else if (!ressource.data.caracteristiques) return false;
+    else {
+      // this._has = false;
+      // for (const iterator of this._setting) {
+      //   this._has = ressource.data.caracteristiques.includes(iterator.replaceAll('\'', '"'));
+
+      //   if (this._has) return this._has;
+      // }
+      return MelEnumerable.from(this._setting).select(x => ressource.data.caracteristiques.includes(x.replaceAll('\'', '"'))).all(x => x);
+    }
+
+    //return false;
+  }
+
+  static ToString(setting) {
+    if (typeof setting === 'string')  setting = JSON.parse(setting);
+
+    let str = [];
+    for (const key in setting) {
+      if (Object.hasOwnProperty.call(setting, key)) {
+        const element = setting[key];
+        
+        str.push(`${key} x${element}`);
+      }
+    }
+
+    return str.join(' + ');
   }
 }

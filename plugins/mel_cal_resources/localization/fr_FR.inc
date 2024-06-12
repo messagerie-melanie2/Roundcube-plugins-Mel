@@ -9,3 +9,4 @@ $labels['batiment'] = 'Batiment';
 $labels['etage'] = 'Etage';
 $labels['roomnumber'] = 'Salle';
 $labels['caracteristiques'] = 'Filtres';
+$labels['today'] = 'Aujourd\'hui';

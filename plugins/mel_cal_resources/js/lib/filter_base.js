@@ -4,6 +4,7 @@ import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.j
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { ResourceSettings } from './resource_base.js';
 
 export { FilterBase };
 
@@ -35,6 +36,7 @@ class FilterBase extends MelObject {
       load_data_on_change = null,
       load_data_on_start = null,
       input_type = 'select',
+      icon = EMPTY_STRING
     },
   ) {
     super();
@@ -44,6 +46,7 @@ class FilterBase extends MelObject {
       load_data_on_change,
       load_data_on_start,
       input_type,
+      icon
     );
   }
 
@@ -85,6 +88,7 @@ class FilterBase extends MelObject {
      */
     this._$filter = null;
     this._id = null;
+    this._icon = EMPTY_STRING;
     /**
      * Texte du filtre
      * @readonly
@@ -111,12 +115,13 @@ class FilterBase extends MelObject {
     return this;
   }
 
-  _setup(name, size, load_data_on_change, load_data_on_start, input_type) {
+  _setup(name, size, load_data_on_change, load_data_on_start, input_type, icon) {
     this._name = name;
     this._size = size;
     this._load_data_on_change = load_data_on_change;
     this._load_data_on_start = load_data_on_start;
     this._input_type = input_type;
+    this._icon = icon;
 
     Object.defineProperty(this, 'name', {
       value: rcmail.gettext(name, 'mel_cal_resources'),
@@ -161,10 +166,12 @@ class FilterBase extends MelObject {
               class: localities.length ? 'placeholder' : 'disabled',
               onchange: this.on_select_change.bind(this),
             })
-            /*.attr(
+            .addClass('fo-select')
+            .attr(
             this._input_type === 'multi-select' ? 'multiple' : 'single',
             true,
-          )*/
+          )
+          .attr('data-fname', this.name)
             .addClass('pretty-select')
             .attr(
               localities.length ? 'enabled' : 'disabled',
@@ -287,7 +294,10 @@ class FilterBase extends MelObject {
       : [];
     return MelHtml.start
       .div({ class: `col-${this._size}` })
+      .div().css({width:'100%', position:'relative'})
+      .icon(this._icon || 'filter_alt', {class:'fo-filter-icon'}).end()
       .action(this._generate_select.bind(this), localities)
+      .end()
       .end();
   }
 
@@ -316,8 +326,8 @@ class FilterBase extends MelObject {
     else {
       switch (this._input_type) {
         case 'multi-select':
-          return true;
-          break;
+          return new ResourceSettings(this._$filter.val()).is(resource);
+          //break;
 
         default:
           return (

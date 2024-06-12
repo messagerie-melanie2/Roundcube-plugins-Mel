@@ -2,7 +2,7 @@
  * @module Mel/UsefulFunctions
  */
 
-export {isNullOrUndefined, isArrayLike, Classes, toHex, isDecimal};
+export {isNullOrUndefined, isArrayLike, Classes, toHex, isDecimal, getRelativePos};
 
 /**
  * Vérivie si un nombre est un nombre entier ou décimal.
@@ -92,3 +92,16 @@ var Classes = (baseClass, ...mixins) => {
   });
   return base;
 }
+
+function getRelativePos(elm){
+    let pPos = elm.parentNode.getBoundingClientRect(), // parent pos
+        cPos = elm.getBoundingClientRect(), // target pos
+        pos = {};
+  
+    pos.top    = cPos.top    - pPos.top + elm.parentNode.scrollTop,
+    pos.right  = cPos.right  - pPos.right,
+    pos.bottom = cPos.bottom - pPos.bottom,
+    pos.left   = cPos.left   - pPos.left;
+  
+    return pos;
+  }

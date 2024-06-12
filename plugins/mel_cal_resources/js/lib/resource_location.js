@@ -160,13 +160,13 @@ class ResourceLocation extends AExternalLocationPart {
    * @override
    */
   destroy() {
-    if (!EventView.INSTANCE.dialog_closed) {
+    if (!EventView.INSTANCE.dialog_closed && window.selected_resources) {
       $(
         `.mel-attendee[data-email="${window.selected_resources[this.id].email}"] .close-button`,
       ).click();
     }
 
-    if (window.selected_resources[this.id])
+    if (window.selected_resources && window.selected_resources[this.id])
       delete window.selected_resources[this.id];
 
     if (this.page.dialog) {

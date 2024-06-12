@@ -58,6 +58,8 @@ class mel_cal_resources extends bnum_plugin {
         $this->rc()->output->set_env('fav_resources', $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []));
 
         $this->include_script('js/waiting_events.js');
+        $this->include_script('external/bootstrap-multiselect.js');
+        $this->include_css('bootstrap-multiselect.min.css');
         $this->load_script_module('main', '/js/');
     }
 

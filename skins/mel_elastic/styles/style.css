@@ -1504,6 +1504,17 @@ body.task-mail .floating-action-buttons {
   margin-top: 15px;
   cursor: pointer;
 }
+.btn-group .mel-button {
+  border-radius: 0;
+}
+.btn-group .mel-button:first-of-type {
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}
+.btn-group .mel-button:last-of-type {
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
 .mel-button.mel-button-block {
   display: block;
 }

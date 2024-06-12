@@ -596,6 +596,7 @@ export class LinkManager extends MelObject {
         const item = rcmail.env.mul_items[key];
         if (item.id === linkId) {
           link = item;
+          let savelink = { ...link };
 
           link.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
           link.link = $(LinkManager.SELECTOR_MODAL_URL).val();
@@ -604,13 +605,20 @@ export class LinkManager extends MelObject {
           );
           link.icon = LinkManager.SELECTEDICON;
 
-          link.callUpdate().then(() => {
+          link.callUpdate().then((data) => {
             this.newLinkModal.hide();
+            if (!data) {
+              link.title = savelink.title;
+              link.link = savelink.link;
+              link.image = savelink.image;
+              link.icon = savelink.icon;
+            }
           });
           break;
         } else if (this.isFolder(item)) {
           let findLink = item.getLink(linkId);
           if (findLink) {
+            let savelink = { ...findLink };
             findLink.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
             findLink.link = $(LinkManager.SELECTOR_MODAL_URL).val();
             findLink.image = LinkManager.fetchIcon(
@@ -618,8 +626,14 @@ export class LinkManager extends MelObject {
             );
             findLink.icon = LinkManager.SELECTEDICON;
 
-            item.callFolderUpdate().then(() => {
+            item.callFolderUpdate().then((data) => {
               this.newLinkModal.hide();
+              if (!data) {
+                findLink.title = savelink.title;
+                findLink.link = savelink.link;
+                findLink.image = savelink.image;
+                findLink.icon = savelink.icon;
+              }
             });
             break;
           }
@@ -915,15 +929,12 @@ export class LinkManager extends MelObject {
         //Si on déplace l'élément
         if (targetElement.hasClass('link-space-between')) {
           targetElement.removeClass('link-space-hovered');
-          targetContainer.before(movedContainer);
 
-          self.updateList(id, targetIndex);
+          self.updateList(id, targetIndex, targetContainer, movedContainer);
           return;
         }
         if (targetElement.hasClass('link-space-end')) {
-          targetElement.before(movedContainer);
-
-          self.updateList(id, targetIndex);
+          self.updateList(id, targetIndex, targetElement, movedContainer);
           return;
         }
 
@@ -984,7 +995,7 @@ export class LinkManager extends MelObject {
    * @param {string} id
    * @param {int} newIndex Nouvelle position de l'icone dans le DOM
    */
-  updateList(id, newIndex) {
+  updateList(id, newIndex, targetContainer = null, movedContainer = null) {
     const busy = rcmail.set_busy(true, 'loading');
     rcmail.env.mul_items.find(function (object, index) {
       if (object.id === id) {
@@ -994,11 +1005,22 @@ export class LinkManager extends MelObject {
           0,
           rcmail.env.mul_items.splice(index, 1)[0],
         );
+
         return mel_metapage.Functions.post(
           mel_metapage.Functions.url('useful_links', 'update_list'),
           { _list: rcmail.env.mul_items, _key: rcmail.env.mul_items_key },
-          () => {
+          (data) => {
             rcmail.set_busy(false, 'loading', busy);
+            if (data != 1) {
+              rcmail.display_message(
+                "Erreur lors de l'enregistrement",
+                'error',
+              );
+            } else {
+              if (targetContainer && movedContainer) {
+                targetContainer.before(movedContainer);
+              }
+            }
           },
         );
       }

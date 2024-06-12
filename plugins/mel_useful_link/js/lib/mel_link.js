@@ -1,10 +1,11 @@
+/* eslint-disable no-undef */
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 
 export { MelLink, MelFolderLink, MelLinkVisualizer, MelStoreLink };
 
 class MelBaseLink {
-  constructor (id, title) {
+  constructor(id, title) {
     this._init()._setup(id, title);
   }
 
@@ -25,7 +26,7 @@ class MelBaseLink {
         get() {
           return id;
         },
-        set: value => {
+        set: (value) => {
           id = value;
           this.on_prop_changed.call(value, 'id', this);
         },
@@ -34,7 +35,7 @@ class MelBaseLink {
         get() {
           return title;
         },
-        set: value => {
+        set: (value) => {
           title = value;
           this.on_prop_changed.call(value, 'title', this);
         },
@@ -46,8 +47,8 @@ class MelBaseLink {
 
   /**
    * Appel Ajax pour supprimer un lien dans les préférences de l'utilisateur
-   * @param {string} task 
-   * @param {string} action 
+   * @param {string} task
+   * @param {string} action
    */
   callDelete(task = 'useful_links', action = 'delete') {
     const busy = rcmail.set_busy(true, 'loading');
@@ -55,7 +56,7 @@ class MelBaseLink {
     return mel_metapage.Functions.post(
       mel_metapage.Functions.url(task, action),
       { _id: this.id, _key: rcmail.env.mul_items_key },
-      datas => {
+      (datas) => {
         rcmail.set_busy(false, 'loading', busy);
         rcmail.display_message(
           'Suppression effectué avec succès !',
@@ -76,7 +77,7 @@ class MelBaseLink {
 }
 
 class MelLink extends MelBaseLink {
-  constructor (id, title, link, inFolder = false) {
+  constructor(id, title, link, inFolder = false) {
     super(id, title);
     this._setup_vars(link, inFolder);
   }
@@ -98,7 +99,7 @@ class MelLink extends MelBaseLink {
 }
 
 class MelFolderLink extends MelBaseLink {
-  constructor (id, title, links, isOpen = false) {
+  constructor(id, title, links, isOpen = false) {
     super(id, title);
     this._setup_vars(links, isOpen);
   }
@@ -125,7 +126,7 @@ class MelFolderLink extends MelBaseLink {
         get() {
           return _title;
         },
-        set: value => {
+        set: (value) => {
           _title = value;
           $(
             `.multilink-block[data-id="${this.id}"] .multilink-icon-title`,
@@ -172,8 +173,8 @@ class MelFolderLink extends MelBaseLink {
 
   /**
    * Appel Ajax pour mettre à jour les liens d'un dossier
-   * @param {string} task 
-   * @param {string} action  
+   * @param {string} task
+   * @param {string} action
    */
   async callFolderUpdate(task = 'useful_links', action = 'update') {
     const busy = rcmail.set_busy(true, 'loading');
@@ -193,10 +194,18 @@ class MelFolderLink extends MelBaseLink {
     await mel_metapage.Functions.post(
       mel_metapage.Functions.url(task, action),
       { link, _key: rcmail.env.mul_items_key },
-      datas => {
+      (datas) => {
         rcmail.set_busy(false, 'loading', busy);
-        rcmail.display_message(message, 'confirmation');
-        id = datas;
+        if (datas !== '') {
+          rcmail.display_message(message, 'confirmation');
+          id = datas;
+        } else {
+          rcmail.display_message(
+            "Impossible d'ajouter ou de modifier ce lien.",
+            'error',
+          );
+          id = false;
+        }
       },
       (a, b, c) => {
         rcmail.display_message(
@@ -204,6 +213,7 @@ class MelFolderLink extends MelBaseLink {
           'error',
         );
         console.error(a, b, c);
+        id = false;
       },
     );
 
@@ -212,8 +222,8 @@ class MelFolderLink extends MelBaseLink {
 
   /**
    * Appel Ajax pour supprimer un ou des liens d'un dossier
-   * @param {string} task 
-   * @param {string} action 
+   * @param {string} task
+   * @param {string} action
    */
   callFolderDelete(task = 'useful_links', action = 'delete') {
     const busy = rcmail.set_busy(true, 'loading');
@@ -221,7 +231,7 @@ class MelFolderLink extends MelBaseLink {
     return mel_metapage.Functions.post(
       mel_metapage.Functions.url(task, action),
       { _id: this.id, _key: rcmail.env.mul_items_key },
-      datas => {
+      (datas) => {
         rcmail.set_busy(false, 'loading', busy);
         rcmail.display_message(
           'Suppression effectué avec succès !',
@@ -242,7 +252,7 @@ class MelFolderLink extends MelBaseLink {
 
   /**
    * Fait passer l'id au moment du déplacement du lien
-   * @param {Event} ev 
+   * @param {Event} ev
    */
   _dragStart(ev) {
     ev = ev.dataTransfer ? ev : ev.originalEvent;
@@ -274,7 +284,7 @@ class MelFolderLink extends MelBaseLink {
   }
 
   /**
-   * Affichage d'un dossier 
+   * Affichage d'un dossier
    */
   displayFolder() {
     return MelHtml.start
@@ -342,7 +352,7 @@ class MelFolderLink extends MelBaseLink {
 }
 
 class MelLinkVisualizer extends MelLink {
-  constructor (id, title, link, image, inFolder = false, icon = null) {
+  constructor(id, title, link, image, inFolder = false, icon = null) {
     super(id, title, link, inFolder);
     this._setup_image(image);
     this._setup_icon(icon);
@@ -364,16 +374,19 @@ class MelLinkVisualizer extends MelLink {
         get() {
           return _icon;
         },
-        set: value => {
+        set: (value) => {
           _icon = value;
           if (value) {
-            $(`.link-block[data-id="${this.id}"] .link-icon-image`).addClass('hidden');
+            $(`.link-block[data-id="${this.id}"] .link-icon-image`).addClass(
+              'hidden',
+            );
             $(`#no-image-${this.id}`).addClass('hidden');
             $(`#link-icon-${this.id}`).removeClass('hidden');
             $(`#link-icon-${this.id}`).text(value);
-          }
-          else {
-            $(`.link-block[data-id="${this.id}"] .link-icon-image`).removeClass('hidden');
+          } else {
+            $(`.link-block[data-id="${this.id}"] .link-icon-image`).removeClass(
+              'hidden',
+            );
             $(`#no-image-${this.id}`).removeClass('hidden');
             $(`#link-icon-${this.id}`).addClass('hidden');
           }
@@ -381,8 +394,8 @@ class MelLinkVisualizer extends MelLink {
             'data-icon',
             value,
           );
-        }
-      }
+        },
+      },
     });
   }
 
@@ -396,20 +409,20 @@ class MelLinkVisualizer extends MelLink {
         get() {
           return _image;
         },
-        set: value => {
+        set: (value) => {
           $(`.link-block[data-id="${this.id}"] .link-icon-image`).show();
           $(`#no-image-${this.id}`).css('display', 'initial').text('');
           $(`.link-block[data-id="${this.id}"] .link-icon-image`).attr(
             'src',
             value,
           );
-        }
+        },
       },
       title: {
         get() {
           return _title;
         },
-        set: value => {
+        set: (value) => {
           _title = value;
           $(`.link-block[data-id="${this.id}"] .link-icon-title`).text(value);
           $(`.link-block[data-id="${this.id}"] button`).attr(
@@ -422,7 +435,7 @@ class MelLinkVisualizer extends MelLink {
         get() {
           return _link;
         },
-        set: value => {
+        set: (value) => {
           _link = value;
           //Change en jquery les data url par la nouvelle valeur
           $(`.link-block[data-id="${this.id}"] button`).attr(
@@ -439,8 +452,8 @@ class MelLinkVisualizer extends MelLink {
 
   /**
    * Ajoute/Met à jour un lien
-   * @param {string} task 
-   * @param {string} action 
+   * @param {string} task
+   * @param {string} action
    */
   async callUpdate(task = 'useful_links', action = 'update') {
     const busy = rcmail.set_busy(true, 'loading');
@@ -462,17 +475,26 @@ class MelLinkVisualizer extends MelLink {
     await mel_metapage.Functions.post(
       mel_metapage.Functions.url(task, action),
       { link, _key: rcmail.env.mul_items_key },
-      datas => {
+      (datas) => {
         rcmail.set_busy(false, 'loading', busy);
-        rcmail.display_message(message, 'confirmation');
-        id = datas;
+        if (datas !== '') {
+          rcmail.display_message(message, 'confirmation');
+          id = datas;
+        } else {
+          rcmail.display_message(
+            "Impossible d'ajouter ou de modifier ce lien.",
+            'error',
+          );
+          id = false;
+        }
       },
       (a, b, c) => {
         rcmail.display_message(
-          'Impossible d\'ajouter ou de modifier ce lien.',
+          "Impossible d'ajouter ou de modifier ce lien.",
           'error',
         );
         console.error(a, b, c);
+        id = false;
       },
     );
 
@@ -481,8 +503,8 @@ class MelLinkVisualizer extends MelLink {
 
   /**
    * Fait passer l'id au moment du déplacement du lien
-   * @param {MelLinkVisualizer} link 
-   * @param {Event} ev 
+   * @param {MelLinkVisualizer} link
+   * @param {Event} ev
    */
   _dragStart(link, ev) {
     ev = ev.dataTransfer ? ev : ev.originalEvent;
@@ -562,15 +584,23 @@ class MelLinkVisualizer extends MelLink {
         id: 'link-block-icon-image-' + this.id,
         class: `link-icon-image ${this.icon ? 'hidden' : ''}`,
         src: this.image,
-        onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0] + '`)',
+        onerror:
+          'imgError(this.id, `no-image-' +
+          this.id +
+          '`, `' +
+          this.title[0] +
+          '`)',
       })
       .span({
-        id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`
+        id: 'no-image-' + this.id,
+        class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`,
       })
       .end('span')
       .icon(this.icon ?? '', {
-        id: 'link-icon-' + this.id, class: `link-with-icon ${!this.icon ? 'hidden' : ''}`
-      }).end('icon')
+        id: 'link-icon-' + this.id,
+        class: `link-with-icon ${!this.icon ? 'hidden' : ''}`,
+      })
+      .end('icon')
       .end('a')
       .span({ class: 'link-icon-title' })
       .text(this.title)
@@ -583,7 +613,7 @@ class MelLinkVisualizer extends MelLink {
 
   /**
    * Affiche un lien dans un dossier
-   * @param {boolean} isOpen 
+   * @param {boolean} isOpen
    */
   displaySubLink(isOpen = false) {
     return MelHtml.start
@@ -645,15 +675,23 @@ class MelLinkVisualizer extends MelLink {
         id: 'link-block-icon-image-' + this.id,
         class: `link-icon-image ${this.icon ? 'hidden' : ''}`,
         src: this.image,
-        onerror: 'imgError(this.id, `no-image-' + this.id + '`, `' + this.title[0] + '`)',
+        onerror:
+          'imgError(this.id, `no-image-' +
+          this.id +
+          '`, `' +
+          this.title[0] +
+          '`)',
       })
       .span({
-        id: 'no-image-' + this.id, class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`
+        id: 'no-image-' + this.id,
+        class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`,
       })
       .end('span')
       .icon(this.icon ?? '', {
-        id: 'link-icon-' + this.id, class: `link-with-icon ${!this.icon ? 'hidden' : ''}`
-      }).end('icon')
+        id: 'link-icon-' + this.id,
+        class: `link-with-icon ${!this.icon ? 'hidden' : ''}`,
+      })
+      .end('icon')
       .end()
       .span({ class: 'link-icon-title' })
       .text(this.title)
@@ -664,7 +702,7 @@ class MelLinkVisualizer extends MelLink {
 }
 
 class MelStoreLink extends MelLinkVisualizer {
-  constructor (id, title, link, icon, description, inLinks = false) {
+  constructor(id, title, link, icon, description, inLinks = false) {
     super(id, title, link, null, null, icon);
     this._setup_vars(description, link, inLinks);
   }
@@ -697,7 +735,8 @@ class MelStoreLink extends MelLinkVisualizer {
         'data-id': this.id,
       })
       .div({ class: 'store-link-icon-container' })
-      .icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' }).end('icon')
+      .icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' })
+      .end('icon')
       .end('div')
       .div({ class: 'store-link-text' })
       .a({
@@ -713,14 +752,18 @@ class MelStoreLink extends MelLinkVisualizer {
       .end('span')
       .end('div')
       .button({
-        class: `add-store-link mel-btn mel-btn-icon ${this.inLinks ? 'disabled' : ''}`, onclick: () => {
+        class: `add-store-link mel-btn mel-btn-icon ${this.inLinks ? 'disabled' : ''}`,
+        onclick: () => {
           window.linkManager.addStoreLink(this);
-        }
+        },
       })
       .span()
       .text(this.inLinks ? 'Ajouté ' : 'Ajouter')
       .end('span')
-      .icon(this.inLinks ? 'check_circle' : 'add_circle', { class: 'ml-4 fs-23' }).end()
+      .icon(this.inLinks ? 'check_circle' : 'add_circle', {
+        class: 'ml-4 fs-23',
+      })
+      .end()
       .end('button')
       .end('li')
       .generate();

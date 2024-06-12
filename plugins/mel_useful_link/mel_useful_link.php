@@ -61,7 +61,7 @@ class mel_useful_link extends bnum_plugin
 
       // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
 
-      if (!$this->rc->config->get('new_personal_useful_links', [])) {
+      if (!$this->rc->config->get('new_personal_useful_links', []) && $this->rc->config->get('personal_useful_links', [])) {
         
         $mul_items = $this->rc->config->get('personal_useful_links', []);
         $this->rc->user->save_prefs(array('save_personal_useful_links' => $mul_items));
@@ -173,6 +173,8 @@ class mel_useful_link extends bnum_plugin
       if(!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $newList])['done']) 
       {
         $this->rc->user->save_prefs(array('new_personal_useful_links' => $newList));
+        echo true;
+        exit;
       }
     }
 

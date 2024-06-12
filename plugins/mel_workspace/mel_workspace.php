@@ -1043,6 +1043,7 @@ class mel_workspace extends bnum_plugin
     const GROUP = "annuaire";
     const WEKAN = "wekan";
     const LINKS = "useful-links";
+    const TCHAP_CHANNEL = "tchap-channel";
 
     public function get_worskpace_services($workspace, $services_to_remove = false, $forceIsInWorkspace = false)
     {
@@ -1056,7 +1057,8 @@ class mel_workspace extends bnum_plugin
             self::EMAIL => $is_in_wsp && $this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $is_in_wsp && $this->get_object($workspace, self::CLOUD) === true,
             self::WEKAN => $is_in_wsp && $this->get_object($workspace, self::WEKAN) !== null,
-            self::LINKS => $is_in_wsp && $this->get_object($workspace, self::LINKS) !== null
+            self::LINKS => $is_in_wsp && $this->get_object($workspace, self::LINKS) !== null,
+            self::TCHAP_CHANNEL => $is_in_wsp && $this->get_object($workspace, self::TCHAP_CHANNEL) !== null
         ];
 
         if ($datas[self::TASKS] && !$datas[self::WEKAN])
@@ -1238,6 +1240,9 @@ class mel_workspace extends bnum_plugin
 
             if ($services[self::CHANNEL] && $this->channel_enabled !== null)
                 $services[self::CHANNEL] = $this->channel_enabled;
+
+            if($services[self::TCHAP_CHANNEL] && $this->channel_enabled !== null)
+                $services[self::TCHAP_CHANNEL] = $this->channel_enabled;
 
             //Email ou discussion
             if ($services[self::EMAIL] || $services[self::CHANNEL])
@@ -2089,7 +2094,8 @@ class mel_workspace extends bnum_plugin
 
         $services = $this->create_tasklist($workspace,$services, $users, $update_wsp, $default_values);
         $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
-        $services = $this->create_channel($workspace, $services, $users, $default_values);
+        //$services = $this->create_channel($workspace, $services, $users, $default_values);
+        $services = $this->create_tchap_channel($workspace, $services, $users, $default_values);
         $services = $this->create_service_group($workspace, $services, $fromUpdateApp);
 
         $this->create_service_links($workspace);
@@ -2264,7 +2270,6 @@ class mel_workspace extends bnum_plugin
                     $uid = $this->generate_channel_id_via_uid($workspace->uid);
                 case 'custom_name':
                     if (!isset($uid)) $uid = $this->generate_channel_id_via_uid($default_values['channel']['value']);
-
                     $rocket = $this->rc->plugins->get_plugin('rocket_chat');
                     $value = $rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
                     break;
@@ -2299,6 +2304,59 @@ class mel_workspace extends bnum_plugin
             }
 
             $this->save_object($workspace, self::CHANNEL, $config);
+        }
+        
+        $key = array_search($service, $services);
+
+        if ($key !== false)
+            unset($services[$key]);
+
+        return $services;
+    }
+
+    function create_tchap_channel(&$workspace, $services, $users, $default_values = null)
+    {
+        $service = self::TCHAP_CHANNEL;
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Services : ".json_encode($service)." => $service");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Can enter : ".($this->get_object($workspace,$service) === null && array_search($service, $services) !== false));
+        
+        if ($this->get_object($workspace,$service) === null)
+        {
+            if (!isset($default_values)) $default_values = ['channel' => ['mode' => 'default']];
+            else if (!isset($default_values['channel'])) $default_values['channel'] = ['mode' => 'default'];
+
+            $uid = null;
+            $value = null;
+            $config = [];
+            switch ($default_values['channel']['mode']) {
+                case 'default':
+                    $uid = $this->generate_channel_id_via_uid($workspace->uid);
+                case 'custom_name':
+                    if (!isset($uid)) $uid = $this->generate_channel_id_via_uid($default_values['channel']['value']);
+                    if (class_exists('tchap')) $value = tchap::create_tchap_room($uid, $users);
+                    
+                    break;
+
+                case 'already_exist':
+                    $value = $default_values['channel']['value']['id'];
+
+                    $config['edited'] = true;
+                    break;
+                default:
+                    return $this->create_tchap_channel($workspace, $services, $users, null);
+            }
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_tchap_channel]Valeur : ".json_encode($value));
+
+            if (is_string($value))
+            {
+                $config['id'] = $value;
+            }
+            else {
+                $value = $value["content"]["channel"];
+                $config['id'] = $value["_id"];
+            }
+
+            $this->save_object($workspace, self::TCHAP_CHANNEL, $config);
         }
         
         $key = array_search($service, $services);
@@ -2786,11 +2844,13 @@ class mel_workspace extends bnum_plugin
             try {
                 if (!(array_search(self::CHANNEL, $services) === false))
                 {
+                    
                     $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                    if ($workspace->uid === "apitech-1")
-                        $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
-                    else
-                        $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                    $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                }
+                if(!(array_search(self::TCHAP_CHANNEL, $services) === false))
+                {
+                    if (class_exists('tchap')) $value = tchap::invite_tchap_user($this->get_object($workspace, self::TCHAP_CHANNEL)->id, $users);
                 }
             } catch (\Throwable $th) {
                 //throw $th;
@@ -2834,6 +2894,14 @@ class mel_workspace extends bnum_plugin
                     try {
                         $rocket = $this->rc->plugins->get_plugin('rocket_chat');
                         $rocket->kick_user($this->get_object($workspace, self::CHANNEL)->id, $user, $workspace->ispublic === 0 ? true : false);
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                    break;
+                case self::TCHAP_CHANNEL:
+                    try {
+                        //kick du salon tchap
+                        if (class_exists('tchap')) $value = tchap::kick_member($this->get_object($workspace, self::TCHAP_CHANNEL)->id, $user);
                     } catch (\Throwable $th) {
                         //throw $th;
                     }
@@ -3050,6 +3118,19 @@ class mel_workspace extends bnum_plugin
                         $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
                     }
                 }
+                if ($services[self::TCHAP_CHANNEL])
+                {
+                    $can =true;
+                    try {
+                        $can = !($this->get_object($workspace, self::TCHAP_CHANNEL)->edited ?? false);
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                    if ($can)
+                    {
+                        if (class_exists('tchap')) $value = tchap::delete_tchap_room($this->get_object($workspace, self::TCHAP_CHANNEL)->id);
+                    }
+                }
 
             } catch (\Throwable $th) {
                 throw $th;
@@ -3086,6 +3167,7 @@ class mel_workspace extends bnum_plugin
                         }
                         $users = $tmp_users;
                         unset($tmp_user);
+                        if (class_exists('tchap')) $value = tchap::create_tchap_room($workspace->uid, $users);
                         $rocket = $this->rc->plugins->get_plugin('rocket_chat');
                         $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? false : true);
                         if (is_string($value["content"]))
@@ -3122,6 +3204,21 @@ class mel_workspace extends bnum_plugin
                         {
                             $rocket = $this->rc->plugins->get_plugin('rocket_chat');
                             $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                        }
+                        
+                        break;
+                    case self::TCHAP_CHANNEL:
+                        $can = true;
+                        try {
+                            if ($this->get_object($workspace, self::TCHAP_CHANNEL)->edited ?? false)
+                                $can = false;
+                        } catch (\Throwable $th) {
+                            //throw $th;
+                        }
+
+                        if ($can)
+                        {
+                            if (class_exists('tchap')) tchap::delete_tchap_room($this->get_object($workspace, self::TCHAP_CHANNEL)->id);
                         }
                         
                         break;

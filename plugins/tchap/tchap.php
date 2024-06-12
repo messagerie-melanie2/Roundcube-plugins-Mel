@@ -131,4 +131,158 @@ class tchap extends bnum_plugin
         $data = $this->get_input_post('_showsidebar');
         $this->rc()->user->save_prefs(['display_tchap_sidebar' => $data]);
     }
+
+    /**
+     * Créer un salon tchap via appel à l'api
+     * @param string $room_name
+     * @param array $users
+     * @param bool $is_private
+     */
+    public static function create_tchap_room($room_name, $users) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $mail_user = [];
+        foreach($users as $user) {
+            $mail_user[] = driver_mel::gi()->getUser($user)->email;
+        }
+        $config = ['token'=> $token, 'room_name'=> $room_name, 'is_private'=> true, 'users_list'=> $mail_user];
+        $content = self::call_tchap_api ($rcmail->config->get('migrate_channel_endpoint'), $config, 'POST');
+        if($content["httpCode"] === 200) {
+            return (json_decode($content['content'])->room_id);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Invite un utilisateur dans un salon tchap via l'api
+     * @param $room_id
+     * @param array $users
+     */
+    public static function invite_tchap_user($room_id, $users) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $mail_user = [];
+        foreach($users as $user) {
+            $mail_user[] = driver_mel::gi()->getUser($user)->email;
+        }
+        $config = ['token'=> $token, 'room_id'=> $room_id, 'users_list'=> $mail_user];
+        $content = self::call_tchap_api ($rcmail->config->get('invite_endpoint'), $config, 'POST');
+        if($content["httpCode"] === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * kick tout les users non admin (plus proche de la supression possible dans tchap)
+     * @param $room_id
+     */
+    public static function delete_tchap_room($room_id) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $config = ['token'=> $token, 'room_id'=> $room_id];
+        $url = $rcmail->config->get('tchap_bot_url') . $rcmail->config->get('delete_room_endpoint');
+        $content = self::call_tchap_api ($rcmail->config->get('delete_room_endpoint'), $config, 'DELETE');
+        if($content["httpdCode"] === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * vérfie si un utilisateur est membre d'un canal
+     * @param $room_id
+     * @param $user_id
+     * @return boolean
+     */
+    public static function is_member($room_id, $user_id) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $user_id = driver_mel::gi()->getUser($user_id)->email;
+        $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_id];
+        $content = self::call_tchap_api ($rcmail->config->get('ismember_endpoint'), $config, 'POST');
+        if($content["httpCode"] === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * kick un utilisateur d'un salon
+     * @param$room_id
+     * @param $user_id 
+     */
+    public static function kick_member($room_id, $user_id) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $user_id = driver_mel::gi()->getUser($user_id)->email;
+        $user_uid = self::get_user_tchap_id($user_id);
+        $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_uid];
+        $content = self::call_tchap_api ($rcmail->config->get('kick_user_endpoint'), $config, 'DELETE');
+        if($content["httpdCode"] === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @params $user_mail mail de l'utilisateur à chercher
+     */
+    private static function get_user_tchap_id ($user_mail) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $config = ['token'=> $token, 'user_mail'=> $user_mail];
+        $content = self::call_tchap_api($rcmail->config->get('get_user_uid'), $config, 'POST');
+        if($content["httpCode"] === 200) {
+            $content = json_decode($content['content']);
+            $user_uid = $content->user_id;
+            return $user_uid;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * retourne le token à utiliser pour l'api tchap
+     */
+    private static function get_tchap_token() {
+        $rcmail = rcmail::get_instance();
+        return hash('sha512', date('d/m/Y') . '-' . $rcmail->config->get('tchap_bot_token'));
+    }
+
+    /**
+     * @params $endpoint
+     * @params $config
+     * @params $type POST ou DELETE
+     */
+    private static function call_tchap_api ($endpoint, $config, $type) {
+        if(class_exists('mel_helper')) {
+            $rcmail = rcmail::get_instance();
+            $url = $rcmail->config->get('tchap_bot_url') . $endpoint;
+            $headers = [0 => 'Content-Type: application/json'];
+            if($rcmail->config->get('http_proxy') !== '') {
+                $headers[CURLOPT_PROXY] = $rcmail->config->get('http_proxy');
+            }
+            switch ($type) {
+                case 'DELETE':
+                    $content = mel_helper::load_helper($rcmail)->fetch("", false, 0)->_custom_url($url, 'DELETE', $config, null, $headers);
+                    break;
+                case 'POST';
+                default:
+                    $content = mel_helper::load_helper($rcmail)->fetch("", false, 0)->_post_url($url, $config, null, $headers);
+                    break;
+            }
+            return $content;
+        } else {
+            return false;
+        }
+
+    }
+
+
 }

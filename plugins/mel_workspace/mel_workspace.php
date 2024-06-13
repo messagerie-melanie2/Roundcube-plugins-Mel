@@ -2811,7 +2811,7 @@ class mel_workspace extends bnum_plugin
         }
     }
 
-    function _add_users(&$workspace, $users)
+    function _add_users(&$workspace, $users, $noNotif = false)
     {
         //get services
         $services = $this->get_worskpace_services($workspace, true, true);
@@ -2827,7 +2827,7 @@ class mel_workspace extends bnum_plugin
                 $share->rights = Share::RIGHT_WRITE;
                 $shares[] = $share;   
 
-                if (class_exists("mel_notification"))
+                if (class_exists("mel_notification") && !$noNotif)
                 {
                     $this->_notify_user($users[$i], $workspace, $users[$i]);
                 }
@@ -3260,7 +3260,7 @@ class mel_workspace extends bnum_plugin
         $workspace = self::get_workspace($uid);
         if ($workspace->ispublic === 1)
         {
-            $this->_add_users($workspace, [driver_mel::gi()->getUser()->uid]);
+            $this->_add_users($workspace, [driver_mel::gi()->getUser()->uid], true);
             self::edit_modified_date($workspace, false);
             $workspace->save();
         }

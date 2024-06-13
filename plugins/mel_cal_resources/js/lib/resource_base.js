@@ -12,6 +12,7 @@ import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.j
 import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { template_resource } from '../../skins/mel_elastic/js_template/resource.js';
+import { FavoriteLoader } from './favorite_loader.js';
 import { FilterBase } from './filter_base.js';
 import { ResourceBaseFunctions } from './resources_functions.js';
 
@@ -67,6 +68,7 @@ class ResourcesBase extends MelObject {
      * @description Ressources à afficher dans le tableau
      */
     this._p_resources = [];
+    this._init_resources = [];
     /**
      * Date de départ
      * @protected
@@ -152,7 +154,7 @@ class ResourcesBase extends MelObject {
         load_data_on_change: x.load_data_on_change,
         load_data_on_start: x.load_data,
         input_type: x.type,
-        icon: x.icon
+        icon: x.icon,
       })
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
@@ -258,6 +260,13 @@ class ResourcesBase extends MelObject {
     return this;
   }
 
+  try_add_resources(rcs) {
+    for (const iterator of rcs) {
+      this.try_add_resource(iterator, false);
+    }
+
+    return this;
+  }
 
   /**
    * Met à jours le texte de la date du planning
@@ -271,6 +280,11 @@ class ResourcesBase extends MelObject {
   }
 
   _generate_ui($fc) {
+    if (this._p_resources.length) {
+      this._init_resources = [...this._p_resources];
+      this._p_resources.length = 0;
+    }
+
     const settings = window.cal?.settings || top.cal.settings;
     const config = {
       resources: this._fetch_resources.bind(this),
@@ -279,7 +293,7 @@ class ResourcesBase extends MelObject {
       schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
       height: 200,
       firstHour: settings.first_hour,
-      scrollTime:  {hours:settings.first_hour},
+      scrollTime: { hours: settings.first_hour },
       slotDuration: { minutes: 60 / settings.timeslots },
       locale: 'fr',
       axisFormat: DATE_HOUR_FORMAT,
@@ -296,12 +310,10 @@ class ResourcesBase extends MelObject {
           id: 'resources',
         },
       ],
-    }
+    };
     try {
       $fc.css('width', '100%').fullCalendar(config);
       $fc.fullCalendar('render');
-
-
       //$fc.fullCalendar('option', 'height', 200);
       //$fc.fullCalendar('render');
     } catch (error) {
@@ -321,50 +333,33 @@ class ResourcesBase extends MelObject {
    * @param {function} callback
    */
   _fetch_resources(callback) {
-    const data = MelEnumerable.from(this._p_resources)
-      .where(
-        (x) => !MelEnumerable.from(this._p_filters).any((f) => !f.filter(x)),
-      )
+    FavoriteLoader.Load(this._name).then((values) => {
+      this.try_add_resources(values);
+
+      if (this._init_resources.length) {
+        this.try_add_resources(
+          this._init_resources.map((x) => (x.data ? x.data : x)),
+        );
+        this._init_resources.length = 0;
+      }
+
+      const data = this._format_resources(this._p_resources, this._p_filters);
+
+      if (!this._first_loaded) this._first_loaded = true;
+
+      if (data.length) callback(data);
+      else callback([{ id: 'resources', title: 'Aucune ressource' }]);
+    });
+  }
+
+  _format_resources(resources, filters) {
+    return MelEnumerable.from(resources)
+      .where((x) => !MelEnumerable.from(filters).any((f) => !f.filter(x)))
       .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
       .toArray();
-
-    if (
-      this._p_filters.filter(
-        (x) => x.name === rcmail.gettext('locality', 'mel_cal_resources'),
-      )?.[0]?.value === EMPTY_STRING &&
-      (!data.length ||
-        (this._p_resources.length === 1 && this._p_resources[0].data.selected))
-    ) {
-      const busy = rcmail.set_busy(true, 'loading');
-      this.http_internal_post({
-        task: 'mel_cal_resources',
-        action: 'load_favorites',
-        on_success: (rcs) => {
-          if (typeof rcs === 'string') rcs = JSON.parse(rcs);
-
-          rcmail.set_busy(false, 'loading', busy);
-
-          if (rcs && rcs.length) {
-            if (
-              !(
-                this._p_resources.length === 1 &&
-                this._p_resources[0].data.selected
-              )
-            )
-              this._p_resources.length = 0;
-
-            for (const iterator of rcs) {
-              this.try_add_resource(iterator, false);
-            }
-
-            this._fetch_resources(callback);
-            this._$calendar.fullCalendar('refetchEvents');
-          } else callback([{ id: 'resources', title: 'Aucune ressource' }]);
-        },
-      });
-    } else if (data.length) callback(data);
-    else callback([{ id: 'resources', title: 'Aucune ressource' }]);
   }
+
+  _load_favorites() {}
 
   /**
    * Fonction get pour la page de dialog retournée
@@ -411,7 +406,8 @@ class ResourcesBase extends MelObject {
           )
           .append($('<option value=""></option>').text(EMPTY_STRING));
 
-        if (this._p_filters[index]._input_type === 'multi-select') this._p_filters[index]._$filter.html(EMPTY_STRING);
+        if (this._p_filters[index]._input_type === 'multi-select')
+          this._p_filters[index]._$filter.html(EMPTY_STRING);
 
         values = {};
 
@@ -421,18 +417,17 @@ class ResourcesBase extends MelObject {
             iterator[this._p_filters[index]._name]
           ) {
             if (this._p_filters[index]._input_type === 'multi-select') {
-              for (const filter of Object.keys(JSON.parse(iterator[this._p_filters[index]._name]))) {
-                if(!values[filter]) {
+              for (const filter of Object.keys(
+                JSON.parse(iterator[this._p_filters[index]._name]),
+              )) {
+                if (!values[filter]) {
                   values[filter] = true;
                   this._p_filters[index]._$filter.append(
-                    $(
-                      `<option value="${filter}">${filter}</option>`,
-                    ),
+                    $(`<option value="${filter}">${filter}</option>`),
                   );
                 }
               }
-            }
-            else {
+            } else {
               values[iterator[this._p_filters[index]._name]] = true;
               this._p_filters[index]._$filter.append(
                 $(
@@ -440,7 +435,6 @@ class ResourcesBase extends MelObject {
                 ),
               );
             }
-
           }
         }
 
@@ -455,7 +449,8 @@ class ResourcesBase extends MelObject {
       }
 
       if (this._p_filters[index]._input_type === 'multi-select') {
-        if (this._p_filters[index]._$filter.children().length) this._p_filters[index]._$filter.multiselect('enable');
+        if (this._p_filters[index]._$filter.children().length)
+          this._p_filters[index]._$filter.multiselect('enable');
         else this._p_filters[index]._$filter.multiselect('disable');
 
         this._p_filters[index]._$filter.multiselect('rebuild');
@@ -508,20 +503,24 @@ export class ResourceSettings {
 
       //   if (this._has) return this._has;
       // }
-      return MelEnumerable.from(this._setting).select(x => ressource.data.caracteristiques.includes(x.replaceAll('\'', '"'))).all(x => x);
+      return MelEnumerable.from(this._setting)
+        .select((x) =>
+          ressource.data.caracteristiques.includes(x.replaceAll("'", '"')),
+        )
+        .all((x) => x);
     }
 
     //return false;
   }
 
   static ToString(setting) {
-    if (typeof setting === 'string')  setting = JSON.parse(setting);
+    if (typeof setting === 'string') setting = JSON.parse(setting);
 
     let str = [];
     for (const key in setting) {
       if (Object.hasOwnProperty.call(setting, key)) {
         const element = setting[key];
-        
+
         str.push(`${key} x${element}`);
       }
     }

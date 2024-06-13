@@ -242,6 +242,19 @@ class ResourceBaseFunctions {
           'align-items': 'center',
           padding: 0,
         });
+
+      if (
+        this._rcs &&
+        MelEnumerable.from(this._rcs)
+          .where((x) => x === resourceObj.data.email)
+          .any()
+      ) {
+        $(`.clock-loader[data-email="${resourceObj.data.email}"]`).remove();
+        $(`.resource-radio[data-email="${resourceObj.data.email}"]`).css(
+          'display',
+          EMPTY_STRING,
+        );
+      }
     }
   }
 
@@ -252,7 +265,18 @@ class ResourceBaseFunctions {
    * @param {*} timezone
    * @param {*} callback
    */
-  async event_loader(start, end, timezone, callback) {
+  event_loader(start, end, timezone, callback) {
+    this._functions.event_loader_async(start, end, timezone, callback);
+  }
+
+  /**
+   * @this {ResourcesBase}
+   * @param {*} start
+   * @param {*} end
+   * @param {*} timezone
+   * @param {*} callback
+   */
+  async event_loader_async(start, end, timezone, callback) {
     const cache_key = this._get_key_format(start, end);
     let return_data = [];
     if (this._cache[cache_key]) {
@@ -260,6 +284,8 @@ class ResourceBaseFunctions {
       $('.clock-loader').remove();
       $('.resource-radio').css('display', EMPTY_STRING);
     } else if (this._p_resources && this._p_resources.length) {
+      if (!this._first_loaded) await Mel_Promise.wait(() => this._first_loaded);
+
       let rcs = FreeBusyLoader.Instance.generate(
         this._p_resources.map((x) => x.data.email),
         {
@@ -269,34 +295,33 @@ class ResourceBaseFunctions {
         },
       );
 
-      //debugger;
-      for (const iterator of MelEnumerable.from(this._cache)
-        .select((x) => MaBoy.Deserialize(x.value))
-        .flat()
-        .select((x) => x.resourceId)
-        .distinct((x) => x)) {
-        $(`.clock-loader[data-email="${iterator}"]`).remove();
-        $(`.resource-radio[data-email="${iterator}"]`).css(
-          'display',
-          EMPTY_STRING,
-        );
-      }
-
+      let emails = [];
       for await (const slots of rcs) {
         for (const slot of slots) {
           if (!slot.isFree) {
             return_data.push(new MaBoy(slot, slots.email));
           }
         }
-
-        $(`.clock-loader[data-email="${slots.email}"]`).remove();
-        $(`.resource-radio[data-email="${slots.email}"]`).css(
-          'display',
-          EMPTY_STRING,
-        );
+        emails.push(slots.email);
       }
 
+      this._rcs = this._rcs || [];
+
+      this._rcs = MelEnumerable.from(this._p_resources)
+        .select((x) => x.data.email)
+        .aggregate(this._rcs)
+        .distinct((x) => x)
+        .toArray();
+
       this._cache[cache_key] = MaBoy.Serialise(return_data);
+
+      // for (const email of emails) {
+      //   $(`.clock-loader[data-email="${email}"]`).remove();
+      //   $(`.resource-radio[data-email="${email}"]`).css(
+      //     'display',
+      //     EMPTY_STRING,
+      //   );
+      // }
     }
 
     if (this.selected_resource) {
@@ -311,8 +336,9 @@ class ResourceBaseFunctions {
       });
     }
 
+    $('.clock-loader').remove();
+    $('.resource-radio').css('display', EMPTY_STRING);
     callback(return_data);
-    //FreeBusyLoader.Instance.get()
   }
 
   /**

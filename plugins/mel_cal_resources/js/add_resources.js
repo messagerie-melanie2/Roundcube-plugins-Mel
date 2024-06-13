@@ -17,8 +17,11 @@ import { getRelativePos } from '../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../mel_metapage/js/lib/mel_promise.js';
+import { FavoriteLoader } from './lib/favorite_loader.js';
 import { ResourcesBase } from './lib/resource_base.js';
 import { ResourceLocation } from './lib/resource_location.js';
+
+export { ResourceDialog };
 
 /**
  * @typedef ResourceConfig
@@ -55,7 +58,7 @@ import { ResourceLocation } from './lib/resource_location.js';
  * @classdesc Représente une dialog pour la gestion des ressources
  * @extends MelObject
  */
-export class ResourceDialog extends MelObject {
+class ResourceDialog extends MelObject {
   /**
    *
    * @param {?string} [resource_type=null]
@@ -159,8 +162,11 @@ export class ResourceDialog extends MelObject {
       if (!this._selected_resource)
         this._selected_resource = this.get_selected_resource();
 
+      FavoriteLoader.StartLoading(this.get_current_page_resource()._name);
+
       if (
-        window.selected_resources && this._selected_resource !== window.selected_resources[this._location.id]
+        window.selected_resources &&
+        this._selected_resource !== window.selected_resources[this._location.id]
       ) {
         $(`#radio-${window.selected_resources[this._location.id].uid}`).click();
       }
@@ -183,11 +189,14 @@ export class ResourceDialog extends MelObject {
         this.dialog._$dialog.find('[multiple="true"]').each((i, e) => {
           $(e).find('option[value="/"]').remove();
           $(e).find('option[value=""]').remove();
-          $(e).multiselect({
-            nonSelectedText: $(e).attr('data-fname'),
-            inheritClass: true,
-            buttonWidth: '100%'
-          }).attr('multiple', 'initialized').multiselect('rebuild');
+          $(e)
+            .multiselect({
+              nonSelectedText: $(e).attr('data-fname'),
+              inheritClass: true,
+              buttonWidth: '100%',
+            })
+            .attr('multiple', 'initialized')
+            .multiselect('rebuild');
         });
 
         this.set_date(
@@ -204,9 +213,13 @@ export class ResourceDialog extends MelObject {
           $('#eventedit').css('opacity', 0.5);
         }
         if (!this._scrolled) {
-          const element = resource._$calendar.find(`.fc-widget-header[data-date="${moment().startOf('day').add(cal.settings.first_hour, 'h').format('YYYY-MM-DD HH:mm').replace(' ', 'T')}:00"]`)[0];
+          const element = resource._$calendar.find(
+            `.fc-widget-header[data-date="${this._date.date_start.startOf('day').add(cal.settings.first_hour, 'h').format('YYYY-MM-DD HH:mm').replace(' ', 'T')}:00"]`,
+          )[0];
           const element_pos = getRelativePos(element);
-          resource._$calendar.find('.fc-body .fc-time-area .fc-scroller').first()[0].scrollLeft = element_pos.left;
+          resource._$calendar
+            .find('.fc-body .fc-time-area .fc-scroller')
+            .first()[0].scrollLeft = element_pos.left;
 
           this._scrolled = true;
         }
@@ -303,6 +316,7 @@ export class ResourceDialog extends MelObject {
       current_resource &&
       !$(`.mel-attendee[data-email="${current_resource.email}"]`).length
     ) {
+      if (!window.selected_resources) window.selected_resources = {};
       window.selected_resources[this._location.id] = current_resource;
       if (typeof this._caller_button === 'function')
         this._caller_button = this._caller_button();

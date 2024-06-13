@@ -222,7 +222,9 @@ class ResourcesBase extends MelObject {
     const button_save = RcmailDialogButton.ButtonSave({
       click: this.event_on_save,
     });
-    const button_cancel = RcmailDialogButton.ButtonCancel({});
+    const button_cancel = RcmailDialogButton.ButtonCancel({
+      click: () => $('.ui-dialog-titlebar-close').click(),
+    });
     let page = new DialogPage(this._name, {
       title: this._name,
       buttons: [button_save, button_cancel],

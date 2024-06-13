@@ -660,9 +660,6 @@ class mel_news extends rcube_plugin {
             <select title="Trier par : " id=news-select-order class="form-control input-mel mel-input" aria-describedby="basic-addon1">
               <options/>
             </select>
-            <div class="input-group-append">
-              <span id=basic-addon1 class="input-group-text mel-text" style="cursor:unset"><span class="icofont-sort"><span class="sr-only">Trier les news</span></span></span>
-            </div>
           </div>
         </div>';
 

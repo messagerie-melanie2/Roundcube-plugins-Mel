@@ -3263,6 +3263,16 @@ class mel_workspace extends bnum_plugin
             $this->_add_users($workspace, [driver_mel::gi()->getUser()->uid], true);
             self::edit_modified_date($workspace, false);
             $workspace->save();
+            $admins = self::get_admins($workspace);
+            foreach($admins as $admin)
+            {
+                if (class_exists("mel_notification"))
+                {
+                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.' vient de rejoindre l\'espace "'.$workspace->title.'" !','',null,$admin);
+                }
+            }
+            //récupérer tout les admins du workspaces
+            //for each notif
         }
         else
             echo "denied";
@@ -3704,11 +3714,28 @@ class mel_workspace extends bnum_plugin
     public static function get_other_admin($workspace, $username = null)
     {
         $me = $username ?? driver_mel::gi()->getUser()->uid;
-        foreach ($workspace->shares as $key => $value) {
-            if ($key !== $me && self::is_admin($key))
-                return $key;
+        $users = self::get_users($workspace);
+        foreach ($users as $user) {
+            if ($user !== $me && self::is_admin($user))
+                return $user;
         }
         return null;
+    }
+
+    public static function get_users($workspace){
+        foreach ($workspace->shares as $key => $value) {
+            yield $key;
+        }
+    }
+
+    public static function get_admins($workspace)
+    {
+        $users = self::get_users($workspace);
+        foreach ($users as $user){
+            if(self::is_admin($workspace, $user)){
+                yield $user;
+            }
+        }
     }
 
     public static function is_in_workspace($workspace, $username = null)
@@ -3875,10 +3902,9 @@ class mel_workspace extends bnum_plugin
     public function get_mails_from_workspace($workspace)
     {
         $mails = [];
-        $shares = $workspace->shares;
-
-        foreach ($shares as $key => $value) {
-            $tmp = driver_mel::gi()->getUser($key)->email;
+        $users = self::get_users($workspace);
+        foreach ($users as $user) {
+            $tmp = driver_mel::gi()->getUser($user)->email;
 
             if (isset($tmp)) $mails[] = $tmp;
         }
@@ -4083,14 +4109,15 @@ class mel_workspace extends bnum_plugin
     {
         //p => group / c => channel
         $shares = $wsp->shares;
+        $users = self::get_users($wsp);
 
         $rocket = $this->get_ariane();
 
-        foreach ($shares as $key => $user) {
+        foreach ($users as $user) {
             $room_id = $room->_id;
             $isPrivate = $room->t === 'p';
-            $rocket->add_users([$key], $room_id, $isPrivate);
-            $rocket->update_owner($key, $room_id, $isPrivate, !self::is_admin($wsp, $key));
+            $rocket->add_users([$user], $room_id, $isPrivate);
+            $rocket->update_owner($user, $room_id, $isPrivate, !self::is_admin($wsp, $user));
         }
     }
 

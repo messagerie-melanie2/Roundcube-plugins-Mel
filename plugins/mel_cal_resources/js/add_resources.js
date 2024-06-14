@@ -166,6 +166,7 @@ class ResourceDialog extends MelObject {
 
       if (
         window.selected_resources &&
+        window.selected_resources[this._location.id] &&
         this._selected_resource !== window.selected_resources[this._location.id]
       ) {
         $(`#radio-${window.selected_resources[this._location.id].uid}`).click();
@@ -370,6 +371,11 @@ class ResourceDialog extends MelObject {
     );
     GuestsPart.can = true;
     this._date.end._$fakeField.val(cr.end.format(DATE_HOUR_FORMAT)).change();
+
+    console.log(this._date.is_all_day, $('#rc-allday').prop('checked'));
+    if (this._date.is_all_day !== $('#rc-allday').prop('checked')) {
+      this._date.$allDay.click();
+    }
 
     this.dialog.hide();
   }

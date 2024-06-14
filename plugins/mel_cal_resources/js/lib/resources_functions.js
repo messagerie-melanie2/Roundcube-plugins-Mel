@@ -150,6 +150,12 @@ class ResourceBaseFunctions {
       .where((x) => x.data.uid === id)
       .firstOrDefault()?.data;
 
+    for (let i = 0; i < this._p_resources.length; ++i) {
+      if (this._p_resources[i].data.uid === id)
+        this._p_resources[i].data.selected = true;
+      else this._p_resources[i].data.selected = false;
+    }
+
     this._$calendar.fullCalendar('refetchEvents');
   }
 
@@ -160,20 +166,18 @@ class ResourceBaseFunctions {
    * @see {@link ResourceBaseFunctions.resource_render}
    */
   on_resource_label_clicked(e) {
-    for (let i = 0; i < this._p_resources.length; ++i) {
-      this._p_resources[i].data.selected = false;
-    }
-
-    e = $(e.currentTarget);
-    if (!e.attr('for'))
-      e = $(`label[for="${e.attr('id').replace('radio', EMPTY_STRING)}"`);
-
-    const id = e.data('id');
-    const index = MelEnumerable.from(this._p_resources)
-      .select((x, i) => ({ x, i }))
-      .where((x) => x.x.id === id)
-      .first().i;
-    this._p_resources[index].data.selected = true;
+    // for (let i = 0; i < this._p_resources.length; ++i) {
+    //   this._p_resources[i].data.selected = false;
+    // }
+    // e = $(e.currentTarget);
+    // if (!e.attr('for'))
+    //   e = $(`label[for="${e.attr('id').replace('radio', EMPTY_STRING)}"`);
+    // const id = e.data('id');
+    // const index = MelEnumerable.from(this._p_resources)
+    //   .select((x, i) => ({ x, i }))
+    //   .where((x) => x.x.id === id)
+    //   .first().i;
+    // this._p_resources[index].data.selected = true;
   }
 
   /**
@@ -188,22 +192,9 @@ class ResourceBaseFunctions {
       labelTds
         .css('display', 'flex')
         .prepend(
-          MelHtml.start
-            .icon('', {
-              id: `loader-${resourceObj.data.ui}`,
-              class: 'clock-loader animate',
-              style: 'align-self:center',
-              'data-email': resourceObj.data.email,
-            })
-            .end()
-            .generate(),
-        )
-        .prepend(
           $(
             `<input type="radio" class="resource-radio" data-email="${resourceObj.data.email}" id="radio-${resourceObj.data.uid}" value="${resourceObj.data.email}" name="resa" ${resourceObj.data.selected ? 'checked' : EMPTY_STRING} />`,
-          )
-            .click(this._functions.on_resource_selected)
-            .css('display', 'none'),
+          ).click(this._functions.on_resource_selected),
         )
         .append(
           MelHtml.start
@@ -242,19 +233,6 @@ class ResourceBaseFunctions {
           'align-items': 'center',
           padding: 0,
         });
-
-      if (
-        this._rcs &&
-        MelEnumerable.from(this._rcs)
-          .where((x) => x === resourceObj.data.email)
-          .any()
-      ) {
-        $(`.clock-loader[data-email="${resourceObj.data.email}"]`).remove();
-        $(`.resource-radio[data-email="${resourceObj.data.email}"]`).css(
-          'display',
-          EMPTY_STRING,
-        );
-      }
     }
   }
 
@@ -277,68 +255,44 @@ class ResourceBaseFunctions {
    * @param {*} callback
    */
   async event_loader_async(start, end, timezone, callback) {
-    const cache_key = this._get_key_format(start, end);
-    let return_data = [];
-    if (this._cache[cache_key]) {
-      return_data = MaBoy.Deserialize(this._cache[cache_key]);
-      $('.clock-loader').remove();
-      $('.resource-radio').css('display', EMPTY_STRING);
-    } else if (this._p_resources && this._p_resources.length) {
-      if (!this._first_loaded) await Mel_Promise.wait(() => this._first_loaded);
+    const key = `${start.format()}-${end.format()}`;
 
-      let rcs = FreeBusyLoader.Instance.generate(
-        this._p_resources.map((x) => x.data.email),
-        {
-          start,
-          end,
-          interval: FreeBusyLoader.Instance.interval,
-        },
-      );
+    let emails = this._p_resources
+      .map((x) => x.data.email)
+      .filter((x) => !this._cache[key]?.includes?.(x));
 
-      let emails = [];
+    if (emails.length > 0) {
+      if (!this._cache[key]) this._cache[key] = [];
+
+      this._cache[key].push(...emails);
+
+      let rcs = FreeBusyLoader.Instance.generate(emails, {
+        start,
+        end,
+        interval: FreeBusyLoader.Instance.interval,
+      });
+
       for await (const slots of rcs) {
         for (const slot of slots) {
           if (!slot.isFree) {
-            return_data.push(new MaBoy(slot, slots.email));
+            this._p_events.push(new MaBoy(slot, slots.email));
           }
         }
-        emails.push(slots.email);
       }
-
-      this._rcs = this._rcs || [];
-
-      this._rcs = MelEnumerable.from(this._p_resources)
-        .select((x) => x.data.email)
-        .aggregate(this._rcs)
-        .distinct((x) => x)
-        .toArray();
-
-      this._cache[cache_key] = MaBoy.Serialise(return_data);
-
-      // for (const email of emails) {
-      //   $(`.clock-loader[data-email="${email}"]`).remove();
-      //   $(`.resource-radio[data-email="${email}"]`).css(
-      //     'display',
-      //     EMPTY_STRING,
-      //   );
-      // }
     }
 
-    if (this.selected_resource) {
-      if (!this.start) await Mel_Promise.wait(() => !!this.start);
-      return_data.push({
-        title: 'Moi',
-        start: this.start,
-        end: this.end,
-        allDay: this.all_day,
-        resourceId: this.selected_resource?.email,
-        color: 'green',
-      });
-    }
-
-    $('.clock-loader').remove();
-    $('.resource-radio').css('display', EMPTY_STRING);
-    callback(return_data);
+    callback(
+      MelEnumerable.from(this._p_events)
+        .aggregate({
+          title: 'Moi',
+          start: this.start,
+          end: this.end,
+          allDay: this.all_day,
+          resourceId: this.selected_resource?.email,
+          color: 'green',
+        })
+        .toArray(),
+    );
   }
 
   /**
@@ -382,6 +336,8 @@ class MaBoy {
     this.end = slot.end;
     this.resourceId = email;
   }
+
+  isEqual(other) {}
 
   for_seralize() {
     return new MaBoy(

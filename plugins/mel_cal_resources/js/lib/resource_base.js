@@ -125,6 +125,7 @@ class ResourcesBase extends MelObject {
      */
     this._$calendar = null;
 
+    this._p_events = [];
     this._cache = {};
 
     /**

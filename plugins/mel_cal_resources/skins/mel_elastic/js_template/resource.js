@@ -64,7 +64,7 @@ function get_page(page, filters, resource) {
 
                                 if (resource._$calendar) resource._$calendar.fullCalendar('refetchEvents');
                             }).attr(resource.all_day ? 'checked' : 'notallday', resource.all_day)
-                        .label({ for:'rc-allday', class:'custom-control-label' }).text('All day').end()
+                        .label({ for:'rc-allday', class:'custom-control-label' }).text('all-day').end()
                     .end()
                 .end()
             .end()

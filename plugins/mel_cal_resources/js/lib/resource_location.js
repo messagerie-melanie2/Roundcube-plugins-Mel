@@ -79,6 +79,9 @@ class ResourceLocation extends AExternalLocationPart {
 
         if (data && data.length && this._$page && this._$page.length) {
           const current_resource = data[0];
+          this.location = `${current_resource.name} - ${current_resource.street} ${current_resource.postalcode} ${current_resource.locality}`;
+          this.update_and_remove_same_location();
+          this.onchange.call();
           this._$page
             .find('button')
             .html(
@@ -108,6 +111,20 @@ class ResourceLocation extends AExternalLocationPart {
     });
 
     BnumMessage.StopBusyLoading();
+  }
+
+  update_and_remove_same_location() {
+    const objs = EventView.INSTANCE.parts.location.locations;
+    for (const key in objs) {
+      if (Object.hasOwnProperty.call(objs, key)) {
+        const element = objs[key];
+
+        if (element.location === this.location) {
+          EventView.INSTANCE.parts.location.remove(element.id);
+          break;
+        }
+      }
+    }
   }
 
   async _update_old_attendees() {

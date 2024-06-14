@@ -377,6 +377,8 @@ class ResourceDialog extends MelObject {
       this._date.$allDay.click();
     }
 
+    this._location.location = `${current_resource.name} - ${current_resource.street} ${current_resource.postalcode} ${current_resource.locality}`;
+    this._location.onchange.call();
     this.dialog.hide();
   }
 

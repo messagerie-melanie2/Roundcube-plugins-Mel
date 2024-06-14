@@ -1510,6 +1510,8 @@ export class LocationPartManager extends IDestroyable {
     delete this._cached[id];
 
     this._update_selects(id);
+
+    this._on_change_action();
   }
 
   /**
@@ -1619,6 +1621,12 @@ export class LocationPartManager extends IDestroyable {
 
     $select = null;
     $tmp = null;
+
+    $select = $('.event-location-select');
+    let $icon = $select.parent().find('button.no-background bnum-icon');
+    if ($select.length === 1 && $icon.text() === 'delete') {
+      $icon.text('forms_add_on').parent().attr('title', 'Ajouter');
+    }
   }
 
   /**

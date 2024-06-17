@@ -410,6 +410,7 @@ class MelLinkVisualizer extends MelLink {
           return _image;
         },
         set: (value) => {
+          _image = value;
           $(`.link-block[data-id="${this.id}"] .link-icon-image`).show();
           $(`#no-image-${this.id}`).css('display', 'initial').text('');
           $(`.link-block[data-id="${this.id}"] .link-icon-image`).attr(

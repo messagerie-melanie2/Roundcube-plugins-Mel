@@ -16,24 +16,29 @@ class mel_cal_resources extends bnum_plugin {
             $this->get_current_action() === 'dialog-ui'
             ) {
 
-            if ($this->is_index_action())
+            if ($this->is_index_action() || $this->get_current_action() === 'dialog-ui')
             {
+                if ($this->is_index_action()){
+                    $this->add_button(array(
+                        'command' => 'calendar-planify',
+                        'class' => 'mel-cal-resource-planify',
+                        'innerclass' => 'inner',
+                        'id' => 'mel-planify',//tb_label_popup
+                        'title' => 'planify', // gets translated
+                        'type' => 'link',
+                        'label' => 'planify', // maybe put translated version of "Labels" here?
+                        'domain' => 'mel_cal_resources'
+                    ), 'toolbar');
+                }
+                
                 $this->add_texts('localization/', true);
-                $this->add_button(array(
-                    'command' => 'calendar-planify',
-                    'class' => 'mel-cal-resource-planify',
-                    'innerclass' => 'inner',
-                    'id' => 'mel-planify',//tb_label_popup
-                    'title' => 'planify', // gets translated
-                    'type' => 'link',
-                    'label' => 'planify', // maybe put translated version of "Labels" here?
-                    'domain' => 'mel_cal_resources'
-                ), 'toolbar');
                 $this->include_css('style.css');
                 $this->add_hook('send_page', [$this, 'render_page']);
             }
 
-            $this->load_data();
+
+
+            $this->load_data($this->get_current_action() === 'dialog-ui' ? 'waiting_dialog' : 'waiting_events');
         }
         else if ($this->get_current_task() === 'mel_cal_resources') {
             $this->register_task('mel_cal_resources');
@@ -45,7 +50,7 @@ class mel_cal_resources extends bnum_plugin {
         }
     }
 
-    function load_data() {
+    function load_data($waiting_script_name) {
         $this->load_config();
         $resources =  $this->rc()->config->get('rc_resources', []);
         $filters =  $this->rc()->config->get('rc_filters', []);
@@ -57,7 +62,7 @@ class mel_cal_resources extends bnum_plugin {
 
         $this->rc()->output->set_env('fav_resources', $this->rc()->config->get(self::CONFIG_KEY_FAVORITE, []));
 
-        $this->include_script('js/waiting_events.js');
+        $this->include_script("js/$waiting_script_name.js");
         $this->include_script('external/bootstrap-multiselect.js');
         $this->include_css('bootstrap-multiselect.min.css');
         $this->load_script_module('main', '/js/');
@@ -169,7 +174,7 @@ class mel_cal_resources extends bnum_plugin {
     }
 
     public function render_page($args) {
-        if (($this->get_current_task() === 'calendar' || $this->get_current_task() === 'ui-dialog') && $this->is_index_action()) {
+        if (($this->get_current_task() === 'calendar'  && $this->is_index_action()) || $this->get_current_action() === 'dialog-ui') {
             $args['content'] = mel_helper::HtmlPartManager($args['content'])->switch_part('date', 'locations')->get();
         }
 

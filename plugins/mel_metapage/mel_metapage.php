@@ -201,13 +201,6 @@ class mel_metapage extends bnum_plugin
             return;
         }
 
-        //$plugin = $rcmail->plugins->exec_hook('folder_update', ['record' => $folder]);
-
-
-
-
-
-
         $this->add_hook('logout_after', array($this, 'logout_after'));
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));

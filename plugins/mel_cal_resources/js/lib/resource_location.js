@@ -19,7 +19,6 @@ import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { ResourceDialogPage } from '../../skins/mel_elastic/js_template/resource_location.js';
 
 export { ResourceLocation };
-
 /**
  * @class
  * @classdesc Location d'un évènement pour une ressource.

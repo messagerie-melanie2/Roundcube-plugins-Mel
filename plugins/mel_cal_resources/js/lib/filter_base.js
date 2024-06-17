@@ -138,7 +138,12 @@ class FilterBase extends MelObject {
     });
 
     Object.defineProperty(this, '_$filter', {
-      get: () => $(`#filter-${this._id}`),
+      get: () => {
+        const $filter = $(`#filter-${this._id}`);
+
+        if ($filter.length) return $filter;
+        else return parent.$(`#filter-${this._id}`);
+      },
     });
 
     Object.defineProperty(this, 'value', {
@@ -252,7 +257,7 @@ class FilterBase extends MelObject {
         _function: this._load_data_on_start,
       },
       on_success: (data) => {
-        console.log('_load_first_data', data);
+        // console.log('_load_first_data', data);
         if (typeof data === 'string') data = JSON.parse(data);
 
         return_data = data;
@@ -277,7 +282,7 @@ class FilterBase extends MelObject {
         _value: this.value,
       },
       on_success: (data) => {
-        console.log('_load_data', data);
+        // console.log('_load_data', data);
         if (typeof data === 'string') data = JSON.parse(data);
 
         return_data = data;

@@ -487,7 +487,6 @@ class ResourcesBase extends MelObject {
 
 export class ResourceSettings {
   constructor(setting) {
-    //debugger;
     this._setting = typeof setting === 'string' ? JSON.parse(setting) : setting;
     this._has = false;
   }

@@ -130,6 +130,12 @@ class ResourceDialog extends MelObject {
       height: 500,
       close: () => {
         $('#eventedit').css('opacity', EMPTY_STRING);
+        if (!EventView.INSTANCE.is_jquery_dialog()) {
+          EventView.INSTANCE.get_dialog()
+            .modal.css('width', EMPTY_STRING)
+            .find('.modal-dialog')
+            .css('max-width', EMPTY_STRING);
+        }
       },
     });
 
@@ -154,11 +160,21 @@ class ResourceDialog extends MelObject {
    * @returns {Mel_Promise}
    */
   show() {
+    if (!EventView.INSTANCE.is_jquery_dialog()) {
+      EventView.INSTANCE.get_dialog()
+        .modal.css('width', '100%')
+        .find('.modal-dialog')
+        .css('max-width', 'unset');
+
+      this.dialog.options.width = '100%';
+    }
+
     this._selected_resource = this.get_selected_resource();
     return new Mel_Promise((current_promise) => {
       current_promise.start_resolving();
 
       this.dialog.show();
+
       if (!this._selected_resource)
         this._selected_resource = this.get_selected_resource();
 
@@ -372,13 +388,19 @@ class ResourceDialog extends MelObject {
     GuestsPart.can = true;
     this._date.end._$fakeField.val(cr.end.format(DATE_HOUR_FORMAT)).change();
 
-    console.log(this._date.is_all_day, $('#rc-allday').prop('checked'));
+    // console.log(this._date.is_all_day, $('#rc-allday').prop('checked'));
     if (this._date.is_all_day !== $('#rc-allday').prop('checked')) {
       this._date.$allDay.click();
     }
 
     this._location.location = `${current_resource.name} - ${current_resource.street} ${current_resource.postalcode} ${current_resource.locality}`;
     this._location.onchange.call();
+    if (!EventView.INSTANCE.is_jquery_dialog()) {
+      EventView.INSTANCE.get_dialog()
+        .modal.css('width', EMPTY_STRING)
+        .find('.modal-dialog')
+        .css('max-width', EMPTY_STRING);
+    }
     this.dialog.hide();
   }
 

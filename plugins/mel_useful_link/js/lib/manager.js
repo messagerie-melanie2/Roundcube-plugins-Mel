@@ -456,7 +456,7 @@ export class LinkManager extends MelObject {
             subLink.id,
             subLink.title,
             subLink.link,
-            subLink.image,
+            !subLink.icon ? (subLink.image ?? LinkManager.fetchIcon(subLink.link)) : '',
             true,
             subLink.icon,
           );
@@ -471,6 +471,7 @@ export class LinkManager extends MelObject {
           link.id,
           link.title,
           link.link,
+          !link.icon ? (link.image ?? LinkManager.fetchIcon(link.link)) : '',
           link.image,
           false,
           link.icon,

@@ -597,7 +597,7 @@ class MelLinkVisualizer extends MelLink {
         class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`,
       })
       .end('span')
-      .icon(this.icon ?? '', {
+      .icon(this.icon || '', {
         id: 'link-icon-' + this.id,
         class: `link-with-icon ${!this.icon ? 'hidden' : ''}`,
       })
@@ -688,7 +688,7 @@ class MelLinkVisualizer extends MelLink {
         class: `link-icon-no-image ${this.icon ? 'hidden' : ''}`,
       })
       .end('span')
-      .icon(this.icon ?? '', {
+      .icon(this.icon || '', {
         id: 'link-icon-' + this.id,
         class: `link-with-icon ${!this.icon ? 'hidden' : ''}`,
       })

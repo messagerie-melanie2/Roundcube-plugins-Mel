@@ -796,14 +796,13 @@
 			return this;
 		}
 
-		delete() {
+		async delete() {
+			const loadJsModule = window.loadJsModule ?? parent.loadJsModule ?? top.loadJsModule;
+			const { MelDialog } = await loadJsModule('mel_metapage', 'modal.js', '/js/lib/classes/');
+				
 			this.busy();
 
-			if (
-				confirm(
-					'Êtes-vous sûr de vouloir supprimer cet espace de travail ?\r\nAttention, cette action sera irréversible !',
-				)
-			) {
+			if (await MelDialog.Confirm(`Êtes-vous sûr de vouloir supprimer l'espace de travail : ${$('.header-wsp').text()} ? <br/> Attention, cette action sera irréversible !`, { waiting_button_enabled:5, title:'Confirmation', button_confirm:'Supprimer l\'espace', options:{ height:105 }})) {
 				return this.ajax(
 					this.url('delete_workspace'),
 					{

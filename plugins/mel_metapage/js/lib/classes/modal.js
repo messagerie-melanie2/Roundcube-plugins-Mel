@@ -2,6 +2,7 @@ import { EMPTY_STRING } from '../constants/constants.js';
 import { MelHtml } from '../html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../mel_events.js';
 import { MelObject } from '../mel_object.js';
+import { Mel_Promise } from '../mel_promise.js';
 import { NotifierObject } from './NotifierObject.js';
 import { VisualiserObject } from './VisualiserObject.js';
 import { BaseStorage } from './base_storage.js';
@@ -583,6 +584,89 @@ class DialogPage {
   static DrawChoice(title, button1, button2, name = 'choice') {
     return this.DrawChoices(title, { name, buttons: [button1, button2] });
   }
+
+  /**
+   * Permet de modifier un objet 'RcmailDialogButton'.
+   * @callback OnButtonCreatedCallback
+   * @param {RcmailDialogButton} button
+   * @returns {RcmailDialogButton}
+   */
+
+  /**
+   * Permet de modifier un objet 'DialogPage'
+   * @callback OnPageCreatedCallback
+   * @param {DialogPage} page
+   * @returns {DialogPage}
+   */
+
+  /**
+   * Affiche une page de confirmation.
+   *
+   * Le bouton de confirmation peut ou pas s'activer au bout de X secondes.
+   * @param {string} text Texte de la modale.
+   * @param {EventClickCallback} callback Action à faire lorsque l'on clique sur la confirmation
+   * @param {Object} optionnals Paramètres optionnels
+   * @param {string} [optionnals.title=''] Titre de la modale
+   * @param {string} [optionnals.button_confirm='Ok'] Texte du bouton de confirmation
+   * @param {string} [optionnals.button_confirm='Annuler'] Texte du bouton d'annulation
+   * @param {string} [optionnals.name='confirm'] Id de la page
+   * @param {?EventClickCallback} [optionnals.oncancel=null] Action à l'annulation. Si null, ferme la modale.
+   * @param {boolean} [optionnals.center=false] Centrer le texte ?
+   * @param {?OnButtonCreatedCallback} [optionnals.on_button_ok_object_created=null] Est appelé après la création du bouton de confirmation. Permet de modifier le bouton.
+   * @param {?OnButtonCreatedCallback} [optionnals.on_button_cancel_object_created=null] Est appelé après la création du bouton d'annulation. Permet de modifier le bouton.
+   * @param {?OnPageCreatedCallback} [optionnals.on_page_object_created=null] Est appelé après la création de la page. Permet de modifier la page.
+   * @returns {DialogPage}
+   * @static
+   */
+  static DrawConfirm(
+    text,
+    callback,
+    {
+      title = EMPTY_STRING,
+      button_confirm = 'Ok',
+      button_cancel = 'Annuler',
+      name = 'confirm',
+      oncancel = null,
+      center = false,
+      on_button_ok_object_created = null,
+      on_button_cancel_object_created = null,
+      on_page_object_created = null,
+    },
+  ) {
+    let rcbutton_ok = RcmailDialogButton.ButtonSave({
+      text: button_confirm,
+      click: callback,
+    }); /*new RcmailDialogButton(button_confirm, {
+      click: callback,
+    });*/
+
+    rcbutton_ok = on_button_ok_object_created?.(rcbutton_ok) ?? rcbutton_ok;
+
+    let rcbutton_cancel = RcmailDialogButton.ButtonCancel({
+      text: button_cancel,
+      click: oncancel ? oncancel : () => {},
+    });
+    /*new RcmailDialogButton(button_cancel, {
+      click: oncancel ? oncancel : () => {},
+    });*/
+
+    rcbutton_cancel =
+      on_button_cancel_object_created?.(rcbutton_cancel) ?? rcbutton_cancel;
+
+    let page = new DialogPage(name, {
+      title: title,
+      buttons: [rcbutton_cancel, rcbutton_ok],
+    });
+
+    page
+      .start_update_content({ force_restart: true })
+      .div({ style: `text-align:${center ? 'center' : 'left'}` })
+      .css('width', '100%')
+      .text(text)
+      .end();
+
+    return on_page_object_created?.(page) ?? page;
+  }
 }
 
 /**
@@ -956,6 +1040,134 @@ class MelDialog {
       ? new JQueryDialogPage(name, { content, title, buttons })
       : new DialogPage(name, { content, title, buttons });
     return new MelDialog(page, options);
+  }
+
+  static CreateConfirmDialog(
+    text,
+    callback,
+    {
+      title = EMPTY_STRING,
+      button_confirm = 'Ok',
+      button_cancel = 'Annuler',
+      name = 'confirm',
+      oncancel = null,
+      center = false,
+      on_button_ok_object_created = null,
+      on_button_cancel_object_created = null,
+      on_page_object_created = null,
+      options = {},
+    },
+  ) {
+    const page = DialogPage.DrawConfirm(text, callback, {
+      title,
+      button_confirm,
+      button_cancel,
+      name,
+      oncancel,
+      center,
+      on_button_cancel_object_created,
+      on_button_ok_object_created,
+      on_page_object_created,
+    });
+
+    return new MelDialog(page, options);
+  }
+
+  /**
+   * Affiche une page de confirmation.
+   *
+   * Le bouton de confirmation peut ou pas s'activer au bout de X secondes.
+   * @param {string} text Texte de la modale.
+   * @param {Object} optionnals Paramètres optionnels
+   * @param {EventClickCallback} [optionnals.onok=(()=>{})] Action à faire lors de la validation
+   * @param {string} [optionnals.title=''] Titre de la modale
+   * @param {string} [optionnals.button_confirm='Ok'] Texte du bouton de confirmation
+   * @param {string} [optionnals.button_confirm='Annuler'] Texte du bouton d'annulation
+   * @param {?EventClickCallback} [optionnals.oncancel=null] Action à l'annulation. Si null, ferme la modale.
+   * @param {boolean} [optionnals.center=false] Centrer le texte ?
+   * @param {boolean} [optionnals.waiting_button_enabled=0] En seconde, au bout de combien de temps le bouton de confirmation est actif.
+   * @param {Object<string, any>} [optionnals.options={}]  Options de la boite de dialogue. Voir {@link https://api.jqueryui.com/dialog/}
+   * @returns {DialogPage}
+   * @static
+   */
+  static async Confirm(
+    text,
+    {
+      onok = () => {},
+      title = EMPTY_STRING,
+      button_confirm = 'Ok',
+      button_cancel = 'Annuler',
+      oncancel = null,
+      center = false,
+      waiting_button_enabled = 0,
+      options = {},
+    },
+  ) {
+    return await new Mel_Promise((current_promise) => {
+      current_promise.start_resolving();
+      let function_ok = null;
+
+      if (waiting_button_enabled > 0) {
+        //On désactive le bouton de confirmation
+        function_ok = (button) => {
+          button.classes += ' disabled needToBeEnabled';
+          return button;
+        };
+      }
+
+      let dialog = this.CreateConfirmDialog(
+        text,
+        (...args) => {
+          onok(...args);
+          dialog.hide();
+          //On détruit la modale après appuie du bouton
+          setTimeout(
+            (_dialog) => {
+              _dialog.destroy();
+            },
+            1000,
+            dialog,
+          );
+          current_promise.resolve(true);
+        },
+        {
+          title,
+          button_confirm,
+          button_cancel,
+          center,
+          options,
+          on_button_ok_object_created: function_ok,
+          oncancel: (...args) => {
+            if (oncancel) oncancel(...args);
+            dialog.hide();
+            //On détruit la modale après appuie du bouton
+            setTimeout(
+              (_dialog) => {
+                _dialog.destroy();
+              },
+              1000,
+              dialog,
+            );
+            current_promise.resolve(false);
+          },
+        },
+      );
+
+      dialog.show();
+
+      //On vire le bouton "close"
+      dialog._$dialog.parent().find('button.ui-dialog-titlebar-close').remove();
+      setTimeout(
+        (_dialog) => {
+          _dialog._$dialog
+            .parent()
+            .find('.needToBeEnabled')
+            .removeClass('disabled');
+        },
+        waiting_button_enabled * 1000,
+        dialog,
+      );
+    });
   }
 }
 

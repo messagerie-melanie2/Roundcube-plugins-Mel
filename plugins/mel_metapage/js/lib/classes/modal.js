@@ -1042,6 +1042,13 @@ class MelDialog {
     return new MelDialog(page, options);
   }
 
+  /**
+   *
+   * @param {*} text
+   * @param {*} callback
+   * @param {*} param2
+   * @returns
+   */
   static CreateConfirmDialog(
     text,
     callback,

@@ -1689,6 +1689,11 @@ class mel_workspace extends bnum_plugin
             if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA /*|| ($key === self::CLOUD && $value)*/ || $key === self::WEKAN)
                 continue;
 
+            if ($key === self::CLOUD && 
+                (!mel_helper::stockage_active() || 
+                    (mel_metapage::have_0_quota() && mel_helper::stockage_active())
+                )) continue;
+
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';
             $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
@@ -2320,7 +2325,7 @@ class mel_workspace extends bnum_plugin
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Services : ".json_encode($service)." => $service");
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Can enter : ".($this->get_object($workspace,$service) === null && array_search($service, $services) !== false));
         
-        if ($this->get_object($workspace,$service) === null)
+        if ($this->get_object($workspace,$service) === null && array_search($service, $services) !== false)
         {
             if (!isset($default_values)) $default_values = ['channel' => ['mode' => 'default']];
             else if (!isset($default_values['channel'])) $default_values['channel'] = ['mode' => 'default'];

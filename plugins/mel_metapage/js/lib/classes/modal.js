@@ -1088,6 +1088,7 @@ class MelDialog {
    * @param {boolean} [optionnals.waiting_button_enabled=0] En seconde, au bout de combien de temps le bouton de confirmation est actif.
    * @param {Object<string, any>} [optionnals.options={}]  Options de la boite de dialogue. Voir {@link https://api.jqueryui.com/dialog/}
    * @returns {DialogPage}
+   * @example var can = await MelDialog.Confirm('Veux-tu supprimer cet espace ?', {waiting_button_enabled:5, title:'Confirmation'});
    * @static
    */
   static async Confirm(

@@ -1158,16 +1158,37 @@ class MelDialog {
 
       //On vire le bouton "close"
       dialog._$dialog.parent().find('button.ui-dialog-titlebar-close').remove();
-      setTimeout(
-        (_dialog) => {
-          _dialog._$dialog
-            .parent()
-            .find('.needToBeEnabled')
-            .removeClass('disabled');
-        },
-        waiting_button_enabled * 1000,
-        dialog,
-      );
+
+      if (waiting_button_enabled > 0) {
+        dialog._$dialog
+          .parent()
+          .find('.needToBeEnabled')
+          .append(
+            $('<span>')
+              .css('margin-left', '5px')
+              .attr('id', 'ntbeid')
+              .text(`(${waiting_button_enabled})`),
+          );
+        let it = 0;
+        const interval = setInterval(
+          (_$button, _waiting_button_enabled) => {
+            if (it >= _waiting_button_enabled) {
+              _$button.removeClass('disabled');
+              _$button.find('#ntbeid').remove();
+              clearInterval(interval);
+            } else {
+              _$button
+                .find('#ntbeid')
+                .text(`(${_waiting_button_enabled - it})`);
+
+              ++it;
+            }
+          },
+          1000,
+          dialog._$dialog.parent().find('.needToBeEnabled'),
+          waiting_button_enabled,
+        );
+      }
     });
   }
 }

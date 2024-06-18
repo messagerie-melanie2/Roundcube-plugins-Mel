@@ -2115,7 +2115,7 @@ class mel_workspace extends bnum_plugin
         $create_nc = $search !== false;
 
         if (!$create_nc && $fromUpdateApp)
-            return $service;
+            return $services;
 
         $this->create_group($workspace, $create_nc);
 

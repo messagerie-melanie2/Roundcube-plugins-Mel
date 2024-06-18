@@ -30,7 +30,7 @@ $(document).ready(async () => {
   if (
     await MelDialog.Confirm('Veux-tu le faire ?', {
       title: 'le faire ?',
-      waiting_button_enabled: 5,
+      waiting_button_enabled: 0,
     })
   ) {
     alert('gg');

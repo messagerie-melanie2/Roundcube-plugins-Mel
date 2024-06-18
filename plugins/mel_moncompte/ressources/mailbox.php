@@ -290,7 +290,9 @@ class M2mailbox {
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'mailbox','foldername' => driver_mel::gi()->mceToRcId($id)));
 
       $table->add('name', $name);
-      $table->add('subscribed', $checkbox_subscribe->show((!isset($hidden_mailboxes[$object_id]) ? $object_id : ''), array('value' => $object_id)));
+
+      //0008216: Page Messagerie: Affichage de la BAL par défaut
+      $table->add('subscribed', $checkbox_subscribe->show((!isset($hidden_mailboxes[$object_id]) ? $object_id : ''), array('value' => $object_id, 'disabled' => ($object_id === $this->user->uid && !isset($hidden_mailboxes[$object_id])) ? true : false)));
     }
 
     // set client env

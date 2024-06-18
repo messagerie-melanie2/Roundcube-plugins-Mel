@@ -28,8 +28,8 @@ $(document).ready(async () => {
   // window.dialog = dialog;
 
   if (
-    await MelDialog.Confirm('Veux-tu un kebab ?', {
-      title: 'KFC ?',
+    await MelDialog.Confirm('Veux-tu le faire ?', {
+      title: 'le faire ?',
       waiting_button_enabled: 5,
     })
   ) {

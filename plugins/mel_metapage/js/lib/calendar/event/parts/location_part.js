@@ -1555,6 +1555,7 @@ export class LocationPartManager extends IDestroyable {
     }
 
     //On gère le cache. Tout les modes qui éxistent sont garder en mémoire.
+    const last = this.locations[id];
     if (!this._cached[id]) this._cached[id] = {};
     this._cached[id][this.locations[id].option_value()] = this.locations[id];
 
@@ -1567,6 +1568,16 @@ export class LocationPartManager extends IDestroyable {
       ))('', id, this._category).generate($(`#location-${id}-container`));
       this.locations[id].onchange.push(this._on_change_action.bind(this));
     }
+
+    const new_loc = this.locations[id];
+
+    rcmail.triggerEvent('location.changed', {
+      oe: event,
+      manager: this,
+      id,
+      new: new_loc,
+      last,
+    });
 
     this._update_selects(id);
     this._on_change_action();

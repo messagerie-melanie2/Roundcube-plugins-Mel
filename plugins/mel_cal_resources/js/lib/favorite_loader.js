@@ -5,17 +5,42 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 export { FavoriteLoader };
 
 /**
+ * Contient les classes utiles pour la récupération et gestion des resources favorites
+ * @module Resources/Favorites/Loaders
+ * @local FavoriteData
+ * @local FavoriteLoader
+ * @local FavoriteLoaderWrapper
+ */
+
+/**
  * @typedef FavoriteData
  * @property {string} date
  * @property {import('./resource_base.js').ResourceData[]} data
  *
  */
 
+/**
+ * @class
+ * @classdesc Récupère les données favorites. Récupère les favoris depuis le stockage local. Chaque jour, les données sont récupérés depuis le serveur avant d'être stocké en local.
+ * @extends {MelObject}
+ */
 class FavoriteLoader extends MelObject {
+  /**
+   * Constructeur de la classe.
+   *
+   * Un loader existe par type de ressource.
+   * @param {string} type Type de ressource. (flex office etc....)
+   */
   constructor(type) {
     super(type);
   }
 
+  /**
+   * Fonction principale de la classe
+   * @private
+   * @param {string} type Type de ressource. (flex office etc....)
+   * @override
+   */
   main(type) {
     super.main(type);
 
@@ -33,6 +58,11 @@ class FavoriteLoader extends MelObject {
     });
   }
 
+  /**
+   * Sauvegarde des favoris en local
+   * @param {import('./resource_base.js').ResourceData[]} favs Favoris à sauvegarder
+   * @returns {FavoriteLoader} Chaînage
+   */
   save_favorites(favs) {
     let loaded = this._set_date(moment().startOf('day'));
 
@@ -44,8 +74,8 @@ class FavoriteLoader extends MelObject {
   }
 
   /**
-   *
-   * @param  {...import('./resource_base.js').ResourceData} favs
+   * Ajoute des favoris au stockage local
+   * @param  {...import('./resource_base.js').ResourceData} favs Favoris à ajouter
    * @returns {FavoriteLoader} chaînage
    */
   add_favorites(...favs) {
@@ -60,6 +90,11 @@ class FavoriteLoader extends MelObject {
     return this.save_favorites(loaded.data);
   }
 
+  /**
+   * Supprime des favoris. Se base sur les emails qui sont uniques.
+   * @param  {...string} emails Favoris à supprimer
+   * @returns {FavoriteLoader} Chaînage
+   */
   remove_favorites(...emails) {
     let loaded = this._get_data_saved();
 
@@ -70,6 +105,11 @@ class FavoriteLoader extends MelObject {
     return this.save_favorites(loaded.data);
   }
 
+  /**
+   * Vérifie si les données sont obsolète ou non
+   * @param {?FavoriteData} [loaded=null] Données déjà chargés. Si ce n'est pas le cas, les récupère depuis lo stockage local. Evite les chargements multiples.
+   * @returns {boolean} Si vrai : pas obsolète, sinon obsolète.
+   */
   is_same_date(loaded = null) {
     return (
       (loaded?.date ?? this._get_data_saved().date) ===
@@ -77,13 +117,18 @@ class FavoriteLoader extends MelObject {
     );
   }
 
+  /**
+   * Force la récupèration des données, sans passer par la récupération serveur.
+   * @returns {import('./resource_base.js').ResourceData[]}
+   */
   force_load_favorites() {
     return this._get_data_saved().data;
   }
 
   /**
-   *
+   * Récupère les favoris, si les favoris local sont obsolète, les récupères depuis la bdd.
    * @returns {Promise<import('./resource_base.js').ResourceData[]}
+   * @async
    */
   async load_favorites() {
     const loaded = this._get_data_saved();
@@ -108,6 +153,7 @@ class FavoriteLoader extends MelObject {
   }
 
   /**
+   * Met le jour en cours en données local.
    * @private
    * @param {external:moment} date
    * @returns {FavoriteData}
@@ -121,6 +167,7 @@ class FavoriteLoader extends MelObject {
   }
 
   /**
+   * Récupère les données locales
    * @private
    * @returns {FavoriteData}
    */
@@ -128,29 +175,65 @@ class FavoriteLoader extends MelObject {
     return this.load(this.key, { date: moment().format(), data: [] });
   }
 
+  /**
+   * Sauvegarde les favoris dans le stockage local
+   * @param {string} type Type de resource (flex office etc....)
+   * @param {import('./resource_base.js').ResourceData[]} favs Favoris à sauvegarder
+   * @returns {FavoriteLoader} Instance
+   * @static
+   */
   static Save(type, favs) {
     return this._Get(type).save_favorites(favs);
   }
 
+  /**
+   * Ajoute des favoris au stockage local
+   * @param {string} type Type de resource (flex office etc....)
+   * @param {...import('./resource_base.js').ResourceData} favs Favoris à sauvegarder
+   * @returns {FavoriteLoader} Instance
+   * @static
+   */
   static Add(type, ...favs) {
     return this._Get(type).add_favorites(...favs);
   }
 
+  /**
+   * Supprime des favoris. Se base sur les emails qui sont uniques.
+   * @param {string} type Type de resource (flex office etc....)
+   * @param  {...string} emails Favoris à supprimer
+   * @returns {FavoriteLoader} Chaînage
+   * @static
+   */
   static Remove(type, ...emails) {
     return this._Get(type).remove_favorites(...emails);
   }
 
+  /**
+   * Vérifie si les données sont obsolète ou non
+   * @param {string} type Type de resource (flex office etc....)
+   * @returns {boolean} Si vrai : pas obsolète, sinon obsolète.
+   * @static
+   */
   static IsSameDate(type) {
     return this._Get(type).is_same_date();
   }
 
+  /**
+   * Force la récupèration des données, sans passer par la récupération serveur.
+   * @param {string} type Type de resource (flex office etc....)
+   * @returns {import('./resource_base.js').ResourceData[]}
+   * @static
+   */
   static Force_Load(type) {
     return this._Get(type).force_load_favorites();
   }
 
   /**
-   *
+   * Récupère les favoris, si les favoris local sont obsolète, les récupères depuis la bdd.
+   * @param {string} type Type de resource (flex office etc....)
    * @returns {Promise<import('./resource_base.js').ResourceData[]}
+   * @async
+   * @static
    */
   static async Load(type) {
     let instance = this._Get(type);
@@ -163,6 +246,12 @@ class FavoriteLoader extends MelObject {
     } else return await this._Get(type).load_favorites();
   }
 
+  /**
+   * Commence à récupèrer les favoris depuis la base
+   * @param {string} type Type de resource (flex office etc....)
+   * @returns {typeof FavoriteLoader}
+   * @static
+   */
   static StartLoading(type) {
     if (!this.IsSameDate(type)) {
       this._Get(type)._promise = this.Load(type);
@@ -172,9 +261,12 @@ class FavoriteLoader extends MelObject {
   }
 
   /**
+   * Récupère une instance de FavoriteLoader en fonction du type.
    *
-   * @param {*} type
-   * @returns {FavoriteLoader}
+   * Les instances sont détruites au bout de 5 minutes.
+   * @private
+   * @param {string} type Type de resource (flex office etc....)
+   * @returns {FavoriteLoader} Instance
    */
   static _Get(type) {
     if (!instances[type]) {
@@ -197,4 +289,16 @@ class FavoriteLoader extends MelObject {
   }
 }
 
+/**
+ * @typedef FavoriteLoaderWrapper
+ * @property {?number} timeout Id du timeout
+ * @property {FavoriteLoader} loader Instance du loader
+ */
+
+/**
+ * Instances de FavoritesLoaders
+ * @package
+ * @type {Object<string, FavoriteLoaderWrapper>}
+ * @frommodule Resources/Favorites/Loaders {@linkto FavoriteLoaderWrapper}
+ */
 let instances = {};

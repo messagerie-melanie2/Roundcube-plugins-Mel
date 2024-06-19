@@ -13,10 +13,20 @@ import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { template_resource } from '../../skins/mel_elastic/js_template/resource.js';
 import { FavoriteLoader } from './favorite_loader.js';
-import { FilterBase } from './filter_base.js';
+import { FilterBase, eInputType } from './filter_base.js';
 import { ResourceBaseFunctions } from './resources_functions.js';
 
-export { ResourcesBase };
+export { ResourcesBase, ResourceSettings };
+
+/**
+ * Contient les classes qui permet de gérer et afficher les ressources
+ * @module Resources
+ * @property {module:Resources/Filters} Filters
+ * @property {module:Resources/Favorites/Loaders} FavoriteLoader
+ * @local ResourceData
+ * @local ResourcesBase
+ * @local ResourceObject
+ */
 
 /**
  * @typedef ResourceData
@@ -42,32 +52,61 @@ export { ResourcesBase };
  */
 
 /**
+ * @typedef ResourceObject
+ * @property {ResourceData} data
+ */
+
+/**
  * @class
  * @classdesc Représente une ressource
  * @extends MelObject
  */
 class ResourcesBase extends MelObject {
+  /**
+   * Constructeur de la classe
+   * @param {string} name Id de la ressource
+   * @param {FilterConfig[]} filters Liste des filtres de la ressource. Ils seront convertit en {@link FilterBase}
+   */
   constructor(name, filters) {
     super(name, filters);
   }
 
+  /**
+   * Fonction principale
+   * @override
+   * @private
+   * @param  {...any} args
+   */
   main(...args) {
     this._init()._setup(...args);
   }
 
+  /**
+   * Initialise les variables
+   * @private
+   * @returns {ResourcesBase} Chaînage
+   */
   _init() {
     /**
      * @protected
      * @type {Array<FilterBase>}
      * @description Contient la liste des filtres qui est possible d'appliquer
+     * @frommodule Resources/Filters {@linkto FilterBase}
      */
     this._p_filters = [];
     /**
      * @protected
-     * @type {Array}
+     * @type {Array<ResourceObject>}
      * @description Ressources à afficher dans le tableau
-     */
+     * @frommodule Resources {@linkto ResourceObject}
+     * */
     this._p_resources = [];
+    /**
+     * @package
+     * @type {Array<ResourceObject>}
+     * @description Ressources à afficher dans le tableau. Ce sont les ressources de départ.
+     * @frommodule Resources {@linkto ResourceObject}
+     */
     this._init_resources = [];
     /**
      * Date de départ
@@ -125,7 +164,18 @@ class ResourcesBase extends MelObject {
      */
     this._$calendar = null;
 
+    /**
+     * Liste des évènements afficher dans l'agenda
+     * @type {MaBoy[]}
+     * @protected
+     */
     this._p_events = [];
+
+    /**
+     * Données en cache
+     * @private
+     * @type {Object<string , *>}
+     */
     this._cache = {};
 
     /**
@@ -146,6 +196,11 @@ class ResourcesBase extends MelObject {
     return this;
   }
 
+  /**
+   * Assigne les variables
+   * @private
+   * @param  {...any} args
+   */
   _setup(...args) {
     const [name, filters] = args;
 
@@ -217,6 +272,7 @@ class ResourcesBase extends MelObject {
   /**
    * Créer une page de dialog à partir de cette ressource
    * @returns {Promise<DialogPage>}
+   * @frommodulereturn Modal {@linkto DialogPage}
    * @async
    */
   async create_page() {
@@ -244,6 +300,12 @@ class ResourcesBase extends MelObject {
     return page;
   }
 
+  /**
+   * Ajoute une ressource à la liste des ressources si elle n'existe pas
+   * @param {ResourceData} rc Ressource à ajouter
+   * @param {boolean} [refetch=true] Si vrai, récupère les ressources et le évènements
+   * @returns {ResourcesBase} Chaînage
+   */
   try_add_resource(rc, refetch = true) {
     if (!this._p_resources.filter((x) => x.data.email === rc.email).length) {
       rc.selected = rc.email === this.selected_resource?.email;
@@ -263,6 +325,11 @@ class ResourcesBase extends MelObject {
     return this;
   }
 
+  /**
+   * Ajoute plusieurs ressources si elles éxistent
+   * @param {ResourceData[]} rcs Liste des ressources à ajouter
+   * @returns {ResourcesBase} Chaînage
+   */
   try_add_resources(rcs) {
     for (const iterator of rcs) {
       this.try_add_resource(iterator, false);
@@ -282,6 +349,12 @@ class ResourcesBase extends MelObject {
     return text;
   }
 
+  /**
+   * Génère l'agenda avec fullcalendar
+   * @package
+   * @param {external:jQuery} $fc Div qui contient le fullcalendar
+   * @returns {external:jQuery} Div qui contient le fullcalendar
+   */
   _generate_ui($fc) {
     if (this._p_resources.length) {
       this._init_resources = [...this._p_resources];
@@ -355,14 +428,20 @@ class ResourcesBase extends MelObject {
     });
   }
 
+  /**
+   * Formatte les ressources et récupère seulement celles qui sont filtrés ou non
+   * @param {ResourceObject[]} resources
+   * @param {FilterBase[]} filters
+   * @returns {ResourceObject[]}
+   * @frommoduleparam Resources/Filters filters {@linkto FilterBase}
+   * @frommodulereturn Resources {@linkto ResourceObject}
+   */
   _format_resources(resources, filters) {
     return MelEnumerable.from(resources)
       .where((x) => !MelEnumerable.from(filters).any((f) => !f.filter(x)))
       .orderBy((x) => (this.get_env('fav_resources')?.[x.data.email] ? 0 : 1))
       .toArray();
   }
-
-  _load_favorites() {}
 
   /**
    * Fonction get pour la page de dialog retournée
@@ -372,10 +451,6 @@ class ResourcesBase extends MelObject {
    */
   _get(old) {
     let $rtn = old();
-
-    // $rtn.find('[multiple="true"]').each((i, e) => {
-    //   $(e).multiselect();
-    // });
 
     let $fc = $rtn.find('[fullcalendar="true"]');
 
@@ -391,6 +466,7 @@ class ResourcesBase extends MelObject {
    * @package
    * @param {ResourceData[]} rcs
    * @param {FilterBase} filter
+   * @frommoduleparam Resources/Filters filter
    */
   _on_data_loaded(rcs, filter) {
     let values;
@@ -409,7 +485,7 @@ class ResourcesBase extends MelObject {
           )
           .append($('<option value=""></option>').text(EMPTY_STRING));
 
-        if (this._p_filters[index]._input_type === 'multi-select')
+        if (this._p_filters[index]._input_type === eInputType.multi_select)
           this._p_filters[index]._$filter.html(EMPTY_STRING);
 
         values = {};
@@ -419,7 +495,9 @@ class ResourcesBase extends MelObject {
             !values[iterator[this._p_filters[index]._name]] &&
             iterator[this._p_filters[index]._name]
           ) {
-            if (this._p_filters[index]._input_type === 'multi-select') {
+            if (
+              this._p_filters[index]._input_type === eInputType.multi_select
+            ) {
               for (const filter of Object.keys(
                 JSON.parse(iterator[this._p_filters[index]._name]),
               )) {
@@ -451,7 +529,7 @@ class ResourcesBase extends MelObject {
             .removeClass('disabled');
       }
 
-      if (this._p_filters[index]._input_type === 'multi-select') {
+      if (this._p_filters[index]._input_type === eInputType.multi_select) {
         if (this._p_filters[index]._$filter.children().length)
           this._p_filters[index]._$filter.multiselect('enable');
         else this._p_filters[index]._$filter.multiselect('disable');
@@ -470,7 +548,8 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Action à faire lorsq'un filtre à changer de valeur
+   * Action à faire lorsqe'un filtre à changer de valeur
+   * @package
    */
   _on_data_changed() {
     this._$calendar.fullCalendar('refetchResources');
@@ -485,36 +564,55 @@ class ResourcesBase extends MelObject {
   }
 }
 
-export class ResourceSettings {
+/**
+ * @class
+ * @classdesc Représentation d'un paramètre de ressource
+ */
+class ResourceSettings {
+  /**
+   * Constructeur de la classe
+   * @param {string} setting Valeur du filtre
+   */
   constructor(setting) {
+    /**
+     * @private
+     * @type {string}
+     * @description Valeur du paramètre
+     */
     this._setting = typeof setting === 'string' ? JSON.parse(setting) : setting;
-    this._has = false;
   }
 
+  /**
+   * Change le paramètre en string
+   * @returns {string}
+   */
   toString() {
-    return ResourceSettings.ToString();
+    return ResourceSettings.ToString(this._setting);
   }
 
+  /**
+   * Check si la ressource correspond au filtre
+   * @param {ResourceObject} ressource Ressource à chacker
+   * @returns {boolean}
+   */
   is(ressource) {
     if (!this._setting?.length) return true;
     else if (!ressource.data.caracteristiques) return false;
     else {
-      // this._has = false;
-      // for (const iterator of this._setting) {
-      //   this._has = ressource.data.caracteristiques.includes(iterator.replaceAll('\'', '"'));
-
-      //   if (this._has) return this._has;
-      // }
       return MelEnumerable.from(this._setting)
         .select((x) =>
           ressource.data.caracteristiques.includes(x.replaceAll("'", '"')),
         )
         .all((x) => x);
     }
-
-    //return false;
   }
 
+  /**
+   * Change le paramètre en string
+   * @static
+   * @param {string} setting
+   * @returns {string}
+   */
   static ToString(setting) {
     if (typeof setting === 'string') setting = JSON.parse(setting);
 

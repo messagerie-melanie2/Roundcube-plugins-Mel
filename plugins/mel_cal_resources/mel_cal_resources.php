@@ -18,6 +18,8 @@ class mel_cal_resources extends bnum_plugin {
 
             if ($this->is_index_action() || $this->get_current_action() === 'dialog-ui')
             {
+                $this->add_texts('localization/', true);
+
                 if ($this->is_index_action()){
                     $this->add_button(array(
                         'command' => 'calendar-planify',
@@ -31,7 +33,6 @@ class mel_cal_resources extends bnum_plugin {
                     ), 'toolbar');
                 }
                 
-                $this->add_texts('localization/', true);
                 $this->include_css('style.css');
                 $this->add_hook('send_page', [$this, 'render_page']);
             }

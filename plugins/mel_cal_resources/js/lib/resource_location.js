@@ -19,6 +19,13 @@ import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { ResourceDialogPage } from '../../skins/mel_elastic/js_template/resource_location.js';
 
 export { ResourceLocation };
+
+/**
+ * Ajoute une location à la liste de location d'un évènement
+ * @module Resources/Location
+ * @local ResourceLocation
+ */
+
 /**
  * @class
  * @classdesc Location d'un évènement pour une ressource.
@@ -34,9 +41,27 @@ class ResourceLocation extends AExternalLocationPart {
   constructor(attendee, index) {
     super(EMPTY_STRING, index);
 
+    /**
+     * Participant du plugin `Calendar`
+     * @private
+     */
     this._attendee = attendee;
+    /**
+     * Html de la location
+     * @private
+     * @type {external:jQuery}
+     */
     this._$page = null;
+    /**
+     * Données de la location
+     * @private
+     * @type {ResourceDialogPage}
+     */
     this._page = null;
+    /**
+     * Action à faire après avoir cliquer sur le bouton de la localisation
+     * @type {BnumEvent<EventClickCallback>}
+     */
     this.onclickafter = new BnumEvent();
   }
 
@@ -64,6 +89,12 @@ class ResourceLocation extends AExternalLocationPart {
     return this;
   }
 
+  /**
+   * Met en forme le bouton et les participants
+   * @async
+   * @private
+   * @returns {Promise}
+   */
   async _load_attendee_data() {
     BnumMessage.SetBusyLoading();
 
@@ -112,6 +143,9 @@ class ResourceLocation extends AExternalLocationPart {
     BnumMessage.StopBusyLoading();
   }
 
+  /**
+   * Supprime les localisations de type "Emplacement" qui ont la même valeur que cette localisation
+   */
   update_and_remove_same_location() {
     const objs = EventView.INSTANCE.parts.location.locations;
     for (const key in objs) {
@@ -126,20 +160,32 @@ class ResourceLocation extends AExternalLocationPart {
     }
   }
 
+  /**
+   * Met à jours le participant de type flex office associé à cette localisation pour qu'il est la bonne mise en forme.
+   * @private
+   * @async
+   * @return {Promise}
+   */
   async _update_old_attendees() {
     await ResourceLocation.SetAttendeeMechanics(this._attendee.email);
   }
 
-  static async SetAttendeeMechanics(email) {
-    await Mel_Promise.wait(
-      () => $(`.mel-attendee[data-email="${email}"]`).length,
-    );
-    $(`.mel-attendee[data-email="${email}"]`)
-      .attr('draggable', false)
-      .css('cursor', 'not-allowed')
-      .find('.close-button')
+  _get_email() {
+    return this._attendee?.email || this._$page.find('button').attr('resource');
+  }
+
+  hide_attendee() {
+    return $(`.mel-attendee[data-email="${this._get_email()}"]`)
+      .addClass('not-here')
       .css('display', 'none');
   }
+
+  show_attendee() {
+    return $(`.mel-attendee[data-email="${this._get_email()}"]`)
+      .removeClass('not-here')
+      .css('display', EMPTY_STRING);
+  }
+
   /**
    * Force le click sur le bouton générer par cette classe
    */
@@ -196,6 +242,23 @@ class ResourceLocation extends AExternalLocationPart {
     }
 
     if (this.page) this.page.onclickafter.clear();
+  }
+
+  /**
+   * Met à jours le participant de type flex office associé à cette localisation pour qu'il est la bonne mise en forme.
+   * @static
+   * @param {string} email Participant associé
+   * @returns {Promise}
+   */
+  static async SetAttendeeMechanics(email) {
+    await Mel_Promise.wait(
+      () => $(`.mel-attendee[data-email="${email}"]`).length,
+    );
+    $(`.mel-attendee[data-email="${email}"]`)
+      .attr('draggable', false)
+      .css('cursor', 'not-allowed')
+      .find('.close-button')
+      .css('display', 'none');
   }
 
   /**
@@ -261,7 +324,7 @@ class ResourceLocation extends AExternalLocationPart {
    * Elles sont de type `ResourceLocations<T>` ou `T` est le type de la ressource.
    * @static
    */
-  static GerateUniqueResources() {
+  static GenerateUniqueResources() {
     var renameFunction = function (name, fn) {
       return eval(`
         (() => {
@@ -323,7 +386,23 @@ if (!window.mel_cal_resource_loaded) {
     //Ajoute les resources au select
     LocationPartManager.AddExtraLocationType(ResourceLocation);
 
-  ResourceLocation.GerateUniqueResources();
+  ResourceLocation.GenerateUniqueResources();
+
+  rcmail.addEventListener('location.changed', (args) => {
+    const { new: new_loc, last } = args;
+
+    if (last.constructor.name.includes(ResourceLocation.name)) {
+      last.hide_attendee();
+    } else if (new_loc.constructor.name.includes(ResourceLocation.name)) {
+      new_loc.show_attendee();
+    }
+  });
+
+  rcmail.addEventListener('calendar.save_event.before', () => {
+    for (const iterator of $('.mel-attendee.not-here')) {
+      $(iterator).find('button').click();
+    }
+  });
 
   //Signifie que les données de ce plugin sont chargés
   window.mel_cal_resource_loaded = true;

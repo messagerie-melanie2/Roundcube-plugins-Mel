@@ -6,7 +6,14 @@ import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { ResourceSettings } from './resource_base.js';
 
-export { FilterBase };
+export { FilterBase, eInputType };
+
+/**
+ * @module Resources/Filters
+ * @local LoadDataCallback
+ * @local eInputType
+ * @local FilterBase
+ */
 
 /**
  * @callback LoadDataCallback
@@ -16,18 +23,29 @@ export { FilterBase };
  */
 
 /**
+ * Contient les type d'input disponible pour la classe {@link FilterBase}
+ * @enum {string}
+ */
+const eInputType = {
+  select: 'select',
+  multi_select: 'multi-select',
+};
+
+/**
  * @class
  * @classdesc Représente un filtre
+ * @extends MelObject
  */
 class FilterBase extends MelObject {
   /**
-   *COnstructeur du filtre
+   * Constructeur du filtre
    * @param {string} name Nom du filtre
    * @param {number} size Taille de la colonne du filtre (de 1 à 12)
-   * @param {!Object} destructured Paramètres du filtre
+   * @param {Object} destructured Paramètres du filtre
    * @param {?string} [destructured.load_data_on_change=null] Si on charge les données à chaque changement
    * @param {?string} [destructured.load_data_on_start=null] Si on charge les données
-   * @param {string} [destructured.input_type='select']
+   * @param {eInputType} [destructured.input_type=eInputType.select] Type de l'input (select ou multi-select)
+   * @param {!string} [destructured.icon=EMPTY_STRING] Icône du filtre
    */
   constructor(
     name,
@@ -35,7 +53,7 @@ class FilterBase extends MelObject {
     {
       load_data_on_change = null,
       load_data_on_start = null,
-      input_type = 'select',
+      input_type = eInputType.select,
       icon = EMPTY_STRING,
     },
   ) {
@@ -50,6 +68,19 @@ class FilterBase extends MelObject {
     );
   }
 
+  /**
+   * @private
+   * @override
+   */
+  main() {
+    super.main();
+  }
+
+  /**
+   * Initialise les variables
+   * @private
+   * @returns {FilterBase} Chaînage
+   */
   _init() {
     /**
      * Id du filtre
@@ -78,7 +109,7 @@ class FilterBase extends MelObject {
     /**
      * Type de l'input
      * @private
-     * @type {string}
+     * @type {eInputType}
      */
     this._input_type = EMPTY_STRING;
     /**
@@ -87,7 +118,17 @@ class FilterBase extends MelObject {
      * @type {?external:jQuery}
      */
     this._$filter = null;
+    /**
+     * Id du filtre
+     * @private
+     * @type {?string}
+     */
     this._id = null;
+    /**
+     * Icone du filtre
+     * @private
+     * @type {string}
+     */
     this._icon = EMPTY_STRING;
     /**
      * Texte du filtre
@@ -115,6 +156,16 @@ class FilterBase extends MelObject {
     return this;
   }
 
+  /**
+   * Associes les valeurs des variables
+   * @private
+   * @param {*} name
+   * @param {*} size
+   * @param {*} load_data_on_change
+   * @param {*} load_data_on_start
+   * @param {*} input_type
+   * @param {*} icon
+   */
   _setup(
     name,
     size,
@@ -163,7 +214,7 @@ class FilterBase extends MelObject {
   /**
    * Génère le select du filtre
    * @private
-   * @param {*} jshtml
+   * @param {____JsHtml} jshtml
    * @param  {...any} args
    * @returns {any}
    */
@@ -210,8 +261,6 @@ class FilterBase extends MelObject {
           id: `filter-${this._id}`,
         });
     }
-
-    return jshtml;
   }
 
   /**
@@ -243,7 +292,7 @@ class FilterBase extends MelObject {
   }
 
   /**
-   *
+   * Récupère les données lorsque le filtre est chargé
    * @private
    * @returns {Promise<*>}
    * @async
@@ -269,6 +318,7 @@ class FilterBase extends MelObject {
 
   /**
    * Récupère les données du filtre lors du changement de la valeur du filtre
+   * @private
    * @returns {Promise<*>}
    * @async
    */
@@ -295,7 +345,9 @@ class FilterBase extends MelObject {
   }
 
   /**
-   * Génère le filtre
+   * Génère le filtre.
+   *
+   * Récupère les valeurs du select en base si elles n'éxistent pas.
    * @async
    * @returns {Promise<____JsHtml>}
    * @frommodulereturn {JsHtml} {@linkto ____JsHtml}
@@ -317,6 +369,7 @@ class FilterBase extends MelObject {
 
   /**
    * Génère un id
+   * @private
    * @returns {string}
    */
   _generate_id() {

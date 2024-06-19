@@ -993,6 +993,8 @@ function rcube_calendar_ui(settings) {
             rcmail.triggerEvent('calendar.not_saved');
             return false;
           }  
+
+          rcmail.triggerEvent('calendar.save_event.before');
         }
 
         // post data to server

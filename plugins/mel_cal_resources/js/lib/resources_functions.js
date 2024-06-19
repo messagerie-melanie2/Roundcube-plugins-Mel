@@ -309,6 +309,10 @@ class ResourceBaseFunctions {
     this.start = moment(start, DATE_TIME_FORMAT);
     this.end = moment(end, DATE_TIME_FORMAT);
 
+    if (this.end <= this.start) {
+      this.end = moment(this.start).add(1, 'h');
+    }
+
     this._$calendar.fullCalendar('refetchEvents');
   }
 

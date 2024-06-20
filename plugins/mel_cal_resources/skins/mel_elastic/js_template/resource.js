@@ -17,7 +17,7 @@ function get_page(page, filters, resource) {
 
     page
     .start_update_content({ force_restart: true })
-    .div({ style:'margin:10px' })
+    .div({ style:'margin:10px' }).attr('data-resourcetype', resource._name)
         .div({ class: 'rc-page-filters row' })
             .each((jhtml, filter) => {
                 return jhtml.add_child(filter);

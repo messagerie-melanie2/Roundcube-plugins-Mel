@@ -3,7 +3,6 @@
  */
 
 import { MelEnumerable } from '../../../classes/enum.js';
-import { DATE_HOUR_FORMAT } from '../../../constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
 import { REG_BETWEEN_PARENTHESIS } from '../../../constants/regexp.js';
 import { BnumException } from '../../../exceptions/bnum_base_exceptions.js';

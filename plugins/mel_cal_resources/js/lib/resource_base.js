@@ -23,6 +23,8 @@ export { ResourcesBase, ResourceSettings };
  * @module Resources
  * @property {module:Resources/Filters} Filters
  * @property {module:Resources/Favorites/Loaders} FavoriteLoader
+ * @property {module:Resources/Location} Location
+ * @property {module:Resources/ResourceBaseFunctions/Functions} Functions
  * @local ResourceData
  * @local ResourcesBase
  * @local ResourceObject
@@ -101,6 +103,15 @@ class ResourcesBase extends MelObject {
      * @frommodule Resources {@linkto ResourceObject}
      * */
     this._p_resources = [];
+
+    /**
+     * Liste des évènements afficher dans l'agenda
+     * @type {ResourceEvent[]}
+     * @frommodule Resources/ResourceBaseFunctions/Functions
+     * @protected
+     */
+    this._p_events = [];
+
     /**
      * @package
      * @type {Array<ResourceObject>}
@@ -140,36 +151,10 @@ class ResourcesBase extends MelObject {
     this._p_internal_data = {};
 
     /**
-     * Date et heure de départ de la location
-     * @type {?external:moment}
-     * @readonly
-     */
-    this.start = null;
-    /**
-     * Date et heure de fin de la location
-     * @type {?external:moment}
-     * @readonly
-     */
-    this.end = null;
-
-    /**
-     * @type {boolean}
-     * @readonly
-     */
-    this.all_day = false;
-
-    /**
      * Calendrier
      * @type {external:jQuery}
      */
     this._$calendar = null;
-
-    /**
-     * Liste des évènements afficher dans l'agenda
-     * @type {MaBoy[]}
-     * @protected
-     */
-    this._p_events = [];
 
     /**
      * Données en cache
@@ -184,15 +169,39 @@ class ResourcesBase extends MelObject {
     this._functions = new ResourceBaseFunctions(this);
 
     /**
+     * Date et heure de départ de la location
+     * @type {?external:moment}
+     */
+    this.start = null;
+    /**
+     * Date et heure de fin de la location
+     * @type {?external:moment}
+     */
+    this.end = null;
+
+    /**
+     * Journée entière ou non
+     * @type {boolean}
+     */
+    this.all_day = false;
+
+    /**
+     * Ressource sélectionnées
      * @type {ResourceData}
      */
     this.selected_resource = null;
 
     /**
      * Action à faire lors du clique du bouton "Sauvegarder"
-     * @type {BnumEvent<function>}
+     * @type {BnumEvent<Function>}
      */
     this.event_on_save = new BnumEvent();
+
+    /**
+     * Id du mode d'évènement associé
+     * @type {number}
+     */
+    this.location_id = null;
     return this;
   }
 
@@ -270,86 +279,6 @@ class ResourcesBase extends MelObject {
   }
 
   /**
-   * Créer une page de dialog à partir de cette ressource
-   * @returns {Promise<DialogPage>}
-   * @frommodulereturn Modal {@linkto DialogPage}
-   * @async
-   */
-  async create_page() {
-    const button_save = RcmailDialogButton.ButtonSave({
-      click: this.event_on_save,
-    });
-    const button_cancel = RcmailDialogButton.ButtonCancel({
-      click: () => $('.ui-dialog-titlebar-close').click(),
-    });
-    let page = new DialogPage(this._name, {
-      title: this._name,
-      buttons: [button_save, button_cancel],
-    });
-
-    page = template_resource.get_page(
-      page,
-      (await Promise.allSettled(this._p_filters.map((x) => x.generate()))).map(
-        (x) => x.value,
-      ),
-      this,
-    );
-    this._last_get = page.get.bind(page);
-    page.get = this._get.bind(this, this._last_get);
-
-    return page;
-  }
-
-  /**
-   * Ajoute une ressource à la liste des ressources si elle n'existe pas
-   * @param {ResourceData} rc Ressource à ajouter
-   * @param {boolean} [refetch=true] Si vrai, récupère les ressources et le évènements
-   * @returns {ResourcesBase} Chaînage
-   */
-  try_add_resource(rc, refetch = true) {
-    if (!this._p_resources.filter((x) => x.data.email === rc.email).length) {
-      rc.selected = rc.email === this.selected_resource?.email;
-      this._p_resources.push({
-        id: rc.email,
-        title: rc.name,
-        parentid: 'resources',
-        data: rc,
-      });
-
-      if (refetch) {
-        this._$calendar.fullCalendar('refetchResources');
-        this._$calendar.fullCalendar('refetchEvents');
-      }
-    }
-
-    return this;
-  }
-
-  /**
-   * Ajoute plusieurs ressources si elles éxistent
-   * @param {ResourceData[]} rcs Liste des ressources à ajouter
-   * @returns {ResourcesBase} Chaînage
-   */
-  try_add_resources(rcs) {
-    for (const iterator of rcs) {
-      this.try_add_resource(iterator, false);
-    }
-
-    return this;
-  }
-
-  /**
-   * Met à jours le texte de la date du planning
-   * @returns {string}
-   */
-  refresh_calendar_date() {
-    let $div = this._$calendar.parent();
-    const text = $div.find('.fc-left h2').text();
-    $div.find('.fo-date').text(text);
-    return text;
-  }
-
-  /**
    * Génère l'agenda avec fullcalendar
    * @package
    * @param {external:jQuery} $fc Div qui contient le fullcalendar
@@ -397,10 +326,6 @@ class ResourcesBase extends MelObject {
     }
 
     return $fc;
-  }
-
-  _get_key_format(start, end) {
-    return `${start.format(DATE_TIME_FORMAT)}-${end.format(DATE_TIME_FORMAT)}-${this._p_filters.filter((x) => x._load_data_on_start)?.[0].value ?? 'unknown'}`;
   }
 
   /**
@@ -472,6 +397,7 @@ class ResourcesBase extends MelObject {
     let values;
     for (let index = 0, len = this._p_filters.length; index < len; ++index) {
       if (this._p_filters[index]._name !== filter._name) {
+        //Réinitialise le filtre
         this._p_filters[index]._$filter
           .html(
             $('<option value="/"></option>')
@@ -491,20 +417,24 @@ class ResourcesBase extends MelObject {
         values = {};
 
         for (const iterator of rcs) {
+          //Si la données éxiste et qu'elle n'a pas déjà été traitée
           if (
             !values[iterator[this._p_filters[index]._name]] &&
             iterator[this._p_filters[index]._name]
           ) {
+            //En multiselect, ce sont les clés des valeurs possible qui servent de filtre
             if (
               this._p_filters[index]._input_type === eInputType.multi_select
             ) {
-              for (const filter of Object.keys(
+              for (const current_filter of Object.keys(
                 JSON.parse(iterator[this._p_filters[index]._name]),
               )) {
-                if (!values[filter]) {
-                  values[filter] = true;
+                if (!values[current_filter]) {
+                  values[current_filter] = true;
                   this._p_filters[index]._$filter.append(
-                    $(`<option value="${filter}">${filter}</option>`),
+                    $(
+                      `<option value="${current_filter}">${current_filter}</option>`,
+                    ),
                   );
                 }
               }
@@ -557,6 +487,95 @@ class ResourcesBase extends MelObject {
   }
 
   /**
+   * Créer une page de dialog à partir de cette ressource
+   * @returns {Promise<DialogPage>}
+   * @frommodulereturn Modal {@linkto DialogPage}
+   * @async
+   */
+  async create_page() {
+    const button_save = RcmailDialogButton.ButtonSave({
+      click: this.event_on_save,
+    });
+    const button_cancel = RcmailDialogButton.ButtonCancel({
+      click: () => {
+        let $parent = this._$calendar;
+
+        while ($parent && !$parent.hasClass('ui-dialog'))
+          $parent = $parent.parent();
+
+        if ($parent) {
+          $parent.find('.ui-dialog-titlebar-close').click();
+        } else $('.ui-dialog-titlebar-close').click();
+      },
+    });
+    let page = new DialogPage(this._name, {
+      title: this._name,
+      buttons: [button_save, button_cancel],
+    });
+
+    page = template_resource.get_page(
+      page,
+      (await Promise.allSettled(this._p_filters.map((x) => x.generate()))).map(
+        (x) => x.value,
+      ),
+      this,
+    );
+    this._last_get = page.get.bind(page);
+    page.get = this._get.bind(this, this._last_get);
+
+    return page;
+  }
+
+  /**
+   * Ajoute une ressource à la liste des ressources si elle n'existe pas
+   * @param {ResourceData} rc Ressource à ajouter
+   * @param {boolean} [refetch=true] Si vrai, récupère les ressources et le évènements
+   * @returns {ResourcesBase} Chaînage
+   */
+  try_add_resource(rc, refetch = true) {
+    if (!this._p_resources.filter((x) => x.data.email === rc.email).length) {
+      rc.selected = rc.email === this.selected_resource?.email;
+      this._p_resources.push({
+        id: rc.email,
+        title: rc.name,
+        parentid: 'resources',
+        data: rc,
+      });
+
+      if (refetch) {
+        this._$calendar.fullCalendar('refetchResources');
+        this._$calendar.fullCalendar('refetchEvents');
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Ajoute plusieurs ressources si elles éxistent
+   * @param {ResourceData[]} rcs Liste des ressources à ajouter
+   * @returns {ResourcesBase} Chaînage
+   */
+  try_add_resources(rcs) {
+    for (const iterator of rcs) {
+      this.try_add_resource(iterator, false);
+    }
+
+    return this;
+  }
+
+  /**
+   * Met à jours le texte de la date du planning
+   * @returns {string}
+   */
+  refresh_calendar_date() {
+    let $div = this._$calendar.parent();
+    const text = $div.find('.fc-left h2').text();
+    $div.find('.fo-date').text(text);
+    return text;
+  }
+
+  /**
    * Dessine le calendrier
    */
   render() {
@@ -601,6 +620,7 @@ class ResourceSettings {
     else {
       return MelEnumerable.from(this._setting)
         .select((x) =>
+          // eslint-disable-next-line quotes
           ressource.data.caracteristiques.includes(x.replaceAll("'", '"')),
         )
         .all((x) => x);

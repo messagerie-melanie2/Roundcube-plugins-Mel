@@ -66,30 +66,6 @@ class ResourceLocation extends AExternalLocationPart {
   }
 
   /**
-   * Génère la location et l'ajoute au parent
-   * @override
-   * @param {external:jQuery} $parent
-   * @returns {ResourceLocation} Chaîne
-   */
-  generate($parent) {
-    super.generate($parent);
-
-    this.page = new ResourceDialogPage(
-      this._attendee,
-      this,
-      this?.resource_type?.(),
-    );
-    this.page.onclickafter.push(this.onclickafter.call.bind(this.onclickafter));
-    this._$page = this.page.get().generate().appendTo($parent);
-
-    if (this._attendee) {
-      this._update_old_attendees();
-      this._load_attendee_data();
-    }
-    return this;
-  }
-
-  /**
    * Met en forme le bouton et les participants
    * @async
    * @private
@@ -144,6 +120,44 @@ class ResourceLocation extends AExternalLocationPart {
   }
 
   /**
+   * Met à jours le participant de type flex office associé à cette localisation pour qu'il est la bonne mise en forme.
+   * @private
+   * @async
+   * @return {Promise}
+   */
+  async _update_old_attendees() {
+    await ResourceLocation.SetAttendeeMechanics(this._attendee.email);
+  }
+
+  _get_email() {
+    return this._attendee?.email || this._$page.find('button').attr('resource');
+  }
+
+  /**
+   * Génère la location et l'ajoute au parent
+   * @override
+   * @param {external:jQuery} $parent
+   * @returns {ResourceLocation} Chaîne
+   */
+  generate($parent) {
+    super.generate($parent);
+
+    this.page = new ResourceDialogPage(
+      this._attendee,
+      this,
+      this?.resource_type?.(),
+    );
+    this.page.onclickafter.push(this.onclickafter.call.bind(this.onclickafter));
+    this._$page = this.page.get().generate().appendTo($parent);
+
+    if (this._attendee) {
+      this._update_old_attendees();
+      this._load_attendee_data();
+    }
+    return this;
+  }
+
+  /**
    * Supprime les localisations de type "Emplacement" qui ont la même valeur que cette localisation
    */
   update_and_remove_same_location() {
@@ -158,20 +172,6 @@ class ResourceLocation extends AExternalLocationPart {
         }
       }
     }
-  }
-
-  /**
-   * Met à jours le participant de type flex office associé à cette localisation pour qu'il est la bonne mise en forme.
-   * @private
-   * @async
-   * @return {Promise}
-   */
-  async _update_old_attendees() {
-    await ResourceLocation.SetAttendeeMechanics(this._attendee.email);
-  }
-
-  _get_email() {
-    return this._attendee?.email || this._$page.find('button').attr('resource');
   }
 
   hide_attendee() {
@@ -254,6 +254,7 @@ class ResourceLocation extends AExternalLocationPart {
     await Mel_Promise.wait(
       () => $(`.mel-attendee[data-email="${email}"]`).length,
     );
+
     $(`.mel-attendee[data-email="${email}"]`)
       .attr('draggable', false)
       .css('cursor', 'not-allowed')
@@ -314,6 +315,12 @@ class ResourceLocation extends AExternalLocationPart {
     return 'resource';
   }
 
+  /**
+   * Nom du plugin utiliser pour récupèrer le nom inscrit dans le select
+   * @static
+   * @returns {string}
+   * @default 'mel_cal_resources'
+   */
   static PluginName() {
     return 'mel_cal_resources';
   }

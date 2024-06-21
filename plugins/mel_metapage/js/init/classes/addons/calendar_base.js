@@ -276,7 +276,92 @@ $(document).ready(() => {
 
     rcmail.lock_frame(dialog);
 
-    if ($('#globalModal .modal-close-footer').length == 0)
+    let hasglobalmodal = true;
+
+    try {
+      hasglobalmodal = !!GlobalModal;
+    } catch (error) {
+      hasglobalmodal = false;
+    }
+
+    if (!hasglobalmodal) {
+      buttons = [
+        {
+          text: 'Annuler',
+          class:
+            'mel-button no-button-margin no-margin-button btn btn-danger cancel-button',
+          click: () => {
+            $popup.dialog('close');
+          },
+        },
+        {
+          text: 'Sauvegarder',
+          class: 'mel-button no-button-margin no-margin-button btn save-button',
+          click: async () => {
+            window.event_saved = true;
+            $popup
+              .parent()
+              .find('.save-button, .cancel-button')
+              .addClass('disabled')
+              .attr('disabled', 'disabled');
+            const saved = await $popup
+              .find('iframe')[0]
+              .contentWindow.rcube_calendar_ui.save();
+            if (!saved) {
+              $popup
+                .parent()
+                .find('.save-button, .cancel-button')
+                .removeClass('disabled')
+                .removeAttr('disabled');
+            } else {
+              window.kolab_event_dialog_element = undefined;
+              $popup.dialog('close');
+            }
+          },
+        },
+      ];
+      let $popup = rcmail.show_popup_dialog(
+        dialog[0],
+        rcmail.gettext('create_event', plugin_text),
+        buttons,
+        {
+          position: { my: 'top', at: 'top' },
+          width: 740,
+        },
+      );
+
+      $popup
+        .css('height', 'calc(100% - 125px)')
+        .parent()
+        .css('height', 'calc(100%)')
+        .find('.save-button')
+        .css({
+          display: 'flex',
+          'align-items': 'center',
+        })
+        .append(
+          $('<span>')
+            .addClass('plus material-symbols-outlined')
+            .text('arrow_right_alt'),
+        );
+
+      $popup
+        .parent()
+        .find('.cancel-button')
+        .css({
+          display: 'flex',
+          'align-items': 'center',
+        })
+        .append(
+          $('<span>').addClass('plus material-symbols-outlined').text('cancel'),
+        );
+
+      window.kolab_event_dialog_element = dialog = $popup;
+
+      return false;
+    }
+
+    if (!$('#globalModal .modal-close-footer').length)
       await GlobalModal.resetModal();
 
     const config = new GlobalModalConfig(

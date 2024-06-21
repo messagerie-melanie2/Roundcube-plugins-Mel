@@ -190,8 +190,11 @@ if (rcmail && window.mel_metapage) {
             uid: uid,
           },
         };
+
         //FIX MANTIS 0007961
         $('.modal-save-footer').removeAttr('disabled').removeClass('disabled');
+        $('#globalModal .modal-close-footer').remove();
+        window.create_event = false;
         this.create_event_from_somewhere(event);
       };
       rcmail.register_command(

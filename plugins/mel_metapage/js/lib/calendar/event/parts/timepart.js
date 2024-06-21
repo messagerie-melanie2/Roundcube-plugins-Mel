@@ -302,15 +302,23 @@ export class TimePartManager {
       DATE_TIME_FORMAT,
     );
 
+    let base_diff =
+      this.is_all_day &&
+      start.format() === moment(start).startOf('day').format()
+        ? moment(start).endOf('day') - moment(start).startOf('day')
+        : this.base_diff;
+
+    if (base_diff <= 0) base_diff = 3600 * 1000;
+
     //Gestion du cas ou la date de début dépasse la date de fin
     if (start >= end) {
-      end = moment(start).add(this.base_diff);
-      this.end.reinit(end, this.base_diff, start.format(DATE_HOUR_FORMAT));
+      end = moment(start).add(base_diff);
+      this.end.reinit(end, base_diff, start.format(DATE_HOUR_FORMAT));
       this._$end_date.val(end.format(DATE_FORMAT)).change();
 
       //Si la date n'éxiste pas, on la réjoute dans le select
       if (!(this.end._$fakeField.val() || false)) {
-        end = start.add(1, 'd').startOf('d').add(this.base_diff);
+        end = start.add(1, 'd').startOf('d').add(base_diff);
         this._$end_date.val(end.format(DATE_FORMAT));
         this.end._$fakeField.val(end.format(DATE_HOUR_FORMAT));
         this._update_date.started = false;

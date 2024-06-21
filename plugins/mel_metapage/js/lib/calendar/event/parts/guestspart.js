@@ -647,8 +647,11 @@ export class GuestsPart extends FakePart {
       this._p_try_add_event($field, 'input', this.onInput.bind(this, $field));
       this._p_try_add_event($field, 'keyup', this.onKeyUp.bind(this, $field));
 
-      if (cant_modify) $field.attr('disabled', 'disabled').addClass('disabled');
-      else $field.removeAttr('disabled').removeClass('disabled');
+      if (cant_modify) {
+        $field.attr('disabled', 'disabled').addClass('disabled');
+      } else {
+        $field.removeAttr('disabled').removeClass('disabled');
+      }
     }
 
     if (this._switchButton.clicked.count() === 0) {
@@ -702,6 +705,21 @@ export class GuestsPart extends FakePart {
       if ((event?.attendees?.length ?? 0) > 0) {
         $(SELECTOR_CHECKBOX_NOTIFY).prop('checked', true);
         this.update_free_busy();
+      }
+    }
+
+    if (!!event.attendees && !!event.attendees.length) {
+      if (
+        MelEnumerable.from(event.attendees)
+          .where((x) => x.email === GuestsPart.GetMe().email)
+          .firstOrDefault()?.role !== 'ORGANIZER' ||
+        cant_modify
+      ) {
+        $('#edit-attendees-donotify').parent().hide();
+        $('#emel-free-busy').hide();
+      } else {
+        $('#edit-attendees-donotify').parent().show();
+        $('#emel-free-busy').show();
       }
     }
 

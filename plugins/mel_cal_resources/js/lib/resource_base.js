@@ -349,7 +349,13 @@ class ResourcesBase extends MelObject {
       if (!this._first_loaded) this._first_loaded = true;
 
       if (data.length) callback(data);
-      else callback([{ id: 'resources', title: 'Aucune ressource' }]);
+      else
+        callback([
+          {
+            id: 'resources',
+            title: this.gettext('no-resources', 'mel_cal_resources'),
+          },
+        ]);
     });
   }
 

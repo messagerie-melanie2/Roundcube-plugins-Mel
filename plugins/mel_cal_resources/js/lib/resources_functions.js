@@ -404,7 +404,7 @@ class ResourceEvent {
      * @type {string}
      * @default 'Occupé'
      */
-    this.title = 'Occupé';
+    this.title = rcmail.gettext('mel_cal_resources.busy');
     /**
      * Date de début de l'évènement
      * @type {external:moment}

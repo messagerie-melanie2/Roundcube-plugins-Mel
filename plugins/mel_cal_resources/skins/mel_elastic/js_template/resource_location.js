@@ -45,17 +45,27 @@ class ResourceDialogPage {
      * @type {____JsHtml}
      */
     this._jshtml = MelHtml.start
-        .div({
-          class: 'location-mode d-flex',
-            'data-locationmode': resource.option_value(),
-        })
-      .button({
-        type: 'button',
-        onclick:async () => {
-            await (await this.dialog.try_init()).show();
-            this.onclickafter.call();
-        }
-      }).addClass(resaData || false ? 'disabled' : EMPTY_STRING).attr(resaData || false ? 'disabled' : 'waitingclick', resaData || false ? 'disabled' : 'true').icon(resaData || false ? '' : 'ads_click').addClass(resaData || false ? 'clock-loader' : EMPTY_STRING).css('margin-right', '5px').css('color', 'var(--mel-button-text-color)').addClass('animate').end().span().css('vertical-align', 'super').text(resaData || false ? resaData.name : 'Reserver une ressource').end().end();
+      .div({
+        class: 'location-mode d-flex',
+          'data-locationmode': resource.option_value(),
+      })
+        .button({
+          type: 'button',
+          onclick:async () => {
+              await (await this.dialog.try_init()).show();
+              this.onclickafter.call();
+          }
+        }).addClass(resaData || false ? 'disabled' : EMPTY_STRING)
+          .attr(resaData || false ? 'disabled' : 'waitingclick', resaData || false ? 'disabled' : 'true')
+          .icon(resaData || false ? '' : 'ads_click').addClass(resaData || false ? 'clock-loader' : EMPTY_STRING)
+          .css('margin-right', '5px')
+          .css('color', 'var(--mel-button-text-color)')
+          .addClass('animate')
+        .end()
+        .span().css('vertical-align', 'super')
+          .text(resaData || false ? resaData.name : 'mel_cal_resources.resarcs')
+        .end()
+      .end();
   }
 
   /**

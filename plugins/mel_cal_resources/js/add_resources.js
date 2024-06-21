@@ -326,7 +326,10 @@ class ResourceDialog extends MelObject {
     //Change le titre de l'évènement si besoin
     if (!(EventView.INSTANCE.inputs.text_title.val() || false)) {
       EventView.INSTANCE.inputs.text_title.val(
-        `Réservation : ${current_resource.fullname}`,
+        this.gettext('automatic-resa-title', 'mel_cal_resources').replaceAll(
+          '%0',
+          current_resource.fullname,
+        ),
       );
     }
 

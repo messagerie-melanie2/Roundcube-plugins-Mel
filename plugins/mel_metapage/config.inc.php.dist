@@ -80,7 +80,7 @@ $config["documents_types"] = [
     ["name" => "text_document", "icon" => "txt", "default_ext" => "txt", "type" => "raw", "tags" => ["l"]],
     ["name" => "text_office_document", "icon" => "word", "default_ext" => "odt", "type" => "text"],
     ["name" => "worksheet", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
-    ["name" => "presentation", "icon" => "pp", "default_ext" => "odp", "type" => "presentation", "tags" => ["f"]]
+    ["name" => "presentation", "icon" => "pp", "default_ext" => "odp", "type" => "presentation", "tags" => ["f"]],
     ["name" => "text_document", "icon" => "txt", "default_ext" => "txt", "type" => "raw", "tags" => ["l"]],
     ["name" => "text_office_document", "icon" => "word", "default_ext" => "odt", "type" => "text"],
     ["name" => "worksheet", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],

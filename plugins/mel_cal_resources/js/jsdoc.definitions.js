@@ -1,5 +1,6 @@
 /**
- * @namespace Plugin.MelCalResource
- * @property {module:Resources/Favorites/Loaders} FavoritesLoaders
- * @property {module:Resources/Filters} Filters
+ * @namespace MelCalResource
+ * @property {module:Resources} Ressources
+ * @property {module:MelCalResource/Page/Location} PageLocation
+ * @memberof Plugins
  */

@@ -1,15 +1,17 @@
-import { DialogPage } from "../../../../mel_metapage/js/lib/classes/modal";
-import { DATE_FORMAT, DATE_HOUR_FORMAT, DATE_TIME_FORMAT } from "../../../../mel_metapage/js/lib/constants/constants.dates.js";
-import { EMPTY_STRING } from "../../../../mel_metapage/js/lib/constants/constants.js";
-import { FilterBase } from "../../../js/lib/filter_base";
-import { ResourcesBase } from "../../../js/lib/resource_base.js";
+import { DATE_FORMAT, DATE_HOUR_FORMAT } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
+import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 
 /**
- * 
- * @param {DialogPage} page 
- * @param {FilterBase[]} filters 
- * @param {ResourcesBase} resource 
+ * Récupère la page d'une ressource
+ * @param {DialogPage} page Page qui doit recevoir le JsHtml
+ * @param {FilterBase[]} filters Filtres à afficher
+ * @param {ResourcesBase} resource Ressource à afficher
  * @returns {DialogPage}
+ * @frommodulereturn Modal
+ * @frommoduleparam Modal page
+ * @frommoduleparam Resources/Filters filters {@linkto FilterBase}
+ * @frommoduleparam Resources resource
+ * @memberof Plugins.MelCalResource.exports.template_resource
  */
 function get_page(page, filters, resource) {
     const date = (resource.start ?? moment().startOf('day'));
@@ -86,6 +88,11 @@ function get_page(page, filters, resource) {
     return page;
 }
 
+/**
+ * Contient la page de ressource
+ * @namespace
+ * @memberof Plugins.MelCalResource
+ */
 export const template_resource = {
     get_page
 };

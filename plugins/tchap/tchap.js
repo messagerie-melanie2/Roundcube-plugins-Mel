@@ -1,6 +1,7 @@
 /**
- * @namespace Plugin.Tchap
+ * @namespace Tchap
  * @property {module:Tchap} Module
+ * @memberof Plugins
  */
 
 /**

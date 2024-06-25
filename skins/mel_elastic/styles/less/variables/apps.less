@@ -1,15 +1,17 @@
 // out: false
-@apps: mail, calendar, stockage, addressbook, visio, parapheur, chat, workspace, sondage, rizomo, wekan, useful_links, bureau, settings, news, tasks, notes;
+@apps: mail, calendar, stockage, addressbook, visio, parapheur, chat, workspace,
+  sondage, rizomo, wekan, useful_links, bureau, settings, news, tasks, notes,
+  tchap;
 
 .update-app-color(@name, @color:'') {
-    @named_color: e('@{name}_color');
-    @truecolor: if((@color = ''), @@named_color, @color);
+  @named_color: e('@{name}_color');
+  @truecolor: if((@color = ''), @@named_color, @color);
 
-    --@{name}-app-color: @truecolor;
+  --@{name}-app-color: @truecolor;
 }
 
 .update-each-app-color(@color) {
-    each(@apps, {
+  each(@apps, {
         .update-app-color(@value, @color);
     });
 }

@@ -1,12 +1,12 @@
 <?php
 /*
- * Copyright 2015-2017 MongoDB, Inc.
+ * Copyright 2015-present MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,16 +25,14 @@ use MongoDB\Exception\BadMethodCallException;
  */
 class InsertOneResult
 {
-    private $writeResult;
-    private $insertedId;
-    private $isAcknowledged;
+    private WriteResult $writeResult;
 
-    /**
-     * Constructor.
-     *
-     * @param WriteResult $writeResult
-     * @param mixed       $insertedId
-     */
+    /** @var mixed */
+    private $insertedId;
+
+    private bool $isAcknowledged;
+
+    /** @param mixed $insertedId */
     public function __construct(WriteResult $writeResult, $insertedId)
     {
         $this->writeResult = $writeResult;
@@ -48,8 +46,8 @@ class InsertOneResult
      * This method should only be called if the write was acknowledged.
      *
      * @see InsertOneResult::isAcknowledged()
-     * @return integer
-     * @throws BadMethodCallException is the write result is unacknowledged
+     * @return integer|null
+     * @throws BadMethodCallException if the write result is unacknowledged
      */
     public function getInsertedCount()
     {
@@ -65,7 +63,7 @@ class InsertOneResult
      *
      * If the document had an ID prior to inserting (i.e. the driver did not
      * need to generate an ID), this will contain its "_id". Any
-     * driver-generated ID will be a MongoDB\BSON\ObjectID instance.
+     * driver-generated ID will be a MongoDB\BSON\ObjectId instance.
      *
      * @return mixed
      */

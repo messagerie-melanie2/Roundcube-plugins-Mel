@@ -773,7 +773,7 @@ class DialogPageManager {
   }
 
   /**
-   * Ajoute une page. Si vous souhaitez ajouter une page déjà éxistante, donnez la en argument de `page_or_name`.
+   * Ajoute une page. Si vous souhaitez ajouter une page déjà existante, donnez la en argument de `page_or_name`.
    *
    * Sinon, donnez le nom de la page (son id) et le contenu de la page.
    * @param {(string | DialogPage)} page_or_name

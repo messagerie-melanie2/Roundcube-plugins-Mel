@@ -26,6 +26,10 @@
         $('#update-wekan-button').on('click', () => {
           this.change_wekan();
         });
+      if ($('#update-tchap-channel-button').length > 0)
+        $('#update-tchap-channel-button').on('click', () => {
+          this.change_tchap();
+        });
     }
 
     change_icons() {
@@ -1047,6 +1051,45 @@
         },
         (a, b, c) => {},
         'GET',
+      );
+    }
+
+    change_tchap() {
+      let buttons = [
+        {
+          text: rcmail.gettext('cancel'),
+          class: 'cancel',
+          click: function () {
+            $popup.dialog('close');
+          },
+        },
+        {
+          text: rcmail.gettext('save'),
+          class: 'save',
+          click: () => {
+            const value = $('#selecttchapchannel').val();
+            this.ajax(
+              this.url('change_tchap_room'),
+              { _uid: this.uid, _room_uid: value },
+              (data) => {
+                data = JSON.parse(data);
+                if (data) {
+                  this.update_toolbar();
+                  this.update_app_table();
+                  $popup.dialog('close');
+                } else {
+                  alert("l'uid entré ne correspond pas à un salon tchap");
+                }
+              },
+            );
+          },
+        },
+      ];
+
+      let $popup = rcmail.show_popup_dialog(
+        ' <span> Attention! La présence de Bot-Gmcd [Developpement-Durable] dans le salon est nécessaire pour fonctionner.</span> <br/> <input id = "selecttchapchannel" type = "text" title = "Entrer l\'uid du salon tchap" /> ',
+        "Entrer l'uid du salon tchap",
+        buttons,
       );
     }
 

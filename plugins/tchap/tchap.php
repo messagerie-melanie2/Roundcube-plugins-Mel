@@ -245,7 +245,7 @@ class tchap extends bnum_plugin
 
     /**
      * kick un utilisateur d'un salon
-     * @param$room_id
+     * @param $room_id
      * @param $user_id 
      */
     public static function kick_member($room_id, $user_id) {
@@ -263,7 +263,7 @@ class tchap extends bnum_plugin
     }
 
     /**
-     * @params $user_mail mail de l'utilisateur à chercher
+     * @param $user_mail mail de l'utilisateur à chercher
      */
     private static function get_user_tchap_id ($user_mail) {
         $rcmail = rcmail::get_instance();
@@ -288,9 +288,9 @@ class tchap extends bnum_plugin
     }
 
     /**
-     * @params $endpoint
-     * @params $config
-     * @params $type POST ou DELETE
+     * @param $endpoint
+     * @param $config
+     * @param $type POST ou DELETE
      */
     private static function call_tchap_api ($endpoint, $config, $type) {
         if(class_exists('mel_helper')) {

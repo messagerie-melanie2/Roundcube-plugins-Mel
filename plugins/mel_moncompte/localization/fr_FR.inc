@@ -349,6 +349,8 @@ $labels['user-agent'] = 'User-agent';
 $labels['version'] = 'Version';
 $labels['language'] = 'Langage';
 $labels['name'] = 'Nom';
+$labels['color'] = 'Couleur';
+$labels['display_reminder'] = 'Afficher les rappels';
 $labels['No type'] = 'Pas de type';
 $labels['No version'] = 'Pas de version';
 $labels['No IMEI'] = 'Pas d\'IMEI';
@@ -391,6 +393,9 @@ $labels['success_Unwipe'] = "La requête d'annulation de suppression des donnée
 $labels['success_Delete'] = "L'appareil vient d'être supprimé de la base de données";
 $labels['success_DeleteZP1'] = "L'appareil vient d'être supprimé de la base de données";
 $labels['success_Resync'] = "La requête de ré-initialisation de la synchronisation de l'appareil a bien été envoyée";
+
+$labels['success_modification'] = "Modification enregistrée avec succès";
+
 
 $labels['success_ResyncUserDevice'] = "La requête de ré-initialisation de la synchronisation du compte a bien été envoyée";
 $labels['success_ResyncFolderId'] = "La requête de ré-initialisation de la synchronisation du dossier a bien été envoyée";

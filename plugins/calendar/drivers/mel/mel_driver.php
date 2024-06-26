@@ -617,17 +617,19 @@ class mel_driver extends calendar_driver {
           $color_calendars = $this->rc->config->get('color_calendars', array());
           $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
           $param_change = false;
-          if (! isset($color_calendars[$cal->id]) || $color_calendars[$cal->id] != $prop['color']) {
+          if (isset($prop['color']) && (! isset($color_calendars[$cal->id]) || $color_calendars[$cal->id] != $prop['color'])) {
             $color_calendars[$cal->id] = $prop['color'];
             $param_change = true;
           }
-          if (! isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 1) {
-            $alarm_calendars[$cal->id] = 1;
-            $param_change = true;
-          }
-          elseif (isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 0) {
-            unset($alarm_calendars[$cal->id]);
-            $param_change = true;
+          if (isset($prop['showalarms'])) {
+            if (!isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 1) {
+              $alarm_calendars[$cal->id] = 1;
+              $param_change = true;
+            }
+            elseif (isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 0) {
+              unset($alarm_calendars[$cal->id]);
+              $param_change = true;
+            }
           }
           if ($param_change) {
             $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'alarm_calendars' => $alarm_calendars));

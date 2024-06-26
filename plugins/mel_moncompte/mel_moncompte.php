@@ -378,6 +378,7 @@ class mel_moncompte extends rcube_plugin {
           $default_calendar = $user->getDefaultCalendar();
           $acl = ($calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
           $shared = $user->uid != $calendar->owner || !$calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE);
+          $name_editable = ($user->uid === $calendar->owner && $id !== $user->uid) ? true : false;
           $is_default = $default_calendar->id == $calendar->id;
           $this->rc->output->set_env("resource_id", $id);
           $this->rc->output->set_env("resource_name", $shared ? "(" . $calendar->owner . ") " . $calendar->name : $calendar->name);
@@ -386,6 +387,9 @@ class mel_moncompte extends rcube_plugin {
           $this->rc->output->set_env("resource_owner", $calendar->owner);
           $this->rc->output->set_env("resource_default", $default_calendar->id == $calendar->id);
           $this->rc->output->set_env("resource_invitation", !isset($no_invitation[$calendar->id]));
+          $this->rc->output->set_env("resource_color", $this->rc->config->get('color_calendars', null)[$id]);
+          $this->rc->output->set_env("resource_name_editable", $name_editable);
+          $this->rc->output->set_env("resource_showalarms", $this->rc->config->get('alarm_calendars', null)[$id]);
 
           if ($acl === $this->gettext('read_only') || M2calendar::is_external($calendar->id)) {
             $this->rc->output->set_env("show_invitations", false);

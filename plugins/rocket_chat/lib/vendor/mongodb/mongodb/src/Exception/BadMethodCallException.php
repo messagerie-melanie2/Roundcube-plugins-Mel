@@ -1,12 +1,12 @@
 <?php
 /*
- * Copyright 2015-2017 MongoDB, Inc.
+ * Copyright 2015-present MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,11 @@
 
 namespace MongoDB\Exception;
 
-class BadMethodCallException extends \BadMethodCallException implements Exception
+use BadMethodCallException as BaseBadMethodCallException;
+
+use function sprintf;
+
+class BadMethodCallException extends BaseBadMethodCallException implements Exception
 {
     /**
      * Thrown when a mutable method is invoked on an immutable object.
@@ -25,9 +29,9 @@ class BadMethodCallException extends \BadMethodCallException implements Exceptio
      * @param string $class Class name
      * @return self
      */
-    public static function classIsImmutable($class)
+    public static function classIsImmutable(string $class)
     {
-        return new static(sprintf('%s is immutable', $class));
+        return new self(sprintf('%s is immutable', $class));
     }
 
     /**
@@ -36,8 +40,8 @@ class BadMethodCallException extends \BadMethodCallException implements Exceptio
      * @param string $method Method name
      * @return self
      */
-    public static function unacknowledgedWriteResultAccess($method)
+    public static function unacknowledgedWriteResultAccess(string $method)
     {
-        return new static(sprintf('%s should not be called for an unacknowledged write result', $method));
+        return new self(sprintf('%s should not be called for an unacknowledged write result', $method));
     }
 }

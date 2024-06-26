@@ -166,7 +166,7 @@ class PlanningManager extends MelObject {
       eventRender: this._event_render.bind(this),
       resourceRender: this._resources_render.bind(this),
     });
-    //calendar.render();
+    calendar.render();
 
     return calendar;
   }
@@ -489,7 +489,10 @@ class PlanningManager extends MelObject {
    * @package
    */
   _rerender_action() {
-    if (this.calendar) this.calendar.rerenderEvents();
+    if (this.calendar) {
+      this.calendar.rerenderEvents();
+      this.calendar.render();
+    }
   }
 
   /**

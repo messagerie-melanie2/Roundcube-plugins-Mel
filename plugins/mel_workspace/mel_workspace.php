@@ -34,6 +34,7 @@ class mel_workspace extends bnum_plugin
     public $workspaces;
     private $currentWorkspace;
     private $channel_enabled;
+    private $tchap_channel_enabled;
     private $folders = ["init", "lib"];
     static private $listenersSet;
 
@@ -157,6 +158,7 @@ class mel_workspace extends bnum_plugin
         $this->register_action('delete_survey', [$this, 'delete_survey']);
         $this->register_action('check_service_async', [$this, 'check_service_action']);
         $this->register_action('create_service_async', [$this, 'create_service_action']);
+        $this->register_action('change_tchap_room', [$this, 'change_tchap_room']);
         //stockage_user_updated
         //toggle_nav_color
     }
@@ -564,6 +566,11 @@ class mel_workspace extends bnum_plugin
                 $this->channel_enabled = $this->check_channel($this->get_object($this->currentWorkspace, self::CHANNEL)->id);
                 $this->rc->output->set_env("current_workspace_channel", $this->get_object($this->currentWorkspace, self::CHANNEL));
             }
+            if ($services[self::TCHAP_CHANNEL])
+            {
+                $this->tchap_channel_enabled = $this->check_tchap_channel($this->get_object($this->currentWorkspace, self::TCHAP_CHANNEL)->id);
+                $this->rc->output->set_env("current_workspace_tchap_channel", $this->get_object($this->currentWorkspace, self::TCHAP_CHANNEL));
+            }
         } catch (\Throwable $th) {
             //throw $th;
         }
@@ -677,6 +684,7 @@ class mel_workspace extends bnum_plugin
             "params" => "settings",
             "links" => "link",
             "information" => "info",
+            "tchap" => "forum"
         ];
 
         $vseparate = "<v_separate></v_separate>";
@@ -688,6 +696,8 @@ class mel_workspace extends bnum_plugin
 
             if ($this->channel_enabled !== null && $services[self::CHANNEL])
                 $services[self::CHANNEL] = $this->channel_enabled;
+            if ($this->tchap_channel_enabled !== null && $services[self::TCHAP_CHANNEL])
+                $services[self::TCHAP_CHANNEL] + $this->tchap_channel_enabled;
 
             $wekan_board_id = "";
             $email = $services[self::EMAIL] ? self::get_wsp_mail($this->currentWorkspace->uid) ?? "" : "";
@@ -713,7 +723,7 @@ class mel_workspace extends bnum_plugin
             {
 
                 if ($services[self::AGENDA] || $services[self::EMAIL] || $services[self::CHANNEL]
-                || $services[self::TASKS] || $services[self::CLOUD] || $is_admin)
+                || $services[self::TASKS] || $services[self::CLOUD] || $services[self::TCHAP_CHANNEL] || $is_admin)
                     $html .= $vseparate;
 
                 if ($services[self::EMAIL])
@@ -721,7 +731,7 @@ class mel_workspace extends bnum_plugin
                     $onclick = "ChangeToolbar('mail', this)";
                     $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $onclick, "class" => "$add_classes wsp-toolbar-item wsp-mail"], "<span class='".$icons_class."'>".$icons["mail"]."</span><span class=text-item>".$this->rc->gettext("mail", "mel_workspace")."</span>");
                     
-                    if ($services[self::CHANNEL] || $services[self::CLOUD] || $services[self::AGENDA] || $services[self::TASKS] || $is_admin)
+                    if ($services[self::CHANNEL] || $services[self::CLOUD] || $services[self::AGENDA] || $services[self::TASKS] || $services[self::TCHAP_CHANNEL] || $is_admin)
                         $html .= $vseparate;
                 }
         
@@ -730,7 +740,7 @@ class mel_workspace extends bnum_plugin
                     $onclick = "ChangeToolbar('calendar', this)";
                     $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $onclick, "class" => "$add_classes wsp-toolbar-item wsp-agenda"], "<span class='".$icons_class."'>".$icons["agenda"]."</span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
                     
-                    if ($services[self::CHANNEL] || $services[self::CLOUD] || $services[self::TASKS] || $is_admin)
+                    if ($services[self::CHANNEL] || $services[self::CLOUD] || $services[self::TASKS] || $services[self::TCHAP_CHANNEL] || $is_admin)
                         $html .= $vseparate;
                 }
                 
@@ -759,9 +769,26 @@ class mel_workspace extends bnum_plugin
                             $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "$add_classes wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
                         }
             
-                        if ($services[self::TASKS] || $services[self::CLOUD] || $is_admin)
+                        if ($services[self::TASKS] || $services[self::CLOUD] || $services[self::TCHAP_CHANNEL] || $is_admin)
                             $html .= $vseparate;
                     }
+                }
+
+                if ($services[self::TCHAP_CHANNEL])
+                {
+
+                    $channel_datas = $this->get_object($this->currentWorkspace, self::TCHAP_CHANNEL);
+                    if (class_exists('tchap')) $channel_name = tchap::get_room_name($this->get_object($workspace, self::TCHAP_CHANNEL)->id);
+                    $click = "ChangeToolbar('tchap', this)";
+
+                    try {
+                            $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"data-isId" => true, "class" => "$add_classes wsp-toolbar-item wsp-ariane", "id"=>"tchap"], "<span class='".$icons_class."'>".$icons["tchap"]."</span><span class=text-item>".$this->rc->gettext("tchap", "mel_workspace")."</span>");
+                        } catch (\Throwable $th) {
+                            $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "$add_classes wsp-toolbar-item wsp-ariane", "id"=>"tchap-notexist"], "<span class=".$icons["tchap"]."></span><span class=text-item>".$this->rc->gettext("tchap", "mel_workspace")."</span>");
+                        }
+
+                    if ($services[self::TASKS] || $services[self::CLOUD] || $is_admin)
+                            $html .= $vseparate;
                 }
 
                 if ($services[self::CLOUD])
@@ -1705,7 +1732,9 @@ class mel_workspace extends bnum_plugin
                     $html.= html::tag("button", ["title" => ($this->channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-channel-button","class" => "mel-button param-button ".($this->channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal".html::tag("span", ["class" => "plus icon-mel-pencil"]));
                 else if ($key === self::TASKS)
                     $html.= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button","class" => "mel-button param-button " ], "Changer de tableau".html::tag("span", ["class" => "plus icon-mel-pencil"]));
-
+                else if ($key === self::TCHAP_CHANNEL)
+                    $html.= '<span class="mel-message"> ('. tchap::get_room_name($this->get_object($this->currentWorkspace, self::TCHAP_CHANNEL)->id) .')</span>';
+                    $html.= html::tag("button", ["title" => ($this->tchap_channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-tchap-channel-button","class" => "mel-button param-button ".($this->tchap_channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal tchap".html::tag("span", ["class" => "plus icon-mel-pencil"]));
                 $class = "btn btn-danger hidden mel-button no-button-margin";
                 $span = $icons["minus"];    
                 $func = '';           
@@ -3575,6 +3604,13 @@ class mel_workspace extends bnum_plugin
         return $this->get_ariane()->check_if_room_exist($channel_id);
     }
 
+    function check_tchap_channel($room_id)
+    {
+        $value = false;
+        if(class_exists('tchap')) $value = tchap::check_if_room_exist($room_id);
+        return $value;
+    }
+
     function check_channel_name($channel_name)
     {
         return $this->get_ariane()->check_if_room_exist_by_name($channel_name);
@@ -4148,7 +4184,7 @@ class mel_workspace extends bnum_plugin
     function change_ariane_room()
     {
         $name = rcube_utils::get_input_value("_name", rcube_utils::INPUT_GPC);
-        $uid =  rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
 
         $name = $this->get_ariane()->room_info($name);
         $datas = ["id" => $name["content"]->room->_id, "name" => $name["content"]->room->name, "edited" => true];
@@ -4176,6 +4212,38 @@ class mel_workspace extends bnum_plugin
             $isPrivate = $room->t === 'p';
             $rocket->add_users([$user], $room_id, $isPrivate);
             $rocket->update_owner($user, $room_id, $isPrivate, !self::is_admin($wsp, $user));
+        }
+    }
+    
+    function change_tchap_room()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
+        $room_id = rcube_utils::get_input_value("_room_uid", rcube_utils::INPUT_GP);
+        $config = [];
+        $config['id'] = $room_id;
+        if(class_exists('tchap') && tchap::check_if_room_exist($room_id)){
+            $wsp = self::get_workspace($uid);
+            $this->sync_workspace_tchap($wsp, $room_id);
+            $this->save_object($wsp, self::TCHAP_CHANNEL, $config);
+            self::edit_modified_date($wsp, false);
+            $wsp->save();
+            $value = true;
+        } else {
+            $value = false;
+        }
+        //si non 
+        echo json_encode($value);
+        exit;
+    }
+
+    function sync_workspace_tchap($wsp, $room_id)
+    {
+        $users = self::get_users($wsp);
+        if  (class_exists('tchap'))
+        {
+            foreach ($users as $user) {
+                tchap::invite_tchap_user($room_id, $user);
+            }
         }
     }
 

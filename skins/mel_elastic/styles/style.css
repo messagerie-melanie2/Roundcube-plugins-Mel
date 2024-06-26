@@ -3809,6 +3809,25 @@ html.layout-phone .mv2-app-line {
 .notes_app.only-current.only-text {
   color: var(--notes-app-color);
 }
+.tchap_app .mv2-app-icon {
+  background-color: var(--tchap-app-color);
+}
+.tchap_app .mv2-app-icon:hover {
+  background-color: var(--hover-app-color);
+}
+.tchap_app.only-text .mv2-app-icon {
+  color: var(--tchap-app-color);
+}
+.tchap_app.only-current.only-background {
+  background-color: var(--tchap-app-color);
+  color: white;
+}
+.tchap_app.only-current.only-background.can-be-hovered:hover {
+  background-color: var(--hover-app-color);
+}
+.tchap_app.only-current.only-text {
+  color: var(--tchap-app-color);
+}
 html.dark-mode:root {
   --hover-app-color: #2e2e2e;
 }

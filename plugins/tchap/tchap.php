@@ -212,6 +212,38 @@ class tchap extends bnum_plugin
     }
 
     /**
+     * vérifie si un canal existe
+     * @param $room_id
+     */
+    public static function check_if_room_exist($room_id) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $config = ['token'=> $token, 'room_id'=> $room_id];
+        $content = self::call_tchap_api($rcmail->config->get('get_room_name_endpoint'), $config, 'POST');
+        if($content["httpCode"] === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * vérifie si un canal existe
+     * @param $room_id
+     */
+    public static function get_room_name($room_id) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $config = ['token'=> $token, 'room_id'=> $room_id];
+        $content = self::call_tchap_api($rcmail->config->get('get_room_name_endpoint'), $config, 'POST');
+        if($content["httpCode"] === 200) {
+            return json_decode($content['content'])->room_name;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * kick un utilisateur d'un salon
      * @param$room_id
      * @param $user_id 

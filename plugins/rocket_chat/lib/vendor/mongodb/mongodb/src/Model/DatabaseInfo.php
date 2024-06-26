@@ -1,12 +1,12 @@
 <?php
 /*
- * Copyright 2015-2017 MongoDB, Inc.
+ * Copyright 2015-present MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,34 +17,36 @@
 
 namespace MongoDB\Model;
 
+use ArrayAccess;
+use MongoDB\Exception\BadMethodCallException;
+use ReturnTypeWillChange;
+
+use function array_key_exists;
+
 /**
  * Database information model class.
  *
  * This class models the database information returned by the listDatabases
  * command. It provides methods to access common database properties.
  *
- * @api
  * @see \MongoDB\Client::listDatabases()
- * @see http://docs.mongodb.org/manual/reference/command/listDatabases/
+ * @see https://mongodb.com/docs/manual/reference/command/listDatabases/
+ * @template-implements ArrayAccess<string, mixed>
  */
-class DatabaseInfo
+class DatabaseInfo implements ArrayAccess
 {
-    private $info;
+    private array $info;
 
-    /**
-     * Constructor.
-     *
-     * @param array $info Database info
-     */
+    /** @param array $info Database info */
     public function __construct(array $info)
     {
         $this->info = $info;
     }
 
     /**
-     * Return the collection info as an array.
+     * Return the database info as an array.
      *
-     * @see http://php.net/oop5.magic#language.oop5.magic.debuginfo
+     * @see https://php.net/oop5.magic#language.oop5.magic.debuginfo
      * @return array
      */
     public function __debugInfo()
@@ -69,6 +71,7 @@ class DatabaseInfo
      */
     public function getSizeOnDisk()
     {
+        /* The MongoDB server might return this number as an integer or float */
         return (integer) $this->info['sizeOnDisk'];
     }
 
@@ -80,5 +83,62 @@ class DatabaseInfo
     public function isEmpty()
     {
         return (boolean) $this->info['empty'];
+    }
+
+    /**
+     * Check whether a field exists in the database information.
+     *
+     * @see https://php.net/arrayaccess.offsetexists
+     * @param mixed $offset
+     * @return boolean
+     * @psalm-param array-key $offset
+     */
+    #[ReturnTypeWillChange]
+    public function offsetExists($offset)
+    {
+        return array_key_exists($offset, $this->info);
+    }
+
+    /**
+     * Return the field's value from the database information.
+     *
+     * @see https://php.net/arrayaccess.offsetget
+     * @param mixed $offset
+     * @return mixed
+     * @psalm-param array-key $offset
+     */
+    #[ReturnTypeWillChange]
+    public function offsetGet($offset)
+    {
+        return $this->info[$offset];
+    }
+
+    /**
+     * Not supported.
+     *
+     * @see https://php.net/arrayaccess.offsetset
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws BadMethodCallException
+     * @return void
+     */
+    #[ReturnTypeWillChange]
+    public function offsetSet($offset, $value)
+    {
+        throw BadMethodCallException::classIsImmutable(self::class);
+    }
+
+    /**
+     * Not supported.
+     *
+     * @see https://php.net/arrayaccess.offsetunset
+     * @param mixed $offset
+     * @throws BadMethodCallException
+     * @return void
+     */
+    #[ReturnTypeWillChange]
+    public function offsetUnset($offset)
+    {
+        throw BadMethodCallException::classIsImmutable(self::class);
     }
 }

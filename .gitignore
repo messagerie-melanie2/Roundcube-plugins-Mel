@@ -15,6 +15,7 @@ jsdoc-tutorials
 */jsdoc-tutorials/*
 **/.vscode/*
 **/launch.json
+*/launch.json
 
 aide/config.php
 aide/custom.css
@@ -27,3 +28,5 @@ plugins/mel_help/public/*
 plugins/mel_news/files/*
 plugins/mel_nextcloud/nextcloud/apps/*.tar.gz
 .vscode/launch.json
+.vscode/launch.json
+.vscode/

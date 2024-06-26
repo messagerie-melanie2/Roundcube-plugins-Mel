@@ -1756,7 +1756,7 @@ class mel_workspace extends bnum_plugin
 
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
         $html .= "<thead>";
-        $html .= "<tr><td>Utilisateur ($nbuser) </td><td class=\"mel-fit-content\">Droits d\'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
+        $html .= "<tr><td>Utilisateur ($nbuser) </td><td class=\"mel-fit-content\">Droits d'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
         $html .= "</thead>";
         $share = $this->sort_user($workspace->shares);
         $current_user = driver_mel::gi()->getUser();
@@ -1890,6 +1890,21 @@ class mel_workspace extends bnum_plugin
         return $html;
     }
 
+    /**
+     * Création de l'espace de travail
+     * 
+     * @param string avatar POST
+     * @param string title POST
+     * @param string uid POST
+     * @param string desc POST
+     * @param string end_date POST
+     * @param string hashtag POST
+     * @param string visibility POST
+     * @param array  users POST
+     * @param string services POST
+     * @param string color POST
+     * @param string service_params POST
+     */
     function create()
     {
         try {
@@ -1939,22 +1954,36 @@ class mel_workspace extends bnum_plugin
 
             $count = count($datas["users"]);
 
-            for ($i=0; $i < $count; ++$i) { 
-                $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i]);
+            for ($i=0; $i < $count; ++$i) {
+                $email = $datas["users"][$i];
+                $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $email);
+                $user_exists = true;
+                $just_created = false;
 
-                if ($tmp_user->uid === null && !$tmp_user->is_list) $retour["errored_user"][] = $datas["users"][$i];
-                else {
+                if ($tmp_user->uid === null && !$tmp_user->is_list) {
+                    if (rcmail::get_instance()->config->get('enable_external_users', false)) {
+                        $user_exists = driver_mel::gi()->create_external_user($email, $workspace);
+                        $just_created = true;
+                    }
+                    else {
+                        $user_exists = false;
+                    }
+                    
+                    if (!$user_exists) {
+                        $retour["errored_user"][] = $email;
+                    }
+                }
+
+                if ($user_exists) {
                     foreach ($this->_add_internal_user($workspace, $tmp_user) as $added_user) {
-                        if ($added_user !== $user->uid && $added_user !== null)
-                        {
+                        if ($added_user !== $user->uid && $added_user !== null) {
                             $retour["existing_users"][] = $added_user;
                             $share = driver_mel::gi()->workspace_share([$workspace]);
                             $share->user = $added_user;
                             $share->rights = Share::RIGHT_WRITE;
                             $shares[] = $share;   
     
-                            if (class_exists("mel_notification"))
-                            {
+                            if (class_exists("mel_notification") && !$just_created) {
                                 $this->_notify_user($added_user, $workspace, $added_user);
                             }           
                         }
@@ -2771,38 +2800,53 @@ class mel_workspace extends bnum_plugin
         return $workspace; 
     }
 
+    /**
+     * Add users to workspace
+     * 
+     * @param string _uid POST
+     * @param array _users POST
+     */
     function add_users()
     {
         //get input
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
+        $tmp_users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
         //
         $workspace = self::get_workspace($uid);
         //get users
-        $count = count($users);
-        $tmp_users = $users;
         $users = [];
         $unexistingUsers = [];
         foreach ($tmp_users as $key => $value) {
             $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
+            $user_exists = true;
 
-            if ($tmp_user->uid !== null || $tmp_user->is_list) {
+            if ($tmp_user->uid === null && !$tmp_user->is_list) {
+                if (rcmail::get_instance()->config->get('enable_external_users', false)) {
+                    $user_exists = driver_mel::gi()->create_external_user($value, $workspace);
+                }
+                else {
+                    $user_exists = false;
+                }
+
+                if (!$user_exists) {
+                    $unexistingUsers[] = $value;
+                }
+            }
+
+            if ($user_exists) {
                 foreach ($this->_add_internal_user($workspace, $tmp_user) as $cuser) {
                     $users[] = $cuser;
                 }
             }
-            else $unexistingUsers[] = $value;
         }
 
-        if (count($users) === 0)
-        {
+        if (count($users) === 0) {
             echo "no one was found";
             exit;
         }
         else {
             //get workspace
-            if (self::is_admin($workspace))
-            {
+            if (self::is_admin($workspace)) {
                 $this->_add_users($workspace, $users);
                 self::edit_modified_date($workspace, false);
                 //save
@@ -2816,6 +2860,15 @@ class mel_workspace extends bnum_plugin
         }
     }
 
+    /**
+     * Add users to workspace
+     * 
+     * @param Workspace $workspace
+     * @param array $users
+     * @param boolean $noNotif
+     * 
+     * @return void
+     */
     function _add_users(&$workspace, $users, $noNotif = false)
     {
         //get services

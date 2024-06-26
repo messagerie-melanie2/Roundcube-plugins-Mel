@@ -1161,17 +1161,37 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->send("mel_metapage.contact");
     }
 
+    /**
+     * Vérification si les utilisateurs existent dans l'annuaire
+     * 
+     * @param array _users POST Liste d'utilisateurs
+     * 
+     * @return json ["unexist", "externs", "added"]
+     */
     function check_users()
     {
         $users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
         $unexisting_users = [];
+        $externs_users = [];
         $added_users = [];
         foreach ($users as $key => $value) {
+            $value = trim($value, ',');
             $tmp = driver_mel::gi()->getUser(null, true, false, null, $value);
 
-            if ($tmp->uid === null && !$tmp->is_list)
-                $unexisting_users[] = $value;
-            else{
+            if ($tmp->uid === null && !$tmp->is_list) {
+                if (rcmail::get_instance()->config->get('enable_external_users', false)) {
+                    $externs_users[] = [
+                        "name"  => $this->gettext('external_user_name'),
+                        "uid"   => $value,
+                        "email" => $value,
+                        "title" => $this->gettext('external_user_title'),
+                    ];
+                }
+                else {
+                    $unexisting_users[] = $value;
+                }
+            }
+            else {
                 $added_users[] = [
                     "name" => $tmp->name,
                     "uid" => ($tmp->is_list ? $value : $tmp->uid),
@@ -1179,9 +1199,8 @@ class mel_metapage extends bnum_plugin
                 ];
             }
         }
-        echo json_encode(["unexist" => $unexisting_users, "added" => $added_users]);
+        echo json_encode(["unexist" => $unexisting_users, "externs" => $externs_users, "added" => $added_users]);
         exit;
-        //driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid
     }
 
     function ariane()

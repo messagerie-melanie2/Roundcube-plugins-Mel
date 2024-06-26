@@ -485,3 +485,6 @@ $labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vi
 $labels['found_audio_date'] = 'Réserver une audio-conférence';
 $labels['add'] = 'Ajouter';
 $labels['delete'] = 'Supprimer';
+
+$labels['external_user_name'] = "Utilisateur externe au Bnum";
+$labels['external_user_title'] = "Cet utilisateur n'a pas encore été créé dans le Bnum. À la création de l'espace, il recevra un courriel pour initialiser son compte.";

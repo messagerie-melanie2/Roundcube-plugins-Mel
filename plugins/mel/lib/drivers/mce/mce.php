@@ -486,7 +486,7 @@ class mce_driver_mel extends driver_mel {
     return false;
   }
 
-   /**
+  /**
    * Méthode pour vérifier si groupe existe déjà 
    * 
    * @param string $workspace_id Identifiant du workspace
@@ -507,6 +507,19 @@ class mce_driver_mel extends driver_mel {
   public function get_workspace_group($workspace_id)
   { 
     return null;
+  }
+
+  /**
+   * Création d'un utilisateur externe s'il n'est pas trouvé dans l'annuaire 
+   * et que son domaine n'est pas un domaine interne
+   * 
+   * @param string $email Email de l'utilisateur externe
+   * @param \LibMelanie\Api\Defaut\Workspace $workspace Espace de travail
+   * 
+   * @return boolean true si l'utilisateur a été créé, false sinon
+   */
+  public function create_external_user($email, $workspace) {
+    return false;
   }
 
   /**

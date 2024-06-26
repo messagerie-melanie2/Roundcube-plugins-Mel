@@ -114,6 +114,9 @@ class mel extends rcube_plugin
     // Chargement de l'ui
     $this->init_ui();
 
+    // Require mel_helper
+    $this->require_plugin('mel_helper');
+
     // Configurer les LOG de la librairie Mél
     $trace_log = function ($message) {
       $message = "[LibM2] $message";

@@ -14,6 +14,7 @@ class Core {
             // Inclusion des fichiers
             require_once __DIR__ . '/../utils.php';
             require __DIR__ . '/../../config.inc.php';
+            include_once __DIR__ . '/../../../vendor/autoload.php';
 
             global $user, $hash, $step;
 
@@ -27,12 +28,24 @@ class Core {
             // Inclusion de l'ORM M2
             @include_once 'includes/libm2.php';
 
+            // Gestion des logs
+            $log = function ($message) {
+                utils::log("Extern - $message");
+            };
+            if ($config['debug']) {
+                LibMelanie\Log\M2Log::InitDebugLog($log);
+            }
+            LibMelanie\Log\M2Log::InitInfoLog($log);
+            LibMelanie\Log\M2Log::InitErrorLog($log);
+            
+
             // Récupération des paramètres de la requête
             $hash = utils::get_input_value("_h", utils::INPUT_GPC);
 
             $params = unserialize(base64_decode(urldecode($hash)));
 
             if ($params === false) {
+                utils::log("Extern/Core::Process() - Invalid hash");
                 return false;
             }
 
@@ -45,6 +58,7 @@ class Core {
             $user->email = $email;
 
             if (!$user->load(['uid', 'email', 'firstname', 'lastname'])) {
+                utils::log("Extern/Core::Process() [$email] - User not found");
                 return false;
             }
 
@@ -52,6 +66,7 @@ class Core {
             $currentKey = $user->getDefaultPreference('external_key');
 
             if (empty($currentKey) || $currentKey != $key) {
+                utils::log("Extern/Core::Process() [$email] - Invalid key");
                 return false;
             }
 
@@ -59,6 +74,7 @@ class Core {
             $validity = $user->getDefaultPreference('external_key_validity');
 
             if (empty($validity) || time() - intval($validity) > intval($config['external_key_validity'])) {
+                utils::log("Extern/Core::Process() [$email] - Key expired");
                 return false;
             }
 
@@ -70,7 +86,8 @@ class Core {
         catch (Exception $e) {
             return false;
         }
-        
+
+        utils::log("Extern/Core::Process() [$email] - Processed");
         return true;
     }
 
@@ -109,6 +126,7 @@ class Core {
 
             // Erreur d'enregistrement ldap
             if (is_null($ret)) {
+                utils::log("Extern/Core::Post() [$user->email] - LDAP error");
                 $message = "Impossible d'enregistrer vos informations, merci de réessayer plus tard.";
             }
             else {

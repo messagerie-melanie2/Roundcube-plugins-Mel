@@ -1985,7 +1985,7 @@ class mel_workspace extends bnum_plugin
 
             for ($i=0; $i < $count; ++$i) {
                 $email = $datas["users"][$i];
-                $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $email);
+                $tmp_user = driver_mel::gi()->getUser(null, true, true, null, $email);
                 $user_exists = true;
                 $just_created = false;
 
@@ -1998,7 +1998,10 @@ class mel_workspace extends bnum_plugin
                         $user_exists = false;
                     }
                     
-                    if (!$user_exists) {
+                    if ($user_exists) {
+                        $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $email);
+                    }
+                    else {
                         $retour["errored_user"][] = $email;
                     }
                 }
@@ -2846,7 +2849,7 @@ class mel_workspace extends bnum_plugin
         $users = [];
         $unexistingUsers = [];
         foreach ($tmp_users as $key => $value) {
-            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
+            $tmp_user = driver_mel::gi()->getUser(null, true, true, null, $value);
             $user_exists = true;
 
             if ($tmp_user->uid === null && !$tmp_user->is_list) {
@@ -2857,7 +2860,10 @@ class mel_workspace extends bnum_plugin
                     $user_exists = false;
                 }
 
-                if (!$user_exists) {
+                if ($user_exists) {
+                    $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
+                }
+                else {
                     $unexistingUsers[] = $value;
                 }
             }

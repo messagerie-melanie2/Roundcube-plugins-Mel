@@ -506,13 +506,15 @@ class utils
    */
   public static function log($message)
   {
+    global $config;
+
     $ip = self::_get_address_ip();
     $procid = getmypid();
     $mineqprovenance = $_SERVER["HTTP_X_MINEQPROVENANCE"] ?: 'Intranet';
     $courrielleur = isset($_GET['_courrielleur']) ? " {Courrielleur}" : " {Web}";
     $date = date('d-M-Y H:i:s O');
     $message = "[$date]: <calendar> [INFO] $ip ($mineqprovenance) PROC[$procid]$courrielleur - $message\r\n";
-    error_log($message, 3, '/var/log/roundcube/roundcube_mel.log');
+    error_log($message, 3, $config['log_file'] ?: '/var/log/roundcube/roundcube_mel.log');
   }
 
   /**

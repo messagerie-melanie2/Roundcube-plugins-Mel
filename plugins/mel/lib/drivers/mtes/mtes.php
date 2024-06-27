@@ -621,6 +621,7 @@ class mtes_driver_mel extends mce_driver_mel
     $user = $this->user([null, 'webmail.external.users']);
 
     $user->email = $email;
+    $user->email_list = [$email];
 
     if ($user->load()) {
       // Si l'utilisateur existe on ne fait rien

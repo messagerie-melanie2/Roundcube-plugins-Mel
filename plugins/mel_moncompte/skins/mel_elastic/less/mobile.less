@@ -1,11 +1,13 @@
 //compress:false
-e('@CHARSET "UTF-8";')
-#body {
-	font: 12px "Lucida Grande",Helvetica,Arial,sans-serif;
+e('@CHARSET "UTF-8";') #body {
+  font:
+    12px 'Lucida Grande',
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
-#mel_mobiles_list_listbox
-{
+#mel_mobiles_list_listbox {
   position: absolute;
   left: 0;
   top: 0;
@@ -13,8 +15,7 @@ e('@CHARSET "UTF-8";')
   width: 180px;
 }
 
-#mel_statistics_mobile_box
-{
+#mel_statistics_mobile_box {
   position: absolute;
   top: 0;
   right: 0;
@@ -22,10 +23,9 @@ e('@CHARSET "UTF-8";')
   left: 192px;
 }
 
-#mel_statistics_mobile_frame
-{
+#mel_statistics_mobile_frame {
   width: 100%;
-  table-layout: fixed; 
+  table-layout: fixed;
   tbody {
     td {
       width: 100%;
@@ -35,7 +35,7 @@ e('@CHARSET "UTF-8";')
     tr {
       &.disabled {
         td {
-          color: #87A3AA;
+          color: #87a3aa;
         }
       }
       &.filtermoveup {
@@ -55,12 +55,12 @@ e('@CHARSET "UTF-8";')
 }
 
 #mobile_actions {
-	font-size: 12px;
+  font-size: 12px;
   > div {
-    margin-bottom: 5px; 
+    margin-bottom: 5px;
   }
   a {
-    color: #3B6EBF;
+    color: #3b6ebf;
     text-decoration: none;
     &:hover {
       text-decoration: underline;
@@ -69,24 +69,24 @@ e('@CHARSET "UTF-8";')
 }
 
 .m2_stats_device_table {
-	margin-top: 0px;
-	width: 100%;
-  background-color: #FFF;
+  margin-top: 0px;
+  width: 100%;
+  background-color: #fff;
   background-color: var(--table-body-bg-color);
-	border: 1px solid #000;
-	border-spacing: 0px;
-	empty-cells: show;
-	margin-bottom: 30px;
-	font-size: 12px;
+  border: 1px solid #000;
+  border-spacing: 0px;
+  empty-cells: show;
+  margin-bottom: 30px;
+  font-size: 12px;
   thead {
     td {
-      background-color: #005D76;
+      background-color: #005d76;
       margin-top: 0px;
       margin-bottom: 0px;
       text-align: center;
       font-weight: bold;
-      color: #FFF;
-      height: 20px;    
+      color: #fff;
+      height: 20px;
     }
   }
   td {
@@ -95,9 +95,9 @@ e('@CHARSET "UTF-8";')
     overflow: visible;
     padding: 6px 12px;
     border-width: 0px 0px 1px;
-    border-bottom: 1px solid #CBCBCB;
+    border-bottom: 1px solid #cbcbcb;
     border-bottom-color: var(--table-body-border-color);
-    background-color: #FAFAFA;
+    background-color: #fafafa;
     background-color: var(--table-body-bg-color);
     text-align: center;
   }
@@ -105,18 +105,23 @@ e('@CHARSET "UTF-8";')
     td {
       &.mel_moncompte\ {
         &.resync {
-          background-image: url("images/1411751212_refresh.png");
+          background-image: url('images/1411751212_refresh.png');
           background-repeat: no-repeat;
           background-position: center;
-          &:HOVER{
+          &:hover {
             cursor: pointer;
           }
+
+          html.dark-mode &,
+          html.dark-mode-custom & {
+            background-image: url('images/1411751212_refresh_dark.png');
+          }
         }
-        &.remove  {
-          background-image: url("images/1411751862_error.png");
+        &.remove {
+          background-image: url('images/1411751862_error.png');
           background-repeat: no-repeat;
           background-position: center;
-          &:HOVER{
+          &:hover {
             cursor: pointer;
           }
         }
@@ -124,4 +129,3 @@ e('@CHARSET "UTF-8";')
     }
   }
 }
-

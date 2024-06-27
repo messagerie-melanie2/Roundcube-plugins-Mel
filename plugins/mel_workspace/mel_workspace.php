@@ -2847,6 +2847,7 @@ class mel_workspace extends bnum_plugin
         $workspace = self::get_workspace($uid);
         //get users
         $users = [];
+        $noNotifUsers = [];
         $unexistingUsers = [];
         foreach ($tmp_users as $key => $value) {
             $tmp_user = driver_mel::gi()->getUser(null, true, true, null, $value);
@@ -2862,6 +2863,7 @@ class mel_workspace extends bnum_plugin
 
                 if ($user_exists) {
                     $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
+                    $noNotifUsers[] = $value;
                 }
                 else {
                     $unexistingUsers[] = $value;
@@ -2882,7 +2884,7 @@ class mel_workspace extends bnum_plugin
         else {
             //get workspace
             if (self::is_admin($workspace)) {
-                $this->_add_users($workspace, $users);
+                $this->_add_users($workspace, $users, null, $noNotifUsers);
                 self::edit_modified_date($workspace, false);
                 //save
                 $workspace->save();
@@ -2901,10 +2903,11 @@ class mel_workspace extends bnum_plugin
      * @param Workspace $workspace
      * @param array $users
      * @param boolean $noNotif
+     * @param array $noNotifUsers
      * 
      * @return void
      */
-    function _add_users(&$workspace, $users, $noNotif = false)
+    function _add_users(&$workspace, $users, $noNotif = false, $noNotifUsers = [])
     {
         //get services
         $services = $this->get_worskpace_services($workspace, true, true);
@@ -2920,7 +2923,7 @@ class mel_workspace extends bnum_plugin
                 $share->rights = Share::RIGHT_WRITE;
                 $shares[] = $share;   
 
-                if (class_exists("mel_notification") && !$noNotif)
+                if (class_exists("mel_notification") && !$noNotif && !in_array($users[$i], $noNotifUsers))
                 {
                     $this->_notify_user($users[$i], $workspace, $users[$i]);
                 }

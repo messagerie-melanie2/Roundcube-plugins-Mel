@@ -54,7 +54,7 @@ class Core {
             $key = $params['key'];
 
             // Récupération de l'objet utilisateur
-            $user = new LibMelanie\Api\Mel\User(null, 'webmail.external.users');
+            $user = new LibMelanie\Api\Mel\User(\LibMelanie\Config\Ldap::$MASTER_LDAP, 'webmail.external.users');
             $user->email = $email;
 
             if (!$user->load(['uid', 'email', 'firstname', 'lastname'])) {

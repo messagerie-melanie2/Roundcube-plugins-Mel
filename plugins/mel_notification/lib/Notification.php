@@ -211,7 +211,7 @@ class Notification {
    * @param NotificationActionBase|null $action Action de la notification
    */
   public function __construct(ENotificationType $notification_type, string $title, string $content, ?NotificationActionBase $action = null) {
-    $this->$notification_type = $notification_type;
+    $this->notification_type = $notification_type;
     $this->title = $title;
     $this->content = $content;
     $this->action = $action;

@@ -1,0 +1,48 @@
+<?php 
+$config = [];
+
+$config['rc_resources'] = [
+    'flex-office' => [
+        'name' => 'Flex-Office',
+        'is_option' => true,
+        'load_data' => 'resources_flex_office',
+    ]
+];
+
+$config['rc_filters'] = [
+    'flex-office' => [
+        [
+            'name' => 'locality', 
+            'load_data' => 'resources_localities',
+            'load_data_on_change' => 'resources_flex_office',
+            'size' => 12,
+            'type' => 'select',
+            'icon' => 'location_on'
+        ],
+        [
+            'name' => 'batiment', 
+            'size' => 3,
+            'type' => 'select',
+            'icon' => 'home'
+        ],
+        [
+            'name' => 'etage', 
+            'size' => 3,
+            'type' => 'select',
+            'icon' => 'floor'
+        ],
+        [
+            'name' => 'roomnumber', 
+            'size' => 3,
+            'type' => 'select',
+            'icon' => 'meeting_room'
+        ],
+        [
+            'name' => 'caracteristiques', 
+            'size' => 3,
+            'type' => 'multi-select',
+            'icon' => 'tune'
+            
+        ]
+    ] 
+];

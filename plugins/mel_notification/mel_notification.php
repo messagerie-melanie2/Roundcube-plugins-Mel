@@ -328,7 +328,7 @@ class mel_notification extends rcube_plugin
             $action = NotificationActionBase::Create(
                 /*text*/      'Ouvrir le mail', 
                 /*title*/     'Cliquez ici pour ouvrir pour aller voir !', 
-                /*href*/      "./?_task=mail&_mbox=$mailbox", 
+                /*href*/      "./?_task=mail&_mbox=$mbox", 
                 /*iscommand*/ false);
 
             (new CommandNotification(

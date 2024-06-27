@@ -4,7 +4,7 @@
  * Enumeration pour les types de notifications
  */
 class ENotificationType {
-  private string $type;
+  private /*string*/ $type;
   private function __construct(string $type) {
     $this->type = $type;
   }
@@ -13,7 +13,7 @@ class ENotificationType {
    * Récupère la valeur de l'énumération
    * @return string
    */
-  public function get() : string
+  public function get()/* : string*/
   {
     return $this->type;
   }
@@ -23,7 +23,7 @@ class ENotificationType {
    * @param ENotificationType $other Vérifier si les types sont identiques
    * @return bool
    */
-  public function is(ENotificationType $other) : bool 
+  public function is(ENotificationType $other)/* : bool */
   {
     return $other->type === $this->type;
   }
@@ -98,12 +98,12 @@ abstract class NotificationActionBase {
    * Texte de la notifications
    * @var string
    */
-  public string $text;
+  public /*string*/ $text;
   /**
    * Texte au survol de la notification
    * @var string
    */
-  public string $title;
+  public /*string*/ $title;
 
   /**
    * Une action de notification est toujours au moins composé d'un texte et d'un title
@@ -113,6 +113,10 @@ abstract class NotificationActionBase {
   public function __construct(string $text, string $title) {
     $this->text = $text;
     $this->title = $title;
+  }
+
+  public function get() {
+    return [$this];
   }
 
   /**
@@ -138,7 +142,7 @@ class NotificationAction extends NotificationActionBase {
    * Commande qui sera appelé lors du clique de la notification
    * @var string
    */
-  public string $command;
+  public /*string*/ $command;
 
   /**
    * Une action de notification est toujours au moins composé d'un texte, d'un title et d'une action, ici une commande.
@@ -162,7 +166,7 @@ class NotificationActionHref extends NotificationActionBase {
    *
    * @var string 
    */
-    public string $href;
+    public /*string*/ $href;
 
   /**
    * Une action de notification est toujours au moins composé d'un texte, d'un title et d'une action, ici un href.
@@ -178,6 +182,30 @@ class NotificationActionHref extends NotificationActionBase {
 }
 
 /**
+ * Classe pour les actions de notifications. La notification appelle une url et une commande.
+ */
+class NotificationActionCommandHref extends NotificationAction {
+  /**
+   * Url qui sera appelé lors du clique de la notification
+   *
+   * @var string 
+   */
+    public /*string*/ $href;
+
+  /**
+   * Une action de notification est toujours au moins composé d'un texte, d'un title et d'une action, ici un href.
+   *
+   * @param string $href Url appeler au clique
+   * @param string $text Texte de l'action
+   * @param string $title Titre de l'action
+   */
+  public function __construct(string $href, string $command, string $text, string $title) {
+    parent::__construct($command, $text, $title);
+    $this->href = $href;
+  }
+}
+
+/**
  * Représente une notification et donne des fonctions utile à la création et l'envoie d'une notification
  */
 class Notification {
@@ -185,22 +213,22 @@ class Notification {
    * Catégorie de la notification
    * @var ENotificationType
    */
-  private ENotificationType $notification_type;
+  private /*ENotificationType*/ $notification_type;
   /**
    * Action de la notification
    * @var ?NotificationActionBase
    */
-  private ?NotificationActionBase $action;
+  private /*?NotificationActionBase*/ $action;
   /**
    * Titre de la notification (au survol de la souris)
    * @var string
    */
-  private string $title;
+  private /*string*/ $title;
   /**
    * Contenu de la notificatyion (html)
    * @var string
    */
-  private string $content;
+  private /*string*/ $content;
 
   /**
    * Créer une notification. Celle-ci pourra être modifier et envoyer.
@@ -223,7 +251,7 @@ class Notification {
    * @param string $title Nouveau titre
    * @return Notification Chaînage
    */
-  public function update_title(string $title) : Notification
+  public function update_title(string $title)/* : Notification*/
   {
     $this->title = $title;
     return $this;
@@ -235,7 +263,7 @@ class Notification {
    * @param ENotificationType $type Nouvelle catégorie
    * @return Notification Chaînage
    */
-  public function update_type(ENotificationType $type) : Notification
+  public function update_type(ENotificationType $type)/* : Notification*/
   {
     $this->notification_type = $type;
     return $this;
@@ -247,7 +275,7 @@ class Notification {
    * @param string $content Nouveau contenu de la notification
    * @return Notification Chaînage
    */
-  public function update_content(string $content) : Notification
+  public function update_content(string $content)/* : Notification*/
   {
     $this->content = $content;
     return $this;
@@ -259,7 +287,7 @@ class Notification {
    * @param ?NotificationActionBase $action Nouvelle action de la notification
    * @return Notification Chaînage
    */
-  public function update_action(?NotificationActionBase $action) : Notification
+  public function update_action(?NotificationActionBase $action)/* : Notification*/
   {
     $this->action = $action;
     return $this;
@@ -270,7 +298,7 @@ class Notification {
    *
    * @return array
    */
-  public function get_for_command() : array
+  public function get_for_command()/* : array*/
   {
     $config =  [
       'title' => $this->title,
@@ -331,13 +359,13 @@ class CommandNotification extends Notification {
    *
    * @var string
    */
-  private string $uid;
+  private /*string*/ $uid;
   /**
    * Paire de clé/valeur supplémentaire pour la notification.
    *
    * @var array
    */
-  private array $extra;
+  private /*array*/ $extra;
 
   /**
    * Créer une notification. Celle-ci pourra être modifier et envoyer.
@@ -361,7 +389,7 @@ class CommandNotification extends Notification {
    * @param any $value Valeur
    * @return CommandNotification Chaînage
    */
-  public function add_extra($key, $value) : CommandNotification {
+  public function add_extra($key, $value)/* : CommandNotification*/ {
     $this->extra[$key] = $value;
     return $this;
   }
@@ -371,7 +399,7 @@ class CommandNotification extends Notification {
    *
    * @return array
    */
-  public function get_for_command() : array
+  public function get_for_command()/* : array*/
   {
     $config = parent::get_for_command();
     $config['uid'] = $this->uid;

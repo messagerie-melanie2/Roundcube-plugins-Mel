@@ -626,7 +626,10 @@ class mel_notification extends rcube_plugin
         $notification->title = $title;
         $notification->content = $content;
 
-        if ($action !== null) $notification->action = serialize($action);
+        if ($action !== null) {
+            if (isset($action->title)) $action = $action->get();
+            $notification->action = serialize($action);
+        }
 
         // Ajouter la notification au User
         return $user->addNotification($notification);

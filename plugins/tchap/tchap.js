@@ -41,6 +41,11 @@ class tchap_manager extends MelObject {
 
     if (navigator.appName == 'Microsoft Internet Explorer')
       $tchap[0].contentWindow.location.reload(true);
+    //Ne pas afficher tchap en mode mobile
+    if ($('html').hasClass('layout-phone')) {
+      $('#tchap_frame').hide();
+      $('#tchap_mobile').show();
+    }
 
     const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
     $('body').append(loader);

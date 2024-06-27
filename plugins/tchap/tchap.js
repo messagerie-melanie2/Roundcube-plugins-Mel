@@ -45,11 +45,11 @@ class tchap_manager extends MelObject {
     if ($('html').hasClass('layout-phone')) {
       $('#tchap_frame').hide();
       $('#tchap_mobile').show();
+    } else {
+      const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
+      $('body').append(loader);
+      $('#wait_box').hide();
     }
-
-    const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
-    $('body').append(loader);
-    $('#wait_box').hide();
 
     await Mel_Promise.wait(
       () =>

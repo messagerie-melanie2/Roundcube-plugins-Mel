@@ -176,16 +176,18 @@ class html_mel_button extends html {
     private $text;
     private $icon;
 
-    public function __construct($attrib = [], $text = '', $icon = null)
+    public function __construct($attrib = [], $text = '', $icon = null, $add_predef_classes = true)
     {
         if (is_array($attrib)) {
             $this->attrib = $attrib;
         }
 
+        if ($add_predef_classes) {
         if (!empty($attrib['class'])) {
             $this->attrib['class'] = 'btn btn-secondary mel-button no-button-margin';
         }
         else $this->attrib['class'] .= ' btn btn-secondary mel-button no-button-margin';
+        }
 
         $this->text = $text;
         $this->icon = $icon;

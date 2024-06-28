@@ -417,7 +417,9 @@ class PlanningManager extends MelObject {
     });
 
     for await (const iterator of FreeBusyLoader.Instance.generate_and_save(
-      rcmail.env.wsp_shares,
+      MelEnumerable.from(rcmail.env.wsp_shares).where(
+        (x) => !this.get_env('current_workspace_users')?.[x]?.is_external,
+      ),
       {
         interval: FreeBusyLoader.Instance.interval,
         start: moment(date).startOf('day'),

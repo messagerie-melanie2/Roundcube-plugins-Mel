@@ -1088,8 +1088,9 @@ class mel_workspace extends bnum_plugin
             self::TCHAP_CHANNEL => $is_in_wsp && $this->get_object($workspace, self::TCHAP_CHANNEL) !== null
         ];
 
-        if ($datas[self::TASKS] && !$datas[self::WEKAN])
-            $datas[self::WEKAN] = true;
+        if ($datas[self::TASKS] && !$datas[self::WEKAN]) $datas[self::WEKAN] = true;
+
+        if (driver_mel::gi()->getUser()->is_external) $datas[self::AGENDA] = false;
 
         if ($services_to_remove)
         {
@@ -1590,7 +1591,7 @@ class mel_workspace extends bnum_plugin
                     html::tag("span", ["class" => "email"], driver_mel::gi()->getUser($value->user)->email ?? 'Adresse inconnue')
                 )
                 );
-                $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname];
+                $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname, 'is_external' => $user->is_external];
             }
         }
 
@@ -1804,7 +1805,7 @@ class mel_workspace extends bnum_plugin
                 $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger mel-button no-button-margin"><span class='.$icon_delete.'></span></button></td>';
             
             $html .= "</tr>";
-            $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname];
+            $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname, 'is_external' => $user->is_external];
         }
 
         $this->rc->output->set_env('current_workspace_users', $env);

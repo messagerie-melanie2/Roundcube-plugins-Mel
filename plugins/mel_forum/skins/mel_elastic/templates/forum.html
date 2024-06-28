@@ -1,0 +1,17 @@
+
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_contacts.bookproperties" />
+</h1>
+
+<div class="formcontainer">
+  <div class="formcontent">
+    <roundcube:object name="bookdetails" class="propform tabbed" />
+  </div>
+
+  <div class="formbuttons">
+    <roundcube:button command="book-save" class="btn btn-primary edit" label="save" />
+  </div>
+</div>
+<roundcube:include file="/includes/footer.html" />

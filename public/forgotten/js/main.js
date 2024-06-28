@@ -1,3 +1,13 @@
+window.addEventListener("load", (event) => {
+	// Ajouter un onclick sur les choix
+	document.querySelectorAll('ul.actions > li > span').forEach((element) => {
+		element.addEventListener('click', (event) => {
+			element.parentElement.classList.toggle('active');
+			element.parentElement.setAttribute('aria-pressed', element.parentElement.getAttribute('aria-pressed') == 'true' ? 'false' : 'true');
+		});
+	});
+});
+
 (function($){
 	function floatLabel(inputType){
 		$(inputType).each(function(){

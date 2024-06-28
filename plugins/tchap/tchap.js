@@ -62,6 +62,16 @@ class tchap_manager extends MelObject {
     }
     $('#tchaploader').hide();
 
+    window.addEventListener('resize', () => {
+      if ($('html').hasClass('layout-phone')) {
+        $('#tchap_frame').hide();
+        $('#tchap_mobile').show();
+      } else {
+        $('#tchap_frame').show();
+        $('#tchap_mobile').hide();
+      }
+    });
+
     this.rcmail().addEventListener(
       'switched_color_theme',
       this.change_theme.bind(this),

@@ -47,6 +47,10 @@ class mel_external_users extends rcube_plugin {
     if (driver_mel::gi()->getUser()->is_external) {
         // Ajout du css
         $this->include_stylesheet('externals.css');
+        
+        if (isset($this->rc->output)) {
+          $this->rc->output->set_env('im_external_user', true);
+        }
     }
   }
 
@@ -62,7 +66,7 @@ class mel_external_users extends rcube_plugin {
           $task = $this->rc->task;
       }
 
-      if (in_array($task, array('mail', 'calendar', 'bureau', 'addressbook'))) {
+      if (in_array($task, array('mail', 'calendar', 'bureau', 'addressbook')) && $_SERVER['REQUEST_METHOD'] === 'GET') {
           header('Location: ' . $this->rc->url(['task' => 'workspace']));
           exit;
       }

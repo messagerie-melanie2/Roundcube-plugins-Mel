@@ -1090,7 +1090,10 @@ class mel_workspace extends bnum_plugin
 
         if ($datas[self::TASKS] && !$datas[self::WEKAN]) $datas[self::WEKAN] = true;
 
-        if (driver_mel::gi()->getUser()->is_external) $datas[self::AGENDA] = false;
+        if (driver_mel::gi()->getUser()->is_external) {
+             $datas[self::AGENDA] = false;
+             $datas[self::EMAIL] = false;
+        }
 
         if ($services_to_remove)
         {

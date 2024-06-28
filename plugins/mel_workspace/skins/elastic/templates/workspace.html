@@ -30,7 +30,9 @@
 					<div id="groupoptions-wsp-plus-actions" class="popupmenu">
 						<h3 id="aria-label-groupoptions-wsp-plus-actions" class="voice">Plus d'options</h3>
 						<ul id=ul-option-actions-wsp class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-wsp-plus-actions">
-							<roundcube:button type="link-menuitem" command="workspace.compose"  label="mel_workspace.create_mail" innerclass="restore-font" class="icon-mel icon-mel-send" classAct="" />
+							<roundcube:if condition="!env:im_external_user"/>
+								<roundcube:button type="link-menuitem" command="workspace.compose"  label="mel_workspace.create_mail" innerclass="restore-font" class="icon-mel icon-mel-send" classAct="" />
+							<roundcube:endif />
 							<roundcube:if condition="env:plugin_list_visio===true"/>
 								<roundcube:button type="link-menuitem" command="workspace.webconf" label="mel_workspace.create_webconf" class="icon-mel icon-mel-videoconference" innerclass="restore-font" classAct="" />
 								<roundcube:button type="link-menuitem" command="workspace.webconf.needParams" label="mel_workspace.create_webconf_params" class="icon-mel icon-mel-videoconference" innerclass="restore-font" classAct="" />

@@ -13,7 +13,7 @@
                     <li>Pour les autres personnels du MASA, vous pouvez solliciter l'assistance en envoyant un mel à outilscollaboratifs,</li>
                     <li>Pour les personnels du MTE ou autres administrations, vous pouvez solliciter votre service informatique local.</li>
                 </ul>
-                <p>En cas de problème, rendez-vous sur le <a href="https://www.tchap.gouv.fr/#/room/!PHwHATDnuimhMowBKN:agent.dev-durable.tchap.gouv.fr">salon Tchap #Bnum-infos</a></p>
+                <p>En cas de problème, rendez-vous sur le <a target="_blank" href="https://www.tchap.gouv.fr/#/room/!PHwHATDnuimhMowBKN:agent.dev-durable.tchap.gouv.fr">salon Tchap #Bnum-infos</a></p>
             </div>
         </li>
         <li role="button" aria-pressed="false">

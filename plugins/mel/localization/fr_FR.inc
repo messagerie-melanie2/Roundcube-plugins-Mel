@@ -125,6 +125,7 @@ $labels['You can close and reopen the tab'] = "Vous pouvez fermer et ré-ouvrir 
 $labels['Or you can clic here to relogin'] = "Ou vous pouvez cliquer ici pour vous reconnecter";
 
 $labels['no bal'] = "Pas de BALI ? Cliquez-ici pour changer votre mot de passe";
+$labels['password forgotten'] = "Mot de passe oublié ?";
 
 $labels['portail_title'] = 'Ouvrez votre bureau numérique';
 $labels['help_title'] = 'Ouvrez la page d\'assistance dédiée à Mél';

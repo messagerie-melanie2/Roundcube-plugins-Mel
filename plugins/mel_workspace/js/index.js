@@ -107,7 +107,6 @@ $(document).ready(() => {
   rcmail.register_command(
     'workspaces.go',
     (uid) => {
-      //debugger;
       if (window.workspace_frame_manager) {
         if (!events_already_created) {
           events_already_created = true;
@@ -122,7 +121,9 @@ $(document).ready(() => {
           });
         }
 
-        workspace_frame_manager.go(uid);
+        top.current_workspace_in_background = workspace_frame_manager
+          .go(uid)
+          .getActiveFrame();
       }
     },
     true,

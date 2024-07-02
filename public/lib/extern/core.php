@@ -143,6 +143,8 @@ class Core {
             }
             else {
                 $step = 2;
+                $user->deletePreference(LibMelanie\Api\Mel\User::PREF_SCOPE_DEFAULT, 'external_key');
+                $user->deletePreference(LibMelanie\Api\Mel\User::PREF_SCOPE_DEFAULT, 'external_key_validity');
             }
         }
 

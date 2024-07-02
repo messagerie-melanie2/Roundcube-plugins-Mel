@@ -390,10 +390,10 @@ class utils
      */
     public static function resolve_url($url)
     {
-      global $config;
-
       // prepend protocol://hostname:port
       if (!preg_match('|^https?://|', $url)) {
+        require __DIR__ . '/../config.inc.php';
+
         $schema       = 'http';
         $default_port = 80;
 

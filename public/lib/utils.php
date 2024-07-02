@@ -390,6 +390,8 @@ class utils
      */
     public static function resolve_url($url)
     {
+      global $config;
+
       // prepend protocol://hostname:port
       if (!preg_match('|^https?://|', $url)) {
         $schema       = 'http';
@@ -400,7 +402,11 @@ class utils
           $default_port = 443;
         }
 
-        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
+        if (isset($config['http_host'])) {
+          $host = $config['http_host'];
+        } else {
+          $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
+        }
         $port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null;
 
         $prefix = $schema . '://' . preg_replace('/:\d+$/', '', $host);
@@ -422,7 +428,7 @@ class utils
    *
    * @return boolean
    */
-  public static function https_check($port = null, $use_https = true)
+  public static function https_check($port = null)
   {
     if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') {
       return true;
@@ -430,14 +436,10 @@ class utils
     if (
       !empty($_SERVER['HTTP_X_FORWARDED_PROTO'])
       && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https'
-      && in_array($_SERVER['REMOTE_ADDR'], rcube::get_instance()->config->get('proxy_whitelist', array()))
     ) {
       return true;
     }
     if ($port && $_SERVER['SERVER_PORT'] == $port) {
-      return true;
-    }
-    if ($use_https && rcube::get_instance()->config->get('use_https')) {
       return true;
     }
 

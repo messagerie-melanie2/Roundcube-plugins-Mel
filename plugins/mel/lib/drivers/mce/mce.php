@@ -85,25 +85,22 @@ class mce_driver_mel extends driver_mel {
       return $user;
     }
     if (!isset(self::$_users)) {
-      self::$_users = [];
+      self::$_users = \mel::getCache('users');
+      if (!isset(self::$_users)) {
+        self::$_users = [];
+      }
     }
     $keyCache = $username . (isset($itemName) ? $itemName : '');
     if (!isset(self::$_users[$keyCache])) {
-      $users = \mel::getCache('users');
-      if (isset($users) && isset($users[$keyCache]) && $users[$keyCache]->issetObjectMelanie()) {
-        self::$_users[$keyCache] = $users[$keyCache];
-        self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
-      }
-      else {
         self::$_users[$keyCache] = $this->user([null, $itemName]);
         self::$_users[$keyCache]->uid = $username;
         if ($load && !self::$_users[$keyCache]->load()) {
           self::$_users[$keyCache] = null;
         }
-        else {
-          self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
-        }
-      }
+      \mel::setCache('users', self::$_users);
+    }
+    if (isset(self::$_users[$keyCache])) {
+      self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
     }
     return self::$_users[$keyCache];
   }
@@ -185,6 +182,7 @@ class mce_driver_mel extends driver_mel {
         $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
       }
       else {
+        $infos->load(['server_host']);
         $hostname = $infos->server_host;
       }
     }

@@ -434,11 +434,11 @@ class mel_sharedmailboxes extends rcube_plugin {
                 mel_logs::gi()->l(mel_logs::DEBUG, "mel::storage_connect()");
             /* PAMELA - Gestion des boites partagées */
             if (!empty($this->get_account)) {
-                if(!$this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', false)) {
+                if (!$this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', true)) {
                     $user = driver_mel::gi()->getUser($this->mel->get_share_objet(), false);
-                      if ($user->is_objectshare) {
-                          return;
-                      }
+                    if ($user->is_objectshare) {
+                        return;
+                    }
                 }
                 $args['user'] = $this->mel->get_share_objet();
                 $args['host'] = $this->mel->get_host();

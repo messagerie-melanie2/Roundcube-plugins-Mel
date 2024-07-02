@@ -32,6 +32,17 @@ class tchap_manager extends MelObject {
    * @package
    */
   async main() {
+    super.main();
+
+    /**
+     * Interrupteur local qui défini si tchap à été lancer en mode mobile puis redimensionner.
+     *
+     * La page de "redirection" ne doit pas être afficher en cas de redimensionnement.
+     * @private
+     * @type {boolean}
+     */
+    this._tchap_mobile_mode_removed = false;
+
     const url =
       rcmail.env.tchap_startup_url !== null &&
       rcmail.env.tchap_startup_url !== undefined
@@ -39,13 +50,15 @@ class tchap_manager extends MelObject {
         : rcmail.env.tchap_url;
     let $tchap = $('#tchap_frame').attr('src', url);
 
-    if (navigator.appName == 'Microsoft Internet Explorer')
+    if (navigator.appName === 'Microsoft Internet Explorer')
       $tchap[0].contentWindow.location.reload(true);
+
     //Ne pas afficher tchap en mode mobile
-    if ($('html').hasClass('layout-phone')) {
+    if (top.$('html').hasClass('layout-phone')) {
       $('#tchap_frame').hide();
       $('#tchap_mobile').show();
     } else {
+      this._tchap_mobile_mode_removed = true;
       const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
       $('body').append(loader);
       $('#wait_box').hide();
@@ -60,17 +73,23 @@ class tchap_manager extends MelObject {
     if (this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null) {
       this.change_theme();
     }
+
     $('#tchaploader').hide();
 
-    window.addEventListener('resize', () => {
-      if ($('html').hasClass('layout-phone')) {
-        $('#tchap_frame').hide();
-        $('#tchap_mobile').show();
-      } else {
-        $('#tchap_frame').show();
-        $('#tchap_mobile').hide();
-      }
-    });
+    if (this._tchap_mobile_mode_removed) {
+      window.addEventListener('resize', () => {
+        if (
+          !this._tchap_mobile_mode_removed &&
+          $('html').hasClass('layout-phone')
+        ) {
+          $('#tchap_frame').hide();
+          $('#tchap_mobile').show();
+        } else {
+          $('#tchap_frame').show();
+          $('#tchap_mobile').hide();
+        }
+      });
+    }
 
     this.rcmail().addEventListener(
       'switched_color_theme',
@@ -89,6 +108,7 @@ class tchap_manager extends MelObject {
       this.tchap_disconnect.bind(this),
     );
     this._notificationhandler();
+
     if (rcmail.env.display_tchap_sidebar === 'false')
       this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
 

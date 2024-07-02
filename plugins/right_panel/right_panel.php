@@ -117,6 +117,7 @@ class right_panel extends rcube_plugin
           catch (Exception $ex) {}
         }
         if (!isset($infos['fname'])) {
+          $user->load(['uid', 'name', 'email']);
           $this->rc->output->set_env('username', $user->uid);
           $this->rc->output->set_env('user_fullname', $user->name);
           $this->rc->output->set_env('user_email', $user->email);

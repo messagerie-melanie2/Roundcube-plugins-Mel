@@ -68,7 +68,7 @@ class M2mailbox {
    * @return array
    */
   public function getAcl() {
-    $_mbox = driver_mel::gi()->getUser($this->mbox, false);
+    $_mbox = driver_mel::gi()->getUser($this->mbox, true, true, null, null, 'webmail.moncompte.mailbox');
     // Récupération de la boite
     if ($_mbox->is_objectshare) {
       $_mbox = $_mbox->objectshare->mailbox;
@@ -190,7 +190,7 @@ class M2mailbox {
     if ($data['abort']) {
       return false;
     }
-    $_mbox = driver_mel::gi()->getUser($this->mbox, false);
+    $_mbox = driver_mel::gi()->getUser($this->mbox, true, true, null, null, 'webmail.moncompte.mailbox');
     // Récupération de la boite
     if ($_mbox->is_objectshare) {
       $_mbox = $_mbox->objectshare->mailbox;

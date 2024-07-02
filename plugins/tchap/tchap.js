@@ -54,7 +54,7 @@ class tchap_manager extends MelObject {
       $tchap[0].contentWindow.location.reload(true);
 
     //Ne pas afficher tchap en mode mobile
-    if (top.$('html').hasClass('layout-phone')) {
+    if ((top ?? parent).$('html').hasClass('layout-phone')) {
       $('#tchap_frame').hide();
       $('#tchap_mobile').show();
     } else {
@@ -113,9 +113,9 @@ class tchap_manager extends MelObject {
       this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
 
     //Mettre à jours les messages quand on vient sur le frame.
-    const top = true;
+    const is_top = true;
 
-    this.rcmail(top).addEventListener(
+    this.rcmail(is_top).addEventListener(
       'frame_loaded',
       (eClass, changepage, isAriane, querry, id, first_load) => {
         if (eClass === 'tchap') this.update_badge();

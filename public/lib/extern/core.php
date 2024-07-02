@@ -69,6 +69,11 @@ class Core {
                 return false;
             }
 
+            if (!$user->is_external) {
+                utils::log("Extern/Core::Reinit() [$email] - User is not external");
+                return false;
+            }
+
             // Récupération de l'objet de la clé
             $currentKey = $user->getDefaultPreference('external_key');
 
@@ -196,6 +201,11 @@ class Core {
 
             if (!$user->load(['uid', 'email'])) {
                 utils::log("Extern/Core::Reinit() [$email] - User not found");
+                return false;
+            }
+
+            if (!$user->is_external) {
+                utils::log("Extern/Core::Reinit() [$email] - User is not external");
                 return false;
             }
 

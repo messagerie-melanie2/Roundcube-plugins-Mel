@@ -47,6 +47,43 @@ class mel_forum extends rcube_plugin
             $this->register_action('index', [$this, 'action']);
             $this->register_action('test', array($this,'test'));
             $this->register_action('elements', array($this, 'elements'));
+            // Récupérer le User Connecté
+            $this->register_action('check_user', array($this, 'check_user'));
+            //Ajouter une réaction
+            $this->register_action('add_reaction', array($this, 'add_reaction'));
+            //modifier une réaction
+            $this->register_action('update_reaction', array($this, 'update_reaction'));
+            // Supprimer une réaction
+            $this->register_action('delete_reaction', array($this, 'delete_reaction'));
+            // Créer un article
+            $this->register_action('create_post', array($this, 'create_post'));
+            //modifier un article
+            $this->register_action('update_post', array($this, 'update_post'));
+            //supprimer un article
+            $this->register_action('delete_post', array($this, 'delete_post'));
+            // récupérer un  article
+            $this->register_action('show_one_post', array($this, 'show_one_post'));
+            // récupérer tous les articles
+            $this->register_action('show_all_posts', array($this, 'show_all_posts'));
+            // Ajouter un commentaire ou une réponse
+            $this->register_action('create_comment', array($this, 'create_comment'));
+            // Répondre à un commentaire ou une réponse
+            $this->register_action('reply_to_comment', array($this, 'reply_to_comment'));
+            // Modifier un commentaire ou une réponse
+            $this->register_action('update_comment', array($this, 'update_comment'));
+            // Supprimer un commentaire ou une réponse
+            $this->register_action('delete_comment', array($this, 'delete_comment'));
+            // Liker un commentaire ou une réponse
+            $this->register_action('like_comment', array($this, 'like_comment'));
+            // Créer un tag
+            $this->register_action('create_tag', array($this, 'create_tag'));
+            // Modifier un tag
+            $this->register_action('update_tag', array($this, 'update_tag'));
+            // Supprimer un tag
+            $this->register_action('delete_tag', array($this, 'delete_tag'));
+            // afficher les articles par tag
+            $this->register_action('all_posts_by_tag', array($this, 'all_posts_by_tag'));
+          
         }
     }
 
@@ -75,16 +112,69 @@ class mel_forum extends rcube_plugin
         exit;
     }
 
-    
-    
-         
-        
     function action()
     {
         $rcmail = rcmail::get_instance();
 
         $rcmail->output->send('mel_forum.forum');
     }
+
+    function check_user()
+    {
+        $user;
+        $val = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
+        if (strpos($val, "@") !== false) $user = driver_mel::gi()->getUser(null, true, false, null, $val);
+        else  $user = driver_mel::gi()->getUser($val);
+
+        echo $user === null ? "false" : json_encode(["uid" => $user->uid, "html" => $user->fullname]);
+
+        exit;
+    }
+
+    public function create_post()
+    {
+        //récupérer l'utilisateur
+        $user = driver_mel::gi()->getUser();
+
+        //récupérer le Workspace
+        $workspace = driver_mel::gi()->get_workspace_group();
+
+        // récupérer les valeurs des champs POST
+        $title = rcube_utils::get_input_value("title", rcube_utils::INPUT_POST);
+        $content = rcube_utils::get_input_value("content", rcube_utils::INPUT_POST);
+        $description = rcube_utils::get_input_value("description", rcube_utils::INPUT_POST);
+        $settings = rcube_utils::get_input_value("settings", rcube_utils::INPUT_POST);
+
+        // Validation des données saisies
+        if (empty($title) || empty($content) || empty($description) || empty($settings)) {
+            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            exit;
+        }
+
+        //Créer un nouvel Article
+        $post = driver_mel::gi()->post();
+
+        //Définition des propriétés de l'article
+        $post->title = $title;
+        $post->content = $content;
+        $post->description = $description;
+        $post->post_uid = uniqid();
+        $post->created_at = date('Y-m-d H:i:s');
+        $post->user_id = $user->uid;
+        $post->workspace_uid = $workspace->uid;
+        $post->settings = $settings;
+
+        // Sauvegarde de l'article
+        if ($post->save()) {
+            echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Echec de création de l article.']);
+        }
+
+        // Arrêt de l'exécution du script
+        exit;
+    }
+
     /**
      * Gestion de la frame
      * @param array $attrib

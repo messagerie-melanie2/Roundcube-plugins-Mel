@@ -196,7 +196,8 @@ function getInfo($office) {
 function getMail($office) {
     global $defaultsValue;
     $name = getCN($office) . " " . $office['Batiment'] . " " . $office['Ville'];
-    return str_replace(' ', '-', strtolower($name)) . "@" . $defaultsValue['domain'];
+    // Remplacer tous les caractère spéciaux par des tirets dans le nom
+    return preg_replace('/[^A-Za-z0-9\-]/', '-', strtolower($name)) . "@" . $defaultsValue['domain'];
 }
 
 /**

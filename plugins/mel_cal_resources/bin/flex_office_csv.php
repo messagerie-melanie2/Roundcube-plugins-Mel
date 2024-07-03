@@ -4,7 +4,7 @@
  * Conversion d'un csv contenant la liste des bureaux de flex office en entrée en csv utilisable par le script MajCSVM2v4.pl
  * Si le script ne s'exécute pas, faire $ chmod +x flex_office_csv.php
  * 
- * Usage : /flex_office_csv.php input=<input.csv> output=<output.csv>
+ * Usage : ./flex_office_csv.php input=<input.csv> output=<output.csv>
  * Paramètre(s) : 
  *  - <input.csv> Fichier d'entrée (.csv) 
  *  - <output.csv> Fichier de sortie (.csv) 

@@ -47,6 +47,9 @@ class mel_forum extends rcube_plugin
             $this->register_action('index', [$this, 'action']);
             $this->register_action('test', array($this,'test'));
             $this->register_action('elements', array($this, 'elements'));
+            $this->register_action('test_create_tag', array($this, 'test_create_tag'));
+            $this->register_action('test_get_all_tags', array($this, 'test_get_all_tags'));
+
             // Récupérer le User Connecté
             $this->register_action('check_user', array($this, 'check_user'));
             //Ajouter une réaction
@@ -143,7 +146,7 @@ class mel_forum extends rcube_plugin
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
         $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-        $description = rcube_utils::get_input_value('_description', rcube_utils::INPUT_POST);
+        $summary = rcube_utils::get_input_value('_summary', rcube_utils::INPUT_POST);
         $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
 
         // Validation des données saisies
@@ -156,14 +159,17 @@ class mel_forum extends rcube_plugin
         $post = new LibMelanie\Api\Defaut\Posts\Post();
 
         //Définition des propriétés de l'article
-        $post->uid = $uid;
-        $post->title = $title;
-        $post->content = $content;
-        $post->description = $description;
+        $post->post_uid = $uid;
+        $post->post_title = $title;
+        $post->post_content = $content;
+        $post->post_summary = $summary;
         $post->post_uid = uniqid();
-        $post->created_at = date('Y-m-d H:i:s');
-        $post->user_id = $user->uid;
-        $post->settings = $settings;
+        $post->created = date('Y-m-d H:i:s');
+        $post->updated = date('Y-m-d H:i:s');
+        $post->user_uid = $user->uid;
+        $post->post_settings = $settings;
+        $post->workspace_uid = $workspace;
+        // $post->post_history = $history;
 
         // Sauvegarde de l'article
         $ret = $post->save();
@@ -257,6 +263,69 @@ class mel_forum extends rcube_plugin
         // Arrêt de l'exécution du script
         exit;
     }
+
+
+
+
+
+// TESTS
+
+
+public function test_create_tag()
+{
+    
+    //Créer un tag
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+
+    //Définition des propriétés du tag
+    $tag->tag_name = 'testtag4';
+    $tag->workspace_uid = 'un-espace-1';
+
+    // Sauvegarde du tag
+    $ret = $tag->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Tag créé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création du Tag.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+
+}
+
+
+public function test_get_all_tags()
+    {
+        // Charger tous les tags
+        $tags = LibMelanie\Api\Defaut\Posts\Tag::all();
+        
+        if (!empty($tags)) {
+            header('Content-Type: application/json');
+            // Préparer les données des tags pour la réponse JSON
+            $tags_array = [];
+            foreach ($tags as $tag) {
+                $tags_array[] = [
+                    'tag_name' => $tag->name,
+                    'workspace_uid' => $tag->workspace,
+                    'tag_id' => $tag->id
+                ];
+            }
+            echo json_encode([
+                'status' => 'success',
+                'tags' => $tags_array
+            ]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Aucun tag trouvé.']);
+        }
+
+        // Arrêt de l'exécution du script
+        exit;
+    }
+
 
 
 

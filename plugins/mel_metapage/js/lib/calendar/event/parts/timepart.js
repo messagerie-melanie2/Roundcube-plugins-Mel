@@ -221,7 +221,7 @@ export class TimePartManager {
       .change(this._start_date_updated.bind(this));
     this.$allDay.change();
 
-    if (this.date_start.format() === this.date_end.format()) {
+    if (this.date_start >= this.date_end) {
       this._$end_date.change();
     }
 

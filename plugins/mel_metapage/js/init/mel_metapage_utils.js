@@ -730,7 +730,8 @@ const mel_metapage = {
       args = null,
       actions = [],
     ) {
-      if (changepage) (top ?? window).rcmail.set_busy(true, 'loading');
+      var busy;
+      if (changepage) busy = (top ?? window).rcmail.set_busy(true, 'loading');
 
       // if (frame === "webconf")
       // {
@@ -738,24 +739,30 @@ const mel_metapage = {
       //     changepage = false;
       // }
 
-      if (waiting)
-        mel_metapage.Storage.set(
-          mel_metapage.Storage.wait_frame_loading,
-          mel_metapage.Storage.wait_frame_waiting,
-        );
+      // if (waiting)
+      //   mel_metapage.Storage.set(
+      //     mel_metapage.Storage.wait_frame_loading,
+      //     mel_metapage.Storage.wait_frame_waiting,
+      //   );
 
       (top ?? window).rcmail.env.can_change_while_busy = true;
-      (top ?? window).mm_st_OpenOrCreateFrame(frame, changepage, args, actions);
+      let promise = (top ?? window).mm_st_OpenOrCreateFrame(
+        frame,
+        changepage,
+        args,
+        actions,
+      );
 
-      if (waiting) {
-        await wait(
-          () =>
-            mel_metapage.Storage.get(
-              mel_metapage.Storage.wait_frame_loading,
-            ) !== mel_metapage.Storage.wait_frame_loaded,
-        );
-        mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
-      }
+      if (waiting) await promise;
+      // if (waiting) {
+      //   await wait(
+      //     () =>
+      //       mel_metapage.Storage.get(
+      //         mel_metapage.Storage.wait_frame_loading,
+      //       ) !== mel_metapage.Storage.wait_frame_loaded,
+      //   );
+      //   mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
+      // }
 
       // if (frame === "webconf")
       // {
@@ -766,9 +773,9 @@ const mel_metapage = {
       //     //this.update_refresh_thing();
       // }
 
-      if (changepage && (top ?? window).rcmail.busy) {
-        (top ?? window).rcmail.set_busy(false);
-        rcmail.clear_messages();
+      if (changepage && busy) {
+        (top ?? window).rcmail.set_busy(false, 'loading', busy);
+        busy = null;
       }
 
       return this;

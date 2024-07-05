@@ -4,7 +4,7 @@
 
 /**
  * Représente un string vide.
- * 
+ *
  * Améliore la lisbilité du code.
  * @constant
  * @type {string}

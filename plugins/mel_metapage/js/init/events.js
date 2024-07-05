@@ -259,7 +259,7 @@ if (rcmail && window.mel_metapage) {
         const task =
           rcmail.env['bnum.init_task'] === 'chat'
             ? 'rocket'
-            : top.mm_st_ClassContract(rcmail.env['bnum.init_task']);
+            : rcmail.env['bnum.init_task'];
         mel_metapage.Functions.change_frame(task, true, true, urls);
       } catch (error) {
         mel_metapage.Functions.change_frame('bureau', true, true);

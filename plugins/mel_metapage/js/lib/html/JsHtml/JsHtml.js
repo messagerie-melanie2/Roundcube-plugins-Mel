@@ -742,8 +742,11 @@ class ____JsHtml {
    * @param {Attribs} attribs Attributs de la balise
    * @returns {____JsHtml} Balise `iframe` créée
    */
-  iframe(attribs = {}) {
-    return this.tag('iframe', attribs).end();
+  iframe(attribs = {}, close = true) {
+    let tmp = this.tag('iframe', attribs);
+
+    if (close) return tmp.end();
+    else return tmp;
   }
 
   /**

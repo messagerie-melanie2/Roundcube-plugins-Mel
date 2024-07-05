@@ -143,7 +143,6 @@ class mel_forum extends rcube_plugin
         $workspace = driver_mel::gi()->get_workspace_group();
 
         // récupérer les valeurs des champs POST
-        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
         $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
         $summary = rcube_utils::get_input_value('_summary', rcube_utils::INPUT_POST);
@@ -159,10 +158,9 @@ class mel_forum extends rcube_plugin
         $post = new LibMelanie\Api\Defaut\Posts\Post();
 
         //Définition des propriétés de l'article
-        $post->post_uid = $uid;
         $post->post_title = $title;
-        $post->post_content = $content;
         $post->post_summary = $summary;
+        $post->post_content = $content;
         $post->post_uid = uniqid();
         $post->created = date('Y-m-d H:i:s');
         $post->updated = date('Y-m-d H:i:s');
@@ -216,6 +214,7 @@ class mel_forum extends rcube_plugin
         $post->description = $description;
         $post->settings = $settings;
         $post->updated_at = date('Y-m-d H:i:s');
+        $post->user_uid = $user->uid;
 
         // Sauvegarde de l'article
         $ret = $post->save();
@@ -278,8 +277,8 @@ public function test_create_tag()
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
     //Définition des propriétés du tag
-    $tag->tag_name = 'testtag4';
-    $tag->workspace_uid = 'un-espace-1';
+    $tag->name = 'testtag4';
+    $tag->workspace = 'un-espace-1';
 
     // Sauvegarde du tag
     $ret = $tag->save();
@@ -301,7 +300,11 @@ public function test_create_tag()
 public function test_get_all_tags()
     {
         // Charger tous les tags
-        $tags = LibMelanie\Api\Defaut\Posts\Tag::all();
+        $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+        $tag->workspace = 'un-espace-1';
+
+        $tags = $tag->getList();
+
         
         if (!empty($tags)) {
             header('Content-Type: application/json');

@@ -5,6 +5,7 @@ import { MelObject, WrapperObject } from '../mel_object.js';
 import { Mel_Promise } from '../mel_promise.js';
 import { BaseStorage } from './base_storage.js';
 import { MelEnumerable } from './enum.js';
+import { MainNav } from './main_nav.js';
 
 export { FramesManager, FrameManager };
 
@@ -108,13 +109,6 @@ class FrameData {
   }
 
   _onload({ changepage = true, actions = [] }) {
-    let querry_content = $('.' + this.task + '-frame')[0].contentWindow;
-    const _$ = querry_content.$;
-
-    _$('#layout-menu').remove();
-    _$('.barup').remove();
-    _$('html').addClass('framed');
-
     this.onload.call({ changepage, actions });
   }
 
@@ -393,26 +387,88 @@ class Window {
           changepage,
           args,
           actions,
-          manager: this,
+          manager: FramesManager.Instance,
+          window: this,
         });
         this._trigger_event('frame.opened', {
           task,
           changepage,
           args,
           actions,
-          manager: this,
+          manager: FramesManager.Instance,
           first: true,
+          window: this,
         });
+
+        //Si on a Jquery
+        if (this.get_frame()[0].contentWindow.$) {
+          //pour tout les iframes de l'iframe
+          for (let iterator of this.get_frame()[0].contentWindow.$('iframe')) {
+            //on ajoute un listener sur chaque frames chargés
+            iterator.contentWindow.document.addEventListener('click', () => {
+              if (!this.is_selected()) {
+                FramesManager.Instance.unselect_all();
+                FramesManager.Instance.select_window(this._id);
+              }
+            });
+
+            iterator.onload = (e) => {
+              console.log('e', e);
+              e = e.srcElement;
+              e.contentWindow.document.addEventListener('click', () => {
+                if (!this.is_selected()) {
+                  FramesManager.Instance.unselect_all();
+                  FramesManager.Instance.select_window(this._id);
+                }
+              });
+            };
+            // //on l'ajoute au load
+            // $(iterator).on('load', (e) => {
+            //   e = e.currentTarget ? $(e.currentTarget) : $(e);
+            //   e[0].contentWindow.document.addEventListener('click', () => {
+            //     if (!this.is_selected()) {
+            //       FramesManager.Instance.unselect_all();
+            //       this.select();
+            //     }
+            //   });
+            // });
+          }
+        }
+
         this._current_frame.show();
         promise.resolve(this);
+      });
+
+      this._current_frame.onload.push(() => {
+        let querry_content = this.get_frame()[0].contentWindow;
+        const _$ = querry_content.$;
+
+        _$('#layout-menu').remove();
+        _$('.barup').remove();
+        _$('html').addClass('framed');
+
+        this.get_frame()[0].contentWindow.document.addEventListener(
+          'click',
+          () => {
+            if (!this.is_selected()) {
+              FramesManager.Instance.unselect_all();
+              FramesManager.Instance.select_window(this._id);
+            }
+          },
+        );
       });
 
       this._current_frame
         .create({ changepage, args, actions })
         .generate()
-        .appendTo(this.get_window().find('.mel-'));
+        .appendTo(this.get_window().find('.mel-window-frame'));
 
       this._frames.add(task, this._current_frame);
+
+      this.select();
+
+      if (this.has_other_window()) $('.mel-windows').addClass('multiple');
+      else $('.mel-windows').removeClass('multiple');
     });
   }
 
@@ -481,7 +537,7 @@ class Window {
   }
 
   async switch_frame(task, { changepage = true, args = null, actions = [] }) {
-    this._update_menu_button(task);
+    MainNav.select(task);
 
     if (this._frames.has(task)) this._open_frame(task, { new_args: args });
     else await this._create_frame(task, { changepage, args, actions });
@@ -521,27 +577,68 @@ class Window {
         .find('.sr-document-title-focusable')
         .focus();
     }
+
+    if (this.has_other_window()) $('.mel-windows').addClass('multiple');
+    else $('.mel-windows').removeClass('multiple');
+  }
+
+  select() {
+    this.get_window().addClass('selected');
+    return this;
+  }
+
+  unselect() {
+    this.get_window().removeClass('selected');
+    return this;
+  }
+
+  is_selected() {
+    return this.get_window().hasClass('selected');
   }
 
   has_other_window() {
-    return $('.mel-windows').length > 0;
+    return $('.mel-windows').length > 1;
   }
 
   get_window() {
-    return $(`mel-window-${this._id}`);
+    return $(`#mel-window-${this._id}`);
+  }
+
+  get_frame() {
+    return this.get_window().find('iframe');
+  }
+
+  delete() {
+    this.get_window().remove();
+    return this;
+  }
+
+  update_id(new_id) {
+    this.get_window().attr('id', `mel-window-${new_id}`);
+    this._id = new_id;
+    return this;
   }
 
   _generate_window() {
     return MelHtml.start
       .div({ id: `mel-window-${this._id}`, class: 'mel-windows' })
+      .attr('onclick', () => {
+        FramesManager.Instance.unselect_all();
+        this.select();
+      })
+      .css({ width: '100%', height: '100%' })
       .div({ class: 'mel-window-header' })
-      .css('display', 'none')
       .button()
+      .attr('onclick', () => {
+        FramesManager.Instance.delete_window(this._id);
+      })
       .icon('delete')
-      .end()
-      .div({ class: 'mel-window-frame' })
-      .end()
-      .end();
+      .end('icon')
+      .end('button')
+      .end('header')
+      .div({ class: 'mel-window-frame fullframe' })
+      .end('frame')
+      .end('window');
   }
 
   _generate_layout_frames() {
@@ -578,7 +675,7 @@ class FrameManager {
     this._selected_window = null;
   }
 
-  switch_frame(
+  async switch_frame(
     task,
     { changepage = true, args = null, actions = [], wind = null },
   ) {
@@ -588,17 +685,27 @@ class FrameManager {
       }
 
       if (this._selected_window?._id !== wind) {
+        this._selected_window?.unselect?.();
         this._selected_window = this._windows.get(wind);
       }
 
-      this._selected_window.switch_frame(task, { changepage, args, actions });
-    } else
-      return this.switch_frame(task, {
+      await this._selected_window.switch_frame(task, {
         changepage,
         args,
         actions,
-        wind: this._windows.keys?.[0] ?? 0,
       });
+      this._selected_window.select();
+    } else
+      return await this.switch_frame(task, {
+        changepage,
+        args,
+        actions,
+        wind: this._selected_window?._id ?? 0,
+      });
+  }
+
+  has_multiples_windows() {
+    return this._selected_window.has_other_window();
   }
 
   add_buttons_actions() {
@@ -611,16 +718,20 @@ class FrameManager {
         .attr('href', '#')
         .attr('onclick', EMPTY_STRING);
 
-      if (false && $it.hasClass('menu-last-frame'))
+      if ($it.hasClass('menu-last-frame'))
         $it
-          .click(this._history.back.bind(this._history))
+          .click(() => {
+            this._history.back();
+          })
           .on('mousedown', (e) => {
             if (e.button === 1) {
               e.preventDefault();
-              return this._history.show_history();
+              return this._selected_window._history.show_history();
             }
           })
-          .on('contextmenu', this._history.show_history.bind(this._history));
+          .on('contextmenu', () => {
+            this._selected_window._history.show_history();
+          });
       else
         $it
           .click(this.button_action.bind(this))
@@ -636,7 +747,49 @@ class FrameManager {
     }
   }
 
+  unselect_all() {
+    for (const iterator of this._windows) {
+      iterator.value.unselect();
+    }
+
+    return this;
+  }
+
+  select_window(id) {
+    this._selected_window = this._windows.get(id).select();
+    MainNav.select(this._selected_window._current_frame.task);
+    return this;
+  }
+
+  delete_window(id) {
+    this._windows.get(id).delete();
+    this._windows.remove(id);
+
+    let array = MelEnumerable.from(this._windows)
+      .where((x) => !!x?.value)
+      .select((x) => x.value)
+      .toArray();
+
+    this._windows.clear();
+
+    for (let index = 0, len = array.length; index < len; ++index) {
+      array[index].update_id(index);
+      this._windows.add(index, array[index]);
+    }
+
+    this.select_window(array.length - 1);
+
+    array.length = 0;
+    array = null;
+
+    if (!this.has_multiples_windows())
+      $('.mel-windows').removeClass('multiple');
+
+    return this;
+  }
+
   _generate_menu($element) {
+    const task = $element.data('task');
     return MelHtml.start
       .div({
         class: 'btn-group-vertical',
@@ -646,18 +799,28 @@ class FrameManager {
       .button({ class: 'btn btn-secondary' })
       .attr(
         'onclick',
-        function onclick(task) {
-          open(FrameManager.Helper.url(task, {}));
-        }.bind(this, $element.data('task')),
+        function onclick(task_to_open) {
+          open(FrameManager.Helper.url(task_to_open, {}));
+        }.bind(this, task),
       )
       .text('Ouvrir dans un nouvel onglet')
       .end()
       .button({ class: 'btn btn-secondary' })
+      .attr('onclick', this.open_another_window.bind(this, task))
       .text('Ouvrir dans une nouvelle colonne')
       .end()
       .end()
       .generate()
       .get(0);
+  }
+
+  open_another_window(task) {
+    this.switch_frame(task, {
+      wind:
+        MelEnumerable.from(this._windows.keys)
+          .select((x) => +x)
+          .max() + 1,
+    });
   }
 
   /**

@@ -5,9 +5,9 @@
  * @local Selector
  */
 
-import { EMPTY_STRING } from "../constants/constants.js";
+import { EMPTY_STRING } from '../constants/constants.js';
 
-export {MainNav}
+export { MainNav };
 
 /**
  * @class
@@ -17,120 +17,157 @@ export {MainNav}
  * @hideconstructor
  */
 class MainNav {
-    constructor() {
-        throw 'This is a static class, you cannot instanciate it';
-    }
+  constructor() {
+    throw 'This is a static class, you cannot instanciate it';
+  }
 
-    /**
-     * Permet de créer un badge qui affichera un texte par dessus un élément.
-     * 
-     * Si le badge n'éxiste pas il sera créer. 
-     * 
-     * Pour modifier le badge il faudra utiliser la fonction {@link MainNav.update_badge}. 
-     * @param {!string} selector Selecteur du bouton qui permettera de retrouver l'élément où ajouter le badge. 
-     * @param {!string} idBadge Id du badge, cela permettre de le modifier plus tard.
-     * @param {!string} default_text Texte par défaut. `'?'` par défaut
-     * @returns {MainNav} Chaînage
-     * @see {@link MainNav.update_badge}
-     * @static
-     * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
-     * @frommodulereturn MainNav {@membertype . }
-     */
-    static try_add_round(selector, idBadge, default_text = '?') {
-        const helper = this.helper;
-        selector = helper.select(selector);
+  /**
+   * Permet de créer un badge qui affichera un texte par dessus un élément.
+   *
+   * Si le badge n'éxiste pas il sera créer.
+   *
+   * Pour modifier le badge il faudra utiliser la fonction {@link MainNav.update_badge}.
+   * @param {!string} selector Selecteur du bouton qui permettera de retrouver l'élément où ajouter le badge.
+   * @param {!string} idBadge Id du badge, cela permettre de le modifier plus tard.
+   * @param {!string} default_text Texte par défaut. `'?'` par défaut
+   * @returns {MainNav} Chaînage
+   * @see {@link MainNav.update_badge}
+   * @static
+   * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
+   * @frommodulereturn MainNav {@membertype . }
+   */
+  static try_add_round(selector, idBadge, default_text = '?') {
+    const helper = this.helper;
+    selector = helper.select(selector);
 
-        if (0 === helper.select(`#${idBadge}`).length)
+    if (helper.select(`#${idBadge}`).length === 0) {
+      const span = new mel_html(
+        'span',
         {
-            const span = new mel_html('span', {
-                id:idBadge,
-                class:'roundbadge menu lightgreen',
-                style:'display:none'
-            }, default_text);
+          id: idBadge,
+          class: 'roundbadge menu lightgreen',
+          style: 'display:none',
+        },
+        default_text,
+      );
 
-            new mel_html2('sup', {
-                contents:span
-            }).create(selector);
-        }
-
-        return this;
+      new mel_html2('sup', {
+        contents: span,
+      }).create(selector);
     }
 
-    /**
-     * Met à jours un badge.
-     * 
-     * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
-     * @param {number} size Nombre à afficher sur le badge.
-     * @param {string} idBadge Id du badge à modifier.
-     * @returns {MainNav} Chaînage
-     * @see {@link MainNav.try_add_round}
-     * @static
-     * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
-     * @frommodulereturn MainNav {@membertype . }
-     */
-    static update_badge_number(size, idBadge) {
-        const helper = this.helper;
-        let querry = helper.select(`#${idBadge}`);
+    return this;
+  }
 
-        if (size == 0) querry.css("display", "none");
-        else {
-            if (size > 999) {
-                size = "999+";
-                querry.css("font-size", "6px");
-            } else querry.css("font-size", EMPTY_STRING);
+  /**
+   * Met à jours un badge.
+   *
+   * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
+   * @param {number} size Nombre à afficher sur le badge.
+   * @param {string} idBadge Id du badge à modifier.
+   * @returns {MainNav} Chaînage
+   * @see {@link MainNav.try_add_round}
+   * @static
+   * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
+   * @frommodulereturn MainNav {@membertype . }
+   */
+  static update_badge_number(size, idBadge) {
+    const helper = this.helper;
+    let querry = helper.select(`#${idBadge}`);
 
-            querry.html(size);
-            querry.css("display", EMPTY_STRING);
-        }
+    if (size == 0) querry.css('display', 'none');
+    else {
+      if (size > 999) {
+        size = '999+';
+        querry.css('font-size', '6px');
+      } else querry.css('font-size', EMPTY_STRING);
 
-        return this;
+      querry.html(size);
+      querry.css('display', EMPTY_STRING);
     }
 
-    /**
-     * Met à jours un badge.
-     * 
-     * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
-     * @param {string} text Nombre à afficher sur le badge.
-     * @param {string} idBadge Id du badge à modifier.
-     * @returns {MainNav} Chaînage
-     * @see {@link MainNav.try_add_round}
-     * @static
-     * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
-     * @frommodulereturn MainNav {@membertype . }
-     */
-    static update_badge_text(text, idBadge) {
-        let $querry = this.helper.select(`#${idBadge}`).css('font-size', EMPTY_STRING);
+    return this;
+  }
 
-        if (!!(text || false)) $querry.html(text).css('display', EMPTY_STRING);
-        else $querry.css('display', 'none');
+  /**
+   * Met à jours un badge.
+   *
+   * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
+   * @param {string} text Nombre à afficher sur le badge.
+   * @param {string} idBadge Id du badge à modifier.
+   * @returns {MainNav} Chaînage
+   * @see {@link MainNav.try_add_round}
+   * @static
+   * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
+   * @frommodulereturn MainNav {@membertype . }
+   */
+  static update_badge_text(text, idBadge) {
+    let $querry = this.helper
+      .select(`#${idBadge}`)
+      .css('font-size', EMPTY_STRING);
 
-        return this;
+    if (text || false) $querry.html(text).css('display', EMPTY_STRING);
+    else $querry.css('display', 'none');
+
+    return this;
+  }
+
+  /**
+   * Met à jours un badge.
+   *
+   * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
+   * @param {string | number} data
+   * @param {string} idBadge
+   * @returns {MainNav} Chaînage
+   * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
+   * @frommodulereturn MainNav {@membertype . }
+   */
+  static update_badge(data, idBadge) {
+    data = data ?? 0;
+
+    if (+data === data) this.update_badge_number(data, idBadge);
+    else this.update_badge_text(data, idBadge);
+
+    return this;
+  }
+
+  static select(task) {
+    this.unselect_all();
+
+    $(`#taskmenu a[data-task="${task}"]`)
+      .addClass('selected')
+      .attr('aria-disabled', true)
+      .attr('tabIndex', '-1')
+      .attr('aria-current', true);
+
+    if ($('#otherapps a.selected').length)
+      $('#taskmenu a.more-options').addClass('selected');
+  }
+
+  static unselect_all() {
+    for (const e of $('#taskmenu').find('a')) {
+      $(e)
+        .removeClass('selected')
+        .attr('aria-disabled', false)
+        .attr('tabIndex', '0')
+        .attr('aria-current', false);
     }
 
-    /**
-     * Met à jours un badge.
-     * 
-     * Doit être appelé si le badge existe. Utilisez {@link MainNav.try_add_round} pour créer un badge.
-     * @param {string | number} data 
-     * @param {string} idBadge 
-     * @returns {MainNav} Chaînage
-     * @frommodulelink MainNav {@linkto MainNav} {@membertype . }
-     * @frommodulereturn MainNav {@membertype . }
-     */
-    static update_badge(data, idBadge) {
-        data = data ?? 0;
-
-        if (+data === data) this.update_badge_number(data, idBadge);
-        else this.update_badge_text(data, idBadge);
-
-        return this;
+    for (const e of $('#otherapps').find('a')) {
+      $(e)
+        .removeClass('selected')
+        .attr('aria-disabled', false)
+        .attr('tabIndex', '0');
     }
+    $('#taskmenu a.more-options').removeClass('selected');
 
+    $('#otherapps').css('display', 'none');
+  }
 }
 
 /**
  * Retourne un élement jQuery.
- * 
+ *
  * Le contexte est toujours `top`.
  * @callback Selector
  * @param {string} selector
@@ -151,14 +188,14 @@ class MainNav {
  */
 MainNav.helper = null;
 Object.defineProperties(MainNav, {
-    helper: {
-        get: function() {
-            return {
-                select(selector) {
-                    return top.$(selector);
-                }
-            }
+  helper: {
+    get: function () {
+      return {
+        select(selector) {
+          return top.$(selector);
         },
-        configurable: true
-    }
+      };
+    },
+    configurable: true,
+  },
 });

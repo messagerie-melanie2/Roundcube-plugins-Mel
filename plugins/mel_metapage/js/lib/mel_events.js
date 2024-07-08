@@ -141,10 +141,16 @@ class RotomecaEvent {
     if (keys.length !== 0) {
       for (let index = 0, len = keys.length; index < len; ++index) {
         const key = keys[index];
-        const { args, callback } = this.events[key];
 
-        if (callback)
-          results[key] = this._call_callback(callback, ...[...args, ...params]);
+        if (this.events[key]) {
+          const { args, callback } = this.events[key];
+
+          if (callback)
+            results[key] = this._call_callback(
+              callback,
+              ...[...args, ...params],
+            );
+        }
       }
     }
 

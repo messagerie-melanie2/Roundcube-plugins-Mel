@@ -6073,3 +6073,42 @@ html.dark-mode-custom {
     }
   }
 }
+
+.mel-windows {
+  margin-top: 60px;
+}
+
+.mel-window-header {
+  display: none;
+  height: 50px;
+  background-color: #1a204e;
+
+  .multiple.mel-windows & {
+    display: block;
+  }
+
+  .selected.mel-windows & {
+    background-color: #363a5b;
+  }
+}
+
+.mel-window-frame {
+  &.fullframe {
+    width: 100%;
+    height: 100%;
+
+    .mel-windows.multiple & {
+      height: calc(100% - 50px);
+    }
+  }
+}
+
+#layout-frames {
+  display: flex;
+}
+
+iframe {
+  &.mm-frame {
+    padding-top: 0 !important;
+  }
+}

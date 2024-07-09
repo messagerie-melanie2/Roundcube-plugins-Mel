@@ -43,7 +43,7 @@ abstract class bnum_plugin extends rcube_plugin
     }
 
     protected function break_initial_fonctionality($key) {
-        $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true;} });");
+        $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true}; });");
     }
 
     protected function setup_module() {

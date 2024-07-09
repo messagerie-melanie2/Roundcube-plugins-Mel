@@ -9,7 +9,7 @@
  *  - <input.csv> Fichier d'entrée (.csv) 
  *  - <output.csv> Fichier de sortie (.csv) 
  * 
- * @version 0.1
+ * @version 0.2
  */
 
 // --- Gestion des paramètres du script

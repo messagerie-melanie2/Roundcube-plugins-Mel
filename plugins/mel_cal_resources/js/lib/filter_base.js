@@ -220,6 +220,7 @@ class FilterBase extends MelObject {
    */
   _generate_select(jshtml, ...args) {
     const [localities] = args;
+
     switch (this._input_type) {
       case 'multi-select':
       case 'select':
@@ -251,7 +252,7 @@ class FilterBase extends MelObject {
                 .text(locality.name)
                 .end();
             },
-            ...localities,
+            ...MelEnumerable.from(localities).orderBy((x) => x),
           )
           .end();
 

@@ -422,7 +422,7 @@ class ResourcesBase extends MelObject {
 
         values = {};
 
-        for (const iterator of rcs) {
+        for (const iterator of MelEnumerable.from(rcs).orderBy((x) => x.name)) {
           //Si la données éxiste et qu'elle n'a pas déjà été traitée
           if (
             !values[iterator[this._p_filters[index]._name]] &&
@@ -437,11 +437,6 @@ class ResourcesBase extends MelObject {
               )) {
                 if (!values[current_filter]) {
                   values[current_filter] = true;
-                  this._p_filters[index]._$filter.append(
-                    $(
-                      `<option value="${current_filter}">${current_filter}</option>`,
-                    ),
-                  );
                 }
               }
             } else {
@@ -466,9 +461,17 @@ class ResourcesBase extends MelObject {
       }
 
       if (this._p_filters[index]._input_type === eInputType.multi_select) {
-        if (this._p_filters[index]._$filter.children().length)
+        if (Object.keys(values).length) {
+          for (const current_filter of MelEnumerable.from(
+            Object.keys(values),
+          ).orderBy((x) => x)) {
+            this._p_filters[index]._$filter.append(
+              $(`<option value="${current_filter}">${current_filter}</option>`),
+            );
+          }
+
           this._p_filters[index]._$filter.multiselect('enable');
-        else this._p_filters[index]._$filter.multiselect('disable');
+        } else this._p_filters[index]._$filter.multiselect('disable');
 
         this._p_filters[index]._$filter.multiselect('rebuild');
       }

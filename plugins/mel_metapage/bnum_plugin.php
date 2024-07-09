@@ -36,6 +36,16 @@ abstract class bnum_plugin extends rcube_plugin
         return $this;
     }
 
+    protected function add_script($script, $where = 'head') {
+        if ($this->api->output !== null) {
+            $this->api->output->add_script($script, $where);
+        }
+    }
+
+    protected function break_initial_fonctionality($key) {
+        $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true;} });");
+    }
+
     protected function setup_module() {
         if (!self::$module_loaded) {
             $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js');

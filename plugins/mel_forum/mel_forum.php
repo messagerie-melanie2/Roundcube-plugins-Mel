@@ -49,6 +49,8 @@ function init()
         $this->register_action('elements', array($this, 'elements'));
         $this->register_action('test_create_tag', array($this, 'test_create_tag'));
         $this->register_action('test_get_all_tags', array($this, 'test_get_all_tags'));
+        $this->register_action('test_create_post', array($this, 'test_create_post'));
+        $this->register_action('test_update_post', array($this, 'test_update_post'));
 
         // Récupérer le User Connecté
         $this->register_action('check_user', array($this, 'check_user'));
@@ -191,7 +193,7 @@ public function update_post()
     $user = driver_mel::gi()->getUser();
 
     // Récupérer les valeurs des champs POST
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+    // $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
     $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
     $description = rcube_utils::get_input_value('_description', rcube_utils::INPUT_POST);
@@ -258,18 +260,22 @@ private function save_post_history($post, $user_uid, $new_data)
         $history = [];
     }
 
-    // Comparer les valeurs et ajouter les modifications à l'historique
+    // Accumuler les champs modifiés
+    $modified_fields = [];
     foreach ($new_data as $field => $new_value) {
         $old_value = $post->$field;
         if ($old_value !== $new_value) {
-            $history[] = [
-                'field' => $field,
-                'old_value' => $old_value,
-                'new_value' => $new_value,
-                'user_id' => $user_uid,
-                'timestamp' => date('Y-m-d H:i:s')
-            ];
+            $modified_fields[] = $field;
         }
+    }
+
+    // Si des champs ont été modifiés, ajouter une seule entrée à l'historique
+    if (!empty($modified_fields)) {
+        $history[] = [
+            'field' => $modified_fields,
+            'user_id' => $user_uid,
+            'timestamp' => date('Y-m-d H:i:s')
+        ];
     }
 
     // Enregistrer l'historique mis à jour dans le champ `history`
@@ -322,13 +328,17 @@ public function delete_post()
 
 function test()
 {
-    $a=2;
-    $b=4;
-    $c=$a+$b;
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->workspace = 'un-espace-2';
+    $posts = $post->list();
 
-    echo($c);
+    foreach ($posts as $post) {
+        echo "Post trouvé: " . $post->title . " | reactions : " . $post->countReactions() . " | comments : " . $post->countComments() . "\r\n";
+    }
+
     exit;
 }
+
 
 function elements()
 {
@@ -346,6 +356,115 @@ exit;
 }
 
 
+
+public function test_create_post()
+{
+    //récupérer l'utilisateur (commenté pour le test)
+    $user = driver_mel::gi()->getUser();
+
+    $workspace = 'espace_test_1';
+
+    $title = 'Le Charme de l\'Hiver'; // Valeur en dur pour le test
+    $content = 'L\'hiver est ma saison préférée. J\'aime la sensation du vent froid sur mon visage et le craquement de la neige fraîche sous mes pieds. Les paysages enneigés sont à couper le souffle et apportent une paix intérieure inégalée. Les soirées passées au coin du feu avec un bon livre et une tasse de chocolat chaud sont des moments de pur bonheur.'; // Valeur en dur pour le test
+    $summary = 'L\'auteur exprime son amour pour l\'hiver, appréciant les sensations et les paysages qu\'il apporte, ainsi que les moments chaleureux passés à l\'intérieur.'; // Valeur en dur pour le test
+    $settings = 'Non modifiable'; // Valeur en dur pour le test
+
+    // Validation des données saisies
+    if (empty($user->uid) || empty($title) || empty($content) || empty($summary) || empty($settings)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    //Créer un nouvel Article
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+
+    //Définition des propriétés de l'article
+    $post->post_title = $title;
+    $post->post_summary = $summary;
+    $post->post_content = $content;
+    $post->post_uid = $this->generateRandomString(24);
+    $post->created = date('Y-m-d H:i:s');
+    $post->updated = date('Y-m-d H:i:s');
+    $post->user_uid = $user->uid;
+    $post->post_settings = $settings;
+    $post->workspace_uid = $workspace;
+
+    // Sauvegarde de l'article
+    $ret = $post->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création de l\'article.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+public function test_update_post()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer les valeurs des champs POST
+    $uid = 'Eq5btaqgu3MIJHmbnLzz0maY'; // UID de l'article à mettre à jour
+    $title = 'Le Charme de l\'Hiver'; // Valeur en dur pour le test
+    $content = 'L\'hiver est ma saison préférée. J\'aime la sensation du vent froid sur mon visage et le craquement de la neige fraîche sous mes pieds. Les paysages enneigés sont à couper le souffle et apportent une paix intérieure inégalée. Les soirées passées au coin du feu avec un bon livre et une tasse de chocolat chaud sont des moments de pur bonheur.'; // Valeur en dur pour le test
+    $summary = 'L\'auteur exprime son amour pour l\'hiver, appréciant les sensations et les paysages qu\'il apporte, ainsi que les moments chaleureux passés à l\'intérieur.'; // Valeur en dur pour le test
+    $workspace = 'un-espace-2';
+    $settings = 'Non modifiable'; // Valeur en dur pour le test
+
+    // Récupérer l'article existant
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+    if (!$post->load()) {
+        # code...
+        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+        exit;
+    }
+
+    // Vérifier si l'article existe
+    if (!$post) {
+        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+        exit;
+    }
+
+    // Préparer les nouvelles données
+    $new_data = [
+        'title' => $title,
+        'content' => $content,
+        'summary' => $summary,
+        'workspace' => $workspace,
+        'settings' => $settings
+    ];
+    
+    // Enregistrer les modifications dans l'historique
+    $this->save_post_history($post, $user->uid, $new_data);
+
+    // Définir les nouvelles propriétés de l'article
+    $post->post_title = $title;
+    $post->post_content = $content;
+    $post->post_summary = $summary;
+    $post->workspace_uid = $workspace;
+    $post->post_settings = $settings;
+    $post->updated = date('Y-m-d H:i:s');
+    $post->user_uid = $user->uid;
+
+    // Sauvegarde de l'article
+    $ret = $post->save();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour de l\'article.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
 public function test_create_tag()
 {
     
@@ -353,7 +472,7 @@ public function test_create_tag()
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
     //Définition des propriétés du tag
-    $tag->name = 'testtag4';
+    $tag->name = 'testtag5';
     $tag->workspace = 'un-espace-1';
 
     // Sauvegarde du tag

@@ -252,7 +252,7 @@ class FilterBase extends MelObject {
                 .text(locality.name)
                 .end();
             },
-            ...MelEnumerable.from(localities).orderBy((x) => x),
+            ...MelEnumerable.from(localities).orderBy((x) => x.name),
           )
           .end();
 

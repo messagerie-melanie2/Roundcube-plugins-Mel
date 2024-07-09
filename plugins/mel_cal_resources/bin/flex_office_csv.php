@@ -93,9 +93,7 @@ function processCsvFile($handle)
         if ($data !== false) {
             $offices[$index] = [];
             foreach ($columns as $col => $key) {
-                if (!empty($data[$key])) {
-                    $offices[$index][$col] = trim($data[$key]);
-                }
+                $offices[$index][$col] = trim($data[$key]);
             }
             $index++;
         }
@@ -177,12 +175,15 @@ function getGivenName($office) {
  * @return string
  */
 function getInfo($office) {
-    $caracteristiques = array_fill_keys(array_map('trim', explode('|', $office['Filtres separateur pipe'])), 1);
     $infos = [
         "Ressource.Batiment: " . $office['Batiment'],
         "Ressource.Etage: " . $office['Etage'],
-        "Ressource.Caracteristiques: " . json_encode($caracteristiques, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 
     ];
+
+    if (!empty($office['Filtres separateur pipe'])) {
+        $caracteristiques = array_fill_keys(array_map('trim', explode('|', $office['Filtres separateur pipe'])), 1);
+        $infos[] = "Ressource.Caracteristiques: " . json_encode($caracteristiques, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
     return implode('|', $infos);
 }
 

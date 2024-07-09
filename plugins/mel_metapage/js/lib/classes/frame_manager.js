@@ -4,10 +4,14 @@ import { BnumEvent } from '../mel_events.js';
 import { MelObject, WrapperObject } from '../mel_object.js';
 import { Mel_Promise } from '../mel_promise.js';
 import { BaseStorage } from './base_storage.js';
+import { BnumMessage, eMessageType } from './bnum_message.js';
 import { MelEnumerable } from './enum.js';
 import { MainNav } from './main_nav.js';
 
 export { FramesManager, FrameManager };
+
+const MAX_FRAME = 2;
+const MULTI_FRAME_FROM_NAV_BAR = true;
 
 class FrameData {
   constructor(task) {
@@ -400,41 +404,6 @@ class Window {
           window: this,
         });
 
-        //Si on a Jquery
-        if (this.get_frame()[0].contentWindow.$) {
-          //pour tout les iframes de l'iframe
-          for (let iterator of this.get_frame()[0].contentWindow.$('iframe')) {
-            //on ajoute un listener sur chaque frames chargés
-            iterator.contentWindow.document.addEventListener('click', () => {
-              if (!this.is_selected()) {
-                FramesManager.Instance.unselect_all();
-                FramesManager.Instance.select_window(this._id);
-              }
-            });
-
-            iterator.onload = (e) => {
-              console.log('e', e);
-              e = e.srcElement;
-              e.contentWindow.document.addEventListener('click', () => {
-                if (!this.is_selected()) {
-                  FramesManager.Instance.unselect_all();
-                  FramesManager.Instance.select_window(this._id);
-                }
-              });
-            };
-            // //on l'ajoute au load
-            // $(iterator).on('load', (e) => {
-            //   e = e.currentTarget ? $(e.currentTarget) : $(e);
-            //   e[0].contentWindow.document.addEventListener('click', () => {
-            //     if (!this.is_selected()) {
-            //       FramesManager.Instance.unselect_all();
-            //       this.select();
-            //     }
-            //   });
-            // });
-          }
-        }
-
         this._current_frame.show();
         promise.resolve(this);
       });
@@ -447,9 +416,38 @@ class Window {
         _$('.barup').remove();
         _$('html').addClass('framed');
 
+        //Si on a Jquery
+        if (this.get_frame()[0].contentWindow.$) {
+          //pour tout les iframes de l'iframe
+          for (let iterator of this.get_frame()[0].contentWindow.$('iframe')) {
+            //on ajoute un listener sur chaque frames chargés
+            iterator.contentWindow.document.addEventListener('click', () => {
+              console.log('CLIIIIIIIIIIIIIIIK');
+              if (!this.is_selected()) {
+                FramesManager.Instance.unselect_all();
+                FramesManager.Instance.select_window(this._id);
+              }
+            });
+
+            iterator.onload = (e) => {
+              console.log('e', e);
+              e = e.srcElement;
+              e.contentWindow.document.addEventListener('click', () => {
+                console.log('cliiiiiiiiiiiiiiiiiiiks');
+                if (!this.is_selected()) {
+                  FramesManager.Instance.unselect_all();
+                  FramesManager.Instance.select_window(this._id);
+                }
+              });
+            };
+          }
+        }
+
+        console.log('heeeeeeeeeeeeeeeeeerreeeeeeee');
         this.get_frame()[0].contentWindow.document.addEventListener(
           'click',
           () => {
+            console.log('clicked');
             if (!this.is_selected()) {
               FramesManager.Instance.unselect_all();
               FramesManager.Instance.select_window(this._id);
@@ -536,23 +534,34 @@ class Window {
     $('#otherapps').css('display', 'none');
   }
 
-  async switch_frame(task, { changepage = true, args = null, actions = [] }) {
-    MainNav.select(task);
+  static UpdateNavUrl(url) {
+    window.history.replaceState({}, document.title, url);
+  }
 
-    if (this._frames.has(task)) this._open_frame(task, { new_args: args });
-    else await this._create_frame(task, { changepage, args, actions });
+  static UpdateDocumentTitle(new_title) {
+    document.title = new_title;
+    $('.sr-document-title-focusable').text(document.title);
+  }
 
-    const url = rcmail.get_task_url(
+  static UrlFromTask(task) {
+    return rcmail.get_task_url(
       task,
       window.location.origin + window.location.pathname,
     );
+  }
 
-    window.history.replaceState({}, document.title, url);
-    document.title = $(`#layout-menu a[data-task="${task}"]`)
-      .find('.inner')
-      .html();
+  static GetTaskTitle(task) {
+    return $(`#layout-menu a[data-task="${task}"]`).find('.inner').text();
+  }
 
-    $('.sr-document-title-focusable').text(document.title);
+  async switch_frame(task, { changepage = true, args = null, actions = [] }) {
+    MainNav.select(task);
+
+    Window.UpdateNavUrl(Window.UrlFromTask(task));
+    Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
+
+    if (this._frames.has(task)) this._open_frame(task, { new_args: args });
+    else await this._create_frame(task, { changepage, args, actions });
 
     this._current_frame.$frame.focus();
 
@@ -605,7 +614,7 @@ class Window {
   }
 
   get_frame() {
-    return this.get_window().find('iframe');
+    return this.get_window().find(`iframe#frame-${this._current_frame.id}`);
   }
 
   delete() {
@@ -624,9 +633,8 @@ class Window {
       .div({ id: `mel-window-${this._id}`, class: 'mel-windows' })
       .attr('onclick', () => {
         FramesManager.Instance.unselect_all();
-        this.select();
+        FramesManager.Instance.select_window(this._id);
       })
-      .css({ width: '100%', height: '100%' })
       .div({ class: 'mel-window-header' })
       .button()
       .attr('onclick', () => {
@@ -679,6 +687,7 @@ class FrameManager {
     task,
     { changepage = true, args = null, actions = [], wind = null },
   ) {
+    debugger;
     if (wind !== null) {
       if (!this._windows.has(wind)) {
         this._windows.add(wind, new Window(wind));
@@ -757,7 +766,13 @@ class FrameManager {
 
   select_window(id) {
     this._selected_window = this._windows.get(id).select();
-    MainNav.select(this._selected_window._current_frame.task);
+
+    const task = this._selected_window._current_frame.task;
+
+    MainNav.select(task);
+    Window.UpdateNavUrl(Window.UrlFromTask(task));
+    Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
+
     return this;
   }
 
@@ -790,6 +805,7 @@ class FrameManager {
 
   _generate_menu($element) {
     const task = $element.data('task');
+    const max_frame_goal = this._windows.length >= MAX_FRAME;
     return MelHtml.start
       .div({
         class: 'btn-group-vertical',
@@ -807,6 +823,11 @@ class FrameManager {
       .end()
       .button({ class: 'btn btn-secondary' })
       .attr('onclick', this.open_another_window.bind(this, task))
+      .addClass(max_frame_goal ? 'disabled' : 'not-disabled')
+      .attr(
+        max_frame_goal ? 'disabled' : 'not-disabled',
+        max_frame_goal ? 'disabled' : true,
+      )
       .text('Ouvrir dans une nouvelle colonne')
       .end()
       .end()
@@ -815,12 +836,29 @@ class FrameManager {
   }
 
   open_another_window(task) {
-    this.switch_frame(task, {
-      wind:
-        MelEnumerable.from(this._windows.keys)
-          .select((x) => +x)
-          .max() + 1,
-    });
+    if (this._windows.length >= MAX_FRAME) {
+      BnumMessage.DisplayMessage(
+        `Vous ne pouvez pas avoir au dessus de ${MAX_FRAME} pages dans le Bnum.`,
+        eMessageType.Error,
+      );
+    } else {
+      this.switch_frame(task, {
+        wind:
+          MelEnumerable.from(this._windows.keys)
+            .select((x) => +x)
+            .max() + 1,
+      });
+    }
+  }
+
+  start_custom_multi_frame() {
+    $('body').addClass('multiframe-header-disabled');
+    return this;
+  }
+
+  stop_custom_multi_frame() {
+    $('.body').removeClass('multiframe-header-disabled');
+    return this;
   }
 
   /**

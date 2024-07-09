@@ -4478,6 +4478,8 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 }
 .mel-windows {
   margin-top: 60px;
+  width: 100%;
+  height: calc(100% - 60px);
 }
 .mel-window-header {
   display: none;

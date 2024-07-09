@@ -220,6 +220,7 @@ class ResourcesBase extends MelObject {
         load_data_on_start: x.load_data,
         input_type: x.type,
         icon: x.icon,
+        number: x.number,
       })
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
@@ -401,6 +402,7 @@ class ResourcesBase extends MelObject {
    */
   _on_data_loaded(rcs, filter) {
     let values;
+    let resources;
     for (let index = 0, len = this._p_filters.length; index < len; ++index) {
       if (this._p_filters[index]._name !== filter._name) {
         //Réinitialise le filtre
@@ -421,8 +423,21 @@ class ResourcesBase extends MelObject {
           this._p_filters[index]._$filter.html(EMPTY_STRING);
 
         values = {};
+        resources = rcs;
 
-        for (const iterator of MelEnumerable.from(rcs).orderBy((x) => x.name)) {
+        if (this._p_filters[index]._input_type !== eInputType.multi_select) {
+          resources = MelEnumerable.from(rcs);
+          if (this._p_filters[index].has_only_number_values()) {
+            resources = resources.orderBy(
+              (x) => +x[this._p_filters[index]._name],
+            );
+          } else
+            resources = resources.orderBy(
+              (x) => x[this._p_filters[index]._name],
+            );
+        }
+
+        for (const iterator of resources) {
           //Si la données éxiste et qu'elle n'a pas déjà été traitée
           if (
             !values[iterator[this._p_filters[index]._name]] &&

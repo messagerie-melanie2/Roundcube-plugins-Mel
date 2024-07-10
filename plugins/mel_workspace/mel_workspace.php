@@ -1717,7 +1717,7 @@ class mel_workspace extends bnum_plugin
 
         $count = 0;
         foreach ($services as $key => $value) {
-            if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA /*|| ($key === self::CLOUD && $value)*/ || $key === self::WEKAN)
+            if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA || ($key === self::CHANNEL && !$value) || $key === self::WEKAN)
                 continue;
 
             if ($key === self::CLOUD && 

@@ -143,7 +143,7 @@ class tchap extends bnum_plugin
         $token = self::get_tchap_token();
         $mail_user = [];
         foreach($users as $user) {
-            $mail_user[] = driver_mel::gi()->getUser($user)->email;
+            $mail_user[] = strtolower(driver_mel::gi()->getUser($user)->email);
         }
         $config = ['token'=> $token, 'room_name'=> $room_name, 'is_private'=> true, 'users_list'=> $mail_user];
         $content = self::call_tchap_api ($rcmail->config->get('migrate_channel_endpoint'), $config, 'POST');
@@ -164,7 +164,7 @@ class tchap extends bnum_plugin
         $token = self::get_tchap_token();
         $mail_user = [];
         foreach($users as $user) {
-            $mail_user[] = driver_mel::gi()->getUser($user)->email;
+            $mail_user[] = strtolower(driver_mel::gi()->getUser($user)->email);
         }
         $config = ['token'=> $token, 'room_id'=> $room_id, 'users_list'=> $mail_user];
         $content = self::call_tchap_api ($rcmail->config->get('invite_endpoint'), $config, 'POST');
@@ -201,7 +201,7 @@ class tchap extends bnum_plugin
     public static function is_member($room_id, $user_id) {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
-        $user_id = driver_mel::gi()->getUser($user_id)->email;
+        $user_id = strtolower(driver_mel::gi()->getUser($user_id)->email);
         $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_id];
         $content = self::call_tchap_api ($rcmail->config->get('ismember_endpoint'), $config, 'POST');
         if($content["httpCode"] === 200) {
@@ -251,7 +251,7 @@ class tchap extends bnum_plugin
     public static function kick_member($room_id, $user_id) {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
-        $user_id = driver_mel::gi()->getUser($user_id)->email;
+        $user_id = strtolower(driver_mel::gi()->getUser($user_id)->email);
         $user_uid = self::get_user_tchap_id($user_id);
         $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_uid];
         $content = self::call_tchap_api ($rcmail->config->get('kick_user_endpoint'), $config, 'DELETE');

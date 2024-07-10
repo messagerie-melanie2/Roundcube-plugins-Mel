@@ -157,6 +157,10 @@ class ResourceLocation extends AExternalLocationPart {
     return this;
   }
 
+  changed_to_this() {
+    if (!window.start_planify) this.force_click();
+  }
+
   /**
    * Supprime les localisations de type "Emplacement" qui ont la même valeur que cette localisation
    */

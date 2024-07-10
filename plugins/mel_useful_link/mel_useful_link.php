@@ -59,8 +59,6 @@ class mel_useful_link extends bnum_plugin
     public function convert_old_links() {
       include_once "lib/link.php";
 
-      // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
-
       if (!$this->rc->config->get('new_personal_useful_links', []) && $this->rc->config->get('personal_useful_links', [])) {
         
         $mul_items = $this->rc->config->get('personal_useful_links', []);
@@ -96,14 +94,14 @@ class mel_useful_link extends bnum_plugin
         if ($item->links) {
           foreach ($item->links as $key => $value) {
             if(strpos($value->icon, '://')) {
-              $item->links->$key = self::convert_image($value, $id);
+              $item->links->$key = self::convert_image($value);
             }
           }
           $temp = new MelFolderLink($id, $item->title, $item->links);
           $mel_links[$id] = $temp->serialize();
         }
         else if(strpos($item->icon, '://')) {
-          $mel_links[$id] = self::convert_image($item, $id)->serialize();
+          $mel_links[$id] = self::convert_image($item)->serialize();
         }
       }
       $this->rc->user->save_prefs(array('new_personal_useful_links' => $mel_links));
@@ -111,10 +109,10 @@ class mel_useful_link extends bnum_plugin
       }
     }
 
-    private function convert_image($link, $id) {
+    private function convert_image($link) {
       $link->image = $link->icon;
       $link->icon = "";
-      $temp = new MelLink($id, $link->title, $link->link, $link->image, $link->icon);
+      $temp = new MelLink($link->id, $link->title, $link->link, $link->image, $link->icon);
       return $temp;
     }
     

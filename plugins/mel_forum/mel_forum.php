@@ -49,10 +49,12 @@ function init()
         $this->register_action('elements', array($this, 'elements'));
         $this->register_action('test_create_tag', array($this, 'test_create_tag'));
         $this->register_action('test_show_all_tags', array($this, 'test_show_all_tags'));
+        $this->register_action('test_update_tag', array($this, 'test_update_tag'));
         $this->register_action('test_delete_tag', array($this, 'test_delete_tag'));
         $this->register_action('test_create_post', array($this, 'test_create_post'));
         $this->register_action('test_update_post', array($this, 'test_update_post'));
         $this->register_action('test_delete_post', array($this, 'test_delete_post'));
+        $this->register_action('test_create_comment', array($this, 'test_create_comment'));
 
         // Récupérer le User Connecté
         $this->register_action('check_user', array($this, 'check_user'));
@@ -157,7 +159,7 @@ public function create_post()
     $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
 
     // Validation des données saisies
-    if (empty($uid) ||empty($title) || empty($content) || empty($description) || empty($settings)) {
+    if (empty($title) || empty($content) || empty($description) || empty($settings)) {
         echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
         exit;
     }
@@ -419,8 +421,54 @@ public function show_all_tags()
     exit;
 }
 
+/**
+ * Supprime un tag spécifique.
+ *
+ * Cette fonction récupère l'utilisateur courant, le workspace associé, 
+ * et le nom du tag à supprimer à partir des données POST. 
+ * Elle valide ensuite les données, vérifie si le tag existe, et le supprime si c'est le cas.
+ *
+ * @return void
+ */
+public function delete_tag()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
 
+    // Récupérer le Workspace
+    $workspace = driver_mel::gi()->get_workspace_group();
 
+    // Récupérer la valeur du champ POST
+    $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
+
+    // Validation de la donnée saisie
+    if (empty($name)) {
+        echo json_encode(['status' => 'error', 'message' => 'Le nom du tag est requis.']);
+        exit;
+    }
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->tag_name = $name;
+    $tag->workspace_uid = $workspace;
+
+    // Vérifier si le tag existe
+    if (!$tag->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Tag introuvable.']);
+        exit;
+    }
+
+    // Supprimer le tag
+    $ret = $tag->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => "Le Tag " . $tag->name . " a été supprimé avec succès."]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => "Echec de suppression du Tag " . $tag->name ."."]);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
 
 
 
@@ -675,23 +723,66 @@ public function test_show_all_tags()
     exit;
 }
 
+public function test_update_tag()
+{
+    // Récupérer les valeurs des champs POST
+    $name = 'testtag4';
+    $workspace = 'un-espace-1';
+    $newname = 'testtag5';
+
+    // Validation de la donnée saisie
+    if (empty($name) || empty($workspace)) {
+        echo json_encode(['status' => 'error', 'message' => 'Le nom du tag et le workspace du tag sont requis.']);
+        exit;
+    }
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace;
+
+    // Vérifier si l'article existe
+    if (!$tag->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Tag introuvable.']);
+        exit;
+    }
+
+    // Définir le nouveau nom du tag
+    $tag->tag_name = $newname;
+
+    // Sauvegarde du nom du tag
+    $ret = $tag->save();
+
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Tag mis à jour avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de la mise à jour du tag.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+
 public function test_delete_tag()
 {
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
 
     // Récupérer la valeur du champ POST
-    $id = '9';
+    $name = 'testtag5';
+    $workspace = 'un-espace-1';
 
     // Validation de la donnée saisie
-    if (empty($id)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant du tag est requis.']);
+    if (empty($name) || empty($workspace)) {
+        echo json_encode(['status' => 'error', 'message' => 'Le nom du tag et le workspace du tag sont requis.']);
         exit;
     }
 
     // Récupérer le tag existant
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-    $tag->id = $id;
+    $tag->name = $name;
+    $tag->workspace = $workspace;
 
     // Vérifier si le tag existe
     if (!$tag->load()) {
@@ -710,6 +801,44 @@ public function test_delete_tag()
     // Arrêt de l'exécution du script
     exit;
 }
+
+public function test_create_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    $content = 'Ce roman est génial, je ne me lasse pas de le lire et de le relire !';
+
+    // Validation des données saisies
+    if (empty($user->uid) || empty($content)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Créer un nouveau commentaire
+    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+    $comment->comment_content = $content;
+    $comment->comment_uid = $this->generateRandomString(24);
+    $comment->created = date('Y-m-d H:i:s');
+    $comment->updated = date('Y-m-d H:i:s');
+    $comment->user_uid = $user->uid;
+    $comment->post_id = '6';
+
+    // Sauvegarde du commentaire
+    $ret = $comment->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Commentaire créé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
 
 /**
  * Gestion de la frame

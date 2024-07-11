@@ -1,7 +1,7 @@
 import { EMPTY_STRING } from '../constants/constants.js';
 import { MelHtml } from '../html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../mel_events.js';
-import { MelObject, WrapperObject } from '../mel_object.js';
+import { MelObject } from '../mel_object.js';
 import { Mel_Promise } from '../mel_promise.js';
 import { BaseStorage } from './base_storage.js';
 import { BnumMessage, eMessageType } from './bnum_message.js';
@@ -10,6 +10,7 @@ import { MainNav } from './main_nav.js';
 
 export { FramesManager, FrameManager };
 
+const MODULE = 'FrameManager';
 const MAX_FRAME = 2;
 const MULTI_FRAME_FROM_NAV_BAR = true;
 
@@ -127,10 +128,12 @@ class FrameData {
   }
 
   update_src(args) {
-    this.$frame.attr(
-      'src',
-      FrameManager.Helper.url(this.task, { params: args }),
-    );
+    let url = FrameManager.Helper.url(this.task, { params: args });
+
+    if (!url.includes('_is_from=iframe')) url += '&_is_from=iframe';
+
+    this.$frame.attr('src', url);
+    url = null;
     return this;
   }
 
@@ -282,7 +285,7 @@ class HistoryManager {
           `<button class="history-button mel-button btn btn-secondary no-button-margin color-for-dark bckg true"><span class="history-text">${element}</span></button>`,
         ).click(
           function (task) {
-            FramesManager.Instance.switch_frame(task, {});
+            FramesManager.Helper.current.switch_frame(task, {});
             quit();
           }.bind(this, this._history[index]),
         ),
@@ -307,7 +310,7 @@ class HistoryManager {
   }
 
   back() {
-    return FramesManager.Instance.switch_frame(
+    return FramesManager.Helper.current.switch_frame(
       this._history[this._history.length - 1],
       {},
     );
@@ -391,7 +394,7 @@ class Window {
           changepage,
           args,
           actions,
-          manager: FramesManager.Instance,
+          manager: FramesManager.Helper.current,
           window: this,
         });
         this._trigger_event('frame.opened', {
@@ -399,7 +402,7 @@ class Window {
           changepage,
           args,
           actions,
-          manager: FramesManager.Instance,
+          manager: FramesManager.Helper.current,
           first: true,
           window: this,
         });
@@ -424,8 +427,8 @@ class Window {
             iterator.contentWindow.document.addEventListener('click', () => {
               console.log('CLIIIIIIIIIIIIIIIK');
               if (!this.is_selected()) {
-                FramesManager.Instance.unselect_all();
-                FramesManager.Instance.select_window(this._id);
+                FramesManager.Helper.current.unselect_all();
+                FramesManager.Helper.current.select_window(this._id);
               }
             });
 
@@ -435,8 +438,8 @@ class Window {
               e.contentWindow.document.addEventListener('click', () => {
                 console.log('cliiiiiiiiiiiiiiiiiiiks');
                 if (!this.is_selected()) {
-                  FramesManager.Instance.unselect_all();
-                  FramesManager.Instance.select_window(this._id);
+                  FramesManager.Helper.current.unselect_all();
+                  FramesManager.Helper.current.select_window(this._id);
                 }
               });
             };
@@ -449,8 +452,8 @@ class Window {
           () => {
             console.log('clicked');
             if (!this.is_selected()) {
-              FramesManager.Instance.unselect_all();
-              FramesManager.Instance.select_window(this._id);
+              FramesManager.Helper.current.unselect_all();
+              FramesManager.Helper.current.select_window(this._id);
             }
           },
         );
@@ -470,13 +473,20 @@ class Window {
     });
   }
 
-  _open_frame(task, { new_args = null }) {
+  async _open_frame(task, { new_args = null }) {
     this._history.add(this._current_frame.task);
     this._current_frame.hide();
     this._current_frame = this._frames.get(task);
 
-    if (new_args) {
-      this._current_frame.update_src(new_args);
+    if (new_args && Object.keys(new_args).length > 0) {
+      await new Mel_Promise((promise) => {
+        promise.start_resolving();
+        this._current_frame.onload.add('src_updated', () => {
+          this._current_frame.onload.remove('src_updated');
+          promise.resolve(true);
+        });
+        this._current_frame.update_src(new_args);
+      });
     }
 
     this._current_frame.show();
@@ -560,7 +570,8 @@ class Window {
     Window.UpdateNavUrl(Window.UrlFromTask(task));
     Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
 
-    if (this._frames.has(task)) this._open_frame(task, { new_args: args });
+    if (this._frames.has(task))
+      await this._open_frame(task, { new_args: args });
     else await this._create_frame(task, { changepage, args, actions });
 
     this._current_frame.$frame.focus();
@@ -613,8 +624,9 @@ class Window {
     return $(`#mel-window-${this._id}`);
   }
 
-  get_frame() {
-    return this.get_window().find(`iframe#frame-${this._current_frame.id}`);
+  get_frame(task = null) {
+    const frame = !task ? this._current_frame : this._frames.get(task);
+    return this.get_window().find(`iframe#frame-${frame.id}`);
   }
 
   delete() {
@@ -628,17 +640,21 @@ class Window {
     return this;
   }
 
+  has_frame(task) {
+    return this._frames.has(task);
+  }
+
   _generate_window() {
     return MelHtml.start
       .div({ id: `mel-window-${this._id}`, class: 'mel-windows' })
       .attr('onclick', () => {
-        FramesManager.Instance.unselect_all();
-        FramesManager.Instance.select_window(this._id);
+        FramesManager.Helper.current.unselect_all();
+        FramesManager.Helper.current.select_window(this._id);
       })
       .div({ class: 'mel-window-header' })
       .button()
       .attr('onclick', () => {
-        FramesManager.Instance.delete_window(this._id);
+        FramesManager.Helper.current.delete_window(this._id);
       })
       .icon('delete')
       .end('icon')
@@ -687,7 +703,6 @@ class FrameManager {
     task,
     { changepage = true, args = null, actions = [], wind = null },
   ) {
-    debugger;
     if (wind !== null) {
       if (!this._windows.has(wind)) {
         this._windows.add(wind, new Window(wind));
@@ -730,7 +745,7 @@ class FrameManager {
       if ($it.hasClass('menu-last-frame'))
         $it
           .click(() => {
-            this._history.back();
+            this._selected_window._history.back();
           })
           .on('mousedown', (e) => {
             if (e.button === 1) {
@@ -741,18 +756,22 @@ class FrameManager {
           .on('contextmenu', () => {
             this._selected_window._history.show_history();
           });
-      else
-        $it
-          .click(this.button_action.bind(this))
-          .popover({
-            trigger: 'manual',
-            content: this._generate_menu.bind(this, $it),
-            html: true,
-          })
-          .on('contextmenu', (e) => {
-            e.preventDefault();
-            $(e.currentTarget).popover('show');
-          });
+      else {
+        $it.click(this.button_action.bind(this));
+
+        if (MULTI_FRAME_FROM_NAV_BAR) {
+          $it
+            .popover({
+              trigger: 'manual',
+              content: this._generate_menu.bind(this, $it),
+              html: true,
+            })
+            .on('contextmenu', (e) => {
+              e.preventDefault();
+              $(e.currentTarget).popover('show');
+            });
+        }
+      }
     }
   }
 
@@ -851,6 +870,10 @@ class FrameManager {
     }
   }
 
+  has_frame(task) {
+    return this._selected_window.has_frame(task);
+  }
+
   start_custom_multi_frame() {
     $('body').addClass('multiframe-header-disabled');
     return this;
@@ -859,6 +882,14 @@ class FrameManager {
   stop_custom_multi_frame() {
     $('.body').removeClass('multiframe-header-disabled');
     return this;
+  }
+
+  get_window() {
+    return this._selected_window;
+  }
+
+  get_frame(task = null) {
+    return this._selected_window.get_frame(task);
   }
 
   /**
@@ -887,10 +918,64 @@ Object.defineProperty(FrameManager, 'Helper', {
 });
 
 /**
- * Gère les différentes frames du Bnum
- * @type {WrapperObject<FrameManager>}
+ * @typedef FrameManagerWrapperHelper
+ * @property {FrameManager} current Récupère le frame manager de la frame courante
  */
-const FramesManager = new WrapperObject(FrameManager);
+
+/**
+ * @class
+ * @classdesc
+ */
+class FrameManagerWrapper {
+  constructor() {
+    /**
+     * Récupère l'instance du FrameManager le plus haut
+     * @readonly
+     * @type {FrameManager}
+     */
+    this.Instance = null;
+    let _instance = null;
+
+    /**
+     * Contient divers fonction d'aide
+     * @type {FrameManagerWrapperHelper}
+     */
+    this.Helper = null;
+    let _helper = {};
+
+    Object.defineProperties(_helper, {
+      current: {
+        get() {
+          if (!_instance) _instance = new FrameManager();
+
+          return _instance;
+        },
+      },
+    });
+
+    Object.defineProperties(this, {
+      Instance: {
+        get() {
+          if (window !== parent) return parent.mel_modules[MODULE].Instance;
+          else if (!_instance) _instance = new FrameManager();
+
+          return _instance;
+        },
+      },
+      Helper: {
+        get() {
+          return _helper;
+        },
+      },
+    });
+  }
+}
+
+/**
+ * Gère les différentes frames du Bnum
+ * @type {FrameManagerWrapper}
+ */
+const FramesManager = new FrameManagerWrapper();
 
 window.mm_st_OpenOrCreateFrame = function (
   eClass,
@@ -908,3 +993,6 @@ window.mm_st_OpenOrCreateFrame = function (
 window.mm_st_CreateOrOpenModal = function (eclass, changepage = true) {
   return window.mm_st_OpenOrCreateFrame(eclass, changepage);
 };
+
+if (!window.mel_modules) window.mel_modules = {};
+if (!window.mel_modules[MODULE]) window.mel_modules[MODULE] = FramesManager;

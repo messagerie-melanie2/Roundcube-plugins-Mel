@@ -156,7 +156,11 @@ class tchap_manager extends MelObject {
         'tchap_badge',
       );
     } else if (
-      this.tchap_frame().querySelector('.mx_NotificationBadge') !== null
+      this.tchap_frame().querySelector('.mx_NotificationBadge_visible') !==
+        null &&
+      this.tchap_frame()
+        .querySelector('.mx_NotificationBadge_visible')
+        .getAttribute('tabindex') !== '-1'
     ) {
       MainNav.update_badge_text(TCHAT_UNREAD, 'tchap_badge');
     } else {

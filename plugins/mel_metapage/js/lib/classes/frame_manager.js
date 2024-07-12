@@ -12,7 +12,7 @@ export { FramesManager, FrameManager };
 
 const MODULE = 'FrameManager';
 const MAX_FRAME = 2;
-const MULTI_FRAME_FROM_NAV_BAR = true;
+const MULTI_FRAME_FROM_NAV_BAR = false;
 
 class FrameData {
   constructor(task) {

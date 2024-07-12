@@ -55,6 +55,10 @@ function init()
         $this->register_action('test_update_post', array($this, 'test_update_post'));
         $this->register_action('test_delete_post', array($this, 'test_delete_post'));
         $this->register_action('test_create_comment', array($this, 'test_create_comment'));
+        $this->register_action('test_reply_comment', array($this, 'test_reply_comment'));
+        $this->register_action('test_update_comment', array($this, 'test_update_comment'));
+        $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
+        $this->register_action('test_like_comment', array($this, 'test_like_comment'));
 
         // Récupérer le User Connecté
         $this->register_action('check_user', array($this, 'check_user'));
@@ -470,18 +474,196 @@ public function delete_tag()
     exit;
 }
 
+/**
+ * Crée un commentaire.
+ *
+ * Cette fonction récupère l'utilisateur actuel, le contenu du commentaire 
+ * depuis la requête POST, valide le contenu, et crée un nouveau commentaire.
+ * Elle retourne un message JSON indiquant le succès ou l'échec de l'opération.
+ *
+ * @return void
+ */
+public function create_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer le nom du champ POST
+    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($content)) {
+        echo json_encode(['status' => 'error', 'message' => 'Le champ commentaire est requis.']);
+        exit;
+    }
+
+    // Créer un nouveau commentaire
+    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+    $comment->comment_content = $content;
+    $comment->comment_uid = $this->generateRandomString(24);
+    $comment->created = date('Y-m-d H:i:s');
+    $comment->updated = date('Y-m-d H:i:s');
+    $comment->user_uid = $user->uid;
+    $comment->post_id = $post->id;
+
+    // Sauvegarde du commentaire
+    $ret = $comment->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Commentaire créé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
 
 
+/**
+ * Répond à un commentaire ou à une réponse à un commentaire.
+ *
+ * Cette fonction récupère l'utilisateur actuel, le contenu de la réponse et l'ID du commentaire parent
+ * depuis la requête POST, valide le contenu, et crée une nouvelle réponse.
+ * Elle retourne un message JSON indiquant le succès ou l'échec de l'opération.
+ *
+ * @return void
+ */
+public function reply_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
 
+    // Récupérer les valeurs post
+    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
 
+    // Validation des données saisies
+    if (empty($user->uid) || empty($content)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
 
+    // Créer un nouveau commentaire
+    $reply = new LibMelanie\Api\Defaut\Posts\Comment();
+    $reply->comment_content = $content;
+    $reply->comment_uid = $this->generateRandomString(24);
+    $reply->created = date('Y-m-d H:i:s');
+    $reply->updated = date('Y-m-d H:i:s');
+    $reply->user_uid = $user->uid;
+    $reply->post_id = $post->id;
+    $reply->parent_comment_id = $comment_parent->id;
 
+    // Sauvegarde du commentaire
+    $ret = $reply->save();
+    if (!is_null($ret)) {
 
+        header('Content-Type: application/json');
 
+        echo json_encode(['status' => 'success', 'message' => 'Réponse créée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création de la réponse.']);
+    }
 
+    // Arrêt de l'exécution du script
+    exit;
+}
 
+/**
+ * Met à jour un commentaire existant.
+ *
+ * Cette fonction récupère l'utilisateur actuel, les nouvelles données du commentaire 
+ * depuis la requête POST, charge le commentaire existant, et met à jour ses données.
+ * Elle retourne un message JSON indiquant le succès ou l'échec de l'opération.
+ *
+ * @return void
+ */
+public function update_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
 
+    // Récupérer les valeurs des champs POST
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
 
+    // Récupérer le commentaire existant
+    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+    $comment->uid = $uid;
+    if (!$comment->load()) {
+
+        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+        exit;
+    }
+
+    // Vérifier si le commentaire existe
+    if (!$comment) {
+        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+        exit;
+    }
+
+    // Définir les nouvelles données
+    $comment->comment_content = $content;
+    $comment->updated = date('Y-m-d H:i:s');
+
+    // Sauvegarde du commentaire
+    $ret = $comment->save();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Commentaire mis à jour avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+
+}
+
+/**
+ * Supprime un commentaire existant.
+ *
+ * Cette fonction récupère l'utilisateur actuel, l'UID du commentaire depuis la requête POST,
+ * charge le commentaire existant, et le supprime. Elle retourne un message JSON indiquant 
+ * le succès ou l'échec de l'opération.
+ *
+ * @return void
+ */
+public function delete_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer la valeur du champ POST
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'uid du commentaire est requis.']);
+        exit;
+    }
+
+    // Récupérer le commentaire existant
+    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+    $comment->uid = $uid;
+
+    // Vérifier si le commentaire existe
+    if (!$comment->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+        exit;
+    }
+
+    // Supprimer le commentaire
+    $ret = $comment->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit; 
+}
 
 
 
@@ -748,7 +930,7 @@ public function test_update_tag()
     }
 
     // Définir le nouveau nom du tag
-    $tag->tag_name = $newname;
+    $tag->name = $newname;
 
     // Sauvegarde du nom du tag
     $ret = $tag->save();
@@ -807,7 +989,7 @@ public function test_create_comment()
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
 
-    $content = 'Ce roman est génial, je ne me lasse pas de le lire et de le relire !';
+    $content = 'Commentaire test à supprimer';
 
     // Validation des données saisies
     if (empty($user->uid) || empty($content)) {
@@ -822,7 +1004,7 @@ public function test_create_comment()
     $comment->created = date('Y-m-d H:i:s');
     $comment->updated = date('Y-m-d H:i:s');
     $comment->user_uid = $user->uid;
-    $comment->post_id = '6';
+    $comment->post_id = '11';
 
     // Sauvegarde du commentaire
     $ret = $comment->save();
@@ -838,6 +1020,166 @@ public function test_create_comment()
     // Arrêt de l'exécution du script
     exit;
 }
+
+public function test_reply_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    $content = 'Je suis comme vous, j\'adore ce roman.';
+
+    // Validation des données saisies
+    if (empty($user->uid) || empty($content)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Créer un nouveau commentaire
+    $reply = new LibMelanie\Api\Defaut\Posts\Comment();
+    $reply->comment_content = $content;
+    $reply->comment_uid = $this->generateRandomString(24);
+    $reply->created = date('Y-m-d H:i:s');
+    $reply->updated = date('Y-m-d H:i:s');
+    $reply->user_uid = $user->uid;
+    $reply->post_id = '6';
+    $reply->parent_comment_id = '10';
+
+    // Sauvegarde du commentaire
+    $ret = $reply->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Réponse créée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création de la réponse.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+public function test_update_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer les valeurs des champs POST
+    $uid ='P4Akl07laJ7he6ewafyKEqPD';
+    $content = 'Ce roman est génial, je ne me lasse pas de le lire et de le relire ! Modification OK';
+
+    // Récupérer le commentaire existant
+    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+    $comment->uid = $uid;
+    if (!$comment->load()) {
+
+        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+        exit;
+    }
+
+    // Vérifier si le commentaire existe
+    if (!$comment) {
+        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+        exit;
+    }
+
+    // Définir les nouvelles données
+    $comment->comment_content = $content;
+    $comment->updated = date('Y-m-d H:i:s');
+
+    // Sauvegarde du commentaire
+    $ret = $comment->save();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Commentaire mis à jour avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+
+}
+
+public function test_delete_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer la valeur du champ POST
+    $uid = 'OkusCpTW36IOcDlzudEQosCR';
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'uid du commentaire est requis.']);
+        exit;
+    }
+
+    // Récupérer le tag existant
+    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+    $comment->uid = $uid;
+
+    // Vérifier si le commentaire existe
+    if (!$comment->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+        exit;
+    }
+
+    // Supprimer le commentaire
+    $ret = $comment->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit; 
+}
+
+public function test_like_comment()
+{
+    // Récupérer les valeurs
+    $creator = 'damien.cotton.i';
+    $type = 'Don\'t like';
+    $comment_id = '10';
+    $user_uid = 'damien.cotton.i';
+
+    // Validation des données saisies
+    if (empty($creator) || empty($type) || empty($comment_id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Vérifier si le créateur du like est le même que le créateur du commentaire
+    if ($creator === $user_uid) {
+        echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas liker votre propre commentaire.']);
+        exit;
+    }
+
+    // Création d'un Like
+    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+    $like->comment_user_uid = $user_uid;
+    $like->comment = $comment_id;
+    $like->creator = $creator;
+    $like->type = $type;
+
+    // Sauvegarde du Like
+    $ret = $like->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Like créé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création du Like.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+
+}
+
+
 
 
 /**

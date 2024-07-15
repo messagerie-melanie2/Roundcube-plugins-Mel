@@ -59,6 +59,7 @@ function init()
         $this->register_action('test_update_comment', array($this, 'test_update_comment'));
         $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
         $this->register_action('test_like_comment', array($this, 'test_like_comment'));
+        $this->register_action('test_delete_like', array($this, 'test_delete_like'));
 
         // Récupérer le User Connecté
         $this->register_action('check_user', array($this, 'check_user'));
@@ -666,7 +667,71 @@ public function delete_comment()
 }
 
 
+/**
+ * Gère l'ajout d'un like à un commentaire.
+ *
+ * Cette fonction récupère l'utilisateur actuel ainsi que les valeurs pour le type de like et l'ID du commentaire
+ * depuis la requête POST. Elle valide les données saisies, charge le commentaire pour obtenir son créateur,
+ * et s'assure que l'utilisateur ne peut pas liker son propre commentaire. Si la validation est réussie, 
+ * un nouveau like est créé et sauvegardé.
+ *
+ * @return void
+ */
+public function like_comment()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+    $user_uid = $user->getUid();
 
+    // Récupérer les valeurs
+    $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
+    $comment_id = rcube_utils::get_input_value('_comment_id', rcube_utils::INPUT_POST);
+    
+
+    // Validation des données saisies
+    if (empty($type) || empty($comment_id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Charger le commentaire pour récupérer son id et son créateur
+    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
+    $comment->uid = $comment_id;
+
+    if (!$comment->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+        exit;
+    }
+
+    $creator = $comment->creator;
+
+    // Vérifier si le créateur du like est le même que le créateur du commentaire
+    if ($creator === $user_uid) {
+        echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas liker votre propre commentaire.']);
+        exit;
+    }
+
+    // Création d'un Like
+    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+    $like->comment = $comment_id;
+    $like->creator = $creator;
+    $like->type = $type;
+
+    // Sauvegarde du Like
+    $ret = $like->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Like créé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création du Like.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+
+}
 
 
 
@@ -1138,11 +1203,13 @@ public function test_delete_comment()
 
 public function test_like_comment()
 {
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
     // Récupérer les valeurs
-    $creator = 'damien.cotton.i';
-    $type = 'Don\'t like';
+    $creator = 'DamienTest4';
+    $type = 'Like à supprimer';
     $comment_id = '10';
-    $user_uid = 'damien.cotton.i';
 
     // Validation des données saisies
     if (empty($creator) || empty($type) || empty($comment_id)) {
@@ -1151,14 +1218,13 @@ public function test_like_comment()
     }
 
     // Vérifier si le créateur du like est le même que le créateur du commentaire
-    if ($creator === $user_uid) {
+    if ($creator === $user->uid) {
         echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas liker votre propre commentaire.']);
         exit;
     }
 
     // Création d'un Like
     $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
-    $like->comment_user_uid = $user_uid;
     $like->comment = $comment_id;
     $like->creator = $creator;
     $like->type = $type;
@@ -1179,7 +1245,36 @@ public function test_like_comment()
 
 }
 
+public function test_delete_like()
+{
+    // Récupérer les valeurs
+    $creator = 'DamienTest';
+    $type = 'Like à supprimer 3';
+    $comment_id = '10';
+    
+    // Validation des données saisies
+    if (empty($creator) || empty($type) || empty($comment_id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
 
+    // Récupérer le like existant
+    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+    $like->comment = $comment_id;
+    $like->creator = $creator;
+    $like->type = $type;
+
+    // Supprimer le Like
+    $ret = $like->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit; 
+}
 
 
 /**

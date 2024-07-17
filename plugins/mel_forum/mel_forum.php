@@ -54,19 +54,25 @@ function init()
         $this->register_action('test_create_post', array($this, 'test_create_post'));
         $this->register_action('test_update_post', array($this, 'test_update_post'));
         $this->register_action('test_delete_post', array($this, 'test_delete_post'));
+        $this->register_action('test_show_all_posts_byworkspace', array($this, 'test_show_all_posts_byworkspace'));
         $this->register_action('test_create_comment', array($this, 'test_create_comment'));
         $this->register_action('test_reply_comment', array($this, 'test_reply_comment'));
         $this->register_action('test_update_comment', array($this, 'test_update_comment'));
         $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
         $this->register_action('test_like_comment', array($this, 'test_like_comment'));
         $this->register_action('test_delete_like', array($this, 'test_delete_like'));
+        $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
+        $this->register_action('test_delete_reaction', array($this, 'test_delete_reaction'));
+        $this->register_action('test_create_image', array($this, 'test_create_image'));
+        $this->register_action('test_delete_image', array($this, 'test_delete_image'));
+        $this->register_action('test_associate_tag_at_post', array($this, 'test_associate_tag_at_post'));
+        $this->register_action('test_unassociate_tag_from_post', array($this, 'test_unassociate_tag_from_post'));
+        
 
         // Récupérer le User Connecté
         $this->register_action('check_user', array($this, 'check_user'));
         //Ajouter une réaction
         $this->register_action('add_reaction', array($this, 'add_reaction'));
-        //modifier une réaction
-        $this->register_action('update_reaction', array($this, 'update_reaction'));
         // Supprimer une réaction
         $this->register_action('delete_reaction', array($this, 'delete_reaction'));
         // Créer un article
@@ -78,27 +84,37 @@ function init()
         // récupérer un  article
         $this->register_action('show_one_post', array($this, 'show_one_post'));
         // récupérer tous les articles
-        $this->register_action('show_all_posts', array($this, 'show_all_posts'));
+        $this->register_action('show_all_posts_byworkspace', array($this, 'show_all_posts_byworkspace'));
         // Ajouter un commentaire ou une réponse
         $this->register_action('create_comment', array($this, 'create_comment'));
         // Répondre à un commentaire ou une réponse
-        $this->register_action('reply_to_comment', array($this, 'reply_to_comment'));
+        $this->register_action('reply_comment', array($this, 'reply_comment'));
         // Modifier un commentaire ou une réponse
         $this->register_action('update_comment', array($this, 'update_comment'));
         // Supprimer un commentaire ou une réponse
         $this->register_action('delete_comment', array($this, 'delete_comment'));
         // Liker un commentaire ou une réponse
         $this->register_action('like_comment', array($this, 'like_comment'));
+        //Supprimer un Like
+        $this->register_action('delete_like', array($this, 'delete_like'));
         // Créer un tag
         $this->register_action('create_tag', array($this, 'create_tag'));
         // Modifier un tag
         $this->register_action('update_tag', array($this, 'update_tag'));
         // Supprimer un tag
         $this->register_action('delete_tag', array($this, 'delete_tag'));
+        // Associer un tag à un Post
+        $this->register_action('associate_tag_at_post', array($this, 'associate_tag_at_post'));
+        // Enlever un Tag existant d'un post
+        $this->register_action('unassociate_tag_from_post', array($this, 'unassociate_tag_from_post'));
         // récupérer tous les tags
         $this->register_action('show_all_tags', array($this, 'show_all_tags'));
         // afficher les articles par tag
         $this->register_action('all_posts_by_tag', array($this, 'all_posts_by_tag'));
+        // Créer une image
+        $this->register_action('create_image', array($this, 'create_image'));
+        // Supprimer une image
+        $this->register_action('delete_image', array($this, 'delete_image'));
         
     }
 }
@@ -337,6 +353,51 @@ public function delete_post()
 }
 
 /**
+ * Affiche tous les posts d'un workspace au format JSON.
+ *
+ * Cette fonction récupère le groupe de workspace en cours d'utilisation
+ * et charge tous les posts associés en utilisant la méthode listPosts.
+ * Les posts sont ensuite renvoyés en réponse au format JSON.
+ *
+ * @return void
+ */
+public function show_all_posts_byworkspace()
+{
+    //récupérer le Workspace
+    $workspace_uid = driver_mel::gi()->get_workspace_group();
+
+    // Charger tous les posts en utilisant la méthode listPosts
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->workspace = $workspace_uid;
+
+    // Appel de la méthode listPosts
+    $posts = $post->listPosts();
+
+    if (!empty($posts)) {
+        header('Content-Type: application/json');
+        // Préparer les données des tags pour la réponse JSON
+        $posts_array = [];
+        foreach ($posts as $post) {
+            $posts_array[] = [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'workspace' => $post->workspace
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'tags' => $posts_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucun post trouvé.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
  * Crée un nouveau tag sous forme de réponse JSON.
  *
  * Cette fonction récupère le groupe de workspace, le nom du tag depuis une requête POST,
@@ -473,6 +534,96 @@ public function delete_tag()
 
     // Arrêt de l'exécution du script
     exit;
+}
+
+/**
+ * Associe un tag à un post et renvoie le résultat au format JSON.
+ *
+ * Cette fonction récupère les valeurs des champs POST pour le nom du tag,
+ * l'UID du workspace et l'UID du post, valide ces données, charge le tag
+ * et le post correspondants, puis associe le tag au post.
+ * Le résultat de l'opération est renvoyé au format JSON.
+ *
+ * @return void
+ */
+public function associate_tag_at_post()
+{
+    // Récupérer la valeur des champs POST
+    $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
+    $workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_POST);
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($name) || empty($workspace_uid) || empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    if ($tag->load()) {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $uid;
+
+        if ($post->load()) {
+            if ($post->addTag($tag)) {
+                echo json_encode(['status' => 'success', 'message' => 'Tag associé au post avec succès.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Echec de l\'association du tag avec le post.']);
+            }
+        }
+
+        // Arrêt de l'exécution du script
+    exit;
+    }
+}
+
+/**
+ * Dissocie un tag d'un post et renvoie le résultat au format JSON.
+ *
+ * Cette fonction récupère les valeurs des champs POST pour le nom du tag,
+ * l'UID du workspace et l'UID du post, valide ces données, charge le tag
+ * et le post correspondants, puis dissocie le tag du post.
+ * Le résultat de l'opération est renvoyé au format JSON.
+ *
+ * @return void
+ */
+public function unassociate_tag_from_post()
+{
+    // Récupérer la valeur des champs POST
+    $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
+    $workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_POST);
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($name) || empty($workspace_uid) || empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    if ($tag->load()) {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $uid;
+
+        if ($post->load()) {
+            if ($post->removeTag($tag)) {
+                echo json_encode(['status' => 'success', 'message' => 'Tag dissocié du post avec succès.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Echec de la suppression du tag lié au post.']);
+            }
+        }
+
+        // Arrêt de l'exécution du script
+    exit;
+    }
 }
 
 /**
@@ -733,6 +884,216 @@ public function like_comment()
 
 }
 
+/**
+ * Supprime un "like" d'un commentaire.
+ *
+ * Cette fonction récupère les informations nécessaires depuis les variables POST,
+ * valide les données reçues, et supprime le "like" associé au commentaire spécifié.
+ *
+ * @return void
+ */
+public function delete_like()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer la valeur du champ POST
+    $comment = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
+    $creator = rcube_utils::get_input_value('_creator', rcube_utils::INPUT_POST);
+    $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($creator) || empty($type) || empty($comment)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Récupérer le like existant
+    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+    $like->comment = $comment->id;
+    $like->creator = $creator;
+    $like->type = $type;
+
+    // Supprimer le Like
+    $ret = $like->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit; 
+}
+
+/**
+ * Crée une réaction à un post.
+ *
+ * Cette fonction récupère les informations nécessaires depuis les variables POST,
+ * valide les données reçues, et crée une nouvelle réaction associée au post spécifié.
+ *
+ * @return void
+ */
+public function add_reaction()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer les valeurs
+    $post_id = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
+    $creator = rcube_utils::get_input_value('_creator', rcube_utils::INPUT_POST);
+    $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($post_id) || empty($creator) || empty($type)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Créer un nouveau commentaire
+    $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
+    $reaction->post = $post_id;
+    $reaction->creator = $creator;
+    $reaction->type = $type;
+
+    // Sauvegarde du commentaire
+    $ret = $reaction->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Réaction créée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création de la réaction.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
+ * Supprime une réaction d'un post.
+ *
+ * Cette fonction récupère les informations nécessaires depuis les variables POST,
+ * valide les données reçues, et supprime la réaction associée au post spécifié.
+ *
+ * @return void
+ */
+public function delete_reaction()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    // Récupérer la valeur du champ POST
+    $post = rcube_utils::get_input_value('_post', rcube_utils::INPUT_POST);
+    $creator = rcube_utils::get_input_value('_creator', rcube_utils::INPUT_POST);
+    $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
+    
+    // Validation des données saisies
+    if (empty($creator) || empty($type) || empty($post_id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Récupérer la réaction existante
+    $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
+    $reaction->post = $post->id;
+    $reaction->creator = $creator;
+    $reaction->type = $type;
+
+    // Supprimer la réaction
+    $ret = $reaction->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'La réaction a été supprimée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de la réaction.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
+ * Crée une nouvelle image et renvoie le résultat au format JSON.
+ *
+ * Cette fonction récupère les données d'image envoyées via un formulaire POST,
+ * valide les données, crée une nouvelle image, et sauvegarde cette image.
+ * Le résultat de l'opération est renvoyé au format JSON.
+ *
+ * @return void
+ */
+public function create_image()
+{
+    // Récupérer la data du champ POST
+    $data = rcube_utils::get_input_value('_data', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($data)) {
+        echo json_encode(['status' => 'error', 'message' => 'Le champ Data est requis.']);
+        exit;
+    }
+
+    // Créer une nouvelle image
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $this-> generateRandomString(24);
+    $image->post = $post->id;
+    $image->data = $data;
+
+    // Sauvegarde de l'image
+    $ret = $image->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Image créée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création de l\'image.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
+ * Supprime une image et renvoie le résultat au format JSON.
+ *
+ * Cette fonction récupère l'UID de l'image à supprimer envoyé via un formulaire POST,
+ * valide l'UID, récupère l'image correspondante et la supprime.
+ * Le résultat de l'opération est renvoyé au format JSON.
+ *
+ * @return void
+ */
+public function delete_image()
+{
+    // Récuperer l'Uid de l'image
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'UID est requis.']);
+        exit;
+    }
+
+    // Récupérer l'image existante
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $uid;
+
+    // Supprimer l'image
+    $ret = $image->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'L\'image a été supprimée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de l\'image.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+
+
+
+
 
 
 // TESTS
@@ -879,7 +1240,7 @@ public function test_delete_post()
     $user = driver_mel::gi()->getUser();
 
     // Récupérer la valeur du champ POST
-    $uid = 'YKBqtSM8iPfuAypNITCbJIVK';
+    $uid = 'lflwbSZvF1MbK6qntjIBY36c';
 
     // Validation de la donnée saisie
     if (empty($uid)) {
@@ -909,6 +1270,39 @@ public function test_delete_post()
     exit;
 }
 
+public function test_show_all_posts_byworkspace()
+{
+    // Charger tous les posts en utilisant la méthode listPosts
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->workspace = 'un-espace-2';
+
+    // Appel de la méthode listPosts
+    $posts = $post->listPosts();
+
+    if (!empty($posts)) {
+        header('Content-Type: application/json');
+        // Préparer les données des tags pour la réponse JSON
+        $posts_array = [];
+        foreach ($posts as $post) {
+            $posts_array[] = [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'workspace' => $post->workspace
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'tags' => $posts_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucun post trouvé.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
 public function test_create_tag()
 {
     
@@ -916,8 +1310,8 @@ public function test_create_tag()
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
     //Définition des propriétés du tag
-    $tag->name = 'testtag5';
-    $tag->workspace = 'un-espace-1';
+    $tag->name = 'Livre';
+    $tag->workspace = 'un-espace-2';
 
     // Sauvegarde du tag
     $ret = $tag->save();
@@ -1010,7 +1404,6 @@ public function test_update_tag()
     exit;
 }
 
-
 public function test_delete_tag()
 {
     // Récupérer l'utilisateur
@@ -1047,6 +1440,76 @@ public function test_delete_tag()
 
     // Arrêt de l'exécution du script
     exit;
+}
+
+public function test_associate_tag_at_post()
+{
+    // Récupérer la valeur du champ POST
+    $name = 'Livre';
+    $workspace_uid = 'un-espace-2';
+    $uid = 'BQasb31PcxMzC4TyroeHkwHZ';
+
+    // Validation des données saisies
+    if (empty($name) || empty($workspace_uid) || empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    if ($tag->load()) {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $uid;
+
+        if ($post->load()) {
+            if ($post->addTag($tag)) {
+                echo json_encode(['status' => 'success', 'message' => 'Tag associé au post avec succès.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Echec de l\'association du tag avec le post.']);
+            }
+        }
+
+        // Arrêt de l'exécution du script
+    exit;
+    }
+}
+
+public function test_unassociate_tag_from_post()
+{
+    // Récupérer la valeur du champ POST
+    $name = 'Livre';
+    $workspace_uid = 'un-espace-2';
+    $uid = 'BQasb31PcxMzC4TyroeHkwHZ';
+
+    // Validation des données saisies
+    if (empty($name) || empty($workspace_uid) || empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    if ($tag->load()) {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $uid;
+
+        if ($post->load()) {
+            if ($post->removeTag($tag)) {
+                echo json_encode(['status' => 'success', 'message' => 'Tag dissocié du post avec succès.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Echec de la suppression du tag lié au post.']);
+            }
+        }
+
+        // Arrêt de l'exécution du script
+    exit;
+    }
 }
 
 public function test_create_comment()
@@ -1275,6 +1738,135 @@ public function test_delete_like()
     // Arrêt de l'exécution du script
     exit; 
 }
+
+public function test_create_reaction()
+{
+    // Récupérer l'utilisateur
+    $user = driver_mel::gi()->getUser();
+
+    $post_id = '14';
+    $creator = 'DamienTest 1';
+    $type = 'Oops';
+
+    // Validation des données saisies
+    if (empty($post_id) || empty($creator) || empty($type)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Créer un nouveau commentaire
+    $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
+    $reaction->post = $post_id;
+    $reaction->creator = $creator;
+    $reaction->type = $type;
+
+    // Sauvegarde du commentaire
+    $ret = $reaction->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Réaction créée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création de la réaction.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+public function test_delete_reaction()
+{
+    // Récupérer les valeurs
+    $creator = 'DamienTest 3';
+    $type = 'Surprised';
+    $post_id = '11';
+    
+    // Validation des données saisies
+    if (empty($creator) || empty($type) || empty($post_id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Récupérer la réaction existante
+    $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
+    $reaction->post = $post_id;
+    $reaction->creator = $creator;
+    $reaction->type = $type;
+
+    // Supprimer la réaction
+    $ret = $reaction->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'La réaction a été supprimée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de la réaction.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+public function test_create_image()
+{
+    $post_id ='14';
+    $data ='https://images-eu.ssl-images-amazon.com/images/I/81o3TrIUwXL._AC_UL600_SR600,600_.jpg';
+
+    // Validation des données saisies
+    if (empty($post_id) || empty($data)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Créer une nouvelle image
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $this-> generateRandomString(24);
+    $image->post = $post_id;
+    $image->data = $data;
+
+    // Sauvegarde de l'image
+    $ret = $image->save();
+    if (!is_null($ret)) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode(['status' => 'success', 'message' => 'Image créée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de création de l\'image.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+public function test_delete_image()
+{
+    // Récuperer l'Uid de l'image
+    $uid ='QSmzqMVy2cfQZD3pNLhB5O9c';
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'UID est requis.']);
+        exit;
+    }
+
+    // Récupérer l'image existante
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $uid;
+
+    // Supprimer l'image
+    $ret = $image->delete();
+    if (!is_null($ret)) {
+        echo json_encode(['status' => 'success', 'message' => 'L\'image a été supprimée avec succès.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de l\'image.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+
+
 
 
 /**

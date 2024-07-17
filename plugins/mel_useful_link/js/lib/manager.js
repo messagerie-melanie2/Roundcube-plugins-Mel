@@ -16,6 +16,8 @@ export class LinkManager extends MelObject {
   main() {
     super.main();
 
+    if(rcmail.env.mel_portal_ulink) this.displayButton($('.module_Links .melv2-card-pre'));
+    
     this.displayLinks();
 
     this.bindActions();
@@ -472,7 +474,6 @@ export class LinkManager extends MelObject {
           link.title,
           link.link,
           !link.icon ? (link.image ?? LinkManager.fetchIcon(link.link)) : '',
-          link.image,
           false,
           link.icon,
         );
@@ -496,6 +497,21 @@ export class LinkManager extends MelObject {
   displayLink(link) {
     link.displayLink().insertBefore('.link-space-end');
     this.saveLink(link);
+  }
+
+  /**
+   * Affiche le bouton de création sur la page web
+   */
+  displayButton(selector) {
+    let button = MelHtml.start
+      .button({
+        class: 'fixed_mulba',
+        id: 'mulba',
+      })
+      .text('Ajouter')
+      .icon('add_circle').end()
+      .end();
+    selector.append(button.generate());
   }
 
   /**

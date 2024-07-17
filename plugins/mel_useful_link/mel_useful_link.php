@@ -49,11 +49,27 @@ class mel_useful_link extends bnum_plugin
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
           }
         }
+        else if($this->rc->task === 'bureau') {
+          // $this->break_initial_fonctionality('mel.portal.links.ongenerate.add');
+          // $this->include_uLinks();
+          // $this->convert_old_links();
+
+          // $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
+          // $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
+          // $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+
+          // $this->rc->output->set_env("mel_portal_ulink", true);
+        }
         else if (class_exists('mel_metapage') && mel_metapage::can_add_widget())
         {
             mel_metapage::add_widget("all_links" ,"useful_links");
             mel_metapage::add_widget("not_taked_links" ,"useful_links", 'joined');
         }
+    }
+    
+    public function mel_portal_link() {
+      $html = html::div(['class' => 'links-items mel-portal-ulinks']);
+      return ['html' => $html];
     }
 
     public function convert_old_links() {

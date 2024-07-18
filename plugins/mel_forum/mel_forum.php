@@ -48,7 +48,8 @@ function init()
         $this->register_action('test', array($this,'test'));
         $this->register_action('elements', array($this, 'elements'));
         $this->register_action('test_create_tag', array($this, 'test_create_tag'));
-        $this->register_action('test_show_all_tags', array($this, 'test_show_all_tags'));
+        $this->register_action('test_show_all_tags_byWorkspace', array($this, 'test_show_all_tags_byWorkspace'));
+        $this->register_action('test_show_all_tags_bypost', array($this, 'test_show_all_tags_bypost'));
         $this->register_action('test_update_tag', array($this, 'test_update_tag'));
         $this->register_action('test_delete_tag', array($this, 'test_delete_tag'));
         $this->register_action('test_create_post', array($this, 'test_create_post'));
@@ -60,9 +61,11 @@ function init()
         $this->register_action('test_update_comment', array($this, 'test_update_comment'));
         $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
         $this->register_action('test_like_comment', array($this, 'test_like_comment'));
+        $this->register_action('test_show_all_comments_bypost', array($this, 'test_show_all_comments_bypost'));
         $this->register_action('test_delete_like', array($this, 'test_delete_like'));
         $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
         $this->register_action('test_delete_reaction', array($this, 'test_delete_reaction'));
+        $this->register_action('test_show_all_reactions_bypost', array($this, 'test_show_all_reactions_bypost'));
         $this->register_action('test_create_image', array($this, 'test_create_image'));
         $this->register_action('test_delete_image', array($this, 'test_delete_image'));
         $this->register_action('test_associate_tag_at_post', array($this, 'test_associate_tag_at_post'));
@@ -75,6 +78,8 @@ function init()
         $this->register_action('add_reaction', array($this, 'add_reaction'));
         // Supprimer une réaction
         $this->register_action('delete_reaction', array($this, 'delete_reaction'));
+        // Lister les Réactions d'un Post
+        $this->register_action('show_all_reactions_bypost', array($this, 'show_all_reactions_bypost'));
         // Créer un article
         $this->register_action('create_post', array($this, 'create_post'));
         //modifier un article
@@ -95,6 +100,8 @@ function init()
         $this->register_action('delete_comment', array($this, 'delete_comment'));
         // Liker un commentaire ou une réponse
         $this->register_action('like_comment', array($this, 'like_comment'));
+        // Lister les comments d'un Post
+        $this->register_action('show_all_comments_bypost', array($this, 'show_all_comments_bypost'));
         //Supprimer un Like
         $this->register_action('delete_like', array($this, 'delete_like'));
         // Créer un tag
@@ -107,8 +114,10 @@ function init()
         $this->register_action('associate_tag_at_post', array($this, 'associate_tag_at_post'));
         // Enlever un Tag existant d'un post
         $this->register_action('unassociate_tag_from_post', array($this, 'unassociate_tag_from_post'));
-        // récupérer tous les tags
-        $this->register_action('show_all_tags', array($this, 'show_all_tags'));
+        // récupérer tous les tags associés à un espace de travail
+        $this->register_action('show_all_tags_byworkspace', array($this, 'show_all_tags_byworkspace'));
+        // Récupérer tous les tags associés à un Post
+        $this->register_action('show_all_tags_bypost', array($this, 'show_all_tags_bypost'));
         // afficher les articles par tag
         $this->register_action('all_posts_by_tag', array($this, 'all_posts_by_tag'));
         // Créer une image
@@ -449,7 +458,7 @@ public function create_tag()
  *
  * @return void
  */
-public function show_all_tags()
+public function show_all_tags_byworkspace()
 {
     // Récupérer le Workspace
     $workspace = driver_mel::gi()->get_workspace_group();
@@ -485,6 +494,50 @@ public function show_all_tags()
 
     // Arrêt de l'exécution du script
     exit;
+}
+
+/**
+ * Affiche tous les tags associés à un post au format JSON.
+ *
+ * Cette fonction récupère l'UID du post envoyé via un formulaire POST,
+ * charge le post correspondant, et liste tous les tags associés à ce post.
+ * Les tags sont ensuite renvoyés en réponse au format JSON.
+ *
+ * @return void
+ */
+public function show_all_tags_bypost()
+{
+    // Récupérer l'uid de l'article du champ POST
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    if ($post->load()) {
+    $tags = $post->listTags();
+
+    if (!empty($tags)) {
+        header('Content-Type: application/json');
+        // Préparer les données des tags pour la réponse JSON
+        $tags_array = [];
+        foreach ($tags as $tag) {
+            $tags_array[] = [
+                'tag_name' => $tag->name,
+                'workspace_uid' => $tag->workspace,
+                'tag_id' => $tag->id
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'tags' => $tags_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucun tag trouvé.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+    }
 }
 
 /**
@@ -885,6 +938,50 @@ public function like_comment()
 }
 
 /**
+ * Affiche tous les commentaires associés à un post au format JSON.
+ *
+ * Cette fonction récupère l'UID du post envoyé via un formulaire POST,
+ * charge le post correspondant, et liste tous les commentaires associés à ce post.
+ * Les commentaires sont ensuite renvoyés en réponse au format JSON.
+ *
+ * @return void
+ */
+public function show_all_comments_bypost()
+{
+    // Récupérer l'uid de l'article du champ POST
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    if ($post->load()) {
+    $comments = $post->listComments();
+
+    if (!empty($comments)) {
+        header('Content-Type: application/json');
+        // Préparer les données des réactions pour la réponse JSON
+        $comments_array = [];
+        foreach ($comments as $comment) {
+            $comments_array[] = [
+                'content' => $comment->content,
+                'uid' => $comment->uid,
+                'date de création' => $comment->created,
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'reactions' => $comments_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucun commentaire trouvé.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+    }
+}
+
+/**
  * Supprime un "like" d'un commentaire.
  *
  * Cette fonction récupère les informations nécessaires depuis les variables POST,
@@ -1014,6 +1111,49 @@ public function delete_reaction()
 }
 
 /**
+ * Affiche toutes les réactions associées à un post au format JSON.
+ *
+ * Cette fonction récupère l'UID du post envoyé via un formulaire POST,
+ * charge le post correspondant, et liste toutes les réactions associées à ce post.
+ * Les réactions sont ensuite renvoyées en réponse au format JSON.
+ *
+ * @return void
+ */
+public function show_all_reactions_bypost()
+{
+    // Récupérer l'uid de l'article du champ POST
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    if ($post->load()) {
+    $reactions = $post->listReactions();
+
+    if (!empty($reactions)) {
+        header('Content-Type: application/json');
+        // Préparer les données des réactions pour la réponse JSON
+        $reactions_array = [];
+        foreach ($reactions as $reaction) {
+            $reactions_array[] = [
+                'reaction_type' => $reaction->type,
+                'reaction_id' => $reaction->id
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'reactions' => $reactions_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucune réaction trouvée.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+    }
+}
+
+/**
  * Crée une nouvelle image et renvoie le résultat au format JSON.
  *
  * Cette fonction récupère les données d'image envoyées via un formulaire POST,
@@ -1133,9 +1273,9 @@ public function test_create_post()
 
     $workspace = 'un-espace-2';
 
-    $title = 'L\'Île Mystérieuse'; // Valeur en dur pour le test
-    $content = 'L\'Île Mystérieuse narre les aventures de cinq prisonniers de guerre qui s\'échappent en montgolfière et s\'échouent sur une île inconnue. L\'ingéniosité et la coopération des naufragés, dirigés par l\'ingénieur Cyrus Smith, leur permettent de survivre et de découvrir les secrets de l\'île, y compris la présence de leur mystérieux bienfaiteur, le capitaine Nemo'; // Valeur en dur pour le test
-    $summary = 'Cinq hommes s\'échappent en montgolfière et atterrissent sur une île inconnue, où ils doivent survivre et découvrir les secrets cachés, y compris la présence du capitaine Nemo.'; // Valeur en dur pour le test
+    $title = 'Metal Gear Solid'; // Valeur en dur pour le test
+    $content = 'Metal Gear Solid est un jeu d\infiltration sorti en 1998 qui a redéfini le genre avec son approche cinématographique et son gameplay innovant. Le jeu suit Solid Snake, un agent infiltré, qui doit empêcher un groupe terroriste de lancer des armes nucléaires. Avec ses mécanismes de furtivité, ses combats de boss mémorables et son histoire complexe, Metal Gear Solid a été acclamé pour son design et sa narration.'; // Valeur en dur pour le test
+    $summary = 'Metal Gear Solid suit Solid Snake, qui doit empêcher un lancement nucléaire, avec des mécanismes de furtivité innovants, des combats de boss mémorables et une histoire complexe.'; // Valeur en dur pour le test
     $settings = 'Modifiable'; // Valeur en dur pour le test
 
     // Validation des données saisies
@@ -1310,7 +1450,7 @@ public function test_create_tag()
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
     //Définition des propriétés du tag
-    $tag->name = 'Livre';
+    $tag->name = 'Survie';
     $tag->workspace = 'un-espace-2';
 
     // Sauvegarde du tag
@@ -1329,7 +1469,7 @@ public function test_create_tag()
 
 }
 
-public function test_show_all_tags()
+public function test_show_all_tags_byWorkspace()
 {
     // Charger tous les tags en utilisant la méthode listTags
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -1362,6 +1502,41 @@ public function test_show_all_tags()
 
     // Arrêt de l'exécution du script
     exit;
+}
+
+public function test_show_all_tags_bypost()
+{
+    // Définir la valeur uid d'un post
+    $uid = '0VEBPgVgzEPVr4dQYygH9dvj';
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    if ($post->load()) {
+    $tags = $post->listTags();
+
+    if (!empty($tags)) {
+        header('Content-Type: application/json');
+        // Préparer les données des tags pour la réponse JSON
+        $tags_array = [];
+        foreach ($tags as $tag) {
+            $tags_array[] = [
+                'tag_name' => $tag->name,
+                'workspace_uid' => $tag->workspace,
+                'tag_id' => $tag->id
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'tags' => $tags_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucun tag trouvé.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+    }
 }
 
 public function test_update_tag()
@@ -1445,9 +1620,9 @@ public function test_delete_tag()
 public function test_associate_tag_at_post()
 {
     // Récupérer la valeur du champ POST
-    $name = 'Livre';
+    $name = 'Survie';
     $workspace_uid = 'un-espace-2';
-    $uid = 'BQasb31PcxMzC4TyroeHkwHZ';
+    $uid = 'Wnc5qDqCJ89kszI6Th7xPH7D';
 
     // Validation des données saisies
     if (empty($name) || empty($workspace_uid) || empty($uid)) {
@@ -1466,9 +1641,9 @@ public function test_associate_tag_at_post()
 
         if ($post->load()) {
             if ($post->addTag($tag)) {
-                echo json_encode(['status' => 'success', 'message' => 'Tag associé au post avec succès.']);
+                echo json_encode(['status' => 'success', 'message' => "Le tag " . $tag->name . " a été associé au post " . $post->title . " avec succès."]);
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Echec de l\'association du tag avec le post.']);
+                echo json_encode(['status' => 'error', 'message' => "Echec de l\'association du tag " . $tag->name . " avec le post " . $post->title . "."]);
             }
         }
 
@@ -1708,6 +1883,41 @@ public function test_like_comment()
 
 }
 
+public function test_show_all_comments_bypost()
+{
+    // Définir la valeur uid d'un post
+    $uid = 'ndWtChyQ4IwabbWjWwlM7Qo9';
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    if ($post->load()) {
+    $comments = $post->listComments();
+
+    if (!empty($comments)) {
+        header('Content-Type: application/json');
+        // Préparer les données des réactions pour la réponse JSON
+        $comments_array = [];
+        foreach ($comments as $comment) {
+            $comments_array[] = [
+                'content' => $comment->content,
+                'uid' => $comment->uid,
+                'date de création' => $comment->created,
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'reactions' => $comments_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucun commentaire trouvé.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+    }
+}
+
 public function test_delete_like()
 {
     // Récupérer les valeurs
@@ -1744,9 +1954,9 @@ public function test_create_reaction()
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
 
-    $post_id = '14';
-    $creator = 'DamienTest 1';
-    $type = 'Oops';
+    $post_id = '16';
+    $creator = 'DamienTest 6';
+    $type = 'Happy';
 
     // Validation des données saisies
     if (empty($post_id) || empty($creator) || empty($type)) {
@@ -1804,6 +2014,40 @@ public function test_delete_reaction()
 
     // Arrêt de l'exécution du script
     exit;
+}
+
+public function test_show_all_reactions_bypost()
+{
+    // Définir la valeur uid d'un post
+    $uid = 'ntihLzawLev7MF82lZZKC93N';
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    if ($post->load()) {
+    $reactions = $post->listReactions();
+
+    if (!empty($reactions)) {
+        header('Content-Type: application/json');
+        // Préparer les données des réactions pour la réponse JSON
+        $reactions_array = [];
+        foreach ($reactions as $reaction) {
+            $reactions_array[] = [
+                'reaction_type' => $reaction->type,
+                'reaction_id' => $reaction->id
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'reactions' => $reactions_array
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Aucune réaction trouvée.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+    }
 }
 
 public function test_create_image()

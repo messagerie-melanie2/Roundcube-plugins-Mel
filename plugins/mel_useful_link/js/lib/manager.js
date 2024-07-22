@@ -16,9 +16,11 @@ export class LinkManager extends MelObject {
   main() {
     super.main();
 
-    if(rcmail.env.mel_portal_ulink) this.displayButton($('.module_Links .melv2-card-pre'));
+    if(rcmail.env.mel_portal_ulink) this.displayCreateButton($('.module_Links .melv2-card-pre'));
     
     this.displayLinks();
+
+    this.displayListButton($('#links-items'))
 
     this.bindActions();
 
@@ -502,7 +504,7 @@ export class LinkManager extends MelObject {
   /**
    * Affiche le bouton de création sur la page web
    */
-  displayButton(selector) {
+  displayCreateButton(selector) {
     let button = MelHtml.start
       .button({
         class: 'fixed_mulba',
@@ -512,6 +514,39 @@ export class LinkManager extends MelObject {
       .icon('add_circle').end()
       .end();
     selector.append(button.generate());
+  }
+
+  /**
+   * Affiche le bouton de changement d'affichage
+   */
+  displayListButton(selector) {
+    let button = MelHtml.start
+      .div({class: 'change_display_button_flex'})
+        .div({class: 'change_display_button'})
+          .button({
+            class: 'change_display',
+            id: 'change_display_button_list',
+            onclick: () => {
+              this.updateDisplayMode('list')
+            }
+          })
+          .icon('splitscreen').end()
+          .end()
+          .button({
+            class: 'change_display',
+            id: 'change_display_button_grid',
+            onclick: () => {
+              this.updateDisplayMode('grid')
+            }
+          })
+          .icon('grid_view').end()
+          .end()
+        .end()
+      .end('div');
+      
+    selector.before(button.generate());
+
+    this.switchDisplayButton(rcmail.env.mul_display_mode);
   }
 
   /**
@@ -1042,6 +1077,57 @@ export class LinkManager extends MelObject {
         );
       }
     });
+  }
+
+   /**
+   * Met a jour le type d'affichage des liens
+   * @param {string} display Type d'affichage
+   */
+  updateDisplayMode(display) {
+    this.switchDisplayButton(display);
+
+    return mel_metapage.Functions.post(
+      mel_metapage.Functions.url('useful_links', 'update_display_mode'),
+      { _display: display },
+      (data) => {
+        if (data) {
+        }
+      },
+    );
+  }
+
+  /**
+   * Switch pour les boutons "list" et "grid" pour l'affichage des liens
+   * @param {string} display Type d'affichage
+   */
+  switchDisplayButton(display) {
+    if (display === 'list') {
+      this.displayInList();
+    }
+    if (display === 'grid') {
+      this.displayInGrid();
+    }
+  }
+
+   /**
+   * Affichage des liens en mode list
+   */
+  displayInList() {
+    $('#change_display_button_list').addClass('selected');
+    $('#change_display_button_grid').removeClass('selected');
+    $(".link-block").addClass("list-links");
+    $("#links-items").addClass("links-items-list");
+  }
+
+   /**
+   * Affichage des liens en mode grid
+   */
+  displayInGrid() {
+    $('#change_display_button_list').removeClass('selected');
+    $('#change_display_button_grid').addClass('selected');
+    $(".link-block").removeClass("list-links");
+    $("#links-items").removeClass("links-items-list");
+
   }
 
   /**

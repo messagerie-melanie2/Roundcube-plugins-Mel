@@ -34,6 +34,7 @@ class mel_useful_link extends bnum_plugin
           $this->register_action('correct', array($this, 'correct_links'));  
           $this->register_action('delete', array($this, 'delete_link'));  
           $this->register_action('update_list', array($this, 'update_list'));
+          $this->register_action('update_display_mode', array($this, 'update_display_mode'));
 
           if ($this->rc->action == "index" || $this->rc->action == "")
           {
@@ -44,6 +45,7 @@ class mel_useful_link extends bnum_plugin
             $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
             $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
             $this->rc->output->set_env("default_links", $this->getFilteredDn(driver_mel::gi()->getUser()->dn));
+            $this->rc->output->set_env("mul_display_mode", $this->rc->config->get('mul_display_mode', 'grid'));
             
             include_once "lib/hidden.php";
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
@@ -100,28 +102,27 @@ class mel_useful_link extends bnum_plugin
 
         $this->rc->user->save_prefs(array('new_personal_useful_links' => $new_mel_links));
         $this->rc->user->save_prefs(array('personal_useful_links' => []));
-     }
-     else {
-      //On converti les icon qui contiennent des images
-      $mel_links = $this->rc->config->get('new_personal_useful_links', []);
-
-      foreach ($mel_links as $id => $item) {
-        $item = json_decode($item);
-        if ($item->links) {
-          foreach ($item->links as $key => $value) {
-            if(strpos($value->icon, '://')) {
-              $item->links->$key = self::convert_image($value);
-            }
-          }
-          $temp = new MelFolderLink($id, $item->title, $item->links);
-          $mel_links[$id] = $temp->serialize();
-        }
-        else if(strpos($item->icon, '://')) {
-          $mel_links[$id] = self::convert_image($item)->serialize();
-        }
       }
-      $this->rc->user->save_prefs(array('new_personal_useful_links' => $mel_links));
+      else {
+        //On converti les icon qui contiennent des images
+        $mel_links = $this->rc->config->get('new_personal_useful_links', []);
 
+        foreach ($mel_links as $id => $item) {
+          $item = json_decode($item);
+          if ($item->links) {
+            foreach ($item->links as $key => $value) {
+              if(strpos($value->icon, '://')) {
+                $item->links->$key = self::convert_image($value);
+              }
+            }
+            $temp = new MelFolderLink($id, $item->title, $item->links);
+            $mel_links[$id] = $temp->serialize();
+          }
+          else if(strpos($item->icon, '://')) {
+            $mel_links[$id] = self::convert_image($item)->serialize();
+          }
+        }
+        $this->rc->user->save_prefs(array('new_personal_useful_links' => $mel_links));
       }
     }
 
@@ -182,7 +183,7 @@ class mel_useful_link extends bnum_plugin
             
             $newList[$id] = $temp->serialize();
         }
-    }
+      }
 
       if(!$this->rc->plugins->exec_hook('save_external_ulinks', ['key' => $key, 'links' => $newList])['done']) 
       {
@@ -190,6 +191,17 @@ class mel_useful_link extends bnum_plugin
         echo true;
         exit;
       }
+    }
+
+    public function update_display_mode() {
+      $newDisplay = rcube_utils::get_input_value("_display", rcube_utils::INPUT_POST);
+
+      if($newDisplay) {
+        $this->rc->user->save_prefs(array('mul_display_mode' => $newDisplay));
+        echo true;
+      }
+
+      exit;
     }
 
     public function include_uLinks()

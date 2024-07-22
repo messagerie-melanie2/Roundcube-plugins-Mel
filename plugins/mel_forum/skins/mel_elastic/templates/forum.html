@@ -2,16 +2,195 @@
 <roundcube:include file="includes/layout.html" />
 
 <h1 class="voice">
-  <roundcube:label name="mel_contacts.bookproperties" />
+  <roundcube:label name="mel_forum" />
 </h1>
 
-<div class="formcontainer">
-  <div class="formcontent">
-    <roundcube:object name="bookdetails" class="propform tabbed" />
-  </div>
+<div class="body  p-3">
+  <div id="contents"></div>
+  <div class="news module_parent">
+      <div class="news-header d-flex justify-content-between align-items-center" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+              <h2 class="title-wsp bold" style="margin: 0;">Articles</h2>
+              <div style="display: flex; align-items: center;">
+                  <span>Plus récent</span>
+                  <i class="material-icons">keyboard_arrow_down</i> <!-- Utiliser Google Material Icons -->
+              </div>
+          </div>
+          <input type="text" placeholder="Rechercher..." style="flex: 1; margin: 0 10px; max-width: 300px;">
+          <div>
+              <button style="margin: 0;">Ajouter</button>
+              <div style="display: flex; align-items: center; margin-top: 5px;">
+                  <label>
+                      Afficher uniquement les favoris
+                      <input type="checkbox" style="margin-left: 5px;">
+                  </label>
+              </div>
+          </div>
+      </div>
+      <div>
+          <div class="row">
+              <div class="col-12" style="margin-top: 5px;">
+                  <div class="">
+                      <div class="contents" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; height: 300px;" tabindex="0">
+                          <div class="square-contents" style="height: 100%; display: flex; flex-direction: column;">
+                              <div class="details-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                  <div class="details-left" style="display: flex; align-items: center; margin-left: 10px; font-size: 14px;">
+                                      <div class="headlines-by">Duveau Dorian</div>
+                                      <i class="material-icons">access_time</i>
+                                      <span style="margin-left: 5px;">2 juin 2024</span>
+                                  </div>
+                                  <div class="details-right" style="display: flex; align-items: center; margin-left: 10px; cursor: pointer;">
+                                      <i class="material-icons">more_vert</i>
+                                      <i class="material-icons">star</i>
+                                  </div>
+                              </div>
+                              <div class="tags" style="margin: 10px 0; padding: 10px; display: flex; flex-wrap: wrap;">
+                                  <span style="background-color: #b2ebf2; border-radius: 5px; padding: 5px 10px; margin-right: 5px; font-size: 14px;">#Chat</span>
+                                  <span style="background-color: #b2ebf2; border-radius: 5px; padding: 5px 10px; margin-right: 5px; font-size: 14px;">#Actualités</span>
+                              </div>
+                              <h3 class="headlines-title bold">Un Chat Filou Dérobe un poisson au Marché : Scène Insolite</h3>
+                              <div class="headlines-contents">
+                                  <p>
+                                      <span>
+                                          Les témoins de l'incident rapportent que le chat, visiblement habitué aux lieux, s'est faufilé discrètement parmi les étals de poissons frais. Profitant d'un moment d'inattention du marchand, il a sauté sur un étal et a attrapé un poisson avec ses griffes avant de s'enfuir rapidement.
+                                      </span>
+                                  </p>
+                              </div>
+                              <div class="reactions" style="display: flex; align-items: center; margin-top: 10px;">
+                                <div class="reaction-item" style="display: flex; align-items: center;           margin-right: 15px;">
+                                    <i class="material-icons">mood</i> <!-- Icône de rire -->
+                                </div>
+                                <div class="reaction-item" style="display: flex; align-items: center; margin-right: 15px;">
+                                    <i class="material-icons">thumb_up</i> <!-- Icône de like -->
+                                    <span style="margin-left: 5px;">2</span>
+                                </div>
+                                  <div class="reaction-item" style="display: flex; align-items: center; margin-right: 15px;">
+                                    <i class="material-icons">thumb_down</i> <!-- Icône de don't like -->
+                                    <span style="margin-left: 5px;">0</span>
+                                  </div>
+                                <div class="reaction-item" style="display: flex; align-items: center;">
+                                    <i class="material-icons">comment</i> <!-- Icône de commentaire -->
+                                    <span style="margin-left: 5px;">4</span>
+                                </div>
+                              </div>
+                              <div style="border-bottom: 2px solid #b2ebf2; margin: 20px 0;"></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-  <div class="formbuttons">
-    <roundcube:button command="book-save" class="btn btn-primary edit" label="save" />
+          <div>
+            <div class="row">
+                <div class="col-12" style="margin-top: 5px;">
+                    <div class="">
+                        <div class="contents" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; height: 300px;" tabindex="0">
+                            <div class="square-contents" style="height: 100%; display: flex; flex-direction: column;">
+                                <div class="details-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="details-left" style="display: flex; align-items: center; margin-left: 10px; font-size: 14px;">
+                                        <div class="headlines-by">Payen Thomas</div>
+                                        <i class="material-icons">access_time</i>
+                                        <span style="margin-left: 5px;">14 mai 2024</span>
+                                    </div>
+                                    <div class="details-right" style="display: flex; align-items: center; margin-left: 10px; cursor: pointer;">
+                                        <i class="material-icons">more_vert</i>
+                                        <i class="material-icons">star</i>
+                                    </div>
+                                </div>
+                                <div class="tags" style="margin: 10px 0; padding: 10px; display: flex; flex-wrap: wrap;">
+                                    <span style="background-color: #b2ebf2; border-radius: 5px; padding: 5px 10px; margin-right: 5px; font-size: 14px;">#Code</span>
+                                </div>
+                                <h3 class="headlines-title bold">Utilisation de Jquery</h3>
+                                <div class="headlines-contents">
+                                    <p>
+                                        <span>
+                                          En jQuery, les méthodes before() et insertBefore() permettent toutes deux d'insérer du contenu avant un élément cible dans le DOM, mais elles s'utilisent de manière légèrement différente. Voici les différences entre les deux :
+                                          Les deux méthodes réalisent la même tâche, mais la différence réside dans l'élément sur lequel vous appelez la méthode et la syntaxe utilisée pour spécifier le contenu et la cible.
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="reactions" style="display: flex; align-items: center; margin-top: 10px;">
+                                  <div class="reaction-item" style="display: flex; align-items: center;           margin-right: 15px;">
+                                      <i class="material-icons">mood</i> <!-- Icône de rire -->
+                                  </div>
+                                  <div class="reaction-item" style="display: flex; align-items: center; margin-right: 15px;">
+                                      <i class="material-icons">thumb_up</i> <!-- Icône de like -->
+                                      <span style="margin-left: 5px;">8</span>
+                                  </div>
+                                    <div class="reaction-item" style="display: flex; align-items: center; margin-right: 15px;">
+                                      <i class="material-icons">thumb_down</i> <!-- Icône de don't like -->
+                                      <span style="margin-left: 5px;">0</span>
+                                    </div>
+                                  <div class="reaction-item" style="display: flex; align-items: center;">
+                                      <i class="material-icons">comment</i> <!-- Icône de commentaire -->
+                                      <span style="margin-left: 5px;">12</span>
+                                  </div>
+                                </div>
+                                <div style="border-bottom: 2px solid #b2ebf2; margin: 20px 0;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+              <div class="row">
+                  <div class="col-12" style="margin-top: 5px;">
+                      <div class="">
+                          <div class="contents" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; height: 300px;" tabindex="0">
+                              <div class="square-contents" style="height: 100%; display: flex; flex-direction: column;">
+                                  <div class="details-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                      <div class="details-left" style="display: flex; align-items: center; margin-left: 10px; font-size: 14px;">
+                                          <div class="headlines-by">Cotton Damien</div>
+                                          <i class="material-icons">access_time</i>
+                                          <span style="margin-left: 5px;">05 mai 2024</span>
+                                      </div>
+                                      <div class="details-right" style="display: flex; align-items: center; margin-left: 10px; cursor: pointer;">
+                                          <i class="material-icons">more_vert</i>
+                                          <i class="material-icons">star</i>
+                                      </div>
+                                  </div>
+                                  <div class="tags" style="margin: 10px 0; padding: 10px; display: flex; flex-wrap: wrap;">
+                                      <span style="background-color: #b2ebf2; border-radius: 5px; padding: 5px 10px; margin-right: 5px; font-size: 14px;">#Code</span>
+                                      <span style="background-color: #b2ebf2; border-radius: 5px; padding: 5px 10px; margin-right: 5px; font-size: 14px;">#Suggestion</span>
+                                  </div>
+                                  <h3 class="headlines-title bold">Outil de Suggestion : Boostez Votre Productivité avec des Recommandations Personnalisées</h3>
+                                  <div class="headlines-contents">
+                                      <p>
+                                          <span>
+                                            Dans un monde où l'information abonde et où le temps est précieux, les outils de suggestion jouent un rôle crucial pour améliorer la productivité et l'efficacité des utilisateurs. Ces outils, souvent basés sur des algorithmes de machine learning et d'intelligence artificielle, analysent les données des utilisateurs pour fournir des recommandations personnalisées et pertinentes.
+                                          </span>
+                                      </p>
+                                  </div>
+                                  <div class="reactions" style="display: flex; align-items: center; margin-top: 10px;">
+                                    <div class="reaction-item" style="display: flex; align-items: center;           margin-right: 15px;">
+                                        <i class="material-icons">mood</i> <!-- Icône de rire -->
+                                    </div>
+                                    <div class="reaction-item" style="display: flex; align-items: center; margin-right: 15px;">
+                                        <i class="material-icons">thumb_up</i> <!-- Icône de like -->
+                                        <span style="margin-left: 5px;">8</span>
+                                    </div>
+                                      <div class="reaction-item" style="display: flex; align-items: center; margin-right: 15px;">
+                                        <i class="material-icons">thumb_down</i> <!-- Icône de don't like -->
+                                        <span style="margin-left: 5px;">0</span>
+                                      </div>
+                                    <div class="reaction-item" style="display: flex; align-items: center;">
+                                        <i class="material-icons">comment</i> <!-- Icône de commentaire -->
+                                        <span style="margin-left: 5px;">27</span>
+                                    </div>
+                                  </div>
+                                  <div style="border-bottom: 2px solid #b2ebf2; margin: 20px 0;"></div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+      </div>
   </div>
 </div>
+
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 <roundcube:include file="/includes/footer.html" />

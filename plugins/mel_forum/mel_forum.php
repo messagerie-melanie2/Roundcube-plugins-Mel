@@ -16,7 +16,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-class mel_forum extends rcube_plugin
+class mel_forum extends bnum_plugin
 {
 /**
  *
@@ -26,11 +26,12 @@ public $task = '.*';
 
 /**
  * (non-PHPdoc)
- * @see rcube_plugin::init()
+ * @see bnum_plugin::init()
  */
 function init()
 {
-    $rcmail = rcmail::get_instance();
+    $this->rc()->output->send('mel_forum.forum');
+
 
     // Chargement de la conf
     $this->load_config();
@@ -44,7 +45,7 @@ function init()
     $this->register_task('forum');
     
     if ($rcmail->task === "forum"){
-        $this->register_action('index', [$this, 'action']);
+        $this->register_action('index', [$this, 'index']);
         $this->register_action('test', array($this,'test'));
         $this->register_action('elements', array($this, 'elements'));
         $this->register_action('test_create_tag', array($this, 'test_create_tag'));

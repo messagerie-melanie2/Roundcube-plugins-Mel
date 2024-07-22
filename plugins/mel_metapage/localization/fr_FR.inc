@@ -488,3 +488,5 @@ $labels['delete'] = 'Supprimer';
 
 $labels['external_user_name'] = "Utilisateur externe au Bnum";
 $labels['external_user_title'] = "Cet utilisateur n'a pas encore été créé dans le Bnum. À la création de l'espace, il recevra un courriel pour initialiser son compte.";
+
+$labels['login_da'] = "Si vous êtes sur internet et n'avez pas activé l'authentification à double facteur vous ne pouvez pas vous connecter.<br/>Vous devez passer par le VPN pour vous connecter et ainsi activer l'authentification à deux facteurs";

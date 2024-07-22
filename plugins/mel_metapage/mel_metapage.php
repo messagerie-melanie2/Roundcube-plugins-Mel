@@ -603,6 +603,11 @@ class mel_metapage extends bnum_plugin
 
             $tmp_maint_text = $this->get_maintenance_text();
             if ($tmp_maint_text !== '') $this->rc->output->set_env("maintenance_text", $tmp_maint_text);
+
+            $this->rc->output->add_handlers(array(
+                'login_doc_message'    => [$this,'_login_doc_message'],
+            ));
+            
         }
         else if ($this->rc->action === "create_document_template")
         {
@@ -1163,8 +1168,6 @@ class mel_metapage extends bnum_plugin
 
     /**
      * Vérification si les utilisateurs existent dans l'annuaire
-     * 
-     * @param array _users POST Liste d'utilisateurs
      * 
      * @return json ["unexist", "externs", "added"]
      */
@@ -3661,4 +3664,10 @@ class mel_metapage extends bnum_plugin
         echo json_encode($prefs);
         exit;
     }
+
+    public function _login_doc_message() {
+        $url =  $this->rc->config->get('login_doc_url');
+        $txt = $this->gettext('login_da');
+        return html::div([], $txt.' '.html::a(['href'=>$url], $url).'.');
+    }  
 }

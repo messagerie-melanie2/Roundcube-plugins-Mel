@@ -30,11 +30,11 @@ public $task = '.*';
  */
 function init()
 {
-    $this->rc()->output->send('mel_forum.forum');
+    // $this->rc()->output->send('mel_forum.forum');
 
 
     // Chargement de la conf
-    $this->load_config();
+    // $this->load_config();
     // Gestion des différentes langues
     $this->add_texts('localization/', true);
 
@@ -44,7 +44,7 @@ function init()
     // ajout de la tache
     $this->register_task('forum');
     
-    if ($rcmail->task === "forum"){
+    if ($this->rc()->task === "forum"){
         $this->register_action('index', [$this, 'index']);
         $this->register_action('test', array($this,'test'));
         $this->register_action('elements', array($this, 'elements'));
@@ -127,6 +127,10 @@ function init()
         $this->register_action('delete_image', array($this, 'delete_image'));
         
     }
+}
+
+function index(){
+    $this->rc()->output->send('mel_forum.forum');
 }
 
 /**

@@ -410,8 +410,14 @@ class FilterBase extends MelObject {
 
         default:
           return (
-            resource.data[this._name].toUpperCase() ===
-            this._$filter.find(`[value="${this.value}"]`).text().toUpperCase()
+            // eslint-disable-next-line quotes
+            resource.data[this._name].replaceAll('’', "'").toUpperCase() ===
+            this._$filter
+              .find(`[value="${this.value}"]`)
+              .text()
+              // eslint-disable-next-line quotes
+              .replaceAll('’', "'")
+              .toUpperCase()
           );
       }
     }

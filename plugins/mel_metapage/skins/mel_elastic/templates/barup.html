@@ -51,13 +51,20 @@
       
       <span class="hide-button-search">  
 
-        <button id="button-chat" class="transparent-icon-button barup-icons-button ml-3 hide-touch" onclick="mel_metapage.PopUp.open_ariane()"
+        <button id="button-tchap-chat" class="transparent-icon-button barup-icons-button ml-3 hide-touch"
           title="<roundcube:label name='mel_metapage.ariane_help' />">
           <span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
           <span class="material-symbols-outlined">
             forum
           </span>
         </button>
+        <!-- <button id="button-chat" class="transparent-icon-button barup-icons-button ml-3 hide-touch" onclick="mel_metapage.PopUp.open_ariane()"
+          title="<roundcube:label name='mel_metapage.ariane_help' />">
+          <span class="sr-only"><roundcube:label name='mel_metapage.open_chat_popup' /></span>
+          <span class="material-symbols-outlined">
+            forum
+          </span>
+        </button> -->
 
         <roundcube:if condition="env:plugin_list_help===true"/>
         <button id="button-help" class="transparent-icon-button barup-icons-button" onclick="m_mp_Help()"

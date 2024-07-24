@@ -32,6 +32,11 @@ class tchap extends bnum_plugin
     {
         $rcmail = rcmail::get_instance();
 
+        if($this->get_current_task() === 'bnum' && $this->is_index_action()) {
+            //appeler le js
+            $this->include_script('init.js');
+        }
+
         //$this->add_hook('refresh', array($this, 'refresh'));
 
         // Chargement de la conf

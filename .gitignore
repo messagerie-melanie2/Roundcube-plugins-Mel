@@ -29,5 +29,3 @@ plugins/mel_useful_link/config/*
 plugins/mel_news/files/*
 plugins/mel_nextcloud/nextcloud/apps/*.tar.gz
 .vscode/launch.json
-.vscode/launch.json
-.vscode/

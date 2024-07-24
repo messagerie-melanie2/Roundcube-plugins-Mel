@@ -86,30 +86,13 @@ body {
 body > #layout > div.sidebar ul .treelist li.context-source:not(.selected) > a {
   background-color: var(--secondary-bckg-color) !important;
 }
-body
-  > #layout
-  > div.sidebar
-  ul
-  .treelist
-  li.context-source:not(.selected)
-  > div
-  > a {
+body > #layout > div.sidebar ul .treelist li.context-source:not(.selected) > div > a {
   background-color: var(--secondary-bckg-color) !important;
 }
-body
-  > #layout
-  > div.sidebar
-  .listing
-  tbody
-  tr.context-source:not(.selected)
-  > td {
+body > #layout > div.sidebar .listing tbody tr.context-source:not(.selected) > td {
   background-color: var(--secondary-bckg-color) !important;
 }
-body
-  > #layout
-  > div.sidebar
-  .listing:not(.treelist)
-  li.context-source:not(.selected) {
+body > #layout > div.sidebar .listing:not(.treelist) li.context-source:not(.selected) {
   background-color: var(--secondary-bckg-color) !important;
 }
 /** PRINCIPAL **/
@@ -133,8 +116,7 @@ p,
 span,
 div {
   scrollbar-width: var(--scrollbar-width-moz) !important;
-  scrollbar-color: var(--scrollbar-handler-color)
-    var(--scrollbar-background-color);
+  scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
 }
 p.more-width,
 span.more-width,
@@ -337,14 +319,10 @@ html.dark-mode .mel-selectable.picture-only.selected {
   border: none;
 }
 .mel-selectable.picture-only.with-border {
-  box-shadow:
-    0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132),
-    0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
 }
 .mel-selectable.picture-only.with-border:hover {
-  box-shadow:
-    0 -0.4px 3.6px 0 rgba(0, 0, 0, 0.132),
-    0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  box-shadow: 0 -0.4px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
 }
 .popupmenu .listing li.selected {
   background-color: var(--secondary-bckg-color);
@@ -605,10 +583,7 @@ ul.folderlist.treelist li ul li li li li li div.treetoggle {
   border-radius: 5px;
   transition: all 0.1s ease-in;
 }
-.task-mail.action-compose
-  #layout-sidebar
-  .scroller
-  a.button.icon.dropdown:hover {
+.task-mail.action-compose #layout-sidebar .scroller a.button.icon.dropdown:hover {
   background-color: var(--secondary-bckg-color);
   color: var(--secondary-text-color);
 }
@@ -1126,7 +1101,6 @@ framed_item > .framed_item {
   background-color: var(--secondary-bckg-color);
 }
 #showcontacts::before {
-  color: var(--main-text-color);
   vertical-align: sub;
   margin: 0 !important;
 }
@@ -1330,34 +1304,19 @@ body.task-tasks .taskhead:hover {
 body.task-settings.action-plugin-mel_resources_bal #layout-content .header {
   display: none !important;
 }
-html.layout-small
-  body.task-settings.action-plugin-mel_resources_bal
-  #layout-content
-  .header {
+html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-content .header {
   display: initial !important;
 }
-html.layout-small
-  body.task-settings.action-plugin-mel_resources_bal
-  #layout-content
-  .header
-  .toolbar-menu-button {
+html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-content .header .toolbar-menu-button {
   display: none !important;
 }
-html.layout-small
-  body.task-settings.action-plugin-mel_resources_bal
-  #layout-list
-  .floating-action-buttons
-  .create.button {
+html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-list .floating-action-buttons .create.button {
   display: none !important;
 }
 body.task-settings.action-plugin-managesieve #layout-list .menu.toolbar a {
   color: var(--alternative-layout-list-text-color) !important;
 }
-body.task-settings.action-plugin-mel_statistics_mobile
-  #layout-list
-  .listing
-  tbody
-  td {
+body.task-settings.action-plugin-mel_statistics_mobile #layout-list .listing tbody td {
   color: var(--secondary-text-color);
 }
 body.task-settings.action-plugin-mel_statistics_mobile .listing tbody td {
@@ -1660,7 +1619,7 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   color: var(--danger-color);
 }
 .mel-button:focus {
-  box-shadow: 0 0 0 0.2rem #484d7a69;
+  box-shadow: 0 0 0 0.2rem #484D7A69;
 }
 .mel-button.button-white:hover {
   color: var(--secondary-text-color);
@@ -1716,7 +1675,7 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   border-radius: 5px;
 }
 .large-toolbar .mel-ui-button.btn:focus {
-  box-shadow: 0 0 0 0.2rem #484d7a69 !important;
+  box-shadow: 0 0 0 0.2rem #484D7A69 !important;
 }
 .mel-ui-button.btn.disabled {
   background-color: var(--disabled-mel-button-color);
@@ -1778,20 +1737,20 @@ button.btn.no-style:active {
   box-shadow: 0 0 0 0.2rem var(--secondary-focus);
 }
 .mel-hover:hover {
-  box-shadow: 0 0 0 0.2rem #484d7a69;
+  box-shadow: 0 0 0 0.2rem #484D7A69;
   border-radius: 15px;
 }
 .mel-hover:hover:focus {
   border-radius: initial;
 }
 .mel-focus:focus {
-  box-shadow: 0 0 0 0.2rem #484d7a69;
+  box-shadow: 0 0 0 0.2rem #484D7A69;
 }
 .mel-focus.focused {
-  box-shadow: 0 0 0 0.2rem #484d7a69;
+  box-shadow: 0 0 0 0.2rem #484D7A69;
 }
 .mel-focus .light-focus:focus {
-  box-shadow: 0 0 0 0.2rem #ffffff69;
+  box-shadow: 0 0 0 0.2rem #FFFFFF69;
 }
 .mel-focus.focus-bordered:focus {
   border: solid;
@@ -1809,13 +1768,13 @@ button.btn.no-style:active {
   background-repeat: no-repeat;
 }
 .input-child-mel-focus input:focus {
-  box-shadow: 0 0 0 0.2rem #484d7a69;
+  box-shadow: 0 0 0 0.2rem #484D7A69;
 }
 .a-child-mel-focus a:focus {
   box-shadow: 0 0 0 0.2rem var(--other-focus);
 }
 a.filename:focus {
-  box-shadow: 0 0 0 0.2rem #ffffff69;
+  box-shadow: 0 0 0 0.2rem #FFFFFF69;
 }
 /* FORM */
 form#mel_doubleauth-form {
@@ -1849,24 +1808,14 @@ img.menu-image {
 /** ??? **/
 html:not(.touch) .listing li > a:focus,
 html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
-html:not(.touch)
-  .listing.focus:not(.withselection)
-  tbody
-  tr.focused
-  > td.selection
-  + td {
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
   border-radius: 0;
 }
 .menu a:not(.disabled):focus {
   border-left: 2px solid var(--button-background-color) !important;
 }
 html:not(.touch) .listing.focus tbody tr.focused.unread > td:first-child,
-html:not(.touch)
-  .listing.focus:not(.withselection)
-  tbody
-  tr.focused.unread
-  > td.selection
-  + td {
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused.unread > td.selection + td {
   border-left: 2px solid var(--message-list-unread-border-left) !important;
   border-radius: 0;
 }
@@ -2193,9 +2142,7 @@ a.roadmap::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
 }
@@ -2219,9 +2166,7 @@ html .menu a.selection::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
   content: '\e834' !important;
@@ -2231,9 +2176,7 @@ html .menu a.selection::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
 }
@@ -2243,9 +2186,7 @@ html .menu a.selection::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
   content: '\e158' !important;
@@ -2255,9 +2196,7 @@ html .menu a.selection::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
   content: '\e153' !important;
@@ -2267,25 +2206,18 @@ html .menu a.selection::before {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
   content: '\e834' !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48,
-    'FILL' 1 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48, 'FILL' 1 !important;
 }
 .menu a.select.none::before {
   content: '\e5c9' !important;
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
 }
@@ -2678,9 +2610,7 @@ html.layout-small .hide-on-small {
   font-size: 26px !important;
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
-  font-variation-settings:
-    'wght' 300,
-    'opsz' 48 !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
   font-size: 17px !important;
   transform: scale(1.5) !important;
   content: '\e0bf' !important;
@@ -2712,18 +2642,14 @@ html.layout-small .hide-on-small {
 button.btn.import:before {
   content: '\f090' !important;
   font-family: 'Material Symbols Outlined' !important;
-  font-variation-settings:
-    'wght' 400,
-    'opsz' 48;
+  font-variation-settings: 'wght' 400, 'opsz' 48;
   font-size: 17px;
   transform: scale(1.5) !important;
 }
 button.btn.export:before {
   content: '\f09b' !important;
   font-family: 'Material Symbols Outlined' !important;
-  font-variation-settings:
-    'wght' 400,
-    'opsz' 48;
+  font-variation-settings: 'wght' 400, 'opsz' 48;
   font-size: 17px;
   transform: scale(1.5) !important;
 }
@@ -2965,9 +2891,7 @@ html.dark-mode .mel-selectable.picture-only.selected {
   margin: 0;
   aspect-ratio: 0.8/1;
 }
-#theme-panel
-  .input-top-selectable
-  + .picture.half-resize.barup-background-color {
+#theme-panel .input-top-selectable + .picture.half-resize.barup-background-color {
   border-top: solid thin var(--primary-border-color);
 }
 .green-badge {
@@ -3028,18 +2952,13 @@ html.dark-mode .green-badge {
 }
 .task-settings #layout-sidebar .listing.iconized li a::before {
   font-family: 'Material Symbols Outlined' !important;
-  font-variation-settings:
-    'wght' 500,
-    'opsz' 40;
+  font-variation-settings: 'wght' 500, 'opsz' 40;
   font-weight: normal !important;
   font-size: 20px;
   height: 1em;
 }
 .task-settings #layout-sidebar .listing.iconized li a:hover::before {
-  font-variation-settings:
-    'wght' 500,
-    'opsz' 40,
-    'FILL' 1;
+  font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
 }
 .task-settings #layout-sidebar .listing.iconized li.preferences > a::before {
   content: '\e429';
@@ -3050,11 +2969,7 @@ html.dark-mode .green-badge {
 .task-settings #layout-sidebar .listing.iconized li.identities > a::before {
   content: '\e7fd';
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li.signatures.identities
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li.signatures.identities > a::before {
   content: '\f74c';
 }
 .task-settings #layout-sidebar .listing.iconized li.nextcloud > a::before {
@@ -3075,42 +2990,22 @@ html.dark-mode .green-badge {
 .task-settings #layout-sidebar .listing.iconized li.resources > a::before {
   content: '\e5cc';
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li.resources._selected
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li.resources._selected > a::before {
   content: '\e5cf';
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li#settingstabpluginmel_resources_bal
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_bal > a::before {
   content: '\e156';
   height: 2em;
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li#settingstabpluginmel_resources_agendas
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_agendas > a::before {
   content: '\ebcc';
   height: 2em;
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li#settingstabpluginmel_resources_contacts
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_contacts > a::before {
   content: '\e7fd';
   height: 2em;
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li#settingstabpluginmel_resources_tasks
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li#settingstabpluginmel_resources_tasks > a::before {
   content: '\e834';
   height: 2em;
 }
@@ -3120,178 +3015,81 @@ html.dark-mode .green-badge {
 .task-settings #layout-sidebar .listing.iconized li.mel.statistics > a::before {
   content: '\e5cc';
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li.mel.statistics._selected
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li.mel.statistics._selected > a::before {
   content: '\e5cf';
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li.mel.statistics.mobile
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li.mel.statistics.mobile > a::before {
   content: '\e325';
   height: 2em;
 }
-.task-settings
-  #layout-sidebar
-  .listing.iconized
-  li.mel_suggestion_box
-  > a::before {
+.task-settings #layout-sidebar .listing.iconized li.mel_suggestion_box > a::before {
   content: '\e175';
 }
 .task-settings #layout-sidebar .listing.iconized li.rocketchat > a::before {
   content: '\e0b7';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr
-  td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr td.section::before {
   font-family: 'Material Symbols Outlined' !important;
-  font-variation-settings:
-    'wght' 500,
-    'opsz' 40;
+  font-variation-settings: 'wght' 500, 'opsz' 40;
   font-weight: normal !important;
   font-size: 20px;
   height: 1em;
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr
-  td.section:hover::before {
-  font-variation-settings:
-    'wght' 500,
-    'opsz' 40,
-    'FILL' 1;
+.task-settings #layout-list .listing.iconized.settings-default-icon tr td.section:hover::before {
+  font-variation-settings: 'wght' 500, 'opsz' 40, 'FILL' 1;
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.general
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.general > td.section::before {
   content: '\e30c';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.mailbox
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.mailbox > td.section::before {
   content: '\e158';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.mailview
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.mailview > td.section::before {
   content: '\e156';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.compose
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.compose > td.section::before {
   content: '\e163';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.addressbook
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.addressbook > td.section::before {
   content: '\f233';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.server
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.server > td.section::before {
   content: '\e875';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.encryption
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.encryption > td.section::before {
   content: '\e898';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.globalsearch
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.globalsearch > td.section::before {
   content: '\e8b6';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.visio
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.visio > td.section::before {
   content: '\e04b';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.chat
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.chat > td.section::before {
   content: '\e0b7';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.navigation
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.navigation > td.section::before {
   content: '\e5d2';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.bnum-experimental
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.bnum-experimental > td.section::before {
   content: '\ea4b';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.labels
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.labels > td.section::before {
   content: '\e892';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.notifications
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.notifications > td.section::before {
   content: '\e7f4';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.calendar
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.calendar > td.section::before {
   content: '\ebcc';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr.a_mel_news_flux
-  > td.section::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr.a_mel_news_flux > td.section::before {
   content: '\e8b8';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr#section_mel_chat_settings
-  > td::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr#section_mel_chat_settings > td::before {
   content: '\f02e';
 }
-.task-settings
-  #layout-list
-  .listing.iconized.settings-default-icon
-  tr#rcmrowmel_chat_ui
-  > td::before {
+.task-settings #layout-list .listing.iconized.settings-default-icon tr#rcmrowmel_chat_ui > td::before {
   content: '\e3c4';
 }
 .mel-toolbar {
@@ -4211,12 +4009,8 @@ html.dark-mode .external_url {
   color: var(--modal-da-next-button-text-color) !important;
 }
 .double-auth-modal .next-button:hover {
-  --modal-da-next-button-text-color: var(
-    --modal-da-next-button-hover-text-color
-  );
-  background-color: var(
-    --modal-da-next-button-hover-background-color
-  ) !important;
+  --modal-da-next-button-text-color: var(--modal-da-next-button-hover-text-color);
+  background-color: var(--modal-da-next-button-hover-background-color) !important;
 }
 .double-auth-modal .done-button {
   background-color: var(--modal-da-button-background-color) !important;
@@ -4296,10 +4090,7 @@ html.dark-mode-custom .double-auth-modal .input-group-code .input-group-append {
   background-color: var(--input-background-color);
   color: var(--input-mel-text-color);
 }
-html.dark-mode-custom
-  .double-auth-modal
-  .input-group-code
-  .input-group-append:hover {
+html.dark-mode-custom .double-auth-modal .input-group-code .input-group-append:hover {
   background-color: var(--mel-button-hover-background-color);
 }
 .double-auth-modal-progress {
@@ -4327,12 +4118,7 @@ html.dark-mode-custom
 }
 html:not(.touch) .listing li > a:focus,
 html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
-html:not(.touch)
-  .listing.focus:not(.withselection)
-  tbody
-  tr.focused
-  > td.selection
-  + td,
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td,
 .menu a:not(.disabled):focus {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
@@ -4360,12 +4146,10 @@ bnum-separate {
 .mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel:first-of-type {
   margin-left: 15px;
 }
-.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel
-  .btn-txt {
+.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel .btn-txt {
   display: block;
 }
-.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel
-  bnum-icon {
+.mel-button.no-button-margin.no-margin-button.btn.btn-block-mel.btn-secondary.btn-mel bnum-icon {
   margin-right: 0px;
   font-size: 60px;
   margin-bottom: 20px;
@@ -4600,9 +4384,7 @@ div.all-day input.input-mel#edit-enddate {
 #emel-free-busy.full-power {
   min-height: 101px;
 }
-#preferences-details
-  .btn-group-vertical
-  > .btn:not(:last-child):not(.dropdown-toggle) {
+#preferences-details .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle) {
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
   margin-bottom: 5px;
@@ -4656,12 +4438,7 @@ html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons {
 html.layout-phone .task-mail .popover .menu .dropbutton a.dropdown {
   background: transparent;
 }
-html.layout-phone
-  .task-mail
-  .popover
-  .menu
-  li
-  a[aria-haspopup].dropdown::after {
+html.layout-phone .task-mail .popover .menu li a[aria-haspopup].dropdown::after {
   color: var(--popover-text-color);
 }
 .wlp_box,
@@ -4681,12 +4458,10 @@ html.layout-phone
   border-radius: 5px;
 }
 input[type='date']::-webkit-calendar-picker-indicator {
-  filter: brightness(0) saturate(100%) invert(22%) sepia(19%) saturate(1076%)
-    hue-rotate(195deg) brightness(93%) contrast(93%);
+  filter: brightness(0) saturate(100%) invert(22%) sepia(19%) saturate(1076%) hue-rotate(195deg) brightness(93%) contrast(93%);
 }
 html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
-  filter: brightness(0) saturate(100%) invert(80%) sepia(47%) saturate(262%)
-    hue-rotate(358deg) brightness(93%) contrast(89%);
+  filter: brightness(0) saturate(100%) invert(80%) sepia(47%) saturate(262%) hue-rotate(358deg) brightness(93%) contrast(89%);
 }
 .download_app {
   margin: 0;
@@ -4695,4 +4470,13 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 .material-symbols-outlined.clock-loader.animate::before {
   content: '';
   animation: materialsymbolclockanimate 1s infinite;
+}
+.menu a.alpha-sort-icon::before {
+  font-size: 26px !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  content: '\e053';
 }

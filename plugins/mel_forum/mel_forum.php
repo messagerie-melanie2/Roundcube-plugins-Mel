@@ -63,10 +63,12 @@ function init()
         $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
         $this->register_action('test_like_comment', array($this, 'test_like_comment'));
         $this->register_action('test_show_all_comments_bypost', array($this, 'test_show_all_comments_bypost'));
+        $this->register_action('test_count_comments', array($this, 'test_count_comments'));
         $this->register_action('test_delete_like', array($this, 'test_delete_like'));
         $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
         $this->register_action('test_delete_reaction', array($this, 'test_delete_reaction'));
         $this->register_action('test_show_all_reactions_bypost', array($this, 'test_show_all_reactions_bypost'));
+        $this->register_action('test_count_reactions', array($this, 'test_count_reactions'));
         $this->register_action('test_create_image', array($this, 'test_create_image'));
         $this->register_action('test_delete_image', array($this, 'test_delete_image'));
         $this->register_action('test_associate_tag_at_post', array($this, 'test_associate_tag_at_post'));
@@ -81,6 +83,8 @@ function init()
         $this->register_action('delete_reaction', array($this, 'delete_reaction'));
         // Lister les Réactions d'un Post
         $this->register_action('show_all_reactions_bypost', array($this, 'show_all_reactions_bypost'));
+        // Compter le nombre de réactions pour un Post
+        $this->register_action('count_reactions', array($this, 'count_reactions'));
         // Créer un article
         $this->register_action('create_post', array($this, 'create_post'));
         //modifier un article
@@ -103,6 +107,8 @@ function init()
         $this->register_action('like_comment', array($this, 'like_comment'));
         // Lister les comments d'un Post
         $this->register_action('show_all_comments_bypost', array($this, 'show_all_comments_bypost'));
+        // Compter le nombre de commentaires pour un Post
+        $this->register_action('count_comment', array($this, 'count_comment'));
         //Supprimer un Like
         $this->register_action('delete_like', array($this, 'delete_like'));
         // Créer un tag
@@ -987,6 +993,52 @@ public function show_all_comments_bypost()
 }
 
 /**
+ * Compte le nombre de commentaires pour un article donné.
+ *
+ * Cette fonction récupère l'identifiant de l'article depuis la requête POST,
+ * valide l'identifiant, charge l'article correspondant, et obtient le nombre
+ * de commentaires pour cet article. Le résultat est renvoyé sous forme de JSON.
+ *
+ * @return void
+ *
+ * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
+ */
+public function count_comments()
+{
+    // Récupérer la valeur du champ POST
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
+        exit;
+    }
+
+    // Récupérer l'article existant
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    // Vérifier si l'article existe
+    if (!$post->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+        exit;
+    }
+
+    // Obtenir le nombre de commentaires
+    $commentCount = $post->countComments();
+
+    // Vérifier si la méthode retourne un résultat valide
+    if ($commentCount !== false) {
+        echo json_encode(['status' => 'success', 'message' => "Nombre de commentaires : $commentCount"]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Impossible de récupérer le nombre de commentaires.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
  * Supprime un "like" d'un commentaire.
  *
  * Cette fonction récupère les informations nécessaires depuis les variables POST,
@@ -1156,6 +1208,52 @@ public function show_all_reactions_bypost()
     // Arrêt de l'exécution du script
     exit;
     }
+}
+
+/**
+ * Compte le nombre de réactions pour un article donné.
+ *
+ * Cette fonction récupère l'identifiant de l'article depuis la requête POST,
+ * valide l'identifiant, charge l'article correspondant, et obtient le nombre
+ * de réactions pour cet article. Le résultat est renvoyé sous forme de JSON.
+ *
+ * @return void
+ *
+ * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
+ */
+public function count_reactions()
+{
+    // Récupérer la valeur du champ POST
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
+        exit;
+    }
+
+    // Récupérer l'article existant
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    // Vérifier si l'article existe
+    if (!$post->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+        exit;
+    }
+
+    // Obtenir le nombre de commentaires
+    $reactionCount = $post->countReactions();
+
+    // Vérifier si la méthode retourne un résultat valide
+    if ($reactionCount !== false) {
+        echo json_encode(['status' => 'success', 'message' => "Nombre de réactions : $reactionCount"]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Impossible de récupérer le nombre de réactions.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
 }
 
 /**
@@ -1923,6 +2021,41 @@ public function test_show_all_comments_bypost()
     }
 }
 
+public function test_count_comments()
+{
+    // Récupérer la valeur du champ POST
+    $uid = 'ndWtChyQ4IwabbWjWwlM7Qo9';
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
+        exit;
+    }
+
+    // Récupérer l'article existant
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    // Vérifier si l'article existe
+    if (!$post->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+        exit;
+    }
+
+    // Obtenir le nombre de commentaires
+    $commentCount = $post->countComments();
+
+    // Vérifier si la méthode retourne un résultat valide
+    if ($commentCount !== false) {
+        echo json_encode(['status' => 'success', 'message' => "Nombre de commentaires : $commentCount"]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Impossible de récupérer le nombre de commentaires.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
 public function test_delete_like()
 {
     // Récupérer les valeurs
@@ -2053,6 +2186,41 @@ public function test_show_all_reactions_bypost()
     // Arrêt de l'exécution du script
     exit;
     }
+}
+
+public function test_count_reactions()
+{
+    // Récupérer la valeur du champ POST
+    $uid = 'hiXJayua2jFhoAoQIeVUC4NN';
+
+    // Validation de la donnée saisie
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
+        exit;
+    }
+
+    // Récupérer l'article existant
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    // Vérifier si l'article existe
+    if (!$post->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+        exit;
+    }
+
+    // Obtenir le nombre de commentaires
+    $reactionCount = $post->countReactions();
+
+    // Vérifier si la méthode retourne un résultat valide
+    if ($reactionCount !== false) {
+        echo json_encode(['status' => 'success', 'message' => "Nombre de réactions : $reactionCount"]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Impossible de récupérer le nombre de réactions.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
 }
 
 public function test_create_image()

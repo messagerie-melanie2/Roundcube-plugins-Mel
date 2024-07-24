@@ -394,4 +394,6 @@ $labels['Webservice error'] = "Une erreur s'est produite, il est possible que le
 $labels['Missing arguments'] = "Une erreur s'est produite, essayez de vous déconnecter/reconnecter.";
 $labels['sort'] = 'Alpha. order';
 $labels['sort_title'] = 'Sort by alphabetical order';
+$labels['sort_warning'] = 'This will change the order of your agenda, are you sure of your action?';
+$labels['cannot_sort'] = 'You can sort alphabetically only from your personal agenda!';
 ?>

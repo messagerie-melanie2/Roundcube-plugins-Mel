@@ -3,18 +3,12 @@ $(document).ready(() => {
     'rcs-agenda-tri-alpha',
     function () {
       if (rcmail.env.account) {
-        alert(
-          'Vous pouvez trier par ordre alphabétique seulement depuis votre agenda personnel !',
-        );
+        alert(rcmail.gettext('cannot_sort', 'mel_moncompte'));
 
         return;
       }
 
-      if (
-        confirm(
-          "Cela va changer l'ordre de vos agenda, êtes vous-sûr de vôtre action ?",
-        )
-      ) {
+      if (confirm(rcmail.gettext('sort_warning', 'mel_moncompte'))) {
         const busy = rcmail.set_busy(true, 'loading');
         mel_metapage.Functions.post(
           mel_metapage.Functions.url(

@@ -477,9 +477,9 @@ class mel_moncompte extends rcube_plugin {
     });
 
     $sort = [];
-    $it = 2;
+    $it = 1;
     foreach ($calendars as $calendar) {
-      if ($calendar->id !== $user->uid) $sort[(++$it)*1000] = driver_mel::gi()->mceToRcId($calendar->id);
+      if ($calendar->id !== $user->uid) $sort[(++$it)+($calendar->owner === $user->uid ? 2000 : 3000)] = driver_mel::gi()->mceToRcId($calendar->id);
     }
 
     $this->rc->user->save_prefs(['sort_agendas' => $sort]);

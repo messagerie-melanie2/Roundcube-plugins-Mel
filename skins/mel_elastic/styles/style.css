@@ -4477,9 +4477,8 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
   animation: materialsymbolclockanimate 1s infinite;
 }
 .mel-windows {
-  margin-top: 60px;
   width: 100%;
-  height: calc(100% - 60px);
+  height: 100%;
 }
 .mel-window-header {
   display: none;
@@ -4492,6 +4491,10 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 .selected.mel-windows .mel-window-header {
   background-color: #363a5b;
 }
+body.multiframe-header-disabled .mel-window-header,
+body.multiframe-header-disabled .multiple.mel-windows .mel-window-header {
+  display: none;
+}
 .mel-window-frame.fullframe {
   width: 100%;
   height: 100%;
@@ -4499,8 +4502,19 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 .mel-windows.multiple .mel-window-frame.fullframe {
   height: calc(100% - 50px);
 }
+body.multiframe-header-disabled .mel-window-frame.fullframe,
+body.multiframe-header-disabled .mel-windows.multiple .mel-window-frame.fullframe {
+  width: 100%;
+  height: 100%;
+}
 #layout-frames {
   display: flex;
+}
+body #layout-frames {
+  margin-top: 60px;
+  margin-left: 60px;
+  width: calc(100% - 60px);
+  height: calc(100% - 60px);
 }
 iframe.mm-frame {
   padding-top: 0 !important;

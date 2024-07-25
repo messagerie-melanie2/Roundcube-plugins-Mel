@@ -11,8 +11,8 @@ import { MainNav } from './main_nav.js';
 export { FramesManager, FrameManager };
 
 const MODULE = 'FrameManager';
-const MAX_FRAME = 2;
-const MULTI_FRAME_FROM_NAV_BAR = false;
+const MAX_FRAME = 3;
+const MULTI_FRAME_FROM_NAV_BAR = true;
 
 class FrameData {
   constructor(task) {
@@ -425,7 +425,6 @@ class Window {
           for (let iterator of this.get_frame()[0].contentWindow.$('iframe')) {
             //on ajoute un listener sur chaque frames chargés
             iterator.contentWindow.document.addEventListener('click', () => {
-              console.log('CLIIIIIIIIIIIIIIIK');
               if (!this.is_selected()) {
                 FramesManager.Helper.current.unselect_all();
                 FramesManager.Helper.current.select_window(this._id);
@@ -436,7 +435,6 @@ class Window {
               console.log('e', e);
               e = e.srcElement;
               e.contentWindow.document.addEventListener('click', () => {
-                console.log('cliiiiiiiiiiiiiiiiiiiks');
                 if (!this.is_selected()) {
                   FramesManager.Helper.current.unselect_all();
                   FramesManager.Helper.current.select_window(this._id);
@@ -446,11 +444,9 @@ class Window {
           }
         }
 
-        console.log('heeeeeeeeeeeeeeeeeerreeeeeeee');
         this.get_frame()[0].contentWindow.document.addEventListener(
           'click',
           () => {
-            console.log('clicked');
             if (!this.is_selected()) {
               FramesManager.Helper.current.unselect_all();
               FramesManager.Helper.current.select_window(this._id);
@@ -474,6 +470,8 @@ class Window {
   }
 
   async _open_frame(task, { new_args = null }) {
+    if (this.is_hidden()) this.show();
+
     this._history.add(this._current_frame.task);
     this._current_frame.hide();
     this._current_frame = this._frames.get(task);
@@ -570,9 +568,9 @@ class Window {
     Window.UpdateNavUrl(Window.UrlFromTask(task));
     Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
 
-    if (this._frames.has(task))
-      await this._open_frame(task, { new_args: args });
-    else await this._create_frame(task, { changepage, args, actions });
+    if (this._frames.has(task)) {
+      if (changepage) await this._open_frame(task, { new_args: args });
+    } else await this._create_frame(task, { changepage, args, actions });
 
     this._current_frame.$frame.focus();
 
@@ -603,7 +601,7 @@ class Window {
   }
 
   select() {
-    this.get_window().addClass('selected');
+    if (this._can_be_selected) this.get_window().addClass('selected');
     return this;
   }
 
@@ -614,6 +612,34 @@ class Window {
 
   is_selected() {
     return this.get_window().hasClass('selected');
+  }
+
+  set_remove_on_change() {
+    this._remove_on_change = true;
+    return this;
+  }
+
+  unset_remove_on_change() {
+    this._remove_on_change = false;
+    return this;
+  }
+
+  is_remove_on_change() {
+    return this._remove_on_change;
+  }
+
+  set_cannot_be_select() {
+    this._can_be_selected = false;
+    return this;
+  }
+
+  set_can_be_select() {
+    this._can_be_selected = true;
+    return this;
+  }
+
+  can_be_selected() {
+    return this._can_be_selected ?? true;
   }
 
   has_other_window() {
@@ -642,6 +668,38 @@ class Window {
 
   has_frame(task) {
     return this._frames.has(task);
+  }
+
+  hide() {
+    this.get_window().css('display', 'none');
+
+    return this;
+  }
+
+  show() {
+    this.get_window().css('display', EMPTY_STRING);
+
+    return this;
+  }
+
+  is_hidden() {
+    return this.get_window().css('display') === 'none';
+  }
+
+  add_tag(tag_name) {
+    this.get_window().attr(`data-ftag-${tag_name}`, true);
+
+    return this;
+  }
+
+  remove_tag(tag_name) {
+    this.get_window().removeAttr(`data-ftag-${tag_name}`);
+
+    return this;
+  }
+
+  has_tag(tag_name) {
+    return this.get_window().attr(`data-ftag-${tag_name}`) ?? false;
   }
 
   _generate_window() {
@@ -681,7 +739,7 @@ class Window {
 
 class FrameManager {
   constructor() {
-    this._init();
+    this._init()._main();
   }
 
   _init() {
@@ -697,6 +755,15 @@ class FrameManager {
      * @type {Window}
      */
     this._selected_window = null;
+
+    this._manual_multi_frame_enabled = true;
+
+    return this;
+  }
+
+  _main() {
+    if (rcmail.env.task === 'bnum')
+      $('#layout-content').addClass('hidden').css('display', 'none');
   }
 
   async switch_frame(
@@ -704,6 +771,8 @@ class FrameManager {
     { changepage = true, args = null, actions = [], wind = null },
   ) {
     if (wind !== null) {
+      if (changepage) this.close_windows_to_remove_on_change();
+
       if (!this._windows.has(wind)) {
         this._windows.add(wind, new Window(wind));
       }
@@ -784,7 +853,13 @@ class FrameManager {
   }
 
   select_window(id) {
-    this._selected_window = this._windows.get(id).select();
+    {
+      const tmp_window = this._windows.get(id).select();
+
+      if (!tmp_window.can_be_selected()) return this;
+
+      this._selected_window = tmp_window;
+    }
 
     const task = this._selected_window._current_frame.task;
 
@@ -825,6 +900,7 @@ class FrameManager {
   _generate_menu($element) {
     const task = $element.data('task');
     const max_frame_goal = this._windows.length >= MAX_FRAME;
+    const button_disabled = !this._manual_multi_frame_enabled || max_frame_goal;
     return MelHtml.start
       .div({
         class: 'btn-group-vertical',
@@ -842,10 +918,10 @@ class FrameManager {
       .end()
       .button({ class: 'btn btn-secondary' })
       .attr('onclick', this.open_another_window.bind(this, task))
-      .addClass(max_frame_goal ? 'disabled' : 'not-disabled')
+      .addClass(button_disabled ? 'disabled' : 'not-disabled')
       .attr(
-        max_frame_goal ? 'disabled' : 'not-disabled',
-        max_frame_goal ? 'disabled' : true,
+        button_disabled ? 'disabled' : 'not-disabled',
+        button_disabled ? 'disabled' : true,
       )
       .text('Ouvrir dans une nouvelle colonne')
       .end()
@@ -854,14 +930,14 @@ class FrameManager {
       .get(0);
   }
 
-  open_another_window(task) {
+  async open_another_window(task) {
     if (this._windows.length >= MAX_FRAME) {
       BnumMessage.DisplayMessage(
         `Vous ne pouvez pas avoir au dessus de ${MAX_FRAME} pages dans le Bnum.`,
         eMessageType.Error,
       );
     } else {
-      this.switch_frame(task, {
+      await this.switch_frame(task, {
         wind:
           MelEnumerable.from(this._windows.keys)
             .select((x) => +x)
@@ -874,13 +950,52 @@ class FrameManager {
     return this._selected_window.has_frame(task);
   }
 
+  disable_manual_multiframe() {
+    this._manual_multi_frame_enabled = false;
+    return this;
+  }
+
+  enable_manual_multiframe() {
+    this._manual_multi_frame_enabled = true;
+    return this;
+  }
+
   start_custom_multi_frame() {
     $('body').addClass('multiframe-header-disabled');
     return this;
   }
 
   stop_custom_multi_frame() {
-    $('.body').removeClass('multiframe-header-disabled');
+    $('body').removeClass('multiframe-header-disabled');
+    return this;
+  }
+
+  close_except_selected() {
+    let uid;
+    while (this._windows.length > 1) {
+      uid = +this._windows.keys[0];
+
+      if (uid === this._selected_window._id) uid += 1;
+
+      this.delete_window(uid);
+    }
+
+    return this;
+  }
+
+  close_windows_to_remove_on_change() {
+    while (
+      MelEnumerable.from(this._windows)
+        .where((x) => x.value.is_remove_on_change())
+        .any()
+    ) {
+      this.delete_window(
+        MelEnumerable.from(this._windows)
+          .where((x) => x.value.is_remove_on_change())
+          .first().value._id,
+      );
+    }
+
     return this;
   }
 
@@ -996,3 +1111,16 @@ window.mm_st_CreateOrOpenModal = function (eclass, changepage = true) {
 
 if (!window.mel_modules) window.mel_modules = {};
 if (!window.mel_modules[MODULE]) window.mel_modules[MODULE] = FramesManager;
+if (!window.mel_modules['visio'])
+  window.mel_modules['visio'] = async function visio() {
+    FramesManager.Instance.disable_manual_multiframe()
+      .start_custom_multi_frame()
+      .get_window()
+      .hide();
+    await FramesManager.Instance.open_another_window('webconf');
+    FramesManager.Instance.get_window()
+      .set_cannot_be_select()
+      .set_remove_on_change()
+      .add_tag('dispo-visio');
+    FramesManager.Instance.select_window(0);
+  };

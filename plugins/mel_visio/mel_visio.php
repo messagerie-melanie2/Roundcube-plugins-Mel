@@ -8,7 +8,7 @@ class mel_visio extends bnum_plugin
     private const DEFAULT_VA_PARAM = 'large';
     private const VA_PARAM = 'visio_audio_parameters';
     private const ASK_ON_END_PARAM = 'visio_ask_on_end';
-    private const OLD = true;
+    private const OLD = false;
     private $tmp_key;
 
 

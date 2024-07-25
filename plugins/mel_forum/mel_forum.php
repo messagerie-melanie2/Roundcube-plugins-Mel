@@ -49,25 +49,25 @@ function init()
         $this->register_action('test', array($this,'test'));
         $this->register_action('elements', array($this, 'elements'));
         $this->register_action('test_create_tag', array($this, 'test_create_tag'));
-        $this->register_action('test_show_all_tags_byWorkspace', array($this, 'test_show_all_tags_byWorkspace'));
-        $this->register_action('test_show_all_tags_bypost', array($this, 'test_show_all_tags_bypost'));
+        $this->register_action('test_get_all_tags_byWorkspace', array($this, 'test_get_all_tags_byWorkspace'));
+        $this->register_action('test_get_all_tags_bypost', array($this, 'test_get_all_tags_bypost'));
         $this->register_action('test_update_tag', array($this, 'test_update_tag'));
         $this->register_action('test_delete_tag', array($this, 'test_delete_tag'));
         $this->register_action('test_create_post', array($this, 'test_create_post'));
         $this->register_action('test_update_post', array($this, 'test_update_post'));
         $this->register_action('test_delete_post', array($this, 'test_delete_post'));
-        $this->register_action('test_show_all_posts_byworkspace', array($this, 'test_show_all_posts_byworkspace'));
+        $this->register_action('test_get_all_posts_byworkspace', array($this, 'test_get_all_posts_byworkspace'));
         $this->register_action('test_create_comment', array($this, 'test_create_comment'));
         $this->register_action('test_reply_comment', array($this, 'test_reply_comment'));
         $this->register_action('test_update_comment', array($this, 'test_update_comment'));
         $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
         $this->register_action('test_like_comment', array($this, 'test_like_comment'));
-        $this->register_action('test_show_all_comments_bypost', array($this, 'test_show_all_comments_bypost'));
+        $this->register_action('test_get_all_comments_bypost', array($this, 'test_get_all_comments_bypost'));
         $this->register_action('test_count_comments', array($this, 'test_count_comments'));
         $this->register_action('test_delete_like', array($this, 'test_delete_like'));
         $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
         $this->register_action('test_delete_reaction', array($this, 'test_delete_reaction'));
-        $this->register_action('test_show_all_reactions_bypost', array($this, 'test_show_all_reactions_bypost'));
+        $this->register_action('test_get_all_reactions_bypost', array($this, 'test_get_all_reactions_bypost'));
         $this->register_action('test_count_reactions', array($this, 'test_count_reactions'));
         $this->register_action('test_create_image', array($this, 'test_create_image'));
         $this->register_action('test_delete_image', array($this, 'test_delete_image'));
@@ -82,7 +82,7 @@ function init()
         // Supprimer une réaction
         $this->register_action('delete_reaction', array($this, 'delete_reaction'));
         // Lister les Réactions d'un Post
-        $this->register_action('show_all_reactions_bypost', array($this, 'show_all_reactions_bypost'));
+        $this->register_action('get_all_reactions_bypost', array($this, 'get_all_reactions_bypost'));
         // Compter le nombre de réactions pour un Post
         $this->register_action('count_reactions', array($this, 'count_reactions'));
         // Créer un article
@@ -92,9 +92,9 @@ function init()
         //supprimer un article
         $this->register_action('delete_post', array($this, 'delete_post'));
         // récupérer un  article
-        $this->register_action('show_one_post', array($this, 'show_one_post'));
+        $this->register_action('get_one_post', array($this, 'get_one_post'));
         // récupérer tous les articles
-        $this->register_action('show_all_posts_byworkspace', array($this, 'show_all_posts_byworkspace'));
+        $this->register_action('get_all_posts_byworkspace', array($this, 'get_all_posts_byworkspace'));
         // Ajouter un commentaire ou une réponse
         $this->register_action('create_comment', array($this, 'create_comment'));
         // Répondre à un commentaire ou une réponse
@@ -106,7 +106,7 @@ function init()
         // Liker un commentaire ou une réponse
         $this->register_action('like_comment', array($this, 'like_comment'));
         // Lister les comments d'un Post
-        $this->register_action('show_all_comments_bypost', array($this, 'show_all_comments_bypost'));
+        $this->register_action('get_all_comments_bypost', array($this, 'get_all_comments_bypost'));
         // Compter le nombre de commentaires pour un Post
         $this->register_action('count_comment', array($this, 'count_comment'));
         //Supprimer un Like
@@ -122,9 +122,9 @@ function init()
         // Enlever un Tag existant d'un post
         $this->register_action('unassociate_tag_from_post', array($this, 'unassociate_tag_from_post'));
         // récupérer tous les tags associés à un espace de travail
-        $this->register_action('show_all_tags_byworkspace', array($this, 'show_all_tags_byworkspace'));
+        $this->register_action('get_all_tags_byworkspace', array($this, 'get_all_tags_byworkspace'));
         // Récupérer tous les tags associés à un Post
-        $this->register_action('show_all_tags_bypost', array($this, 'show_all_tags_bypost'));
+        $this->register_action('get_all_tags_bypost', array($this, 'get_all_tags_bypost'));
         // afficher les articles par tag
         $this->register_action('all_posts_by_tag', array($this, 'all_posts_by_tag'));
         // Créer une image
@@ -137,6 +137,8 @@ function init()
 
 function index(){
     $this->rc()->output->send('mel_forum.forum');
+
+    $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
 }
 
 /**
@@ -381,10 +383,10 @@ public function delete_post()
  *
  * @return void
  */
-public function show_all_posts_byworkspace()
+public function get_all_posts_byworkspace()
 {
     //récupérer le Workspace
-    $workspace_uid = driver_mel::gi()->get_workspace_group();
+    $workspace_uid = driver_mel::gi()->workspace();
 
     // Charger tous les posts en utilisant la méthode listPosts
     $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -401,7 +403,11 @@ public function show_all_posts_byworkspace()
             $posts_array[] = [
                 'id' => $post->id,
                 'title' => $post->title,
+                'summary'=> $post->summary,
                 'content' => $post->content,
+                'created' => $post->created,
+                'user_uid' => $post->user_uid,
+                'settings' => $post->settings,
                 'workspace' => $post->workspace
             ];
         }
@@ -469,7 +475,7 @@ public function create_tag()
  *
  * @return void
  */
-public function show_all_tags_byworkspace()
+public function get_all_tags_byworkspace()
 {
     // Récupérer le Workspace
     $workspace = driver_mel::gi()->get_workspace_group();
@@ -516,7 +522,7 @@ public function show_all_tags_byworkspace()
  *
  * @return void
  */
-public function show_all_tags_bypost()
+public function get_all_tags_bypost()
 {
     // Récupérer l'uid de l'article du champ POST
     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
@@ -957,7 +963,7 @@ public function like_comment()
  *
  * @return void
  */
-public function show_all_comments_bypost()
+public function get_all_comments_bypost()
 {
     // Récupérer l'uid de l'article du champ POST
     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
@@ -1176,7 +1182,7 @@ public function delete_reaction()
  *
  * @return void
  */
-public function show_all_reactions_bypost()
+public function get_all_reactions_bypost()
 {
     // Récupérer l'uid de l'article du champ POST
     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
@@ -1332,6 +1338,35 @@ public function delete_image()
     // Arrêt de l'exécution du script
     exit;
 }
+
+
+
+
+
+function show_posts($posts) {
+    
+    $html = "";
+    $html_post = $this->rc->output->parse("mel_forum.model-post", false, false);
+
+    $posts = $this->get_all_posts_byworkspace();
+
+    foreach ($posts as $post) {
+        $html_post_copy = $html_post;
+
+        $html_post_copy = str_replace("<creator/>", $post->creator, $html_post_copy);
+        $html_post_copy = str_replace("<date/>", $post->create, $html_post_copy);
+        $html_post_copy = str_replace("<title/>", $post->title, $html_post_copy);
+        $html_post_copy = str_replace("<summary/>", $post->summary, $html_post_copy);
+
+        $html .= $html_post_copy;
+
+    }
+
+    return $html;
+}
+
+
+
 
 
 
@@ -1513,7 +1548,7 @@ public function test_delete_post()
     exit;
 }
 
-public function test_show_all_posts_byworkspace()
+public function test_get_all_posts_byworkspace()
 {
     // Charger tous les posts en utilisant la méthode listPosts
     $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -1572,7 +1607,7 @@ public function test_create_tag()
 
 }
 
-public function test_show_all_tags_byWorkspace()
+public function test_get_all_tags_byWorkspace()
 {
     // Charger tous les tags en utilisant la méthode listTags
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -1607,7 +1642,7 @@ public function test_show_all_tags_byWorkspace()
     exit;
 }
 
-public function test_show_all_tags_bypost()
+public function test_get_all_tags_bypost()
 {
     // Définir la valeur uid d'un post
     $uid = '0VEBPgVgzEPVr4dQYygH9dvj';
@@ -1986,7 +2021,7 @@ public function test_like_comment()
 
 }
 
-public function test_show_all_comments_bypost()
+public function test_get_all_comments_bypost()
 {
     // Définir la valeur uid d'un post
     $uid = 'ndWtChyQ4IwabbWjWwlM7Qo9';
@@ -2154,7 +2189,7 @@ public function test_delete_reaction()
     exit;
 }
 
-public function test_show_all_reactions_bypost()
+public function test_get_all_reactions_bypost()
 {
     // Définir la valeur uid d'un post
     $uid = 'ntihLzawLev7MF82lZZKC93N';

@@ -77,6 +77,16 @@ function m_mp_Create() {
   FullscreenItem.close_if_exist();
   m_mp_step3_param.datas = null;
 
+  if (
+    ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
+    !$('.wekan-frame').length
+  )
+    m_mp_Create.current_promise = mel_metapage.Functions.change_frame(
+      'wekan',
+      false,
+      true,
+    );
+
   //window.create_popUp = undefined;
   //Si problème de configuration, on gère.
   window.mel_metapage_tmp = rcmail.env.is_stockage_active ? true : null;
@@ -996,128 +1006,143 @@ function m_mp_createworkspace() {
       mel_metapage.Functions.url('mel_metapage', 'get_create_workspace'),
       {},
       (datas) => {
-        if ($('#globallist').length > 0) return;
+        // eslint-disable-next-line no-async-promise-executor
+        new Promise(async (ok) => {
+          if ($('#globallist').length > 0) return;
 
-        create_popUp.contents.html(
-          html +
-            datas +
-            `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
-        );
-
-        if ($('#tmpavatar').find('a').length === 0)
-          $('#worspace-avatar-a')
-            .html('')
-            .css('display', '')
-            .appendTo($('#tmpavatar'));
-
-        m_mp_switch_step('workspace-step1');
-        rcmail.init_address_input_events($('#_workspace-user-list'));
-        $('.global-modal-body')
-          .css('height', `${window.innerHeight - 200}px`)
-          .css('overflow-y', 'auto')
-          .css('overflow-x', 'hidden');
-
-        create_popUp.contents.find('#workspace-title-param').click((e) => {
-          e = $(e.currentTarget);
-          let $div = $('#custom-div-uid');
-          const class_name = 'active';
-
-          if (e.hasClass(class_name)) {
-            $div.css('display', 'none');
-            e.removeClass(class_name);
-          } else {
-            $div.css('display', '');
-            e.addClass(class_name);
+          if (m_mp_Create.current_promise) {
+            await m_mp_Create.current_promise;
+            m_mp_Create.current_promise = null;
+          } else if (
+            ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
+            !$('.wekan-frame').length
+          ) {
+            await mel_metapage.Functions.change_frame('wekan', false, true);
           }
-        });
 
-        create_popUp.contents.find('#custom-div-uid button').click((e) => {
-          e = $(e.currentTarget);
-          let $div = $('#custom-div-input-uid');
-          const class_name = 'active';
+          create_popUp.contents.html(
+            html +
+              datas +
+              `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
+          );
 
-          if (e.hasClass(class_name)) {
-            $div.css('display', 'none');
-            e.removeClass(class_name);
-            e.html("Activer l'id personalisé");
-          } else {
-            $div.css('display', '');
-            e.addClass(class_name);
-            e.html("Désactiver l'id personalisé");
+          if ($('#tmpavatar').find('a').length === 0)
+            $('#worspace-avatar-a')
+              .html('')
+              .css('display', '')
+              .appendTo($('#tmpavatar'));
 
-            let $input = $('#custom-uid');
+          m_mp_switch_step('workspace-step1');
+          rcmail.init_address_input_events($('#_workspace-user-list'));
+          $('.global-modal-body')
+            .css('height', `${window.innerHeight - 200}px`)
+            .css('overflow-y', 'auto')
+            .css('overflow-x', 'hidden');
 
-            if ($input.val() === '') {
-              const title = mel_metapage.Functions.remove_accents(
-                mel_metapage.Functions.replace_special_char(
-                  mel_metapage.Functions.replace_dets(
-                    $('#workspace-title').val().toLowerCase(),
+          create_popUp.contents.find('#workspace-title-param').click((e) => {
+            e = $(e.currentTarget);
+            let $div = $('#custom-div-uid');
+            const class_name = 'active';
+
+            if (e.hasClass(class_name)) {
+              $div.css('display', 'none');
+              e.removeClass(class_name);
+            } else {
+              $div.css('display', '');
+              e.addClass(class_name);
+            }
+          });
+
+          create_popUp.contents.find('#custom-div-uid button').click((e) => {
+            e = $(e.currentTarget);
+            let $div = $('#custom-div-input-uid');
+            const class_name = 'active';
+
+            if (e.hasClass(class_name)) {
+              $div.css('display', 'none');
+              e.removeClass(class_name);
+              e.html("Activer l'id personalisé");
+            } else {
+              $div.css('display', '');
+              e.addClass(class_name);
+              e.html("Désactiver l'id personalisé");
+
+              let $input = $('#custom-uid');
+
+              if ($input.val() === '') {
+                const title = mel_metapage.Functions.remove_accents(
+                  mel_metapage.Functions.replace_special_char(
+                    mel_metapage.Functions.replace_dets(
+                      $('#workspace-title').val().toLowerCase(),
+                      '-',
+                    ),
                     '-',
                   ),
-                  '-',
-                ),
-              ).replaceAll(' ', '-');
-              $input.val(title);
-            }
-          }
-        });
-
-        let $custom_uid = $('#custom-uid');
-        $custom_uid.on('input', () => {
-          let val = $custom_uid.val();
-          val = mel_metapage.Functions.replace_special_char(
-            mel_metapage.Functions.remove_accents(val),
-            '-',
-          )
-            .replaceAll(' ', '-')
-            .toLowerCase();
-          $custom_uid.val(val);
-        });
-
-        setTimeout(() => {
-          const rdmColor = MEL_ELASTIC_UI.getRandomColor();
-          $('#workspace-color')
-            .val(rdmColor)
-            .on('change', (e) => {
-              const color = $(e.currentTarget).val();
-              let $span = $('#worspace-avatar-a');
-              if ($span.length > 0) {
-                if (
-                  !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
-                    mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
-                    mel_metapage.Functions.colors.kMel_extractRGB(color),
-                  )
-                ) {
-                  $span.attr('style', 'color:white!important');
-                } else {
-                  $span.attr('style', 'color:#363A5B!important');
-                }
-
-                $span.css('background-color', color);
+                ).replaceAll(' ', '-');
+                $input.val(title);
               }
-              $span = null;
-            });
-          let $span = $('#worspace-avatar-a');
-          if ($span.length > 0) {
-            if (
-              !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
-                mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
-                mel_metapage.Functions.colors.kMel_extractRGB(rdmColor),
-              )
-            ) {
-              $span.attr('style', 'color:white!important');
-            } else {
-              $span.attr('style', 'color:#363A5B!important');
             }
-          }
-          $span.css('background-color', rdmColor);
-          $span = null;
-          $('#workspace-date-end').datetimepicker({
-            format: 'd/m/Y H:i',
-            dayOfWeekStart: 1,
           });
-          MEL_ELASTIC_UI.redStars();
-        }, 10);
+
+          let $custom_uid = $('#custom-uid');
+          $custom_uid.on('input', () => {
+            let val = $custom_uid.val();
+            val = mel_metapage.Functions.replace_special_char(
+              mel_metapage.Functions.remove_accents(val),
+              '-',
+            )
+              .replaceAll(' ', '-')
+              .toLowerCase();
+            $custom_uid.val(val);
+          });
+
+          setTimeout(() => {
+            const rdmColor = MEL_ELASTIC_UI.getRandomColor();
+            $('#workspace-color')
+              .val(rdmColor)
+              .on('change', (e) => {
+                const color = $(e.currentTarget).val();
+                let $span = $('#worspace-avatar-a');
+                if ($span.length > 0) {
+                  if (
+                    !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
+                      mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
+                      mel_metapage.Functions.colors.kMel_extractRGB(color),
+                    )
+                  ) {
+                    $span.attr('style', 'color:white!important');
+                  } else {
+                    $span.attr('style', 'color:#363A5B!important');
+                  }
+
+                  $span.css('background-color', color);
+                }
+                $span = null;
+              });
+            let $span = $('#worspace-avatar-a');
+            if ($span.length > 0) {
+              if (
+                !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
+                  mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
+                  mel_metapage.Functions.colors.kMel_extractRGB(rdmColor),
+                )
+              ) {
+                $span.attr('style', 'color:white!important');
+              } else {
+                $span.attr('style', 'color:#363A5B!important');
+              }
+            }
+            $span.css('background-color', rdmColor);
+            $span = null;
+            $('#workspace-date-end').datetimepicker({
+              format: 'd/m/Y H:i',
+              dayOfWeekStart: 1,
+            });
+            MEL_ELASTIC_UI.redStars();
+
+            ok();
+          }, 10);
+        });
       },
     );
     create_popUp.editTitleAndSetBeforeTitle(
@@ -1754,60 +1779,63 @@ function m_mp_add_users() {
   });
 
   if (users.length > 0) {
-        $('#mm-wsp-loading').css('display', '');
-        return mel_metapage.Functions.post(
-        mel_metapage.Functions.url('mel_metapage', 'check_users'),
-        {
-            _users: users,
-        },
-        (datas) => {
-            datas = JSON.parse(datas);
-            let html;
-            let querry = $('#mm-cw-participants').css(
-              'height',
-              `${window.innerHeight - 442}`,
-            );
+    $('#mm-wsp-loading').css('display', '');
+    return mel_metapage.Functions.post(
+      mel_metapage.Functions.url('mel_metapage', 'check_users'),
+      {
+        _users: users,
+      },
+      (datas) => {
+        datas = JSON.parse(datas);
+        let html;
+        let querry = $('#mm-cw-participants').css(
+          'height',
+          `${window.innerHeight - 442}`,
+        );
 
-            /**
-             * Ajouter un utilisateur
-             * @param {*} element 
-             */
-            function addUser(element) {
-                html = '<li>';
-                html += '<div class="row" style="margin-top:15px">';
-                html += '<div class="col-2">';
-                html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
-                html += '</div>';
-                html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
-                html += `<span class="name">${element.name}</span><br/>`;
-                html += `<span class="email">${element.email}</span>`;
-                html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>`;
-                html += '</div>';
-                html += '</div></li>';
+        /**
+         * Ajouter un utilisateur
+         * @param {*} element
+         */
+        function addUser(element) {
+          html = '<li>';
+          html += '<div class="row" style="margin-top:15px">';
+          html += '<div class="col-2">';
+          html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
+          html += '</div>';
+          html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
+          html += `<span class="name">${element.name}</span><br/>`;
+          html += `<span class="email">${element.email}</span>`;
+          html +=
+            '<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>';
+          html += '</div>';
+          html += '</div></li>';
 
-                querry.append(html);
-            }
-
-            // Utilisateurs internes
-            for (let index = 0; index < datas.added.length; ++index) {
-                addUser(datas.added[index]);
-            }
-
-            // Utilisateurs externes
-            for (let index = 0; index < datas.externs.length; ++index) {
-                addUser(datas.externs[index]);
-            }
-
-            // Utilisateurs non trouvés
-            for (let it = 0; it < datas.unexist.length; it++) {
-                const element = datas.unexist[it];
-                rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
-            }
+          querry.append(html);
         }
-        ).always(() => {
-            $('#mm-wsp-loading').css('display', 'none');
-        });
-    }
+
+        // Utilisateurs internes
+        for (let index = 0; index < datas.added.length; ++index) {
+          addUser(datas.added[index]);
+        }
+
+        // Utilisateurs externes
+        for (let index = 0; index < datas.externs.length; ++index) {
+          addUser(datas.externs[index]);
+        }
+
+        // Utilisateurs non trouvés
+        for (let it = 0; it < datas.unexist.length; it++) {
+          const element = datas.unexist[it];
+          rcmail.display_message(
+            "impossible d'ajouter " + element + " à l'espace de travail !",
+          );
+        }
+      },
+    ).always(() => {
+      $('#mm-wsp-loading').css('display', 'none');
+    });
+  }
 }
 
 function m_mp_remove_user(e) {

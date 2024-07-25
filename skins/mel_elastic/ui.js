@@ -1007,6 +1007,7 @@ $(document).ready(() => {
       let $theme_button = $(
         `${CONST_JQUERY_SELECTOR_ID}${CONST_THEME_BUTTON_ID}`,
       );
+
       if (top === window) {
         //Si on est en Top & que le bouton de thème existe
         if (html.count() > 1) {
@@ -1055,6 +1056,16 @@ $(document).ready(() => {
             .addClass(CONST_ATTRIB_DISABLED)
             .attr(CONST_ATTRIB_DISABLED, CONST_ATTRIB_DISABLED);
         }
+      } else if (
+        rcmail.env.task === 'settings' &&
+        parent.MEL_ELASTIC_UI.color_mode() !== this.color_mode()
+      ) {
+        if (parent.MEL_ELASTIC_UI.color_mode() === 'dark') {
+          if (this.themes[this.theme]?.custom_dark_mode)
+            $('html').addClass('dark-mode-custom');
+          else $('html').addClass('dark-mode');
+        } else
+          $('html').removeClass('dark-mode-custom').removeClass('dark-mode');
       }
 
       if ($('#rcmfd-toggle-anims').length > 0) {
@@ -3223,6 +3234,7 @@ $(document).ready(() => {
       let $html = $('html');
       if ($html.hasClass('dark-mode-custom'))
         $html.removeClass('dark-mode-custom');
+
       $html = null;
 
       $('iframe.mm-frame').each((i, e) => {

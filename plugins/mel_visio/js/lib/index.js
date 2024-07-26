@@ -49,13 +49,12 @@ class VisioCreator extends MelObject {
    */
   main() {
     super.main();
-    debugger;
     this._init()._setup();
 
     //Mettre les données par défauts
     if (this.data?.need_config) {
       this.view.$room.val(
-        this.data.room ?? VisioFunctions.generateWebconfRoomName(),
+        this.data.room || VisioFunctions.generateWebconfRoomName(),
       );
 
       if (this.data.wsp) this.view.linked_to.check();
@@ -67,7 +66,7 @@ class VisioCreator extends MelObject {
         this.view.password.check();
         this.view.password.$field.val(this.data.password);
       }
-    }
+    } else this.view.$room.val(VisioFunctions.generateWebconfRoomName());
 
     //Désactivé les champs qui ont besoins d'être désactivés
     if (this.locks.room) this._disable(this.view.$room);

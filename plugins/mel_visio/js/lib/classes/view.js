@@ -18,7 +18,6 @@ class VisioView {
    * @private
    */
   _init() {
-    debugger;
     /**
      * @type {external:jQuery}
      * @member

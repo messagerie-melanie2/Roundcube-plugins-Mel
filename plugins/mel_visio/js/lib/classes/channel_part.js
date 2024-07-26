@@ -14,7 +14,6 @@ export { ChannelPart };
  */
 class ChannelPart extends ACheckBox {
   constructor() {
-    debugger;
     super(SELECTOR_CHECKBOX_CHANNEL);
     this._init()._setup()._main();
   }
@@ -88,7 +87,6 @@ class ChannelPart extends ACheckBox {
    * @package
    */
   _on_checkbox_change(state) {
-    debugger;
     if (state) {
       $(SELECTOR_DIV_WSP).show();
       $(SELECTOR_DIV_CHANNEL).hide();

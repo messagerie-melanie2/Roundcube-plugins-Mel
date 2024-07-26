@@ -126,5 +126,4 @@ abstract class bnum_plugin extends rcube_plugin
             $name    => $callback,
         ));
     }
-
 }

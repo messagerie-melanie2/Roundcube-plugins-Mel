@@ -15,7 +15,7 @@
     pass = null,
     extra = null,
   ) {
-    window.mel_modules.visio();
+    window.mel_modules['FrameManager'].Instance.start_mode('visio');
     return;
 
     if (!webconf_is_active()) {

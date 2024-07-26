@@ -39,9 +39,13 @@ class mel_visio extends bnum_plugin
     }
 
     function index() {
-        if (!$this->data->has_room() || $this->data->need_config()) $this->go_to_page('index');
-        else $this->go_to_page('visio');
-        
+        $page =  rcube_utils::get_input_value('_page', rcube_utils::INPUT_GET) ?? 'init';
+
+        if ($page === 'visio' || $page === 'index') {
+            if (!$this->data->has_room() || $this->data->need_config()) $this->go_to_page('index');
+            else $this->go_to_page('visio');
+        }
+        else $this->go_to_page($page);
     }
 
     function go_to_page($page) {
@@ -49,6 +53,29 @@ class mel_visio extends bnum_plugin
 
         if (!$data['break']) {
             call_user_func([$this, "page_$page"]);
+        }
+    }
+
+    function page_init() {
+        $this->setup_module();
+        
+        if (!$this->data->has_room()) {
+            return $this->page_index();
+        }
+        else {
+            $page = $this->data->has_room() ? '\'visio\'' : 'null';
+            
+            $this->rc()->output->set_env('visio.data', $this->data->serialize());
+            
+            $this->api->output->add_script("
+                (async () => {
+                    const {FramesManager} = await loadJsModule('mel_metapage', 'frame_manager', '/js/lib/classes/');
+                    
+                    FramesManager.Instance.start_mode('visio', $page);
+                })();
+            ", 'docready');
+
+            $this->rc()->output->send('mel_metapage.empty');
         }
     }
 

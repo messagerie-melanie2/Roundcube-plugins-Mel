@@ -8,9 +8,15 @@ import { BnumMessage, eMessageType } from './bnum_message.js';
 import { MelEnumerable } from './enum.js';
 import { MainNav } from './main_nav.js';
 
-export { FramesManager, FrameManager };
+export {
+  FramesManager,
+  FrameManager,
+  MODULE as FrameManger_ModuleName,
+  MODULE_CUSTOM_FRAMES as FrameManger_ModuleName_custom,
+};
 
 const MODULE = 'FrameManager';
+const MODULE_CUSTOM_FRAMES = `${MODULE}_custom_actions`;
 const MAX_FRAME = 3;
 const MULTI_FRAME_FROM_NAV_BAR = true;
 
@@ -758,6 +764,8 @@ class FrameManager {
 
     this._manual_multi_frame_enabled = true;
 
+    this._modes = new BaseStorage();
+
     return this;
   }
 
@@ -897,6 +905,16 @@ class FrameManager {
     return this;
   }
 
+  add_mode(name, callback) {
+    this._modes.add(name, callback);
+
+    return this;
+  }
+
+  start_mode(name, ...args) {
+    return this._modes.get(name, () => {})(...args);
+  }
+
   _generate_menu($element) {
     const task = $element.data('task');
     const max_frame_goal = this._windows.length >= MAX_FRAME;
@@ -930,7 +948,7 @@ class FrameManager {
       .get(0);
   }
 
-  async open_another_window(task) {
+  async open_another_window(task, args = null) {
     if (this._windows.length >= MAX_FRAME) {
       BnumMessage.DisplayMessage(
         `Vous ne pouvez pas avoir au dessus de ${MAX_FRAME} pages dans le Bnum.`,
@@ -938,6 +956,7 @@ class FrameManager {
       );
     } else {
       await this.switch_frame(task, {
+        args,
         wind:
           MelEnumerable.from(this._windows.keys)
             .select((x) => +x)
@@ -1111,16 +1130,28 @@ window.mm_st_CreateOrOpenModal = function (eclass, changepage = true) {
 
 if (!window.mel_modules) window.mel_modules = {};
 if (!window.mel_modules[MODULE]) window.mel_modules[MODULE] = FramesManager;
-if (!window.mel_modules['visio'])
-  window.mel_modules['visio'] = async function visio() {
+if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
+  window.mel_modules[MODULE_CUSTOM_FRAMES] = {};
+
+FramesManager.Instance.add_mode('visio', async function visio(...args) {
+  debugger;
+  const [page] = args;
+  if (!page) {
+    await FramesManager.Instance.switch_frame('webconf', {
+      args: { _page: 'index' },
+    });
+  } else if (page !== 'index') {
     FramesManager.Instance.disable_manual_multiframe()
       .start_custom_multi_frame()
       .get_window()
       .hide();
-    await FramesManager.Instance.open_another_window('webconf');
+    await FramesManager.Instance.open_another_window('webconf', {
+      _page: page || 'init',
+    });
     FramesManager.Instance.get_window()
       .set_cannot_be_select()
       .set_remove_on_change()
       .add_tag('dispo-visio');
     FramesManager.Instance.select_window(0);
-  };
+  }
+});

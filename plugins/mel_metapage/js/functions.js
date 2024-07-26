@@ -1007,142 +1007,128 @@ function m_mp_createworkspace() {
       {},
       (datas) => {
         // eslint-disable-next-line no-async-promise-executor
-        new Promise(async (ok) => {
-          if ($('#globallist').length > 0) return;
+        if ($('#globallist').length > 0) return;
 
-          if (m_mp_Create.current_promise) {
-            await m_mp_Create.current_promise;
-            m_mp_Create.current_promise = null;
-          } else if (
-            ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
-            !$('.wekan-frame').length
-          ) {
-            await mel_metapage.Functions.change_frame('wekan', false, true);
+        create_popUp.contents.html(
+          html +
+            datas +
+            `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
+        );
+
+        if ($('#tmpavatar').find('a').length === 0)
+          $('#worspace-avatar-a')
+            .html('')
+            .css('display', '')
+            .appendTo($('#tmpavatar'));
+
+        m_mp_switch_step('workspace-step1');
+        rcmail.init_address_input_events($('#_workspace-user-list'));
+        $('.global-modal-body')
+          .css('height', `${window.innerHeight - 200}px`)
+          .css('overflow-y', 'auto')
+          .css('overflow-x', 'hidden');
+
+        create_popUp.contents.find('#workspace-title-param').click((e) => {
+          e = $(e.currentTarget);
+          let $div = $('#custom-div-uid');
+          const class_name = 'active';
+
+          if (e.hasClass(class_name)) {
+            $div.css('display', 'none');
+            e.removeClass(class_name);
+          } else {
+            $div.css('display', '');
+            e.addClass(class_name);
           }
+        });
 
-          create_popUp.contents.html(
-            html +
-              datas +
-              `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
-          );
+        create_popUp.contents.find('#custom-div-uid button').click((e) => {
+          e = $(e.currentTarget);
+          let $div = $('#custom-div-input-uid');
+          const class_name = 'active';
 
-          if ($('#tmpavatar').find('a').length === 0)
-            $('#worspace-avatar-a')
-              .html('')
-              .css('display', '')
-              .appendTo($('#tmpavatar'));
+          if (e.hasClass(class_name)) {
+            $div.css('display', 'none');
+            e.removeClass(class_name);
+            e.html("Activer l'id personalisé");
+          } else {
+            $div.css('display', '');
+            e.addClass(class_name);
+            e.html("Désactiver l'id personalisé");
 
-          m_mp_switch_step('workspace-step1');
-          rcmail.init_address_input_events($('#_workspace-user-list'));
-          $('.global-modal-body')
-            .css('height', `${window.innerHeight - 200}px`)
-            .css('overflow-y', 'auto')
-            .css('overflow-x', 'hidden');
+            let $input = $('#custom-uid');
 
-          create_popUp.contents.find('#workspace-title-param').click((e) => {
-            e = $(e.currentTarget);
-            let $div = $('#custom-div-uid');
-            const class_name = 'active';
-
-            if (e.hasClass(class_name)) {
-              $div.css('display', 'none');
-              e.removeClass(class_name);
-            } else {
-              $div.css('display', '');
-              e.addClass(class_name);
-            }
-          });
-
-          create_popUp.contents.find('#custom-div-uid button').click((e) => {
-            e = $(e.currentTarget);
-            let $div = $('#custom-div-input-uid');
-            const class_name = 'active';
-
-            if (e.hasClass(class_name)) {
-              $div.css('display', 'none');
-              e.removeClass(class_name);
-              e.html("Activer l'id personalisé");
-            } else {
-              $div.css('display', '');
-              e.addClass(class_name);
-              e.html("Désactiver l'id personalisé");
-
-              let $input = $('#custom-uid');
-
-              if ($input.val() === '') {
-                const title = mel_metapage.Functions.remove_accents(
-                  mel_metapage.Functions.replace_special_char(
-                    mel_metapage.Functions.replace_dets(
-                      $('#workspace-title').val().toLowerCase(),
-                      '-',
-                    ),
+            if ($input.val() === '') {
+              const title = mel_metapage.Functions.remove_accents(
+                mel_metapage.Functions.replace_special_char(
+                  mel_metapage.Functions.replace_dets(
+                    $('#workspace-title').val().toLowerCase(),
                     '-',
                   ),
-                ).replaceAll(' ', '-');
-                $input.val(title);
-              }
+                  '-',
+                ),
+              ).replaceAll(' ', '-');
+              $input.val(title);
             }
-          });
-
-          let $custom_uid = $('#custom-uid');
-          $custom_uid.on('input', () => {
-            let val = $custom_uid.val();
-            val = mel_metapage.Functions.replace_special_char(
-              mel_metapage.Functions.remove_accents(val),
-              '-',
-            )
-              .replaceAll(' ', '-')
-              .toLowerCase();
-            $custom_uid.val(val);
-          });
-
-          setTimeout(() => {
-            const rdmColor = MEL_ELASTIC_UI.getRandomColor();
-            $('#workspace-color')
-              .val(rdmColor)
-              .on('change', (e) => {
-                const color = $(e.currentTarget).val();
-                let $span = $('#worspace-avatar-a');
-                if ($span.length > 0) {
-                  if (
-                    !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
-                      mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
-                      mel_metapage.Functions.colors.kMel_extractRGB(color),
-                    )
-                  ) {
-                    $span.attr('style', 'color:white!important');
-                  } else {
-                    $span.attr('style', 'color:#363A5B!important');
-                  }
-
-                  $span.css('background-color', color);
-                }
-                $span = null;
-              });
-            let $span = $('#worspace-avatar-a');
-            if ($span.length > 0) {
-              if (
-                !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
-                  mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
-                  mel_metapage.Functions.colors.kMel_extractRGB(rdmColor),
-                )
-              ) {
-                $span.attr('style', 'color:white!important');
-              } else {
-                $span.attr('style', 'color:#363A5B!important');
-              }
-            }
-            $span.css('background-color', rdmColor);
-            $span = null;
-            $('#workspace-date-end').datetimepicker({
-              format: 'd/m/Y H:i',
-              dayOfWeekStart: 1,
-            });
-            MEL_ELASTIC_UI.redStars();
-
-            ok();
-          }, 10);
+          }
         });
+
+        let $custom_uid = $('#custom-uid');
+        $custom_uid.on('input', () => {
+          let val = $custom_uid.val();
+          val = mel_metapage.Functions.replace_special_char(
+            mel_metapage.Functions.remove_accents(val),
+            '-',
+          )
+            .replaceAll(' ', '-')
+            .toLowerCase();
+          $custom_uid.val(val);
+        });
+
+        setTimeout(() => {
+          const rdmColor = MEL_ELASTIC_UI.getRandomColor();
+          $('#workspace-color')
+            .val(rdmColor)
+            .on('change', (e) => {
+              const color = $(e.currentTarget).val();
+              let $span = $('#worspace-avatar-a');
+              if ($span.length > 0) {
+                if (
+                  !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
+                    mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
+                    mel_metapage.Functions.colors.kMel_extractRGB(color),
+                  )
+                ) {
+                  $span.attr('style', 'color:white!important');
+                } else {
+                  $span.attr('style', 'color:#363A5B!important');
+                }
+
+                $span.css('background-color', color);
+              }
+              $span = null;
+            });
+          let $span = $('#worspace-avatar-a');
+          if ($span.length > 0) {
+            if (
+              !mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
+                mel_metapage.Functions.colors.kMel_extractRGB('#363A5B'),
+                mel_metapage.Functions.colors.kMel_extractRGB(rdmColor),
+              )
+            ) {
+              $span.attr('style', 'color:white!important');
+            } else {
+              $span.attr('style', 'color:#363A5B!important');
+            }
+          }
+          $span.css('background-color', rdmColor);
+          $span = null;
+          $('#workspace-date-end').datetimepicker({
+            format: 'd/m/Y H:i',
+            dayOfWeekStart: 1,
+          });
+          MEL_ELASTIC_UI.redStars();
+        }, 10);
       },
     );
     create_popUp.editTitleAndSetBeforeTitle(
@@ -1298,7 +1284,7 @@ async function m_mp_check_w(step, next) {
   }
 }
 
-function m_mp_CreateWorkSpace() {
+async function m_mp_CreateWorkSpace() {
   rcmail.set_busy(true);
   rcmail.display_message("Création d'un espace de travail...", 'loading');
   let datas = {
@@ -1334,6 +1320,17 @@ function m_mp_CreateWorkSpace() {
   $('#worspace-avatar-a').css('display', 'none').appendTo($('#layout'));
   create_popUp.contents.html('<span class=spinner-border></span>');
   create_popUp.editTitle('<h2 class=""><span>Chargement...</span></h2>');
+
+  if (m_mp_Create.current_promise) {
+    await m_mp_Create.current_promise;
+    m_mp_Create.current_promise = null;
+  } else if (
+    ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
+    !$('.wekan-frame').length
+  ) {
+    await mel_metapage.Functions.change_frame('wekan', false, true);
+  }
+
   $.ajax({
     // fonction permettant de faire de l'ajax
     type: 'POST', // methode de transmission des données au fichier php

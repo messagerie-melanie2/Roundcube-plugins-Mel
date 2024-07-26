@@ -1095,12 +1095,8 @@ public function count_comments()
  */
 public function delete_like()
 {
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
     // Récupérer la valeur du champ POST
     $comment = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
-    $creator = rcube_utils::get_input_value('_creator', rcube_utils::INPUT_POST);
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
 
     // Validation des données saisies
@@ -1112,7 +1108,7 @@ public function delete_like()
     // Récupérer le like existant
     $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
     $like->comment = $comment->id;
-    $like->creator = $creator;
+    $like->creator = driver_mel::gi()->getUser()->name;
     $like->type = $type;
 
     // Supprimer le Like
@@ -1137,12 +1133,8 @@ public function delete_like()
  */
 public function add_reaction()
 {
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
     // Récupérer les valeurs
     $post_id = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
-    $creator = rcube_utils::get_input_value('_creator', rcube_utils::INPUT_POST);
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
 
     // Validation des données saisies
@@ -1154,7 +1146,7 @@ public function add_reaction()
     // Créer un nouveau commentaire
     $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
     $reaction->post = $post_id;
-    $reaction->creator = $creator;
+    $reaction->creator = driver_mel::gi()->getUser()->name;
     $reaction->type = $type;
 
     // Sauvegarde du commentaire
@@ -1182,12 +1174,8 @@ public function add_reaction()
  */
 public function delete_reaction()
 {
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
     // Récupérer la valeur du champ POST
     $post = rcube_utils::get_input_value('_post', rcube_utils::INPUT_POST);
-    $creator = rcube_utils::get_input_value('_creator', rcube_utils::INPUT_POST);
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
     
     // Validation des données saisies
@@ -1199,7 +1187,7 @@ public function delete_reaction()
     // Récupérer la réaction existante
     $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
     $reaction->post = $post->id;
-    $reaction->creator = $creator;
+    $reaction->creator = driver_mel::gi()->getUser()->name;
     $reaction->type = $type;
 
     // Supprimer la réaction

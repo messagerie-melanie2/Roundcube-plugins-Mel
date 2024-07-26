@@ -56,6 +56,7 @@ function init()
         $this->register_action('test_create_post', array($this, 'test_create_post'));
         $this->register_action('test_update_post', array($this, 'test_update_post'));
         $this->register_action('test_delete_post', array($this, 'test_delete_post'));
+        $this->register_action('test_get_post', array($this, 'test_get_post'));
         $this->register_action('test_get_all_posts_byworkspace', array($this, 'test_get_all_posts_byworkspace'));
         $this->register_action('test_create_comment', array($this, 'test_create_comment'));
         $this->register_action('test_reply_comment', array($this, 'test_reply_comment'));
@@ -71,7 +72,8 @@ function init()
         $this->register_action('test_count_reactions', array($this, 'test_count_reactions'));
         $this->register_action('test_create_image', array($this, 'test_create_image'));
         $this->register_action('test_delete_image', array($this, 'test_delete_image'));
-        $this->register_action('test_associate_tag_at_post', array($this, 'test_associate_tag_at_post'));
+        $this->register_action('test_delete_image', array($this, 'test_delete_image'));
+        $this->register_action('test_get_image', array($this, 'test_get_image'));
         $this->register_action('test_unassociate_tag_from_post', array($this, 'test_unassociate_tag_from_post'));
         
 
@@ -368,6 +370,45 @@ public function delete_post()
         echo json_encode(['status' => 'success', 'message' => "L'article " . $post->title . " a été supprimé avec succès."]);
     } else {
         echo json_encode(['status' => 'error', 'message' => "Echec de suppression de l'article " . $post->title ."."]);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
+ * Récupère un article en fonction de son UID et renvoie les données en format JSON.
+ *
+ * @return void Cette méthode ne retourne rien mais affiche directement une réponse JSON.
+ */
+public function get_post()
+{
+    // Récuperer l'Uid de l'article
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation des données
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'article et requis.']);
+        exit;
+    }
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    $ret = $post->load();
+    if (!is_null($ret)) {
+
+        echo json_encode([
+            'status' => 'success',
+            'titre' => $post->title,
+            'summary' => $post->summary,
+            'content' => $post->content,
+            'auteur' => $post->$user_uid = $user->uid,
+            'date de création' => $post->created,
+        ]);
+    } else {
+        header('Content-Type : application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'article.']);
     }
 
     // Arrêt de l'exécution du script
@@ -1339,6 +1380,47 @@ public function delete_image()
     exit;
 }
 
+/**
+ * Récupère une image en fonction de son UID et renvoie les données en format JSON.
+ *
+ * @return void Cette méthode ne retourne rien mais affiche directement une réponse JSON.
+ */
+public function get_image()
+{
+    // Récuperer l'Uid de l'image
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Validation des données
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'image et requis.']);
+        exit;
+    }
+
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $uid;
+
+    $ret = $image->load();
+    if (!is_null($ret)) {
+
+        echo json_encode([
+            'status' => 'success',
+            'image' => $image->data,
+        ]);
+    } else {
+        header('Content-Type : application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'image.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+
+
+
+
+
+
 
 
 
@@ -1547,6 +1629,39 @@ public function test_delete_post()
         echo json_encode(['status' => 'success', 'message' => "L'article " . $post->title . " a été supprimé avec succès."]);
     } else {
         echo json_encode(['status' => 'error', 'message' => "Echec de suppression de l'article " . $post->title ."."]);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+public function test_get_post()
+{
+    $uid ='iDaeXxkems6Ize9DH8TrZMDh';
+
+    // Validation des données
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'article et requis.']);
+        exit;
+    }
+
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    $ret = $post->load();
+    if (!is_null($ret)) {
+
+        echo json_encode([
+            'status' => 'success',
+            'titre' => $post->title,
+            'summary' => $post->summary,
+            'content' => $post->content,
+            'auteur' => $post->$user_uid = $user->uid,
+            'date de création' => $post->created,
+        ]);
+    } else {
+        header('Content-Type : application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'article.']);
     }
 
     // Arrêt de l'exécution du script
@@ -2322,7 +2437,34 @@ public function test_delete_image()
     exit;
 }
 
+public function test_get_image()
+{
+    $uid ='H00NX329lkJ9lyS7Si20Q7Ig';
 
+    // Validation des données
+    if (empty($uid)) {
+        echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'image et requis.']);
+        exit;
+    }
+
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $uid;
+
+    $ret = $image->load();
+    if (!is_null($ret)) {
+
+        echo json_encode([
+            'status' => 'success',
+            'image' => $image->data,
+        ]);
+    } else {
+        header('Content-Type : application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'image.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
 
 
 

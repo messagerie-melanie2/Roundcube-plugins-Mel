@@ -195,7 +195,7 @@ public function create_post()
     $user = driver_mel::gi()->getUser();
 
     //récupérer le Workspace
-    $workspace = driver_mel::gi()->get_workspace_group();
+    $workspace = driver_mel::gi()->workspace();
 
     // récupérer les valeurs des champs POST
     $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
@@ -384,7 +384,7 @@ public function delete_post()
 public function get_post()
 {
     // Récuperer l'Uid de l'article
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET);
 
     // Validation des données
     if (empty($uid)) {
@@ -403,7 +403,7 @@ public function get_post()
             'titre' => $post->title,
             'summary' => $post->summary,
             'content' => $post->content,
-            'auteur' => $post->$user_uid = $user->uid,
+            'creator' => driver_mel::gi()->getUser()->name,
             'date de création' => $post->created,
         ]);
     } else {
@@ -447,7 +447,7 @@ public function get_all_posts_byworkspace()
                 'summary'=> $post->summary,
                 'content' => $post->content,
                 'created' => $post->created,
-                'user_uid' => $post->user_uid,
+                'author' => driver_mel::gi()->getUser()->name,
                 'settings' => $post->settings,
                 'workspace' => $post->workspace
             ];
@@ -478,7 +478,7 @@ public function get_all_posts_byworkspace()
 public function create_tag()
 {
     // Récupérer le Workspace
-    $workspace= driver_mel::gi()->get_workspace_group();
+    $workspace_uid = driver_mel::gi()->workspace();
 
     // Récupérer le nom du champ POST
     $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
@@ -519,7 +519,7 @@ public function create_tag()
 public function get_all_tags_byworkspace()
 {
     // Récupérer le Workspace
-    $workspace = driver_mel::gi()->get_workspace_group();
+    $workspace_uid = driver_mel::gi()->workspace();
 
     // Charger tous les tags en utilisant la méthode listTags
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -943,7 +943,7 @@ public function like_comment()
 {
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
-    $user_uid = $user->getUid();
+    $user_uid = $user->getName();
 
     // Récupérer les valeurs
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
@@ -1493,9 +1493,6 @@ exit;
 
 public function test_create_post()
 {
-    //récupérer l'utilisateur (commenté pour le test)
-    $user = driver_mel::gi()->getUser();
-
     $workspace = 'un-espace-2';
 
     $title = 'Metal Gear Solid'; // Valeur en dur pour le test
@@ -1519,7 +1516,7 @@ public function test_create_post()
     $post->post_uid = $this->generateRandomString(24);
     $post->created = date('Y-m-d H:i:s');
     $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = $user->uid;
+    $post->user_uid = driver_mel::gi()->getUser()->name;
     $post->post_settings = $settings;
     $post->workspace_uid = $workspace;
 
@@ -1656,7 +1653,7 @@ public function test_get_post()
             'titre' => $post->title,
             'summary' => $post->summary,
             'content' => $post->content,
-            'auteur' => $post->$user_uid = $user->uid,
+            'auteur' => driver_mel::gi()->getUser()->name,
             'date de création' => $post->created,
         ]);
     } else {

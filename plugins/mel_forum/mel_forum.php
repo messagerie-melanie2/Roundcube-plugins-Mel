@@ -1342,7 +1342,12 @@ public function delete_image()
 
 
 
-
+/**
+ * Affiche une liste de posts en générant du HTML à partir d'un modèle.
+ *
+ * @param array $posts Un tableau d'objets post à afficher.
+ * @return string Le HTML généré pour la liste des posts.
+ */
 function show_posts($posts) {
     
     $html = "";

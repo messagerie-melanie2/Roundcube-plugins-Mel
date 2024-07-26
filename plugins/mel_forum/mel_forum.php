@@ -45,7 +45,6 @@ function init()
     $this->register_task('forum');
     
     if ($this->rc()->task === "forum"){
-        $this->register_action('index', [$this, 'index']);
         $this->register_action('test', array($this,'test'));
         $this->register_action('elements', array($this, 'elements'));
         $this->register_action('test_create_tag', array($this, 'test_create_tag'));
@@ -77,6 +76,11 @@ function init()
         $this->register_action('test_unassociate_tag_from_post', array($this, 'test_unassociate_tag_from_post'));
         
 
+
+        // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
+        $this->register_action('index', [$this, 'post']);
+        //Affichage de la page d'un article
+        $this->register_action('post', [$this, 'post']);
         // Récupérer le User Connecté
         $this->register_action('check_user', array($this, 'check_user'));
         //Ajouter une réaction
@@ -141,6 +145,10 @@ function index(){
     $this->rc()->output->send('mel_forum.forum');
 
     $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
+}
+
+function post(){
+    $this->rc()->output->send('mel_forum.post');
 }
 
 /**

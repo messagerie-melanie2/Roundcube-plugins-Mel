@@ -2393,23 +2393,24 @@ class mel_workspace extends bnum_plugin
         
         if ($this->get_object($workspace,$service) === null && array_search($service, $services) !== false)
         {
-            if (!isset($default_values)) $default_values = ['channel' => ['mode' => 'default']];
-            else if (!isset($default_values['channel'])) $default_values['channel'] = ['mode' => 'default'];
+            $default_values_key = "tchap-channel";
+            if (!isset($default_values)) $default_values = [$default_values_key => ['mode' => 'default']];
+            else if (!isset($default_values[$default_values_key])) $default_values[$default_values_key] = ['mode' => 'default'];
 
             $uid = null;
             $value = null;
             $config = [];
-            switch ($default_values['channel']['mode']) {
+            switch ($default_values[$default_values_key]['mode']) {
                 case 'default':
-                    $uid = $this->generate_channel_id_via_uid($workspace->uid);
+                    $uid = $workspace->uid;
                 case 'custom_name':
-                    if (!isset($uid)) $uid = $this->generate_channel_id_via_uid($default_values['channel']['value']);
+                    if (!isset($uid)) $uid = $default_values[$default_values_key]['value'];
                     if (class_exists('tchap')) $value = tchap::create_tchap_room($uid, $users);
                     
                     break;
 
                 case 'already_exist':
-                    $value = $default_values['channel']['value']['id'];
+                    $value = $default_values[$default_values_key]['value']['id'];
 
                     $config['edited'] = true;
                     break;

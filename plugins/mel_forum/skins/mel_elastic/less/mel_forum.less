@@ -1,3 +1,25 @@
+body {
+  height: 100%;
+  margin: 0; /* Supprime les marges par défaut pour éviter tout espace non désiré */
+}
+
+.container-fluid {
+  min-height: 100vh; /* Utilise la hauteur totale de la vue pour s'assurer que la barre de défilement apparaît si nécessaire */
+  box-sizing: border-box; /* Inclut les bordures et le padding dans la largeur et hauteur totales */
+}
+
+/* Styles pour le conteneur avec une barre de défilement */
+.scrollable-container {
+  overflow-y: auto; /* Ajoute une barre de défilement verticale */
+  max-height: 100vh; /* Assure que le conteneur ne dépasse pas la hauteur de la vue */
+}
+
+/* Assure que le contenu n'est pas coupé et qu'une barre de défilement est visible si nécessaire */
+.content {
+  padding: 20px; /* Ajoute du padding pour éviter que le contenu ne touche les bords */
+  box-sizing: border-box; /* Inclut le padding dans la largeur totale */
+}
+
 .btn {
   margin: 0;
   background-color: #363a5b;
@@ -148,8 +170,121 @@
   max-width: 100px;
 }
 
-.centered-title {
+.post-header-custom {
+  padding: 10px; /* Ajustez le padding selon vos besoins */
+  position: relative; /* Permet la position absolue des enfants */
+}
+
+.icon-container-custom {
+  position: absolute;
+  left: 10px; /* Ajustez selon vos besoins */
+  top: 10px; /* Ajustez selon vos besoins */
+}
+
+.keyboard-icon-custom {
+  cursor: pointer;
+  font-size: 24px; /* Taille de l'icône */
+}
+
+.header-content-custom {
+  width: 100%;
+  text-align: center;
+}
+
+.title-wsp-custom {
+  margin: 0 auto; /* Centre le h2 horizontalement */
+  width: fit-content;
+}
+
+.centered-title-custom {
   width: 700px;
   margin: 0 auto; /* Center the h2 horizontally */
   text-align: center; /* Center the text within the h2 */
+}
+
+.separator-custom {
+  max-width: 900px;
+}
+
+.content-container-custom {
+  text-align: center;
+  margin-top: 20px; /* Ajustez la marge selon vos besoins */
+}
+
+.article-image-custom {
+  width: 900px;
+  height: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.article-content-custom {
+  max-width: 900px;
+  margin: 20px auto; /* Ajoute une marge supérieure et inférieure */
+  text-align: left; /* Ajuste selon tes besoins */
+}
+
+.top-section-custom {
+  display: flex;
+  align-items: center;
+  margin-top: 20px; /* Ajustez la marge selon vos besoins */
+  margin-left: 20px; /* Ajustez la marge selon vos besoins */
+}
+
+.comment-section-custom {
+  display: flex;
+  align-items: center;
+  margin-top: 20px; /* Ajustez la marge selon vos besoins */
+}
+
+.profile-image-custom {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px; /* Espace entre l'image et l'input */
+}
+
+.comment-input-custom {
+  flex: 1;
+  padding: 5px 10px;
+  border: none;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  outline: none;
+  height: 120px;
+}
+
+.comments-container {
+  margin-top: 20px;
+}
+
+.comment-item-custom {
+  margin-bottom: 20px; /* Espace entre les commentaires */
+}
+
+.comment-author-custom {
+  font-weight: bold;
+  margin-right: 10px; /* Espace entre le nom et les autres éléments */
+}
+
+.comment-item-custom {
+  margin-bottom: 20px; /* Espace entre les commentaires */
+}
+
+.comment-image-container {
+  text-align: left;
+  width : 100%;
+}
+
+.comment-image-custom {
+  width: 400px;
+  height: 300px;
+  object-fit: cover;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.comment-text-custom {
+  margin-top: 10px; /* Espace entre l'image et le texte du commentaire */
 }

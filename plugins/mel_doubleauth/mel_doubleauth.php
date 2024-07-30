@@ -205,6 +205,21 @@ class mel_doubleauth extends bnum_plugin {
         return $return;
     }
 
+    private function _date_grace_enabled($user = null) {
+        $return = false;
+        $user = $user ?? driver_mel::gi()->getUser();
+
+        if ($user) {
+            $user->load(['double_authentification_date_grace']);
+
+            $deadline = $user->double_authentification_date_grace;
+
+            $return = $deadline && new DateTime() <= $deadline;
+        }
+
+        return $return;
+    }
+
     /**
      * Hook logout_after
      * 
@@ -1108,7 +1123,7 @@ class mel_doubleauth extends bnum_plugin {
      */
     private function is_auth_strong() 
     {
-      return mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true);
+      return $this->_date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
     }
     
     /**

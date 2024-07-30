@@ -1,12 +1,4 @@
-body {
-  height: 100%;
-  margin: 0; /* Supprime les marges par défaut pour éviter tout espace non désiré */
-}
-
-.container-fluid {
-  min-height: 100vh; /* Utilise la hauteur totale de la vue pour s'assurer que la barre de défilement apparaît si nécessaire */
-  box-sizing: border-box; /* Inclut les bordures et le padding dans la largeur et hauteur totales */
-}
+.task-forum {
 
 /* Styles pour le conteneur avec une barre de défilement */
 .scrollable-container {
@@ -20,13 +12,24 @@ body {
   box-sizing: border-box; /* Inclut le padding dans la largeur totale */
 }
 
-.btn {
-  margin: 0;
+#forum-button-add {
+  margin-top: 0;
+  display: inline-flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.forum-button {
   background-color: #363a5b;
-  border-radius: 50px;
   color: #ffffff;
+  width: fit-content;
+  border-radius: 50px;
   padding: 5px 10px;
   vertical-align: middle;
+}
+
+#layout-content {
+  overflow: auto;
 }
 
 .flex {
@@ -46,10 +49,6 @@ body {
   align-items: center;
 }
 
-.header-content .material-icons {
-  margin-right: 8px; /* Ajustez la marge selon vos besoins */
-}
-
 .title-wsp {
   margin: 0 10px; /* Ajustez la marge horizontale selon vos besoins */
 }
@@ -58,10 +57,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-}
 
-.options .margin-top-5 {
-  margin-top: 5px;
+  .margin-top-5 {
+    margin-top: 5px;
+  }
 }
 
 .margin-left-5 {
@@ -76,11 +75,47 @@ body {
   margin-right: 15px;
 }
 
-.search-input {
-  flex: 1;
-  margin: 0 10px;
+// .search-input {
+//   flex: 1;
+//   margin: 0 10px;
+//   max-width: 500px;
+//   border-radius: 50px;
+// }
+
+.forum-search-group {
+  border-color: #363a5b;
+  border-bottom-left-radius: 15px;
+  border-top-left-radius: 15px;
+}
+
+.input-group {
+  position: relative;
+  flex: 1 1 auto;
+  width: 1%;
+  margin-bottom: 0;
+}
+
+.forum-centered {
+  justify-content: center;
+}
+
+.form-control {
+  display: block;
+  height: calc(1.5em + .75rem + 2px);
+  padding: .375rem + .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  background-clip: padding-box;
+}
+
+.forum-max-width-500 {
   max-width: 500px;
-  border-radius: 50px;
+}
+
+.input-group-append {
+  margin-left: -1px;
+  display: flex;
 }
 
 .cursor-pointer {
@@ -134,16 +169,16 @@ body {
   margin: 10px 0;
 }
 
-.row {
+.row-forum {
   margin-top: 0; /* Réduit l'espace au-dessus de chaque ligne */
   margin-bottom: 0; /* Réduit l'espace en dessous de chaque ligne */
 }
 
-.row + .row {
+.row-forum + .row-forum {
   margin-top: 0; /* Réduit l'espace au-dessus des lignes suivantes */
 }
 
-.col-12 {
+.posts {
   padding-left: 0;
   padding-right: 0;
 }
@@ -197,7 +232,7 @@ body {
 }
 
 .centered-title-custom {
-  width: 700px;
+  max-width: 700px;
   margin: 0 auto; /* Center the h2 horizontally */
   text-align: center; /* Center the text within the h2 */
 }
@@ -215,11 +250,11 @@ body {
 }
 
 .ml-2 {
-  margin-left: 8px; /* Ajustez la valeur selon vos besoins */
+  margin-left: 8px;
 }
 
 .mt-2 {
-  margin-top: 4px; /* Ajustez la valeur selon vos besoins */
+  margin-top: 4px;
 }
 
 .author-info-custom > div {
@@ -236,8 +271,8 @@ body {
 }
 
 .article-image-custom {
-  width: 900px;
-  height: 300px;
+  max-width: 900px;
+  max-height: 300px;
   border-radius: 10px;
   object-fit: cover;
 }
@@ -292,18 +327,14 @@ body {
   margin-right: 10px; /* Espace entre le nom et les autres éléments */
 }
 
-.comment-item-custom {
-  margin-bottom: 20px; /* Espace entre les commentaires */
-}
-
 .comment-image-container {
   text-align: left;
   width : 100%;
 }
 
 .comment-image-custom {
-  width: 400px;
-  height: 300px;
+  max-width: 400px;
+  max-height: 300px;
   object-fit: cover;
   margin-top: 10px;
   border-radius: 5px;
@@ -320,4 +351,6 @@ body {
 .sub-reply-container {
   margin-left: 150px;
   padding-left: 15px;
+}
+
 }

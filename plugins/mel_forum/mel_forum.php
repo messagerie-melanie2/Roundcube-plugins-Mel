@@ -78,7 +78,7 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'post']);
+        $this->register_action('index', [$this, 'index']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Récupérer le User Connecté
@@ -142,9 +142,9 @@ function init()
 }
 
 function index(){
-    $this->rc()->output->send('mel_forum.forum');
-
     $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
+    
+    $this->rc()->output->send('mel_forum.forum');
 }
 
 function post(){
@@ -439,34 +439,37 @@ public function get_all_posts_byworkspace()
 
     // Charger tous les posts en utilisant la méthode listPosts
     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    $post->workspace = $workspace_uid;
+    // $post->workspace = $workspace_uid;
+    $post->workspace = "un-espace-2";
 
     // Appel de la méthode listPosts
     $posts = $post->listPosts();
 
-    if (!empty($posts)) {
-        header('Content-Type: application/json');
-        // Préparer les données des tags pour la réponse JSON
-        $posts_array = [];
-        foreach ($posts as $post) {
-            $posts_array[] = [
-                'id' => $post->id,
-                'title' => $post->title,
-                'summary'=> $post->summary,
-                'content' => $post->content,
-                'created' => $post->created,
-                'author' => driver_mel::gi()->getUser()->name,
-                'settings' => $post->settings,
-                'workspace' => $post->workspace
-            ];
-        }
-        echo json_encode([
-            'status' => 'success',
-            'tags' => $posts_array
-        ]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Aucun post trouvé.']);
-    }
+    // if (!empty($posts)) {
+    //     header('Content-Type: application/json');
+    //     // Préparer les données des tags pour la réponse JSON
+    //     $posts_array = [];
+    //     foreach ($posts as $post) {
+    //         $posts_array[] = [
+    //             'id' => $post->id,
+    //             'title' => $post->title,
+    //             'summary'=> $post->summary,
+    //             'content' => $post->content,
+    //             'created' => $post->created,
+    //             'author' => driver_mel::gi()->getUser()->name,
+    //             'settings' => $post->settings,
+    //             'workspace' => $post->workspace
+    //         ];
+    //     }
+    //     echo json_encode([
+    //         'status' => 'success',
+    //         'tags' => $posts_array
+    //     ]);
+    // } else {
+    //     echo json_encode(['status' => 'error', 'message' => 'Aucun post trouvé.']);
+    // }
+
+    return $posts;
 
     // Arrêt de l'exécution du script
     exit;
@@ -1426,23 +1429,30 @@ public function get_image()
  * @param array $posts Un tableau d'objets post à afficher.
  * @return string Le HTML généré pour la liste des posts.
  */
-function show_posts($posts) {
+public function show_posts($posts) {
     
     $html = "";
-    $html_post = $this->rc->output->parse("mel_forum.model-post", false, false);
+    $html_post = $this->rc()->output->parse("mel_forum.model-post", false, false);
 
     $posts = $this->get_all_posts_byworkspace();
+
+    // Définir la locale en français pour le formatage de la date
+    $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
     foreach ($posts as $post) {
         $html_post_copy = $html_post;
 
+        // Convertit la date du post en un timestamp Unix
+        $timestamp = strtotime($post->created);
+        // Formate la date du post
+        $formatted_date = $formatter->format($timestamp);
+
         $html_post_copy = str_replace("<creator/>", $post->creator, $html_post_copy);
-        $html_post_copy = str_replace("<date/>", $post->create, $html_post_copy);
+        $html_post_copy = str_replace("<date/>", $formatted_date, $html_post_copy);
         $html_post_copy = str_replace("<title/>", $post->title, $html_post_copy);
         $html_post_copy = str_replace("<summary/>", $post->summary, $html_post_copy);
 
         $html .= $html_post_copy;
-
     }
 
     return $html;

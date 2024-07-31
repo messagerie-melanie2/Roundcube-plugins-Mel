@@ -13,7 +13,9 @@
 <div class="barup">
     <div id="barup-wrapper-row" class="wrapper">
         <div id="barup-buttons" style=" display: inline;">
-            <a id=touchmelmenu class="button icon-mel-menu task-menu-button show-touch" href="#menu" role="button"><span class="inner sr-only"><roundcube:label name='menu' /></span></a>
+            <a id=touchmelmenu class="button icon-mel-menu task-menu-button show-touch" href="#menu" role="button" onclick="setTimeout(() => {
+              $('#menu-small').focus();
+            }, 100);"><span class="inner sr-only"><roundcube:label name='menu' /></span></a>
             <button id="button-create" class="mel-button margin-right-15 no-button-margin" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
                 <roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus"></span>
             </button>

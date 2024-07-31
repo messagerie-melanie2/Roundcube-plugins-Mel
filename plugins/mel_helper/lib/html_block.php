@@ -62,6 +62,9 @@ class HtmlBlock {
   }
 
   public function parse(){
-    
+    $matches = null;
+    if (preg_match('/<<([^<>]*)\/>>/', $this->_template, $matches)) {
+      debugger;
+    }
   }
 }

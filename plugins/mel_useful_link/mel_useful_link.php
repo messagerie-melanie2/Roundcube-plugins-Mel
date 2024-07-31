@@ -50,15 +50,15 @@ class mel_useful_link extends bnum_plugin
           }
         }
         else if($this->rc->task === 'bureau') {
-          // $this->break_initial_fonctionality('mel.portal.links.ongenerate.add');
-          // $this->include_uLinks();
-          // $this->convert_old_links();
+          $this->break_initial_fonctionality('mel.portal.links.generate.html');
+          $this->include_uLinks();
+          $this->convert_old_links();
 
-          // $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
-          // $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
-          // $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+          $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
+          $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
+          $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
 
-          // $this->rc->output->set_env("mel_portal_ulink", true);
+          $this->rc->output->set_env("mel_portal_ulink", true);
         }
         else if (class_exists('mel_metapage') && mel_metapage::can_add_widget())
         {

@@ -574,10 +574,11 @@ public function get_all_tags_byworkspace()
  *
  * @return void
  */
-public function get_all_tags_bypost()
+public function get_all_tags_bypost($uid)
 {
     // Récupérer l'uid de l'article du champ POST
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+    // $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+    // $uid = "hiXJayua2jFhoAoQIeVUC4NN";
 
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
@@ -585,24 +586,7 @@ public function get_all_tags_bypost()
     if ($post->load()) {
     $tags = $post->listTags();
 
-    if (!empty($tags)) {
-        header('Content-Type: application/json');
-        // Préparer les données des tags pour la réponse JSON
-        $tags_array = [];
-        foreach ($tags as $tag) {
-            $tags_array[] = [
-                'tag_name' => $tag->name,
-                'workspace_uid' => $tag->workspace,
-                'tag_id' => $tag->id
-            ];
-        }
-        echo json_encode([
-            'status' => 'success',
-            'tags' => $tags_array
-        ]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Aucun tag trouvé.']);
-    }
+    return $tags;
 
     // Arrêt de l'exécution du script
     exit;
@@ -1053,44 +1037,30 @@ public function get_all_comments_bypost()
 /**
  * Compte le nombre de commentaires pour un article donné.
  *
- * Cette fonction récupère l'identifiant de l'article depuis la requête POST,
- * valide l'identifiant, charge l'article correspondant, et obtient le nombre
- * de commentaires pour cet article. Le résultat est renvoyé sous forme de JSON.
+ * Cette fonction récupère l'identifiant de l'article
+ * charge l'article correspondant, et obtient le nombre
+ * de commentaires pour cet article. Le résultat est retourné.
  *
  * @return void
  *
  * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
  */
-public function count_comments()
+public function count_comments($id)
 {
-    // Récupérer la valeur du champ POST
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-
-    // Validation de la donnée saisie
-    if (empty($uid)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
-        exit;
-    }
-
     // Récupérer l'article existant
     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    $post->uid = $uid;
+    $post->id = $id;
 
-    // Vérifier si l'article existe
-    if (!$post->load()) {
-        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
-        exit;
-    }
+    // // Vérifier si l'article existe
+    // if (!$post->load()) {
+    //     echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+    //     exit;
+    // }
 
     // Obtenir le nombre de commentaires
     $commentCount = $post->countComments();
 
-    // Vérifier si la méthode retourne un résultat valide
-    if ($commentCount !== false) {
-        echo json_encode(['status' => 'success', 'message' => "Nombre de commentaires : $commentCount"]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Impossible de récupérer le nombre de commentaires.']);
-    }
+    return $commentCount;
 
     // Arrêt de l'exécution du script
     exit;
@@ -1379,61 +1349,101 @@ public function delete_image()
     exit;
 }
 
-/**
- * Récupère une image en fonction de son UID et renvoie les données en format JSON.
- *
- * @return void Cette méthode ne retourne rien mais affiche directement une réponse JSON.
- */
-public function get_image()
-{
-    // Récuperer l'Uid de l'image
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
 
-    // Validation des données
-    if (empty($uid)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'image et requis.']);
-        exit;
-    }
 
+
+
+// /**
+//  * Récupère une image en fonction de son UID et renvoie les données en format JSON.
+//  *
+//  * @return void Cette méthode ne retourne rien mais affiche directement une réponse JSON.
+//  */
+// public function get_image()
+// {
+//     // Récuperer l'Uid de l'image
+//     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+//     // Validation des données
+//     if (empty($uid)) {
+//         echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'image et requis.']);
+//         exit;
+//     }
+
+//     $image = new LibMelanie\Api\Defaut\Posts\Image();
+//     $image->uid = $uid;
+
+//     $ret = $image->load();
+//     if (!is_null($ret)) {
+
+//         echo json_encode([
+//             'status' => 'success',
+//             'image' => $image->data,
+//         ]);
+//     } else {
+//         header('Content-Type : application/json');
+//         echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'image.']);
+//     }
+
+//     // Arrêt de l'exécution du script
+//     exit;
+// }
+
+public function get_image($post_id) {
+    // Appeler la fonction get_image pour récupérer l'image
+    // Simuler un appel à une API interne ou une autre méthode pour obtenir l'image
     $image = new LibMelanie\Api\Defaut\Posts\Image();
-    $image->uid = $uid;
+    $image->post_id = $post_id; // Associer l'image au post par son ID
 
     $ret = $image->load();
     if (!is_null($ret)) {
-
-        echo json_encode([
-            'status' => 'success',
-            'image' => $image->data,
-        ]);
+        return $image->image_data; // Retourner le lien de l'image
     } else {
-        header('Content-Type : application/json');
-        echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'image.']);
+        return null;
     }
-
-    // Arrêt de l'exécution du script
-    exit;
 }
 
 
 
-
-
-
-
-
-
-
-/**
- * Affiche une liste de posts en générant du HTML à partir d'un modèle.
- *
- * @param array $posts Un tableau d'objets post à afficher.
- * @return string Le HTML généré pour la liste des posts.
- */
-public function show_posts($posts) {
+// /**
+//  * Affiche une liste de posts en générant du HTML à partir d'un modèle.
+//  *
+//  * @param array $posts Un tableau d'objets post à afficher.
+//  * @return string Le HTML généré pour la liste des posts.
+//  */
+// public function show_posts($posts) {
     
+//     $html = "";
+//     $html_post = $this->rc()->output->parse("mel_forum.model-post", false, false);
+
+//     $posts = $this->get_all_posts_byworkspace();
+
+//     // Définir la locale en français pour le formatage de la date
+//     $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+
+//     foreach ($posts as $post) {
+//         $html_post_copy = $html_post;
+
+//         // Convertit la date du post en un timestamp Unix
+//         $timestamp = strtotime($post->created);
+//         // Formate la date du post
+//         $formatted_date = $formatter->format($timestamp);
+
+//         $html_post_copy = str_replace("<creator/>", $post->creator, $html_post_copy);
+//         $html_post_copy = str_replace("<date/>", $formatted_date, $html_post_copy);
+//         $html_post_copy = str_replace("<title/>", $post->title, $html_post_copy);
+//         $html_post_copy = str_replace("<summary/>", $post->summary, $html_post_copy);
+
+//         $html .= $html_post_copy;
+//     }
+
+//     return $html;
+// }
+
+public function show_posts($posts) {
     $html = "";
     $html_post = $this->rc()->output->parse("mel_forum.model-post", false, false);
 
+    // Supposons que la fonction get_all_posts_byworkspace() retourne les posts sans les images
     $posts = $this->get_all_posts_byworkspace();
 
     // Définir la locale en français pour le formatage de la date
@@ -1447,18 +1457,47 @@ public function show_posts($posts) {
         // Formate la date du post
         $formatted_date = $formatter->format($timestamp);
 
-        $html_post_copy = str_replace("<creator/>", $post->creator, $html_post_copy);
-        $html_post_copy = str_replace("<date/>", $formatted_date, $html_post_copy);
-        $html_post_copy = str_replace("<title/>", $post->title, $html_post_copy);
-        $html_post_copy = str_replace("<summary/>", $post->summary, $html_post_copy);
+        // Remplacer les placeholders par les valeurs des posts
+        $html_post_copy = str_replace("<creator/>", htmlspecialchars($post->creator), $html_post_copy);
+        $html_post_copy = str_replace("<date/>", htmlspecialchars($formatted_date), $html_post_copy);
+        $html_post_copy = str_replace("<title/>", htmlspecialchars($post->title), $html_post_copy);
+        $html_post_copy = str_replace("<summary/>", htmlspecialchars($post->summary), $html_post_copy);
 
+        // Récupérer l'image associée au post
+        $image_link = $this->get_image($post->post_id);
+        
+        // Ajouter le lien de l'image
+        if (!empty($image_link)) {
+            $image_tag = '<img src="' . htmlspecialchars($image_link) . '" alt="Image illustrant l\'article" />';
+            $html_post_copy = str_replace("<image/>", $image_tag, $html_post_copy);
+        } else {
+            // Si pas d'image, remplacer par un placeholder ou rien
+            $html_post_copy = str_replace("<image/>", '', $html_post_copy);
+        }
+
+        // Récupérer les tags associés au post
+        $tags = $this->get_all_tags_bypost($post->uid);
+
+        // Création des éléments HTML pour les tags
+        $tags_html = '';
+        foreach ($tags as $tag) {
+            $tags_html .= '<span class="tag">#' . htmlspecialchars($tag->tag_name) . '</span>';
+        }
+
+        // Ajoute les tags au HTML du post
+        $html_post_copy = str_replace("<tag/>", $tags_html, $html_post_copy);
+
+        // Récupérer le nombre de commentaire
+        $comment_count = $this->count_comments($post->id);
+
+        //Ajoute le nombre de commentaire au HTML du post
+        $html_post_copy = str_replace("<count_comments/>", $comment_count, $html_post_copy);
+                
         $html .= $html_post_copy;
     }
 
     return $html;
 }
-
-
 
 
 

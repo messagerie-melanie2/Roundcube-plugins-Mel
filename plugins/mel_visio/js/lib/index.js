@@ -4,6 +4,10 @@
  * @local VisioCreator
  */
 
+import {
+  FrameManager,
+  FramesManager,
+} from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Locks } from './classes/locks.js';
@@ -157,6 +161,7 @@ class VisioCreator extends MelObject {
    * Action à faire au clique sur le bouton de validation
    */
   _on_button_click() {
-    window.location.href = this.url('webconf', { params: this.get_config() });
+    //window.location.href = this.url('webconf', { params: this.get_config() });
+    FramesManager.Instance.start_mode('visio', 'visio', this.get_config());
   }
 }

@@ -441,7 +441,10 @@ class Window {
               console.log('e', e);
               e = e.srcElement;
               e.contentWindow.document.addEventListener('click', () => {
-                if (!this.is_selected()) {
+                if (
+                  FramesManager.Instance.manual_multi_frame_enabled() &&
+                  !this.is_selected()
+                ) {
                   FramesManager.Helper.current.unselect_all();
                   FramesManager.Helper.current.select_window(this._id);
                 }
@@ -453,7 +456,10 @@ class Window {
         this.get_frame()[0].contentWindow.document.addEventListener(
           'click',
           () => {
-            if (!this.is_selected()) {
+            if (
+              FramesManager.Instance.manual_multi_frame_enabled() &&
+              !this.is_selected()
+            ) {
               FramesManager.Helper.current.unselect_all();
               FramesManager.Helper.current.select_window(this._id);
             }
@@ -476,8 +482,6 @@ class Window {
   }
 
   async _open_frame(task, { new_args = null }) {
-    if (this.is_hidden()) this.show();
-
     this._history.add(this._current_frame.task);
     this._current_frame.hide();
     this._current_frame = this._frames.get(task);
@@ -569,13 +573,15 @@ class Window {
   }
 
   async switch_frame(task, { changepage = true, args = null, actions = [] }) {
+    if (changepage && this.is_hidden()) this.show();
+
     MainNav.select(task);
 
     Window.UpdateNavUrl(Window.UrlFromTask(task));
     Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
 
     if (this._frames.has(task)) {
-      if (changepage) await this._open_frame(task, { new_args: args });
+      await this._open_frame(task, { new_args: args });
     } else await this._create_frame(task, { changepage, args, actions });
 
     this._current_frame.$frame.focus();
@@ -779,6 +785,7 @@ class FrameManager {
     { changepage = true, args = null, actions = [], wind = null },
   ) {
     if (wind !== null) {
+      debugger;
       if (changepage) this.close_windows_to_remove_on_change();
 
       if (!this._windows.has(wind)) {
@@ -796,6 +803,8 @@ class FrameManager {
         actions,
       });
       this._selected_window.select();
+
+      return this._selected_window;
     } else
       return await this.switch_frame(task, {
         changepage,
@@ -955,7 +964,7 @@ class FrameManager {
         eMessageType.Error,
       );
     } else {
-      await this.switch_frame(task, {
+      return await this.switch_frame(task, {
         args,
         wind:
           MelEnumerable.from(this._windows.keys)
@@ -977,6 +986,10 @@ class FrameManager {
   enable_manual_multiframe() {
     this._manual_multi_frame_enabled = true;
     return this;
+  }
+
+  manual_multi_frame_enabled() {
+    return this._manual_multi_frame_enabled;
   }
 
   start_custom_multi_frame() {
@@ -1134,23 +1147,21 @@ if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
   window.mel_modules[MODULE_CUSTOM_FRAMES] = {};
 
 FramesManager.Instance.add_mode('visio', async function visio(...args) {
-  debugger;
-  const [page] = args;
+  const [page, params] = args;
   if (!page) {
     await FramesManager.Instance.switch_frame('webconf', {
       args: { _page: 'index' },
     });
   } else if (page !== 'index') {
+    params._page = page || 'init';
     FramesManager.Instance.disable_manual_multiframe()
       .start_custom_multi_frame()
       .get_window()
       .hide();
-    await FramesManager.Instance.open_another_window('webconf', {
-      _page: page || 'init',
-    });
+    await FramesManager.Instance.open_another_window('webconf', params);
     FramesManager.Instance.get_window()
       .set_cannot_be_select()
-      .set_remove_on_change()
+      //.set_remove_on_change()
       .add_tag('dispo-visio');
     FramesManager.Instance.select_window(0);
   }

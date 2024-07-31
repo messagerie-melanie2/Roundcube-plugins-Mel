@@ -1164,8 +1164,6 @@ class mel_metapage extends bnum_plugin
     /**
      * Vérification si les utilisateurs existent dans l'annuaire
      * 
-     * @param array _users POST Liste d'utilisateurs
-     * 
      * @return json ["unexist", "externs", "added"]
      */
     function check_users()
@@ -2932,6 +2930,8 @@ class mel_metapage extends bnum_plugin
 
     public function debug_and_test()
     {
+                        unset($_SESSION);
+                    session_destroy();
         //$this->include_script('js/program/webconf_video_manager.js');
         $this->include_script('js/actions/test.js');
         $this->rc->output->send('mel_metapage.test');

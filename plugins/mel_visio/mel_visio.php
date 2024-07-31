@@ -214,6 +214,10 @@ class mel_visio extends bnum_plugin
         return $html;
     }
 
+    public function get_room_input() {
+        return 
+    }
+
     public function get_jwt()
     {
         header("Content-Type: application/json; charset=" . RCUBE_CHARSET);

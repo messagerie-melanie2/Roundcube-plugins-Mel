@@ -134,14 +134,17 @@ class MainNav {
   static select(task) {
     this.unselect_all();
 
-    $(`#taskmenu a[data-task="${task}"]`)
-      .addClass('selected')
-      .attr('aria-disabled', true)
-      .attr('tabIndex', '-1')
-      .attr('aria-current', true);
+    let $task = $(`#taskmenu a[data-task="${task}"]`);
+    if ($task.length) {
+      $(`#taskmenu a[data-task="${task}"]`)
+        .addClass('selected')
+        .attr('aria-disabled', true)
+        .attr('tabIndex', '-1')
+        .attr('aria-current', true);
 
-    if ($('#otherapps a.selected').length)
-      $('#taskmenu a.more-options').addClass('selected');
+      if ($('#otherapps a.selected').length)
+        $('#taskmenu a.more-options').addClass('selected');
+    }
   }
 
   static unselect_all() {

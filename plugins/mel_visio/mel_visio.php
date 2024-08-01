@@ -80,6 +80,12 @@ class mel_visio extends bnum_plugin
     }
 
     function page_index() {
+        if (!$this->data->has_room()) 
+        {
+            $this->data->update_room($this->generate_key());
+            $this->add_handler("inputroom", [$this, "get_room_input"]);
+        }
+
         if (class_exists('rocket_chat')) {
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
             $this->rc()->output->set_env('visio.has_channel', true);
@@ -215,7 +221,10 @@ class mel_visio extends bnum_plugin
     }
 
     public function get_room_input() {
-        return 
+        $this->require_plugin('mel_helper');
+        $input = mel_helper::Parse('mel_visio.block/input_room');
+        $input->value = $this->data->room();
+        return $input->parse();
     }
 
     public function get_jwt()
@@ -299,6 +308,46 @@ class mel_visio extends bnum_plugin
             );
         }
         return $result;
+    }
+
+    private function generate_key($size = null)
+    {
+        if ($size === null)
+            $size = rand(10 , 20);
+        $type = rand(0 , 3);
+        $key = "";
+
+        for ($i=0; $i < $size; ++$i) { 
+            switch ($type) {
+                case 0:
+                    if ($i === 1 || $i == 3 || $i == 6)
+                        $key.= rand(0,9);
+                    else
+                        $key.= chr(rand(65, 90));
+                    break;
+                case 1:
+                    if ($i === 2 || $i == 4 || $i == 7)
+                        $key.= rand(0,9);
+                    else
+                        $key.= chr(rand(65, 90));
+                    break;
+                case 2:
+                    if ($i === 1 || $i == 4 || $i == 8)
+                        $key.= rand(0,9);
+                    else
+                        $key.= chr(rand(65, 90));
+                    break;
+                default:
+                if ($i === 2 || $i == 5 || $i == 9)
+                    $key.= rand(0,9);
+                else
+                    $key.= chr(rand(65, 90));
+                break;
+            } 
+
+        } 
+
+        return $key;
     }
 
 }

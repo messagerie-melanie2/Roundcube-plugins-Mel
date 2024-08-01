@@ -785,7 +785,6 @@ class FrameManager {
     { changepage = true, args = null, actions = [], wind = null },
   ) {
     if (wind !== null) {
-      debugger;
       if (changepage) this.close_windows_to_remove_on_change();
 
       if (!this._windows.has(wind)) {

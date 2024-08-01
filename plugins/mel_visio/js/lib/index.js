@@ -70,7 +70,8 @@ class VisioCreator extends MelObject {
         this.view.password.check();
         this.view.password.$field.val(this.data.password);
       }
-    } else this.view.$room.val(VisioFunctions.generateWebconfRoomName());
+    } else if (this.view.$room.val() === EMPTY_STRING)
+      this.view.$room.val(VisioFunctions.generateWebconfRoomName());
 
     //Désactivé les champs qui ont besoins d'être désactivés
     if (this.locks.room) this._disable(this.view.$room);

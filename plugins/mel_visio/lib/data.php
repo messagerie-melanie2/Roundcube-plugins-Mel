@@ -10,33 +10,37 @@ class VisioParams
     public function __construct() {}
 
     public function room() {
-        if (!$room) $room = rcube_utils::get_input_value('_key', rcube_utils::INPUT_GET);
+        if (!$this->room) $this->room = rcube_utils::get_input_value('_key', rcube_utils::INPUT_GET);
 
-        return $room;
+        return $this->room;
     }
 
     public function wsp() {
-        if (!$wsp) $wsp = rcube_utils::get_input_value('_wsp', rcube_utils::INPUT_GET);
+        if (!$this->wsp) $this->wsp = rcube_utils::get_input_value('_wsp', rcube_utils::INPUT_GET);
 
-        return $wsp;
+        return $this->wsp;
     }
 
     public function channel() {
-        if (!$channel) $channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_GET) ?? rcube_utils::get_input_value('_ariane', rcube_utils::INPUT_GET) ;
+        if (!$this->channel) $this->channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_GET) ?? rcube_utils::get_input_value('_ariane', rcube_utils::INPUT_GET) ;
 
-        return $channel;
+        return $this->channel;
     }
 
     public function password() {
-        if (!$password) $password = rcube_utils::get_input_value('_pass', rcube_utils::INPUT_GET);
+        if (!$this->password) $this->password = rcube_utils::get_input_value('_pass', rcube_utils::INPUT_GET);
 
-        return $password;
+        return $this->password;
     }
 
     public function need_config() {
-        if (!isset($password)) $need_config = rcube_utils::get_input_value('_need_config', rcube_utils::INPUT_GET) ?? false;
+        if (!isset($this->need_config)) $this->need_config = rcube_utils::get_input_value('_need_config', rcube_utils::INPUT_GET) ?? false;
 
-        return $need_config;
+        return $this->need_config;
+    }
+
+    public function update_room($room) {
+        $this->room = $room;
     }
 
     public function has_room() {

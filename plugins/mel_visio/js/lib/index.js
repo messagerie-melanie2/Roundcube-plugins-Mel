@@ -4,19 +4,13 @@
  * @local VisioCreator
  */
 
-import {
-  FrameManager,
-  FramesManager,
-} from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Locks } from './classes/locks.js';
-import { ConfigVisioData } from './classes/structures/data.js';
 import { VisioView } from './classes/view.js';
 import { SELECTOR_BUTTON_START } from './consts.js';
-import { ePage } from './enums.js';
 import { VisioFunctions } from './helpers.js';
-import { VisioPageManager } from './pages.js';
 export { VisioCreator };
 
 /**

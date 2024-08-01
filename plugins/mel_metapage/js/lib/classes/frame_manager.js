@@ -1153,7 +1153,8 @@ FramesManager.Instance.add_mode('visio', async function visio(...args) {
     });
   } else if (page !== 'index') {
     params._page = page || 'init';
-    FramesManager.Instance.disable_manual_multiframe()
+    FramesManager.Instance.close_except_selected()
+      .disable_manual_multiframe()
       .start_custom_multi_frame()
       .get_window()
       .hide();
@@ -1164,4 +1165,14 @@ FramesManager.Instance.add_mode('visio', async function visio(...args) {
       .add_tag('dispo-visio');
     FramesManager.Instance.select_window(0);
   }
+});
+
+FramesManager.Instance.add_mode('stop_visio', function () {
+  FramesManager.Instance.enable_manual_multiframe().stop_custom_multi_frame();
+});
+
+FramesManager.Instance.add_mode('reinit_visio', function () {
+  FramesManager.Instance.close_except_selected().get_window().show();
+  FramesManager.Instance.start_mode('stop_visio');
+  FramesManager.Instance.start_mode('visio');
 });

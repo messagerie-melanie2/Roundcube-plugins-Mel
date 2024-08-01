@@ -2,16 +2,23 @@
 class HtmlBlock {
   private $_template;
   private $_other_variables;
+  private $_parsed_template;
 
   public function __construct($template) {
-    $this->_template = rcmail::get_instance()->output->parse($template, false, false);
+    $this->_template = $template;  
+  }
+
+  public function raw_template() {
+    if (!isset($this->_parsed_template)) $this->_parsed_template = rcmail::get_instance()->output->parse($this->_template, false, false);
+
+    return $this->_parsed_template;
   }
 
   private function _is_in_template($prop) {
-    return strpos($this->_template, "<<$prop/>>") !== false   || 
-           strpos($this->_template, "<< $prop/>>") !== false  || 
-           strpos($this->_template, "<<$prop />>") !== false  || 
-           strpos($this->_template, "<< $prop />>") !== false  ;
+    return strpos($this->raw_template(), "<<$prop/>>") !== false   || 
+           strpos($this->raw_template(), "<< $prop/>>") !== false  || 
+           strpos($this->raw_template(), "<<$prop />>") !== false  || 
+           strpos($this->raw_template(), "<< $prop />>") !== false  ;
   }
 
   /**
@@ -62,6 +69,25 @@ class HtmlBlock {
   }
 
   public function parse(){
-    
+    $template = $this->raw_template();
+    $this->_parsed_template = null;
+    $matches = null;
+    if (preg_match_all('/<<([^<>]*)\/>>/', $template, $matches)) {
+      for ($i=0, $len = count($matches[0]), $value = null; $i < $len; ++$i) {
+        $value = $this->_wash($matches[1][$i]);
+        $template = str_replace($matches[0][$i], $this->$value ?? '', $template);
+      }
+    }
+
+    return $template;
+  }
+
+  private function _wash($str) {
+    if (isset($str) && $str !== ''){
+      if ($str[0] === ' ') $str = ltrim($str);
+      if ($str[strlen($str) - 1] === ' ') $str = rtrim($str);
+    }
+
+    return $str;
   }
 }

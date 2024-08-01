@@ -5,49 +5,56 @@
 </h1>
 
 <div id="layout-content" role="main">
-  <div class="container-fluid p-3 body">
-    <div id="contents"></div>
-    <div class="post module_parent">
-      <div class="post-header d-flex justify-content-between align-items-center p-3">
-        <div class="header-content d-flex flex-column align-items-start">
-          <div class="d-flex align-items-center">
-            <i class="material-symbols-outlined">keyboard_backspace</i>
-            <h2 class="title-wsp bold no-margin ml-2">Articles</h2>
-          </div>
-          <div class="d-flex align-items-center mt-2 ml-4">
-            <span>Plus récent</span>
-            <i class="material-symbols-outlined ml-2">keyboard_arrow_down</i>
-          </div>
-        </div>
-        <div class="input-group forum-search-group forum-centered">
-          <input id="wsp-search-input" type="text" class="form-control forum-max-width-500">
-          <div class="input-group-append">
-            <span class="icon-forum-search input-group-text"></span>
-          </div>
-        </div>
-        <!-- <input class="search-input"> -->
-        <div class="options d-flex flex-column align-items-center">
-          <button id="forum-button-add" class="forum-button btn btn-secondary">
-            <span class="add">Ajouter</span>
-            <span class="material-symbols-outlined">
-              add_circle
-            </span>
-          </button>
-          <div class="d-flex align-items-center mt-2">
-            <label class="d-flex align-items-center">
-              Afficher uniquement les favoris
-              <input type="checkbox" class="ml-2">
-            </label>
-          </div>
+  <div class="content">
+    <div class="row forum-header">
+      <div class="return">
+        <i class="material-symbols-outlined">keyboard_backspace</i>
+        <span class="ml-2">Articles</span>
+      </div>
+      <div class="input-group mel-search-group mel-centered">
+        <input id="wsp-search-input" type="text" onmousedown="" class="form-control mel-max-width-500">
+        <div class="input-group-append">
+          <span class="icon-mel-search input-group-text"></span>
         </div>
       </div>
       <div>
-        <roundcube:object name="forum_post" />
+        <button id="forum-button-add" class="mel-button btn btn-secondary">
+          <span class="add">Ajouter</span>
+          <span class="material-symbols-outlined">
+            add_circle
+          </span>
+        </button>
       </div>
+    </div>
+    <div class="row forum-sort">
+      <div>
+        <div class="input-group mel-group">
+          <select title="" id="forum-sort-select" class="form-control input-mel mel-input custom-select pretty-select"
+            data-original-title="Trier par : ">
+            <!-- A dynamiser en js -->
+            <option value="date_asc">Plus récents</option>
+            <option value="date_desc">Plus anciens</option>
+            <option value="">etc</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-flex align-items-center">
+        <div class="d-flex justify-content-center align-items-center mr-2">
+          Afficher uniquement les favoris
+        </div>
+        <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
+          <input name="message_extwin" id="rcmfd_message_extwin" type="checkbox"
+            class="form-check-input custom-control-input no-click-focus">
+          <label for="rcmfd_message_extwin" class="custom-control-label option-switch no-click-focus">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="row forum-content">
+      <roundcube:object name="forum_post" />
     </div>
   </div>
 </div>
-
 
 <roundcube:include file="/includes/footer.html" />
 

@@ -1,0 +1,68 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <div class="row forum-header">
+      <div class="return">
+        <i class="material-symbols-outlined">keyboard_backspace</i>
+        <span class="ml-2">Articles</span>
+      </div>
+      <div class="text-header">
+        <!-- <h2 class="title">|</h2> -->
+        <h2 class="title">Créer un nouvel article</h2>
+      </div>
+      <div></div>
+    </div>
+    <div class="row forum-content">
+      <div class="col-8 mt-4">
+        <div class="row">
+          <div class="border-bottom-input-icon">
+            <input type="text" placeholder="Ajoutez un titre"
+              class="form-control input-mel border-bottom-input large-input" name="title" id="edit-title"
+              required="true">
+            <button id="reset-title-button" class="border-bottom-input-button close-button btn btn-secondary"
+              type="button">
+              <span class="material-symbols-outlined">
+                close
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="row my-4">
+          <span class="tag">#Chat</span>
+          <span class="tag">#Actualités</span>
+          <span id="new-tag" class="tag">+ Ajouter un tag</span>
+        </div>
+        <div class="row mt-4 d-flex justify-content-center">
+          <div id="forum-content" class="forum-content mce_editor"></div>
+        </div>
+        <div class="row my-2">
+          <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
+            <input name="message_extwin" id="rcmfd_message_extwin" type="checkbox"
+              class="form-check-input custom-control-input no-click-focus">
+            <label for="rcmfd_message_extwin" class="custom-control-label option-switch no-click-focus">
+            </label>
+          </div>
+          <div class="d-flex justify-content-center align-items-center ml-2">
+            Autoriser uniquement les administrateurs de l’espace à modifier l’article
+            <!-- <span class="material-symbols-outlined options-help ml-2"
+              title="Ouvre les courriel dans une nouvelle fenêtre">
+              help
+            </span> -->
+          </div>
+        </div>
+        <div class="row d-flex justify-content-end align-items-center">
+          <button type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2" data-dismiss="modal">Annuler<span class="plus icon-mel-close"></span></button>
+          <button type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder<span class="plus icon-mel-arrow-right"></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<roundcube:include file="/includes/footer.html" />

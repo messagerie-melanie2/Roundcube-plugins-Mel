@@ -24,6 +24,8 @@ class mel_forum extends bnum_plugin
  */
 public $task = '.*';
 
+public $current_post;
+
 /**
  * (non-PHPdoc)
  * @see bnum_plugin::init()
@@ -78,7 +80,7 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'index']);
+        $this->register_action('index', [$this, 'post']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Récupérer le User Connecté
@@ -98,7 +100,7 @@ function init()
         //supprimer un article
         $this->register_action('delete_post', array($this, 'delete_post'));
         // récupérer un  article
-        $this->register_action('get_one_post', array($this, 'get_one_post'));
+        $this->register_action('get_post', array($this, 'get_post'));
         // récupérer tous les articles
         $this->register_action('get_all_posts_byworkspace', array($this, 'get_all_posts_byworkspace'));
         // Ajouter un commentaire ou une réponse
@@ -141,15 +143,66 @@ function init()
     }
 }
 
-function index(){
+public function index(){
     $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
     
     $this->rc()->output->send('mel_forum.forum');
 }
 
-function post(){
+public function post(){
+    //Récupérér uid avec GET
+    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
+    $this->current_post = $this->get_post($uid);
+
+    $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
+    $this->rc()->output->add_handlers(array('show_post_creator' => array($this, 'show_post_creator')));
+    $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
+    $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
+
     $this->rc()->output->send('mel_forum.post');
 }
+
+public function show_post_title(){
+      
+    return $this->current_post->title;
+   
+}
+
+public function show_post_creator(){
+
+    return driver_mel::gi()->getUser($this->current_post->user_id)->name;
+
+}
+
+public function show_post_date(){
+
+    $post_date = $this->current_post->created;
+
+    // Définir la locale en français pour le formatage de la date
+    $formatter = new IntlDateFormatter(
+        'fr_FR', 
+        IntlDateFormatter::LONG, 
+        IntlDateFormatter::NONE
+    );
+
+    // Convertir la date du post en un timestamp Unix
+    $timestamp = strtotime($post_date);
+
+    // Formater la date du post
+    $formatted_date = $formatter->format($timestamp);
+
+    return $formatted_date;
+}
+
+public function show_post_content(){
+
+    return $this->current_post->content;
+
+    
+}
+
+
+
 
 /**
      * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
@@ -389,38 +442,27 @@ public function delete_post()
  *
  * @return void Cette méthode ne retourne rien mais affiche directement une réponse JSON.
  */
-public function get_post()
+public function get_post($uid)
 {
-    // Récuperer l'Uid de l'article
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET);
-
-    // Validation des données
-    if (empty($uid)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'article et requis.']);
-        exit;
-    }
+    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
 
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
 
     $ret = $post->load();
     if (!is_null($ret)) {
-
-        echo json_encode([
-            'status' => 'success',
-            'titre' => $post->title,
-            'summary' => $post->summary,
-            'content' => $post->content,
-            'creator' => driver_mel::gi()->getUser()->name,
-            'date de création' => $post->created,
-        ]);
+        // Retourner les informations du post sous forme de tableau associatif
+        // return [
+        //     'status' => 'success',
+        //     'title' => $post->title,
+        //     'creator' => driver_mel::gi()->getUser($post->user_id)->name,
+        //     'created' => $post->created,
+        //     'content' => $post->content
+        // ];
+        return $post;
     } else {
-        header('Content-Type : application/json');
-        echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'article.']);
+        return null;
     }
-
-    // Arrêt de l'exécution du script
-    exit;
 }
 
 /**

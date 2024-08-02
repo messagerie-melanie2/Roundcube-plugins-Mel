@@ -127,4 +127,12 @@ abstract class bnum_plugin extends rcube_plugin
         ));
     }
 
+    protected function get_user($uid = null) {
+        return driver_mel::gi()->getUser($uid);
+    }
+
+    protected function get_user_from_email($email) {
+        return  driver_mel::gi()->getUser(null, true, false, null, $email);
+    }
+
 }

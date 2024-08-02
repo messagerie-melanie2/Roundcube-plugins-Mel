@@ -80,7 +80,7 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'post']);
+        $this->register_action('index', [$this, 'index']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Récupérer le User Connecté
@@ -230,7 +230,8 @@ public function show_post_tags() {
  */
 public function show_post_creator(){
 
-    return driver_mel::gi()->getUser($this->current_post->user_uid)->name;
+    
+    return $this->get_user($this->current_post->user_uid)->name;
 
 }
 
@@ -1581,10 +1582,10 @@ public function show_posts($posts) {
         $formatted_date = $formatter->format($timestamp);
 
         // Remplacer les placeholders par les valeurs des posts
-        $html_post_copy = str_replace("<creator/>", htmlspecialchars($post->creator), $html_post_copy);
-        $html_post_copy = str_replace("<date/>", htmlspecialchars($formatted_date), $html_post_copy);
-        $html_post_copy = str_replace("<title/>", htmlspecialchars($post->title), $html_post_copy);
-        $html_post_copy = str_replace("<summary/>", htmlspecialchars($post->summary), $html_post_copy);
+        $html_post_copy = str_replace("<post-creator/>", htmlspecialchars(driver_mel::gi()->getUser($post->creator)->name), $html_post_copy);
+        $html_post_copy = str_replace("<post-date/>", htmlspecialchars($formatted_date), $html_post_copy);
+        $html_post_copy = str_replace("<post-title/>", htmlspecialchars($post->title), $html_post_copy);
+        $html_post_copy = str_replace("<post-summary/>", htmlspecialchars($post->summary), $html_post_copy);
 
         // Récupérer l'image associée au post
         $image_link = $this->get_image($post->post_id);
@@ -1592,10 +1593,10 @@ public function show_posts($posts) {
         // Ajouter le lien de l'image
         if (!empty($image_link)) {
             $image_tag = '<img src="' . htmlspecialchars($image_link) . '" alt="Image illustrant l\'article" />';
-            $html_post_copy = str_replace("<image/>", $image_tag, $html_post_copy);
+            $html_post_copy = str_replace("<post-image/>", $image_tag, $html_post_copy);
         } else {
             // Si pas d'image, remplacer par un placeholder ou rien
-            $html_post_copy = str_replace("<image/>", '', $html_post_copy);
+            $html_post_copy = str_replace("<post-image/>", '', $html_post_copy);
         }
 
         // Récupérer les tags associés au post
@@ -1608,13 +1609,13 @@ public function show_posts($posts) {
         }
 
         // Ajoute les tags au HTML du post
-        $html_post_copy = str_replace("<tag/>", $tags_html, $html_post_copy);
+        $html_post_copy = str_replace("<post-tag/>", $tags_html, $html_post_copy);
 
         // Récupérer le nombre de commentaire
         $comment_count = $this->count_comments($post->id);
 
         //Ajoute le nombre de commentaire au HTML du post
-        $html_post_copy = str_replace("<count_comments/>", $comment_count, $html_post_copy);
+        $html_post_copy = str_replace("<post-count-comments/>", $comment_count, $html_post_copy);
                 
         $html .= $html_post_copy;
     }

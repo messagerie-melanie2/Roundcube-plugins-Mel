@@ -271,8 +271,15 @@ public function show_post_date(){
 
 public function show_post_content(){
 
-    return $this->current_post->content;
+    $content = $this->current_post->content;
+
+    $images = $this->current_post->listImages();
+
+    foreach ($images as $image) {
+        $content = str_replace("<image-".$image->uid."/>", $image->image_data, $content);
+    }
     
+    return $content;
 }
 
 
@@ -1702,10 +1709,10 @@ public function test_update_post()
     $user = driver_mel::gi()->getUser();
 
     // Récupérer les valeurs des champs POST
-    $uid = 'BnuDKo6D8Kd2xABa2TgaVFpf'; // UID de l'article à mettre à jour
-    $title = 'Vingt Mille Lieues sous les Mers'; // Valeur en dur pour le test
-    $content = 'Vingt Mille Lieues sous les Mers plonge les lecteurs dans une aventure sous-marine à bord du Nautilus, le sous-marin du capitaine Nemo. Le narrateur, le professeur Aronnax, accompagné de son domestique Conseil et du harponneur Ned Land, explore les profondeurs des océans, rencontrant des créatures marines fascinantes et découvrant des trésors engloutis. Le capitaine Nemo, mystérieux et complexe, ajoute une dimension intrigante à cette odyssée.'; // Valeur en dur pour le test
-    $summary = 'L\'histoire de Vingt Mille Lieues sous les Mers suit le professeur Aronnax et ses compagnons à bord du Nautilus, explorant les merveilles et les mystères des océans avec le capitaine Nemo.'; // Valeur en dur pour le test
+    $uid = 'iDaeXxkems6Ize9DH8TrZMDh'; // UID de l'article à mettre à jour
+    $title = 'Voyage au Centre de la Terre'; // Valeur en dur pour le test
+    $content = '<image-c2iyB5W9vxq1yWBYy5rPvv7U/> <br> <br> Voyage au Centre de la Terre est un roman captivant qui raconte l\'histoire du professeur Lidenbrock, son neveu Axel et leur guide Hans. Ils entreprennent une expédition pour atteindre le centre de la Terre en suivant un passage découvert en Islande. Le voyage est plein de mystères et de dangers, et ils découvrent un monde souterrain fantastique avec des créatures préhistoriques et des paysages époustouflants.'; // Valeur en dur pour le test
+    $summary = 'Ce roman suit une expédition audacieuse menée par le professeur Lidenbrock pour atteindre le centre de la Terre, dévoilant un monde souterrain étonnant.'; // Valeur en dur pour le test
     $workspace = 'un-espace-2';
     $settings = 'Modifiable'; // Valeur en dur pour le test
 
@@ -2538,8 +2545,8 @@ public function test_count_reactions()
 
 public function test_create_image()
 {
-    $post_id ='14';
-    $data ='https://images-eu.ssl-images-amazon.com/images/I/81o3TrIUwXL._AC_UL600_SR600,600_.jpg';
+    $post_id ='6';
+    $data ='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN3kspmHm_n83-nq2uWFIRaIY2q5xh5ylVSA&s';
 
     // Validation des données saisies
     if (empty($post_id) || empty($data)) {
@@ -2571,7 +2578,7 @@ public function test_create_image()
 public function test_delete_image()
 {
     // Récuperer l'Uid de l'image
-    $uid ='QSmzqMVy2cfQZD3pNLhB5O9c';
+    $uid ='H00NX329lkJ9lyS7Si20Q7Ig';
 
     // Validation de la donnée saisie
     if (empty($uid)) {

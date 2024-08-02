@@ -143,47 +143,112 @@ function init()
     }
 }
 
+/**
+ * Affiche la page d'accueil du forum.
+ *
+ * Cette fonction enregistre un template pour afficher les publications du forum
+ * et envoie le modèle 'mel_forum.forum' à la page qui affiche les articles.
+ *
+ * @return void
+ */
 public function index(){
     $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
     
     $this->rc()->output->send('mel_forum.forum');
 }
 
+/**
+ * Affiche un article du forum.
+ *
+ * Cette fonction récupère l'identifiant de l'article via une méthode GET,
+ * charge la publication actuelle, et enregistre plusieurs gestionnaires pour 
+ * afficher le titre, le créateur, la date et le contenu de la publication.
+ * Ensuite, elle envoie le modèle 'mel_forum.post' à la page.
+ *
+ * @return void
+ */
 public function post(){
     //Récupérér uid avec GET
     $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
     $this->current_post = $this->get_post($uid);
 
     $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
+    $this->rc()->output->add_handlers(array('show_post_tags' => array($this, 'show_post_tags')));
     $this->rc()->output->add_handlers(array('show_post_creator' => array($this, 'show_post_creator')));
     $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
     $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
-
+    
     $this->rc()->output->send('mel_forum.post');
 }
 
+/**
+ * Affiche le titre de la publication actuelle.
+ *
+ * Cette fonction retourne le titre de la publication chargée dans 
+ * l'attribut `current_post`.
+ *
+ * @return string Le titre de la publication actuelle.
+ */
 public function show_post_title(){
       
     return $this->current_post->title;
    
 }
 
+/**
+ * Affiche les tags associés à la publication actuelle.
+ *
+ * Cette fonction récupère les tags associés à la publication chargée 
+ * dans l'attribut `current_post`, génère des éléments HTML pour chaque tag 
+ * et les intègre dans le contenu HTML de la publication.
+ *
+ * @return string Le HTML contenant les tags formatés et le contenu de la publication.
+ */
+public function show_post_tags() {
+    // Récupérer les tags associés au post actuel
+    $tags = $this->get_all_tags_bypost($this->current_post->uid);
+
+    // Création des éléments HTML pour les tags
+    $tags_html = '';
+    foreach ($tags as $tag) {
+        $tags_html .= '<span class="tag">#' . htmlspecialchars($tag->tag_name) . '</span>';
+    }
+
+    $tags_html .= $html_post_copy;
+
+    return $tags_html;
+}
+
+/**
+ * Affiche le nom du créateur de la publication actuelle.
+ *
+ * Cette fonction retourne le nom de l'utilisateur qui a créé la publication 
+ * chargée dans l'attribut `current_post`, en utilisant l'identifiant utilisateur 
+ * pour récupérer les informations de l'utilisateur via le driver `driver_mel`.
+ *
+ * @return string Le nom du créateur de la publication actuelle.
+ */
 public function show_post_creator(){
 
-    return driver_mel::gi()->getUser($this->current_post->user_id)->name;
+    return driver_mel::gi()->getUser($this->current_post->user_uid)->name;
 
 }
 
+/**
+ * Affiche la date de création de la publication actuelle.
+ *
+ * Cette fonction récupère la date de création de la publication chargée 
+ * dans l'attribut `current_post`, puis la formate en français en utilisant 
+ * le `IntlDateFormatter` pour l'affichage.
+ *
+ * @return string La date formatée de la publication actuelle.
+ */
 public function show_post_date(){
 
     $post_date = $this->current_post->created;
 
     // Définir la locale en français pour le formatage de la date
-    $formatter = new IntlDateFormatter(
-        'fr_FR', 
-        IntlDateFormatter::LONG, 
-        IntlDateFormatter::NONE
-    );
+    $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
     // Convertir la date du post en un timestamp Unix
     $timestamp = strtotime($post_date);
@@ -194,10 +259,19 @@ public function show_post_date(){
     return $formatted_date;
 }
 
+
+/**
+ * Affiche le contenu de la publication actuelle.
+ *
+ * Cette fonction retourne le contenu de la publication chargée 
+ * dans l'attribut `current_post`.
+ *
+ * @return string Le contenu de la publication actuelle.
+ */
+
 public function show_post_content(){
 
     return $this->current_post->content;
-
     
 }
 

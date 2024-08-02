@@ -1,54 +1,62 @@
-<div class="row-forum custom-row-spacing">
-  <div class="posts">
-    <div class="contents rounded-none height-250" tabindex="0">
-      <div class="square-contents d-flex flex-column full-height">
-        <div class="details-row flex justify-content-between align-items-center">
-          <div class="details-left d-flex align-items-center ml-2 font-size-14">
-            <div class="headlines-by"><creator/></div>
-            <i class="material-symbols-outlined">access_time</i>
-            <span class="ml-2"><date/></span>
+<div class="row post">
+  <div class="col-12">
+    <div class="row">
+      <div class="col-12">
+        <div class="post-header">
+          <div class="post-creator">
+            <img
+              src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
+              alt="Auteur Image"
+              class="author-image"/>
+            <div class="post-creator-name"><post-creator/></div>
+            <div class="post-date">
+              <i class="material-symbols-outlined">access_time</i
+              ><span class="ml-1"><post-date/></span>
+            </div>
           </div>
-          <div class="details-right flex align-items-center ml-2 cursor-pointer">
-            <i class="material-symbols-outlined">more_vert</i>
-            <i class="material-symbols-outlined">star_border</i>
+          <div class="post-actions"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-8 col-xl-10">
+        <div class="post-content">
+          <div class="post-tags"><post-tag/></div>
+  
+          <div class="post-title"><post-title/></div>
+  
+          <div class="post-summary"><post-summary/></div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4 col-xl-2">
+        <div class="post-image"><img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="post-footer">
+          <div class="post-reaction">
+            <div id="add_reaction" class="reaction">
+              <i class="material-symbols-outlined">add_reaction</i>
+            </div>
+            <div id="add_reaction" class="reaction">
+              <i class="material-symbols-outlined">thumb_up</i>
+              <span class="ml-2"><post-count-thumb_up/></span>
+            </div>
+            <div id="add_reaction" class="reaction">
+              <i class="material-symbols-outlined">thumb_down</i>
+              <span class="ml-2"><post-count-thumb_down/></span>
+            </div>
+            <div id="add_reaction" class="reaction">
+              <i class="material-symbols-outlined">comment</i>
+              <span class="ml-2"><post-count-comments/></span>
+            </div>
           </div>
         </div>
-        <div id="image-post" class="image-container" style="display: none;">
-          <image/>
-        </div>
-        <div class="tags flex-wrap" id="tags-container">
-          <tag/>
-        </div>
-        <h3 class="headlines-title bold"><title/></h3>
-        <div class="headlines-contents">
-          <p>
-            <span><summary/></span>
-          </p>
-        </div>
-        <div class="reactions flex align-items-center mt-2">
-          <div class="reaction-item flex align-items-center mr-3">
-            <i class="material-symbols-outlined">mood</i>
-          </div>
-          <div class="reaction-item d-flex align-items-center mr-3">
-            <i class="material-symbols-outlined">thumb_up</i>
-            <span class="ml-2">2</span>
-          </div>
-          <div class="reaction-item d-flex align-items-center mr-3">
-            <i class="material-symbols-outlined">thumb_down</i>
-            <span class="ml-2">0</span>
-          </div>
-          <div class="reaction-item d-flex align-items-center">
-            <i class="material-symbols-outlined">comment</i>
-            <span class="ml-2"><count_comments/></span>
-          </div>
-        </div>
-        <div class="separator"></div>
       </div>
     </div>
   </div>
 </div>
-
-
 
   <!-- <script>
     document.addEventListener('DOMContentLoaded', () => {

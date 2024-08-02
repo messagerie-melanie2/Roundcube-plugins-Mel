@@ -1,223 +1,56 @@
 <roundcube:include file="includes/layout.html" />
 
 <h1 class="voice">
-    <roundcube:label name="mel_forum" />
+  <roundcube:label name="mel_forum" />
 </h1>
 
 <div id="layout-content" role="main">
-    <div class="container-fluid p-3 body">
-        <div class="scrollable-container">
-            <div id="contents"></div>
-            <div class="post module_parent">
-                <div class="post-header-custom d-flex justify-content-between align-items-center p-3">
-                    <div class="icon-container-custom">
-                        <i class="material-symbols-outlined keyboard-icon-custom">keyboard_backspace</i>
-                    </div>
-                    <div class="header-content-custom">
-                        <h2 class="title-wsp-custom bold centered-title-custom"><roundcube:object name="show_post_title" /></h2>
-                    </div>
-                </div>
-                <div class="author-info-custom text-center mt-3">
-                    <div class="d-flex justify-content-center align-items-center">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJuPiStkx6CKOWAjuFHKzQ_2eTBIUU0RMpIA&s"
-                            alt="Auteur Image" class="author-image">
-                        <div class="ml-2">
-                            <div class="author-name-custom bold"><roundcube:object name="show_post_creator" /></div>
-                            <div class="d-flex justify-content-center align-items-center mt-1">
-                                <i class="material-symbols-outlined">access_time</i>
-                                <span class="ml-2"><roundcube:object name="show_post_date" /></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="separator separator-custom mx-auto mt-3"></div>
-                </div>
-                <div class="content-container-custom text-center mt-3">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN3kspmHm_n83-nq2uWFIRaIY2q5xh5ylVSA&s"
-                        alt="Description de l'image" class="article-image-custom">
-                    <div class="article-content-custom mx-auto">
-                        <p><roundcube:object name="show_post_content" /></p>
-                        <!-- Ajoutez d'autres paragraphes ou contenu selon vos besoins -->
-                    </div>
-                </div>
-                <div class="top-section-custom d-flex align-items-center mt-2 ml-4">
-                    <span>Top</span>
-                    <i class="material-symbols-outlined ml-2 mr-2">keyboard_arrow_down</i>
-                </div>
-                <div class="separator ml-4"></div>
-                <div class="comment-section-custom d-flex align-items-center mt-2">
-                    <img src="https://img.freepik.com/photos-premium/lettre-alphabet-vue-dessus-fond-colore_680303-5663.jpg"
-                        alt="Image de Profil" class="profile-image-custom ml-4">
-                    <input type="text" class="comment-input-custom" placeholder="Ajouter un commentaire">
-                </div>
-                <div class="comments-container mt-4">
-                    <div class="comment-item-custom ml-4">
-                        <div class="d-flex align-items-center">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRis1t5GuU79tKxU7ZPh4X9vPkbjLURLeLcxsSvS0pn2X_PgnBQ_JSDFNF_kTyoRSqY1Ek&usqp=CAU"
-                                alt="Profile" class="profile-image-custom">
-                            <div class="ml-2">
-                                <span class="comment-author-custom">Goubier Arnaud</span>
-                                <div class="d-flex align-items-center">
-                                    <i class="material-symbols-outlined">access_time</i>
-                                    <span class="ml-2">04 mai 2024</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="comment-image-container mt-2">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMICbTizKIX157TAWhjaXKuPVy-xMxEPL8jAmC1Q-pIFxO5WBRUviXsylS2ncrmtI4aoM&usqp=CAU"
-                                alt="Comment Image" class="comment-image-custom">
-                        </div>
-                        <div class="comment-text-custom">
-                            <p>Voici une photo de l'interface !</p>
-                        </div>
-                        <div class="reactions flex align-items-center mt-2">
-                            <div class="reaction-item d-flex align-items-center mr-3">
-                                <i class="material-symbols-outlined">thumb_up</i>
-                                <span class="ml-2">8</span>
-                            </div>
-                            <div class="reaction-item d-flex align-items-center mr-3">
-                                <i class="material-symbols-outlined">thumb_down</i>
-                                <span class="ml-2">0</span>
-                            </div>
-                            <div class="reaction-item d-flex align-items-center">
-                                <i class="material-symbols-outlined">comment</i>
-                                <span class="ml-2">12 réponses</span>
-                                <i class="material-symbols-outlined">keyboard_arrow_down</i>
-                            </div>
-                        </div>
-
-                        <!-- Réponses -->
-                        <div class="reply-container mt-4">
-                            <div class="d-flex align-items-center">
-                                <img src="https://img.freepik.com/photos-premium/gros-plan-lettre-coloree-fond-noir-ai-generative_955925-40718.jpg"
-                                    alt="Profile" class="profile-image-custom reply-profile-image">
-                                <div class="ml-2">
-                                    <span class="comment-author-custom">Duveau Dorian</span>
-                                    <div class="d-flex align-items-center">
-                                        <i class="material-symbols-outlined">access_time</i>
-                                        <span class="ml-2">07 mai 2024</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="reply-text-custom mt-2">
-                                <p>C'est vraiment dingue.</p>
-                            </div>
-                            <div class="reactions flex align-items-center mt-2">
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_up</i>
-                                    <span class="ml-2">1</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_down</i>
-                                    <span class="ml-2">0</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center">
-                                    <i class="material-symbols-outlined">comment</i>
-                                    <span class="ml-2">1 réponse</span>
-                                    <i class="material-symbols-outlined">keyboard_arrow_down</i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sous-réponse -->
-                        <div class="sub-reply-container mt-4 border-left 5px solid">
-                            <div class="d-flex align-items-center">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJuPiStkx6CKOWAjuFHKzQ_2eTBIUU0RMpIA&s"
-                                    alt="Profile" class="profile-image-custom sub-reply-profile-image">
-                                <div class="ml-2">
-                                    <span class="comment-author-custom">Cotton Damien</span>
-                                    <div class="d-flex align-items-center">
-                                        <i class="material-symbols-outlined">access_time</i>
-                                        <span class="ml-2">07 mai 2024</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="sub-reply-text-custom mt-2">
-                                <p>Content que ça te plaise !</p>
-                            </div>
-                            <div class="reactions flex align-items-center mt-2">
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_up</i>
-                                    <span class="ml-2">0</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_down</i>
-                                    <span class="ml-2">0</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center">
-                                    <i class="material-symbols-outlined">comment</i>
-                                    <span class="ml-2">0</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Nouvelle-réponse -->
-                        <div class="reply-container mt-4">
-                            <div class="d-flex align-items-center">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoZ-D0bvWI9rnadVgMOyCivHJYD0WMZCac4Q&s"
-                                    alt="Profile" class="profile-image-custom reply-profile-image">
-                                <div class="ml-2">
-                                    <span class="comment-author-custom">Delphin Tommy</span>
-                                    <div class="d-flex align-items-center">
-                                        <i class="material-symbols-outlined">access_time</i>
-                                        <span class="ml-2">08 mai 2024</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="reply-text-custom mt-2">
-                                <p>Top !</p>
-                            </div>
-                            <div class="reactions flex align-items-center mt-2">
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_up</i>
-                                    <span class="ml-2">1</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_down</i>
-                                    <span class="ml-2">0</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center">
-                                    <i class="material-symbols-outlined">comment</i>
-                                    <span class="ml-2">0 réponse</span>
-                                    <i class="material-symbols-outlined">keyboard_arrow_down</i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="comment-item-custom mt-4 ml-4">
-                            <div class="d-flex align-items-center">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJHSTf2JZC2TYKfMedDvuYWHxHL2h-xMPLDw&s"
-                                    alt="Profile" class="profile-image-custom">
-                                <div class="ml-2">
-                                    <span class="comment-author-custom">Payen Thomas</span>
-                                    <div class="d-flex align-items-center">
-                                        <i class="material-symbols-outlined">access_time</i>
-                                        <span class="ml-2">12 mai 2024</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="comment-text-custom">
-                                <p>Super bien joué 👍</p>
-                            </div>
-                            <div class="reactions flex align-items-center mt-2">
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_up</i>
-                                    <span class="ml-2">1</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center mr-3">
-                                    <i class="material-symbols-outlined">thumb_down</i>
-                                    <span class="ml-2">0</span>
-                                </div>
-                                <div class="reaction-item d-flex align-items-center">
-                                    <i class="material-symbols-outlined">comment</i>
-                                    <span class="ml-2">1 réponse</span>
-                                    <i class="material-symbols-outlined">keyboard_arrow_down</i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="content">
+    <div class="row return-header">
+      <div class="return">
+        <i class="material-symbols-outlined">keyboard_backspace</i>
+        <span class="ml-2">Articles</span>
+      </div>
     </div>
+    <div class="row forum-header">
+      <div class="text-header">
+        <h2 class="title"><roundcube:object name="show_post_title" /></h2>
+      </div>
+    </div>
+    <div class="row forum-content">
+      <div class="col-12 col-md-10 mt-4 mx-2">
+        <div class="row d-flex justify-content-center align-items-center">
+          <div class="d-flex justify-content-center align-items-center">
+            <img
+              src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
+              alt="Auteur Image"
+              class="author-image"
+            />
+            <div class="ml-2 author-infos">
+              <div class="author-name-custom ml-1">
+                <roundcube:object name="show_post_creator" />
+              </div>
+              <div class="d-flex justify-content-center align-items-center">
+                <i class="material-symbols-outlined">access_time</i>
+                <span class="ml-2"
+                  ><roundcube:object name="show_post_date"
+                /></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row custom-border-bottom my-4">
+          <roundcube:object name="show_post_tags" />
+        </div>
+        <div class="row mt-4 d-flex justify-content-center">
+          <div id="forum-content" class="forum-content">
+            <roundcube:object name="show_post_content" />
+          </div>
+        </div>
+        <div class="row my-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <roundcube:include file="/includes/footer.html" />
 </div>
-<roundcube:include file="/includes/footer.html" />

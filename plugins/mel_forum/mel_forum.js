@@ -2,6 +2,10 @@ $(document).ready(function() {
     let config = rcmail.env.editor_config;
     rcmail.editor_init(config, 'forum-content');
 
+    $('#submit-post').on('click', () => {
+        console.log(tinyMCE.activeEditor.getContent());        
+    });
+
     // URL de l'API PHP pour les posts
     const postsApiUrl = 'https://roundcube.ida.melanie2.i2/?_task=forum&_action=show_all_posts_byworkspace';
     // URL de l'API PHP pour les tags

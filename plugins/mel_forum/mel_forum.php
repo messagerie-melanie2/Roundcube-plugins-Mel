@@ -169,7 +169,7 @@ public function index(){
  */
 public function post(){
     //Récupérér uid avec GET
-    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
+    $uid = 'GwYd0JFJhX2fglbmWRlCoJU2';
     $this->current_post = $this->get_post($uid);
 
     $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
@@ -526,8 +526,6 @@ public function delete_post()
  */
 public function get_post($uid)
 {
-    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
-
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
 
@@ -1665,12 +1663,12 @@ public function test_create_post()
     $workspace = 'un-espace-2';
 
     $title = 'Metal Gear Solid'; // Valeur en dur pour le test
-    $content = 'Metal Gear Solid est un jeu d\infiltration sorti en 1998 qui a redéfini le genre avec son approche cinématographique et son gameplay innovant. Le jeu suit Solid Snake, un agent infiltré, qui doit empêcher un groupe terroriste de lancer des armes nucléaires. Avec ses mécanismes de furtivité, ses combats de boss mémorables et son histoire complexe, Metal Gear Solid a été acclamé pour son design et sa narration.'; // Valeur en dur pour le test
+    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://media.gqmagazine.fr/photos/66a2577ab05ccbd22a0c9f5a/16:9/w_1920%2Cc_limit/WeightliftingHP-589919534.jpg" alt="" width="500" height="281" /></p><h2 class="BaseWrap-sc-gjQpdd BaseText-ewhhUZ GallerySlideCaptionHed-fiZQOl iUEiRd evVGNa lKgiC"><span class="GallerySlideCaptionHedText-iqjOmM jwPuvZ">Titre de mon article<br /></span></h2><p>Pousser son corps aux limites de la performance humaine conduit invariablement &agrave; des blessures, m&ecirc;me aux <a href="https://www.gqmagazine.fr/dossier/jeux-olympiques">Jeux olympiques</a>. Lhalt&eacute;rophile arm&eacute;nien Andranik Karapetyan sest d&eacute;bo&icirc;t&eacute; le coude en essayant de soulever 195 kg. Le gymnaste fran&ccedil;ais Samir A&iuml;t Sa&iuml;d sest cass&eacute; une jambe apr&egrave;s avoir rat&eacute; sa r&eacute;ception au saut. Trois cyclistes se sont bris&eacute;s les os dans des accidents de course sur route. La liste est encore longue. Le ph&eacute;nom&egrave;ne n&rsquo;a rien d&rsquo;&eacute;tonnant.</p><p>&nbsp;</p><h2 class="BaseWrap-sc-gjQpdd BaseText-ewhhUZ GallerySlideCaptionHed-fiZQOl iUEiRd evVGNa lKgiC"><span class="GallerySlideCaptionHedText-iqjOmM jwPuvZ">La Boxe<br /></span></h2><p><img src="https://media.gqmagazine.fr/photos/66a25700219f2554697e8fdd/master/w_1920%2Cc_limit/Boxing-589926104.jpg" alt="" width="279" height="209" /></p><p>&nbsp;</p><div class="GallerySlideCaptionDekContainer-hLUdt gSWuis" data-testid="GallerySlideCaptionDekContainer"><div class="GallerySlideCaptionDek-cXnbPe bplbpl"><div><p>La boxe est lun des sports les plus risqu&eacute;s des Jeux, m&ecirc;me si les hommes <a href="https://www.gqmagazine.fr/article/pourquoi-les-boxeurs-ne-portent-plus-de-casque-aux-jeux-olympiques"z>ne portent plus de casque</a> depuis Rio 2016. Bien que le risque de blessure au cours dun combat soit relativement faible, en marge des contusions et des coupures, les combattants doivent sinqui&eacute;ter des cons&eacute;quences &agrave; long terme des impacts. Les coups port&eacute;s &agrave; la m&acirc;choire peuvent faire brutalement pivoter la t&ecirc;te du boxeur et entra&icirc;ner des commotions c&eacute;r&eacute;brales. M&ecirc;me les coups subconcussifs peuvent augmenter le risque denc&eacute;phalopathie traumatique chronique, une maladie d&eacute;g&eacute;n&eacute;rative du cerveau.</p></div></div></div>'; // Valeur en dur pour le test
     $summary = 'Metal Gear Solid suit Solid Snake, qui doit empêcher un lancement nucléaire, avec des mécanismes de furtivité innovants, des combats de boss mémorables et une histoire complexe.'; // Valeur en dur pour le test
     $settings = 'Modifiable'; // Valeur en dur pour le test
 
     // Validation des données saisies
-    if (empty($user->uid) || empty($title) || empty($content) || empty($summary) || empty($settings)) {
+    if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
         echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
         exit;
     }
@@ -1685,7 +1683,7 @@ public function test_create_post()
     $post->post_uid = $this->generateRandomString(24);
     $post->created = date('Y-m-d H:i:s');
     $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = driver_mel::gi()->getUser()->name;
+    $post->user_uid = driver_mel::gi()->getUser()->uid;
     $post->post_settings = $settings;
     $post->workspace_uid = $workspace;
 

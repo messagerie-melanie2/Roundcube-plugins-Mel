@@ -157,6 +157,10 @@ public function index(){
     $this->rc()->output->send('mel_forum.forum');
 }
 
+
+
+// Fonctions nécessaires à l'affichage d'un article
+
 /**
  * Affiche un article du forum.
  *
@@ -169,7 +173,7 @@ public function index(){
  */
 public function post(){
     //Récupérér uid avec GET
-    $uid = 'GwYd0JFJhX2fglbmWRlCoJU2';
+    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
     $this->current_post = $this->get_post($uid);
 
     $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
@@ -273,17 +277,147 @@ public function show_post_date(){
  public function show_post_content() {
     $content = $this->current_post->content;
 
-    $images = $this->current_post->listImages();
+    // $images = $this->current_post->listImages();
 
-    foreach ($images as $image) {
-        $img_tag = '<img src="' . htmlspecialchars($image->image_data) . '" alt="Image" />';
-        $content = str_replace("<image-" . htmlspecialchars($image->uid) . "/>", $img_tag, $content);
-    }
+    // foreach ($images as $image) {
+    //     $img_tag = '<img src="' . htmlspecialchars($image->image_data) . '" alt="Image" />';
+    //     $content = str_replace("<image-" . htmlspecialchars($image->uid) . "/>", $img_tag, $content);
+    // }
 
     return $content;
 }
 
 
+
+// Fonctions qui sont nécessaires à la création d'un article.
+
+/**
+ * Extrait les liens des images d'un contenu HTML.
+ *
+ * Cette fonction analyse le contenu HTML fourni, extrait tous les liens 
+ * des balises <img> et les retourne sous forme de tableau.
+ *
+ * @param string $content Le contenu HTML à analyser.
+ * @return array Un tableau contenant les liens des images trouvées dans le contenu HTML.
+ */
+private function extractImageLinks($content) {
+    $imageLinks = [];
+    $dom = new DOMDocument();
+    
+    // Supprimer les erreurs HTML malformées
+    libxml_use_internal_errors(true);
+    $dom->loadHTML($content);
+    libxml_clear_errors();
+    
+    $images = $dom->getElementsByTagName('img');
+    
+    foreach ($images as $img) {
+        $imageLinks[] = $img->getAttribute('src');
+    }
+    
+    return $imageLinks;
+}
+
+/**
+ * Crée un nouvel article dans l'espace de travail.
+ *
+ * Cette fonction récupère les valeurs des champs POST, valide les données saisies,
+ * crée une nouvelle publication avec les propriétés définies, et sauvegarde l'article.
+ * Elle extrait également les liens d'image du contenu et les enregistre.
+ * La fonction retourne une réponse JSON indiquant le statut de la création de l'article.
+ *
+ * @return void
+ */
+public function create_post()
+{
+    //récupérer le Workspace
+    $workspace = driver_mel::gi()->workspace();
+
+    // récupérer les valeurs des champs POST
+    $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
+    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+    $summary = rcube_utils::get_input_value('_summary', rcube_utils::INPUT_POST);
+    $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($title) || empty($content) || empty($description) || empty($settings)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    //Créer un nouvel Article
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+
+    //Définition des propriétés de l'article
+    $post->post_title = $title;
+    $post->post_summary = $summary;
+    $post->post_content = $content;
+    $post->post_uid = $this-> generateRandomString(24);
+    $post->created = date('Y-m-d H:i:s');
+    $post->updated = date('Y-m-d H:i:s');
+    $post->user_uid = driver_mel::gi()->getUser()->uid;
+    $post->post_settings = $settings;
+    $post->workspace_uid = $workspace;
+
+    // Sauvegarde de l'article
+    $post_id = $post->save();
+    if ($post_id) {
+        $post->load();
+        // Extraire les liens d'image et les enregistrer
+        $imageLinks = $this->extractImageLinks($content);
+        $imageSaved = true;
+        foreach ($imageLinks as $link) {
+            if (!$this->test_create_image($post->id, $link)) {
+                $imageSaved = false;
+                break; // On arrête si une image échoue à être enregistrée
+            }
+        }
+
+        // Réponse JSON en fonction de la sauvegarde des images
+        if ($imageSaved) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Article créé, mais échec de l\'enregistrement de certaines images.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Échec de création de l\'article.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
+ * Crée une nouvelle image associée à une publication.
+ *
+ * Cette fonction valide les données saisies, crée une nouvelle image avec les
+ * propriétés définies, et la sauvegarde. Elle retourne un booléen indiquant
+ * si l'image a été sauvegardée avec succès.
+ *
+ * @param string $post_id L'identifiant de la publication à laquelle l'image est associée.
+ * @param string $data Les données de l'image à enregistrer.
+ * @return bool True si l'image a été sauvegardée avec succès, sinon false.
+ */
+public function save_image($post_id, $data)
+{
+    // Validation des données saisies
+    if (empty($post_id) || empty($data)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        return false;
+    }
+
+    // Créer une nouvelle image
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $this->generateRandomString(24);
+    $image->post = $post_id;
+    $image->data = $data;
+
+    // Sauvegarde de l'image
+    $ret = $image->save();
+    return !is_null($ret);
+}
 
 
 /**
@@ -330,65 +464,18 @@ function check_user()
 }
 
 /**
- * Crée un nouvel article avec les données fournies.
- */
-public function create_post()
-{
-    //récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
-    //récupérer le Workspace
-    $workspace = driver_mel::gi()->workspace();
-
-    // récupérer les valeurs des champs POST
-    $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
-    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-    $summary = rcube_utils::get_input_value('_summary', rcube_utils::INPUT_POST);
-    $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
-
-    // Validation des données saisies
-    if (empty($title) || empty($content) || empty($description) || empty($settings)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
-
-    //Créer un nouvel Article
-    $post = new LibMelanie\Api\Defaut\Posts\Post();
-
-    //Définition des propriétés de l'article
-    $post->post_title = $title;
-    $post->post_summary = $summary;
-    $post->post_content = $content;
-    $post->post_uid = $this-> generateRandomString(24);
-    $post->created = date('Y-m-d H:i:s');
-    $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = $user->uid;
-    $post->post_settings = $settings;
-    $post->workspace_uid = $workspace;
-
-    // Sauvegarde de l'article
-    $ret = $post->save();
-    if (!is_null($ret)) {
-
-        header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création de l\'article.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
-
-/**
- * Met à jour un article existant avec les données fournies.
+ * Met à jour une publication existante.
+ *
+ * Cette fonction récupère les valeurs des champs POST, valide les données saisies,
+ * charge la publication existante, enregistre les modifications dans l'historique,
+ * met à jour les propriétés de la publication et sauvegarde les modifications.
+ * Elle extrait également les liens d'image du contenu et les enregistre.
+ * La fonction retourne une réponse JSON indiquant le statut de la mise à jour de l'article.
+ *
+ * @return void
  */
 public function update_post()
 {
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
     // Récupérer les valeurs des champs POST
     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
     $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
@@ -421,7 +508,7 @@ public function update_post()
     ];
     
     // Enregistrer les modifications dans l'historique
-    $this->save_post_history($post, $user->uid, $new_data);
+    $this->save_post_history($post, $post->user_uid, $new_data);
 
     // Définir les nouvelles propriétés de l'article
     $post->post_title = $title;
@@ -429,18 +516,66 @@ public function update_post()
     $post->post_summary = $summary;
     $post->post_settings = $settings;
     $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = $user->uid;
+    $post->user_uid = driver_mel::gi()->getUser()->uid;
 
     // Sauvegarde de l'article
-    $ret = $post->save();
-    if (!is_null($ret)) {
-        echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
+    $post_id = $post->save();
+    if ($post_id) {
+        $post->load();
+        // Extraire les liens d'image et les enregistrer
+        $imageLinks = $this->test_extractImageLinks($content);
+        $imageSaved = true;
+        foreach ($imageLinks as $link) {
+            if (!$this->test_create_image($post->id, $link)) {
+                $imageSaved = false;
+                break; // On arrête si une image échoue à être enregistrée
+            }
+        }
+
+        // Réponse JSON en fonction de la sauvegarde des images
+        if ($imageSaved) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Article mis à jour, mais échec de l\'enregistrement de certaines images.']);
+        }
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour de l\'article.']);
+        echo json_encode(['status' => 'error', 'message' => 'Échec de mise à jour de l\'article.']);
     }
 
     // Arrêt de l'exécution du script
     exit;
+}
+
+/**
+ * Enregistre une nouvelle image associée à une publication.
+ *
+ * Cette fonction valide les données saisies, crée une nouvelle image avec les
+ * propriétés définies, et la sauvegarde. Elle retourne un booléen indiquant
+ * si l'image a été sauvegardée avec succès.
+ *
+ * @param string $post_id L'identifiant de la publication à laquelle l'image est associée.
+ * @param string $data Les données de l'image à enregistrer.
+ * @return bool True si l'image a été sauvegardée avec succès, sinon false.
+ */
+public function save_new_image($post_id, $data)
+{
+    // Validation des données saisies
+    if (empty($post_id) || empty($data)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        return false;
+    }
+
+    // Créer une nouvelle image
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $this->generateRandomString(24);
+    $image->post = $post_id;
+    $image->data = $data;
+
+    // Sauvegarde de l'image
+    $ret = $image->save();
+    return !is_null($ret);
 }
 
 /**
@@ -1395,47 +1530,6 @@ public function count_reactions()
 }
 
 /**
- * Crée une nouvelle image et renvoie le résultat au format JSON.
- *
- * Cette fonction récupère les données d'image envoyées via un formulaire POST,
- * valide les données, crée une nouvelle image, et sauvegarde cette image.
- * Le résultat de l'opération est renvoyé au format JSON.
- *
- * @return void
- */
-public function create_image()
-{
-    // Récupérer la data du champ POST
-    $data = rcube_utils::get_input_value('_data', rcube_utils::INPUT_POST);
-
-    // Validation des données saisies
-    if (empty($data)) {
-        echo json_encode(['status' => 'error', 'message' => 'Le champ Data est requis.']);
-        exit;
-    }
-
-    // Créer une nouvelle image
-    $image = new LibMelanie\Api\Defaut\Posts\Image();
-    $image->uid = $this-> generateRandomString(24);
-    $image->post = $post->id;
-    $image->data = $data;
-
-    // Sauvegarde de l'image
-    $ret = $image->save();
-    if (!is_null($ret)) {
-
-        header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Image créée avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création de l\'image.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
-
-/**
  * Supprime une image et renvoie le résultat au format JSON.
  *
  * Cette fonction récupère l'UID de l'image à supprimer envoyé via un formulaire POST,
@@ -1471,45 +1565,16 @@ public function delete_image()
     exit;
 }
 
-
-
-
-
-// /**
-//  * Récupère une image en fonction de son UID et renvoie les données en format JSON.
-//  *
-//  * @return void Cette méthode ne retourne rien mais affiche directement une réponse JSON.
-//  */
-// public function get_image()
-// {
-//     // Récuperer l'Uid de l'image
-//     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-
-//     // Validation des données
-//     if (empty($uid)) {
-//         echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'image et requis.']);
-//         exit;
-//     }
-
-//     $image = new LibMelanie\Api\Defaut\Posts\Image();
-//     $image->uid = $uid;
-
-//     $ret = $image->load();
-//     if (!is_null($ret)) {
-
-//         echo json_encode([
-//             'status' => 'success',
-//             'image' => $image->data,
-//         ]);
-//     } else {
-//         header('Content-Type : application/json');
-//         echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'image.']);
-//     }
-
-//     // Arrêt de l'exécution du script
-//     exit;
-// }
-
+/**
+ * Récupère l'image associée à une publication spécifique.
+ *
+ * Cette fonction simule un appel à une API interne ou utilise une autre méthode 
+ * pour obtenir l'image associée à l'identifiant de la publication fourni. 
+ * Si une image est trouvée, elle retourne les données de l'image, sinon elle retourne null.
+ *
+ * @param string $post_id L'identifiant de la publication pour laquelle récupérer l'image.
+ * @return string|null Les données de l'image si elle est trouvée, sinon null.
+ */
 public function get_image($post_id) {
     // Appeler la fonction get_image pour récupérer l'image
     // Simuler un appel à une API interne ou une autre méthode pour obtenir l'image
@@ -1524,43 +1589,16 @@ public function get_image($post_id) {
     }
 }
 
-
-
-// /**
-//  * Affiche une liste de posts en générant du HTML à partir d'un modèle.
-//  *
-//  * @param array $posts Un tableau d'objets post à afficher.
-//  * @return string Le HTML généré pour la liste des posts.
-//  */
-// public function show_posts($posts) {
-    
-//     $html = "";
-//     $html_post = $this->rc()->output->parse("mel_forum.model-post", false, false);
-
-//     $posts = $this->get_all_posts_byworkspace();
-
-//     // Définir la locale en français pour le formatage de la date
-//     $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
-//     foreach ($posts as $post) {
-//         $html_post_copy = $html_post;
-
-//         // Convertit la date du post en un timestamp Unix
-//         $timestamp = strtotime($post->created);
-//         // Formate la date du post
-//         $formatted_date = $formatter->format($timestamp);
-
-//         $html_post_copy = str_replace("<creator/>", $post->creator, $html_post_copy);
-//         $html_post_copy = str_replace("<date/>", $formatted_date, $html_post_copy);
-//         $html_post_copy = str_replace("<title/>", $post->title, $html_post_copy);
-//         $html_post_copy = str_replace("<summary/>", $post->summary, $html_post_copy);
-
-//         $html .= $html_post_copy;
-//     }
-
-//     return $html;
-// }
-
+/**
+ * Affiche une liste de publications avec leurs détails formatés en HTML.
+ *
+ * Cette fonction récupère toutes les publications d'un espace de travail, 
+ * formate chaque publication avec ses détails (créateur, date, titre, résumé, image, tags, 
+ * et nombre de commentaires) et génère le HTML correspondant.
+ *
+ * @param array $posts Liste des publications à afficher.
+ * @return string Le HTML formaté contenant toutes les publications.
+ */
 public function show_posts($posts) {
     $html = "";
     $html_post = $this->rc()->output->parse("mel_forum.model-post", false, false);
@@ -1658,68 +1696,31 @@ echo json_encode($data);
 exit;
 }
 
-public function test_create_post()
-{
-    $workspace = 'un-espace-2';
-
-    $title = 'Metal Gear Solid'; // Valeur en dur pour le test
-    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://media.gqmagazine.fr/photos/66a2577ab05ccbd22a0c9f5a/16:9/w_1920%2Cc_limit/WeightliftingHP-589919534.jpg" alt="" width="500" height="281" /></p><h2 class="BaseWrap-sc-gjQpdd BaseText-ewhhUZ GallerySlideCaptionHed-fiZQOl iUEiRd evVGNa lKgiC"><span class="GallerySlideCaptionHedText-iqjOmM jwPuvZ">Titre de mon article<br /></span></h2><p>Pousser son corps aux limites de la performance humaine conduit invariablement &agrave; des blessures, m&ecirc;me aux <a href="https://www.gqmagazine.fr/dossier/jeux-olympiques">Jeux olympiques</a>. Lhalt&eacute;rophile arm&eacute;nien Andranik Karapetyan sest d&eacute;bo&icirc;t&eacute; le coude en essayant de soulever 195 kg. Le gymnaste fran&ccedil;ais Samir A&iuml;t Sa&iuml;d sest cass&eacute; une jambe apr&egrave;s avoir rat&eacute; sa r&eacute;ception au saut. Trois cyclistes se sont bris&eacute;s les os dans des accidents de course sur route. La liste est encore longue. Le ph&eacute;nom&egrave;ne n&rsquo;a rien d&rsquo;&eacute;tonnant.</p><p>&nbsp;</p><h2 class="BaseWrap-sc-gjQpdd BaseText-ewhhUZ GallerySlideCaptionHed-fiZQOl iUEiRd evVGNa lKgiC"><span class="GallerySlideCaptionHedText-iqjOmM jwPuvZ">La Boxe<br /></span></h2><p><img src="https://media.gqmagazine.fr/photos/66a25700219f2554697e8fdd/master/w_1920%2Cc_limit/Boxing-589926104.jpg" alt="" width="279" height="209" /></p><p>&nbsp;</p><div class="GallerySlideCaptionDekContainer-hLUdt gSWuis" data-testid="GallerySlideCaptionDekContainer"><div class="GallerySlideCaptionDek-cXnbPe bplbpl"><div><p>La boxe est lun des sports les plus risqu&eacute;s des Jeux, m&ecirc;me si les hommes <a href="https://www.gqmagazine.fr/article/pourquoi-les-boxeurs-ne-portent-plus-de-casque-aux-jeux-olympiques"z>ne portent plus de casque</a> depuis Rio 2016. Bien que le risque de blessure au cours dun combat soit relativement faible, en marge des contusions et des coupures, les combattants doivent sinqui&eacute;ter des cons&eacute;quences &agrave; long terme des impacts. Les coups port&eacute;s &agrave; la m&acirc;choire peuvent faire brutalement pivoter la t&ecirc;te du boxeur et entra&icirc;ner des commotions c&eacute;r&eacute;brales. M&ecirc;me les coups subconcussifs peuvent augmenter le risque denc&eacute;phalopathie traumatique chronique, une maladie d&eacute;g&eacute;n&eacute;rative du cerveau.</p></div></div></div>'; // Valeur en dur pour le test
-    $summary = 'Metal Gear Solid suit Solid Snake, qui doit empêcher un lancement nucléaire, avec des mécanismes de furtivité innovants, des combats de boss mémorables et une histoire complexe.'; // Valeur en dur pour le test
-    $settings = 'Modifiable'; // Valeur en dur pour le test
-
-    // Validation des données saisies
-    if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
-
-    //Créer un nouvel Article
-    $post = new LibMelanie\Api\Defaut\Posts\Post();
-
-    //Définition des propriétés de l'article
-    $post->post_title = $title;
-    $post->post_summary = $summary;
-    $post->post_content = $content;
-    $post->post_uid = $this->generateRandomString(24);
-    $post->created = date('Y-m-d H:i:s');
-    $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = driver_mel::gi()->getUser()->uid;
-    $post->post_settings = $settings;
-    $post->workspace_uid = $workspace;
-
-    // Sauvegarde de l'article
-    $ret = $post->save();
-    if (!is_null($ret)) {
-
-        header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création de l\'article.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
-
 public function test_update_post()
 {
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
 
     // Récupérer les valeurs des champs POST
-    $uid = 'iDaeXxkems6Ize9DH8TrZMDh'; // UID de l'article à mettre à jour
-    $title = 'Voyage au Centre de la Terre'; // Valeur en dur pour le test
-    $content = '<image-c2iyB5W9vxq1yWBYy5rPvv7U/><br><br>
-    Le narrateur est Axel Lidenbrock, neveu d\’un éminent géologue et naturaliste allemand, le professeur de minéralogie Otto Lidenbrock. L\’histoire commence le 24 mai 1863 à Hambourg et plus exactement dans la Königstraße, rue où est située la maison du Pr Lidenbrock. Le professeur, amateur de vieux livres, a acheté le manuscrit original d\'une saga islandaise, Heimskringla, écrite par Snorre Turleson (Snorri Sturluson) au XIIe siècle. Il y découvre un parchemin codé, rédigé en caractères runiques islandais. Lidenbrock se passionne aussitôt pour ce cryptogramme et tyrannise toute la maison tant qu\'il lui résiste. Axel, d\'abord peu enthousiaste, se prend peu à peu au jeu et finit par découvrir la clé du message par un coup de chance. Le parchemin se révèle être un message d\'un certain Arne Saknussemm, un alchimiste islandais du XVIe siècle, rédigé en latin mais écrit en runes. Celui-ci affirme avoir découvert un passage qui l\'aurait mené jusqu\'au centre de la Terre, via l\'un des cratères d\'un volcan éteint d\'Islande, le Sneffels (l\'actuel Snæfellsjökull).<br><br>
-    Le professeur Otto Lidenbrock est un homme enthousiaste et impétueux. Il décide de partir dès le lendemain pour l\’Islande, emmenant avec lui son neveu Axel, beaucoup plus réticent. L\'oncle et le neveu sont en désaccord sur la possibilité pratique d\'un tel voyage, qui va à l\'encontre de la théorie la plus répandue sur la composition de l\'intérieur de la planète, la théorie de la chaleur centrale, soutenue notamment par Siméon Denis Poisson : Axel s\'en fait le défenseur, tandis que Lidenbrock, plus influencé par les théories de Humphry Davy selon qui les températures profondes sont moins élevées, est déterminé à mettre l\'hypothèse de la chaleur centrale à l\'épreuve des faits. Par ailleurs, Axel est retenu à Hambourg par les sentiments qui le lient à la pupille de Lidenbrock, Graüben, une Virlandaise avec qui il s\'est fiancé à l\'insu du professeur ; mais celle-ci l\'encourage au contraire à accomplir ce voyage, espérant qu\'ils se marieront à son retour. Deux jours à peine après le déchiffrement du message, Lidenbrock et Axel se mettent donc en route, non sans de fiévreux préparatifs de la part du professeur, qui se pourvoit d\'un matériel abondant correspondant au dernier cri technologique de l\'époque (notamment les appareils de Ruhmkorff fournissant un moyen d\'éclairage sûr, et le fulmicoton, un puissant explosif). Lidenbrock se hâte, car les indications fournies par Saknussemm sur l\'emplacement exact du cratère à emprunter se fondent sur l\'ombre projetée par un pic rocheux à la fin du mois de juin, et le trajet jusqu\'en Islande leur prendra du temps.<br><br>
-    Le voyage d\'Axel et de Lidenbrock les mène d\'Altona, banlieue de Hambourg, à Kiel en chemin de fer ; de là, ils embarquent sur un navire à vapeur en partance pour le Danemark, qui les mène à Korsør, d\'où ils gagnent en train Copenhague. Lidenbrock entre en contact avec M. Thompson, directeur du musée des Antiquités du Nord de Copenhague, qui lui procure de précieuses indications pour son voyage et son séjour en Islande. Pendant les cinq jours d\'attente avant le départ du navire qui les emmènera dans l\'île, Lidenbrock oblige son neveu à prendre des leçons d\'abîme en haut d\'un clocher, afin de leur permettre de surmonter leur vertige, en prévision des gouffres qu\'ils devront descendre. Le 2 juin, Lidenbrock et Axel embarquent sur une goélette qui longe Elseneur, remonte jusqu\'au Skagerrak, longe la Norvège puis traverse la mer du Nord et passe au large des îles Féroé, avant de rejoindre enfin le port de Reykjavik, au sud-ouest de l\'Islande. Les deux voyageurs, armés de lettres de recommandation, y sont accueillis par le maire Finsen et le coadjuteur Pictursson, et surtout hébergés par un professeur de sciences naturelles, M. Fridriksson, qui les renseigne mieux sur Saknussemm. Lidenbrock et Axel gardent le secret sur le but réel de leur voyage.<br><br>
-    Sur les conseils de Fridriksson, Lidenbrock et son neveu engagent un chasseur d\’eider nommé Hans Bjelke, remarquablement fiable et impassible, qui sera leur guide et est prêt à suivre Lidenbrock où il voudra : l\'expédition est au complet. Après quelques derniers préparatifs, Lidenbrock, Axel et Hans se mettent en route pour le Sneffels, situé plus au nord-ouest. Ils font étape à Gardär puis à Stapi, rencontrent quelques infortunes dues à l\'impatience du professeur ou à l\'hospitalité douteuse d\'un de leurs hôtes, et arrivent quelques jours plus tard au pied du volcan Sneffels. Ils engagent quelques porteurs temporaires pour l\'ascension des bagages et se retrouvent ensuite seuls tous les trois près des cratères du volcan éteint. Lidenbrock trouve là une inscription runique au nom de Saknussemm : aucun doute n\'est plus possible sur la véracité du parchemin. Le cratère éteint renferme trois cheminées. L\’une d\’elles doit être effleurée par l\’ombre d\’un haut pic, le Scartaris, à midi, « avant les calendes de juillet », c\’est-à-dire dans les derniers jours de juin. D\’après la note de Saknussemm, là se trouve le passage vers le centre de la Terre. Le 28 juin, lorsque le temps se dégage, l\'ombre se projette sur le cratère central et la descente peut commencer.<br><br>
-    Après avoir descendu la cheminée principale du cratère à l\'aide de cordes, l\'expédition s\'engage dans les profondeurs de la terre, tandis que Lidenbrock tient un journal scientifique pour consigner précisément l\'itinéraire parcouru. Une difficulté se présente lorsque l\'expédition parvient à un croisement entre deux galeries. Lidenbrock s\'engage dans ce qui se révèle peu à peu être la mauvaise direction, car elle les mène vers des terrains trop récents pour correspondre aux couches les plus profondes. Ce retard manque de coûter la vie aux membres de l\'expédition, qui se trouvent rapidement à court d\'eau et souffrent terriblement de la soif. Revenus avec peine au croisement, ils se fient aux indications de Hans, qui finit par découvrir une nappe souterraine d\'eau ferrugineuse en perçant une paroi. La descente peut alors se poursuivre, toujours plus bas et en se déportant toujours vers le sud-est, c\'est-à-dire sous l\'Islande puis sous la croûte supportant l\'océan Atlantique. Axel doit s\'avouer vaincu car la température ambiante augmente bien moins que ce que prévoyait la théorie de la chaleur centrale. Quelques jours après, trompé par un embranchement dans la galerie, Axel se retrouve perdu, seul et sans lumière. Ayant repris contact avec Lidenbrock grâce à un phénomène acoustique propice, il se fait guider jusqu\'à ses compagnons, mais son trajet se termine par une mauvaise chute.<br><br>
-    Soigné et guéri par Hans et Lidenbrock, Axel se rend compte que l\'expédition est arrivée au bord d\'une étendue d\'eau souterraine qui ressemble à une véritable mer, enfermée dans une caverne aux proportions gigantesques et éclairée par des phénomènes électriques. La côte est constellée d\'ossements fossiles et abrite une forêt de champignons fossiles géants. Le 13 août, embarqués sur un radeau construit par Hans en surtarbrandur, du bois à demi fossilisé trouvé sur place, les trois voyageurs naviguent sur la mer que le professeur a baptisée « mer Lidenbrock ». Ils croisent des algues géantes, puis pêchent un poisson appartenant à une espèce disparue et redoutent de croiser des monstres préhistoriques. De fait, ils manquent d\'être coulés lorsqu\'un ichthyosaure et un plésiosaure surgissent des eaux et s\'affrontent près du radeau. Après une dizaine de jours de navigation, ils sont pris dans un orage qui dévaste leur embarcation et manque de leur coûter la vie, notamment lors d\'un feu Saint-Elme sur le navire, mais sont finalement rejetés sur une côte. Par malheur, d\'après les indications de la boussole, la tempête leur a fait rebrousser chemin vers la même côte. Lidenbrock et Axel l\'explorent à nouveau et tombent sur un ossuaire où se trouvent des restes d\'animaux des ères quaternaire et tertiaire, dont un homme fossilisé plus ancien que tout ce qui avait été découvert jusqu\'alors. Plus loin, ils s\'aventurent dans une forêt de végétaux appartenant à des espèces anciennes, dont le kauri, et y entrevoient un troupeau de mastodontes, menés par ce qui ressemble à un humanoïde géant : ils finissent par battre prudemment en retraite. Revenant vers la côte, ils trouvent un poignard rouillé du XVIe siècle près d\'une nouvelle inscription aux initiales d\'Arne Saknussemm : ils sont sur la bonne voie.<br><br>
-    Mais la grotte qui s\'ouvre non loin de là les mène à un cul de sac : une éruption plus récente a bouché la galerie. Déterminé, Lidenbrock décide d\'employer le fulmicoton pour faire sauter l\'obstacle. Remontés sur le radeau afin de se tenir à une distance sûre, les trois voyageurs font sauter le mur rocheux le 27 août, mais sont entraînés vers la galerie lorsque l\'explosion provoque un petit raz-de-marée : la mer s\'engouffre dans la grotte. Prisonnier de son embarcation, le petit groupe poursuit sa descente sur une eau devenue bouillante. Axel se rend compte que presque tout l\'équipement et surtout les provisions ont basculé hors du radeau au moment de l\'explosion : l\'expédition risque de mourir de faim rapidement… Les voyageurs n\'ont plus le contrôle de leur direction et ne peuvent s\'échapper de la galerie rocheuse. Après être descendus, le couloir et l\'eau remontent dans une atmosphère de plus en plus étouffante. Axel comprend avec horreur que le radeau progresse désormais sur une masse de roche fondue qui monte dans une cheminée volcanique sur le point d\'entrer en éruption, mais Lidenbrock refuse de se laisser aller au désespoir : c\'est une chance de revenir à la surface de la terre. Finalement, brûlés et très affaiblis, les trois voyageurs sont rejetés par un cratère et échouent sur le flanc d\'un volcan. Après s\'être mis à l\'abri, ils se rendent compte qu\'ils sont en Italie, sur les flancs du Stromboli. De retour à Hambourg, l\'expédition se couvre de gloire, Lidenbrock devient célèbre et Axel peut épouser sa fiancée. Hans retourne en Islande, où l\'oncle et le neveu espèrent aller le revoir un jour.<br><br>
-    Néanmoins, un mystère demeure jusqu\'à la fin du roman : la boussole indiquait une mauvaise direction, sans que les personnages comprennent le problème. Finalement en comparant la boussole avec une autre, Axel se rend compte que l\'aiguille indique le sud et non le nord, et que cela est dû à la désorientation électrique causée par le feu Saint-Elme lors de l\'orage sur la mer Lidenbrock.'; // Valeur en dur pour le test
-    $summary = 'Ce roman suit une expédition audacieuse menée par le professeur Lidenbrock pour atteindre le centre de la Terre, dévoilant un monde souterrain étonnant.'; // Valeur en dur pour le test
+    $uid = '0VEBPgVgzEPVr4dQYygH9dvj'; // UID de l'article à mettre à jour
+    $title = 'Dragon Ball Z'; // Valeur en dur pour le test
+    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReaE06z2MlFj8ap8pDCcV_96CyaxxYE1hoCwU3YKnycI7MvuwjIMC2fh3Mjcl3c4BUs98&usqp=CAU"alt="Illustration Dragon Ball Z" max-width="500" /></p><br><br>
+    <p>Dragon Ball Z (DBZ) est une série d\’animation japonaise adaptée du manga "Dragon Ball" d\’Akira Toriyama. Elle se compose de plusieurs sagas majeures et de nombreux épisodes. Voici un résumé complet de chaque saga principale de Dragon Ball Z :<br><br></p>
+    <h2>Saga Saiyan<br><br></h2>
+    <p>Raditz arrive sur Terre et révèle à Goku qu\’il est un Saiyan et son frère. Raditz kidnappe Gohan, le fils de Goku. Goku et Piccolo s\’allient pour affronter Raditz. Goku se sacrifie pour permettre à Piccolo de tuer Raditz. Avant de mourir, Raditz informe ses camarades Saiyans, Nappa et Vegeta, de la présence des Dragon Balls sur Terre. Goku est ressuscité grâce aux Dragon Balls et s\’entraîne dans l\’autre monde avec Kaio-sama. Nappa et Vegeta arrivent sur Terre. Les Z Fighters (Piccolo, Krillin, Yamcha, Tien et Chiaotzu) affrontent Nappa, mais plusieurs d\’entre eux sont tués. Goku revient juste à temps pour vaincre Nappa et affronter Vegeta. Après un combat épique, Vegeta est finalement battu mais épargné par Goku.<br><br></p>
+    <p><img src="https://m.media-amazon.com/images/I/91of7+DvLDL.jpg"alt="" max-width="700" /></p><br><br>
+    <h2>Saga Namek<br><br></h2>
+    <p>Les héros se rendent sur la planète Namek pour utiliser ses Dragon Balls afin de ressusciter leurs amis. Sur Namek, ils rencontrent Freezer, un tyran intergalactique également à la recherche des Dragon Balls. Vegeta, devenu ennemi de Freezer, s\’allie momentanément avec les héros. La Ginyu Force, une équipe d\’élite de Freezer, affronte les héros, mais Goku arrive et les vainc. Goku combat Freezer, et après un long et difficile combat, il se transforme en Super Saiyan pour la première fois, battant finalement Freezer. Cependant, la planète Namek est détruite dans le processus. Goku parvient à s\’échapper avant l\’explosion.<br><br></p>
+    <p><img src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2016/11/dbz-sagas-namek.jpg"alt="" max-width="700" /></p><br><br>
+    <h2>Saga des Cyborgs et de Cell<br><br></h2>
+    <p>Après leur retour sur Terre, les héros sont confrontés à de nouveaux ennemis : les cyborgs créés par le Dr. Gero. Trunks, un mystérieux jeune homme venu du futur, avertit les héros de la menace des cyborgs. Les cyborgs #17 et #18 sont libérés et se révèlent extrêmement puissants. La menace principale, cependant, est Cell, un bio-android qui absorbe les cyborgs pour atteindre sa forme parfaite. Goku et les autres s\’entraînent intensivement dans la Salle de l\’Esprit et du Temps. Gohan atteint finalement le niveau de Super Saiyan 2 et, après un combat acharné, parvient à vaincre Cell avec un Kamehameha puissant.<br><br></p>
+    <p><img src="https://www.kanpai.fr/sites/default/files/uploads/2010/11/dragon-ball-kai-cyborgs.jpg"alt="" max-width="700" /></p><br><br>
+    <h2>Saga Boo<br><br></h2>
+    <p>Sept ans après la défaite de Cell, une nouvelle menace apparaît sous la forme de Majin Boo, un être magique puissant et imprévisible. Goku, revenu temporairement à la vie pour participer à un tournoi, s\’implique dans la lutte contre Boo. Vegeta se sacrifie pour tenter de détruire Boo, mais échoue. Goku atteint le niveau de Super Saiyan 3 pour combattre Boo, mais même cette transformation n\’est pas suffisante pour le vaincre. Goten et Trunks fusionnent pour former Gotenks et combattre Boo. Boo absorbe plusieurs des héros, devenant de plus en plus puissant. Finalement, Goku et Vegeta fusionnent grâce aux boucles d\’oreilles Potara pour former Vegito, mais même cette fusion est absorbée par Boo. Après de nombreuses péripéties, Goku parvient à rassembler l\’énergie de tous les habitants de la Terre pour créer une gigantesque bombe spirituelle, détruisant Boo une fois pour toutes.<br><br></p>
+    <p><img src="https://i.ytimg.com/vi/dpsgNlVwvos/sddefault.jpg"alt="" max-width="700" /></p><br><br>
+    <h2>Conclusion<br><br></h2>
+    <p>À la fin de Dragon Ball Z, Goku rencontre Uub, la réincarnation humaine de Boo, et décide de l\’entraîner pour qu\’il devienne le prochain protecteur de la Terre. La série se termine sur une note d\’espoir, avec Goku transmettant son savoir à la nouvelle génération.<br><br></p>'; // Valeur en dur pour le test
+    $summary = 'Dragon Ball Z suit Goku et ses amis dans des combats épiques contre des ennemis menaçant la Terre, tout en explorant les origines de Goku et introduisant de nouveaux personnages.'; // Valeur en dur pour le test
     $workspace = 'un-espace-2';
     $settings = 'Modifiable'; // Valeur en dur pour le test
 
@@ -1777,7 +1778,7 @@ public function test_delete_post()
     $user = driver_mel::gi()->getUser();
 
     // Récupérer la valeur du champ POST
-    $uid = 'lflwbSZvF1MbK6qntjIBY36c';
+    $uid = '30VpIZ1SHoErLZQk0rd9zh4e';
 
     // Validation de la donnée saisie
     if (empty($uid)) {
@@ -2550,42 +2551,10 @@ public function test_count_reactions()
     exit;
 }
 
-public function test_create_image()
-{
-    $post_id ='6';
-    $data ='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN3kspmHm_n83-nq2uWFIRaIY2q5xh5ylVSA&s';
-
-    // Validation des données saisies
-    if (empty($post_id) || empty($data)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
-
-    // Créer une nouvelle image
-    $image = new LibMelanie\Api\Defaut\Posts\Image();
-    $image->uid = $this-> generateRandomString(24);
-    $image->post = $post_id;
-    $image->data = $data;
-
-    // Sauvegarde de l'image
-    $ret = $image->save();
-    if (!is_null($ret)) {
-
-        header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Image créée avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création de l\'image.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
-
 public function test_delete_image()
 {
     // Récuperer l'Uid de l'image
-    $uid ='H00NX329lkJ9lyS7Si20Q7Ig';
+    $uid ='23mo20v73S8aEaMNa4GBvEdy';
 
     // Validation de la donnée saisie
     if (empty($uid)) {
@@ -2636,6 +2605,140 @@ public function test_get_image()
 
     // Arrêt de l'exécution du script
     exit;
+}
+
+
+
+
+
+private function test_extractImageLinks($content) {
+    $imageLinks = [];
+    $dom = new DOMDocument();
+    
+    // Supprimer les erreurs HTML malformées
+    libxml_use_internal_errors(true);
+    $dom->loadHTML($content);
+    libxml_clear_errors();
+    
+    $images = $dom->getElementsByTagName('img');
+    
+    foreach ($images as $img) {
+        $imageLinks[] = $img->getAttribute('src');
+    }
+    
+    return $imageLinks;
+}
+
+public function test_create_post()
+{
+    $workspace = 'un-espace-2';
+
+    $title = 'Les Jeux Olympiques';
+    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMLJc80xN6OEfStcY3D-hsiYtq9zWKRzTRaw&s"alt="Anneaux Olympiques" max-width="500" /></p><br><br>
+    <p>Les Jeux Olympiques, souvent simplement appelés les Jeux, sont une célébration mondiale du sport qui remonte à l\’antiquité. Originaires de la Grèce antique, ils ont été réinventés au XIXe siècle par le baron Pierre de Coubertin et sont devenus l\’événement sportif le plus prestigieux au monde. Les Jeux Olympiques modernes, organisés par le Comité International Olympique (CIO), rassemblent des milliers d\’athlètes de presque tous les pays pour concourir dans une grande variété de disciplines sportives. Cet essai de 5000 mots explore l\’histoire des Jeux Olympiques, leur évolution, leur impact culturel et politique, ainsi que les défis auxquels ils sont confrontés.</p><br><br>
+    <h2>Les Origines des Jeux Olympiques<br><br></h2>
+    <p>Les premiers Jeux Olympiques remontent à 776 avant J.-C. à Olympie, en Grèce. Ils étaient organisés en l\’honneur de Zeus, le roi des dieux dans la mythologie grecque. Ces jeux se déroulaient tous les quatre ans, une tradition qui se perpétue encore aujourd\’hui. Les épreuves originales comprenaient la course à pied, le saut en longueur, le lancer du disque et du javelot, la lutte, et le pentathlon, une combinaison de plusieurs de ces épreuves.
+    Les athlètes de l\’Antiquité concouraient nus, et la victoire leur apportait une grande gloire personnelle ainsi que des avantages matériels pour leur cité. Les Jeux étaient aussi un moment de trêve où les conflits entre les cités-États grecques étaient suspendus. Cependant, malgré leur prestige, les Jeux antiques prirent fin en 393 après J.-C. sous l\’empereur romain Théodose Ier, qui interdit les cultes païens.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToZ_D7rPEU20tMXiq1eWks9njoHmHu8fEuMw&s"alt="Allumage antique de la flamme Olympique" max-width="700" /></p><br><br>
+    <h2>La Renaissance des Jeux Olympiques<br><br></h2>
+    <p>Les Jeux Olympiques modernes doivent leur existence à Pierre de Coubertin, un éducateur français passionné par le sport et l\’éducation physique. Coubertin voyait le sport comme un moyen d\’unir les nations et de promouvoir la paix. En 1894, il fonda le Comité International Olympique (CIO), et deux ans plus tard, les premiers Jeux Olympiques modernes eurent lieu à Athènes, en Grèce.
+    Les premiers Jeux modernes, bien que modestes en comparaison avec les standards actuels, marquèrent le début d\’une nouvelle ère pour le sport international. Seulement 14 nations y participèrent, et les épreuves étaient principalement concentrées sur l\’athlétisme, la natation, la gymnastique et quelques autres sports. La flamme olympique, symbole de paix et d\’amitié, fut introduite plus tard, en 1928 à Amsterdam.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9HVDrI-ZsZsNDP2QWcZcD0j4QCyuHpADIHA&s"alt="Portrait de Pierre de Coubertin" max-width="700" /></p><br><br>
+    <h2>L\’Évolution des Jeux Olympiques<br><br></h2>
+    <p>Depuis leur renaissance, les Jeux Olympiques ont évolué de manière significative. Ils sont devenus de plus en plus inclusifs, intégrant de nouveaux sports et disciplines et permettant la participation d\’un nombre croissant de nations. Les femmes, initialement exclues, ont commencé à concourir en 1900 à Paris et ont progressivement obtenu l\’accès à presque toutes les disciplines.
+    Les Jeux d\’été et d\’hiver, autrefois organisés la même année, sont désormais alternés tous les deux ans. Les Jeux d\’hiver, introduits en 1924 à Chamonix, en France, incluent des sports tels que le ski, le patinage artistique et le hockey sur glace.
+    Les Jeux Olympiques ont également vu l\’introduction de nombreux symboles et traditions, tels que le serment olympique, la devise olympique "Citius, Altius, Fortius" (plus vite, plus haut, plus fort), et la mascotte olympique, introduite pour la première fois en 1972 à Munich.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjWNi-w4Wi7svzBa2tLfcSfZxKkZ8QA8FI9A&s"alt="Stade Olympique ancien" max-width="700" /></p><br><br>
+    <h2>Les Jeux Olympiques et la Politique<br><br></h2>
+    <p>Les Jeux Olympiques, malgré leur objectif de promouvoir la paix et l\’unité, ont souvent été le théâtre de tensions politiques. L\’exemple le plus marquant est peut-être les Jeux de Berlin en 1936, utilisés par le régime nazi comme outil de propagande. Cependant, ces jeux sont également célèbres pour les performances exceptionnelles de Jesse Owens, un athlète afro-américain qui remporta quatre médailles d\’or, défiant les idéologies racistes du régime hitlérien.
+    La Guerre froide a également marqué les Jeux, avec des boycotts significatifs en 1980 et 1984. Les États-Unis boycottèrent les Jeux de Moscou en 1980 en réponse à l\’invasion soviétique de l\’Afghanistan, et en représailles, l\’Union soviétique et plusieurs de ses alliés boycottèrent les Jeux de Los Angeles en 1984.
+    Malgré ces tensions, les Jeux Olympiques ont souvent servi de plateforme pour des gestes symboliques de paix et de réconciliation. Par exemple, les Jeux de Séoul en 1988 ont été marqués par la participation de nombreux pays qui avaient été absents des Jeux précédents en raison des boycotts, symbolisant un rapprochement dans les relations internationales.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHEsz1-HmVfd7aA_GrfFwYAuJpBI2uhUkC2HF5GTy86T2R_YgOHY2wv55EdClpsnstVKo&usqp=CAU"alt="Jeux Olympiques et Politique" max-width="700" /></p><br><br>
+    <h2>L\’Impact Culturel des Jeux Olympiques<br><br></h2>
+    <p>Les Jeux Olympiques ont un impact culturel immense, transcendant les frontières nationales et unissant des millions de personnes à travers le monde. Ils célèbrent non seulement l\’excellence sportive, mais aussi la diversité culturelle et les valeurs de fair-play, de respect et de solidarité.
+    Les cérémonies d\’ouverture et de clôture sont devenues des spectacles culturels de grande envergure, mettant en valeur les traditions et l\’histoire du pays hôte. Les Jeux sont également une vitrine pour l\’architecture moderne et les infrastructures, avec des villes hôtes construisant souvent des stades et des installations de pointe pour accueillir l\’événement.
+    Les athlètes olympiques eux-mêmes deviennent des symboles culturels et des modèles pour des millions de jeunes. Leurs histoires de persévérance, de dévouement et de succès inspirent et motivent les gens à travers le monde à poursuivre leurs propres rêves et objectifs.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0JHndQdOexZ8ib8Cm0b-fliv6uUXPBHlhwQ&s"alt="Illustration des Jeux Olympiques" max-width="700" /></p><br><br>
+    <h2>Les Défis des Jeux Olympiques<br><br></h2>
+    <p>Malgré leur succès, les Jeux Olympiques ne sont pas sans défis. L\’un des principaux problèmes est le coût exorbitant de l\’organisation des Jeux, qui peut placer une pression financière énorme sur les pays hôtes. Par exemple, les Jeux de Sotchi en 2014 sont devenus les Jeux d\’hiver les plus chers de l\’histoire, coûtant environ 50 milliards de dollars.
+    Il y a aussi des préoccupations concernant la durabilité et l\’impact environnemental des Jeux. Les constructions massives et les infrastructures nécessaires peuvent avoir des effets négatifs sur l\’environnement local. Cependant, le CIO a pris des mesures pour promouvoir des pratiques durables et encourager les villes hôtes à minimiser leur empreinte écologique.
+    Un autre défi majeur est le dopage, qui ternit la réputation des Jeux et soulève des questions sur l\’intégrité des compétitions. Le CIO et les fédérations sportives internationales ont mis en place des mesures strictes de contrôle anti-dopage, mais le problème persiste, nécessitant des efforts continus pour garantir des compétitions équitables.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBpT493uciUvoLcLFiFO1apHCnKMJ3V4lpsg&s"alt="Défis des jeux Olympiques" max-width="700" /></p><br><br>
+    <h2>Les Jeux Olympiques et l\’Innovation Technologique<br><br></h2>
+    <p>Les Jeux Olympiques ont toujours été à la pointe de l\’innovation technologique. Des avancées dans la diffusion télévisée ont permis à des millions de personnes de suivre les Jeux en direct, peu importe où ils se trouvent dans le monde. Les technologies de pointe en matière de chronométrage et de mesure garantissent des résultats précis et équitables.
+    Les Jeux de Tokyo 2020, bien que reportés à 2021 en raison de la pandémie de COVID-19, ont été particulièrement marqués par l\’innovation. Des robots ont été utilisés pour assister les spectateurs et les athlètes, et des technologies de réalité virtuelle et augmentée ont enrichi l\’expérience des téléspectateurs. Les mesures strictes de contrôle sanitaire et les protocoles de sécurité ont également démontré l\’importance de la technologie dans la gestion des événements de grande envergure en période de crise.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkY5BN3lMmtrJiuiNpiBMbXrwNw8rAdf588A&s"alt="Technologies et Jeux Olympiques" max-width="700" /></p><br><br>
+    <h2>Conclusion<br><br></h2>
+    <p>Les Jeux Olympiques, avec leur riche histoire et leur impact mondial, restent une célébration unique de l\’excellence sportive et de l\’unité humaine. Ils reflètent à la fois les aspirations les plus nobles de l\’humanité et les défis complexes auxquels nous sommes confrontés. En célébrant la diversité et en encourageant la compétition équitable, les Jeux Olympiques continuent d\’inspirer des millions de personnes à travers le monde, rappelant l\’importance de la paix, de la coopération et de la persévérance.
+    Les Jeux de l\’avenir devront relever des défis croissants, notamment en matière de durabilité, de coût et d\’intégrité sportive, mais avec les innovations technologiques et les efforts continus du CIO et des nations participantes, ils continueront de briller comme un phare d\’espoir et d\’inspiration pour les générations futures.</p><br><br>'; // Valeur en dur pour le test
+    $summary = 'Les Jeux Olympiques, réinventés au XIXe siècle par Pierre de Coubertin après leurs origines antiques en Grèce, sont le plus prestigieux événement sportif mondial. Depuis les premiers Jeux modernes en 1896 à Athènes, ils ont évolué pour inclure de nouveaux sports et des athlètes féminins, alternant entre été et hiver tous les deux ans. Malgré des influences politiques comme les boycotts de la Guerre froide, les Jeux restent une plateforme de paix et de célébration culturelle. Les défis incluent les coûts élevés, les préoccupations environnementales et le dopage, mais les innovations technologiques continuent d\’améliorer leur gestion et leur diffusion.'; // Valeur en dur pour le test
+    $settings = 'Modifiable'; // Valeur en dur pour le test
+
+    // Validation des données saisies
+    if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
+    }
+
+    // Créer un nouvel Article
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->post_title = $title;
+    $post->post_summary = $summary;
+    $post->post_content = $content;
+    $post->post_uid = $this->generateRandomString(24);
+    $post->created = date('Y-m-d H:i:s');
+    $post->updated = date('Y-m-d H:i:s');
+    $post->user_uid = driver_mel::gi()->getUser()->uid;
+    $post->post_settings = $settings;
+    $post->workspace_uid = $workspace;
+
+    // Sauvegarde de l'article
+    $post_id = $post->save();
+    if ($post_id) {
+        $post->load();
+        // Extraire les liens d'image et les enregistrer
+        $imageLinks = $this->test_extractImageLinks($content);
+        $imageSaved = true;
+        foreach ($imageLinks as $link) {
+            if (!$this->test_create_image($post->id, $link)) {
+                $imageSaved = false;
+                break; // On arrête si une image échoue à être enregistrée
+            }
+        }
+
+        // Réponse JSON en fonction de la sauvegarde des images
+        if ($imageSaved) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Article créé, mais échec de l\'enregistrement de certaines images.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Échec de création de l\'article.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+public function test_create_image($post_id, $data)
+{
+    // Validation des données saisies
+    if (empty($post_id) || empty($data)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        return false;
+    }
+
+    // Créer une nouvelle image
+    $image = new LibMelanie\Api\Defaut\Posts\Image();
+    $image->uid = $this->generateRandomString(24);
+    $image->post = $post_id;
+    $image->data = $data;
+
+    // Sauvegarde de l'image
+    $ret = $image->save();
+    return !is_null($ret);
 }
 
 

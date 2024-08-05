@@ -504,13 +504,19 @@ export class LinkManager extends MelObject {
    */
   displayButton(selector) {
     let button = MelHtml.start
-      .button({
-        class: 'fixed_mulba',
-        id: 'mulba',
-      })
-      .text('Ajouter')
-      .icon('add_circle').end()
-      .end();
+      .div({class: 'mul_right_buttons'})
+        .button({
+          class: 'fixed_mulba',
+          id: 'mulba',
+        })
+          .text('Ajouter')
+          .icon('add_circle').end()
+        .end('button')
+        .button({id:'app_store', class:'mel-button-icon'})
+          .text('Bibliothèque d\'applications')
+          .icon('widgets').end()
+        .end('button')
+      .end('div')
     selector.append(button.generate());
   }
 

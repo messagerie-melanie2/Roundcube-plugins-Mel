@@ -127,7 +127,20 @@ class mel_visio extends bnum_plugin
 
         $this->include_css("webconf.css");
         $this->rc()->output->set_env('visio.data', $this->data->serialize());  
+
+        // $base_src = $this->rc()->config->get('annuaire_source');
+        // $contacts = $this->rc()->get_address_book($base_src)->search('email', driver_mel::gi()->getUser()->email);
+
+        // if (count($contacts) > 0) {
+        //     $cid = $contacts->first()['ID'];
+        //     $this->rc()->output->set_env('cid', $cid);
+        // }
+
+        unset($contacts);
+
         $this->send_visio_config();
+        $this->load_script_module('visio');
+        $this->api->output->add_header('<script src="'.$this->rc()->config->get("web_conf").'/external_api.js"></script>');
 
         $this->rc()->output->send('mel_visio.visio');
         

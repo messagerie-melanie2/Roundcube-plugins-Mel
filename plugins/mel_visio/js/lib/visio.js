@@ -1,3 +1,7 @@
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object';
@@ -13,6 +17,7 @@ class Visio extends MelObject {
   }
 
   main() {
+    //debugger;
     super.main();
 
     this._init()._setup().start();
@@ -27,11 +32,11 @@ class Visio extends MelObject {
      */
     this.data = null;
 
-    this.loader = new VisioLoader('#mm-webconf .loading-visio-text');
+    this.loader = null;
 
     this.jitsii = null;
 
-    this._token = this._get_jwt();
+    this._token = null;
 
     return this;
   }
@@ -46,10 +51,15 @@ class Visio extends MelObject {
       },
     });
 
+    this.loader = new VisioLoader('#mm-webconf .loading-visio-text');
+
+    this._token = this._get_jwt();
+
     return this;
   }
 
   async start() {
+    //debugger;
     if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
       FramesManager.Instance.start_mode('reinit_visio');
     } else {
@@ -57,19 +67,49 @@ class Visio extends MelObject {
         .replace('http://', '')
         .replace('https://', '');
 
-      //Si on est sous ff, avertir que c'est pas ouf d'utiliser ff
-      await this.navigatorWarning();
+      // //Si on est sous ff, avertir que c'est pas ouf d'utiliser ff
+      // await this.navigatorWarning();
 
       this.loader.update_text('Récupération du jeton...');
-      const debug_token = await this._token;
+      const token = await this._token;
+      if (token.has_error) {
+        BnumMessage.DisplayMessage(
+          'Impossible de lancer la visio !',
+          eMessageType.Error,
+        );
+        console.error(token);
+        return;
+      }
+
+      let user = null;
+
+      if (rcmail.env.current_user?.name && rcmail.env.current_user?.lastname)
+        user = `${rcmail.env.current_user.name} ${rcmail.env.current_user.lastname}`;
+      else user = rcmail.env.mel_metapage_user_emails[0];
+
       const options = {
-        jwt: await this._token, //Récupère le token jwt pour pouvoir lancer la visio
+        jwt: token.datas.jwt, //Récupère le token jwt pour pouvoir lancer la visio
         roomName: this.data.room,
         width: '100%',
         height: '100%',
         parentNode: document.querySelector('#mm-webconf'),
         onload: () => {
-          this.loader = this.loader.destroy();
+          let avatar_url = null;
+          if (this.get_env('cid')) {
+            avatar_url = this.url('addressbook', {
+              action: 'photo',
+              params: {
+                _cid: this.get_env('cid'),
+                _source: this.get_env('annuaire_source'),
+              },
+            });
+          } else avatar_url = this.get_env('avatar_url');
+
+          if (avatar_url) {
+            this.jitsii.executeCommand('avatarUrl', avatar_url);
+          }
+
+          if (this.loader) this.loader = this.loader.destroy();
         },
         configOverwrite: {
           hideLobbyButton: true,
@@ -94,13 +134,8 @@ class Visio extends MelObject {
           //TOOLBAR_BUTTONS : [""]
         },
         userInfo: {
-          email: rcmail.env['webconf.user_datas'].email,
-          displayName:
-            rcmail.env['webconf.user_datas'].name === null
-              ? rcmail.env['webconf.user_datas'].email
-                ? rcmail.env['webconf.user_datas'].email
-                : 'Bnum user'
-              : rcmail.env['webconf.user_datas'].name, //.split("(")[0].split("-")[0]
+          email: rcmail.env.mel_metapage_user_emails[0],
+          displayName: user,
         },
       };
 
@@ -108,11 +143,15 @@ class Visio extends MelObject {
 
       await wait(() => window.JitsiMeetExternalAPI === undefined);
 
+      this.loader.update_text('Chargement de la visioconférence...');
+
       this.jitsii = new JitsiMeetExternalAPI(domain, options);
     }
   }
 
   async _get_jwt() {
-    return (await BnumConnector.force_connect(VisioConnectors.jwt, {}))?.datas;
+    let params = VisioConnectors.jwt.needed;
+    params._room = this.data.room;
+    return await BnumConnector.force_connect(VisioConnectors.jwt, { params });
   }
 }

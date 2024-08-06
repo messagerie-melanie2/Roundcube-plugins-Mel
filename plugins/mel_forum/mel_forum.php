@@ -287,9 +287,24 @@ public function show_post_date(){
     return $content;
 }
 
-
-
-// Fonctions qui sont nécessaires à la création d'un article.
+/**
+     * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
+     *
+     * Cette fonction génère une chaîne de caractères aléatoire de la longueur spécifiée
+     * en utilisant des caractères d'un ensemble prédéfini de caractères alphanumériques.
+     *
+     * @param int $length La longueur de la chaîne de caractères aléatoire à générer. La valeur par défaut est 10.
+     * @return string La chaîne de caractères aléatoire générée.
+     */
+    function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
 
 /**
  * Extrait les liens des images d'un contenu HTML.
@@ -319,75 +334,25 @@ private function extractImageLinks($content) {
 }
 
 /**
- * Crée un nouvel article dans l'espace de travail.
+ * Crée un résumé à partir du contenu fourni.
  *
- * Cette fonction récupère les valeurs des champs POST, valide les données saisies,
- * crée une nouvelle publication avec les propriétés définies, et sauvegarde l'article.
- * Elle extrait également les liens d'image du contenu et les enregistre.
- * La fonction retourne une réponse JSON indiquant le statut de la création de l'article.
+ * Cette fonction supprime les balises HTML du contenu, extrait les phrases 
+ * en utilisant des délimiteurs de phrase, et retourne les deux premières phrases 
+ * sous forme de résumé.
  *
- * @return void
+ * @param string $content Le contenu à partir duquel le résumé est créé.
+ * @return string Le résumé généré à partir des deux premières phrases du contenu.
  */
-public function create_post()
-{
-    //récupérer le Workspace
-    $workspace = driver_mel::gi()->workspace();
-
-    // récupérer les valeurs des champs POST
-    $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
-    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-    $summary = rcube_utils::get_input_value('_summary', rcube_utils::INPUT_POST);
-    $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
-
-    // Validation des données saisies
-    if (empty($title) || empty($content) || empty($description) || empty($settings)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
+private function create_summary_from_content($content)
+    {
+        // Suppression des balises HTML pour éviter des erreurs d'extraction
+        $content = strip_tags($content);
+        // Extraction des phrases en utilisant un délimiteur de phrase
+        $sentences = preg_split('/(\. |\? |\! )/', $content);
+        // Prend les deux premières phrases
+        $summary = implode('. ', array_slice($sentences, 0, 2));
+        return $summary;
     }
-
-    //Créer un nouvel Article
-    $post = new LibMelanie\Api\Defaut\Posts\Post();
-
-    //Définition des propriétés de l'article
-    $post->post_title = $title;
-    $post->post_summary = $summary;
-    $post->post_content = $content;
-    $post->post_uid = $this-> generateRandomString(24);
-    $post->created = date('Y-m-d H:i:s');
-    $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = driver_mel::gi()->getUser()->uid;
-    $post->post_settings = $settings;
-    $post->workspace_uid = $workspace;
-
-    // Sauvegarde de l'article
-    $post_id = $post->save();
-    if ($post_id) {
-        $post->load();
-        // Extraire les liens d'image et les enregistrer
-        $imageLinks = $this->extractImageLinks($content);
-        $imageSaved = true;
-        foreach ($imageLinks as $link) {
-            if (!$this->test_create_image($post->id, $link)) {
-                $imageSaved = false;
-                break; // On arrête si une image échoue à être enregistrée
-            }
-        }
-
-        // Réponse JSON en fonction de la sauvegarde des images
-        if ($imageSaved) {
-            header('Content-Type: application/json');
-            echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
-        } else {
-            header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Article créé, mais échec de l\'enregistrement de certaines images.']);
-        }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Échec de création de l\'article.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
 
 /**
  * Crée une nouvelle image associée à une publication.
@@ -420,24 +385,80 @@ public function save_image($post_id, $data)
 }
 
 
+// Fonctions qui sont nécessaires à la création d'un article.
+
 /**
-     * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
-     *
-     * Cette fonction génère une chaîne de caractères aléatoire de la longueur spécifiée
-     * en utilisant des caractères d'un ensemble prédéfini de caractères alphanumériques.
-     *
-     * @param int $length La longueur de la chaîne de caractères aléatoire à générer. La valeur par défaut est 10.
-     * @return string La chaîne de caractères aléatoire générée.
-     */
-function generateRandomString($length = 10) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[random_int(0, $charactersLength - 1)];
+ * Crée un nouvel article dans l'espace de travail.
+ *
+ * Cette fonction récupère les valeurs des champs POST, valide les données saisies,
+ * crée une nouvelle publication avec les propriétés définies, et sauvegarde l'article.
+ * Elle extrait également les liens d'image du contenu et les enregistre.
+ * La fonction retourne une réponse JSON indiquant le statut de la création de l'article.
+ *
+ * @return void
+ */
+public function create_post()
+{
+    //récupérer le Workspace
+    $workspace = driver_mel::gi()->workspace();
+
+    // récupérer les valeurs des champs POST
+    $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
+    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+    // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
+    $summary = $this->create_summary_from_content($content);
+    $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($title) || empty($content) || empty($description) || empty($settings)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+        exit;
     }
-    return $randomString;
+
+    //Créer un nouvel Article
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+
+    //Définition des propriétés de l'article
+    $post->post_title = $title;
+    $post->post_summary = $summary;
+    $post->post_content = $content;
+    $post->post_uid = $this-> generateRandomString(24);
+    $post->created = date('Y-m-d H:i:s');
+    $post->updated = date('Y-m-d H:i:s');
+    $post->user_uid = driver_mel::gi()->getUser()->uid;
+    $post->post_settings = $settings;
+    $post->workspace_uid = $workspace;
+
+    // Sauvegarde de l'article
+    $post_id = $post->save();
+    if ($post_id) {
+        $post->load();
+        // Extraire les liens d'image et les enregistrer
+        $imageLinks = $this->extractImageLinks($content);
+        $imageSaved = true;
+        foreach ($imageLinks as $link) {
+            if (!$this->save_image($post->id, $link)) {
+                $imageSaved = false;
+                break; // On arrête si une image échoue à être enregistrée
+            }
+        }
+
+        // Réponse JSON en fonction de la sauvegarde des images
+        if ($imageSaved) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Article créé, mais échec de l\'enregistrement de certaines images.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Échec de création de l\'article.']);
+    }
+
+    // Arrêt de l'exécution du script
+    exit;
 }
+
 
 /**
  * Envoie une réponse de type forum.
@@ -526,7 +547,7 @@ public function update_post()
         $imageLinks = $this->test_extractImageLinks($content);
         $imageSaved = true;
         foreach ($imageLinks as $link) {
-            if (!$this->test_create_image($post->id, $link)) {
+            if (!$this->save_image($post->id, $link)) {
                 $imageSaved = false;
                 break; // On arrête si une image échoue à être enregistrée
             }
@@ -546,36 +567,6 @@ public function update_post()
 
     // Arrêt de l'exécution du script
     exit;
-}
-
-/**
- * Enregistre une nouvelle image associée à une publication.
- *
- * Cette fonction valide les données saisies, crée une nouvelle image avec les
- * propriétés définies, et la sauvegarde. Elle retourne un booléen indiquant
- * si l'image a été sauvegardée avec succès.
- *
- * @param string $post_id L'identifiant de la publication à laquelle l'image est associée.
- * @param string $data Les données de l'image à enregistrer.
- * @return bool True si l'image a été sauvegardée avec succès, sinon false.
- */
-public function save_new_image($post_id, $data)
-{
-    // Validation des données saisies
-    if (empty($post_id) || empty($data)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        return false;
-    }
-
-    // Créer une nouvelle image
-    $image = new LibMelanie\Api\Defaut\Posts\Image();
-    $image->uid = $this->generateRandomString(24);
-    $image->post = $post_id;
-    $image->data = $data;
-
-    // Sauvegarde de l'image
-    $ret = $image->save();
-    return !is_null($ret);
 }
 
 /**
@@ -1683,44 +1674,38 @@ function test()
 
 function elements()
 {
-// Les données à envoyer en JSON
-$data = ['dorian', 'arnaud', 'thomas', 'julien', 'stéphanie'];
+    // Les données à envoyer en JSON
+    $data = ['dorian', 'arnaud', 'thomas', 'julien', 'stéphanie'];
 
-// Ajout d'un en-tête pour spécifier que la réponse est en JSON
-header('Content-Type: application/json');
+    // Ajout d'un en-tête pour spécifier que la réponse est en JSON
+    header('Content-Type: application/json');
 
-// Envoie de la réponse JSON
-echo json_encode($data);
+    // Envoie de la réponse JSON
+    echo json_encode($data);
 
-// Arrêt de l'exécution du script
-exit;
+    // Arrêt de l'exécution du script
+    exit;
 }
 
 public function test_update_post()
 {
     // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
+    $user = driver_mel::gi()->getUser()->uid;
 
     // Récupérer les valeurs des champs POST
-    $uid = '0VEBPgVgzEPVr4dQYygH9dvj'; // UID de l'article à mettre à jour
-    $title = 'Dragon Ball Z'; // Valeur en dur pour le test
-    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReaE06z2MlFj8ap8pDCcV_96CyaxxYE1hoCwU3YKnycI7MvuwjIMC2fh3Mjcl3c4BUs98&usqp=CAU"alt="Illustration Dragon Ball Z" max-width="500" /></p><br><br>
-    <p>Dragon Ball Z (DBZ) est une série d\’animation japonaise adaptée du manga "Dragon Ball" d\’Akira Toriyama. Elle se compose de plusieurs sagas majeures et de nombreux épisodes. Voici un résumé complet de chaque saga principale de Dragon Ball Z :<br><br></p>
-    <h2>Saga Saiyan<br><br></h2>
-    <p>Raditz arrive sur Terre et révèle à Goku qu\’il est un Saiyan et son frère. Raditz kidnappe Gohan, le fils de Goku. Goku et Piccolo s\’allient pour affronter Raditz. Goku se sacrifie pour permettre à Piccolo de tuer Raditz. Avant de mourir, Raditz informe ses camarades Saiyans, Nappa et Vegeta, de la présence des Dragon Balls sur Terre. Goku est ressuscité grâce aux Dragon Balls et s\’entraîne dans l\’autre monde avec Kaio-sama. Nappa et Vegeta arrivent sur Terre. Les Z Fighters (Piccolo, Krillin, Yamcha, Tien et Chiaotzu) affrontent Nappa, mais plusieurs d\’entre eux sont tués. Goku revient juste à temps pour vaincre Nappa et affronter Vegeta. Après un combat épique, Vegeta est finalement battu mais épargné par Goku.<br><br></p>
-    <p><img src="https://m.media-amazon.com/images/I/91of7+DvLDL.jpg"alt="" max-width="700" /></p><br><br>
-    <h2>Saga Namek<br><br></h2>
-    <p>Les héros se rendent sur la planète Namek pour utiliser ses Dragon Balls afin de ressusciter leurs amis. Sur Namek, ils rencontrent Freezer, un tyran intergalactique également à la recherche des Dragon Balls. Vegeta, devenu ennemi de Freezer, s\’allie momentanément avec les héros. La Ginyu Force, une équipe d\’élite de Freezer, affronte les héros, mais Goku arrive et les vainc. Goku combat Freezer, et après un long et difficile combat, il se transforme en Super Saiyan pour la première fois, battant finalement Freezer. Cependant, la planète Namek est détruite dans le processus. Goku parvient à s\’échapper avant l\’explosion.<br><br></p>
-    <p><img src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2016/11/dbz-sagas-namek.jpg"alt="" max-width="700" /></p><br><br>
-    <h2>Saga des Cyborgs et de Cell<br><br></h2>
-    <p>Après leur retour sur Terre, les héros sont confrontés à de nouveaux ennemis : les cyborgs créés par le Dr. Gero. Trunks, un mystérieux jeune homme venu du futur, avertit les héros de la menace des cyborgs. Les cyborgs #17 et #18 sont libérés et se révèlent extrêmement puissants. La menace principale, cependant, est Cell, un bio-android qui absorbe les cyborgs pour atteindre sa forme parfaite. Goku et les autres s\’entraînent intensivement dans la Salle de l\’Esprit et du Temps. Gohan atteint finalement le niveau de Super Saiyan 2 et, après un combat acharné, parvient à vaincre Cell avec un Kamehameha puissant.<br><br></p>
-    <p><img src="https://www.kanpai.fr/sites/default/files/uploads/2010/11/dragon-ball-kai-cyborgs.jpg"alt="" max-width="700" /></p><br><br>
-    <h2>Saga Boo<br><br></h2>
-    <p>Sept ans après la défaite de Cell, une nouvelle menace apparaît sous la forme de Majin Boo, un être magique puissant et imprévisible. Goku, revenu temporairement à la vie pour participer à un tournoi, s\’implique dans la lutte contre Boo. Vegeta se sacrifie pour tenter de détruire Boo, mais échoue. Goku atteint le niveau de Super Saiyan 3 pour combattre Boo, mais même cette transformation n\’est pas suffisante pour le vaincre. Goten et Trunks fusionnent pour former Gotenks et combattre Boo. Boo absorbe plusieurs des héros, devenant de plus en plus puissant. Finalement, Goku et Vegeta fusionnent grâce aux boucles d\’oreilles Potara pour former Vegito, mais même cette fusion est absorbée par Boo. Après de nombreuses péripéties, Goku parvient à rassembler l\’énergie de tous les habitants de la Terre pour créer une gigantesque bombe spirituelle, détruisant Boo une fois pour toutes.<br><br></p>
-    <p><img src="https://i.ytimg.com/vi/dpsgNlVwvos/sddefault.jpg"alt="" max-width="700" /></p><br><br>
-    <h2>Conclusion<br><br></h2>
-    <p>À la fin de Dragon Ball Z, Goku rencontre Uub, la réincarnation humaine de Boo, et décide de l\’entraîner pour qu\’il devienne le prochain protecteur de la Terre. La série se termine sur une note d\’espoir, avec Goku transmettant son savoir à la nouvelle génération.<br><br></p>'; // Valeur en dur pour le test
-    $summary = 'Dragon Ball Z suit Goku et ses amis dans des combats épiques contre des ennemis menaçant la Terre, tout en explorant les origines de Goku et introduisant de nouveaux personnages.'; // Valeur en dur pour le test
+    $uid = 'zF5lAVs66fzNhvPw8EhMaj45'; // UID de l'article à mettre à jour
+    $title = 'La Nationale 7 : La Mythique Route des Vacances'; // Valeur en dur pour le test
+    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s"alt="Nationale 7" max-width="500" /></p><br><br>
+    <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\’Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
+	<p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg"alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
+	<p>Créée en 1959, la Nationale 7 a été, pendant des décennies, la principale artère empruntée par des générations de vacanciers en quête de soleil et de mer Méditerranée. Avant l\’ère des autoroutes, cette route représentait l\’évasion estivale, un symbole de liberté et d\’aventure pour de nombreuses familles françaises. Des voitures surchargées de bagages, des arrêts fréquents dans des auberges et des relais routiers typiques, des pique-niques improvisés au bord de la route : tels étaient les rituels de ceux qui empruntaient cette route légendaire.</p><br><br>
+    <p><img src="https://www.lesbiefs.eu/2020/wp-content/uploads/2020/01/embouteillage-1024x523.jpg"alt="Illustration de la circulation sur la Nationale 7" max-width="500" /></p><br><br>
+    <p>La Nationale 7 est également ancrée dans la culture populaire française. Elle a inspiré des chansons, des films et des livres, devenant un symbole de la dolce vita à la française. Charles Trenet l\’a immortalisée dans sa célèbre chanson "Nationale 7", évoquant le charme et la convivialité de cette route mythique.</p><br><br>
+    <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg"alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
+    <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\’attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
+    <p><img src="https://pictures.laprovence.com/cdn-cgi/image/width=3840,format=auto,quality=80,trim.left=0,trim.top=188,trim.height=1135,trim.width=2000/media/2024/08/03/1T9A0774.JPG.jyfZsP7lMdsL98tjACEA.-uLA7Qb6Eb.jpg"alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
+    <p>Aujourd\’hui, parcourir la Nationale 7, c\’est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\’antan, et se plonger dans l\’histoire et la culture d\’une France en mouvement. Cette route reste une invitation à l\’évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
+    $summary = $this->create_summary_from_content($content);
     $workspace = 'un-espace-2';
     $settings = 'Modifiable'; // Valeur en dur pour le test
 
@@ -1778,7 +1763,7 @@ public function test_delete_post()
     $user = driver_mel::gi()->getUser();
 
     // Récupérer la valeur du champ POST
-    $uid = '30VpIZ1SHoErLZQk0rd9zh4e';
+    $uid = 'yeCrPF4rA4r61UuQuFc4EX9R';
 
     // Validation de la donnée saisie
     if (empty($uid)) {
@@ -2578,25 +2563,18 @@ public function test_delete_image()
     exit;
 }
 
-public function test_get_image()
+public function test_get_image($post_id = '55')
 {
-    $uid ='H00NX329lkJ9lyS7Si20Q7Ig';
-
-    // Validation des données
-    if (empty($uid)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'Uid de l\'image et requis.']);
-        exit;
-    }
-
+        
     $image = new LibMelanie\Api\Defaut\Posts\Image();
-    $image->uid = $uid;
+    $image->post_id = $post_id;
 
     $ret = $image->load();
     if (!is_null($ret)) {
 
         echo json_encode([
             'status' => 'success',
-            'image' => $image->data,
+            'image' => $image->image_data,
         ]);
     } else {
         header('Content-Type : application/json');
@@ -2633,45 +2611,18 @@ public function test_create_post()
 {
     $workspace = 'un-espace-2';
 
-    $title = 'Les Jeux Olympiques';
-    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMLJc80xN6OEfStcY3D-hsiYtq9zWKRzTRaw&s"alt="Anneaux Olympiques" max-width="500" /></p><br><br>
-    <p>Les Jeux Olympiques, souvent simplement appelés les Jeux, sont une célébration mondiale du sport qui remonte à l\’antiquité. Originaires de la Grèce antique, ils ont été réinventés au XIXe siècle par le baron Pierre de Coubertin et sont devenus l\’événement sportif le plus prestigieux au monde. Les Jeux Olympiques modernes, organisés par le Comité International Olympique (CIO), rassemblent des milliers d\’athlètes de presque tous les pays pour concourir dans une grande variété de disciplines sportives. Cet essai de 5000 mots explore l\’histoire des Jeux Olympiques, leur évolution, leur impact culturel et politique, ainsi que les défis auxquels ils sont confrontés.</p><br><br>
-    <h2>Les Origines des Jeux Olympiques<br><br></h2>
-    <p>Les premiers Jeux Olympiques remontent à 776 avant J.-C. à Olympie, en Grèce. Ils étaient organisés en l\’honneur de Zeus, le roi des dieux dans la mythologie grecque. Ces jeux se déroulaient tous les quatre ans, une tradition qui se perpétue encore aujourd\’hui. Les épreuves originales comprenaient la course à pied, le saut en longueur, le lancer du disque et du javelot, la lutte, et le pentathlon, une combinaison de plusieurs de ces épreuves.
-    Les athlètes de l\’Antiquité concouraient nus, et la victoire leur apportait une grande gloire personnelle ainsi que des avantages matériels pour leur cité. Les Jeux étaient aussi un moment de trêve où les conflits entre les cités-États grecques étaient suspendus. Cependant, malgré leur prestige, les Jeux antiques prirent fin en 393 après J.-C. sous l\’empereur romain Théodose Ier, qui interdit les cultes païens.</p><br><br>
-    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToZ_D7rPEU20tMXiq1eWks9njoHmHu8fEuMw&s"alt="Allumage antique de la flamme Olympique" max-width="700" /></p><br><br>
-    <h2>La Renaissance des Jeux Olympiques<br><br></h2>
-    <p>Les Jeux Olympiques modernes doivent leur existence à Pierre de Coubertin, un éducateur français passionné par le sport et l\’éducation physique. Coubertin voyait le sport comme un moyen d\’unir les nations et de promouvoir la paix. En 1894, il fonda le Comité International Olympique (CIO), et deux ans plus tard, les premiers Jeux Olympiques modernes eurent lieu à Athènes, en Grèce.
-    Les premiers Jeux modernes, bien que modestes en comparaison avec les standards actuels, marquèrent le début d\’une nouvelle ère pour le sport international. Seulement 14 nations y participèrent, et les épreuves étaient principalement concentrées sur l\’athlétisme, la natation, la gymnastique et quelques autres sports. La flamme olympique, symbole de paix et d\’amitié, fut introduite plus tard, en 1928 à Amsterdam.</p><br><br>
-    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9HVDrI-ZsZsNDP2QWcZcD0j4QCyuHpADIHA&s"alt="Portrait de Pierre de Coubertin" max-width="700" /></p><br><br>
-    <h2>L\’Évolution des Jeux Olympiques<br><br></h2>
-    <p>Depuis leur renaissance, les Jeux Olympiques ont évolué de manière significative. Ils sont devenus de plus en plus inclusifs, intégrant de nouveaux sports et disciplines et permettant la participation d\’un nombre croissant de nations. Les femmes, initialement exclues, ont commencé à concourir en 1900 à Paris et ont progressivement obtenu l\’accès à presque toutes les disciplines.
-    Les Jeux d\’été et d\’hiver, autrefois organisés la même année, sont désormais alternés tous les deux ans. Les Jeux d\’hiver, introduits en 1924 à Chamonix, en France, incluent des sports tels que le ski, le patinage artistique et le hockey sur glace.
-    Les Jeux Olympiques ont également vu l\’introduction de nombreux symboles et traditions, tels que le serment olympique, la devise olympique "Citius, Altius, Fortius" (plus vite, plus haut, plus fort), et la mascotte olympique, introduite pour la première fois en 1972 à Munich.</p><br><br>
-    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjWNi-w4Wi7svzBa2tLfcSfZxKkZ8QA8FI9A&s"alt="Stade Olympique ancien" max-width="700" /></p><br><br>
-    <h2>Les Jeux Olympiques et la Politique<br><br></h2>
-    <p>Les Jeux Olympiques, malgré leur objectif de promouvoir la paix et l\’unité, ont souvent été le théâtre de tensions politiques. L\’exemple le plus marquant est peut-être les Jeux de Berlin en 1936, utilisés par le régime nazi comme outil de propagande. Cependant, ces jeux sont également célèbres pour les performances exceptionnelles de Jesse Owens, un athlète afro-américain qui remporta quatre médailles d\’or, défiant les idéologies racistes du régime hitlérien.
-    La Guerre froide a également marqué les Jeux, avec des boycotts significatifs en 1980 et 1984. Les États-Unis boycottèrent les Jeux de Moscou en 1980 en réponse à l\’invasion soviétique de l\’Afghanistan, et en représailles, l\’Union soviétique et plusieurs de ses alliés boycottèrent les Jeux de Los Angeles en 1984.
-    Malgré ces tensions, les Jeux Olympiques ont souvent servi de plateforme pour des gestes symboliques de paix et de réconciliation. Par exemple, les Jeux de Séoul en 1988 ont été marqués par la participation de nombreux pays qui avaient été absents des Jeux précédents en raison des boycotts, symbolisant un rapprochement dans les relations internationales.</p><br><br>
-    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHEsz1-HmVfd7aA_GrfFwYAuJpBI2uhUkC2HF5GTy86T2R_YgOHY2wv55EdClpsnstVKo&usqp=CAU"alt="Jeux Olympiques et Politique" max-width="700" /></p><br><br>
-    <h2>L\’Impact Culturel des Jeux Olympiques<br><br></h2>
-    <p>Les Jeux Olympiques ont un impact culturel immense, transcendant les frontières nationales et unissant des millions de personnes à travers le monde. Ils célèbrent non seulement l\’excellence sportive, mais aussi la diversité culturelle et les valeurs de fair-play, de respect et de solidarité.
-    Les cérémonies d\’ouverture et de clôture sont devenues des spectacles culturels de grande envergure, mettant en valeur les traditions et l\’histoire du pays hôte. Les Jeux sont également une vitrine pour l\’architecture moderne et les infrastructures, avec des villes hôtes construisant souvent des stades et des installations de pointe pour accueillir l\’événement.
-    Les athlètes olympiques eux-mêmes deviennent des symboles culturels et des modèles pour des millions de jeunes. Leurs histoires de persévérance, de dévouement et de succès inspirent et motivent les gens à travers le monde à poursuivre leurs propres rêves et objectifs.</p><br><br>
-    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0JHndQdOexZ8ib8Cm0b-fliv6uUXPBHlhwQ&s"alt="Illustration des Jeux Olympiques" max-width="700" /></p><br><br>
-    <h2>Les Défis des Jeux Olympiques<br><br></h2>
-    <p>Malgré leur succès, les Jeux Olympiques ne sont pas sans défis. L\’un des principaux problèmes est le coût exorbitant de l\’organisation des Jeux, qui peut placer une pression financière énorme sur les pays hôtes. Par exemple, les Jeux de Sotchi en 2014 sont devenus les Jeux d\’hiver les plus chers de l\’histoire, coûtant environ 50 milliards de dollars.
-    Il y a aussi des préoccupations concernant la durabilité et l\’impact environnemental des Jeux. Les constructions massives et les infrastructures nécessaires peuvent avoir des effets négatifs sur l\’environnement local. Cependant, le CIO a pris des mesures pour promouvoir des pratiques durables et encourager les villes hôtes à minimiser leur empreinte écologique.
-    Un autre défi majeur est le dopage, qui ternit la réputation des Jeux et soulève des questions sur l\’intégrité des compétitions. Le CIO et les fédérations sportives internationales ont mis en place des mesures strictes de contrôle anti-dopage, mais le problème persiste, nécessitant des efforts continus pour garantir des compétitions équitables.</p><br><br>
-    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBpT493uciUvoLcLFiFO1apHCnKMJ3V4lpsg&s"alt="Défis des jeux Olympiques" max-width="700" /></p><br><br>
-    <h2>Les Jeux Olympiques et l\’Innovation Technologique<br><br></h2>
-    <p>Les Jeux Olympiques ont toujours été à la pointe de l\’innovation technologique. Des avancées dans la diffusion télévisée ont permis à des millions de personnes de suivre les Jeux en direct, peu importe où ils se trouvent dans le monde. Les technologies de pointe en matière de chronométrage et de mesure garantissent des résultats précis et équitables.
-    Les Jeux de Tokyo 2020, bien que reportés à 2021 en raison de la pandémie de COVID-19, ont été particulièrement marqués par l\’innovation. Des robots ont été utilisés pour assister les spectateurs et les athlètes, et des technologies de réalité virtuelle et augmentée ont enrichi l\’expérience des téléspectateurs. Les mesures strictes de contrôle sanitaire et les protocoles de sécurité ont également démontré l\’importance de la technologie dans la gestion des événements de grande envergure en période de crise.</p><br><br>
-    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkY5BN3lMmtrJiuiNpiBMbXrwNw8rAdf588A&s"alt="Technologies et Jeux Olympiques" max-width="700" /></p><br><br>
-    <h2>Conclusion<br><br></h2>
-    <p>Les Jeux Olympiques, avec leur riche histoire et leur impact mondial, restent une célébration unique de l\’excellence sportive et de l\’unité humaine. Ils reflètent à la fois les aspirations les plus nobles de l\’humanité et les défis complexes auxquels nous sommes confrontés. En célébrant la diversité et en encourageant la compétition équitable, les Jeux Olympiques continuent d\’inspirer des millions de personnes à travers le monde, rappelant l\’importance de la paix, de la coopération et de la persévérance.
-    Les Jeux de l\’avenir devront relever des défis croissants, notamment en matière de durabilité, de coût et d\’intégrité sportive, mais avec les innovations technologiques et les efforts continus du CIO et des nations participantes, ils continueront de briller comme un phare d\’espoir et d\’inspiration pour les générations futures.</p><br><br>'; // Valeur en dur pour le test
-    $summary = 'Les Jeux Olympiques, réinventés au XIXe siècle par Pierre de Coubertin après leurs origines antiques en Grèce, sont le plus prestigieux événement sportif mondial. Depuis les premiers Jeux modernes en 1896 à Athènes, ils ont évolué pour inclure de nouveaux sports et des athlètes féminins, alternant entre été et hiver tous les deux ans. Malgré des influences politiques comme les boycotts de la Guerre froide, les Jeux restent une plateforme de paix et de célébration culturelle. Les défis incluent les coûts élevés, les préoccupations environnementales et le dopage, mais les innovations technologiques continuent d\’améliorer leur gestion et leur diffusion.'; // Valeur en dur pour le test
+    $title = 'La Nationale 7 : La Mythique Route des Vacances';
+    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s"alt="Nationale 7" max-width="500" /></p><br><br>
+    <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\’Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
+	<p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg"alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
+	<p>Créée en 1959, la Nationale 7 a été, pendant des décennies, la principale artère empruntée par des générations de vacanciers en quête de soleil et de mer Méditerranée. Avant l\’ère des autoroutes, cette route représentait l\’évasion estivale, un symbole de liberté et d\’aventure pour de nombreuses familles françaises. Des voitures surchargées de bagages, des arrêts fréquents dans des auberges et des relais routiers typiques, des pique-niques improvisés au bord de la route : tels étaient les rituels de ceux qui empruntaient cette route légendaire.</p><br><br>
+    <p><img src="https://www.lesbiefs.eu/2020/wp-content/uploads/2020/01/embouteillage-1024x523.jpg"alt="Illustration de la circulation sur la Nationale 7" max-width="500" /></p><br><br>
+    <p>La Nationale 7 est également ancrée dans la culture populaire française. Elle a inspiré des chansons, des films et des livres, devenant un symbole de la dolce vita à la française. Charles Trenet l\’a immortalisée dans sa célèbre chanson "Nationale 7", évoquant le charme et la convivialité de cette route mythique.</p><br><br>
+    <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg"alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
+    <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\’attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
+    <p><img src="https://pictures.laprovence.com/cdn-cgi/image/width=3840,format=auto,quality=80,trim.left=0,trim.top=188,trim.height=1135,trim.width=2000/media/2024/08/03/1T9A0774.JPG.jyfZsP7lMdsL98tjACEA.-uLA7Qb6Eb.jpg"alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
+    <p>Aujourd\’hui, parcourir la Nationale 7, c\’est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\’antan, et se plonger dans l\’histoire et la culture d\’une France en mouvement. Cette route reste une invitation à l\’évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
+    $summary = $this->create_summary_from_content($content); // Valeur en dur pour le test
     $settings = 'Modifiable'; // Valeur en dur pour le test
 
     // Validation des données saisies
@@ -2700,7 +2651,7 @@ public function test_create_post()
         $imageLinks = $this->test_extractImageLinks($content);
         $imageSaved = true;
         foreach ($imageLinks as $link) {
-            if (!$this->test_create_image($post->id, $link)) {
+            if (!$this->test_save_image($post->id, $link)) {
                 $imageSaved = false;
                 break; // On arrête si une image échoue à être enregistrée
             }
@@ -2722,7 +2673,7 @@ public function test_create_post()
     exit;
 }
 
-public function test_create_image($post_id, $data)
+public function test_save_image($post_id, $data)
 {
     // Validation des données saisies
     if (empty($post_id) || empty($data)) {
@@ -2740,6 +2691,25 @@ public function test_create_image($post_id, $data)
     $ret = $image->save();
     return !is_null($ret);
 }
+
+// Vérifier si une image existe déjà et est liée à un article
+private function test_image_exists_and_linked($post_id, $image_link)
+{
+    // Implémentez la logique pour vérifier si une image avec ce lien existe déjà
+    // et est liée à l'article avec l'ID $post_id.
+    // Cette fonction devrait retourner true si l'image existe déjà et est liée,
+    // et false sinon.
+
+    // Exemple de logique (à adapter selon votre modèle de données et votre base de données):
+    $image = new LibMelanie\Api\Defaut\Image();
+    $image->link = $image_link;
+    if ($image->load() && $image->post_id == $post_id) {
+        return true;
+    }
+    return false;
+}
+
+
 
 
 

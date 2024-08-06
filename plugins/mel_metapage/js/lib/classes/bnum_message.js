@@ -1,4 +1,4 @@
-import { EMPTY_STRING } from '../constants/constants';
+import { EMPTY_STRING } from '../constants/constants.js';
 
 export { BnumMessage, eMessageType };
 

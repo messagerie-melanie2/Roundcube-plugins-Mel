@@ -191,6 +191,12 @@ class JitsiAdaptor {
     return devices;
   }
 
+  resize_film_strip(new_size) {
+    this._jitsi.executeCommand('resizeFilmStrip', {
+      width: new_size,
+    });
+  }
+
   hangup() {
     this._jitsi.executeCommand('hangup');
   }

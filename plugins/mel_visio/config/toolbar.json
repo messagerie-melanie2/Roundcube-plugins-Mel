@@ -1,0 +1,52 @@
+{
+  "toolbar": {
+    "id": "visio-toolbar",
+    "shape": "rectangle:x60px, y0, wcalc(100% - 60px), h60px",
+    "color": "var:bureau-card-background-color",
+    "icon_type": "material-symbol",
+    "buttons": {
+      "chat": {
+        "icon": "chat",
+        "text": "mel_metapage.chat"
+      },
+      "mic": [
+        {
+          "icon": "mic",
+          "text": "mel_metapage.audioinput"
+        },
+        {
+          "icon": "arrow_drop_down"
+        }
+      ],
+      "camera": [
+        {
+          "icon": "videocam",
+          "text": "mel_metapage.videoinput"
+        },
+        {
+          "icon": "arrow_drop_down"
+        }
+      ],
+      "share_screen": {
+        "icon": "screen_share",
+        "text": "mel_metapage.diffuse"
+      },
+      "handup": {
+        "icon": "hand_gesture",
+        "text": "mel_metapage.to_participate"
+      },
+      "moz": {
+        "icon": "auto_awesome_mosaic",
+        "text": "mel_metapage.mosaik"
+      },
+      "more": {
+        "icon": "more_horiz",
+        "text": "mel_metapage.more"
+      },
+      "hangup": {
+        "icon": "call_end",
+        "text": "mel_metapage.hangup"
+      }
+    }
+  }
+}

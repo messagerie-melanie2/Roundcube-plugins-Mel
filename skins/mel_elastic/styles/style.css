@@ -4519,3 +4519,52 @@ body #layout-frames {
 iframe.mm-frame {
   padding-top: 0 !important;
 }
+.mel-nav-toolbar {
+  position: absolute;
+}
+.mel-nav-toolbar ul {
+  margin-top: 2.5px;
+  margin-bottom: 2.5px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.mel-nav-toolbar ul .toolbar-button {
+  background-color: transparent;
+  border-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 5px;
+  margin-right: 2.5px;
+  margin-left: 2.5px;
+  min-width: 80px;
+}
+.mel-nav-toolbar ul .toolbar-button:hover {
+  background-color: var(--mel-button-hover-background-color);
+}
+.mel-nav-toolbar ul .toolbar-button.selected {
+  border-color: var(--mel-button-border-color);
+}
+.mel-nav-toolbar ul .btn-group.toolbar-button-group {
+  margin-right: 2.5px;
+  margin-left: 2.5px;
+}
+.mel-nav-toolbar ul .btn-group.toolbar-button-group .mel-button.toolbar-button {
+  border-color: var(--mel-button-border-color);
+  margin: 0;
+}
+.mel-nav-toolbar ul .btn-group.toolbar-button-group .mel-button.toolbar-button:first-of-type {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+.mel-nav-toolbar ul .btn-group.toolbar-button-group .mel-button.toolbar-button:last-of-type {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  padding: 0;
+  min-width: unset;
+}

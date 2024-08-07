@@ -265,6 +265,14 @@ class ____JsHtml {
   }
 
   /**
+   * Récpère le premier enfant
+   * @returns {____JsHtml}
+   */
+  first() {
+    return this.childs[0];
+  }
+
+  /**
    * Ajoute une balise enfant à la balise actuelle et la retourne.
    *
    * Terminez par {@link end} pour fermer la balise.
@@ -348,7 +356,13 @@ class ____JsHtml {
    * @returns {____JsHtml} Balise `ul` créée
    */
   ul(attribs = {}) {
-    return this.tag('ul', attribs);
+    let ul = this.tag('ul', attribs);
+
+    if (attribs.unstyled) {
+      ul.removeAttr('unstyled').addClass('list-unstyled');
+    }
+
+    return ul;
   }
 
   /**

@@ -2,11 +2,20 @@ import {
   BnumMessage,
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message';
+import { ColorFromVariable } from '../../../mel_metapage/js/lib/classes/color';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager';
+import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections';
+import { capitalize } from '../../../mel_metapage/js/lib/mel';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object';
 import { VisioData } from './classes/structures/data';
+import { JitsiAdaptor } from './classes/visio/jitsii';
 import { VisioLoader } from './classes/visio/loader';
+import {
+  ToolbarFunctions,
+  ToolbarIcon,
+  ToolbarsItems,
+} from './classes/visio/toolbar';
 import { VisioConnectors } from './connectors';
 import { VisioFunctions } from './helpers';
 export { Visio };
@@ -17,7 +26,6 @@ class Visio extends MelObject {
   }
 
   main() {
-    //debugger;
     super.main();
 
     this._init()._setup().start();
@@ -34,7 +42,14 @@ class Visio extends MelObject {
 
     this.loader = null;
 
+    /**
+     * @type {JitsiAdaptor}
+     */
     this.jitsii = null;
+    /**
+     * @type {Toolbar}
+     */
+    this.toolbar = null;
 
     this._token = null;
 
@@ -52,14 +67,14 @@ class Visio extends MelObject {
     });
 
     this.loader = new VisioLoader('#mm-webconf .loading-visio-text');
-
+    this.jitsii = null;
     this._token = this._get_jwt();
+    this._toolbar = null;
 
     return this;
   }
 
   async start() {
-    //debugger;
     if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
       FramesManager.Instance.start_mode('reinit_visio');
     } else {
@@ -109,7 +124,10 @@ class Visio extends MelObject {
             this.jitsii.executeCommand('avatarUrl', avatar_url);
           }
 
-          if (this.loader) this.loader = this.loader.destroy();
+          if (this.loader) {
+            this.loader = this.loader.destroy();
+            this.toolbar = this._create_toolbar();
+          }
         },
         configOverwrite: {
           hideLobbyButton: true,
@@ -145,7 +163,7 @@ class Visio extends MelObject {
 
       this.loader.update_text('Chargement de la visioconférence...');
 
-      this.jitsii = new JitsiMeetExternalAPI(domain, options);
+      this.jitsii = new JitsiAdaptor(new JitsiMeetExternalAPI(domain, options));
     }
   }
 
@@ -153,5 +171,29 @@ class Visio extends MelObject {
     let params = VisioConnectors.jwt.needed;
     params._room = this.data.room;
     return await BnumConnector.force_connect(VisioConnectors.jwt, { params });
+  }
+
+  _create_toolbar() {
+    let toolbar = Toolbar.FromConfig(JSON.parse(this.get_env('visio.toolbar')));
+
+    for (let element of toolbar) {
+      if (element.get) {
+        for (let sub_element of element) {
+          if (ToolbarFunctions[capitalize(sub_element.id.replace('-', '_'))])
+            sub_element.add_action(
+              ToolbarFunctions[
+                capitalize(sub_element.id.replace('-', '_'))
+              ].bind(ToolbarFunctions, this),
+            );
+        }
+      } else if (ToolbarFunctions[capitalize(element.id)])
+        element.add_action(
+          ToolbarFunctions[capitalize(element.id)].bind(ToolbarFunctions, this),
+        );
+    }
+
+    toolbar.generate(top.$('body'));
+
+    return toolbar;
   }
 }

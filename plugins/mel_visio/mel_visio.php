@@ -117,6 +117,8 @@ class mel_visio extends bnum_plugin
     }
 
     function page_visio() {
+        $path = __DIR__.'/config/toolbar.json';
+        $toolbar = file_get_contents($path, true);
         $is_from_config = rcube_utils::get_input_value('_from_config', rcube_utils::INPUT_GET);
 
         if ($is_from_config !== true) $is_from_config = $is_from_config === 'true';
@@ -127,7 +129,7 @@ class mel_visio extends bnum_plugin
 
         $this->include_css("webconf.css");
         $this->rc()->output->set_env('visio.data', $this->data->serialize());  
-
+        $this->rc()->output->set_env('visio.toolbar', $toolbar); 
         // $base_src = $this->rc()->config->get('annuaire_source');
         // $contacts = $this->rc()->get_address_book($base_src)->search('email', driver_mel::gi()->getUser()->email);
 

@@ -2,7 +2,14 @@
  * @module Mel/UsefulFunctions
  */
 
-export { isNullOrUndefined, isArrayLike, Classes, toHex, isDecimal };
+export {
+  isNullOrUndefined,
+  isArrayLike,
+  Classes,
+  toHex,
+  isDecimal,
+  capitalize,
+};
 
 /**
  * Vérivie si un nombre est un nombre entier ou décimal.
@@ -100,3 +107,10 @@ const Classes = (baseClass, ...mixins) => {
   });
   return base;
 };
+
+function capitalize(s) {
+  if (typeof s !== 'string') return '';
+
+  s = s.toLowerCase();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}

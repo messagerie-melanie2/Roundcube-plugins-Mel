@@ -173,7 +173,7 @@ public function index(){
  */
 public function post(){
     //Récupérér uid avec GET
-    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
+    $uid = 'VOszRaUI1dQRuQGs2NzKiKZ0';
     $this->current_post = $this->get_post($uid);
 
     $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
@@ -1687,6 +1687,76 @@ function elements()
     exit;
 }
 
+// public function test_update_post()
+// {
+//     // Récupérer l'utilisateur
+//     $user = driver_mel::gi()->getUser()->uid;
+
+//     // Récupérer les valeurs des champs POST
+//     $uid = 'zF5lAVs66fzNhvPw8EhMaj45'; // UID de l'article à mettre à jour
+//     $title = 'La Nationale 7 : La Mythique Route des Vacances'; // Valeur en dur pour le test
+//     $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s"alt="Nationale 7" max-width="500" /></p><br><br>
+//     <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\’Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
+// 	<p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg"alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
+// 	<p>Créée en 1959, la Nationale 7 a été, pendant des décennies, la principale artère empruntée par des générations de vacanciers en quête de soleil et de mer Méditerranée. Avant l\’ère des autoroutes, cette route représentait l\’évasion estivale, un symbole de liberté et d\’aventure pour de nombreuses familles françaises. Des voitures surchargées de bagages, des arrêts fréquents dans des auberges et des relais routiers typiques, des pique-niques improvisés au bord de la route : tels étaient les rituels de ceux qui empruntaient cette route légendaire.</p><br><br>
+//     <p><img src="https://www.lesbiefs.eu/2020/wp-content/uploads/2020/01/embouteillage-1024x523.jpg"alt="Illustration de la circulation sur la Nationale 7" max-width="500" /></p><br><br>
+//     <p>La Nationale 7 est également ancrée dans la culture populaire française. Elle a inspiré des chansons, des films et des livres, devenant un symbole de la dolce vita à la française. Charles Trenet l\’a immortalisée dans sa célèbre chanson "Nationale 7", évoquant le charme et la convivialité de cette route mythique.</p><br><br>
+//     <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg"alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
+//     <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\’attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
+//     <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMDeCMx4SnwfdJxTTFnbBgeWE1w0CsXkkCssS3TO8JuJoYjz83KC2k33h17hwOquV4Hiw&usqp=CAU"alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
+//     <p>Aujourd\’hui, parcourir la Nationale 7, c\’est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\’antan, et se plonger dans l\’histoire et la culture d\’une France en mouvement. Cette route reste une invitation à l\’évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
+//     $summary = $this->create_summary_from_content($content);
+//     $workspace = 'un-espace-2';
+//     $settings = 'Modifiable';
+
+//     // Récupérer l'article existant
+//     $post = new LibMelanie\Api\Defaut\Posts\Post();
+//     $post->uid = $uid;
+//     if (!$post->load()) {
+        
+//         echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+//         exit;
+//     }
+
+//     // Vérifier si l'article existe
+//     if (!$post) {
+//         echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+//         exit;
+//     }
+
+//     // Préparer les nouvelles données
+//     $new_data = [
+//         'title' => $title,
+//         'content' => $content,
+//         'summary' => $summary,
+//         'workspace' => $workspace,
+//         'settings' => $settings
+//     ];
+    
+//     // Enregistrer les modifications dans l'historique
+//     $this->save_post_history($post, $user->uid, $new_data);
+
+//     // Définir les nouvelles propriétés de l'article
+//     $post->post_title = $title;
+//     $post->post_content = $content;
+//     $post->post_summary = $summary;
+//     $post->workspace_uid = $workspace;
+//     $post->post_settings = $settings;
+//     $post->updated = date('Y-m-d H:i:s');
+//     $post->user_uid = $user->uid;
+
+//     // Sauvegarde de l'article
+//     $ret = $post->save();
+//     if (!is_null($ret)) {
+//         echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
+//     } else {
+//         echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour de l\'article.']);
+//     }
+
+//     // Arrêt de l'exécution du script
+//     exit;
+// }
+
 public function test_update_post()
 {
     // Récupérer l'utilisateur
@@ -1694,17 +1764,17 @@ public function test_update_post()
 
     // Récupérer les valeurs des champs POST
     $uid = 'zF5lAVs66fzNhvPw8EhMaj45'; // UID de l'article à mettre à jour
-    $title = 'La Nationale 7 : La Mythique Route des Vacances'; // Valeur en dur pour le test
-    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s"alt="Nationale 7" max-width="500" /></p><br><br>
-    <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\’Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
-	<p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg"alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
-	<p>Créée en 1959, la Nationale 7 a été, pendant des décennies, la principale artère empruntée par des générations de vacanciers en quête de soleil et de mer Méditerranée. Avant l\’ère des autoroutes, cette route représentait l\’évasion estivale, un symbole de liberté et d\’aventure pour de nombreuses familles françaises. Des voitures surchargées de bagages, des arrêts fréquents dans des auberges et des relais routiers typiques, des pique-niques improvisés au bord de la route : tels étaient les rituels de ceux qui empruntaient cette route légendaire.</p><br><br>
-    <p><img src="https://www.lesbiefs.eu/2020/wp-content/uploads/2020/01/embouteillage-1024x523.jpg"alt="Illustration de la circulation sur la Nationale 7" max-width="500" /></p><br><br>
-    <p>La Nationale 7 est également ancrée dans la culture populaire française. Elle a inspiré des chansons, des films et des livres, devenant un symbole de la dolce vita à la française. Charles Trenet l\’a immortalisée dans sa célèbre chanson "Nationale 7", évoquant le charme et la convivialité de cette route mythique.</p><br><br>
-    <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg"alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
-    <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\’attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
-    <p><img src="https://pictures.laprovence.com/cdn-cgi/image/width=3840,format=auto,quality=80,trim.left=0,trim.top=188,trim.height=1135,trim.width=2000/media/2024/08/03/1T9A0774.JPG.jyfZsP7lMdsL98tjACEA.-uLA7Qb6Eb.jpg"alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
-    <p>Aujourd\’hui, parcourir la Nationale 7, c\’est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\’antan, et se plonger dans l\’histoire et la culture d\’une France en mouvement. Cette route reste une invitation à l\’évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
+    $title = 'La Nationale 7 : La Mythique Route des Vacances';
+    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s" alt="Nationale 7" max-width="500" /></p><br><br>
+    <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\'Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
+    <p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg" alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
+    <p>Créée en 1959, la Nationale 7 a été, pendant des décennies, la principale artère empruntée par des générations de vacanciers en quête de soleil et de mer Méditerranée. Avant l\'ère des autoroutes, cette route représentait l\'évasion estivale, un symbole de liberté et d\'aventure pour de nombreuses familles françaises. Des voitures surchargées de bagages, des arrêts fréquents dans des auberges et des relais routiers typiques, des pique-niques improvisés au bord de la route : tels étaient les rituels de ceux qui empruntaient cette route légendaire.</p><br><br>
+    <p><img src="https://www.lesbiefs.eu/2020/wp-content/uploads/2020/01/embouteillage-1024x523.jpg" alt="Illustration de la circulation sur la Nationale 7" max-width="500" /></p><br><br>
+    <p>La Nationale 7 est également ancrée dans la culture populaire française. Elle a inspiré des chansons, des films et des livres, devenant un symbole de la dolce vita à la française. Charles Trenet l\'a immortalisée dans sa célèbre chanson "Nationale 7", évoquant le charme et la convivialité de cette route mythique.</p><br><br>
+    <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg" alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
+    <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\'attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
+    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMDeCMx4SnwfdJxTTFnbBgeWE1w0CsXkkCssS3TO8JuJoYjz83KC2k33h17hwOquV4Hiw&usqp=CAU" alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
+    <p>Aujourd\'hui, parcourir la Nationale 7, c\'est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\'antan, et se plonger dans l\'histoire et la culture d\'une France en mouvement. Cette route reste une invitation à l\'évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
     $summary = $this->create_summary_from_content($content);
     $workspace = 'un-espace-2';
     $settings = 'Modifiable'; // Valeur en dur pour le test
@@ -1713,15 +1783,17 @@ public function test_update_post()
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
     if (!$post->load()) {
-        
         echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
         exit;
     }
 
-    // Vérifier si l'article existe
-    if (!$post) {
-        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
-        exit;
+    // Récupérer les images existantes liées au post
+    $images = $post->listImages();
+    foreach ($images as $image) {
+        if (!$image->delete()) {
+            echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de l\'image existante.']);
+            exit;
+        }
     }
 
     // Préparer les nouvelles données
@@ -1732,9 +1804,9 @@ public function test_update_post()
         'workspace' => $workspace,
         'settings' => $settings
     ];
-    
+
     // Enregistrer les modifications dans l'historique
-    $this->save_post_history($post, $user->uid, $new_data);
+    $this->save_post_history($post, $user, $new_data);
 
     // Définir les nouvelles propriétés de l'article
     $post->post_title = $title;
@@ -1743,14 +1815,34 @@ public function test_update_post()
     $post->workspace_uid = $workspace;
     $post->post_settings = $settings;
     $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = $user->uid;
+    $post->user_uid = $user;
 
     // Sauvegarde de l'article
-    $ret = $post->save();
-    if (!is_null($ret)) {
-        echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
+    $post_id = $post->save();
+    if ($post_id) {
+        $post->load();
+        // Extraire les liens d'image et les enregistrer
+        $imageLinks = $this->test_extractImageLinks($content);
+        $imageSaved = true;
+        $errors = [];
+
+        foreach ($imageLinks as $link) {
+            if (!$this->test_save_image($post->id, $link)) {
+                $imageSaved = false;
+                $errors[] = "Echec de l'enregistrement de l'image: $link";
+            }
+        }
+        
+        // Réponse JSON en fonction de la sauvegarde des images
+        if ($imageSaved) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Article mis à jour, mais échec de l\'enregistrement de certaines images.', 'errors' => $errors]);
+        }
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour de l\'article.']);
+        echo json_encode(['status' => 'error', 'message' => 'Échec de mise à jour de l\'article.']);
     }
 
     // Arrêt de l'exécution du script
@@ -2563,30 +2655,33 @@ public function test_delete_image()
     exit;
 }
 
-public function test_get_image($post_id = '55')
+public function test_get_image($post_uid = 'zF5lAVs66fzNhvPw8EhMaj45')
 {
-        
-    $image = new LibMelanie\Api\Defaut\Posts\Image();
-    $image->post_id = $post_id;
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $post_uid;
 
-    $ret = $image->load();
-    if (!is_null($ret)) {
+    if ($post->load()) {
+        $images = $post->listImages();
 
-        echo json_encode([
-            'status' => 'success',
-            'image' => $image->image_data,
-        ]);
-    } else {
-        header('Content-Type : application/json');
-        echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'image.']);
+        if (!empty($images)) {
+            header('Content-Type: application/json');
+            $images_array = [];
+            foreach ($images as $image) {
+                $images_array[] = [
+                    'image_uid' => $image->uid,
+                    'image_data' => $image->data,
+                ];
+            } echo json_encode([
+                'status' => 'success',
+                'images' => $images_array
+            ]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Aucune image trouvée.']);
+        }
+    
+        exit;
     }
-
-    // Arrêt de l'exécution du script
-    exit;
 }
-
-
-
 
 
 private function test_extractImageLinks($content) {

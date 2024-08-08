@@ -195,7 +195,6 @@ class mel_useful_link extends bnum_plugin
     public function include_uLinks()
     {
       $this->load_script_module('manager');
-      $this->include_script('js/links.js');
       $this->include_stylesheet($this->local_skin_path().'/links.css');
       $this->rc->output->set_env("link_modify_options", $this->rc->config->get('modify_options', []));
     }
@@ -226,8 +225,7 @@ class mel_useful_link extends bnum_plugin
             'domain' => "mel_useful_link"
         ), $need_button);
         }
-
-      $this->include_script('js/classes.js');
+        
       $this->include_script('js/display.js');
     }
 
@@ -378,7 +376,7 @@ class mel_useful_link extends bnum_plugin
           $melLink = new MelLink($id, $title, $link, $image, $icon);
       }
   
-      //On supprime les anciens liens
+      //On supprime les anciens liens qui viennent d'être ajoutés dans un dossier
       $index;
       if ($isMultiLink) {
         foreach ($link as $link_key => $value) {
@@ -387,15 +385,15 @@ class mel_useful_link extends bnum_plugin
         }
         
         //On met le nouveau lien à la place des anciens
-        $config = array_merge(
-          array_slice($config, 0, $index),
-          array($id => $melLink->serialize()),
-          array_slice($config, $index)
-        );
+        if ($index) {
+          $config = array_merge(
+            array_slice($config, 0, $index),
+            array($id => $melLink->serialize()),
+            array_slice($config, $index)
+          );
+        }
       }
-      else {
-        $config[$id] = $melLink->serialize();
-      }
+      $config[$id] = $melLink->serialize();
 
       
 

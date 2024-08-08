@@ -277,13 +277,6 @@ public function show_post_date(){
  public function show_post_content() {
     $content = $this->current_post->content;
 
-    // $images = $this->current_post->listImages();
-
-    // foreach ($images as $image) {
-    //     $img_tag = '<img src="' . htmlspecialchars($image->image_data) . '" alt="Image" />';
-    //     $content = str_replace("<image-" . htmlspecialchars($image->uid) . "/>", $img_tag, $content);
-    // }
-
     return $content;
 }
 
@@ -384,6 +377,29 @@ public function save_image($post_id, $data)
     return !is_null($ret);
 }
 
+/**
+ * Envoie une réponse de type forum.
+ */
+function action()
+{
+    $rcmail = rcmail::get_instance();
+
+    $rcmail->output->send('mel_forum.forum');
+}
+
+/**
+ * Vérifie l'utilisateur en fonction de l'UID fourni.
+ */
+function check_user()
+{
+    $user;
+    $val = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GPC);
+    $user = driver_mel::gi()->getUser($val);
+
+    echo $user === null ? 'false' : json_encode(['uid' => $user->uid, 'html' => $user->fullname]);
+
+    exit;
+}
 
 // Fonctions qui sont nécessaires à la création d'un article.
 
@@ -419,15 +435,15 @@ public function create_post()
     $post = new LibMelanie\Api\Defaut\Posts\Post();
 
     //Définition des propriétés de l'article
-    $post->post_title = $title;
-    $post->post_summary = $summary;
-    $post->post_content = $content;
-    $post->post_uid = $this-> generateRandomString(24);
+    $post->title = $title;
+    $post->summary = $summary;
+    $post->content = $content;
+    $post->uid = $this-> generateRandomString(24);
     $post->created = date('Y-m-d H:i:s');
-    $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = driver_mel::gi()->getUser()->uid;
-    $post->post_settings = $settings;
-    $post->workspace_uid = $workspace;
+    $post->modified = date('Y-m-d H:i:s');
+    $post->creator = driver_mel::gi()->getUser()->uid;
+    $post->settings = $settings;
+    $post->workspace = $workspace;
 
     // Sauvegarde de l'article
     $post_id = $post->save();
@@ -459,65 +475,43 @@ public function create_post()
     exit;
 }
 
-
 /**
- * Envoie une réponse de type forum.
- */
-function action()
-{
-    $rcmail = rcmail::get_instance();
-
-    $rcmail->output->send('mel_forum.forum');
-}
-
-/**
- * Vérifie l'utilisateur en fonction de l'UID fourni.
- */
-function check_user()
-{
-    $user;
-    $val = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GPC);
-    $user = driver_mel::gi()->getUser($val);
-
-    echo $user === null ? 'false' : json_encode(['uid' => $user->uid, 'html' => $user->fullname]);
-
-    exit;
-}
-
-/**
- * Met à jour une publication existante.
+ * Met à jour un article existant avec de nouvelles données.
  *
- * Cette fonction récupère les valeurs des champs POST, valide les données saisies,
- * charge la publication existante, enregistre les modifications dans l'historique,
- * met à jour les propriétés de la publication et sauvegarde les modifications.
- * Elle extrait également les liens d'image du contenu et les enregistre.
- * La fonction retourne une réponse JSON indiquant le statut de la mise à jour de l'article.
+ * Cette fonction récupère les valeurs des champs POST, charge la publication existante,
+ * génère un résumé à partir du contenu, et met à jour les propriétés de la publication.
+ * Elle supprime les images existantes liées à la publication, enregistre les nouvelles images,
+ * et sauvegarde les modifications. La fonction retourne une réponse JSON indiquant 
+ * le statut de la mise à jour de l'article.
  *
  * @return void
  */
 public function update_post()
 {
-    // Récupérer les valeurs des champs POST
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+    // Récupérer les valeurs
+    $uid = '';
+    $this->current_post = $this->get_post($uid);
     $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-    $summary = rcube_utils::get_input_value('_description', rcube_utils::INPUT_POST);
+    $summary = $this->create_summary_from_content($content);
+    // TODO Paramétrage du bouton settings
     $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
-
-    // Validation des données saisies
-    if (empty($uid) || empty($title) || empty($content) || empty($description) || empty($settings)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
 
     // Récupérer l'article existant
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
-
-    // Vérifier si l'article existe
     if (!$post->load()) {
         echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
         exit;
+    }
+
+    // Récupérer les images existantes liées au post
+    $images = $post->listImages();
+    foreach ($images as $image) {
+        if (!$image->delete()) {
+            echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de l\'image existante.']);
+            exit;
+        }
     }
 
     // Préparer les nouvelles données
@@ -540,16 +534,19 @@ public function update_post()
     $post->user_uid = driver_mel::gi()->getUser()->uid;
 
     // Sauvegarde de l'article
+    // TODO demander a thomas si comportement normal (this->hasChanged ne garde pas la valeur donc ->save() return null)
     $post_id = $post->save();
-    if ($post_id) {
+    if (!$post_id) {
         $post->load();
         // Extraire les liens d'image et les enregistrer
-        $imageLinks = $this->test_extractImageLinks($content);
+        $imageLinks = $this->extractImageLinks($content);
         $imageSaved = true;
+        $errors = [];
+
         foreach ($imageLinks as $link) {
             if (!$this->save_image($post->id, $link)) {
                 $imageSaved = false;
-                break; // On arrête si une image échoue à être enregistrée
+                $errors[] = "Echec de l'enregistrement de l'image: $link";
             }
         }
 
@@ -559,7 +556,7 @@ public function update_post()
             echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
         } else {
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Article mis à jour, mais échec de l\'enregistrement de certaines images.']);
+            echo json_encode(['status' => 'error', 'message' => 'Article mis à jour, mais échec de l\'enregistrement de certaines images.', 'errors' => $errors]);
         }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Échec de mise à jour de l\'article.']);
@@ -657,14 +654,7 @@ public function get_post($uid)
 
     $ret = $post->load();
     if (!is_null($ret)) {
-        // Retourner les informations du post sous forme de tableau associatif
-        // return [
-        //     'status' => 'success',
-        //     'title' => $post->title,
-        //     'creator' => driver_mel::gi()->getUser($post->user_id)->name,
-        //     'created' => $post->created,
-        //     'content' => $post->content
-        // ];
+        
         return $post;
     } else {
         return null;
@@ -692,30 +682,6 @@ public function get_all_posts_byworkspace()
 
     // Appel de la méthode listPosts
     $posts = $post->listPosts();
-
-    // if (!empty($posts)) {
-    //     header('Content-Type: application/json');
-    //     // Préparer les données des tags pour la réponse JSON
-    //     $posts_array = [];
-    //     foreach ($posts as $post) {
-    //         $posts_array[] = [
-    //             'id' => $post->id,
-    //             'title' => $post->title,
-    //             'summary'=> $post->summary,
-    //             'content' => $post->content,
-    //             'created' => $post->created,
-    //             'author' => driver_mel::gi()->getUser()->name,
-    //             'settings' => $post->settings,
-    //             'workspace' => $post->workspace
-    //         ];
-    //     }
-    //     echo json_encode([
-    //         'status' => 'success',
-    //         'tags' => $posts_array
-    //     ]);
-    // } else {
-    //     echo json_encode(['status' => 'error', 'message' => 'Aucun post trouvé.']);
-    // }
 
     return $posts;
 
@@ -746,8 +712,8 @@ public function create_tag()
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
     //Définition des propriétés du tag
-    $tag->tag_name = $name;
-    $tag->workspace_uid = $workspace;
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
 
     // Sauvegarde du tag
     $ret = $tag->save();
@@ -824,10 +790,7 @@ public function get_all_tags_byworkspace()
  */
 public function get_all_tags_bypost($uid)
 {
-    // Récupérer l'uid de l'article du champ POST
-    // $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-    // $uid = "hiXJayua2jFhoAoQIeVUC4NN";
-
+    // Récupérer l'article
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
 
@@ -869,8 +832,8 @@ public function delete_tag()
 
     // Récupérer le tag existant
     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-    $tag->tag_name = $name;
-    $tag->workspace_uid = $workspace;
+    $tag->name = $name;
+    $tag->workspace = $workspace;
 
     // Vérifier si le tag existe
     if (!$tag->load()) {
@@ -1005,12 +968,12 @@ public function create_comment()
 
     // Créer un nouveau commentaire
     $comment = new LibMelanie\Api\Defaut\Posts\Comment();
-    $comment->comment_content = $content;
-    $comment->comment_uid = $this->generateRandomString(24);
+    $comment->content = $content;
+    $comment->uid = $this->generateRandomString(24);
     $comment->created = date('Y-m-d H:i:s');
-    $comment->updated = date('Y-m-d H:i:s');
-    $comment->user_uid = $user->uid;
-    $comment->post_id = $post->id;
+    $comment->modified = date('Y-m-d H:i:s');
+    $comment->creator = $user->uid;
+    $comment->post = $post->id;
 
     // Sauvegarde du commentaire
     $ret = $comment->save();
@@ -1053,13 +1016,13 @@ public function reply_comment()
 
     // Créer un nouveau commentaire
     $reply = new LibMelanie\Api\Defaut\Posts\Comment();
-    $reply->comment_content = $content;
-    $reply->comment_uid = $this->generateRandomString(24);
+    $reply->content = $content;
+    $reply->uid = $this->generateRandomString(24);
     $reply->created = date('Y-m-d H:i:s');
-    $reply->updated = date('Y-m-d H:i:s');
-    $reply->user_uid = $user->uid;
-    $reply->post_id = $post->id;
-    $reply->parent_comment_id = $comment_parent->id;
+    $reply->modified = date('Y-m-d H:i:s');
+    $reply->creator = $user->uid;
+    $reply->post = $post->id;
+    $reply->parent = $comment_parent->id;
 
     // Sauvegarde du commentaire
     $ret = $reply->save();
@@ -1110,8 +1073,8 @@ public function update_comment()
     }
 
     // Définir les nouvelles données
-    $comment->comment_content = $content;
-    $comment->updated = date('Y-m-d H:i:s');
+    $comment->content = $content;
+    $comment->modified = date('Y-m-d H:i:s');
 
     // Sauvegarde du commentaire
     $ret = $comment->save();
@@ -1458,7 +1421,8 @@ public function get_all_reactions_bypost()
         foreach ($reactions as $reaction) {
             $reactions_array[] = [
                 'reaction_type' => $reaction->type,
-                'reaction_id' => $reaction->id
+                'reaction_post_id' => $reaction->post,
+                'reaction_creator' => $reaction->creator
             ];
         }
         echo json_encode([
@@ -1687,76 +1651,6 @@ function elements()
     exit;
 }
 
-// public function test_update_post()
-// {
-//     // Récupérer l'utilisateur
-//     $user = driver_mel::gi()->getUser()->uid;
-
-//     // Récupérer les valeurs des champs POST
-//     $uid = 'zF5lAVs66fzNhvPw8EhMaj45'; // UID de l'article à mettre à jour
-//     $title = 'La Nationale 7 : La Mythique Route des Vacances'; // Valeur en dur pour le test
-//     $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s"alt="Nationale 7" max-width="500" /></p><br><br>
-//     <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\’Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
-// 	<p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg"alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
-// 	<p>Créée en 1959, la Nationale 7 a été, pendant des décennies, la principale artère empruntée par des générations de vacanciers en quête de soleil et de mer Méditerranée. Avant l\’ère des autoroutes, cette route représentait l\’évasion estivale, un symbole de liberté et d\’aventure pour de nombreuses familles françaises. Des voitures surchargées de bagages, des arrêts fréquents dans des auberges et des relais routiers typiques, des pique-niques improvisés au bord de la route : tels étaient les rituels de ceux qui empruntaient cette route légendaire.</p><br><br>
-//     <p><img src="https://www.lesbiefs.eu/2020/wp-content/uploads/2020/01/embouteillage-1024x523.jpg"alt="Illustration de la circulation sur la Nationale 7" max-width="500" /></p><br><br>
-//     <p>La Nationale 7 est également ancrée dans la culture populaire française. Elle a inspiré des chansons, des films et des livres, devenant un symbole de la dolce vita à la française. Charles Trenet l\’a immortalisée dans sa célèbre chanson "Nationale 7", évoquant le charme et la convivialité de cette route mythique.</p><br><br>
-//     <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg"alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
-//     <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\’attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
-//     <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMDeCMx4SnwfdJxTTFnbBgeWE1w0CsXkkCssS3TO8JuJoYjz83KC2k33h17hwOquV4Hiw&usqp=CAU"alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
-//     <p>Aujourd\’hui, parcourir la Nationale 7, c\’est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\’antan, et se plonger dans l\’histoire et la culture d\’une France en mouvement. Cette route reste une invitation à l\’évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
-//     $summary = $this->create_summary_from_content($content);
-//     $workspace = 'un-espace-2';
-//     $settings = 'Modifiable';
-
-//     // Récupérer l'article existant
-//     $post = new LibMelanie\Api\Defaut\Posts\Post();
-//     $post->uid = $uid;
-//     if (!$post->load()) {
-        
-//         echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
-//         exit;
-//     }
-
-//     // Vérifier si l'article existe
-//     if (!$post) {
-//         echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
-//         exit;
-//     }
-
-//     // Préparer les nouvelles données
-//     $new_data = [
-//         'title' => $title,
-//         'content' => $content,
-//         'summary' => $summary,
-//         'workspace' => $workspace,
-//         'settings' => $settings
-//     ];
-    
-//     // Enregistrer les modifications dans l'historique
-//     $this->save_post_history($post, $user->uid, $new_data);
-
-//     // Définir les nouvelles propriétés de l'article
-//     $post->post_title = $title;
-//     $post->post_content = $content;
-//     $post->post_summary = $summary;
-//     $post->workspace_uid = $workspace;
-//     $post->post_settings = $settings;
-//     $post->updated = date('Y-m-d H:i:s');
-//     $post->user_uid = $user->uid;
-
-//     // Sauvegarde de l'article
-//     $ret = $post->save();
-//     if (!is_null($ret)) {
-//         echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
-//     } else {
-//         echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour de l\'article.']);
-//     }
-
-//     // Arrêt de l'exécution du script
-//     exit;
-// }
-
 public function test_update_post()
 {
     // Récupérer l'utilisateur
@@ -1764,7 +1658,7 @@ public function test_update_post()
 
     // Récupérer les valeurs des champs POST
     $uid = 'zF5lAVs66fzNhvPw8EhMaj45'; // UID de l'article à mettre à jour
-    $title = 'La Nationale 7 : La Mythique Route des Vacances';
+    $title = 'La Mythique Route des Vacances';
     $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s" alt="Nationale 7" max-width="500" /></p><br><br>
     <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\'Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
     <p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg" alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
@@ -1774,7 +1668,7 @@ public function test_update_post()
     <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg" alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
     <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\'attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
     <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMDeCMx4SnwfdJxTTFnbBgeWE1w0CsXkkCssS3TO8JuJoYjz83KC2k33h17hwOquV4Hiw&usqp=CAU" alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
-    <p>Aujourd\'hui, parcourir la Nationale 7, c\'est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\'antan, et se plonger dans l\'histoire et la culture d\'une France en mouvement. Cette route reste une invitation à l\'évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
+    <p>Aujourd\'hui, parcourir la Nationakjle 7, c\'est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\'antan, et se plonger dans l\'histoire et la culture d\'une France en mouvement. Cette route reste une invitation à l\'évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
     $summary = $this->create_summary_from_content($content);
     $workspace = 'un-espace-2';
     $settings = 'Modifiable'; // Valeur en dur pour le test
@@ -1809,17 +1703,18 @@ public function test_update_post()
     $this->save_post_history($post, $user, $new_data);
 
     // Définir les nouvelles propriétés de l'article
-    $post->post_title = $title;
-    $post->post_content = $content;
-    $post->post_summary = $summary;
+    $post->title = $title;
+    $post->content = $content;
+    $post->summary = $summary;
     $post->workspace_uid = $workspace;
-    $post->post_settings = $settings;
+    $post->settings = $settings;
     $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = $user;
+    $post->creator = $user;
 
     // Sauvegarde de l'article
+    // TODO demander a thomas si comportement normal (this->hasChanged ne garde pas la valeur donc ->save() return null)
     $post_id = $post->save();
-    if ($post_id) {
+    if (!$post_id) {
         $post->load();
         // Extraire les liens d'image et les enregistrer
         $imageLinks = $this->test_extractImageLinks($content);
@@ -2210,12 +2105,12 @@ public function test_create_comment()
 
     // Créer un nouveau commentaire
     $comment = new LibMelanie\Api\Defaut\Posts\Comment();
-    $comment->comment_content = $content;
-    $comment->comment_uid = $this->generateRandomString(24);
+    $comment->content = $content;
+    $comment->uid = $this->generateRandomString(24);
     $comment->created = date('Y-m-d H:i:s');
-    $comment->updated = date('Y-m-d H:i:s');
-    $comment->user_uid = $user->uid;
-    $comment->post_id = '11';
+    $comment->modified = date('Y-m-d H:i:s');
+    $comment->creator = $user->uid;
+    $comment->post = '11';
 
     // Sauvegarde du commentaire
     $ret = $comment->save();
@@ -2247,13 +2142,13 @@ public function test_reply_comment()
 
     // Créer un nouveau commentaire
     $reply = new LibMelanie\Api\Defaut\Posts\Comment();
-    $reply->comment_content = $content;
-    $reply->comment_uid = $this->generateRandomString(24);
+    $reply->content = $content;
+    $reply->uid = $this->generateRandomString(24);
     $reply->created = date('Y-m-d H:i:s');
-    $reply->updated = date('Y-m-d H:i:s');
-    $reply->user_uid = $user->uid;
-    $reply->post_id = '6';
-    $reply->parent_comment_id = '10';
+    $reply->modified = date('Y-m-d H:i:s');
+    $reply->creator = $user->uid;
+    $reply->post = '6';
+    $reply->parent = '10';
 
     // Sauvegarde du commentaire
     $ret = $reply->save();
@@ -2295,8 +2190,8 @@ public function test_update_comment()
     }
 
     // Définir les nouvelles données
-    $comment->comment_content = $content;
-    $comment->updated = date('Y-m-d H:i:s');
+    $comment->content = $content;
+    $comment->modified = date('Y-m-d H:i:s');
 
     // Sauvegarde du commentaire
     $ret = $comment->save();
@@ -2728,15 +2623,15 @@ public function test_create_post()
 
     // Créer un nouvel Article
     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    $post->post_title = $title;
-    $post->post_summary = $summary;
-    $post->post_content = $content;
-    $post->post_uid = $this->generateRandomString(24);
+    $post->title = $title;
+    $post->summary = $summary;
+    $post->content = $content;
+    $post->uid = $this->generateRandomString(24);
     $post->created = date('Y-m-d H:i:s');
-    $post->updated = date('Y-m-d H:i:s');
-    $post->user_uid = driver_mel::gi()->getUser()->uid;
-    $post->post_settings = $settings;
-    $post->workspace_uid = $workspace;
+    $post->modified = date('Y-m-d H:i:s');
+    $post->creator = driver_mel::gi()->getUser()->uid;
+    $post->settings = $settings;
+    $post->workspace = $workspace;
 
     // Sauvegarde de l'article
     $post_id = $post->save();
@@ -2786,24 +2681,6 @@ public function test_save_image($post_id, $data)
     $ret = $image->save();
     return !is_null($ret);
 }
-
-// Vérifier si une image existe déjà et est liée à un article
-private function test_image_exists_and_linked($post_id, $image_link)
-{
-    // Implémentez la logique pour vérifier si une image avec ce lien existe déjà
-    // et est liée à l'article avec l'ID $post_id.
-    // Cette fonction devrait retourner true si l'image existe déjà et est liée,
-    // et false sinon.
-
-    // Exemple de logique (à adapter selon votre modèle de données et votre base de données):
-    $image = new LibMelanie\Api\Defaut\Image();
-    $image->link = $image_link;
-    if ($image->load() && $image->post_id == $post_id) {
-        return true;
-    }
-    return false;
-}
-
 
 
 

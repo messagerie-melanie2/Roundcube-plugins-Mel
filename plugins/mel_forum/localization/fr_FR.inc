@@ -130,3 +130,5 @@ $labels['delete_flux_warning'] = 'Attention, vous allez supprimer ce flux, êtes
 $labels['update_news'] = 'Mise à jours des actualités....';
 $labels['new_successfuly_updated'] = 'Actualités mises à jours avec succès !';
 $labels['error_reorder'] = 'Une erreur est survenue lors du triage ! Êtes-vous connectez à internet ?';
+
+$labels['create_new_comment'] = 'Création d\'un nouveau commentaire';

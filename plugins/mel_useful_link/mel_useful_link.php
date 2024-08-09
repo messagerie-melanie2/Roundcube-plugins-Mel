@@ -57,6 +57,7 @@ class mel_useful_link extends bnum_plugin
           $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
           $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
           $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+          $this->rc->output->set_env("default_links", $this->getFilteredDn(driver_mel::gi()->getUser()->dn));
 
           $this->rc->output->set_env("mel_portal_ulink", true);
         }

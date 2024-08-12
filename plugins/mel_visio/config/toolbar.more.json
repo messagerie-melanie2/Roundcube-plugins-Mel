@@ -1,0 +1,22 @@
+{
+  "Url": {
+    "icon": "content_copy",
+    "text": "Url"
+  },
+  "Phone": {
+    "icon": "smartphone",
+    "text": "Rejoindre par téléphone"
+  },
+  "Users": {
+    "icon": "groups",
+    "text": "Participants"
+  },
+  "Background": {
+    "icon": "background_replace",
+    "text": "Arrière-plan"
+  },
+  "Security": {
+    "icon": "lock",
+    "text": "Sécurité"
+  }
+}

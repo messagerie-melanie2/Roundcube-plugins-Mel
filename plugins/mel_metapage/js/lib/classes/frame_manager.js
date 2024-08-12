@@ -1158,7 +1158,10 @@ FramesManager.Instance.add_mode('visio', async function visio(...args) {
       .start_custom_multi_frame()
       .get_window()
       .hide();
-    await FramesManager.Instance.open_another_window('webconf', params);
+    window.current_visio = await FramesManager.Instance.open_another_window(
+      'webconf',
+      params,
+    );
     FramesManager.Instance.get_window()
       .set_cannot_be_select()
       //.set_remove_on_change()

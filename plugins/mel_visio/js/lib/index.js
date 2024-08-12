@@ -74,7 +74,7 @@ class VisioCreator extends MelObject {
 
     if (this.locks.password) this.view.password.disable();
 
-    $(SELECTOR_BUTTON_START).click(this._on_button_click.bind(this));
+    $(SELECTOR_BUTTON_START).click(this._on_button_click.bind(this)).click();
   }
 
   /**

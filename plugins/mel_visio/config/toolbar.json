@@ -27,13 +27,13 @@
           "icon": "arrow_drop_down"
         }
       ],
-      "share_screen": {
-        "icon": "screen_share",
-        "text": "mel_metapage.diffuse"
-      },
       "handup": {
         "icon": "hand_gesture",
         "text": "mel_metapage.to_participate"
+      },
+      "share_screen": {
+        "icon": "screen_share",
+        "text": "mel_metapage.diffuse"
       },
       "moz": {
         "icon": "auto_awesome_mosaic",

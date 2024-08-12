@@ -4,6 +4,7 @@ import { MelHtml } from '../html/JsHtml/MelHtml';
 import { BnumEvent } from '../mel_events';
 import { Point, Rectangle } from '../mel_maths';
 import { Color, ColorFromVariable } from './color';
+import { MelEnumerable } from './enum';
 
 export { Toolbar };
 
@@ -53,7 +54,7 @@ class ToolbarItem {
   }
 
   _get_item_jquery() {
-    return $(`#toolbar-button-${this.id}`);
+    return this._parent.toolbar().find(`#toolbar-button-${this.id}`);
   }
 
   set_parent(toolbar) {
@@ -100,7 +101,7 @@ class ToolbarItem {
   static Generate(item, additionnal_attribs = {}) {
     //prettier-ignore
     let button = MelHtml.start
-      .button({ class: 'toolbar-button', id: `toolbar-button-${this.id}` }).attr('onmouseenter', item._on_enter.bind(item)).attr('onmouseleave', item._on_leave.bind(item)).attr('onclick', item.actions.call.bind(item.actions))
+      .button({ class: 'toolbar-button', id: `toolbar-button-${item.id}` }).attr('onmouseenter', item._on_enter.bind(item)).attr('onmouseleave', item._on_leave.bind(item)).attr('onclick', item.actions.call.bind(item.actions))
         .add_child(item._icon.generate())
         .span({ class:'toolbar-text' }).css('display', (item._text ? EMPTY_STRING : 'none'))
           .text(item._text)
@@ -330,6 +331,12 @@ class Toolbar {
     return item;
   }
 
+  remove_item(id) {
+    this._items = this._items.filter((x) => x.id !== id);
+
+    return this;
+  }
+
   generate($parent, $additionnal_attribs = {}) {
     //prettier-ignore
     let nav = MelHtml.start
@@ -391,7 +398,11 @@ class Toolbar {
     return this._$toolbar;
   }
 
-  get_button() {}
+  get_button(id) {
+    return MelEnumerable.from(this._items)
+      .where((x) => x.id === id)
+      .first();
+  }
 
   destroy() {
     return this.toolbar().hide().remove();

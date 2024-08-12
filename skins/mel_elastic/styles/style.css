@@ -4568,3 +4568,85 @@ iframe.mm-frame {
   padding: 0;
   min-width: unset;
 }
+.bnum-popover .bnum-popover-content {
+  background-color: var(--default-background);
+  border: solid thin var(--mel-button-border-color);
+  border-radius: 5px;
+  padding: 10px;
+}
+.bnum-popover .bnum-popover-arrow,
+.bnum-popover .bnum-popover-arrow:before {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  visibility: hidden;
+  border: solid thin var(--mel-button-border-color);
+}
+.bnum-popover .bnum-popover-arrow:before {
+  visibility: visible;
+  content: '';
+  transform: rotate(45deg);
+}
+[data-popper-placement^='top'].bnum-popover .bnum-popover-arrow {
+  bottom: -3px;
+}
+[data-popper-placement^='top'].bnum-popover .bnum-popover-arrow:before {
+  border-top: none;
+  border-left: none;
+}
+[data-popper-placement^='bottom'].bnum-popover .bnum-popover-arrow {
+  top: -4px;
+}
+[data-popper-placement^='bottom'].bnum-popover .bnum-popover-arrow:before {
+  border-bottom: none;
+  border-right: none;
+}
+[data-popper-placement^='left'].bnum-popover .bnum-popover-arrow {
+  right: -3px;
+}
+[data-popper-placement^='left'].bnum-popover .bnum-popover-arrow:before {
+  border-bottom: none;
+  border-left: none;
+}
+[data-popper-placement^='right'].bnum-popover .bnum-popover-arrow {
+  left: -4px;
+}
+[data-popper-placement^='right'].bnum-popover .bnum-popover-arrow:before {
+  border-top: none;
+  border-right: none;
+}
+.bnum-popover .bnum-popover-arrow.hide,
+.bnum-popover .bnum-popover-arrow.hide::before {
+  background-color: transparent;
+  border: transparent;
+  pointer-events: none;
+}
+.bnum-popover div.bnum-popover-arrow {
+  background-color: var(--default-background);
+}
+.bnum-popover .btn-group-vertical .mel-button {
+  background-color: var(--default-background);
+  color: var(--main-text-color);
+  border-color: transparent;
+  border-radius: 0;
+}
+.bnum-popover .btn-group-vertical .mel-button:first-of-type {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.bnum-popover .btn-group-vertical .mel-button:last-of-type {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.bnum-popover .btn-group-vertical .mel-button:hover {
+  background-color: var(--mel-button-hover-background-color);
+  color: var(--mel-button-hover-text-color);
+}
+.bnum-popover .btn-group-vertical .mel-button.mel-popover-button {
+  display: flex;
+  align-items: center;
+}
+.bnum-popover .btn-group-vertical .mel-button.mel-popover-button span {
+  margin-left: 5px;
+}

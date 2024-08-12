@@ -145,3 +145,7 @@ JsHtml.extend('center', function () {
 JsHtml.extend('btn_group', function (attribs = {}) {
   return this.div(attribs).addClass('btn-group').attr('role', 'group');
 });
+
+JsHtml.extend('btn_group_vertical', function (attribs = {}) {
+  return this.div(attribs).addClass('btn-group-vertical').attr('role', 'group');
+});

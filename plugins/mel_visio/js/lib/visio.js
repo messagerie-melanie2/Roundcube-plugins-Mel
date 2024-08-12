@@ -2,20 +2,17 @@ import {
   BnumMessage,
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message';
-import { ColorFromVariable } from '../../../mel_metapage/js/lib/classes/color';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager';
+import { MelPopover } from '../../../mel_metapage/js/lib/classes/mel_popover';
 import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections';
+import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/InternetNavigator';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml';
 import { capitalize } from '../../../mel_metapage/js/lib/mel';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object';
-import { VisioData } from './classes/structures/data';
 import { JitsiAdaptor } from './classes/visio/jitsii';
 import { VisioLoader } from './classes/visio/loader';
-import {
-  ToolbarFunctions,
-  ToolbarIcon,
-  ToolbarsItems,
-} from './classes/visio/toolbar';
+import { ToolbarFunctions } from './classes/visio/toolbar';
 import { VisioConnectors } from './connectors';
 import { VisioFunctions } from './helpers';
 export { Visio };
@@ -68,10 +65,15 @@ class Visio extends MelObject {
 
     this.loader = new VisioLoader('#mm-webconf .loading-visio-text');
     this.jitsii = null;
+    this._call_datas = webconf_helper.phone.getAll(this.data.wsp);
     this._token = this._get_jwt();
     this._toolbar = null;
 
     return this;
+  }
+
+  async get_call_data() {
+    return await this._call_datas;
   }
 
   async start() {
@@ -176,7 +178,21 @@ class Visio extends MelObject {
   _create_toolbar() {
     let toolbar = Toolbar.FromConfig(JSON.parse(this.get_env('visio.toolbar')));
 
+    this.rcmail().env['visio.toolbar'] = null;
+
     for (let element of toolbar) {
+      switch (element.id) {
+        case 'share_screen':
+          if (InternetNavigator.IsFirefox()) {
+            toolbar.remove_item(element.id);
+            continue;
+          }
+          break;
+
+        default:
+          break;
+      }
+
       if (element.get) {
         for (let sub_element of element) {
           if (ToolbarFunctions[capitalize(sub_element.id.replace('-', '_'))])
@@ -193,6 +209,60 @@ class Visio extends MelObject {
     }
 
     toolbar.generate(top.$('body'));
+
+    // toolbar
+    //   .get_button('more')
+    //   .$item.attr('data-toggle', 'popover')
+    //   .popover({
+    //     html: true,
+    //     content: '<p>yolo</p><br/><br/><i>yolo</i>',
+    //     placement: 'top',
+    //     container: top.$('body')[0],
+    //   });
+    // this.popover = new bootstrap.Popover(toolbar.get_button('more').$item[0], {
+    //   html: true,
+    //   content: '<p>yolo</p><br/><br/><i>yolo</i>',
+    //   placement: 'top',
+    //   container: top.$('body')[0],
+    //   trigger: 'manual',
+    // });
+    const raw_actions = JSON.parse(this.get_env('visio.toolbar.more'));
+    const pop_actions = MelHtml.start
+      .btn_group_vertical()
+      .each(
+        (self, item) => {
+          return self
+            .button({ class: 'mel-popover-button' })
+            .attr(
+              'onclick',
+              ToolbarFunctions[`Action_${item}`]
+                ? ToolbarFunctions[`Action_${item}`].bind(
+                    ToolbarFunctions,
+                    this,
+                  )
+                : () => {},
+            )
+            .icon(raw_actions[item].icon)
+            .end()
+            .span()
+            .text(raw_actions[item].text)
+            .end()
+            .end();
+        },
+        ...Object.keys(raw_actions),
+      )
+      .end();
+
+    this.popover = new MelPopover(
+      toolbar.get_button('more').$item,
+      pop_actions,
+      { config: { placement: 'top' }, container: top.$('body') },
+    );
+
+    $(this.popover._pop.element.popper)
+      .find('.bnum-popover-content')
+      .css('padding', 0);
+    this.rcmail().env['visio.toolbar.more'] = null;
 
     return toolbar;
   }

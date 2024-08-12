@@ -1,25 +1,6 @@
-import { BnumMessage } from '../../../../../mel_metapage/js/lib/classes/bnum_message.js';
-import { Toolbar } from '../../../../../mel_metapage/js/lib/classes/toolbar.js';
 import { Visio } from '../../visio.js';
 
-export { ToolbarsItems, ToolbarFunctions, ToolbarIcon };
-
-const ToolbarIcon = Toolbar.IconsType.material;
-const ToolbarsItemsIcons = {
-  chat: 'chat',
-  hangup: 'call_end',
-};
-
-const ToolbarsItems = {
-  chat: Toolbar.Item({
-    icon: ToolbarsItemsIcons.chat,
-    text: rcmail.gettext('chat', 'mel_metapage'),
-  }),
-  hangup: Toolbar.Item({
-    icon: ToolbarsItemsIcons.hangup,
-    text: rcmail.gettext('hangup', 'mel_metapage'),
-  }),
-};
+export { ToolbarFunctions };
 
 class ToolbarFunctions {
   constructor() {
@@ -35,15 +16,89 @@ class ToolbarFunctions {
     visio.toolbar.destroy();
   }
 
-  static Chat(visio) {}
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static Chat(visio) {
+    visio.jitsii.toggle_chat();
+  }
 
   /**
    *
    * @param {Visio} visio
    */
-  static async Mic(visio) {
+  static Mic(visio) {
     visio.jitsii.toggle_micro();
   }
 
-  static async Mic_0(visio) {}
+  static Mic_0(visio) {}
+
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static Cam(visio) {
+    visio.jitsii.toggle_video();
+  }
+
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static Handup(visio) {
+    visio.jitsii.toggle_hand();
+  }
+
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static Share_screen(visio) {
+    visio.jitsii.share_screen();
+  }
+
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static Moz(visio) {
+    visio.jitsii.toggle_film_strip();
+  }
+
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static More(visio) {
+    visio.popover.toggle();
+    //visio.toolbar.get_button('more').popover('toggle');
+  }
+
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static Action_Url(visio) {
+    let config = {
+      _key: visio.data.room,
+    };
+
+    if (visio.data.wsp) config._wsp = visio.data.wsp;
+
+    const url = mel_metapage.Functions.public_url('webconf', config);
+    mel_metapage.Functions.copy(url);
+    visio.popover.hide();
+  }
+
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static async Action_Phone(visio) {
+    const data = visio.get_call_data();
+    const copy_value = `Numéro : ${data.number} - PIN : ${data.pin}`;
+    mel_metapage.Functions.copy(copy_value);
+    visio.popover.hide();
+  }
 }

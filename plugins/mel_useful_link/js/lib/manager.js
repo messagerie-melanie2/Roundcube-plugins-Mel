@@ -330,7 +330,8 @@ export class LinkManager extends MelObject {
           });
         }
 
-        if (filterPass) {
+        //!link.feedUr permet de ne pas mettre les anciens liens dans la boucle
+        if (filterPass && !link.feedUrl) {
           let storeLink = new MelStoreLink(
             item,
             link.name,
@@ -750,7 +751,7 @@ export class LinkManager extends MelObject {
    * @returns {Boolean}
    */
   isInFolder(link) {
-    if (link.inFolder) return true;
+    if (link.inFolder === true) return true;
 
     return false;
   }

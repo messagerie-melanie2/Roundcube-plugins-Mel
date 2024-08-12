@@ -1210,7 +1210,7 @@ public function like_comment()
  *
  * @return void
  */
-public function get_all_comments_bypost()
+public function get_all_comments_bypost($uid)
 {
     // Récupérer l'uid de l'article du champ POST
     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
@@ -1221,10 +1221,9 @@ public function get_all_comments_bypost()
     if ($post->load()) {
     $comments = $post->listComments();
 
+    $comments_array = [];
+
     if (!empty($comments)) {
-        header('Content-Type: application/json');
-        // Préparer les données des réactions pour la réponse JSON
-        $comments_array = [];
         foreach ($comments as $comment) {
             $comments_array[] = [
                 'content' => $comment->content,
@@ -1232,17 +1231,15 @@ public function get_all_comments_bypost()
                 'date de création' => $comment->created,
             ];
         }
-        echo json_encode([
-            'status' => 'success',
-            'reactions' => $comments_array
-        ]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Aucun commentaire trouvé.']);
+    } 
+
+    // Retourner le tableau des commentaires
+    return $comments_array;
     }
 
-    // Arrêt de l'exécution du script
-    exit;
-    }
+    // Retourner un tableau vide ou null si le post n'a pas pu être chargé ou s'il n'y a pas de commentaires
+    return [];
+
 }
 
 /**

@@ -273,14 +273,40 @@ class MelFolderLink extends MelBaseLink {
     }
   }
 
+  toggleMultilink() {
+    if (!this.isOpen) 
+      this.openMultilink();
+    else
+      this.closeMultilink();    
+  }
+
   /**
-   * Ouvre/Ferme un dossier
+   * Ouvre un dossier
    */
-  openMultilink() {
-    $('#link-block-' + this.id).toggleClass('multilink-close');
-    $('#link-block-' + this.id).toggleClass('multilink-open');
-    $(`#link-block-${this.id} li.link-block`).toggleClass('sublink');
-    this.isOpen = !this.isOpen;
+  openMultilink() {    
+    //Si un autre dossier est déjà ouvert
+    if (MelFolderLink.folderOpen) {
+      this.closeMultilink(MelFolderLink.folderOpen.id);
+      MelFolderLink.folderOpen.isOpen = false;
+    }
+
+    $('#link-block-' + this.id).removeClass('multilink-close');
+    $('#link-block-' + this.id).addClass('multilink-open');
+    $(`#link-block-${this.id} li.link-block`).removeClass('sublink');
+
+    MelFolderLink.folderOpen = this;
+    this.isOpen = true;
+  }
+
+  /**
+   * Ferme un dossier
+   */
+  closeMultilink(id = this.id) {
+    $('#link-block-' + id).addClass('multilink-close');
+    $('#link-block-' + id).removeClass('multilink-open');
+    $(`#link-block-${id} li.link-block`).addClass('sublink');
+
+    this.isOpen = false;
   }
 
   /**
@@ -334,7 +360,7 @@ class MelFolderLink extends MelBaseLink {
       .div({
         id: 'link-id-' + this.id,
         class: 'multilink-icon-container',
-        onclick: this.openMultilink.bind(this),
+        onclick: this.toggleMultilink.bind(this),
       })
       .ul({
         id: 'links-container-' + this.id,
@@ -350,6 +376,14 @@ class MelFolderLink extends MelBaseLink {
       .generate();
   }
 }
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default 'false'
+ */
+MelFolderLink.folderOpen = false;
 
 class MelLinkVisualizer extends MelLink {
   constructor(id, title, link, image, inFolder = false, icon = null) {

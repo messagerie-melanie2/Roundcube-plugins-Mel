@@ -109,7 +109,10 @@ export class Manager extends MelObject {
 
     }),
 
-    html.end('div');
+    html
+      .end('div');
+
+    return html.generate();
   };
 
 

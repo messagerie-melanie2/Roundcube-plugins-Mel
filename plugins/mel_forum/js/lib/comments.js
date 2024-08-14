@@ -1,15 +1,16 @@
-import { RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal";
+export {PostComment, PostCommentView}
 
-class MelCommentVisualizer extends MelPostComment {
-  constructor(uid, post_id, user_id, content, created, like, dislike, child_comment) {
+class PostComment {
+  constructor(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment) {
 
-    this._init()._setup(uid, post_id, user_id, content, created, like, dislike, child_comment)
+    this._init()._setup(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment)
   }
 
   _init() {
     this.uid = '';
     this.post_id = '';
     this.user_id = '';
+    this.user_name = '';
     this.content = '';
     this.created = '';
     this.like = '';
@@ -20,12 +21,12 @@ class MelCommentVisualizer extends MelPostComment {
 
   }
 
-  _setup(uid, post_id, user_id, content, created, like, dislike, child_comment) {
+  _setup(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment) {
     Object.defineProperties(this, {
 
       uid: {
         get() {
-          return this.uid;
+          return uid;
         },
 
         set: (value) => {
@@ -35,7 +36,7 @@ class MelCommentVisualizer extends MelPostComment {
 
       post_id: {
         get() {
-          return this.post_id;
+          return post_id;
         },
 
         set: (value) => {
@@ -45,7 +46,7 @@ class MelCommentVisualizer extends MelPostComment {
 
       user_id: {
         get() {
-          return this.user_id;
+          return user_id;
         },
 
         set: (value) => {
@@ -53,9 +54,19 @@ class MelCommentVisualizer extends MelPostComment {
         }
       },
 
+      user_name: {
+        get() {
+          return user_name;
+        },
+
+        set: (value) => {
+          this.user_name = value;
+        }
+      },
+
       content: {
         get() {
-          return this.content;
+          return content;
         },
 
         set: (value) => {
@@ -65,7 +76,7 @@ class MelCommentVisualizer extends MelPostComment {
 
       created: {
         get() {
-          return this.created;
+          return created;
         },
 
         set: (value) => {
@@ -75,7 +86,7 @@ class MelCommentVisualizer extends MelPostComment {
 
       like: {
         get() {
-          return this.like;
+          return like;
         },
 
         set: (value) => {
@@ -85,7 +96,7 @@ class MelCommentVisualizer extends MelPostComment {
 
       dislike: {
         get() {
-          return this.dislike;
+          return dislike;
         },
 
         set: (value) => {
@@ -95,7 +106,7 @@ class MelCommentVisualizer extends MelPostComment {
 
       child_comment: {
         get() {
-          return this.child_comment;
+          return child_comment;
         },
 
         set: (value) => {
@@ -105,18 +116,127 @@ class MelCommentVisualizer extends MelPostComment {
     })
   }
 
-  displayPostComment() {
+    // generateHtml(comments_array) {
+  //   let html = MelHtml.start;
+  //   html
+  //     .div({ class: 'comments-container mt-4' });
 
-  }
-  
-async getCommentByPost(task = 'mel_forum', action = 'get_all_comments_bypost'){
-  let return_data = [];
-  await mel_metapage.Functions.comment(
-    mel_metapage.Functions.url(task, action),
-    (datas) => {
-      rcmail.set_busy(false, 'loading', busy);
-    }
-  )
+  //   comments_array(comment => {
+  //     //Commentaire
+  //     html
+  //       .div({ class: 'comment-item-custom ml-4' })
+  //       .div({ class: 'd-flex align-items-center' })
+  //       .img({
+  //         src: '',
+  //         alt: 'Image de Profil',
+  //         class: 'profile-image-custom'
+  //       })
+  //       .div({ class: 'ml-2' })
+  //       .span({ class: 'comment-author-custom' })
+  //       .text(creator)
+  //       .end('span')
+  //       .div({ class: 'd-flex align-items-center' })
+  //       .i({ class: 'material-symbols-outlined' })
+  //       .text('access_time')
+  //       .end('i')
+  //       .span({ class: 'ml-2' })
+  //       .text(date)
+  //       .end('span')
+  //       .end('div')
+  //       .end('div');
+
+  //     //Contenu du commentaire
+  //     html
+  //       .div({ class: 'comment-content' })
+  //       .p()
+  //       .text(content)
+  //       .end(p)
+  //       .end(div);
+
+  //     //Likes et nombre de réponses
+  //     html
+  //       .div({ class: 'Likes flex align-items-center mt-2' })
+  //       .div({ class: 'Like-item d-flex align-items-center mr-3' })
+  //       .i({ class: 'material-symbols-outlined' })
+  //       .text('thumb_up')
+  //       .end('i')
+  //       .span({ class: 'ml-2' })
+  //       .text(comment.likes)
+  //       .end('span')
+  //       .end('div')
+  //       .div({ class: 'Like-item d-flex align-items-center mr-3' })
+  //       .i({ class: 'material-symbols-outlined' })
+  //       .text('thumb_down')
+  //       .end('i')
+  //       .span({ class: 'ml-2' })
+  //       .text(comment.dislikes)
+  //       .end('span')
+  //       .end('div')
+  //       .div({ class: 'reaction-item d-flex align-items-center' })
+  //       .i({ class: 'material-symbols-outlined' })
+  //       .text('comment')
+  //       .end('i')
+  //       .span({ class: 'ml-2' })
+  //       .text(`x réponses`)
+  //       .end('span')
+  //       .i({ class: 'material-symbols-outlined' })
+  //       .text('keyboard_arrow_down')
+  //       .end('i')
+  //       .end('div')
+  //       .end('div');
+
+  //   }),
+
+  //     html
+  //       .end('div');
+
+  //   return html.generate();
+  // };
 
 }
+
+class PostCommentView {
+  constructor(post_id) {
+    this._init()._setup(post_id)
+  }
+
+  _init() {
+    this.post_id = this.post_id;
+
+    return this;
+
+  }
+
+  _setup(post_id) {
+    Object.defineProperties(this, {
+
+      post_id: {
+        get() {
+          return post_id;
+        },
+
+        set: (value) => {
+          this.post_id = value;
+        }
+      }
+    });
+  }
+
+  async getCommentByPost() {
+    // BnumMessage.SetBusyLoading();
+    let return_data;
+    await mel_metapage.Functions.post(
+      mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
+      { _post_id: this.post_id },
+      (datas) => {
+        return_data = JSON.parse(datas);
+        
+        // BnumMessage.SetBusyLoading();
+      }
+    )
+
+    return return_data;
+
+  }
+
 }

@@ -64,7 +64,7 @@ function init()
         $this->register_action('test_update_comment', array($this, 'test_update_comment'));
         $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
         $this->register_action('test_like_comment', array($this, 'test_like_comment'));
-        $this->register_action('test_get_all_comments_bypost', array($this, 'test_get_all_comments_bypost'));
+        // $this->register_action('test_get_all_comments_bypost', array($this, 'test_get_all_comments_bypost'));
         $this->register_action('test_count_comments', array($this, 'test_count_comments'));
         $this->register_action('test_delete_like', array($this, 'test_delete_like'));
         $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
@@ -84,37 +84,37 @@ function init()
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Récupérer le User Connecté
-        $this->register_action('check_user', array($this, 'check_user'));
-        //Ajouter une réaction
-        $this->register_action('add_reaction', array($this, 'add_reaction'));
-        // Supprimer une réaction
-        $this->register_action('delete_reaction', array($this, 'delete_reaction'));
-        // Lister les Réactions d'un Post
-        $this->register_action('get_all_reactions_bypost', array($this, 'get_all_reactions_bypost'));
-        // Compter le nombre de réactions pour un Post
-        $this->register_action('count_reactions', array($this, 'count_reactions'));
-        // Créer un article
-        $this->register_action('create_post', array($this, 'create_post'));
-        //modifier un article
-        $this->register_action('update_post', array($this, 'update_post'));
-        //supprimer un article
-        $this->register_action('delete_post', array($this, 'delete_post'));
-        // récupérer un  article
-        $this->register_action('get_post', array($this, 'get_post'));
-        // récupérer tous les articles
-        $this->register_action('get_all_posts_byworkspace', array($this, 'get_all_posts_byworkspace'));
-        // Ajouter un commentaire ou une réponse
-        $this->register_action('create_comment', array($this, 'create_comment'));
-        // Répondre à un commentaire ou une réponse
-        $this->register_action('reply_comment', array($this, 'reply_comment'));
-        // Modifier un commentaire ou une réponse
-        $this->register_action('update_comment', array($this, 'update_comment'));
-        // Supprimer un commentaire ou une réponse
-        $this->register_action('delete_comment', array($this, 'delete_comment'));
-        // Liker un commentaire ou une réponse
-        $this->register_action('like_comment', array($this, 'like_comment'));
+        // $this->register_action('check_user', array($this, 'check_user'));
+        // //Ajouter une réaction
+        // $this->register_action('add_reaction', array($this, 'add_reaction'));
+        // // Supprimer une réaction
+        // $this->register_action('delete_reaction', array($this, 'delete_reaction'));
+        // // Lister les Réactions d'un Post
+        // $this->register_action('get_all_reactions_bypost', array($this, 'get_all_reactions_bypost'));
+        // // Compter le nombre de réactions pour un Post
+        // $this->register_action('count_reactions', array($this, 'count_reactions'));
+        // // Créer un article
+        // $this->register_action('create_post', array($this, 'create_post'));
+        // //modifier un article
+        // $this->register_action('update_post', array($this, 'update_post'));
+        // //supprimer un article
+        // $this->register_action('delete_post', array($this, 'delete_post'));
+        // // récupérer un  article
+        // $this->register_action('get_post', array($this, 'get_post'));
+        // // récupérer tous les articles
+        // $this->register_action('get_all_posts_byworkspace', array($this, 'get_all_posts_byworkspace'));
+        // // Ajouter un commentaire ou une réponse
+        // $this->register_action('create_comment', array($this, 'create_comment'));
+        // // Répondre à un commentaire ou une réponse
+        // $this->register_action('reply_comment', array($this, 'reply_comment'));
+        // // Modifier un commentaire ou une réponse
+        // $this->register_action('update_comment', array($this, 'update_comment'));
+        // // Supprimer un commentaire ou une réponse
+        // $this->register_action('delete_comment', array($this, 'delete_comment'));
+        // // Liker un commentaire ou une réponse
+        // $this->register_action('like_comment', array($this, 'like_comment'));
         // Lister les comments d'un Post
-        $this->register_action('get_all_comments_bypost', array($this, 'get_all_comments_bypost'));
+        $this->register_action('get_all_comments_bypost', [$this, 'get_all_comments_bypost']);
         // Compter le nombre de commentaires pour un Post
         $this->register_action('count_comment', array($this, 'count_comment'));
         //Supprimer un Like
@@ -172,6 +172,7 @@ public function index(){
  * @return void
  */
 public function post(){
+    $this->load_script_module('manager');
     //Récupérér uid avec GET
     $uid = 'VOszRaUI1dQRuQGs2NzKiKZ0';
     $this->current_post = $this->get_post($uid);
@@ -1210,36 +1211,35 @@ public function like_comment()
  *
  * @return void
  */
-public function get_all_comments_bypost($uid)
+public function get_all_comments_bypost()
 {
     // Récupérer l'uid de l'article du champ POST
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+    $uid = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_GPC);
 
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
 
-    if ($post->load()) {
-    $comments = $post->listComments();
-
     $comments_array = [];
 
-    if (!empty($comments)) {
-        foreach ($comments as $comment) {
-            $comments_array[] = [
-                'content' => $comment->content,
-                'uid' => $comment->uid,
-                'date de création' => $comment->created,
-            ];
-        }
-    } 
+    if ($post->load()) {
+        $comments = $post->listComments();
 
-    // Retourner le tableau des commentaires
-    return $comments_array;
+        if (!empty($comments)) {
+            foreach ($comments as $comment) {
+                $user_name = driver_mel::gi()->getUser($comment->user_uid)->name;
+                $comments_array[$comment->uid] = [
+                    'post_id' => $comment->post_id,
+                    'user_id' => $comment->user_id,
+                    'user_name' => $user_name
+                ];
+            }
+        } 
+
+        // Retourner le tableau des commentaires
+
+        echo json_encode($comments_array);
     }
-
-    // Retourner un tableau vide ou null si le post n'a pas pu être chargé ou s'il n'y a pas de commentaires
-    return [];
-
+    exit;
 }
 
 /**

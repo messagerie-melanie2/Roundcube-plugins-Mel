@@ -1,10 +1,10 @@
-import { EMPTY_STRING } from '../constants/constants';
-import { ____JsHtml } from '../html/JsHtml/JsHtml';
-import { MelHtml } from '../html/JsHtml/MelHtml';
-import { BnumEvent } from '../mel_events';
-import { Point, Rectangle } from '../mel_maths';
-import { Color, ColorFromVariable } from './color';
-import { MelEnumerable } from './enum';
+import { EMPTY_STRING } from '../constants/constants.js';
+import { ____JsHtml } from '../html/JsHtml/JsHtml.js';
+import { MelHtml } from '../html/JsHtml/MelHtml.js';
+import { BnumEvent } from '../mel_events.js';
+import { Point, Rectangle } from '../mel_maths.js';
+import { Color, ColorFromVariable } from './color.js';
+import { MelEnumerable } from './enum.js';
 
 export { Toolbar };
 

@@ -1,20 +1,20 @@
 import {
   BnumMessage,
   eMessageType,
-} from '../../../mel_metapage/js/lib/classes/bnum_message';
-import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager';
-import { MelPopover } from '../../../mel_metapage/js/lib/classes/mel_popover';
-import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar';
-import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections';
-import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/InternetNavigator';
-import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml';
-import { capitalize } from '../../../mel_metapage/js/lib/mel';
-import { MelObject } from '../../../mel_metapage/js/lib/mel_object';
-import { JitsiAdaptor } from './classes/visio/jitsii';
-import { VisioLoader } from './classes/visio/loader';
-import { ToolbarFunctions, VisioToolbar } from './classes/visio/toolbar';
-import { VisioConnectors } from './connectors';
-import { VisioFunctions } from './helpers';
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { MelPopover } from '../../../mel_metapage/js/lib/classes/mel_popover.js';
+import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar.js';
+import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
+import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/InternetNavigator.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { capitalize } from '../../../mel_metapage/js/lib/mel.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { JitsiAdaptor } from './classes/visio/jitsii.js';
+import { VisioLoader } from './classes/visio/loader.js';
+import { ToolbarFunctions, VisioToolbar } from './classes/visio/toolbar.js';
+import { VisioConnectors } from './connectors.js';
+import { VisioFunctions } from './helpers.js';
 export { Visio };
 
 class Visio extends MelObject {

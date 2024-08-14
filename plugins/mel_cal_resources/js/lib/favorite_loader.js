@@ -1,5 +1,5 @@
-import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum';
-import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants';
+import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 
 export { FavoriteLoader };

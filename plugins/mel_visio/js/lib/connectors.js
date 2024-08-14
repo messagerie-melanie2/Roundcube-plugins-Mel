@@ -1,5 +1,5 @@
-import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants';
-import { Connector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/connector';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { Connector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/connector.js';
 
 export { connectors as VisioConnectors };
 const connectors = {

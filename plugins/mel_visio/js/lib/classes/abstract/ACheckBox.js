@@ -1,5 +1,5 @@
-import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events';
-import { IVisioPart } from '../interfaces/IVisioPart';
+import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events.js';
+import { IVisioPart } from '../interfaces/IVisioPart.js';
 
 export { ACheckBox };
 

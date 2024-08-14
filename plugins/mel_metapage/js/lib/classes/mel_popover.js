@@ -1,8 +1,7 @@
-import { EMPTY_STRING } from '../constants/constants';
-import { MelHtml } from '../html/JsHtml/MelHtml';
-import { isArrayLike } from '../mel';
-import { BnumEvent } from '../mel_events';
-import { MelEnumerable } from './enum';
+import { EMPTY_STRING } from '../constants/constants.js';
+import { MelHtml } from '../html/JsHtml/MelHtml.js';
+import { BnumEvent } from '../mel_events.js';
+import { MelEnumerable } from './enum.js';
 
 const default_template = MelHtml.start
   .div({ class: 'bnum-popover', role: 'dialog', 'aria-modal': true })
@@ -56,14 +55,20 @@ export class MelPopover {
     $tmp.find('.bnum-popover-content').css('display', 'none');
     $tmp.find('.bnum-popover-arrow').addClass('hide');
 
-    $last = this._find_last_focusable($tmp);
+    let $last = this._find_last_focusable($tmp);
+
+    $tmp.find('.bnum-popover-content').append('<span tabindex=0></span>');
 
     if ($last && $last.length) {
-      $last.on('blur', () => {
+      $last.on('focusout', () => {
         if (this.is_shown()) {
-          this._find_last_focusable(
+          let $element = this._find_first_focusable(
             $(this._pop.state.elements.popper),
-          )?.focus?.();
+          );
+
+          if ($element){
+            $element[0].focus();
+          }
         }
       });
     }
@@ -115,15 +120,15 @@ export class MelPopover {
   }
 
   _find_first_focusable($element) {
-    return this._find_focusable(this._flat_jquery($element));
+    return this._find_focusable(MelEnumerable.from(this._flat_jquery($element)));
   }
 
-  _find_focusable($element) {
-    for (const element of $element) {
-      if (aria.Utils.isFocusable(element)) return $(element);
-    }
+  _find_focusable(elements) {
+    // for (const element of $element) {
+    //   if (aria.Utils.isFocusable(element)) return $(element);
+    // }
 
-    return null;
+    return elements.where(x => aria.Utils.isFocusable(x?.[0] ? x[0] : x)).firstOrDefault();
   }
 
   *_flat_jquery($element) {

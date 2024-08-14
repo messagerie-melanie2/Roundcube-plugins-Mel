@@ -13,55 +13,109 @@
       </div>
     </div>
     <div class="row forum-header">
-      <div class="text-header">
-        <h2 class="title"><roundcube:object name="show_post_title" /></h2>
-      </div>
-    </div>
-    <div class="row forum-content">
-      <div class="col-12 col-md-10 mt-4 mx-2">
-        <div class="row d-flex justify-content-center align-items-center">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 text-center">
+            <h2 class="title">
+              <roundcube:object name="show_post_title" />
+            </h2>
+          </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center mt-3">
           <div class="d-flex justify-content-center align-items-center">
             <img
               src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
-              alt="Auteur Image"
-              class="author-image"
-            />
+              alt="Auteur Image" class="author-image" />
             <div class="ml-2 author-infos">
               <div class="author-name-custom ml-1">
                 <roundcube:object name="show_post_creator" />
               </div>
               <div class="d-flex justify-content-center align-items-center">
                 <i class="material-symbols-outlined">access_time</i>
-                <span class="ml-2"
-                  ><roundcube:object name="show_post_date"
-                /></span>
+                <span class="ml-2">
+                  <roundcube:object name="show_post_date" />
+                </span>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row forum-content">
+      <div class="col-12 col-md-10">
         <div class="row custom-border-bottom my-4">
           <roundcube:object name="show_post_tags" />
         </div>
         <div class="row">
           <div id="post-content" class="post-content">
-            <roundcube:object name="show_post_content" />          
+            <roundcube:object name="show_post_content" />
           </div>
         </div>
-        
-        <div class="top-section-custom d-flex align-items-center mt-2 ml-4">
-          <span>Top</span>
-          <i class="material-symbols-outlined ml-2 mr-2">keyboard_arrow_down</i>
-        </div>
-        <div class="separator ml-4"></div>
-        <div class="row my-2 d-flex align-items-center">
-          <img src="https://img.freepik.com/photos-premium/lettre-alphabet-vue-dessus-fond-colore_680303-5663.jpg"
-            alt="Image de Profil" class="profile-image-custom ml-4">
-          <input type="text" class="comment-input-custom" placeholder="Ajouter un commentaire" style="max-height: 40px;">
+      </div>
+    </div>
+
+    <div class="row forum-comment d-flex justify-content-center">
+      <div class="col-12 col-md-10">
+        <div class="row forum-comment-sort">
+          <div class="input-group mel-group">
+            <select title="" id="forum-comment-select" class="form-control input-mel mel-input custom-select"
+              data-original-title="Trier par : ">
+              <!-- A dynamiser en js -->
+              <option value="date_asc">Plus récents</option>
+              <option value="date_desc">Plus anciens</option>
+              <option value="">etc</option>
+            </select>
+          </div>
         </div>
 
+        <div class="row my-4 d-flex align-items-center">
+          <div class="col-auto pr-0">
+            <img src="https://img.freepik.com/photos-premium/lettre-alphabet-vue-dessus-fond-colore_680303-5663.jpg"
+              alt="Image de Profil" class="forum-comment-profile-image">
+          </div>
+          <div class="col pl-0">
+            <input type="text" class="forum-comment-input" placeholder="Ajouter un commentaire">
+          </div>
+        </div>
+
+        <div id="comment-id-#" class="row comment">
+          <div class="col-12">
+            <div class="d-flex align-items-center">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJHSTf2JZC2TYKfMedDvuYWHxHL2h-xMPLDw&s"
+                alt="Profile" class="forum-comment-profile-image">
+              <span class="forum-comment-author">Payen Thomas</span>
+              <div class="forum-comment-date d-flex align-items-end">
+                <i class="material-symbols-outlined">access_time</i>
+                <span class="ml-1">12 mai 2024</span>
+              </div>
+            </div>
+            <div class="forum-comment-text">
+              <p>Content que ça te plaise 👍</p>
+            </div>
+            <div class="forum-comment-reactions mt-2">
+              <div class="reaction-item active mr-3">
+                <i class="material-symbols-outlined">thumb_up</i>
+                <span class="ml-2">1</span>
+              </div>
+              <div class="reaction-item mr-3">
+                <i class="material-symbols-outlined">thumb_down</i>
+                <span class="ml-2">0</span>
+              </div>
+              <div class="reaction-item  response">
+                <i class="material-symbols-outlined">mode_comment</i>
+                <span class="ml-2">1 réponse</span>
+                <i class="material-symbols-outlined">keyboard_arrow_down</i>
+              </div>
+              <div class="reaction-item">
+                <i class="material-symbols-outlined">more_horiz</i>
+              </div>
+            </div>
+          </div>
+        </div>       
       </div>
     </div>
   </div>
-
-  <roundcube:include file="/includes/footer.html" />
 </div>
+
+<roundcube:include file="/includes/footer.html" />
+

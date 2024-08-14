@@ -45,6 +45,7 @@ class ToolbarItem {
     this.$item = null;
     this.actions = new BnumEvent();
     this.ongenerate = new BnumEvent();
+    this.attribs = {};
 
     Object.defineProperty(this, '$item', {
       get: () => {
@@ -72,6 +73,11 @@ class ToolbarItem {
     return this;
   }
 
+  add_attribs(key, value) {
+    this.attribs[key] = value;
+    return this;
+  }
+
   add_action(callback) {
     this.actions.push(callback);
     return this;
@@ -89,6 +95,12 @@ class ToolbarItem {
   }
 
   generate(additionnal_attribs = {}) {
+    for (const key in this.attribs) {
+      if (Object.prototype.hasOwnProperty.call(this.attribs, key)) {
+        additionnal_attribs[key] = this.attribs[key];
+      }
+    }
+
     return ToolbarItem.Generate(this, additionnal_attribs);
   }
 
@@ -139,14 +151,14 @@ class ToolbarItem {
   }
 
   _on_enter(e) {
-    e = $(e.currentTarget);
-    this._style = e.css('color');
-    e.css('color', EMPTY_STRING);
+    // e = $(e.currentTarget);
+    // this._style = e.css('color');
+    // e.css('color', EMPTY_STRING);
   }
 
   _on_leave(e) {
-    $(e.currentTarget).css('color', this._style);
-    this._style = null;
+    // $(e.currentTarget).css('color', this._style);
+    // this._style = null;
   }
 }
 
@@ -267,7 +279,7 @@ class Toolbar {
   _update_toolbar() {
     if (this._$toolbar) {
       this._$toolbar.css({
-        'background-color': this.color,
+        //'background-color': this.color,
         height: this.heigth,
         width: this.width,
         left: this.x,
@@ -301,15 +313,18 @@ class Toolbar {
       .set_text(first.text)
       .set_icon(this._icon_type.Create(first.icon));
 
+    item = this._set_attribs_on_existing_item(first, item);
+
+    let button;
     for (let index = 1; index < array.length; ++index) {
       const element = array[index];
 
-      item.add_button(
-        new ToolbarItem(id)
-          .set_parent(this)
-          .set_text(element.text)
-          .set_icon(this._icon_type.Create(element.icon)),
-      );
+      button = new ToolbarItem(id)
+        .set_parent(this)
+        .set_text(element.text)
+        .set_icon(this._icon_type.Create(element.icon));
+
+      item.add_button(this._set_attribs_on_existing_item(element, button));
     }
 
     this._items.push(item);
@@ -327,6 +342,19 @@ class Toolbar {
     let item = this.add_item(id, existing_item.text, existing_item.icon);
 
     if (existing_item.action) item.add_action(existing_item.action);
+
+    return this._set_attribs_on_existing_item(existing_item, item);
+  }
+
+  _set_attribs_on_existing_item(existing_item, item) {
+    if (existing_item.data) {
+      for (const key in existing_item.data) {
+        if (Object.prototype.hasOwnProperty.call(existing_item.data, key)) {
+          const element = existing_item.data[key];
+          item.add_attribs(`data-${key}`, element);
+        }
+      }
+    }
 
     return item;
   }
@@ -375,21 +403,21 @@ class Toolbar {
 
     this._update_toolbar();
 
-    const raw_color_a = Color.fromRGB(
-      this._$toolbar.css('background-color'),
-    ).toHexa();
-    const raw_color_b = Color.fromRGB(
-      this._$toolbar.find('button').first().css('color'),
-    ).toHexa();
-    const colorA = mel_metapage.Functions.colors.kMel_extractRGB(raw_color_a);
-    const colorB = mel_metapage.Functions.colors.kMel_extractRGB(raw_color_b);
+    // const raw_color_a = Color.fromRGB(
+    //   this._$toolbar.css('background-color'),
+    // ).toHexa();
+    // const raw_color_b = Color.fromRGB(
+    //   this._$toolbar.find('button').first().css('color'),
+    // ).toHexa();
+    // const colorA = mel_metapage.Functions.colors.kMel_extractRGB(raw_color_a);
+    // const colorB = mel_metapage.Functions.colors.kMel_extractRGB(raw_color_b);
 
-    const isAAA = mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
-      colorA,
-      colorB,
-    );
+    // const isAAA = mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(
+    //   colorA,
+    //   colorB,
+    // );
 
-    if (!isAAA) this._$toolbar.find('button').css('color', 'black');
+    // if (!isAAA) this._$toolbar.find('button').css('color', 'black');
 
     return this.toolbar();
   }
@@ -398,6 +426,11 @@ class Toolbar {
     return this._$toolbar;
   }
 
+  /**
+   *
+   * @param {string} id
+   * @returns {ToolbarItem}
+   */
   get_button(id) {
     return MelEnumerable.from(this._items)
       .where((x) => x.id === id)
@@ -432,9 +465,15 @@ class Toolbar {
     return new Toolbar(id);
   }
 
-  static FromConfig(config) {
+  /**
+   *
+   * @param {string} config
+   * @param {typeof Toolbar} ToolbarType
+   * @returns
+   */
+  static FromConfig(config, ToolbarType = Toolbar) {
     const shape = this._ParseShape(config.toolbar.shape);
-    let toolbar = new Toolbar(config.toolbar.id).set_icon_type(
+    let toolbar = new ToolbarType(config.toolbar.id).set_icon_type(
       config.toolbar.icon_type === 'material-symbol'
         ? ToolbarMaterialIcon
         : ToolbarIcon,

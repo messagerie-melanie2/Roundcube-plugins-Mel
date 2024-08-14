@@ -7,12 +7,20 @@
     "buttons": {
       "chat": {
         "icon": "chat",
-        "text": "mel_metapage.chat"
+        "text": "mel_metapage.chat",
+        "data": {
+          "disabled-icon": "chat_bubble",
+          "has-unread-icon": "mark_unread_chat_alt",
+          "has-unread-disabled-icon": "mark_chat_unread"
+        }
       },
       "mic": [
         {
           "icon": "mic",
-          "text": "mel_metapage.audioinput"
+          "text": "mel_metapage.audioinput",
+          "data": {
+            "disabled-icon": "mic_off"
+          }
         },
         {
           "icon": "arrow_drop_down"
@@ -21,7 +29,10 @@
       "camera": [
         {
           "icon": "videocam",
-          "text": "mel_metapage.videoinput"
+          "text": "mel_metapage.videoinput",
+          "data": {
+            "disabled-icon": "videocam_off"
+          }
         },
         {
           "icon": "arrow_drop_down"
@@ -29,11 +40,15 @@
       ],
       "handup": {
         "icon": "hand_gesture",
-        "text": "mel_metapage.to_participate"
+        "text": "mel_metapage.to_participate",
+        "data": {
+          "disabled-icon": "pan_tool"
+        }
       },
       "share_screen": {
-        "icon": "screen_share",
-        "text": "mel_metapage.diffuse"
+        "icon": "stop_screen_share",
+        "text": "mel_metapage.diffuse",
+        "data": { "disabled-icon": "screen_share" }
       },
       "moz": {
         "icon": "auto_awesome_mosaic",

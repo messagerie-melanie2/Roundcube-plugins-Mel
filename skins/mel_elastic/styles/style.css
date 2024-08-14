@@ -4546,6 +4546,14 @@ iframe.mm-frame {
 .mel-nav-toolbar ul .toolbar-button.selected {
   border-color: var(--mel-button-border-color);
 }
+.mel-nav-toolbar ul .toolbar-button.state-active {
+  background-color: var(--mel-button-hover-background-color);
+  color: var(--mel-button-hover-text-color);
+}
+.mel-nav-toolbar ul .toolbar-button.state-active:hover {
+  background-color: var(--mel-button-background-color);
+  color: var(--mel-button-text-color);
+}
 .mel-nav-toolbar ul .btn-group.toolbar-button-group {
   margin-right: 2.5px;
   margin-left: 2.5px;
@@ -4567,6 +4575,17 @@ iframe.mm-frame {
   border-bottom-left-radius: 0px;
   padding: 0;
   min-width: unset;
+}
+.mel-nav-toolbar.white-toolbar {
+  background-color: var(--bureau-card-background-color);
+  color: var(--bureau-card-text-color);
+}
+.mel-nav-toolbar.white-toolbar .toolbar-button {
+  color: var(--bureau-card-text-color);
+}
+.mel-nav-toolbar.white-toolbar .toolbar-button:hover {
+  background-color: var(--mel-button-hover-background-color);
+  color: var(--mel-button-text-color);
 }
 .bnum-popover .bnum-popover-content {
   background-color: var(--default-background);

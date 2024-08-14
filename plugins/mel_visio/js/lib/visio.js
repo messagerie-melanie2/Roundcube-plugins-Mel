@@ -12,7 +12,7 @@ import { capitalize } from '../../../mel_metapage/js/lib/mel';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object';
 import { JitsiAdaptor } from './classes/visio/jitsii';
 import { VisioLoader } from './classes/visio/loader';
-import { ToolbarFunctions } from './classes/visio/toolbar';
+import { ToolbarFunctions, VisioToolbar } from './classes/visio/toolbar';
 import { VisioConnectors } from './connectors';
 import { VisioFunctions } from './helpers';
 export { Visio };
@@ -44,7 +44,7 @@ class Visio extends MelObject {
      */
     this.jitsii = null;
     /**
-     * @type {Toolbar}
+     * @type {VisioToolbar}
      */
     this.toolbar = null;
 
@@ -129,6 +129,7 @@ class Visio extends MelObject {
           if (this.loader) {
             this.loader = this.loader.destroy();
             this.toolbar = this._create_toolbar();
+            this._init_listeners();
           }
         },
         configOverwrite: {
@@ -176,7 +177,10 @@ class Visio extends MelObject {
   }
 
   _create_toolbar() {
-    let toolbar = Toolbar.FromConfig(JSON.parse(this.get_env('visio.toolbar')));
+    let toolbar = Toolbar.FromConfig(
+      JSON.parse(this.get_env('visio.toolbar')),
+      VisioToolbar,
+    );
 
     this.rcmail().env['visio.toolbar'] = null;
 
@@ -209,6 +213,8 @@ class Visio extends MelObject {
     }
 
     toolbar.generate(top.$('body'));
+
+    toolbar.toolbar().addClass('white-toolbar');
 
     // toolbar
     //   .get_button('more')
@@ -259,11 +265,123 @@ class Visio extends MelObject {
       { config: { placement: 'top' }, container: top.$('body') },
     );
 
-    $(this.popover._pop.element.popper)
-      .find('.bnum-popover-content')
-      .css('padding', 0);
+    // $(this.popover._pop.element.popper)
+    //   .find('.bnum-popover-content')
+    //   .css('padding', 0);
     this.rcmail().env['visio.toolbar.more'] = null;
 
     return toolbar;
+  }
+
+  async _init_listeners() {
+    const promise_user_id = this.jitsii.get_user_id();
+
+    this.jitsii.on_audio_mute_status_changed.push(
+      this._event_on_audio_change.bind(this),
+    );
+
+    this.jitsii.on_video_mute_status_changed.push(
+      this._event_on_video_change.bind(this),
+    );
+
+    this.jitsii.on_film_strip_display_changed.push(
+      this._event_on_filmstrip_state_changed.bind(this),
+    );
+
+    this.jitsii.on_chat_updated.push(this._event_on_chat_updated.bind(this));
+
+    this.jitsii.on_tile_view_updated.push(
+      this._event_on_tileview_updated.bind(this),
+    );
+
+    this.jitsii.on_raise_hand_updated.push(
+      this._event_on_raise_hand_updated.bind(this),
+    );
+
+    this.jitsii.on_share_screen_status_changed.push(
+      this._event_on_share_screen_status_changed.bind(this),
+    );
+
+    this.jitsii.on_chat_updated.call({
+      unreadCount: 0,
+      isOpen: false,
+    });
+
+    this.jitsii.on_share_screen_status_changed.call({
+      on: false,
+    });
+
+    this.jitsii.on_raise_hand_updated.call({
+      id: await promise_user_id,
+      handRaised: 0,
+    });
+  }
+
+  _event_on_audio_change(state) {
+    this._update_icon_state(state.muted, 'mic');
+  }
+
+  _event_on_video_change(state) {
+    this._update_icon_state(state.muted, 'camera');
+  }
+
+  _event_on_filmstrip_state_changed(state) {
+    state = state.visible;
+    return state;
+  }
+
+  _event_on_chat_updated(state) {
+    this._update_icon_state(!state.isOpen, 'chat', (icon, disabled, button) => {
+      if (state.unreadCount > 0) {
+        icon = disabled
+          ? button.$item.attr('data-has-unread-disabled-icon')
+          : button.$item.attr('has-unread-icon');
+      }
+
+      return icon;
+    });
+  }
+
+  _event_on_tileview_updated(state) {
+    this._update_icon_state(!state.enabled, 'moz');
+  }
+
+  async _event_on_raise_hand_updated(state) {
+    const id = await this.jitsii.get_user_id();
+
+    if (state.id === id)
+      this._update_icon_state(state.handRaised === 0, 'handup');
+  }
+
+  _event_on_share_screen_status_changed(data) {
+    this._update_icon_state(!data.on, 'share_screen');
+  }
+
+  _update_icon_state(disabled, button_id, callback_icon_ex = null) {
+    const button = this.toolbar.get_button(button_id);
+
+    if (button.$item.attr('data-disabled-icon')) {
+      if (!(button.$item.attr('data-default-icon') || false))
+        button.$item.attr(
+          'data-default-icon',
+          button.$item.children().first().text(),
+        );
+
+      const icon = !disabled
+        ? button.$item.attr('data-default-icon')
+        : button.$item.attr('data-disabled-icon');
+
+      button.$item
+        .children()
+        .first()
+        .text(
+          callback_icon_ex
+            ? callback_icon_ex(icon, disabled, button, this)
+            : icon,
+        );
+    }
+
+    const state_active = !disabled;
+    this.toolbar.updateToolbarStateFromButton(state_active, button);
   }
 }

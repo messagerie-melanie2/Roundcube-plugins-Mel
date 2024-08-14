@@ -6169,6 +6169,16 @@ iframe {
         &:extend(.mel-nav-toolbar .toolbar-button:hover);
         border-color: var(--mel-button-border-color);
       }
+
+      &.state-active {
+        background-color: var(--mel-button-hover-background-color);
+        color: var(--mel-button-hover-text-color);
+
+        &:hover {
+          background-color: var(--mel-button-background-color);
+          color: var(--mel-button-text-color);
+        }
+      }
     }
 
     .btn-group {
@@ -6197,6 +6207,20 @@ iframe {
             }
           }
         }
+      }
+    }
+  }
+
+  &.white-toolbar {
+    background-color: var(--bureau-card-background-color);
+    color: var(--bureau-card-text-color);
+
+    .toolbar-button {
+      color: var(--bureau-card-text-color);
+
+      &:hover {
+        background-color: var(--mel-button-hover-background-color);
+        color: var(--mel-button-text-color);
       }
     }
   }

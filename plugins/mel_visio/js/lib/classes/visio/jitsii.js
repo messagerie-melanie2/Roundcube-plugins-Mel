@@ -1,15 +1,17 @@
-import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum';
-import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants';
-import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events';
+import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.js';
+import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
+import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events.js';
+import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
 
 export { JitsiAdaptor };
 
 class JitsiAdaptor {
   constructor(jitsi) {
     this._jitsi = jitsi;
+    this._password = null;
 
     this.on_video_mute_status_changed = new BnumEvent();
-    this.on_audio_mute_status_cnhaged = new BnumEvent();
+    this.on_audio_mute_status_changed = new BnumEvent();
     this.on_film_strip_display_changed = new BnumEvent();
     this.on_mouse_move = new BnumEvent();
     this.on_chat_updated = new BnumEvent();
@@ -18,6 +20,22 @@ class JitsiAdaptor {
     this.on_ready_to_close = new BnumEvent();
     this.on_password_required = new BnumEvent();
     this.on_video_conference_joined = new BnumEvent();
+    this.on_raise_hand_updated = new BnumEvent();
+    this.on_share_screen_status_changed = new BnumEvent();
+
+    this._init_listeners();
+  }
+
+  has_password() {
+    return !!(this._password || false);
+  }
+
+  async get_user_id() {
+    await Mel_Promise.wait(
+      () => !!this._jitsi._myUserID && this._jitsi._myUserID !== EMPTY_STRING,
+    );
+
+    return this._jitsi._myUserID;
   }
 
   change_avatar(url) {
@@ -28,16 +46,42 @@ class JitsiAdaptor {
     this._jitsi.executeCommand('sendChatMessage', text, EMPTY_STRING, true);
   }
 
-  set_password(password) {
-    this._jitsi.executeCommand('password', password);
+  async get_role() {
+    var user;
+    const [id, rooms] = (
+      await Promise.allSettled([this.get_user_id(), this.get_rooms_info()])
+    ).map((x) => x.value);
+
+    for (const room of rooms.rooms) {
+      for (const participant of room.participants) {
+        if (participant.id === id) {
+          user = participant;
+          break;
+        }
+      }
+
+      if (user) break;
+    }
+
+    return user?.role;
+  }
+
+  async is_moderator() {
+    return (await this.get_role()) === 'moderator';
+  }
+
+  async set_password(password) {
+    if (await this.is_moderator()) {
+      this._jitsi.executeCommand('password', password);
+
+      if (password === EMPTY_STRING) password = null;
+
+      this._password = password;
+    }
   }
 
   async get_rooms_info() {
     return await this._jitsi.getRoomsInfo();
-  }
-
-  get_user_id() {
-    return this._jitsi._myUserID;
   }
 
   async is_video_muted() {
@@ -191,6 +235,19 @@ class JitsiAdaptor {
     return devices;
   }
 
+  show_notification(
+    content,
+    { uid = undefined, type = 'info', timeout = 'short' },
+  ) {
+    this._jitsi.executeCommand('showNotification', {
+      title: content,
+      content,
+      uid,
+      type,
+      timeout,
+    });
+  }
+
   resize_film_strip(new_size) {
     this._jitsi.executeCommand('resizeFilmStrip', {
       width: new_size,
@@ -199,5 +256,26 @@ class JitsiAdaptor {
 
   hangup() {
     this._jitsi.executeCommand('hangup');
+  }
+
+  _init_listeners() {
+    return this._add_listener(
+      'videoMuteStatusChanged',
+      'on_video_mute_status_changed',
+    )
+      ._add_listener('audioMuteStatusChanged', 'on_audio_mute_status_changed')
+      ._add_listener('filmstripDisplayChanged', 'on_film_strip_display_changed')
+      ._add_listener('chatUpdated', 'on_chat_updated')
+      ._add_listener('tileViewChanged', 'on_tile_view_updated')
+      ._add_listener('raiseHandUpdated', 'on_raise_hand_updated')
+      ._add_listener(
+        'screenSharingStatusChanged',
+        'on_share_screen_status_changed',
+      );
+  }
+
+  _add_listener(name, prop) {
+    this._jitsi.addEventListener(name, this[prop].call.bind(this[prop]));
+    return this;
   }
 }

@@ -1547,6 +1547,17 @@ public function get_image($post_id) {
     }
 }
 
+/**
+ * Récupère toutes les images associées à une publication.
+ *
+ * Cette fonction instancie un objet Post et utilise la méthode `listImages()`
+ * pour récupérer les images associées au post identifié par `$post_id`.
+ * Elle retourne un tableau contenant les données de toutes les images ou un
+ * tableau vide si aucune image n'est trouvée.
+ *
+ * @param string $post_id L'identifiant de la publication pour laquelle les images doivent être récupérées.
+ * @return array Un tableau contenant les données des images associées à la publication, ou un tableau vide si aucune image n'est trouvée.
+ */
 public function get_images($post_id) {
     // Instancier un objet Post pour utiliser la méthode listImages()
     $post = new LibMelanie\Api\Defaut\Posts\Post();

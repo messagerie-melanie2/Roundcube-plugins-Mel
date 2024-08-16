@@ -8,6 +8,16 @@ class PostComment {
     this._init()._setup(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment)
   }
 
+  /**
+ * Initialise un objet avec des valeurs par défaut.
+ *
+ * Cette fonction réinitialise toutes les propriétés de l'objet, telles que
+ * `uid`, `post_id`, `user_id`, `user_name`, `content`, `created`, `like`, 
+ * `dislike`, et `child_comment` à des chaînes de caractères vides.
+ * Elle retourne l'objet lui-même après l'initialisation.
+ *
+ * @return {Object} L'objet initialisé avec des valeurs par défaut.
+ */
   _init() {
     this.uid = '';
     this.post_id = '';
@@ -23,6 +33,25 @@ class PostComment {
 
   }
 
+  /**
+ * Configure les propriétés de l'objet avec les valeurs spécifiées.
+ *
+ * Cette fonction utilise `Object.defineProperties` pour définir les propriétés
+ * `uid`, `post_id`, `user_id`, `user_name`, `content`, `created`, `like`, 
+ * `dislike`, et `child_comment` de l'objet. Chaque propriété a un getter qui 
+ * retourne la valeur initiale passée en paramètre, et un setter qui permet 
+ * de mettre à jour cette valeur.
+ *
+ * @param {string} uid - L'identifiant unique de l'objet.
+ * @param {string} post_id - L'identifiant du post associé.
+ * @param {string} user_id - L'identifiant de l'utilisateur.
+ * @param {string} user_name - Le nom de l'utilisateur.
+ * @param {string} content - Le contenu du commentaire ou du post.
+ * @param {string} created - La date de création.
+ * @param {string} like - Le nombre de likes.
+ * @param {string} dislike - Le nombre de dislikes.
+ * @param {string} child_comment - Le nombre de sous-commentaires.
+ */
   _setup(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment) {
     Object.defineProperties(this, {
 
@@ -118,6 +147,17 @@ class PostComment {
     })
   }
 
+  /**
+ * Génère le code HTML pour afficher un commentaire avec ses réactions.
+ *
+ * Cette fonction crée un ensemble d'éléments HTML représentant un commentaire,
+ * avec le profil de l'utilisateur, le contenu du commentaire, les réactions
+ * (likes, dislikes, réponses), ainsi que des éléments supplémentaires comme
+ * la date de création et le nombre de réponses. Le HTML est construit en 
+ * utilisant une syntaxe fluide pour faciliter la lecture et l'écriture.
+ *
+ * @returns {string} - Le code HTML généré sous forme de chaîne de caractères.
+ */
   generateHtml() {
     let html = MelHtml.start
       .div({ 
@@ -199,6 +239,14 @@ class PostCommentView {
     this._init()._setup(post_id)
   }
 
+  /**
+ * Initialise l'objet avec l'identifiant du post.
+ *
+ * Cette fonction affecte la valeur de `post_id` à la propriété `post_id` de l'objet.
+ * Elle retourne ensuite l'objet lui-même après l'initialisation.
+ *
+ * @returns {Object} - L'objet initialisé avec la valeur de `post_id`.
+ */
   _init() {
     this.post_id = this.post_id;
 
@@ -206,6 +254,15 @@ class PostCommentView {
 
   }
 
+  /**
+ * Configure la propriété `post_id` de l'objet avec les valeurs spécifiées.
+ *
+ * Cette fonction utilise `Object.defineProperties` pour définir la propriété 
+ * `post_id` de l'objet. La propriété a un getter qui retourne la valeur passée 
+ * en paramètre, et un setter qui permet de mettre à jour cette valeur.
+ *
+ * @param {string} post_id - L'identifiant du post à configurer.
+ */
   _setup(post_id) {
     Object.defineProperties(this, {
 
@@ -221,6 +278,17 @@ class PostCommentView {
     });
   }
 
+  /**
+ * Récupère les commentaires associés à un post spécifique.
+ *
+ * Cette fonction envoie une requête asynchrone pour obtenir tous les commentaires
+ * liés à l'identifiant du post spécifié. Elle utilise une fonction `post` pour
+ * envoyer la requête et reçoit les données au format JSON. Les données sont ensuite
+ * analysées et retournées par la fonction.
+ *
+ * @returns {Promise<Object>} - Une promesse qui se résout avec les données des commentaires
+ *                              obtenues en réponse à la requête.
+ */
   async getCommentByPost() {
     // BnumMessage.SetBusyLoading();
     let return_data;

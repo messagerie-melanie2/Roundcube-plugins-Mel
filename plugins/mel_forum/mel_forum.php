@@ -64,7 +64,7 @@ function init()
         $this->register_action('test_update_comment', array($this, 'test_update_comment'));
         $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
         $this->register_action('test_like_comment', array($this, 'test_like_comment'));
-        // $this->register_action('test_get_all_comments_bypost', array($this, 'test_get_all_comments_bypost'));
+        $this->register_action('test_get_all_comments_bypost', array($this, 'test_get_all_comments_bypost'));
         $this->register_action('test_count_comments', array($this, 'test_count_comments'));
         $this->register_action('test_delete_like', array($this, 'test_delete_like'));
         $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
@@ -80,40 +80,40 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'post']);
+        $this->register_action('index', [$this, 'index']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Récupérer le User Connecté
-        // $this->register_action('check_user', array($this, 'check_user'));
-        // //Ajouter une réaction
-        // $this->register_action('add_reaction', array($this, 'add_reaction'));
-        // // Supprimer une réaction
-        // $this->register_action('delete_reaction', array($this, 'delete_reaction'));
-        // // Lister les Réactions d'un Post
-        // $this->register_action('get_all_reactions_bypost', array($this, 'get_all_reactions_bypost'));
-        // // Compter le nombre de réactions pour un Post
-        // $this->register_action('count_reactions', array($this, 'count_reactions'));
-        // // Créer un article
-        // $this->register_action('create_post', array($this, 'create_post'));
-        // //modifier un article
-        // $this->register_action('update_post', array($this, 'update_post'));
-        // //supprimer un article
-        // $this->register_action('delete_post', array($this, 'delete_post'));
-        // // récupérer un  article
-        // $this->register_action('get_post', array($this, 'get_post'));
-        // // récupérer tous les articles
-        // $this->register_action('get_all_posts_byworkspace', array($this, 'get_all_posts_byworkspace'));
-        // // Ajouter un commentaire ou une réponse
-        // $this->register_action('create_comment', array($this, 'create_comment'));
-        // // Répondre à un commentaire ou une réponse
-        // $this->register_action('reply_comment', array($this, 'reply_comment'));
-        // // Modifier un commentaire ou une réponse
-        // $this->register_action('update_comment', array($this, 'update_comment'));
-        // // Supprimer un commentaire ou une réponse
-        // $this->register_action('delete_comment', array($this, 'delete_comment'));
-        // // Liker un commentaire ou une réponse
-        // $this->register_action('like_comment', array($this, 'like_comment'));
-        // Lister les comments d'un Post
+        $this->register_action('check_user', array($this, 'check_user'));
+        //Ajouter une réaction
+        $this->register_action('add_reaction', array($this, 'add_reaction'));
+        // Supprimer une réaction
+        $this->register_action('delete_reaction', array($this, 'delete_reaction'));
+        // Lister les Réactions d'un Post
+        $this->register_action('get_all_reactions_bypost', array($this, 'get_all_reactions_bypost'));
+        // Compter le nombre de réactions pour un Post
+        $this->register_action('count_reactions', array($this, 'count_reactions'));
+        // Créer un article
+        $this->register_action('add_post', array($this, 'add_post'));
+        //modifier un article
+        $this->register_action('update_post', array($this, 'update_post'));
+        //supprimer un article
+        $this->register_action('delete_post', array($this, 'delete_post'));
+        // récupérer un  article
+        $this->register_action('get_post', array($this, 'get_post'));
+        // récupérer tous les articles
+        $this->register_action('get_all_posts_byworkspace', array($this, 'get_all_posts_byworkspace'));
+        // Ajouter un commentaire ou une réponse
+        $this->register_action('create_comment', array($this, 'create_comment'));
+        // Répondre à un commentaire ou une réponse
+        $this->register_action('reply_comment', array($this, 'reply_comment'));
+        // Modifier un commentaire ou une réponse
+        $this->register_action('update_comment', array($this, 'update_comment'));
+        // Supprimer un commentaire ou une réponse
+        $this->register_action('delete_comment', array($this, 'delete_comment'));
+        // Liker un commentaire ou une réponse
+        $this->register_action('like_comment', array($this, 'like_comment'));
+        //Lister les comments d'un Post
         $this->register_action('get_all_comments_bypost', [$this, 'get_all_comments_bypost']);
         // Compter le nombre de commentaires pour un Post
         $this->register_action('count_comment', array($this, 'count_comment'));
@@ -281,6 +281,12 @@ public function show_post_date(){
     return $content;
 }
 
+public function create_or_edit_post() {
+    $this->rc()->output->add_handlers(array('add_post' => array($this, 'create_post')));
+    
+    $this->rc()->output->send('mel_forum.create-post');
+}
+
 /**
      * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
      *
@@ -414,7 +420,7 @@ function check_user()
  *
  * @return void
  */
-public function create_post()
+public function add_post()
 {
     //récupérer le Workspace
     $workspace = driver_mel::gi()->workspace();
@@ -1541,6 +1547,27 @@ public function get_image($post_id) {
     }
 }
 
+public function get_images($post_id) {
+    // Instancier un objet Post pour utiliser la méthode listImages()
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->post_id = $post_id; // Associer le post_id à l'objet Post
+
+    // Récupérer toutes les images associées à ce post
+    $images = $post->listImages(); // Utiliser listImages() pour récupérer la liste des images
+
+    // Vérifier si des images ont été trouvées
+    if (!empty($images)) {
+        $image_data_list = [];
+        foreach ($images as $image) {
+            $image_data_list[] = $image->image_data; // Ajouter les données de chaque image à la liste
+        }
+        return $image_data_list; // Retourner un tableau contenant les données de toutes les images
+    } else {
+        return []; // Retourner un tableau vide si aucune image n'est trouvée
+    }
+}
+
+
 /**
  * Affiche une liste de publications avec leurs détails formatés en HTML.
  *
@@ -1575,17 +1602,15 @@ public function show_posts($posts) {
         $html_post_copy = str_replace("<post-title/>", htmlspecialchars($post->title), $html_post_copy);
         $html_post_copy = str_replace("<post-summary/>", htmlspecialchars($post->summary), $html_post_copy);
 
-        // Récupérer l'image associée au post
-        $image_link = $this->get_image($post->post_id);
+        // Récupérer la première image associée au post
+        $images = $this->get_images($post->post_id);
         
-        // Ajouter le lien de l'image
-        if (!empty($image_link)) {
-            $image_tag = '<img src="' . htmlspecialchars($image_link) . '" alt="Image illustrant l\'article" />';
-            $html_post_copy = str_replace("<post-image/>", $image_tag, $html_post_copy);
-        } else {
-            // Si pas d'image, remplacer par un placeholder ou rien
-            $html_post_copy = str_replace("<post-image/>", '', $html_post_copy);
+        // Ajouter uniquement la première image au HTML, s'il y en a
+        $image_html = '';
+        if (!empty($images)) {
+            $image_html = '<img src="' . htmlspecialchars($images[0]) . '" alt="Image illustrant l\'article" />';
         }
+        $html_post_copy = str_replace("<post-image/>", $image_html, $html_post_copy);
 
         // Récupérer les tags associés au post
         $tags = $this->get_all_tags_bypost($post->uid);

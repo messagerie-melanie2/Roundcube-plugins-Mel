@@ -254,6 +254,11 @@ class JitsiAdaptor {
     });
   }
 
+  get_frame({ jquery = true }) {
+    let frame = this._jitsi.getIFrame();
+    return jquery ? $(frame) : frame;
+  }
+
   hangup() {
     this._jitsi.executeCommand('hangup');
   }

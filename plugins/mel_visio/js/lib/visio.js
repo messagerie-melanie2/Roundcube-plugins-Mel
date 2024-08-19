@@ -338,6 +338,9 @@ class Visio extends MelObject {
           : button.$item.attr('has-unread-icon');
       }
 
+      if (state.isOpen) this.jitsii.get_frame({ jquery: false }).focus();
+      else this.toolbar.get_button('chat').$item.focus();
+
       return icon;
     });
   }
@@ -383,5 +386,7 @@ class Visio extends MelObject {
 
     const state_active = !disabled;
     this.toolbar.updateToolbarStateFromButton(state_active, button);
+
+    return state_active;
   }
 }

@@ -23,6 +23,7 @@ $labels["a_document"] = "Un document";
 $labels["a_wordpad"] = "Une note";
 $labels["a_survey"] = "Un sondage Pégase";
 
+
 $labels["h_general"] = "Aide générale";
 $labels["h_video"] = "Voir les vidéos";
 $labels["h_suggestion"] = "Proposer une amélioration";
@@ -488,3 +489,4 @@ $labels['delete'] = 'Supprimer';
 
 $labels['external_user_name'] = "Utilisateur externe au Bnum";
 $labels['external_user_title'] = "Cet utilisateur n'a pas encore été créé dans le Bnum. À la création de l'espace, il recevra un courriel pour initialiser son compte.";
+$labels['pad'] = 'Pad';

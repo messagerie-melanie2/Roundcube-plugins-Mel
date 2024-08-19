@@ -66,6 +66,13 @@ class ChannelPart extends ACheckBox {
       if (rcmail.env['visio.has_channel'] !== true) {
         $(SELECTOR_DIV_CHANNEL).remove();
         this._p_$checkbox.prop('checked', true);
+        $(SELECTOR_DIV_WSP)
+          .css('display', EMPTY_STRING)
+          .find('.title-conf-item')
+          .text('Attacher à un espace de travail ?')
+          .parent()
+          .find('select')
+          .prepend('<option value="" selected>Ne pas attacher</option>');
       }
 
       if (rcmail.env['visio.has_wsp'] !== true) {

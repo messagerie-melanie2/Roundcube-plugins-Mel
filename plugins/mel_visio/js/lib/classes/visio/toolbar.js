@@ -1,3 +1,4 @@
+import { FramesManager } from '../../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import {
   MelDialog,
   RcmailDialogButton,
@@ -72,6 +73,17 @@ class ToolbarFunctions {
    */
   static Moz(visio) {
     visio.jitsii.toggle_film_strip();
+  }
+
+  Document(visio) {
+    const url = `/apps/files?dir=/dossiers-${visio.data.wsp}`;
+
+    FramesManager.Instance.switch_frame('stockage', {
+      changepage: true,
+      args: {
+        _params: url,
+      },
+    });
   }
 
   /**

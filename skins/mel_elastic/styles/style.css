@@ -4576,6 +4576,9 @@ iframe.mm-frame {
   padding: 0;
   min-width: unset;
 }
+.mel-nav-toolbar ul .btn-group.toolbar-button-group .mel-button[data-mef='true'] {
+  padding: 5px !important;
+}
 .mel-nav-toolbar.white-toolbar {
   background-color: var(--bureau-card-background-color);
   color: var(--bureau-card-text-color);

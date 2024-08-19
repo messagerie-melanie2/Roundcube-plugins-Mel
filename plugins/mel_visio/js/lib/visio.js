@@ -10,6 +10,7 @@ import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/Internet
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { capitalize } from '../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { Drive } from '../../../mel_metapage/js/lib/nextcloud/drive.js';
 import { JitsiAdaptor } from './classes/visio/jitsii.js';
 import { VisioLoader } from './classes/visio/loader.js';
 import { ToolbarFunctions, VisioToolbar } from './classes/visio/toolbar.js';
@@ -50,6 +51,8 @@ class Visio extends MelObject {
 
     this._token = null;
 
+    this._pad_promise = null;
+
     return this;
   }
 
@@ -80,6 +83,14 @@ class Visio extends MelObject {
     if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
       FramesManager.Instance.start_mode('reinit_visio');
     } else {
+      if (this.data.wsp) {
+        debugger;
+        this._pad_promise = Drive.Instance.get(
+          'pad',
+          `/dossiers-${this.data.wsp}`,
+        );
+      }
+
       const domain = rcmail.env['webconf.base_url']
         .replace('http://', '')
         .replace('https://', '');
@@ -167,6 +178,8 @@ class Visio extends MelObject {
       this.loader.update_text('Chargement de la visioconférence...');
 
       this.jitsii = new JitsiAdaptor(new JitsiMeetExternalAPI(domain, options));
+
+      await this._pad_promise;
     }
   }
 
@@ -191,6 +204,11 @@ class Visio extends MelObject {
             toolbar.remove_item(element.id);
             continue;
           }
+          break;
+
+        case 'document':
+        case 'pad':
+          if (!this.data.wsp) toolbar.remove_item(element.id);
           break;
 
         default:

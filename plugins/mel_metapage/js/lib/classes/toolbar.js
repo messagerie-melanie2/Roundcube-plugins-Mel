@@ -186,7 +186,7 @@ class MultipleButtonToolbarItem extends ToolbarItem {
     let entity = MelHtml.start.btn_group({ class: 'toolbar-button-group' })
                           .add_child(base)
                           .each((self, item) => {
-                            return self.add_child(ToolbarItem.Generate(item));
+                            return self.add_child(ToolbarItem.Generate(item, item.attribs));
                           }, ...this._others_buttons)
                         .end();
 

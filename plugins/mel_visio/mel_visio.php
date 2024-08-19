@@ -86,7 +86,7 @@ class mel_visio extends bnum_plugin
             $this->add_handler("inputroom", [$this, "get_room_input"]);
         }
 
-        if (class_exists('rocket_chat')) {
+        if (false && class_exists('rocket_chat')) {
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
             $this->rc()->output->set_env('visio.has_channel', true);
         }

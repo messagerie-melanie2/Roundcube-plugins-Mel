@@ -9,7 +9,7 @@ export class Manager extends MelObject {
 
   main() {
     super.main();
-    
+     debugger;
     this.displayComments();
 
       // allComments.forEach(element => {
@@ -26,25 +26,29 @@ export class Manager extends MelObject {
   async displayComments() {
     let PostCommentManager = new PostCommentView('ndWtChyQ4IwabbWjWwlM7Qo9');
     let allComments = await PostCommentManager.getCommentByPost();
-    for (const comment in allComments) {
-      commentVizualizer = new PostComment(
-        comment.uid,
-        comment.post_id,
-        comment.user_id,
-        comment.user_name,
-        comment.content,
-        comment.created,
-        comment.like,
-        comment.dislike,
-        comment.child_comment,
-      );
-      commentVizualizer.generateHtml().appendTo('.comments-items');
+    let comments_array = [];
+
+    for (const key in allComments) {
+        if (allComments.hasOwnProperty(key)) {
+            const comment = allComments[key];
+            var commentVizualizer = new PostComment(
+                comment.uid,
+                comment.post_id,
+                comment.user_id,
+                comment.user_name,
+                comment.content,
+                comment.created,
+                comment.like,
+                comment.dislike,
+                comment.child_comment,
+            );
+            commentVizualizer.generateHtml().appendTo($('#comment-area'));
+            comments_array.push(commentVizualizer);
+        }
     }
-    comments_array.push(commentVizualizer);
 
     console.log(allComments);
-    
-  }
+}
 
 
   /**

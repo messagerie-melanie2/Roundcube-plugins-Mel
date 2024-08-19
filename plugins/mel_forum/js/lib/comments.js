@@ -1,4 +1,4 @@
-import { text } from "body-parser";
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 
 export {PostComment, PostCommentView}
 
@@ -29,6 +29,8 @@ class PostComment {
     this.dislike = '';
     this.child_comment = '';
 
+  
+
     return this;
 
   }
@@ -53,99 +55,18 @@ class PostComment {
  * @param {string} child_comment - Le nombre de sous-commentaires.
  */
   _setup(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment) {
-    Object.defineProperties(this, {
 
-      uid: {
-        get() {
-          return uid;
-        },
-
-        set: (value) => {
-          this.uid = value;
-        }
-      },
-
-      post_id: {
-        get() {
-          return post_id;
-        },
-
-        set: (value) => {
-          this.post_id = value;
-        }
-      },
-
-      user_id: {
-        get() {
-          return user_id;
-        },
-
-        set: (value) => {
-          this.user_id = value;
-        }
-      },
-
-      user_name: {
-        get() {
-          return user_name;
-        },
-
-        set: (value) => {
-          this.user_name = value;
-        }
-      },
-
-      content: {
-        get() {
-          return content;
-        },
-
-        set: (value) => {
-          this.content = value;
-        }
-      },
-
-      created: {
-        get() {
-          return created;
-        },
-
-        set: (value) => {
-          this.created = value;
-        }
-      },
-
-      like: {
-        get() {
-          return like;
-        },
-
-        set: (value) => {
-          this.like = value;
-        }
-      },
-
-      dislike: {
-        get() {
-          return dislike;
-        },
-
-        set: (value) => {
-          this.dislike = value;
-        }
-      },
-
-      child_comment: {
-        get() {
-          return child_comment;
-        },
-
-        set: (value) => {
-          this.child_comment = value;
-        }
-      },
-    })
+          this.uid = uid;
+          this.post_id = post_id;
+          this.user_id = user_id;
+          this.user_name = user_name;
+          this.content = content;
+          this.created = created;
+          this.like = like;
+          this.dislike = dislike;
+          this.child_comment = child_comment;
   }
+  
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions.
@@ -159,15 +80,25 @@ class PostComment {
  * @returns {string} - Le code HTML généré sous forme de chaîne de caractères.
  */
   generateHtml() {
+    console.log("UID:", this.uid);
+    console.log("PostID:", this.post_id);
+    console.log("UserID:", this.user_id);
+    console.log("UserName:", this.user_name);
+    console.log("Content:", this.content);
+    console.log("Created:", this.created);
+    console.log("Like:", this.like);
+    console.log("Dislike:", this.dislike);
+    console.log("Child:", this.child_comment);
+    //prettier-ignore
     let html = MelHtml.start
       .div({ 
-        id: 'comment_id-' + this.uid,
+        id: 'comment-id-' + this.uid,
         class: 'row comment'
        })
-      .div({ class: 'col-12' })
+        .div({ class: 'col-12' })
       .div({ class: 'd-flex align-items-center' })
       .img({
-        src: 'this.##',
+        src: '',
         alt: 'Image de profil',
         class: 'forum-comment-profile-image'
        })
@@ -175,9 +106,9 @@ class PostComment {
        .text(this.user_name)
        .end('span')
        .div({ class: 'forum-comment-date d-flex align-items-end' })
-       .i({ class: 'material-symbols-outlined' })
+       .span({ class: 'material-symbols-outlined' })
        .text('access_time')
-       .end('i')
+       .end('span')
        .span({ class: 'ml-1' })
        .text(this.created)
        .end('span')
@@ -189,41 +120,41 @@ class PostComment {
        .end('div')
        .div({ class: 'forum-comment-reactions' })
        .div({ class: 'reaction-item active mr-3' })
-       .i({ class: 'material-symbols-outlined' })
+       .span({ class: 'material-symbols-outlined' })
        .text('thumb-up')
-       .end('i')
+       .end('span')
        .span({ class: 'ml-2' })
        .text(this.like)
        .end('span')
        .end('div')
        .div({ class: 'reaction-item mr-3' })
-       .i({ class: 'material-symbols-outlined' })
+       .span({ class: 'material-symbols-outlined' })
        .text('thumb-down')
-       .end('i')
+       .end('span')
        .span({ class: 'ml-2' })
        .text(this.dislike)
        .end('span')
        .end('div')
        .div({ class: 'reaction-item mr-3 response' })
-       .i({ class: 'material-symbols-outlined' })
+       .span({ class: 'material-symbols-outlined' })
        .text('mode_comment')
-       .end('i')
+       .end('span')
        .span({ class: 'ml-2' })
        .text('répondre')
        .end('span')
        .end('div')
        .div({ class: 'reaction-item' })
-       .i({ class: 'material-symbols-outlined' })
+       .span({ class: 'material-symbols-outlined' })
        .text('more_horiz')
-       .end('i')
+       .end('span')
        .end('div')
        .end('div')
        .div({ class: 'forum-comment-responses' })
-       .i({ class: 'material-symbols-outlined' })
+       .span({ class: 'material-symbols-outlined' })
        .text('arrow_drop_down')
-       .end('i')
+       .end('span')
        .span({ class: 'ml-2' })
-       .text(this.nb_reponse)
+       .text(this.nb_response)
        .end('span')
        .end('div')
        .end('div')
@@ -264,19 +195,10 @@ class PostCommentView {
  * @param {string} post_id - L'identifiant du post à configurer.
  */
   _setup(post_id) {
-    Object.defineProperties(this, {
-
-      post_id: {
-        get() {
-          return post_id;
-        },
-
-        set: (value) => {
-          this.post_id = value;
+    
+          this.post_id = post_id;
         }
-      }
-    });
-  }
+ 
 
   /**
  * Récupère les commentaires associés à un post spécifique.

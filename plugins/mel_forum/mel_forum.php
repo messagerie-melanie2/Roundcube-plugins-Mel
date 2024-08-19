@@ -80,9 +80,11 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'index']);
+        $this->register_action('index', [$this, 'post']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
+        // Affichage de la page qui permet de créer un article
+        $this->register_action('create_or_edit_post', [$this, 'create_or_edit_post']);
         // Récupérer le User Connecté
         $this->register_action('check_user', array($this, 'check_user'));
         //Ajouter une réaction
@@ -173,6 +175,7 @@ public function index(){
  */
 public function post(){
     $this->load_script_module('manager');
+    
     //Récupérér uid avec GET
     $uid = 'VOszRaUI1dQRuQGs2NzKiKZ0';
     $this->current_post = $this->get_post($uid);
@@ -282,7 +285,7 @@ public function show_post_date(){
 }
 
 public function create_or_edit_post() {
-    $this->rc()->output->add_handlers(array('add_post' => array($this, 'create_post')));
+    $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
     
     $this->rc()->output->send('mel_forum.create-post');
 }
@@ -1444,25 +1447,16 @@ public function get_all_reactions_bypost()
 /**
  * Compte le nombre de réactions pour un article donné.
  *
- * Cette fonction récupère l'identifiant de l'article depuis la requête POST,
- * valide l'identifiant, charge l'article correspondant, et obtient le nombre
- * de réactions pour cet article. Le résultat est renvoyé sous forme de JSON.
+ * Cette fonction récupère l'uid de l'article,
+ * charge l'article correspondant, et obtient le nombre
+ * de réactions pour cet article. Le résultat est retourné.
  *
  * @return void
  *
  * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
  */
-public function count_reactions()
+public function count_reactions($uid)
 {
-    // Récupérer la valeur du champ POST
-    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-
-    // Validation de la donnée saisie
-    if (empty($uid)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
-        exit;
-    }
-
     // Récupérer l'article existant
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
@@ -1476,12 +1470,7 @@ public function count_reactions()
     // Obtenir le nombre de commentaires
     $reactionCount = $post->countReactions();
 
-    // Vérifier si la méthode retourne un résultat valide
-    if ($reactionCount !== false) {
-        echo json_encode(['status' => 'success', 'message' => "Nombre de réactions : $reactionCount"]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Impossible de récupérer le nombre de réactions.']);
-    }
+    return $reactionCount;
 
     // Arrêt de l'exécution du script
     exit;
@@ -1584,7 +1573,7 @@ public function get_images($post_id) {
  *
  * Cette fonction récupère toutes les publications d'un espace de travail, 
  * formate chaque publication avec ses détails (créateur, date, titre, résumé, image, tags, 
- * et nombre de commentaires) et génère le HTML correspondant.
+ * et nombre de réactions et commentaires) et génère le HTML correspondant.
  *
  * @param array $posts Liste des publications à afficher.
  * @return string Le HTML formaté contenant toutes les publications.
@@ -1634,6 +1623,12 @@ public function show_posts($posts) {
 
         // Ajoute les tags au HTML du post
         $html_post_copy = str_replace("<post-tag/>", $tags_html, $html_post_copy);
+
+        // Récupérer le nombre de réaction
+        $reaction_count = $this->count_reactions($post->uid);
+
+        // Ajoute le nombre de réaction au HTML du post
+        $html_post_copy = str_replace("<post-count-reactions/>", $reaction_count, $html_post_copy);
 
         // Récupérer le nombre de commentaire
         $comment_count = $this->count_comments($post->id);

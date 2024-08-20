@@ -63,17 +63,12 @@ class mel_visio extends bnum_plugin
             return $this->page_index();
         }
         else {
-            $page = $this->data->has_room() ? '\'visio\'' : 'null';
+            $page = $this->data->has_room() ? 'visio' : null;
             
             $this->rc()->output->set_env('visio.data', $this->data->serialize());
-            
-            $this->api->output->add_script("
-                (async () => {
-                    const {FramesManager} = await loadJsModule('mel_metapage', 'frame_manager', '/js/lib/classes/');
-                    
-                    FramesManager.Instance.start_mode('visio', $page);
-                })();
-            ", 'docready');
+            $this->rc()->output->set_env('visio.init.page', $page);
+
+            $this->include_script('js/caller.js');
 
             $this->rc()->output->send('mel_metapage.empty');
         }

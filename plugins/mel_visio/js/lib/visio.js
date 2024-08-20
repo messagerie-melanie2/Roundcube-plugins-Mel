@@ -2,15 +2,17 @@ import {
   BnumMessage,
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { MelPopover } from '../../../mel_metapage/js/lib/classes/mel_popover.js';
 import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/InternetNavigator.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { capitalize } from '../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
-import { Drive } from '../../../mel_metapage/js/lib/nextcloud/drive.js';
+//import { Drive } from '../../../mel_metapage/js/lib/nextcloud/drive.js';
 import { JitsiAdaptor } from './classes/visio/jitsii.js';
 import { VisioLoader } from './classes/visio/loader.js';
 import { ToolbarFunctions, VisioToolbar } from './classes/visio/toolbar.js';
@@ -83,13 +85,12 @@ class Visio extends MelObject {
     if (!VisioFunctions.CheckKeyIsValid(this.data.room)) {
       FramesManager.Instance.start_mode('reinit_visio');
     } else {
-      if (this.data.wsp) {
-        debugger;
-        this._pad_promise = Drive.Instance.get(
-          'pad',
-          `/dossiers-${this.data.wsp}`,
-        );
-      }
+      // if (this.data.wsp) {
+      //   this._pad_promise = Drive.Instance.get(
+      //     'pad',
+      //     `/dossiers-${this.data.wsp}`,
+      //   );
+      // }
 
       const domain = rcmail.env['webconf.base_url']
         .replace('http://', '')
@@ -107,6 +108,14 @@ class Visio extends MelObject {
         );
         console.error(token);
         return;
+      }
+
+      {
+        const use_top = true;
+        FramesManager.Helper.window_object.UpdateNavUrl(
+          this.get_visio_url(),
+          use_top,
+        );
       }
 
       let user = null;
@@ -183,6 +192,18 @@ class Visio extends MelObject {
     }
   }
 
+  get_visio_url() {
+    const params = {
+      _key: this.data.room,
+    };
+
+    if (this.data.wsp) params['_wsp'] = this.data.wsp;
+
+    return this.url('webconf', {
+      params,
+    }).replace('&_is_from=iframe', EMPTY_STRING);
+  }
+
   async _get_jwt() {
     let params = VisioConnectors.jwt.needed;
     params._room = this.data.room;
@@ -198,6 +219,11 @@ class Visio extends MelObject {
     this.rcmail().env['visio.toolbar'] = null;
 
     for (let element of toolbar) {
+      if (element.attribs['data-inactive']) {
+        toolbar.remove_item(element.id);
+        continue;
+      }
+
       switch (element.id) {
         case 'share_screen':
           if (InternetNavigator.IsFirefox()) {
@@ -206,7 +232,7 @@ class Visio extends MelObject {
           }
           break;
 
-        case 'document':
+        case 'documents':
         case 'pad':
           if (!this.data.wsp) toolbar.remove_item(element.id);
           break;
@@ -217,6 +243,20 @@ class Visio extends MelObject {
 
       if (element.get) {
         for (let sub_element of element) {
+          if (sub_element.attribs['data-inactive']) {
+            element.remove_button(sub_element.id);
+
+            if (
+              MelEnumerable.from(element)
+                .where((x) => !x.attribs.removed)
+                .count() === 1
+            ) {
+              element.attribs['data-solo'] = true;
+            }
+
+            continue;
+          }
+
           if (ToolbarFunctions[capitalize(sub_element.id.replace('-', '_'))])
             sub_element.add_action(
               ToolbarFunctions[

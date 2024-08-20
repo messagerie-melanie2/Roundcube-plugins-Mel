@@ -74,9 +74,9 @@ class VisioCreator extends MelObject {
 
     if (this.locks.password) this.view.password.disable();
 
-    $(SELECTOR_DIV_WSP).find('select').val('test-9');
+    //$(SELECTOR_DIV_WSP).find('select').val('test-9');
 
-    $(SELECTOR_BUTTON_START).click(this._on_button_click.bind(this)).click();
+    $(SELECTOR_BUTTON_START).click(this._on_button_click.bind(this)); //.click();
   }
 
   /**

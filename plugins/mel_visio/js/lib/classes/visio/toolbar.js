@@ -75,7 +75,7 @@ class ToolbarFunctions {
     visio.jitsii.toggle_film_strip();
   }
 
-  Document(visio) {
+  static Documents(visio) {
     const url = `/apps/files?dir=/dossiers-${visio.data.wsp}`;
 
     FramesManager.Instance.switch_frame('stockage', {

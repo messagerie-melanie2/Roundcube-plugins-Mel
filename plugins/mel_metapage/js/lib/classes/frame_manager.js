@@ -552,8 +552,8 @@ class Window {
     $('#otherapps').css('display', 'none');
   }
 
-  static UpdateNavUrl(url) {
-    window.history.replaceState({}, document.title, url);
+  static UpdateNavUrl(url, top_context = false) {
+    (top_context ? top : window).history.replaceState({}, document.title, url);
   }
 
   static UpdateDocumentTitle(new_title) {
@@ -1066,6 +1066,7 @@ Object.defineProperty(FrameManager, 'Helper', {
 /**
  * @typedef FrameManagerWrapperHelper
  * @property {FrameManager} current Récupère le frame manager de la frame courante
+ * @property {typeof Window} window_object
  */
 
 /**
@@ -1096,6 +1097,9 @@ class FrameManagerWrapper {
 
           return _instance;
         },
+      },
+      window_object: {
+        get: () => Window,
       },
     });
 
@@ -1146,6 +1150,7 @@ if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
   window.mel_modules[MODULE_CUSTOM_FRAMES] = {};
 
 FramesManager.Instance.add_mode('visio', async function visio(...args) {
+  debugger;
   const [page, params] = args;
   if (!page) {
     await FramesManager.Instance.switch_frame('webconf', {

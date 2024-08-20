@@ -179,14 +179,23 @@ class MultipleButtonToolbarItem extends ToolbarItem {
     return this;
   }
 
+  remove_button(id) {
+    const index = this._others_buttons.findIndex((x) => x.id === id);
+
+    this._others_buttons[index].attribs['removed'] = true;
+    return this;
+  }
+
   generate(main_button_additionnal_attribs = {}) {
     let base = super.generate(main_button_additionnal_attribs);
+
+    if (this.attribs['data-solo']) return base;
 
     //prettier-ignore
     let entity = MelHtml.start.btn_group({ class: 'toolbar-button-group' })
                           .add_child(base)
                           .each((self, item) => {
-                            return self.add_child(ToolbarItem.Generate(item, item.attribs));
+                            return item.attribs.removed ? self : self.add_child(ToolbarItem.Generate(item, item.attribs));
                           }, ...this._others_buttons)
                         .end();
 

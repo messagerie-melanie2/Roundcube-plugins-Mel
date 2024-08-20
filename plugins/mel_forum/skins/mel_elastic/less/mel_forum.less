@@ -431,10 +431,14 @@
         span {
           font-size: 12px;
         }
-        i.material-symbols-outlined {
-          font-size: 20px;
-          font-variation-settings:'wght' 300;
-
+        .icon::before {
+          font-family: 'Material Symbols Outlined';
+          content: attr(data-icon);  /* Utilisation de l'attribut data-icon pour afficher l'icône */
+          font-size: 20px;           /* Taille de l'icône */
+          font-variation-settings:'wght' 300; /* Poids de l'icône */
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 5px;         /* Espacement à droite de l'icône */
         }
       }    
   
@@ -449,9 +453,14 @@
         display: flex;
         align-items: center;
   
-        i.material-symbols-outlined {
+        .icon::before {
+          font-family: 'Material Symbols Outlined';
+          content: attr(data-icon);
           font-size: 19px;
-          font-variation-settings:'wght' 400;
+          font-variation-settings: 'wght' 400;
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 5px;
         }
         
         .reaction-item {
@@ -465,7 +474,9 @@
           }
 
           &.response {
-            i.material-symbols-outlined {
+            .icon::before {
+              font-family: 'Material Symbols Outlined';
+              content: attr(data-icon);
               font-variation-settings:'wght' 300;
             }
             span {

@@ -1189,11 +1189,16 @@ public function like_comment()
         exit;
     }
 
-    // Création d'un Like
+    // Création du like et vérifier s'il existe déjà
     $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
     $like->comment = $comment_id;
-    $like->creator = $creator;
+    $like->creator = $user_uid; // Utilisez l'UID de l'utilisateur courant
     $like->type = $type;
+
+    if ($like->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Vous avez déjà liké ce commentaire.']);
+        exit;
+    }
 
     // Sauvegarde du Like
     $ret = $like->save();
@@ -1236,10 +1241,17 @@ public function get_all_comments_bypost()
         if (!empty($comments)) {
             foreach ($comments as $comment) {
                 $user_name = driver_mel::gi()->getUser($comment->user_uid)->name;
+
+                // Formater la date au format jour-mois-année
+                $formatted_date = date('d-m-Y', strtotime($comment->created));
+
                 $comments_array[$comment->uid] = [
                     'post_id' => $comment->post_id,
-                    'user_id' => $comment->user_id,
-                    'user_name' => $user_name
+                    'user_id' => $comment->user_uid,
+                    'user_name' => $user_name,
+                    'content' => $comment->content,
+                    'created' => $formatted_date,
+                    'parent' => $comment->parent,
                 ];
             }
         } 
@@ -2277,7 +2289,7 @@ public function test_like_comment()
 
     // Récupérer les valeurs
     $creator = 'DamienTest4';
-    $type = 'Like à supprimer';
+    $type = 'like';
     $comment_id = '10';
 
     // Validation des données saisies
@@ -2289,6 +2301,17 @@ public function test_like_comment()
     // Vérifier si le créateur du like est le même que le créateur du commentaire
     if ($creator === $user->uid) {
         echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas liker votre propre commentaire.']);
+        exit;
+    }
+
+    // Vérifier si le like existe déjà
+    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+    $like->comment = $comment_id;
+    $like->creator = $creator;
+    $like->type = $type;
+
+    if ($like->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Vous avez déjà liké ce commentaire.']);
         exit;
     }
 
@@ -2387,8 +2410,8 @@ public function test_count_comments()
 public function test_delete_like()
 {
     // Récupérer les valeurs
-    $creator = 'DamienTest';
-    $type = 'Like à supprimer 3';
+    $creator = 'DamienTest4';
+    $type = 'Like à supprimer';
     $comment_id = '10';
     
     // Validation des données saisies

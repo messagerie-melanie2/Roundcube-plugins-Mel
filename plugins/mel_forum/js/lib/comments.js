@@ -3,17 +3,17 @@ import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 export {PostComment, PostCommentView}
 
 class PostComment {
-  constructor(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment) {
+  constructor(uid, post_id, user_uid, user_name, content, created, like, dislike, parent) {
 
-    this._init()._setup(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment)
+    this._init()._setup(uid, post_id, user_uid, user_name, content, created, like, dislike, parent)
   }
 
   /**
  * Initialise un objet avec des valeurs par défaut.
  *
  * Cette fonction réinitialise toutes les propriétés de l'objet, telles que
- * `uid`, `post_id`, `user_id`, `user_name`, `content`, `created`, `like`, 
- * `dislike`, et `child_comment` à des chaînes de caractères vides.
+ * `uid`, `post_id`, `user_uid`, `user_name`, `content`, `created`, `like`, 
+ * `dislike`, et `parent` à des chaînes de caractères vides.
  * Elle retourne l'objet lui-même après l'initialisation.
  *
  * @return {Object} L'objet initialisé avec des valeurs par défaut.
@@ -21,13 +21,13 @@ class PostComment {
   _init() {
     this.uid = '';
     this.post_id = '';
-    this.user_id = '';
+    this.user_uid = '';
     this.user_name = '';
     this.content = '';
     this.created = '';
     this.like = '';
     this.dislike = '';
-    this.child_comment = '';
+    this.parent = '';
 
   
 
@@ -39,32 +39,32 @@ class PostComment {
  * Configure les propriétés de l'objet avec les valeurs spécifiées.
  *
  * Cette fonction utilise `Object.defineProperties` pour définir les propriétés
- * `uid`, `post_id`, `user_id`, `user_name`, `content`, `created`, `like`, 
- * `dislike`, et `child_comment` de l'objet. Chaque propriété a un getter qui 
+ * `uid`, `post_id`, `user_uid`, `user_name`, `content`, `created`, `like`, 
+ * `dislike`, et `parent` de l'objet. Chaque propriété a un getter qui 
  * retourne la valeur initiale passée en paramètre, et un setter qui permet 
  * de mettre à jour cette valeur.
  *
  * @param {string} uid - L'identifiant unique de l'objet.
  * @param {string} post_id - L'identifiant du post associé.
- * @param {string} user_id - L'identifiant de l'utilisateur.
+ * @param {string} user_uid - L'identifiant de l'utilisateur.
  * @param {string} user_name - Le nom de l'utilisateur.
  * @param {string} content - Le contenu du commentaire ou du post.
  * @param {string} created - La date de création.
  * @param {string} like - Le nombre de likes.
  * @param {string} dislike - Le nombre de dislikes.
- * @param {string} child_comment - Le nombre de sous-commentaires.
+ * @param {string} parent - Le nombre de sous-commentaires.
  */
-  _setup(uid, post_id, user_id, user_name, content, created, like, dislike, child_comment) {
+  _setup(uid, post_id, user_uid, user_name, content, created, like, dislike, parent) {
 
           this.uid = uid;
           this.post_id = post_id;
-          this.user_id = user_id;
+          this.user_uid = user_uid;
           this.user_name = user_name;
           this.content = content;
           this.created = created;
           this.like = like;
           this.dislike = dislike;
-          this.child_comment = child_comment;
+          this.parent = parent;
   }
   
 
@@ -82,13 +82,13 @@ class PostComment {
   generateHtml() {
     console.log("UID:", this.uid);
     console.log("PostID:", this.post_id);
-    console.log("UserID:", this.user_id);
+    console.log("UserID:", this.user_uid);
     console.log("UserName:", this.user_name);
     console.log("Content:", this.content);
     console.log("Created:", this.created);
     console.log("Like:", this.like);
     console.log("Dislike:", this.dislike);
-    console.log("Child:", this.child_comment);
+    console.log("Child:", this.parent);
     //prettier-ignore
     let html = MelHtml.start
       .div({ 
@@ -106,8 +106,7 @@ class PostComment {
        .text(this.user_name)
        .end('span')
        .div({ class: 'forum-comment-date d-flex align-items-end' })
-       .span({ class: 'material-symbols-outlined' })
-       .text('access_time')
+       .span({ class: 'icon', 'data-icon': 'access_time' })
        .end('span')
        .span({ class: 'ml-1' })
        .text(this.created)
@@ -115,46 +114,42 @@ class PostComment {
        .end('div')
        .end('div')
        .div({ class: 'forum-comment-text' })
-       .p(this.content)
+       .p()
+       .text(this.content)
        .end('p')
        .end('div')
        .div({ class: 'forum-comment-reactions' })
        .div({ class: 'reaction-item active mr-3' })
-       .span({ class: 'material-symbols-outlined' })
-       .text('thumb-up')
+       .span({ class: 'icon', 'data-icon': 'thumb_up' })
        .end('span')
        .span({ class: 'ml-2' })
        .text(this.like)
        .end('span')
        .end('div')
        .div({ class: 'reaction-item mr-3' })
-       .span({ class: 'material-symbols-outlined' })
-       .text('thumb-down')
+       .span({ class: 'icon', 'data-icon': 'thumb_down' })
        .end('span')
        .span({ class: 'ml-2' })
        .text(this.dislike)
        .end('span')
        .end('div')
        .div({ class: 'reaction-item mr-3 response' })
-       .span({ class: 'material-symbols-outlined' })
-       .text('mode_comment')
+       .span({ class: 'icon', 'data-icon': 'mode_comment' })
        .end('span')
        .span({ class: 'ml-2' })
        .text('répondre')
        .end('span')
        .end('div')
        .div({ class: 'reaction-item' })
-       .span({ class: 'material-symbols-outlined' })
-       .text('more_horiz')
+       .span({ class: 'icon', 'data-icon': 'more_horiz' })
        .end('span')
        .end('div')
        .end('div')
        .div({ class: 'forum-comment-responses' })
-       .span({ class: 'material-symbols-outlined' })
-       .text('arrow_drop_down')
+       .span({ class: 'icon', 'data-icon': 'arrow_drop_down' })
        .end('span')
        .span({ class: 'ml-2' })
-       .text(this.nb_response)
+       .text(this.parent)
        .end('span')
        .end('div')
        .end('div')

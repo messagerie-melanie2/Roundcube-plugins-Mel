@@ -942,7 +942,7 @@ $(document).ready(() => {
               style: `${CONST_CSS_BACKGROUND}${CONST_CSS_ASSIGN}${CONST_CSS_BACKGROUND_URL}(${iterator.value.icon})${CONST_CSS_SEPARATOR}${STYLE_THEME_BUTTON}`,
               title: `${iterator.value.displayed}${iterator.value.desc ? ` - ${iterator.value.desc}` : EMPTY_STRING}`,
               role: CONST_ATTRIB_ROLE_BUTTON,
-              'tab-index': 0,
+              'tabindex': 0,
               'data-name': iterator.value.id,
               'aria-pressed': iterator.value.id === this.theme,
             });

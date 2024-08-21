@@ -713,7 +713,7 @@ class roundcube_auth extends rcube_plugin
             }
         }
 
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Return args : " . implode($args, ','));
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Return args : " . implode(',', $args));
         return $args;
     }
 

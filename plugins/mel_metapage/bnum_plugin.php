@@ -16,7 +16,13 @@ abstract class bnum_plugin extends rcube_plugin
 
         $args = "'$plugin', '$name', '$path', $save_in_memory";
         
-        $this->api->output->add_script("runModule($args)", 'docready');
+        if ($this->api->output !== null) {
+            try {
+                $this->api->output->add_script("runModule($args)", 'docready');
+            } catch (\Throwable $th) {
+                return null;
+            }
+        }
     }
 
     protected function load_js_page($name) {

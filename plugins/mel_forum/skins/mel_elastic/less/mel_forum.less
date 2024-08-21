@@ -1,3 +1,4 @@
+//compress:false
 .task-forum {
 
   /* Styles pour le conteneur avec une barre de défilement */
@@ -439,6 +440,7 @@
           display: inline-block;
           vertical-align: middle;
           margin-right: 5px;         /* Espacement à droite de l'icône */
+          margin-left: 5px;
         }
       }    
   
@@ -477,7 +479,11 @@
             .icon::before {
               font-family: 'Material Symbols Outlined';
               content: attr(data-icon);
+              font-size: 19px;
               font-variation-settings:'wght' 300;
+              display: inline-block;
+              vertical-align: middle;
+              margin-right: 5px;
             }
             span {
               color: var(--forum-active-text-color);
@@ -485,6 +491,27 @@
           }
         }
       }
+    }
+  }
+
+  .forum-comment-response {
+    display: flex;                   /* Pour aligner les éléments horizontalement */
+    align-items: center;             /* Aligne les éléments verticalement au centre */
+    margin-left: 40px;               /* Ajuste la marge pour s'aligner avec les autres éléments */
+
+    .icon::before {
+      font-family: 'Material Symbols Outlined';
+      content: attr(data-icon);
+      font-size: 19px;
+      font-variation-settings: 'wght' 400;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 5px;              /* Espace à droite de l'icône */
+    }
+
+    .ml-2 {
+      font-size: 12px;                /* Ajuste la taille du texte pour correspondre au design */
+      color: var(--forum-text-color); /* Applique la couleur de texte souhaitée */
     }
   }
 

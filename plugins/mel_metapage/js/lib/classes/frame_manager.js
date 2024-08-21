@@ -21,7 +21,7 @@ const MAX_FRAME = 3;
 const MULTI_FRAME_FROM_NAV_BAR = true;
 
 class FrameData {
-  constructor(task) {
+  constructor(task, parent) {
     /**
      * Tache de la frame
      * @type {string}
@@ -46,6 +46,10 @@ class FrameData {
      * @readonly
      */
     this.id = 0;
+    /**
+     * @type {Window}
+     */
+    this.parent = parent;
     this.onframecreated = new BnumEvent();
     this.onframecreatedafter = new BnumEvent();
     this.onload = new BnumEvent();
@@ -59,7 +63,9 @@ class FrameData {
       name: {},
       $frame: {
         get: () => {
-          return top.$(`.mm-frame.${this.task}-frame`);
+          return top.$(
+            `#${this.parent.get_window_id()} .mm-frame.${this.task}-frame`,
+          );
         },
       },
       id: {
@@ -212,6 +218,7 @@ class HistoryManager {
           .replace(/"/g, '')
           .charCodeAt(0)
           .toString(16);
+
         font = window
           .getComputedStyle(
             document.querySelector(`#taskmenu [data-task="${last_task}"]`),
@@ -390,7 +397,7 @@ class Window {
         this._current_frame.hide();
       }
 
-      this._current_frame = new FrameData(task);
+      this._current_frame = new FrameData(task, this);
 
       this._current_frame.onload.add('resolve', () => {
         this._current_frame.onload.remove('resolve');
@@ -577,8 +584,15 @@ class Window {
 
     MainNav.select(task);
 
-    Window.UpdateNavUrl(Window.UrlFromTask(task));
-    Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
+    const break_next =
+      FramesManager.Instance.call_attach('before_url') === 'break';
+
+    if (!break_next) {
+      Window.UpdateNavUrl(Window.UrlFromTask(task));
+      Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
+    }
+
+    FramesManager.Instance.call_attach('url');
 
     if (this._frames.has(task)) {
       await this._open_frame(task, { new_args: args });
@@ -658,8 +672,12 @@ class Window {
     return $('.mel-windows').length > 1;
   }
 
+  get_window_id() {
+    return `mel-window-${this._id}`;
+  }
+
   get_window() {
-    return $(`#mel-window-${this._id}`);
+    return $(`#${this.get_window_id()}`);
   }
 
   get_frame(task = null) {
@@ -771,6 +789,8 @@ class FrameManager {
     this._manual_multi_frame_enabled = true;
 
     this._modes = new BaseStorage();
+
+    this._attaches = {};
 
     return this;
   }
@@ -973,6 +993,20 @@ class FrameManager {
     }
   }
 
+  attach(action, callback) {
+    this._attaches[action] = callback;
+
+    return this;
+  }
+
+  detach(action) {
+    return this.attach(action, null);
+  }
+
+  call_attach(action, ...args) {
+    return this._attaches[action]?.(...args);
+  }
+
   has_frame(task) {
     return this._selected_window.has_frame(task);
   }
@@ -1150,11 +1184,12 @@ if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
   window.mel_modules[MODULE_CUSTOM_FRAMES] = {};
 
 FramesManager.Instance.add_mode('visio', async function visio(...args) {
-  debugger;
   const [page, params] = args;
   if (!page) {
+    if (params) params._page = 'index';
+
     await FramesManager.Instance.switch_frame('webconf', {
-      args: { _page: 'index' },
+      args: params ?? { _page: 'index' },
     });
   } else if (page !== 'index') {
     params._page = page || 'init';

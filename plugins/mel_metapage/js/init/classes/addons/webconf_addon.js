@@ -15,7 +15,19 @@
     pass = null,
     extra = null,
   ) {
-    window.mel_modules['FrameManager'].Instance.start_mode('visio');
+    let config = {};
+
+    if (key) config._key = key;
+    if (wsp) config._wsp = wsp;
+    if (locks) config._locks = locks;
+    if (pass) config._pass = pass;
+    if (extra) config._need_config = extra === 'need_config';
+
+    window.mel_modules['FrameManager'].Instance.start_mode(
+      'visio',
+      null,
+      config,
+    );
     return;
 
     if (!webconf_is_active()) {

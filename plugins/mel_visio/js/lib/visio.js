@@ -28,6 +28,20 @@ class Visio extends MelObject {
   main() {
     super.main();
 
+    // FramesManager.Instance.attach('url', () => {
+    //   const use_top = true;
+    //   FramesManager.Helper.window_object.UpdateNavUrl(
+    //     this.get_visio_url(),
+    //     use_top,
+    //   );
+
+    //   Frames
+    // });
+
+    FramesManager.Instance.attach('before_url', () => {
+      return 'break';
+    });
+
     this._init()._setup().start();
   }
   /**
@@ -52,8 +66,6 @@ class Visio extends MelObject {
     this.toolbar = null;
 
     this._token = null;
-
-    this._pad_promise = null;
 
     return this;
   }
@@ -150,6 +162,10 @@ class Visio extends MelObject {
             this.loader = this.loader.destroy();
             this.toolbar = this._create_toolbar();
             this._init_listeners();
+
+            if (this.data.password) {
+              this.jitsii.set_password(this.data.password);
+            }
           }
         },
         configOverwrite: {
@@ -187,8 +203,6 @@ class Visio extends MelObject {
       this.loader.update_text('Chargement de la visioconférence...');
 
       this.jitsii = new JitsiAdaptor(new JitsiMeetExternalAPI(domain, options));
-
-      await this._pad_promise;
     }
   }
 
@@ -359,6 +373,10 @@ class Visio extends MelObject {
     this.jitsii.on_share_screen_status_changed.push(
       this._event_on_share_screen_status_changed.bind(this),
     );
+
+    this.jitsii.on_password_required.push(() => {
+      this.jitsii._jitsi.executeCommand('password', this.data.password);
+    });
 
     this.jitsii.on_chat_updated.call({
       unreadCount: 0,

@@ -11,6 +11,7 @@ class VisioParams
 
     public function room() {
         if (!$this->room) $this->room = rcube_utils::get_input_value('_key', rcube_utils::INPUT_GET);
+        if (!$this->room) $this->room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
 
         return $this->room;
     }
@@ -34,7 +35,7 @@ class VisioParams
     }
 
     public function need_config() {
-        if (!isset($this->need_config)) $this->need_config = rcube_utils::get_input_value('_need_config', rcube_utils::INPUT_GET) ?? false;
+        if (!isset($this->need_config)) $this->need_config = rcube_utils::get_input_value('_need_config', rcube_utils::INPUT_GET) === 'true';
 
         return $this->need_config;
     }

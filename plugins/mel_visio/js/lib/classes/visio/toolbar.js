@@ -21,6 +21,8 @@ class ToolbarFunctions {
    * @param {Visio} visio
    */
   static Hangup(visio) {
+    FramesManager.Instance.detach('before_url');
+
     visio.jitsii.hangup();
     visio.toolbar.destroy();
   }

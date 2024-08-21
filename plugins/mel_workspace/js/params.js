@@ -857,6 +857,8 @@
           null,
           true,
           [1],
+          null,
+          'need_config'
         );
     }
 

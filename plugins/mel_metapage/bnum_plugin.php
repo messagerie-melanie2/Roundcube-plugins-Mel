@@ -38,7 +38,11 @@ abstract class bnum_plugin extends rcube_plugin
 
     protected function add_script($script, $where = 'head') {
         if ($this->api->output !== null) {
-            $this->api->output->add_script($script, $where);
+            try {
+                $this->api->output->add_script($script, $where);
+            } catch (\Throwable $th) {
+                return null;
+            }
         }
     }
 

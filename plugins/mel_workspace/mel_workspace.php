@@ -119,7 +119,6 @@ class mel_workspace extends bnum_plugin
      */
     function portal()
     {
-        $this->include_css();
         $this->include_js();
 
         $this->register_action('index', array($this, 'index'));
@@ -1859,14 +1858,6 @@ class mel_workspace extends bnum_plugin
         // }
         // $html .= "</select>";
         // return $html;
-    }
-        /**
-     * Récupère le css utile pour ce plugin.
-     */
-    function include_css()
-    {
-        // Ajout du css
-        //$this->include_stylesheet($this->local_skin_path().'/workspaces.css');
     }
 
     function include_js()

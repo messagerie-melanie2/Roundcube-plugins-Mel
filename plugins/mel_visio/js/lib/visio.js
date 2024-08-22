@@ -50,7 +50,11 @@ class Visio extends MelObject {
 
     FramesManager.Instance.attach('switch_frame', (task) => {
       if (task === 'webconf') {
-        top.$('#visio-back-button').find('bnum-icon').text('fullscreen_exit');
+        top
+          .$('#visio-back-button')
+          .attr('title', 'Minimiser la visioconférence')
+          .find('bnum-icon')
+          .text('fullscreen_exit');
         FramesManager.Instance.get_window()._history.add(
           FramesManager.Instance.get_window()._current_frame.task,
         );
@@ -65,7 +69,12 @@ class Visio extends MelObject {
         this.toolbar.toolbar().find('button').first().focus();
 
         return 'break';
-      } else top.$('#visio-back-button').find('bnum-icon').text('fullscreen');
+      } else
+        top
+          .$('#visio-back-button')
+          .attr('title', 'Maximiser la visioconférence')
+          .find('bnum-icon')
+          .text('fullscreen');
     });
 
     this._init()._setup().start();
@@ -401,17 +410,17 @@ class Visio extends MelObject {
     top.$('body').append(
       //prettier-ignore
       MelHtml.start
-        .button( { id:'visio-back-button', class:'visio-back-button' } )
+        .button( { id:'visio-back-button', class:'visio-back-button', title:'Minimiser la visioconférence' } )
         .attr('onclick', () => {
           if (FramesManager.Instance.get_window()._current_frame.task === 'webconf') {
             if (FramesManager.Instance.get_window()._history._history.length) FramesManager.Instance.get_window()._history.back();
             else FramesManager.Instance.switch_frame('bureau', {});
 
-            top.$('#visio-back-button').find('bnum-icon').text('fullscreen');
+            top.$('#visio-back-button').attr('title', 'Maximiser la visioconférence').find('bnum-icon').text('fullscreen');
           }
           else { 
             FramesManager.Instance.switch_frame('webconf', {});
-            top.$('#visio-back-button').find('bnum-icon').text('fullscreen_exit');
+            top.$('#visio-back-button').attr('title', 'Minimiser la visioconférence').find('bnum-icon').text('fullscreen_exit');
           }
         })
           .icon('fullscreen_exit').end()

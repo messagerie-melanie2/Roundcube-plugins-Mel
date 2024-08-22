@@ -14,8 +14,7 @@
           "icon": "description",
           "text": "mel_metapage.pad",
           "data": {
-            "mef": true,
-            "inactive": true
+            "mef": true
           }
         }
       ],

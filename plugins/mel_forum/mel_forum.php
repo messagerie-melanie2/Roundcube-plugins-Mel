@@ -1164,7 +1164,6 @@ public function like_comment()
     // Récupérer les valeurs
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
     $comment_id = rcube_utils::get_input_value('_comment_id', rcube_utils::INPUT_POST);
-    
 
     // Validation des données saisies
     if (empty($type) || empty($comment_id)) {
@@ -1183,37 +1182,46 @@ public function like_comment()
 
     $creator = $comment->creator;
 
-    // Vérifier si le créateur du like est le même que le créateur du commentaire
+    // Vérifier si le créateur du like/dislike est le même que le créateur du commentaire
     if ($creator === $user_uid) {
-        echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas liker votre propre commentaire.']);
+        echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas réagir à votre propre commentaire.']);
         exit;
     }
 
-    // Création du like et vérifier s'il existe déjà
-    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
-    $like->comment = $comment_id;
-    $like->creator = $user_uid; // Utilisez l'UID de l'utilisateur courant
-    $like->type = $type;
+    // Vérifier si un like ou dislike existe déjà
+    $existing_reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+    $existing_reaction->comment = $comment_id;
+    $existing_reaction->creator = $user_uid;
 
-    if ($like->load()) {
-        echo json_encode(['status' => 'error', 'message' => 'Vous avez déjà liké ce commentaire.']);
-        exit;
+    if ($existing_reaction->load()) {
+        // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
+        if ($existing_reaction->type === $type) {
+            $existing_reaction->delete();
+            echo json_encode(['status' => 'success', 'message' => ucfirst($type) . ' annulé avec succès.']);
+            exit;
+        } else {
+            // Sinon, l'utilisateur change de réaction (like -> dislike ou dislike -> like)
+            $existing_reaction->delete();
+        }
     }
 
-    // Sauvegarde du Like
-    $ret = $like->save();
+    // Créer un nouveau like/dislike
+    $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+    $reaction->comment = $comment_id;
+    $reaction->creator = $user_uid;
+    $reaction->type = $type;
+
+    // Sauvegarde de la nouvelle réaction
+    $ret = $reaction->save();
     if (!is_null($ret)) {
-
         header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Like créé avec succès.']);
+        echo json_encode(['status' => 'success', 'message' => ucfirst($type) . ' enregistré avec succès.']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création du Like.']);
+        echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
     }
 
     // Arrêt de l'exécution du script
     exit;
-
 }
 
 /**
@@ -1246,12 +1254,16 @@ public function get_all_comments_bypost()
                 $formatted_date = date('d-m-Y', strtotime($comment->created));
 
                 $comments_array[$comment->uid] = [
+                    'uid' => $comment->uid,
                     'post_id' => $comment->post_id,
                     'user_id' => $comment->user_uid,
                     'user_name' => $user_name,
                     'content' => $comment->content,
                     'created' => $formatted_date,
                     'parent' => $comment->parent,
+                    'children_number' => $comment->countChildren(),
+                    'likes' => $comment->countLikes(),
+                    'dislikes' => $comment->countDislikes(),
                 ];
             }
         } 

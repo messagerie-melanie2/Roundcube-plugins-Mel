@@ -3,9 +3,8 @@ import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 export {PostComment, PostCommentView}
 
 class PostComment {
-  constructor(uid, post_id, user_uid, user_name, content, created, like, dislike, parent) {
-
-    this._init()._setup(uid, post_id, user_uid, user_name, content, created, like, dislike, parent)
+  constructor(uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number) {
+    this._init()._setup(uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number)
   }
 
   /**
@@ -25,9 +24,10 @@ class PostComment {
     this.user_name = '';
     this.content = '';
     this.created = '';
-    this.like = '';
-    this.dislike = '';
+    this.likes = 0;
+    this.dislikes = 0;
     this.parent = '';
+    this.children_number = 0;
 
   
 
@@ -50,11 +50,12 @@ class PostComment {
  * @param {string} user_name - Le nom de l'utilisateur.
  * @param {string} content - Le contenu du commentaire ou du post.
  * @param {string} created - La date de création.
- * @param {string} like - Le nombre de likes.
- * @param {string} dislike - Le nombre de dislikes.
- * @param {string} parent - Le nombre de sous-commentaires.
+ * @param {string} likes - Le nombre de likes.
+ * @param {string} dislikes - Le nombre de dislikes.
+ * @param {string} parent - L'Id du commentaire parent s'il existe'.
+ * @param {integer} children_number - Le nombre de réponse au commentaire parent
  */
-  _setup(uid, post_id, user_uid, user_name, content, created, like, dislike, parent) {
+  _setup(uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number) {
 
           this.uid = uid;
           this.post_id = post_id;
@@ -62,11 +63,24 @@ class PostComment {
           this.user_name = user_name;
           this.content = content;
           this.created = created;
-          this.like = like;
-          this.dislike = dislike;
+          this.likes = likes;
+          this.dislikes = dislikes;
           this.parent = parent;
+          this.children_number = children_number;
   }
   
+  async saveLikeOrDislike(type) {
+    let return_data;
+    await mel_metapage.Functions.post(
+        mel_metapage.Functions.url('forum', 'like_comment'),
+        { _comment_id: this.uid, _type: type },
+        (datas) => {
+            return_data = JSON.parse(datas);
+        }
+    );
+  
+    return return_data;
+  }
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions.
@@ -86,8 +100,8 @@ class PostComment {
     console.log("UserName:", this.user_name);
     console.log("Content:", this.content);
     console.log("Created:", this.created);
-    console.log("Like:", this.like);
-    console.log("Dislike:", this.dislike);
+    console.log("Likes:", this.likes);
+    console.log("Dislikes:", this.dislikes);
     console.log("Child:", this.parent);
     //prettier-ignore
     let html = MelHtml.start
@@ -120,17 +134,17 @@ class PostComment {
         .end('div')
         .div({ class: 'forum-comment-reactions' })
           .div({ class: 'reaction-item active mr-3' })
-            .span({ class: 'icon', 'data-icon': 'thumb_up' })
+            .span({ class: 'icon', 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like') })
             .end('span')
             .span({ class: 'ml-2' })
-              .text(this.like)
+              .text(this.likes)
             .end('span')
           .end('div')
           .div({ class: 'reaction-item mr-3' })
-            .span({ class: 'icon', 'data-icon': 'thumb_down' })
+            .span({ class: 'icon', 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike') })
             .end('span')
             .span({ class: 'ml-2' })
-              .text(this.dislike)
+              .text(this.dislikes)
             .end('span')
           .end('div')
           .div({ class: 'reaction-item mr-3 response' })
@@ -149,7 +163,7 @@ class PostComment {
           .span({ class: 'icon', 'data-icon': 'arrow_drop_down' })
           .end('span')
           .span({ class: 'ml-2' })
-            .text(this.parent + ' réponses')
+            .text(this.children_number + ' réponses')
           .end('span')
         .end('div')
       .end('div')
@@ -222,5 +236,8 @@ class PostCommentView {
     return return_data;
 
   }
+
+
+
 
 }

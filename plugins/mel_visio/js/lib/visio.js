@@ -3,7 +3,10 @@ import {
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
-import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import {
+  FrameManager,
+  FramesManager,
+} from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { MelPopover } from '../../../mel_metapage/js/lib/classes/mel_popover.js';
 import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
@@ -28,18 +31,41 @@ class Visio extends MelObject {
   main() {
     super.main();
 
-    // FramesManager.Instance.attach('url', () => {
-    //   const use_top = true;
-    //   FramesManager.Helper.window_object.UpdateNavUrl(
-    //     this.get_visio_url(),
-    //     use_top,
-    //   );
+    FramesManager.Instance.attach('url', () => {
+      const use_top = true;
+      FramesManager.Helper.window_object.UpdateNavUrl(
+        this.get_visio_url(),
+        use_top,
+      );
 
-    //   Frames
-    // });
+      FramesManager.Helper.window_object.UpdateDocumentTitle(
+        'Visioconférence',
+        use_top,
+      );
+    });
 
     FramesManager.Instance.attach('before_url', () => {
       return 'break';
+    });
+
+    FramesManager.Instance.attach('switch_frame', (task) => {
+      if (task === 'webconf') {
+        top.$('#visio-back-button').find('bnum-icon').text('fullscreen_exit');
+        FramesManager.Instance.get_window()._history.add(
+          FramesManager.Instance.get_window()._current_frame.task,
+        );
+
+        FramesManager.Instance.get_window().hide()._current_frame =
+          MelEnumerable.from(FramesManager.Instance.get_window()._frames)
+            .where((x) => x.key === 'webconf')
+            .firstOrDefault(
+              FramesManager.Instance.get_window()._current_frame,
+            ).value;
+
+        this.toolbar.toolbar().find('button').first().focus();
+
+        return 'break';
+      } else top.$('#visio-back-button').find('bnum-icon').text('fullscreen');
     });
 
     this._init()._setup().start();
@@ -74,6 +100,14 @@ class Visio extends MelObject {
    * @private
    */
   _setup() {
+    for (const key in rcmail.env['visio.data']) {
+      if (Object.prototype.hasOwnProperty.call(rcmail.env['visio.data'], key)) {
+        const element = rcmail.env['visio.data'][key];
+
+        if (element === 'null') rcmail.env['visio.data'][key] = null;
+      }
+    }
+
     Object.defineProperty(this, 'data', {
       get() {
         return rcmail.env['visio.data'];
@@ -162,6 +196,7 @@ class Visio extends MelObject {
             this.loader = this.loader.destroy();
             this.toolbar = this._create_toolbar();
             this._init_listeners();
+            this._create_ui();
 
             if (this.data.password) {
               this.jitsii.set_password(this.data.password);
@@ -230,6 +265,9 @@ class Visio extends MelObject {
       VisioToolbar,
     );
 
+    toolbar.width = EMPTY_STRING;
+    toolbar.x = '50%';
+
     this.rcmail().env['visio.toolbar'] = null;
 
     for (let element of toolbar) {
@@ -286,7 +324,21 @@ class Visio extends MelObject {
 
     toolbar.generate(top.$('body'));
 
-    toolbar.toolbar().addClass('white-toolbar');
+    toolbar
+      .toolbar()
+      .addClass('white-toolbar')
+      .addClass('visio-toolbar')
+      .prepend(
+        //prettier-ignore
+        MelHtml.start
+          .button({ class:'visio-button', title:'Cacher la barre de navigation' })
+            .attr('onclick', () => {
+              toolbar.toolbar().css('display', 'none');
+            })
+            .icon('visibility_off', { class:'absolute-center' }).end()
+          .end()
+          .generate(),
+      );
 
     // toolbar
     //   .get_button('more')
@@ -345,6 +397,28 @@ class Visio extends MelObject {
     return toolbar;
   }
 
+  _create_ui() {
+    top.$('body').append(
+      //prettier-ignore
+      MelHtml.start
+        .button( { id:'visio-back-button', class:'visio-back-button' } )
+        .attr('onclick', () => {
+          if (FramesManager.Instance.get_window()._current_frame.task === 'webconf') {
+            if (FramesManager.Instance.get_window()._history._history.length) FramesManager.Instance.get_window()._history.back();
+            else FramesManager.Instance.switch_frame('bureau', {});
+
+            top.$('#visio-back-button').find('bnum-icon').text('fullscreen');
+          }
+          else { 
+            FramesManager.Instance.switch_frame('webconf', {});
+            top.$('#visio-back-button').find('bnum-icon').text('fullscreen_exit');
+          }
+        })
+          .icon('fullscreen_exit').end()
+        .end().generate(),
+    );
+  }
+
   async _init_listeners() {
     const promise_user_id = this.jitsii.get_user_id();
 
@@ -376,6 +450,14 @@ class Visio extends MelObject {
 
     this.jitsii.on_password_required.push(() => {
       this.jitsii._jitsi.executeCommand('password', this.data.password);
+    });
+
+    this.jitsii.on_mouse_move.push(() => {
+      this.toolbar.toolbar().css('display', EMPTY_STRING);
+      clearTimeout(this._timeout);
+      this._timeout = setTimeout(() => {
+        this.toolbar.toolbar().css('display', 'none');
+      }, 60 * 1000);
     });
 
     this.jitsii.on_chat_updated.call({

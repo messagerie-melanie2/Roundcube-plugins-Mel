@@ -276,7 +276,8 @@ class JitsiAdaptor {
       ._add_listener(
         'screenSharingStatusChanged',
         'on_share_screen_status_changed',
-      );
+      )
+      ._add_listener('mouseMove', 'on_mouse_move');
   }
 
   _add_listener(name, prop) {

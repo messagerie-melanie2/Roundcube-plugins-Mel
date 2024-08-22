@@ -563,8 +563,8 @@ class Window {
     (top_context ? top : window).history.replaceState({}, document.title, url);
   }
 
-  static UpdateDocumentTitle(new_title) {
-    document.title = new_title;
+  static UpdateDocumentTitle(new_title, top_context = false) {
+    (top_context ? top : window).document.title = new_title;
     $('.sr-document-title-focusable').text(document.title);
   }
 
@@ -804,6 +804,18 @@ class FrameManager {
     task,
     { changepage = true, args = null, actions = [], wind = null },
   ) {
+    const quit =
+      this.call_attach(
+        'switch_frame',
+        task,
+        changepage,
+        args,
+        actions,
+        wind,
+      ) === 'break';
+
+    if (quit) return;
+
     if (wind !== null) {
       if (changepage) this.close_windows_to_remove_on_change();
 

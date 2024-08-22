@@ -22,19 +22,44 @@ class mel_visio extends bnum_plugin
      */
     function init()
     {
-        if ('webconf' === $this->get_current_task()) {
-            $this->load_config();
-            include_once __DIR__.'/lib/data.php'; 
-            $this->data = new VisioParams();
-            $this->register_task('webconf');
-            $this->force_register_action('index', [$this, 'index']);
-            $this->force_register_action('jwt', [$this, 'get_jwt']);
-            $this->force_register_action('get_workspace_datas', [$this, 'get_workspace_datas']);
-            $this->force_register_action('onGo', [$this, 'onGo']);
-            $this->force_register_action('notify', [$this, 'notify']);
-        }
-        else if ('calendar' === $this->get_current_task()) {
-            $this->send_visio_config();
+        $this->add_texts('localization/', false);  
+
+        switch ($this->get_current_task()) {
+            case 'webconf':
+                include_once __DIR__.'/lib/data.php'; 
+
+                $this->data = new VisioParams();
+
+                $this->load_config();
+                $this->register_task('webconf');
+                $this->force_register_action('index', [$this, 'index']);
+                $this->force_register_action('jwt', [$this, 'get_jwt']);
+                $this->force_register_action('get_workspace_datas', [$this, 'get_workspace_datas']);
+                $this->force_register_action('onGo', [$this, 'onGo']);
+                $this->force_register_action('notify', [$this, 'notify']);
+                break;
+
+            case 'calendar':
+                $this->send_visio_config();
+                break;
+
+            case 'bnum':              
+                $this->add_button(array(
+                    'command' => 'webconf',
+                    'class'	=> 'button-mel-webconf icon-mel-webconf webconf hidden',
+                    'classsel' => 'button-mel-webconf icon-mel-webconf webconf hidden selected',
+                    'innerclass' => 'button-inner inner',
+                    'label'	=> 'mel_visio.visio',
+                    'title' => 'mel_visio.visio',
+                    'type'       => 'link',
+                    'data-task' => 'webconf'
+                ), 'taskbar');
+
+                $this->include_css("main-nav.css");
+                break;
+            
+            default:
+                break;
         }
     }
 

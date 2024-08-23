@@ -50,8 +50,10 @@
 
   const old = rcube_webmail.prototype.triggerEvent;
   function rcmail_trigger_event_new(evt, e) {
-    old.call(this, evt, e);
+    const ret = old.call(this, evt, e);
     this.trigger_event_ex(evt, e);
+
+    return ret;
   }
 
   if (rcmail) {

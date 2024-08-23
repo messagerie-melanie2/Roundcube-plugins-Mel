@@ -1,10 +1,13 @@
 <?php
 $root = realpath(dirname(dirname(dirname($_SERVER["SCRIPT_FILENAME"]))));
+
+if (file_exists("$root/bnum/index.php")) $root = "$root/bnum";
+
 if (!defined('INSTALL_PATH')) {
     define('INSTALL_PATH', "$root/");
 }
 if (!defined('RCMAIL_CONFIG_DIR')) {
-    define('RCMAIL_CONFIG_DIR', getenv('ROUNDCUBE_CONFIG_DIR') ?: (INSTALL_PATH . 'config'));
+    define('RCMAIL_CONFIG_DIR', getenv('ROUNDCUBE_CONFIG_DIR') ?: (INSTALL_PATH . (strpos($root, '/bnum/') !== false ? '../' : '') . 'config'));
 }
 
 if (!defined('RCUBE_LOCALIZATION_DIR')) {
@@ -15,7 +18,8 @@ define('RCUBE_INSTALL_PATH', INSTALL_PATH);
 define('RCUBE_CONFIG_DIR',  RCMAIL_CONFIG_DIR.'/');
 require_once 'imel.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/bootstrap.php';
-require_once INSTALL_PATH.'program/lib/Roundcube/rcube_utils.php';
+require_once INSTALL_PATH.
+'program/lib/Roundcube/rcube_utils.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube_config.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube_session.php';

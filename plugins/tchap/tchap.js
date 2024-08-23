@@ -34,6 +34,8 @@ class tchap_manager extends MelObject {
   async main() {
     super.main();
 
+    if ($('#wait_box').length) $('#wait_box').hide();
+
     /**
      * Interrupteur local qui défini si tchap à été lancer en mode mobile puis redimensionner.
      *
@@ -59,9 +61,8 @@ class tchap_manager extends MelObject {
       $('#tchap_mobile').show();
     } else {
       this._tchap_mobile_mode_removed = true;
-      const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
-      $('body').append(loader);
-      $('#wait_box').hide();
+      // const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
+      // $('body').append(loader);
     }
 
     await Mel_Promise.wait(
@@ -74,7 +75,7 @@ class tchap_manager extends MelObject {
       this.change_theme();
     }
 
-    $('#tchaploader').hide();
+    //$('#tchaploader').hide();
 
     if (this._tchap_mobile_mode_removed) {
       window.addEventListener('resize', () => {
@@ -156,7 +157,11 @@ class tchap_manager extends MelObject {
         'tchap_badge',
       );
     } else if (
-      this.tchap_frame().querySelector('.mx_NotificationBadge') !== null
+      this.tchap_frame().querySelector('.mx_NotificationBadge_visible') !==
+        null &&
+      this.tchap_frame()
+        .querySelector('.mx_NotificationBadge_visible')
+        .getAttribute('tabindex') !== '-1'
     ) {
       MainNav.update_badge_text(TCHAT_UNREAD, 'tchap_badge');
     } else {

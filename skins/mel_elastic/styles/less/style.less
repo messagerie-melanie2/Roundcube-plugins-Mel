@@ -4659,7 +4659,7 @@ button {
     }
 
     &:last-child > div {
-      margin-bottom: 0;
+      // margin-bottom: 0;
     }
   }
 }
@@ -5046,9 +5046,8 @@ button.melv2-sec-nav-correction {
     display: flex;
     // padding: 0 308px;
     flex-wrap: wrap;
-    overflow: unset;
-    height: 260px;
-    max-height: 260px;
+    height: auto;
+    max-height: none;
     justify-content: center;
 
     .touch & {
@@ -6365,4 +6364,14 @@ iframe {
   //     }
   //   }
   // }
+}
+.menu {
+  a {
+    &.alpha-sort-icon {
+      &::before {
+        ._material-icon() !important;
+        content: '\e053';
+      }
+    }
+  }
 }

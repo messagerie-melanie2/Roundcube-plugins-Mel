@@ -1,4 +1,4 @@
-//compress:false
+//compress:true
 @import '../../../../../skins/mel_elastic/styles/less/main.less';
 
 .before() {
@@ -241,7 +241,7 @@ button {
       content: '';
       position: absolute;
       top: 0;
-      left: 23px;
+      left: 13px;
       width: 75px;
       height: 75px;
       border-radius: 15px;
@@ -278,7 +278,7 @@ button {
       padding: 5px !important;
       justify-content: start;
       .link-block {
-        margin-left: 28px;
+        margin: 0 6px;
         margin-top: 2px;
       }
     }
@@ -305,6 +305,7 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 12px;
   }
 
   .multilink-title-open {
@@ -320,7 +321,13 @@ button {
 .links-items {
   display: flex;
   flex-wrap: wrap;
+  align-content: baseline;
 }
+
+.mel-portal-ulinks {
+  height: 390px;
+  margin-top: 30px;
+} 
 
 .link-space-end {
   display: inline-flex;
@@ -375,7 +382,7 @@ button {
   // margin: 10px 20px;
   padding: 0;
   position: relative;
-  width: 120px;
+  width: 100px;
   align-items: center;
 
   .link-icon-container {
@@ -396,7 +403,7 @@ button {
       content: '';
       position: absolute;
       top: 0;
-      left: 23px;
+      left: 13px;
       width: 75px;
       height: 75px;
       border-radius: 15px;
@@ -441,7 +448,8 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 143px;
+    max-width: 110px;
+    font-size: 12px;
   }
 }
 
@@ -729,4 +737,13 @@ button {
       }
     }
   }
+}
+
+.mul_right_buttons {
+  position: absolute;
+  right: 15px;
+  height: 35px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }

@@ -1569,6 +1569,9 @@ export class LocationPartManager extends IDestroyable {
       this.locations[id].onchange.push(this._on_change_action.bind(this));
     }
 
+    if (this.locations[id].changed_to_this)
+      this.locations[id].changed_to_this();
+
     const new_loc = this.locations[id];
 
     rcmail.triggerEvent('location.changed', {

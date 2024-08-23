@@ -40,7 +40,18 @@ export class ModuleLinks extends BaseModule {
       },
       {},
     );
-    const hook_datas = this.trigger_event('mel.portal.links.generate.html', {
+
+    let hook_datas = this.rcmail().triggerEvent(
+      'mel.portal.links.generate.html',
+      {
+        break: false,
+        module: this,
+      },
+    );
+
+    if (!!hook_datas && hook_datas.break) return;
+
+    hook_datas = this.trigger_event('mel.portal.links.generate.html', {
       break: false,
       module: this,
     });
@@ -139,9 +150,26 @@ export class ModuleLinks extends BaseModule {
       for (let iterator of links) {
         if (!iterator.onclick.haveEvents()) {
           iterator.onclick.push((e) => {
-            const app = $(e.currentTarget).data('app');
-            FramesManager.Instance.switch_frame(app, {});
-            Look.SendTask(app);
+            let navigator = top ?? parent ?? window;
+
+            if (navigator.mm_st_ClassContract) {
+              let app = $(e.currentTarget).data('app');
+
+              switch (app) {
+                case 'chat':
+                  app = 'discussion';
+                  break;
+
+                default:
+                  break;
+              }
+
+              MelObject.Empty().change_frame(app, {
+                force_update: false,
+                update: false,
+              });
+              Look.SendTask(app);
+            }
           });
         }
         html_lines[~~(it / (links_lenght / lines))].addContent(iterator);
@@ -277,9 +305,6 @@ class html_link extends mel_html2 {
       if (!!this._current_task && !!this._current_task[1]) {
         this._current_task = this._current_task[1].split('&')[0];
       } else this._current_task = EMPTY_STRING;
-
-      if (!this._current_task || this._current_task === EMPTY_STRING)
-        this._current_task = $item.data('task') || EMPTY_STRING;
     }
 
     return this;

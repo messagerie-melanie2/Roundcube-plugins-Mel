@@ -178,6 +178,9 @@ class Workspaces extends Module
           case mel_workspace::CHANNEL:
             $tmp_html .= '<button data-channel="' . $ws->get_object($workspace, mel_workspace::CHANNEL)->name . '" onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="material-symbols-outlined fill-on-hover ariane-icon">forum</button>';
             break;
+          case mel_workspace::TCHAP_CHANNEL:
+            // $tmp_html .= '<button data-channel="' . $ws->get_object($workspace, mel_workspace::TCHAP_CHANNEL)->id . '" onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="material-symbols-outlined fill-on-hover ariane-icon">forum</button>';
+            break;
           default:
             $tmp_html .= '<button onclick="wsp_action_notif(this, `fromphp_' . $key . '`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" title="' . rcmail::get_instance()->gettext('button_title_' . $key, 'mel_portal') . '" style=display:none;><span class=' . $key . '><span class="' . $key . '-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';
             break;

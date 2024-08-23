@@ -49,17 +49,32 @@ class mel_useful_link extends bnum_plugin
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
           }
         }
+        else if($this->rc->task === 'bureau') {
+          $this->break_initial_fonctionality('mel.portal.links.generate.html');
+          $this->include_uLinks();
+          $this->convert_old_links();
+
+          $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
+          $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
+          $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+          $this->rc->output->set_env("default_links", $this->getFilteredDn(driver_mel::gi()->getUser()->dn));
+
+          $this->rc->output->set_env("mel_portal_ulink", true);
+        }
         else if (class_exists('mel_metapage') && mel_metapage::can_add_widget())
         {
             mel_metapage::add_widget("all_links" ,"useful_links");
             mel_metapage::add_widget("not_taked_links" ,"useful_links", 'joined');
         }
     }
+    
+    public function mel_portal_link() {
+      $html = html::div(['class' => 'links-items mel-portal-ulinks']);
+      return ['html' => $html];
+    }
 
     public function convert_old_links() {
       include_once "lib/link.php";
-
-      // $this->rc->user->save_prefs(array('new_personal_useful_links' => []));
 
       if (!$this->rc->config->get('new_personal_useful_links', []) && $this->rc->config->get('personal_useful_links', [])) {
         
@@ -96,14 +111,14 @@ class mel_useful_link extends bnum_plugin
         if ($item->links) {
           foreach ($item->links as $key => $value) {
             if(strpos($value->icon, '://')) {
-              $item->links->$key = self::convert_image($value, $id);
+              $item->links->$key = self::convert_image($value);
             }
           }
           $temp = new MelFolderLink($id, $item->title, $item->links);
           $mel_links[$id] = $temp->serialize();
         }
         else if(strpos($item->icon, '://')) {
-          $mel_links[$id] = self::convert_image($item, $id)->serialize();
+          $mel_links[$id] = self::convert_image($item)->serialize();
         }
       }
       $this->rc->user->save_prefs(array('new_personal_useful_links' => $mel_links));
@@ -111,10 +126,10 @@ class mel_useful_link extends bnum_plugin
       }
     }
 
-    private function convert_image($link, $id) {
+    private function convert_image($link) {
       $link->image = $link->icon;
       $link->icon = "";
-      $temp = new MelLink($id, $link->title, $link->link, $link->image, $link->icon);
+      $temp = new MelLink($link->id, $link->title, $link->link, $link->image, $link->icon);
       return $temp;
     }
     
@@ -181,7 +196,6 @@ class mel_useful_link extends bnum_plugin
     public function include_uLinks()
     {
       $this->load_script_module('manager');
-      $this->include_script('js/links.js');
       $this->include_stylesheet($this->local_skin_path().'/links.css');
       $this->rc->output->set_env("link_modify_options", $this->rc->config->get('modify_options', []));
     }
@@ -212,8 +226,7 @@ class mel_useful_link extends bnum_plugin
             'domain' => "mel_useful_link"
         ), $need_button);
         }
-
-      $this->include_script('js/classes.js');
+        
       $this->include_script('js/display.js');
     }
 
@@ -364,7 +377,7 @@ class mel_useful_link extends bnum_plugin
           $melLink = new MelLink($id, $title, $link, $image, $icon);
       }
   
-      //On supprime les anciens liens
+      //On supprime les anciens liens qui viennent d'être ajoutés dans un dossier
       $index;
       if ($isMultiLink) {
         foreach ($link as $link_key => $value) {
@@ -373,15 +386,15 @@ class mel_useful_link extends bnum_plugin
         }
         
         //On met le nouveau lien à la place des anciens
-        $config = array_merge(
-          array_slice($config, 0, $index),
-          array($id => $melLink->serialize()),
-          array_slice($config, $index)
-        );
+        if ($index) {
+          $config = array_merge(
+            array_slice($config, 0, $index),
+            array($id => $melLink->serialize()),
+            array_slice($config, $index)
+          );
+        }
       }
-      else {
-        $config[$id] = $melLink->serialize();
-      }
+      $config[$id] = $melLink->serialize();
 
       
 

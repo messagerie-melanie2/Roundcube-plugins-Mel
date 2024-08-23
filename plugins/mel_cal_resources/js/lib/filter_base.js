@@ -46,6 +46,7 @@ class FilterBase extends MelObject {
    * @param {?string} [destructured.load_data_on_start=null] Si on charge les données
    * @param {eInputType} [destructured.input_type=eInputType.select] Type de l'input (select ou multi-select)
    * @param {!string} [destructured.icon=EMPTY_STRING] Icône du filtre
+   * @param {!boolean} [destructured.number=false] Si les valeurs sont toutes des nombres ou non
    */
   constructor(
     name,
@@ -55,6 +56,7 @@ class FilterBase extends MelObject {
       load_data_on_start = null,
       input_type = eInputType.select,
       icon = EMPTY_STRING,
+      number = false,
     },
   ) {
     super();
@@ -65,6 +67,7 @@ class FilterBase extends MelObject {
       load_data_on_start,
       input_type,
       icon,
+      number,
     );
   }
 
@@ -131,6 +134,12 @@ class FilterBase extends MelObject {
      */
     this._icon = EMPTY_STRING;
     /**
+     * Le valeurs de ce filtre sont seulement des nombres
+     * @private
+     * @type {boolean}
+     */
+    this._number = false;
+    /**
      * Texte du filtre
      * @readonly
      * @type {string}
@@ -173,6 +182,7 @@ class FilterBase extends MelObject {
     load_data_on_start,
     input_type,
     icon,
+    number,
   ) {
     this._name = name;
     this._size = size;
@@ -180,6 +190,7 @@ class FilterBase extends MelObject {
     this._load_data_on_start = load_data_on_start;
     this._input_type = input_type;
     this._icon = icon;
+    this._number = number;
 
     Object.defineProperty(this, 'name', {
       value: rcmail.gettext(name, 'mel_cal_resources'),
@@ -220,6 +231,7 @@ class FilterBase extends MelObject {
    */
   _generate_select(jshtml, ...args) {
     const [localities] = args;
+
     switch (this._input_type) {
       case 'multi-select':
       case 'select':
@@ -251,7 +263,7 @@ class FilterBase extends MelObject {
                 .text(locality.name)
                 .end();
             },
-            ...localities,
+            ...MelEnumerable.from(localities).orderBy((x) => x.name),
           )
           .end();
 
@@ -398,10 +410,20 @@ class FilterBase extends MelObject {
 
         default:
           return (
-            resource.data[this._name].toUpperCase() ===
-            this._$filter.find(`[value="${this.value}"]`).text().toUpperCase()
+            // eslint-disable-next-line quotes
+            resource.data[this._name].replaceAll('’', "'").toUpperCase() ===
+            this._$filter
+              .find(`[value="${this.value}"]`)
+              .text()
+              // eslint-disable-next-line quotes
+              .replaceAll('’', "'")
+              .toUpperCase()
           );
       }
     }
+  }
+
+  has_only_number_values() {
+    return this._number;
   }
 }

@@ -26,8 +26,8 @@ $(document).ready(() => {
         const busy = rcmail.set_busy(true, 'loading');
         let location;
         $('#eventedit').css('opacity', 0);
-        window.start_planify = false;
         data.view.parts.location.update_first_location('flex-office');
+        window.start_planify = false;
 
         location =
           data.view.parts.location.locations[

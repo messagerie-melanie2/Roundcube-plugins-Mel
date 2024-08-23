@@ -198,6 +198,7 @@ class mel_moncompte extends rcube_plugin {
       $this->register_action('plugin.invitation',               array($this,'invitation'));
       $this->register_action('plugin.no_invitation',            array($this,'no_invitation'));
       $this->register_action('plugin.set_default_resource',     array($this,'set_default_resource'));
+      $this->register_action('plugin.ressources_calendar_agendas_tri_alpha', [$this, 'ressources_calendar_agendas_tri_alpha']);
 
       // register actions
       $this->register_action('plugin.mel_resources_bal', array($this,'resources_bal_init'));
@@ -426,6 +427,8 @@ class mel_moncompte extends rcube_plugin {
         }
       }
       else {
+        $account = rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET);
+
         // register UI objects
         $this->rc->output->add_handlers(
             array(
@@ -433,9 +436,25 @@ class mel_moncompte extends rcube_plugin {
                 'mel_resources_type_frame'    => array($this,'mel_resources_type_frame'),
             )
         );
-        $this->rc->output->set_env("account", rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
+        $config = [
+                      'command' => 'rcs-agenda-tri-alpha',
+            'class' => 'alpha-sort-icon'.($account === null ? '' : ' disabled'),
+            'innerclass' => 'inner',
+            'id' => 'rcs-agenda-tri-alpha',//tb_label_popup
+            'title' => 'mel_moncompte.sort_title', // gets translated
+            'type' => 'link',
+            'data-type' => 'link',
+            'label' => 'mel_moncompte.sort', // maybe put translated version of "Labels" here?
+            // 'wrapper'    => 'li',
+        ];
+
+        if (isset($account)) $config['disabled'] = 'disabled';
+
+        $this->add_button($config, 'rcs_moncompte_header');
+        $this->rc->output->set_env("account", $account);
         $this->rc->output->set_env("resources_action", "agendas");
         $this->rc->output->include_script('list.js');
+        $this->include_script('events.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));
         $this->rc->output->send('mel_moncompte.resources_elements');
       }
@@ -448,6 +467,27 @@ class mel_moncompte extends rcube_plugin {
       return false;
     }
   }
+
+  public function ressources_calendar_agendas_tri_alpha() {
+    $user = driver_mel::gi()->getUser();
+    $calendars = $user->getSharedCalendars();
+
+    $calendars = mel_helper::Enumerable($calendars)->orderBy(function ($key, $value) {
+      return ord($value->name);
+    });
+
+    $sort = [];
+    $it = 1;
+    foreach ($calendars as $calendar) {
+      if ($calendar->id !== $user->uid) $sort[(++$it)+($calendar->owner === $user->uid ? 2000 : 3000)] = driver_mel::gi()->mceToRcId($calendar->id);
+    }
+
+    $this->rc->user->save_prefs(['sort_agendas' => $sort]);
+
+    echo 'reload';
+    exit; 
+  }
+
   /**
    * Initialisation du menu ressources pour les Contacts
    * Affichage du template et gestion de la sélection

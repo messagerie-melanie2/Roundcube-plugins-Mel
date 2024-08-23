@@ -812,12 +812,12 @@ class tasklist_mel_driver extends tasklist_driver {
     }
 
     if (isset($record->modified)) {
-      $task['changed'] = new DateTime(date(self::DB_DATE_FORMAT, $record->modified), $this->plugin->timezone);
+      $task['changed'] = date_timezone_set(new DateTime(date(self::DB_DATE_FORMAT, $record->modified)), $this->plugin->timezone);
     } else {
       $task['changed'] = '';
     }
     if ($created = $record->getAttribute('created')) {
-      $task['created'] = new DateTime(date(self::DB_DATE_FORMAT, $created), $this->plugin->timezone);
+      $task['created'] = date_timezone_set(new DateTime(date(self::DB_DATE_FORMAT, $created)), $this->plugin->timezone);
     }
     
     if ($record->alarm != 0) {

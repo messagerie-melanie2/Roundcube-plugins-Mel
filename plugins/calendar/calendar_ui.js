@@ -2741,7 +2741,8 @@ function rcube_calendar_ui(settings) {
       });
     }
   };
-
+  //PAMELA
+  this.event_times_changed = event_times_changed;
   // add the given list of participants
   var add_attendees = function (names, params) {
     names = explode_quoted_string(names.replace(/,\s*$/, ''), ',');

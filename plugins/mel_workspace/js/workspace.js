@@ -230,8 +230,8 @@ function Start(uid, hasAriane, datas) {
           'src',
           rcmail.env.tchap_url +
             '#/room/' +
-            $(top.current_workspace_in_background)[0].contentWindow.rcmail.env
-              .current_workspace_tchap_channel.id,
+            top.current_workspace_in_background.get()[0].contentWindow.rcmail
+              .env.current_workspace_tchap_channel.id,
         );
     }
   });

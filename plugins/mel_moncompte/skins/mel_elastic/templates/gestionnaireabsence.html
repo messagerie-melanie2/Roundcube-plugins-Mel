@@ -44,8 +44,11 @@
                   </label>
                 </td>
                 <td class="col-sm-6">
-                  <input type="text" name="absence_date_debut" id="abs_date_debut" class="form-control"
-                    value="<roundcube:var name="env:moncompte_absence_debut_interne" />" />
+                  <div class="abs_date_picker">
+                    <input type="text" name="absence_date_debut" id="abs_date_debut" class="form-control"
+                      value="<roundcube:var name="env:moncompte_absence_debut_interne" />" />
+                    <span class="calendar_icon"></span>
+                  </div>
                 </td>
               </tr>
               <tr class="form-group row">
@@ -55,8 +58,11 @@
                   </label>
                 </td>
                 <td class="col-sm-6">
-                  <input type="text" name="absence_date_fin" id="abs_date_fin" class="form-control"
-                    value="<roundcube:var name="env:moncompte_absence_fin_interne" />" />
+                  <div class="abs_date_picker">
+                    <input type="text" name="absence_date_fin" id="abs_date_fin" class="form-control"
+                      value="<roundcube:var name="env:moncompte_absence_fin_interne" />" />
+                    <span class="calendar_icon"></span>
+                  </div>
                 </td>
               </tr>
             </tbody>

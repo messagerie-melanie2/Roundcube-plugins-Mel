@@ -67,6 +67,7 @@ function init()
         $this->register_action('test_get_all_comments_bypost', array($this, 'test_get_all_comments_bypost'));
         $this->register_action('test_count_comments', array($this, 'test_count_comments'));
         $this->register_action('test_delete_like', array($this, 'test_delete_like'));
+        $this->register_action('test_count_likes', array($this, 'test_count_likes'));
         $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
         $this->register_action('test_delete_reaction', array($this, 'test_delete_reaction'));
         $this->register_action('test_get_all_reactions_bypost', array($this, 'test_get_all_reactions_bypost'));
@@ -80,7 +81,7 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'post']);
+        $this->register_action('index', [$this, 'index']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Affichage de la page qui permet de créer un article
@@ -121,6 +122,8 @@ function init()
         $this->register_action('count_comment', array($this, 'count_comment'));
         //Supprimer un Like
         $this->register_action('delete_like', array($this, 'delete_like'));
+        // Compter le nombre de commentaires pour un Post
+        $this->register_action('count_likes', array($this, 'count_likes'));
         // Créer un tag
         $this->register_action('create_tag', array($this, 'create_tag'));
         // Modifier un tag
@@ -1346,6 +1349,38 @@ public function delete_like()
 }
 
 /**
+ * Compte le nombre de likes pour un article donné.
+ *
+ * Cette fonction récupère l'uid de l'article,
+ * charge l'article correspondant, et obtient le nombre
+ * de likes pour cet article. Le résultat est retourné.
+ *
+ * @return void
+ *
+ * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
+ */
+public function count_Likes($uid)
+{
+    // Récupérer l'article existant
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    // Vérifier si l'article existe
+    if (!$post->load()) {
+        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+        exit;
+    }
+
+    // Obtenir le nombre de commentaires
+    $likeCount = $post->countLikes();
+
+    return $likeCount;
+
+    // Arrêt de l'exécution du script
+    exit;
+}
+
+/**
  * Crée une réaction à un post.
  *
  * Cette fonction récupère les informations nécessaires depuis les variables POST,
@@ -1653,6 +1688,12 @@ public function show_posts($posts) {
 
         // Ajoute le nombre de réaction au HTML du post
         $html_post_copy = str_replace("<post-count-reactions/>", $reaction_count, $html_post_copy);
+
+        // Récupérer le nombre de likes
+        $like_count = $this->count_likes($post->uid);
+
+        // Ajoute le nombre de likes au HTML du post
+        $html_post_copy = str_replace("<post-count-thumb-up/>", $like_count, $html_post_copy);
 
         // Récupérer le nombre de commentaire
         $comment_count = $this->count_comments($post->id);
@@ -2448,6 +2489,31 @@ public function test_delete_like()
 
     // Arrêt de l'exécution du script
     exit; 
+}
+
+public function test_count_likes()
+{
+    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
+
+    // Récupérer l'article existant par son ID
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    // Récupérer les commentaires de l'article
+    $comments = $post->get_all_comments_bypost(); // Méthode qui récupère les commentaires liés à l'article
+
+    $totalLikes = 0;
+
+    // Compter les likes pour chaque commentaire
+    foreach ($comments as $comment) {
+        $totalLikes += $comment->getList(); // Méthode getList() pour compter ses likes
+    }
+
+    // Retourner ou afficher le nombre total de likes pour l'article
+    echo json_encode(['status' => 'success', 'likes' => $totalLikes]);
+
+    // Arrêt de l'exécution du script
+    exit;
 }
 
 public function test_create_reaction()

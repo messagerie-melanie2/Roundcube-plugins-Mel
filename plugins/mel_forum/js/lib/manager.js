@@ -44,6 +44,7 @@ export class Manager extends MelObject {
 
             // Crée une instance de PostComment pour chaque commentaire.
             var commentVizualizer = new PostComment(
+                comment.id,
                 comment.uid,
                 comment.post_id,
                 comment.user_id,
@@ -65,15 +66,15 @@ export class Manager extends MelObject {
     }
 
     // Attache des événements de clic pour gérer les likes et les dislikes après que tous les commentaires aient été ajoutés au DOM.
-    $('.reaction-item .icon[data-icon="thumb_up"]').on('click', (e) => {
-        this.handleLikeClick(e.currentTarget);
-        return false; // Empêche la propagation de l'événement.
-    });
+    // $('.reaction-item .icon[data-icon="thumb_up"]').on('click', (e) => {
+    //     this.handleLikeClick(e.currentTarget);
+    //     return false; // Empêche la propagation de l'événement.
+    // });
 
-    $('.reaction-item .icon[data-icon="thumb_down"]').on('click', (e) => {
-        this.handleDislikeClick(e.currentTarget);
-        return false; // Empêche la propagation de l'événement.
-    });
+    // $('.reaction-item .icon[data-icon="thumb_down"]').on('click', (e) => {
+    //     this.handleDislikeClick(e.currentTarget);
+    //     return false; // Empêche la propagation de l'événement.
+    // });
 
     // Affiche les données de tous les commentaires dans la console pour débogage.
     console.log(allComments);

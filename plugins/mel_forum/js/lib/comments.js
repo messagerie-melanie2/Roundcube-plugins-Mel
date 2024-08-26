@@ -44,6 +44,7 @@ class PostComment {
  * retourne la valeur initiale passée en paramètre, et un setter qui permet 
  * de mettre à jour cette valeur.
  *
+ * @param {string} id - L'identifiant de l'objet.
  * @param {string} uid - L'identifiant unique de l'objet.
  * @param {string} post_id - L'identifiant du post associé.
  * @param {string} user_uid - L'identifiant de l'utilisateur.
@@ -55,8 +56,9 @@ class PostComment {
  * @param {string} parent - L'Id du commentaire parent s'il existe'.
  * @param {integer} children_number - Le nombre de réponse au commentaire parent
  */
-  _setup(uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number) {
+  _setup(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number) {
 
+          this.id = id;
           this.uid = uid;
           this.post_id = post_id;
           this.user_uid = user_uid;
@@ -69,18 +71,51 @@ class PostComment {
           this.children_number = children_number;
   }
   
-  async saveLikeOrDislike(type) {
-    let return_data;
-    await mel_metapage.Functions.post(
-        mel_metapage.Functions.url('forum', 'like_comment'),
-        { _comment_id: this.uid, _type: type },
-        (datas) => {
-            return_data = JSON.parse(datas);
+  async saveLikeOrDislike(type, uid) {
+    //Changer element qui est un event clic en this
+
+    try {
+        // Envoyer la requête pour enregistrer le like ou dislike
+        // Utilisation d'une fonction asynchrone pour envoyer une requête POST à l'API.
+        // La requête envoie l'ID du commentaire, l'UID de l'utilisateur et le type de réaction (like ou dislike).
+        const response = await mel_metapage.Functions.post(
+            mel_metapage.Functions.url('forum', 'like_comment'),
+            { 
+                _comment_id: this.id,  // L'identifiant du commentaire à aimer ou disliker
+                _comment_uid: this.uid,     // L'identifiant de l'utilisateur effectuant l'action
+                _type: type                 // Le type de réaction (like ou dislike)
+            }
+        );
+
+        // Vérifier le statut de la réponse
+        // Si le serveur retourne un statut de succès, afficher un message de confirmation à l'utilisateur.
+        if (response.status === 'success') {
+            rcmail.display_message('Votre réaction a été enregistrée avec succès.', 'confirmation');
+
+            // Mise à jour de l'interface utilisateur
+            // Si la réaction est un 'like', incrémenter le compteur de likes dans l'interface utilisateur.
+            if (type === 'like') {
+                let likeCounter = $('[data-like-uid="'+uid+'"]').siblings('span.ml-2');
+                likeCounter.text(parseInt(likeCounter.text()) + 1);
+            // Si la réaction est un 'dislike', incrémenter le compteur de dislikes dans l'interface utilisateur.
+            } else if (type === 'dislike') {
+                let dislikeCounter = $('[data-dislike-uid="'+uid+'"]').siblings('span.ml-2');
+                dislikeCounter.text(parseInt(dislikeCounter.text()) + 1);
+            }
+        } else {
+            // Si le statut de la réponse n'est pas 'success', afficher le message d'erreur reçu du serveur.
+            rcmail.display_message(return_data.message, 'error');
         }
-    );
-  
-    return return_data;
-  }
+        
+        // Retourner les données reçues.
+        return return_data;
+    } catch (error) {
+        // En cas d'erreur lors de la requête, afficher un message d'erreur et loguer l'erreur dans la console.
+        rcmail.display_message('Une erreur est survenue lors de l\'enregistrement de votre réaction.', 'error');
+        console.error("Erreur lors de l'enregistrement du like/dislike:", error);
+    }
+}
+
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions.
@@ -134,14 +169,14 @@ class PostComment {
         .end('div')
         .div({ class: 'forum-comment-reactions' })
           .div({ class: 'reaction-item active mr-3' })
-            .span({ class: 'icon', 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like') })
+            .span({ class: 'icon', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) })
             .end('span')
             .span({ class: 'ml-2' })
               .text(this.likes)
             .end('span')
           .end('div')
           .div({ class: 'reaction-item mr-3' })
-            .span({ class: 'icon', 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike') })
+            .span({ class: 'icon', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) })
             .end('span')
             .span({ class: 'ml-2' })
               .text(this.dislikes)

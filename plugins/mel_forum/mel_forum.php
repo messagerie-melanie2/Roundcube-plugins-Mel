@@ -81,7 +81,7 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'index']);
+        $this->register_action('index', [$this, 'post']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Affichage de la page qui permet de créer un article
@@ -1162,11 +1162,12 @@ public function like_comment()
 {
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
-    $user_uid = $user->getName();
+    $user_uid = $user->uid;
 
     // Récupérer les valeurs
     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
     $comment_id = rcube_utils::get_input_value('_comment_id', rcube_utils::INPUT_POST);
+    $comment_uid = rcube_utils::get_input_value('_comment_uid', rcube_utils::INPUT_POST);
 
     // Validation des données saisies
     if (empty($type) || empty($comment_id)) {
@@ -1176,7 +1177,7 @@ public function like_comment()
 
     // Charger le commentaire pour récupérer son id et son créateur
     $comment = new LibMelanie\Api\Defaut\Posts\Comment();
-    $comment->uid = $comment_id;
+    $comment->uid = $comment_uid;
 
     if (!$comment->load()) {
         echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
@@ -1195,16 +1196,47 @@ public function like_comment()
     $existing_reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
     $existing_reaction->comment = $comment_id;
     $existing_reaction->creator = $user_uid;
+    $existing_reaction->type = $type;
 
+    //   tester si type like puis load et ensuite si type dislike puis load
+
+    // if ($existing_reaction->load()) {
+    //     // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
+    //     if ($existing_reaction->type === $type) {
+    //         $existing_reaction->delete();
+    //         echo json_encode(['status' => 'success', 'message' => ucfirst($type) . ' annulé avec succès.']);
+    //         exit;
+    //     } else {
+    //         // Sinon, l'utilisateur change de réaction (like -> dislike ou dislike -> like)
+    //         $existing_reaction->delete();
+    //     }
+    // }
+
+    // Tester si le type est "like"
+    $existing_reaction->type = 'like';
     if ($existing_reaction->load()) {
         // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
-        if ($existing_reaction->type === $type) {
+        if ($type === 'like') {
             $existing_reaction->delete();
-            echo json_encode(['status' => 'success', 'message' => ucfirst($type) . ' annulé avec succès.']);
+            echo json_encode(['status' => 'success', 'message' => 'Like annulé avec succès.']);
             exit;
         } else {
-            // Sinon, l'utilisateur change de réaction (like -> dislike ou dislike -> like)
+            // Sinon, l'utilisateur change de réaction (like -> dislike)
             $existing_reaction->delete();
+        }
+    } else {
+        // Si aucun like n'existe, tester pour le dislike
+        $existing_reaction->type = 'dislike';
+        if ($existing_reaction->load()) {
+            // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
+            if ($type === 'dislike') {
+                $existing_reaction->delete();
+                echo json_encode(['status' => 'success', 'message' => 'Dislike annulé avec succès.']);
+                exit;
+            } else {
+                // Sinon, l'utilisateur change de réaction (dislike -> like)
+                $existing_reaction->delete();
+            }
         }
     }
 
@@ -1255,8 +1287,10 @@ public function get_all_comments_bypost()
 
                 // Formater la date au format jour-mois-année
                 $formatted_date = date('d-m-Y', strtotime($comment->created));
+                $comment->likes = null;
 
                 $comments_array[$comment->uid] = [
+                    'id' => $comment->id,
                     'uid' => $comment->uid,
                     'post_id' => $comment->post_id,
                     'user_id' => $comment->user_uid,

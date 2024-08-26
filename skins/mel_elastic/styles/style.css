@@ -4480,3 +4480,20 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
   transform: scale(1.5) !important;
   content: '\e053';
 }
+@media screen and (max-width: 904px) {
+  .ui-dialog {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    top: 0 !important;
+  }
+  .ui-dialog .ui-resizable-handle,
+  .ui-dialog .ui-dialog-titlebar-close {
+    display: block !important;
+  }
+}
+.boxwarning .custom-switch .custom-control-label {
+  color: var(--modal-title-color);
+}

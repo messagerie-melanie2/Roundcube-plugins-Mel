@@ -357,7 +357,10 @@ class ResourceBaseFunctions {
       this.end = moment(this.start).add(1, 'h');
     }
 
+    this._$calendar.fullCalendar('gotoDate', this.start);
     this._$calendar.fullCalendar('refetchEvents');
+
+    this.refresh_calendar_date();
   }
 
   /**

@@ -1196,21 +1196,10 @@ public function like_comment()
     $existing_reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
     $existing_reaction->comment = $comment_id;
     $existing_reaction->creator = $user_uid;
-    $existing_reaction->type = $type;
 
-    //   tester si type like puis load et ensuite si type dislike puis load
-
-    // if ($existing_reaction->load()) {
-    //     // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
-    //     if ($existing_reaction->type === $type) {
-    //         $existing_reaction->delete();
-    //         echo json_encode(['status' => 'success', 'message' => ucfirst($type) . ' annulé avec succès.']);
-    //         exit;
-    //     } else {
-    //         // Sinon, l'utilisateur change de réaction (like -> dislike ou dislike -> like)
-    //         $existing_reaction->delete();
-    //     }
-    // }
+    // Initialiser la variable de message et de status
+    $message = '';
+    $status = 'success';
 
     // Tester si le type est "like"
     $existing_reaction->type = 'like';
@@ -1218,11 +1207,11 @@ public function like_comment()
         // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
         if ($type === 'like') {
             $existing_reaction->delete();
-            echo json_encode(['status' => 'success', 'message' => 'Like annulé avec succès.']);
-            exit;
+            $message = 'Like annulé avec succès.';
         } else {
             // Sinon, l'utilisateur change de réaction (like -> dislike)
             $existing_reaction->delete();
+            $message = 'Like annulé, dislike enregistré avec succès.';
         }
     } else {
         // Si aucun like n'existe, tester pour le dislike
@@ -1231,31 +1220,32 @@ public function like_comment()
             // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
             if ($type === 'dislike') {
                 $existing_reaction->delete();
-                echo json_encode(['status' => 'success', 'message' => 'Dislike annulé avec succès.']);
-                exit;
+                $message = 'Dislike annulé avec succès.';
             } else {
                 // Sinon, l'utilisateur change de réaction (dislike -> like)
                 $existing_reaction->delete();
+                $message = 'Dislike annulé, like enregistré avec succès.';
             }
+        } else {
+            // Si aucune réaction n'existe, on va créer une nouvelle réaction
+            $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+            $reaction->comment = $comment_id;
+            $reaction->creator = $user_uid;
+            $reaction->type = $type;
+
+            // Sauvegarde de la nouvelle réaction
+            $ret = $reaction->save();
+            if (is_null($ret)) {
+                echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
+                exit;
+            }
+            $message = ucfirst($type) . ' enregistré avec succès.';
         }
     }
 
-    // Créer un nouveau like/dislike
-    $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
-    $reaction->comment = $comment_id;
-    $reaction->creator = $user_uid;
-    $reaction->type = $type;
-
-    // Sauvegarde de la nouvelle réaction
-    $ret = $reaction->save();
-    if (!is_null($ret)) {
-        header('Content-Type: application/json');
-        echo json_encode(['status' => 'success', 'message' => ucfirst($type) . ' enregistré avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
-    }
-
-    // Arrêt de l'exécution du script
+    // Retourner la réponse JSON avec le statut et le message approprié
+    header('Content-Type: application/json');
+    echo json_encode(['status' => $status, 'message' => $message]);
     exit;
 }
 

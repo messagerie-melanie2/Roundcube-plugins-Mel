@@ -55,8 +55,10 @@ export class Manager extends MelObject {
                 comment.dislikes,
                 comment.parent,
                 comment.children_number,
+                comment.current_user_reacted,
             );
 
+            debugger;
             // Génère le HTML pour ce commentaire et l'ajoute à la zone de commentaires dans le DOM.
             commentVizualizer.generateHtml().appendTo($('#comment-area'));
 

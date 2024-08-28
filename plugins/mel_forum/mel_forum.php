@@ -1211,6 +1211,19 @@ public function like_comment()
             // Sinon, l'utilisateur change de réaction (like -> dislike)
             $existing_reaction->delete();
             $message = 'Like annulé, dislike enregistré avec succès.';
+
+            $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+            $reaction->comment = $comment_id;
+            $reaction->creator = $user_uid;
+            $reaction->type = $type;
+
+            // Sauvegarde de la nouvelle réaction
+            $ret = $reaction->save();
+            if (is_null($ret)) {
+                echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
+                exit;
+            }
+            $message = ucfirst($type) . ' enregistré avec succès.';
         }
     } else {
         // Si aucun like n'existe, tester pour le dislike
@@ -1224,6 +1237,19 @@ public function like_comment()
                 // Sinon, l'utilisateur change de réaction (dislike -> like)
                 $existing_reaction->delete();
                 $message = 'Dislike annulé, like enregistré avec succès.';
+
+                $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
+                $reaction->comment = $comment_id;
+                $reaction->creator = $user_uid;
+                $reaction->type = $type;
+
+                // Sauvegarde de la nouvelle réaction
+                $ret = $reaction->save();
+                if (is_null($ret)) {
+                    echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
+                    exit;
+                }
+                $message = ucfirst($type) . ' enregistré avec succès.';
             }
         } else {
             // Si aucune réaction n'existe, on va créer une nouvelle réaction
@@ -1278,6 +1304,16 @@ public function get_all_comments_bypost()
                 $formatted_date = date('d-m-Y', strtotime($comment->created));
                 $comment->likes = null;
 
+                // Test si l'utilisateur courant a réagit au commentaire
+                $comment_reactions=$comment->listLikes();
+                $current_user_reacted = '';
+                foreach ($comment_reactions as $reaction) {
+                    if ($reaction->user_uid === driver_mel::gi()->getUser()->uid) {
+                        $current_user_reacted = $reaction->like_type;
+                    }
+                }
+
+
                 $comments_array[$comment->uid] = [
                     'id' => $comment->id,
                     'uid' => $comment->uid,
@@ -1290,6 +1326,7 @@ public function get_all_comments_bypost()
                     'children_number' => $comment->countChildren(),
                     'likes' => $comment->countLikes(),
                     'dislikes' => $comment->countDislikes(),
+                    'current_user_reacted' => $current_user_reacted,
                 ];
             }
         } 

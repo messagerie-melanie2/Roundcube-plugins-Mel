@@ -83,81 +83,68 @@ class PostComment {
  * @param {string} uid - L'identifiant unique du commentaire.
  * @returns {Object} response - La réponse du serveur, incluant le statut et le message.
  */
- async saveLikeOrDislike(type, uid) {
+  async saveLikeOrDislike(type, uid) {
     try {
-        // Fonction pour envoyer la requête au serveur
         const sendRequest = async (reactionType) => {
             return await mel_metapage.Functions.post(
                 mel_metapage.Functions.url('forum', 'like_comment'),
                 { 
-                    _comment_id: this.id,  // L'identifiant du commentaire
-                    _comment_uid: this.uid, // L'identifiant de l'utilisateur
-                    _type: reactionType     // Le type de réaction (like ou dislike)
+                    _comment_id: this.id,
+                    _comment_uid: this.uid,
+                    _type: reactionType
                 }
             );
         };
 
-        // Envoyer la requête pour enregistrer ou annuler la réaction
         let response = await sendRequest(type);
 
-        // Mise à jour de l'interface utilisateur
         let likeCounterElement = $('[data-like-uid="'+uid+'"]').siblings('span.ml-2');
         let dislikeCounterElement = $('[data-dislike-uid="'+uid+'"]').siblings('span.ml-2');
         let likeActionElement = $('[data-like-uid="'+uid+'"]');
         let dislikeActionElement = $('[data-dislike-uid="'+uid+'"]');
 
-        // Fonction pour ajuster le compteur et l'état des actions
-        const adjustCountersAndStates = () => {
-            if (response.message.includes('annulé')) {
-                // Annulation de la réaction
-                if (type === 'like') {
-                    likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
-                    likeActionElement.removeClass('active');
-                } else if (type === 'dislike') {
+        if (response.message.includes('annulé')) {
+            if (type === 'like') {
+                likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
+                likeActionElement.parent().removeClass('active');
+                this.current_user_reacted = ''; 
+            } else if (type === 'dislike') {
+                dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
+                dislikeActionElement.parent().removeClass('active');
+                this.current_user_reacted = '';
+            }
+        } else {
+            if (type === 'like') {
+                likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
+                likeActionElement.parent().addClass('active');
+                this.current_user_reacted = 'like';
+                if (dislikeActionElement.parent().hasClass('active')) {
                     dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
-                    dislikeActionElement.removeClass('active');
+                    dislikeActionElement.parent().removeClass('active');
                 }
-            } else {
-                // Ajout ou modification de la réaction
-                if (type === 'like') {
-                    likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
-                    likeActionElement.addClass('active');
-                    if (dislikeActionElement.hasClass('active')) {
-                        dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
-                        dislikeActionElement.removeClass('active');
-                    }
-                } else if (type === 'dislike') {
-                    dislikeCounterElement.text(parseInt(dislikeCounterElement.text()) + 1);
-                    dislikeActionElement.addClass('active');
-                    if (likeActionElement.hasClass('active')) {
-                        likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
-                        likeActionElement.removeClass('active');
-                    }
+            } else if (type === 'dislike') {
+                dislikeCounterElement.text(parseInt(dislikeCounterElement.text()) + 1);
+                dislikeActionElement.parent().addClass('active');
+                this.current_user_reacted = 'dislike';
+                if (likeActionElement.parent().hasClass('active')) {
+                    likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
+                    likeActionElement.parent().removeClass('active');
                 }
             }
-        };
+        }
 
-        adjustCountersAndStates();
-
-        // Afficher le message approprié
         if (response.status === 'success') {
             rcmail.display_message(response.message, 'confirmation');
         } else {
             rcmail.display_message(response.message, 'error');
         }
 
-        // Retourner la réponse reçue.
         return response;
     } catch (error) {
-        // En cas d'erreur lors de la requête, afficher un message d'erreur et loguer l'erreur dans la console.
         rcmail.display_message('Une erreur est survenue lors de l\'enregistrement de votre réaction.', 'error');
         console.error("Erreur lors de l'enregistrement du like/dislike:", error);
     }
 }
-
-
-
-
 
 
   /**
@@ -172,21 +159,11 @@ class PostComment {
  * @returns {string} - Le code HTML généré sous forme de chaîne de caractères.
  */
   generateHtml() {
-    console.log("UID:", this.uid);
-    console.log("PostID:", this.post_id);
-    console.log("UserID:", this.user_uid);
-    console.log("UserName:", this.user_name);
-    console.log("Content:", this.content);
-    console.log("Created:", this.created);
-    console.log("Likes:", this.likes);
-    console.log("Dislikes:", this.dislikes);
-    console.log("Child:", this.parent);
-    //prettier-ignore
+    let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
+    let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
+
     let html = MelHtml.start
-      .div({ 
-        id: 'comment-id-' + this.uid,
-        class: 'row comment'
-        })
+      .div({ id: 'comment-id-' + this.uid, class: 'row comment' })
         .div({ class: 'col-12' })
           .div({ class: 'd-flex align-items-center' })
             .img({
@@ -194,62 +171,41 @@ class PostComment {
               alt: 'Image de profil',
               class: 'forum-comment-profile-image'
               })
-            .span({ class: 'forum-content-author' })
-              .text(this.user_name)
-            .end('span')
+            .span({ class: 'forum-content-author' }).text(this.user_name).end('span')
           .div({ class: 'forum-comment-date d-flex align-items-end' })
-            .span({ class: 'icon', 'data-icon': 'access_time' })
-            .end('span')
-            .span({ class: 'ml-1' })
-              .text(this.created)
-            .end('span')
+            .span({ class: 'icon', 'data-icon': 'access_time' }).end('span')
+            .span({ class: 'ml-1' }).text(this.created).end('span')
           .end('div')
         .end('div')
         .div({ class: 'forum-comment-text' })
-          .p()
-            .text(this.content)
-          .end('p')
+          .p().text(this.content).end('p')
         .end('div')
         .div({ class: 'forum-comment-reactions' })
-          .div({ class: 'reaction-item active mr-3' })
-            .span({ class: 'icon', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) })
-            .end('span')
-            .span({ class: 'ml-2' })
-              .text(this.likes)
-            .end('span')
+          .div({ class: likeClass })
+            .span({ class: 'icon', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) }).end('span')
+            .span({ class: 'ml-2' }).text(this.likes).end('span')
           .end('div')
-          .div({ class: 'reaction-item mr-3' })
-            .span({ class: 'icon', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) })
-            .end('span')
-            .span({ class: 'ml-2' })
-              .text(this.dislikes)
-            .end('span')
+          .div({ class: dislikeClass })
+            .span({ class: 'icon', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) }).end('span')
+            .span({ class: 'ml-2' }).text(this.dislikes).end('span')
           .end('div')
           .div({ class: 'reaction-item mr-3 response' })
-            .span({ class: 'icon', 'data-icon': 'mode_comment' })
-            .end('span')
-            .span({ class: 'ml-2' })
-              .text('répondre')
-            .end('span')
+            .span({ class: 'icon', 'data-icon': 'mode_comment' }).end('span')
+            .span({ class: 'ml-2' }).text('répondre').end('span')
           .end('div')
           .div({ class: 'reaction-item' })
-            .span({ class: 'icon', 'data-icon': 'more_horiz' })
-            .end('span')
+            .span({ class: 'icon', 'data-icon': 'more_horiz' }).end('span')
           .end('div')
         .end('div')
         .div({ class: 'forum-comment-response' })
-          .span({ class: 'icon', 'data-icon': 'arrow_drop_down' })
-          .end('span')
-          .span({ class: 'ml-2' })
-            .text(this.children_number + ' réponses')
-          .end('span')
+          .span({ class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
+          .span({ class: 'ml-2' }).text(this.children_number + ' réponses').end('span')
         .end('div')
       .end('div')
       .end('div');
 
     return html.generate();
- }
-
+}
 }
 
 class PostCommentView {

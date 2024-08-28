@@ -71,50 +71,93 @@ class PostComment {
           this.children_number = children_number;
   }
   
-  async saveLikeOrDislike(type, uid) {
-    //Changer element qui est un event clic en this
-
+  /**
+ * Enregistre ou met à jour une réaction (like ou dislike) sur un commentaire.
+ *
+ * Cette fonction envoie une requête au serveur pour enregistrer ou modifier une réaction 
+ * de l'utilisateur sur un commentaire. Si la réaction est annulée, une nouvelle requête 
+ * est envoyée pour enregistrer la nouvelle réaction. L'interface utilisateur est mise à jour 
+ * en conséquence pour refléter le changement de réaction.
+ *
+ * @param {string} type - Le type de réaction ('like' ou 'dislike').
+ * @param {string} uid - L'identifiant unique du commentaire.
+ * @returns {Object} response - La réponse du serveur, incluant le statut et le message.
+ */
+ async saveLikeOrDislike(type, uid) {
     try {
-        // Envoyer la requête pour enregistrer le like ou dislike
-        // Utilisation d'une fonction asynchrone pour envoyer une requête POST à l'API.
-        // La requête envoie l'ID du commentaire, l'UID de l'utilisateur et le type de réaction (like ou dislike).
-        const response = await mel_metapage.Functions.post(
-            mel_metapage.Functions.url('forum', 'like_comment'),
-            { 
-                _comment_id: this.id,  // L'identifiant du commentaire à aimer ou disliker
-                _comment_uid: this.uid,     // L'identifiant de l'utilisateur effectuant l'action
-                _type: type                 // Le type de réaction (like ou dislike)
-            }
-        );
+        // Fonction pour envoyer la requête au serveur
+        const sendRequest = async (reactionType) => {
+            return await mel_metapage.Functions.post(
+                mel_metapage.Functions.url('forum', 'like_comment'),
+                { 
+                    _comment_id: this.id,  // L'identifiant du commentaire
+                    _comment_uid: this.uid, // L'identifiant de l'utilisateur
+                    _type: reactionType     // Le type de réaction (like ou dislike)
+                }
+            );
+        };
 
-        // Vérifier le statut de la réponse
-        // Si le serveur retourne un statut de succès, afficher un message de confirmation à l'utilisateur.
+        // Envoyer la requête pour enregistrer ou annuler la réaction
+        let response = await sendRequest(type);
+
+        // Mise à jour de l'interface utilisateur
+        let likeCounterElement = $('[data-like-uid="'+uid+'"]').siblings('span.ml-2');
+        let dislikeCounterElement = $('[data-dislike-uid="'+uid+'"]').siblings('span.ml-2');
+        let likeActionElement = $('[data-like-uid="'+uid+'"]');
+        let dislikeActionElement = $('[data-dislike-uid="'+uid+'"]');
+
+        // Fonction pour ajuster le compteur et l'état des actions
+        const adjustCountersAndStates = () => {
+            if (response.message.includes('annulé')) {
+                // Annulation de la réaction
+                if (type === 'like') {
+                    likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
+                    likeActionElement.removeClass('active');
+                } else if (type === 'dislike') {
+                    dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
+                    dislikeActionElement.removeClass('active');
+                }
+            } else {
+                // Ajout ou modification de la réaction
+                if (type === 'like') {
+                    likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
+                    likeActionElement.addClass('active');
+                    if (dislikeActionElement.hasClass('active')) {
+                        dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
+                        dislikeActionElement.removeClass('active');
+                    }
+                } else if (type === 'dislike') {
+                    dislikeCounterElement.text(parseInt(dislikeCounterElement.text()) + 1);
+                    dislikeActionElement.addClass('active');
+                    if (likeActionElement.hasClass('active')) {
+                        likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
+                        likeActionElement.removeClass('active');
+                    }
+                }
+            }
+        };
+
+        adjustCountersAndStates();
+
+        // Afficher le message approprié
         if (response.status === 'success') {
-            rcmail.display_message('Votre réaction a été enregistrée avec succès.', 'confirmation');
-
-            // Mise à jour de l'interface utilisateur
-            // Si la réaction est un 'like', incrémenter le compteur de likes dans l'interface utilisateur.
-            if (type === 'like') {
-                let likeCounter = $('[data-like-uid="'+uid+'"]').siblings('span.ml-2');
-                likeCounter.text(parseInt(likeCounter.text()) + 1);
-            // Si la réaction est un 'dislike', incrémenter le compteur de dislikes dans l'interface utilisateur.
-            } else if (type === 'dislike') {
-                let dislikeCounter = $('[data-dislike-uid="'+uid+'"]').siblings('span.ml-2');
-                dislikeCounter.text(parseInt(dislikeCounter.text()) + 1);
-            }
+            rcmail.display_message(response.message, 'confirmation');
         } else {
-            // Si le statut de la réponse n'est pas 'success', afficher le message d'erreur reçu du serveur.
-            rcmail.display_message(return_data.message, 'error');
+            rcmail.display_message(response.message, 'error');
         }
-        
-        // Retourner les données reçues.
-        return return_data;
+
+        // Retourner la réponse reçue.
+        return response;
     } catch (error) {
         // En cas d'erreur lors de la requête, afficher un message d'erreur et loguer l'erreur dans la console.
         rcmail.display_message('Une erreur est survenue lors de l\'enregistrement de votre réaction.', 'error');
         console.error("Erreur lors de l'enregistrement du like/dislike:", error);
     }
 }
+
+
+
+
 
 
   /**

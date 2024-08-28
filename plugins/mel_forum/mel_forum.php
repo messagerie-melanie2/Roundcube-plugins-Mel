@@ -1149,14 +1149,13 @@ public function delete_comment()
 
 
 /**
- * Gère l'ajout d'un like à un commentaire.
+ * Gère les actions de like et dislike sur un commentaire.
  *
- * Cette fonction récupère l'utilisateur actuel ainsi que les valeurs pour le type de like et l'ID du commentaire
- * depuis la requête POST. Elle valide les données saisies, charge le commentaire pour obtenir son créateur,
- * et s'assure que l'utilisateur ne peut pas liker son propre commentaire. Si la validation est réussie, 
- * un nouveau like est créé et sauvegardé.
+ * Cette fonction permet à un utilisateur de liker ou disliker un commentaire, 
+ * d'annuler une réaction existante, ou de changer sa réaction d'un like à un dislike, ou inversement. 
+ * L'utilisateur ne peut pas réagir à ses propres commentaires.
  *
- * @return void
+ * @return void Renvoie une réponse JSON avec un statut et un message correspondant au résultat de l'opération.
  */
 public function like_comment()
 {

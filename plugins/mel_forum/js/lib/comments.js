@@ -54,8 +54,9 @@ class PostComment {
  * @param {string} dislikes - Le nombre de dislikes.
  * @param {string} parent - L'Id du commentaire parent s'il existe'.
  * @param {integer} children_number - Le nombre de réponse au commentaire parent
+ * @param {string} current_user_reacted - reaction de l'utilisateur courant au commentaire
  */
-  _setup(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number) {
+  _setup(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted) {
 
           this.id = id;
           this.uid = uid;
@@ -68,7 +69,7 @@ class PostComment {
           this.dislikes = dislikes;
           this.parent = parent;
           this.children_number = children_number;
-          this.current_user_reacted = this.current_user_reacted;
+          this.current_user_reacted = current_user_reacted;
   }
   
   /**
@@ -161,6 +162,9 @@ class PostComment {
     let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
     let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
+     // Détermination du puriel ou du singulier pour "réponse(s)"
+     let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
+
     let html = MelHtml.start
       .div({ id: 'comment-id-' + this.uid, class: 'row comment' })
         .div({ class: 'col-12' })
@@ -198,7 +202,7 @@ class PostComment {
         .end('div')
         .div({ class: 'forum-comment-response' })
           .span({ class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
-          .span({ class: 'ml-2' }).text(this.children_number + ' réponses').end('span')
+          .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
         .end('div')
       .end('div')
       .end('div');

@@ -3,8 +3,8 @@ import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 export {PostComment, PostCommentView}
 
 class PostComment {
-  constructor(uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number) {
-    this._init()._setup(uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number)
+  constructor(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted) {
+    this._init()._setup(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted)
   }
 
   /**
@@ -12,12 +12,13 @@ class PostComment {
  *
  * Cette fonction réinitialise toutes les propriétés de l'objet, telles que
  * `uid`, `post_id`, `user_uid`, `user_name`, `content`, `created`, `like`, 
- * `dislike`, et `parent` à des chaînes de caractères vides.
+ * `dislike`, `parent` et `children_number` à des chaînes de caractères vides.
  * Elle retourne l'objet lui-même après l'initialisation.
  *
  * @return {Object} L'objet initialisé avec des valeurs par défaut.
  */
   _init() {
+    this.id = '';
     this.uid = '';
     this.post_id = '';
     this.user_uid = '';
@@ -28,11 +29,9 @@ class PostComment {
     this.dislikes = 0;
     this.parent = '';
     this.children_number = 0;
-
-  
+    this.current_user_reacted = '';
 
     return this;
-
   }
 
   /**
@@ -40,7 +39,7 @@ class PostComment {
  *
  * Cette fonction utilise `Object.defineProperties` pour définir les propriétés
  * `uid`, `post_id`, `user_uid`, `user_name`, `content`, `created`, `like`, 
- * `dislike`, et `parent` de l'objet. Chaque propriété a un getter qui 
+ * `dislike`, `parent` et `children_number` de l'objet. Chaque propriété a un getter qui 
  * retourne la valeur initiale passée en paramètre, et un setter qui permet 
  * de mettre à jour cette valeur.
  *
@@ -69,6 +68,7 @@ class PostComment {
           this.dislikes = dislikes;
           this.parent = parent;
           this.children_number = children_number;
+          this.current_user_reacted = this.current_user_reacted;
   }
   
   /**
@@ -145,7 +145,6 @@ class PostComment {
         console.error("Erreur lors de l'enregistrement du like/dislike:", error);
     }
 }
-
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions.

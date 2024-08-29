@@ -58,7 +58,6 @@ export class Manager extends MelObject {
                 comment.current_user_reacted,
             );
 
-            debugger;
             // Génère le HTML pour ce commentaire et l'ajoute à la zone de commentaires dans le DOM.
             commentVizualizer.generateHtml().appendTo($('#comment-area'));
 
@@ -67,147 +66,11 @@ export class Manager extends MelObject {
         }
     }
 
-    // Attache des événements de clic pour gérer les likes et les dislikes après que tous les commentaires aient été ajoutés au DOM.
-    // $('.reaction-item .icon[data-icon="thumb_up"]').on('click', (e) => {
-    //     this.handleLikeClick(e.currentTarget);
-    //     return false; // Empêche la propagation de l'événement.
-    // });
-
-    // $('.reaction-item .icon[data-icon="thumb_down"]').on('click', (e) => {
-    //     this.handleDislikeClick(e.currentTarget);
-    //     return false; // Empêche la propagation de l'événement.
-    // });
-
     // Affiche les données de tous les commentaires dans la console pour débogage.
     console.log(allComments);
 }
 
 
-  /**
- * Gère les interactions de l'utilisateur pour aimer ou ne pas aimer un commentaire.
- *
- * Cette méthode est appelée lorsqu'un utilisateur clique sur les boutons "like" ou "dislike" d'un commentaire.
- * Elle envoie une requête asynchrone pour enregistrer la réaction, met à jour l'interface utilisateur en conséquence, 
- * et affiche un message de confirmation ou d'erreur en fonction de la réponse du serveur.
- *
- * @async
- * @function
- * @name callLikeOrDislike
- * @param {HTMLElement} element - L'élément HTML sur lequel l'utilisateur a cliqué (bouton "like" ou "dislike").
- * @param {string} type - Le type de réaction, soit "like" soit "dislike".
- * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que la réaction a été traitée.
- *
- * @example
- * // Appeler cette fonction lors du clic sur un bouton "like" ou "dislike"
- * await callLikeOrDislike(element, 'like');
- *
- * @throws {Error} Affiche un message d'erreur si la requête échoue.
- */
-  async callLikeOrDislike(element, type) {
-    const commentId = $(element).closest('.reaction-item').attr('id').split('-')[2];
-    const busy = rcmail.set_busy(true, 'loading');
-
-    try {
-      const response = await mel_metapage.Functions.post(
-        mel_metapage.Functions.url('forum', 'like_comment'),
-        { _comment_id: commentId, _type: type }
-      );
-
-      const data = JSON.parse(response);
-      rcmail.set_busy(false, 'loading', busy);
-
-      if (data.status === 'success') {
-        rcmail.display_message('Votre réaction a été enregistrée avec succès.', 'confirmation');
-        
-        // Mise à jour de l'interface utilisateur
-        if (type === 'like') {
-          let likeCounter = $(element).siblings('span.ml-2');
-          likeCounter.text(parseInt(likeCounter.text()) + 1);
-        } else if (type === 'dislike') {
-          let dislikeCounter = $(element).siblings('span.ml-2');
-          dislikeCounter.text(parseInt(dislikeCounter.text()) + 1);
-        }
-      } else {
-        rcmail.display_message(data.message, 'error');
-      }
-    } catch (error) {
-      rcmail.set_busy(false, 'loading', busy);
-      rcmail.display_message('Une erreur est survenue lors de l\'enregistrement de votre réaction.', 'error');
-    }
-  }
-
-
-  /**
- * Gère le clic de l'utilisateur sur l'icône "like" d'un commentaire.
- *
- * Cette fonction met à jour le compteur de likes et l'état visuel de l'icône "like" en fonction de l'interaction de l'utilisateur.
- * Si l'utilisateur a déjà liké, le like est annulé. Si l'utilisateur n'a pas encore liké, le compteur est incrémenté.
- * De plus, si l'utilisateur avait déjà cliqué sur "dislike", ce dernier est annulé automatiquement.
- *
- * @function
- * @name handleLikeClick
- * @param {HTMLElement} element - L'élément HTML représentant l'icône "like" sur lequel l'utilisateur a cliqué.
- *
- * @example
- * // Utilisation de cette fonction lors du clic sur l'icône "like"
- * handleLikeClick(document.querySelector('.icon[data-icon="thumb_up"]'));
- */
-  handleLikeClick(element) {
-    let likeCounter = $(element).siblings('span.ml-2');
-    let likeCount = parseInt(likeCounter.text());
-
-    // Vérifie si l'utilisateur a déjà liké
-    if ($(element).hasClass('liked')) {
-      likeCounter.text(likeCount - 1);
-      $(element).removeClass('liked');
-    } else {
-      likeCounter.text(likeCount + 1);
-      $(element).addClass('liked');
-
-      // Annule le dislike si l'utilisateur a déjà cliqué sur dislike
-      let dislikeElement = $(element).closest('.reaction-item').siblings('.reaction-item').find('.icon[data-icon="thumb_down"]');
-      if (dislikeElement.hasClass('disliked')) {
-        this.handleDislikeClick(dislikeElement[0]);
-      }
-    }
-  }
-
-
-  /**
- * Gère le clic de l'utilisateur sur l'icône "dislike" d'un commentaire.
- *
- * Cette fonction met à jour le compteur de dislikes et l'état visuel de l'icône "dislike" en fonction de l'interaction de l'utilisateur.
- * Si l'utilisateur a déjà disliké, le dislike est annulé. Si l'utilisateur n'a pas encore disliké, le compteur est incrémenté.
- * De plus, si l'utilisateur avait déjà cliqué sur "like", ce dernier est annulé automatiquement.
- *
- * @function
- * @name handleDislikeClick
- * @param {HTMLElement} element - L'élément HTML représentant l'icône "dislike" sur lequel l'utilisateur a cliqué.
- *
- * @example
- * // Utilisation de cette fonction lors du clic sur l'icône "dislike"
- * handleDislikeClick(document.querySelector('.icon[data-icon="thumb_down"]'));
- */
-  handleDislikeClick(element) {
-    debugger;
-    let dislikeCounter = $(element).siblings('span.ml-2');
-    let dislikeCount = parseInt(dislikeCounter.text());
-
-    // Vérifie si l'utilisateur a déjà disliké
-    if ($(element).hasClass('disliked')) {
-      dislikeCounter.text(dislikeCount - 1);
-      $(element).removeClass('disliked');
-    } else {
-      dislikeCounter.text(dislikeCount + 1);
-      $(element).addClass('disliked');
-
-      // Annule le like si l'utilisateur a déjà cliqué sur like
-      let likeElement = $(element).closest('.reaction-item').siblings('.reaction-item').find('.icon[data-icon="thumb_up"]');
-      if (likeElement.hasClass('liked')) {
-        this.handleLikeClick(likeElement[0]);
-      }
-    }
-  }
 
 /**
    * Créé l'input qui permet d'ajouter un commentaire

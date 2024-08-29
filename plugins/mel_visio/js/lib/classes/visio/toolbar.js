@@ -7,7 +7,10 @@ import { Toolbar } from '../../../../../mel_metapage/js/lib/classes/toolbar.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
 import { MelHtml } from '../../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { isNullOrUndefined } from '../../../../../mel_metapage/js/lib/mel.js';
+import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
 import { Visio } from '../../visio.js';
+import { MelAudioManager, MelAudioTester } from './audioManager.js';
+import { ToolbarPopup } from './toolbar_popup.js';
 
 export { ToolbarFunctions };
 
@@ -43,7 +46,194 @@ class ToolbarFunctions {
     visio.jitsii.toggle_micro();
   }
 
-  static Mic_0(visio) {}
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static async Mic_0(visio) {
+    if (!this._popup) {
+      this._popup = new ToolbarPopup(visio.toolbar.toolbar()).hide();
+    }
+
+    if (this._popup.is_show()) {
+      this._popup.hide();
+    } else {
+      this._audioManager = this._audioManager || new MelAudioManager();
+      this.UpdatePopupDevices(
+        await visio.jitsii.get_micro_and_audio_devices(),
+        async (id, type, label) => {
+          switch (type) {
+            case 'audioinput':
+              this._popup.$content
+                .find('button')
+                .addClass('loading')
+                .attr('disabled');
+              visio.jitsii.set_micro_device(label, id);
+              await Mel_Promise.wait_async(async () => {
+                const tmp = await visio.jitsii.get_current_devices();
+                return tmp['audioInput'].deviceId === id;
+              });
+              this._popup.$content
+                .find('button')
+                .removeClass('disabled')
+                .removeAttr('disabled');
+              this._popup.$content
+                .find(
+                  `button[data-deviceid="${id}"][data-devicekind="${type}"]`,
+                )
+                .addClass('disbabled')
+                .attr('disabled', 'disabled');
+              break;
+
+            case 'audiooutput':
+              visio.jitsii.set_audio_device(label, id);
+              break;
+
+            default:
+              break;
+          }
+        },
+      );
+      this._popup.set_tag('mic');
+      this._popup.show();
+    }
+  }
+
+  /**
+   * Met à jour la liste des périphériques afficher sur la popup
+   * @param {Array<*>} devices Liste des devices envoyé par jitsii
+   * @param {function} click Action à faire lorsque l'on clique sur un device
+   * @returns Chaîne
+   */
+  static async UpdatePopupDevices(devices, click) {
+    const _$ = top.$;
+    let devices_by_kind = {};
+
+    for (let index = 0; index < devices.length; ++index) {
+      const element = devices[index];
+      if (devices_by_kind[element.kind] === undefined)
+        devices_by_kind[element.kind] = [];
+      devices_by_kind[element.kind].push(element);
+    }
+
+    let $button = null;
+    let type = '';
+    let html = this._popup.$content.html(EMPTY_STRING);
+    for (const key in devices_by_kind) {
+      if (Object.hasOwnProperty.call(devices_by_kind, key)) {
+        const array = devices_by_kind[key];
+        html.append(
+          `<span class=toolbar-title>${rcmail.gettext(key, 'mel_metapage')}</span><div class="btn-group-vertical" style=width:100% role="group" aria-label="groupe des ${key}">`,
+        );
+        for (let index = 0; index < array.length; ++index) {
+          const element = array[index];
+          const disabled = element.isCurrent === true ? 'disabled' : '';
+
+          type = element.kind === 'videoinput' ? 'div' : 'button';
+
+          $button = _$(
+            `<${type} data-deviceid="${element.deviceId}" data-devicekind="${element.kind}" data-devicelabel="${element.label}" title="${element.label}" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}></${type}>`,
+          ).click((e) => {
+            e = $(e.currentTarget);
+            click(
+              e.data('deviceid'),
+              e.data('devicekind'),
+              e.data('devicelabel'),
+            );
+          });
+
+          if (type === 'button') $button.html(element.label);
+
+          if (element.kind === 'audioinput') {
+            //Visualiser les micros
+            $button = (
+              await this._audioManager.addElement(element, $button)
+            ).$main.parent();
+          } else if (element.kind === 'audiooutput') {
+            //Tester l'audio
+            var $button_div = $('<div></div>').css('position', 'relative');
+            $button
+              .on('mouseover', (event) => {
+                let $e = $(event.currentTarget);
+                let $parent = $e.parent();
+
+                let $tmp = $('<button>Test</button>')
+                  .data('devicelabel', $e.data('devicelabel'))
+                  .addClass(
+                    'mel-button btn btn-secondary no-button-margin mel-test-audio-button',
+                  )
+                  .click(async (testbuttonevent) => {
+                    const data = $(testbuttonevent.currentTarget).data(
+                      'devicelabel',
+                    );
+
+                    if (this.audio_tester.audios[data])
+                      await this.audio_tester.audios[data].test({
+                        kind: 'audiooutput',
+                        label: data,
+                      });
+                    else {
+                      this.audio_tester.addAudio(
+                        data,
+                        await new MelAudioTester(
+                          this._audioManager.devices,
+                        ).test({
+                          kind: 'audiooutput',
+                          label: data,
+                        }),
+                      );
+                    }
+                  })
+                  .on('mouseleave', (levent) => {
+                    if (!$(levent.relatedTarget).hasClass('mel-ui-button')) {
+                      $(levent.currentTarget).remove();
+                    }
+                  });
+
+                $parent.append($tmp);
+              })
+              .on('mouseleave', (event) => {
+                console.log('event', event);
+                if (!$(event.relatedTarget).hasClass('mel-test-audio-button')) {
+                  $(event.currentTarget)
+                    .parent()
+                    .find('.mel-test-audio-button')
+                    .remove();
+                }
+              })
+              .appendTo($button_div);
+
+            $button = $button_div;
+            $button_div = null;
+          } else {
+            //Visualiser les caméras
+            await this.video_manager.addVideo($button, element, false);
+          }
+
+          html.append($button);
+        }
+
+        if (true) html.append('<separate class="device"></separate>');
+      }
+    }
+
+    html.find('separate').last().remove();
+
+    // if (this.video_manager.count() > 0) {
+    //   (
+    //     await this.video_manager
+    //       .oncreate((video, device) => {
+    //         $('<label></label>')
+    //           .addClass('video-visio-label')
+    //           .html(device.label)
+    //           .appendTo($(video).parent().css('position', 'relative'));
+    //       })
+    //       .create()
+    //   ).updateSizePerfect('100%', 'unset');
+    // }
+
+    return this;
+  }
 
   /**
    *
@@ -254,6 +444,11 @@ class ToolbarFunctions {
     callback();
   }
 }
+
+/**
+ * @type {ToolbarPopup}
+ */
+ToolbarFunctions._popup = null;
 
 export class VisioToolbar extends Toolbar {
   constructor(id) {

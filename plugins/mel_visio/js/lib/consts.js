@@ -13,3 +13,7 @@ export const public_room = 'channel';
 export const private_room = 'group';
 export const right_item_size = 340;
 export const class_to_add_to_top = 'webconf-started';
+export const visualValueCount = 16;
+export const audiourltotest =
+  mel_metapage.Functions.url('', '').split('?')[0] +
+  'plugins/mel_metapage/skins/elastic/audio/test.mp3';

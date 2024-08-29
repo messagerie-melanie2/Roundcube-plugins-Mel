@@ -145,14 +145,16 @@ class JitsiAdaptor {
   }
 
   async get_current_devices() {
-    await this._jitsi.getCurrentDevices();
+    return await this._jitsi.getCurrentDevices();
   }
 
   async get_micro_and_audio_devices() {
-    var [devices, current_devices] = await Promise.allSettled([
-      this.get_available_devices(),
-      this.get_current_devices(),
-    ]);
+    var [devices, current_devices] = (
+      await Promise.allSettled([
+        this.get_available_devices(),
+        this.get_current_devices(),
+      ])
+    ).map((x) => x.value);
 
     devices = MelEnumerable.from(devices.audioOutput)
       .union(devices.audioInput)

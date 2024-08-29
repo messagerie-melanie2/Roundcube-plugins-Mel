@@ -3,10 +3,7 @@ import {
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
-import {
-  FrameManager,
-  FramesManager,
-} from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { MelPopover } from '../../../mel_metapage/js/lib/classes/mel_popover.js';
 import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';

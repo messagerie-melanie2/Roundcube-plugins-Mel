@@ -81,7 +81,7 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'index']);
+        $this->register_action('index', [$this, 'post']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Affichage de la page qui permet de créer un article
@@ -178,6 +178,7 @@ public function index(){
  */
 public function post(){
     //Récupérér uid avec GET
+    $this->load_script_module('manager');
     $uid = 'VOszRaUI1dQRuQGs2NzKiKZ0';
     $this->current_post = $this->get_post($uid);
 

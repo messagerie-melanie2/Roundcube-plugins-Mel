@@ -33,28 +33,26 @@ export class Manager extends MelObject {
     let allComments = await PostCommentManager.getCommentByPost();
     let comments_array = [];
 
-    // Parcourt tous les commentaires retournés par la requête.
-    let commentVizualizer;
+    // Parcourir tous les commentaires
     for (const key in allComments) {
-      if (allComments.hasOwnProperty(key)) {
-        // Extrait les données de chaque commentaire.
-        const comment = allComments[key];
+        if (allComments.hasOwnProperty(key)) {
+            const comment = allComments[key];
 
-        // Crée une instance de PostComment pour chaque commentaire.
-        commentVizualizer = new PostComment(
-          comment.id,
-          comment.uid,
-          comment.post_id,
-          comment.user_id,
-          comment.user_name,
-          comment.content,
-          comment.created,
-          comment.likes,
-          comment.dislikes,
-          comment.parent,
-          comment.children_number,
-          comment.current_user_reacted,
-        );
+            // Créer une instance de PostComment pour chaque commentaire
+            let commentVizualizer = new PostComment(
+                comment.id,
+                comment.uid,
+                comment.post_id,
+                comment.user_id,
+                comment.user_name,
+                comment.content,
+                comment.created,
+                comment.likes,
+                comment.dislikes,
+                comment.parent,
+                comment.children_number,
+                comment.current_user_reacted,
+            );
 
             let commentHtml = commentVizualizer.generateHtml();
             // Si le commentaire n'a pas de parent, c'est un commentaire principal
@@ -75,8 +73,6 @@ export class Manager extends MelObject {
             comments_array.push(commentVizualizer);
         }
     }
-
-    commentVizualizer = null;
 
     // Affiche les données de tous les commentaires dans la console pour débogage.
     console.log(allComments);

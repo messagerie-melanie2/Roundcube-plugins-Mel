@@ -2524,9 +2524,9 @@ public function test_count_comments()
 public function test_delete_like()
 {
     // Récupérer les valeurs
-    $creator = 'DamienTest4';
-    $type = 'Like à supprimer';
-    $comment_id = '10';
+    $creator = 'damien.cotton.i';
+    $type = 'remove_dislike';
+    $comment_id = '1';
     
     // Validation des données saisies
     if (empty($creator) || empty($type) || empty($comment_id)) {
@@ -2543,9 +2543,9 @@ public function test_delete_like()
     // Supprimer le Like
     $ret = $like->delete();
     if (!is_null($ret)) {
-        echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
+        echo json_encode(['status' => 'success', 'message' => 'Le like a été supprimé avec succès.']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
+        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du like.']);
     }
 
     // Arrêt de l'exécution du script

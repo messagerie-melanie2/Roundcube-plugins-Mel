@@ -162,8 +162,8 @@ class PostComment {
     let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
     let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
-     // Détermination du puriel ou du singulier pour "réponse(s)"
-     let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
+    // Détermination du pluriel ou du singulier pour "réponse(s)"
+    let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
 
     let html = MelHtml.start
       .div({ id: 'comment-id-' + this.uid, class: 'row comment' })
@@ -185,11 +185,11 @@ class PostComment {
         .end('div')
         .div({ class: 'forum-comment-reactions' })
           .div({ class: likeClass })
-            .span({ class: 'icon', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) }).end('span')
+            .span({ class: 'icon material-symbols-outlined', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) }).end('span')
             .span({ class: 'ml-2' }).text(this.likes).end('span')
           .end('div')
           .div({ class: dislikeClass })
-            .span({ class: 'icon', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) }).end('span')
+            .span({ class: 'icon material-symbols-outlined', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) }).end('span')
             .span({ class: 'ml-2' }).text(this.dislikes).end('span')
           .end('div')
           .div({ class: 'reaction-item mr-3 response' })
@@ -208,7 +208,7 @@ class PostComment {
       .end('div');
 
     return html.generate();
-}
+  }
 }
 
 class PostCommentView {

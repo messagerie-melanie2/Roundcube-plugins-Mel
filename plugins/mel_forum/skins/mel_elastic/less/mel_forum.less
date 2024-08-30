@@ -467,7 +467,18 @@
             font-size: 12px;
           }
           &.active {
-            color: var(--forum-active-text-color);
+            .icon::before {
+              font-family: 'Material Symbols Outlined';
+              content: attr(data-icon);
+              font-size: 19px;
+              font-variation-settings: 'wght' 400;
+              display: inline-block;
+              vertical-align: middle;
+              margin-right: 5px;
+              color: var(--forum-active-text-color);
+            font-variation-settings: 'FILL' 1,
+            }
+            
           }
 
           &.response {

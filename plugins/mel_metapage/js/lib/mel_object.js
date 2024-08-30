@@ -623,13 +623,13 @@ class MelObject {
     return this.switch_url(this.url(task, { action, params }));
   }
 
-  export() {
-    window[this.get_class_name()] = this;
+  export(name = null) {
+    window[name ?? this.get_class_name()] = this;
     return this;
   }
 
-  delete_export() {
-    window[this.get_class_name()] = null;
+  delete_export(name = null) {
+    window[name ?? this.get_class_name()] = null;
     return this;
   }
 

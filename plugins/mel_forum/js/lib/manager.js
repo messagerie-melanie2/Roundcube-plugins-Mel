@@ -28,13 +28,9 @@ export class Manager extends MelObject {
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
   async displayComments() {
-    // Crée une instance de PostCommentView pour gérer les commentaires d'un post spécifique.
+    // Obtenir tous les commentaires du post
     let PostCommentManager = new PostCommentView('ndWtChyQ4IwabbWjWwlM7Qo9');
-
-    // Récupère tous les commentaires associés au post via une requête asynchrone.
     let allComments = await PostCommentManager.getCommentByPost();
-
-    // Initialise un tableau pour stocker les objets PostComment.
     let comments_array = [];
 
     // Parcourt tous les commentaires retournés par la requête.
@@ -60,12 +56,24 @@ export class Manager extends MelObject {
           comment.current_user_reacted,
         );
 
-        // Génère le HTML pour ce commentaire et l'ajoute à la zone de commentaires dans le DOM.
-        commentVizualizer.generateHtml().appendTo($('#comment-area'));
+            let commentHtml = commentVizualizer.generateHtml();
+            // Si le commentaire n'a pas de parent, c'est un commentaire principal
+            if (!comment.parent) {
+                commentHtml.appendTo($('#comment-area'));
+            } else {
+                // Sinon, c'est une réponse (ou une réponse à une réponse)
+                let parentResponseContainer = $('#responses-' + comment.parent);
+                
+                if (parentResponseContainer.length === 0) {
+                    // Si le conteneur de réponses n'existe pas, le créer sous le commentaire parent
+                    commentHtml.appendTo(parentResponseContainer);
+                }
+                
+                commentHtml.appendTo(parentResponseContainer);
+            }
 
-        // Ajoute l'objet commentVizualizer au tableau de commentaires.
-        comments_array.push(commentVizualizer);
-      }
+            comments_array.push(commentVizualizer);
+        }
     }
 
     commentVizualizer = null;

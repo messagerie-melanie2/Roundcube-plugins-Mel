@@ -424,6 +424,17 @@
   color: var(--forum-text-color);
   /* Applique la couleur de texte souhaitée */
 }
+.task-forum .hidden {
+  display: none;
+}
+.task-forum .responses {
+  margin-left: 20px;
+  /* Ajustez cette valeur selon vos besoins */
+  padding-left: 10px;
+  /* Ajustez pour un espacement intérieur si nécessaire */
+  border-left: 1px solid #ddd;
+  /* Optionnel : ligne verticale pour indiquer les réponses */
+}
 .task-forum .forum-content {
   display: flex;
   justify-content: center;

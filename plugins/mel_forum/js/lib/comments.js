@@ -147,17 +147,51 @@ class PostComment {
     }
 }
 
-  /**
- * Génère le code HTML pour afficher un commentaire avec ses réactions.
+/**
+ * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
  *
- * Cette fonction crée un ensemble d'éléments HTML représentant un commentaire,
- * avec le profil de l'utilisateur, le contenu du commentaire, les réactions
- * (likes, dislikes, réponses), ainsi que des éléments supplémentaires comme
- * la date de création et le nombre de réponses. Le HTML est construit en 
- * utilisant une syntaxe fluide pour faciliter la lecture et l'écriture.
+ * Cette fonction affiche ou masque les réponses d'un commentaire en fonction de leur état actuel,
+ * en ajoutant ou supprimant la classe CSS 'hidden'. L'icône de basculement est également mise à jour
+ * pour indiquer visuellement l'état (affiché ou masqué) des réponses.
  *
- * @returns {string} - Le code HTML généré sous forme de chaîne de caractères.
+ * @param {string} id - L'identifiant unique du commentaire pour lequel les réponses doivent être basculées.
+ * @returns {Promise<void>} Une promesse résolue une fois l'opération terminée.
  */
+async toggleResponses(id) {
+    try {
+        // Correction du sélecteur jQuery
+        let responseContainer = $('#responses-' + id);
+        // Sélection de l'icône correspondante
+        let toggleIcon = $('#toggle-icon-' + id);
+
+        // Basculer la classe 'hidden' pour afficher ou masquer les réponses
+        responseContainer.toggleClass('hidden');
+        
+        // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
+        if (responseContainer.hasClass('hidden')) {
+          toggleIcon.attr('data-icon', 'arrow_drop_down');
+      } else {
+          toggleIcon.attr('data-icon', 'arrow_drop_up');
+      }
+  } catch (error) {
+      console.error("Erreur lors du basculement des réponses:", error);
+  }
+}
+
+  /**
+ * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
+ *
+ * Cette fonction construit dynamiquement le HTML d'un commentaire, en incluant les informations
+ * sur l'auteur, le contenu, la date de création, ainsi que les boutons de réaction (like, dislike, répondre).
+ * Le HTML est adapté en fonction des données du commentaire, comme le nombre de likes, dislikes, et réponses.
+ *
+ * - Les classes CSS sont déterminées pour indiquer si l'utilisateur a déjà réagi (like/dislike).
+ * - Le texte des réponses est ajusté pour être au singulier ou au pluriel en fonction du nombre de réponses.
+ * - Si le commentaire a des réponses, un élément pour afficher ou masquer les réponses est ajouté.
+ *
+ * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
+ */
+
   generateHtml() {
     let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
     let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
@@ -199,10 +233,16 @@ class PostComment {
           .div({ class: 'reaction-item' })
             .span({ class: 'icon', 'data-icon': 'more_horiz' }).end('span')
           .end('div')
-        .end('div')
-        .div({ class: 'forum-comment-response' })
-          .span({ class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
+        .end('div');
+
+        if (this.children_number > 0) {
+          html = html.div({ class: 'forum-comment-response' })
+          .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down', onclick: this.toggleResponses.bind(this, this.id) }).end('span')
           .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
+        .end('div');
+        }
+
+        html = html.div({ id: 'responses-' + this.id, class: 'responses ml-4 hidden' })
         .end('div')
       .end('div')
       .end('div');

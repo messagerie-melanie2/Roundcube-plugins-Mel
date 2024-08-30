@@ -2,6 +2,10 @@ $(document).ready(function() {
     let config = rcmail.env.editor_config;
     rcmail.editor_init(config, 'forum-content');
 
+    $('#forum-button-add').on('click', () => {
+        window.location.href = this.url('forum', {action:'create_or_edit_post'});
+    });
+
     $('#submit-post').on('click', () => {
         console.log(tinyMCE.activeEditor.getContent());        
     });

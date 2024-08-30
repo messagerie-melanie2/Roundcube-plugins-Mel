@@ -157,6 +157,7 @@ function init()
  * @return void
  */
 public function index(){
+    $this->load_script_module('forum');
     $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
     
     $this->rc()->output->send('mel_forum.forum');
@@ -288,7 +289,8 @@ public function show_post_date(){
 }
 
 public function create_or_edit_post() {
-    $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
+    $this->load_script_module('create_or_edit_post');
+    // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
     
     $this->rc()->output->send('mel_forum.create-post');
 }

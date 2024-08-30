@@ -1,1 +1,50 @@
-/home/user/bnum/dev/roundcube-mel-deploiement/webmail/../deploiement/init/plugins/mel_useful_link/config/organisation/melanie/melanie.json
+{
+    "intra-numerique-r2342": {
+      "name": "Rubrique numérique du portail intranet ministériel",
+      "url": "http://intra.portail.e2.rie.gouv.fr/numerique-r2342.html",
+      "description": "Les bonnes pratiques du numérique",
+      "icon": "thumb_up",
+      "categories": [
+        "communication"
+      ]
+    },
+    "intra-ac-e2-rie": {
+      "name": "Le numérique en AC",
+      "url": "http://intra.ac.e2.rie.gouv.fr",
+      "description": "Portail dédié au quotidien à l'AC",
+      "icon": "bookmark",
+      "dn": [
+        "ou=AC,ou=melanie,ou=organisation,dc=equipement,dc=gouv,dc=fr"
+      ],
+      "categories": [
+        "communication"
+      ]
+    },
+    "presse-et-document": {
+      "name": "Presse et document",
+      "url": "https://intra.portail.e2.rie.gouv.fr/information-veille-et-documentation-sur-les-sujets-a17929.html",
+      "description": "Information, veille et documentation sur les sujets du ministère.",
+      "icon": "bookmark",
+      "categories": [
+        "informations"
+      ]
+    },
+    "wikisi": {
+      "name": "WikiSI",
+      "url": "https://wikisi.e2.rie.gouv.fr/wikisi/",
+      "description": "Le Wiki SI est un outil collaboratif permettant de partager une information à jour sur les applications et les bases, jeux et flux de données.",
+      "icon": "link",
+      "categories": [
+        "informations"
+      ]
+    },
+    "gusi": {
+      "name": "GUSI",
+      "url": "https://carto.gusi.e2.rie.gouv.fr/",
+      "description": "GUSI permet de construire une vue macro urbanisée des produits numériques du pôle ministériel. Il établit une cartographie des SI du pôle ministériel pour en optimiser la gestion.",
+      "icon": "check_circle",
+      "categories": [
+        "informations"
+      ]
+    }
+  }

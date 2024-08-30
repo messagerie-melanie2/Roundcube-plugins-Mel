@@ -1,1 +1,11 @@
-/home/user/bnum/dev/roundcube-mel-deploiement/webmail/../deploiement/init/plugins/mel_useful_link/config/organisation/organisation.json
+  {
+    "parapheur": {
+      "name": "Parapheur",
+      "url": "https://parapheur.e2.rie.gouv.fr/",
+      "description": "Le parapheur du MTE",
+      "icon": "border_color",
+      "categories": [
+        "collaboratif"
+      ]
+    }
+  }

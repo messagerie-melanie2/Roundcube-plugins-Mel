@@ -552,3 +552,7 @@
 .task-forum #post-content img {
   max-width: 100%;
 }
+.task-forum #go-back-to-articles:hover {
+  color: var(--input-mel-text-color);
+  cursor: pointer;
+}

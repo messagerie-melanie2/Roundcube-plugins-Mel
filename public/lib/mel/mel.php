@@ -132,5 +132,18 @@ abstract class AMel implements IMel {
         for ($i=0; $i < $count; ++$i) { 
             self::$plugins[$i]->run();
         }
+    } 
+}
+
+class ConfigMel extends AMel {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    public function run(...$args) {}
+
+    public function conf($plugin_name) {
+        require_once INSTALL_PATH."/plugins/$plugin_name/config.inc.php";
+        return $config;
     }
 }

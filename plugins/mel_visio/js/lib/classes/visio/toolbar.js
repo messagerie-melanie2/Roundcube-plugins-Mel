@@ -11,6 +11,7 @@ import { Mel_Promise } from '../../../../../mel_metapage/js/lib/mel_promise.js';
 import { Visio } from '../../visio.js';
 import { MelAudioManager, MelAudioTester } from './audioManager.js';
 import { ToolbarPopup } from './toolbar_popup.js';
+import { MelVideoManager } from './videoManager.js';
 
 export { ToolbarFunctions };
 
@@ -59,7 +60,7 @@ class ToolbarFunctions {
       this._popup = new ToolbarPopup(visio.toolbar.toolbar()).hide();
     }
 
-    if (this._popup.is_show()) {
+    if (this._popup.is_show() && this._popup.has_tag('mic')) {
       this._popup.hide();
     } else {
       this._audioManager = this._audioManager || new MelAudioManager();
@@ -72,12 +73,22 @@ class ToolbarFunctions {
     }
   }
 
+  /**
+   *
+   * @param {Visio} visio
+   * @param {*} id
+   * @param {*} type
+   * @param {*} label
+   */
   static async Mic_0_Click(visio, id, type, label) {
     const initial = this._popup.$content
-      .find('button.disabled')
+      .find('.mel-ui-button.disabled')
       .data('deviceid');
     let waitState = null;
-    this._popup.$content.find('button').addClass('loading').attr('disabled');
+    this._popup.$content
+      .find('.mel-ui-button')
+      .addClass('loading')
+      .attr('disabled');
 
     switch (type) {
       case 'audioinput':
@@ -97,24 +108,36 @@ class ToolbarFunctions {
         });
         break;
 
+      case 'videoinput':
+        visio.jitsii.set_video_device(label, id);
+        waitState = await Mel_Promise.wait_async(async () => {
+          const tmp = await visio.jitsii.get_current_devices();
+          return tmp['videoInput'].deviceId === id;
+        });
+        break;
+
       default:
         break;
     }
 
     this._popup.$content
-      .find('button')
+      .find('.mel-ui-button')
       .removeClass('disabled')
       .removeAttr('disabled')
       .removeClass('loading');
 
     if (!waitState?.resolved) {
       this._popup.$content
-        .find(`button[data-deviceid="${initial}"][data-devicekind="${type}"]`)
+        .find(
+          `.mel-ui-button[data-deviceid="${initial}"][data-devicekind="${type}"]`,
+        )
         .addClass('disabled')
         .attr('disabled', 'disabled');
     } else {
       this._popup.$content
-        .find(`button[data-deviceid="${id}"][data-devicekind="${type}"]`)
+        .find(
+          `.mel-ui-button[data-deviceid="${id}"][data-devicekind="${type}"]`,
+        )
         .addClass('disabled')
         .attr('disabled', 'disabled');
     }
@@ -228,7 +251,7 @@ class ToolbarFunctions {
             $button_div = null;
           } else {
             //Visualiser les caméras
-            await this.video_manager.addVideo($button, element, false);
+            await this._videoManager.addVideo($button, element, false);
           }
 
           html.append($button);
@@ -240,18 +263,22 @@ class ToolbarFunctions {
 
     html.find('separate').last().remove();
 
-    // if (this.video_manager.count() > 0) {
-    //   (
-    //     await this.video_manager
-    //       .oncreate((video, device) => {
-    //         $('<label></label>')
-    //           .addClass('video-visio-label')
-    //           .html(device.label)
-    //           .appendTo($(video).parent().css('position', 'relative'));
-    //       })
-    //       .create()
-    //   ).updateSizePerfect('100%', 'unset');
-    // }
+    if (
+      this._popup.has_tag('video') &&
+      this._videoManager &&
+      this._videoManager.count() > 0
+    ) {
+      (
+        await this._videoManager
+          .oncreate((video, device) => {
+            $('<label></label>')
+              .addClass('video-visio-label')
+              .html(device.label)
+              .appendTo($(video).parent().css('position', 'relative'));
+          })
+          .create()
+      ).updateSizePerfect('100%', 'unset');
+    }
 
     return this;
   }
@@ -264,7 +291,27 @@ class ToolbarFunctions {
     visio.jitsii.toggle_video();
   }
 
-  static Camera_0(visio) {}
+  /**
+   *
+   * @param {Visio} visio
+   */
+  static async Camera_0(visio) {
+    if (!this._popup) {
+      this._popup = new ToolbarPopup(visio.toolbar.toolbar()).hide();
+    }
+
+    if (this._popup.is_show() && this._popup.has_tag('video')) {
+      this._popup.hide();
+    } else {
+      this._videoManager = this._videoManager || new MelVideoManager();
+      this.UpdatePopupDevices(
+        await visio.jitsii.get_video_devices(),
+        this.Mic_0_Click.bind(this, visio),
+      );
+      this._popup.set_tag('video');
+      this._popup.show();
+    }
+  }
 
   /**
    *

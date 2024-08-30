@@ -216,10 +216,12 @@ class JitsiAdaptor {
   }
 
   async get_video_devices() {
-    var [devices, current_devices] = await Promise.allSettled([
-      this.get_available_devices(),
-      this.get_current_devices(),
-    ]);
+    var [devices, current_devices] = (
+      await Promise.allSettled([
+        this.get_available_devices(),
+        this.get_current_devices(),
+      ])
+    ).map((x) => x.value);
 
     devices = devices.videoInput;
 

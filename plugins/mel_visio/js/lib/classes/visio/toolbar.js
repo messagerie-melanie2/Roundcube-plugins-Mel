@@ -26,6 +26,10 @@ class ToolbarFunctions {
   static Hangup(visio) {
     FramesManager.Instance.detach('before_url');
 
+    if (this._audioManager) this._audioManager.dispose();
+
+    if (this._popup) this._popup.destroy();
+
     visio.jitsii.hangup();
     visio.toolbar.destroy();
   }
@@ -61,41 +65,58 @@ class ToolbarFunctions {
       this._audioManager = this._audioManager || new MelAudioManager();
       this.UpdatePopupDevices(
         await visio.jitsii.get_micro_and_audio_devices(),
-        async (id, type, label) => {
-          switch (type) {
-            case 'audioinput':
-              this._popup.$content
-                .find('button')
-                .addClass('loading')
-                .attr('disabled');
-              visio.jitsii.set_micro_device(label, id);
-              await Mel_Promise.wait_async(async () => {
-                const tmp = await visio.jitsii.get_current_devices();
-                return tmp['audioInput'].deviceId === id;
-              });
-              this._popup.$content
-                .find('button')
-                .removeClass('disabled')
-                .removeAttr('disabled');
-              this._popup.$content
-                .find(
-                  `button[data-deviceid="${id}"][data-devicekind="${type}"]`,
-                )
-                .addClass('disbabled')
-                .attr('disabled', 'disabled');
-              break;
-
-            case 'audiooutput':
-              visio.jitsii.set_audio_device(label, id);
-              break;
-
-            default:
-              break;
-          }
-        },
+        this.Mic_0_Click.bind(this, visio),
       );
       this._popup.set_tag('mic');
       this._popup.show();
+    }
+  }
+
+  static async Mic_0_Click(visio, id, type, label) {
+    const initial = this._popup.$content
+      .find('button.disabled')
+      .data('deviceid');
+    let waitState = null;
+    this._popup.$content.find('button').addClass('loading').attr('disabled');
+
+    switch (type) {
+      case 'audioinput':
+        visio.jitsii.set_micro_device(label, id);
+        waitState = await Mel_Promise.wait_async(async () => {
+          const tmp = await visio.jitsii.get_current_devices();
+          return tmp['audioInput'].deviceId === id;
+        });
+
+        break;
+
+      case 'audiooutput':
+        visio.jitsii.set_audio_device(label, id);
+        waitState = await Mel_Promise.wait_async(async () => {
+          const tmp = await visio.jitsii.get_current_devices();
+          return tmp['audioOutput'].deviceId === id;
+        });
+        break;
+
+      default:
+        break;
+    }
+
+    this._popup.$content
+      .find('button')
+      .removeClass('disabled')
+      .removeAttr('disabled')
+      .removeClass('loading');
+
+    if (!waitState?.resolved) {
+      this._popup.$content
+        .find(`button[data-deviceid="${initial}"][data-devicekind="${type}"]`)
+        .addClass('disabled')
+        .attr('disabled', 'disabled');
+    } else {
+      this._popup.$content
+        .find(`button[data-deviceid="${id}"][data-devicekind="${type}"]`)
+        .addClass('disabled')
+        .attr('disabled', 'disabled');
     }
   }
 
@@ -242,6 +263,8 @@ class ToolbarFunctions {
   static Camera(visio) {
     visio.jitsii.toggle_video();
   }
+
+  static Camera_0(visio) {}
 
   /**
    *

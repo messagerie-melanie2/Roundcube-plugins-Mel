@@ -2595,6 +2595,8 @@ body {
 }
 
 .mel-ui-button {
+  position: relative;
+
   &.btn {
     background-color: var(--main-bckg-color);
     color: var(--secondary-text-color);
@@ -2609,19 +2611,21 @@ body {
       overflow: hidden;
       text-overflow: ellipsis;
       border-radius: 5px !important;
+      color: var(--bureau-card-text-color);
     }
 
     &:hover {
-      background-color: var(--tierciary-bckg-color);
-      border-color: var(--mel-button-border-color-alt);
+      background-color: var(--mel-button-hover-background-color);
+      border-color: var(--mel-button-border-color);
+      color: var(--mel-button-text-color);
       border-radius: 5px;
     }
 
     &:active {
       .large-toolbar & {
-        background-color: var(--main-bckg-color);
-        color: var(--secondary-text-color);
-        border-color: var(--invisible);
+        background-color: var(--mel-button-hover-background-color);
+        border-color: var(--mel-button-border-color);
+        color: var(--mel-button-text-color);
         border-radius: 5px;
       }
     }
@@ -2633,15 +2637,32 @@ body {
     }
 
     &.disabled {
-      background-color: var(--disabled-mel-button-color); /*#a3a7bc;*/
-      border-color: var(--disabled-mel-button-color); /*#a3a7bc;*/
+      background-color: var(--mel-button-hover-background-color);
+      border-color: var(--mel-button-border-color);
 
       .large-toolbar & {
-        background-color: var(--main-bckg-color);
-        color: var(--secondary-text-color);
-        border-color: var(--invisible);
+        color: var(--mel-button-text-color);
         opacity: 1;
         border-radius: 5px;
+      }
+    }
+
+    &.loading {
+      &::before {
+        content: '';
+        width: 100%;
+        display: block !important;
+        // background: linear-gradient(
+        //   90deg,
+        //   rgba(2, 0, 36, 0) 0%,
+        //   rgb(255, 255, 255) 50%,
+        //   rgba(0, 212, 255, 0) 100%
+        // );
+        animation: loadingbutton 1s linear 0.5s infinite;
+        position: absolute;
+        height: 100%;
+        top: 0;
+        left: 0;
       }
     }
   }

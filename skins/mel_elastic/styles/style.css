@@ -1648,6 +1648,9 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 .popover .btn-group-vertical {
   width: 100%;
 }
+.mel-ui-button {
+  position: relative;
+}
 .mel-ui-button.btn {
   background-color: var(--main-bckg-color);
   color: var(--secondary-text-color);
@@ -1662,33 +1665,41 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   border-radius: 5px !important;
+  color: var(--bureau-card-text-color);
 }
 .mel-ui-button.btn:hover {
-  background-color: var(--tierciary-bckg-color);
-  border-color: var(--mel-button-border-color-alt);
+  background-color: var(--mel-button-hover-background-color);
+  border-color: var(--mel-button-border-color);
+  color: var(--mel-button-text-color);
   border-radius: 5px;
 }
 .large-toolbar .mel-ui-button.btn:active {
-  background-color: var(--main-bckg-color);
-  color: var(--secondary-text-color);
-  border-color: var(--invisible);
+  background-color: var(--mel-button-hover-background-color);
+  border-color: var(--mel-button-border-color);
+  color: var(--mel-button-text-color);
   border-radius: 5px;
 }
 .large-toolbar .mel-ui-button.btn:focus {
   box-shadow: 0 0 0 0.2rem #484D7A69 !important;
 }
 .mel-ui-button.btn.disabled {
-  background-color: var(--disabled-mel-button-color);
-  /*#a3a7bc;*/
-  border-color: var(--disabled-mel-button-color);
-  /*#a3a7bc;*/
+  background-color: var(--mel-button-hover-background-color);
+  border-color: var(--mel-button-border-color);
 }
 .large-toolbar .mel-ui-button.btn.disabled {
-  background-color: var(--main-bckg-color);
-  color: var(--secondary-text-color);
-  border-color: var(--invisible);
+  color: var(--mel-button-text-color);
   opacity: 1;
   border-radius: 5px;
+}
+.mel-ui-button.btn.loading::before {
+  content: '';
+  width: 100%;
+  display: block !important;
+  animation: loadingbutton 1s linear 0.5s infinite;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 .btn-arrow {
   transition: all 0.1s ease-in;

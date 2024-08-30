@@ -81,7 +81,7 @@ function init()
 
 
         // Penser à modifier avec index au lieu de post pour afficher la page d'accueil
-        $this->register_action('index', [$this, 'post']);
+        $this->register_action('index', [$this, 'index']);
         //Affichage de la page d'un article
         $this->register_action('post', [$this, 'post']);
         // Affichage de la page qui permet de créer un article
@@ -177,8 +177,6 @@ public function index(){
  * @return void
  */
 public function post(){
-    $this->load_script_module('manager');
-    
     //Récupérér uid avec GET
     $uid = 'VOszRaUI1dQRuQGs2NzKiKZ0';
     $this->current_post = $this->get_post($uid);
@@ -241,7 +239,6 @@ public function show_post_tags() {
  */
 public function show_post_creator(){
 
-    
     return $this->get_user($this->current_post->user_uid)->name;
 
 }
@@ -288,8 +285,12 @@ public function show_post_date(){
 }
 
 public function create_or_edit_post() {
+
+    $this->rc()->html_editor();
+    $this->load_script_module('manager');
     $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
     
+    $this->rc()->output->add_handlers(array('show_tag_manager' => array($this, 'show_tag_manager')));
     $this->rc()->output->send('mel_forum.create-post');
 }
 

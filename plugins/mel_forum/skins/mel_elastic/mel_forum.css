@@ -433,7 +433,16 @@
   font-size: 14px;
 }
 .task-forum .tag#new-tag {
+  color: var(--forum-tag-text-color);
+  width: 10rem;
+  border-radius: 15px;
+  border-color: var(--default-placeholder-text-color);
+}
+.task-forum .tag#new-tag::placeholder {
   color: var(--default-placeholder-text-color);
+}
+.task-forum .tag#new-tag::focus-visible {
+  outline-width: 0px !important;
 }
 .task-forum .author-infos {
   display: flex;

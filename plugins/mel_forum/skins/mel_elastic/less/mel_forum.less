@@ -1,6 +1,5 @@
 //compress:false
 .task-forum {
-
   /* Styles pour le conteneur avec une barre de défilement */
   .scrollable-container {
     overflow-y: auto;
@@ -169,7 +168,7 @@
     /* Réduit l'espace en dessous de chaque ligne */
   }
 
-  .row-forum+.row-forum {
+  .row-forum + .row-forum {
     margin-top: 0;
     /* Réduit l'espace au-dessus des lignes suivantes */
   }
@@ -263,7 +262,7 @@
     margin-top: 4px;
   }
 
-  .author-info-custom>div {
+  .author-info-custom > div {
     text-align: center;
   }
 
@@ -308,10 +307,6 @@
     /* Ajustez la marge selon vos besoins */
   }
 
-
-
-
-
   .comments-container {
     margin-top: 20px;
   }
@@ -339,8 +334,6 @@
     margin-top: 10px;
     border-radius: 5px;
   }
-
-
 
   .reply-container {
     margin-left: 75px;
@@ -427,34 +420,36 @@
         font-weight: bold;
         margin-right: 10px;
       }
-  
+
       .forum-comment-date {
         span {
           font-size: 12px;
         }
         .icon::before {
           font-family: 'Material Symbols Outlined';
-          content: attr(data-icon);  /* Utilisation de l'attribut data-icon pour afficher l'icône */
-          font-size: 20px;           /* Taille de l'icône */
-          font-variation-settings:'wght' 300; /* Poids de l'icône */
+          content: attr(
+            data-icon
+          ); /* Utilisation de l'attribut data-icon pour afficher l'icône */
+          font-size: 20px; /* Taille de l'icône */
+          font-variation-settings: 'wght' 300; /* Poids de l'icône */
           display: inline-block;
           vertical-align: middle;
-          margin-right: 5px;         /* Espacement à droite de l'icône */
+          margin-right: 5px; /* Espacement à droite de l'icône */
           margin-left: 5px;
         }
-      }    
-  
+      }
+
       .forum-comment-text {
         margin-top: 5px;
         margin-left: 40px;
       }
-  
+
       .forum-comment-reactions {
         margin-left: 40px;
-  
+
         display: flex;
         align-items: center;
-  
+
         .icon::before {
           font-family: 'Material Symbols Outlined';
           content: attr(data-icon);
@@ -464,7 +459,7 @@
           vertical-align: middle;
           margin-right: 5px;
         }
-        
+
         .reaction-item {
           display: flex;
           align-items: center;
@@ -480,7 +475,7 @@
               font-family: 'Material Symbols Outlined';
               content: attr(data-icon);
               font-size: 19px;
-              font-variation-settings:'wght' 300;
+              font-variation-settings: 'wght' 300;
               display: inline-block;
               vertical-align: middle;
               margin-right: 5px;
@@ -495,9 +490,9 @@
   }
 
   .forum-comment-response {
-    display: flex;                   /* Pour aligner les éléments horizontalement */
-    align-items: center;             /* Aligne les éléments verticalement au centre */
-    margin-left: 40px;               /* Ajuste la marge pour s'aligner avec les autres éléments */
+    display: flex; /* Pour aligner les éléments horizontalement */
+    align-items: center; /* Aligne les éléments verticalement au centre */
+    margin-left: 40px; /* Ajuste la marge pour s'aligner avec les autres éléments */
 
     .icon::before {
       font-family: 'Material Symbols Outlined';
@@ -506,12 +501,14 @@
       font-variation-settings: 'wght' 400;
       display: inline-block;
       vertical-align: middle;
-      margin-right: 5px;              /* Espace à droite de l'icône */
+      margin-right: 5px; /* Espace à droite de l'icône */
     }
 
     .ml-2 {
-      font-size: 12px;                /* Ajuste la taille du texte pour correspondre au design */
-      color: var(--forum-text-color); /* Applique la couleur de texte souhaitée */
+      font-size: 12px; /* Ajuste la taille du texte pour correspondre au design */
+      color: var(
+        --forum-text-color
+      ); /* Applique la couleur de texte souhaitée */
     }
   }
 
@@ -534,7 +531,16 @@
     font-size: 14px;
 
     &#new-tag {
-      color: var(--default-placeholder-text-color);
+      color: var(--forum-tag-text-color);
+      width: 10rem;
+      border-radius: 15px;
+      border-color: var(--default-placeholder-text-color);
+      &::placeholder {
+        color: var(--default-placeholder-text-color);
+      }
+      &::focus-visible {
+        outline-width: 0px !important;
+      }
     }
   }
 

@@ -685,6 +685,14 @@ class Window {
     return this.get_window().find(`iframe#frame-${frame.id}`);
   }
 
+  remove_frame(task) {
+    let frame = this._frames.get(task);
+    this._frames.remove(task);
+
+    frame.$frame.remove();
+    return this;
+  }
+
   delete() {
     this.get_window().remove();
     return this;
@@ -952,7 +960,12 @@ class FrameManager {
   }
 
   start_mode(name, ...args) {
-    return this._modes.get(name, () => {})(...args);
+    const func = this._modes.get(name);
+
+    if (func) {
+      return func(...args);
+    }
+    //return this._modes.get(name, () => {})(...args);
   }
 
   _generate_menu($element) {
@@ -1092,6 +1105,15 @@ class FrameManager {
     event.preventDefault();
     this.switch_frame($(e.currentTarget).data('task'), {});
   }
+
+  /**
+   * @yield {Window}
+   */
+  *[Symbol.iterator]() {
+    for (const element of this._windows) {
+      yield element.value;
+    }
+  }
 }
 
 FrameManager._helper = null;
@@ -1152,7 +1174,8 @@ class FrameManagerWrapper {
     Object.defineProperties(this, {
       Instance: {
         get() {
-          if (window !== parent) return parent.mel_modules[MODULE].Instance;
+          if (window !== parent && !!parent)
+            return parent.mel_modules[MODULE].Instance;
           else if (!_instance) _instance = new FrameManager();
 
           return _instance;
@@ -1197,6 +1220,7 @@ if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
 
 FramesManager.Instance.add_mode('visio', async function visio(...args) {
   const [page, params] = args;
+  debugger;
   if (!page) {
     if (params) params._page = 'index';
 

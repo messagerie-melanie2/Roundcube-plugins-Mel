@@ -25,14 +25,40 @@ class ToolbarFunctions {
    * @param {Visio} visio
    */
   static Hangup(visio) {
+    FramesManager.Instance.detach('url');
     FramesManager.Instance.detach('before_url');
+    FramesManager.Instance.detach('switch_frame');
 
     if (this._audioManager) this._audioManager.dispose();
+    if (this._videoManager) this._videoManager.dispose();
 
     if (this._popup) this._popup.destroy();
 
     visio.jitsii.hangup();
     visio.toolbar.destroy();
+
+    top
+      .$('#visio-back-button bnum-icon')
+      .text('undo')
+      .parent()
+      .off('click')
+      .on('click', () => {
+        if (FramesManager.Instance.get_window()._history._history.length)
+          FramesManager.Instance.get_window()._history.back();
+        else FramesManager.Instance.switch_frame('bureau', {});
+      });
+
+    FramesManager.Instance.attach('switch_frame', (task, changeframe) => {
+      if (changeframe) {
+        top.$('#visio-back-button').remove();
+        FramesManager.Instance.detach('switch_frame');
+
+        if (FramesManager.Instance.get_window().has_frame('webconf'))
+          FramesManager.Instance.get_window().remove_frame('webconf');
+
+        FramesManager.Instance.close_except_selected();
+      }
+    });
   }
 
   /**

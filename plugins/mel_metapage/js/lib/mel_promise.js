@@ -13,6 +13,12 @@ export { Mel_Promise, Mel_Ajax, WaitSomething };
  */
 
 /**
+ * @callback WaitCallbackAsync
+ * @returns {Promise<boolean>} Si vrai, la boucle s'arrête.
+ * @async
+ */
+
+/**
  * Ajoute des fonctionnalités aux promesses déjà existantes.
  * Pour que les fonctions asynchrones soient complètement compatible, le premier argument doit être la promesse elle même.
  * Ca sera utile pour arrêter la fonction si la fonction 'Abort' est appelé.
@@ -311,6 +317,12 @@ class Mel_Promise {
     return new WaitSomething(whatIWait, timeout);
   }
 
+  /**
+   *
+   * @param {WaitCallbackAsync} whatIWait
+   * @param {number} [timeout=5]
+   * @returns
+   */
   static wait_async(whatIWait, timeout = 5) {
     return new WaitSomethingAsync(whatIWait, timeout);
   }
@@ -375,10 +387,16 @@ class WaitSomething extends Mel_Promise {
   }
 }
 
+/**
+ * @class
+ * @classdesc Attend une fonction asynchrone
+ * @extends Mel_Promise
+ * @package
+ */
 class WaitSomethingAsync extends Mel_Promise {
   /**
    *
-   * @param {WaitCallback} whatIWait
+   * @param {WaitCallbackAsync} whatIWait
    * @param {number} timeout en secondes
    */
   constructor(whatIWait, timeout = 5) {

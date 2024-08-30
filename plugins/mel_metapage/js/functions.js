@@ -77,15 +77,15 @@ function m_mp_Create() {
   FullscreenItem.close_if_exist();
   m_mp_step3_param.datas = null;
 
-  if (
-    ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
-    !$('.wekan-frame').length
-  )
-    m_mp_Create.current_promise = mel_metapage.Functions.change_frame(
-      'wekan',
-      false,
-      true,
-    );
+  // if (
+  //   ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
+  //   !$('.wekan-frame').length
+  // )
+  //   m_mp_Create.current_promise = mel_metapage.Functions.change_frame(
+  //     'wekan',
+  //     false,
+  //     true,
+  //   );
 
   //window.create_popUp = undefined;
   //Si problème de configuration, on gère.
@@ -506,7 +506,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -655,7 +655,7 @@ function m_mp_step3_param(type) {
         let $param_button = $master_button.parent().find('.under-button');
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -797,7 +797,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =

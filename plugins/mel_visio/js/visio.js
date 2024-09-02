@@ -1,3 +1,5 @@
+/* eslint-disable vars-on-top */
+/* eslint-disable no-shadow */
 /*****************************************************************/
 /*                 SYSTEME DE VISIOCONFERENCE
 /*
@@ -3642,11 +3644,14 @@
        * @param {boolean} state true => Ouvert
        */
       toggleChat(state) {
-        this.globalScreenManager.webconf.chat.hidden = !state;
-        this.listener.switchAriane(state);
+        if (rcmail.env.plugin_list_chat) {
+          this.globalScreenManager.webconf.chat.hidden = !state;
+          this.listener.switchAriane(state);
 
-        if (state) this.right_pannel.enable_right_mode();
-        else this.right_pannel.disable_right_mode();
+          if (state) this.right_pannel.enable_right_mode();
+          else this.right_pannel.disable_right_mode();
+        }
+        else this.toggleInternalChat();
       }
 
       /**

@@ -58,7 +58,14 @@ class tchap extends bnum_plugin
                 $this,
                 'sidebar'
             ]);
+            $this->register_action('avatar_url', [
+                $this,
+                'avatar_url'
+            ]);
         }
+        // else if ($this->is_bnum_task()) {
+        //     $this->load_script_module('bnum.js', '/');
+        // }
         
         $tchap_url = $rcmail->config->get('tchap_url');
     	
@@ -124,6 +131,14 @@ class tchap extends bnum_plugin
 
     	return $rcmail->output->frame($attrib);
     }
+
+    public function avatar_url() {
+        $url = self::get_avatar_url(driver_mel::gi()->user()->email);
+
+        echo json_encode($url);
+        exit;
+    }
+
     /**
      * Bloquer les refresh
      * @param array $args
@@ -292,6 +307,21 @@ class tchap extends bnum_plugin
         return hash('sha512', date('d/m/Y') . '-' . $rcmail->config->get('tchap_bot_token'));
     }
 
+    public static function get_avatar_url($user_id) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $user_id = strtolower(driver_mel::gi()->getUser($user_id)->email);
+        $user_uid = self::get_user_tchap_id($user_id);
+        $config = ['token'=> $token/*, 'user_id'=> $user_uid*/];
+        $content = self::call_tchap_api (str_replace('{userId}', $user_uid, $rcmail->config->get('get_avatar_url')), $config, 'GET');
+        if($content["httpdCode"] === 200) {
+            return $content;
+        } else {
+            return false;
+        }
+    }
+
+
     /**
      * @param $endpoint
      * @param $config
@@ -300,7 +330,7 @@ class tchap extends bnum_plugin
     private static function call_tchap_api ($endpoint, $config, $type) {
         if(class_exists('mel_helper')) {
             $rcmail = rcmail::get_instance();
-            $url = $rcmail->config->get('tchap_bot_url') . $endpoint;
+            $url = strpos($endpoint, 'https') !== false ? $endpoint : $rcmail->config->get('tchap_bot_url') . $endpoint;
             $headers = [0 => 'Content-Type: application/json'];
             if($rcmail->config->get('http_proxy') !== '') {
                 $headers[CURLOPT_PROXY] = $rcmail->config->get('http_proxy');
@@ -308,6 +338,13 @@ class tchap extends bnum_plugin
             switch ($type) {
                 case 'DELETE':
                     $content = mel_helper::load_helper($rcmail)->fetch("", false, 0)->_custom_url($url, 'DELETE', $config, null, $headers);
+                    break;
+                case 'PUT':
+                    $content = mel_helper::load_helper($rcmail)->fetch("", false, 0)->_custom_url($url, 'PUT', $config, null, $headers);
+                    break;
+
+                case 'GET':
+                    $content = mel_helper::load_helper($rcmail)->fetch('', false, 0)->_get_url($url, $config, null, $headers);
                     break;
                 case 'POST';
                 default:

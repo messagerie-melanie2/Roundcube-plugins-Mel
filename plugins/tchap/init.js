@@ -3,6 +3,8 @@
  * @memberof Plugins
  */
 
+//$('#user-picture').attr('src', mel_metapage.Storage.get('tchap_avatar_url'));
+
 $(document).ready(() => {
   const button = top.$('#button-tchap-chat')[0];
 

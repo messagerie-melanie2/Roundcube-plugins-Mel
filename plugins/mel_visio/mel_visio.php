@@ -286,49 +286,52 @@ class mel_visio extends bnum_plugin
 
     public function get_ariane_rooms($classes = "", $ownerOnly = false, $only = 0)
     {
-        try {
-            $list = null;
-            $chat = $this->rc()->plugins->get_plugin("rocket_chat");
-            if ($ownerOnly)
-            {
-                $list = $chat->get_all_moderator_joined();
-                switch ($only) {
-                    case 1:
-                        $list["group"] = [];
-                        break;
+        $html = '<select class="ariane_select input-mel '.$classes.'">';
+        $html .= "<option value=home>".$this->rc()->gettext("nothing", "mel_metapage")."</option>";
+        $html .= "</select>";
+        // try {
+        //     $list = null;
+        //     $chat = $this->rc()->plugins->get_plugin("rocket_chat");
+        //     if ($ownerOnly)
+        //     {
+        //         $list = $chat->get_all_moderator_joined();
+        //         switch ($only) {
+        //             case 1:
+        //                 $list["group"] = [];
+        //                 break;
 
-                    case 2:
-                        $list["channel"] = [];
-                        break;
+        //             case 2:
+        //                 $list["channel"] = [];
+        //                 break;
                     
-                    default:
-                        # code...
-                        break;
-                }
-            }
-            else {
-                $list = $chat->get_joined();
-                $list["channel"] = json_decode($list["channel"]["content"]);
-                $list["group"] = json_decode($list["group"]["content"]);
-            }
+        //             default:
+        //                 # code...
+        //                 break;
+        //         }
+        //     }
+        //     else {
+        //         $list = $chat->get_joined();
+        //         $list["channel"] = json_decode($list["channel"]["content"]);
+        //         $list["group"] = json_decode($list["group"]["content"]);
+        //     }
 
-            $html = '<select class="ariane_select input-mel '.$classes.'">';
-            $html .= "<option value=home selected>".$this->rc()->gettext("nothing", "mel_metapage")."</option>";
+        //     $html = '<select class="ariane_select input-mel '.$classes.'">';
+        //     $html .= "<option value=home selected>".$this->rc()->gettext("nothing", "mel_metapage")."</option>";
 
-            foreach (($ownerOnly ? $list["channel"] : $list["channel"]->channels) as $key => $value) {
-                $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';
-            } 
+        //     foreach (($ownerOnly ? $list["channel"] : $list["channel"]->channels) as $key => $value) {
+        //         $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';
+        //     } 
 
-            foreach (($ownerOnly ? $list["group"] : $list["group"]->groups) as $key => $value) {
-                $html.='<option value="false:'.$value->name.'">'.$value->name.'</option>';
-            } 
+        //     foreach (($ownerOnly ? $list["group"] : $list["group"]->groups) as $key => $value) {
+        //         $html.='<option value="false:'.$value->name.'">'.$value->name.'</option>';
+        //     } 
             
-            $html .= "</select>";
-        } catch (\Throwable $th) {
-            $html = '<select class="ariane_select input-mel '.$classes.'">';
-            $html .= "<option value=home>".$this->rc()->gettext("nothing", "mel_metapage")."</option>";
-            $html .= "</select>";
-        }
+        //     $html .= "</select>";
+        // } catch (\Throwable $th) {
+        //     $html = '<select class="ariane_select input-mel '.$classes.'">';
+        //     $html .= "<option value=home>".$this->rc()->gettext("nothing", "mel_metapage")."</option>";
+        //     $html .= "</select>";
+        // }
         return $html;
     }
 

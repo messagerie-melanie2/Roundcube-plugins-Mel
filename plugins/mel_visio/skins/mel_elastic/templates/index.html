@@ -3,71 +3,144 @@
 
 <h1 class="voice"><roundcube:label name="webconf" /></h1>
 
-<div id="layout-content" class="webconf-content"  role="main">
-    <div id="room-selector">
-        <div class="square_div absolute-center">
-            <div class="contents" style="height: unset;background-color: var(--modal-background-color);">
-                <div class="square-contents" style="width: 500px;">
-                    <div style="text-align: left;">
-                        <span class="title-conf-item red-star-after"><roundcube:label name="mel_metapage.saloon" /></span>
-                        <br/>
-                        <div class="form-floating pixel-correction">
-                            <input id="webconf-room-name" type="text" style="background-clip: unset" required class="form-control input-mel" />
-                            <label for="webconf-room-name">10 caractères alphanumérique avec au moins 3 chiffres</label>
-                        </div>
-                        <div class="webconf-error-text" style=display:none><roundcube:label name="mel_metapage.webconf_saloon_name_error" /></div>
-                    </div>
-                    <div class="form-conf">              
-                        <div class="form-check mel-radio-1" style="margin-top:15px">
-                            <input type="checkbox" name="wsp-attach" id="wsp-yes" value="1" class="form-check-input custom-control-input"  value="yes" /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
-                            <label class="form-check-label" for="wsp-yes">
-                                <span></span><text class="title-conf-item"><roundcube:label name="mel_metapage.attach_to" /> <roundcube:label name="mel_metapage.a_workspace" /></text>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-conf webconf-ariane">
-                        <span class="title-conf-item"><roundcube:label name="mel_metapage.choose" /> <roundcube:label name="mel_metapage.an_ariane_space" /></span>
-                        <roundcube:object name="selectrooms" />
-                    </div>
-                    <div class="form-conf webconf-wsp"   style="display:none;">
-                        <span class="title-conf-item"><roundcube:label name="mel_metapage.choose" /> <roundcube:label name="mel_metapage.a_workspace" /></span>
-                        <roundcube:object name="selectwsp" />
-                    </div>
-                    <div class="form-conf">              
-                        <div class="form-check mel-radio-1 radio-small" style="margin-top:15px">
-                            <input type="checkbox" name="visio-pass" id="visio-pass" value="1" class="form-check-input custom-control-input"  value="yes" /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
-                            <label class="form-check-label" for="visio-pass">
-                                <span></span><text class="title-conf-item-">Visio sécurisée ?</text>
-                            </label>
-                        </div>
-                    </div>
-                    <div style="text-align:left;display:none;" id="form-mel-visio-pass">
-                        <div id="form-floating-pass" class="form-floating pixel-correction">
-                            <div class="input-group">
-                                <input id="webconf-room-pass" maxlength="40" data-for="form-floating-pass" type="password" oninput="mel_input.floatingSetInput(this)" onfocusout="mel_input.floatingSetFocusClass(this, true)" onfocus="mel_input.floatingSetFocusClass(this)" required class="form-control input-mel" />
-                                <div class="input-group-append">
-                                    <button class="show-password mel-button no-button-margin" data-icon-show="icon-mel-eye" data-icon-hide="icon-mel-eye-crossed" data-for="webconf-room-pass" onclick="mel_input.togglePasswordShowed(this)"><span class="icon-mel-eye"></span></button>    
-                                </div>
-                            </div>
-                            <label for="webconf-room-pass">Mot de passe</label>
-                        </div>
-                        <div class="alert alert-warning" style=display:none>
-                            <p>
-                                /!\ Attention, si la visioconférence a déjà commencé, il s'agira du mot de passe d'entrée.
-                            </p>
-                        </div>
-                    </div>
-                    <div title="<roundcube:label name='mel_metapage.webconf_enter_help' />" id=webconf-enter style="margin-top: 15px;" class="mel-button invite-button create">
-                        <span><roundcube:label name="mel_metapage.enter" /></span>
-                        <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
-                    </div>
-                    <span title="<roundcube:label name='mel_metapage.webconf_close_help' />" onclick="mel_metapage.Functions.frame_back(true, 'home')" style="position: absolute;
-                    top: 0;
-                    right: 12px; cursor: pointer;" class="icon-mel-close card-close"></span>
-                </div>
+<div id="layout-content" class="webconf-content" role="main">
+  <div id="room-selector">
+    <div class="square_div absolute-center">
+      <div
+        class="contents"
+        style="height: unset; background-color: var(--modal-background-color)"
+      >
+        <div class="square-contents" style="width: 500px">
+          <div style="text-align: left">
+            <span class="title-conf-item red-star-after"
+              ><roundcube:label name="mel_metapage.saloon"
+            /></span>
+            <br />
+            <div class="form-floating pixel-correction">
+              <input
+                id="webconf-room-name"
+                type="text"
+                style="background-clip: unset"
+                required
+                class="form-control input-mel"
+              />
+              <label for="webconf-room-name"
+                >10 caractères alphanumérique avec au moins 3 chiffres</label
+              >
             </div>
+            <div class="webconf-error-text" style="display: none">
+              <roundcube:label name="mel_metapage.webconf_saloon_name_error" />
+            </div>
+          </div>
+          <div class="form-conf">
+            <div class="form-check mel-radio-1" style="margin-top: 15px">
+              <input
+                type="checkbox"
+                name="wsp-attach"
+                id="wsp-yes"
+                value="1"
+                class="form-check-input custom-control-input"
+                value="yes"
+              /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
+              <label class="form-check-label" for="wsp-yes">
+                <span></span
+                ><text class="title-conf-item"
+                  ><roundcube:label name="mel_metapage.attach_to" />
+                  <roundcube:label name="mel_metapage.a_workspace"
+                /></text>
+              </label>
+            </div>
+          </div>
+          <div class="form-conf webconf-ariane" style="display: none">
+            <span class="title-conf-item"
+              ><roundcube:label name="mel_metapage.choose" />
+              <roundcube:label name="mel_metapage.an_ariane_space"
+            /></span>
+            <roundcube:object name="selectrooms" />
+          </div>
+          <div class="form-conf webconf-wsp" style="display: none">
+            <span class="title-conf-item"
+              ><roundcube:label name="mel_metapage.choose" />
+              <roundcube:label name="mel_metapage.a_workspace"
+            /></span>
+            <roundcube:object name="selectwsp" />
+          </div>
+          <div class="form-conf">
+            <div
+              class="form-check mel-radio-1 radio-small"
+              style="margin-top: 15px"
+            >
+              <input
+                type="checkbox"
+                name="visio-pass"
+                id="visio-pass"
+                value="1"
+                class="form-check-input custom-control-input"
+                value="yes"
+              /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
+              <label class="form-check-label" for="visio-pass">
+                <span></span
+                ><text class="title-conf-item-">Visio sécurisée ?</text>
+              </label>
+            </div>
+          </div>
+          <div style="text-align: left; display: none" id="form-mel-visio-pass">
+            <div id="form-floating-pass" class="form-floating pixel-correction">
+              <div class="input-group">
+                <input
+                  id="webconf-room-pass"
+                  maxlength="40"
+                  data-for="form-floating-pass"
+                  type="password"
+                  oninput="mel_input.floatingSetInput(this)"
+                  onfocusout="mel_input.floatingSetFocusClass(this, true)"
+                  onfocus="mel_input.floatingSetFocusClass(this)"
+                  required
+                  class="form-control input-mel"
+                />
+                <div class="input-group-append">
+                  <button
+                    class="show-password mel-button no-button-margin"
+                    data-icon-show="icon-mel-eye"
+                    data-icon-hide="icon-mel-eye-crossed"
+                    data-for="webconf-room-pass"
+                    onclick="mel_input.togglePasswordShowed(this)"
+                  >
+                    <span class="icon-mel-eye"></span>
+                  </button>
+                </div>
+              </div>
+              <label for="webconf-room-pass">Mot de passe</label>
+            </div>
+            <div class="alert alert-warning" style="display: none">
+              <p>
+                /!\ Attention, si la visioconférence a déjà commencé, il s'agira
+                du mot de passe d'entrée.
+              </p>
+            </div>
+          </div>
+          <div
+            title="<roundcube:label name='mel_metapage.webconf_enter_help' />"
+            id="webconf-enter"
+            style="margin-top: 15px"
+            class="mel-button invite-button create"
+          >
+            <span><roundcube:label name="mel_metapage.enter" /></span>
+            <span
+              class="icon-mel-arrow-right plus"
+              style="margin-left: 15px"
+            ></span>
+          </div>
+          <span
+            title="<roundcube:label name='mel_metapage.webconf_close_help' />"
+            onclick="mel_metapage.Functions.frame_back(true, 'home')"
+            style="position: absolute; top: 0; right: 12px; cursor: pointer"
+            class="icon-mel-close card-close"
+          ></span>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <roundcube:include file="includes/footer.html" />

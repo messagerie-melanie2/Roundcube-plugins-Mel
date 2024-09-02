@@ -13,8 +13,6 @@ if (!defined('CONFIGURATION_APP_LIBM2')) {
 // Inclusion de l'ORM M2
 @include_once 'includes/libm2.php';
 
-@include_once '../lib/mel/mel.php';
-
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
 
@@ -35,8 +33,6 @@ $event = new LibMelanie\Api\Mel\Event($data['user'], $calendar);
 $event->uid = utils::generate_uid($_user);
 $event->load();
 
-$events = $calendar->getAllEvents();
-
 $appointment = json_decode($_POST['appointment'], true);
 $attendee_post = json_decode($_POST['attendee'], true);
 
@@ -45,7 +41,7 @@ $event->title = ($appointment['object'] == "custom" || $appointment['object'] ==
 $event->start = new DateTime($appointment['time_start']);
 $event->end = new DateTime($appointment['time_end']);
 $event->description = $appointment['description'];
-$event->timezone = "Europe/Paris";
+$event->timezone = $event->timezone;
 $event->event_creator_id = $data['user']->uid;
 $event->alarm = 0;
 $event->transparency = "OPAQUE";

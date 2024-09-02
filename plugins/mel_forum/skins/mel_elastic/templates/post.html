@@ -74,7 +74,25 @@
               alt="Image de Profil" class="forum-comment-profile-image">
           </div>
           <div class="col pl-0">
-            <input type="text" class="forum-comment-input" placeholder="Ajouter un commentaire">
+            <textarea id="new-comment-textarea-" class="forum-comment-input" placeholder="Ajouter un commentaire" rows="1"></textarea>
+          </div>
+          <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center" hidden>
+            <button
+              id="cancel-comment"
+              type="button"
+              class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"
+              data-dismiss="modal"
+            >
+              Annuler<span class="plus icon-mel-close"></span>
+            </button>
+            <button
+              id="submit-comment"
+              type="button"
+              class="modal-save-footer btn btn-secondary mel-button"
+              onclick="submitComment()"
+            >
+              Sauvegarder<span class="plus icon-mel-arrow-right"></span>
+            </button>
           </div>
         </div>
 
@@ -90,9 +108,9 @@
                 <span class="ml-1">12 mai 2024</span>
               </div>
             </div>
-            <div class="forum-comment-text">
+            <!-- <div class="forum-comment-text">
               <p>Content que ça te plaise 👍</p>
-            </div>
+            </div> -->
             <div class="forum-comment-reactions mt-2">
               <div class="reaction-item active mr-3">
                 <i class="material-symbols-outlined">thumb_up</i>

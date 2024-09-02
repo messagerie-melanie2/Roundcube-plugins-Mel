@@ -199,15 +199,36 @@ async toggleResponses(id) {
     // Détermination du pluriel ou du singulier pour "réponse(s)"
     let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
 
+    // Générer les initiales de l'utilisateur pour l'image de profil
+    let getInitials = function(fullName) {
+        const names = fullName.split(' ');
+        const initials = names[0][0] + names[1][0]; // Prend la première lettre du prénom et du nom
+        return initials.toUpperCase();
+    };
+
+    // Générer une couleur de fond aléatoire pour l'image de profil
+    let getRandomColor = function() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
     let html = MelHtml.start
       .div({ id: 'comment-id-' + this.uid, class: 'row comment' })
         .div({ class: 'col-12' })
-          .div({ class: 'd-flex align-items-center' })
-            .img({
-              src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJHSTf2JZC2TYKfMedDvuYWHxHL2h-xMPLDw&s',
-              alt: 'Image de profil',
-              class: 'forum-comment-profile-image'
-              })
+          .div({ class: 'forum-comment flex align-items-center' })
+
+            // Remplacer l'image par un div avec les initiales et la couleur de fond aléatoire
+            .div({
+              class: 'forum-comment-profile-image',
+              style: 'background-color: ' + getRandomColor() + '; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;'
+            })
+            .text(getInitials(this.user_name))
+            .end('div')
+
             .span({ class: 'forum-content-author' }).text(this.user_name).end('span')
           .div({ class: 'forum-comment-date d-flex align-items-end' })
             .span({ class: 'icon', 'data-icon': 'access_time' }).end('span')
@@ -235,25 +256,28 @@ async toggleResponses(id) {
           .end('div')
         .end('div');
 
-        if (this.children_number > 0) {
-          html = html.div({ class: 'forum-comment-response' })
-          .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down', onclick: this.toggleResponses.bind(this, this.id) }).end('span')
-          .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
-        .end('div');
-        }
-
-        html = html.div({ id: 'responses-' + this.id, class: 'responses ml-4 hidden' })
-        .end('div')
-      .end('div')
+    if (this.children_number > 0) {
+      html = html.div({ class: 'forum-comment-response' })
+        .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down', onclick: this.toggleResponses.bind(this, this.id) }).end('span')
+        .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
       .end('div');
+    }
+
+    html = html.div({ id: 'responses-' + this.id, class: 'responses ml-4 hidden' })
+      .end('div')
+    .end('div')
+    .end('div');
 
     return html.generate();
-  }
+}
 }
 
 class PostCommentView {
   constructor(post_id) {
     this._init()._setup(post_id)
+
+    this._autoResizeTextarea();
+    this._setupButtonVisibility();
   }
 
   /**
@@ -285,6 +309,39 @@ class PostCommentView {
           this.post_id = post_id;
         }
  
+  
+  /**
+   * Configure le redimensionnement automatique du textarea dédié au commentaire en fonction de son contenu.
+   */
+  _autoResizeTextarea() {
+    $(document).on('input', '.forum-comment-input', function () {
+      this.style.height = 'auto'; // Réinitialise la hauteur
+      this.style.height = (this.scrollHeight) + 'px'; // Ajuste la hauteur
+    });
+  }
+
+  /**
+   * Configure la visibilité des boutons lors du focus et du blur du textarea.
+   */
+  _setupButtonVisibility() {
+    const $textarea = $('#new-comment-textarea-');
+    const $buttonsContainer = $('#buttons-container');
+
+    // Initialement masqué
+    $buttonsContainer.addClass('hidden');
+
+    // Afficher les boutons lorsque le textarea reçoit le focus
+    $textarea.on('focus', function() {
+      $buttonsContainer.removeClass('hidden');
+    });
+
+    // Cacher les boutons lorsque le textarea perd le focus
+    // $textarea.on('blur', function() {
+    //   $buttonsContainer.addClass('hidden');
+    // });
+
+  }
+
 
   /**
  * Récupère les commentaires associés à un post spécifique.
@@ -314,7 +371,40 @@ class PostCommentView {
 
   }
 
+  
 
+  async submitComment() {
+    const content = $('#new-comment-textarea').val(); // Assurez-vous que l'ID correspond à votre textarea
 
+    if (!content) {
+      rcmail.display_message('Le champ commentaire est requis.', 'error');
+      return;
+    }
 
+    try {
+      let response = await mel_metapage.Functions.post(
+        mel_metapage.Functions.url('forum', 'create_comment'),
+        {
+          _content: this.content,
+          _post_id: this.post_id,
+        }
+      );
+
+      response = JSON.parse(response);
+
+      if (response.status === 'success') {
+        rcmail.display_message(response.message, 'confirmation');
+        $('#new-comment-textarea').val(''); // Effacer le champ de texte après l'envoi du commentaire
+        this.displayComments(); // Rafraîchir les commentaires
+      } else {
+        rcmail.display_message(response.message, 'error');
+      }
+
+    } catch (error) {
+      rcmail.display_message('Une erreur est survenue lors de la création du commentaire.', 'error');
+      console.error("Erreur lors de la création du commentaire:", error);
+    }
+  }
+
+ 
 }

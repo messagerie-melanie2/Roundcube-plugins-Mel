@@ -400,6 +400,8 @@
       padding: 8px 10px;
       outline: none;
       border-radius: 5px;
+      overflow-y: hidden;
+      resize: none;
     }
 
     .forum-comment-sort {
@@ -500,6 +502,10 @@
     }
   }
 
+  .forum-content-author {
+    font-weight: bold;
+  }
+
   .forum-comment-response {
     display: flex; /* Pour aligner les éléments horizontalement */
     align-items: center; /* Aligne les éléments verticalement au centre */
@@ -512,14 +518,14 @@
       font-variation-settings: 'wght' 400;
       display: inline-block;
       vertical-align: middle;
+      color: var(--forum-active-text-color);
       margin-right: 5px; /* Espace à droite de l'icône */
     }
 
     .ml-2 {
       font-size: 12px; /* Ajuste la taille du texte pour correspondre au design */
-      color: var(
-        --forum-text-color
-      ); /* Applique la couleur de texte souhaitée */
+      color: var(--forum-active-text-color); /* Applique la couleur de texte souhaitée */
+      //font-weight: bold;
     }
   }
 
@@ -537,6 +543,7 @@
     display: flex;
     justify-content: center;
     margin-top: 10px;
+
 
     .tox-tinymce {
       width: 100%;

@@ -318,6 +318,8 @@
   padding: 8px 10px;
   outline: none;
   border-radius: 5px;
+  overflow-y: hidden;
+  resize: none;
 }
 .task-forum .forum-comment .forum-comment-sort {
   padding-bottom: 5px;
@@ -400,6 +402,9 @@
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response span {
   color: var(--forum-active-text-color);
 }
+.task-forum .forum-content-author {
+  font-weight: bold;
+}
 .task-forum .forum-comment-response {
   display: flex;
   /* Pour aligner les éléments horizontalement */
@@ -415,13 +420,14 @@
   font-variation-settings: 'wght' 400;
   display: inline-block;
   vertical-align: middle;
+  color: var(--forum-active-text-color);
   margin-right: 5px;
   /* Espace à droite de l'icône */
 }
 .task-forum .forum-comment-response .ml-2 {
   font-size: 12px;
   /* Ajuste la taille du texte pour correspondre au design */
-  color: var(--forum-text-color);
+  color: var(--forum-active-text-color);
   /* Applique la couleur de texte souhaitée */
 }
 .task-forum .hidden {

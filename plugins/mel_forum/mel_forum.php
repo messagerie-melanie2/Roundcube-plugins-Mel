@@ -188,6 +188,9 @@ public function post(){
     $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
     $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
     
+    $this->rc()->output->set_env('post_uid', $this->current_post->uid);
+    $this->rc()->output->set_env('post_id', $this->current_post->id);
+
     $this->rc()->output->send('mel_forum.post');
 }
 
@@ -974,6 +977,7 @@ public function create_comment()
 
     // Récupérer le nom du champ POST
     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+    $post = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
 
     // Validation des données saisies
     if (empty($content)) {
@@ -1288,7 +1292,7 @@ public function like_comment()
 public function get_all_comments_bypost()
 {
     // Récupérer l'uid de l'article du champ POST
-    $uid = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_GPC);
+    $uid = rcube_utils::get_input_value('_post_uid', rcube_utils::INPUT_GPC);
 
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;

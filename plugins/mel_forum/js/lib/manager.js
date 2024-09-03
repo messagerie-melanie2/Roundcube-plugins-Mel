@@ -29,7 +29,7 @@ export class Manager extends MelObject {
    */
   async displayComments() {
     // Obtenir tous les commentaires du post
-    let PostCommentManager = new PostCommentView('ndWtChyQ4IwabbWjWwlM7Qo9');
+    let PostCommentManager = new PostCommentView(this.get_env('post_id'));
     let allComments = await PostCommentManager.getCommentByPost();
     let comments_array = [];
 

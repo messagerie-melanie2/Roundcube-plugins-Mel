@@ -278,6 +278,7 @@ class PostCommentView {
 
     this._autoResizeTextarea();
     this._setupButtonVisibility();
+    this._setupSaveButton();
   }
 
   /**
@@ -289,7 +290,7 @@ class PostCommentView {
  * @returns {Object} - L'objet initialisé avec la valeur de `post_id`.
  */
   _init() {
-    this.post_id = this.post_id;
+    this.post_id = '';
 
     return this;
 
@@ -324,7 +325,7 @@ class PostCommentView {
    * Configure la visibilité des boutons lors du focus et du blur du textarea.
    */
   _setupButtonVisibility() {
-    const $textarea = $('#new-comment-textarea-');
+    const $textarea = $('#new-comment-textarea');
     const $buttonsContainer = $('#buttons-container');
 
     // Initialement masqué
@@ -342,6 +343,42 @@ class PostCommentView {
 
   }
 
+  _setupSaveButton() {
+    const $saveButton = $('#submit-comment');
+    const $textarea = $('#new-comment-textarea');
+
+    $saveButton.on('click', () => {
+      debugger;
+        const commentContent = $textarea.val();
+        if (commentContent.trim() !== '') {
+            this.saveComment(commentContent);
+        }
+    });
+}
+
+async saveComment(content) {
+    try {
+        const response = await mel_metapage.Functions.post(
+            mel_metapage.Functions.url('forum', 'create_comment'),
+            {
+                _post_id: this.post_id,
+                _content: content
+            }
+        );
+
+        if (response.status === 'success') {
+            rcmail.display_message(response.message, 'confirmation');
+            $('#new-comment-textarea').val('');  // Réinitialiser le textarea
+            this.displayComments();  // Rafraîchir les commentaires après l'ajout
+        } else {
+            rcmail.display_message(response.message, 'error');
+        }
+    } catch (error) {
+        rcmail.display_message("Une erreur est survenue lors de la sauvegarde du commentaire.", 'error');
+        console.error("Erreur lors de la sauvegarde du commentaire:", error);
+    }
+}
+
 
   /**
  * Récupère les commentaires associés à un post spécifique.
@@ -357,6 +394,7 @@ class PostCommentView {
   async getCommentByPost() {
     // BnumMessage.SetBusyLoading();
     let return_data;
+    debugger;
     await mel_metapage.Functions.post(
       mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
       { _post_id: this.post_id },
@@ -369,41 +407,6 @@ class PostCommentView {
 
     return return_data;
 
-  }
-
-  
-
-  async submitComment() {
-    const content = $('#new-comment-textarea').val(); // Assurez-vous que l'ID correspond à votre textarea
-
-    if (!content) {
-      rcmail.display_message('Le champ commentaire est requis.', 'error');
-      return;
-    }
-
-    try {
-      let response = await mel_metapage.Functions.post(
-        mel_metapage.Functions.url('forum', 'create_comment'),
-        {
-          _content: this.content,
-          _post_id: this.post_id,
-        }
-      );
-
-      response = JSON.parse(response);
-
-      if (response.status === 'success') {
-        rcmail.display_message(response.message, 'confirmation');
-        $('#new-comment-textarea').val(''); // Effacer le champ de texte après l'envoi du commentaire
-        this.displayComments(); // Rafraîchir les commentaires
-      } else {
-        rcmail.display_message(response.message, 'error');
-      }
-
-    } catch (error) {
-      rcmail.display_message('Une erreur est survenue lors de la création du commentaire.', 'error');
-      console.error("Erreur lors de la création du commentaire:", error);
-    }
   }
 
  

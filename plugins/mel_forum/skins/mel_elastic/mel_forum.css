@@ -432,6 +432,21 @@
   margin-right: 5px;
   font-size: 14px;
 }
+.task-forum .tag:hover .icon-remove-tag {
+  display: inline-block;
+}
+.task-forum .tag .icon-remove-tag {
+  display: none;
+}
+.task-forum .tag .icon-remove-tag::before {
+  font-family: 'Material Symbols Outlined';
+  content: '\e5cd';
+  font-size: 19px;
+  font-variation-settings: 'wght' 400;
+  display: inline-block;
+  vertical-align: middle;
+  color: #ff3c38;
+}
 .task-forum .tag#new-tag {
   color: var(--default-placeholder-text-color);
 }

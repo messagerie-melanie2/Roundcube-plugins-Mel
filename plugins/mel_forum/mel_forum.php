@@ -289,6 +289,7 @@ public function show_post_date(){
 }
 
 public function create_or_edit_post() {
+    $this->rc()->html_editor();
     $this->load_script_module('create_or_edit_post');
     // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
     

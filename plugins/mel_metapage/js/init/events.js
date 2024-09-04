@@ -260,9 +260,12 @@ if (rcmail && window.mel_metapage) {
           rcmail.env['bnum.init_task'] === 'chat'
             ? 'rocket'
             : rcmail.env['bnum.init_task'];
-        mel_metapage.Functions.change_frame(task, true, true, urls);
+        //mel_metapage.Functions.change_frame(task, true, true, urls);
+        FramesHelper.switch_frame(task, {
+          args: urls,
+        });
       } catch (error) {
-        mel_metapage.Functions.change_frame('bureau', true, true);
+        FramesHelper.switch_frame('bureau', {});
       }
     }
   });
@@ -976,7 +979,7 @@ if (rcmail && window.mel_metapage) {
           numbers = Enumerable.from(Chat.unreads[Symbol.iterator]())
             .where((x) => x.key !== 'haveSomeUnreads')
             .sum((x) =>
-              typeof x.value === 'string' ? parseInt(x.value) : x?.value ?? 0,
+              typeof x.value === 'string' ? parseInt(x.value) : (x?.value ?? 0),
             );
 
           if (numbers === 0 && Chat.unreads.haveUnreads() === true) {
@@ -998,7 +1001,9 @@ if (rcmail && window.mel_metapage) {
             numbers = Enumerable.from(Chat.unreads[Symbol.iterator]())
               .where((x) => x.key !== 'haveSomeUnreads')
               .sum((x) =>
-                typeof x.value === 'string' ? parseInt(x.value) : x?.value ?? 0,
+                typeof x.value === 'string'
+                  ? parseInt(x.value)
+                  : (x?.value ?? 0),
               );
 
             if (numbers === 0 && Chat.unreads.haveUnreads() === true)

@@ -365,6 +365,7 @@ class Window {
   _create_frame(task, { changepage = true, args = null, actions = [] }) {
     return new Mel_Promise((promise) => {
       promise.start_resolving();
+
       if (!args) args = {};
 
       this._trigger_event('frame.create.before', {
@@ -391,6 +392,14 @@ class Window {
 
       if (!this.get_window().length)
         $('#layout-frames').append(this._generate_window().generate());
+
+      const frame_id = `frameid${this._id}`;
+
+      if (changepage)
+        MelObject.Empty()
+          .generate_loader(frame_id, true)
+          .generate()
+          .appendTo(this.get_window());
 
       if (this._current_frame) {
         this._history.add(this._current_frame.task);
@@ -421,6 +430,9 @@ class Window {
         });
 
         this._current_frame.show();
+
+        if (changepage) this.get_window().find(`#${frame_id}`).remove();
+
         promise.resolve(this);
       });
 
@@ -762,10 +774,12 @@ class Window {
   }
 
   _generate_layout_frames() {
-    return MelHtml.start
-      .div({ id: 'layout-frames' })
-      .css('display', 'none')
-      .end();
+    return (
+      MelHtml.start
+        .div({ id: 'layout-frames' })
+        //.css('display', 'none')
+        .end()
+    );
   }
 
   _trigger_event(key, args) {
@@ -796,7 +810,7 @@ class FrameManager {
 
     this._manual_multi_frame_enabled = true;
 
-    this._modes = new BaseStorage();
+    this._modes = {}; //new BaseStorage();
 
     this._attaches = {};
 
@@ -825,6 +839,9 @@ class FrameManager {
     if (quit) return;
 
     if (wind !== null) {
+      if (rcmail.busy) return;
+      else BnumMessage.SetBusyLoading();
+
       if (changepage) this.close_windows_to_remove_on_change();
 
       if (!this._windows.has(wind)) {
@@ -842,6 +859,8 @@ class FrameManager {
         actions,
       });
       this._selected_window.select();
+
+      BnumMessage.StopBusyLoading();
 
       return this._selected_window;
     } else
@@ -954,13 +973,13 @@ class FrameManager {
   }
 
   add_mode(name, callback) {
-    this._modes.add(name, callback);
+    this._modes[name] = callback; //.add(name, callback);
 
     return this;
   }
 
   start_mode(name, ...args) {
-    const func = this._modes.get(name);
+    const func = this._modes[name]; //.get(name);
 
     if (func) {
       return func(...args);
@@ -1218,9 +1237,8 @@ if (!window.mel_modules[MODULE]) window.mel_modules[MODULE] = FramesManager;
 if (!window.mel_modules[MODULE_CUSTOM_FRAMES])
   window.mel_modules[MODULE_CUSTOM_FRAMES] = {};
 
-FramesManager.Instance.add_mode('visio', async function visio(...args) {
+FramesManager.Instance.add_mode('visio', async (...args) => {
   const [page, params] = args;
-  debugger;
   if (!page) {
     if (params) params._page = 'index';
 

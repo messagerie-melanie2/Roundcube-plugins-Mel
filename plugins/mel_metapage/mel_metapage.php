@@ -446,6 +446,7 @@ class mel_metapage extends bnum_plugin
     
                     if ($this->rc->task === 'bnum') {
                         $this->load_metapage_script_module('bnum.js');
+                        $this->include_script_frame_manager();
     
                         include_once __DIR__."/program/classes/metrics.php";
                         (new MetricsConfigData($this))->send_to_env();

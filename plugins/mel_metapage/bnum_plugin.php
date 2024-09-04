@@ -25,6 +25,12 @@ abstract class bnum_plugin extends rcube_plugin
         }
     }
 
+    protected function include_script_frame_manager() {
+        $this->setup_module();
+
+        $this->include_script_from_plugin('mel_metapage', 'js/scripting_frame_manager.js');
+    }
+
     protected function load_js_page($name) {
         $this->setup_module();
 

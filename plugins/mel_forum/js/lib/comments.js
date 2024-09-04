@@ -279,6 +279,7 @@ class PostCommentView {
     this._autoResizeTextarea();
     this._setupButtonVisibility();
     this._setupSaveButton();
+    this._setupCancelButton();
   }
 
   /**
@@ -315,6 +316,7 @@ class PostCommentView {
    * Configure le redimensionnement automatique du textarea dédié au commentaire en fonction de son contenu.
    */
   _autoResizeTextarea() {
+    debugger;
     $(document).on('input', '.forum-comment-input', function () {
       this.style.height = 'auto'; // Réinitialise la hauteur
       this.style.height = (this.scrollHeight) + 'px'; // Ajuste la hauteur
@@ -322,39 +324,62 @@ class PostCommentView {
   }
 
   /**
-   * Configure la visibilité des boutons lors du focus et du blur du textarea.
+   * Configure la visibilité des boutons lors du focus et du blur du textarea
+   * et permet la réinitialisation du text area lorsqu'on clique sur le bouton 'annuler'.
    */
   _setupButtonVisibility() {
     const $textarea = $('#new-comment-textarea');
     const $buttonsContainer = $('#buttons-container');
+    const $cancelButton = $('#cancel-comment');
 
     // Initialement masqué
     $buttonsContainer.addClass('hidden');
 
     // Afficher les boutons lorsque le textarea reçoit le focus
     $textarea.on('focus', function() {
-      $buttonsContainer.removeClass('hidden');
+        $buttonsContainer.removeClass('hidden');
     });
 
-    // Cacher les boutons lorsque le textarea perd le focus
-    // $textarea.on('blur', function() {
-    //   $buttonsContainer.addClass('hidden');
-    // });
+    // Ajouter l'événement pour le bouton "Annuler"
+    $cancelButton.on('click', function() {
+        // Réinitialiser le contenu du textarea
+        $textarea.val('');
 
-  }
+        // Revenir à la taille d'origine
+        $textarea.height('auto');
+
+        // Cacher les boutons "Annuler" et "Sauvegarder"
+        $buttonsContainer.addClass('hidden');
+    });
+}
+
+
 
   _setupSaveButton() {
     const $saveButton = $('#submit-comment');
     const $textarea = $('#new-comment-textarea');
 
     $saveButton.on('click', () => {
-      debugger;
         const commentContent = $textarea.val();
         if (commentContent.trim() !== '') {
             this.saveComment(commentContent);
         }
     });
 }
+
+   /**
+   * Configure le comportement du bouton "Annuler".
+   */
+   _setupCancelButton() {
+    const $cancelButton = $('#cancel-comment');
+    const $textarea = $('#new-comment-textarea');
+    const $buttonsContainer = $('#buttons-container');
+
+    $cancelButton.on('click', function() {
+        $textarea.val('');  // Réinitialiser le contenu du textarea
+        $buttonsContainer.addClass('hidden');  // Masquer les boutons "Annuler" et "Sauvegarder"
+    });
+  }
 
 async saveComment(content) {
     try {

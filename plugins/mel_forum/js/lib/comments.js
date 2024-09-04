@@ -273,8 +273,8 @@ async toggleResponses(id) {
 }
 
 class PostCommentView {
-  constructor(post_id) {
-    this._init()._setup(post_id)
+  constructor(post_uid, post_id) {
+    this._init()._setup(post_uid, post_id)
 
     this._autoResizeTextarea();
     this._setupButtonVisibility();
@@ -285,12 +285,13 @@ class PostCommentView {
   /**
  * Initialise l'objet avec l'identifiant du post.
  *
- * Cette fonction affecte la valeur de `post_id` à la propriété `post_id` de l'objet.
+ * Cette fonction affecte la valeur de `post_uid` à la propriété `post_uid` de l'objet.
  * Elle retourne ensuite l'objet lui-même après l'initialisation.
  *
- * @returns {Object} - L'objet initialisé avec la valeur de `post_id`.
+ * @returns {Object} - L'objet initialisé avec la valeur de `post_uid`.
  */
   _init() {
+    this.post_uid = '';
     this.post_id = '';
 
     return this;
@@ -298,16 +299,18 @@ class PostCommentView {
   }
 
   /**
- * Configure la propriété `post_id` de l'objet avec les valeurs spécifiées.
+ * Configure les propriétés `post_uid` et `post_id` de l'objet avec les valeurs spécifiées.
  *
- * Cette fonction utilise `Object.defineProperties` pour définir la propriété 
- * `post_id` de l'objet. La propriété a un getter qui retourne la valeur passée 
- * en paramètre, et un setter qui permet de mettre à jour cette valeur.
+ * Cette fonction utilise `Object.defineProperties` pour définir les propriétés
+ * `post_uid` `post_id` de l'objet. Les propriétés ont un getter qui retourne la valeur passée 
+ * en paramètre, et un setter qui permet de mettre à jour ces valeurs.
  *
+ * @param {string} post_uid - L'uid du post à configurer.
  * @param {string} post_id - L'identifiant du post à configurer.
  */
-  _setup(post_id) {
+  _setup(post_uid, post_id) {
     
+          this.post_uid = post_uid;
           this.post_id = post_id;
         }
  
@@ -316,7 +319,6 @@ class PostCommentView {
    * Configure le redimensionnement automatique du textarea dédié au commentaire en fonction de son contenu.
    */
   _autoResizeTextarea() {
-    debugger;
     $(document).on('input', '.forum-comment-input', function () {
       this.style.height = 'auto'; // Réinitialise la hauteur
       this.style.height = (this.scrollHeight) + 'px'; // Ajuste la hauteur
@@ -383,6 +385,7 @@ class PostCommentView {
 
 async saveComment(content) {
     try {
+      debugger;
         const response = await mel_metapage.Functions.post(
             mel_metapage.Functions.url('forum', 'create_comment'),
             {
@@ -419,10 +422,9 @@ async saveComment(content) {
   async getCommentByPost() {
     // BnumMessage.SetBusyLoading();
     let return_data;
-    debugger;
     await mel_metapage.Functions.post(
       mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
-      { _post_id: this.post_id },
+      { _post_uid: this.post_uid },
       (datas) => {
         return_data = JSON.parse(datas);
         

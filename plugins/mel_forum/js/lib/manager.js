@@ -11,6 +11,9 @@ export class Manager extends MelObject {
     super.main();
     this.displayComments();
     this.export('manager');
+    $('#return-homepage').click(() => {
+      window.location.href = this.url('forum',{action:'index'});
+  })
     //window.manager = this;
   }
 
@@ -29,7 +32,7 @@ export class Manager extends MelObject {
    */
   async displayComments() {
     // Obtenir tous les commentaires du post
-    let PostCommentManager = new PostCommentView(this.get_env('post_id'));
+    let PostCommentManager = new PostCommentView(this.get_env('post_uid'));
     let allComments = await PostCommentManager.getCommentByPost();
     let comments_array = [];
 

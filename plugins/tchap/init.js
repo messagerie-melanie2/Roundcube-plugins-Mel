@@ -12,7 +12,7 @@ $(document).ready(() => {
     button.addEventListener('click', () => {
       let $tchap_frame = $('.tchap-frame');
 
-      if ($tchap_frame.length && !$tchap_frame.hasClass('tchap-card')) {
+      if (!$tchap_frame.length || !$tchap_frame.hasClass('tchap-card')) {
         mel_metapage.Functions.change_frame('tchap', false, false);
         $('.tchap-frame').addClass('frame-card a-frame tchap-card');
       } else {

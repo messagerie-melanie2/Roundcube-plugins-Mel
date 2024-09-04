@@ -133,7 +133,10 @@ class tchap extends bnum_plugin
     }
 
     public function avatar_url() {
-        $url = self::get_avatar_url(driver_mel::gi()->user()->email);
+        $user = driver_mel::gi()->getUser();
+        $name = explode(' ', $user->name);
+        $fname = $name[1] === null ? '' : "$name[1].";
+        $url = self::get_avatar_url("$fname$name[0]");
 
         echo json_encode($url);
         exit;
@@ -283,17 +286,31 @@ class tchap extends bnum_plugin
     }
 
     /**
-     * @param $user_mail mail de l'utilisateur à chercher
+     * @param $user_mail mail de lutilisateur à chercher
      */
     private static function get_user_tchap_id ($user_mail) {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $config = ['token'=> $token, 'user_mail'=> $user_mail];
         $content = self::call_tchap_api($rcmail->config->get('get_user_uid'), $config, 'POST');
+
         if($content["httpCode"] === 200) {
             $content = json_decode($content['content']);
-            $user_uid = $content->user_id;
-            return $user_uid;
+            return $content->user_id;
+        } else {
+            return false;
+        }
+    }
+
+    private static function search_user($user) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $config = ['token'=> $token, 'term'=> $user];
+        $content = self::call_tchap_api($rcmail->config->get('get_user'), $config, 'POST');
+
+        if($content["httpCode"] === 200) {
+            $content = json_decode($content['content']);
+            return $content;
         } else {
             return false;
         }
@@ -308,17 +325,10 @@ class tchap extends bnum_plugin
     }
 
     public static function get_avatar_url($user_id) {
-        $rcmail = rcmail::get_instance();
-        $token = self::get_tchap_token();
-        $user_id = strtolower(driver_mel::gi()->getUser($user_id)->email);
-        $user_uid = self::get_user_tchap_id($user_id);
-        $config = ['token'=> $token/*, 'user_id'=> $user_uid*/];
-        $content = self::call_tchap_api (str_replace('{userId}', $user_uid, $rcmail->config->get('get_avatar_url')), $config, 'GET');
-        if($content["httpdCode"] === 200) {
-            return $content;
-        } else {
-            return false;
-        }
+        $user = self::search_user($user_id);
+
+        if ($user) return $user->avatar_url;
+        else return $user;
     }
 
 

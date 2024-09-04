@@ -17,9 +17,21 @@ export class TchapBnum extends MelObject {
       action: 'avatar_url',
       on_success: (data) => {
         data = JSON.parse(data);
-        $('#user-picture').attr('src', data);
 
-        this.save('tchap_avatar_url', data);
+        if (data) {
+          $('#user-picture').html($('<img />'));
+          $('#user-picture img')[0].onerror = function () {
+            $('#user-picture').html(
+              "<span class='no-image avatar'>" +
+                rcmail.env.username.slice(0, 1).toUpperCase() +
+                '</span>',
+            );
+          };
+
+          $('#user-picture img').attr('src', data);
+
+          this.save('tchap_avatar_url', data);
+        }
       },
     });
   }

@@ -432,7 +432,8 @@
   margin-right: 5px;
   font-size: 14px;
 }
-.task-forum .tag:hover .icon-remove-tag {
+.task-forum .tag:hover .icon-remove-tag,
+.task-forum .tag:focus .icon-remove-tag {
   display: inline-block;
 }
 .task-forum .tag .icon-remove-tag {
@@ -447,8 +448,13 @@
   vertical-align: middle;
   color: #ff3c38;
 }
-.task-forum .tag#new-tag {
-  color: var(--default-placeholder-text-color);
+.task-forum #add-tag {
+  background-color: var(--forum-tag-background-color);
+  color: var(--forum-tag-text-color);
+  border-radius: 5px;
+  padding: 2px 8px;
+  margin-right: 5px;
+  font-size: 14px;
 }
 .task-forum .author-infos {
   display: flex;
@@ -570,4 +576,7 @@
 .task-forum #go-back-to-articles:hover {
   color: var(--input-mel-text-color);
   cursor: pointer;
+}
+.task-forum .close-button:focus {
+  color: red !important;
 }

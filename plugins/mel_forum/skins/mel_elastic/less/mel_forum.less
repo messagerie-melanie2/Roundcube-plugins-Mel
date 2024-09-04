@@ -533,8 +533,10 @@
     margin-right: 5px;
     font-size: 14px;
 
-    &:hover .icon-remove-tag {
+    &:hover, &:focus {
+      .icon-remove-tag {
       display:inline-block;
+      }
     }
 
     .icon-remove-tag {
@@ -549,9 +551,14 @@
         color: #ff3c38;
       }
     }
-    &#new-tag {
-      color: var(--default-placeholder-text-color);
-    }
+  }
+  #add-tag {
+    background-color: var(--forum-tag-background-color);
+    color: var(--forum-tag-text-color);
+    border-radius: 5px;
+    padding: 2px 8px;
+    margin-right: 5px;
+    font-size: 14px;
   }
 
   .author-infos {
@@ -710,5 +717,8 @@
       color: var(--input-mel-text-color);
       cursor:pointer;
     }
+  }
+  .close-button:focus {
+    color: red!important
   }
 }

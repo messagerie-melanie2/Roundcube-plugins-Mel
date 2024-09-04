@@ -8,8 +8,6 @@ export class create_or_edit_post extends MelObject {
 
     main() {
         super.main();
-        // let config = rcmail.env.editor_config;
-        // rcmail.editor_init(config, 'forum-content');
         $("#reset-title-button").click(() => {
             $("#edit-title").val('');
         });
@@ -28,7 +26,7 @@ export class create_or_edit_post extends MelObject {
     displayTags() {
         for(var tag of this.tags) {
             let html = JsHtml.start
-                    .span({class: 'tag'}).text(`#${tag}`).span({class: 'icon-remove-tag'}).end().end();
+                    .span({class: 'tag', tabindex: 0}).text(`#${tag}`).span({class: 'icon-remove-tag'}).end().end();
                     $('.tag-list').append(html.generate());
         }
     }
@@ -41,7 +39,7 @@ export class create_or_edit_post extends MelObject {
                 //si le tag éxiste déjà
                 if (!this.tags.includes(tagname)) {
                     let html = JsHtml.start
-                    .span({class: 'tag'}).text(`#${tagname}`).span({class: 'icon-remove-tag'}).end().end();
+                    .span({class: 'tag', tabindex: 0}).text(`#${tagname}`).span({class: 'icon-remove-tag'}).end().end();
                     $('.tag-list').append(html.generate());
                     this.tags.push(tagname);
                     $('#add-tag').val('');
@@ -64,5 +62,16 @@ export class create_or_edit_post extends MelObject {
                 this.tags.splice(index,1);
             }
         });
+        $('.tag').on("keydown", (e) => {
+            if(e.keyCode === 13) {
+                e = $(e.currentTarget);
+                let tagname = e.text().slice(1);
+                e.remove();
+                let index = this.tags.indexOf(tagname);
+                if (index > -1) {
+                    this.tags.splice(index,1);
+                }
+            }
+        })
     }
 }

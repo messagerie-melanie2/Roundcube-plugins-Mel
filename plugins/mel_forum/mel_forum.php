@@ -992,7 +992,7 @@ public function create_comment()
     $comment->created = date('Y-m-d H:i:s');
     $comment->modified = date('Y-m-d H:i:s');
     $comment->creator = $user->uid;
-    $comment->post = $post->id;
+    $comment->post = $post;
 
     // Sauvegarde du commentaire
     $ret = $comment->save();

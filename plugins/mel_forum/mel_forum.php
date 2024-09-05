@@ -1026,6 +1026,7 @@ public function reply_comment()
 
     // Récupérer les valeurs post
     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+    $post = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
 
     // Validation des données saisies
     if (empty($user->uid) || empty($content)) {
@@ -1040,7 +1041,7 @@ public function reply_comment()
     $reply->created = date('Y-m-d H:i:s');
     $reply->modified = date('Y-m-d H:i:s');
     $reply->creator = $user->uid;
-    $reply->post = $post->id;
+    $reply->post = $post;
     $reply->parent = $comment_parent->id;
 
     // Sauvegarde du commentaire
@@ -1306,15 +1307,15 @@ public function get_all_comments_bypost()
             foreach ($comments as $comment) {
                 $user_name = driver_mel::gi()->getUser($comment->user_uid)->name;
 
-                // Formater la date au format jour-mois-année
-                $mois_fr = ['January' => 'janvier', 'February' => 'février', 'March' => 'mars', 'April' => 'avril', 'May' => 'mai', 'June' => 'juin', 'July' => 'juillet', 'August' => 'août', 'September' => 'septembre', 'October' => 'octobre', 'November' => 'novembre', 'December' => 'décembre'];
+                // Définir la locale en français pour le formatage de la date
+                $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
-                // Formater la date avec 'd F Y' pour obtenir le mois en anglais
-                $formatted_date = date('d F Y', strtotime($comment->created));
+                // Convertir la date du commentaire en timestamp Unix
+                $timestamp = strtotime($comment->created);
 
-                // Remplacer le mois en anglais par le mois en français
-                $formatted_date = str_replace(array_keys($mois_fr), $mois_fr, $formatted_date);
-                
+                // Formater la date
+                $formatted_date = $formatter->format($timestamp);
+
                 $comment->likes = null;
 
                 // Test si l'utilisateur courant a réagit au commentaire
@@ -1367,12 +1368,6 @@ public function count_comments($id)
     // Récupérer l'article existant
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->id = $id;
-
-    // // Vérifier si l'article existe
-    // if (!$post->load()) {
-    //     echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
-    //     exit;
-    // }
 
     // Obtenir le nombre de commentaires
     $commentCount = $post->countComments();

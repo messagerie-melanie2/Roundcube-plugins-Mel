@@ -1579,6 +1579,8 @@ class mel_workspace extends bnum_plugin
             $user = driver_mel::gi()->getUser($value->user); 
             $tmp = $user->name;
             
+            if (!isset($user)) continue;
+
             if (isset($tmp) || $tmp !== '')
             {
                 $html .= html::div(["class" => "row"], 
@@ -1796,6 +1798,9 @@ class mel_workspace extends bnum_plugin
 
         foreach ($share as $key => $value) {
             $user =driver_mel::gi()->getUser($value->user);
+
+            if (!isset($user)) continue;
+
             $from_list = $this->_check_if_is_in_list($workspace, $value->user);
             $html .= "<tr>";
             $html .= '<td>'.(count($from_list) > 0 ? '<span style="margin-right:5px;vertical-align: bottom;" class="material-symbols-outlined" title="'.$this->_list_to_title($from_list).'">groups</span>' : ''). $user->fullname."</td>";

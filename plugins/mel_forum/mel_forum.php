@@ -1307,7 +1307,14 @@ public function get_all_comments_bypost()
                 $user_name = driver_mel::gi()->getUser($comment->user_uid)->name;
 
                 // Formater la date au format jour-mois-année
-                $formatted_date = date('d-m-Y', strtotime($comment->created));
+                $mois_fr = ['January' => 'janvier', 'February' => 'février', 'March' => 'mars', 'April' => 'avril', 'May' => 'mai', 'June' => 'juin', 'July' => 'juillet', 'August' => 'août', 'September' => 'septembre', 'October' => 'octobre', 'November' => 'novembre', 'December' => 'décembre'];
+
+                // Formater la date avec 'd F Y' pour obtenir le mois en anglais
+                $formatted_date = date('d F Y', strtotime($comment->created));
+
+                // Remplacer le mois en anglais par le mois en français
+                $formatted_date = str_replace(array_keys($mois_fr), $mois_fr, $formatted_date);
+                
                 $comment->likes = null;
 
                 // Test si l'utilisateur courant a réagit au commentaire

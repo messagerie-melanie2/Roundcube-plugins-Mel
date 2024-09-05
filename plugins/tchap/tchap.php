@@ -187,7 +187,11 @@ class tchap extends bnum_plugin
         $token = self::get_tchap_token();
         $mail_user = [];
         foreach($users as $user) {
-            $mail_user[] = strtolower(driver_mel::gi()->getUser($user)->email);
+            $email = strtolower(driver_mel::gi()->getUser($user)->email);
+
+            if (isset($email) && is_string($email) && strpos($email, '@') !== false) {
+                $mail_user[] = $email;
+            }
         }
         $config = ['token'=> $token, 'room_id'=> $room_id, 'users_list'=> $mail_user];
         $content = self::call_tchap_api ($rcmail->config->get('invite_endpoint'), $config, 'POST');

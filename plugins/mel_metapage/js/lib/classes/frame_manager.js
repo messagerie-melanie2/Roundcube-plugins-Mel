@@ -787,6 +787,21 @@ class Window {
     rcmail.triggerEvent(key, args);
     return this;
   }
+
+  steal_frame(window_id, task) {
+    let win = FramesManager.Helper.current._windows.get(window_id);
+
+    if (!!win && win.has_frame(task) && !this.has_frame(task)) {
+      let frame = win._frames.get(task);
+
+      frame.$frame.appendTo(this.get_window());
+      win._frames.remove(task);
+      this._frames.add(frame);
+      frame.parent = this;
+
+      return true;
+    } else return false;
+  }
 }
 
 class FrameManager {
@@ -797,7 +812,7 @@ class FrameManager {
   _init() {
     /**
      * Liste des fenêtres
-     * @private
+     *
      * @type {BaseStorage<Window>}
      */
     this._windows = new BaseStorage();
@@ -985,6 +1000,21 @@ class FrameManager {
       return func(...args);
     }
     //return this._modes.get(name, () => {})(...args);
+  }
+
+  create_window(uid, $parent = null) {
+    let win = new Window(uid);
+
+    if ($parent === null) {
+      $parent = $('<div>').class('fixed-window').appendTo($('body'));
+    }
+
+    win._generate_window().generate().appendTo($parent);
+
+    return {
+      win,
+      $parent,
+    };
   }
 
   _generate_menu($element) {

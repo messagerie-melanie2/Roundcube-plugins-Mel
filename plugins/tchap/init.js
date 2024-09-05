@@ -3,6 +3,28 @@
  * @memberof Plugins
  */
 
+import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
+
+export class TchapInit extends MelObject {
+  constructor() {
+    super();
+  }
+
+  main() {
+    super.main();
+  }
+
+  generate_listeners() {
+    const button = top.$('#button-tchap-chat')[0];
+
+    if (button) {
+      button.click(this.button_left_clicked.bind(this));
+    }
+  }
+
+  button_left_clicked() {}
+}
+
 $(document).ready(() => {
   const button = top.$('#button-tchap-chat')[0];
 

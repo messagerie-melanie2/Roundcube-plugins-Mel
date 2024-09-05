@@ -385,7 +385,6 @@ class PostCommentView {
 
 async saveComment(content) {
     try {
-      debugger;
         const response = await mel_metapage.Functions.post(
             mel_metapage.Functions.url('forum', 'create_comment'),
             {
@@ -393,7 +392,6 @@ async saveComment(content) {
                 _content: content
             }
         );
-
         if (response.status === 'success') {
             rcmail.display_message(response.message, 'confirmation');
             $('#new-comment-textarea').val('');  // Réinitialiser le textarea

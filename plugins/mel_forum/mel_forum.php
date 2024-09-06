@@ -975,9 +975,12 @@ public function create_comment()
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
 
-    // Récupérer le nom du champ POST
+    // Récupérer le contenu du commentaire et le post ID
     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
     $post = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
+
+    // Récupérer l'ID du commentaire parent s'il s'agit d'une réponse
+    $comment_parent_id = rcube_utils::get_input_value('_comment_parent_id', rcube_utils::INPUT_POST, true);
 
     // Validation des données saisies
     if (empty($content)) {
@@ -993,6 +996,11 @@ public function create_comment()
     $comment->modified = date('Y-m-d H:i:s');
     $comment->creator = $user->uid;
     $comment->post = $post;
+
+    // Si c'est une réponse, on associe le commentaire parent
+    if (!empty($comment_parent_id)) {
+        $comment->parent_id = $comment_parent_id;
+    }
 
     // Sauvegarde du commentaire
     $ret = $comment->save();
@@ -1305,7 +1313,11 @@ public function get_all_comments_bypost()
 
         if (!empty($comments)) {
             foreach ($comments as $comment) {
-                $user_name = driver_mel::gi()->getUser($comment->user_uid)->name;
+                // Récupérer l'utilisateur associé au commentaire
+                $user = driver_mel::gi()->getUser($comment->user_uid);
+
+                // S'il y a un utilisateur et un nom, utiliser le nom ; sinon utiliser une valeur par défaut
+                $user_name = ($user !== null && !empty($user->name)) ? $user->name : '? ?';
 
                 // Définir la locale en français pour le formatage de la date
                 $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
@@ -1318,8 +1330,8 @@ public function get_all_comments_bypost()
 
                 $comment->likes = null;
 
-                // Test si l'utilisateur courant a réagit au commentaire
-                $comment_reactions=$comment->listLikes();
+                // Test si l'utilisateur courant a réagi au commentaire
+                $comment_reactions = $comment->listLikes();
                 $current_user_reacted = '';
                 foreach ($comment_reactions as $reaction) {
                     if ($reaction->user_uid === driver_mel::gi()->getUser()->uid) {
@@ -1327,13 +1339,13 @@ public function get_all_comments_bypost()
                     }
                 }
 
-
+                // Ajouter le commentaire au tableau des commentaires
                 $comments_array[$comment->uid] = [
                     'id' => $comment->id,
                     'uid' => $comment->uid,
                     'post_id' => $comment->post_id,
                     'user_id' => $comment->user_uid,
-                    'user_name' => $user_name,
+                    'user_name' => $user_name, // Utiliser le nom ou la valeur par défaut
                     'content' => $comment->content,
                     'created' => $formatted_date,
                     'parent' => $comment->parent,
@@ -1343,14 +1355,14 @@ public function get_all_comments_bypost()
                     'current_user_reacted' => $current_user_reacted,
                 ];
             }
-        } 
+        }
 
         // Retourner le tableau des commentaires
-
         echo json_encode($comments_array);
     }
     exit;
 }
+
 
 /**
  * Compte le nombre de commentaires pour un article donné.
@@ -2254,12 +2266,12 @@ public function test_unassociate_tag_from_post()
 public function test_create_comment()
 {
     // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
+    $user = 'damien.test1';
 
     $content = 'Commentaire test à supprimer';
 
     // Validation des données saisies
-    if (empty($user->uid) || empty($content)) {
+    if (empty($user) || empty($content)) {
         echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
         exit;
     }
@@ -2270,8 +2282,8 @@ public function test_create_comment()
     $comment->uid = $this->generateRandomString(24);
     $comment->created = date('Y-m-d H:i:s');
     $comment->modified = date('Y-m-d H:i:s');
-    $comment->creator = $user->uid;
-    $comment->post = '11';
+    $comment->creator = $user;
+    $comment->post = '56';
 
     // Sauvegarde du commentaire
     $ret = $comment->save();

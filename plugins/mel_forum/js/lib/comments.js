@@ -178,6 +178,31 @@ async toggleResponses(id) {
   }
 }
 
+/**
+ * Affiche ou masque le formulaire de réponse.
+ */
+toggleReplyForm(uid) {
+  let form = $('#reply-form-' + uid);
+  let isVisible = !form.hasClass('hidden');
+  
+  // Masquer tous les autres formulaires de réponse
+  $('.reply-form').not(form).addClass('hidden');
+  
+  // Afficher ou masquer le formulaire actuel
+  form.toggleClass('hidden');
+  
+  // Réinitialiser le textarea lorsque le formulaire est visible
+  if (!isVisible) {
+      form.find('textarea').val('').height('auto');
+      form.find('.btn').show(); // Assurez-vous que les boutons sont visibles
+  }
+  
+  // Focus sur le textarea lorsque le formulaire est visible
+  if (!form.hasClass('hidden')) {
+      form.find('textarea').focus();
+  }
+}
+
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
  *
@@ -200,10 +225,17 @@ async toggleResponses(id) {
     let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
 
     // Générer les initiales de l'utilisateur pour l'image de profil
+    // Générer les initiales de l'utilisateur pour l'image de profil
     let getInitials = function(fullName) {
-        const names = fullName.split(' ');
-        const initials = names[0][0] + names[1][0]; // Prend la première lettre du prénom et du nom
-        return initials.toUpperCase();
+      const names = fullName.split(' ');
+
+      // Vérifier si nous avons au moins un prénom et un nom
+      if (names.length < 2) {
+          return '?'; // Retourner un point d'interrogation si le nom complet est incomplet
+      }
+
+      const initials = names[0][0] + names[1][0]; // Prend la première lettre du prénom et du nom
+      return initials.toUpperCase();
     };
 
     // Générer une couleur de fond aléatoire pour l'image de profil
@@ -247,7 +279,7 @@ async toggleResponses(id) {
             .span({ class: 'icon material-symbols-outlined', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) }).end('span')
             .span({ class: 'ml-2' }).text(this.dislikes).end('span')
           .end('div')
-          .div({ class: 'reaction-item mr-3 response' })
+          .div({ class: 'reaction-item mr-3 response', onclick: this.toggleReplyForm.bind(this, this.uid) })
             .span({ class: 'icon', 'data-icon': 'mode_comment' }).end('span')
             .span({ class: 'ml-2' }).text('répondre').end('span')
           .end('div')
@@ -255,6 +287,22 @@ async toggleResponses(id) {
             .span({ class: 'icon', 'data-icon': 'more_horiz' }).end('span')
           .end('div')
         .end('div');
+
+    // Ajout du formulaire de réponse masqué
+    html = html.div({ id: 'reply-form-'+ this.uid, class: 'row my-4 d-flex align-items-center hidden' })
+    .div({ class: 'col-auto pr-0' })
+      .div({ class: 'forum-comment-profile-image', style: 'background-color: ' + getRandomColor() + ';' })
+        .text(getInitials(this.user_name))
+      .end('div')
+    .end('div')
+    .div({ class: 'col pl-0' })
+      .textarea({ id: 'new-comment-textarea', class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
+    .end('div')
+    .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center'})
+      .button({ id: 'cancel-comment', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2' }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span').end('button')
+      .button({ id: 'submit-comment', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button' }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right'}).end('span').end('button')
+    .end('div')
+    .end('div');
 
     if (this.children_number > 0) {
       html = html.div({ class: 'forum-comment-response' })
@@ -405,6 +453,31 @@ async saveComment(content) {
     }
 }
 
+
+
+
+
+async saveReply(content, parentCommentId) {
+  try {
+      const response = await mel_metapage.Functions.post(
+          mel_metapage.Functions.url('forum', 'create_comment'),
+          {
+              _post_id: this.post_id,  // L'ID du post
+              _content: content,       // Le contenu de la réponse
+              _comment_parent_id: parentCommentId  // ID du commentaire parent
+          }
+      );
+      if (response.status === 'success') {
+          rcmail.display_message(response.message, 'confirmation');
+          this.displayComments();  // Rafraîchir les commentaires après l'ajout
+      } else {
+          rcmail.display_message(response.message, 'error');
+      }
+  } catch (error) {
+      rcmail.display_message("Une erreur est survenue lors de la sauvegarde de la réponse.", 'error');
+      console.error("Erreur lors de la sauvegarde de la réponse:", error);
+  }
+}
 
   /**
  * Récupère les commentaires associés à un post spécifique.

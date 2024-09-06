@@ -773,7 +773,7 @@ class mtes_driver_mel extends mce_driver_mel
     $names = explode('@', strtolower($email), 2);
     if (strpos($names[0], '.') === false) {
       $lastname = strtoupper($names[0]);
-      $fistname = null;
+      $fistname = ' ';
     }
     else {
       $names = explode('.', $names[0]);
@@ -796,7 +796,7 @@ class mtes_driver_mel extends mce_driver_mel
    */
   protected function get_uid_from_email($email) {
     $uid = preg_replace("/[^a-z0-9\.-]/", '.', strtolower($email));
-    
+
     if (strlen($uid) > 34) {
       $uid = substr($uid, 0, 34);
     }

@@ -3,27 +3,7 @@
  * @memberof Plugins
  */
 
-import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
-
-export class TchapInit extends MelObject {
-  constructor() {
-    super();
-  }
-
-  main() {
-    super.main();
-  }
-
-  generate_listeners() {
-    const button = top.$('#button-tchap-chat')[0];
-
-    if (button) {
-      button.click(this.button_left_clicked.bind(this));
-    }
-  }
-
-  button_left_clicked() {}
-}
+//$('#user-picture').attr('src', mel_metapage.Storage.get('tchap_avatar_url'));
 
 $(document).ready(() => {
   const button = top.$('#button-tchap-chat')[0];
@@ -32,7 +12,7 @@ $(document).ready(() => {
     button.addEventListener('click', () => {
       let $tchap_frame = $('.tchap-frame');
 
-      if ($tchap_frame.length && !$tchap_frame.hasClass('tchap-card')) {
+      if (!$tchap_frame.length || !$tchap_frame.hasClass('tchap-card')) {
         mel_metapage.Functions.change_frame('tchap', false, false);
         $('.tchap-frame').addClass('frame-card a-frame tchap-card');
       } else {

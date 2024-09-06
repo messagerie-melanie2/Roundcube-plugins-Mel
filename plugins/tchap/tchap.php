@@ -58,7 +58,14 @@ class tchap extends bnum_plugin
                 $this,
                 'sidebar'
             ]);
+            $this->register_action('avatar_url', [
+                $this,
+                'avatar_url'
+            ]);
         }
+        // else if ($this->is_bnum_task()) {
+        //     $this->load_script_module('bnum.js', '/');
+        // }
         
         $tchap_url = $rcmail->config->get('tchap_url');
     	
@@ -124,6 +131,17 @@ class tchap extends bnum_plugin
 
     	return $rcmail->output->frame($attrib);
     }
+
+    public function avatar_url() {
+        $user = driver_mel::gi()->getUser();
+        $name = explode(' ', $user->name);
+        $fname = $name[1] === null ? '' : "$name[1].";
+        $url = self::get_avatar_url("$fname$name[0]");
+
+        echo json_encode($url);
+        exit;
+    }
+
     /**
      * Bloquer les refresh
      * @param array $args
@@ -169,7 +187,11 @@ class tchap extends bnum_plugin
         $token = self::get_tchap_token();
         $mail_user = [];
         foreach($users as $user) {
-            $mail_user[] = strtolower(driver_mel::gi()->getUser($user)->email);
+            $email = strtolower(driver_mel::gi()->getUser($user)->email);
+
+            if (isset($email) && is_string($email) && strpos($email, '@') !== false) {
+                $mail_user[] = $email;
+            }
         }
         $config = ['token'=> $token, 'room_id'=> $room_id, 'users_list'=> $mail_user];
         $content = self::call_tchap_api ($rcmail->config->get('invite_endpoint'), $config, 'POST');
@@ -268,17 +290,31 @@ class tchap extends bnum_plugin
     }
 
     /**
-     * @param $user_mail mail de l'utilisateur à chercher
+     * @param $user_mail mail de lutilisateur à chercher
      */
     private static function get_user_tchap_id ($user_mail) {
         $rcmail = rcmail::get_instance();
         $token = self::get_tchap_token();
         $config = ['token'=> $token, 'user_mail'=> $user_mail];
         $content = self::call_tchap_api($rcmail->config->get('get_user_uid'), $config, 'POST');
+
         if($content["httpCode"] === 200) {
             $content = json_decode($content['content']);
-            $user_uid = $content->user_id;
-            return $user_uid;
+            return $content->user_id;
+        } else {
+            return false;
+        }
+    }
+
+    private static function search_user($user) {
+        $rcmail = rcmail::get_instance();
+        $token = self::get_tchap_token();
+        $config = ['token'=> $token, 'term'=> $user];
+        $content = self::call_tchap_api($rcmail->config->get('get_user'), $config, 'POST');
+
+        if($content["httpCode"] === 200) {
+            $content = json_decode($content['content']);
+            return $content;
         } else {
             return false;
         }
@@ -292,6 +328,14 @@ class tchap extends bnum_plugin
         return hash('sha512', date('d/m/Y') . '-' . $rcmail->config->get('tchap_bot_token'));
     }
 
+    public static function get_avatar_url($user_id) {
+        $user = self::search_user($user_id);
+
+        if ($user) return $user->avatar_url;
+        else return $user;
+    }
+
+
     /**
      * @param $endpoint
      * @param $config
@@ -300,7 +344,7 @@ class tchap extends bnum_plugin
     private static function call_tchap_api ($endpoint, $config, $type) {
         if(class_exists('mel_helper')) {
             $rcmail = rcmail::get_instance();
-            $url = $rcmail->config->get('tchap_bot_url') . $endpoint;
+            $url = strpos($endpoint, 'https') !== false ? $endpoint : $rcmail->config->get('tchap_bot_url') . $endpoint;
             $headers = [0 => 'Content-Type: application/json'];
             if($rcmail->config->get('http_proxy') !== '') {
                 $headers[CURLOPT_PROXY] = $rcmail->config->get('http_proxy');
@@ -308,6 +352,13 @@ class tchap extends bnum_plugin
             switch ($type) {
                 case 'DELETE':
                     $content = mel_helper::load_helper($rcmail)->fetch("", false, 0)->_custom_url($url, 'DELETE', $config, null, $headers);
+                    break;
+                case 'PUT':
+                    $content = mel_helper::load_helper($rcmail)->fetch("", false, 0)->_custom_url($url, 'PUT', $config, null, $headers);
+                    break;
+
+                case 'GET':
+                    $content = mel_helper::load_helper($rcmail)->fetch('', false, 0)->_get_url($url, $config, null, $headers);
                     break;
                 case 'POST';
                 default:

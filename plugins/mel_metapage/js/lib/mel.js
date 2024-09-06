@@ -9,6 +9,7 @@ export {
   toHex,
   isDecimal,
   capitalize,
+  getRelativePos,
 };
 
 /**
@@ -78,8 +79,8 @@ const Classes = (baseClass, ...mixins) => {
   class base extends baseClass {
     constructor(...args) {
       super(...args);
-      mixins.forEach((Mixin) => {
-        copyProps(this, new Mixin());
+      mixins.forEach((mixin) => {
+        copyProps(this, new mixin());
       });
     }
   }
@@ -113,4 +114,17 @@ function capitalize(s) {
 
   s = s.toLowerCase();
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function getRelativePos(elm) {
+  let pPos = elm.parentNode.getBoundingClientRect(), // parent pos
+    cPos = elm.getBoundingClientRect(), // target pos
+    pos = {};
+
+  (pos.top = cPos.top - pPos.top + elm.parentNode.scrollTop),
+    (pos.right = cPos.right - pPos.right),
+    (pos.bottom = cPos.bottom - pPos.bottom),
+    (pos.left = cPos.left - pPos.left);
+
+  return pos;
 }

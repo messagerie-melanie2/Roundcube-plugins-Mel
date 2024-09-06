@@ -614,6 +614,29 @@ class MelObject {
     this.rcmail().triggerEvent('plugin.push_notification', notification);
   }
 
+  switch_url(url) {
+    window.location.href = url;
+    return this;
+  }
+
+  switch_task(task, { action = null, params = {} }) {
+    return this.switch_url(this.url(task, { action, params }));
+  }
+
+  export(name = null) {
+    window[name ?? this.get_class_name()] = this;
+    return this;
+  }
+
+  delete_export(name = null) {
+    window[name ?? this.get_class_name()] = null;
+    return this;
+  }
+
+  get_class_name() {
+    return this.constructor.name;
+  }
+
   /**
    * Envoie un MelObject vide.
    * @returns {MelObject}

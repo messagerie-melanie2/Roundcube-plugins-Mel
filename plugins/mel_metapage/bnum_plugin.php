@@ -153,6 +153,10 @@ abstract class bnum_plugin extends rcube_plugin
         ));
     }
 
+    protected function is_bnum_task() {
+        return $this->get_current_task() === 'bnum';
+    }
+
     protected function get_user($uid = null) {
         return driver_mel::gi()->getUser($uid);
     }

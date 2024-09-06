@@ -70,6 +70,8 @@ class mel_external_users extends rcube_plugin {
           header('Location: ' . $this->rc->url(['task' => 'workspace']));
           exit;
       }
+
+      $this->add_hook('main-nav-bar', [$this, 'main_nav_manager']);
     }
     return $args;
   }
@@ -82,6 +84,14 @@ class mel_external_users extends rcube_plugin {
     if (driver_mel::gi()->getUser($args['user'])->is_external) {
         $args['return'] = true;
     }
+    return $args;
+  }
+
+  public function main_nav_manager($args) {
+    if (in_array($args['plugin'], array('rizomo', 'wekan'))) {
+      $args['need_button'] = false;
+    }
+
     return $args;
   }
 }

@@ -942,7 +942,7 @@ $(document).ready(() => {
               style: `${CONST_CSS_BACKGROUND}${CONST_CSS_ASSIGN}${CONST_CSS_BACKGROUND_URL}(${iterator.value.icon})${CONST_CSS_SEPARATOR}${STYLE_THEME_BUTTON}`,
               title: `${iterator.value.displayed}${iterator.value.desc ? ` - ${iterator.value.desc}` : EMPTY_STRING}`,
               role: CONST_ATTRIB_ROLE_BUTTON,
-              'tabindex': 0,
+              tabindex: 0,
               'data-name': iterator.value.id,
               'aria-pressed': iterator.value.id === this.theme,
             });
@@ -3877,6 +3877,7 @@ $(document).ready(() => {
      */
     set_pagination(e, count, current = null) {
       const _integer = this._integer;
+      //debugger;
       //console.log("count", count);
       count = Math.ceil(count / 7.0);
       e.html(
@@ -3884,16 +3885,12 @@ $(document).ready(() => {
       );
       e.append('<div class=pagination-elements></div>');
       let pagination_elements = e.find('.pagination-elements');
-      for (let index = 0; index < count; ++index) {
-        if (index === _integer) {
-          pagination_elements.append(this.create_number('...', false));
-          pagination_elements.append(this.create_number(count));
-          break;
-        } else
-          pagination_elements.append(
-            this.create_number(index + 1, true, index === 0),
-          );
+      for (let index = (current ?? 1) - 1; index < count; ++index) {
+        pagination_elements.append(
+          this.create_number(index + 1, true, index === 0),
+        );
       }
+
       e.append(
         '<button class="pagination_next pagination-button" onclick="MEL_ELASTIC_UI.pagination_next(this)">Suivant</button>',
       );
@@ -3916,7 +3913,6 @@ $(document).ready(() => {
      * @returns {Mel_Elastic} ChaÃ®nage
      */
     pagination_page(e, number, doAction = true) {
-      //debugger;
       const _integer = this._integer;
       e = $(e).parent();
       const count = Math.ceil(e.parent().data('count') / 7.0);
@@ -3925,48 +3921,67 @@ $(document).ready(() => {
       if (count > _integer) {
         let before = false;
         let after = false;
+
         for (let index = 0; index < count; ++index) {
-          //affichage du premier
-          if (index === 0)
+          if (index === 0 || index === count - 1) {
             html += this.create_number(index + 1, true, index + 1 === number);
-          //affichage du dernier
-          else if (index === count - 1)
-            html += this.create_number(count, true, number === count);
-          //si loin premier et loin dernier
-          else if (number > _integer && number < count - _integer) {
-            if (index < number - _integer / 2.0) {
-              // || index > number + _integer / 2.0)
-              if (!before) {
-                html += this.create_number('...', false);
-                before = true;
-              }
-            } else if (index > number + _integer / 2.0) {
-              if (!after) {
-                html += this.create_number('...', false);
-                after = true;
-              }
-            } else
-              html += this.create_number(index + 1, true, index + 1 === number);
-          }
-          //si proche premier
-          else if (number < _integer) {
-            if (index === _integer) {
+          } else if (index >= number - _integer && index <= number + _integer) {
+            html += this.create_number(index + 1, true, index + 1 === number);
+          } else {
+            if (!before && index < number - _integer) {
               html += this.create_number('...', false);
-              html += this.create_number(count);
-              break;
-            } else html += this.create_number(index + 1);
-          }
-          //si proche dernier
-          else {
-            if (index > count - _integer) html += this.create_number(index + 1);
-            else {
-              if (!before) {
-                html += this.create_number('...', false);
-                before = true;
-              }
+              before = true;
+            } else if (!after && index > number + _integer) {
+              html += this.create_number('...', false);
+              after = true;
             }
           }
         }
+
+        // for (let index = 0; index < count; ++index) {
+        //   //affichage du premier
+        //   if (index === 0)
+        //     html += this.create_number(index + 1, true, index + 1 === number);
+        //   //affichage du dernier
+        //   else if (index === count - 1)
+        //     html += this.create_number(count, true, number === count);
+        //   //si loin premier et loin dernier
+        //   else if (index > _integer && index > count - _integer) {
+        //     if (index < number - _integer / 2.0) {
+        //       // || index > number + _integer / 2.0)
+        //       if (!before) {
+        //         html += this.create_number('...', false);
+        //         before = true;
+        //       }
+        //     } else if (index > number + _integer / 2.0) {
+        //       if (!after) {
+        //         html += this.create_number('...', false);
+        //         after = true;
+        //       }
+        //     } else
+        //       html += this.create_number(index + 1, true, index + 1 === number);
+        //   }
+        //   //si proche premier
+        //   else if (index < _integer) {
+        //     if (index === _integer) {
+        //       html += this.create_number('...', false);
+        //       html += this.create_number(count);
+        //       break;
+        //     } else
+        //       html += this.create_number(index + 1, true, index + 1 === number);
+        //   }
+        //   //si proche dernier
+        //   else {
+        //     if (index > count - _integer)
+        //       html += this.create_number(index + 1, true, index + 1 === number);
+        //     else {
+        //       if (!before) {
+        //         html += this.create_number('...', false);
+        //         before = true;
+        //       }
+        //     }
+        //   }
+        // }
       } else {
         for (let index = 0; index < count; ++index) {
           //console.log("test", index+1 === number);

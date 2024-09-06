@@ -1,4 +1,4 @@
-@CHARSET "UTF-8";
+@charset "UTF-8";
 
 #button-create,
 #taskmenu .button-home,
@@ -24,10 +24,11 @@
 #rcmrowgestionnaireabsence,
 #rcmrowaccesinternet,
 #rcmrowgestionnairelistes,
-#rcmrowsuspectsurls {
-	display: none !important;
+#rcmrowsuspectsurls,
+#settingstabpluginmelroadmap {
+  display: none !important;
 }
 
 #taskmenu .button-wsp {
-	order: 1;
+  order: 1;
 }

@@ -534,7 +534,7 @@ class ResourcesBase extends MelObject {
     });
     let page = new DialogPage(this._name, {
       title: this._name,
-      buttons: [button_save, button_cancel],
+      buttons: [button_cancel, button_save],
     });
 
     page = template_resource.get_page(

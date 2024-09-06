@@ -6396,3 +6396,27 @@ iframe {
     }
   }
 }
+
+@media screen and (max-width: 904px) {
+  .ui-dialog {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  top: 0 !important; // for Chrome
+
+    .ui-resizable-handle,
+    .ui-dialog-titlebar-close {
+      display: block !important;
+    }
+  }
+}
+
+.boxwarning {
+  .custom-switch {
+    .custom-control-label {
+      color: var(--modal-title-color);
+    }
+  }
+}

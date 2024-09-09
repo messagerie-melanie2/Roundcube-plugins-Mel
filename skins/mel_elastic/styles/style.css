@@ -3938,8 +3938,11 @@ html.dark-mode .mv2-app-text {
 #abs-loader {
   height: 200px;
 }
-.popover button.mel-button {
+.popover {
   color: var(--popover-text-color);
+}
+.popover button.mel-button {
+  color: var(--secondary-text-color);
 }
 .popover button.mel-button:hover {
   background-color: var(--popover-hover-background-color);
@@ -4489,13 +4492,26 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 .mel-window-header {
   display: none;
   height: 50px;
-  background-color: #1a204e;
+  background-color: var(--main-bckg-color);
+  color: var(--secondary-text-color);
 }
 .multiple.mel-windows .mel-window-header {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.multiple.mel-windows .mel-window-header .mel-window-title {
+  width: 100%;
+  text-align: center;
+}
+.multiple.mel-windows .mel-window-header button {
+  border-radius: 5px;
+}
+.multiple.mel-windows .mel-window-header button:hover {
+  --mel-button-hover-background-color: var(--mel-button-danger-background-color);
 }
 .selected.mel-windows .mel-window-header {
-  background-color: #363a5b;
+  background-color: var(--tierciary-bckg-color);
 }
 body.multiframe-header-disabled .mel-window-header,
 body.multiframe-header-disabled .multiple.mel-windows .mel-window-header {

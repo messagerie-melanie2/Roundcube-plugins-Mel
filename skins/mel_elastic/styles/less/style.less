@@ -5378,8 +5378,9 @@ html.dark-mode {
 // }
 
 .popover {
+  color: var(--popover-text-color);
   button.mel-button {
-    color: var(--popover-text-color);
+    color: var(--secondary-text-color);
 
     &:hover {
       background-color: var(--popover-hover-background-color);
@@ -6104,18 +6105,35 @@ html.dark-mode-custom {
 .mel-window-header {
   display: none;
   height: 50px;
-  background-color: #1a204e;
+  background-color: var(--main-bckg-color);
+  color: var(--secondary-text-color);
 
   .multiple.mel-windows & {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     body.multiframe-header-disabled & {
       &:extend(body.multiframe-header-disabled .mel-window-header);
     }
+
+    .mel-window-title {
+      width: 100%;
+      text-align: center;
+    }
+
+    button {
+      border-radius: 5px;
+      &:hover {
+        --mel-button-hover-background-color: var(
+          --mel-button-danger-background-color
+        );
+      }
+    }
   }
 
   .selected.mel-windows & {
-    background-color: #363a5b;
+    background-color: var(--tierciary-bckg-color);
   }
 
   body.multiframe-header-disabled & {
@@ -6399,12 +6417,12 @@ iframe {
 
 @media screen and (max-width: 904px) {
   .ui-dialog {
-  width: 100% !important;
-  height: 100% !important;
-  display: flex;
-  flex-direction: column;
-  border: 0;
-  top: 0 !important; // for Chrome
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    top: 0 !important; // for Chrome
 
     .ui-resizable-handle,
     .ui-dialog-titlebar-close {

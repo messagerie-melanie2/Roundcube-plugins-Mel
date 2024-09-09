@@ -354,6 +354,7 @@ class Window {
      */
     this._current_frame = null;
     this._id = 0;
+    this._can_be_selected = true;
     return this;
   }
 
@@ -610,6 +611,12 @@ class Window {
       await this._open_frame(task, { new_args: args });
     } else await this._create_frame(task, { changepage, args, actions });
 
+    if (!break_next) {
+      this.get_window()
+        .find('.mel-window-header .mel-window-title')
+        .text(Window.GetTaskTitle(task));
+    }
+
     this._current_frame.$frame.focus();
 
     if (
@@ -639,7 +646,12 @@ class Window {
   }
 
   select() {
-    if (this._can_be_selected) this.get_window().addClass('selected');
+    if (this._can_be_selected) {
+      this.get_window()
+        .addClass('selected')
+        .find('.mel-window-header .mel-window-title')
+        .text(Window.GetTaskTitle(this._current_frame.task));
+    }
     return this;
   }
 
@@ -760,7 +772,9 @@ class Window {
         FramesManager.Helper.current.select_window(this._id);
       })
       .div({ class: 'mel-window-header' })
-      .button()
+      .div({ class: 'mel-window-title' })
+      .end()
+      .button({ class: 'bckg true' })
       .attr('onclick', () => {
         FramesManager.Helper.current.delete_window(this._id);
       })

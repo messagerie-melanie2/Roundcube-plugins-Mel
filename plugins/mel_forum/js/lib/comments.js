@@ -296,11 +296,11 @@ toggleReplyForm(uid) {
       .end('div')
     .end('div')
     .div({ class: 'col pl-0' })
-      .textarea({ id: 'new-comment-textarea', class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
+      .textarea({ id: 'new-response-textarea', class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
     .end('div')
-    .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center'})
-      .button({ id: 'cancel-comment', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2' }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span').end('button')
-      .button({ id: 'submit-comment', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button' }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right'}).end('span').end('button')
+    .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center hidden'})
+      .button({ id: 'cancel-reply', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2' }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span').end('button')
+      .button({ id: 'submit-reply', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button' }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right'}).end('span').end('button')
     .end('div')
     .end('div');
 
@@ -328,6 +328,11 @@ class PostCommentView {
     this._setupButtonVisibility();
     this._setupSaveButton();
     this._setupCancelButton();
+
+    this._autoResizeReplyTextarea();
+    this._setupReplyButtonVisibility();
+    this._setupSaveReplyButton();
+    this._setupCancelReplyButton();
   }
 
   /**
@@ -454,6 +459,75 @@ async saveComment(content) {
 }
 
 
+/**
+   * Configure le redimensionnement automatique du textarea dédié à la réponse en fonction de son contenu.
+   */
+_autoResizeReplyTextarea() {
+  $(document).on('input', '.forum-comment-input', function () {
+    this.style.height = 'auto'; // Réinitialise la hauteur
+    this.style.height = (this.scrollHeight) + 'px'; // Ajuste la hauteur
+  });
+}
+
+/**
+   * Configure la visibilité des boutons lors du focus et du blur du textarea de réponse
+   * et permet la réinitialisation du text area lorsqu'on clique sur le bouton 'annuler'.
+   */
+_setupReplyButtonVisibility() {
+  const $textarea = $('#new-response-textarea');
+  const $buttonsContainer = $('#buttons-container');
+  const $cancelButton = $('#cancel-reply');
+
+  // Initialement masqué
+  $buttonsContainer.addClass('hidden');
+
+  // Afficher les boutons lorsque le textarea reçoit le focus
+  $textarea.on('focus', function() {
+      $buttonsContainer.removeClass('hidden');
+  });
+
+  // Ajouter l'événement pour le bouton "Annuler"
+  $cancelButton.on('click', function() {
+      // Réinitialiser le contenu du textarea
+      $textarea.val('');
+
+      // Revenir à la taille d'origine
+      $textarea.height('auto');
+
+      // Cacher les boutons "Annuler" et "Sauvegarder"
+      $buttonsContainer.addClass('hidden');
+  });
+}
+
+/**
+   * Configure le bouton "Sauvegarder" pour les réponses.
+   */
+_setupSaveReplyButton() {
+  const $saveButton = $('#submit-reply');
+  const $textarea = $('#new-response-textarea');
+
+  $saveButton.on('click', () => {
+      const replyContent = $textarea.val();
+      if (replyContent.trim() !== '') {
+          // Vous devez fournir l'identifiant du commentaire parent pour la réponse
+          this.saveReply(replyContent, this.parentCommentId);
+      }
+  });
+}
+
+/**
+   * Configure le bouton "Annuler" pour les réponses.
+   */
+_setupCancelReplyButton() {
+  const $cancelButton = $('#cancel-reply');
+  const $textarea = $('#new-response-textarea');
+  const $buttonsContainer = $('#reply-buttons-container');
+
+  $cancelButton.on('click', function() {
+      $textarea.val('');  // Réinitialiser le contenu du textarea
+      $buttonsContainer.addClass('hidden');  // Masquer les boutons "Annuler" et "Sauvegarder"
+  });
+}
 
 
 

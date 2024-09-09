@@ -1320,7 +1320,7 @@ async function m_mp_CreateWorkSpace() {
   $('#worspace-avatar-a').css('display', 'none').appendTo($('#layout'));
   create_popUp.contents.html('<span class=spinner-border></span>');
   create_popUp.editTitle('<h2 class=""><span>Chargement...</span></h2>');
-
+  debugger;
   if (m_mp_Create.current_promise) {
     await m_mp_Create.current_promise;
     m_mp_Create.current_promise = null;
@@ -1328,7 +1328,7 @@ async function m_mp_CreateWorkSpace() {
     ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
     !$('.wekan-frame').length
   ) {
-    await mel_metapage.Functions.change_frame('wekan', false, true);
+    await FramesHelper.switch_frame('wekan', { changepage: false }); //mel_metapage.Functions.change_frame('wekan', false, true);
   }
 
   $.ajax({
@@ -1373,31 +1373,40 @@ async function m_mp_CreateWorkSpace() {
         mel_metapage.EventListeners.workspaces_updated.get,
       );
 
-      if (
-        $('.workspace-frame').length > 0 &&
-        $('iframe.workspace-frame').length === 0
-      )
-        window.location.href = action.url;
-      else if ($('iframe.workspace-frame').length === 0) {
-        mel_metapage.Functions.change_frame('wsp', true, true, {
+      FramesHelper.switch_frame('workspace', {
+        args: {
           _action: 'workspace',
           _uid: data.workspace_uid,
-        });
-      } else if ($('iframe.workspace-frame').length === 1) {
-        mel_metapage.Functions.change_frame('wsp', true, true).then(() => {
-          let config = {
-            _uid: data.workspace_uid,
-          };
-          config[rcmail.env.mel_metapage_const.key] =
-            rcmail.env.mel_metapage_const.value;
+        },
+      });
 
-          $('iframe.workspace-frame')[0].src = mel_metapage.Functions.url(
-            'workspace',
-            'workspace',
-            config,
-          );
-        });
-      } else window.location.href = action.url;
+      // if (
+      //   $('.workspace-frame').length > 0 &&
+      //   $('iframe.workspace-frame').length === 0
+      // )
+      //   window.location.href = action.url;
+      // else if ($('iframe.workspace-frame').length === 0) {
+      //   mel_metapage.Functions.change_frame('workspace', true, true, {
+      //     _action: 'workspace',
+      //     _uid: data.workspace_uid,
+      //   });
+      // } else if ($('iframe.workspace-frame').length === 1) {
+      //   mel_metapage.Functions.change_frame('workspace', true, true).then(
+      //     () => {
+      //       let config = {
+      //         _uid: data.workspace_uid,
+      //       };
+      //       config[rcmail.env.mel_metapage_const.key] =
+      //         rcmail.env.mel_metapage_const.value;
+
+      //       $('iframe.workspace-frame')[0].src = mel_metapage.Functions.url(
+      //         'workspace',
+      //         'workspace',
+      //         config,
+      //       );
+      //     },
+      //   );
+      // } else window.location.href = action.url;
 
       m_mp_step3_param.datas = null;
     },
@@ -2933,15 +2942,21 @@ async function m_mp_sondage() {
   //     });
   // }
 
-  await mel_metapage.Functions.change_page(
-    'sondage',
-    null,
-    {
+  await FramesHelper.switch_frame('sondage', {
+    args: {
       _url: encodeURIComponent(rcmail.env.sondage_create_sondage_url),
     },
-    true,
-    true,
-  );
+  });
+
+  // await mel_metapage.Functions.change_page(
+  //   'sondage',
+  //   null,
+  //   {
+  //     _url: encodeURIComponent(rcmail.env.sondage_create_sondage_url),
+  //   },
+  //   true,
+  //   true,
+  // );
 }
 
 /**
@@ -3247,7 +3262,10 @@ function open_task(id, config = {}) {
   if (event !== undefined) event.preventDefault();
 
   mel_metapage.Storage.set('task_to_open', id);
-  mel_metapage.Functions.change_frame('tasklist', true, false, config);
+  //mel_metapage.Functions.change_frame('tasklist', true, false, config);
+  FramesHelper.switch_frame('tasks', {
+    args: config,
+  });
 
   if ($('iframe.tasks-frame').length > 0)
     $('iframe.tasks-frame')[0].contentWindow.rcmail.triggerEvent(

@@ -8,6 +8,7 @@ export { MelObject, WrapperObject };
 import { Mel_Ajax } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { BaseStorage } from './classes/base_storage.js';
 import { Cookie } from './classes/cookies.js';
+import { FramesManager } from './classes/frame_manager.js';
 import { EMPTY_STRING } from './constants/constants.js';
 import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
@@ -281,28 +282,39 @@ class MelObject {
    * @param {Object} param1
    * @param {?string} param1.action Action de la page
    * @param {Object<string, string>} param1.params Paramètres additionnels de la page
-   * @param {!boolean} param1.update
-   * @param {!boolean} param1.force_update
+   * @param {!boolean} param1.update {@deprecated}
+   * @param {!boolean} param1.force_update {@deprecated}
    * @async
    * @protected
    * @return {Promise<void>}
-   * @deprecated
+   * @deprecated Utilisez plutôt {@link switch_frame}
    */
   async change_frame(
     frame,
     { action = null, params = {}, update = true, force_update = false },
   ) {
-    await mel_metapage.Functions.change_page(
-      frame,
-      action,
-      params,
-      update,
-      force_update,
-    );
+    if (action && (update || force_update)) params['_action'] = action;
+
+    await this.switch_frame(frame, {
+      changepage: true,
+      args: params,
+    });
   }
 
+  /**
+   * Change de frame
+   * @param {string} task Nom de la tâche
+   * @param {Object} options
+   * @param {boolean} [options.changepage=true] Si l'on change de page ou si la frame reste caché pendant le chargement.
+   * @param {?Object<string, *>} [options.args=null] Options du changement de frame. Si la frame est déjà ouverte, force le changement d'url.
+   * @async
+   * @returns {Promise}
+   */
   async switch_frame(task, { changepage = true, args = null }) {
-    await mel_metapage.Functions.change_frame(task, changepage, true, args);
+    await FramesManager.Instance.switch_frame(task, {
+      changepage,
+      args,
+    });
   }
 
   /**

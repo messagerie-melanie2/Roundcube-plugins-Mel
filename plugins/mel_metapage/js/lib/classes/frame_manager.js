@@ -589,7 +589,11 @@ class Window {
   }
 
   static GetTaskTitle(task) {
-    return $(`#layout-menu a[data-task="${task}"]`).find('.inner').text();
+    return $(
+      `#layout-menu a[data-task="${task}"], #otherapps a[data-task="${task}"]`,
+    )
+      .find('.inner, .button-inner')
+      .text();
   }
 
   async switch_frame(task, { changepage = true, args = null, actions = [] }) {
@@ -855,7 +859,7 @@ class FrameManager {
     task,
     { changepage = true, args = null, actions = [], wind = null },
   ) {
-    const quit =
+    let quit =
       this.call_attach(
         'switch_frame',
         task,
@@ -866,6 +870,17 @@ class FrameManager {
       ) === 'break';
 
     if (quit) return;
+
+    quit = rcmail.triggerEvent('switch_frame', {
+      task,
+      changepage,
+      args,
+      actions,
+      wind,
+    });
+
+    if (quit) return;
+    else quit = null;
 
     if (wind !== null) {
       if (rcmail.busy) return;
@@ -907,7 +922,10 @@ class FrameManager {
 
   add_buttons_actions() {
     let $it;
-    for (const iterator of $('#taskmenu a')) {
+
+    $('#otherapps').css('z-index', 1);
+
+    for (const iterator of $('#taskmenu a, #otherapps a')) {
       $it = $(iterator);
 
       $it
@@ -929,7 +947,11 @@ class FrameManager {
           .on('contextmenu', () => {
             this._selected_window._history.show_history();
           });
-      else {
+      else if ($it.hasClass('more-options')) {
+        $it.click(() => {
+          rcmail.command('more_options');
+        });
+      } else {
         $it.click(this.button_action.bind(this));
 
         if (MULTI_FRAME_FROM_NAV_BAR) {
@@ -1257,7 +1279,8 @@ class FrameManagerWrapper {
  * Gère les différentes frames du Bnum
  * @type {FrameManagerWrapper}
  */
-const FramesManager = new FrameManagerWrapper();
+const FramesManager =
+  window?.mel_modules?.[MODULE] || new FrameManagerWrapper();
 
 window.mm_st_OpenOrCreateFrame = function (
   eClass,

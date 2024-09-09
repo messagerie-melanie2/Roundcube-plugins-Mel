@@ -134,9 +134,12 @@ class MainNav {
   static select(task) {
     this.unselect_all();
 
-    let $task = $(`#taskmenu a[data-task="${task}"]`);
+    let $task = $(
+      `#taskmenu a[data-task="${task}"], #otherapps a[data-task="${task}"]`,
+    );
+
     if ($task.length) {
-      $(`#taskmenu a[data-task="${task}"]`)
+      $task
         .addClass('selected')
         .attr('aria-disabled', true)
         .attr('tabIndex', '-1')

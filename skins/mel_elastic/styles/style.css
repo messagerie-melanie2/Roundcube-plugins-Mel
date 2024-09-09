@@ -4488,6 +4488,7 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 .mel-windows {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 .mel-window-header {
   display: none;

@@ -8,6 +8,7 @@ export { MelObject, WrapperObject };
 import { Mel_Ajax } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { BaseStorage } from './classes/base_storage.js';
 import { Cookie } from './classes/cookies.js';
+import { EMPTY_STRING } from './constants/constants.js';
 import { isNullOrUndefined } from './mel.js';
 import { Top } from './top.js';
 
@@ -285,6 +286,7 @@ class MelObject {
    * @async
    * @protected
    * @return {Promise<void>}
+   * @deprecated
    */
   async change_frame(
     frame,
@@ -297,6 +299,10 @@ class MelObject {
       update,
       force_update,
     );
+  }
+
+  async switch_frame(task, { changepage = true, args = null }) {
+    await mel_metapage.Functions.change_frame(task, changepage, true, args);
   }
 
   /**

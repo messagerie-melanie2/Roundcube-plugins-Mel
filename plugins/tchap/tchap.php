@@ -32,13 +32,6 @@ class tchap extends bnum_plugin
     {
         $rcmail = rcmail::get_instance();
 
-        if($this->get_current_task() === 'bnum' && $this->is_index_action()) {
-            //appeler le js
-            $this->include_script('init.js');
-        }
-
-        //$this->add_hook('refresh', array($this, 'refresh'));
-
         // Chargement de la conf
         $this->load_config();
         $this->add_texts('localization/', true);
@@ -63,9 +56,9 @@ class tchap extends bnum_plugin
                 'avatar_url'
             ]);
         }
-        // else if ($this->is_bnum_task()) {
-        //     $this->load_script_module('bnum.js', '/');
-        // }
+        else if ($this->is_bnum_task() && $this->is_index_action()) {
+            $this->load_script_module('bnum.js', '/');
+        }
         
         $tchap_url = $rcmail->config->get('tchap_url');
     	

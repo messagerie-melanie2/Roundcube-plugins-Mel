@@ -31,7 +31,6 @@ export class Manager extends MelObject {
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
   async displayComments() {
-    debugger;
     // Obtenir tous les commentaires du post
     let PostCommentManager = new PostCommentView(this.get_env('post_uid'),this.get_env('post_id'));
     let allComments = await PostCommentManager.getCommentByPost();

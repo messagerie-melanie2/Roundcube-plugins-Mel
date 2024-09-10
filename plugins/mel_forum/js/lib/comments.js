@@ -181,15 +181,18 @@ async toggleResponses(id) {
 /**
  * Affiche ou masque le formulaire de réponse.
  */
-toggleReplyForm(uid) {
+toggleReplyForm(uid, parentId) {
   let form = $('#reply-form-' + uid);
   let isVisible = !form.hasClass('hidden');
   
   // Masquer tous les autres formulaires de réponse
-  $('.reply-form').not(form).addClass('hidden');
+  $('#reply-form').not(form).addClass('hidden');
   
   // Afficher ou masquer le formulaire actuel
   form.toggleClass('hidden');
+
+  // Stocker l'ID du parent pour l'utiliser lors de l'envoi de la réponse
+  this.parent = parentId || this.id;  // Enregistre l'ID du commentaire parent dans `this.parent`
   
   // Réinitialiser le textarea lorsque le formulaire est visible
   if (!isVisible) {
@@ -200,6 +203,42 @@ toggleReplyForm(uid) {
   // Focus sur le textarea lorsque le formulaire est visible
   if (!form.hasClass('hidden')) {
       form.find('textarea').focus();
+  }
+}
+
+async saveReply() {
+  const $textarea = $('#new-response-textarea-' + this.uid);
+  const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
+  if (replyContent && replyContent.trim() !== '') {     // Vérifier si le commentaire n'est pas vide
+      try {
+          const response = await mel_metapage.Functions.post(
+              mel_metapage.Functions.url('forum', 'create_comment'),
+              {
+                  _post_id: this.post_id,  // L'ID du post
+                  _content: replyContent, // Le contenu de la réponse
+                  _parent: this.parent,     // ID du commentaire parent
+              }
+          );
+          if (response.status === 'success') {
+              rcmail.display_message(response.message, 'confirmation');
+
+              // Vider le textarea
+              $textarea.val('');
+
+              // Fermer le formulaire en ajoutant la classe 'hidden'
+              $('#reply-form-' + this.uid).addClass('hidden');
+
+              // Rafraîchir les commentaires après l'ajout
+              this.displayComments();  
+          } else {
+              rcmail.display_message(response.message, 'error');
+          }
+      } catch (error) {
+          rcmail.display_message("Une erreur est survenue lors de la sauvegarde de la réponse.", 'error');
+          console.error("Erreur lors de la sauvegarde de la réponse:", error);
+      }
+  } else {
+      rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
   }
 }
 
@@ -224,7 +263,6 @@ toggleReplyForm(uid) {
     // Détermination du pluriel ou du singulier pour "réponse(s)"
     let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
 
-    // Générer les initiales de l'utilisateur pour l'image de profil
     // Générer les initiales de l'utilisateur pour l'image de profil
     let getInitials = function(fullName) {
       const names = fullName.split(' ');
@@ -279,7 +317,7 @@ toggleReplyForm(uid) {
             .span({ class: 'icon material-symbols-outlined', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) }).end('span')
             .span({ class: 'ml-2' }).text(this.dislikes).end('span')
           .end('div')
-          .div({ class: 'reaction-item mr-3 response', onclick: this.toggleReplyForm.bind(this, this.uid) })
+          .div({ class: 'reaction-item mr-3 response', onclick: this.toggleReplyForm.bind(this, this.uid, this.id) })
             .span({ class: 'icon', 'data-icon': 'mode_comment' }).end('span')
             .span({ class: 'ml-2' }).text('répondre').end('span')
           .end('div')
@@ -296,11 +334,11 @@ toggleReplyForm(uid) {
       .end('div')
     .end('div')
     .div({ class: 'col pl-0' })
-      .textarea({ id: 'new-response-textarea', class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
+      .textarea({ id: 'new-response-textarea-' + this.uid, class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
     .end('div')
     .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center'})
       .button({ id: 'cancel-reply', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.toggleReplyForm.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span').end('button')
-      .button({ id: 'submit-reply', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button' }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right'}).end('span').end('button')
+      .button({ id: 'submit-reply', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button', onclick: this.saveReply.bind(this, this.content) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right'}).end('span').end('button')
     .end('div')
     .end('div');
 
@@ -453,28 +491,6 @@ async saveComment(content) {
     }
 }
 
-
-async saveReply(content, parentCommentId) {
-  try {
-      const response = await mel_metapage.Functions.post(
-          mel_metapage.Functions.url('forum', 'create_comment'),
-          {
-              _post_id: this.post_id,  // L'ID du post
-              _content: content,       // Le contenu de la réponse
-              _comment_parent_id: parentCommentId  // ID du commentaire parent
-          }
-      );
-      if (response.status === 'success') {
-          rcmail.display_message(response.message, 'confirmation');
-          this.displayComments();  // Rafraîchir les commentaires après l'ajout
-      } else {
-          rcmail.display_message(response.message, 'error');
-      }
-  } catch (error) {
-      rcmail.display_message("Une erreur est survenue lors de la sauvegarde de la réponse.", 'error');
-      console.error("Erreur lors de la sauvegarde de la réponse:", error);
-  }
-}
 
   /**
  * Récupère les commentaires associés à un post spécifique.

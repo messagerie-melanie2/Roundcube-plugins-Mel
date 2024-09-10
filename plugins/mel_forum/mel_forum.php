@@ -980,7 +980,7 @@ public function create_comment()
     $post = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
 
     // Récupérer l'ID du commentaire parent s'il s'agit d'une réponse
-    $comment_parent_id = rcube_utils::get_input_value('_comment_parent_id', rcube_utils::INPUT_POST, true);
+    $parent = rcube_utils::get_input_value('_parent', rcube_utils::INPUT_POST, true);
 
     // Validation des données saisies
     if (empty($content)) {
@@ -998,8 +998,8 @@ public function create_comment()
     $comment->post = $post;
 
     // Si c'est une réponse, on associe le commentaire parent
-    if (!empty($comment_parent_id)) {
-        $comment->parent_id = $comment_parent_id;
+    if (!empty($parent)) {
+        $comment->parent = $parent;
     }
 
     // Sauvegarde du commentaire

@@ -265,16 +265,13 @@ async saveReply() {
 
     // Générer les initiales de l'utilisateur pour l'image de profil
     let getInitials = function(fullName) {
-      const names = fullName.split(' ');
+    const names = fullName.split(' ');
+    if (names.length === 0) return '?'; // Aucun nom donné
+    const firstInitial = names[0][0] || '';
+    const lastInitial = names.length > 1 ? names[names.length - 1][0] : ''; // Garde seulement la dernière partie
+    return (firstInitial + lastInitial).toUpperCase();
+};
 
-      // Vérifier si nous avons au moins un prénom et un nom
-      if (names.length < 2) {
-          return '?'; // Retourner un point d'interrogation si le nom complet est incomplet
-      }
-
-      const initials = names[0][0] + names[1][0]; // Prend la première lettre du prénom et du nom
-      return initials.toUpperCase();
-    };
 
     // Générer une couleur de fond aléatoire pour l'image de profil
     let getRandomColor = function() {
@@ -329,11 +326,11 @@ async saveReply() {
     // Ajout du formulaire de réponse masqué
     html = html.div({ id: 'reply-form-'+ this.uid, class: 'row my-4 d-flex align-items-center hidden' })
     .div({ class: 'col-auto pr-0' })
-      .div({ class: 'forum-comment-profile-image', style: 'background-color: ' + getRandomColor() + ';' })
+      .div({ class: 'forum-comment-profile-image', style: 'background-color: ' + getRandomColor() + '; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;' })
         .text(getInitials(this.user_name))
       .end('div')
     .end('div')
-    .div({ class: 'col pl-0' })
+    .div({ class: 'col pl-0', style: 'margin-bottom: 1rem;' })
       .textarea({ id: 'new-response-textarea-' + this.uid, class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
     .end('div')
     .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center'})
@@ -343,8 +340,8 @@ async saveReply() {
     .end('div');
 
     if (this.children_number > 0) {
-      html = html.div({ class: 'forum-comment-response' })
-        .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down', onclick: this.toggleResponses.bind(this, this.id) }).end('span')
+      html = html.div({ class: 'forum-comment-response', onclick: this.toggleResponses.bind(this, this.id) })
+        .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
         .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
       .end('div');
     }

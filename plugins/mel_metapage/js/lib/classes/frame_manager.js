@@ -4,6 +4,7 @@ import { BnumEvent } from '../mel_events.js';
 import { MelObject } from '../mel_object.js';
 import { Mel_Promise } from '../mel_promise.js';
 import { BaseStorage } from './base_storage.js';
+import { BnumLog } from './bnum_log.js';
 import { BnumMessage, eMessageType } from './bnum_message.js';
 import { MelEnumerable } from './enum.js';
 import { MainNav } from './main_nav.js';
@@ -18,7 +19,7 @@ export {
 const MODULE = 'FrameManager';
 const MODULE_CUSTOM_FRAMES = `${MODULE}_custom_actions`;
 const MAX_FRAME = 3;
-const MULTI_FRAME_FROM_NAV_BAR = true;
+export const MULTI_FRAME_FROM_NAV_BAR = false;
 
 class FrameData {
   constructor(task, parent) {
@@ -98,6 +99,7 @@ class FrameData {
             params: args,
           }),
           onload: this._onload.bind(this, { changepage, actions }),
+          'data-frame-task': this.task,
         },
         close,
       )
@@ -402,42 +404,27 @@ class Window {
           .generate()
           .appendTo(this.get_window());
 
-      if (this._current_frame) {
+      if (this._current_frame && changepage) {
         this._history.add(this._current_frame.task);
         this._current_frame.hide();
       }
 
-      this._current_frame = new FrameData(task, this);
+      let current_frame = new FrameData(task, this);
 
-      this._current_frame.onload.add('resolve', () => {
-        this._current_frame.onload.remove('resolve');
-        $('#layout-frames').css('display', EMPTY_STRING);
-        this._trigger_event('frame.loaded', {
+      current_frame.onload.add(
+        'resolve',
+        this._first_load.bind(
+          this,
+          promise,
+          frame_id,
           task,
           changepage,
           args,
           actions,
-          manager: FramesManager.Helper.current,
-          window: this,
-        });
-        this._trigger_event('frame.opened', {
-          task,
-          changepage,
-          args,
-          actions,
-          manager: FramesManager.Helper.current,
-          first: true,
-          window: this,
-        });
+        ),
+      );
 
-        this._current_frame.show();
-
-        if (changepage) this.get_window().find(`#${frame_id}`).remove();
-
-        promise.resolve(this);
-      });
-
-      this._current_frame.onload.push(() => {
+      current_frame.onload.push(() => {
         let querry_content = this.get_frame()[0].contentWindow;
         const _$ = querry_content.$;
 
@@ -487,17 +474,23 @@ class Window {
         );
       });
 
-      this._current_frame
-        .create({ changepage, args, actions })
-        .generate()
-        .appendTo(this.get_window().find('.mel-window-frame'));
+      let tmp_frame = current_frame.create({ changepage, args, actions });
 
-      this._frames.add(task, this._current_frame);
+      if (!changepage) tmp_frame.first().css('display', 'none');
 
-      this.select();
+      this.get_window()[0].add_frame(tmp_frame); //;.find('.mel-window-frame')[0].attach_frame(tmp_frame);
+      this._frames.add(task, current_frame);
+
+      if (changepage) {
+        this._current_frame = current_frame;
+        this.select();
+      }
 
       if (this.has_other_window()) $('.mel-windows').addClass('multiple');
       else $('.mel-windows').removeClass('multiple');
+
+      current_frame = null;
+      tmp_frame = null;
     });
   }
 
@@ -529,6 +522,46 @@ class Window {
     });
 
     return this;
+  }
+
+  /**
+   *
+   * @param {Mel_Promise} promise
+   * @param {*} task
+   * @param {*} changepage
+   * @param {*} args
+   * @param {*} actions
+   */
+  _first_load(promise, frame_id, task, changepage, args, actions) {
+    let current = this._frames.get(task);
+
+    current.onload.remove('resolve');
+    if (changepage) $('#layout-frames').css('display', EMPTY_STRING);
+
+    this._trigger_event('frame.loaded', {
+      task,
+      changepage,
+      args,
+      actions,
+      manager: FramesManager.Helper.current,
+      window: this,
+    });
+    this._trigger_event('frame.opened', {
+      task,
+      changepage,
+      args,
+      actions,
+      manager: FramesManager.Helper.current,
+      first: true,
+      window: this,
+    });
+
+    if (changepage) {
+      this._current_frame.show();
+      this.get_window().find(`#${frame_id}`).remove();
+    }
+
+    promise.resolve(this);
   }
 
   _update_menu_button(task) {
@@ -599,12 +632,12 @@ class Window {
   async switch_frame(task, { changepage = true, args = null, actions = [] }) {
     if (changepage && this.is_hidden()) this.show();
 
-    MainNav.select(task);
+    if (changepage) MainNav.select(task);
 
     const break_next =
       FramesManager.Instance.call_attach('before_url') === 'break';
 
-    if (!break_next) {
+    if (!break_next && changepage) {
       Window.UpdateNavUrl(Window.UrlFromTask(task));
       Window.UpdateDocumentTitle(Window.GetTaskTitle(task));
     }
@@ -612,7 +645,7 @@ class Window {
     FramesManager.Instance.call_attach('url');
 
     if (this._frames.has(task)) {
-      await this._open_frame(task, { new_args: args });
+      if (changepage) await this._open_frame(task, { new_args: args });
     } else await this._create_frame(task, { changepage, args, actions });
 
     if (!break_next) {
@@ -621,32 +654,34 @@ class Window {
         .text(Window.GetTaskTitle(task));
     }
 
-    this._current_frame.$frame.focus();
+    if (changepage) {
+      this._current_frame.$frame.focus();
 
-    if (
-      this._current_frame.$frame[0].contentWindow.$(
-        '#sr-document-title-focusable',
-      ).length
-    ) {
-      this._current_frame.$frame[0].contentWindow
-        .$('#sr-document-title-focusable')
-        .focus();
-    } else {
-      this._current_frame.$frame[0].contentWindow
-        .$('body')
-        .prepend(
-          $('<div>')
-            .attr('id', 'sr-document-title-focusable')
-            .addClass('sr-only')
-            .attr('tabindex', '-1')
-            .text(document.title),
-        )
-        .find('.sr-document-title-focusable')
-        .focus();
+      if (
+        this._current_frame.$frame[0].contentWindow.$(
+          '#sr-document-title-focusable',
+        ).length
+      ) {
+        this._current_frame.$frame[0].contentWindow
+          .$('#sr-document-title-focusable')
+          .focus();
+      } else {
+        this._current_frame.$frame[0].contentWindow
+          .$('body')
+          .prepend(
+            $('<div>')
+              .attr('id', 'sr-document-title-focusable')
+              .addClass('sr-only')
+              .attr('tabindex', '-1')
+              .text(document.title),
+          )
+          .find('.sr-document-title-focusable')
+          .focus();
+      }
+
+      if (this.has_other_window()) $('.mel-windows').addClass('multiple');
+      else $('.mel-windows').removeClass('multiple');
     }
-
-    if (this.has_other_window()) $('.mel-windows').addClass('multiple');
-    else $('.mel-windows').removeClass('multiple');
   }
 
   select() {
@@ -697,7 +732,7 @@ class Window {
   }
 
   has_other_window() {
-    return $('.mel-windows').length > 1;
+    return $('#layout-frames .mel-windows').length > 1;
   }
 
   get_window_id() {
@@ -710,7 +745,7 @@ class Window {
 
   get_frame(task = null) {
     const frame = !task ? this._current_frame : this._frames.get(task);
-    return this.get_window().find(`iframe#frame-${frame.id}`);
+    return frame.$frame;
   }
 
   remove_frame(task) {
@@ -769,26 +804,7 @@ class Window {
   }
 
   _generate_window() {
-    return MelHtml.start
-      .div({ id: `mel-window-${this._id}`, class: 'mel-windows' })
-      .attr('onclick', () => {
-        FramesManager.Helper.current.unselect_all();
-        FramesManager.Helper.current.select_window(this._id);
-      })
-      .div({ class: 'mel-window-header' })
-      .div({ class: 'mel-window-title' })
-      .end()
-      .button({ class: 'bckg true' })
-      .attr('onclick', () => {
-        FramesManager.Helper.current.delete_window(this._id);
-      })
-      .icon('delete')
-      .end('icon')
-      .end('button')
-      .end('header')
-      .div({ class: 'mel-window-frame fullframe' })
-      .end('frame')
-      .end('window');
+    return MelHtml.start.mel_window(this._id).end();
   }
 
   _generate_layout_frames() {
@@ -804,21 +820,6 @@ class Window {
     FrameManager.Helper.trigger_event(key, args);
     rcmail.triggerEvent(key, args);
     return this;
-  }
-
-  steal_frame(window_id, task) {
-    let win = FramesManager.Helper.current._windows.get(window_id);
-
-    if (!!win && win.has_frame(task) && !this.has_frame(task)) {
-      let frame = win._frames.get(task);
-
-      frame.$frame.appendTo(this.get_window());
-      win._frames.remove(task);
-      this._frames.add(frame);
-      frame.parent = this;
-
-      return true;
-    } else return false;
   }
 }
 
@@ -847,12 +848,34 @@ class FrameManager {
 
     this._attaches = {};
 
+    this.$layout_frames = null;
+
+    Object.defineProperties(this, {
+      $layout_frames: {
+        get: () => $('#layout-frames'),
+      },
+    });
+
     return this;
   }
 
   _main() {
     if (rcmail.env.task === 'bnum')
       $('#layout-content').addClass('hidden').css('display', 'none');
+  }
+
+  add_tag(tag) {
+    let $layout = $('#layout-frames');
+    if ($layout.length) {
+      $layout.attr(`data-tag-${tag}`, 1);
+    }
+  }
+
+  remove_tag(tag) {
+    let $layout = $('#layout-frames');
+    if ($layout.length) {
+      $layout.removeAttr(`data-tag-${tag}`);
+    }
   }
 
   async switch_frame(
@@ -884,7 +907,7 @@ class FrameManager {
 
     if (wind !== null) {
       if (rcmail.busy) return;
-      else BnumMessage.SetBusyLoading();
+      else if (changepage) BnumMessage.SetBusyLoading();
 
       if (changepage) this.close_windows_to_remove_on_change();
 
@@ -904,7 +927,7 @@ class FrameManager {
       });
       this._selected_window.select();
 
-      BnumMessage.StopBusyLoading();
+      if (changepage) BnumMessage.StopBusyLoading();
 
       return this._selected_window;
     } else
@@ -1042,7 +1065,7 @@ class FrameManager {
     let win = new Window(uid);
 
     if ($parent === null) {
-      $parent = $('<div>').class('fixed-window').appendTo($('body'));
+      $parent = $('<div>').class('fixed-window').appendTo($('#layout'));
     }
 
     win._generate_window().generate().appendTo($parent);
@@ -1145,6 +1168,16 @@ class FrameManager {
     return this;
   }
 
+  hide_except_selected() {
+    for (const { key, value } of this._windows) {
+      if (this._selected_window._id !== value._id) value.hide();
+
+      BnumLog.debug('hide_except_selected', key, value);
+    }
+
+    return this;
+  }
+
   close_except_selected() {
     let uid;
     while (this._windows.length > 1) {
@@ -1180,6 +1213,10 @@ class FrameManager {
 
   get_frame(task = null) {
     return this._selected_window.get_frame(task);
+  }
+
+  current_frame() {
+    return this.get_window()._current_frame;
   }
 
   /**

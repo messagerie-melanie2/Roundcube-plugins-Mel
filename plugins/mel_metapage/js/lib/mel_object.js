@@ -324,7 +324,7 @@ class MelObject {
    * @protected
    */
   have_frame(frame) {
-    return this.select_frame(frame).length > 0;
+    return FramesManager.Instance.get_window().has_frame(frame);
   }
 
   /**

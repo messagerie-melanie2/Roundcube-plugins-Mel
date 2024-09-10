@@ -56,6 +56,8 @@ class ToolbarFunctions {
         if (FramesManager.Instance.get_window().has_frame('webconf'))
           FramesManager.Instance.get_window().remove_frame('webconf');
 
+        FramesManager.Instance.start_mode('stop_visio');
+
         FramesManager.Instance.close_except_selected();
       }
     });

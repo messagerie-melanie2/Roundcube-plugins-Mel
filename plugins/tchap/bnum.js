@@ -2,7 +2,10 @@ import {
   FramesManager,
   MULTI_FRAME_FROM_NAV_BAR,
 } from '../mel_metapage/js/lib/classes/frame_manager.js';
+//import { MelHtml } from '../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelObject } from '../mel_metapage/js/lib/mel_object.js';
+import { Mel_Promise } from '../mel_metapage/js/lib/mel_promise.js';
+import { MelHtml } from '../tchap/js/lib/jshtmlex.js';
 
 const ENABLE_AVATAR_LOADING = false;
 export class TchapBnum extends MelObject {
@@ -14,6 +17,23 @@ export class TchapBnum extends MelObject {
     super.main();
 
     this._tchap_state = false;
+    this._anchor = false;
+
+    this.$tchap_frame = null;
+    this.$tchap_frame_container = null;
+    this.tchap_frame_container_element = null;
+
+    Object.defineProperties(this, {
+      $tchap_frame: {
+        get: () => this.select_frame('tchap'),
+      },
+      $tchap_frame_container: {
+        get: () => this.$tchap_frame.parent(),
+      },
+      tchap_frame_container_element: {
+        get: () => this.$tchap_frame_container[0],
+      },
+    });
 
     if (ENABLE_AVATAR_LOADING) this.load_url();
 
@@ -65,9 +85,11 @@ export class TchapBnum extends MelObject {
       ) {
         $button.addClass('disabled').attr('disabled', 'disabled');
 
-        if ($('.tchap-frame').hasClass('tchap-card')) {
-          $('.tchap-frame').removeClass('tchap-card');
+        if (this.$tchap_frame_container.hasClass('tchap-card')) {
+          this.$tchap_frame_container.removeClass('tchap-card');
         }
+
+        this.tchap_frame_container_element.remove_element('tchap');
       } else if ($button.hasClass('disabled')) {
         $button.removeClass('disabled').removeAttr('disabled');
 
@@ -78,19 +100,52 @@ export class TchapBnum extends MelObject {
     return this;
   }
 
-  _button_on_click() {
-    let $tchap_frame = this.select_frame('tchap');
-
-    if (!this.have_frame('tchap') || !$tchap_frame.hasClass('tchap-card')) {
+  async _button_on_click() {
+    if (
+      !this.have_frame('tchap') ||
+      !this.$tchap_frame_container.hasClass('tchap-card')
+    ) {
       this.switch_frame('tchap', { changepage: false });
 
-      $('.tchap-frame').addClass('frame-card a-frame tchap-card');
+      await Mel_Promise.wait(() => !!this.$tchap_frame_container.length);
+
+      this.$tchap_frame_container.addClass('frame-card a-frame tchap-card');
+
+      this.tchap_frame_container_element.add_element(
+        'tchap',
+        MelHtml.start
+          .tchap_actions(
+            this._button_on_click.bind(this),
+            () => {
+              if (this._anchor) {
+                FramesManager.Instance.remove_tag('attach');
+                this.tchap_frame_container_element
+                  .get_element('tchap')
+                  .find('.button-anchor bnum-icon')
+                  .text('view_column_2');
+                this._anchor = false;
+              } else {
+                FramesManager.Instance.add_tag('attach');
+                this.tchap_frame_container_element
+                  .get_element('tchap')
+                  .find('.button-anchor bnum-icon')
+                  .text('display_external_input');
+                this._anchor = true;
+              }
+            },
+            () => FramesManager.Instance.switch_frame('tchap', {}),
+          )
+          .end(),
+        false,
+      );
+
       this._tchap_state = true;
     } else {
-      $tchap_frame.removeClass('tchap-card');
+      this.tchap_frame_container_element.remove_element('tchap');
+      this.$tchap_frame_container.removeClass('tchap-card');
 
       if (this.get_env('current_frame_name') !== 'tchap')
-        $tchap_frame.css('display', 'none');
+        this.$tchap_frame_container.css('display', 'none');
 
       this._tchap_state = false;
     }

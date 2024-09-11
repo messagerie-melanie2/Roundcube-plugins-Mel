@@ -45,6 +45,7 @@
 .tchap-card {
   position: absolute;
   right: 0%;
+  top: 0;
   width: 40% !important;
   height: 100% !important;
   display: initial !important;
@@ -52,5 +53,39 @@
 
   iframe {
     display: unset !important;
+  }
+}
+
+bnum-tchap-actions {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 0;
+  left: -56px;
+  background-color: var(--card-background-color);
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  padding: 5px;
+
+  button {
+    border-radius: 0 !important;
+
+    &:first-of-type {
+      border-top-left-radius: 15px !important;
+      border-top-right-radius: 5px !important;
+    }
+
+    &:last-of-type {
+      border-bottom-left-radius: 15px !important;
+      border-bottom-right-radius: 5px !important;
+    }
+  }
+}
+
+#layout-frames {
+  &[data-tag-attach='1'] {
+    .mw-mm-frame {
+      max-width: 60%;
+    }
   }
 }

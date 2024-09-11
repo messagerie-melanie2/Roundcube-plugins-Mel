@@ -156,7 +156,7 @@ class FrameData {
    * @returns {FrameData} Chaînage
    */
   show() {
-    this.$frame.show();
+    this.$frame.parent().show();
     return this;
   }
 
@@ -165,7 +165,7 @@ class FrameData {
    * @returns {FrameData} Chaînage
    */
   hide() {
-    this.$frame.hide();
+    this.$frame.parent().hide();
     return this;
   }
 }

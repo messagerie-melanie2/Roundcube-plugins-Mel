@@ -968,6 +968,10 @@ class ____JsHtml {
     return this._generate({ mode: 1 });
   }
 
+  generate_dom() {
+    return this._generate({ mode: 1 })[0];
+  }
+
   /**
    * Génère le code en html brut. Les fonctions des évènements ne fonctionneront pas.
    * @param {Object} param0

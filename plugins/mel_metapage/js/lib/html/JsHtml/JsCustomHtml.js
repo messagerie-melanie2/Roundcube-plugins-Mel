@@ -5,8 +5,11 @@ import {
   BnumHtmlSeparate,
   BnumHtmlSrOnly,
   HtmlCustomTag,
-} from './CustomAttributes/classes.js';
-import { MelWindow, MelWindowFrame } from './CustomAttributes/frames.js';
+} from './CustomAttributes/js_html_base_web_elements.js';
+import {
+  MelWindow,
+  MelWindowFrame,
+} from './CustomAttributes/frames_web_elements.js';
 import { JsHtml } from './JsHtml.js';
 export { JsHtml };
 

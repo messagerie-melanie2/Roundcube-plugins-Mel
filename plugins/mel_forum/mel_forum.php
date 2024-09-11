@@ -984,6 +984,7 @@ public function create_comment()
 
     // Validation des données saisies
     if (empty($content)) {
+        header('Content-Type: application/json');
         echo json_encode(['status' => 'error', 'message' => 'Le champ commentaire est requis.']);
         exit;
     }
@@ -994,7 +995,7 @@ public function create_comment()
     $comment->uid = $this->generateRandomString(24);
     $comment->created = date('Y-m-d H:i:s');
     $comment->modified = date('Y-m-d H:i:s');
-    $comment->creator = $user->uid;
+    $comment->creator = $user->uid; // ID de l'utilisateur
     $comment->post = $post;
 
     // Si c'est une réponse, on associe le commentaire parent
@@ -1005,32 +1006,29 @@ public function create_comment()
     // Sauvegarde du commentaire
     $ret = $comment->save();
     if (!is_null($ret)) {
+        // Préparer les données du commentaire avec le nom d'utilisateur
+        $commentData = [
+            'uid' => $comment->uid,
+            'content' => $comment->content,
+            'created' => $comment->created,
+            'creator' => $comment->creator,
+            'post' => $comment->post,
+            'parent' => !empty($comment->parent) ? $comment->parent : null,
+            'user_name' => $user->name // Récupération du nom d'utilisateur
+        ];
 
-    // Sauvegarde du commentaire
-    $ret = $comment->save();
-    if (!is_null($ret)) {
-        // Préparation de la réponse JSON
-        // $response = [
-        //     'status' => 'success',
-        //     'message' => 'Commentaire créé avec succès.',
-        //     'comment' => [
-        //         'uid' => $comment->uid,
-        //         'content' => $comment->content,
-        //         'created' => $comment->created,
-        //         'creator' => $comment->creator,
-        //         'post' => $comment->post,
-        //         'parent' => $comment->parent ?? null, // Si c'est une réponse, ajouter l'ID du commentaire parent
-        //     ]
-        // ];
-
+        // Réponse JSON avec les informations du commentaire
         header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Commentaire créé avec succès.']);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Commentaire créé avec succès.',
+            'comment' => $commentData
+        ]);
     } else {
+        header('Content-Type: application/json');
         echo json_encode(['status' => 'error', 'message' => 'Echec de création du commentaire.']);
     }
 
-    // Arrêt de l'exécution du script
     exit;
 }
 

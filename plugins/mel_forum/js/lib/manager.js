@@ -81,6 +81,10 @@ export class Manager extends MelObject {
     console.log(allComments);
   }
 
+  
+
+
+
   /**
    * Créé l'input qui permet d'ajouter un commentaire
    */

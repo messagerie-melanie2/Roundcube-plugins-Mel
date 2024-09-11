@@ -1006,6 +1006,23 @@ public function create_comment()
     $ret = $comment->save();
     if (!is_null($ret)) {
 
+    // Sauvegarde du commentaire
+    $ret = $comment->save();
+    if (!is_null($ret)) {
+        // Préparation de la réponse JSON
+        // $response = [
+        //     'status' => 'success',
+        //     'message' => 'Commentaire créé avec succès.',
+        //     'comment' => [
+        //         'uid' => $comment->uid,
+        //         'content' => $comment->content,
+        //         'created' => $comment->created,
+        //         'creator' => $comment->creator,
+        //         'post' => $comment->post,
+        //         'parent' => $comment->parent ?? null, // Si c'est une réponse, ajouter l'ID du commentaire parent
+        //     ]
+        // ];
+
         header('Content-Type: application/json');
 
         echo json_encode(['status' => 'success', 'message' => 'Commentaire créé avec succès.']);

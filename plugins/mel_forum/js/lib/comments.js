@@ -206,6 +206,7 @@ toggleReplyForm(uid, parentId) {
   }
 }
 
+
 async saveReply() {
   const $textarea = $('#new-response-textarea-' + this.uid);
   const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
@@ -228,8 +229,9 @@ async saveReply() {
               // Fermer le formulaire en ajoutant la classe 'hidden'
               $('#reply-form-' + this.uid).addClass('hidden');
 
-              // Rafraîchir les commentaires après l'ajout
-              this.displayComments();  
+              // Insérer le nouveau commentaire
+              debugger;
+              this.displaySingleComment(response.comment);  
           } else {
               rcmail.display_message(response.message, 'error');
           }
@@ -239,6 +241,39 @@ async saveReply() {
       }
   } else {
       rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
+  }
+}
+
+async displaySingleComment(comment) {
+  debugger;
+  let commentVizualizer = new PostComment(
+    comment.id,
+    comment.uid,
+    comment.post_id,
+    comment.user_id,
+    comment.user_name,
+    comment.content,
+    comment.created,
+    comment.likes,
+    comment.dislikes,
+    comment.parent,
+    comment.children_number,
+    comment.current_user_reacted,
+  );
+
+  let commentHtml = commentVizualizer.generateHtml();
+
+  if (!comment.parent) {
+    commentHtml.appendTo($('#comment-area'));
+  } else {
+    let parentResponseContainer = $('#responses-' + comment.parent);
+    
+    if (parentResponseContainer.length === 0) {
+      parentResponseContainer = $('<div id="responses-' + comment.parent + '"></div>');
+      $('#comment-' + comment.parent).append(parentResponseContainer);
+    }
+    
+    commentHtml.appendTo(parentResponseContainer);
   }
 }
 
@@ -517,5 +552,4 @@ async saveComment(content) {
 
   }
 
- 
 }

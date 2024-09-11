@@ -139,6 +139,13 @@ export class TchapBnum extends MelObject {
         false,
       );
 
+      if (this._anchor) {
+        this.tchap_frame_container_element
+          .get_element('tchap')
+          .find('.button-anchor bnum-icon')
+          .text('display_external_input');
+      }
+
       this._tchap_state = true;
     } else {
       this.tchap_frame_container_element.remove_element('tchap');
@@ -146,6 +153,11 @@ export class TchapBnum extends MelObject {
 
       if (this.get_env('current_frame_name') !== 'tchap')
         this.$tchap_frame_container.css('display', 'none');
+
+      if (this._anchor) {
+        this._anchor = false;
+        FramesManager.Instance.remove_tag('attach');
+      }
 
       this._tchap_state = false;
     }

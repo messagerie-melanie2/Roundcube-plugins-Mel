@@ -246,6 +246,13 @@ async saveReply() {
 
 async displaySingleComment(comment) {
   debugger;
+
+  // Définir le format de la date d'entrée
+  let inputFormat = 'YYYY-MM-DD HH:mm:ss';
+  
+  // Créer un objet moment en utilisant le format spécifié
+  let formattedDate = moment(comment.created, inputFormat).format('D MMMM YYYY'); // Format souhaité
+
   let commentVizualizer = new PostComment(
     comment.id,
     comment.uid,
@@ -253,9 +260,9 @@ async displaySingleComment(comment) {
     comment.user_id,
     comment.user_name,
     comment.content,
-    comment.created,
-    comment.likes,
-    comment.dislikes,
+    formattedDate,
+    comment.likes || 0,
+    comment.dislikes || 0,
     comment.parent,
     comment.children_number,
     comment.current_user_reacted,

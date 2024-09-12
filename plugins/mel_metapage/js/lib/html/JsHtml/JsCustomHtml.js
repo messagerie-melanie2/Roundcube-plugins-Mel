@@ -22,6 +22,8 @@ JsHtml.create_custom_tag = function (
     extend = null,
   },
 ) {
+  let ret = false;
+
   const tag = `bnum-${name}`;
   if (!customElements.get(tag)) {
     let config = {};
@@ -30,6 +32,10 @@ JsHtml.create_custom_tag = function (
 
     customElements.define(tag, already_existing_class ?? HtmlCustomTag, config);
 
+    ret = true;
+  }
+
+  if (!JsHtml.start[name.replaceAll('-', '_')]) {
     JsHtml.create_alias(name.replaceAll('-', '_'), {
       tag,
       generate_callback,
@@ -38,11 +44,9 @@ JsHtml.create_custom_tag = function (
         return html.attr('data-custom-tag', name);
       },
     });
-
-    return true;
   }
 
-  return false;
+  return ret;
 };
 
 JsHtml.create_custom_tag('icon', {

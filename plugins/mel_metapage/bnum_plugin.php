@@ -11,14 +11,28 @@ abstract class bnum_plugin extends rcube_plugin
         $this->load_script_module_from_plugin($this->ID, $name, $path, $save_in_memory);
     }
 
-    protected function load_script_module_from_plugin($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false) {
+    protected function load_script_module_from_plugin($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false, $where = 'docready') {
         $this->setup_module();
 
         $args = "'$plugin', '$name', '$path', $save_in_memory";
         
         if ($this->api->output !== null) {
             try {
-                $this->api->output->add_script("runModule($args)", 'docready');
+                $this->api->output->add_script("(() => {runModule($args);})();", $where);
+            } catch (\Throwable $th) {
+                return null;
+            }
+        }
+    }
+
+    protected function include_component($name, $path = (self::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/') , $plugin = 'mel_metapage') {
+        $this->setup_module();
+
+        $args = "'$plugin', '$name', '$path', false";
+
+        if ($this->api->output !== null) {
+            try {
+                $this->api->output->add_script("(() => {loadJsModule($args);})();", 'head');
             } catch (\Throwable $th) {
                 return null;
             }
@@ -64,17 +78,17 @@ abstract class bnum_plugin extends rcube_plugin
 
     protected function setup_module() {
         if (!self::$module_loaded) {
-            $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js');
+            $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js', 'head');
             self::$module_loaded = true;
         }
     }
 
-    public function include_script_from_plugin($plugin, $fn)
+    public function include_script_from_plugin($plugin, $fn, $pos = 'head_bottom')
     {
         $ID = rcmail::get_instance()->plugins->get_plugin($plugin)->ID;
         if (is_object($this->api->output) && $this->api->output->type == 'html') {
-            $src = $this->resource_url_from_plugin($fn, $ID);
-            $this->api->include_script($src, 'head_bottom', false);
+            $src = $this->resource_url_from_plugin($fn, "plugins/$ID");
+            $this->rc()->output->include_script($src, $pos, false);
         }
     }
 
@@ -138,6 +152,10 @@ abstract class bnum_plugin extends rcube_plugin
         return rcube_utils::get_input_value($arg, rcube_utils::INPUT_POST);
     }
 
+    protected function get_config($key, $default_value = null) {
+        return $this->rc()->config->get($key, $default_value);
+    }
+
     protected function include_css($path, $local = false)
     {
         if ($local)
@@ -165,4 +183,42 @@ abstract class bnum_plugin extends rcube_plugin
         return  driver_mel::gi()->getUser(null, true, false, null, $email);
     }
 
+    protected function include_web_component() {
+        return WebComponnents::Instance();
+    } 
+
+    public function ____METHODS____($what, ...$args) {
+        switch ($what) {
+            case 'include_component':
+                $this->include_component(...$args);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+    }
+}
+
+class WebComponnents {
+    private $plugin;
+    private static $_instance;
+
+    private function __construct() {
+        $this->plugin = rcmail::get_instance()->plugins->get_plugin('mel_metapage');
+    }
+
+    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/') , $plugin = 'mel_metapage') {
+        return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
+    }
+
+    public function Tabs() {
+        $this->_include_component('tab_web_element');
+    }
+
+    public static function Instance() {
+        if (!isset(self::$_instance)) self::$_instance = new WebComponnents();
+
+        return self::$_instance;
+    }
 }

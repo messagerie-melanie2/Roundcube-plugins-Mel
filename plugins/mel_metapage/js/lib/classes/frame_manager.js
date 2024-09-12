@@ -18,8 +18,9 @@ export {
 
 const MODULE = 'FrameManager';
 const MODULE_CUSTOM_FRAMES = `${MODULE}_custom_actions`;
-const MAX_FRAME = 3;
-export const MULTI_FRAME_FROM_NAV_BAR = false;
+const MAX_FRAME = rcmail.env['frames.max_multi_frame'];
+export const MULTI_FRAME_FROM_NAV_BAR =
+  rcmail.env['frames.multi_frame_enabled'];
 
 class FrameData {
   constructor(task, parent) {

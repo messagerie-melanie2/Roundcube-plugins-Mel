@@ -3025,7 +3025,15 @@ class mel_metapage extends bnum_plugin
         $this->set_plugin_env_exist();
 
         $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
-        $this->rc->output->send('mel_metapage.empty');
+
+        if (empty($_SESSION['user_id']))  
+        {
+            $this->rc->output->redirect([
+                '_task' => 'logout',
+                '_action' => '',
+            ]);
+        } 
+        else $this->rc->output->send('mel_metapage.empty');
     }
 
     private function set_plugin_env_exist() {

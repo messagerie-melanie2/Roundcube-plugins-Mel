@@ -179,7 +179,18 @@ async toggleResponses(id) {
 }
 
 /**
- * Affiche ou masque le formulaire de réponse.
+ * Bascule l'affichage du formulaire de réponse et gère l'état des autres formulaires de réponse.
+ *
+ * @param {string|number} uid - L'identifiant unique utilisé pour cibler le formulaire de réponse à afficher/masquer.
+ * @param {string|number} [parentId] - L'identifiant du commentaire parent auquel la réponse sera associée. 
+ *                                      Si non fourni, utilise l'ID du commentaire actuel.
+ *
+ * Cette fonction effectue les opérations suivantes :
+ * - Masque tous les autres formulaires de réponse (en ajoutant la classe 'hidden').
+ * - Affiche ou masque le formulaire de réponse spécifié.
+ * - Stocke l'ID du parent pour l'utiliser lors de l'envoi de la réponse.
+ * - Réinitialise le contenu et les dimensions du textarea lorsque le formulaire devient visible.
+ * - Met le focus sur le textarea lorsque le formulaire est affiché.
  */
 toggleReplyForm(uid, parentId) {
   let form = $('#reply-form-' + uid);
@@ -206,7 +217,25 @@ toggleReplyForm(uid, parentId) {
   }
 }
 
-
+/**
+ * Enregistre une réponse à un commentaire et met à jour l'interface utilisateur en conséquence.
+ *
+ * @async
+ * @returns {Promise<void>} - Une promesse qui se résout lorsque la réponse est enregistrée et l'interface mise à jour.
+ *
+ * Cette fonction récupère le contenu de la réponse à partir d'une zone de texte spécifique, vérifie que le contenu n'est pas vide,
+ * puis envoie une requête pour enregistrer la réponse. Si l'enregistrement est réussi :
+ * - Affiche un message de confirmation.
+ * - Vide la zone de texte.
+ * - Cache le formulaire de réponse.
+ * - Affiche le nouveau commentaire dans l'interface utilisateur.
+ * 
+ * En cas d'échec ou d'erreur lors de l'enregistrement :
+ * - Affiche un message d'erreur.
+ * - Enregistre l'erreur dans la console.
+ * 
+ * @throws {Error} Si une erreur survient lors de l'envoi de la requête ou de l'enregistrement de la réponse.
+ */
 async saveReply() {
   const $textarea = $('#new-response-textarea-' + this.uid);
   const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
@@ -244,8 +273,29 @@ async saveReply() {
   }
 }
 
+/**
+ * Affiche un commentaire dans la section appropriée de l'interface utilisateur.
+ *
+ * @param {Object} comment - L'objet commentaire à afficher.
+ * @param {number} comment.id - L'identifiant unique du commentaire.
+ * @param {string} comment.uid - L'identifiant unique de l'utilisateur ayant posté le commentaire.
+ * @param {number} comment.post_id - L'identifiant du post auquel le commentaire appartient.
+ * @param {number} comment.user_id - L'identifiant de l'utilisateur ayant posté le commentaire.
+ * @param {string} comment.user_name - Le nom de l'utilisateur ayant posté le commentaire.
+ * @param {string} comment.content - Le contenu du commentaire.
+ * @param {string} comment.created - La date de création du commentaire au format 'YYYY-MM-DD HH:mm:ss'.
+ * @param {number} [comment.likes=0] - Le nombre de likes sur le commentaire (0 par défaut).
+ * @param {number} [comment.dislikes=0] - Le nombre de dislikes sur le commentaire (0 par défaut).
+ * @param {number} [comment.parent=null] - L'identifiant du commentaire parent si le commentaire est une réponse, sinon `null`.
+ * @param {number} [comment.children_number=0] - Le nombre de réponses à ce commentaire (0 par défaut).
+ * @param {boolean} [comment.current_user_reacted=false] - Indique si l'utilisateur actuel a réagi au commentaire (false par défaut).
+ *
+ * Crée une instance de `PostComment` pour le commentaire fourni, génère le HTML associé et l'ajoute à la section appropriée :
+ * - Si le commentaire n'a pas de parent, il est ajouté directement à la zone de commentaires principale.
+ * - Si le commentaire est une réponse, il est ajouté au conteneur des réponses du commentaire parent. Si ce conteneur n'existe pas encore, il est créé.
+ *
+ */
 async displaySingleComment(comment) {
-  debugger;
 
   // Définir le format de la date d'entrée
   let inputFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -284,6 +334,17 @@ async displaySingleComment(comment) {
   }
 }
 
+/**
+ * Bascule l'affichage d'un conteneur de sélection et applique des actions spécifiques lorsque le conteneur devient visible.
+ * @param {string|number} uid - L'identifiant unique utilisé pour cibler le conteneur de sélection associé.
+ *
+ * Le conteneur ciblé est supposé avoir un identifiant au format `#select-container-{uid}`.
+ * 
+ * - Si le conteneur est trouvé, la classe 'hidden' est ajoutée ou retirée pour basculer son affichage.
+ * - Si le conteneur devient visible, le premier élément `<select>` qu'il contient reçoit le focus et une taille est forcée 
+ *   pour afficher toutes les options dans certains navigateurs.
+ * - Si le conteneur n'est pas trouvé, un message d'erreur est affiché dans la console.
+ */
 toggleSelect(uid) {
   let selectContainer = $('#select-container-' + uid);
 

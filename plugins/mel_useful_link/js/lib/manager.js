@@ -456,7 +456,9 @@ export class LinkManager extends MelObject {
         for (const key in linkVisualizer.links) {
           let subLink = linkVisualizer.links[key];
           if (!subLink.icon) {
-            subLink.image ? subLink.image : LinkManager.fetchIcon(subLink.link);
+            if (!subLink.image) {
+              subLink.image = LinkManager.fetchIcon(subLink.link)
+            }
           }
           else {
             subLink.image = '';
@@ -483,7 +485,9 @@ export class LinkManager extends MelObject {
         }
       } else {
         if (!link.icon) {
-          link.image ? link.image : LinkManager.fetchIcon(link.link);
+          if (!link.image) {
+            link.image = LinkManager.fetchIcon(link.link)
+          }
         }
         else {
           link.image = '';

@@ -1,3 +1,8 @@
+/**
+ * Contient toute la logique et la gestion des frames
+ * @module Frames
+ */
+
 import { EMPTY_STRING } from '../constants/constants.js';
 import { MelHtml } from '../html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../mel_events.js';
@@ -14,15 +19,72 @@ export {
   FrameManager,
   MODULE as FrameManger_ModuleName,
   MODULE_CUSTOM_FRAMES as FrameManger_ModuleName_custom,
+  MULTI_FRAME_FROM_NAV_BAR,
 };
 
-const MODULE = 'FrameManager';
-const MODULE_CUSTOM_FRAMES = `${MODULE}_custom_actions`;
-const MAX_FRAME = rcmail.env['frames.max_multi_frame'];
-export const MULTI_FRAME_FROM_NAV_BAR =
-  rcmail.env['frames.multi_frame_enabled'];
+/**
+ * Callback utilisé lors de la création des frames en jshtml.
+ *
+ * Permet de modifier la frame en jshtml à différents endroits de la création.
+ * @callback OnFrameCreatedCallback
+ * @param {____JsHtml} jFrame Frame créée en jshtml
+ * @param {Object} options
+ * @param {boolean} [options.changepage=true] Si la frame doit être chargée en arrière plan ou non.
+ * @param {?Object<string, string>}  [options.args=null] Les autres arguments pour le changement d'url.
+ * @param {FrameData} frame Référence vers la frame créatrice
+ * @return {____JsHtml}
+ */
 
+/**
+ * Ajoute des actions à faire lorsque la frame est chargée.
+ * @callback OnLoadCallback
+ * @param {Object} options
+ * @param {boolean} [options.changepage=true] Si la frame doit être chargée en arrière plan ou non.
+ * @param {?Object<string, string>}  [options.args=null] Les autres arguments pour le changement d'url.
+ * @return {null}
+ */
+
+/**
+ * Nom du module
+ * @constant
+ * @type {string}
+ * @default 'FrameManager'
+ */
+const MODULE = 'FrameManager';
+/**
+ * Nom du module lié aux actions custom
+ * @constant
+ * @type {string}
+ * @default 'FrameManager_custom_actions'
+ * @deprecated
+ */
+const MODULE_CUSTOM_FRAMES = `${MODULE}_custom_actions`;
+/**
+ * Nombre de fenêtres maximal que l'on peut avoir.
+ * @constant
+ * @type {number}
+ */
+const MAX_FRAME = rcmail.env['frames.max_multi_frame'];
+/**
+ * Si le multi-fenêtre manuel est activé.
+ *
+ * Si c'est le cas, au clic droit sur un bouton de la barre de navigation, le choix d'ouvrir une nouvelle fenêtre ou non sera proposé.
+ * @constant
+ * @type {boolean}
+ */
+const MULTI_FRAME_FROM_NAV_BAR = rcmail.env['frames.multi_frame_enabled'];
+
+/**
+ * @class
+ * @classdesc Contient les donénes d'une frame, un lien vers ça version html et quelque actions qui peuvent l'affecter.
+ * @package
+ */
 class FrameData {
+  /**
+   * Initialise les variables
+   * @param {string} task Tâche lié à la frame
+   * @param {Window} parent Fenêtre parente
+   */
   constructor(task, parent) {
     /**
      * Tache de la frame
@@ -30,30 +92,50 @@ class FrameData {
      * @readonly
      */
     this.task = EMPTY_STRING;
+
     /**
      * Nom de la frame
      * @type {string}
      * @readonly
      */
     this.name = EMPTY_STRING;
+
     /**
      * Frame de la tâche
      * @type {external:jQuery}
      * @readonly
      */
     this.$frame = null;
+
     /**
      * Id de la frame
      * @type {number}
      * @readonly
      */
     this.id = 0;
+
     /**
+     * Fenêtre parente
      * @type {Window}
      */
     this.parent = parent;
+
+    /**
+     * Actions à faire lorsque la frame est créée
+     * @type {BnumEvent<OnFrameCreatedCallback>}
+     */
     this.onframecreated = new BnumEvent();
+
+    /**
+     * Actions à faire après que la frame est créée
+     * @type {BnumEvent<OnFrameCreatedCallback>}
+     */
     this.onframecreatedafter = new BnumEvent();
+
+    /**
+     * Actions à faire lorsque la page est chargée
+     * @type {BnumEvent<OnLoadCallback>}
+     */
     this.onload = new BnumEvent();
     Object.defineProperties(this, {
       task: {
@@ -79,7 +161,16 @@ class FrameData {
     });
   }
 
+  /**
+   * Créer une frame en JsHtml
+   * @param {Object} param0
+   * @param {boolean} [param0.changepage=true] Si la frame doit être chargée en arrière plan ou non.
+   * @param {?Object<string, string>}  [param0.args=null] Les autres arguments pour le changement d'url.
+   * @param {Array<any>} [param0.actions=[]] Ne pas utiliser
+   * @returns {____JsHtml}
+   */
   create({ changepage = true, args = null, actions = [] }) {
+    //Si on ferme la balise iframe par défaut ou non
     const close = false;
     const frameArg = {
       complete: '_is_from=iframe',
@@ -87,6 +178,7 @@ class FrameData {
       value: 'iframe',
     };
 
+    //Passer en mode iframe
     args[frameArg.key] = frameArg.value;
 
     let jFrame = MelHtml.start
@@ -128,10 +220,24 @@ class FrameData {
     );
   }
 
+  /**
+   * Est appelé au chargement de la frame.
+   *
+   * Appele `this.onload`.
+   * @param {*} param0
+   * @param {boolean} [param0.changepage=true] Si la frame doit être chargée en arrière plan ou non.
+   * @param {Array<any>} [param0.actions=[]] Ne pas utiliser
+   * @package
+   * @event
+   */
   _onload({ changepage = true, actions = [] }) {
     this.onload.call({ changepage, actions });
   }
 
+  /**
+   * Génère un id unique.
+   * @returns {number}
+   */
   generate_id() {
     if ($('.mm-frame').length)
       return (
@@ -142,6 +248,11 @@ class FrameData {
     else return 0;
   }
 
+  /**
+   * Met à jours la source de la frame
+   * @param {Object<string, string>} args Arguments. Ne pas mettre la tâche.
+   * @returns {FrameData} Chaîne
+   */
   update_src(args) {
     let url = FrameManager.Helper.url(this.task, { params: args });
 
@@ -333,11 +444,25 @@ class HistoryManager {
   }
 }
 
+/**
+ * @class
+ * @classdesc Gère plusieurs frames
+ * @package
+ */
 class Window {
+  /**
+   * Initialise les variables
+   * @param {string | number} uid Id de la fenêtre
+   */
   constructor(uid) {
     this._init()._setup(uid);
   }
 
+  /**
+   * Initialise les variables
+   * @private
+   * @returns {Window} Chaîne
+   */
   _init() {
     /**
      * Historique des frames
@@ -354,24 +479,52 @@ class Window {
     /**
      * Frame en cours
      * @type {FrameData}
+     * @package
      */
     this._current_frame = null;
+    /**
+     * Id de la fenêtre
+     * @type {number}
+     * @package
+     */
     this._id = 0;
+    /**
+     * Si la fenêtre peut-être séléctionnée ou non
+     * @type {boolean}
+     * @package
+     */
     this._can_be_selected = true;
     return this;
   }
 
+  /**
+   * Associe les variables
+   * @param {number} uid
+   * @returns {Window} Chaîne
+   * @private
+   */
   _setup(uid) {
     this._id = uid;
     return this;
   }
 
+  /**
+   * Créer une frame
+   * @param {string} task Tâche à afficher
+   * @param {Object} param1
+   * @param {boolean} [param1.changepage=true] Si on charge la frame en arrière plan ou non
+   * @param {?Object<string, string>} [param1.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @returns {Mel_Promise}
+   * @package
+   * @async
+   */
   _create_frame(task, { changepage = true, args = null, actions = [] }) {
     return new Mel_Promise((promise) => {
       promise.start_resolving();
 
       if (!args) args = {};
 
+      //Action externes à faire avant la création
       this._trigger_event('frame.create.before', {
         task,
         changepage,
@@ -394,24 +547,35 @@ class Window {
           this._generate_layout_frames().generate_html({ joli_html: false }),
         );
 
+      //Création de la fenêtre si elle n'éxiste pas
       if (!this.get_window().length)
         $('#layout-frames').append(this._generate_window().generate());
 
+      /**
+       * Id du loader
+       * @type {string}
+       * @constant
+       * @default `frameid${this._id}`
+       */
       const frame_id = `frameid${this._id}`;
 
+      //Si on change de page, on affiche un loader
       if (changepage)
         MelObject.Empty()
           .generate_loader(frame_id, true)
           .generate()
           .appendTo(this.get_window());
 
+      //Ajoute la frame à l'historique et cache l'ancienne frame
       if (this._current_frame && changepage) {
         this._history.add(this._current_frame.task);
         this._current_frame.hide();
       }
 
+      //On créer une variable locale pour éviter les conflits suite à l'asynchrone
       let current_frame = new FrameData(task, this);
 
+      // Voir _first_load
       current_frame.onload.add(
         'resolve',
         this._first_load.bind(
@@ -425,6 +589,10 @@ class Window {
         ),
       );
 
+      /*
+        Au chargement de la frame, vire les éléments indésirable, et 
+        si le multi-fenêtre est activé, gérer la séléction de la fenêtre
+      */
       current_frame.onload.push(() => {
         let querry_content = this.get_frame()[0].contentWindow;
         const _$ = querry_content.$;
@@ -432,6 +600,9 @@ class Window {
         _$('#layout-menu').remove();
         _$('.barup').remove();
         _$('html').addClass('framed');
+
+        //Pas besoin d'aller plus loin si le multi-frame est désactivé
+        if (!MULTI_FRAME_FROM_NAV_BAR) return;
 
         //Si on a Jquery
         if (this.get_frame()[0].contentWindow.$) {
@@ -446,7 +617,6 @@ class Window {
             });
 
             iterator.onload = (e) => {
-              console.log('e', e);
               e = e.srcElement;
               e.contentWindow.document.addEventListener('click', () => {
                 if (
@@ -475,11 +645,15 @@ class Window {
         );
       });
 
+      //Création de la frame
       let tmp_frame = current_frame.create({ changepage, args, actions });
 
       if (!changepage) tmp_frame.first().css('display', 'none');
 
-      this.get_window()[0].add_frame(tmp_frame); //;.find('.mel-window-frame')[0].attach_frame(tmp_frame);
+      //La fenêtre est un webcomponent, on utilise les fonctions de celui-ci pour créer la frame
+      //sinon, ça risque de ne pas ce comporter correctement
+      this.get_window()[0].add_frame(tmp_frame);
+
       this._frames.add(task, current_frame);
 
       if (changepage) {
@@ -487,6 +661,7 @@ class Window {
         this.select();
       }
 
+      //Gestion si il y a d'autres fenêtres
       if (this.has_other_window()) $('.mel-windows').addClass('multiple');
       else $('.mel-windows').removeClass('multiple');
 
@@ -495,11 +670,20 @@ class Window {
     });
   }
 
+  /**
+   * Ouvre une frame déjà ouverte.
+   * @param {string} task Frame à ouvrir
+   * @param {Object} param1
+   * @param {?Object<string, string>} [param1.new_args=null] Nouveau arguments à ajouter à la frame. Si ils éxistent, force le rechargement de la frame.
+   * @returns {Promise<Window>}
+   */
   async _open_frame(task, { new_args = null }) {
+    //Ajoute à l'historique et cache l'ancienne frame
     this._history.add(this._current_frame.task);
     this._current_frame.hide();
     this._current_frame = this._frames.get(task);
 
+    //Met à jour la source de la frame et attend qu'elle soit chargée
     if (new_args && Object.keys(new_args).length > 0) {
       await new Mel_Promise((promise) => {
         promise.start_resolving();
@@ -511,6 +695,7 @@ class Window {
       });
     }
 
+    //Affiche la frame
     this._current_frame.show();
 
     this._trigger_event('frame.opened', {
@@ -526,12 +711,15 @@ class Window {
   }
 
   /**
-   *
-   * @param {Mel_Promise} promise
-   * @param {*} task
-   * @param {*} changepage
-   * @param {*} args
-   * @param {*} actions
+   * Premier chargement d'une frame. Est supprimé après la fin de l'éxécution de la fonction
+   * @param {Mel_Promise} promise Promesse en cour d'éxécution
+   * @param {string} frame_id Id de la frame en cours
+   * @param {string} task Tâche en cours
+   * @param {boolean} changepage Si on charge la frame seulement ou si on l'affiche aussi
+   * @param {?Object<string, string>} args Arguments à ajouter en plus à l'url
+   * @param {Array} actions Ne pas utiliser
+   * @package
+   * @event
    */
   _first_load(promise, frame_id, task, changepage, args, actions) {
     let current = this._frames.get(task);
@@ -565,71 +753,53 @@ class Window {
     promise.resolve(this);
   }
 
-  _update_menu_button(task) {
-    $('#taskmenu')
-      .find('a')
-      .each((i, e) => {
-        e = $(e);
-        if (e.data('task') === task) {
-          if (!e.hasClass('selected')) e.addClass('selected');
-
-          e.attr('aria-disabled', true)
-            .attr('tabIndex', '-1')
-            .attr('aria-current', true);
-        } else {
-          e.removeClass('selected')
-            .attr('aria-disabled', false)
-            .attr('tabIndex', '0')
-            .attr('aria-current', false);
-        }
-      });
-
-    $('#otherapps')
-      .find('a')
-      .each((i, e) => {
-        e = $(e);
-        if (e.data('task') === task) {
-          if (!e.hasClass('selected')) e.addClass('selected');
-
-          e.attr('aria-disabled', true).attr('tabIndex', '-1');
-          $('#taskmenu a.more-options').addClass('selected');
-        } else {
-          e.removeClass('selected')
-            .attr('aria-disabled', false)
-            .attr('tabIndex', '0');
-        }
-      });
-
-    if ($('#otherapps a.selected').length === 0)
-      $('#taskmenu a.more-options').removeClass('selected');
-
-    $('#otherapps').css('display', 'none');
+  /**
+   * Génère la fenêtre en jshtml
+   * @package
+   * @returns {____JsHtml}
+   */
+  _generate_window() {
+    return MelHtml.start.mel_window(this._id).end();
   }
 
-  static UpdateNavUrl(url, top_context = false) {
-    (top_context ? top : window).history.replaceState({}, document.title, url);
-  }
-
-  static UpdateDocumentTitle(new_title, top_context = false) {
-    (top_context ? top : window).document.title = new_title;
-    $('.sr-document-title-focusable').text(document.title);
-  }
-
-  static UrlFromTask(task) {
-    return rcmail.get_task_url(
-      task,
-      window.location.origin + window.location.pathname,
+  /**
+   * Génère la div qui contiendra les fenêtre en jshtml
+   * @package
+   * @returns {____JsHtml}
+   */
+  _generate_layout_frames() {
+    return (
+      MelHtml.start
+        .div({ id: 'layout-frames' })
+        //.css('display', 'none')
+        .end()
     );
   }
 
-  static GetTaskTitle(task) {
-    return $(
-      `#layout-menu a[data-task="${task}"], #otherapps a[data-task="${task}"]`,
-    )
-      .find('.inner, .button-inner')
-      .text();
+  /**
+   * Trigger un évènement rcmail et MelObject
+   * @private
+   * @param {string} key Clé du listener
+   * @param {Array} args Arguments
+   * @returns {Window} Chaînage
+   */
+  _trigger_event(key, args) {
+    FrameManager.Helper.trigger_event(key, args);
+    rcmail.triggerEvent(key, args);
+    return this;
   }
 
+  /**
+   * Change de frame.
+   *
+   * Si la frame n'existe pas la créer, sinon l'ouvre.
+   * @param {string} task Tâche à ouvrir
+   * @param {Object} param1
+   * @param {boolean} [param1.changepage=true] Si on charge la frame en arrière plan ou non
+   * @param {?Object<string, string>} [param1.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @return {Promise}
+   * @async
+   */
   async switch_frame(task, { changepage = true, args = null, actions = [] }) {
     if (changepage && this.is_hidden()) this.show();
 
@@ -655,6 +825,7 @@ class Window {
         .text(Window.GetTaskTitle(task));
     }
 
+    //Focus le titre de la frame, le cas échéant, le titre de la page
     if (changepage) {
       this._current_frame.$frame.focus();
 
@@ -680,11 +851,16 @@ class Window {
           .focus();
       }
 
+      //Gestion du multi-fenêtre
       if (this.has_other_window()) $('.mel-windows').addClass('multiple');
       else $('.mel-windows').removeClass('multiple');
     }
   }
 
+  /**
+   * Sélectionne la fenêtre
+   * @returns {Window} Chaîne
+   */
   select() {
     if (this._can_be_selected) {
       this.get_window()
@@ -695,60 +871,120 @@ class Window {
     return this;
   }
 
+  /**
+   * Déselectionne la fenêtre
+   * @returns {Window} Chaîne
+   */
   unselect() {
     this.get_window().removeClass('selected');
     return this;
   }
 
+  /**
+   * Vérifie si la fenêtre est séléctionnée ou non
+   * @returns {Boolean}
+   */
   is_selected() {
     return this.get_window().hasClass('selected');
   }
 
+  /**
+   * Active le tag "remove_on_change".
+   *
+   * Lorsque le tag est activé, si il y a un change de frame, on supprime les autres fenêtre ayant ce tag d'activé.
+   * @returns {Window} Chaînage
+   */
   set_remove_on_change() {
     this._remove_on_change = true;
     return this;
   }
 
+  /**
+   * Désactive le tag "remove_on_change".
+   *
+   * Lorsque le tag est activé, si il y a un change de frame, on supprime les autres fenêtre ayant ce tag d'activé.
+   * @returns {Window} Chaînage
+   */
   unset_remove_on_change() {
     this._remove_on_change = false;
     return this;
   }
 
+  /**
+   * Vérifie l'état du tag "remove_on_change".
+   *
+   * Lorsque le tag est activé, si il y a un change de frame, on supprime les autres fenêtre ayant ce tag d'activé.
+   * @returns {boolean}
+   */
   is_remove_on_change() {
     return this._remove_on_change;
   }
 
+  /**
+   * Active le fait que la feneêtre ne peut pas être séléctionnée
+   * @returns {Window} Chaînage
+   */
   set_cannot_be_select() {
     this._can_be_selected = false;
     return this;
   }
 
+  /**
+   * Active le fait que la fenêtre peut être séléctionnée
+   * @returns {Window} Chaînage
+   */
   set_can_be_select() {
     this._can_be_selected = true;
     return this;
   }
 
+  /**
+   * Vérifie si la fenêtre peut être séléctionnée
+   * @returns {Boolean}
+   */
   can_be_selected() {
     return this._can_be_selected ?? true;
   }
 
+  /**
+   * Vérifie si il y a d'autres fenêtres
+   * @returns {boolean}
+   */
   has_other_window() {
     return $('#layout-frames .mel-windows').length > 1;
   }
 
+  /**
+   * Récupère l'id de la fenêtre
+   * @returns {string}
+   */
   get_window_id() {
     return `mel-window-${this._id}`;
   }
 
+  /**
+   * Récupère la fenêtre
+   * @returns {external:jQuery}
+   */
   get_window() {
     return $(`#${this.get_window_id()}`);
   }
 
+  /**
+   * Récupère la frame
+   * @param {string} task Une frame spécifique ou celle en cours.
+   * @returns {external:jQuery}
+   */
   get_frame(task = null) {
     const frame = !task ? this._current_frame : this._frames.get(task);
     return frame.$frame;
   }
 
+  /**
+   * Supprime une frame
+   * @param {string} task Tâche à supprimer
+   * @returns  {Window} Chaînage
+   */
   remove_frame(task) {
     let frame = this._frames.get(task);
     this._frames.remove(task);
@@ -757,98 +993,203 @@ class Window {
     return this;
   }
 
+  /**
+   * Supprime la fenêtre
+   * @returns {Window} Chaîne
+   */
   delete() {
     this.get_window().remove();
     return this;
   }
 
+  /**
+   * Change l'id de la feneêtre
+   * @param {number | string} new_id Nouvelle id
+   * @returns {Window} Chaînage
+   */
   update_id(new_id) {
     this.get_window().attr('id', `mel-window-${new_id}`);
     this._id = new_id;
     return this;
   }
 
+  /**
+   * Vérifie si une frame lié à une tâche éxiste
+   * @param {string} task  Tâche
+   * @returns {boolean}
+   */
   has_frame(task) {
     return this._frames.has(task);
   }
 
+  /**
+   * Cache la fenêtre
+   * @returns {Window} Chaîne
+   */
   hide() {
     this.get_window().css('display', 'none');
 
     return this;
   }
 
+  /**
+   * Affiche la fenêtre
+   * @returns {Window} Chaîne
+   */
   show() {
     this.get_window().css('display', EMPTY_STRING);
 
     return this;
   }
 
+  /**
+   * Vérifie si la fenêtre est affiché ou non
+   * @returns {boolean} Chaîne
+   */
   is_hidden() {
     return this.get_window().css('display') === 'none';
   }
 
+  /**
+   * Ajoute un tag à la fenêtre.
+   *
+   * Les tags sont des attributs `data` ajouté à la balise, il ont la forme :
+   *
+   * `data-ftag-${tag_name}=true`
+   * @param {string} tag_name Nom du tag
+   * @returns {Window}
+   */
   add_tag(tag_name) {
     this.get_window().attr(`data-ftag-${tag_name}`, true);
 
     return this;
   }
 
+  /**
+   * Supprime un tag à la fenêtre
+   * @param {string} tag_name Nom du tag
+   * @returns {Window} Chaîne
+   */
   remove_tag(tag_name) {
     this.get_window().removeAttr(`data-ftag-${tag_name}`);
 
     return this;
   }
 
+  /**
+   * Vérifie si un tag existe
+   * @param {string} tag_name Nom du tag
+   * @returns {boolean}
+   */
   has_tag(tag_name) {
     return this.get_window().attr(`data-ftag-${tag_name}`) ?? false;
   }
 
-  _generate_window() {
-    return MelHtml.start.mel_window(this._id).end();
+  /**
+   * Met à jours l'url
+   * @param {string} url Nouvelle url
+   * @param {boolean} [top_context=false] Si on change l'url du document en cours ou du document en top.
+   * @static
+   */
+  static UpdateNavUrl(url, top_context = false) {
+    (top_context ? top : window).history.replaceState({}, document.title, url);
   }
 
-  _generate_layout_frames() {
-    return (
-      MelHtml.start
-        .div({ id: 'layout-frames' })
-        //.css('display', 'none')
-        .end()
+  /**
+   * Met à jours le titre du document ou de l'onglet.
+   *
+   * Met aussi à jours le titre focusable.
+   * @param {string} new_title Nouveau titre
+   * @param {boolean} [top_context=false] Si on change l'url du document en cours ou du document en top.
+   * @static
+   */
+  static UpdateDocumentTitle(new_title, top_context = false) {
+    (top_context ? top : window).document.title = new_title;
+    $('.sr-document-title-focusable').text(document.title);
+  }
+
+  /**
+   * Créer une url depuis une tâche
+   * @param {string} task Tâche
+   * @returns {string} Nouvelle url
+   * @static
+   */
+  static UrlFromTask(task) {
+    return rcmail.get_task_url(
+      task,
+      window.location.origin + window.location.pathname,
     );
   }
 
-  _trigger_event(key, args) {
-    FrameManager.Helper.trigger_event(key, args);
-    rcmail.triggerEvent(key, args);
-    return this;
+  /**
+   * Récupère le titre depuis une tâche
+   * @param {string} task
+   * @returns {external:jQuery}
+   */
+  static GetTaskTitle(task) {
+    return $(
+      `#layout-menu a[data-task="${task}"], #otherapps a[data-task="${task}"]`,
+    )
+      .find('.inner, .button-inner')
+      .text();
   }
 }
 
+/**
+ * @class
+ * @classdesc Classe principale qui gère la gestion des frames. Contient une liste de fenêtres.
+ */
 class FrameManager {
   constructor() {
     this._init()._main();
   }
 
+  /**
+   * @private
+   * @returns {FrameManager}
+   */
   _init() {
     /**
      * Liste des fenêtres
-     *
+     * @package
      * @type {BaseStorage<Window>}
      */
     this._windows = new BaseStorage();
     /**
      * Fenêtre en cours
-     * @private
+     * @package
      * @type {Window}
      */
     this._selected_window = null;
 
+    /**
+     * Si le mutliframe gérer par l'utilisateur est actif ou non
+     * @package
+     * @type {string}
+     */
     this._manual_multi_frame_enabled = true;
 
-    this._modes = {}; //new BaseStorage();
+    /**
+     * Liste des modes de fenêtrage
+     * @type {Object<string, Function>}
+     * @package
+     */
+    this._modes = {};
 
+    /**
+     * Liste des attaches.
+     *
+     * Les attaches sont des actions supplémentaires qui peuvent "parasiter" des actions du changement de frame.
+     * @type {Object<string, Function>}
+     * @package
+     */
     this._attaches = {};
 
+    /**
+     * Raccourcis vers layout-frames
+     * @readonly
+     * @type {external:jQuery}
+     */
     this.$layout_frames = null;
 
     Object.defineProperties(this, {
@@ -860,29 +1201,94 @@ class FrameManager {
     return this;
   }
 
+  /**
+   * Cache le layout-content.
+   * @private
+   */
   _main() {
     if (rcmail.env.task === 'bnum')
       $('#layout-content').addClass('hidden').css('display', 'none');
   }
 
+  /**
+   * Génère le menu multifenêtre
+   * @package
+   * @param {external:jQuery} $element
+   * @returns {any}
+   */
+  _generate_menu($element) {
+    const task = $element.data('task');
+    const max_frame_goal = this._windows.length >= MAX_FRAME;
+    const button_disabled = !this._manual_multi_frame_enabled || max_frame_goal;
+    return MelHtml.start
+      .div({
+        class: 'btn-group-vertical',
+        role: 'group',
+        'aria-label': 'Actions supplémentaires',
+      })
+      .button({ class: 'btn btn-secondary' })
+      .attr(
+        'onclick',
+        function onclick(task_to_open) {
+          open(FrameManager.Helper.url(task_to_open, {}));
+        }.bind(this, task),
+      )
+      .text('Ouvrir dans un nouvel onglet')
+      .end()
+      .button({ class: 'btn btn-secondary' })
+      .attr('onclick', this.open_another_window.bind(this, task))
+      .addClass(button_disabled ? 'disabled' : 'not-disabled')
+      .attr(
+        button_disabled ? 'disabled' : 'not-disabled',
+        button_disabled ? 'disabled' : true,
+      )
+      .text('Ouvrir dans une nouvelle colonne')
+      .end()
+      .end()
+      .generate()
+      .get(0);
+  }
+
+  /**
+   * Ajout un tag aux layout-frames.
+   *
+   * Les tags ont le format `data-tag-${tag}`.
+   * @param {string} tag
+   */
   add_tag(tag) {
-    let $layout = $('#layout-frames');
+    let $layout = this.$layout_frames;
     if ($layout.length) {
       $layout.attr(`data-tag-${tag}`, 1);
     }
   }
 
+  /**
+   * Supprime un tag aux layout-frames
+   * @param {string} tag
+   */
   remove_tag(tag) {
-    let $layout = $('#layout-frames');
+    let $layout = this.$layout_frames;
     if ($layout.length) {
       $layout.removeAttr(`data-tag-${tag}`);
     }
   }
 
+  /**
+   * Change de frame.
+   *
+   * Soit une fenêtre précise soit celle en cour.
+   * @param {string} task Tâche à afficher
+   * @param {Object} param1
+   * @param {boolean} [param1.changepage=true] Si on charge la frame en arrière plan ou non
+   * @param {?Object<string, string>} [param1.args=null] Arguments - sauf la tâche - de la l'url à ajouter à la source de la frame
+   * @param {?number} [param1.wind=null] Id de la fenêtre à changer. Si null, celle en cours.
+   * @returns {Promise}
+   */
   async switch_frame(
     task,
     { changepage = true, args = null, actions = [], wind = null },
   ) {
+    //Action à faire avant le changement de frame
     let quit =
       this.call_attach(
         'switch_frame',
@@ -940,10 +1346,17 @@ class FrameManager {
       });
   }
 
+  /**
+   * Vérifie si il y a plusieurs fenêtres
+   * @returns {boolean}
+   */
   has_multiples_windows() {
     return this._selected_window.has_other_window();
   }
 
+  /**
+   * Ajoute les actions sur les boutons de navigation principale
+   */
   add_buttons_actions() {
     let $it;
 
@@ -994,6 +1407,10 @@ class FrameManager {
     }
   }
 
+  /**
+   * Désélectionne toute les fenêtres
+   * @returns {FrameManager} Chaînage
+   */
   unselect_all() {
     for (const iterator of this._windows) {
       iterator.value.unselect();
@@ -1002,6 +1419,11 @@ class FrameManager {
     return this;
   }
 
+  /**
+   * Sélectionne une fenêtre
+   * @param {number} id Id de la fenêtre
+   * @returns {FrameManager} Chaînage
+   */
   select_window(id) {
     {
       const tmp_window = this._windows.get(id).select();
@@ -1020,6 +1442,11 @@ class FrameManager {
     return this;
   }
 
+  /**
+   * Supprime une fenâtre
+   * @param {number} id id de la fenêtre à supprimer
+   * @returns {FrameManager} Chaînage
+   */
   delete_window(id) {
     this._windows.get(id).delete();
     this._windows.remove(id);
@@ -1047,21 +1474,35 @@ class FrameManager {
     return this;
   }
 
+  /**
+   * Ajoute un mode.
+   * @param {string} name Nom du mode
+   * @param {function} callback Callback du mode
+   * @returns {FrameManager} Chaînage
+   */
   add_mode(name, callback) {
-    this._modes[name] = callback; //.add(name, callback);
-
+    this._modes[name] = callback;
     return this;
   }
 
+  /**
+   * Démarre un mode
+   * @param {string} name Nom du mode
+   * @param  {...any} args
+   * @returns {any}
+   */
   start_mode(name, ...args) {
-    const func = this._modes[name]; //.get(name);
+    const func = this._modes[name];
 
-    if (func) {
-      return func(...args);
-    }
-    //return this._modes.get(name, () => {})(...args);
+    if (func) return func(...args);
   }
 
+  /**
+   * Créer une fenêtre
+   * @param {string | number} uid Id de la fenêtre
+   * @param {?external:jQuery} $parent Element parent
+   * @returns {{win:external:jQuery, $parent:external:jQuery}}
+   */
   create_window(uid, $parent = null) {
     let win = new Window(uid);
 
@@ -1077,39 +1518,12 @@ class FrameManager {
     };
   }
 
-  _generate_menu($element) {
-    const task = $element.data('task');
-    const max_frame_goal = this._windows.length >= MAX_FRAME;
-    const button_disabled = !this._manual_multi_frame_enabled || max_frame_goal;
-    return MelHtml.start
-      .div({
-        class: 'btn-group-vertical',
-        role: 'group',
-        'aria-label': 'Actions supplémentaires',
-      })
-      .button({ class: 'btn btn-secondary' })
-      .attr(
-        'onclick',
-        function onclick(task_to_open) {
-          open(FrameManager.Helper.url(task_to_open, {}));
-        }.bind(this, task),
-      )
-      .text('Ouvrir dans un nouvel onglet')
-      .end()
-      .button({ class: 'btn btn-secondary' })
-      .attr('onclick', this.open_another_window.bind(this, task))
-      .addClass(button_disabled ? 'disabled' : 'not-disabled')
-      .attr(
-        button_disabled ? 'disabled' : 'not-disabled',
-        button_disabled ? 'disabled' : true,
-      )
-      .text('Ouvrir dans une nouvelle colonne')
-      .end()
-      .end()
-      .generate()
-      .get(0);
-  }
-
+  /**
+   * Ouvre une nouvelle fenêtre
+   * @param {string} task
+   * @param {?Object<string, string>} [args=null]
+   * @returns {Promise}
+   */
   async open_another_window(task, args = null) {
     if (this._windows.length >= MAX_FRAME) {
       BnumMessage.DisplayMessage(
@@ -1127,48 +1541,94 @@ class FrameManager {
     }
   }
 
+  /**
+   * Attache une action
+   * @param {string} action Nom de l'action
+   * @param {Function} callback
+   * @returns {Window} Chaînage
+   */
   attach(action, callback) {
     this._attaches[action] = callback;
 
     return this;
   }
 
+  /**
+   * Supprime une action
+   * @param {string} action Action à supprimer
+   * @returns {Window} Chaînage
+   */
   detach(action) {
     return this.attach(action, null);
   }
 
+  /**
+   * Appèle une action
+   * @param {string} action Action à appeller
+   * @param  {...any} args
+   * @returns {*}
+   */
   call_attach(action, ...args) {
     return this._attaches[action]?.(...args);
   }
 
+  /**
+   * Vérifie si une frame de la fenêtre séléctionnée éxiste
+   * @param {string} task
+   * @returns {boolean}
+   */
   has_frame(task) {
     return this._selected_window.has_frame(task);
   }
 
+  /**
+   * Désactive le fait qu'un utilisateur puisse lancer plusieurs fenêtres
+   * @returns {Window} Chaînage
+   */
   disable_manual_multiframe() {
     this._manual_multi_frame_enabled = false;
     return this;
   }
 
+  /**
+   * Active le fait qu'un utilisateur puisse lancer plusieurs fenêtres
+   * @returns {Window} Chaînage
+   */
   enable_manual_multiframe() {
     this._manual_multi_frame_enabled = true;
     return this;
   }
 
+  /**
+   * Vérifie le fait qu'un utilisateur puisse lancer plusieurs fenêtres
+   * @returns {boolean}
+   */
   manual_multi_frame_enabled() {
     return this._manual_multi_frame_enabled;
   }
 
+  /**
+   * Démarre un multi-fenêtre custom. CAD que la barre au dessus de la fenêtre ne va pas s'afficher.
+   * @returns {Window} Chaînage
+   */
   start_custom_multi_frame() {
     $('body').addClass('multiframe-header-disabled');
     return this;
   }
 
+  /**
+   * Arrête un multi-fenêtre custom.
+   * @returns {Window} Chaînage
+   */
   stop_custom_multi_frame() {
     $('body').removeClass('multiframe-header-disabled');
     return this;
   }
 
+  /**
+   * Cache toute les fenêtres sauf celle qui est séléctionnée
+   * @returns {Window} Chaînage
+   */
   hide_except_selected() {
     for (const { key, value } of this._windows) {
       if (this._selected_window._id !== value._id) value.hide();
@@ -1179,6 +1639,10 @@ class FrameManager {
     return this;
   }
 
+  /**
+   * Supprime toute les fenêtres sauf celle qui est séléctionnée
+   * @returns {Window} Chaînage
+   */
   close_except_selected() {
     let uid;
     while (this._windows.length > 1) {
@@ -1192,6 +1656,10 @@ class FrameManager {
     return this;
   }
 
+  /**
+   * Supprime toute les fenêtres aux changement de frame
+   * @returns {Window} Chaînage
+   */
   close_windows_to_remove_on_change() {
     while (
       MelEnumerable.from(this._windows)
@@ -1208,14 +1676,27 @@ class FrameManager {
     return this;
   }
 
+  /**
+   * Récupère la fenêtre courante
+   * @returns {Window}
+   */
   get_window() {
     return this._selected_window;
   }
 
+  /**
+   * Récupère la frame courante
+   * @param {?string} task
+   * @returns {external:jQuery}
+   */
   get_frame(task = null) {
     return this._selected_window.get_frame(task);
   }
 
+  /**
+   * Récupère la frame courante
+   * @returns {FrameData}
+   */
   current_frame() {
     return this.get_window()._current_frame;
   }
@@ -1243,7 +1724,7 @@ FrameManager._helper = null;
 /**
  * @static
  * @readonly
- * @type {MelObject}
+ * @type {FrameManagerWrapperHelper}
  */
 FrameManager.Helper = null;
 Object.defineProperty(FrameManager, 'Helper', {
@@ -1262,7 +1743,7 @@ Object.defineProperty(FrameManager, 'Helper', {
 
 /**
  * @class
- * @classdesc
+ * @classdesc Wrapper d'instance
  */
 class FrameManagerWrapper {
   constructor() {

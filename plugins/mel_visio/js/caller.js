@@ -1,3 +1,4 @@
+//Lance la visio sans passer par la demande de clé
 (async () => {
   const { FramesManager } = await loadJsModule(
     'mel_metapage',

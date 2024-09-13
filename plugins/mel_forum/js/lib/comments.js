@@ -345,25 +345,13 @@ async displaySingleComment(comment) {
  *   pour afficher toutes les options dans certains navigateurs.
  * - Si le conteneur n'est pas trouvé, un message d'erreur est affiché dans la console.
  */
-toggleSelect(uid) {
-  let selectContainer = $('#select-container-' + uid);
+toggleMenu(uid) {
+  let selectContainer = $('#context-menu-' + uid);
 
   // Vérifier si le conteneur du select existe
   if (selectContainer.length) {
     // Bascule l'affichage du conteneur
     selectContainer.toggleClass('hidden');
-
-    // Si le conteneur devient visible, on déclenche le focus sur le select
-    if (!selectContainer.hasClass('hidden')) {
-      let selectElement = selectContainer.find('select');
-      if (selectElement.length) {
-        selectElement.focus(); // Mettre le focus sur le select
-        // Simule un clic pour ouvrir le select dans certains navigateurs
-        selectElement[0].size = selectElement.find('option').length; // Force à afficher toutes les options
-      }
-    }
-  } else {
-    console.error('Select container not found for UID:', uid);
   }
 }
 
@@ -445,13 +433,29 @@ toggleSelect(uid) {
             .span({ class: 'ml-2' }).text('répondre').end('span')
           .end('div')
           .div({ class: 'reaction-item' })
-            .span({ class: 'icon', 'data-icon': 'more_horiz', onclick: this.toggleSelect.bind(this, this.uid) }).end('span')
-            .div({ id: 'select-container-' + this.uid, class: 'select-container hidden' }) 
-              .select()
-                .option({ value: 'cancel_comment' }).text('Supprimer le commentaire').end('option')
-                .option({ value: 'modify_comment' }).text('Modifier le commentaire').end('option')
-                .option({ value: '' }).text('etc').end('option')
-              .end('select')
+            .span({ class: 'icon', 'data-icon': 'more_horiz', onclick: this.toggleMenu.bind(this, this.uid) }).end('span')
+            .div({ id: 'context-menu-' + this.uid, class: 'forum-comment-context-menu hidden' }) 
+              .h3({ id: 'aria-label-groupoptions-smallmenu', class: 'voice' }).text('Menu du commentaire').end('h3')
+                .button({ class: 'comment-options-button edit-comment', title: 'Modifier le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'modify_comment', 'data-id': this.uid, })
+                .removeClass('mel-button')
+                .removeClass('no-button-margin')
+                .removeClass('no-margin-button')
+                .css({ border: 'none', outline: 'none', display: 'flex', alignItems: 'center' })
+                .icon('edit')
+                .end('icon')
+                .span({ class: 'comment-options-text', style: 'margin-left: 8px;' }) .text('Modifier le commentaire')
+                .end('span')
+                .end('button')
+                .button({ class: 'comment-options-button delete-comment', title: 'Supprimer le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'cancel_comment', 'data-uid': this.uid, })
+                .removeClass('mel-button')
+                .removeClass('no-button-margin')
+                .removeClass('no-margin-button')
+                .css({ border: 'none', outline: 'none', display: 'flex', alignItems: 'center' })
+                .icon('delete')
+                .end('icon')
+                .span({ class: 'comment-options-text', style: 'margin-left: 8px;' }) .text('Supprimer le commentaire')
+                .end('span')
+                .end('button')
             .end('div')
           .end('div')
         .end('div');

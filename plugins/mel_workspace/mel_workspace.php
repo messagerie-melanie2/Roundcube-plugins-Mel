@@ -58,7 +58,7 @@ class mel_workspace extends bnum_plugin
     }
 
     public function show_workspaces() {
-        //$this->load_script_module_from_plugin('mel_metapage', 'tab_web_element', '/js/lib/html/JsHtml/CustomAttributes/', false, 'head');
+        $this->add_texts('localization/index', true);
         $this->include_web_component()->Tabs();
 
         $this->rc()->output->send('mel_workspace.index');

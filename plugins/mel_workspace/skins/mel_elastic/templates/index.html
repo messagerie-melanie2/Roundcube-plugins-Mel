@@ -3,12 +3,7 @@
 
 <h1 class="voice"><roundcube:label name="workspaces" /></h1>
 
-<div
-  id="layout-content"
-  class="wsp-content wsp-index only-content"
-  style="overflow: auto"
-  role="main"
->
+<div id="layout-content" class="wsp-content wsp-index only-content" role="main">
   <!-- <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>-->
   <div
     class="wsp-header"
@@ -51,7 +46,12 @@
   </div>
 
   <div class="body" style="padding-bottom: 15px">
-    <bnum-tab data-navs="private, public, archived">
+    <bnum-tabs
+      data-navs="subscribed, publics, archived"
+      data-ex-label="mel_workspace"
+      data-description="Liste des différents espaces auquel on a souscris"
+      data-shadow="false"
+    >
       <!-- <:object name="private" data-linked-to="private" /> -->
     </bnum-tab>
   </div>

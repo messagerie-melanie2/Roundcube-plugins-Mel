@@ -1,0 +1,43 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /> - MCE MI</title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+<div data-role="page" class="jqm-contact">
+	<div data-role="header" data-position="fixed" data-theme="f" class="jqm-contact-header" data-tap-toggle="false">
+		<div style="display: none;" data-role="controlgroup" data-type="horizontal" class="jqm_contact_list_group ui-mini ui-btn-left">
+			<a href="#" class="jqm_contact_list ui-btn ui-link ui-icon-back ui-btn-icon-notext">List</a>
+		</div>
+		<roundcube:button command="list" type="link" class="rc_contact_back button back ui-link ui-btn-left ui-btn ui-icon-back ui-btn-icon-notext" label="back" />
+		<h1><roundcube:label name="contactproperties" /></h1>
+		<div data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">
+			<roundcube:button command="delete_mobile" type="link" title="deletecontact" class="listbutton delete ui-link ui-btn ui-icon-trash-o ui-btn-icon-notext" innerClass="inner" label="delete" condition="!ENV:readonly" />
+			<roundcube:button command="edit" class="button mainaction ui-link ui-btn ui-icon-edit ui-btn-icon-notext" label="editcontact" condition="!ENV:readonly" />
+		</div>
+	</div>
+
+	<div role="main" class="ui-content jqm-content">
+		<div id="contact-details" class="boxcontent">
+			<roundcube:if condition="strlen(env:sourcename)" />
+				<div id="sourcename"><roundcube:label name="addressbook" />: <roundcube:var name="env:sourcename" /></div>
+			<roundcube:endif />
+
+			<div id="contactphoto"><roundcube:object name="contactphoto" id="contactpic" placeholder="/images/contactpic.png" placeholderGroup="/images/contactgroup.png" /></div>
+			<roundcube:object name="contacthead" id="contacthead" />
+			<br style="clear:both" />
+
+			<div id="contacttabs" class="tabbed">
+				<roundcube:object name="contactdetails" />
+			</div>
+
+		</div>
+		<roundcube:button command="delete_mobile" type="link" title="deletecontact" class="listbutton delete ui-link ui-btn ui-btn-h ui-icon-trash-o ui-btn-icon-left ui-corner-all" innerClass="inner" label="delete" condition="!ENV:readonly" />
+	</div>
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

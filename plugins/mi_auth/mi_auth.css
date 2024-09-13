@@ -1,0 +1,16 @@
+#layout-menu{
+  top: 60px;
+}
+#mce_portail{
+  z-index: 1000 !important;
+}
+#mce_portail_app,
+#mce_portail_app *,
+#mce_portail_app ::after,
+#mce_portail_app ::before{
+  box-sizing: content-box;
+}
+#touchmelmenu{
+  left: 48px;
+  top: 5px;
+}

@@ -1,0 +1,22 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /> - MCE MI</title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+
+<div data-role="page" data-ajax="true" data-dom-cache="true" data-theme="f">
+	<div data-role="header" data-position="fixed" data-theme="f" id="jqm-messagerror-header" data-tap-toggle="false">
+		<roundcube:button command="list" type="link" class="button back ui-link ui-btn-left ui-btn ui-icon-back ui-btn-icon-notext" label="back" />
+		<h1></h1>
+	</div>
+	<div role="main" class="ui-content">
+		<div id="messagecontent" class="watermark"></div>
+	</div>
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

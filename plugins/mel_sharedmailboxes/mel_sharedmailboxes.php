@@ -61,6 +61,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         $this->mel = $this->rc->plugins->get_plugin('mel');
 
         // Hooks
+        $this->add_hook('startup',              array($this, 'startup'));
         $this->add_hook('storage_connect',      array($this, 'storage_connect'));
         $this->add_hook('managesieve_connect',  array($this, 'managesieve_connect'));
         $this->add_hook('identity_select',      array($this, 'identity_select'));
@@ -115,6 +116,23 @@ class mel_sharedmailboxes extends rcube_plugin {
         }
         // Chargement de l'ui
         $this->init_ui();
+    }
+
+    /**
+     * Traitement 
+     */
+    public function startup($args) {
+        if ($this->rc->task == 'mail') {
+            // set imap properties and session vars
+            if (!strlen($mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC, true))) {
+                $mbox = strlen($_SESSION['mbox']) ? $_SESSION['mbox'] : 'INBOX';
+            }
+
+            // always instantiate storage object (but not connect to server yet)
+            $this->rc->storage_init();
+
+            $this->rc->storage->set_folder($_SESSION['mbox'] = $mbox);
+        }
     }
 
     /**

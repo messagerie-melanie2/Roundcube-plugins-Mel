@@ -1,5 +1,6 @@
 <?php
 require dirname(__FILE__) . '/vendor/autoload.php';
+
 class mi_auth extends rcube_plugin
 {
   public $task = '.*';
@@ -8,21 +9,21 @@ class mi_auth extends rcube_plugin
     $this->rc = rcmail::get_instance();
     $this->load_config();
     $this->add_hook('unauthenticated', array($this, 'unauthenticated'));
-    $this->add_hook('authenticate', array($this, 'authenticate'));
     $this->add_hook('startup', array($this, 'startup'));
     $this->add_hook('logout_after', [$this, 'logout_after']);
+    $this->add_hook('login_failed', [$this, 'login_failed']);
     $this->add_texts('localization/', true);
     $this->authConf = $this->rc->config->get('mi_auth', []);
     $this->rc->output->set_env('portail_uri', $this->authConf['portail_uri']);
     $this->rc->output->set_env('mi_auth_api_uri', $this->authConf['api_uri']);
     $this->rc->output->set_env('mi_auth_courrielleur', false);
     $this->rc->output->set_env('mi_auth_verify', $this->authConf['api_uri_ext'] . 'token/verify');
-    $this->include_script('mi_auth.js');
   }
 
   function startup($args){
+    $this->include_script('mi_auth.js');
     if($this->rc->user->get_username()){
-
+      $this->rc->output->set_env('user_email', $this->rc->user->get_identity()['email']);
       $storage = $this->rc->autoselect_host();
       $res = $this->rc->login($this->rc->user->get_username(), $this->rc->get_user_password(), $storage, true);
 
@@ -76,33 +77,40 @@ class mi_auth extends rcube_plugin
       $password = json_decode(base64_decode($payload))->auth_token;
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mi_auth : startup userinfo");
       $userInfo = $client->userInfo($user_token);
-      if($userInfo == [] )
-        return $this->error($args);
-      $args['user'] = $userInfo['mceUid'];
-      $args['pass'] =  $password;
-      return $this->authenticate($args);
+
+      $args['user'] = $_POST['_user'] = $userInfo['mceUid'];
+      $args['pass'] =  $_POST['_pass'] = $password;
+      $args['timzone'] = $_POST['_timezone'] = $userInfo['timeZone'];
+      $args['action'] = 'login';
+      return $args;
     }
     return $args;
   }
 
-  private function error($args){
-    $this->include_stylesheet($this->local_skin_path() . '/error.css');
-    $this->rc->output->set_pagetitle($this->gettext('Problème de connexion'));
+  function login_failed($args){
     $args['task'] = 'error';
-    $msg = '<a href="'. $this->authConf['portail_uri'] .'">Retourner au portail</a>';
-    $this->rc->output->show_message($msg, 'error', null, true, 3600);
     $args['abort'] = true;
     $args['valid'] = false;
     $args['error'] = 503;
     $this->rc->log_login($args['user'], true, $args['error']);
+    $this->rc->kill_session();
+    $fileName = '/mi_auth_error.php';
+    $file = dirname(__FILE__) . $fileName;
 
+    if(is_file($file)){
+      $http = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME'];
+      $url = $http . '://' . $_SERVER['HTTP_HOST'] . '/plugins/mi_auth' . $fileName;
+      header("Location: " . $url, true, 302);
+      exit;
+    }
+    return $args;
+  }
+  private function error($args){
     $this->rc->plugins->exec_hook('login_failed', array(
           'code' => $args['error'],
           'host' => $args['host'],
           'user' => $args['user']
     ));
-    $this->rc->kill_session();
-    $this->rc->output->send('mi_auth.error');
     return $args;
   }
 
@@ -113,43 +121,6 @@ class mi_auth extends rcube_plugin
     $redirect_uri = rawurlencode($this->rc->url([], true, true) . '&' . $string);
     $redirect = $this->authConf['portail_uri'] . '?redirect_uri=' . $redirect_uri;
     header('Location: '. $redirect);
-    return $args;
-  }
-
-  function authenticate($args){
-    if(!isset($_REQUEST['_action']))
-      return $args;
-
-    if(isset($_REQUEST['_action']) AND ($_REQUEST['_action'] !== 'portailutilisateur'))
-      return $args;
-
-    mel_logs::get_instance()->log(mel_logs::DEBUG, "mi_auth : authenticate " . $args['pass']);
-    $args['cookiecheck'] = true;
-    mel_logs::get_instance()->log(mel_logs::DEBUG, "mi_auth : user " . json_encode($args, JSON_PRETTY_PRINT));
-    try{
-      $storage = $this->rc->autoselect_host();
-      if($this->rc->login($args['user'], $args['pass'], $storage, true)){
-        $this->rc->session->remove('temp');
-        $this->rc->session->regenerate_id(false);
-        $this->rc->session->set_auth_cookie();
-        $this->rc->log_login();
-      }
-      $req = $_REQUEST;
-      if(!isset($req['_task']))
-        $req['_task'] = 'mail';
-      if(($req['_task'] == 'logout') OR ($req['_task'] == 'login'))
-        $req['_task'] = 'mail';
-      if(isset($req['_portail_admin']))
-        unset($req['_portail_admin']);
-      if(isset($req['_action']) AND ($req['_action'] == 'portailutilisateur'))
-        unset($req['_action']);
-      $redir = $this->rc->plugins->exec_hook('login_after', $req);
-      $q = http_build_query($req);
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "mi_auth : redir" . json_encode($redir, JSON_PRETTY_PRINT));
-      header('Location: ./?' . $q);
-    }catch(\Throwable $e){
-      $this->error($args);
-    }
     return $args;
   }
 

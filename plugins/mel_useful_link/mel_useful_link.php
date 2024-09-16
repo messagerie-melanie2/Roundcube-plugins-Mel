@@ -88,7 +88,7 @@ class mel_useful_link extends bnum_plugin
     if (empty($personal_useful_links)) {
       if (empty($new_personal_useful_links)) {
         //Si aucun lien, on met les liens par défaut
-        $this->rc->user->save_prefs(array('new_personal_useful_links' => $this->get_default_link()));
+        $this->rc->user->save_prefs(array('new_personal_useful_links' => $new_personal_useful_links));
       } else {
         //On converti les images qui contenait une icone
         $this->convert_image_icon($new_personal_useful_links);
@@ -98,6 +98,8 @@ class mel_useful_link extends bnum_plugin
         $this->convert_old_links($personal_useful_links);
       }
     }
+
+    $this->check_pinned_link();
   }
 
   /**
@@ -113,9 +115,51 @@ class mel_useful_link extends bnum_plugin
   }
 
   /**
+   * Récupère et les liens épinglés qui ne sont pas affichés
+   * 
+   * @return MelLink[]
+   */
+  public function check_pinned_link()
+  {
+    $created_default_useful_links = $this->rc->config->get('created_default_useful_links', []);
+    $new_personal_useful_links = $this->rc->config->get('new_personal_useful_links', []);
+    $default_links = $this->get_default_link();
+
+    if (empty($created_default_useful_links)) {
+      $created_default_useful_links = $this->get_created_pinned_link();
+
+      $this->rc->user->save_prefs(array('created_default_useful_links' => $created_default_useful_links));
+    }
+
+    $changed_default = false;
+    $changed_links = false;
+    foreach ($created_default_useful_links as $id => $already_created) {
+      //Si l'utilisateur à déjà le lien dans sa liste
+      if (array_key_exists($id, $new_personal_useful_links)) {
+        //On met a true pour ne pas recréer le lien si l'utilisateur le supprime
+        if ($already_created === false) {
+          $created_default_useful_links[$id] = true;
+          $changed_default = true;
+        }
+        continue;
+      }
+
+      if ($already_created === true) continue;
+
+      $new_personal_useful_links = [$id => $default_links[$id]] + $new_personal_useful_links;
+      $created_default_useful_links[$id] = true;
+      $changed_links = true;
+      $changed_default = true;
+    }
+
+    if ($changed_default) $this->rc->user->save_prefs(array('created_default_useful_links' => $created_default_useful_links));
+    if ($changed_links) $this->rc->user->save_prefs(array('new_personal_useful_links' => $new_personal_useful_links));
+  }
+
+  /**
    * Converti les anciens liens vers des nouveaux objet MelLink
    *
-   * @param MelLink[] $personal_useful_links
+   * @param [] $personal_useful_links
    * 
    * @return void
    */
@@ -188,7 +232,7 @@ class mel_useful_link extends bnum_plugin
   /**
    * Récupère les liens utiles par défaut selon la configuration de l'utilisateur
    * 
-   * @return void
+   * @return []
    */
   public function get_default_link()
   {
@@ -210,6 +254,26 @@ class mel_useful_link extends bnum_plugin
     }
 
     return $newMelLinks;
+  }
+
+  /**
+   * Récupère les liens utiles épinglés selon la configuration de l'utilisateur
+   * 
+   * @return Array
+   */
+  public function get_created_pinned_link()
+  {
+    $items = $this->getCardsConfiguration(driver_mel::gi()->getUser()->dn);
+    $items = array_merge($items, $this->rc->config->get('portail_items_list', []));
+    $pinnedMelLinks = [];
+
+    foreach ($items as $id => $item) {
+      if ($item['pinned']) {
+        $pinnedMelLinks[$id] = false;
+      }
+    }
+
+    return $pinnedMelLinks;
   }
 
   /**

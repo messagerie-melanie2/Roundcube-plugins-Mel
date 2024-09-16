@@ -355,6 +355,19 @@ toggleMenu(uid) {
   }
 }
 
+toggleModifyComment(uid) {
+  let commentTextDiv = $('#comment-text-' + uid);
+  let editTextDiv = $('#edit-comment-' + uid);
+
+  // Basculer entre le content et le textarea de modification
+  commentTextDiv.toggleClass('hidden');
+  editTextDiv.toggleClass('hidden')
+}
+
+// Annuler la modification du commentaire
+cancelModifyComment(uid) {
+  this.toggleModifyComment(uid); // On remet l'affichage initial
+}
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
@@ -397,6 +410,9 @@ toggleMenu(uid) {
         return color;
     };
 
+    // Ajout de l'état "en cours d'édition"
+    let isEditing = false;
+
     let html = MelHtml.start
       .div({ id: 'comment-id-' + this.uid, class: 'row comment' })
         .div({ class: 'col-12' })
@@ -416,9 +432,25 @@ toggleMenu(uid) {
             .span({ class: 'ml-1' }).text(this.created).end('span')
           .end('div')
         .end('div')
-        .div({ class: 'forum-comment-text' })
+
+        // Texte du commentaire, visible par défaut et masqué par le textarea qui suit, lorsqu'on clique sur modifier un commentaire.
+        .div({ class: 'forum-comment-text', id: 'comment-text-' + this.uid })
           .p().text(this.content).end('p')
         .end('div')
+
+        // Textarea pour modification d'un commentaire, caché par défaut
+        .div({ class: 'forum-comment-edit hidden', id: 'edit-comment-' + this.uid })
+            .textarea({ id: 'edit-comment-textarea-' + this.uid, class: 'forum-comment-input', rows: '1' })
+            .text(this.content)
+            .end('textarea')
+            .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center' })
+              .button({ id: 'cancel-modify-comment', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.cancelModifyComment.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span')
+              .end('button')
+              .button({ id: 'submit-modify-comment', type: 'button', class:'modal-save-footer btn btn-secondary mel-button' }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span')
+              .end('button')
+            .end('div')  
+        .end('div')
+
         .div({ class: 'forum-comment-reactions' })
           .div({ class: likeClass })
             .span({ class: 'icon material-symbols-outlined', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) }).end('span')
@@ -436,7 +468,7 @@ toggleMenu(uid) {
             .span({ class: 'icon', 'data-icon': 'more_horiz', onclick: this.toggleMenu.bind(this, this.uid) }).end('span')
             .div({ id: 'context-menu-' + this.uid, class: 'forum-comment-context-menu hidden' }) 
               .h3({ id: 'aria-label-groupoptions-smallmenu', class: 'voice' }).text('Menu du commentaire').end('h3')
-                .button({ class: 'comment-options-button edit-comment', title: 'Modifier le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'modify_comment', 'data-id': this.uid, })
+                .button({ class: 'comment-options-button edit-comment', title: 'Modifier le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'modify_comment', 'data-id': this.uid, onclick: this.toggleModifyComment.bind(this, this.uid) })
                 .removeClass('mel-button')
                 .removeClass('no-button-margin')
                 .removeClass('no-margin-button')
@@ -472,7 +504,7 @@ toggleMenu(uid) {
     .end('div')
     .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center'})
       .button({ id: 'cancel-reply', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.toggleReplyForm.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span').end('button')
-      .button({ id: 'submit-reply', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button', onclick: this.saveReply.bind(this, this.content) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right'}).end('span').end('button')
+      .button({ id: 'submit-reply', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button', onclick: this.saveReply.bind(this, this.content) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span').end('button')
     .end('div')
     .end('div');
 

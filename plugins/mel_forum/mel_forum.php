@@ -552,7 +552,6 @@ public function update_post()
     $post->user_uid = driver_mel::gi()->getUser()->uid;
 
     // Sauvegarde de l'article
-    // TODO demander a thomas si comportement normal (this->hasChanged ne garde pas la valeur donc ->save() return null)
     $post_id = $post->save();
     if (!$post_id) {
         $post->load();

@@ -1,6 +1,7 @@
 .task-forum {
   /* Styles pour le conteneur avec une barre de défilement */
   /* Assure que le contenu n'est pas coupé et qu'une barre de défilement est visible si nécessaire */
+  /* Modifier l'apparence au survol des boutons */
 }
 .task-forum .scrollable-container {
   overflow-y: auto;
@@ -360,6 +361,7 @@
 }
 .task-forum .forum-comment .comment .forum-comment-reactions {
   margin-left: 40px;
+  position: relative;
   display: flex;
   align-items: center;
 }
@@ -587,11 +589,32 @@
   max-width: 100%;
 }
 .task-forum .forum-comment-context-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
   position: absolute;
-  bottom: -18px;
-  width: 199px;
+  bottom: -50px;
+  width: 198px;
+  height: 60px;
   border-radius: 10px;
   background-color: var(--bureau-card-background-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  z-index: 100;
+  z-index: 200;
+}
+.task-forum .comment-options-button {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background-color: var(--bureau-card-background-color);
+  /* Appliquer la même couleur de fond */
+  cursor: pointer;
+  color: inherit;
+  /* Conserver la couleur de texte définie par parent */
+  border-radius: 5px;
+}
+.task-forum .comment-options-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  /* Légère modification au survol */
 }

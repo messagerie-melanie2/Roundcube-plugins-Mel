@@ -342,6 +342,13 @@ class ResourceDialog extends MelObject {
     if (!(EventView.INSTANCE.parts.status._$field.val() || false))
       EventView.INSTANCE.parts.status._$field.val('FREE').change();
 
+    //Changer la réccurence
+    EventView.INSTANCE.parts.recurrence._$fakeField
+      .val(EMPTY_STRING)
+      .addClass('disabled')
+      .attr('disabled', 'disabled')
+      .change();
+
     if (!EventView.INSTANCE.is_jquery_dialog()) {
       //On remet la modale globale comme avant
       EventView.INSTANCE.get_dialog()

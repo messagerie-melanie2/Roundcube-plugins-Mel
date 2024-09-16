@@ -3032,7 +3032,15 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("frames.max_multi_frame", $this->get_config('max_multi_frame', 3));
 
         $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
-        $this->rc->output->send('mel_metapage.empty');
+
+        if (empty($_SESSION['user_id']))  
+        {
+            $this->rc->output->redirect([
+                '_task' => 'logout',
+                '_action' => '',
+            ]);
+        } 
+        else $this->rc->output->send('mel_metapage.empty');
     }
 
     private function set_plugin_env_exist() {

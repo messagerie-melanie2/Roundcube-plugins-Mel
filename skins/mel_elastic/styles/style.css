@@ -4721,3 +4721,6 @@ iframe.mm-frame {
 .boxwarning .custom-switch .custom-control-label {
   color: var(--modal-title-color);
 }
+.task-mel_metapage #eventfreebusy {
+  height: 100% !important;
+}

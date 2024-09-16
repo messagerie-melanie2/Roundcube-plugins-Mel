@@ -4497,3 +4497,6 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 .boxwarning .custom-switch .custom-control-label {
   color: var(--modal-title-color);
 }
+.task-mel_metapage #eventfreebusy {
+  height: 100% !important;
+}

@@ -1121,7 +1121,19 @@ public function update_comment()
     // Sauvegarde du commentaire
     $ret = $comment->save();
     if (!is_null($ret)) {
-        echo json_encode(['status' => 'success', 'message' => 'Commentaire mis à jour avec succès.']);
+        $modifyData = [
+            'content' => $comment->content,
+            'modified' => $comment->modified,
+            'user_name' => $user->name
+        ];
+
+        // Réponse JSON avec les modifications apportées au commentaire
+        header('Content-Type : application/json');
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Commentaire mis à jour avec succès.'
+            'modify' => $modifyData
+        ]);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour du commentaire.']);
     }

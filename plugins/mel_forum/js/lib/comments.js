@@ -259,7 +259,6 @@ async saveReply() {
               $('#reply-form-' + this.uid).addClass('hidden');
 
               // Insérer le nouveau commentaire
-              debugger;
               this.displaySingleComment(response.comment);  
           } else {
               rcmail.display_message(response.message, 'error');
@@ -369,6 +368,56 @@ cancelModifyComment(uid) {
   this.toggleModifyComment(uid); // On remet l'affichage initial
 }
 
+/**
+ * Enregistre les modifications d'un commentaire et met à jour l'interface utilisateur en conséquence.
+ *
+ * @async
+ * @returns {Promise<void>} - Une promesse qui se résout lorsque la modification est enregistrée et l'interface mise à jour.
+ *
+ * Cette fonction récupère le contenu modifié du commentaire à partir d'une zone de texte spécifique, vérifie que le contenu n'est pas vide,
+ * puis envoie une requête pour enregistrer la modification. Si l'enregistrement est réussi :
+ * - Affiche un message de confirmation.
+ * - Cache le formulaire de modification.
+ * - Met à jour le texte du commentaire dans l'interface utilisateur.
+ * 
+ * En cas d'échec ou d'erreur lors de l'enregistrement :
+ * - Affiche un message d'erreur.
+ * - Enregistre l'erreur dans la console.
+ */
+async modifyComment(uid) {
+  const $textarea = $('#edit-comment-textarea-' + uid);
+  const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
+  if (updatedContent && updatedContent.trim() !== '') {
+    try {
+      const response = await mel_metapage.Functions.post(
+        mel_metapage.Functions.url('forum', 'update_comment'),
+        {
+          _uid: uid, // L'ID du commentaire
+          _content: updatedContent // Le nouveau contenu
+        }
+      );
+
+      if (response.status === 'success') {
+        rcmail.display_message(response.message, 'confirmation');
+
+        // Mettre à jour l'affichage du commentaire avec le nouveau contenu
+        $('#comment-content-' + uid).text(updatedContent);
+
+        // Fermer le formulaire de modification en ajoutant la classe 'hidden'
+        $('#edit-comment-form-' + uid).addClass('hidden');
+
+      } else {
+        rcmail.display_message(response.message, 'error');
+      }
+    } catch (error) {
+      rcmail.display_message("Une erreur est survenue lors de la mise à jour du commentaire.", 'error');
+      console.error("Erreur lors de la mise à jour du commentaire:", error);
+    }
+  } else {
+    rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
+  }
+}
+
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
  *
@@ -446,7 +495,7 @@ cancelModifyComment(uid) {
             .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center' })
               .button({ id: 'cancel-modify-comment', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.cancelModifyComment.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span')
               .end('button')
-              .button({ id: 'submit-modify-comment', type: 'button', class:'modal-save-footer btn btn-secondary mel-button' }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span')
+              .button({ id: 'submit-modify-comment', type: 'button', class:'modal-save-footer btn btn-secondary mel-button', onclick: this.modifyComment.bind(this, this.uid) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span')
               .end('button')
             .end('div')  
         .end('div')

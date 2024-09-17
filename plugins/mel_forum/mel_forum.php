@@ -1376,8 +1376,8 @@ public function get_all_comments_bypost()
                     'created' => $formatted_date,
                     'parent' => $comment->parent,
                     'children_number' => $comment->countChildren(),
-                    'likes' => $comment->countLikes(),
-                    'dislikes' => $comment->countDislikes(),
+                    'likes' => $comment->countLikes(Likes),
+                    'dislikes' => $comment->countLikes(Dislikes),
                     'current_user_reacted' => $current_user_reacted,
                 ];
             }

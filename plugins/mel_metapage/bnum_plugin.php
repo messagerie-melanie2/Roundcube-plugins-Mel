@@ -216,6 +216,20 @@ class WebComponnents {
         $this->_include_component('tab_web_element');
     }
 
+    public function ____METHODS____($what, ...$args) {
+        switch ($what) {
+            case '_include_component':
+                $name = $args[0];
+                $path = $args[1] ?? bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/';
+                $plugin = $args[2] ?? 'mel_metapage';
+                return $this->_include_component($name, $path, $plugin);
+            
+            default:
+                # code...
+                break;
+        }
+    }
+
     public static function Instance() {
         if (!isset(self::$_instance)) self::$_instance = new WebComponnents();
 

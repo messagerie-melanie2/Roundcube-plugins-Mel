@@ -1,0 +1,31 @@
+.workspace-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  .workspace-block-item {
+    box-shadow: var(--bureau-card-box-shadow);
+    border-radius: var(--bureau-card-border-radius);
+    background-color: var(--bureau-card-background-color);
+    padding: 22px;
+    margin-right: 5px;
+    margin-top: 5px;
+
+    width: 380px;
+    height: 380px;
+
+    .workspace-block-item-picture {
+      height: 123px;
+      display: flex;
+      justify-content: center;
+
+      .no-picture {
+        width: 110px;
+        height: 110px;
+        border-radius: 100%;
+        line-height: 64px;
+        font-size: x-large;
+        position: relative;
+      }
+    }
+  }
+}

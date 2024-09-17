@@ -385,6 +385,7 @@ cancelModifyComment(uid) {
  * - Enregistre l'erreur dans la console.
  */
 async modifyComment(uid) {
+  debugger;
   const $textarea = $('#edit-comment-textarea-' + uid);
   const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
   if (updatedContent && updatedContent.trim() !== '') {
@@ -401,10 +402,13 @@ async modifyComment(uid) {
         rcmail.display_message(response.message, 'confirmation');
 
         // Mettre à jour l'affichage du commentaire avec le nouveau contenu
-        $('#comment-content-' + uid).text(updatedContent);
+        $('#comment-text-' + uid).text(updatedContent);
 
         // Fermer le formulaire de modification en ajoutant la classe 'hidden'
-        $('#edit-comment-form-' + uid).addClass('hidden');
+        $('#edit-comment-' + uid).addClass('hidden');
+
+        // Rafraîchir les commentaires après les modifications
+        this.displayComments();
 
       } else {
         rcmail.display_message(response.message, 'error');

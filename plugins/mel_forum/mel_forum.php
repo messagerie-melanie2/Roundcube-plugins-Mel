@@ -1108,9 +1108,9 @@ public function update_comment()
         exit;
     }
 
-    // Vérifier si le commentaire existe
-    if (!$comment) {
-        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+    // Vérifier si l'utilisateur est bien l'auteur du commentaire
+    if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
+        echo json_encode(['status' => 'error', 'message' => 'Vous n\'êtes pas autorisé à modifier ce commentaire.']);
         exit;
     }
 
@@ -1128,10 +1128,10 @@ public function update_comment()
         ];
 
         // Réponse JSON avec les modifications apportées au commentaire
-        header('Content-Type : application/json');
+        header('Content-Type: application/json');
         echo json_encode([
             'status' => 'success',
-            'message' => 'Commentaire mis à jour avec succès.'
+            'message' => 'Commentaire mis à jour avec succès.',
             'modify' => $modifyData
         ]);
     } else {

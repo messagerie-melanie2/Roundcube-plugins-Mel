@@ -31,6 +31,7 @@ export class Manager extends MelObject {
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
   async displayComments() {
+    debugger;
     // Obtenir tous les commentaires du post
     let PostCommentManager = new PostCommentView(this.get_env('post_uid'),this.get_env('post_id'));
     let allComments = await PostCommentManager.getCommentByPost();
@@ -85,27 +86,7 @@ export class Manager extends MelObject {
 
 
 
-  /**
-   * Créé l'input qui permet d'ajouter un commentaire
-   */
-  addComment() {
-    let html = MelHtml.start;
-    html
-      .div({ class: 'row my-2 d-flex align-items-center' })
-      .img({
-        src: '',
-        alt: 'Image de Profil',
-        class: 'profile-image-custom ml-4',
-      })
-      .input({
-        type: 'text',
-        placeholder: 'Ajouter un commentaire',
-        class: 'comment-input-custom',
-        style: 'max-height: 40px',
-      })
-      .end('div')
-      .generate();
-  }
+ 
 
   /**
    * Affiche les commentaires sur la page web

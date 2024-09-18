@@ -484,6 +484,53 @@ async deleteComment(uid) {
   }
 }
 
+/**
+ * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
+ *
+ * Cette fonction construit dynamiquement le HTML d'un commentaire, en incluant les informations
+ * sur l'auteur, le contenu, la date de création, ainsi que les boutons de réaction (like, dislike, répondre).
+ * Le HTML est adapté en fonction des données du commentaire, comme le nombre de likes, dislikes, et réponses.
+ *
+ * - Les classes CSS sont déterminées pour indiquer si l'utilisateur a déjà réagi (like/dislike).
+ * - Le texte des réponses est ajusté pour être au singulier ou au pluriel en fonction du nombre de réponses.
+ * - Si le commentaire a des réponses, un élément pour afficher ou masquer les réponses est ajouté.
+ *
+ * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
+ */
+generateHtmlFromTemplate() {
+  let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
+  let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
+
+  // Détermination du pluriel ou du singulier pour "réponse(s)"
+  let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
+
+  // Générer les initiales de l'utilisateur pour l'image de profil
+  let getInitials = function(fullName) {
+    const names = fullName.split(' ');
+    if (names.length === 0) return '?'; // Aucun nom donné
+    const firstInitial = names[0][0] || '';
+    const lastInitial = names.length > 1 ? names[names.length - 1][0] : ''; // Garde seulement la dernière partie
+    return (firstInitial + lastInitial).toUpperCase();    
+  };
+
+
+  // Générer une couleur de fond aléatoire pour l'image de profil
+  let getRandomColor = function() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+  };
+
+  // Ajout de l'état "en cours d'édition"
+  let isEditing = false;
+
+  let template = document.querySelector('#comment-template').cloneNode();
+  template.querySelector('.forum-content-author').text(this.user_name);
+  return template.outerHTML;
+}
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
@@ -508,12 +555,12 @@ async deleteComment(uid) {
 
     // Générer les initiales de l'utilisateur pour l'image de profil
     let getInitials = function(fullName) {
-    const names = fullName.split(' ');
-    if (names.length === 0) return '?'; // Aucun nom donné
-    const firstInitial = names[0][0] || '';
-    const lastInitial = names.length > 1 ? names[names.length - 1][0] : ''; // Garde seulement la dernière partie
-    return (firstInitial + lastInitial).toUpperCase();
-};
+      const names = fullName.split(' ');
+      if (names.length === 0) return '?'; // Aucun nom donné
+      const firstInitial = names[0][0] || '';
+      const lastInitial = names.length > 1 ? names[names.length - 1][0] : ''; // Garde seulement la dernière partie
+      return (firstInitial + lastInitial).toUpperCase();    
+    };
 
 
     // Générer une couleur de fond aléatoire pour l'image de profil

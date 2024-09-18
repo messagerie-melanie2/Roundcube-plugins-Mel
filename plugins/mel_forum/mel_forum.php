@@ -1360,7 +1360,7 @@ public function get_all_comments_bypost()
                 // Formater la date
                 $formatted_date = $formatter->format($timestamp);
 
-                $comment->likes = null;
+                $count = ['like' => 0, 'dislike' => 0];
 
                 // Test si l'utilisateur courant a réagi au commentaire
                 $comment_reactions = $comment->listLikes();
@@ -1369,6 +1369,8 @@ public function get_all_comments_bypost()
                     if ($reaction->user_uid === driver_mel::gi()->getUser()->uid) {
                         $current_user_reacted = $reaction->like_type;
                     }
+
+                    $count[$reaction->like_type]++;
                 }
 
                 // Ajouter le commentaire au tableau des commentaires
@@ -1382,8 +1384,8 @@ public function get_all_comments_bypost()
                     'created' => $formatted_date,
                     'parent' => $comment->parent,
                     'children_number' => $comment->countChildren(),
-                    'likes' => $comment->countLikes(Likes),
-                    'dislikes' => $comment->countLikes(Dislikes),
+                    'likes' => $count['like'],
+                    'dislikes' => $count['dislike'],
                     'current_user_reacted' => $current_user_reacted,
                 ];
             }

@@ -1176,6 +1176,12 @@ public function delete_comment()
         exit;
     }
 
+    // Vérifier si l'utilisateur est bien l'auteur du commentaire
+    if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
+        echo json_encode(['status' => 'error', 'message' => 'Vous n\'êtes pas autorisé à supprimer ce commentaire.']);
+        exit;
+    }
+
     // Supprimer le commentaire
     $ret = $comment->delete();
     if (!is_null($ret)) {

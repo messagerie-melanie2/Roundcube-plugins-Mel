@@ -354,6 +354,16 @@ toggleMenu(uid) {
   }
 }
 
+/**
+ * Basculer l'affichage entre le texte du commentaire et le champ de texte de modification.
+ *
+ * Cette fonction permet d'afficher ou de masquer la section de modification du commentaire 
+ * en fonction de l'état actuel de l'affichage.
+ *
+ * @function toggleModifyComment
+ * @param {string} uid - L'identifiant unique du commentaire à modifier.
+ * @returns {void}
+ */
 toggleModifyComment(uid) {
   let commentTextDiv = $('#comment-text-' + uid);
   let editTextDiv = $('#edit-comment-' + uid);
@@ -363,9 +373,18 @@ toggleModifyComment(uid) {
   editTextDiv.toggleClass('hidden')
 }
 
-// Annuler la modification du commentaire
+/**
+ * Annule la modification du commentaire en rétablissant l'affichage initial.
+ *
+ * Cette fonction appelle `toggleModifyComment` pour basculer l'affichage 
+ * entre la section de texte et la section de modification.
+ *
+ * @function cancelModifyComment
+ * @param {string} uid - L'identifiant unique du commentaire dont la modification est annulée.
+ * @returns {void}
+ */
 cancelModifyComment(uid) {
-  this.toggleModifyComment(uid); // On remet l'affichage initial
+  this.toggleModifyComment(uid);
 }
 
 /**
@@ -385,7 +404,6 @@ cancelModifyComment(uid) {
  * - Enregistre l'erreur dans la console.
  */
 async modifyComment(uid) {
-  debugger;
   const $textarea = $('#edit-comment-textarea-' + uid);
   const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
   if (updatedContent && updatedContent.trim() !== '') {
@@ -421,6 +439,51 @@ async modifyComment(uid) {
     rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
   }
 }
+
+/**
+ * Supprime un commentaire spécifique après confirmation de l'utilisateur.
+ *
+ * Cette fonction envoie une requête à l'API de suppression du commentaire, 
+ * puis met à jour l'affichage en retirant le commentaire supprimé.
+ *
+ * @async
+ * @function deleteComment
+ * @param {string} uid - L'identifiant unique du commentaire à supprimer.
+ * @returns {void}
+ * @throws {Error} En cas d'échec de la suppression ou d'une erreur réseau.
+ */
+async deleteComment(uid) {
+  // Demander confirmation à l'utilisateur avant de supprimer
+  const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
+  
+  if (!confirmation) return;
+
+  try {
+    const response = await mel_metapage.Functions.post(
+      mel_metapage.Functions.url('forum', 'delete_comment'), // API de suppression
+      {
+        _uid: uid // L'ID du commentaire à supprimer
+      }
+    );
+
+    if (response.status === 'success') {
+      rcmail.display_message(response.message, 'confirmation');
+
+      // Supprimer le commentaire de l'affichage
+      $('#comment-id-' + uid).remove();
+
+      // Rafraîchir les commentaires si nécessaire
+      this.displayComments();
+
+    } else {
+      rcmail.display_message(response.message, 'error');
+    }
+  } catch (error) {
+    rcmail.display_message("Une erreur est survenue lors de la suppression du commentaire.", 'error');
+    console.error("Erreur lors de la suppression du commentaire:", error);
+  }
+}
+
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
@@ -531,7 +594,7 @@ async modifyComment(uid) {
                 .span({ class: 'comment-options-text', style: 'margin-left: 8px;' }) .text('Modifier le commentaire')
                 .end('span')
                 .end('button')
-                .button({ class: 'comment-options-button delete-comment', title: 'Supprimer le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'cancel_comment', 'data-uid': this.uid, })
+                .button({ class: 'comment-options-button delete-comment', title: 'Supprimer le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'cancel_comment', 'data-id': this.uid, onclick: this.deleteComment.bind(this, this.uid) })
                 .removeClass('mel-button')
                 .removeClass('no-button-margin')
                 .removeClass('no-margin-button')
@@ -661,7 +724,13 @@ class PostCommentView {
 }
 
 
-
+  /**
+ * Configure le bouton de sauvegarde pour soumettre un commentaire.
+ *
+ * Cette fonction associe un gestionnaire d'événements au bouton de sauvegarde 
+ * qui récupère le contenu du textarea et appelle la méthode `saveComment` 
+ * si le contenu n'est pas vide.
+ */
   _setupSaveButton() {
     const $saveButton = $('#submit-comment');
     const $textarea = $('#new-comment-textarea');
@@ -688,6 +757,19 @@ class PostCommentView {
     });
   }
 
+  /**
+ * Enregistre un nouveau commentaire et met à jour l'affichage.
+ *
+ * Cette fonction envoie le contenu du commentaire à l'API pour le créer, 
+ * puis réinitialise le champ de texte et rafraîchit la liste des commentaires 
+ * en cas de succès. En cas d'erreur, un message d'erreur est affiché.
+ *
+ * @async
+ * @function saveComment
+ * @param {string} content - Le contenu du commentaire à enregistrer.
+ * @returns {void}
+ * @throws {Error} En cas d'échec de l'enregistrement ou d'une erreur réseau.
+ */
 async saveComment(content) {
     try {
         const response = await mel_metapage.Functions.post(

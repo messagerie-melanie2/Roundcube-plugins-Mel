@@ -594,12 +594,14 @@ class Window {
         si le multi-fenêtre est activé, gérer la séléction de la fenêtre
       */
       current_frame.onload.push(() => {
-        let querry_content = this.get_frame()[0].contentWindow;
-        const _$ = querry_content.$;
+        let querry_content = this.get_frame()?.[0]?.contentWindow;
+        const _$ = querry_content?.$;
 
-        _$('#layout-menu').remove();
-        _$('.barup').remove();
-        _$('html').addClass('framed');
+        if (_$) {
+          _$('#layout-menu').remove();
+          _$('.barup').remove();
+          _$('html').addClass('framed');
+        }
 
         //Pas besoin d'aller plus loin si le multi-frame est désactivé
         if (!MULTI_FRAME_FROM_NAV_BAR) return;
@@ -648,7 +650,7 @@ class Window {
       //Création de la frame
       let tmp_frame = current_frame.create({ changepage, args, actions });
 
-      if (!changepage) tmp_frame.first().css('display', 'none');
+      //if (!changepage) tmp_frame.first().css('display', 'none');
 
       //La fenêtre est un webcomponent, on utilise les fonctions de celui-ci pour créer la frame
       //sinon, ça risque de ne pas ce comporter correctement
@@ -659,7 +661,7 @@ class Window {
       if (changepage) {
         this._current_frame = current_frame;
         this.select();
-      }
+      } else current_frame.hide();
 
       //Gestion si il y a d'autres fenêtres
       if (this.has_other_window()) $('.mel-windows').addClass('multiple');

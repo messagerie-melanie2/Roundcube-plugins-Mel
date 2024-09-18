@@ -1,6 +1,30 @@
+@border-size: 3px;
+
+:root {
+  --wsp-round-border-size: @border-size;
+}
+
 .workspace-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
+
+  .mode-list & {
+    justify-content: initial;
+
+    .workspace-block-item {
+      width: 100%;
+      height: unset;
+      flex-direction: row;
+      justify-content: unset;
+
+      .workspace-block-item-main {
+        display: flex;
+        width: 100%;
+        flex: 100%;
+      }
+    }
+  }
 
   .workspace-block-item {
     box-shadow: var(--bureau-card-box-shadow);
@@ -9,9 +33,18 @@
     padding: 22px;
     margin-right: 5px;
     margin-top: 5px;
+    margin-bottom: 20px;
 
     width: 380px;
     height: 380px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    position: relative;
 
     .workspace-block-item-picture {
       height: 123px;
@@ -25,6 +58,87 @@
         line-height: 64px;
         font-size: x-large;
         position: relative;
+      }
+
+      img {
+        width: 110px;
+        height: 110px;
+        border-radius: 100%;
+        border: solid thick;
+      }
+    }
+
+    .workspace-block-item-bottom {
+      height: 199px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      div {
+        text-align: center;
+      }
+
+      .workspace-block-item-tag {
+        height: 21px;
+      }
+
+      .workspace-block-item-description {
+        height: 63px;
+        overflow: auto;
+      }
+    }
+
+    .workspace-block-item-favorite {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+    }
+
+    .workspace-block-item-users {
+      display: flex;
+      justify-content: center;
+    }
+
+    .workspace-block-item-user {
+      margin-left: -20px;
+
+      .no-picture {
+        &:extend(.workspace-list
+          .workspace-block-item
+          .workspace-block-item-picture
+          .no-picture);
+
+        display: inline-block;
+        width: 42px;
+        height: 42px;
+        font-size: medium;
+      }
+
+      .workspace-block-item-user-number {
+        &:extend(.workspace-list
+          .workspace-block-item
+          .workspace-block-item-user
+          .no-picture);
+
+        background-color: var(--roundbadge-default-bckg-color);
+        border: solid var(--wsp-round-border-size);
+      }
+
+      img {
+        width: 42px;
+        height: 42px;
+        border-radius: 100%;
+        background-size: cover;
+        background-position: center;
+        border: solid var(--wsp-round-border-size);
+        filter: blur(0em);
+        transition: filter 0.5s;
+        object-fit: cover;
+
+        &[data-src] {
+          filter: blur(0.2em);
+          background-color: white;
+        }
       }
     }
   }

@@ -730,53 +730,54 @@ const mel_metapage = {
       args = null,
       actions = [],
     ) {
-      var busy;
-      if (changepage) busy = (top ?? window).rcmail.set_busy(true, 'loading');
+      await PageManager.SwitchFrame(frame, { changepage, args, actions });
+      // var busy;
+      // if (changepage) busy = (top ?? window).rcmail.set_busy(true, 'loading');
 
-      // if (frame === "webconf")
-      // {
-      //     var initial_change_page = changepage;
-      //     changepage = false;
+      // // if (frame === "webconf")
+      // // {
+      // //     var initial_change_page = changepage;
+      // //     changepage = false;
+      // // }
+
+      // // if (waiting)
+      // //   mel_metapage.Storage.set(
+      // //     mel_metapage.Storage.wait_frame_loading,
+      // //     mel_metapage.Storage.wait_frame_waiting,
+      // //   );
+
+      // (top ?? window).rcmail.env.can_change_while_busy = true;
+      // let promise = (top ?? window).mm_st_OpenOrCreateFrame(
+      //   frame,
+      //   changepage,
+      //   args,
+      //   actions,
+      // );
+
+      // if (waiting) await promise;
+      // // if (waiting) {
+      // //   await wait(
+      // //     () =>
+      // //       mel_metapage.Storage.get(
+      // //         mel_metapage.Storage.wait_frame_loading,
+      // //       ) !== mel_metapage.Storage.wait_frame_loaded,
+      // //   );
+      // //   mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
+      // // }
+
+      // // if (frame === "webconf")
+      // // {
+      // //     if (initial_change_page)
+      // //     {
+      // //         (top ?? window).mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
+      // //     }
+      // //     //this.update_refresh_thing();
+      // // }
+
+      // if (changepage && busy) {
+      //   (top ?? window).rcmail.set_busy(false, 'loading', busy);
+      //   busy = null;
       // }
-
-      // if (waiting)
-      //   mel_metapage.Storage.set(
-      //     mel_metapage.Storage.wait_frame_loading,
-      //     mel_metapage.Storage.wait_frame_waiting,
-      //   );
-
-      (top ?? window).rcmail.env.can_change_while_busy = true;
-      let promise = (top ?? window).mm_st_OpenOrCreateFrame(
-        frame,
-        changepage,
-        args,
-        actions,
-      );
-
-      if (waiting) await promise;
-      // if (waiting) {
-      //   await wait(
-      //     () =>
-      //       mel_metapage.Storage.get(
-      //         mel_metapage.Storage.wait_frame_loading,
-      //       ) !== mel_metapage.Storage.wait_frame_loaded,
-      //   );
-      //   mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
-      // }
-
-      // if (frame === "webconf")
-      // {
-      //     if (initial_change_page)
-      //     {
-      //         (top ?? window).mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
-      //     }
-      //     //this.update_refresh_thing();
-      // }
-
-      if (changepage && busy) {
-        (top ?? window).rcmail.set_busy(false, 'loading', busy);
-        busy = null;
-      }
 
       return this;
     },

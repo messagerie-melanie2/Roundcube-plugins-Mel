@@ -24,6 +24,18 @@ class HtmlCustomTag extends HTMLElement {
     });
   }
 
+  connectedCallback() {
+    this._p_main();
+  }
+
+  disconnectedCallback() {
+    this.destroy();
+  }
+
+  _p_main() {
+    return this;
+  }
+
   _p_start_construct() {
     return this.shadowEnabled() ? this.attachShadow({ mode: 'open' }) : this;
   }
@@ -77,6 +89,20 @@ class HtmlCustomTag extends HTMLElement {
     return this;
   }
 
+  text(text) {
+    if (HtmlCustomTag._p_text_callback)
+      return HtmlCustomTag._p_text_callback(text);
+    else return text;
+  }
+
+  createText(text) {
+    return document.createTextNode(this.text(text));
+  }
+
+  destroy() {
+    return this;
+  }
+
   static SetTextCallback(callback) {
     this._p_text_callback = callback;
   }
@@ -87,7 +113,10 @@ HtmlCustomTag._p_text_callback = (text) => rcmail.gettext(text);
 class BnumHtmlIcon extends HtmlCustomTag {
   constructor() {
     super();
+  }
 
+  _p_main() {
+    super._p_main();
     if (!this.getAttribute('class'))
       this.setAttribute('class', BnumHtmlIcon.HTML_CLASS);
 
@@ -96,6 +125,8 @@ class BnumHtmlIcon extends HtmlCustomTag {
 
     if (this.dataset['icon'])
       this.appendChild(document.createTextNode(this.dataset['icon']));
+
+    this.removeAttribute('data-icon');
   }
 }
 
@@ -104,7 +135,10 @@ BnumHtmlIcon.HTML_CLASS = MaterialIcon.html_class;
 class BnumHtmlSrOnly extends HtmlCustomTag {
   constructor() {
     super();
+  }
 
+  _p_main() {
+    super._p_main();
     const sr_only = 'sr-only';
 
     if (!this.classList.contains(sr_only)) this.classList.add(sr_only);
@@ -120,6 +154,10 @@ class BnumHtmlSeparate extends HtmlCustomTag {
 class BnumHtmlFlexContainer extends HtmlCustomTag {
   constructor() {
     super();
+  }
+
+  _p_main() {
+    super._p_main();
 
     this.style.display = 'flex';
   }
@@ -128,6 +166,10 @@ class BnumHtmlFlexContainer extends HtmlCustomTag {
 class BnumHtmlCenteredFlexContainer extends BnumHtmlFlexContainer {
   constructor() {
     super();
+  }
+
+  _p_main() {
+    super._p_main();
 
     this.style.justifyContent = 'center';
   }

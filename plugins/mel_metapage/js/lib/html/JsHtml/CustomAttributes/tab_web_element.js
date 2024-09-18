@@ -31,7 +31,7 @@ export class TabsElement extends HtmlCustomElement {
   constructor() {
     super();
 
-    this._init()._setup()._main();
+    this._init()._setup();
   }
 
   /**
@@ -127,6 +127,12 @@ export class TabsElement extends HtmlCustomElement {
     element_selected = null;
 
     return this;
+  }
+
+  _p_main() {
+    super._p_main();
+
+    this._main();
   }
 
   /**

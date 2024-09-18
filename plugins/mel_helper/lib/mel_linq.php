@@ -444,7 +444,7 @@ class MelOrder extends Mel_Enumerable {
 
             if ($a == $b) return 0;
             
-            return $a > $b ? 1 : -1;
+            return $this->_p_test($a, $b);
         });
         return $T;
         // yield from 
@@ -456,6 +456,10 @@ class MelOrder extends Mel_Enumerable {
         //     $array = $this->_fusion($array->where(function($k, $v) use($T_len) {return $k < $T_len;})->toArray(), $array->where(function($k, $v) use($T_len) {return $k >= $T_len;})->toArray());
         //     yield from $array;
         // }
+    }
+
+    protected function _p_test($a, $b) {
+        return $a > $b ? 1 : -1;
     }
 
     function test_fusion($a, $b) {
@@ -484,6 +488,10 @@ class MelOrderByDescending extends MelOrder{
 
     function test_fusion($a, $b) {
         return !parent::test_fusion($a, $b);
+    }
+
+    protected function _p_test($a, $b) {
+        return -parent::_p_test($a, $b);
     }
 }
 

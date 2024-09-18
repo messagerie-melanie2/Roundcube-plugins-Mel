@@ -764,6 +764,9 @@ html.touch .wlp_box.fullscreen {
 .wlp-header .mel-focus.focused {
   box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
 }
+.wlp-header .mel-focus.important:focus {
+  box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus) !important;
+}
 .wlp-header .mel-button:focus {
   box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
 }
@@ -1402,6 +1405,22 @@ body.task-settings .scroller > .listing li:hover {
 .roundbadge.hover.tick:hover::before {
   content: '\eed8' !important;
 }
+.roundbadge.can-be-favorite {
+  height: 26px;
+  width: 26px;
+  background-color: transparent;
+}
+.roundbadge.can-be-favorite:hover {
+  background-color: var(--roundbadge-default-bckg-color);
+  font-variation-settings: 'FILL' 1;
+}
+.roundbadge.can-be-favorite.active {
+  background-color: #fdcf42;
+  font-variation-settings: 'FILL' 1;
+}
+.roundbadge.can-be-favorite.active:hover {
+  font-variation-settings: 'FILL' 0;
+}
 .roundbadge.menu {
   top: -15px;
   position: absolute;
@@ -1636,7 +1655,8 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 .mel-button.under-button.selected {
   color: var(--secondary-text-color);
 }
-.mel-button.selected-item {
+.mel-button.selected-item,
+bnum-pressed-button.mel-button[aria-pressed='true'] {
   background-color: var(--mel-button-active-background-color);
   color: var(--mel-button-active-text-color);
   pointer-events: none;
@@ -1759,6 +1779,9 @@ button.btn.no-style:active {
 }
 .mel-focus.focused {
   box-shadow: 0 0 0 0.2rem #484D7A69;
+}
+.mel-focus.important:focus {
+  box-shadow: 0 0 0 0.2rem #484D7A69 !important;
 }
 .mel-focus .light-focus:focus {
   box-shadow: 0 0 0 0.2rem #FFFFFF69;

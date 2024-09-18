@@ -18,7 +18,7 @@ abstract class bnum_plugin extends rcube_plugin
         
         if ($this->api->output !== null) {
             try {
-                $this->api->output->add_script("(() => {runModule($args);})();", $where);
+                $this->api->output->add_script("runModule($args);", $where);
             } catch (\Throwable $th) {
                 return null;
             }
@@ -214,6 +214,10 @@ class WebComponnents {
 
     public function Tabs() {
         $this->_include_component('tab_web_element');
+    }
+
+    public function PressedButton() {
+        $this->_include_component('pressed_button_web_element');
     }
 
     public function ____METHODS____($what, ...$args) {

@@ -56,7 +56,10 @@ class mel_workspace extends bnum_plugin
     public function show_workspaces() {
         $this->add_texts('localization/index', true);
         $this->include_css('workspace_list.css');
+        $this->include_css('index.css');
+        $this->load_script_module('index');
         $this->include_web_component()->Tabs();
+        $this->include_web_component()->PressedButton();
         self::IncludeWorkspaceBlockComponent();
 
         $this->add_handler('subscribed', [$this, 'handler_subscribed']);
@@ -133,7 +136,13 @@ class mel_workspace extends bnum_plugin
     }
 
     public static function GetWorkspaceBlocks($workspaces) {
+        $favorites = rcmail::get_instance()->config->get('workspaces_personal_datas', null);
+
         $html = '';
+
+        if (isset($favorites)) $workspaces = mel_helper::Enumerable($workspaces)->orderBy(function ($k, $v) use($favorites) {
+            return isset($favorites) && isset($favorites[$v->uid]) && $favorites[$v->uid]['tak'] ? new DateTime(date('Y-m-d H:i:s', PHP_INT_MAX)) : new DateTime($v->modified);
+        }, true);
 
         foreach (self::GetWorkspaceBlocksGenerator($workspaces) as $block) {
            $html .= $block;
@@ -149,17 +158,46 @@ class mel_workspace extends bnum_plugin
     }
 
     public static function GetWorkspacesBlock($workspace) {
+        $rc = rcmail::get_instance();
         $name = 'mel_workspace.workspace_block';
+
+        $favorites = $rc->config->get('workspaces_personal_datas', null);
+        $hashtags = $workspace->hashtags;
+
+        $users = [];
+        {
+            $it = 0;
+            $shared = $workspace->shares;
+
+            foreach ($shared as $value) {
+                $tmp = driver_mel::gi()->getUser($value->user);
+
+                if ($tmp) {
+                    $tmp = $rc->plugins->exec_hook('bnum.avatar', ['user' => $tmp, 'url' => "./?_task=addressbook&_action=photo&_email=$tmp->email&_error=1&_is_from=iframe"]);
+                    if (isset($tmp) && isset($tmp['url'])) {              
+                        $users[] = implode('|', [$tmp['url'], $tmp['user']->name]);
+                        ++$it;
+                    }
+                }
+
+                if ($it > 3) {
+                    $users[] = implode('|', [count($shared) - 4, '']);
+                    break;
+                }
+            }
+        }
 
         $block = mel_helper::Parse($name);
 
         $block->picture = self::_GetWorkspaceLogo($workspace);
-        $block->tag = isset($workspace->hashtags) && count($workspace->hashtags) > 0 ? ($workspace->hashtags[0] ?? '') : '';
+        $block->tag = isset($hashtags) && count($hashtags) > 0 ? ($hashtags[0] ?? '') : '';
         $block->title = $workspace->title;
         $block->description = $workspace->description;
-        $block->users = '';
+        $block->users = implode(',', $users);
         $block->edited = $workspace->modified;
         $block->color = self::_GetWorkspaceSetting($workspace, 'color');
+        $block->favorite = isset($favorites) && isset($favorites[$workspace->uid]) && $favorites[$workspace->uid] && $favorites[$workspace->uid]['tak'] ? $favorites[$workspace->uid]['tak'] : false;
+        $block->private = !$workspace->ispublic;
 
         return $block->parse();
     }

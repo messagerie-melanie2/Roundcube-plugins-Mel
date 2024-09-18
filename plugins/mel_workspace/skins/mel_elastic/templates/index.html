@@ -45,14 +45,27 @@
     </div>
   </div>
 
-  <div class="body" style="padding-bottom: 15px">
+  <div class="body" style="padding-bottom: 15px; overflow: auto;">
     <bnum-tabs
       data-navs="subscribed, publics, archived"
       data-ex-label="mel_workspace"
       data-description="Liste des différents espaces auquel on a souscris"
       data-shadow="false"
     >
-      <roundcube:object name="subscribed" data-linked-to="subscribed" />
+      <div data-linked-to="subscribed">
+        <div class="header-pannel">
+          <button class="mel-button no-margin-button no-button-margin">Créer un espace</button>
+          <div class="btn-group">
+            <bnum-pressed-button id="mode-list" class="btn btn-secondary mel-button no-margin-button no-button-margin">
+              <bnum-icon>splitscreen</bnum-icon>
+            </bnum-pressed-button>
+            <bnum-pressed-button data-start-pressed="true" id="mode-block" class="btn btn-secondary mel-button no-margin-button no-button-margin">
+              <bnum-icon>grid_view</bnum-icon>
+            </bnum-pressed-button>
+          </div>
+        </div>
+        <roundcube:object name="subscribed"  />
+      </div>
     </bnum-tab>
   </div>
 </div>

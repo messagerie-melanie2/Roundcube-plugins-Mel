@@ -28,11 +28,29 @@ var PageManager =
       Instance: null,
       Helper: null,
       Has() {
-        return !!window.mel_modules[MODULE];
+        return !!window.mel_modules?.[MODULE];
       },
       async Load() {
-        await loadJsModule('mel_metapage', 'frame_manager', '/js/lib/classes/');
-        return window.mel_modules[MODULE];
+        const { FramesManager } = await loadJsModule(
+          'mel_metapage',
+          'frame_manager',
+          '/js/lib/classes/',
+        );
+        return FramesManager;
+      },
+      async SwitchFrame(
+        task,
+        { changepage = true, args = null, actions = [] },
+      ) {
+        let instance;
+        if (!this.Has()) instance = (await this.Load()).Instance;
+        else instance = this.Instance;
+
+        return await instance.switch_frame(task, {
+          changepage,
+          args,
+          actions,
+        });
       },
     };
 

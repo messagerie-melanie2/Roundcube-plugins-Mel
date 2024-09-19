@@ -17,6 +17,7 @@
       height: unset;
       flex-direction: row;
       justify-content: unset;
+      max-height: 154px;
 
       .workspace-block-item-picture {
         height: 100%;
@@ -43,20 +44,26 @@
 
         div {
           text-align: left;
+
+          &.workspace-block-item-tag,
+          &.workspace-block-item-description {
+            height: fit-content;
+          }
         }
       }
 
       .workspace-block-item-bottom-title {
-        justify-content: center;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .workspace-block-item-data {
         &:extend(.mode-list
           .workspace-list
           .workspace-block-item
-          .workspace-block-item-bottom-title);
+          .workspace-block-item-data);
+        max-width: 90%;
+      }
+
+      .workspace-block-item-data {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
       }
     }
   }

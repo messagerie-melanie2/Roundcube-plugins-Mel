@@ -22,6 +22,8 @@ class mel_workspace extends bnum_plugin
                 if ($this->is_index_action()) {
                     $this->_setup_index_action();
                 }
+
+                $this->_setup_external_actions();
                 break;
 
             case 'bnum':
@@ -53,6 +55,7 @@ class mel_workspace extends bnum_plugin
         }
     }
 
+    #region pages
     public function show_workspaces() {
         $this->add_texts('localization/index', true);
         $this->include_css('workspace_list.css');
@@ -66,18 +69,34 @@ class mel_workspace extends bnum_plugin
 
         $this->rc()->output->send('mel_workspace.index');
     }
+    #endregion
 
-    private function _setup_index_action() {
-        $this->register_action('index', [$this, 'show_workspaces']);
+    #region actions
+    public function check_uid() {
+        
     }
+    #endregion
 
+    #region handlers
     public function handler_subscribed($args) {
         $args['class'] = 'workspace-list';
         $html = html::div($args, $this->_show_block(0));
         return $html;
     }
+    #endregion
 
-    public function _show_block($mode) {
+    #region private_functions
+    private function _setup_index_action() {
+        $this->register_action('index', [$this, 'show_workspaces']);
+    }
+
+    private function _setup_external_actions() {
+        $this->register_actions(
+            ['check_uid' => [$this, '']]
+        )
+    }
+
+    private function _show_block($mode) {
         $html = '';
         $workspaces = null;
         switch ($mode) {
@@ -96,7 +115,9 @@ class mel_workspace extends bnum_plugin
 
         return $html;
     }
+    #endregion
 
+    #region statics
     private static function _GetWorkspaceLogo($workspace) {
         $logo = $workspace->logo;
         if ($logo !== null && strpos($logo, 'mel_elastic') === false && strpos($logo, 'elastic') !== false) {
@@ -227,5 +248,6 @@ class mel_workspace extends bnum_plugin
         $workspace->load();
         return $workspace;
     }
+    #endregion
 
 }

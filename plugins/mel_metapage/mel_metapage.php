@@ -955,6 +955,8 @@ class mel_metapage extends bnum_plugin
      */
     function generate_html($args)
     {
+        if ($this->get_current_task() === 'logout' || $this->get_current_task() === 'login') return $args;
+
         if (strpos($args["content"],'<html lang="fr" class="iframe') !== false)
         {
             $args["content"] = $this->from_iframe($args["content"]);

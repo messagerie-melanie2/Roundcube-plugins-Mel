@@ -164,8 +164,10 @@ class tchap extends bnum_plugin
         $config = ['token'=> $token, 'room_name'=> $room_name, 'is_private'=> true, 'users_list'=> $mail_user];
         $content = self::call_tchap_api ($rcmail->config->get('migrate_channel_endpoint'), $config, 'POST');
         if($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->create_tchap_room]Valeur retour de l'api : ".json_encode($content));
             return (json_decode($content['content'])->room_id);
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->create_tchap_room]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -189,8 +191,10 @@ class tchap extends bnum_plugin
         $config = ['token'=> $token, 'room_id'=> $room_id, 'users_list'=> $mail_user];
         $content = self::call_tchap_api ($rcmail->config->get('invite_endpoint'), $config, 'POST');
         if($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->invite_tchap_user]Valeur retour de l'api : ".json_encode($content));
             return true;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->invite_tchap_user]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -206,8 +210,10 @@ class tchap extends bnum_plugin
         $url = $rcmail->config->get('tchap_bot_url') . $rcmail->config->get('delete_room_endpoint');
         $content = self::call_tchap_api ($rcmail->config->get('delete_room_endpoint'), $config, 'DELETE');
         if($content["httpdCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->delete_tchap_room]Valeur retour de l'api : ".json_encode($content));
             return true;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->delete_tchap_room]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -225,8 +231,10 @@ class tchap extends bnum_plugin
         $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_id];
         $content = self::call_tchap_api ($rcmail->config->get('ismember_endpoint'), $config, 'POST');
         if($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->is_member]Valeur retour de l'api : ".json_encode($content));
             return true;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->is_member]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -241,8 +249,10 @@ class tchap extends bnum_plugin
         $config = ['token'=> $token, 'room_id'=> $room_id];
         $content = self::call_tchap_api($rcmail->config->get('get_room_name_endpoint'), $config, 'POST');
         if($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->check_if_room_exist]Valeur retour de l'api : ".json_encode($content));
             return true;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->check_if_room_exist]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -257,8 +267,10 @@ class tchap extends bnum_plugin
         $config = ['token'=> $token, 'room_id'=> $room_id];
         $content = self::call_tchap_api($rcmail->config->get('get_room_name_endpoint'), $config, 'POST');
         if($content["httpCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->get_room_name]Valeur retour de l'api : ".json_encode($content));
             return json_decode($content['content'])->room_name;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->get_room_name]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -276,8 +288,10 @@ class tchap extends bnum_plugin
         $config = ['token'=> $token, 'room_id'=> $room_id, 'user_id'=> $user_uid];
         $content = self::call_tchap_api ($rcmail->config->get('kick_user_endpoint'), $config, 'DELETE');
         if($content["httpdCode"] === 200) {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->kick_member]Valeur retour de l'api : ".json_encode($content));
             return true;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->kick_member]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -293,8 +307,10 @@ class tchap extends bnum_plugin
 
         if($content["httpCode"] === 200) {
             $content = json_decode($content['content']);
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->get_user_tchap_id]Valeur retour de l'api : ".json_encode($content));
             return $content->user_id;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->get_user_tchap_id]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }
@@ -307,8 +323,10 @@ class tchap extends bnum_plugin
 
         if($content["httpCode"] === 200) {
             $content = json_decode($content['content']);
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[tchap->search_user]Valeur retour de l'api : ".json_encode($content));
             return $content;
         } else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[tchap->search_user]Valeur retour de l'api : ".json_encode($content));
             return false;
         }
     }

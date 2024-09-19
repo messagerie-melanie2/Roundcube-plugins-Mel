@@ -98,82 +98,81 @@
         <div id="comment-area"></div>
 
 
-        <div id="comment-template" class="row comment template">
-          <div class="col-12">
-            <div class="forum-comment flex align-items-center">
-              <div class="forum-comment-profile-image" style="display: flex; align-items: center; justify-content: center; font-weight: bold;">INITIALS</div>
-              <!-- div -->
-              <span class="forum-content-author">NOM Prenom</span><!-- span -->
-              <div class="forum-comment-date d-flex align-items-end">
-                <span class="icon" data-icon="access_time"></span><!-- span -->
-                <span class="ml-1 forum-comment-date-value">DATE</span><!-- span -->
-              </div><!-- div -->
-            </div><!-- div -->
-            <div class="forum-comment-text" id="comment-text-template">
-              <p>CONTENT</p><!-- p -->
-            </div><!-- div -->
-            <div class="forum-comment-edit hidden" id="edit-comment-template">
-              <textarea id="edit-comment-textarea-NrQHZABSYYVvwFlFMIJYfhk4" class="forum-comment-input form-control input-mel" rows="1"></textarea><!-- textarea -->
+        <div id="comment-template" type="text/html">
+          <div id="comment-id-%%UID%%" class="row comment">
+            <div class="col-12">
+              <div class="forum-comment flex align-items-center">
+                <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                  %USER_INITIALS%
+                </div>
+                <span class="forum-content-author">%%USER_NAME%%</span>
+                <div class="forum-comment-date d-flex align-items-end">
+                  <span class="icon" data-icon="access_time"></span>
+                  <span class="ml-1">%%COMMENT_DATE%%</span>
+                </div>
+              </div>
+            </div>
+        
+            <div class="forum-comment-text" id="comment-text-%%UID%%">
+              <p>%%COMMENT_CONTENT%%</p>
+            </div>
+        
+            <div class="forum-comment-edit hidden" id="edit-comment-%%UID%%">
+              <textarea id="edit-comment-textarea-%%UID%%" class="forum-comment-input" rows="1">%%COMMENT_CONTENT%%</textarea>
               <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
-                <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2 no-button-margin no-margin-button" data-on-id="h9xK2" style="border-style:solid">
-                  Annuler
-                  <span class="plus icon-mel-close"></span><!-- span -->
-                </button><!-- button -->
-                <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button no-button-margin no-margin-button" data-on-id="KgK00" style="border-style:solid">
-                  Sauvegarder
-                  <span class="plus icon-mel-arrow-right"></span><!-- span -->
-                </button><!-- button -->
-              </div><!-- div -->
-            </div><!-- div -->
+                <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2" onclick="cancelModifyComment('%%UID%%')">Annuler</button>
+                <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button" onclick="modifyComment('%%UID%%')">Sauvegarder</button>
+              </div>
+            </div>
+        
             <div class="forum-comment-reactions">
-              <div class="reaction-item mr-3">
-                <span class="icon material-symbols-outlined" data-like-uid="NrQHZABSYYVvwFlFMIJYfhk4" data-icon="thumb_up" data-on-id="oJ0qO"></span><!-- span -->
-                <span class="ml-2">0</span><!-- span -->
-              </div><!-- div -->
-              <div class="reaction-item mr-3">
-                <span class="icon material-symbols-outlined" data-dislike-uid="NrQHZABSYYVvwFlFMIJYfhk4" data-icon="thumb_down" data-on-id="pf0Tf"></span><!-- span -->
-                <span class="ml-2">0</span><!-- span -->
-              </div><!-- div -->
-              <div class="reaction-item mr-3 response" data-on-id="7aMl9">
-                <span class="icon" data-icon="mode_comment"></span><!-- span -->
-                <span class="ml-2">répondre</span><!-- span -->
-              </div><!-- div -->
+              <div class="%%LIKE_CLASS%%">
+                <span class="icon material-symbols-outlined" data-like-uid="%%UID%%" data-icon="thumb_up" onclick="saveLikeOrDislike('like', '%%UID%%')"></span>
+                <span class="ml-2">%%LIKES%%</span>
+              </div>
+              <div class="%%DISLIKE_CLASS%%">
+                <span class="icon material-symbols-outlined" data-dislike-uid="%%UID%%" data-icon="thumb_down" onclick="saveLikeOrDislike('dislike', '%%UID%%')"></span>
+                <span class="ml-2">%%DISLIKES%%</span>
+              </div>
+              <div class="reaction-item mr-3 response" onclick="toggleReplyForm('%%UID%%', '%%COMMENT_ID%%')">
+                <span class="icon" data-icon="mode_comment"></span>
+                <span class="ml-2">répondre</span>
+              </div>
               <div class="reaction-item">
-                <span class="icon" data-icon="more_horiz" data-on-id="RVEdi"></span><!-- span -->
-                <div id="context-menu-NrQHZABSYYVvwFlFMIJYfhk4" class="forum-comment-context-menu hidden">
-                  <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du commentaire</h3><!-- h3 -->
-                  <button class="comment-options-button edit-comment" title="Modifier le commentaire" aria-labelledby="aria-label-comment-options-menu-NrQHZABSYYVvwFlFMIJYfhk4" data-action="modify_comment" data-id="NrQHZABSYYVvwFlFMIJYfhk4" data-on-id="sTEAA" style="border-style:solid;border:none;outline:none;display:flex;alignItems:center">
-                    <bnum-icon data-icon="edit" class="material-symbols-outlined">edit</bnum-icon><!-- icon -->
-                    <span class="comment-options-text" style="margin-left: 8px;">Modifier le commentaire</span><!-- span -->
-                  </button><!-- button -->
-                  <button class="comment-options-button delete-comment" title="Supprimer le commentaire" aria-labelledby="aria-label-comment-options-menu-NrQHZABSYYVvwFlFMIJYfhk4" data-action="cancel_comment" data-id="NrQHZABSYYVvwFlFMIJYfhk4" data-on-id="hmTYe" style="border-style:solid;border:none;outline:none;display:flex;alignItems:center">
-                    <bnum-icon data-icon="delete" class="material-symbols-outlined">delete</bnum-icon><!-- icon -->
-                    <span class="comment-options-text" style="margin-left: 8px;">Supprimer le commentaire</span><!-- span -->
-                  </button><!-- button -->
-                </div><!-- div -->
-              </div><!-- div -->
-            </div><!-- div -->
-            <div id="reply-form-NrQHZABSYYVvwFlFMIJYfhk4" class="row my-4 d-flex align-items-center hidden">
-              <div class="col-auto pr-0">
-                <div class="forum-comment-profile-image" style="background-color: #BBD012; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">CD</div><!-- div -->
-              </div><!-- div -->
-              <div class="col pl-0" style="margin-bottom: 1rem;">
-                <textarea id="new-response-textarea-NrQHZABSYYVvwFlFMIJYfhk4" class="forum-comment-input form-control input-mel" placeholder="Répondre" rows="1"></textarea><!-- textarea -->
-              </div><!-- div -->
-              <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
-                <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2 no-button-margin no-margin-button" data-on-id="S2QT7" style="border-style:solid">
-                  Annuler
-                  <span class="plus icon-mel-close"></span><!-- span -->
-                </button><!-- button -->
-                <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button no-button-margin no-margin-button" data-on-id="riaCQ" style="border-style:solid">
-                  Sauvegarder
-                  <span class="plus icon-mel-arrow-right"></span><!-- span -->
-                </button><!-- button -->
-              </div><!-- div -->
-            </div><!-- div -->
-            <div id="responses-16" class="responses ml-4 hidden"></div><!-- div -->
-          </div><!-- div -->
+                <span class="icon" data-icon="more_horiz" onclick="toggleMenu('%%UID%%')"></span>
+                <div id="context-menu-%%UID%%" class="forum-comment-context-menu hidden">
+                  <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du commentaire</h3>
+                  <button class="comment-options-button edit-comment" title="Modifier le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="modify_comment" data-id="%%UID%%" onclick="toggleModifyComment('%%UID%%')">
+                    <span class="icon">edit</span>
+                    <span class="comment-options-text" style="margin-left: 8px;">Modifier le commentaire</span>
+                  </button>
+                  <button class="comment-options-button delete-comment" title="Supprimer le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="cancel_comment" data-id="%%UID%%" onclick="deleteComment('%%UID%%')">
+                    <span class="icon">delete</span>
+                    <span class="comment-options-text" style="margin-left: 8px;">Supprimer le commentaire</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div id="reply-form-%UID%" class="row my-4 d-flex align-items-center hidden">
+            <div class="col-auto pr-0">
+              <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                %%USER_INITIALS%%
+              </div>
+            </div>
+            <div class="col pl-0" style="margin-bottom: 1rem;">
+              <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>
+            </div>
+            <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+              <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2" onclick="toggleReplyForm('%%UID%%')">Annuler</button>
+              <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button" onclick="saveReply()">Sauvegarder</button>
+            </div>
+          </div>
+        
+          %%RESPONSE_SECTION%%
         </div>
+        
               
       </div>
     </div>

@@ -58,7 +58,7 @@ export class Manager extends MelObject {
                 comment.current_user_reacted,
             );
 
-            let commentHtml = commentVizualizer.generateHtml();
+            let commentHtml = commentVizualizer.generateHtmlFromTemplate();
             // Si le commentaire n'a pas de parent, c'est un commentaire principal
             if (!comment.parent) {
                 commentHtml.appendTo($('#comment-area'));

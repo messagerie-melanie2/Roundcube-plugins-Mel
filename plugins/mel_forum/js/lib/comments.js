@@ -498,6 +498,7 @@ async deleteComment(uid) {
  * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
  */
 generateHtmlFromTemplate() {
+  debugger;
   let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
   let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
@@ -524,12 +525,46 @@ generateHtmlFromTemplate() {
       return color;
   };
 
-  // Ajout de l'état "en cours d'édition"
-  let isEditing = false;
+  // Préparez les données à insérer dans le template
+  const data = {
+    UID: this.uid,
+    PROFILE_COLOR: getRandomColor(),
+    USER_INITIALS: getInitials(this.user_name),
+    USER_NAME: this.user_name,
+    COMMENT_DATE: this.created,
+    COMMENT_CONTENT: this.content,
+    COMMENT_ID: this.id,
+    LIKE_CLASS: likeClass,
+    DISLIKE_CLASS: dislikeClass,
+    LIKES: this.likes,
+    DISLIKES: this.dislikes,
+    RESPONSE_SECTION: this.children_number > 0 ? 
+      `<div class="forum-comment-response" onclick="toggleResponses('${this.id}')">
+        <span id="toggle-icon-${this.id}" class="icon" data-icon="arrow_drop_down"></span>
+        <span class="ml-2">${this.children_number} ${reponseText}</span>
+      </div>
+      <div id="responses-${this.id}" class="responses ml-4 hidden"></div>` : ''
+  };
 
-  let template = document.querySelector('#comment-template').cloneNode();
-  template.querySelector('.forum-content-author').text(this.user_name);
-  return template.outerHTML;
+  let template = document.querySelector('#comment-template').innerHTML;
+
+  // Remplacer les placeholders avec les valeurs de data
+  let renderedHtml = template
+    .replace(/%%UID%%/g, data.UID)
+    .replace(/%%PROFILE_COLOR%%/g, data.PROFILE_COLOR)
+    .replace(/%%USER_INITIALS%%/g, data.USER_INITIALS)
+    .replace(/%%USER_NAME%%/g, data.USER_NAME)
+    .replace(/%%COMMENT_CONTENT%%/g, data.COMMENT_CONTENT)
+    .replace(/%%COMMENT_DATE%%/g, data.COMMENT_DATE)
+    .replace(/%%COMMENT_ID%%/g, data.COMMENT_ID)
+    .replace(/%%LIKE_CLASS%%/g, data.LIKE_CLASS)
+    .replace(/%%DISLIKE_CLASS%%/g, data.DISLIKE_CLASS)
+    .replace(/%%LIKES%%/g, data.LIKES)
+    .replace(/%%DISLIKES%%/g, data.DISLIKES)
+    .replace(/%%RESPONSE_SECTION%%/g, data.RESPONSE_SECTION || '');
+
+
+    return renderedHtml;
 }
 
   /**

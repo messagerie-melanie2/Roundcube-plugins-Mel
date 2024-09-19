@@ -243,6 +243,12 @@ class mel_helper extends rcube_plugin
         $rc->storage->clear_cache($cache_key);
     }
 
+    public static function clear_caches() {
+        $rc = rcmail::get_instance();
+
+        
+    }
+
     public static function array($array = [])
     {
         include_once 'lib/mel_array.php';

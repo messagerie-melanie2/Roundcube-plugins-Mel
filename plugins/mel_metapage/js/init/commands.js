@@ -538,6 +538,12 @@ if (rcmail)
 
             }, true);
 
+            rcmail.register_command('clean_cache', () => {
+                mel_metapage.Functions.post(
+                    mel_metapage.Functions.url("mel_metapage", "clean_cache"),
+                    {},
+                    (datas) => {});
+            });
 
             rcmail.register_command("toggleAnimations", async () => {
                 const busy = rcmail.set_busy(true, 'loading');

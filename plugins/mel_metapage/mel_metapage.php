@@ -623,6 +623,11 @@ class mel_metapage extends bnum_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_event_html', array($this, 'get_event_html'));
         }
+        else if ($this->rc->action === "clean_cache")
+        {
+            $this->register_task("mel_metapage");
+            $this->register_action('clean_cache', array($this, 'clean_cache'));
+        }
         else if ($this->rc->action === "get_create_workspace")
         {
             $this->add_texts('localization/', true);

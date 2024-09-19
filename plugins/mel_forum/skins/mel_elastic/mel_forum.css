@@ -580,3 +580,6 @@
 .task-forum .close-button:focus {
   color: red !important;
 }
+.task-forum .editor-toolbar {
+  background-color: white;
+}

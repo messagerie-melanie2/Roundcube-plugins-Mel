@@ -124,6 +124,8 @@ function init()
         $this->register_action('delete_like', array($this, 'delete_like'));
         // Compter le nombre de commentaires pour un Post
         $this->register_action('count_likes', array($this, 'count_likes'));
+        //Gère les tags suite à la modification/création d'un post
+        $this->register_action('send_post', array($this, 'send_post'));
         // Créer un tag
         $this->register_action('create_tag', array($this, 'create_tag'));
         // Modifier un tag
@@ -159,6 +161,8 @@ function init()
 public function index(){
     $this->load_script_module('forum');
     $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
+    $workspace = rcube_utils::get_input_value('_worskpace_uid', rcube_utils::INPUT_POST);
+
     
     $this->rc()->output->send('mel_forum.forum');
 }
@@ -289,8 +293,12 @@ public function show_post_date(){
 }
 
 public function create_or_edit_post() {
-    $this->rc()->html_editor();
+    // $this->rc()->html_editor();
+    // $this->rc()->output->set_env($workspace_uid);
     $this->load_script_module('create_or_edit_post');
+    $this->include_css('../../lib/simpleMDE/simplemde.min.css');
+    $this->load_script_module('simplemde.min.js', '/lib/simpleMDE/');
+
     // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
     
     $this->rc()->output->send('mel_forum.create-post');
@@ -442,7 +450,7 @@ public function add_post()
     $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
 
     // Validation des données saisies
-    if (empty($title) || empty($content) || empty($description) || empty($settings)) {
+    if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
         echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
         exit;
     }
@@ -460,6 +468,8 @@ public function add_post()
     $post->creator = driver_mel::gi()->getUser()->uid;
     $post->settings = $settings;
     $post->workspace = $workspace;
+    //TODO supprimé 
+    $post->workspace = 'un-espace-2';
 
     // Sauvegarde de l'article
     $post_id = $post->save();
@@ -705,6 +715,263 @@ public function get_all_posts_byworkspace()
     exit;
 }
 
+/**
+ * Gère les tags suite à la modification/création d'un post
+ * @return void
+ */
+public function send_post()
+{
+    $post = $this->_add_post();
+    if ($post !== false){
+        // le post est créé on passe aux tags
+        $tags = rcube_utils::get_input_value('_tags', rcube_utils::INPUT_POST);
+        $post_tags = $this->_get_tags_bypost($post->uid);
+        if(empty(array_diff($tags, $post_tags))) {
+            if(!empty(array_diff($post_tags, $tags))) {
+                //il y a moins de tags suite à la modifs décorellé les tags
+                $unlink_tags = array_diff($post_tags, $tags);
+                $this->_unsassociate_tags_from_post();
+                // si le tag est associé à aucun post le supprimer
+                if (!$this->_tag_is_associated_to_any_post()) {
+                    $this->_delete_tag();
+                }
+            }
+        } else {
+            //il y plus de tag que dans la bdd
+            $new_tags = array_diff($tags, $post_tags);
+            foreach($new_tags as $tag){
+                if(!$this->_exist_tag($tag)){
+                    //le tag n'éxiste pas encore il faut le créer
+                    $this->_create_tag($tag);
+                }
+                //associé le tag au post
+                $this->_associate_tag_with_post($tag);
+            }
+        }
+    }
+}
+
+/**
+ * Crée un nouvel article dans l'espace de travail.
+ *
+ * Cette fonction récupère les valeurs des champs POST, valide les données saisies,
+ * crée une nouvelle publication avec les propriétés définies, et sauvegarde l'article.
+ * Elle extrait également les liens d'image du contenu et les enregistre.
+ * La fonction retourne une réponse JSON indiquant le statut de la création de l'article.
+ *
+ * @return LibMelanie\Api\Defaut\Posts\Post $post 
+ */
+private function _add_post()
+{
+    //récupérer le Workspace
+    $workspace = driver_mel::gi()->workspace();
+
+    // récupérer les valeurs des champs POST
+    $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
+    $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+    // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
+    $summary = $this->create_summary_from_content($content);
+    $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
+
+    // Validation des données saisies
+    if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
+        return false;
+    }
+
+    //Créer un nouvel Article
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+
+    //Définition des propriétés de l'article
+    $post->title = $title;
+    $post->summary = $summary;
+    $post->content = $content;
+    $post->uid = $this-> generateRandomString(24);
+    $post->created = date('Y-m-d H:i:s');
+    $post->modified = date('Y-m-d H:i:s');
+    $post->creator = driver_mel::gi()->getUser()->uid;
+    $post->settings = $settings;
+    $post->workspace = $workspace;
+    //TODO supprimé 
+    $post->workspace = 'un-espace-2';
+
+    // Sauvegarde de l'article
+    $post_id = $post->save();
+    if ($post_id) {
+        $post->load();
+        // Extraire les liens d'image et les enregistrer
+        $imageLinks = $this->extractImageLinks($content);
+        $imageSaved = true;
+        foreach ($imageLinks as $link) {
+            if (!$this->save_image($post->id, $link)) {
+                $imageSaved = false;
+                break; // On arrête si une image échoue à être enregistrée
+            }
+        }
+
+        // Réponse JSON en fonction de la sauvegarde des images
+        if ($imageSaved) {
+            return $post;
+        } else {
+            return $post;
+            //problème d'enregistrement de l'image
+        }
+    } else {
+        return false;
+    }
+
+}
+
+/**
+ * créer un tag dans l'espace de travail courant
+ * @param string $name Nom du tag
+ * @return bool $result
+ */
+private function _create_tag($name)
+{
+    // Récupérer le Workspace
+    $workspace_uid = driver_mel::gi()->workspace();
+
+    //Créer un tag
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+
+    //Définition des propriétés du tag
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    // Sauvegarde du tag
+    $ret = $tag->save();
+    return(!is_null($ret));
+}
+
+/**
+ * Supprime un tag de l'espace de travail courant
+ * @param string $name Nom du tag
+ * @return bool $result
+ */
+private function _delete_tag($name)
+{
+    // Récupérer le Workspace
+    $workspace_uid = driver_mel::gi()->workspace();
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    // Vérifier si le tag existe
+    if (!$tag->load()) {
+        return false;
+    }
+    // Supprimer le tag
+    $ret = $tag->delete();
+    return(!is_null($ret));
+}
+
+/**
+ * Associe un tag à un post
+ * @param string $name nom du tag
+ */
+private function _associate_tag_with_post($name)
+{
+    $workspace_uid = driver_mel::gi()->workspace();
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    if ($tag->load()) {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $uid;
+
+        if ($post->load()) {
+            if ($post->addTag($tag)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
+/**
+ * Dessaocie un tag d'un post
+ * @param string $name nom du tag
+ */
+private function _unsassociate_tags_from_post($name)
+{
+    $workspace_uid = driver_mel::gi()->workspace();
+    $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+    // Récupérer le tag existant
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->name = $name;
+    $tag->workspace = $workspace_uid;
+
+    if ($tag->load()) {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->uid = $uid;
+
+        if ($post->load()) {
+            if ($post->removeTag($tag)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
+/**
+ * récupère tout les tags associé à un post
+ * @param string $uid uid du post
+ */
+private function _get_tags_bypost($uid) 
+{
+    // Récupérer l'article
+    $post = new LibMelanie\Api\Defaut\Posts\Post();
+    $post->uid = $uid;
+
+    if ($post->load()) {
+    $tags = $post->listTags();
+
+    return $tags;
+    }
+}
+
+/**
+ * vérifie si un tag existe dans le workspace courant
+ * @param string $exist_tag nom du tag à vérifie
+ * @return bool le tag existe
+ */
+private function _exist_tag($exist_tag)
+{
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->workspace = driver_mel::gi()->workspace();
+    $tags = $tag->listTags();
+    foreach($tags as $tag) {
+        if ($tag->name === $exist_tag) {
+            return true;
+        }
+    }
+    return false;
+
+}
+
+/**
+ * vérifie si un tag est associé à un post dans le workspace
+ * @param string $tag_name nom du tag à chercher
+ * @return bool 
+ */
+private function _tag_is_associated_to_any_post($tag_name)
+{
+    $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+    $tag->workspace = driver_mel::gi()->workspace();
+    $tag->name = $tag_name;
+    $tag->load();
+    return (!($tag->countPosts() === 0));
+}
 /**
  * Crée un nouveau tag sous forme de réponse JSON.
  *

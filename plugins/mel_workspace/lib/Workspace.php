@@ -1,4 +1,6 @@
 <?php
+define('DEFAULT_SYMBOL', '¤¤¤¤¤¤¤DEFAULT_SYMBOL¤¤¤¤¤¤¤');
+
 class Workspace {
   private $_uid;
   private $_workspace;
@@ -7,19 +9,17 @@ class Workspace {
   private $_description;
   private $_hashtag;
   private $_users;
-  private $_is_public;
+  private $_ispublic;
   private $_creator;
   private $_created;
   private $_modified;
-  private $_settings;
-  private $_objects;
   
   public function __construct($uid, $load = false) {
     if ($uid !== null) {
       $this->_uid = $uid;
       $this->_workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
       $this->_workspace->uid = $uid;
-      
+
       if ($load) $this->load();
     }
   }
@@ -28,16 +28,18 @@ class Workspace {
     $this->_workspace = $workspace;
     $this->_uid = $this->_workspace->uid;
 
+    return $this->_unset();
+  }
+
+  private function _unset() {
     unset($this->_title);
     unset($this->_description);
     unset($this->_hashtag);
     unset($this->_users);
-    unset($this->_is_public);
+    unset($this->_ispublic);
     unset($this->_creator);
     unset($this->_created);
     unset($this->_modified);
-    unset($this->_settings);
-    unset($this->_objects);
     unset($this->_logo);
 
     return $this;
@@ -46,34 +48,208 @@ class Workspace {
   public function load() {
     $this->_workspace->load();
 
-    return $this;
+    return $this->_unset();
   }
 
   public function save() {
     $this->_workspace->save();
   
-    return $this;
+    return $this->_unset();
+  }
+
+  public function get() {
+    return $this->_workspace;
+  }
+
+  public function exists() {
+    return !is_null($this->_workspace) && $this->_workspace->exists();
   }
 
   public function uid() {
     return $this->_uid;
   }
 
-  public function logo($newLogo = null) {
+  private function _update_or_get_item($prop ,$item = DEFAULT_SYMBOL) {
+    $private_prop = "_$prop";
     $ret = $this;
-    
-    if (isset($newLogo)) {
-      $this->_workspace->logo = $newLogo;
-      $this->_logo = $newLogo;
+
+    if ($item !== DEFAULT_SYMBOL) {
+      $this->_workspace->$prop = $item;
+      $this->$private_prop = $item;
     }
-    else if(isset($this->_logo)) $ret = $this->_logo;
+    else if(isset($this->$private_prop)) $ret = $this->$private_prop;
     else {
-      $this->_logo = $this->_workspace->logo;
-      $ret = $this->logo();
+      $this->$private_prop = $this->_workspace->$prop;
+      $ret = $this->$private_prop;
     }
 
-    return $ret;
+    return $ret;    
+  }
+
+  public function logo($newLogo = DEFAULT_SYMBOL) {
+    return $this->_update_or_get_item('logo', $newLogo);
   }  
+
+  public function title($newTitle = DEFAULT_SYMBOL) {
+    return $this->_update_or_get_item('logo', $newTitle);
+  }
+
+  public function description($newDesc = DEFAULT_SYMBOL) {
+    return $this->_update_or_get_item('description', $newDesc);
+  }
+
+  public function hashtag($newTag = DEFAULT_SYMBOL) {
+    $ret = $this;
+
+    if ($this->_hashtag !== DEFAULT_SYMBOL) {
+      $this->_workspace->hashtag = [$newTag];
+      $this->_hashtag = $newTag;
+    }
+    else if(isset($this->_hashtag)) $ret = $this->_hashtag;
+    else {
+      $this->_hashtag = isset($this->_workspace->_hashtag) && isset($this->_workspace->_hashtag[0]) ? $this->_workspace->_hashtag[0] : null;
+      $ret = $this->_hashtag;
+    }
+
+    return $ret;    
+  }
+
+  public function settings() {
+    return new WorkspaceSetting($this->_workspace);
+  }
+
+  public function objects() {
+    return new WorkspaceObject($this->_workspace);
+  }
+
+  public function isPublic($newState = DEFAULT_SYMBOL) {
+    return $this->_update_or_get_item('ispublic', $newState);
+  }
+
+  public function creator($newCreator = DEFAULT_SYMBOL) {
+    return $this->_update_or_get_item('creator', $newCreator);
+  }
+
+  public function created($newDate = DEFAULT_SYMBOL) {
+    return $this->_update_or_get_item('created', $newDate);
+  }
+
+  public function modified($newDate = DEFAULT_SYMBOL) {
+    return $this->_update_or_get_item('modified', $newDate);
+  }
+
+  public function color($newColor = null) {
+    $ret = $this;
+
+    if (isset($newColor)) $this->settings()->set('color', $newColor);
+    else $ret = $this->settings()->get('color');
+
+    return $ret;
+  }
+
+  public function users($to_melanie_user = false) {
+    if (!isset($this->_users)) $this->_users = $this->_workspace->shares;
+    return $to_melanie_user ? mel_helper::Enumerable($this->_users)->select(function ($k, $v) {
+      return driver_mel::gi()->getUser($v->user_uid);
+    })->where(function ($k, $v) {
+      return !is_null($v);
+    }) : $this->_users;
+  }
+
+  public function add_owners(...$users) {
+    return $this->_add_users(mel_helper::Enumerable($users)->select(function($k, $v) {
+      return ['right' => Share::RIGHT_OWNER, 'user' => $v];
+    }));
+  }
+
+  public function add_users(...$users) {
+    return $this->_add_users(mel_helper::Enumerable($users)->select(function($k, $v) {
+      return ['right' => Share::RIGHT_WRITE, 'user' => $v];
+    }));
+  }
+
+  private function _add_users($users) {
+    $return_data = [            
+      "errored_user" => [],
+      "existing_users" => []
+    ];
+
+    $shares = $this->users();
+
+    foreach ($users as $userData) {
+      $right = $userData['right'];
+      $id = $userData['user'];
+
+      $share = driver_mel::gi()->workspace_share([$this->_workspace]);
+      $tmp_user = null;
+      if (strpos($id, '@')) {
+        $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $id);
+      }else {
+        $tmp_user = driver_mel::gi()->getUser($id);
+      }
+
+      if ($shares[$tmp_user->uid] !== null) continue;
+
+      $user_exists = true;
+      $just_created = false;
+
+      if ($tmp_user->uid === null && !$tmp_user->is_list) {
+        if (rcmail::get_instance()->config->get('enable_external_users', false)) {
+            $user_exists = driver_mel::gi()->create_external_user($id, $this->_workspace);
+            $just_created = true;
+        }
+        else {
+            $user_exists = false;
+        }
+        
+        if ($user_exists) {
+            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $id);
+        }
+        else {
+            $return_data["errored_user"][] = $id;
+        }
+      }
+
+      if ($user_exists) {
+        foreach ($this->_add_internal_user($tmp_user) as $added_user) {
+            if ($added_user !== null) {
+                $return_data["existing_users"][] = ['just_created' => $just_created, 'user' => $added_user];
+                $share = driver_mel::gi()->workspace_share([$this->_workspace]);
+                $share->user = $added_user;
+                $share->rights = $right;
+                $shares[] = $share;             
+            }
+        }
+      }
+    }
+
+    if (isset($return_data['existing_users']) && count($return_data['existing_users']) > 0) $this->_workspace->shares = $shares;
+
+    return $return_data;
+  }
+
+  private function _add_internal_user($user) {
+    if ($user->is_list) {
+        $list = [];
+
+        foreach ($user->list->members as $value) {
+            $value = $value->uid;
+            $list[] = $value;
+            yield $value;
+        }
+
+        $lists = $this->settings()->get('lists') ?? [];//$this->get_setting($workspace, 'lists') ?? [];
+
+        if (is_array($lists)) $lists[$user->mail[0]] = $list;
+        else {
+            $user = $user->mail[0];
+            $lists->$user = $list;
+        }
+
+        $this->settings()->set('lists', $lists);//$this->add_setting($workspace, 'lists', $lists);
+    } 
+    else yield $user->uid;
+  }
 
   public static function FromWorkspace($workspace) {
     $wsp = new Workspace(null);
@@ -81,4 +257,105 @@ class Workspace {
     return $wsp->_from_workspace($workspace);
   }
 
+  public static function IsUIDValid($uid) {
+    mel_helper::load_helper()->include_utilities();
+    return mel_utils::replace_special_char($uid) === $uid && strtolower($uid) === $uid;
+  }
+
+  public static function GenerateUID($title)
+  {
+      $max = 30;
+
+      mel_helper::load_helper()->include_utilities();
+      $text = mel_utils::replace_determinants(mel_utils::replace_special_char(mel_utils::remove_accents(strtolower($title))), "-");
+      $text = str_replace(" ", "-", $text);
+      if (count($text) > $max)
+      {
+          $title = "";
+          for ($i=0; $i < count($text); $i++) { 
+              if ($i >= $max)
+                  break;
+              $title.= $text[$i];
+          }
+          $text = $title;
+      }
+      $it = 0;
+      do {
+          $workspace = driver_mel::gi()->workspace();
+          $workspace->uid = $text."-".(++$it);
+      } while ($workspace->exists());
+      
+      do {
+          $workspace = driver_mel::gi()->workspace();
+          $workspace->uid = $text."-".(++$it);
+      } while (driver_mel::gi()->if_group_exist($workspace->uid));
+
+      return $text."-".$it;
+  }
+
+}
+
+class WorkspaceSetting {
+  private $_workspace;
+
+  public function __construct(&$workspace) {
+    $this->_workspace = $workspace;
+  }
+
+  public function get($key) {
+    if ($this->_workspace->settings === null) return null;
+    else return json_decode($this->_workspace->settings)->$key;
+  }
+
+  public function set($key, $value) {
+    if ($this->_workspace->settings === null)
+      $this->_workspace->settings = [$key => $value];
+    else {
+        $this->_workspace->settings = json_decode($this->_workspace->settings);
+        $this->_workspace->settings->$key = $value;
+    }
+
+    $this->_workspace->settings = json_encode($this->_workspace->settings);
+
+    return $this;
+  }
+}
+
+class WorkspaceObject {
+  private $_workspace;
+
+  public function __construct(&$workspace) {
+    $this->_workspace = $workspace;
+  }
+
+  public function get($key) {
+    if ($this->_workspace->objects === null) return null;
+    else return json_decode($this->_workspace->objects)->$key;
+  }
+
+  public function set($key, $object) {
+    if ($this->_workspace->objects === null) $this->_workspace->objects = [$key => $object];
+    else
+    {
+        $this->_workspace->objects = json_decode($this->_workspace->objects);
+        $this->_workspace->objects->$key = $object;
+    }
+
+    $this->_workspace->objects = json_encode($this->_workspace->objects);
+
+    return $this;
+  }
+
+  public function remove($key) {
+    if ($this->_workspace->objects !== null)
+    {
+        $this->_workspace->objects = json_decode($this->_workspace->objects);
+
+        if (isset($this->_workspace->objects->$key)) unset($this->_workspace->objects->$key);
+
+        $this->_workspace->objects = json_encode($this->_workspace->objects);
+    }
+
+    return $this;
+}
 }

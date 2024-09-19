@@ -1,7 +1,10 @@
 <?php
+include_once __DIR__.'/lib/Workspace.php';
 
 class mel_workspace extends bnum_plugin
 {
+    public const KEY_TASK = 'tasks';
+    public const KEY_AGENDA = 'calendar';
     /**
      * @var string
      */
@@ -73,8 +76,80 @@ class mel_workspace extends bnum_plugin
 
     #region actions
     public function check_uid() {
-        
+        $return = 3;
+
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+
+        if ($uid === "" || $uid === null) $return = 2;
+        else if (Workspace::IsUIDValid($uid)) {
+            $workspace = new Workspace($uid);
+            $return = $workspace->exists() ? 0 : 1;
+        }
+
+        echo json_encode($return);
+        exit;
     }
+
+    public function create() {
+        $data = [
+            "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
+            "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
+            "uid" => rcube_utils::get_input_value("custom_uid", rcube_utils::INPUT_POST),
+            "desc" => rcube_utils::get_input_value("desc", rcube_utils::INPUT_POST),
+            "end_date" => rcube_utils::get_input_value("end_date", rcube_utils::INPUT_POST),
+            "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
+            "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
+            "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
+            "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST) ?? [],
+            "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
+            "service_params" => rcube_utils::get_input_value("_services_params", rcube_utils::INPUT_POST),
+        ];
+
+        if ($data["color"] === "" || $data["color"] === null) $data["color"] = "#FFFFFF";
+        if ($data["uid"] === null || $data["uid"] === "") $data['uid'] = Workspace::GenerateUID($data["title"]);
+
+        $retour = [
+            "errored_user" => [],
+            "existing_users" => []
+        ];
+
+        $user = driver_mel::gi()->getUser();
+        $workspace = new Workspace($data["uid"]);
+        $workspace->title($data['title'])
+                  ->logo($data['avatar'])
+                  ->description($data['desc'])
+                  ->creator($user->uid)
+                  ->created(new DateTime('now'))
+                  ->modified(new DateTime('now'))
+                  ->is_public((($data["visibility"] === "private") ? false : true))
+                  ->hashtag($data['hashtag'])
+                  ->color($data['color'])
+                  ->settings()->set('end_date', $data['end_date']);
+        
+        $workspace->save();
+        $workspace->load();
+
+        $workspace->add_owners($user->email);
+
+        if (isset($data['users']) && count($data['users']) > 0) {
+            $retour = $workspace->add_users(...$data['users']);
+
+            if (isset($retour) && isset($retour['existing_users']) && count($retour['existing_users']) > 0) {
+                foreach ($retour['existing_users'] as $userData) {
+                    $just_created = $userData['just_created'];
+
+                    if (class_exists("mel_notification") && !$just_created) {
+                        $user_id = $userData['user'];
+                        $this->_notify_user($user_id, $workspace->get(), $user_id);
+                    }
+                }
+            }
+        }
+
+        $this->_set_services($workspace, $data['services'], $data['service_params']);
+
+        $workspace->save();
+    } 
     #endregion
 
     #region handlers
@@ -86,15 +161,91 @@ class mel_workspace extends bnum_plugin
     #endregion
 
     #region private_functions
-    private function _setup_index_action() {
-        $this->register_action('index', [$this, 'show_workspaces']);
-    }
+        #region register_actions
+        private function _setup_index_action() {
+            $this->register_action('index', [$this, 'show_workspaces']);
+        }
 
-    private function _setup_external_actions() {
-        $this->register_actions(
-            ['check_uid' => [$this, '']]
-        )
-    }
+        private function _setup_external_actions() {
+            $this->register_actions(
+                ['check_uid' => [$this, 'check_uid']],
+                ['create' => [$this, 'create']]
+            );
+        }
+        #endregion
+
+        #region services
+        private function _set_services(&$workspace, $services, $default_value = null) {
+            $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value]);
+
+            if (isset($plugins) && isset($plugins['workspace'])) $workspace = $plugins['workspace']; 
+
+            $services = $this->_set_tasklist($workspace, $services, $default_value);
+            $services = $this->_set_agenda($workspace, $services);
+        }
+
+        private function _set_tasklist(&$workspace, $services, $default_value)
+        {
+            if (array_search(self::KEY_TASK, $services) === false) return $services;
+    
+            include_once "../mel_moncompte/ressources/tasks.php";
+            $tasklist = $workspace->objects()->get(self::KEY_TASK);//$this->get_object($workspace, $tasks);
+    
+            if ($tasklist !== null) //Si la liste de tâche existe déjà
+            {
+                $mel = new M2taskswsp($tasklist);
+                if ($mel->getTaskslist() !== null)
+                {
+                    foreach ($users as $s)
+                    {
+                        $mel->setAcl($s, ["w"]);
+                    }
+                }
+                else {
+                    //$this->remove_object($workspace, $tasks);
+                    $workspace->objects()->remove(self::KEY_TASK);
+                    return $this->create_tasklist($workspace, $services, $users, $update_wsp, $default_value);
+                }
+            }
+            else {//Sinon
+                $mel = new M2taskswsp($workspace->uid());
+    
+                if ($mel->createTaskslist($workspace->title()))
+                {
+                    foreach ($users as $s)
+                    {
+                        $mel->setAcl($s, ["w"]);
+                    }
+    
+                    $taskslist = $mel->getTaskslist();
+                    $workspace->objects()->set(self::KEY_TASK, $taskslist->id);
+                }
+            }
+    
+            $key = array_search(self::KEY_TASK, $services);
+    
+            //$this->create_wekan($workspace, $services, $users, $default_value);
+    
+            if ($key !== false) unset($services[$key]);
+    
+            return $services;
+        }
+
+        private function _set_agenda(&$workspace, $services) {
+            mel_helper::load_helper()->include_utilities();
+            $color = $workspace->color();
+    
+            foreach ($workspace->users() as $s) mel_utils::cal_add_category($s->user, 'ws#'.$workspace->uid(), $color);
+    
+            $workspace->objects()->set(self::KEY_AGENDA, true);
+            
+            $key = array_search(self::KEY_AGENDA, $services);
+    
+            if ($key !== false) unset($services[$key]);
+
+            return $services;
+        }
+        #endregion
 
     private function _show_block($mode) {
         $html = '';
@@ -114,6 +265,76 @@ class mel_workspace extends bnum_plugin
         }
 
         return $html;
+    }
+
+    private function _notify_user($userid, $workspace, $tmp_user = null) {
+        $canNotify = true;
+        $user_last_login = mel_helper::last_login($userid);
+        
+        if (class_exists("mel_notification") && isset($user_last_login)) {
+            if (mel_helper::check_date_past($user_last_login, 15)) $canNotify = false;
+        } else $canNotify = false;
+
+        if ($canNotify) {
+            mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.click_for_open"), [
+                [
+                    'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
+                    'text' => $this->gettext("mel_workspace.open"),
+                    'title' => $this->gettext("mel_workspace.click_for_open"),
+                    'command' => "event.click"
+                ]
+            ], $tmp_user);
+        }
+        else {
+            mel_helper::include_mail_body();
+            include_once 'lib/wsp_mail_body.php';
+            $email = $this->get_worskpace_services($workspace)[self::EMAIL] ? (self::get_wsp_mail($workspace_id) ?? driver_mel::gi()->getUser()->email) : driver_mel::gi()->getUser()->email;
+
+            $bodymail = new WspMailBody('mel_workspace.email');
+
+            $bodymail->user_name = driver_mel::gi()->getUser()->name;
+            $bodymail->user_email = driver_mel::gi()->getUser()->email;
+            $bodymail->wsp_name = $workspace->title;
+            $bodymail->wsp_creator = $workspace->creator;
+            $bodymail->wsp_last__action_text = $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour';
+            $bodymail->wsp_last__action_date = DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y');
+            $bodymail->logobnum = MailBody::load_image(__DIR__.'/skins/elastic/pictures/logobnum.png', 'png');
+            $bodymail->bnum_base__url = 'http://mtes.fr/2';
+            $bodymail->url = 'https://mel.din.developpement-durable.gouv.fr/bureau/?_task=workspace&_action=workspace&_uid='.$workspace->uid;
+
+            $div = ['<div style="display:flex">'];
+            $shares = $workspace->shares;
+
+            $i = 0;
+            foreach ($shares as $user) {
+                if ($i++ < 2) {
+                    $image = MailBody::load_image($this->rc->config->get('rocket_chat_url').'avatar/'.$user->user_uid);
+
+                    if (MailBody::image_loaded()) $div[] = "<img src=\"$image\" style=\"width:36px;height:36px;border-radius:100%;margin-left:-15px;border: solid thick white;\" />";
+                    else $div[] = "<div style=\"text-align: center;line-height: 25px;display:inline-block;width:36px;height:36px;border-radius:100%;background-color:#7DD0C2;margin-left:-15px;border: solid thick white;\"><span>".substr(driver_mel::gi()->getUser($user->user_uid)->name, 0, 2)."</span></div>";
+                }
+                else {
+                    $i = count($shares) - 2;
+
+                    if ($i > 99) $i = ">99";
+                    else $i = "+$i";
+
+                    $div[] = "<div style=\"text-align: center;line-height: 25px;display:inline-block;width:36px;height:36px;border-radius:100%;background-color:#7DD0C2;margin-left:-15px;border: solid thick white;\"><span>$i</span></div>";
+                    
+                    break;
+                }
+            }
+
+            $div[] = '</div>';
+
+            $bodymail->wsp_shares_rounded = implode('', $div);
+
+            $subject = $bodymail->subject();
+            $message = $bodymail->body();
+
+            $is_html = true;
+            mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
+        }
     }
     #endregion
 

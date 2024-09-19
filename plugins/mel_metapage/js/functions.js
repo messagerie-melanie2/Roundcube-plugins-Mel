@@ -1225,7 +1225,8 @@ async function m_mp_check_w(step, next) {
           },
           url: mel_metapage.Functions.url('workspace', 'check_uid'),
           success: function (ariane) {
-            if (ariane !== 'uid_ok') {
+            ariane = +ariane;
+            if (ariane !== 1) {
               stop = true;
               $(input_uid).css('border-color', 'red');
               if ($('#wsptuid').length === 0)
@@ -1234,11 +1235,10 @@ async function m_mp_check_w(step, next) {
                   .append(
                     '<span id=wsptuid class=input-error-r style=color:red></span>',
                   );
-              if (ariane === 'uid_exists')
-                $('#wsptuid').html("* L'id existe déjà !");
-              else if (ariane === 'uid_not_ok')
+              if (ariane === 0) $('#wsptuid').html("* L'id existe déjà !");
+              else if (ariane === 3)
                 $('#wsptuid').html("* L'id n'est pas valide !");
-              else if (ariane === 'ui_empty')
+              else if (ariane === 2)
                 $('#wsptuid').html("* L'id ne doit pas être vide !");
               else $('#wsptuid').html('* Erreur inconnue !');
               $('#wsptuid').css('display', '');

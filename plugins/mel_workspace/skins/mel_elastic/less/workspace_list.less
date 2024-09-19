@@ -18,10 +18,45 @@
       flex-direction: row;
       justify-content: unset;
 
+      .workspace-block-item-picture {
+        height: 100%;
+
+        .no-picture,
+        img {
+          align-self: center;
+        }
+      }
+
       .workspace-block-item-main {
         display: flex;
         width: 100%;
         flex: 100%;
+      }
+
+      .workspace-block-item-bottom {
+        width: 100%;
+        height: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-left: 50px;
+        margin-right: 50px;
+
+        div {
+          text-align: left;
+        }
+      }
+
+      .workspace-block-item-bottom-title {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .workspace-block-item-data {
+        &:extend(.mode-list
+          .workspace-list
+          .workspace-block-item
+          .workspace-block-item-bottom-title);
       }
     }
   }

@@ -2,3 +2,45 @@
   padding-left: 50px;
   padding-right: 50px;
 }
+
+.header-pannel {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 0 5px;
+  display: flex;
+  align-content: space-between;
+}
+
+.pressed-list {
+  background-color: #f8f8f8;
+  border-radius: 10px;
+  padding: 3px 5px 3px 8px;
+
+  .mel-button {
+    color: black;
+    background-color: transparent;
+    border-radius: 5px !important;
+    border: none;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
+
+    &:hover {
+      background-color: white;
+    }
+
+    &[aria-pressed='true'] {
+      &:extend(.pressed-list .mel-button:hover);
+
+      pointer-events: none;
+      color: black;
+    }
+
+    &:first-child {
+      margin-left: 5px;
+    }
+
+    &:last-child {
+      &:extend(.pressed-list .mel-button:first-child);
+    }
+  }
+}

@@ -16,7 +16,9 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     this._color = null;
     this._is_favorite = null;
     this._private = null;
+  }
 
+  _init() {
     Object.defineProperties(this, {
       _picture: {
         value: this.dataset.picture,
@@ -68,6 +70,12 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
         configurable: false,
       },
     });
+
+    return this;
+  }
+
+  _p_main() {
+    this._init();
 
     this.classList.add('workspace-block-item', 'mv2-card');
 
@@ -155,12 +163,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     let bottom = document.createElement('div');
     bottom.classList.add('workspace-block-item-bottom');
 
-    let functions = [
-      this._generate_title_block,
-      this._generate_description,
-      this._generate_users,
-      this._generate_edited,
-    ];
+    let functions = [this._generate_title_block, this._generate_workspace_data];
 
     let tmp;
     for (const func of functions) {
@@ -172,10 +175,6 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       }
     }
 
-    // this.appendChild(bottom);
-
-    // bottom = null;
-
     return bottom;
   }
 
@@ -183,7 +182,11 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     let bottom = document.createElement('div');
     bottom.classList.add('workspace-block-item-bottom-title');
 
-    let functions = [this._generate_tag, this._generate_title];
+    let functions = [
+      this._generate_tag,
+      this._generate_title,
+      this._generate_description,
+    ];
 
     let tmp;
     for (const func of functions) {
@@ -301,6 +304,16 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       'description',
       'workspace-block-item-description',
     );
+  }
+
+  _generate_workspace_data() {
+    let div = document.createElement('div');
+    div.classList.add('workspace-block-item-data');
+
+    div.appendChild(this._generate_users());
+    div.appendChild(this._generate_edited());
+
+    return div;
   }
 
   _generate_users() {

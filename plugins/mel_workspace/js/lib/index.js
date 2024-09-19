@@ -13,9 +13,11 @@ export class IndexWorkspace extends MelObject {
       $('[data-linked-to="subscribed"]').removeClass('mode-list');
     });
 
-    $('#mode-list').on('api:pressed', () => {
-      document.querySelector('#mode-block').unpress();
-      $('[data-linked-to="subscribed"]').addClass('mode-list');
-    });
+    $('#mode-list')
+      .on('api:pressed', () => {
+        document.querySelector('#mode-block').unpress();
+        $('[data-linked-to="subscribed"]').addClass('mode-list');
+      })
+      .click();
   }
 }

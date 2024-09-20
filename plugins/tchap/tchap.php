@@ -18,6 +18,8 @@
 
 class tchap extends bnum_plugin
 {
+    public const KEY_FOR_WORKSPACE = 'tchap'; 
+
     /**
      *
      * @var string
@@ -83,6 +85,8 @@ class tchap extends bnum_plugin
                 'type' => 'link',
             ), $need_button);
         }
+
+        $this->add_hook('workspace.services.set', [$this, 'workspace_set_tchap']);
     }
 
     function action()
@@ -133,6 +137,68 @@ class tchap extends bnum_plugin
 
         echo json_encode($url);
         exit;
+    }
+
+    public function workspace_set_tchap($args) {
+        if (class_exists('mel_workspace')) {
+            $workspace = $args['workspace'];
+            $services = $args['services'];
+            $default_values= $args['default_values'];
+
+            $users = mel_helper::Enumerable($workspace->users())->select(function ($k, $v) {
+                return $v->user;
+            })->toArray();
+
+            if ($workspace->objects()->get(self::KEY_FOR_WORKSPACE) && array_search(self::KEY_FOR_WORKSPACE, $services) !== false) {
+                $default_values_key = "tchap-channel";
+                if (!isset($default_values)) $default_values = [$default_values_key => ['mode' => 'default']];
+                else if (!isset($default_values[$default_values_key])) $default_values[$default_values_key] = ['mode' => 'default'];
+    
+                $uid = null;
+                $value = null;
+                $config = [];
+                switch ($default_values[$default_values_key]['mode']) {
+                    case 'default':
+                        $uid = $workspace->uid();
+                    case 'custom_name':
+                        if (!isset($uid)) $uid = $default_values[$default_values_key]['value'];
+                        $value = self::create_tchap_room($uid, $users);
+                        
+                        break;
+    
+                    case 'already_exist':
+                        $value = $default_values[$default_values_key]['value']['id'];
+    
+                        $config['edited'] = true;
+                        break;
+                    default:
+                        unset($default_values[$default_values_key]);
+                        $args['default_values'] = $default_values;
+                        return $this->workspace_set_tchap($args);
+                }
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_tchap_channel]Valeur : ".json_encode($value));
+    
+                if (is_string($value))
+                {
+                    $config['id'] = $value;
+                }
+                else {
+                    $value = $value["content"]["channel"];
+                    $config['id'] = $value["_id"];
+                }
+    
+                //$this->save_object($workspace, self::TCHAP_CHANNEL, $config);
+                $workspace->objects()->set(self::KEY_FOR_WORKSPACE, $config);
+
+                $args['workspace'] = $workspace;
+
+                unset($services[self::KEY_FOR_WORKSPACE]);
+
+                $args['services'] = $services;
+            }
+        }
+
+        return $args;
     }
 
     /**

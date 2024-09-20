@@ -107,6 +107,7 @@ export class TabsElement extends HtmlCustomElement {
         element_selected.setAttribute('aria-labelledby', generated_tab.id);
         element_selected.setAttribute('tabindex', -1);
         element_selected.classList.add('mel-tab-content');
+        element_selected.id = pannel_id;
       }
 
       element_selected = null;

@@ -1,6 +1,6 @@
 <?php
 define('DEFAULT_SYMBOL', '¤¤¤¤¤¤¤DEFAULT_SYMBOL¤¤¤¤¤¤¤');
-
+use LibMelanie\Api\Defaut\Workspaces\Share;
 class Workspace {
   private $_uid;
   private $_workspace;
@@ -52,6 +52,7 @@ class Workspace {
   }
 
   public function save() {
+    $this->modified(new DateTime());
     $this->_workspace->save();
   
     return $this->_unset();
@@ -91,7 +92,7 @@ class Workspace {
   }  
 
   public function title($newTitle = DEFAULT_SYMBOL) {
-    return $this->_update_or_get_item('logo', $newTitle);
+    return $this->_update_or_get_item('title', $newTitle);
   }
 
   public function description($newDesc = DEFAULT_SYMBOL) {
@@ -102,12 +103,12 @@ class Workspace {
     $ret = $this;
 
     if ($this->_hashtag !== DEFAULT_SYMBOL) {
-      $this->_workspace->hashtag = [$newTag];
+      $this->_workspace->hashtags = [$newTag];
       $this->_hashtag = $newTag;
     }
     else if(isset($this->_hashtag)) $ret = $this->_hashtag;
     else {
-      $this->_hashtag = isset($this->_workspace->_hashtag) && isset($this->_workspace->_hashtag[0]) ? $this->_workspace->_hashtag[0] : null;
+      $this->_hashtag = isset($this->_workspace->hashtags) && isset($this->_workspace->hashtags[0]) ? $this->_workspace->hashtags[0] : null;
       $ret = $this->_hashtag;
     }
 
@@ -154,6 +155,15 @@ class Workspace {
     })->where(function ($k, $v) {
       return !is_null($v);
     }) : $this->_users;
+  }
+
+  public function users_mail($to_array = true) {
+    $to_melanie_user = true;
+    $tmp = $this->users($to_melanie_user)->select(function ($k, $v) {
+      return $v->email;
+    });
+
+    return $to_array ? $tmp->toArray() : $tmp;
   }
 
   public function add_owners(...$users) {

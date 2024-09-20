@@ -1337,6 +1337,7 @@ async function m_mp_CreateWorkSpace() {
     data: datas,
     url: mel_metapage.Functions.url('workspace', 'create'), //"/?_task=workspace&_action=create",
     success: function (data) {
+      debugger;
       data = JSON.parse(data);
 
       rcmail.set_busy(false);
@@ -1807,7 +1808,7 @@ function m_mp_add_users() {
           html = '<li>';
           html += '<div class="row" style="margin-top:15px">';
           html += '<div class="col-2">';
-          html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
+          html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="./?_task=addressbook&_action=photo&_email=${element.email}&_error=1&_is_from=iframe" /></div>`;
           html += '</div>';
           html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
           html += `<span class="name">${element.name}</span><br/>`;

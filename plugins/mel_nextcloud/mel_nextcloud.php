@@ -40,6 +40,8 @@ class mel_nextcloud extends rcube_plugin {
     $this->load_config();
     $this->add_texts('localization/', false);
     
+    $this->get_env_js();
+
     if (class_exists('driver_mel')) {
       if (!driver_mel::get_instance()->userHasAccessToStockage()) {
         return;
@@ -77,7 +79,6 @@ class mel_nextcloud extends rcube_plugin {
 
     // ajout de la tache
     $this->register_task('stockage');
-    $this->get_env_js();
     // Ajoute le bouton en fonction de la skin
 
     $need_button = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
@@ -137,6 +138,9 @@ class mel_nextcloud extends rcube_plugin {
         'settings'
       ));
     }
+    
+
+    $this->add_hook('workspace.services.set', [$this, 'workspace_set_drive']);
   }
 
   /**
@@ -340,5 +344,31 @@ class mel_nextcloud extends rcube_plugin {
     }
 
     return $iv;
+  }
+
+  public function workspace_set_drive($args) {
+    if (class_exists('mel_workspace')) {
+      $workspace = $args['workspace'];
+      $services = $args['services'];
+  
+      $search = array_search(mel_workspace::KEY_DRIVE, $services);
+      $create_nc = $search !== false || ($workspace->objects()->get(mel_workspace::KEY_DRIVE) ?? false);
+  
+      driver_mel::gi()->workspace_group($workspace->uid(), $workspace->users_mail(), $create_nc);
+  
+      $workspace->objects()->set(mel_workspace::KEY_DRIVE, $create_nc);
+
+      $args['workspace'] = $workspace;
+
+      if ($create_nc) {
+        $key = array_search(mel_workspace::KEY_DRIVE, $services);
+
+        if ($key !== false) unset($services[$key]);
+      }
+
+      $args['services'] = $services;
+    }
+
+    return $args;
   }
 }

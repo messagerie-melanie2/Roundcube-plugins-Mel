@@ -122,6 +122,12 @@ abstract class bnum_plugin extends rcube_plugin
         $this->api->register_action($action, $this->ID, $callback, $this->get_current_task());
     }
 
+    protected function register_actions($array) {
+        foreach ($array as $key => $action) {
+            $this->register_action($key, $action);
+        }
+    }
+
     protected function rc() {
         return rcmail::get_instance();
     }

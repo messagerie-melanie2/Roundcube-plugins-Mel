@@ -5,6 +5,8 @@ class mel_workspace extends bnum_plugin
 {
     public const KEY_TASK = 'tasks';
     public const KEY_AGENDA = 'calendar';
+    public const KEY_DRIVE = 'doc';
+    public const KEY_TCHAT = 'tchat';
     /**
      * @var string
      */
@@ -91,64 +93,78 @@ class mel_workspace extends bnum_plugin
     }
 
     public function create() {
-        $data = [
-            "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
-            "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
-            "uid" => rcube_utils::get_input_value("custom_uid", rcube_utils::INPUT_POST),
-            "desc" => rcube_utils::get_input_value("desc", rcube_utils::INPUT_POST),
-            "end_date" => rcube_utils::get_input_value("end_date", rcube_utils::INPUT_POST),
-            "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
-            "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
-            "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
-            "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST) ?? [],
-            "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
-            "service_params" => rcube_utils::get_input_value("_services_params", rcube_utils::INPUT_POST),
-        ];
+        try {
+            $data = [
+                "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
+                "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
+                "uid" => rcube_utils::get_input_value("custom_uid", rcube_utils::INPUT_POST),
+                "desc" => rcube_utils::get_input_value("desc", rcube_utils::INPUT_POST),
+                "end_date" => rcube_utils::get_input_value("end_date", rcube_utils::INPUT_POST),
+                "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
+                "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
+                "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
+                "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST) ?? [],
+                "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
+                "service_params" => rcube_utils::get_input_value("_services_params", rcube_utils::INPUT_POST),
+            ];
 
-        if ($data["color"] === "" || $data["color"] === null) $data["color"] = "#FFFFFF";
-        if ($data["uid"] === null || $data["uid"] === "") $data['uid'] = Workspace::GenerateUID($data["title"]);
+            if ($data["color"] === "" || $data["color"] === null) $data["color"] = "#FFFFFF";
+            if ($data["uid"] === null || $data["uid"] === "") $data['uid'] = Workspace::GenerateUID($data["title"]);
 
-        $retour = [
-            "errored_user" => [],
-            "existing_users" => []
-        ];
+            $retour = [
+                "errored_user" => [],
+                "existing_users" => []
+            ];
 
-        $user = driver_mel::gi()->getUser();
-        $workspace = new Workspace($data["uid"]);
-        $workspace->title($data['title'])
-                  ->logo($data['avatar'])
-                  ->description($data['desc'])
-                  ->creator($user->uid)
-                  ->created(new DateTime('now'))
-                  ->modified(new DateTime('now'))
-                  ->is_public((($data["visibility"] === "private") ? false : true))
-                  ->hashtag($data['hashtag'])
-                  ->color($data['color'])
-                  ->settings()->set('end_date', $data['end_date']);
-        
-        $workspace->save();
-        $workspace->load();
+            $user = driver_mel::gi()->getUser();
+            $workspace = new Workspace($data["uid"]);
+            $workspace->title($data['title'])
+                    ->logo($data['avatar'])
+                    ->description($data['desc'])
+                    ->creator($user->uid)
+                    ->created(new DateTime('now'))
+                    ->modified(new DateTime('now'))
+                    ->isPublic((($data["visibility"] === "private") ? false : true))
+                    ->hashtag($data['hashtag'])
+                    ->color($data['color'])
+                    ->settings()->set('end_date', $data['end_date']);
+            
+            $workspace->save();
+            $workspace->load();
 
-        $workspace->add_owners($user->email);
+            $workspace->add_owners($user->email);
 
-        if (isset($data['users']) && count($data['users']) > 0) {
-            $retour = $workspace->add_users(...$data['users']);
+            if (isset($data['users']) && count($data['users']) > 0) {
+                $retour = $workspace->add_users(...$data['users']);
 
-            if (isset($retour) && isset($retour['existing_users']) && count($retour['existing_users']) > 0) {
-                foreach ($retour['existing_users'] as $userData) {
-                    $just_created = $userData['just_created'];
+                if (isset($retour) && isset($retour['existing_users']) && count($retour['existing_users']) > 0) {
+                    foreach ($retour['existing_users'] as $userData) {
+                        $just_created = $userData['just_created'];
 
-                    if (class_exists("mel_notification") && !$just_created) {
-                        $user_id = $userData['user'];
-                        $this->_notify_user($user_id, $workspace->get(), $user_id);
+                        if (class_exists("mel_notification") && !$just_created) {
+                            $user_id = $userData['user'];
+                            $this->_notify_user($user_id, $workspace->get(), $user_id);
+                        }
                     }
                 }
             }
+
+            $services = $this->_set_services($workspace, $data['services'], $data['service_params']);
+
+            $workspace->save();
+
+            $retour["workspace_uid"] = $workspace->uid();
+
+            $retour["uncreated_services"] = $services;
+
+            echo json_encode($retour);
+            exit;
+        } catch (\Throwable $th) {
+            $func = "create";
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title."'' !");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
         }
-
-        $this->_set_services($workspace, $data['services'], $data['service_params']);
-
-        $workspace->save();
     } 
     #endregion
 
@@ -161,92 +177,6 @@ class mel_workspace extends bnum_plugin
     #endregion
 
     #region private_functions
-        #region register_actions
-        private function _setup_index_action() {
-            $this->register_action('index', [$this, 'show_workspaces']);
-        }
-
-        private function _setup_external_actions() {
-            $this->register_actions(
-                ['check_uid' => [$this, 'check_uid']],
-                ['create' => [$this, 'create']]
-            );
-        }
-        #endregion
-
-        #region services
-        private function _set_services(&$workspace, $services, $default_value = null) {
-            $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value]);
-
-            if (isset($plugins) && isset($plugins['workspace'])) $workspace = $plugins['workspace']; 
-
-            $services = $this->_set_tasklist($workspace, $services, $default_value);
-            $services = $this->_set_agenda($workspace, $services);
-        }
-
-        private function _set_tasklist(&$workspace, $services, $default_value)
-        {
-            if (array_search(self::KEY_TASK, $services) === false) return $services;
-    
-            include_once "../mel_moncompte/ressources/tasks.php";
-            $tasklist = $workspace->objects()->get(self::KEY_TASK);//$this->get_object($workspace, $tasks);
-    
-            if ($tasklist !== null) //Si la liste de tâche existe déjà
-            {
-                $mel = new M2taskswsp($tasklist);
-                if ($mel->getTaskslist() !== null)
-                {
-                    foreach ($users as $s)
-                    {
-                        $mel->setAcl($s, ["w"]);
-                    }
-                }
-                else {
-                    //$this->remove_object($workspace, $tasks);
-                    $workspace->objects()->remove(self::KEY_TASK);
-                    return $this->create_tasklist($workspace, $services, $users, $update_wsp, $default_value);
-                }
-            }
-            else {//Sinon
-                $mel = new M2taskswsp($workspace->uid());
-    
-                if ($mel->createTaskslist($workspace->title()))
-                {
-                    foreach ($users as $s)
-                    {
-                        $mel->setAcl($s, ["w"]);
-                    }
-    
-                    $taskslist = $mel->getTaskslist();
-                    $workspace->objects()->set(self::KEY_TASK, $taskslist->id);
-                }
-            }
-    
-            $key = array_search(self::KEY_TASK, $services);
-    
-            //$this->create_wekan($workspace, $services, $users, $default_value);
-    
-            if ($key !== false) unset($services[$key]);
-    
-            return $services;
-        }
-
-        private function _set_agenda(&$workspace, $services) {
-            mel_helper::load_helper()->include_utilities();
-            $color = $workspace->color();
-    
-            foreach ($workspace->users() as $s) mel_utils::cal_add_category($s->user, 'ws#'.$workspace->uid(), $color);
-    
-            $workspace->objects()->set(self::KEY_AGENDA, true);
-            
-            $key = array_search(self::KEY_AGENDA, $services);
-    
-            if ($key !== false) unset($services[$key]);
-
-            return $services;
-        }
-        #endregion
-
     private function _show_block($mode) {
         $html = '';
         $workspaces = null;
@@ -336,6 +266,91 @@ class mel_workspace extends bnum_plugin
             mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
         }
     }
+        #region register_actions
+        private function _setup_index_action() {
+            $this->register_action('index', [$this, 'show_workspaces']);
+        }
+
+        private function _setup_external_actions() {
+            $this->register_actions(
+                ['check_uid' => [$this, 'check_uid'],
+                'create' => [$this, 'create']]
+            );
+        }
+        #endregion
+
+        #region services
+        private function _set_services(&$workspace, $services, $default_value = null) {
+            $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value]);
+
+            if (isset($plugins) && isset($plugins['workspace'])) $workspace = $plugins['workspace']; 
+
+            $services = $this->_set_tasklist($workspace, $services, $default_value);
+            $services = $this->_set_agenda($workspace, $services);
+        }
+
+        private function _set_tasklist(&$workspace, $services, $default_value)
+        {
+            if (array_search(self::KEY_TASK, $services) === false) return $services;
+    
+            include_once "../mel_moncompte/ressources/tasks.php";
+            $tasklist = $workspace->objects()->get(self::KEY_TASK);//$this->get_object($workspace, $tasks);
+    
+            if ($tasklist !== null) //Si la liste de tâche existe déjà
+            {
+                $mel = new M2taskswsp($tasklist);
+                if ($mel->getTaskslist() !== null)
+                {
+                    foreach ($users as $s)
+                    {
+                        $mel->setAcl($s, ["w"]);
+                    }
+                }
+                else {
+                    //$this->remove_object($workspace, $tasks);
+                    $workspace->objects()->remove(self::KEY_TASK);
+                    return $this->create_tasklist($workspace, $services, $users, $update_wsp, $default_value);
+                }
+            }
+            else {//Sinon
+                $mel = new M2taskswsp($workspace->uid());
+    
+                if ($mel->createTaskslist($workspace->title()))
+                {
+                    foreach ($users as $s)
+                    {
+                        $mel->setAcl($s, ["w"]);
+                    }
+    
+                    $taskslist = $mel->getTaskslist();
+                    $workspace->objects()->set(self::KEY_TASK, $taskslist->id);
+                }
+            }
+    
+            $key = array_search(self::KEY_TASK, $services);
+    
+            //$this->create_wekan($workspace, $services, $users, $default_value);
+    
+            if ($key !== false) unset($services[$key]);
+    
+            return $services;
+        }
+
+        private function _set_agenda(&$workspace, $services) {
+            mel_helper::load_helper()->include_utilities();
+            $color = $workspace->color();
+    
+            foreach ($workspace->users() as $s) mel_utils::cal_add_category($s->user, 'ws#'.$workspace->uid(), $color);
+    
+            $workspace->objects()->set(self::KEY_AGENDA, true);
+            
+            $key = array_search(self::KEY_AGENDA, $services);
+    
+            if ($key !== false) unset($services[$key]);
+
+            return $services;
+        }
+        #endregion
     #endregion
 
     #region statics

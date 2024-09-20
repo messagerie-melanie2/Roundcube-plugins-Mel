@@ -8,16 +8,36 @@ export class IndexWorkspace extends MelObject {
   main() {
     super.main();
 
-    $('#mode-block').on('api:pressed', () => {
-      document.querySelector('#mode-list').unpress();
-      $('[data-linked-to="subscribed"]').removeClass('mode-list');
-    });
+    $('#mode-block')
+      .on('api:pressed', (e) => {
+        $(e.currentTarget).attr('tabindex', -1);
+        document
+          .querySelector('#mode-list')
+          .unpress()
+          .setAttribute('tabindex', 0);
+        let control = $('bnum-tabs')
+          .removeClass('mode-list')
+          .find('button.mel-tabheader.active')
+          .attr('aria-controls');
 
-    $('#mode-list')
-      .on('api:pressed', () => {
-        document.querySelector('#mode-block').unpress();
-        $('[data-linked-to="subscribed"]').addClass('mode-list');
+        $(`#${control}`).focus();
       })
-      .click();
+      .parent()
+      .find('[aria-pressed="true"], [data-start-pressed="true"]')
+      .attr('tabindex', -1);
+
+    $('#mode-list').on('api:pressed', (e) => {
+      $(e.currentTarget).attr('tabindex', -1);
+      document
+        .querySelector('#mode-block')
+        .unpress()
+        .setAttribute('tabindex', 0);
+      let control = $('bnum-tabs')
+        .addClass('mode-list')
+        .find('button.mel-tabheader.active')
+        .attr('aria-controls');
+
+      $(`#${control}`).focus();
+    });
   }
 }

@@ -498,7 +498,7 @@ async deleteComment(uid) {
  * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
  */
 generateHtmlFromTemplate() {
-  debugger;
+  // debugger;
   let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
   let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
@@ -539,7 +539,7 @@ generateHtmlFromTemplate() {
     LIKES: this.likes,
     DISLIKES: this.dislikes,
     RESPONSE_SECTION: this.children_number > 0 ? 
-      `<div class="forum-comment-response" onclick="toggleResponses('${this.id}')">
+      `<div class="forum-comment-response" data-comment-id="${this.id}">
         <span id="toggle-icon-${this.id}" class="icon" data-icon="arrow_drop_down"></span>
         <span class="ml-2">${this.children_number} ${reponseText}</span>
       </div>
@@ -547,6 +547,8 @@ generateHtmlFromTemplate() {
   };
 
   let template = document.querySelector('#comment-template').innerHTML;
+
+  console.log('Template avant remplacement :', template); // Vérifier que les placeholders sont bien présents
 
   // Remplacer les placeholders avec les valeurs de data
   let renderedHtml = template
@@ -563,6 +565,7 @@ generateHtmlFromTemplate() {
     .replace(/%%DISLIKES%%/g, data.DISLIKES)
     .replace(/%%RESPONSE_SECTION%%/g, data.RESPONSE_SECTION || '');
 
+  console.log('HTML généré :', renderedHtml); // Vérifiez si les valeurs sont remplacées ici
 
     return renderedHtml;
 }

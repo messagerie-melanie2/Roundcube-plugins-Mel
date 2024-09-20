@@ -744,7 +744,7 @@ class mel_metapage extends bnum_plugin
             'classsel' => 'compose mel-new-compose options rcm-active',
             'innerclass' => 'inner',
             'label'    => 'mel_metapage.new-mail-from',
-            'title' => '',
+            'title' => 'Composer un email',
             'type'       => 'link-menuitem',
         ), "messagemenu");
     }
@@ -783,7 +783,7 @@ class mel_metapage extends bnum_plugin
             'classsel' => 'compose options',
             'innerclass' => 'inner',
             'label'    => 'compose',
-            'title' => '',
+            'title' => 'Composer un email',
             'type'       => 'link',
         ), "listcontrols");
 
@@ -794,7 +794,7 @@ class mel_metapage extends bnum_plugin
             'classsel' => 'compose mel-event-compose options',
             'innerclass' => 'inner',
             'label'    => 'mel_metapage.event-compose',
-            'title' => '',
+            'title' => 'Composer un email',
             'type'       => 'link-menuitem',
         ), "events-options-containers");
 

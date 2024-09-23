@@ -1,13 +1,13 @@
 {
-    "parent":"abstract-picture-theme-two-colored",
-    "id":"party-christmas",
-    "display":"white",
-    "description":"desc",
-    "icon":"icon.svg",
-    "enabled":true,
-    "style":"style",
-    "class":"party-christmas",
-    "custom_dark_mode":true,
-    "order":100,
-    "saison":"22/09-31/12"
+  "parent": "abstract-picture-theme-two-colored",
+  "id": "party-christmas",
+  "display": "white",
+  "description": "desc",
+  "icon": "icon.svg",
+  "enabled": true,
+  "style": "style",
+  "class": "party-christmas",
+  "custom_dark_mode": true,
+  "order": 100,
+  "saison": "01/12-31/12"
 }

@@ -84,54 +84,12 @@ export class Manager extends MelObject {
                 parentResponseContainer.append(commentHtml);
             }
 
+            // Ajouter chaque commentaire à la liste des commentaires pour un éventuel traitement ultérieur
             comments_array.push(commentVizualizer);
         }
     }
 
-    // Délégation d'événements pour les éléments dynamiques
-    $('#comment-area').on('click', '.edit-comment', function() {
-        let uid = $(this).data('id');
-        toggleModifyComment(uid);
-    });
-
-    $('#comment-area').on('click', '.delete-comment', function() {
-        let uid = $(this).data('id');
-        deleteComment(uid);
-    });
-
-    $('#comment-area').on('click', '.icon[data-icon="thumb_up"]', function() {
-        let uid = $(this).data('like-uid');
-        saveLikeOrDislike('like', uid);
-    });
-
-    $('#comment-area').on('click', '.icon[data-icon="thumb_down"]', function() {
-        let uid = $(this).data('dislike-uid');
-        saveLikeOrDislike('dislike', uid);
-    });
-
-    $('#comment-area').on('click', '.response', function() {
-        let uid = $(this).closest('.row').attr('id').split('-')[2];
-        toggleReplyForm(uid);
-    });
-
-    $('#comment-area').on('click', '#submit-modify-comment', function() {
-        let uid = $(this).closest('.forum-comment-edit').attr('id').split('-')[2];
-        modifyComment(uid);
-    });
-
-    $('#comment-area').on('click', '#submit-reply', function() {
-        saveReply();
-    });
-
-    $('#comment-area').on('click', '.forum-comment-response', function() {
-        let commentId = $(this).attr('data-comment-id');
-        console.log(commentId);
-        
-        // toggleResponses(commentId);
-    });
-
-
-    // Affiche les données de tous les commentaires dans la console pour débogage.
+     // Affiche les données de tous les commentaires dans la console pour débogage.
     console.log($('#comment-area').html()); // Affiche le contenu du DOM avec les valeurs dynamiques
 }
 

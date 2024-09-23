@@ -192,7 +192,9 @@ async toggleResponses(id) {
  * - Réinitialise le contenu et les dimensions du textarea lorsque le formulaire devient visible.
  * - Met le focus sur le textarea lorsque le formulaire est affiché.
  */
-toggleReplyForm(uid, parentId) {
+
+async toggleReplyForm(uid, parentId) {
+  debugger;
   let form = $('#reply-form-' + uid);
   let isVisible = !form.hasClass('hidden');
   
@@ -543,15 +545,15 @@ generateHtmlFromTemplate() {
         <span id="toggle-icon-${this.id}" class="icon" data-icon="arrow_drop_down"></span>
         <span class="ml-2">${this.children_number} ${reponseText}</span>
       </div>
-      <div id="responses-${this.id}" class="responses ml-4 hidden"></div>` : ''
+      <div id="responses-${this.id}" class="responses ml-4"></div>` : ''
   };
+  let template = document.querySelector('#comment-template').cloneNode(true);
 
-  let template = document.querySelector('#comment-template').innerHTML;
 
-  console.log('Template avant remplacement :', template); // Vérifier que les placeholders sont bien présents
+  
 
   // Remplacer les placeholders avec les valeurs de data
-  let renderedHtml = template
+  template.innerHTML = template.innerHTML
     .replace(/%%UID%%/g, data.UID)
     .replace(/%%PROFILE_COLOR%%/g, data.PROFILE_COLOR)
     .replace(/%%USER_INITIALS%%/g, data.USER_INITIALS)
@@ -565,9 +567,21 @@ generateHtmlFromTemplate() {
     .replace(/%%DISLIKES%%/g, data.DISLIKES)
     .replace(/%%RESPONSE_SECTION%%/g, data.RESPONSE_SECTION || '');
 
-  console.log('HTML généré :', renderedHtml); // Vérifiez si les valeurs sont remplacées ici
+  console.log('HTML généré :', template.innerHTML); // Vérifiez si les valeurs sont remplacées ici
 
-    return renderedHtml;
+  template.querySelector('#cancel-modify-comment').onclick = this.cancelModifyComment.bind(this, this.uid);
+  template.querySelector('#submit-modify-comment').onclick = this.modifyComment.bind(this, this.uid);
+  template.querySelector('.icon[data-icon="thumb_up"]').onclick = this.saveLikeOrDislike.bind(this, 'like', this.uid);
+  template.querySelector('.icon[data-icon="thumb_down"]').onclick = this.saveLikeOrDislike.bind(this, 'dislike', this.uid);
+  template.querySelector('.reaction-item.response').onclick = this.toggleReplyForm.bind(this, this.uid, this.id);
+  template.querySelector('.icon[data-icon="more_horiz"]').onclick = this.toggleMenu.bind(this, this.uid);
+  template.querySelector('.comment-options-button.edit-comment').onclick = this.toggleModifyComment.bind(this, this.uid);
+  template.querySelector('.comment-options-button.delete-comment').onclick = this.deleteComment.bind(this, this.uid);
+  template.querySelector('#cancel-reply').onclick = this.toggleReplyForm.bind(this, this.uid);
+  template.querySelector('#submit-reply').onclick = this.saveReply.bind(this, this.content);
+  if(this.children_number > 0) template.querySelector('.forum-comment-response').onclick = this.toggleResponses.bind(this, this.id);
+
+    return template.querySelector('.comment-container');
 }
 
   /**

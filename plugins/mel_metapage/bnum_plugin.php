@@ -226,6 +226,10 @@ class WebComponnents {
         $this->_include_component('pressed_button_web_element');
     }
 
+    public function InfiniteScrollContainer() {
+        $this->_include_component('infinite_scroll_container');
+    }
+
     public function ____METHODS____($what, ...$args) {
         switch ($what) {
             case '_include_component':

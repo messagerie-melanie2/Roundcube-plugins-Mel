@@ -3,6 +3,7 @@ include_once __DIR__.'/lib/Workspace.php';
 
 class mel_workspace extends bnum_plugin
 {
+    public const PAGE_MAX = 16;
     public const KEY_TASK = 'tasks';
     public const KEY_AGENDA = 'calendar';
     public const KEY_DRIVE = 'doc';
@@ -11,6 +12,8 @@ class mel_workspace extends bnum_plugin
      * @var string
      */
     public $task = '.*';
+
+    private static $_workspaces;
 
   /**
      * (non-PHPdoc)
@@ -58,6 +61,8 @@ class mel_workspace extends bnum_plugin
                 # code...
                 break;
         }
+
+        $this->_hook_actions();
     }
 
     #region pages
@@ -68,9 +73,12 @@ class mel_workspace extends bnum_plugin
         $this->load_script_module('index');
         $this->include_web_component()->Tabs();
         $this->include_web_component()->PressedButton();
+        $this->include_web_component()->InfiniteScrollContainer();
         self::IncludeWorkspaceBlockComponent();
 
         $this->add_handler('subscribed', [$this, 'handler_subscribed']);
+        $this->add_handler('publics', [$this, 'handler_publics']);
+        $this->add_handler('archived', [$this, 'handler_archived']);
 
         $this->rc()->output->send('mel_workspace.index');
     }
@@ -170,19 +178,39 @@ class mel_workspace extends bnum_plugin
 
     #region handlers
     public function handler_subscribed($args) {
-        $args['class'] = 'workspace-list';
+        $args['class'] = 'workspace-list contents';
         $html = html::div($args, $this->_show_block(0));
+        return $html;
+    }
+
+    public function handler_publics($args) {
+        $args['class'] = 'workspace-list contents';
+        $html = html::div($args, $this->_show_block(1));
+        return $html;
+    }
+
+    public function handler_archived($args) {
+        $args['class'] = 'workspace-list contents';
+        $html = html::div($args, $this->_show_block(2));
         return $html;
     }
     #endregion
 
     #region private_functions
-    private function _show_block($mode) {
+    private function _show_block($mode, $page = null) {
         $html = '';
         $workspaces = null;
         switch ($mode) {
             case 0:
-                $workspaces = self::LoadWorkspaces();
+                $workspaces = self::LoadWorkspaces(1);
+                break;
+
+            case 1:
+                $workspaces = (driver_mel::gi()->workspace())->listPublicsWorkspaces('modified', true, self::PAGE_MAX, (($page ?? 1) - 1)*self::PAGE_MAX);
+                break;
+
+            case 2:
+                $workspaces = self::LoadWorkspaces(2);
                 break;
             
             default:
@@ -276,6 +304,46 @@ class mel_workspace extends bnum_plugin
                 ['check_uid' => [$this, 'check_uid'],
                 'create' => [$this, 'create']]
             );
+        }
+        #endregion
+
+        #region hook_actions
+        private function _hook_actions() {
+            $this->add_hook('webcomponents.scroll.count', [$this, 'webcomponentScrollCount']);
+            $this->add_hook('webcomponents.scroll.data', [$this, 'webcomponentScrollData']);
+        }
+
+        public function webcomponentScrollCount($args) {
+            $namespace = $args['namespace'];
+
+            switch ($namespace) {
+                case 'workspace.publics':
+                    $args['count'] =count((driver_mel::gi()->workspace())->listPublicsWorkspaces());
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
+            return $args;
+        }
+
+        public function webcomponentScrollData($args) {
+            $page = $args['page'];
+            $namespace = $args['namespace'];
+
+            switch ($namespace) {
+                case 'workspace.publics':
+                    $args['html'] = $this->_show_block(1, $page);
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
+            return $args;
         }
         #endregion
 
@@ -415,6 +483,7 @@ class mel_workspace extends bnum_plugin
     }
 
     public static function GetWorkspacesBlock($workspace) {
+        mel_helper::load_helper()->include_utilities();
         $rc = rcmail::get_instance();
         $name = 'mel_workspace.workspace_block';
 
@@ -448,8 +517,9 @@ class mel_workspace extends bnum_plugin
 
         $block->picture = self::_GetWorkspaceLogo($workspace);
         $block->tag = isset($hashtags) && count($hashtags) > 0 ? ($hashtags[0] ?? '') : '';
-        $block->title = $workspace->title;
-        $block->description = $workspace->description;
+        $block->tag = mel_utils::for_data_html($block->tag);
+        $block->title = mel_utils::for_data_html($workspace->title);
+        $block->description = mel_utils::for_data_html($workspace->description);
         $block->users = implode(',', $users);
         $block->edited = $workspace->modified;
         $block->color = self::_GetWorkspaceSetting($workspace, 'color');
@@ -472,9 +542,31 @@ class mel_workspace extends bnum_plugin
      *
      * @return void
      */
-    public static function LoadWorkspaces()
+    public static function LoadWorkspaces($mode = 0, $limit = null, $offset = null)
     {
-        return driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
+        if (!isset(self::$_workspaces)) self::$_workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces(null, false, $limit, $offset);
+
+        $data = self::$_workspaces;
+
+        switch ($mode) {
+            case 1:
+                $data = mel_helper::Enumerable($data)->where(function ($k, $v) {
+                    return !$v->isarchived;
+                });
+                break;
+            
+            case 2:
+                $data = mel_helper::Enumerable($data)->where(function ($k, $v) {
+                    return $v->isarchived;
+                });
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        return $data;
     }
 
     public static function GetWorkspace($uid)

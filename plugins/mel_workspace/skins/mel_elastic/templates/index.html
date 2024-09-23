@@ -45,7 +45,7 @@
     </div>
   </div>
 
-  <div class="body" style="padding-bottom: 15px; overflow: auto;">
+  <!-- <div class="body"> -->
     <bnum-tabs
       data-navs="subscribed, publics, archived"
       data-ex-label="mel_workspace"
@@ -66,8 +66,16 @@
       <div data-linked-to="subscribed">
         <roundcube:object name="subscribed"  />
       </div>
+
+      <bnum-infinite-scroll-container data-scrollspace="workspace.publics" data-linked-to="publics">
+        <roundcube:object name="publics"  />
+      </bnum-infinite-scroll-container>
+
+      <div data-linked-to="archived">
+        <roundcube:object name="archived"  />
+      </div>
     </bnum-tab>
-  </div>
+  <!-- </div> -->
 </div>
 
 <roundcube:include file="includes/footer.html" />

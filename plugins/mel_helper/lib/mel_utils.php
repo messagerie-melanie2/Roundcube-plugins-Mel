@@ -757,6 +757,9 @@ class mel_utils
 
   }
 
+  public static function for_data_html($string) {
+    return str_replace('"', '\'\'', $string);
+  }
 
   public static function string_to_number($string)
   {

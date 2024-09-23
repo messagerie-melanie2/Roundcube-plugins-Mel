@@ -3,6 +3,12 @@ import { HtmlCustomTag } from '../../../../mel_metapage/js/lib/html/JsHtml/Custo
 import { FavoriteButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 
+//#region textes
+const TEXT_PRIVATE_SPACE = 'Cet espace est privé !';
+const TEXT_SET_TO_FAVORITE = 'Mettre cet espace en favori';
+const TEXT_UNSET_TO_FAVORITE = 'Retirer cet espace des favoris';
+//#endregion
+
 export class WorkspaceBlockItem extends HtmlCustomTag {
   constructor() {
     super();
@@ -82,6 +88,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     this._generate();
   }
 
+  //#region main_block
   _generate() {
     let div = document.createElement('div');
     div.classList.add('workspace-block-item-main', 'mel-focus', 'important');
@@ -111,9 +118,10 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
     div = null;
 
-    return this._generate_favorite();
+    return this._generate_favorite()._generate_lock();
   }
 
+  //#region favorite
   _generate_favorite() {
     /**
      * @type {FavoriteButton}
@@ -124,17 +132,44 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     favorite.setAttribute('data-start-pressed', this._is_favorite);
     favorite.classList.add('workspace-block-item-favorite');
 
+    this._set_favorite_texts(favorite, this._is_favorite);
+
     favorite.ontoggle.push((...data) => {
-      console.log('favs', data);
+      let [event, node] = data;
+
+      this._set_favorite_texts(node, event.newState);
     });
 
     this.appendChild(favorite);
+    this.removeAttribute('data-favorite');
 
     favorite = null;
 
     return this;
   }
+  //#endregion
 
+  //#region lock
+  _generate_lock() {
+    if ([true, 'true', 1, '1'].includes(this.dataset.private)) {
+      let lock = document.createElement('bnum-icon');
+      lock.setAttribute('data-icon', 'lock');
+      lock.setAttribute('title', TEXT_PRIVATE_SPACE);
+      lock.classList.add('workspace-block-item-lock');
+
+      this.appendChild(lock);
+
+      lock = null;
+    }
+
+    this.removeAttribute('data-private');
+
+    return this;
+  }
+  //#endregion
+  //#endregion
+
+  //#region top_block
   _generate_picture() {
     let pict = document.createElement('div');
     pict.classList.add('workspace-block-item-picture');
@@ -158,7 +193,9 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
     return pict;
   }
+  //#endregion
 
+  //#region bottom_block
   _generate_bottom() {
     let bottom = document.createElement('div');
     bottom.classList.add('workspace-block-item-bottom');
@@ -178,6 +215,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     return bottom;
   }
 
+  //#region title_block
   _generate_title_block() {
     let bottom = document.createElement('div');
     bottom.classList.add('workspace-block-item-bottom-title');
@@ -199,6 +237,161 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     }
 
     return bottom;
+  }
+
+  //#region tag
+  _generate_tag() {
+    return this._generate_text_item(
+      this._tag,
+      'tag',
+      'workspace-block-item-tag',
+    );
+  }
+  //#endregion
+
+  //#region title
+  _generate_title() {
+    return this._generate_text_item(
+      this._title,
+      'title',
+      'workspace-block-item-title',
+    );
+  }
+  //#endregion
+
+  //#region description
+  _generate_description() {
+    return this._generate_text_item(
+      this._description,
+      'description',
+      'workspace-block-item-description',
+    );
+  }
+  //#endregion
+  //#endregion
+
+  //#region data_blocks
+  _generate_workspace_data() {
+    let div = document.createElement('div');
+    div.classList.add('workspace-block-item-data');
+
+    div.appendChild(this._generate_users());
+    div.appendChild(this._generate_edited());
+
+    return div;
+  }
+
+  //#region round_users
+  _generate_users() {
+    let pictures = document.createElement('div');
+    pictures.classList.add('workspace-block-item-users');
+
+    const users = this._users.split(',');
+
+    let div;
+    let img;
+    let span;
+    let url;
+    let user;
+    for (const userData of users) {
+      url = userData.split('|');
+      user = url[1];
+      url = url[0];
+
+      div = document.createElement('div');
+      div.classList.add('workspace-block-item-user');
+
+      if (!Number.isNaN(+url)) {
+        img = document.createElement('span');
+        img.classList.add('workspace-block-item-user-number');
+        img.style.borderColor = this._color;
+        span = document.createElement('span');
+        span.appendChild(document.createTextNode(`+${url}`));
+        span.classList.add('absolute-center');
+        img.appendChild(span);
+        div.appendChild(img);
+
+        span = null;
+      } else {
+        img = document.createElement('img');
+        div.appendChild(img);
+        img.setAttribute('src', 'skins/elastic/images/contactpic.svg');
+        img.setAttribute('data-src', url);
+        img.setAttribute('data-user', user);
+        img.setAttribute('title', user);
+        img.owner = this;
+      }
+
+      pictures.appendChild(div);
+
+      img = null;
+      div = null;
+    }
+
+    this.removeAttribute('data-users');
+
+    return pictures;
+  }
+  //#endregion
+
+  //#region date
+  _generate_edited() {
+    return this._generate_text_item(
+      this._edited,
+      'last-edited',
+      'workspace-block-item-edited',
+    );
+  }
+  //#endregion
+  //#endregion
+  //#endregion
+
+  //#region private_functions
+  _generate_text_item(text, data, ...classes) {
+    let return_data = false;
+
+    if (!isNullOrUndefined(text)) {
+      let element = document.createElement('div');
+
+      if (classes.length) element.classList.add(...classes);
+
+      let tag;
+      switch (data) {
+        case 'title':
+          tag = 'h2';
+          break;
+
+        default:
+          tag = 'span';
+          break;
+      }
+
+      let span = document.createElement(tag);
+      span.appendChild(document.createTextNode(text));
+
+      element.appendChild(span);
+
+      return_data = element;
+
+      span = null;
+      element = null;
+    } else return this._generate_text_item(EMPTY_STRING, data, ...classes);
+
+    this.removeAttribute(`data-${data}`);
+
+    return return_data;
+  }
+
+  /**
+   *
+   * @param {HTMLElement} node
+   * @param {boolean} fav
+   */
+  _set_favorite_texts(node, fav) {
+    if (fav) node.setAttribute('title', TEXT_UNSET_TO_FAVORITE);
+    else node.setAttribute('title', TEXT_SET_TO_FAVORITE);
+
+    return this;
   }
 
   /**
@@ -245,143 +438,6 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     return this;
   }
 
-  _generate_text_item(text, data, ...classes) {
-    let return_data = false;
-
-    if (!isNullOrUndefined(text)) {
-      let element = document.createElement('div');
-
-      if (classes.length) element.classList.add(...classes);
-
-      let tag;
-      switch (data) {
-        case 'title':
-          tag = 'h2';
-          break;
-
-        default:
-          tag = 'span';
-          break;
-      }
-
-      let span = document.createElement(tag);
-      span.appendChild(document.createTextNode(text));
-
-      element.appendChild(span);
-
-      //this.appendChild(element);
-
-      return_data = element;
-
-      span = null;
-      element = null;
-    } else return this._generate_text_item(EMPTY_STRING, data, ...classes);
-
-    this.removeAttribute(`data-${data}`);
-
-    return return_data;
-  }
-
-  _generate_tag() {
-    return this._generate_text_item(
-      this._tag,
-      'tag',
-      'workspace-block-item-tag',
-    );
-  }
-
-  _generate_title() {
-    return this._generate_text_item(
-      this._title,
-      'title',
-      'workspace-block-item-title',
-    );
-  }
-
-  _generate_description() {
-    return this._generate_text_item(
-      this._description,
-      'description',
-      'workspace-block-item-description',
-    );
-  }
-
-  _generate_workspace_data() {
-    let div = document.createElement('div');
-    div.classList.add('workspace-block-item-data');
-
-    div.appendChild(this._generate_users());
-    div.appendChild(this._generate_edited());
-
-    return div;
-  }
-
-  _generate_users() {
-    let pictures = document.createElement('div');
-    pictures.classList.add('workspace-block-item-users');
-
-    const users = this._users.split(',');
-
-    let div;
-    let img;
-    let span;
-    let url;
-    let user;
-    for (const userData of users) {
-      url = userData.split('|');
-      user = url[1];
-      url = url[0];
-
-      div = document.createElement('div');
-      div.classList.add('workspace-block-item-user');
-
-      if (!Number.isNaN(+url)) {
-        img = document.createElement('span');
-        img.classList.add('workspace-block-item-user-number');
-        img.style.borderColor = this._color;
-        span = document.createElement('span');
-        span.appendChild(document.createTextNode(`+${url}`));
-        span.classList.add('absolute-center');
-        img.appendChild(span);
-        div.appendChild(img);
-
-        span = null;
-      } else {
-        // div.style.backgroundImage = `url(${user})`;
-        // div.classList.add('with-picture');
-        img = document.createElement('img');
-        div.appendChild(img);
-        // img.addEventListener('load', this._on_picture_load.bind(this));
-        // img.addEventListener(
-        //   'error',
-        //   this._on_error_load.bind(this, img.parentNode, user),
-        // );
-        img.setAttribute('src', 'skins/elastic/images/contactpic.svg');
-        img.setAttribute('data-src', url);
-        img.setAttribute('data-user', user);
-        img.setAttribute('title', user);
-        img.owner = this;
-      }
-
-      pictures.appendChild(div);
-
-      img = null;
-      div = null;
-    }
-
-    this.removeAttribute('data-users');
-
-    return pictures;
-  }
-
-  _generate_edited() {
-    return this._generate_text_item(
-      this._edited,
-      'last-edited',
-      'workspace-block-item-edited',
-    );
-  }
-
   /**
    *
    * @param {HTMLElement} node
@@ -400,6 +456,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     ev.removeAttribute;
     //console.log('pl', e);
   }
+  //#endregion
 }
 
 {

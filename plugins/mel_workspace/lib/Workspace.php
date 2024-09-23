@@ -115,6 +115,13 @@ class Workspace {
     return $ret;    
   }
 
+  public function isArchived($newState = DEFAULT_SYMBOL) {
+    if ($newState === DEFAULT_SYMBOL) return $this->_workspace->isarchived;
+    else $this->_workspace->isarchived = $newState;
+
+    return $this;
+  }
+
   public function settings() {
     return new WorkspaceSetting($this->_workspace);
   }
@@ -234,6 +241,9 @@ class Workspace {
     }
 
     if (isset($return_data['existing_users']) && count($return_data['existing_users']) > 0) $this->_workspace->shares = $shares;
+
+    $this->save();
+    $this->load();
 
     return $return_data;
   }

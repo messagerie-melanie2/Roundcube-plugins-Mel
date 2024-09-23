@@ -631,6 +631,14 @@ class mel_metapage extends bnum_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
         }
+        else if($this->rc->task === 'mel_metapage') {
+            $this->register_task("mel_metapage");
+            $this->register_actions([
+                'webcomponent_scroll_count' => [$this, 'infiniteScrollCount'],
+                'webcomponent_scroll_data' => [$this, 'infiniteScrollData']
+            ]);
+        }
+
         else if ($this->rc->task === 'mail') {
             $this->include_internal_and_external_buttons();
         }
@@ -3687,4 +3695,23 @@ class mel_metapage extends bnum_plugin
         $txt = $this->gettext('login_da');
         return html::div([], $txt.' '.html::a(['href'=>$url], $url).'.');
     }  
+
+    public function infiniteScrollCount() {
+        $namespace = rcube_utils::get_input_value('_for', rcube_utils::INPUT_POST);
+
+        $data = $this->rc->plugins->exec_hook('webcomponents.scroll.count', ['namespace' => $namespace, 'count' => 0]);
+
+        echo json_encode($data['count'] ?? 0);
+        exit;
+    }
+
+    public function infiniteScrollData() {
+        $page = rcube_utils::get_input_value('_page', rcube_utils::INPUT_POST);
+        $namespace = rcube_utils::get_input_value('_for', rcube_utils::INPUT_POST);
+
+        $data = $this->rc->plugins->exec_hook('webcomponents.scroll.data', ['page' => $page, 'namespace' => $namespace, 'html' => '']);
+
+        echo json_encode($data['html'] ?? '');
+        exit;
+    }
 }

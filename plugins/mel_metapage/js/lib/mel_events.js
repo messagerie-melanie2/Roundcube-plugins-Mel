@@ -190,7 +190,18 @@ class RotomecaEvent {
       }
     }
 
-    await Promise.allSettled(asyncs);
+    const results = await Promise.allSettled(asyncs);
+
+    debugger;
+
+    switch (results.length) {
+      case 0:
+        return null;
+      case 1:
+        return results[Object.keys(results)[0]];
+      default:
+        return results;
+    }
   }
 
   /**

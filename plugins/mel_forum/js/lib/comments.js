@@ -1,4 +1,6 @@
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
+
 
 export {PostComment, PostCommentView}
 
@@ -545,7 +547,7 @@ generateHtmlFromTemplate() {
         <span id="toggle-icon-${this.id}" class="icon" data-icon="arrow_drop_down"></span>
         <span class="ml-2">${this.children_number} ${reponseText}</span>
       </div>
-      <div id="responses-${this.id}" class="responses ml-4"></div>` : ''
+      <div id="responses-${this.id}" class="responses ml-4 hidden"></div>` : ''
   };
   let template = document.querySelector('#comment-template').cloneNode(true);
 
@@ -577,7 +579,7 @@ generateHtmlFromTemplate() {
   template.querySelector('.icon[data-icon="more_horiz"]').onclick = this.toggleMenu.bind(this, this.uid);
   template.querySelector('.comment-options-button.edit-comment').onclick = this.toggleModifyComment.bind(this, this.uid);
   template.querySelector('.comment-options-button.delete-comment').onclick = this.deleteComment.bind(this, this.uid);
-  template.querySelector('#cancel-reply').onclick = this.toggleReplyForm.bind(this, this.uid);
+  template.querySelector('#cancel-reply').onclick = this.toggleReplyForm.bind(this, this.uid, this.id);
   template.querySelector('#submit-reply').onclick = this.saveReply.bind(this, this.content);
   if(this.children_number > 0) template.querySelector('.forum-comment-response').onclick = this.toggleResponses.bind(this, this.id);
 

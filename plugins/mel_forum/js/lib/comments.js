@@ -518,7 +518,6 @@ generateHtmlFromTemplate() {
     return (firstInitial + lastInitial).toUpperCase();    
   };
 
-
   // Générer une couleur de fond aléatoire pour l'image de profil
   let getRandomColor = function() {
       const letters = '0123456789ABCDEF';
@@ -530,6 +529,7 @@ generateHtmlFromTemplate() {
   };
 
   // Préparez les données à insérer dans le template
+  debugger;
   const data = {
     UID: this.uid,
     PROFILE_COLOR: getRandomColor(),
@@ -552,42 +552,31 @@ generateHtmlFromTemplate() {
       .end('div')
     .generate() : ''
   };
-  let template = document.querySelector('#comment-template').cloneNode(true);
 
+  // Utilisation de MelTemplate
+  let template = new MelTemplate()
+    .setTemplateSelector('#comment-template')
+    .setData(data)
+    .addEvent('#cancel-modify-comment', 'click', this.cancelModifyComment.bind(this, this.uid))
+    .addEvent('#submit-modify-comment', 'click', this.modifyComment.bind(this, this.uid))
+    .addEvent('.icon[data-icon="thumb_up"]', 'click', this.saveLikeOrDislike.bind(this, 'like', this.uid))
+    .addEvent('.icon[data-icon="thumb_down"]', 'click', this.saveLikeOrDislike.bind(this, 'dislike', this.uid))
+    .addEvent('.reaction-item.response', 'click', this.toggleReplyForm.bind(this, this.uid, this.id))
+    .addEvent('.icon[data-icon="more_horiz"]', 'click', this.toggleMenu.bind(this, this.uid))
+    .addEvent('.comment-options-button.edit-comment', 'click', this.toggleModifyComment.bind(this, this.uid))
+    .addEvent('.comment-options-button.delete-comment', 'click', this.deleteComment.bind(this, this.uid))
+    .addEvent('#cancel-reply', 'click', this.toggleReplyForm.bind(this, this.uid, this.id))
+    .addEvent('#submit-reply', 'click', this.saveReply.bind(this, this.content))
+    
+    // Ajouter l'événement pour '.forum-comment-response' seulement si elle existe
+    if (this.children_number > 0) {
+      template.addEvent('.forum-comment-response', 'click', this.toggleResponses.bind(this, this.id));
+    }
 
-  
-
-  // Remplacer les placeholders avec les valeurs de data
-  template.innerHTML = template.innerHTML
-    .replace(/%%UID%%/g, data.UID)
-    .replace(/%%PROFILE_COLOR%%/g, data.PROFILE_COLOR)
-    .replace(/%%USER_INITIALS%%/g, data.USER_INITIALS)
-    .replace(/%%USER_NAME%%/g, data.USER_NAME)
-    .replace(/%%COMMENT_CONTENT%%/g, data.COMMENT_CONTENT)
-    .replace(/%%COMMENT_DATE%%/g, data.COMMENT_DATE)
-    .replace(/%%COMMENT_ID%%/g, data.COMMENT_ID)
-    .replace(/%%LIKE_CLASS%%/g, data.LIKE_CLASS)
-    .replace(/%%DISLIKE_CLASS%%/g, data.DISLIKE_CLASS)
-    .replace(/%%LIKES%%/g, data.LIKES)
-    .replace(/%%DISLIKES%%/g, data.DISLIKES)
-    .replace(/%%RESPONSE_SECTION%%/g, data.RESPONSE_SECTION || '');
-
-  console.log('HTML généré :', template.innerHTML); // Vérifiez si les valeurs sont remplacées ici
-
-  template.querySelector('#cancel-modify-comment').onclick = this.cancelModifyComment.bind(this, this.uid);
-  template.querySelector('#submit-modify-comment').onclick = this.modifyComment.bind(this, this.uid);
-  template.querySelector('.icon[data-icon="thumb_up"]').onclick = this.saveLikeOrDislike.bind(this, 'like', this.uid);
-  template.querySelector('.icon[data-icon="thumb_down"]').onclick = this.saveLikeOrDislike.bind(this, 'dislike', this.uid);
-  template.querySelector('.reaction-item.response').onclick = this.toggleReplyForm.bind(this, this.uid, this.id);
-  template.querySelector('.icon[data-icon="more_horiz"]').onclick = this.toggleMenu.bind(this, this.uid);
-  template.querySelector('.comment-options-button.edit-comment').onclick = this.toggleModifyComment.bind(this, this.uid);
-  template.querySelector('.comment-options-button.delete-comment').onclick = this.deleteComment.bind(this, this.uid);
-  template.querySelector('#cancel-reply').onclick = this.toggleReplyForm.bind(this, this.uid, this.id);
-  template.querySelector('#submit-reply').onclick = this.saveReply.bind(this, this.content);
-  if(this.children_number > 0) template.querySelector('.forum-comment-response').onclick = this.toggleResponses.bind(this, this.id);
-
-    return template.querySelector('.comment-container');
+  // Retourner le rendu complet sans l'ajouter au DOM
+  return template.render();
 }
+
 
   /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.

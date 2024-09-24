@@ -63,7 +63,7 @@ export class Manager extends MelObject {
             // Si le commentaire n'a pas de parent, c'est un commentaire principal
             if (!comment.parent) {
                 // Insérer le commentaire principal dans la zone de commentaires
-                $('#comment-area').append(commentHtml);
+                $('#comment-area').append(...commentHtml);
             } else {
                 // C'est une réponse (ou une réponse à une réponse)
                 let parentResponseContainer = $('#responses-' + comment.parent);
@@ -81,7 +81,7 @@ export class Manager extends MelObject {
                 }
 
                 // Ajouter la réponse dans le conteneur de réponses
-                parentResponseContainer.append(commentHtml);
+                parentResponseContainer.append(...commentHtml);
             }
 
             // Ajouter chaque commentaire à la liste des commentaires pour un éventuel traitement ultérieur

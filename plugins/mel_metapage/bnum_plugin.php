@@ -11,14 +11,14 @@ abstract class bnum_plugin extends rcube_plugin
         $this->load_script_module_from_plugin($this->ID, $name, $path, $save_in_memory);
     }
 
-    protected function load_script_module_from_plugin($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false) {
+    protected function load_script_module_from_plugin($plugin, $name = self::BASE_MODULE_NAME, $path = self::BASE_MODULE_PATH, $save_in_memory = false,  $where = 'docready') {
         $this->setup_module();
 
         $args = "'$plugin', '$name', '$path', $save_in_memory";
         
         if ($this->api->output !== null) {
             try {
-                $this->api->output->add_script("runModule($args)", 'docready');
+                $this->api->output->add_script("runModule($args)", $where);
             } catch (\Throwable $th) {
                 return null;
             }
@@ -52,23 +52,37 @@ abstract class bnum_plugin extends rcube_plugin
         }
     }
 
+    public function include_component($name, $path = (self::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/') , $plugin = 'mel_metapage') {
+        $this->setup_module();
+
+        $args = "'$plugin', '$name', '$path', false";
+
+        if ($this->api->output !== null) {
+            try {
+                $this->api->output->add_script("(() => {loadJsModule($args);})();", 'head');
+            } catch (\Throwable $th) {
+                return null;
+            }
+        }
+    }
+
     protected function break_initial_fonctionality($key) {
         $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true}; });");
     }
 
     protected function setup_module() {
         if (!self::$module_loaded) {
-            $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js');
+            $this->include_script_from_plugin('mel_metapage', 'js/always_load/load_module.js', 'head');
             self::$module_loaded = true;
         }
     }
 
-    public function include_script_from_plugin($plugin, $fn)
+    public function include_script_from_plugin($plugin, $fn, $pos = 'head_bottom')
     {
         $ID = rcmail::get_instance()->plugins->get_plugin($plugin)->ID;
         if (is_object($this->api->output) && $this->api->output->type == 'html') {
-            $src = $this->resource_url_from_plugin($fn, $ID);
-            $this->api->include_script($src, 'head_bottom', false);
+            $src = $this->resource_url_from_plugin($fn, "plugins/$ID");
+            $this->rc()->output->include_script($src, $pos, false);
         }
     }
 
@@ -138,6 +152,10 @@ abstract class bnum_plugin extends rcube_plugin
             $this->include_stylesheet(__DIR__."/css/$path");
         else
             $this->include_stylesheet($this->local_skin_path()."/$path");
+    }
+
+    protected function exec_hook($hook, $args = []) {
+        return $this->rc()->plugins->exec_hook($hook, $args);
     }
 
     protected function add_handler($name, $callback)

@@ -606,6 +606,10 @@ class mel_metapage extends bnum_plugin
             $this->add_hook('folder_form', [$this, 'folder_form']);
         }
 
+        if ($this->rc->task === 'mel_metapage') {
+            $this->register_action('avatar', [$this, 'avatar_url']);
+        }
+
         $this->add_hook('folder_form', [$this, 'folder_form']);
         $this->add_hook('folder_create', [$this, 'folder_create']);
     }
@@ -2906,6 +2910,7 @@ class mel_metapage extends bnum_plugin
         }
 
         $this->set_plugin_env_exist();
+        $this->include_component('avatar');
 
         $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
 
@@ -3587,4 +3592,51 @@ class mel_metapage extends bnum_plugin
         $txt = $this->gettext('login_da');
         return html::div([], $txt . ' ' . html::a(['href' => $url], $url) . '.');
     }
+
+    public function avatar_url() {
+        $data = null;
+        $redirect = false;
+        $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
+
+        if (!isset($email)) $email = driver_mel::gi()->getUser()->email;
+        
+        $plugin = $this->exec_hook('app.avatar', [
+            'email' => $email,
+            'data' => null,
+        ]);
+
+        // redirect to url provided by a plugin
+        if (!empty($plugin['url'])) { 
+            $data = $plugin['url'];//$this->rc()->output->redirect($plugin['url']);
+            $redirect = true;
+        }
+        else if (!isset($plugin) && !isset($plugin['data'])) $data = $plugin['data'];
+        else {
+            $data = [
+            '_task' => 'addressbook',
+            '_action' => 'photo',
+            '_email' => $email,
+            '_error' => 1
+            ];
+            $redirect = true;
+        }
+
+        if ($redirect) $this->rc()->output->redirect($data);
+        else {
+            if ($data) {
+                $this->rc()->output->sendExit($data, ['Content-Type: ' . rcube_mime::image_content_type($data)]);
+            }
+    
+            if (!empty($_GET['_error'])) {
+                $this->rc()->output->sendExit('', ['HTTP/1.0 204 Photo not found']);
+            }
+    
+            $this->rc()->output->sendExit(base64_decode(rcmail_output::BLANK_GIF), ['Content-Type: image/gif']);
+        }
+
+    }
+
+    public static function IncludeAvatar() {
+        rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('avatar');
+    } 
 }

@@ -48,5 +48,30 @@ export class IndexWorkspace extends MelObject {
 
       $(`#${control}`).focus();
     });
+
+    $('.workspace-list').css('height', '100%');
+
+    $(window).resize(this._on_resize.bind(this));
+
+    this._on_resize();
+  }
+
+  _on_resize() {
+    $('.body').css(
+      'height',
+      `${$('#layout-content').height() - $('.wsp-header').height()}px`,
+    );
+
+    this._container_resize();
+  }
+
+  _container_resize() {
+    const tabs = $('bnum-tabs [role="tablist"]').height();
+    const headerPannel = $('bnum-tabs .header-pannel').height();
+    const total = $('bnum-tabs').height();
+
+    const result = total - tabs - headerPannel - 15;
+
+    $('.workspace-list').css('height', `${result}px`);
   }
 }

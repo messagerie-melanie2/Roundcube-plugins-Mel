@@ -101,6 +101,6 @@ class MelTemplate {
       div.querySelector(event.target).addEventListener(event.type, event.listener);
     });
 
-    return div.querySelectorAll('*');
+    return div.childNodes;
   }
 }

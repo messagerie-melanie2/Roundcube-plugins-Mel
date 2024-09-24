@@ -20,7 +20,7 @@ class MelTemplate {
    * @param {array} events Tableau d'événements à injecter dans le template sous la forme [ { target: target, type: type, listener: listener }, { target: target1, type: type1, listener: listener1 } ] avec target = selecteur
    * @param {string} regex Regex à utiliser pour remplacer les données dans le template
    */
-  constructor(templateSelector = '', data = {}, events = [], regex = /%%(\w*)%%/g) {
+  constructor({ templateSelector = '', data = {}, events = [], regex = /%%(\w*)%%/g } = {}) {
     this.template = templateSelector;
     this.data = data;
     this.events = events;

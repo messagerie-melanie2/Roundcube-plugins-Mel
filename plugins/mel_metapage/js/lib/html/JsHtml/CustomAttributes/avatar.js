@@ -26,7 +26,8 @@ export class AvatarElement extends HtmlCustomTag {
     });
 
     this.removeAttribute('data-email');
-    this.setAttribute('data-needcreation', true);
+
+    if (!this.dataset.forceload) this.setAttribute('data-needcreation', true);
 
     this.style.display = 'block';
 
@@ -55,6 +56,13 @@ export class AvatarElement extends HtmlCustomTag {
 
     img = null;
     style = null;
+
+    if (this.dataset.forceload) {
+      setTimeout(() => {
+        this.update_img();
+        this.removeAttribute('data-forceload');
+      }, 10);
+    }
   }
 
   update_img() {

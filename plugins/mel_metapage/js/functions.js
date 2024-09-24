@@ -506,7 +506,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -655,7 +655,7 @@ function m_mp_step3_param(type) {
         let $param_button = $master_button.parent().find('.under-button');
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -797,7 +797,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -1798,7 +1798,7 @@ function m_mp_add_users() {
           html = '<li>';
           html += '<div class="row" style="margin-top:15px">';
           html += '<div class="col-2">';
-          html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
+          html += `<div class="dwp-round" style="background-color:var(--mel-button-background-color)"><bnum-avatar style="width:100%; height:100%;" data-email="${element.email}" data-forceload="true"></bnum-avatar></div>`;
           html += '</div>';
           html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
           html += `<span class="name">${element.name}</span><br/>`;

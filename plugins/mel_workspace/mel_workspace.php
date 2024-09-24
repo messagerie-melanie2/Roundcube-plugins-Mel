@@ -360,6 +360,7 @@ class mel_workspace extends bnum_plugin
         ));
         $this->include_script('js/workspace_frame_manager.js');
         $this->load_script_module('index', '/js/mel_lib/');
+        mel_metapage::IncludeAvatar();
         $this->rc->output->set_pagetitle("Espaces de travail");
         $this->rc->output->send('mel_workspace.workspaces');
     }
@@ -1567,6 +1568,8 @@ class mel_workspace extends bnum_plugin
 
     function setup_user_page()
     {
+        mel_metapage::IncludeAvatar();
+
         $env = [];
         $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
         $shares = $this->sort_user($this->currentWorkspace->shares); 
@@ -1585,8 +1588,8 @@ class mel_workspace extends bnum_plugin
             {
                 $html .= html::div(["class" => "row"], 
                 html::div(["class" => "col-2"],
-                    html::div(["class" => "dwp-round", "style" => "background-color:transparent"],
-                        html::tag("img", ["src" => $this->rc->config->get('rocket_chat_url')."avatar/".$value->user])
+                    html::div(["class" => "dwp-round", "style" => "background-color:var(--mel-button-background-color);"],
+                        html::tag("bnum-avatar", ["data-email" => $user->email, 'style' => '--avatar-border-loaded: solid 4px '.$this->get_setting($this->currentWorkspace, 'color')])//$this->rc->config->get('rocket_chat_url')."avatar/".$value->user])
                     )
                 ).
                 html::div(["class" => "col-10"],
@@ -2669,7 +2672,7 @@ class mel_workspace extends bnum_plugin
                     $html_tmp[] ='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp[] = '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img alt="'.$s->user.'" src="'.$rc_url."avatar/".$s->user.'" /></div>';
+                $html_tmp[] = '<div data-user="'.$s->user.'" class="dwp-circle dwp-user" title="'.driver_mel::gi()->getUser($s->user)->name.'"><bnum-avatar style="width:100%;height:100%;" data-email="'.driver_mel::gi()->getUser($s->user)->email.'"></bnum-avatar></div>';//<img alt="'.$s->user.'" src="'.$rc_url."avatar/".$s->user.'" /></div>';
                 ++$it;
             }
 

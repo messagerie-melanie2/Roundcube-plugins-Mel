@@ -543,11 +543,14 @@ generateHtmlFromTemplate() {
     LIKES: this.likes,
     DISLIKES: this.dislikes,
     RESPONSE_SECTION: this.children_number > 0 ? 
-      `<div class="forum-comment-response" data-comment-id="${this.id}">
-        <span id="toggle-icon-${this.id}" class="icon" data-icon="arrow_drop_down"></span>
-        <span class="ml-2">${this.children_number} ${reponseText}</span>
-      </div>
-      <div id="responses-${this.id}" class="responses ml-4 hidden"></div>` : ''
+    MelHtml.start
+      .div({ class: 'forum-comment-response', 'data-comment-id': this.id })
+        .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
+        .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
+      .end('div')
+      .div({ id: 'responses-' + this.id, class: 'responses ml-4 hidden' })
+      .end('div')
+    .generate() : ''
   };
   let template = document.querySelector('#comment-template').cloneNode(true);
 

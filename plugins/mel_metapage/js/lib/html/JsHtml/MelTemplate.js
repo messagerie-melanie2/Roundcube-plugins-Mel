@@ -120,7 +120,7 @@ class MelTemplate {
   /**
    * Défini une liste de données à remplacer
    * 
-   * @param {*} data Liste de données à injecter dans le template sous la forme { key: value, key1: value1}
+   * @param {Object} data Liste de données à injecter dans le template sous la forme { key: value, key1: value1}
    * @returns {MelTemplate}
    */
   setData(data) {
@@ -143,11 +143,11 @@ class MelTemplate {
    * Ajoute du html dans un élément du template
    * 
    * @param {string} selector Selecteur de l'élément dans lequel ajouter le html
-   * @param {string} html Html à ajouter
+   * @param {*} html Html à ajouter au format String, Node, NodeList, Object ou Array
    * @returns {MelTemplate}
    */
   addHtml(selector, html) {
-    if (html)
+    if (html && html !== null)
       this.#htmlContents[selector] = html;
     return this;
   }
@@ -168,7 +168,15 @@ class MelTemplate {
     div.innerHTML = html;
 
     for (const selector in this.#htmlContents) {
-      div.querySelector(selector).innerHTML = this.#htmlContents[selector];
+      if (typeof this.#htmlContents[selector] === 'string' || this.#htmlContents[selector] instanceof String) {
+        div.querySelector(selector)?.insertAdjacentHTML('beforeend', this.#htmlContents[selector]);
+      }
+      else if (typeof this.#htmlContents[selector][Symbol.iterator] === 'function') {
+        div.querySelector(selector)?.append(...this.#htmlContents[selector]);
+      }
+      else {
+        div.querySelector(selector)?.append(this.#htmlContents[selector]);
+      }
     }
 
     this.#events.forEach(event => {

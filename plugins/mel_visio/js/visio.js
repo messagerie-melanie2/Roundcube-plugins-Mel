@@ -310,7 +310,7 @@
      * @returns vrai => visible
      */
     chat_visible() {
-      return !!(this.room || false) && !this.hidden;
+      return false && !!(this.room || false) && !this.hidden;
     }
 
     /**
@@ -578,7 +578,7 @@
     create_chat($framechat, $loading_chat) {
       let chat = null;
 
-      if (this.have_workspace() && this.have_chatroom()) {
+      if (this.have_workspace() && this.have_chatroom() && false) {
         chat = new WebconfChat($framechat, $loading_chat, {
           room: this.objects.channel.name,
           privacy: this.privacy,

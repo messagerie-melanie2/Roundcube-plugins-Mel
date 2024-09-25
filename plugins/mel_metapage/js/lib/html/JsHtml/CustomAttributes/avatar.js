@@ -3,25 +3,157 @@ import { BnumEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
 import { HtmlCustomTag } from './classes.js';
 
-export class AvatarElement extends HtmlCustomTag {
+export { AvatarElement };
+
+//#region jsdoc
+/**
+ * Contient la classe lié aux éléments custom "bnum-avatar" ainsi que toutes les classes et fonctions utile.
+ *
+ * Le chargement de se module implique le chargement des images après le chargement de la page.
+ * @module WebComponents/Avatar
+ * @local OnImageLoadCallback
+ * @local OnImageNotLoadCallback
+ * @local AvatarElement
+ * @local onLoaded
+ * @local AvatarEvent
+ * @local AvatarLoadEvent
+ * @local AvatarNotLoadEvent
+ */
+
+/**
+ * @callback OnImageLoadCallback
+ * @param {HTMLImageElement} img Node de l'image chargée
+ * @param {AvatarElement} avatarElement Node qui contient l'image
+ * @returns {void}
+ */
+
+/**
+ * @callback OnImageNotLoadCallback
+ * @param {AvatarElement} avatarElement Element qui contient l'image qui n'a pas été chargé
+ * @returns {null | undefined | {stop:boolean}}
+ */
+//#endregion
+
+//#region constantes
+const STYLE_BASE = `
+      img {
+        filter: blur(0.2em);
+        transition: filter 0.5s;
+        object-fit: cover;
+        border: var(--avatar-border);
+        border-radius: 100%;
+        width:100%;
+        height:100%;
+        box-sizing: var(--avatar-box-sizing);
+      }
+      `;
+const STYLE_LOADED = `
+      img {
+        filter: blur(0)!important;
+        --avatar-border: var(--avatar-border-loaded)!important;
+        --avatar-box-sizing: var(--avatar-box-sizing-loaded)!important;
+      }
+      `;
+const STYLE_HOST = `
+        :host {
+          width:%0%;
+          height:%0%;
+        }
+      `;
+const STYLE_ERROR = `
+      .absolute-center {
+          margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translateY(-50%) translateX(-50%);
+    transform: translateY(-50%) translateX(-50%);
+    font-size: xx-large;
+    color: var(--mel-button-text-color);
+    }
+
+    .no-picture {
+    position:relative;
+    display: block;
+width: 100%;
+height: 100%;
+    }`;
+const EVENT_IMAGE_LOAD = 'api:imgload';
+const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
+//#endregion
+
+/**
+ * @class
+ * @classdesc Gestion de la balise <bnum-avatar>.
+ * @extends HtmlCustomTag
+ */
+class AvatarElement extends HtmlCustomTag {
+  /**
+   * La balise <bnum-avatar></bnum-avatar> permet de charger l'avatar de l'utilisateur en cours ou d'un utilisateur du bnum.
+   *
+   * Le chargement des avatars se fait après le chargement de la page. On peut néanmoins le forcer avec le data `data-forceload`.
+   *
+   * Les évènements sont api:imgload et api:imgloaderror.
+   *
+   * Liste des data :
+   *
+   * data-email => email de l'utilisateur dont on souhaite l'avatar. Si indéfini, se sera l'utilisateur en cours. (Optionnel)
+   *
+   * data-force-size => taille de l'objet, en pourcentage. (Optionnel)
+   *
+   * data-f100 => Equivalent de `data-force-size=100`
+   *
+   * data-forceload => Force le chargement de l'image
+   *
+   */
   constructor() {
     super();
 
+    /**
+     * Email qui permettra de retrouver l'avatar de l'utilisateur
+     * @package
+     * @type {string}
+     */
     this._email = null;
+    /**
+     * Taille (de 0 à 100) de la balise.
+     *
+     * Si null, ça sera le css qui s'en chargera.
+     * @package
+     * @type {string | number | null}
+     */
     this._force = null;
+    /**
+     * Action à faire lorsque l'image est chargée.
+     * @type {BnumEvent<OnImageLoadCallback>}
+     */
     this.onimgload = new BnumEvent();
+    /**
+     * Action à faire lorsque l'image n'a pas réussie à être chargée.
+     * @type {BnumEvent<OnImageNotLoadCallback>}
+     */
     this.onimgloaderror = new BnumEvent();
 
+    //Ajoute les évènements liés aux listeners javascript/jquery.
     this.onimgload.push((...args) => {
-      this.dispatchEvent(new CustomEvent('api:imgload', { detail: args }));
+      const [imageNode, avatarElement] = args;
+      this.dispatchEvent(new AvatarLoadEvent(imageNode, avatarElement));
     });
 
     this.onimgloaderror.push((...args) => {
-      this.dispatchEvent(new CustomEvent('api:imgloaderror', { detail: args }));
+      const [avatarElement] = args;
+      let customEvent = new AvatarNotLoadEvent(avatarElement);
+      this.dispatchEvent(customEvent);
+
+      return customEvent.getReturnData();
     });
   }
 
+  /**
+   * Est appelé par le navigateur.
+   */
   connectedCallback() {
+    //Init
     Object.defineProperty(this, '_email', {
       value:
         this.dataset.email || rcmail?.env?.mel_metapage_user_emails?.[0] || '?',
@@ -40,6 +172,7 @@ export class AvatarElement extends HtmlCustomTag {
 
     if (!this.dataset.forceload) this.setAttribute('data-needcreation', true);
 
+    //Setup
     this.style.display = 'block';
 
     let shadow = this.attachShadow({ mode: 'open' });
@@ -57,25 +190,11 @@ export class AvatarElement extends HtmlCustomTag {
       this.removeAttribute('data-force-size');
     }
 
-    style.append(
-      document.createTextNode(`
-      img {
-        filter: blur(0.2em);
-        transition: filter 0.5s;
-        object-fit: cover;
-        border: var(--avatar-border);
-        border-radius: 100%;
-        width:100%;
-        height:100%;
-        box-sizing: var(--avatar-box-sizing);
-      }
-
-        ${style_ex}
-      `),
-    );
+    style.append(document.createTextNode(STYLE_BASE + style_ex));
 
     shadow.append(style, img);
 
+    //end
     img = null;
     style = null;
 
@@ -101,28 +220,25 @@ export class AvatarElement extends HtmlCustomTag {
     img = null;
   }
 
+  /**
+   * Récupère le block de style lié au forcage de la taille
+   * @package
+   * @returns {string}
+   */
   _get_style_force() {
-    return `
-        :host {
-          width:${this._force}%;
-          height: ${this._force}%;
-        }
-      `;
+    return STYLE_HOST.replaceAll('%0', this._force);
   }
 
+  /**
+   * Appelé lorsque l'image est chargée.
+   * @package
+   * @returns {AvatarElement} Chaîne
+   */
   _on_load() {
     this.removeAttribute('data-needcreation');
 
     let style = document.createElement('style');
-    style.append(
-      document.createTextNode(`
-      img {
-        filter: blur(0)!important;
-        --avatar-border: var(--avatar-border-loaded)!important;
-        --avatar-box-sizing: var(--avatar-box-sizing-loaded)!important;
-      }
-      `),
-    );
+    style.append(document.createTextNode(STYLE_LOADED));
 
     this.shadowRoot.append(style);
     style = null;
@@ -136,6 +252,10 @@ export class AvatarElement extends HtmlCustomTag {
     return this;
   }
 
+  /**
+   * Est appelé lorsque l'image ne se charge pas
+   * @returns {AvatarElement} Chaîne
+   */
   _on_error() {
     let error_data = this.onimgloaderror.call(this);
 
@@ -163,27 +283,9 @@ export class AvatarElement extends HtmlCustomTag {
     let style = document.createElement('style');
 
     style.append(
-      document.createTextNode(`
-      .absolute-center {
-          margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translateY(-50%) translateX(-50%);
-    transform: translateY(-50%) translateX(-50%);
-    font-size: xx-large;
-    color: var(--mel-button-text-color);
-    }
-
-    .no-picture {
-    position:relative;
-    display: block;
-width: 100%;
-height: 100%;
-    }
-
-    ${this._force ? this._get_style_force() : EMPTY_STRING}
-      `),
+      document.createTextNode(
+        STYLE_ERROR + (this._force ? this._get_style_force() : EMPTY_STRING),
+      ),
     );
 
     this.shadowRoot.append(style, element);
@@ -196,6 +298,12 @@ height: 100%;
   }
 }
 
+/**
+ * Si la page a été chargé et les avatars aussi.
+ * @static
+ * @readonly
+ * @type {boolean}
+ */
 AvatarElement.IsLoaded;
 
 Object.defineProperty(AvatarElement, 'IsLoaded', {
@@ -214,6 +322,10 @@ window.addEventListener('load', function () {
   onLoaded();
 });
 
+/**
+ * Charge tout les avatars qui ont besoin d'être chargés.
+ * @package
+ */
 function onLoaded() {
   let imagesToLoad = document.querySelectorAll(
     'bnum-avatar[data-needcreation]',
@@ -224,4 +336,126 @@ function onLoaded() {
   }
 
   window.avatarPageLoaded = true;
+}
+
+/**
+ * @class
+ * @classdesc Evènement de base pour l'avatar.
+ * @abstract
+ * @extends CustomEvent
+ * @package
+ */
+class AvatarEvent extends CustomEvent {
+  /**
+   * Le principe est que cette classe ainsi que les classes filles auront une valeur de retour en mémoire.
+   *
+   * Cette valeur de retour pourra ensuite être utiliser par les `BnumEvent` ou d'autres fonctions.
+   * @param {string} type Type d'évènement
+   * @param {Object<string, *>} config Configuration de l'évènement
+   */
+  constructor(type, config = {}) {
+    super(type, config);
+
+    /**
+     * Données de retour.
+     * @private
+     * @type {?any}
+     */
+    this._return_data = null;
+  }
+
+  /**
+   * Permet de données une valeur qui sera mise en mémoire pour plus tard.
+   * @param {*} value Valeur à mettre en mémoire.
+   */
+  setReturnData(value) {
+    this._return_data = value;
+  }
+
+  /**
+   * Récupère la valeur mise en mémoire.
+   * @returns {?*}
+   */
+  getReturnData() {
+    return this._return_data;
+  }
+}
+
+/**
+ * @class
+ * @classdesc Evènement de type `api:imgload`.
+ * @extends AvatarEvent
+ * @package
+ */
+class AvatarLoadEvent extends AvatarEvent {
+  /**
+   * Evènement reçu lorsque l'on fait un listener sur `api:imgload`.
+   * @param {HTMLImageElement} imageNode Image qui a été changée
+   * @param {AvatarElement} avatarNode Node parente
+   */
+  constructor(imageNode, avatarNode) {
+    super(EVENT_IMAGE_LOAD);
+
+    /**
+     * @private
+     */
+    this._imageNode = imageNode;
+    /**
+     * @private
+     */
+    this._avatarNode = avatarNode;
+  }
+
+  /**
+   * Récupère l'image
+   * @returns {HTMLImageElement}
+   */
+  image() {
+    return this._imageNode;
+  }
+
+  /**
+   * Récupère l'avatar
+   * @returns {AvatarElement}
+   */
+  avatar() {
+    return this._avatarNode;
+  }
+}
+
+/**
+ * @class
+ * @classdesc Evènement de type `api:imgloaderror`.
+ * @extends AvatarEvent
+ * @package
+ */
+class AvatarNotLoadEvent extends AvatarEvent {
+  /**
+   * Evènement reçu lorsque l'on fait un listener sur `api:imgloaderror`.
+   * @param {AvatarElement} avatarNode Node parente
+   */
+  constructor(avatarNode) {
+    super(EVENT_IMAGE_NOT_LOAD);
+
+    /**
+     * @private
+     */
+    this._avatarNode = avatarNode;
+  }
+
+  /**
+   * Récupère l'avatar
+   * @returns {AvatarElement}
+   */
+  avatar() {
+    return this._avatarNode;
+  }
+
+  /**
+   * Empêche la fonction _on_error de s'éxécuter normalement.
+   * @returns {void}
+   */
+  stop() {
+    return this.setReturnData({ stop: true });
+  }
 }

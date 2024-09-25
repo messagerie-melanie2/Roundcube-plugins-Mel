@@ -502,7 +502,6 @@ async deleteComment(uid) {
  * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
  */
 generateHtmlFromTemplate() {
-  // debugger;
   let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
   let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
@@ -529,7 +528,6 @@ generateHtmlFromTemplate() {
   };
 
   // Préparez les données à insérer dans le template
-  debugger;
   const data = {
     UID: this.uid,
     PROFILE_COLOR: getRandomColor(),

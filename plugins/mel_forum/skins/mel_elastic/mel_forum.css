@@ -412,7 +412,7 @@
   /* Pour aligner les éléments horizontalement */
   align-items: center;
   /* Aligne les éléments verticalement au centre */
-  margin-left: 40px;
+  margin-left: 50px;
   /* Ajuste la marge pour s'aligner avec les autres éléments */
 }
 .task-forum .forum-comment-response .icon::before {

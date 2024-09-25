@@ -1,15 +1,15 @@
 {
-    "parent":"abstract-picture-theme-two-colored",
-    "id":"season-winter",
-    "display":"white",
-    "description":"desc",
-    "icon":"icon.svg",
-    "enabled":true,
-    "style":"style",
-    "class":"season-winter",
-    "custom_dark_mode":true,
-    "order":100,
-    "saison":"22/09-21/03",
-    "animation_class":"snow-animation",
-    "animation_enabled_by_default":true
+  "parent": "abstract-picture-theme-two-colored",
+  "id": "season-winter",
+  "display": "white",
+  "description": "desc",
+  "icon": "icon.svg",
+  "enabled": true,
+  "style": "style",
+  "class": "season-winter",
+  "custom_dark_mode": true,
+  "order": 100,
+  "saison": "21/12-21/03",
+  "animation_class": "snow-animation",
+  "animation_enabled_by_default": true
 }

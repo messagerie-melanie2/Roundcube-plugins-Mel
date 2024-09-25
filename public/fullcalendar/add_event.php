@@ -13,6 +13,8 @@ if (!defined('CONFIGURATION_APP_LIBM2')) {
 // Inclusion de l'ORM M2
 @include_once 'includes/libm2.php';
 
+@include_once '../lib/mel/mel.php';
+
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
 

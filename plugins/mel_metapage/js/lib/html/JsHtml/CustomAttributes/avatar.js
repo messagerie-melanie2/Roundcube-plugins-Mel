@@ -1,3 +1,4 @@
+import { EMPTY_STRING } from '../../../constants/constants.js';
 import { BnumEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
 import { HtmlCustomTag } from './classes.js';
@@ -7,6 +8,7 @@ export class AvatarElement extends HtmlCustomTag {
     super();
 
     this._email = null;
+    this._force = null;
     this.onimgload = new BnumEvent();
     this.onimgloaderror = new BnumEvent();
 
@@ -27,6 +29,11 @@ export class AvatarElement extends HtmlCustomTag {
 
     this.removeAttribute('data-email');
 
+    if (this.dataset.f100) {
+      this.setAttribute('data-force-size', '100');
+      this.removeAttribute('data-f100');
+    }
+
     if (!this.dataset.forceload) this.setAttribute('data-needcreation', true);
 
     this.style.display = 'block';
@@ -37,6 +44,15 @@ export class AvatarElement extends HtmlCustomTag {
     img.src = 'skins/elastic/images/contactpic.svg';
 
     let style = document.createElement('style');
+
+    let style_ex = EMPTY_STRING;
+
+    if (this.dataset.forceSize) {
+      this._force = this.dataset.forceSize;
+      style_ex = this._get_style_force();
+      this.removeAttribute('data-force-size');
+    }
+
     style.append(
       document.createTextNode(`
       img {
@@ -49,6 +65,8 @@ export class AvatarElement extends HtmlCustomTag {
         height:100%;
         box-sizing: var(--avatar-box-sizing);
       }
+
+        ${style_ex}
       `),
     );
 
@@ -77,6 +95,15 @@ export class AvatarElement extends HtmlCustomTag {
     });
 
     img = null;
+  }
+
+  _get_style_force() {
+    return `
+        :host {
+          width:${this._force}%;
+          height: ${this._force}%;
+        }
+      `;
   }
 
   _on_load() {
@@ -130,6 +157,7 @@ export class AvatarElement extends HtmlCustomTag {
     element.appendChild(span);
 
     let style = document.createElement('style');
+
     style.append(
       document.createTextNode(`
       .absolute-center {
@@ -149,6 +177,8 @@ export class AvatarElement extends HtmlCustomTag {
 width: 100%;
 height: 100%;
     }
+
+    ${this._force ? this._get_style_force() : EMPTY_STRING}
       `),
     );
 

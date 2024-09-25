@@ -50,6 +50,7 @@ class Workspaces extends Module
     $this->edit_row_size(12);
     $this->edit_order(6);
     $this->set_use_custom_style(true);
+    mel_metapage::IncludeAvatar();
 
     // $it = 0;
     // foreach ($this->workspaces as $key => $value) {
@@ -127,12 +128,12 @@ class Workspaces extends Module
           break;
         }
         
-        if (!$this->rc->plugins->get_plugin('mel_metapage')->get_picture_mode())
+        if (false && !$this->rc->plugins->get_plugin('mel_metapage')->get_picture_mode())
         {
           $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><span style=color:"'. $ws->get_badge_text_color($workspace) .">" . substr($s->user, 0, 2) . '</span></div>';
         }
         else {
-          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
+          $html_tmp .= '<div data-user="' . $s->user . '" class="dwp-circle dwp-user"><bnum-avatar data-f100="true" data-email="'.driver_mel::gi()->getUser($s->user)->email.'"></bnum-avatar></div>';//<img alt="" src="' . $this->rc->config->get('rocket_chat_url') . 'avatar/' . $s->user . '" /></div>';
         }
         ++$it;
       }

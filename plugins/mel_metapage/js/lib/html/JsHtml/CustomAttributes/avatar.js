@@ -34,6 +34,10 @@ export class AvatarElement extends HtmlCustomTag {
       this.removeAttribute('data-f100');
     }
 
+    if (AvatarElement.IsLoaded) {
+      this.setAttribute('data-forceload', true);
+    }
+
     if (!this.dataset.forceload) this.setAttribute('data-needcreation', true);
 
     this.style.display = 'block';
@@ -192,6 +196,14 @@ height: 100%;
   }
 }
 
+AvatarElement.IsLoaded;
+
+Object.defineProperty(AvatarElement, 'IsLoaded', {
+  get() {
+    return !!window.avatarPageLoaded;
+  },
+});
+
 {
   const TAG = 'bnum-avatar';
 
@@ -210,4 +222,6 @@ function onLoaded() {
   for (const image of imagesToLoad) {
     image.update_img();
   }
+
+  window.avatarPageLoaded = true;
 }

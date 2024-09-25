@@ -2617,14 +2617,14 @@ class mel_workspace extends bnum_plugin
                     continue;
             }
             
-            $html[] = $this->create_block($value, $only_epingle, $parsed);
+            $html[] = $this->create_block($value, $only_epingle, $parsed, true);
         } 
 
         $html = implode('', $html);
         return $html;
     }
 
-    function create_block($workspace, $epingle = false, $html = null)
+    function create_block($workspace, $epingle = false, $html = null, $force_avatar_loading = false)
     {
         $username = driver_mel::gi()->getUser($workspace->creator)->name;
 

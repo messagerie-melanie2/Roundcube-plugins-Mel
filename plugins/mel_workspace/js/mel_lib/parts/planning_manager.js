@@ -473,7 +473,29 @@ class PlanningManager extends MelObject {
         'frame_opened',
         'planning',
         (args) => {
-          if (args.eClass === 'workspace') $(window).resize();
+          if (args.eClass === 'workspace') {
+            const func = () => {
+              $(window).resize();
+              let frame = this.select_frame('workspace');
+              $(frame[0].contentWindow).resize();
+  
+              let wsp = frame[0].contentWindow.find('.side-workspaces');
+  
+              if (wsp.length > 0) {
+                for (const element of wsp.find('iframe')) {
+                  $(element.contentWindow).resize();
+                }
+              }
+
+              frame = null;
+              wsp = null;
+            }
+
+            func();
+            setTimeout(() => {
+              func();
+            }, 100);
+          }
         },
       );
     }

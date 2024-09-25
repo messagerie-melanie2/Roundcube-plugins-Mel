@@ -28,7 +28,7 @@ if ($config['DEV']) {
   $dir = str_replace('/public/feed', '', dirname($_SERVER['SCRIPT_FILENAME']));
 }
 else {
-  $dir = __DIR__.'../..';
+  $dir = __DIR__.'/../..';
 }
 
 // Inclusion de l'ORM M2

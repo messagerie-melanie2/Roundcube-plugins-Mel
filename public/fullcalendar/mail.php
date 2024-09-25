@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__ . '/../config.inc.php';
+
 
 /**
  * Classe de gestion des mails
@@ -42,16 +42,18 @@ class Mail
    *
    * @param $attendee informations de l'organisateur
    * @param $attendee informations du participant
-   * @return boolean
+   * @param $appointment informations de l'évènement
    */
 
   public static function SendOrganizerAppointmentMail($organizer, $attendee, $appointment)
   {
-    global $config;
+    require_once __DIR__ . '/../config.inc.php';
+
     $subject = $config["organizer_mail_subject"];
     $from = $config['mail_from'];
     $to = '=?UTF-8?B?' . base64_encode('"' . $organizer->name . '"') . '?=' . "\r\n <" . $organizer->email . ">";
     $body = file_get_contents(__DIR__ . '/templates/organizer_appointment_mail.html');
+
     // Replace elements
     $subject = str_replace("%%attendee_name%%", $attendee['name'] . ' ' . $attendee['firstname'], $subject);
     $subject = str_replace("%%appointment_date_day%%", $appointment['date_day'], $subject);
@@ -70,12 +72,14 @@ class Mail
    *
    * @param $attendee informations de l'organisateur
    * @param $attendee informations du participant
-   * @return boolean
+   * @param $appointment informations de l'évènement
+   * @param $appointment ics de l'évènement
    */
 
   public static function SendAttendeeAppointmentMail($organizer, $attendee, $appointment, $ics)
   {
-    global $config;
+    require_once __DIR__ . '/../config.inc.php';
+
     $subject = $config["attendee_mail_subject"];
     $from = $config['mail_from'];
     $to = '=?UTF-8?B?' . base64_encode('"' . $attendee['name'] . '"') . '?=' . "\r\n <" . $attendee['email'] . ">";

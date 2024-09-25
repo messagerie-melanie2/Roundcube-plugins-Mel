@@ -100,6 +100,7 @@
 
         <div id="comment-template">
           <div class="comment-container">
+
             <div id="comment-id-%%UID%%" class="row comment">
               <div class="col-12">
                 <div class="forum-comment flex align-items-center">
@@ -112,71 +113,70 @@
                     <span class="ml-1">%%COMMENT_DATE%%</span>
                   </div>
                 </div>
-              </div>
           
-              <div class="forum-comment-text" id="comment-text-%%UID%%">
-                <p>%%COMMENT_CONTENT%%</p>
-              </div>
+                <div class="forum-comment-text" id="comment-text-%%UID%%">
+                  <p>%%COMMENT_CONTENT%%</p>
+                </div>
           
-              <div class="forum-comment-edit hidden" id="edit-comment-%%UID%%">
-                <textarea id="edit-comment-textarea-%%UID%%" class="forum-comment-input" rows="1">%%COMMENT_CONTENT%%</textarea>
-                <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
-                  <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler</button>
-                  <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder</button>
+                <div class="forum-comment-edit hidden" id="edit-comment-%%UID%%">
+                  <textarea id="edit-comment-textarea-%%UID%%" class="forum-comment-input" rows="1">%%COMMENT_CONTENT%%</textarea>
+                  <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+                    <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler</button>
+                    <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder</button>
+                  </div>
                 </div>
-              </div>
           
-              <div class="forum-comment-reactions">
-                <div class="%%LIKE_CLASS%%">
-                  <span class="icon material-symbols-outlined" data-like-uid="%%UID%%" data-icon="thumb_up"></span>
-                  <span class="ml-2">%%LIKES%%</span>
-                </div>
-                <div class="%%DISLIKE_CLASS%%">
-                  <span class="icon material-symbols-outlined" data-dislike-uid="%%UID%%" data-icon="thumb_down"></span>
-                  <span class="ml-2">%%DISLIKES%%</span>
-                </div>
-                <div class="reaction-item mr-3 response">
-                  <span class="icon" data-icon="mode_comment"></span>
-                  <span class="ml-2">répondre</span>
-                </div>
-                <div class="reaction-item">
-                  <span class="icon" data-icon="more_horiz"></span>
-                  <div id="context-menu-%%UID%%" class="forum-comment-context-menu hidden">
-                    <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du commentaire</h3>
-                    <button class="comment-options-button edit-comment" title="Modifier le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="modify_comment" data-id="%%UID%%">
-                      <span class="icon">edit</span>
-                      <span class="comment-options-text" style="margin-left: 8px;">Modifier le commentaire</span>
-                    </button>
-                    <button class="comment-options-button delete-comment" title="Supprimer le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="cancel_comment" data-id="%%UID%%">
-                      <span class="icon">delete</span>
-                      <span class="comment-options-text" style="margin-left: 8px;">Supprimer le commentaire</span>
-                    </button>
+                <div class="forum-comment-reactions">
+                  <div class="%%LIKE_CLASS%%">
+                    <span class="icon material-symbols-outlined" data-like-uid="%%UID%%" data-icon="thumb_up"></span>
+                    <span class="ml-2">%%LIKES%%</span>
+                  </div>
+                  <div class="%%DISLIKE_CLASS%%">
+                    <span class="icon material-symbols-outlined" data-dislike-uid="%%UID%%" data-icon="thumb_down"></span>
+                    <span class="ml-2">%%DISLIKES%%</span>
+                  </div>
+                  <div class="reaction-item mr-3 response">
+                    <span class="icon" data-icon="mode_comment"></span>
+                    <span class="ml-2">répondre</span>
+                  </div>
+                  <div class="reaction-item">
+                    <span class="icon" data-icon="more_horiz"></span>
+                    <div id="context-menu-%%UID%%" class="forum-comment-context-menu hidden">
+                      <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du commentaire</h3>
+                      <button class="comment-options-button edit-comment" title="Modifier le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="modify_comment" data-id="%%UID%%">
+                        <span class="icon">edit</span>
+                        <span class="comment-options-text" style="margin-left: 8px;">Modifier le commentaire</span>
+                      </button>
+                      <button class="comment-options-button delete-comment" title="Supprimer le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="cancel_comment" data-id="%%UID%%">
+                        <span class="icon">delete</span>
+                        <span class="comment-options-text" style="margin-left: 8px;">Supprimer le commentaire</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
           
-            <div id="reply-form-%%UID%%" class="row my-4 d-flex align-items-center hidden">
-              <div class="col-auto pr-0">
-                <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                  %%USER_INITIALS%%
+              <div id="reply-form-%%UID%%" class="row my-4 d-flex align-items-center hidden">
+                <div class="col-auto pr-0">
+                  <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                    %%USER_INITIALS%%
+                  </div>
+                </div>
+                <div class="col pl-0" style="margin-bottom: 1rem;">
+                  <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>
+                </div>
+                <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+                  <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler</button>
+                  <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder</button>
                 </div>
               </div>
-              <div class="col pl-0" style="margin-bottom: 1rem;">
-                <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>
-              </div>
-              <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
-                <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler</button>
-                <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder</button>
-              </div>
-            </div>
           
-            <div class="forum-comment-responses">
-              %%RESPONSE_SECTION%%
+              <div class="forum-comment-responses">
+                %%RESPONSE_SECTION%%
+              </div>
             </div>
           </div>
         </div>
-        
               
       </div>
     </div>

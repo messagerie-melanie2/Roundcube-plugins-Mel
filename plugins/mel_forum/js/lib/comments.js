@@ -540,8 +540,8 @@ generateHtmlFromTemplate() {
     COMMENT_ID: this.id,
     LIKE_CLASS: likeClass,
     DISLIKE_CLASS: dislikeClass,
-    LIKES: this.likes,
-    DISLIKES: this.dislikes,
+    LIKES: this.likes.toString(),
+    DISLIKES: this.dislikes.toString(),
     RESPONSE_SECTION: this.children_number > 0 ? 
     MelHtml.start
       .div({ class: 'forum-comment-response', 'data-comment-id': this.id })
@@ -550,7 +550,7 @@ generateHtmlFromTemplate() {
       .end('div')
       .div({ id: 'responses-' + this.id, class: 'responses ml-4 hidden' })
       .end('div')
-    .generate() : ''
+    .generate_html(true) : ''
   };
 
   // Utilisation de MelTemplate

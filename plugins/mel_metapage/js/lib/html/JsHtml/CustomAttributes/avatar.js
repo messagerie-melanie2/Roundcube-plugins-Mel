@@ -5,7 +5,7 @@ import { HtmlCustomTag } from './classes.js';
 
 export { AvatarElement };
 
-//#region jsdoc
+//#region JsDoc
 /**
  * Contient la classe lié aux éléments custom "bnum-avatar" ainsi que toutes les classes et fonctions utile.
  *
@@ -34,7 +34,7 @@ export { AvatarElement };
  */
 //#endregion
 
-//#region constantes
+//#region Constantes
 const STYLE_BASE = `
       img {
         filter: blur(0.2em);
@@ -82,6 +82,7 @@ const EVENT_IMAGE_LOAD = 'api:imgload';
 const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
 //#endregion
 
+//#region Element Html
 /**
  * @class
  * @classdesc Gestion de la balise <bnum-avatar>.
@@ -311,17 +312,18 @@ Object.defineProperty(AvatarElement, 'IsLoaded', {
     return !!window.avatarPageLoaded;
   },
 });
-
+//#endregion
+//#region Definition
 {
   const TAG = 'bnum-avatar';
 
   if (!customElements.get(TAG)) customElements.define(TAG, AvatarElement);
 }
-
+//#endregion
 window.addEventListener('load', function () {
   onLoaded();
 });
-
+//#region Chargement
 /**
  * Charge tout les avatars qui ont besoin d'être chargés.
  * @package
@@ -337,7 +339,8 @@ function onLoaded() {
 
   window.avatarPageLoaded = true;
 }
-
+//#endregion
+//#region Classes d'évènements
 /**
  * @class
  * @classdesc Evènement de base pour l'avatar.
@@ -459,3 +462,4 @@ class AvatarNotLoadEvent extends AvatarEvent {
     return this.setReturnData({ stop: true });
   }
 }
+//#endregion

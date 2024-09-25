@@ -154,29 +154,29 @@
                     </div>
                   </div>
                 </div>
-              </div>
+            
           
-              <div id="reply-form-%%UID%%" class="row my-4 d-flex align-items-center hidden">
-                <div class="col-auto pr-0">
-                  <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                    %%USER_INITIALS%%
+                <div id="reply-form-%%UID%%" class="row my-4 d-flex align-items-center hidden">
+                  <div class="col-auto pr-0">
+                    <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                      %%USER_INITIALS%%
+                    </div>
+                  </div>
+                  <div class="col pl-0" style="margin-bottom: 1rem;">
+                    <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>
+                  </div>
+                  <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+                    <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler</button>
+                    <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder</button>
                   </div>
                 </div>
-                <div class="col pl-0" style="margin-bottom: 1rem;">
-                  <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>
+            
+                <div class="forum-comment-responses">
+                  %%RESPONSE_SECTION%%
                 </div>
-                <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
-                  <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler</button>
-                  <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder</button>
-                </div>
-              </div>
-          
-              <div class="forum-comment-responses">
-                %%RESPONSE_SECTION%%
               </div>
             </div>
           </div>
-        </div>
               
       </div>
     </div>

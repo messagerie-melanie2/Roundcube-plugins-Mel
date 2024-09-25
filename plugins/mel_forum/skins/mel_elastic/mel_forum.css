@@ -412,7 +412,7 @@
   /* Pour aligner les éléments horizontalement */
   align-items: center;
   /* Aligne les éléments verticalement au centre */
-  margin-left: 50px;
+  margin-left: 35px;
   /* Ajuste la marge pour s'aligner avec les autres éléments */
 }
 .task-forum .forum-comment-response .icon::before {
@@ -423,8 +423,7 @@
   display: inline-block;
   vertical-align: middle;
   color: var(--forum-active-text-color);
-  margin-right: 5px;
-  /* Espace à droite de l'icône */
+  
 }
 .task-forum .forum-comment-response .ml-2 {
   font-size: 12px;
@@ -617,4 +616,7 @@
 .task-forum .comment-options-button:hover {
   background-color: rgba(0, 0, 0, 0.05);
   /* Légère modification au survol */
+}
+.task-forum .forum-comment-input {
+  margin-top: 5px;
 }

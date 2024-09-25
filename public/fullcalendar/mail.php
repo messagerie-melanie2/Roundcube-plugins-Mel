@@ -47,7 +47,7 @@ class Mail
 
   public static function SendOrganizerAppointmentMail($organizer, $attendee, $appointment)
   {
-    require_once __DIR__ . '/../config.inc.php';
+    require __DIR__ . '/../config.inc.php';
 
     $subject = $config["organizer_mail_subject"];
     $from = $config['mail_from'];
@@ -78,7 +78,7 @@ class Mail
 
   public static function SendAttendeeAppointmentMail($organizer, $attendee, $appointment, $ics)
   {
-    require_once __DIR__ . '/../config.inc.php';
+    require __DIR__ . '/../config.inc.php';
 
     $subject = $config["attendee_mail_subject"];
     $from = $config['mail_from'];

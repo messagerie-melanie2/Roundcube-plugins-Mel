@@ -67,6 +67,7 @@ class MelTemplate {
    * @param {TemplateEvent[]}   [destructured.events=[]] Tableau d'événements à injecter dans le template sous la forme [ { target: target, type: type, listener: listener }, { target: target1, type: type1, listener: listener1 } ] avec target = selecteur
    * @param {Object}  [destructured.htmlContents={}] Liste de html à injecter dans le template sous la forme { selector: html, selector1: html1}
    * @param {RegExp}  [destructured.regex=/%%(\w*)%%/g] Regex à utiliser pour remplacer les données dans le template
+   * @frommoduleparam {MelTemplate} events {@linkto TemplateEvent}
    */
   constructor({ templateSelector = '', data = {}, events = [], htmlContents = {}, regex = /%%(\w*)%%/g } = {}) {
     this.#template = templateSelector;
@@ -99,6 +100,7 @@ class MelTemplate {
    * 
    * @param {TemplateEvent[]} events Tableau d'événements à injecter dans le template sous la forme [ { target: target, type: type, listener: listener }, { target: target1, type: type1, listener: listener1 } ] avec target = selecteur
    * @returns {MelTemplate}
+   * @frommoduleparam {MelTemplate} events {@linkto TemplateEvent}
    */
   setEvents(events) {
     this.#events = events;

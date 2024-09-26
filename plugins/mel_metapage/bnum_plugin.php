@@ -210,20 +210,24 @@ class WebComponnents {
         $this->plugin = rcmail::get_instance()->plugins->get_plugin('mel_metapage');
     }
 
-    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/') , $plugin = 'mel_metapage') {
+    private function _include_component($name, $path = (bnum_plugin::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
         return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
     }
 
     public function Tabs() {
-        $this->_include_component('tab_web_element');
+        $this->_include_component('tab_web_element.js');
     }
 
     public function PressedButton() {
-        $this->_include_component('pressed_button_web_element');
+        $this->_include_component('pressed_button_web_element.js');
     }
 
     public function InfiniteScrollContainer() {
-        $this->_include_component('infinite_scroll_container');
+        $this->_include_component('infinite_scroll_container.js');
+    }
+
+    public function Avatar() {
+        $this->_include_component('avatar.js');
     }
 
     public function ____METHODS____($what, ...$args) {

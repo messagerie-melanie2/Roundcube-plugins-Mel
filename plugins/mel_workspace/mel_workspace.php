@@ -74,6 +74,7 @@ class mel_workspace extends bnum_plugin
         $this->include_web_component()->Tabs();
         $this->include_web_component()->PressedButton();
         $this->include_web_component()->InfiniteScrollContainer();
+        $this->include_web_component()->Avatar();
         self::IncludeWorkspaceBlockComponent();
 
         $this->add_handler('subscribed', [$this, 'handler_subscribed']);
@@ -432,7 +433,7 @@ class mel_workspace extends bnum_plugin
     }
 
     public static function IncludeWorkspaceBlockComponent() {
-        WebComponnents::Instance()->____METHODS____('_include_component', 'workspace_block_item', '/js/lib/WebComponents/', 'mel_workspace');
+        WebComponnents::Instance()->____METHODS____('_include_component', 'workspace_block_item.js', '/js/lib/WebComponents', 'mel_workspace');
     }
 
     public static function IncludeWorkspacesBlocks($workspaces, $callback = null) {
@@ -499,7 +500,7 @@ class mel_workspace extends bnum_plugin
                 $tmp = driver_mel::gi()->getUser($value->user);
 
                 if ($tmp) {
-                    $tmp = $rc->plugins->exec_hook('bnum.avatar', ['user' => $tmp, 'url' => "./?_task=addressbook&_action=photo&_email=$tmp->email&_error=1&_is_from=iframe"]);
+                    $tmp = $rc->plugins->exec_hook('bnum.avatar', ['user' => $tmp, 'url' => $tmp->email]);
                     if (isset($tmp) && isset($tmp['url'])) {              
                         $users[] = implode('|', [$tmp['url'], $tmp['user']->name]);
                         ++$it;

@@ -182,7 +182,7 @@
         border: solid var(--wsp-round-border-size);
       }
 
-      img {
+      bnum-avatar{
         width: 42px;
         height: 42px;
         border-radius: 100%;
@@ -192,8 +192,15 @@
         filter: blur(0em);
         transition: filter 0.5s;
         object-fit: cover;
+        overflow: hidden;
 
-        &[data-src] {
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        &[data-needcreation] {
           filter: blur(0.2em);
           background-color: white;
         }

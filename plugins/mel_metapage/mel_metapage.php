@@ -2926,7 +2926,7 @@ class mel_metapage extends bnum_plugin
         }
 
         $this->set_plugin_env_exist();
-        $this->include_component('avatar.js');
+        $this->include_web_component()->Avatar();
 
         $this->rc->output->set_env("frames.multi_frame_enabled", $this->get_config('multi_frame_enabled', false));
         $this->rc->output->set_env("frames.max_multi_frame", $this->get_config('max_multi_frame', 3));
@@ -3629,9 +3629,6 @@ class mel_metapage extends bnum_plugin
 
         echo json_encode($data['html'] ?? '');
         exit;
-    }
-}
-        return html::div([], $txt . ' ' . html::a(['href' => $url], $url) . '.');
     }
 
     public function avatar_url() {

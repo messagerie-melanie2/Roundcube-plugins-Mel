@@ -313,13 +313,27 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
         span = null;
       } else {
-        img = document.createElement('img');
-        div.appendChild(img);
-        img.setAttribute('src', 'skins/elastic/images/contactpic.svg');
-        img.setAttribute('data-src', url);
-        img.setAttribute('data-user', user);
+        img = document.createElement('bnum-avatar');
+        img.setAttribute('data-email', url);
+        img.setAttribute('data-shadow', false);
         img.setAttribute('title', user);
-        img.owner = this;
+        img.addEventListener('api:imgload', (customEvent) => {
+          let image = customEvent.image();
+          image.style.borderColor = this._color;
+        });
+        img.addEventListener('api:imgloaderror', function (user, customEvent) {
+          customEvent.avatar().style.border = 'none';
+          this._on_error_load(customEvent.avatar().navigator, user);
+          customEvent.stop();
+        }.bind(this, user));
+        div.appendChild(img);
+        // img = document.createElement('img');
+        // div.appendChild(img);
+        // img.setAttribute('src', 'skins/elastic/images/contactpic.svg');
+        // img.setAttribute('data-src', url);
+        // img.setAttribute('data-user', user);
+        // img.setAttribute('title', user);
+        // img.owner = this;
       }
 
       pictures.appendChild(div);
@@ -453,7 +467,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     let ev = e.originalTarget;
 
     ev.setAttribute('src', ev.dataset.src);
-    ev.removeAttribute;
+    // ev.removeAttribute;
     //console.log('pl', e);
   }
   //#endregion
@@ -464,29 +478,29 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
   if (!customElements.get(TAG)) customElements.define(TAG, WorkspaceBlockItem);
 }
 
-window.addEventListener('load', function () {
-  onLoaded();
-});
+// window.addEventListener('load', function () {
+//   onLoaded();
+// });
 
-function onLoaded() {
-  let imagesToLoad = document.querySelectorAll(
-    '.workspace-block-item img[data-src]',
-  );
+// function onLoaded() {
+//   let imagesToLoad = document.querySelectorAll(
+//     '.workspace-block-item img[data-src]',
+//   );
 
-  const loadImages = (image) => {
-    image.onload = () => {
-      image.removeAttribute('data-src');
-      image.style.borderColor = image.owner._color;
-    };
-    image.onerror = image.owner._on_error_load.bind(
-      image.owner,
-      image.parentNode,
-      image.dataset.user,
-    );
-    image.setAttribute('src', image.getAttribute('data-src'));
-  };
+//   const loadImages = (image) => {
+//     image.onload = () => {
+//       image.removeAttribute('data-src');
+//       image.style.borderColor = image.owner._color;
+//     };
+//     image.onerror = image.owner._on_error_load.bind(
+//       image.owner,
+//       image.parentNode,
+//       image.dataset.user,
+//     );
+//     image.setAttribute('src', image.getAttribute('data-src'));
+//   };
 
-  for (const image of imagesToLoad) {
-    loadImages(image);
-  }
-}
+//   for (const image of imagesToLoad) {
+//     loadImages(image);
+//   }
+// }

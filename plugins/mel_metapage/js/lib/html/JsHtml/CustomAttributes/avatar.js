@@ -1,7 +1,7 @@
 import { EMPTY_STRING } from '../../../constants/constants.js';
 import { BnumEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
-import { HtmlCustomTag } from './classes.js';
+import { HtmlCustomTag } from './js_html_base_web_elements.js';
 
 export { AvatarElement };
 
@@ -207,7 +207,11 @@ class AvatarElement extends HtmlCustomTag {
   /**
    * Est appelé par le navigateur.
    */
-  connectedCallback() {
+  _p_main() {
+    super._p_main();
+
+    if (!['false', false, true, 'true'].includes(this.data('shadow'))) this.data('shadow', true);
+
     //Init
     Object.defineProperty(this, '_email', {
       value:
@@ -230,28 +234,32 @@ class AvatarElement extends HtmlCustomTag {
     //Setup
     this.style.display = 'block';
 
-    let shadow = this.attachShadow({ mode: 'open' });
+    let shadow = this._p_start_construct();
 
     let img = document.createElement('img');
     img.src = 'skins/elastic/images/contactpic.svg';
 
-    let style = document.createElement('style');
+    if (this.shadowEnabled()) {
+      let style = document.createElement('style');
 
-    let style_ex = EMPTY_STRING;
+      let style_ex = EMPTY_STRING;
+  
+      if (this.dataset.forceSize) {
+        this._force = this.dataset.forceSize;
+        style_ex = this._get_style_force();
+        this.removeAttribute('data-force-size');
+      }
+  
+      style.append(document.createTextNode(STYLE_BASE + style_ex));
 
-    if (this.dataset.forceSize) {
-      this._force = this.dataset.forceSize;
-      style_ex = this._get_style_force();
-      this.removeAttribute('data-force-size');
+      shadow.append(style);
+      style = null;
     }
 
-    style.append(document.createTextNode(STYLE_BASE + style_ex));
-
-    shadow.append(style, img);
+    shadow.append(img);
 
     //end
     img = null;
-    style = null;
 
     if (this.dataset.forceload) {
       setTimeout(() => {
@@ -262,14 +270,13 @@ class AvatarElement extends HtmlCustomTag {
     }
     else {
       this.#timeout = setTimeout(() => {
-        this.removeAttribute('data-needcreation');
         this.update_img();
       }, 5*1000);
     }
   }
 
   update_img() {
-    let img = this.shadowRoot.querySelector('img');
+    let img = this.navigator.querySelector('img');
     img.onload = this._on_load.bind(this);
     img.onerror = this._on_error.bind(this);
     img.src = MelObject.Empty().url('mel_metapage', {
@@ -304,13 +311,15 @@ class AvatarElement extends HtmlCustomTag {
 
     this.removeAttribute('data-needcreation');
 
-    let style = document.createElement('style');
-    style.append(document.createTextNode(STYLE_LOADED));
+    if (this.shadowEnabled()) {
+      let style = document.createElement('style');
+      style.append(document.createTextNode(STYLE_LOADED));
+  
+      this.shadowRoot.append(style);
+      style = null;
+    }
 
-    this.shadowRoot.append(style);
-    style = null;
-
-    let img = this.shadowRoot.querySelector('img');
+    let img = this.navigator.querySelector('img');
     img.onload = null;
     img.onerror = null;
 
@@ -325,6 +334,13 @@ class AvatarElement extends HtmlCustomTag {
    * @package
    */
   _on_error() {
+    if (this.#timeout) {
+      clearTimeout(this.#timeout);
+      this.#timeout = null;
+    }
+
+    this.removeAttribute('data-needcreation');
+
     let error_data = this.onimgloaderror.call(this);
 
     if (Array.isArray(error_data)) {
@@ -334,8 +350,9 @@ class AvatarElement extends HtmlCustomTag {
     } else if (error_data && error_data.stop === true) return this;
 
     const txt = this._email;
-    this.shadowRoot.querySelector('img').remove();
-    this.shadowRoot.querySelector('style').remove();
+    this.navigator.querySelector('img').remove();
+    
+    if (this.shadowEnabled()) this.shadowRoot.querySelector('style').remove();
 
     let element = document.createElement('span');
     element.classList.add('no-picture');
@@ -348,19 +365,24 @@ class AvatarElement extends HtmlCustomTag {
 
     element.appendChild(span);
 
-    let style = document.createElement('style');
+    if (this.shadowEnabled()) {
+      let style = document.createElement('style');
 
-    style.append(
-      document.createTextNode(
-        STYLE_ERROR + (this._force ? this._get_style_force() : EMPTY_STRING),
-      ),
-    );
+      style.append(
+        document.createTextNode(
+          STYLE_ERROR + (this._force ? this._get_style_force() : EMPTY_STRING),
+        ),
+      );
 
-    this.shadowRoot.append(style, element);
+      this.shadowRoot.append(style);
+
+      style = null;
+    }
+
+    this.navigator.append(element);
 
     element = null;
     span = null;
-    style = null;
 
     return this;
   }

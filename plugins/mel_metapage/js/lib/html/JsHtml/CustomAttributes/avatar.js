@@ -92,6 +92,16 @@ const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
  * @frommodule WebComponents/Base
  */
 class AvatarElement extends HtmlCustomTag {
+
+  /**
+   * Contient ou non, un timeout lié au chargement des avatars.
+   * 
+   * Les avatars se chargent au bout de 5 secondes.
+   * @type {null | undefined |number }
+   * @private
+   */
+  #timeout
+  
   /**
    * La balise <bnum-avatar></bnum-avatar> permet de charger l'avatar de l'utilisateur en cours ou d'un utilisateur du bnum.
    *
@@ -127,6 +137,7 @@ class AvatarElement extends HtmlCustomTag {
      * @type {string | number | null}
      */
     this._force = null;
+    this.#timeout = null;
     /**
      * Action à faire lorsque l'image est chargée.
      * @type {BnumEvent<OnImageLoadCallback>}
@@ -206,9 +217,16 @@ class AvatarElement extends HtmlCustomTag {
 
     if (this.dataset.forceload) {
       setTimeout(() => {
-        this.update_img();
+        this.removeAttribute('data-needcreation');
         this.removeAttribute('data-forceload');
+        this.update_img();
       }, 10);
+    }
+    else {
+      this.#timeout = setTimeout(() => {
+        this.removeAttribute('data-needcreation');
+        this.update_img();
+      }, 5*1000);
     }
   }
 
@@ -241,6 +259,11 @@ class AvatarElement extends HtmlCustomTag {
    * @returns {AvatarElement} Chaîne
    */
   _on_load() {
+    if (this.#timeout) {
+      clearTimeout(this.#timeout);
+      this.#timeout = null;
+    }
+
     this.removeAttribute('data-needcreation');
 
     let style = document.createElement('style');

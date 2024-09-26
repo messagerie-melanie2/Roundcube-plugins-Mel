@@ -36,6 +36,12 @@ export { AvatarElement };
 //#endregion
 
 //#region Constantes
+/**
+ * Style dans le shadow dom de l'image
+ * @type {string}
+ * @constant
+ * @package
+ */
 const STYLE_BASE = `
       img {
         filter: blur(0.2em);
@@ -48,6 +54,12 @@ const STYLE_BASE = `
         box-sizing: var(--avatar-box-sizing);
       }
       `;
+/**
+ * Style dans le shadow dom de l'image lorsqu'elle est chargée
+ * @type {string}
+ * @constant
+ * @package
+ */
 const STYLE_LOADED = `
       img {
         filter: blur(0)!important;
@@ -55,12 +67,24 @@ const STYLE_LOADED = `
         --avatar-box-sizing: var(--avatar-box-sizing-loaded)!important;
       }
       `;
+/**
+ * Style du host
+ * @type {string}
+ * @constant
+ * @package
+ */
 const STYLE_HOST = `
         :host {
           width:%0%;
           height:%0%;
         }
       `;
+/**
+ * Style dans le shadow dom lorsque l'image n'est pas chargé
+ * @type {string}
+ * @constant
+ * @package
+ */
 const STYLE_ERROR = `
       .absolute-center {
           margin: 0;
@@ -79,14 +103,28 @@ const STYLE_ERROR = `
 width: 100%;
 height: 100%;
     }`;
+/**
+ * Nom de l'évènement lorsque l'image est chargée
+ * @type {string}
+ * @constant
+ * @package
+ * @default 'api:imgload'
+ */
 const EVENT_IMAGE_LOAD = 'api:imgload';
+/**
+ * Nom de l'évènement lorsque l'image n'est pas chargée
+ * @type {string}
+ * @constant
+ * @package
+ * @default 'api:imgloaderror'
+ */
 const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
 //#endregion
 
 //#region Element Html
 /**
  * @class
- * @classdesc Gestion de la balise <bnum-avatar>.
+ * @classdesc Gestion de la balise bnum-avatar.
  * @extends HtmlCustomTag
  * @tutorial webcomponent-avatar
  * @frommodule WebComponents/Base
@@ -103,7 +141,7 @@ class AvatarElement extends HtmlCustomTag {
   #timeout
   
   /**
-   * La balise <bnum-avatar></bnum-avatar> permet de charger l'avatar de l'utilisateur en cours ou d'un utilisateur du bnum.
+   * La balise bnum-avatar permet de charger l'avatar de l'utilisateur en cours ou d'un utilisateur du bnum.
    *
    * Le chargement des avatars se fait après le chargement de la page. On peut néanmoins le forcer avec le data `data-forceload`.
    *
@@ -284,6 +322,7 @@ class AvatarElement extends HtmlCustomTag {
   /**
    * Est appelé lorsque l'image ne se charge pas
    * @returns {AvatarElement} Chaîne
+   * @package
    */
   _on_error() {
     let error_data = this.onimgloaderror.call(this);

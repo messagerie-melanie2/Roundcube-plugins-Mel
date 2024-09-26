@@ -956,11 +956,14 @@ class mel_metapage extends bnum_plugin
 
     function appendTo($args)
     {
+        $args["content"] = str_replace('/scriptType:module"', '?v='.Version::VERSION.'.'.Version::BUILD.'" type="module"', $args["content"]);
+
         if (strpos($args["content"], '<div id="layout">') === false)
             return $args;
 
         $tmp = explode('<div id="layout">', $args["content"]);
         $args["content"] = $tmp[0] . '<div id="layout">' . $this->rc->output->parse("mel_metapage.custom_options", false, false) . $tmp[1];
+
         return $args;
     }
 
@@ -2910,7 +2913,7 @@ class mel_metapage extends bnum_plugin
         }
 
         $this->set_plugin_env_exist();
-        $this->include_component('avatar');
+        $this->include_component('avatar.js');
 
         $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
 
@@ -3637,6 +3640,6 @@ class mel_metapage extends bnum_plugin
     }
 
     public static function IncludeAvatar() {
-        rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('avatar');
+        rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('avatar.js');
     } 
 }

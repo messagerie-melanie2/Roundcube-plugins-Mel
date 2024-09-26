@@ -52,18 +52,21 @@ abstract class bnum_plugin extends rcube_plugin
         }
     }
 
-    public function include_component($name, $path = (self::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes/') , $plugin = 'mel_metapage') {
-        $this->setup_module();
+    public function include_component($name, $path = (self::BASE_MODULE_PATH.'html/JsHtml/CustomAttributes') , $plugin = 'mel_metapage') {
+        // $this->setup_module();
 
-        $args = "'$plugin', '$name', '$path', false";
+        // $args = "'$plugin', '$name', '$path', false";
 
-        if ($this->api->output !== null) {
-            try {
-                $this->api->output->add_script("(() => {loadJsModule($args);})();", 'head');
-            } catch (\Throwable $th) {
-                return null;
-            }
-        }
+        // if ($this->api->output !== null) {
+        //     try {
+        //         $this->api->output->add_script("(() => {loadJsModule($args);})();", 'head');
+        //     } catch (\Throwable $th) {
+        //         return null;
+        //     }
+        // }
+        if ($path[0] === '/') $path = substr($path, 1);
+
+        $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');
     }
 
     protected function break_initial_fonctionality($key) {

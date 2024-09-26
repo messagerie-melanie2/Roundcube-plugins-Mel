@@ -161,32 +161,23 @@ class PostComment {
  */
 async toggleResponses(id) {
   try {
+      // Correction du sélecteur jQuery
       let responseContainer = $('#responses-' + id);
+      // Sélection de l'icône correspondante
       let toggleIcon = $('#toggle-icon-' + id);
 
-      // Bascule la classe 'hidden' pour afficher ou masquer les réponses
+      // Basculer la classe 'hidden' pour afficher ou masquer les réponses
       responseContainer.toggleClass('hidden');
       
       // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
       if (responseContainer.hasClass('hidden')) {
-          toggleIcon.attr('data-icon', 'arrow_drop_down');
-      } else {
-          toggleIcon.attr('data-icon', 'arrow_drop_up');
-
-          // Ajouter un écouteur de clic pour fermer les réponses si on clique en dehors
-          setTimeout(() => {
-              $(document).on('click.responseOutside', function(event) {
-                  if (!$(event.target).closest(responseContainer).length && !$(event.target).closest(toggleIcon).length) {
-                      responseContainer.addClass('hidden'); // Masquer les réponses
-                      toggleIcon.attr('data-icon', 'arrow_drop_down'); // Réinitialiser l'icône
-                      $(document).off('click.responseOutside'); // Retirer l'écouteur après fermeture
-                  }
-              });
-          }, 0); // Délai pour permettre le clic sur l'icône
-      }
-  } catch (error) {
-      console.error("Erreur lors du basculement des réponses:", error);
-  }
+        toggleIcon.attr('data-icon', 'arrow_drop_down');
+    } else {
+        toggleIcon.attr('data-icon', 'arrow_drop_up');
+    }
+} catch (error) {
+    console.error("Erreur lors du basculement des réponses:", error);
+}
 }
 
 /**
@@ -526,6 +517,9 @@ async deleteComment(uid) {
     console.error("Erreur lors de la suppression du commentaire:", error);
   }
 }
+
+
+
 
 /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.

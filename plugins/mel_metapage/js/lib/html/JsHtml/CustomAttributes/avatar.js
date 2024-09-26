@@ -1,3 +1,4 @@
+import { Cookie } from '../../../classes/cookies.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
 import { BnumEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
@@ -120,6 +121,131 @@ const EVENT_IMAGE_LOAD = 'api:imgload';
  */
 const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
 //#endregion
+
+//#region Classes d'évènements
+/**
+ * @class
+ * @classdesc Evènement de base pour l'avatar.
+ * @abstract
+ * @extends CustomEvent
+ * @package
+ */
+class AvatarEvent extends CustomEvent {
+  /**
+   * Le principe est que cette classe ainsi que les classes filles auront une valeur de retour en mémoire.
+   *
+   * Cette valeur de retour pourra ensuite être utiliser par les `BnumEvent` ou d'autres fonctions.
+   * @param {string} type Type d'évènement
+   * @param {Object<string, *>} config Configuration de l'évènement
+   */
+  constructor(type, config = {}) {
+    super(type, config);
+
+    /**
+     * Données de retour.
+     * @private
+     * @type {?any}
+     */
+    this._return_data = null;
+  }
+
+  /**
+   * Permet de données une valeur qui sera mise en mémoire pour plus tard.
+   * @param {*} value Valeur à mettre en mémoire.
+   */
+  setReturnData(value) {
+    this._return_data = value;
+  }
+
+  /**
+   * Récupère la valeur mise en mémoire.
+   * @returns {?*}
+   */
+  getReturnData() {
+    return this._return_data;
+  }
+}
+
+/**
+ * @class
+ * @classdesc Evènement de type `api:imgload`.
+ * @extends AvatarEvent
+ * @package
+ */
+class AvatarLoadEvent extends AvatarEvent {
+  /**
+   * Evènement reçu lorsque l'on fait un listener sur `api:imgload`.
+   * @param {HTMLImageElement} imageNode Image qui a été changée
+   * @param {AvatarElement} avatarNode Node parente
+   */
+  constructor(imageNode, avatarNode) {
+    super(EVENT_IMAGE_LOAD);
+
+    /**
+     * @private
+     */
+    this._imageNode = imageNode;
+    /**
+     * @private
+     */
+    this._avatarNode = avatarNode;
+  }
+
+  /**
+   * Récupère l'image
+   * @returns {HTMLImageElement}
+   */
+  image() {
+    return this._imageNode;
+  }
+
+  /**
+   * Récupère l'avatar
+   * @returns {AvatarElement}
+   */
+  avatar() {
+    return this._avatarNode;
+  }
+}
+
+/**
+ * @class
+ * @classdesc Evènement de type `api:imgloaderror`.
+ * @extends AvatarEvent
+ * @package
+ */
+class AvatarNotLoadEvent extends AvatarEvent {
+  /**
+   * Evènement reçu lorsque l'on fait un listener sur `api:imgloaderror`.
+   * @param {AvatarElement} avatarNode Node parente
+   */
+  constructor(avatarNode) {
+    super(EVENT_IMAGE_NOT_LOAD);
+
+    /**
+     * @private
+     */
+    this._avatarNode = avatarNode;
+  }
+
+  /**
+   * Récupère l'avatar
+   * @returns {AvatarElement}
+   */
+  avatar() {
+    return this._avatarNode;
+  }
+
+  /**
+   * Empêche la fonction _on_error de s'éxécuter normalement.
+   * @returns {void}
+   */
+  stop() {
+    return this.setReturnData({ stop: true });
+  }
+}
+//#endregion
+
 
 //#region Element Html
 /**
@@ -261,17 +387,23 @@ class AvatarElement extends HtmlCustomTag {
     //end
     img = null;
 
-    if (this.dataset.forceload) {
-      setTimeout(() => {
-        this.removeAttribute('data-needcreation');
-        this.removeAttribute('data-forceload');
-        this.update_img();
-      }, 10);
-    }
-    else {
-      this.#timeout = setTimeout(() => {
-        this.update_img();
-      }, 5*1000);
+    if (this._cookie_exist(this._email)) {
+      this.removeAttribute('data-forceload');
+
+      this._on_error();
+    }else {
+      if (this.dataset.forceload) {
+        setTimeout(() => {
+          this.removeAttribute('data-needcreation');
+          this.removeAttribute('data-forceload');
+          this.update_img();
+        }, 10);
+      }
+      else {
+        this.#timeout = setTimeout(() => {
+          this.update_img();
+        }, 5*1000);
+      }
     }
   }
 
@@ -296,6 +428,22 @@ class AvatarElement extends HtmlCustomTag {
    */
   _get_style_force() {
     return STYLE_HOST.replaceAll('%0', this._force);
+  }
+
+  _cookie_exist(mail) {
+    let cookie_avatars = Cookie.get_cookie('avatars_in_memory')?.value?.split?.(',');
+
+    return cookie_avatars && cookie_avatars.includes(mail);
+  }
+
+  _add_cookie(mail) {
+    let cookie_avatars = Cookie.get_cookie('avatars_in_memory')?.value?.split?.(',') ?? [];
+
+    if ((cookie_avatars.length <= 20 || mail === rcmail?.env?.mel_metapage_user_emails?.[0]) && !cookie_avatars.includes(mail)) {
+      cookie_avatars.push(mail);
+
+      Cookie.set_cookie('avatars_in_memory', cookie_avatars.join(','), moment().add(7, 'd').toDate());
+    }
   }
 
   /**
@@ -340,6 +488,8 @@ class AvatarElement extends HtmlCustomTag {
     }
 
     this.removeAttribute('data-needcreation');
+
+    if (!this._cookie_exist(this._email)) this._add_cookie(this._email);
 
     let error_data = this.onimgloaderror.call(this);
 
@@ -427,128 +577,5 @@ function onLoaded() {
   }
 
   window.avatarPageLoaded = true;
-}
-//#endregion
-//#region Classes d'évènements
-/**
- * @class
- * @classdesc Evènement de base pour l'avatar.
- * @abstract
- * @extends CustomEvent
- * @package
- */
-class AvatarEvent extends CustomEvent {
-  /**
-   * Le principe est que cette classe ainsi que les classes filles auront une valeur de retour en mémoire.
-   *
-   * Cette valeur de retour pourra ensuite être utiliser par les `BnumEvent` ou d'autres fonctions.
-   * @param {string} type Type d'évènement
-   * @param {Object<string, *>} config Configuration de l'évènement
-   */
-  constructor(type, config = {}) {
-    super(type, config);
-
-    /**
-     * Données de retour.
-     * @private
-     * @type {?any}
-     */
-    this._return_data = null;
-  }
-
-  /**
-   * Permet de données une valeur qui sera mise en mémoire pour plus tard.
-   * @param {*} value Valeur à mettre en mémoire.
-   */
-  setReturnData(value) {
-    this._return_data = value;
-  }
-
-  /**
-   * Récupère la valeur mise en mémoire.
-   * @returns {?*}
-   */
-  getReturnData() {
-    return this._return_data;
-  }
-}
-
-/**
- * @class
- * @classdesc Evènement de type `api:imgload`.
- * @extends AvatarEvent
- * @package
- */
-class AvatarLoadEvent extends AvatarEvent {
-  /**
-   * Evènement reçu lorsque l'on fait un listener sur `api:imgload`.
-   * @param {HTMLImageElement} imageNode Image qui a été changée
-   * @param {AvatarElement} avatarNode Node parente
-   */
-  constructor(imageNode, avatarNode) {
-    super(EVENT_IMAGE_LOAD);
-
-    /**
-     * @private
-     */
-    this._imageNode = imageNode;
-    /**
-     * @private
-     */
-    this._avatarNode = avatarNode;
-  }
-
-  /**
-   * Récupère l'image
-   * @returns {HTMLImageElement}
-   */
-  image() {
-    return this._imageNode;
-  }
-
-  /**
-   * Récupère l'avatar
-   * @returns {AvatarElement}
-   */
-  avatar() {
-    return this._avatarNode;
-  }
-}
-
-/**
- * @class
- * @classdesc Evènement de type `api:imgloaderror`.
- * @extends AvatarEvent
- * @package
- */
-class AvatarNotLoadEvent extends AvatarEvent {
-  /**
-   * Evènement reçu lorsque l'on fait un listener sur `api:imgloaderror`.
-   * @param {AvatarElement} avatarNode Node parente
-   */
-  constructor(avatarNode) {
-    super(EVENT_IMAGE_NOT_LOAD);
-
-    /**
-     * @private
-     */
-    this._avatarNode = avatarNode;
-  }
-
-  /**
-   * Récupère l'avatar
-   * @returns {AvatarElement}
-   */
-  avatar() {
-    return this._avatarNode;
-  }
-
-  /**
-   * Empêche la fonction _on_error de s'éxécuter normalement.
-   * @returns {void}
-   */
-  stop() {
-    return this.setReturnData({ stop: true });
-  }
 }
 //#endregion

@@ -78,9 +78,13 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
   }
 
   async _on_scroll() {
+    let navigator = this.$.find('.contents');
+
+    if (!navigator.length) navigator = this.$;
+
     if (
-      this.$.scrollTop() > 1 &&
-      (this.$.scrollTop() + this.$.height()) / this.$.height() >= 0.95 &&
+      navigator.scrollTop() > 1 &&
+      (navigator.scrollTop() + navigator.height()) / navigator.height() >= 0.95 &&
       this._current_page_scroll > 1
     ) {
       // Affichage de la page suivante au bas de la page

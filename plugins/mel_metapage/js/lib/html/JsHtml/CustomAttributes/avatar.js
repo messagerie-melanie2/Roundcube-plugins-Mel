@@ -325,6 +325,11 @@ class AvatarElement extends HtmlCustomTag {
    * @package
    */
   _on_error() {
+    if (this.#timeout) {
+      clearTimeout(this.#timeout);
+      this.#timeout = null;
+    }
+
     let error_data = this.onimgloaderror.call(this);
 
     if (Array.isArray(error_data)) {

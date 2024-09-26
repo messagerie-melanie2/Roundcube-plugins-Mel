@@ -1808,7 +1808,7 @@ function m_mp_add_users() {
           html = '<li>';
           html += '<div class="row" style="margin-top:15px">';
           html += '<div class="col-2">';
-          html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="./?_task=addressbook&_action=photo&_email=${element.email}&_error=1&_is_from=iframe" /></div>`;
+          html += `<div class="dwp-round" style="background-color:var(--mel-button-background-color)"><bnum-avatar style="width:100%; height:100%;" data-email="${element.email}" data-forceload="true"></bnum-avatar></div>`;
           html += '</div>';
           html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
           html += `<span class="name">${element.name}</span><br/>`;

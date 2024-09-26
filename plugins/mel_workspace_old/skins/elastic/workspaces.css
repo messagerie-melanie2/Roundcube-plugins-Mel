@@ -795,3 +795,11 @@ body.task-workspace .table-bordered thead th {
 #tmp-id-wsp {
   color: var(--main-text-color);
 }
+.task-workspace {
+  --avatar-border-loaded: solid 4px white;
+  --avatar-box-sizing-loaded: border-box;
+}
+.task-workspace bnum-avatar {
+  width: 100%;
+  height: 100%;
+}

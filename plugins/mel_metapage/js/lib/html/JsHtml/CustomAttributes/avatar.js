@@ -11,6 +11,7 @@ export { AvatarElement };
  *
  * Le chargement de se module implique le chargement des images après le chargement de la page.
  * @module WebComponents/Avatar
+ * @tutorial webcomponent-avatar
  * @local OnImageLoadCallback
  * @local OnImageNotLoadCallback
  * @local AvatarElement
@@ -87,6 +88,8 @@ const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
  * @class
  * @classdesc Gestion de la balise <bnum-avatar>.
  * @extends HtmlCustomTag
+ * @tutorial webcomponent-avatar
+ * @frommodule WebComponents/Base
  */
 class AvatarElement extends HtmlCustomTag {
   /**
@@ -127,11 +130,13 @@ class AvatarElement extends HtmlCustomTag {
     /**
      * Action à faire lorsque l'image est chargée.
      * @type {BnumEvent<OnImageLoadCallback>}
+     * @frommodule WebComponents/Avatar {@linkto OnImageLoadCallback}
      */
     this.onimgload = new BnumEvent();
     /**
      * Action à faire lorsque l'image n'a pas réussie à être chargée.
      * @type {BnumEvent<OnImageNotLoadCallback>}
+     * @frommodule WebComponents/Avatar {@linkto OnImageNotLoadCallback}
      */
     this.onimgloaderror = new BnumEvent();
 

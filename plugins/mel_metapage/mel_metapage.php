@@ -538,11 +538,16 @@ class mel_metapage extends bnum_plugin
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
+            
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
+
+            $user = driver_mel::gi()->getUser();
+            $user->load();
             $this->rc->output->set_env('current_user', [
-                'name' => driver_mel::gi()->getUser()->firstname,
-                'lastname' => driver_mel::gi()->getUser()->lastname,
-                'full' => driver_mel::gi()->getUser()->fullname
+                'name' => $user->firstname,
+                'lastname' => $user->lastname,
+                'full' => $user->fullname,
+                'email' => $user->email
             ]);
 
             //            $this->include_script('js/actions/startup.js');
@@ -956,7 +961,9 @@ class mel_metapage extends bnum_plugin
 
     function appendTo($args)
     {
-        $args["content"] = str_replace('/scriptType:module"', '?v='.Version::VERSION.'.'.Version::BUILD.'" type="module"', $args["content"]);
+        if (strpos($args['content'], '/scriptType:module"') !== false){
+            $args["content"] = str_replace('/scriptType:module"', '?v='.Version::VERSION.'.'.Version::BUILD.'" type="module"', $args["content"]);
+        }
 
         if (strpos($args["content"], '<div id="layout">') === false)
             return $args;

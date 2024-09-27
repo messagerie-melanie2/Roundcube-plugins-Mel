@@ -127,7 +127,7 @@ const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
  * @constant
  * @package
  */
-const COOKIE_NAME = 'bnum_avatar';
+const COOKIE_NAME = 'bnum_avatar_v2';
 /**
  * Nombre de jour à ajouter à aujourd'hui pour créer la date d'éxpiration du cookie.
  * @default 31
@@ -135,7 +135,7 @@ const COOKIE_NAME = 'bnum_avatar';
  * @constant
  * @package
  */
-const COOKIE_EXPIRATION = 31;
+const COOKIE_EXPIRATION = 2;
 //#endregion
 
 //#region Classes d'évènements
@@ -397,6 +397,7 @@ class AvatarElement extends HtmlCustomTag {
     if (this._is_mine() && this._cookie_exist()) {
       this.removeAttribute('data-forceload');
       this._on_error();
+      console.info('[avatar]Des cookies d\'avatar non chargés ont été trouvé !');
     }
     else if (this.dataset.forceload) {
       setTimeout(() => {
@@ -505,7 +506,10 @@ class AvatarElement extends HtmlCustomTag {
       this.#timeout = null;
     }
 
-    if (!this._cookie_exist() && this._is_mine()) this._set_cookie();
+    if (!this._cookie_exist() && this._is_mine()) {
+      this._set_cookie();
+      console.info('[avatar]Les données de cookies ont été sauvegardé car une image l\'utilisateur n\'a pas défini d\'avatar !');
+    }
 
     this.removeAttribute('data-needcreation');
 

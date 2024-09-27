@@ -201,6 +201,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("message_part_structure", [$this, 'hook_message_part_structure']);
         $this->add_hook("message_part_before", [$this, 'hook_message_part_before']);
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
+        //$this->add_hook('contact_photo', [$this, 'no_contact_found']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs") {
             if (rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch') $this->include_script('js/actions/settings_gs.js');
@@ -3610,6 +3611,14 @@ class mel_metapage extends bnum_plugin
         $redirect = false;
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
 
+        if (rcube_utils::get_input_value('_no_data', rcube_utils::INPUT_GET)) {
+            $img = $this->_generate_no_picture();
+            header("Content-Type: image/png"); 
+  
+            imagepng($img); 
+            exit;
+        }
+
         if (!isset($email)) $email = driver_mel::gi()->getUser()->email;
         
         $plugin = $this->exec_hook('app.avatar', [
@@ -3645,7 +3654,75 @@ class mel_metapage extends bnum_plugin
     
             $this->rc()->output->sendExit(base64_decode(rcmail_output::BLANK_GIF), ['Content-Type: image/gif']);
         }
+    }
 
+    public function _generate_no_picture() {
+        $image = imagecreate(100, 100);
+
+        $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
+
+        $colors = $this->getRandomColorWithContrast($email);
+
+        // Set the background color of image 
+        $background_color = imagecolorallocate($image, $colors['background'][0], $colors['background'][1], $colors['background'][2]); 
+        imagefill($image, 100, 100, $background_color);
+
+        // Set the text color of image 
+        $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]); 
+
+        $tmp=imagefttext($image, 60, 0, 25, 80, $text_color, __DIR__.'/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
+        //imagestring($image, 2, 20, 20, substr($email, 0, 1), $text_color);
+
+        return $image;
+    }
+
+    function getContrastingColor($bgColor) {
+        // Convertir la couleur hexadécimale en RGB
+        $r = hexdec(substr($bgColor, 1, 2));
+        $g = hexdec(substr($bgColor, 3, 2));
+        $b = hexdec(substr($bgColor, 5, 2));
+    
+        // Calculer la luminosité
+        $luminance = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+    
+        // Si la couleur de fond est claire, choisir une couleur de texte sombre, et vice versa
+        return $luminance > 186 ? '#000000' : '#FFFFFF'; // Texte noir pour fond clair, blanc pour fond sombre
+    }
+    
+    function getRandomColorWithContrast($name) {
+        $bgColor = $this->stringToColorCode($name);
+        $textColor = $this->getContrastingColor($bgColor);
+        
+        $r = hexdec(substr($bgColor, 1, 2));
+        $g = hexdec(substr($bgColor, 3, 2));
+        $b = hexdec(substr($bgColor, 5, 2));
+
+        $r2 = hexdec(substr($textColor, 1, 2));
+        $g2 = hexdec(substr($textColor, 3, 2));
+        $b2 = hexdec(substr($textColor, 5, 2));
+
+        return [
+            'background' => [$r, $g, $b],
+            'text' => [$r2, $g2, $b2],
+        ];
+    }
+
+    function stringToColorCode($str) {
+        return "#".substr(md5($str), 0, 6);
+      }
+      
+    
+    public function no_contact_found($args) {
+        if (is_null($args['record']) || is_null($args['data'])) {
+            $args['url'] = [
+                '_task' => 'mel_metapage',
+                '_action' => 'avatar',
+                '_email' => $args['email'],
+                '_no_data' => true
+                ];
+        }
+
+        return $args;
     }
 
     public static function IncludeAvatar() {

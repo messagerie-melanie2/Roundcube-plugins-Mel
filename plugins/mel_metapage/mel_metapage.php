@@ -965,6 +965,8 @@ class mel_metapage extends bnum_plugin
             $args["content"] = str_replace('/scriptType:module"', '?v='.Version::VERSION.'.'.Version::BUILD.'" type="module"', $args["content"]);
         }
 
+        if (strpos($args['content'], '﻿') !== false) $args['content'] = str_replace('﻿', '', $args['content']);
+
         if (strpos($args["content"], '<div id="layout">') === false)
             return $args;
 

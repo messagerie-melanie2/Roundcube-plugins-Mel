@@ -881,6 +881,7 @@ class PostCommentView {
     });
   }
 
+
   /**
  * Enregistre un nouveau commentaire et met à jour l'affichage.
  *

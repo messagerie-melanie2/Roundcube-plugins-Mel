@@ -58,12 +58,14 @@
       <div class="col-12 col-md-10">
         <div class="row forum-comment-sort">
           <div class="input-group mel-group">
-            <select title="" id="forum-comment-select" class="form-control input-mel mel-input custom-select"
+            <select title="Trier par : " id="forum-comment-select" class="form-control input-mel mel-input custom-select"
               data-original-title="Trier par : ">
               <!-- A dynamiser en js -->
+              <option value="" disabled selected>Trier par :</option>
               <option value="date_asc">Plus récents</option>
               <option value="date_desc">Plus anciens</option>
-              <option value="">etc</option>
+              <option value="likes_desc">Plus de likes</option>
+              <option value="dislikes_desc">Plus de dislikes</option>
             </select>
           </div>
         </div>

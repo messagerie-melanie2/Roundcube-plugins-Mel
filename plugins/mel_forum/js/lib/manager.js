@@ -10,6 +10,18 @@ export class Manager extends MelObject {
   main() {
     super.main();
     this.displayComments();
+
+    // Associer l'événement de tri des commentaires au select
+    $('#forum-comment-select').change(async (event) => {
+      const selectedValue = $(event.target).val(); // Récupérer la valeur sélectionnée
+
+      // Vérifier si la valeur sélectionnée est correctement récupérée
+      console.log("Option sélectionnée:", selectedValue);
+      
+      // Appeler displayComments avec l'ordre sélectionné
+      await this.displayComments(selectedValue);
+    });
+
     this.export('manager');
     $('#return-homepage').click(() => {
       window.location.href = this.url('forum',{action:'index'});
@@ -30,11 +42,36 @@ export class Manager extends MelObject {
    * @name displayComments
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
-  async displayComments() {
+  async displayComments(order = 'date_desc') {
     // Obtenir tous les commentaires du post
     let PostCommentManager = new PostCommentView(this.get_env('post_uid'), this.get_env('post_id'));
     let allComments = await PostCommentManager.getCommentByPost();
     let comments_array = [];
+
+    // Fonction pour convertir le format de la date (qui est 24 septembre 2024)
+    const parseDate = (dateString) => {
+      const months = {
+          janvier: 0,
+          février: 1,
+          mars: 2,
+          avril: 3,
+          mai: 4,
+          juin: 5,
+          juillet: 6,
+          août: 7,
+          septembre: 8,
+          octobre: 9,
+          novembre: 10,
+          décembre: 11,
+      };
+
+      const parts = dateString.split(' '); // Diviser la chaîne
+      const day = parseInt(parts[0], 10); // Le jour
+      const month = months[parts[1]]; // Le mois (converti en index)
+      const year = parseInt(parts[2], 10); // L'année
+
+      return new Date(year, month, day); // Créer un objet Date
+  };
 
     // Parcourir tous les commentaires
     for (const key in allComments) {
@@ -57,35 +94,52 @@ export class Manager extends MelObject {
                 comment.current_user_reacted,
             );
 
-            // Générer le HTML avec les valeurs dynamiques insérées
-            let commentHtml = commentVizualizer.generateHtmlFromTemplate();
-
-            // Si le commentaire n'a pas de parent, c'est un commentaire principal
-            if (!comment.parent) {
-                // Insérer le commentaire principal dans la zone de commentaires
-                $('#comment-area').append(...commentHtml);
-            } else {
-                // C'est une réponse (ou une réponse à une réponse)
-                let parentResponseContainer = $('#responses-' + comment.parent);
-
-                // Vérifier si le conteneur de réponses existe
-                if (parentResponseContainer.length === 0) {
-                    // Créer un conteneur pour les réponses si besoin
-                    parentResponseContainer = $('<div>', {
-                        id: 'responses-' + comment.parent,
-                        class: 'responses ml-4'
-                    });
-
-                    // Insérer ce conteneur sous le commentaire parent
-                    $('#comment-id-' + comment.parent).append(parentResponseContainer);
-                }
-
-                // Ajouter la réponse dans le conteneur de réponses
-                parentResponseContainer.append(...commentHtml);
-            }
-
             // Ajouter chaque commentaire à la liste des commentaires pour un éventuel traitement ultérieur
             comments_array.push(commentVizualizer);
+        }
+    }
+
+     // Appliquer le tri en fonction de l'ordre spécifié
+     if (order === 'date_asc') {
+        comments_array.sort((a, b) => parseDate(b.created) - parseDate(a.created));
+    } else if (order === 'date_desc') {
+        comments_array.sort((a, b) => parseDate(a.created) - parseDate(b.created));
+    } else if (order === 'likes_desc') {
+        comments_array.sort((a, b) => b.likes - a.likes);
+    } else if (order === 'dislikes_desc') {
+        comments_array.sort((a, b) => b.dislikes - a.dislikes);
+    }
+
+    // Vider la zone des commentaires avant de ré-afficher les commentaires triés
+    $('#comment-area').empty();
+
+    // Afficher les commentaires triés
+    for (const commentVizualizer of comments_array) {
+        // Générer le HTML avec les valeurs dynamiques insérées
+        let commentHtml = commentVizualizer.generateHtmlFromTemplate();
+
+        // Si le commentaire n'a pas de parent, c'est un commentaire principal
+        if (!commentVizualizer.parent) {
+            // Insérer le commentaire principal dans la zone de commentaires
+            $('#comment-area').append(...commentHtml);
+        } else {
+            // C'est une réponse (ou une réponse à une réponse)
+            let parentResponseContainer = $('#responses-' + commentVizualizer.parent);
+
+            // Vérifier si le conteneur de réponses existe
+            if (parentResponseContainer.length === 0) {
+                // Créer un conteneur pour les réponses si besoin
+                parentResponseContainer = $('<div>', {
+                    id: 'responses-' + commentVizualizer.parent,
+                    class: 'responses ml-4'
+                });
+
+                // Insérer ce conteneur sous le commentaire parent
+                $('#comment-id-' + commentVizualizer.parent).append(parentResponseContainer);
+            }
+
+            // Ajouter la réponse dans le conteneur de réponses
+            parentResponseContainer.append(...commentHtml);
         }
     }
 

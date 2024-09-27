@@ -122,7 +122,7 @@ const EVENT_IMAGE_LOAD = 'api:imgload';
 const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
 /**
  * Nom du cookie qui indique que l'avatar n'a pas pu être chargé.
- * @default 'bnum_avatar'
+ * @default 'bnum_avatar_v2'
  * @type {string}
  * @constant
  * @package
@@ -130,7 +130,7 @@ const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
 const COOKIE_NAME = 'bnum_avatar_v2';
 /**
  * Nombre de jour à ajouter à aujourd'hui pour créer la date d'éxpiration du cookie.
- * @default 31
+ * @default 2
  * @type {number}
  * @constant
  * @package

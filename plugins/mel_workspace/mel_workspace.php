@@ -80,6 +80,7 @@ class mel_workspace extends bnum_plugin
         $this->add_handler('subscribed', [$this, 'handler_subscribed']);
         $this->add_handler('publics', [$this, 'handler_publics']);
         $this->add_handler('archived', [$this, 'handler_archived']);
+        $this->add_handler('publiccount', [$this, 'handler_public_count']);
 
         $this->rc()->output->send('mel_workspace.index');
     }
@@ -194,6 +195,10 @@ class mel_workspace extends bnum_plugin
         $args['class'] = 'workspace-list contents';
         $html = html::div($args, $this->_show_block(2));
         return $html;
+    }
+
+    public function handler_public_count($args) {
+        return ceil(count((driver_mel::gi()->workspace())->listPublicsWorkspaces()) / self::PAGE_MAX);
     }
     #endregion
 
@@ -319,7 +324,7 @@ class mel_workspace extends bnum_plugin
 
             switch ($namespace) {
                 case 'workspace.publics':
-                    $args['count'] =count((driver_mel::gi()->workspace())->listPublicsWorkspaces());
+                    $args['count'] = ceil(count((driver_mel::gi()->workspace())->listPublicsWorkspaces()) / self::PAGE_MAX);
                     break;
                 
                 default:

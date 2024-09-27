@@ -355,7 +355,7 @@ class AvatarElement extends HtmlCustomTag {
       this.setAttribute('data-forceload', true);
     }
 
-    if (!this.dataset.forceload) this.setAttribute('data-needcreation', true);
+    this.setAttribute('data-needcreation', true);
 
     //Setup
     this.style.display = 'block';
@@ -394,7 +394,7 @@ class AvatarElement extends HtmlCustomTag {
     }else {
       if (this.dataset.forceload) {
         setTimeout(() => {
-          this.removeAttribute('data-needcreation');
+          // this.removeAttribute('data-needcreation');
           this.removeAttribute('data-forceload');
           this.update_img();
         }, 10);
@@ -408,6 +408,7 @@ class AvatarElement extends HtmlCustomTag {
   }
 
   update_img() {
+    this.setAttribute('data-state', 'loading');
     let img = this.navigator.querySelector('img');
     img.onload = this._on_load.bind(this);
     img.onerror = this._on_error.bind(this);
@@ -458,6 +459,7 @@ class AvatarElement extends HtmlCustomTag {
     }
 
     this.removeAttribute('data-needcreation');
+    this.setAttribute('data-state', 'loaded');
 
     if (this.shadowEnabled()) {
       let style = document.createElement('style');
@@ -488,6 +490,7 @@ class AvatarElement extends HtmlCustomTag {
     }
 
     this.removeAttribute('data-needcreation');
+    this.setAttribute('data-state', 'error');
 
     if (!this._cookie_exist(this._email)) this._add_cookie(this._email);
 

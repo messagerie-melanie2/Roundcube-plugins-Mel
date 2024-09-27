@@ -1,3 +1,4 @@
+import { MelEnumerable } from '../../../classes/enum.js';
 import { isNullOrUndefined } from '../../../mel.js';
 import { BnumEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
@@ -14,7 +15,7 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
     this._countMax = null;
     this._scrollspace = null;
     this._page_loading = null;
-    this._current_page_scroll = 1;
+    this._current_page_scroll = 2;
     this._promise = null;
     this.onscrolledtoend = new BnumEvent();
 
@@ -22,7 +23,7 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
   }
 
   _setup() {
-    let promise = this._get_count_max();
+    //let promise = this._get_count_max();
 
     this._page_loading = {};
 
@@ -35,7 +36,7 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
         this.onscrolledtoend.count() <= 2 &&
         !$._data(this, 'events')?.['api:scrollended']
       ) {
-        await this._get_data_on_scroll.bind(this, args);
+        await this._get_data_on_scroll.call(this, args);
       }
     });
 
@@ -47,7 +48,7 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
 
     this.removeAttribute('data-scrollspace');
 
-    this._promise = promise;
+    //this._promise = promise;
 
     return this;
   }
@@ -63,29 +64,34 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
       this.removeAttribute('data-function');
     }
 
-    let navigator = this.$.find('.contents');
+    this.style.display = 'block';
 
-    if (!navigator.length) navigator = this.$;
+    // let navigator = this.$.find('.contents');
 
-    navigator.css('overflow', 'auto');
+    // if (!navigator.length) navigator = this.$;
+
+    this.$.css('overflow', 'auto');
 
     // Gestion du scroll infini
-    navigator.scroll(this._on_scroll.bind(this));
+    this.$.scroll(this._on_scroll.bind(this));
 
-    console.log(navigator);
+    //console.log(navigator);
 
-    navigator = null;
+    //navigator = null;
   }
 
   async _on_scroll() {
-    let navigator = this.$.find('.contents');
+    let nav = this.$.find('.contents');
 
-    if (!navigator.length) navigator = this.$;
+    if (!nav.length) nav = this.$;
 
+    // const height = MelEnumerable.from(nav.children()).sum({selector:(x) => x.clientHeight });
+    console.log(this.$.scrollTop(), this.scrollTopMax, (this.scrollTopMax * 95/100));
     if (
-      navigator.scrollTop() > 1 &&
-      (navigator.scrollTop() + navigator.height()) / navigator.height() >= 0.95 &&
-      this._current_page_scroll > 1
+      this.$.scrollTop() > 1 &&
+      this.$.scrollTop() >= ((this.scrollTopMax * 95/100)) 
+      /*&&
+      this._current_page_scroll > 1*/
     ) {
       // Affichage de la page suivante au bas de la page
       let page = this._current_page_scroll;
@@ -111,7 +117,7 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
             post_data,
             lock,
           })
-          .always(() => {
+          .then(() => {
             console.log('Recherche terminée !');
             rcmail.set_busy(false, 'loading', lock);
           });
@@ -130,18 +136,22 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
       action: 'webcomponent_scroll_data',
       params: post_data,
       on_success: (data) => {
+        data = JSON.parse(data);
+
         let navigator = this.$.find('.contents');
 
         if (!navigator.length) navigator = this.$;
 
         navigator.append(data);
+
+        this._current_page_scroll += 1;
       },
     });
   }
 
   async _get_count_max() {
     if (this._promise) {
-      this._countMax = await this._promise();
+      await this._promise;
       this._promise = null;
     }
 
@@ -151,7 +161,7 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
         this.removeAttribute('data-pagecount');
       } else {
         const helper = MelObject.Empty();
-        await helper.http_internal_post({
+        this._promise = helper.http_internal_post({
           task: 'mel_metapage',
           action: 'webcomponent_scroll_count',
           params: {
@@ -166,6 +176,8 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
             }
           },
         });
+
+        await this._promise;
       }
 
       if (isNullOrUndefined(this._countMax))

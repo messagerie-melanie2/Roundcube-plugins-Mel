@@ -49,7 +49,7 @@ export class IndexWorkspace extends MelObject {
       $(`#${control}`).focus();
     });
 
-    $('.workspace-list').css('height', '100%');
+    $('.workspace-list').parent().css('display', 'block').css('overflow', 'auto');
 
     $(window).resize(this._on_resize.bind(this));
 
@@ -72,6 +72,6 @@ export class IndexWorkspace extends MelObject {
 
     const result = total - tabs - headerPannel - 15;
 
-    $('.workspace-list').css('height', `${result}px`);
+    $('.workspace-list').parent().css('height', `${result}px`);
   }
 }

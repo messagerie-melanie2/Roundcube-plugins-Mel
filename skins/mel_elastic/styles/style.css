@@ -114,13 +114,15 @@ a:hover,
 }
 p,
 span,
-div {
+div,
+bnum-infinite-scroll-container {
   scrollbar-width: var(--scrollbar-width-moz) !important;
   scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
 }
 p.more-width,
 span.more-width,
-div.more-width {
+div.more-width,
+bnum-infinite-scroll-container.more-width {
   scrollbar-width: var(--scrollbar-width-hover-moz) !important;
 }
 main {
@@ -4748,4 +4750,7 @@ iframe.mm-frame {
 }
 .task-mel_metapage #eventfreebusy {
   height: 100% !important;
+}
+bnum-infinite-scroll-container {
+  display: block;
 }

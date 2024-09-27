@@ -192,8 +192,6 @@ class RotomecaEvent {
 
     const results = await Promise.allSettled(asyncs);
 
-    debugger;
-
     switch (results.length) {
       case 0:
         return null;

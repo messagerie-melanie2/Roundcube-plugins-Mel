@@ -543,7 +543,8 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env('current_user', [
                 'name' => driver_mel::gi()->getUser()->firstname,
                 'lastname' => driver_mel::gi()->getUser()->lastname,
-                'full' => driver_mel::gi()->getUser()->fullname
+                'full' => driver_mel::gi()->getUser()->fullname,
+                'email' => driver_mel::gi()->getUser()->email
             ]);
 
             //            $this->include_script('js/actions/startup.js');
@@ -590,13 +591,6 @@ class mel_metapage extends bnum_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
         }
-        else if($this->rc->task === 'mel_metapage') {
-            $this->register_task("mel_metapage");
-            $this->register_actions([
-                'webcomponent_scroll_count' => [$this, 'infiniteScrollCount'],
-                'webcomponent_scroll_data' => [$this, 'infiniteScrollData']
-            ]);
-        }
 
         else if ($this->rc->task === 'mail') {
             $this->include_internal_and_external_buttons();
@@ -618,6 +612,10 @@ class mel_metapage extends bnum_plugin
 
         if ($this->rc->task === 'mel_metapage') {
             $this->register_action('avatar', [$this, 'avatar_url']);
+            $this->register_actions([
+                'webcomponent_scroll_count' => [$this, 'infiniteScrollCount'],
+                'webcomponent_scroll_data' => [$this, 'infiniteScrollData']
+            ]);
         }
 
         $this->add_hook('folder_form', [$this, 'folder_form']);

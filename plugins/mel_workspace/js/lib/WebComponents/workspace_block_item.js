@@ -327,13 +327,6 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
           customEvent.stop();
         }.bind(this, user));
         div.appendChild(img);
-        // img = document.createElement('img');
-        // div.appendChild(img);
-        // img.setAttribute('src', 'skins/elastic/images/contactpic.svg');
-        // img.setAttribute('data-src', url);
-        // img.setAttribute('data-user', user);
-        // img.setAttribute('title', user);
-        // img.owner = this;
       }
 
       pictures.appendChild(div);

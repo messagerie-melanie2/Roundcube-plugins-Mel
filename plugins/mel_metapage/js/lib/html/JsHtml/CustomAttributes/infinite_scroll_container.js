@@ -23,8 +23,6 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
   }
 
   _setup() {
-    //let promise = this._get_count_max();
-
     this._page_loading = {};
 
     this.onscrolledtoend.push(async (args) => {
@@ -66,18 +64,11 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
 
     this.style.display = 'block';
 
-    // let navigator = this.$.find('.contents');
-
-    // if (!navigator.length) navigator = this.$;
-
     this.$.css('overflow', 'auto');
 
     // Gestion du scroll infini
     this.$.scroll(this._on_scroll.bind(this));
 
-    //console.log(navigator);
-
-    //navigator = null;
   }
 
   async _on_scroll() {
@@ -85,13 +76,9 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
 
     if (!nav.length) nav = this.$;
 
-    // const height = MelEnumerable.from(nav.children()).sum({selector:(x) => x.clientHeight });
-    console.log(this.$.scrollTop(), this.scrollTopMax, (this.scrollTopMax * 95/100));
     if (
       this.$.scrollTop() > 1 &&
       this.$.scrollTop() >= ((this.scrollTopMax * 95/100)) 
-      /*&&
-      this._current_page_scroll > 1*/
     ) {
       // Affichage de la page suivante au bas de la page
       let page = this._current_page_scroll;
@@ -107,7 +94,6 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
         this._page_loading[page] = true;
         let lock = rcmail.set_busy(true, 'loading');
         let post_data = {};
-        //post_data._mbox = rcmail.env.mailbox;
         post_data._page = page;
 
         console.log('Recherche en cours....', post_data);

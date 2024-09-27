@@ -18,8 +18,13 @@ export class Manager extends MelObject {
       // Vérifier si la valeur sélectionnée est correctement récupérée
       console.log("Option sélectionnée:", selectedValue);
       
+      if (selectedValue === 'default') {
       // Appeler displayComments avec l'ordre sélectionné
-      await this.displayComments(selectedValue);
+      await this.displayComments();
+      } else {
+        await this.displayComments(selectedValue);
+      }
+    
     });
 
     this.export('manager');
@@ -42,7 +47,7 @@ export class Manager extends MelObject {
    * @name displayComments
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
-  async displayComments(order = 'date_desc') {
+  async displayComments(order = 'date_asc') {
     // Obtenir tous les commentaires du post
     let PostCommentManager = new PostCommentView(this.get_env('post_uid'), this.get_env('post_id'));
     let allComments = await PostCommentManager.getCommentByPost();
@@ -146,15 +151,6 @@ export class Manager extends MelObject {
      // Affiche les données de tous les commentaires dans la console pour débogage.
     console.log($('#comment-area').html()); // Affiche le contenu du DOM avec les valeurs dynamiques
 }
-
-
-
-
-  
-
-
-
- 
 
   /**
    * Affiche les commentaires sur la page web

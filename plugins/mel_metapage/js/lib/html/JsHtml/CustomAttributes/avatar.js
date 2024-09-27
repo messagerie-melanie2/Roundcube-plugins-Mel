@@ -413,6 +413,9 @@ class AvatarElement extends HtmlCustomTag {
     }
   }
 
+  /**
+   * Change la source de l'image par le bonne source et gère en cas d'erreur ou non.
+   */
   update_img() {
     let img = this.shadowRoot.querySelector('img');
     img.onload = this._on_load.bind(this);

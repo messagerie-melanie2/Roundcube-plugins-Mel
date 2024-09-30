@@ -2,7 +2,10 @@ import { Cookie } from '../../../classes/cookies.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
 import { BnumEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
-import { HtmlCustomTag } from './js_html_base_web_elements.js';
+import {
+  EWebComponentMode,
+  HtmlCustomTag,
+} from './js_html_base_web_elements.js';
 
 export { AvatarElement };
 
@@ -120,6 +123,47 @@ const EVENT_IMAGE_LOAD = 'api:imgload';
  * @default 'api:imgloaderror'
  */
 const EVENT_IMAGE_NOT_LOAD = 'api:imgloaderror';
+/**
+ * Nom du cookie servant à contenir les adresse email des avatars à charger en erreur instantanément.
+ * @type {string}
+ * @constant
+ * @package
+ * @default 'avatars_in_memory'
+ */
+const COOKIE_NAME = 'avatars_in_memory';
+/**
+ * Expiration du cookie servant à contenir les adresse email des avatars à charger en erreur instantanément.
+ * @type {number}
+ * @constant
+ * @package
+ * @default 7
+ */
+const COOKIE_EXPIRE = 7;
+/**
+ * Nombre d'adresse email max dans le cookie servant à contenir les adresse email des avatars à charger en erreur instantanément.
+ * @type {number}
+ * @constant
+ * @package
+ * @default 20
+ */
+const COOKIE_LENGTH_MAX = 20;
+/**
+ * Si on active le cookie d'erreurs ou non.
+ * @type {boolean}
+ * @constant
+ * @package
+ * @default true
+ */
+const ENABLE_COOKIE = true;
+/**
+ * Url de l'avatar. Remplacez %0 par l'email.
+ * @constant
+ * @package
+ */
+const AVATAR_URL = MelObject.Empty().url('mel_metapage', {
+  action: 'avatar',
+  params: { _email: '%0' },
+});
 //#endregion
 
 //#region Classes d'évènements
@@ -246,7 +290,6 @@ class AvatarNotLoadEvent extends AvatarEvent {
 }
 //#endregion
 
-
 //#region Element Html
 /**
  * @class
@@ -256,16 +299,15 @@ class AvatarNotLoadEvent extends AvatarEvent {
  * @frommodule WebComponents/Base
  */
 class AvatarElement extends HtmlCustomTag {
-
   /**
    * Contient ou non, un timeout lié au chargement des avatars.
-   * 
+   *
    * Les avatars se chargent au bout de 5 secondes.
    * @type {null | undefined |number }
    * @private
    */
-  #timeout
-  
+  #timeout;
+
   /**
    * La balise bnum-avatar permet de charger l'avatar de l'utilisateur en cours ou d'un utilisateur du bnum.
    *
@@ -285,7 +327,7 @@ class AvatarElement extends HtmlCustomTag {
    *
    */
   constructor() {
-    super();
+    super({ mode: EWebComponentMode.div });
 
     /**
      * Email qui permettra de retrouver l'avatar de l'utilisateur
@@ -332,11 +374,13 @@ class AvatarElement extends HtmlCustomTag {
 
   /**
    * Est appelé par le navigateur.
+   * @protected
    */
   _p_main() {
     super._p_main();
 
-    if (!['false', false, true, 'true'].includes(this.data('shadow'))) this.data('shadow', true);
+    if (!['false', false, true, 'true'].includes(this.data('shadow')))
+      this.data('shadow', true);
 
     //Init
     Object.defineProperty(this, '_email', {
@@ -357,9 +401,6 @@ class AvatarElement extends HtmlCustomTag {
 
     this.setAttribute('data-needcreation', true);
 
-    //Setup
-    this.style.display = 'block';
-
     let shadow = this._p_start_construct();
 
     let img = document.createElement('img');
@@ -369,13 +410,13 @@ class AvatarElement extends HtmlCustomTag {
       let style = document.createElement('style');
 
       let style_ex = EMPTY_STRING;
-  
+
       if (this.dataset.forceSize) {
         this._force = this.dataset.forceSize;
         style_ex = this._get_style_force();
         this.removeAttribute('data-force-size');
       }
-  
+
       style.append(document.createTextNode(STYLE_BASE + style_ex));
 
       shadow.append(style);
@@ -387,37 +428,34 @@ class AvatarElement extends HtmlCustomTag {
     //end
     img = null;
 
-    if (this._cookie_exist(this._email)) {
+    if (ENABLE_COOKIE && this._cookie_exist(this._email)) {
       this.removeAttribute('data-forceload');
 
       this._on_error();
-    }else {
+    } else {
       if (this.dataset.forceload) {
         setTimeout(() => {
           // this.removeAttribute('data-needcreation');
           this.removeAttribute('data-forceload');
           this.update_img();
         }, 10);
-      }
-      else {
+      } else {
         this.#timeout = setTimeout(() => {
           this.update_img();
-        }, 5*1000);
+        }, 5 * 1000);
       }
     }
   }
 
+  /**
+   * Met la bonne url à l'image.
+   */
   update_img() {
     this.setAttribute('data-state', 'loading');
     let img = this.navigator.querySelector('img');
     img.onload = this._on_load.bind(this);
     img.onerror = this._on_error.bind(this);
-    img.src = MelObject.Empty().url('mel_metapage', {
-      action: 'avatar',
-      params: {
-        _email: this._email,
-      },
-    });
+    img.src = AVATAR_URL.replace('%0', this._email);
 
     img = null;
   }
@@ -431,19 +469,41 @@ class AvatarElement extends HtmlCustomTag {
     return STYLE_HOST.replaceAll('%0', this._force);
   }
 
+  /**
+   * Vérifie si le cookie éxiste
+   * @private
+   * @param {string} mail Mail à tester
+   * @returns {boolean}
+   */
   _cookie_exist(mail) {
-    let cookie_avatars = Cookie.get_cookie('avatars_in_memory')?.value?.split?.(',');
+    let cookie_avatars = Cookie.get_cookie(COOKIE_NAME)?.value?.split?.(',');
 
     return cookie_avatars && cookie_avatars.includes(mail);
   }
 
+  /**
+   * Ajoute un mail au cookie.
+   *
+   * Les mails dans se cookie seront charger instantanément.
+   * @param {string} mail Mail à ajouter au cookie
+   * @private
+   */
   _add_cookie(mail) {
-    let cookie_avatars = Cookie.get_cookie('avatars_in_memory')?.value?.split?.(',') ?? [];
+    let cookie_avatars =
+      Cookie.get_cookie(COOKIE_NAME)?.value?.split?.(',') ?? [];
 
-    if ((cookie_avatars.length <= 20 || mail === rcmail?.env?.mel_metapage_user_emails?.[0]) && !cookie_avatars.includes(mail)) {
+    if (
+      (cookie_avatars.length <= COOKIE_LENGTH_MAX ||
+        mail === rcmail?.env?.mel_metapage_user_emails?.[0]) &&
+      !cookie_avatars.includes(mail)
+    ) {
       cookie_avatars.push(mail);
 
-      Cookie.set_cookie('avatars_in_memory', cookie_avatars.join(','), moment().add(7, 'd').toDate());
+      Cookie.set_cookie(
+        COOKIE_NAME,
+        cookie_avatars.join(','),
+        moment().add(COOKIE_EXPIRE, 'd').toDate(),
+      );
     }
   }
 
@@ -464,7 +524,7 @@ class AvatarElement extends HtmlCustomTag {
     if (this.shadowEnabled()) {
       let style = document.createElement('style');
       style.append(document.createTextNode(STYLE_LOADED));
-  
+
       this.shadowRoot.append(style);
       style = null;
     }
@@ -504,7 +564,7 @@ class AvatarElement extends HtmlCustomTag {
 
     const txt = this._email;
     this.navigator.querySelector('img').remove();
-    
+
     if (this.shadowEnabled()) this.shadowRoot.querySelector('style').remove();
 
     let element = document.createElement('span');

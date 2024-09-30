@@ -66,8 +66,7 @@ a,
 p,
 span,
 div,
-bnum-infinite-scroll-container
-{
+bnum-infinite-scroll-container {
   scrollbar-width: var(--scrollbar-width-moz) !important;
   scrollbar-color: var(--scrollbar-handler-color)
     var(--scrollbar-background-color);
@@ -6490,6 +6489,18 @@ bnum-pressed-button {
   }
 }
 
-bnum-infinite-scroll-container{
-  display:block;
+bnum-infinite-scroll-container {
+  display: block;
+}
+
+[component-mode='div'] {
+  display: block;
+}
+
+[component-mode='flex'] {
+  display: flex;
+}
+
+[component-mode='inline-block'] {
+  display: inline-block;
 }

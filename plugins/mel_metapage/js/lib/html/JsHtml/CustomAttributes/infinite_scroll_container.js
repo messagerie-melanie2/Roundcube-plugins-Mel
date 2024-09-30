@@ -1,27 +1,104 @@
-import { MelEnumerable } from '../../../classes/enum.js';
 import { isNullOrUndefined } from '../../../mel.js';
 import { BnumEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
-import { HtmlCustomTag } from './js_html_base_web_elements.js';
+import {
+  EWebComponentMode,
+  HtmlCustomTag,
+} from './js_html_base_web_elements.js';
 
-export class InfiniteScrollContainer extends HtmlCustomTag {
+export { InfiniteScrollContainer };
+
+/**
+ * Contient la classe qui gère le scroll infini
+ * @module WebComponents/InfiniteScrollContainer
+ * @local InfiniteScrollContainer
+ * @local PageData
+ * @local OnScrollEndedCallback
+ */
+
+/**
+ * @typedef PageData
+ * @property {number} _page
+ */
+
+/**
+ * @callback OnScrollEndedCallback
+ * @param {PageData} pageData
+ * @param {number} lock
+ * @return {void}
+ */
+
+/**
+ * @class
+ * @classdesc Gère un scroll infini. Balise bnum-infinite-scroll-container
+ * @extends HtmlCustomTag
+ * @frommodule WebComponents/Base
+ */
+class InfiniteScrollContainer extends HtmlCustomTag {
+  /**
+   * Gère un scroll infini.
+   *
+   * Si data-pagecount n'est pas défini, les données seront récupérer par le serveur. <br/>
+   *
+   * data-function permet de définir une fonction qui sera évaluer (optionnel.) <br/>
+   *
+   * webcomponent_scroll_data est l'action qui récupère les données. <br/>
+   *
+   * api:scrollended => Evènement lorsque le scroll de fin est atteind.
+   */
   constructor() {
-    super();
+    super({ mode: EWebComponentMode.div });
 
     this._init();
   }
 
+  /**
+   * Initialise les variables
+   * @private
+   * @returns {InfiniteScrollContainer} Chaîne
+   */
   _init() {
+    /**
+     * Nombre de page max.
+     * @package
+     * @type {?number}
+     */
     this._countMax = null;
+    /**
+     * Espace de nom, il sera envoyer au serveur pour récupérer les données.
+     * @package
+     * @readonly
+     * @type {?string}
+     */
     this._scrollspace = null;
+    /**
+     * Données à envoyer au serveur
+     * @private
+     */
     this._page_loading = null;
+    /**
+     * Prochaine page à charger
+     * @private
+     */
     this._current_page_scroll = 2;
+    /**
+     * @private
+     */
     this._promise = null;
+    /**
+     * @type {BnumEvent<OnScrollEndedCallback>}
+     * @frommodule WebComponents/InfiniteScrollContainer {@linkto OnScrollEndedCallback}
+     */
     this.onscrolledtoend = new BnumEvent();
 
     return this;
   }
 
+  /**
+   * Assigne les variables
+   * @private
+   * @returns {InfiniteScrollContainer} Chaîne
+   */
   _setup() {
     this._page_loading = {};
 
@@ -46,11 +123,13 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
 
     this.removeAttribute('data-scrollspace');
 
-    //this._promise = promise;
-
     return this;
   }
 
+  /**
+   * Setup le composant
+   * @protected
+   */
   _p_main() {
     super._p_main();
 
@@ -62,15 +141,17 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
       this.removeAttribute('data-function');
     }
 
-    this.style.display = 'block';
-
     this.$.css('overflow', 'auto');
 
     // Gestion du scroll infini
     this.$.scroll(this._on_scroll.bind(this));
-
   }
 
+  /**
+   * Action au scroll
+   * @async
+   * @package
+   */
   async _on_scroll() {
     let nav = this.$.find('.contents');
 
@@ -78,7 +159,7 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
 
     if (
       this.$.scrollTop() > 1 &&
-      this.$.scrollTop() >= ((this.scrollTopMax * 95/100)) 
+      this.$.scrollTop() >= (this.scrollTopMax * 95) / 100
     ) {
       // Affichage de la page suivante au bas de la page
       let page = this._current_page_scroll;
@@ -111,6 +192,12 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
     }
   }
 
+  /**
+   * Récupère les données lorsque le bout du scroll est atteind
+   * @async
+   * @param {Object<string, any>} args
+   * @package
+   */
   async _get_data_on_scroll(args) {
     const { post_data } = args;
     const helper = MelObject.Empty();
@@ -135,6 +222,11 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
     });
   }
 
+  /**
+   * Récupère et met en mémoire le nombre de page maximum.
+   * @returns {Promise<number>}
+   * @async
+   */
   async _get_count_max() {
     if (this._promise) {
       await this._promise;
@@ -174,6 +266,12 @@ export class InfiniteScrollContainer extends HtmlCustomTag {
   }
 }
 
+/**
+ * Tag de la balise
+ * @type {string}
+ * @constant
+ * @static
+ */
 InfiniteScrollContainer.TAG = 'bnum-infinite-scroll-container';
 
 Object.defineProperty(InfiniteScrollContainer, 'TAG', {

@@ -4754,3 +4754,12 @@ iframe.mm-frame {
 bnum-infinite-scroll-container {
   display: block;
 }
+[component-mode='div'] {
+  display: block;
+}
+[component-mode='flex'] {
+  display: flex;
+}
+[component-mode='inline-block'] {
+  display: inline-block;
+}

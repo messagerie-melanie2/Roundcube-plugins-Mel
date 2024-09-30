@@ -48,101 +48,76 @@ export class Manager extends MelObject {
    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
    */
   async displayComments(order = 'date_asc') {
-    // Obtenir tous les commentaires du post
     let PostCommentManager = new PostCommentView(this.get_env('post_uid'), this.get_env('post_id'));
     let allComments = await PostCommentManager.getCommentByPost();
     let comments_array = [];
 
-    // Fonction pour convertir le format de la date (qui est actuellement au format 24 septembre 2024)
+    // Fonction pour convertir le format de la date
     const parseDate = (dateString) => {
         const months = {
-            janvier: 0,
-            février: 1,
-            mars: 2,
-            avril: 3,
-            mai: 4,
-            juin: 5,
-            juillet: 6,
-            août: 7,
-            septembre: 8,
-            octobre: 9,
-            novembre: 10,
-            décembre: 11,
+            janvier: 0, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
+            juillet: 6, août: 7, septembre: 8, octobre: 9, novembre: 10, décembre: 11,
         };
-
-        const parts = dateString.split(' '); // Diviser la chaîne
-        const day = parseInt(parts[0], 10); // Le jour
-        const month = months[parts[1]]; // Le mois (converti en index)
-        const year = parseInt(parts[2], 10); // L'année
-
-        return new Date(year, month, day); // Créer un objet Date
+        const parts = dateString.split(' ');
+        const day = parseInt(parts[0], 10);
+        const month = months[parts[1]];
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
     };
 
-    // Parcourir tous les commentaires
+    // Ajouter chaque commentaire à un tableau pour traitement
     for (const key in allComments) {
         if (allComments.hasOwnProperty(key)) {
             const comment = allComments[key];
-
-            // Créer une instance de PostComment pour chaque commentaire
             let commentVizualizer = new PostComment(
-                comment.id,
-                comment.uid,
-                comment.post_id,
-                comment.user_id,
-                comment.user_name,
-                comment.content,
-                comment.created,
-                comment.likes,
-                comment.dislikes,
-                comment.parent,
-                comment.children_number,
-                comment.current_user_reacted,
+                comment.id, comment.uid, comment.post_id, comment.user_id, comment.user_name,
+                comment.content, comment.created, comment.likes, comment.dislikes,
+                comment.parent, comment.children_number, comment.current_user_reacted
             );
-
-            // Ajouter chaque commentaire à la liste des commentaires pour un éventuel traitement ultérieur
             comments_array.push(commentVizualizer);
         }
     }
-
-    // Séparer les commentaires principaux et les réponses
-    let mainComments = comments_array.filter(comment => !comment.parent); // Commentaires principaux
-    let responses = comments_array.filter(comment => comment.parent);     // Réponses
-
+    debugger;
     // Appliquer le tri en fonction de l'ordre spécifié
-    if (order === 'default') {
-        // Pas de tri, afficher les commentaires dans l'ordre d'origine
-    } else if (order === 'date_asc') {
-        mainComments.sort((a, b) => parseDate(a.created) - parseDate(b.created));
+    if (order === 'date_asc') {
+        comments_array.sort((a, b) => parseDate(a.created) - parseDate(b.created)); // Plus anciens d'abord
     } else if (order === 'date_desc') {
-        mainComments.sort((a, b) => parseDate(b.created) - parseDate(a.created));
+        comments_array.sort((a, b) => parseDate(b.created) - parseDate(a.created)); // Plus récents d'abord
+        comments_array.sort((a, b) => a.parent - b.parent);
     } else if (order === 'likes_desc') {
-        mainComments.sort((a, b) => b.likes - a.likes);
+        comments_array.sort((a, b) => a.parent === b.parent ? b.likes - a.likes : parseDate(a.created) - parseDate(b.created)); // Plus de likes
     } else if (order === 'dislikes_desc') {
-        mainComments.sort((a, b) => b.dislikes - a.dislikes);
+        comments_array.sort((a, b) => a.parent === b.parent ? b.dislikes - a.dislikes : parseDate(a.created) - parseDate(b.created)); // Plus de dislikes
+    } else if (order === 'default') {
+        // Ne pas trier, laisser dans l'ordre récupéré par getCommentByPost
     }
 
     // Vider la zone des commentaires avant de ré-afficher les commentaires triés
     $('#comment-area').empty();
 
     // Afficher les commentaires triés
-    for (const commentVizualizer of mainComments) {
-        // Générer le HTML avec les valeurs dynamiques insérées
+    for (const commentVizualizer of comments_array) {
         let commentHtml = commentVizualizer.generateHtmlFromTemplate();
-        
-        // Insérer le commentaire principal dans la zone de commentaires
-        $('#comment-area').append(...commentHtml);
 
-        // Ajouter les réponses sous le commentaire parent
-        const parentResponses = responses.filter(response => response.parent === commentVizualizer.id);
-        for (const response of parentResponses) {
-            let responseHtml = response.generateHtmlFromTemplate();
-            $('#responses-' + commentVizualizer.id).append(...responseHtml);
+        if (!commentVizualizer.parent) {
+            $('#comment-area').append(...commentHtml); // Commentaire principal
+        } else {
+            let parentResponseContainer = $('#responses-' + commentVizualizer.parent);
+            if (parentResponseContainer.length === 0) {
+                parentResponseContainer = $('<div>', {
+                    id: 'responses-' + commentVizualizer.parent,
+                    class: 'responses ml-4'
+                });
+                $('#comment-id-' + commentVizualizer.parent).append(parentResponseContainer);
+            }
+            parentResponseContainer.append(...commentHtml); // Réponse
         }
     }
 
-    // Affiche les données de tous les commentaires dans la console pour débogage.
-    console.log($('#comment-area').html()); // Affiche le contenu du DOM avec les valeurs dynamiques
+    console.log($('#comment-area').html());
 }
+
+
 
   /**
    * Affiche les commentaires sur la page web

@@ -136,6 +136,32 @@ export class TabsElement extends HtmlCustomElement {
     this._main();
   }
 
+  selectTab(id) {
+    return this.$.find(`[data-button-namespace="${id}"]`).click();
+  }
+
+  tabs() {
+    return this.$.find('.mel-tabheader');
+  }
+
+  getCurrentTabId() {
+    return this.$.find('.mel-tabheader.active').attr('data-button-namespace');
+  }
+
+  currentTab() {
+    return this.$.find('.mel-tabheader.active');
+  }
+
+  currentTabText() {
+    return this.currentTab().text();
+  }
+
+  currentPannel(id = null) {
+    return this.$.find(
+      `.mel-tab-content[data-pannel-namespace="${id || this.getCurrentTabId()}"]`,
+    );
+  }
+
   /**
    * Génère le label qui sert à décrire la liste d'onglet.
    * @private

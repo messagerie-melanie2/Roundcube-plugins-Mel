@@ -88,6 +88,10 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     this._generate();
   }
 
+  title() {
+    return this._title;
+  }
+
   //#region main_block
   _generate() {
     let div = document.createElement('div');
@@ -321,11 +325,14 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
           let image = customEvent.image();
           image.style.borderColor = this._color;
         });
-        img.addEventListener('api:imgloaderror', function (user, customEvent) {
-          customEvent.avatar().style.border = 'none';
-          this._on_error_load(customEvent.avatar().navigator, user);
-          customEvent.stop();
-        }.bind(this, user));
+        img.addEventListener(
+          'api:imgloaderror',
+          function (user, customEvent) {
+            customEvent.avatar().style.border = 'none';
+            this._on_error_load(customEvent.avatar().navigator, user);
+            customEvent.stop();
+          }.bind(this, user),
+        );
         div.appendChild(img);
       }
 

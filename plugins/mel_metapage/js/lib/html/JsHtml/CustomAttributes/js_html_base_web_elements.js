@@ -308,6 +308,7 @@ class BnumHtmlIcon extends HtmlCustomTag {
  * @default 'material-symbols-outlined'
  */
 BnumHtmlIcon.HTML_CLASS = MaterialIcon.html_class;
+BnumHtmlIcon.TAG = 'bnum-icon';
 
 class BnumHtmlSrOnly extends HtmlCustomTag {
   constructor() {
@@ -321,12 +322,14 @@ class BnumHtmlSrOnly extends HtmlCustomTag {
     if (!this.classList.contains(sr_only)) this.classList.add(sr_only);
   }
 }
+BnumHtmlSrOnly.TAG = 'bnum-screen-reader';
 
 class BnumHtmlSeparate extends HtmlCustomTag {
   constructor() {
     super();
   }
 }
+BnumHtmlSeparate.TAG = 'bnum-separate';
 
 class BnumHtmlFlexContainer extends HtmlCustomTag {
   constructor() {
@@ -339,6 +342,7 @@ class BnumHtmlFlexContainer extends HtmlCustomTag {
     this.style.display = 'flex';
   }
 }
+BnumHtmlFlexContainer.TAG = 'bnum-flex-container';
 
 class BnumHtmlCenteredFlexContainer extends BnumHtmlFlexContainer {
   constructor() {
@@ -349,5 +353,24 @@ class BnumHtmlCenteredFlexContainer extends BnumHtmlFlexContainer {
     super._p_main();
 
     this.style.justifyContent = 'center';
+  }
+}
+
+BnumHtmlCenteredFlexContainer.TAG = 'bnum-centered-flex-container';
+
+{
+  const TAGS = [
+    { tag: BnumHtmlIcon.TAG, class: BnumHtmlIcon },
+    { tag: BnumHtmlFlexContainer.TAG, class: BnumHtmlFlexContainer },
+    { tag: BnumHtmlSrOnly.TAG, class: BnumHtmlSrOnly },
+    { tag: BnumHtmlSeparate.TAG, class: BnumHtmlSeparate },
+    {
+      tag: BnumHtmlCenteredFlexContainer.TAG,
+      class: BnumHtmlCenteredFlexContainer,
+    },
+  ];
+
+  for (const TAG of TAGS) {
+    if (!customElements.get(TAG.tag)) customElements.define(TAG.tag, TAG.class);
   }
 }

@@ -71,6 +71,7 @@ class mel_workspace extends bnum_plugin
         $this->include_css('workspace_list.css');
         $this->include_css('index.css');
         $this->load_script_module('index');
+        $this->include_web_component()->Base();
         $this->include_web_component()->Tabs();
         $this->include_web_component()->PressedButton();
         $this->include_web_component()->InfiniteScrollContainer();

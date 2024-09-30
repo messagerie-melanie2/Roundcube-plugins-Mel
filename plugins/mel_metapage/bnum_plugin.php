@@ -214,6 +214,10 @@ class WebComponnents {
         return $this->plugin->____METHODS____('include_component', $name, $path, $plugin);
     }
 
+    public function Base() {
+        $this->_include_component('js_html_base_web_elements.js');
+    }
+
     public function Tabs() {
         $this->_include_component('tab_web_element.js');
     }

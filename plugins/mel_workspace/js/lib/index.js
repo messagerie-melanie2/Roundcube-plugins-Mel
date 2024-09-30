@@ -1,3 +1,5 @@
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 
@@ -49,7 +51,10 @@ export class IndexWorkspace extends MelObject {
       $(`#${control}`).focus();
     });
 
-    $('.workspace-list').parent().css('display', 'block').css('overflow', 'auto');
+    $('.workspace-list')
+      .parent()
+      .css('display', 'block')
+      .css('overflow', 'auto');
 
     $(window).resize(this._on_resize.bind(this));
 
@@ -73,5 +78,14 @@ export class IndexWorkspace extends MelObject {
     const result = total - tabs - headerPannel - 15;
 
     $('.workspace-list').parent().css('height', `${result}px`);
+  }
+
+  _search() {
+    let searchValue = $('#wsp-search-input').val();
+
+    if (isNullOrUndefined(searchValue) || searchValue === EMPTY_STRING) {
+      $('#main-pannel').css('display', EMPTY_STRING);
+      //$('#');
+    }
   }
 }

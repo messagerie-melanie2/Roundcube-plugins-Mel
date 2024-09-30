@@ -17,10 +17,10 @@
   >
     <div class="row">
       <div class="col-12">
-        <div class="header-wsp">
+        <bnum-centered-flex-container class="header-wsp">
           <span class="icon-mel-workplace no-weight roundbadge"></span>
           <h1><roundcube:label name="mel_workspace.my_workspaces" /></h1>
-        </div>
+        </bnum-centered-flex-container>
       </div>
     </div>
     <div class="row">
@@ -47,6 +47,7 @@
 
   <div class="body"> 
     <bnum-tabs
+      id="main-pannel"
       data-navs="subscribed, publics, archived"
       data-ex-label="mel_workspace"
       data-description="Liste des différents espaces auquel on a souscris"

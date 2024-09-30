@@ -194,31 +194,30 @@ async toggleResponses(id) {
  * - Réinitialise le contenu et les dimensions du textarea lorsque le formulaire devient visible.
  * - Met le focus sur le textarea lorsque le formulaire est affiché.
  */
+  async toggleReplyForm(uid, parentId) {
+    let form = $('#reply-form-' + uid);
+    let isVisible = !form.hasClass('hidden');
+    
+    // Masquer tous les autres formulaires de réponse
+    $('#reply-form').not(form).addClass('hidden');
+    
+    // Afficher ou masquer le formulaire actuel
+    form.toggleClass('hidden');
 
-async toggleReplyForm(uid, parentId) {
-  let form = $('#reply-form-' + uid);
-  let isVisible = !form.hasClass('hidden');
-  
-  // Masquer tous les autres formulaires de réponse
-  $('#reply-form').not(form).addClass('hidden');
-  
-  // Afficher ou masquer le formulaire actuel
-  form.toggleClass('hidden');
-
-  // Stocker l'ID du parent pour l'utiliser lors de l'envoi de la réponse
-  this.parent = parentId || this.id;  // Enregistre l'ID du commentaire parent dans `this.parent`
-  
-  // Réinitialiser le textarea lorsque le formulaire est visible
-  if (!isVisible) {
-      form.find('textarea').val('').height('auto');
-      form.find('.btn').show(); // Assurez-vous que les boutons sont visibles
+    // Stocker l'ID du parent pour l'utiliser lors de l'envoi de la réponse
+    this.parent = parentId || this.id;  // Enregistre l'ID du commentaire parent dans `this.parent`
+    
+    // Réinitialiser le textarea lorsque le formulaire est visible
+    if (!isVisible) {
+        form.find('textarea').val('').height('auto');
+        form.find('.btn').show(); // Assurez-vous que les boutons sont visibles
+    }
+    
+    // Focus sur le textarea lorsque le formulaire est visible
+    if (!form.hasClass('hidden')) {
+        form.find('textarea').focus();
+    }
   }
-  
-  // Focus sur le textarea lorsque le formulaire est visible
-  if (!form.hasClass('hidden')) {
-      form.find('textarea').focus();
-  }
-}
 
 /**
  * Enregistre une réponse à un commentaire et met à jour l'interface utilisateur en conséquence.

@@ -10,6 +10,8 @@ const TEXT_UNSET_TO_FAVORITE = 'Retirer cet espace des favoris';
 //#endregion
 
 export class WorkspaceBlockItem extends HtmlCustomTag {
+  #initHtml;
+
   constructor() {
     super();
 
@@ -25,6 +27,8 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
   }
 
   _init() {
+    this.#initHtml = this.outerHTML;
+
     Object.defineProperties(this, {
       _picture: {
         value: this.dataset.picture,
@@ -90,6 +94,10 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
   title() {
     return this._title;
+  }
+
+  getClone() {
+    return $(this.#initHtml);
   }
 
   //#region main_block

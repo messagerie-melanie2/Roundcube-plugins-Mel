@@ -62,6 +62,9 @@ export class IndexWorkspace extends MelObject {
     this._on_resize();
 
     $('#wsp-search-input').on('change', this._search.bind(this));
+    // .on('keydown', (e) => {
+    //   console.log('e', e);
+    // });
   }
 
   _on_resize() {
@@ -74,13 +77,33 @@ export class IndexWorkspace extends MelObject {
   }
 
   _container_resize() {
-    const tabs = $('bnum-tabs [role="tablist"]').height();
-    const headerPannel = $('bnum-tabs .header-pannel').height();
-    const total = $('bnum-tabs').height();
+    const constant = 50;
 
-    const result = total - tabs - headerPannel - 15;
+    let tab = null;
+    for (tab of $('bnum-tabs')) {
+      tab = $(tab);
+      const tabs = tab.find('[role="tablist"]').height(); //$('bnum-tabs [role="tablist"]').height();
+      const baseHeaderPannel = tab.find('.header-pannel').height(); //$('bnum-tabs .header-pannel').height();
+      const headerPannel = isNaN(baseHeaderPannel) ? 0 : baseHeaderPannel + 15;
+      const total = tab.height();
 
-    $('.workspace-list').parent().css('height', `${result}px`);
+      const result = total - tabs - headerPannel - constant;
+
+      console.log(
+        'total',
+        total,
+        'tabs',
+        tabs,
+        'header',
+        headerPannel,
+        'constant',
+        constant,
+      );
+      console.log('result', result);
+
+      $('.workspace-list').parent().css('height', `${result}px`);
+    }
+    tab = null;
   }
 
   _search() {
@@ -106,7 +129,11 @@ export class IndexWorkspace extends MelObject {
         tab.setAttribute('data-shadow', false);
         tab.setAttribute('id', 'search-pannel');
 
-        let div = document.createElement('div');
+        let div = document.createElement(
+          mainTabs.currentTabText() === this.gettext('publics', 'mel_workspace')
+            ? 'bnum-infinite-scroll-container'
+            : 'div',
+        );
         div.classList.add('workspace-list');
         div.setAttribute('data-linked-to', mainTabs.getCurrentTabId());
 
@@ -118,40 +145,50 @@ export class IndexWorkspace extends MelObject {
         tab = null;
       }
 
-      let arr;
-      let $dest;
       switch (mainTabs.currentTabText()) {
         case this.gettext('subscribed', 'mel_workspace'):
         case this.gettext('archived', 'mel_workspace'):
-          arr = MelEnumerable.from(
-            mainTabs.currentPannel().find('bnum-workspace-block-item'),
-          )
-            .aggregate(
-              mainTabs
-                .currentPannel('archived')
-                .find('bnum-workspace-block-item'),
-            )
-            .where((x) =>
-              x.title().toUpperCase().includes(searchValue.toUpperCase()),
-            );
-          $dest = $('#search-pannel')[0].currentPannel();
-          for (const element of arr) {
-            $(element).clone().appendTo($dest);
-          }
-
-          $dest.find('bnum-icon').each((i, e) => {
-            e = $(e);
-
-            if (e.text().includes('keep')) e.remove();
-          });
+          this._mine_search(mainTabs, searchValue);
           break;
 
         default:
           break;
       }
 
-      arr = null;
-      $dest = null;
+      $('#search-pannel')
+        .find('.workspace-list')
+        .parent()
+        .css('overflow', 'auto');
     }
+
+    this._container_resize();
   }
+
+  _mine_search(mainTabs, searchValue) {
+    let arr = MelEnumerable.from(
+      mainTabs.currentPannel().find('bnum-workspace-block-item'),
+    )
+      .aggregate(
+        mainTabs.currentPannel('archived').find('bnum-workspace-block-item'),
+      )
+      .where((x) =>
+        x.title().toUpperCase().includes(searchValue.toUpperCase()),
+      );
+
+    let $dest = $('#search-pannel')[0].currentPannel();
+    for (const element of arr) {
+      element.getClone().appendTo($dest);
+    }
+
+    $dest.find('bnum-icon').each((i, e) => {
+      e = $(e);
+
+      if (e.text().includes('keep')) e.remove();
+    });
+
+    arr = null;
+    $dest = null;
+  }
+
+  _public_search() {}
 }

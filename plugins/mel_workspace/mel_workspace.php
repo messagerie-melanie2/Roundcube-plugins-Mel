@@ -1789,12 +1789,13 @@ class mel_workspace extends bnum_plugin
 
         $icon_delete = "icon-mel-trash";
         $env = [];
-        $shares = $this->sort_user($this->currentWorkspace->shares); 
+        $shares = $this->sort_user($workspace->shares); 
         $nbuser = count($shares);
+        $s = $nbuser > 1 ? 's' : '';
 
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
         $html .= "<thead>";
-        $html .= "<tr><td>Utilisateur ($nbuser) </td><td class=\"mel-fit-content\">Droits d'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
+        $html .= "<tr><td>Utilisateur$s ($nbuser) </td><td class=\"mel-fit-content\">Droits d'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
         $html .= "</thead>";
         $share = $this->sort_user($workspace->shares);
         $current_user = driver_mel::gi()->getUser();

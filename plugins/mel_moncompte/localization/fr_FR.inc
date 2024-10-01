@@ -246,7 +246,7 @@ $labels['acces_internet_button_enable'] = "Activer";
 $labels['acces_internet_button_disable'] = "Désactiver";
 $labels['acces_internet_disable_label_forbidden'] = "Vous ne pouvez accéder au Bnum que depuis le réseau ministériel. Pour accéder au Bnum depuis n'importe où, contactez votre service informatique.";
 $labels['acces_internet_disable_label_allowed'] = "Vous ne pouvez accéder au Bnum que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder au Bnum depuis n'importe où.";
-$labels['acces_internet_enable_label'] = "Vous pouvez accéder au Bnum depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr/bureau";
+$labels['acces_internet_enable_label'] = "Vous pouvez accéder au Bnum depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
 $labels['acces_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accès, vous devez vous connecter à cet écran depuis le réseau ministériel.";
 
 $labels['acces_internet_enable_ok'] = "Votre accès internet a bien été activé";

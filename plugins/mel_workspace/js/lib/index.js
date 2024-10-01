@@ -4,6 +4,16 @@ import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 
+const mode = {
+  subscribed: 'subscribed',
+  archived: 'archived',
+  publics: 'publics',
+};
+
+const subscribed = MelObject.Empty().gettext(mode.subscribed, 'mel_workspace');
+const archived = MelObject.Empty().gettext(mode.archived, 'mel_workspace');
+const publics = MelObject.Empty().gettext(mode.publics, 'mel_workspace');
+
 export class IndexWorkspace extends MelObject {
   constructor() {
     super();
@@ -114,8 +124,12 @@ export class IndexWorkspace extends MelObject {
     if (isNullOrUndefined(searchValue) || searchValue === EMPTY_STRING) {
       $('#main-pannel').css('display', EMPTY_STRING);
     } else {
-      $('#main-pannel').css('display', 'none');
       let mainTabs = $('bnum-tabs')[0];
+
+      if (mainTabs.currentTabText() === archived)
+        mainTabs.selectTab(mode.subscribed);
+
+      $('#main-pannel').css('display', 'none');
 
       if (!$('#search-pannel').length) {
         let tab = document.createElement('bnum-tabs');
@@ -130,7 +144,7 @@ export class IndexWorkspace extends MelObject {
         tab.setAttribute('id', 'search-pannel');
 
         let div = document.createElement(
-          mainTabs.currentTabText() === this.gettext('publics', 'mel_workspace')
+          mainTabs.currentTabText() === publics
             ? 'bnum-infinite-scroll-container'
             : 'div',
         );
@@ -146,8 +160,8 @@ export class IndexWorkspace extends MelObject {
       }
 
       switch (mainTabs.currentTabText()) {
-        case this.gettext('subscribed', 'mel_workspace'):
-        case this.gettext('archived', 'mel_workspace'):
+        case subscribed:
+        case archived:
           this._mine_search(mainTabs, searchValue);
           break;
 

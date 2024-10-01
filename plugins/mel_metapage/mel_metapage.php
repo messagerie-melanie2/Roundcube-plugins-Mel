@@ -1848,7 +1848,7 @@ class mel_metapage extends bnum_plugin
         if (!class_exists("rocket_chat")) {
             $p['list']['chat'] = [
                 'id'      => 'chat',
-                'section' => $this->gettext('chat', 'mel_metapage'),
+                'section' => $this->gettext('tchap', 'mel_metapage'),
             ];
         } else {
             $p['list']['mel_chat_ui'] = [

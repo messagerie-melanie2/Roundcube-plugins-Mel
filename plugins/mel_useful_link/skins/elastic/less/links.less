@@ -166,6 +166,7 @@ button {
 }
 
 .hidden-link {
+
   &.tak,
   .tools & {
     display: none !important;
@@ -277,6 +278,7 @@ button {
     .multilink-container {
       padding: 5px !important;
       justify-content: start;
+
       .link-block {
         margin: 0 6px;
         margin-top: 2px;
@@ -294,6 +296,7 @@ button {
         display: none;
       }
     }
+
     .multilink-icon-title {
       max-width: 360px;
     }
@@ -327,7 +330,7 @@ button {
 .mel-portal-ulinks {
   max-height: 390px;
   margin-top: 30px;
-} 
+}
 
 .link-space-end {
   display: inline-flex;
@@ -421,7 +424,7 @@ button {
     .link-icon-image {
       width: inherit;
       height: inherit;
-      border-radius: 18px;
+      border-radius: inherit;
     }
 
     .link-icon-no-image {
@@ -582,6 +585,9 @@ button {
 
     .store-link-icon-container {
       &:extend(.link-block:not(.sublink) .link-icon-container);
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       .link-with-icon {
         display: flex;
@@ -593,6 +599,12 @@ button {
         align-items: center;
         color: var(--main-text-color);
       }
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: inherit;
+      }
     }
 
     .store-link-text {
@@ -600,8 +612,9 @@ button {
       flex-direction: column;
       margin-left: 10px;
       align-items: flex-start;
-      gap: 10px;
+      gap: 2px;
       flex: 1 0 0;
+      height: 63px;
 
       .store-link-icon-title {
         font-weight: bold;
@@ -645,17 +658,13 @@ button {
         background-color: transparent;
 
         &.active {
-          background-color: var(
-            --message-list-quick-filter-active-background-color
-          );
+          background-color: var(--message-list-quick-filter-active-background-color);
           color: var(--message-list-quick-filter-active-text-color);
         }
 
         &:hover {
           color: var(--message-list-quick-filter-hover-text-color);
-          background-color: var(
-            --message-list-quick-filter-hover-background-color
-          );
+          background-color: var(--message-list-quick-filter-hover-background-color);
         }
 
         &::first-letter {
@@ -720,6 +729,7 @@ button {
         font-size: 33px;
       }
     }
+
     .image-preview {
       width: 45px;
       height: 45px;

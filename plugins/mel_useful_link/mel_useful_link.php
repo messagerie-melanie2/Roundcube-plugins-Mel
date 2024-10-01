@@ -40,7 +40,7 @@ class mel_useful_link extends bnum_plugin
         $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
         $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
         $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
-        $this->rc->output->set_env("default_links", $this->getFilteredDn(driver_mel::gi()->getUser()->dn));
+        $this->rc->output->set_env("default_links", $this->get_store_link());
 
         include_once "lib/hidden.php";
         $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
@@ -52,7 +52,7 @@ class mel_useful_link extends bnum_plugin
       $this->add_hook('mel.portal.links.html', array($this, 'mel_portal_link'));
       $this->rc->output->set_env("mul_items", $this->rc->config->get('new_personal_useful_links', []));
       $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
-      $this->rc->output->set_env("default_links", $this->getFilteredDn(driver_mel::gi()->getUser()->dn));
+      $this->rc->output->set_env("default_links", $this->get_store_link());
 
       $this->rc->output->set_env("mel_portal_ulink", true);
     } else if (class_exists('mel_metapage') && mel_metapage::can_add_widget()) {
@@ -228,6 +228,18 @@ class mel_useful_link extends bnum_plugin
     $temp = new MelLink($link->id, $link->title, $link->link, $link->image, $link->icon);
     return $temp;
   }
+
+  public function get_store_link()
+  {
+    $links = $this->getFilteredDn(driver_mel::gi()->getUser()->dn);
+
+    //On trie les liens par ordre alphabétique
+    uasort($links, function ($a, $b) {
+      return strcmp($a['name'], $b['name']);
+    });
+    return $links;
+  }
+
 
   /**
    * Récupère les liens utiles par défaut selon la configuration de l'utilisateur

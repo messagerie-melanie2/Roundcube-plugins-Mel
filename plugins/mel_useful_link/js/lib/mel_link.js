@@ -274,16 +274,16 @@ class MelFolderLink extends MelBaseLink {
   }
 
   toggleMultilink() {
-    if (!this.isOpen) 
+    if (!this.isOpen)
       this.openMultilink();
     else
-      this.closeMultilink();    
+      this.closeMultilink();
   }
 
   /**
    * Ouvre un dossier
    */
-  openMultilink() {    
+  openMultilink() {
     //Si un autre dossier est déjà ouvert
     if (MelFolderLink.folderOpen) {
       this.closeMultilink(MelFolderLink.folderOpen.id);
@@ -737,23 +737,25 @@ class MelLinkVisualizer extends MelLink {
 }
 
 class MelStoreLink extends MelLinkVisualizer {
-  constructor(id, title, link, icon, description, inLinks = false) {
-    super(id, title, link, null, null, icon);
-    this._setup_vars(description, link, inLinks);
+  constructor(id, title, link, icon, description, inLinks = false, image = null) {
+    super(id, title, link, null, null, icon, image);
+    this._setup_vars(description, link, inLinks, image);
   }
 
   _init() {
     super._init();
     this.description = '';
     this.inLinks = false;
+    this.image = null;
 
     return this;
   }
 
-  _setup_vars(description, link, inLinks) {
+  _setup_vars(description, link, inLinks, image) {
     super._setup_vars(link, false);
     this.description = description;
     this.inLinks = inLinks;
+    this.image = image;
 
     return this;
   }
@@ -762,17 +764,23 @@ class MelStoreLink extends MelLinkVisualizer {
    * Affiche un lien dans la modale de bibliothèque d'application
    */
   displayStoreLink() {
-    return MelHtml.start
+    let html = MelHtml.start
       .li({
         id: 'store-link-block-' + this.id,
         title: this.title,
         class: 'store-link-block',
         'data-id': this.id,
       })
-      .div({ class: 'store-link-icon-container' })
-      .icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' })
-      .end('icon')
-      .end('div')
+      .div({ class: 'store-link-icon-container' });
+
+    if (this.image) {
+      html = html.img({ src: this.image ?? '' });
+    }
+    else if (this.icon) {
+      html = html.icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' }).end('icon');
+    }
+
+    html = html.end('div')
       .div({ class: 'store-link-text' })
       .a({
         id: 'store-link-id-' + this.id,
@@ -802,5 +810,7 @@ class MelStoreLink extends MelLinkVisualizer {
       .end('button')
       .end('li')
       .generate();
+
+    return html;
   }
 }

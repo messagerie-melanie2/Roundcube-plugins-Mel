@@ -310,6 +310,7 @@ export class LinkManager extends MelObject {
               link.icon,
               link.description,
               this.linksIdList.includes(item) ? true : false,
+              link.image ?? null
             );
 
             foundLink.displayStoreLink().appendTo('#list-store-app');
@@ -339,6 +340,7 @@ export class LinkManager extends MelObject {
             link.icon,
             link.description,
             this.linksIdList.includes(item) ? true : false,
+            link.image ?? null
           );
           storeLink.displayStoreLink().appendTo('#list-store-app');
           isLinks = true;

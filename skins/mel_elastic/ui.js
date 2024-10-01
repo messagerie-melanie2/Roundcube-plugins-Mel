@@ -946,6 +946,19 @@ $(document).ready(() => {
               'data-name': iterator.value.id,
               'aria-pressed': iterator.value.id === this.theme,
             });
+
+            html_theme.onkeydown.push((e) => {
+              switch (e.originalEvent.code) {
+                case 'Enter':
+                case ' ':
+                  $(e.currentTarget).click();
+                  break;
+
+                default:
+                  break;
+              }
+            });
+
             //Action à faire au clique
             html_theme.onclick.push((e) => {
               let dosomething = callback_click ? callback_click(e) : true;
@@ -1336,6 +1349,20 @@ $(document).ready(() => {
         } else if (iterator.value.title) {
           $item.setAttr('title', iterator.value.title);
         }
+
+        $item.setAttr('tabindex', 0);
+        $item.addClass('mel-focus');
+        $item.onkeydown.push((e) => {
+          switch (e.originalEvent.code) {
+            case 'Enter':
+            case ' ':
+              $(e.currentTarget).click();
+              break;
+
+            default:
+              break;
+          }
+        });
 
         //Ajout des classes et du fonctionnement des boutons
         $item.addClass(THEME_CLASSES);

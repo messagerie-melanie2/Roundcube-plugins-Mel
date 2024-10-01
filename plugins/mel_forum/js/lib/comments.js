@@ -917,32 +917,59 @@ async saveComment(content) {
 }
 
 
-  /**
- * Récupère les commentaires associés à un post spécifique.
- *
- * Cette fonction envoie une requête asynchrone pour obtenir tous les commentaires
- * liés à l'identifiant du post spécifié. Elle utilise une fonction `post` pour
- * envoyer la requête et reçoit les données au format JSON. Les données sont ensuite
- * analysées et retournées par la fonction.
- *
- * @returns {Promise<Object>} - Une promesse qui se résout avec les données des commentaires
- *                              obtenues en réponse à la requête.
- */
-  async getCommentByPost() {
-    // BnumMessage.SetBusyLoading();
-    let return_data;
-    await mel_metapage.Functions.post(
-      mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
-      { _post_uid: this.post_uid },
-      (datas) => {
-        return_data = JSON.parse(datas);
+//   /**
+//  * Récupère les commentaires associés à un post spécifique.
+//  *
+//  * Cette fonction envoie une requête asynchrone pour obtenir tous les commentaires
+//  * liés à l'identifiant du post spécifié. Elle utilise une fonction `post` pour
+//  * envoyer la requête et reçoit les données au format JSON. Les données sont ensuite
+//  * analysées et retournées par la fonction.
+//  *
+//  * @returns {Promise<Object>} - Une promesse qui se résout avec les données des commentaires
+//  *                              obtenues en réponse à la requête.
+//  */
+//   async getCommentByPost() {
+//     // BnumMessage.SetBusyLoading();
+//     let return_data;
+//     await mel_metapage.Functions.post(
+//       mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
+//       { _post_uid: this.post_uid },
+//       (datas) => {
+//         return_data = JSON.parse(datas);
         
-        // BnumMessage.SetBusyLoading();
-      }
-    )
+//         // BnumMessage.SetBusyLoading();
+//       }
+//     )
 
-    return return_data;
+//     return return_data;
 
-  }
+//   }
+
+/**
+   * Récupère les commentaires associés à un post spécifique avec un ordre de tri.
+   *
+   * Cette fonction envoie une requête asynchrone pour obtenir tous les commentaires
+   * liés à l'identifiant du post spécifié, en prenant en compte l'ordre de tri.
+   * Elle utilise une fonction `post` pour envoyer la requête et reçoit les données au format JSON.
+   *
+   * @param {string} order - L'ordre dans lequel trier les commentaires (ex: 'date_asc', 'likes_desc').
+   * @returns {Promise<Object>} - Une promesse qui se résout avec les données des commentaires
+   *                              obtenues en réponse à la requête.
+   */
+async getCommentByPost(order = 'date_asc') {  // Ajout du paramètre 'order'
+  let return_data;
+  await mel_metapage.Functions.post(
+    mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
+    { 
+      _post_uid: this.post_uid,
+      _order: order  // Envoi du paramètre 'order' au serveur
+    },
+    (datas) => {
+      return_data = JSON.parse(datas);
+    }
+  )
+
+  return return_data;
+}
 
 }

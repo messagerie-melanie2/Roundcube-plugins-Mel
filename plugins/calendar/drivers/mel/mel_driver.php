@@ -1494,12 +1494,23 @@ class mel_driver extends calendar_driver {
         if (isset($event_attendee['role']) && $event_attendee['role'] == 'ORGANIZER') {
           if (count($event['attendees']) != 1) {
             $organizer = driver_mel::gi()->organizer([$_event]);
-            if (isset($event_attendee['email'])) {
-              $organizer->email = $event_attendee['email'];
-            }
+            
             if (isset($event_attendee['name'])) {
               $organizer->name = $event_attendee['name'];
             }
+            if (isset($event_attendee['email'])) {
+              $organizer->email = $event_attendee['email'];
+
+              // Est-ce qu'on est dans le cas ou on organise sur une réunion dans un autre agenda ?
+              if ($this->calendars[$event['calendar']]->owner != $this->rc->get_user_name() 
+                  && !isset($_event->organizer)
+                  && $organizer->uid == $this->calendars[$event['calendar']]->owner) {
+                $organizer->owner_email = $organizer->email;
+                $organizer->email = driver_mel::gi()->getUser()->email;
+                $organizer->uid = driver_mel::gi()->getUser()->uid;
+              }
+            }
+            
             $_event->organizer = $organizer;
           }
         }

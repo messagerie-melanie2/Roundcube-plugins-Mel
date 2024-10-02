@@ -350,7 +350,10 @@ function m_mp_Create() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('create-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('help-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           const element = actions[key];
@@ -363,8 +366,7 @@ function m_mp_Create() {
                     `);
         }
       }
-
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('create-initialized');
     }
     window.create_popUp.close();
 
@@ -2201,7 +2203,10 @@ function m_mp_Help() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('help-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('create-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           //On cache l'onboarding sur mobile
@@ -2218,7 +2223,7 @@ function m_mp_Help() {
         }
       }
 
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('help-initialized');
     }
     window.help_popUp.close();
 

@@ -1,7 +1,11 @@
+import { BnumMessage } from '../../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { HtmlCustomTag } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { FavoriteButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
+import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
+import { connectors } from '../connectors.js';
 
 //#region textes
 const TEXT_PRIVATE_SPACE = 'Cet espace est privé !';
@@ -15,6 +19,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
   constructor() {
     super();
 
+    this._uid = null;
     this._picture = null;
     this._tag = null;
     this._title = null;
@@ -24,12 +29,31 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     this._color = null;
     this._is_favorite = null;
     this._private = null;
+
+    this.onfavoritechanged = new BnumEvent();
   }
 
   _init() {
+    this.onfavoritechanged.push((state, node, self) => {
+      this.dispatchEvent(
+        new CustomEvent('api:favorite', {
+          detail: { state, node, self },
+        }),
+      );
+    });
+
     this.#initHtml = this.outerHTML;
 
+    const canBeFavorite = this.data('canBeFavorite') ?? true;
+
+    if (!canBeFavorite) this.data('favorite', false);
+
     Object.defineProperties(this, {
+      _uid: {
+        value: this.dataset.id,
+        writable: false,
+        configurable: false,
+      },
       _picture: {
         value: this.dataset.picture,
         writable: false,
@@ -69,17 +93,19 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
         writable: false,
         configurable: false,
       },
-      _is_favorite: {
-        value: this.dataset.favorite,
-        writable: false,
-        configurable: false,
-      },
+      // _is_favorite: {
+      //   value: this.dataset.favorite,
+      //   writable: false,
+      //   configurable: false,
+      // },
       _private: {
         value: this.dataset.private,
         writable: false,
         configurable: false,
       },
     });
+
+    this._is_favorite = this.dataset.favorite;
 
     return this;
   }
@@ -96,8 +122,20 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     return this._title;
   }
 
+  edited() {
+    return moment(this._edited.split(' ')[2], 'DD/MM/YYYY');
+  }
+
+  isFavorite() {
+    return this._is_favorite;
+  }
+
   getClone() {
     return $(this.#initHtml);
+  }
+
+  getInitHtml() {
+    return this.#initHtml;
   }
 
   //#region main_block
@@ -135,27 +173,56 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
   //#region favorite
   _generate_favorite() {
-    /**
-     * @type {FavoriteButton}
-     */
-    let favorite = document.createElement(FavoriteButton.TAG);
-    favorite.data('favoriteIcon', 'star');
-    favorite.data('notFavoriteIcon', 'star');
-    favorite.setAttribute('data-start-pressed', this._is_favorite);
-    favorite.classList.add('workspace-block-item-favorite');
+    if (this.data('canBeFavorite') ?? true) {
+      // if (this.hasAttribute('data-old-favorite')) debugger;
 
-    this._set_favorite_texts(favorite, this._is_favorite);
+      /**
+       * @type {FavoriteButton}
+       */
+      let favorite = document.createElement(FavoriteButton.TAG);
+      favorite.data('favoriteIcon', 'star');
+      favorite.data('notFavoriteIcon', 'star');
+      favorite.setAttribute('data-start-pressed', this._is_favorite);
+      favorite.classList.add('workspace-block-item-favorite');
 
-    favorite.ontoggle.push((...data) => {
-      let [event, node] = data;
+      this._set_favorite_texts(favorite, this._is_favorite);
 
-      this._set_favorite_texts(node, event.newState);
-    });
+      favorite.ontoggle.push(async (...data) => {
+        if (rcmail.busy) {
+          $(node).click();
+        } else {
+          let [event, node] = data;
 
-    this.appendChild(favorite);
-    this.removeAttribute('data-favorite');
+          $('bnum-favorite-button')
+            .addClass('disabled')
+            .attr('disabled', 'disabled');
 
-    favorite = null;
+          BnumMessage.SetBusyLoading();
+
+          this._set_favorite_texts(node, event.newState);
+
+          this._is_favorite = event.newState;
+
+          const connector = connectors.toggle_favorite;
+
+          let params = connector.needed;
+          params._id = this._uid;
+
+          await BnumConnector.connect(connector, { params });
+          BnumMessage.StopBusyLoading();
+
+          this.onfavoritechanged.call(event, node, this);
+        }
+      });
+
+      this.appendChild(favorite);
+      this.removeAttribute('data-favorite');
+
+      favorite = null;
+    }
+
+    this.removeAttribute('data-can-be-favorite');
+    this.removeAttribute('data-old-favorite');
 
     return this;
   }

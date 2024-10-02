@@ -99,8 +99,7 @@ class mel_workspace extends bnum_plugin
             $return = $workspace->exists() ? 0 : 1;
         }
 
-        echo json_encode($return);
-        exit;
+        $this->sendEncodedExit($return);
     }
 
     public function create() {
@@ -168,8 +167,7 @@ class mel_workspace extends bnum_plugin
 
             $retour["uncreated_services"] = $services;
 
-            echo json_encode($retour);
-            exit;
+            $this->sendEncodedExit($retour);
         } catch (\Throwable $th) {
             $func = "create";
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title."'' !");
@@ -177,6 +175,36 @@ class mel_workspace extends bnum_plugin
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
         }
     } 
+
+    public function workspaces_search() {
+        $type = $this->get_input_post('_type');
+        $page = $this->get_input_post('_page');
+
+        $html = '';
+
+        switch ($type) {
+            case 'public':
+                $html = $this->_show_block(3, $page);
+                break;
+            
+            case 'count_public':
+                $html = ceil(count($this->_search_publics_workspaces($this->get_input_post('_search'))) / self::PAGE_MAX);
+                break;
+            
+            default:
+                throw new Exception("###[workspaces_search]Type de recherche ''$type'' inconnue !", 1);
+        }
+
+        $this->sendEncodedExit($html);
+    }
+
+    public function toggle_favorite() {
+        $uid = $this->get_input_post('_id');
+
+        $wsp = Workspace::ToggleFavoriteWsp($uid);
+
+        $this->sendEncodedExit(['newState' => $wsp->isFavorite()]);
+    }
     #endregion
 
     #region handlers
@@ -219,6 +247,15 @@ class mel_workspace extends bnum_plugin
             case 2:
                 $workspaces = self::LoadWorkspaces(2);
                 break;
+
+            case 3:
+                $search = $this->get_input_post('_search');
+
+                if (!isset($search) || $search === '') return $this->_show_block(1);
+                else {
+                    $workspaces = $this->_search_publics_workspaces($search, (($page ?? 1) - 1)*self::PAGE_MAX, self::PAGE_MAX);//$workspace->getList(null, null, $operators, 'modified', true, (($page ?? 1) - 1)*self::PAGE_MAX, self::PAGE_MAX, ["workspace_title"]);
+                }
+                break;
             
             default:
                 # code...
@@ -230,6 +267,19 @@ class mel_workspace extends bnum_plugin
         }
 
         return $html;
+    }
+
+    private function _search_publics_workspaces($search, $offset = null, $max = null) {
+        $workspace = driver_mel::gi()->workspace();
+        $workspace->ispublic = true;
+        $workspace->title = "%$search%";
+
+        $operators =  [
+            'ispublic' => LibMelanie\Config\MappingMce::eq,
+            'title' => LibMelanie\Config\MappingMce::like,
+        ];
+
+        return $workspace->getList(null, null, $operators, 'modified', true, $max, $offset, ["workspace_title"]);
     }
 
     private function _notify_user($userid, $workspace, $tmp_user = null) {
@@ -308,8 +358,13 @@ class mel_workspace extends bnum_plugin
 
         private function _setup_external_actions() {
             $this->register_actions(
-                ['check_uid' => [$this, 'check_uid'],
-                'create' => [$this, 'create']]
+                [
+                    'check_uid' => [$this, 'check_uid'],
+                    'create' => [$this, 'create'],
+                    'search' => [$this, 'workspaces_search'],
+                    'toggle_favorite' => [$this, 'toggle_favorite'],
+                    'set_visu_mode' => [$this, 'set_visu_mode']
+                ]
             );
         }
         #endregion
@@ -490,17 +545,19 @@ class mel_workspace extends bnum_plugin
     }
 
     public static function GetWorkspacesBlock($workspace) {
+        $workspace = Workspace::FromWorkspace($workspace);
+
         mel_helper::load_helper()->include_utilities();
         $rc = rcmail::get_instance();
         $name = 'mel_workspace.workspace_block';
 
-        $favorites = $rc->config->get('workspaces_personal_datas', null);
-        $hashtags = $workspace->hashtags;
+        // $favorites = $rc->config->get('workspaces_personal_datas', null);
+        // $hashtags = $workspace->hashtag();
 
         $users = [];
         {
             $it = 0;
-            $shared = $workspace->shares;
+            $shared = $workspace->users();
 
             foreach ($shared as $value) {
                 $tmp = driver_mel::gi()->getUser($value->user);
@@ -522,16 +579,18 @@ class mel_workspace extends bnum_plugin
 
         $block = mel_helper::Parse($name);
 
-        $block->picture = self::_GetWorkspaceLogo($workspace);
-        $block->tag = isset($hashtags) && count($hashtags) > 0 ? ($hashtags[0] ?? '') : '';
+        $block->id = $workspace->uid();
+        $block->picture = self::_GetWorkspaceLogo($workspace->get());
+        $block->tag = $workspace->hashtag();//isset($hashtags) && count($hashtags) > 0 ? ($hashtags[0] ?? '') : '';
         $block->tag = mel_utils::for_data_html($block->tag);
-        $block->title = mel_utils::for_data_html($workspace->title);
-        $block->description = mel_utils::for_data_html($workspace->description);
+        $block->title = mel_utils::for_data_html($workspace->title());
+        $block->description = mel_utils::for_data_html($workspace->description());
         $block->users = implode(',', $users);
-        $block->edited = $workspace->modified;
-        $block->color = self::_GetWorkspaceSetting($workspace, 'color');
-        $block->favorite = isset($favorites) && isset($favorites[$workspace->uid]) && $favorites[$workspace->uid] && $favorites[$workspace->uid]['tak'] ? $favorites[$workspace->uid]['tak'] : false;
-        $block->private = !$workspace->ispublic;
+        $block->edited = $workspace->modified();
+        $block->color = $workspace->color();//self::_GetWorkspaceSetting($workspace, 'color');
+        $block->favorite = $workspace->isFavorite();//isset($favorites) && isset($favorites[$workspace->uid]) && $favorites[$workspace->uid] && $favorites[$workspace->uid]['tak'] ? $favorites[$workspace->uid]['tak'] : false;
+        $block->private = !$workspace->isPublic();
+        //$block->canBeFavorite = !($workspace->isArchived() || ($workspace->isPublic() && !$workspace->hasUser(driver_mel::gi()->getUser()->uid)));
 
         return $block->parse();
     }

@@ -51,6 +51,14 @@ class Workspace {
     return $this->_unset();
   }
 
+  public function toggleFavorite() {
+    FavoriteData::ToggleWsp($this->_uid);
+  }
+
+  public function isFavorite() {
+    return FavoriteData::From($this->_uid)->is();
+  }
+
   public function save() {
     $this->modified(new DateTime());
     $this->_workspace->save();
@@ -102,7 +110,7 @@ class Workspace {
   public function hashtag($newTag = DEFAULT_SYMBOL) {
     $ret = $this;
 
-    if ($this->_hashtag !== DEFAULT_SYMBOL) {
+    if ($newTag !== DEFAULT_SYMBOL) {
       $this->_workspace->hashtags = [$newTag];
       $this->_hashtag = $newTag;
     }
@@ -153,6 +161,18 @@ class Workspace {
     else $ret = $this->settings()->get('color');
 
     return $ret;
+  }
+
+  public function hasUser($user_id) {
+    return mel_helper::Enumerable($this->users())->any(function ($k, $v) use($user_id) {
+      return $v->user_uid === $user_id;
+    });
+  }
+
+  public function hasUserFromEmail($email) {
+    return $this->users(true)->any(function ($k, $v) use($email) {
+      return $v->email === $email;
+    });
   }
 
   public function users($to_melanie_user = false) {
@@ -313,6 +333,54 @@ class Workspace {
       return $text."-".$it;
   }
 
+  public static function ToggleFavoriteWsp($uid, $load = false) {
+    $wsp = new Workspace($uid, $load);
+    $wsp->toggleFavorite();
+
+    return $wsp;
+  }
+
+}
+
+class FavoriteData {
+  private $uid;
+  private $config;
+
+  public function __construct($uid) {
+    $this->uid =  $uid;
+    $this->config = self::_Config();
+
+    if (!isset($this->config[$this->uid])) $this->config[$this->uid] = ['tak' => false];
+  }
+
+  public function is() {
+    return isset($this->config[$this->uid]) && $this->config[$this->uid]['tak'] === true;
+  }
+
+  public function toggle() {
+    $this->config[$this->uid]['tak'] = !$this->config[$this->uid]['tak'];
+  }
+
+  public function save() {
+    return rcmail::get_instance()->user->save_prefs(array('workspaces_personal_datas' => $this->config));
+  }
+
+  private static function _Config() {
+    return rcmail::get_instance()->config->get('workspaces_personal_datas', []);
+  }
+
+  public static function From($uid) {
+    return new FavoriteData($uid);
+  } 
+
+  public static function ToggleWsp($uid, $save = true) {
+    $data = self::From($uid);
+    $data->toggle();
+
+    if ($save) $data->save();
+
+    return $data;
+  }
 }
 
 class WorkspaceSetting {

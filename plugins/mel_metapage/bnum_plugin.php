@@ -185,6 +185,21 @@ abstract class bnum_plugin extends rcube_plugin
         return  driver_mel::gi()->getUser(null, true, false, null, $email);
     }
 
+    protected function sendExit($item, $headers = []) {
+        if (count($headers) > 0) {
+            foreach ($headers as $header) {
+                header($header);
+            }
+        }
+
+        echo $item;
+        exit;
+    }
+
+    protected function sendEncodedExit($item, $headers = []) {
+        $this->sendExit(json_encode($item), $headers);
+    }
+
     protected function include_web_component() {
         return WebComponnents::Instance();
     } 

@@ -25,6 +25,7 @@ export { InfiniteScrollContainer };
  * @callback OnScrollEndedCallback
  * @param {PageData} pageData
  * @param {number} lock
+ * @param {InfiniteScrollContainer} caller
  * @return {void}
  */
 
@@ -147,6 +148,10 @@ class InfiniteScrollContainer extends HtmlCustomTag {
     this.$.scroll(this._on_scroll.bind(this));
   }
 
+  setPageCountMax(count) {
+    this._countMax = count;
+  }
+
   /**
    * Action au scroll
    * @async
@@ -183,6 +188,7 @@ class InfiniteScrollContainer extends HtmlCustomTag {
           .asyncCall({
             post_data,
             lock,
+            caller: this,
           })
           .then(() => {
             console.log('Recherche terminée !');

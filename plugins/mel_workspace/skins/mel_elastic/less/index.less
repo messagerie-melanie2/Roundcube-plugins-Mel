@@ -94,3 +94,18 @@ bnum-tabs {
   padding-bottom: 20px !important;
   margin-top: 30px !important;
 }
+
+.wsp-search-wsp {
+  button {
+    &.mel-button {
+      &.reset-search {
+        &:disabled {
+          background-color: var(--input-background-color) !important;
+          border-color: var(--mel-button-border-color) !important;
+          color: var(--input-mel-text-color);
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

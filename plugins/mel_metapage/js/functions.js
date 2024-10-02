@@ -730,7 +730,7 @@ function m_mp_step3_param(type) {
             case 'already_exist':
               $param_button.addClass('selected');
               $select.attr('disabled', 'disabled').addClass('disabled');
-              rcmail.set_busy(true, 'loading');
+              const busy = rcmail.set_busy(true, 'loading');
               $custom_name_div.css('display', 'none');
               mel_metapage.Functions.post(
                 mel_metapage.Functions.url('wekan', 'get_user_board'),
@@ -754,7 +754,16 @@ function m_mp_step3_param(type) {
                     .removeAttr('disabled', 'disabled')
                     .removeClass('disabled');
                 },
-              );
+                (err) => {
+
+                  rcmail.display_message('Erreur lors de la récupération des tableaux', 'error');
+                }
+              ).always(() => {
+                rcmail.set_busy(false, 'loading', busy);
+                $select
+                  .removeAttr('disabled', 'disabled')
+                  .removeClass('disabled');
+              })
 
               break;
 
@@ -1011,8 +1020,8 @@ function m_mp_createworkspace() {
 
         create_popUp.contents.html(
           html +
-            datas +
-            `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
+          datas +
+          `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
         );
 
         if ($('#tmpavatar').find('a').length === 0)
@@ -1292,8 +1301,8 @@ async function m_mp_CreateWorkSpace() {
       $('#worspace-avatar-a').find('img').length === 0
         ? false
         : $('#worspace-avatar-a')
-            .find('img')[0]
-            .src.replace(window.location.origin, ''),
+          .find('img')[0]
+          .src.replace(window.location.origin, ''),
     title: $('#workspace-title').val(),
     desc: $('#workspace-desc').val(),
     end_date: $('#workspace-date-end').val(),
@@ -1506,7 +1515,7 @@ async function m_mp_get_all_hashtag(
                 `La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`,
               );
             }
-          } catch (error) {}
+          } catch (error) { }
         },
       })
       .always(() => {
@@ -1584,7 +1593,7 @@ function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
       }
       querry.css('display', 'none').parent().attr('data-visible', false);
     }
-  } catch (error) {}
+  } catch (error) { }
 }
 
 function m_mp_autocomplete(element, force = false) {
@@ -2536,8 +2545,8 @@ function m_mp_UpdateCreateDoc(json) {
     (json.tags !== undefined && json.tags.includes('f')
       ? rcmail.gettext('mel_metapage.new_f')
       : rcmail.gettext('mel_metapage.new_n')) +
-      ' ' +
-      rcmail.gettext('mel_metapage.' + json.name).toLowerCase(),
+    ' ' +
+    rcmail.gettext('mel_metapage.' + json.name).toLowerCase(),
   );
   $('#' + mel_metapage.Ids.create.doc_input_ext).attr(
     'placeholder',
@@ -2618,8 +2627,8 @@ async function m_mp_CreateDoc() {
       (json.tags !== undefined && json.tags.includes('f')
         ? 'Nouvelle'
         : 'Nouveau') +
-        ' ' +
-        json.name.toLowerCase(),
+      ' ' +
+      json.name.toLowerCase(),
     );
   if ($('#' + mel_metapage.Ids.create.doc_input_ext).val() === '')
     $('#' + mel_metapage.Ids.create.doc_input_ext).val(json.default_ext);
@@ -2810,7 +2819,7 @@ async function m_mp_CreateDocCurrent(val = null, close = true) {
   //console.log("7 change page");
   m_mp_CreateOrOpenFrame(
     'stockage',
-    () => {},
+    () => { },
     () => {
       rcmail.set_busy(false);
       rcmail.clear_messages();
@@ -2829,7 +2838,7 @@ function m_mp_CreateDocNotCurrent() {
   );
   m_mp_CreateOrOpenFrame(
     'stockage',
-    () => {},
+    () => { },
     () => {
       rcmail.set_busy(true, 'loading');
       $('.stockage-frame')[0].src =
@@ -2899,7 +2908,7 @@ function m_mp_DecodeUrl() {
 async function m_mp_CreateOrOpenFrame(
   frameClasse,
   funcBefore,
-  func = () => {},
+  func = () => { },
   changepage = true,
 ) {
   if (funcBefore !== null) funcBefore();
@@ -2952,8 +2961,8 @@ function m_mp_CreateEvent(_action = null) {
   const action =
     _action === null
       ? () => {
-          m_mp_set_storage('calendar_create');
-        }
+        m_mp_set_storage('calendar_create');
+      }
       : _action;
   const calendar = 'calendar';
   //console.log(window.rcube_calendar_ui, rcmail.env.current_frame_name, rcmail.env.task);
@@ -3037,7 +3046,7 @@ function m_mp_OpenTask() {
 function m_mp_close_ariane() {
   try {
     event.preventDefault();
-  } catch (e) {}
+  } catch (e) { }
 
   if (parent.mel_metapage.PopUp.ariane !== undefined)
     parent.mel_metapage.PopUp.ariane.hide();
@@ -3426,9 +3435,9 @@ function external_link_modal(_url, isSuspect = false) {
             class: 'custom-control-label option-switch no-click-focus pl-6',
           },
           rcmail.gettext('mel_metapage.always_authorize') +
-            '<span class="external_domain">' +
-            domain +
-            '</span>',
+          '<span class="external_domain">' +
+          domain +
+          '</span>',
         ),
       ],
     });
@@ -3458,9 +3467,9 @@ function external_link_modal(_url, isSuspect = false) {
             class: 'custom-control-label option-switch no-click-focus pl-6',
           },
           '<span class="external_domain">' +
-            domain +
-            '</span>' +
-            rcmail.gettext('mel_metapage.warning_suspect_url'),
+          domain +
+          '</span>' +
+          rcmail.gettext('mel_metapage.warning_suspect_url'),
         ),
       ],
     });

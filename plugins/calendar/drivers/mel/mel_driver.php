@@ -1609,6 +1609,15 @@ class mel_driver extends calendar_driver {
       }
       if ($event['_savemode'] == 'current') {
         if ($_event->load()) {
+          // Test si privé
+          if (($_event->class == \LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+                || $_event->class == \LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+              && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+              && $_event->owner != $this->user->uid 
+              && !$this->calendars[$_event->calendar]->asRight(\LibMelanie\Config\ConfigMelanie::PRIV)) {
+            return false;
+          }
+          
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
@@ -1656,6 +1665,15 @@ class mel_driver extends calendar_driver {
       }
       elseif ($event['_savemode'] == 'future') {
         if ($_event->load()) {
+          // Test si privé
+          if (($_event->class == \LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+                || $_event->class == \LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+              && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+              && $_event->owner != $this->user->uid 
+              && !$this->calendars[$_event->calendar]->asRight(\LibMelanie\Config\ConfigMelanie::PRIV)) {
+            return false;
+          }
+
           // Positionnement de la recurrence_id et de l'uid
           $recid = explode('@DATE-', $event['id'])[1];
           $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
@@ -1673,6 +1691,15 @@ class mel_driver extends calendar_driver {
       else {
         // 0005105: La suppression d'un événement simple ne le charge pas
         if ($_event->load()) {
+          // Test si privé
+          if (($_event->class == \LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+                || $_event->class == \LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+              && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+              && $_event->owner != $this->user->uid 
+              && !$this->calendars[$_event->calendar]->asRight(\LibMelanie\Config\ConfigMelanie::PRIV)) {
+            return false;
+          }
+          
           // MANTIS 0006615: L'exception d'une invitation est toujours présente sur le téléphone après suppression de la récurrence complète
           foreach ($_event->exceptions as $exception) {
             $exception_uid = $exception->uid;

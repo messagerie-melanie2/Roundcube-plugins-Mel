@@ -1321,19 +1321,29 @@ public function like_comment()
     exit;
 }
 
-/**
- * Affiche tous les commentaires associés à un post au format JSON.
- *
- * Cette fonction récupère l'UID du post envoyé via un formulaire POST,
- * charge le post correspondant, et liste tous les commentaires associés à ce post.
- * Les commentaires sont ensuite renvoyés en réponse au format JSON.
- *
- * @return void
- */
+
+
 public function get_all_comments_bypost()
 {
-    // Récupérer l'uid de l'article du champ POST
+    // Récupérer l'uid de l'article
     $uid = rcube_utils::get_input_value('_post_uid', rcube_utils::INPUT_GPC);
+
+    // Récupérer le paramètre de tri des commentaires
+    $sort_order = rcube_utils::get_input_value('_sort_order', rcube_utils::INPUT_GPC, true);
+
+    // Initialisation des variables de tri
+    $orderby = 'created';
+    $asc = false; // Par défaut, tri descendant
+
+    // Définir l'ordre et le tri en fonction du paramètre choisi
+    if ($sort_order === 'date_asc') {
+        $orderby = 'created';
+        $asc = true; // Tri ascendant
+    } elseif ($sort_order === 'reactions') {
+        $orderby = 'likes'; // Tri par nombre de réactions
+    } elseif ($sort_order === 'replies') {
+        $orderby = 'children'; // Tri par nombre de réponses
+    }
 
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
@@ -1341,7 +1351,8 @@ public function get_all_comments_bypost()
     $comments_array = [];
 
     if ($post->load()) {
-        $comments = $post->listComments();
+        // Passer les paramètres de tri à listComments()
+        $comments = $post->listComments(true, null, $orderby, $asc);
 
         if (!empty($comments)) {
             foreach ($comments as $comment) {
@@ -1396,119 +1407,6 @@ public function get_all_comments_bypost()
     }
     exit;
 }
-
-// public function get_all_comments_bypost()
-// {
-//     // Récupérer l'uid de l'article et le paramètre 'order' du champ POST
-//     $uid = rcube_utils::get_input_value('_post_uid', rcube_utils::INPUT_GPC);
-//     $order = rcube_utils::get_input_value('_order', rcube_utils::INPUT_GPC, true);
-
-//     $post = new LibMelanie\Api\Defaut\Posts\Post();
-//     $post->uid = $uid;
-
-//     $comments_array = [];
-//     $parents_array = [];
-//     $children_array = [];
-
-//     if ($post->load()) {
-//         $comments = $post->listComments();
-
-//         if (!empty($comments)) {
-//             foreach ($comments as $comment) {
-//                 // Récupérer l'utilisateur associé au commentaire
-//                 $user = driver_mel::gi()->getUser($comment->user_uid);
-//                 $user_name = ($user !== null && !empty($user->name)) ? $user->name : '? ?';
-
-//                 // Définir la locale en français pour le formatage de la date
-//                 $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-//                 $timestamp = strtotime($comment->created);
-//                 $formatted_date = $formatter->format($timestamp);
-
-//                 $count = ['like' => 0, 'dislike' => 0];
-
-//                 // Vérifier si l'utilisateur a réagi
-//                 $comment_reactions = $comment->listLikes();
-//                 $current_user_reacted = '';
-//                 foreach ($comment_reactions as $reaction) {
-//                     if ($reaction->user_uid === driver_mel::gi()->getUser()->uid) {
-//                         $current_user_reacted = $reaction->like_type;
-//                     }
-//                     $count[$reaction->like_type]++;
-//                 }
-
-//                 // Préparer l'élément de commentaire à ajouter
-//                 $comment_data = [
-//                     'id' => $comment->id,
-//                     'uid' => $comment->uid,
-//                     'post_id' => $comment->post_id,
-//                     'user_id' => $comment->user_uid,
-//                     'user_name' => $user_name,
-//                     'content' => $comment->content,
-//                     'created' => $formatted_date,
-//                     'timestamp' => $timestamp, // Utilisé pour trier par date
-//                     'parent' => $comment->parent,
-//                     'children_number' => $comment->countChildren(),
-//                     'likes' => $count['like'],
-//                     'dislikes' => $count['dislike'],
-//                     'current_user_reacted' => $current_user_reacted,
-//                     'responses' => $responses,
-//                 ];
-
-//                 // Séparer les parents des enfants
-//                 if ($comment->parent == 0) {
-//                     // C'est un commentaire parent
-//                     $parents_array[] = $comment_data;
-//                 } else {
-//                     // C'est une réponse (enfant)
-//                     $children_array[$comment->parent][] = $comment_data;
-//                 }
-//             }
-//         }
-
-//         // Appliquer le tri uniquement aux commentaires parents
-//         if ($order === 'date_asc') {
-//             usort($parents_array, function ($a, $b) {
-//                 return $a['timestamp'] - $b['timestamp']; // Plus anciens d'abord
-//             });
-//         } elseif ($order === 'date_desc') {
-//             usort($parents_array, function ($a, $b) {
-//                 return $b['timestamp'] - $a['timestamp']; // Plus récents d'abord
-//             });
-//         } elseif ($order === 'likes_desc') {
-//             usort($parents_array, function ($a, $b) {
-//                 return $b['likes'] - $a['likes']; // Plus de likes
-//             });
-//         } elseif ($order === 'dislikes_desc') {
-//             usort($parents_array, function ($a, $b) {
-//                 return $b['dislikes'] - $a['dislikes']; // Plus de dislikes
-//             });
-//         }
-
-//         // Fonction récursive pour ajouter les réponses sous chaque commentaire parent
-//         function add_children($parent, &$children_array) {
-//             // Si le parent a des enfants, on les ajoute
-//             if (isset($children_array[$parent['id']])) {
-//                 foreach ($children_array[$parent['id']] as $child) {
-//                     // Ajouter les enfants récursivement
-//                     $child['children'] = add_children($child, $children_array);
-//                     $parent['children'][] = $child;
-//                 }
-//             }
-//             return isset($parent['children']) ? $parent['children'] : [];
-//         }
-
-//         // Réassembler les commentaires parents avec leurs réponses récursivement
-//         foreach ($parents_array as &$parent) {
-//             $parent['children'] = add_children($parent, $children_array);
-//             $comments_array[] = $parent;
-//         }
-
-//         // Retourner le tableau des commentaires trié avec réponses imbriquées
-//         echo json_encode($comments_array);
-//     }
-//     exit;
-// }
-
 
 /**
  * Compte le nombre de commentaires pour un article donné.

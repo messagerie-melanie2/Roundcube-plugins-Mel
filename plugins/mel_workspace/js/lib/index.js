@@ -6,15 +6,26 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { connectors } from './connectors.js';
 
-const mode = {
+/**
+ * @enum {string}
+ */
+const EMode = {
   subscribed: 'subscribed',
   archived: 'archived',
   publics: 'publics',
 };
 
-const subscribed = MelObject.Empty().gettext(mode.subscribed, 'mel_workspace');
-const archived = MelObject.Empty().gettext(mode.archived, 'mel_workspace');
-const publics = MelObject.Empty().gettext(mode.publics, 'mel_workspace');
+const subscribed = MelObject.Empty().gettext(EMode.subscribed, 'mel_workspace');
+const archived = MelObject.Empty().gettext(EMode.archived, 'mel_workspace');
+const publics = MelObject.Empty().gettext(EMode.publics, 'mel_workspace');
+
+/**
+ * @enum {string}
+ */
+const EVisuMode = {
+  cards: 'cards',
+  list: 'list',
+};
 
 export class IndexWorkspace extends MelObject {
   constructor() {
@@ -27,6 +38,10 @@ export class IndexWorkspace extends MelObject {
     this._set_listeners();
 
     $('#mode-block').on('api:pressed', (e) => {
+      BnumConnector.connect(connectors.set_visu_mode, {
+        params: { _mode: EVisuMode.cards },
+      });
+
       $(e.currentTarget).attr('tabindex', -1);
       document
         .querySelector('#mode-list')
@@ -50,9 +65,17 @@ export class IndexWorkspace extends MelObject {
         .parent()
         .find('[aria-pressed="true"]')
         .attr('tabindex', -1);
+
+      if (this.get_env('visu-mode') === EVisuMode.list) {
+        $('#mode-list').click();
+      }
     });
 
     $('#mode-list').on('api:pressed', (e) => {
+      BnumConnector.connect(connectors.set_visu_mode, {
+        params: { _mode: EVisuMode.list },
+      });
+
       $(e.currentTarget).attr('tabindex', -1);
       document
         .querySelector('#mode-block')
@@ -149,7 +172,7 @@ export class IndexWorkspace extends MelObject {
       let mainTabs = $('bnum-tabs')[0];
 
       if (mainTabs.currentTabText() === archived)
-        mainTabs.selectTab(mode.subscribed);
+        mainTabs.selectTab(EMode.subscribed);
 
       $('#main-pannel').css('display', 'none');
 
@@ -307,7 +330,7 @@ export class IndexWorkspace extends MelObject {
   _reorder() {
     const data = MelEnumerable.from(
       $(
-        `[data-pannel-namespace="${mode.subscribed}"] bnum-workspace-block-item`,
+        `[data-pannel-namespace="${EMode.subscribed}"] bnum-workspace-block-item`,
       ),
     ).select((x) => {
       return {
@@ -324,16 +347,14 @@ export class IndexWorkspace extends MelObject {
     });
 
     let $dest = $(
-      `[data-pannel-namespace="${mode.subscribed}"] .workspace-list`,
+      `[data-pannel-namespace="${EMode.subscribed}"] .workspace-list`,
     );
 
     const html = MelEnumerable.from(data)
-      .orderBy((x) =>
-        x.isFavorite ? Number.POSITIVE_INFINITY : x.date.valueOf(),
-      )
+      .orderBy((x) => (x.isFavorite ? -1 : x.date.valueOf()))
       .then((x) => x.title)
       .select((x) => x.html)
-      .join('');
+      .join(EMPTY_STRING);
 
     $dest.html(html);
   }

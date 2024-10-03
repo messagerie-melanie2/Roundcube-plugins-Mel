@@ -83,6 +83,8 @@ class mel_workspace extends bnum_plugin
         $this->add_handler('archived', [$this, 'handler_archived']);
         $this->add_handler('publiccount', [$this, 'handler_public_count']);
 
+        $this->rc()->output->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
+
         $this->rc()->output->send('mel_workspace.index');
     }
     #endregion
@@ -204,6 +206,14 @@ class mel_workspace extends bnum_plugin
         $wsp = Workspace::ToggleFavoriteWsp($uid);
 
         $this->sendEncodedExit(['newState' => $wsp->isFavorite()]);
+    }
+
+    public function set_visu_mode() {
+        $mode = $this->get_input_post('_mode');
+
+        $this->rc()->user->save_prefs(array('wsp-visu-mode' => $mode));
+
+        $this->sendEncodedExit('ok');
     }
     #endregion
 

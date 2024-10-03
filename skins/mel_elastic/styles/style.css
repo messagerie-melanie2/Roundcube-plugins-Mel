@@ -177,6 +177,9 @@ main {
   background-color: var(--layout-list-background-color) !important;
   color: var(--secondary-text-color) !important;
 }
+#layout {
+  overflow: unset;
+}
 #layout > div > .header {
   border: none;
 }

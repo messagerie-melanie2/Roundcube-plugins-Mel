@@ -644,6 +644,8 @@ button {
     display: flex;
     padding: 0;
     gap: 10px;
+    padding: 4px;
+    padding-bottom: 0;
 
     li {
       display: flex;
@@ -660,6 +662,10 @@ button {
         &.active {
           background-color: var(--message-list-quick-filter-active-background-color);
           color: var(--message-list-quick-filter-active-text-color);
+        }
+
+        &:focus {
+          outline: none !important;
         }
 
         &:hover {

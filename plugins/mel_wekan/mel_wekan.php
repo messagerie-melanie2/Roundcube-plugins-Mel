@@ -50,18 +50,30 @@ class mel_wekan extends rcube_plugin
           $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban') ? $need_button : 'otherappsbar';
         }
 
-        if ($need_button)
-        {
-            $this->add_button(array(
-                'command' => 'wekan',
-                'class'	=> 'button-mel-wekan icon-mel-trello wekan',
-                'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
-                'innerclass' => 'button-inner inner',
-                'label'	=> 'mel_wekan.kanban',
-                'title' => 'mel_wekan.kanban',
-                'type'       => 'link'
-            ), $need_button);
-        }
+        $button_config = array(
+            'command' => 'wekan',
+            'class'	=> 'button-mel-wekan icon-mel-trello wekan',
+            'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
+            'innerclass' => 'button-inner inner',
+            'label'	=> 'mel_wekan.kanban',
+            'title' => 'mel_wekan.kanban',
+            'type'       => 'link'
+        );
+
+        $params = $this->rc->plugins->exec_hook('main-nav-bar', [
+            'plugin' => 'wekan',
+            'need_button' => $need_button,
+            'button' => $button_config
+        ]);
+
+        if (isset($params) && isset($params->need_button)) $need_button = $params->need_button;
+        if (isset($params) && isset($params->button)) $button_config = $params->button;
+
+        if ($need_button) $this->add_button($button_config, $need_button);
+        
+        unset($button_config);
+        unset($params);
+        unset($need_button);
 
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->wekan_url(false), 'kanban');

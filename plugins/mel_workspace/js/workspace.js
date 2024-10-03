@@ -217,6 +217,24 @@ function Start(uid, hasAriane, datas) {
     hasAriane,
     datas,
   });
+
+  top.rcmail.add_event_listener_ex('frame_loaded', 'wsp-tchap', (args) => {
+    if (
+      top.rcmail.env.current_task === 'workspace' &&
+      args.eClass === 'tchap'
+    ) {
+      top
+        .$('.tchap-frame')[0]
+        .contentWindow.$('#tchap_frame')
+        .attr(
+          'src',
+          rcmail.env.tchap_url +
+            '#/room/' +
+            top.current_workspace_in_background.get()[0].contentWindow.rcmail
+              .env.current_workspace_tchap_channel.id,
+        );
+    }
+  });
 }
 
 /**
@@ -1241,20 +1259,19 @@ async function InitLinks() {
       }
     });
 
-        // $("#button-create-new-ulink").click(() =>{
-        //     GetLinkPopUp().setLinkEditor(new MelLink(), "workspace", "update_ulink", {_workspace_id:rcmail.env.current_workspace_uid}, async (result) => {
-                
-        //         if (result)
-        //         { 
-        //             await mel_metapage.Functions.callAsync(`$(".links-frame").remove()`, false);
-        //             $(".wsp-toolbar-item.wsp-links").click();
-        //         }
+    // $("#button-create-new-ulink").click(() =>{
+    //     GetLinkPopUp().setLinkEditor(new MelLink(), "workspace", "update_ulink", {_workspace_id:rcmail.env.current_workspace_uid}, async (result) => {
 
-        //         GetLinkPopUp().hide();
-        //     }).show();
-        // });
-        
-    }
+    //         if (result)
+    //         {
+    //             await mel_metapage.Functions.callAsync(`$(".links-frame").remove()`, false);
+    //             $(".wsp-toolbar-item.wsp-links").click();
+    //         }
+
+    //         GetLinkPopUp().hide();
+    //     }).show();
+    // });
+  }
 }
 
 function PaperClipCopy(link) {

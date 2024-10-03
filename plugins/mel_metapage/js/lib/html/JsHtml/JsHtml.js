@@ -4,6 +4,8 @@
  * @local ____JsHtml
  * @local AttribData
  * @local Attribs
+ * @local EachCallback
+ * @local ActionCallback
  * @tutorial js-html
  * @tutorial mel-html
  */
@@ -20,6 +22,22 @@ export { JsHtml, ____JsHtml };
 /**
  * [(string | Object<string, AttribData>)]Une chaîne de charactère ou un objet (ex : 'class:test', {class:'test'})
  * @typedef {(string | Object<string, AttribData>)} Attribs
+ */
+
+/**
+ * Callback utiliser pour la fonction "each" du JsHtml.
+ * @callback EachCallback
+ * @param {____JsHtml} jsHtml JsHtml en cours
+ * @param {*} item Objet de la boucle
+ * @return {____JsHtml} Chaîne de JsHtml
+ */
+
+/**
+ * Callback utiliser pour la fonction "action" du JsHtml.
+ * @callback ActionCallback
+ * @param {____JsHtml} jsHtml JsHtml en cours
+ * @param {...*} args Arguments
+ * @return {____JsHtml} Chaîne de JsHtml
  */
 
 /**
@@ -872,6 +890,7 @@ class ____JsHtml {
    * @param {string} commentary Commentaire
    * @returns {____JsHtml}
    */
+  // eslint-disable-next-line no-unused-vars
   _(commentary) {
     return this;
   }
@@ -900,6 +919,31 @@ class ____JsHtml {
   }
 
   /**
+   * Permet d'ajouter des éléments en jshtml qui nécéssitent d'être bouclés.
+   * @param {EachCallback} callback Action
+   * @param  {...*} items Objets
+   * @returns {____JsHtml} JsHtml en cours
+   */
+  each(callback, ...items) {
+    let html = this;
+    for (const iterator of items) {
+      html = callback(this, iterator);
+    }
+
+    return html;
+  }
+
+  /**
+   * Actions à éxécuter dans le JsHtml.
+   * @param {ActionCallback} callback
+   * @param  {...any} args Arguments qui seront transmits au callback
+   * @returns {____JsHtml} Chaîne de JsHtml
+   */
+  action(callback, ...args) {
+    return callback(this, ...args);
+  }
+
+  /**
    * Génère en jQuery
    * @returns {external:jQuery}
    */
@@ -915,6 +959,27 @@ class ____JsHtml {
    */
   generate_html({ joli_html = false }) {
     return this._generate({ joli_html });
+  }
+
+  /**
+   * Ajoute un JsHtml enfant
+   * @param {____JsHtml} jshtml JsHtml à ajouter
+   * @returns {____JsHtml}
+   */
+  add_child(jshtml) {
+    if (jshtml.balise === 'start') {
+      this.childs.push(
+        ...jshtml.childs.map((x) => {
+          x.parent = this;
+          return x;
+        }),
+      );
+    } else {
+      jshtml.parent = this;
+      this.childs.push(jshtml);
+    }
+
+    return this;
   }
 
   /**
@@ -1000,27 +1065,38 @@ class ____JsHtml {
       case 1:
         html = $(html);
 
+        // eslint-disable-next-line no-case-declarations
         let id;
+        // eslint-disable-next-line no-case-declarations
         let $item;
+        // eslint-disable-next-line no-case-declarations
+        let $node;
+        // eslint-disable-next-line no-case-declarations, quotes
         const $nodes = [html, ...html.find("[data-on-id!=''][data-on-id]")];
         for (const iterator of $nodes) {
           $item = $(iterator);
-          id = $item.attr('data-on-id');
 
-          if (id) {
-            for (const key in ____JsHtml.actions[id]) {
-              if (Object.hasOwnProperty.call(____JsHtml.actions[id], key)) {
-                const element = ____JsHtml.actions[id][key];
-                $item.on(
-                  key.replace('on', ''),
-                  element instanceof BnumEvent
-                    ? element.call.bind(element)
-                    : element,
-                );
+          for (const node of $item) {
+            $node = $(node);
+            id = $node.attr('data-on-id');
+
+            if (id) {
+              for (const key in ____JsHtml.actions[id]) {
+                if (Object.hasOwnProperty.call(____JsHtml.actions[id], key)) {
+                  const element = ____JsHtml.actions[id][key];
+                  $node.on(
+                    key.replace('on', ''),
+                    element instanceof BnumEvent
+                      ? element.call.bind(element)
+                      : element,
+                  );
+                }
               }
+              ____JsHtml.remove_id(id);
+              id = null;
             }
-            ____JsHtml.remove_id(id);
-            id = null;
+
+            $node = null;
           }
 
           $item = null;
@@ -1040,6 +1116,7 @@ class ____JsHtml {
    * @private
    */
   _get_balise() {
+    var current_class;
     const memory_tag =
       typeof this.balise === 'function' ? this.balise(this) : this.balise;
     let balise;
@@ -1072,7 +1149,7 @@ class ____JsHtml {
 
                 case 'class':
                   if (element instanceof Array) {
-                    var current_class = [];
+                    current_class = [];
 
                     for (const iterator of element) {
                       if (typeof iterator === 'function')
@@ -1088,8 +1165,9 @@ class ____JsHtml {
 
                 case 'style':
                   if (typeof element === 'object') {
-                    var current_class = [];
+                    current_class = [];
 
+                    // eslint-disable-next-line no-shadow
                     for (const key in element) {
                       if (Object.hasOwnProperty.call(element, key)) {
                         if (typeof element[key] === 'function')
@@ -1111,6 +1189,7 @@ class ____JsHtml {
                   break;
               }
             } else if (this._isOn(key)) {
+              // eslint-disable-next-line vars-on-top
               var id = id || ____JsHtml.generate_ids();
               balise.push(`data-on-id="${id}"`);
               ____JsHtml.add_action(id, key, this._getOn(key));

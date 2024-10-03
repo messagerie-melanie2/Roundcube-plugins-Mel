@@ -1,39 +1,82 @@
 <roundcube:include file="includes/layout.html" />
 
 <header role="banner">
-	<h1 class="voice"><roundcube:object name="productname" /> <roundcube:label name="login" /></h1>
-	<img class="mel-logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="" alt="Ministères Transition Ecologique, Cohésion des Territoires, Mer - Liberté, Egalité, Fraternité" />
+  <h1 class="voice">
+    <roundcube:object name="productname" /> <roundcube:label name="login" />
+  </h1>
+  <img
+    class="mel-logo"
+    src="plugins/mel_portal/skins/elastic/images/logoportal.svg"
+    data-src-small="0"
+    id=""
+    alt="Ministères Transition Ecologique, Cohésion des Territoires, Mer - Liberté, Egalité, Fraternité"
+  />
 </header>
 
 <main role="main">
-	<div id="mel-login-form">
-		<div class="login-title"><center>
-			<h1>
-				<roundcube:label name="mel.welcome" /><br>
-				<roundcube:label name="mel.on_your_dwp" />
-			</h1>
-      <h3><roundcube:label name="mel.baseline" /></h3>
-    </center>
-		</div>
-		<div class="card clear" id="login-alt-1" style="margin-bottom:5px;padding-bottom: 15px;padding-top:15px;display:none;">
-			<center>
-				<btn onclick="window.location.href=mel_metapage.Functions.url('login', '', {oidc:1})" class="btn btn-secondary mel-button no-button-margin">Se connecter avec cerbère <span class="plus icon-mel-arrow-right"></span></btn>
-			</center>
-		</div>
-		<div class="card clear" id="main-login-card">
-			<div class="card-body mel_correction">
-				<roundcube:form name="form" method="post">
-					<roundcube:object name="loginform" form="form" size="40" submit=true />
-					<roundcube:object name="message" id="message" />
-				</form>
-				<div class="footerbox"><roundcube:label name="mel.login_warning" /></div>
-			</div>
-		</div>
-	</div>
+  <div id="mel-login-form">
+    <div class="login-title">
+      <center>
+        <h1>
+          <roundcube:label name="mel.welcome" /><br />
+          <roundcube:label name="mel.on_your_dwp" />
+        </h1>
+        <h3><roundcube:label name="mel.baseline" /></h3>
+      </center>
+    </div>
+    <div
+      class="card clear"
+      id="login-alt-1"
+      style="
+        margin-bottom: 5px;
+        padding-bottom: 15px;
+        padding-top: 15px;
+        display: none;
+      "
+    >
+      <center>
+        <button class="btn btn-secondary mel-button no-button-margin">
+          Se connecter avec cerbère
+          <span class="plus icon-mel-arrow-right"></span>
+        </button>
+      </center>
+    </div>
+    <div class="card clear" id="main-login-card">
+      <div class="card-body mel_correction">
+        <roundcube:form name="form" method="post">
+          <roundcube:object
+            name="loginform"
+            form="form"
+            size="40"
+            submit="true"
+          />
+          <roundcube:object name="message" id="message" />
+        </roundcube:form>
+        <div class="footerbox">
+          <roundcube:label name="mel.login_warning" />
+          <br />
+          <roundcube:object name="login_doc_message" id="doc_message" />
+        </div>
+      </div>
+    </div>
+  </div>
 
-
-	<img class="login-logo-footer-right" name="logo" src="skins/mel_elastic/images/meuf.svg"  data-src-small="0" id="" alt="" />
-	<img class="login-logo-footer-left" name="logo" src="skins/mel_elastic/images/gars.svg"  data-src-small="0" id="" alt="" />
+  <img
+    class="login-logo-footer-right"
+    name="logo"
+    src="skins/mel_elastic/images/meuf.svg"
+    data-src-small="0"
+    id=""
+    alt=""
+  />
+  <img
+    class="login-logo-footer-left"
+    name="logo"
+    src="skins/mel_elastic/images/gars.svg"
+    data-src-small="0"
+    id=""
+    alt=""
+  />
 </main>
 <!-- <div id="loginfooter">
 	<span><roundcube:label name="mel.login_footer1" /></span>
@@ -41,7 +84,7 @@
 </div> -->
 
 <noscript>
-	<p class="noscriptwarning"><roundcube:label name="noscriptwarning" /></p>
+  <p class="noscriptwarning"><roundcube:label name="noscriptwarning" /></p>
 </noscript>
 <roundcube:include file="includes/footer.html" />
 
@@ -59,5 +102,3 @@
   /images/splitter.png
   /images/watermark.jpg
 " /> -->
-
-

@@ -1348,6 +1348,9 @@ class mel_sharedmailboxes extends rcube_plugin {
             $form['addressing']['content']['sended_folder']['class'] = 'disabled';
         } 
 
+        unset($record['organization']);
+        unset($form['addressing']['content']['organization']);
+
         $args['form'] = $form;
         $args['record'] = $record;
 

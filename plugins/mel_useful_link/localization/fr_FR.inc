@@ -13,6 +13,12 @@ $labels['delete_link_element'] = 'Supprimer l\'élément';
 $labels['confirm_delete_link_element'] = 'Voulez-vous supprimer ce lien ?';
 $labels['confirm_delete_link_folder'] = 'Voulez-vous supprimer ce dossier ?';
 
+$labels['app_store_title'] = 'Services Numériques Partagés';
+$labels['category_filter'] = 'Filtrer par catégorie :';
+
+$labels['not_found_link'] = 'Aucun lien trouvé.';
+$labels['change_icon'] = 'Changer l\'icône';
+
 $labels['update_new_folder'] = 'Modification d\'un dossier';
 $labels['folder_name'] = 'Nom du dossier';
 

@@ -3,16 +3,16 @@
 // Inclusion des fichiers
 require_once '../lib/utils.php';
 require_once __DIR__ . '/../config.inc.php';
+
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
-
 if ($config['DEV']) {
   $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
 } else {
-  $dir = __DIR__ . '../..';
+  $dir = __DIR__ . '/../..';
 }
 
 // Inclusion de l'ORM M2
@@ -43,8 +43,8 @@ if ($calendar->load()) {
 }
 
 header('Content-Type: application/json; charset=utf-8');
-header("Expires: ".gmdate("D, d M Y H:i:s")." GMT");
-header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: private, no-cache, no-store, must-revalidate, post-check=0, pre-check=0");
 header("Pragma: no-cache");
 

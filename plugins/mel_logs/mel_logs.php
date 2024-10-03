@@ -60,6 +60,7 @@ class mel_logs extends rcube_plugin
 		49 => 'Mauvais identifiant ou mot de passe',
 		491 => 'Accès internet non activé pour ce compte',
 		492 => 'Double authentification obligatoire',
+		493 => 'Utilisateur externe sans espace de travail',
 	];
 
 	/**

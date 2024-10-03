@@ -1,0 +1,244 @@
+﻿//compress:true
+textarea {
+    width: 270px;
+    height: 50px;
+    padding: 5px 10px;
+}
+
+.custom-select,
+select {
+    width: 270px;
+}
+
+.table {
+    td,th {
+    border: 0;
+    }
+}
+
+#signature_html {
+    width: 350px;
+    height: 100px;
+    padding: 2px;
+    margin-top: 20px;
+    display: none;
+}
+
+#settings-right {
+    padding: 40px;
+    overflow: auto;
+}
+
+#signature_template,
+#identities-content {
+    display: none;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.form {
+    input{
+        padding: 5px 10px;
+        min-width: 270px;
+        font-size: 1em;
+        &[type=checkbox] {
+            min-width: 15px;
+        }
+        &:disabled {
+            opacity: 0.7;
+        }
+    }
+}
+.userinfos {
+    label {
+        display: block !important;
+        margin: 0;
+        margin-top: 1em;
+    }
+}
+
+#input-links {
+    .items {
+        label {
+            display: inline-block !important;
+            padding: 0 0 0 2px; 
+        }
+    }
+}
+
+#identities-list {
+    .description {
+        display: block;
+        padding: 10px 0;
+        border-bottom: 1px solid #d0d0d0;
+        border-color: var(--top-border-color);
+    }
+    .list {
+        padding-top: 10px;
+        display: grid;
+        grid-template-columns: 20px auto;
+        grid-gap: 10px;
+        align-items: center;
+        max-height: 250px;
+        overflow-y: auto;
+    }    
+}
+
+.usersignature {
+    margin-right: 20px;
+    margin-bottom: 20px;
+    .action {
+        .message {
+            display: none;
+        }
+    }
+}
+
+.userinfos {
+    display: none;
+}
+
+.action-button {
+    border: 0;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: normal;
+    overflow: visible;
+    padding: 0;
+    -webkit-appearance: button;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    min-width: 150px;
+    height: 50px;
+    margin: auto;
+    margin-top: 20px;
+    background: #2a4d69;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 5px 10px;
+    white-space: normal;
+}
+
+.grid-form {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    .custom-logo,
+    .custom-link {
+        display: none;
+    }
+}
+  
+.form {
+    overflow: hidden;
+    padding: 15px 25px;
+    background-color: #2a4d69;
+    color: #fff;
+    margin-top: 20px;
+}
+
+.grid-form .custom-logo,
+.grid-form .custom-link {
+    display: none;
+}
+
+.left-form,
+.right-form {
+  padding: 0 10px;
+}
+
+.sign {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    margin-top: 20px;
+}
+
+.dropdown-check-list {
+    display: inline-block;
+    min-width: 292px;
+    .anchor {
+        position: relative;
+        cursor: pointer;
+        display: inline-block;
+        padding: 5px 50px 5px 10px;
+        border: solid 1px #d5d5d5;
+        background-color: #fff;
+        color: #000;
+        border-radius: 4px;
+        width: 270px;
+        &:after {
+            position: absolute;
+            content: "";
+            border-left: 1px solid black;
+            border-top: 1px solid black;
+            padding: 3px;
+            right: 10px;
+            top: 30%;
+            -moz-transform: rotate(-135deg);
+            -ms-transform: rotate(-135deg);
+            -o-transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
+            transform: rotate(-135deg);
+        }
+        &:active:after {
+            right: 8px;
+            top: 21%;
+        }
+    }
+    &.visible {
+        .anchor{
+            &:after {
+                border-left: none;
+                border-top: none;
+                border-right: 1px solid black;
+                border-bottom: 1px solid black;
+                top: 40%;
+            }
+        }
+    }
+    ul {
+        &.items {
+            padding: 2px;
+            display: none;
+            margin: 0;
+            border: solid 1px #d5d5d5;
+            background-color: #fff;
+            color: #000;
+            border-top: none;
+            max-height: 150px;
+            width: 270px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            li {
+                list-style: none;
+                padding: 2px 0;
+                width: 270px;
+                overflow: hidden;
+                white-space: nowrap; 
+            }  
+        }
+    }
+    &.visible {
+        .items {
+            display: block;
+        }
+    }
+}
+
+div{
+    &.notice-container {
+        margin-top: 20px;
+    }
+}
+
+.courrielleur {
+    .notice-container &,
+    .usersignature & {
+        display: none;
+    }
+}

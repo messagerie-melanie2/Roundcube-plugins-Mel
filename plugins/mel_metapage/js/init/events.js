@@ -190,8 +190,11 @@ if (rcmail && window.mel_metapage) {
             uid: uid,
           },
         };
+
         //FIX MANTIS 0007961
         $('.modal-save-footer').removeAttr('disabled').removeClass('disabled');
+        $('#globalModal .modal-close-footer').remove();
+        window.create_event = false;
         this.create_event_from_somewhere(event);
       };
       rcmail.register_command(
@@ -2261,6 +2264,7 @@ $(document).ready(() => {
         return;
       else if (
         !!Enumerable &&
+        !!$target.parent()[0] &&
         Enumerable.from($target.parent()[0].classList).any((x) =>
           x.includes('listitem'),
         )
@@ -2268,7 +2272,7 @@ $(document).ready(() => {
         return;
       else if ($target.parent().parent().parent().attr('id') === 'taskmenu')
         return;
-      else if ($target.attr('target') === '_blank') return;
+      //else if ($target.attr('target') === '_blank') return;
 
       //On ferme la modal
       $('#globalModal').modal('hide');
@@ -2539,9 +2543,14 @@ function sendMessageToAriane(data) {
   const chat_urls_origin = [
     'https://ariane.preprod.m2.e2.rie.gouv.fr',
     'https://ariane.din.developpement-durable.gouv.fr',
-    'https://mel.din.developpement-durable.gouv.fr/tchap',
-    'https://rcube.preprod.m2.e2.rie.gouv.fr/tchap',
+    'https://mel.din.developpement-durable.gouv.fr',
+    'https://rcube.preprod.m2.e2.rie.gouv.fr',
   ];
+
+  const pegaze_url =
+    rcmail.env.sondage_url ||
+    parent.rcmail.env.sondage_url ||
+    top.rcmail.env.sondage_url;
 
   const suggestionUrl = 'suggestionUrl'; //type/value
   const suggestionId = 'suggestionId';
@@ -2558,13 +2567,29 @@ function sendMessageToAriane(data) {
         mel_metapage.Frames.back();
       }
     } else if (chat_urls_origin.includes(event.origin)) {
+      //Evènement venant du chat
       const datas_accepted = 'isBNumEmbedded';
+      const datas_url_accepted = 'taskLink';
       if (event.data === datas_accepted) {
+        //Rocketchat
         sendMessageToAriane({
           bNumEmbedded: true,
           isDarkTheme: new Roundcube_Mel_Color().isDarkMode(),
         });
+      } else if (event.data[datas_url_accepted]) {
+        //Url au clique
+        let link = event.data[datas_url_accepted];
+
+        if (link.includes(pegaze_url))
+          link = mel_metapage.Functions.url('sondage', null, { _url: link });
+
+        $('<a>')
+          .attr('href', link)
+          .click((e) => rcmail.triggerEvent('event.click', { e }))
+          .click()
+          .remove();
       }
+
       if (event.data && event.data.webconfRoom) {
         window.webconf_helper.go(
           (key = event.data.webconfRoom),

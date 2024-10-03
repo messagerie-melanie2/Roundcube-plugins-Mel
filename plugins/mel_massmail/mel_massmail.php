@@ -173,7 +173,7 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
 - Sensibiliser l'utilisateur sur le choix et la sécurisation de son mot de passe
 - Inviter l'utilisateur à activer la double authentification*, dans le but d'une meilleure sécurisation de son compte
 
-* Le guide d'utilisation de la double authentification est disponible à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr/aide/doc/melweb/index.html#7-Double_authentification" . ($ldap_error ? "\r\n\r\nPour le PNE:\r\nUne erreur LDAP ($ldap_error) s'est produite, le mot de passe n'a pas pu être grillé automatiquement, merci de le faire au plus vite." : "");
+* Le guide d'utilisation de la double authentification est disponible à l'adresse suivante : https://fabrique-numerique.gitbook.io/bnum/tutoriels/apprendre-a/activer-lauthentification-a-deux-facteurs" . ($ldap_error ? "\r\n\r\nPour le PNE:\r\nUne erreur LDAP ($ldap_error) s'est produite, le mot de passe n'a pas pu être grillé automatiquement, merci de le faire au plus vite." : "");
 
             // Envoi du message d'information
             \LibMelanie\Mail\Mail::mail($mail_dest, $mail_subject, $mail_text, $headers, null, 'bnum');

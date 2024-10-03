@@ -10,14 +10,15 @@
         color: var(--layout-menu-text-color) !important;
       }
 
-      &:focus>span.inner {
+      &:focus > span.inner {
         background-color: var(--layout-menu-background-color);
         border: none;
-
       }
 
       &.selected {
-        background-color: var(--layout-menu-background-selected-color) !important;
+        background-color: var(
+          --layout-menu-background-selected-color
+        ) !important;
         color: var(--layout-menu-text-selected-color) !important;
       }
 
@@ -39,13 +40,16 @@ nav.otherapps {
   color: var(--layout-menu-text-color) !important;
 }
 
-#taskmenu a.selected:focus, #taskmenu a:focus, #taskmenu .action-buttons a:focus {
+#taskmenu a.selected:focus,
+#taskmenu a:focus,
+#taskmenu .action-buttons a:focus {
   box-shadow: none;
 }
 
-.menu a:not(.disabled):focus, .menu a:not(.disabled):hover,
+.menu a:not(.disabled):focus,
+.menu a:not(.disabled):hover,
 #layout-menu #taskmenu a:focus > span.inner {
-  background-color: var(--layout-menu-background-selected-color) !important;
+  background-color: var(--card-background-color) !important;
   color: var(--layout-menu-text-selected-color) !important;
 }
 #taskmenu a.selected,
@@ -57,20 +61,20 @@ nav.otherapps {
 #otherapps a.selected:hover,
 #otherapps .action-buttons a:hover,
 #otherapps a:hover span,
-#layout-menu:hover a:hover>span.inner,
-#layout-menu.force-open a.force-hover>span.inner,
-#layout-menu:hover a.selected>span.inner,
-#layout-menu.force-open a.selected>span.inner {
+#layout-menu:hover a:hover > span.inner,
+#layout-menu.force-open a.force-hover > span.inner,
+#layout-menu:hover a.selected > span.inner,
+#layout-menu.force-open a.selected > span.inner {
   background-color: var(--layout-menu-background-hover-color) !important;
 }
 
-html.touch #layout-menu a>span.inner,
-html.touch #layout-menu span>a>span.inner,
-#layout-menu:hover a>span.inner,
-#layout-menu:hover span>a>span.inner,
-#layout-menu.force-open a>span.inner,
-#layout-menu.force-open span>a>span.inner,
-#layout-menu a:focus>span.inner,
-#layout-menu span>a:focus>span.inner {
+html.touch #layout-menu a > span.inner,
+html.touch #layout-menu span > a > span.inner,
+#layout-menu:hover a > span.inner,
+#layout-menu:hover span > a > span.inner,
+#layout-menu.force-open a > span.inner,
+#layout-menu.force-open span > a > span.inner,
+#layout-menu a:focus > span.inner,
+#layout-menu span > a:focus > span.inner {
   border-top: var(--layout-menu-border-top);
 }

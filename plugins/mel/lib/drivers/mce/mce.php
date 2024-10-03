@@ -487,6 +487,17 @@ class mce_driver_mel extends driver_mel {
   }
 
   /**
+   * Méthode pour vérifier si groupe existe déjà 
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return boolean
+   */
+  public function if_group_exist($workspace_id) {
+    return false;
+  }
+
+  /**
    * Méthode de récupération d'un groupe associé à un workspace
    * 
    * @param string $workspace_id Identifiant du workspace
@@ -494,8 +505,85 @@ class mce_driver_mel extends driver_mel {
    * @return null|\LibMelanie\Api\Defaut\Group
    */
   public function get_workspace_group($workspace_id)
-  {
-    
+  { 
     return null;
+  }
+
+  /**
+   * Création d'un utilisateur externe s'il n'est pas trouvé dans l'annuaire 
+   * et que son domaine n'est pas un domaine interne
+   * 
+   * @param string $email Email de l'utilisateur externe
+   * @param \LibMelanie\Api\Defaut\Workspace $workspace Espace de travail
+   * 
+   * @return boolean true si l'utilisateur a été créé, false sinon
+   */
+  public function create_external_user($email, $workspace) {
+    return false;
+  }
+
+  /**
+   * Lister les ressources par uid ou email
+   * 
+   * @param string[] $uids Liste des uids des ressources
+   * @param string[] $emails Liste des emails des ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources
+   */
+  public function resources($uids = null, $emails = null) {
+    return [];
+  }
+
+  /**
+   * Lister les localités disponibles pour les ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 
+   */
+  public function resources_localities() {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Flex Office disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_flex_office($locality_uid) {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Salle disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_salle($locality_uid) {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Véhicule disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_vehicule($locality_uid) {
+    return [];
+  }
+
+  /**
+   * Lister les ressources Matériel disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_materiel($locality_uid) {
+    return [];
   }
 }

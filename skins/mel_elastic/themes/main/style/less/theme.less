@@ -11,8 +11,7 @@ body.action-dialog-ui {
   border-top-color: var(--separate);
 }
 
-.menu.pagenav.pagenav-list
-{
+.menu.pagenav.pagenav-list {
   border-bottom-color: transparent;
 }
 .task-workspace,
@@ -32,9 +31,9 @@ body.action-dialog-ui {
 #layout-list #layout-list-content,
 #layout-list #messagelist-header,
 #layout-list #messagelist-content,
-#layout-list>.scroller,
+#layout-list > .scroller,
 #layout #layout-content #calendar,
-#layout-content>.header,
+#layout-content > .header,
 #layout-content .iframe-wrapper,
 #layout-content #mel_suggestion_box_option_box {
   margin: var(--main-margin) !important;
@@ -55,13 +54,11 @@ body.action-dialog-ui {
 }
 
 #layout-menu {
-
   #taskmenu a.selected,
   #taskmenu a:hover {
     border-radius: var(--layout-menu-border-radius);
   }
 }
-
 
 .mel-button {
   background-color: var(--mel-button-background-color);
@@ -125,21 +122,20 @@ body.action-dialog-ui {
   }
 }
 
-ul.treelist li.selected>div>a,
-.scroller>.listing li a,
-.scroller>.listing li div {
+ul.treelist li.selected > div > a,
+.scroller > .listing li a,
+.scroller > .listing li div {
   color: var(--layout-sidebar-text-color);
 }
 
 #folderlistbox,
-#files-compose-dialog{
-  ul.treelist li.selected>div>a,
-.scroller>.listing li a,
-.scroller>.listing li div
-{
-  color: var(--main-text-color);
-}
-  li.selected div.treetoggle{
+#files-compose-dialog {
+  ul.treelist li.selected > div > a,
+  .scroller > .listing li a,
+  .scroller > .listing li div {
+    color: var(--main-text-color);
+  }
+  li.selected div.treetoggle {
     color: var(--secondary-text-color);
   }
 }
@@ -173,38 +169,37 @@ ul.treelist li.selected>div>a,
 }
 
 .mel-radio-1 {
-
   //Correction checkbox journée entiere pour création d'évèvenement
-  input[type="checkbox"]+label span::before {
+  input[type='checkbox'] + label span::before {
     top: 2px;
     left: 3px;
     height: 24px;
     width: 24px;
   }
 
-  input[type="checkbox"]:checked+label span::before {
-    content: "";
+  input[type='checkbox']:checked + label span::before {
+    content: '';
     top: 2px;
     right: 3px;
     left: unset;
   }
 
   span {
-    background-color: var(--custom-switch-unchecked-background-color) !important;
+    background-color: var(
+      --custom-switch-unchecked-background-color
+    ) !important;
     border: var(--custom-switch-border) !important;
   }
 
-  input[type="checkbox"]:checked+label span {
+  input[type='checkbox']:checked + label span {
     background-color: var(--custom-switch-checked-background-color) !important;
-
   }
 
-  input[type="checkbox"]+label span::before {
+  input[type='checkbox'] + label span::before {
     background-color: var(--custom-switch-unchecked-dot-color) !important;
     border-color: var(--custom-switch-unchecked-dot-color) !important;
   }
 }
-
 #eventedit .edit-alarm-value,
 #eventedit .edit-alarm-offset,
 #eventedit .edit-alarm-related {
@@ -214,7 +209,7 @@ ul.treelist li.selected>div>a,
 
   &:focus {
     background-color: var(--input-mel-focus-background-color) !important;
-    box-shadow: 0 0 0 .2rem var(--input-mel-focus-shadow-color) !important;
+    box-shadow: 0 0 0 0.2rem var(--input-mel-focus-shadow-color) !important;
     border-color: var(--input-mel-focus-border-color) !important;
   }
 }
@@ -223,23 +218,21 @@ ul.treelist li.selected>div>a,
   color: var(--input-mel-text-color);
 }
 
-.search>.input-group {
-  >.form-control {
+.search > .input-group {
+  > .form-control {
     background-color: var(--barup-search-input-background-color);
     border-color: var(--barup-search-input-border-color);
     color: var(--barup-search-input-text-color);
 
     &::placeholder {
       color: var(--default-placeholder-text-color);
-
     }
   }
 
-  >.input-group-append>.input-group-text {
+  > .input-group-append > .input-group-text {
     background-color: var(--barup-search-input-background-color);
     border-color: var(--barup-search-input-border-color);
     color: var(--barup-search-input-text-color);
-
   }
 }
 
@@ -266,7 +259,7 @@ ul.treelist li.selected>div>a,
   color: var(--popover-hover-icon-color);
 }
 
-.search>.input-group>.task-mail {
+.search > .input-group > .task-mail {
   #layout-sidebar {
     background-color: var(--layout-sidebar-background-color) !important;
   }
@@ -280,7 +273,7 @@ ul.treelist li.selected>div>a,
   button {
     color: var(--barup-icon-color) !important;
 
-    .barup-picture &{
+    .barup-picture & {
       --barup-icon-color: var(--barup-icon-color-picture);
     }
   }
@@ -326,7 +319,8 @@ ul.treelist li.selected>div>a,
 
     .dropdown-menu-scroll {
       scrollbar-width: var(--scrollbar-width-moz) !important;
-      scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
+      scrollbar-color: var(--scrollbar-handler-color)
+        var(--scrollbar-background-color);
     }
   }
 
@@ -338,12 +332,12 @@ ul.treelist li.selected>div>a,
 #folderlist-content {
   color: var(--layout-sidebar-text-color);
 
-  >a.button,
-  >.listing li a {
+  > a.button,
+  > .listing li a {
     color: var(--layout-sidebar-text-color);
   }
 
-  >a.button:hover {
+  > a.button:hover {
     background-color: var(--list-hover-background-color);
     border-radius: var(--secondary-border-radius);
   }
@@ -366,14 +360,16 @@ ul.treelist li.selected>div>a,
             border-left: solid thin var(--layout-sidebar-border-selected-color) !important;
           }
 
-          &:hover>a:first-of-type {
-            background-color: var(--layout-sidebar-background-hover-selected-color);
+          &:hover > a:first-of-type {
+            background-color: var(
+              --layout-sidebar-background-hover-selected-color
+            );
             color: var(--layout-sidebar-text-hover-selected-color);
             border-left: solid thin var(--layout-sidebar-border-selected-color);
 
             &:focus {
-              border-left: solid thin var(--layout-sidebar-border-selected-color) !important;
-
+              border-left: solid thin
+                var(--layout-sidebar-border-selected-color) !important;
             }
           }
 
@@ -382,7 +378,7 @@ ul.treelist li.selected>div>a,
           }
         }
 
-        &:hover>a:first-of-type {
+        &:hover > a:first-of-type {
           background-color: var(--layout-sidebar-background-hover-color);
           border-radius: var(--layout-sidebar-item-border-radius);
 
@@ -393,7 +389,7 @@ ul.treelist li.selected>div>a,
   }
 }
 
-.bs-popover-bottom>.arrow::after {
+.bs-popover-bottom > .arrow::after {
   border-bottom-color: var(--popover-icon-color);
 }
 
@@ -418,7 +414,7 @@ ul.treelist li.selected>div>a,
 #layout-list {
   background-color: var(--layout-list-background-color);
 
-  >.header {
+  > .header {
     background-color: var(--layout-list-header-background-color) !important;
 
     a.button,
@@ -432,7 +428,9 @@ ul.treelist li.selected>div>a,
     .menu a:not(.disabled):hover,
     a.toolbar-button.button.icon:not(.disabled):hover,
     .header a.toolbar-button:hover {
-      background-color: var(--layout-list-header-background-hover-color) !important;
+      background-color: var(
+        --layout-list-header-background-hover-color
+      ) !important;
       color: var(--layout-list-header-text-hover-color) !important;
     }
 
@@ -456,16 +454,15 @@ ul.treelist li.selected>div>a,
   }
 }
 
-
-
 #layout-content {
-  >.header {
-
+  > .header {
     .menu a:not(.disabled):focus,
     .menu a:not(.disabled):hover,
     a.toolbar-button.button.icon:not(.disabled):hover,
     .header a.toolbar-button:hover {
-      background-color: var(--layout-content-header-background-hover-color) !important;
+      background-color: var(
+        --layout-content-header-background-hover-color
+      ) !important;
       color: var(--layout-content-header-text-hover-color) !important;
     }
   }
@@ -490,13 +487,15 @@ ul.treelist li.selected>div>a,
     border: var(--secondary-mel-button-hover-border);
   }
   &:focus {
-    background-color: var(--secondary-mel-button-hover-background-color) !important;
+    background-color: var(
+      --secondary-mel-button-hover-background-color
+    ) !important;
     color: var(--secondary-mel-button-hover-text-color) !important;
     border: var(--secondary-mel-button-hover-border) !important;
   }
 }
 
-#search_row>.input-group>.form-control {
+#search_row > .input-group > .form-control {
   border-right: none;
   border-bottom-left-radius: 15px;
   border-top-left-radius: 15px;
@@ -505,7 +504,7 @@ ul.treelist li.selected>div>a,
   color: var(--barup-search-input-text-color);
 }
 
-#search_row>.input-group>.input-group-append>.input-group-text {
+#search_row > .input-group > .input-group-append > .input-group-text {
   border-bottom-right-radius: 15px;
   border-top-right-radius: 15px;
   background-color: var(--barup-search-input-background-color);
@@ -535,7 +534,6 @@ ul.treelist li.selected>div>a,
       &:hover {
         &:extend(#groupoptions-user .option_radio_wrapper .option:hover);
       }
-
     }
 
     .color-icon {
@@ -549,7 +547,9 @@ ul.treelist li.selected>div>a,
     border: var(--option-menu-button-border) !important;
 
     &:hover {
-      background-color: var(--option-menu-button-hover-background-color) !important;
+      background-color: var(
+        --option-menu-button-hover-background-color
+      ) !important;
     }
   }
 
@@ -571,7 +571,7 @@ ul.treelist li.selected>div>a,
     }
   }
 
-  .custom-control-input:checked~.custom-control-label {
+  .custom-control-input:checked ~ .custom-control-label {
     &::before {
       background-color: var(--alternate-custom-switch-checked-background-color);
       border: var(--custom-switch-border);
@@ -671,23 +671,23 @@ button.btn.mel-tab {
 }
 
 .mel-search-group {
-  >input {
+  > input {
     border: var(--searchbar-border);
   }
 
-  .input-group-append>.input-group-text {
+  .input-group-append > .input-group-text {
     border: var(--searchbar-border);
     background-color: var(--searchbar-background-color);
     color: var(--searchbar-text-color);
   }
 }
 
-
 p,
 span,
 div {
   scrollbar-width: var(--scrollbar-width-moz) !important;
-  scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color) !important;
+  scrollbar-color: var(--scrollbar-handler-color)
+    var(--scrollbar-background-color) !important;
 }
 
 .input-group-text {
@@ -726,10 +726,11 @@ optgroup {
   background-color: var(--primary-layout-sidebar-background-color) !important;
   color: var(--primary-layout-sidebar-text-color) !important;
 
-  .scroller>.listing li {
-
+  .scroller > .listing li {
     &.selected {
-      background-color: var(--primary-layout-sidebar-background-selected-color) !important;
+      background-color: var(
+        --primary-layout-sidebar-background-selected-color
+      ) !important;
     }
 
     a {
@@ -737,24 +738,40 @@ optgroup {
     }
   }
 
-  >.header {
+  > .header {
     &:extend(.task-tasks #layout-sidebar);
   }
 }
 
-#layout>div>.header {
+#layout > div > .header {
   background-color: var(--layout-content-header-background-color);
   color: var(--layout-content-text-color);
 }
 
 #listview-float-right #list-contacts .listsearchbox input,
-
-
 .custom-select:disabled {
   background-color: var(--input-mel-background-color);
   color: var(--input-mel-text-color);
   border-color: var(--input-mel-border-color);
-  opacity: .5;
+  opacity: 0.5;
+}
+
+.custom-select {
+  &#edit-calendar,
+  .compose-headers &,
+  #eventsimport &,
+  #eventsexport &,
+  .action-edit-folder &,
+  #tasksexport &,
+  #tasksimport &,
+  #listoptions-menu & {
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")
+      no-repeat right 0.75rem center / 8px 10px !important;
+    html.dark-mode-custom & {
+      background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%2396b9e7' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")
+        no-repeat right 0.75rem center / 8px 10px !important;
+    }
+  }
 }
 
 .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select,
@@ -775,6 +792,7 @@ textarea.input-mel,
 select.input-mel,
 input.input-mel,
 #wspf.form-control.input-mel,
+.multiselect.form-control.input-mel,
 .input-group-append > .input-group-text.mel-text {
   background-color: var(--input-mel-background-color);
   color: var(--input-mel-text-color);
@@ -782,7 +800,7 @@ input.input-mel,
 
   &:focus {
     background-color: var(--input-mel-focus-background-color);
-    box-shadow: 0 0 0 .2rem var(--input-mel-focus-shadow-color);
+    box-shadow: 0 0 0 0.2rem var(--input-mel-focus-shadow-color);
     border-color: var(--input-mel-focus-border-color);
   }
 
@@ -791,7 +809,7 @@ input.input-mel,
   }
 }
 
-.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select{
+.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select {
   background-color: var(--jitsii-input-mel-background-color);
   color: var(--jitsii-mel-button-text-color);
   border-color: var(--input-mel-border-color);
@@ -829,7 +847,7 @@ input.input-mel,
 .menu.toolbar li,
 #taskmenu a,
 #otherapps a,
-#layout-menu:hover a>span.inner {
+#layout-menu:hover a > span.inner {
   height: 60px !important;
 }
 
@@ -869,32 +887,32 @@ input.input-mel,
 }
 
 .button.icon.toolbar-button.refresh:focus,
-html:not(.touch) #messagelist-header .listing li>a:focus,
-html:not(.touch) #layout-content .header .listing li>a:focus {
+html:not(.touch) #messagelist-header .listing li > a:focus,
+html:not(.touch) #layout-content .header .listing li > a:focus {
   border-left: none !important;
 }
 
-.mel-radio-1.radio-small input[type="checkbox"] + label span::before {
-	height: 11px;
-	width: 11px;
+.mel-radio-1.radio-small input[type='checkbox'] + label span::before {
+  height: 11px;
+  width: 11px;
 }
 
-.mel-radio-1 input[type="checkbox"] + label span::before {
-	top: 1px;
-	left: 1px;
+.mel-radio-1 input[type='checkbox'] + label span::before {
+  top: 1px;
+  left: 1px;
 }
 
-.mel-radio-1 input[type="checkbox"]:checked + label span::before {
-	top: 1px;
-	right: 1px;
+.mel-radio-1 input[type='checkbox']:checked + label span::before {
+  top: 1px;
+  right: 1px;
 }
 
-.table{
-  color: var(--main-text-color)!important;
+.table {
+  color: var(--main-text-color) !important;
 }
 
-// html:not(.touch) .listing li > a:focus, 
-// html:not(.touch) .listing.focus tbody tr.focused > td:first-child, 
+// html:not(.touch) .listing li > a:focus,
+// html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
 // html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
 //   border-left-color: var(--button-background-color);
 // }
@@ -907,9 +925,10 @@ html body a.filename .attachment-name {
   color: var(--main-text-color);
 }
 
-#compose-contacts{
-  ul.treelist li.selected > div > a, .scroller > .listing li a, .scroller > .listing li div 
-  {
+#compose-contacts {
+  ul.treelist li.selected > div > a,
+  .scroller > .listing li a,
+  .scroller > .listing li div {
     --layout-sidebar-text-color: var(--main-text-color);
   }
 }
@@ -919,6 +938,6 @@ html body a.filename .attachment-name {
   border: 1px solid var(--input-mel-border-color);
 }
 
-.mel-attendee{
-  background-color:var(--card-background-color);
+.mel-attendee {
+  background-color: var(--card-background-color);
 }

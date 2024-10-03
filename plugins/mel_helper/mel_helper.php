@@ -359,6 +359,15 @@ class mel_helper extends rcube_plugin
     {
         include_once "lib/mel_mail.php";
     }
-    
 
+    public static function HtmlPartManager($html) {
+        include_once "lib/html_part_manager.php";
+        return new HtmlPartManager($html);
+    }
+
+    public static function Parse($template) {
+        include_once "lib/html_block.php";
+        return new HtmlBlock($template);
+    }
+    
 }

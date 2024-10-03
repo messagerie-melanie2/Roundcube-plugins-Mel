@@ -9,6 +9,7 @@ $labels['documents'] = 'Documents';
 $labels['rocketchat'] = 'Discussion';
 $labels['tasks'] = 'Tâches';
 $labels['params'] = 'Paramètres';
+$labels['tchap'] = 'Tchap';
 $labels['create_event'] = 'Créer un évènement';
 $labels['create_task'] = 'Créer une tâche';
 $labels["open_ariane"] = "Afficher la discussion instantanée de l'espace de travail";

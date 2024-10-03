@@ -99,7 +99,8 @@ body[data-themes="light-highcontrast,opendyslexic"] .app-menu-main .app-menu-ent
 #profile-visibility,
 #content.app-settings #app-content .development-notice,
 #content.app-settings #app-navigation > ul > li:nth-child(8),
-#content.app-settings #app-navigation > ul > li:nth-child(9) {
+#content.app-settings #app-navigation > ul > li:nth-child(9),
+#app-content-files div.newFileMenu a.menuitem[data-action="template-init"] {
 	display: none;
 }
 

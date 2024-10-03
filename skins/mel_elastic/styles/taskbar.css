@@ -702,6 +702,11 @@ li#menu-small-li
 #layout-menu.main-nav-cannot-deploy:hover a .inner {
     display: none!important;
 }
+.layout-phone #layout-menu.main-nav-cannot-deploy:hover a .button-inner,
+.layout-phone #layout-menu.main-nav-cannot-deploy:hover a .inner{
+    display: flex!important;
+}
+
 
 .tchap {
     order: 6;

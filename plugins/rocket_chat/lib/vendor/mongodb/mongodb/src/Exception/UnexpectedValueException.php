@@ -1,12 +1,12 @@
 <?php
 /*
- * Copyright 2015-2017 MongoDB, Inc.
+ * Copyright 2015-present MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,8 @@
 
 namespace MongoDB\Exception;
 
-class UnexpectedValueException extends \MongoDB\Driver\Exception\UnexpectedValueException implements Exception
+use MongoDB\Driver\Exception\UnexpectedValueException as DriverUnexpectedValueException;
+
+class UnexpectedValueException extends DriverUnexpectedValueException implements Exception
 {
 }

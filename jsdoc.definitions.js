@@ -1,8 +1,5 @@
 /**
  * @namespace Plugins
- * @property {Plugin.MelMetapage} MelMetapage
- * @property {Plugin.Tchap} Tchap
- * @property {Plugin.Workspace} Tchap
  */
 
 /**

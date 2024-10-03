@@ -12,3 +12,30 @@ $config['fb_filename'] = "fb_%uid.vfb";
 
 // Filename for the ics url, use %calendar for the calendar name
 $config['ics_filename'] = "calendar_%calendar.ics";
+
+// Durée de validité du hash pour les externes
+$config['external_key_validity'] = 86400;
+
+// Longueur minimale du mot de passe pour les externes
+$config['external_password_min_length'] = 10;
+
+// Longueur maximale du mot de passe pour les externes
+$config['external_password_max_length'] = 150;
+
+// Le mot de passe des externes doit contenir une majuscule
+$config['external_password_uppercase'] = true;
+
+// Le mot de passe des externes doit contenir une minuscule
+$config['external_password_lowercase'] = true;
+
+// Le mot de passe des externes doit contenir un chiffre
+$config['external_password_number'] = true;
+
+// Le mot de passe des externes doit contenir un caractère spécial
+$config['external_password_special_char'] = true;
+
+// Le mot de passe des externes peut contenir un caractère accentué
+$config['external_password_accented_char'] = false;
+
+// Le mot de passe des externes doit être différent de leur nom
+$config['external_password_ad_restrictions'] = true;

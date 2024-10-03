@@ -555,14 +555,13 @@ class mel_labels_sync extends rcube_plugin {
                 'size' => 30,
                 'disabled' => $disabled
         ));
-        $label_remove = new html_inputfield(array(
+        $label_remove = new html_mel_button(array(
                 'type' => 'button',
-                'value' => 'X',
-                'class' => 'button',
                 'onclick' => '$(this).parent().parent().remove()',
                 'title' => $this->gettext('remove_label'),
                 'disabled' => $disabled
-        ));
+        ), '<span style="vertical-align: middle;" class="material-symbols-outlined">delete</span>');
+
         $parent = html::div(["class" => "row"],
           html::div(["class" => "col-5"], $label_name->show($name)).
           html::div(["class" => "col-5"], $label_color->show($color)).
@@ -603,7 +602,7 @@ class mel_labels_sync extends rcube_plugin {
           if (name.length) {
             var input = $("<input>").addClass("form-control").attr("type", "text").attr("name", "_labels["+label+"]").attr("size", 30).val(name);
             var color = $("<input>").addClass("form-control").attr("type", "text").attr("readonly", true).attr("name", "_colors["+label+"]").attr("size", 6).addClass("colors").val("");
-            var button = $("<input>").addClass("btn btn-secondary").attr("type", "button").attr("value", "X").addClass("button").click(function(){ $(this).parent().parent().remove() });
+            var button = $("<button>").addClass("btn btn-secondary mel-button no-margin-button no-button-margin").attr("type", "button").addClass("material-symbols-outlined").html("delete").addClass("button").click(function(){ $(this).parent().parent().remove() });
             let tmp = $("<div>").addClass("row").append("<div class=col-5 id=col1></div>").append("<div class=col-5 id=col2></div>").append("<div class=col-2></div>");
             tmp.find("#col1").removeAttr("id").append(input);
             tmp.find("#col2").removeAttr("id").append(color);

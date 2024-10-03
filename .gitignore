@@ -13,6 +13,9 @@ yarn.lock
 .prettierc.json
 jsdoc-tutorials
 */jsdoc-tutorials/*
+**/.vscode/*
+**/launch.json
+*/launch.json
 
 aide/config.php
 aide/custom.css
@@ -22,5 +25,7 @@ aide/config_search.php
 plugins/mel_portail/modules/fluxrss/rss
 plugins/mel_portail/config
 plugins/mel_help/public/*
+plugins/mel_useful_link/config/*
 plugins/mel_news/files/*
 plugins/mel_nextcloud/nextcloud/apps/*.tar.gz
+.vscode/launch.json

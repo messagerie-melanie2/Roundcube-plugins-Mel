@@ -6,238 +6,267 @@ import { Top } from '../../top.js';
 import { MetapageModule } from '../metapage_module.js';
 
 export class MetapageMailDelayedModule extends MetapageModule {
-	constructor() {
-		super();
-	}
+  constructor() {
+    super();
+  }
 
-	/**
-	 * @protected
-	 * @async Actions principales
-	 */
-	async main() {
-		super.main();
+  /**
+   * @protected
+   * @async Actions principales
+   */
+  async main() {
+    super.main();
 
-		if (!MetapageMailDelayedModule.elements)
-			MetapageMailDelayedModule.elements = new MelEvent();
+    if (!MetapageMailDelayedModule.elements)
+      MetapageMailDelayedModule.elements = new MelEvent();
 
-		this._init();
+    /**
+     * @private
+     * @type {?boolean}
+     */
+    this._already = null;
+    this._init();
 
-		if (!MetapageMailDelayedModule.Instance)
-			MetapageMailDelayedModule.Instance = this;
-	}
+    if (!MetapageMailDelayedModule.Instance)
+      MetapageMailDelayedModule.Instance = this;
+  }
 
-	/**
-	 * Initialise la classe
-	 * @private
-	 * @returns Chaîne
-	 */
-	_init() {
-		if (rcmail.submit_messageform) {
-			const rcmail_submit_messageform = rcmail.submit_messageform;
-			rcmail.submit_messageform = function (...args) {
-				const [draft, saveonly] = args;
-				const delay = this.env['mail_delay'] ?? 0;
-				const have_delay = delay > 0;
+  /**
+   * Initialise la classe
+   * @private
+   * @returns Chaîne
+   */
+  _init() {
+    if (rcmail.submit_messageform) {
+      const rcmail_submit_messageform = rcmail.submit_messageform;
+      rcmail.submit_messageform = function (...args) {
+        const [draft, saveonly] = args;
+        if (this._already && !draft) return;
 
-				if (true !== draft && true === have_delay) {
-					const navigator = Top.top();
-					const current_window = window;
-					let self = this;
+        if (!draft) {
+          this._already = true;
+        }
 
-					let html = mel_cancellable_html_timer.Success(delay, {
-						cancel_icon: 'undo',
-						contents: new mel_html(
-							'span',
-							{},
-							`${this.gettext('delaytimer', 'mel_metapage')} <span class="time-number">${delay}</span>...`,
-						),
-					});
+        const delay = this.env['mail_delay'] ?? 0;
+        const have_delay = delay > 0;
 
-					html.attribs['data-uid'] =
-						MetapageMailDelayedModule.elements._generateKey();
+        if (draft !== true && have_delay === true) {
+          const navigator = Top.top();
+          const current_window = window;
+          let self = this;
 
-					html.ontimerfinished.push($element => {
-						try {
-							MetapageMailDelayedModule.Instance.enable_mail_window_actions().show_loader();
-						} catch (error) {
-							console.error(error);
-						}
-						rcmail_submit_messageform.call(self, ...args);
-						MetapageMailDelayedModule.elements.remove($element.data('uid'));
-					});
+          let html = mel_cancellable_html_timer.Success(delay, {
+            cancel_icon: 'undo',
+            contents: new mel_html(
+              'span',
+              {},
+              `${this.gettext('delaytimer', 'mel_metapage')} <span class="time-number">${delay}</span>...`,
+            ),
+          });
 
-					html.oncancel.push(e => {
-						e = $(e.currentTarget).parent();
-						e.break_timer();
+          html.attribs['data-uid'] =
+            MetapageMailDelayedModule.elements._generateKey();
 
-						if (current_window.popup_action) {
-							current_window.popup_action(($element, box) => {
-								box.minifier.click();
-								box.title
-									.find('h3')
-									.html(
-										box.title
-											.find('h3')
-											.html()
-											.replace('Envoi de : ', 'Rédaction : '),
-									);
-								box.close.removeClass('disabled').removeAttr('disabled');
-							});
-						}
+          html.ontimerfinished.push(($element) => {
+            try {
+              MetapageMailDelayedModule.Instance.enable_mail_window_actions().show_loader();
+            } catch (error) {
+              console.error(error);
+            }
+            rcmail_submit_messageform.call(self, ...args);
+            MetapageMailDelayedModule.elements.remove($element.data('uid'));
 
-						MetapageMailDelayedModule.elements.remove(e.data('uid'));
-						MetapageMailDelayedModule.Instance.enable_mail_window_actions();
-						rcmail.display_message(
-							'Envoi du message annulé avec succès !',
-							'confirmation',
-						);
-						$(window).resize();
-					});
+            if (rcmail.env.extwin === 1) {
+              const interval = setInterval(() => {
+                if ($('#messagestack .error').length) {
+                  $('#mail-send-loader').remove();
+                  $('#layout-content').show();
+                  $('#layout-sidebar').attr('style', EMPTY_STRING);
 
-					html.onstart.push(e => {
-						e = $(e.currentTarget).parent();
-						e.skip_timer();
-					});
+                  this._already = false;
+                  clearInterval(interval);
+                }
+              }, 10);
+            }
+          });
 
-					if (navigator.$('#messagestack').length <= 0) {
-						new mel_html('div', { id: 'messagestack' }).create(
-							navigator.$('body'),
-						);
-					}
+          html.oncancel.push((e) => {
+            e = $(e.currentTarget).parent();
+            e.break_timer();
 
-					let $gen = html.create(navigator.$('#messagestack'));
-					$gen.find('.mel-timer-cancel').attr('title', "Annuler l'envoi");
+            if (current_window.popup_action) {
+              current_window.popup_action(($element, box) => {
+                box.minifier.click();
+                box.title
+                  .find('h3')
+                  .html(
+                    box.title
+                      .find('h3')
+                      .html()
+                      .replace('Envoi de : ', 'Rédaction : '),
+                  );
+                box.close.removeClass('disabled').removeAttr('disabled');
+              });
+            }
 
-					MetapageMailDelayedModule.elements.add(html.attribs['data-uid'], {
-						$gen,
-						html,
-						rcmail,
-					});
+            MetapageMailDelayedModule.elements.remove(e.data('uid'));
+            MetapageMailDelayedModule.Instance.enable_mail_window_actions();
+            rcmail.display_message(
+              'Envoi du message annulé avec succès !',
+              'confirmation',
+            );
+            $(window).resize();
 
-					MetapageMailDelayedModule.Instance.disable_mail_window_actions();
+            this._already = false;
+          });
 
-					if (window.popup_action) {
-						window.popup_action(($element, box) => {
-							box.title
-								.find('h3')
-								.html(
-									box.title
-										.find('h3')
-										.html()
-										.replace('Rédaction : ', 'Envoi de : '),
-								);
-							box.close.addClass('disabled').attr('disabled', 'disabled');
-							box.minifier.click();
-						});
-					}
-				} else rcmail_submit_messageform.call(this, ...args);
-			};
-		}
+          html.onstart.push((e) => {
+            e = $(e.currentTarget).parent();
+            e.skip_timer();
+          });
 
-		if (!window.onbeforeunload) {
-			const window_onbeforeunload = window.onbeforeunload;
-			window.onbeforeunload = (...args) => {
-				const txt =
-					window_onbeforeunload?.call?.(window, ...args) ?? EMPTY_STRING;
+          if (navigator.$('#messagestack').length <= 0) {
+            new mel_html('div', { id: 'messagestack' }).create(
+              navigator.$('body'),
+            );
+          }
 
-				if (txt) return txt;
-				else return this.onBeforeUnload(...args);
-			};
-		} else window.onbeforeunload = this.onBeforeUnload;
+          let $gen = html.create(navigator.$('#messagestack'));
+          $gen.find('.mel-timer-cancel').attr('title', "Annuler l'envoi");
 
-		Mel_Promise.wait(() => {
-			return $('#list-toggle-button').length > 0;
-		}).always(value => {
-			let $toggle = $('#list-toggle-button');
-			if (value.resolved && $toggle.hasClass('disabled'))
-				$('#list-toggle-button')
-					.addClass('active')
-					.removeClass('disabled')
-					.removeAttr('disabled');
-		});
+          MetapageMailDelayedModule.elements.add(html.attribs['data-uid'], {
+            $gen,
+            html,
+            rcmail,
+          });
 
-		return this;
-	}
+          MetapageMailDelayedModule.Instance.disable_mail_window_actions();
 
-	onBeforeUnload(e) {
-		if (
-			!!MetapageMailDelayedModule.elements &&
-			MetapageMailDelayedModule.elements.haveEvents()
-		) {
-			const message = rcmail.gettext('quitdelayconfirmation', 'mel_metapage');
-			(e || window.event).returnValue = message;
-			return message;
-		}
-	}
+          if (window.popup_action) {
+            window.popup_action(($element, box) => {
+              box.title
+                .find('h3')
+                .html(
+                  box.title
+                    .find('h3')
+                    .html()
+                    .replace('Rédaction : ', 'Envoi de : '),
+                );
+              box.close.addClass('disabled').attr('disabled', 'disabled');
+              box.minifier.click();
+            });
+          }
+        } else {
+          rcmail_submit_messageform.call(this, ...args);
+          this._already = false;
+        }
+      };
+    }
 
-	_get_elements_form_states_can_be_changed() {
-		return [
-			$('#layout-sidebar input'),
-			$('#layout-sidebar button'),
-			$('#layout-sidebar select'),
-			$('#layout-content input'),
-			$('#layout-content select'),
-			$('#layout-content a'),
-			$('#layout-content button'),
-		];
-	}
+    if (!window.onbeforeunload) {
+      const window_onbeforeunload = window.onbeforeunload;
+      window.onbeforeunload = (...args) => {
+        const txt =
+          window_onbeforeunload?.call?.(window, ...args) ?? EMPTY_STRING;
 
-	show_loader() {
-		$('#layout-content').hide();
-		$('#layout-sidebar').attr('style', 'display: none !important;');
-		this.get_skin()
-			.create_loader('mail-send-loader', true, false)
-			.create($('#layout'));
-	}
+        if (txt) return txt;
+        else return this.onBeforeUnload(...args);
+      };
+    } else window.onbeforeunload = this.onBeforeUnload;
 
-	disable_mail_window_actions() {
-		// $('#layout-content').hide();
-		// $('#layout-sidebar').attr('style', 'display: none !important;');
-		// this.get_skin().create_loader('mail-send-loader', true, false).create($('#layout'));
-		const elements = this._get_elements_form_states_can_be_changed();
-		for (const iterator of elements) {
-			MelEnumerable.from(iterator)
-				.where(x => $(x).hasClass('disabled'))
-				.select(x => $(x).attr('data-original-state', 'disabled'))
-				.count();
-			iterator.attr('disabled', 'disabled').addClass('disabled');
-		}
+    Mel_Promise.wait(() => {
+      return $('#list-toggle-button').length > 0;
+    }).always((value) => {
+      let $toggle = $('#list-toggle-button');
+      if (value.resolved && $toggle.hasClass('disabled'))
+        $('#list-toggle-button')
+          .addClass('active')
+          .removeClass('disabled')
+          .removeAttr('disabled');
+    });
 
-		$('#compose_to ul').css({
-			'pointer-events': 'none',
-			'background-color': '#e9ecef',
-		});
+    return this;
+  }
 
-		return this;
-	}
+  onBeforeUnload(e) {
+    if (
+      !!MetapageMailDelayedModule.elements &&
+      MetapageMailDelayedModule.elements.haveEvents()
+    ) {
+      const message = rcmail.gettext('quitdelayconfirmation', 'mel_metapage');
+      (e || window.event).returnValue = message;
+      return message;
+    }
+  }
 
-	enable_mail_window_actions() {
-		// $('#layout-content').show();
-		// $('#layout-sidebar').removeAttr('style');
-		// $('#mail-send-loader').remove();
-		const elements = this._get_elements_form_states_can_be_changed();
-		for (const iterator of elements) {
-			iterator.removeAttr('disabled').removeClass('disabled');
-			MelEnumerable.from(iterator)
-				.where(x => $(x).attr('data-original-state') === 'disabled')
-				.select(x =>
-					$(x)
-						.removeAttr('data-original-state')
-						.attr('disabled', 'disabled')
-						.addClass('disabled'),
-				)
-				.count();
-		}
+  _get_elements_form_states_can_be_changed() {
+    return [
+      $('#layout-sidebar input'),
+      $('#layout-sidebar button'),
+      $('#layout-sidebar select'),
+      $('#layout-content input'),
+      $('#layout-content select'),
+      $('#layout-content a'),
+      $('#layout-content button'),
+    ];
+  }
 
-		$('#compose_to ul').css({
-			'pointer-events': '',
-			'background-color': '',
-		});
+  show_loader() {
+    $('#layout-content').hide();
+    $('#layout-sidebar').attr('style', 'display: none !important;');
+    this.get_skin()
+      .create_loader('mail-send-loader', true, false)
+      .create($('#layout'));
+  }
 
-		return this;
-	}
+  disable_mail_window_actions() {
+    // $('#layout-content').hide();
+    // $('#layout-sidebar').attr('style', 'display: none !important;');
+    // this.get_skin().create_loader('mail-send-loader', true, false).create($('#layout'));
+    const elements = this._get_elements_form_states_can_be_changed();
+    for (const iterator of elements) {
+      MelEnumerable.from(iterator)
+        .where((x) => $(x).hasClass('disabled'))
+        .select((x) => $(x).attr('data-original-state', 'disabled'))
+        .count();
+      iterator.attr('disabled', 'disabled').addClass('disabled');
+    }
 
-	static Start() {
-		return new MetapageMailDelayedModule();
-	}
+    $('#compose_to ul').css({
+      'pointer-events': 'none',
+      'background-color': '#e9ecef',
+    });
+
+    return this;
+  }
+
+  enable_mail_window_actions() {
+    // $('#layout-content').show();
+    // $('#layout-sidebar').removeAttr('style');
+    // $('#mail-send-loader').remove();
+    const elements = this._get_elements_form_states_can_be_changed();
+    for (const iterator of elements) {
+      iterator.removeAttr('disabled').removeClass('disabled');
+      MelEnumerable.from(iterator)
+        .where((x) => $(x).attr('data-original-state') === 'disabled')
+        .select((x) =>
+          $(x)
+            .removeAttr('data-original-state')
+            .attr('disabled', 'disabled')
+            .addClass('disabled'),
+        )
+        .count();
+    }
+
+    $('#compose_to ul').css({
+      'pointer-events': '',
+      'background-color': '',
+    });
+
+    return this;
+  }
+
+  static Start() {
+    return new MetapageMailDelayedModule();
+  }
 }

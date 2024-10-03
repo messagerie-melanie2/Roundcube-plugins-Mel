@@ -149,37 +149,53 @@ class mel_ldap_auth extends rcube_plugin {
           unset($_COOKIE['roundcube_login']);
           rcube_utils::setcookie('roundcube_login', null, -1);
         } else {
-          $hostname = driver_mel::gi()->getRoutage($_user_mce, 'authenticate');
-          if (isset($hostname)) {
-            if (driver_mel::gi()->isSsl($hostname)) {
-              $args['host'] = "ssl://" . $hostname;
-            }
-            else {
-              $args['host'] = $hostname;
-            }
-            // Gestion du keep login
-            if (isset($_POST['_keeplogin'])) {
-              // Création du cookie avec le login / cn
-              rcube_utils::setcookie('roundcube_login', $user . "###" . $_user_mce->fullname, self::$expire_cookie + time());
-              $_SESSION['_keeplogin'] = true;
-
-              // Suppression du cooke error login
-              unset($_COOKIE['roundcube_error_login']);
-              rcube_utils::setcookie('roundcube_error_login', null, -1);
-            } else if (!isset($_SESSION['auth_type'])) {
+          // Pas de connexion pour les externes sans espace
+          if ($_user_mce->is_external) {
+            $workspaces = $_user_mce->getSharedWorkspaces(null, null, 1);
+            if (count($workspaces) === 0) {
+              $args['error'] = 493;
+              $args['abort'] = true;
               // Suppression du cookie
               unset($_COOKIE['roundcube_login']);
               rcube_utils::setcookie('roundcube_login', null, -1);
-              $_SESSION['_keeplogin'] = false;
             }
-            // Toujours valider la connexion pour éviter les erreurs csrf sur l'auth
-            $args['valid'] = true;
-          } else {
-            $args['abort'] = true;
-            $args['error'] = 49;
-            // Suppression du cookie
-            unset($_COOKIE['roundcube_login']);
-            rcube_utils::setcookie('roundcube_login', null, -1);
+          }
+          if (!$args['abort']) {
+            $hostname = driver_mel::gi()->getRoutage($_user_mce, 'authenticate');
+            if (isset($hostname)) {
+              if (driver_mel::gi()->isSsl($hostname)) {
+                $args['host'] = "ssl://" . $hostname;
+              }
+              else {
+                $args['host'] = $hostname;
+              }
+              // Gestion du keep login
+              if (isset($_POST['_keeplogin'])) {
+                // Création du cookie avec le login / cn
+                rcube_utils::setcookie('roundcube_login', $user . "###" . $_user_mce->fullname, self::$expire_cookie + time());
+                $_SESSION['_keeplogin'] = true;
+  
+                // Suppression du cooke error login
+                unset($_COOKIE['roundcube_error_login']);
+                rcube_utils::setcookie('roundcube_error_login', null, -1);
+              } else if (!isset($_SESSION['auth_type'])) {
+                // Suppression du cookie
+                unset($_COOKIE['roundcube_login']);
+                rcube_utils::setcookie('roundcube_login', null, -1);
+                $_SESSION['_keeplogin'] = false;
+              }
+              // Toujours valider la connexion pour éviter les erreurs csrf sur l'auth
+              $args['valid'] = true;
+            } else if ($_user_mce->is_external) {
+              // Toujours valider la connexion pour éviter les erreurs csrf sur l'auth
+              $args['valid'] = true;
+            } else {
+              $args['abort'] = true;
+              $args['error'] = 49;
+              // Suppression du cookie
+              unset($_COOKIE['roundcube_login']);
+              rcube_utils::setcookie('roundcube_login', null, -1);
+            }
           }
         }
       } else {

@@ -51,6 +51,27 @@
 			</div>
 			<table class="propform">
 				<tr>
+					<td class="title"><label for="calendar-name"><roundcube:label name="mel_moncompte.name" /></label></td>
+					<roundcube:if condition="env:resource_name_editable == true" />
+						<td><input name="calendar-name" id="calendar-name" class="form-control" value="<roundcube:var name="env:resource_name" />" type="text" onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['name', '${this.value}']`)"></td>
+					<roundcube:else />
+					<td><input name="calendar-name" id="calendar-name" class="form-control" value="<roundcube:var name="env:resource_name" />" type="text" disabled="true"></td>
+					<roundcube:endif />
+				  </tr>
+				  <tr>
+					<td class="title"><label for="calendar-color"><roundcube:label name="mel_moncompte.color" /></label></td>
+						<td><input name="color" id="calendar-color" size="7" class="colors form-control minicolors-input" value="#<roundcube:var name="env:resource_color" />" type="color" onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['color', '${this.value}']`)"></td>
+				  </tr>
+				  <tr>
+					<roundcube:if condition="env:resource_showalarms == true" />
+						<td class="title"><label for="calendar-switch"><roundcube:label name="mel_moncompte.display_reminder" /></label></td>
+							<td><div class="custom-control custom-switch"><input name="showalarms" id="calendar-showalarms" value="1" type="checkbox" class="form-check-input custom-control-input" checked onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['showalarms', '${this.checked}']`)"><label for="calendar-showalarms" class="custom-control-label" title=""></label></div></td>
+					<roundcube:else />
+					<td class="title"><label for="calendar-switch"><roundcube:label name="mel_moncompte.display_reminder" /></label></td>
+							<td><div class="custom-control custom-switch"><input name="showalarms" id="calendar-showalarms" value="1" type="checkbox" class="form-check-input custom-control-input" onchange="rcmail.command('calendar_edit','<roundcube:var name="env:resource_id" />', `['showalarms', '${this.checked}']`)"><label for="calendar-showalarms" class="custom-control-label" title=""></label></div></td>
+					<roundcube:endif />
+				  </tr>
+				<tr>
 					<td class="title"><label for="rcmfd_default"><roundcube:label
 								name="mel_moncompte.use_as_default" /></label></td>
 					<roundcube:if condition="env:resource_default == true" />

@@ -1,6 +1,6 @@
 //compress:true
 
-table{
+table {
   &#mel_moncompte_options_list {
     #rcmrowrcmgestionabs {
       td {
@@ -72,7 +72,7 @@ table{
 
 #mel_moncompte_options_list {
   width: 100%;
-  table-layout: fixed; 
+  table-layout: fixed;
   tbody {
     td {
       width: 100%;
@@ -88,7 +88,7 @@ table{
     tr {
       &.disabled {
         td {
-          color: #87A3AA;
+          color: #87a3aa;
         }
       }
       &.filtermoveup {
@@ -113,19 +113,22 @@ table{
   padding: 20px 10px 10px 10px;
 }
 
-legend, label {
+legend,
+label {
   color: #666666;
   color: var(--labels-text-color);
 }
 
-#rules, #actions {
+#rules,
+#actions {
   margin-top: 5px;
   padding: 0;
   border-collapse: collapse;
 }
 
 div {
-  &.rulerow,&.actionrow {
+  &.rulerow,
+  &.actionrow {
     width: auto;
     padding: 2px;
     white-space: nowrap;
@@ -133,8 +136,8 @@ div {
     &:hover {
       padding: 2px;
       white-space: nowrap;
-      background-color: #D9ECF4;
-      border: 1px solid #BBD3DA;
+      background-color: #d9ecf4;
+      border: 1px solid #bbd3da;
       border-radius: 4px;
     }
     table {
@@ -191,9 +194,10 @@ input {
     }
   }
   &.error {
-    background-color: #FFFFC4;
+    background-color: #ffffc4;
   }
-  &.box,&.radio {
+  &.box,
+  &.radio {
     border: 0;
     margin-top: 0;
   }
@@ -201,7 +205,7 @@ input {
 
 textarea {
   &.error {
-    background-color: #FFFFC4;
+    background-color: #ffffc4;
   }
 }
 select {
@@ -249,7 +253,7 @@ span {
   background-color: #eee;
 }
 
-a{
+a {
   &.button {
     margin: 0;
     padding: 0;
@@ -274,7 +278,9 @@ a{
   }
 }
 #filter-form {
-  select, input, textarea {
+  select,
+  input,
+  textarea {
     font-size: 11px;
     padding: 1px;
   }
@@ -310,7 +316,7 @@ body {
 }
 
 #form_gest_abs {
-	padding:10px;
+  padding: 10px;
   div {
     margin-bottom: 10px;
     &.ui-tabs-panel {
@@ -342,7 +348,8 @@ body {
           }
         }
       }
-      &.hourstart, &.hourend {
+      &.hourstart,
+      &.hourend {
         > input {
           :disabled {
             opacity: 0.6;
@@ -360,54 +367,115 @@ body {
 
 #listes_saisir,
 #listes_purger {
-	margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 #rcmmoncomptebalplist {
-	margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .texte_explic {
-	padding: 10px 15px;
-	border: 1px solid #FFFFE0;
-	border-color: var(--settings-warn-border-color);
-	background-color: #FFFFE0;
-	background-color: var(--settings-warn-bg-color);
+  padding: 10px 15px;
+  border: 1px solid #ffffe0;
+  border-color: var(--settings-warn-border-color);
+  background-color: #ffffe0;
+  background-color: var(--settings-warn-bg-color);
 }
 
-#progress{
+#progress {
   height: 6px;
 }
 
-.tmdp-A{
+.tmdp-A {
   border: solid 1px var(--password-A);
   border-radius: 5px;
   padding: 5px;
   margin-top: 5px;
 }
-.tmdp-B{
+.tmdp-B {
   border: solid 1px var(--password-B);
   border-radius: 5px;
   padding: 5px;
   margin-top: 5px;
 }
-.tmdp-C{
+.tmdp-C {
   border: solid 1px var(--password-C);
   border-radius: 5px;
   padding: 5px;
   margin-top: 5px;
 }
-.tmdp-D{
+.tmdp-D {
   border: solid 1px var(--password-D);
   border-radius: 5px;
   padding: 5px;
   margin-top: 5px;
 }
-.tmdp-E{
+.tmdp-E {
   border: solid 1px var(--password-E);
   border-radius: 5px;
   padding: 5px;
   margin-top: 5px;
 }
 
+.password-area {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
 
+.password-field {
+  padding: 8px;
+  padding-right: 30px; /* Espace pour l'icône */
+}
+
+.toggle-password {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:focus {
+    outline: none;
+  }
+}
+
+#toggle_password_view {
+  &::before {
+    content: '\e8f4';
+    font-family: 'Material Symbols Outlined' !important;
+    font-variation-settings:
+      'wght' 500,
+      'opsz' 40;
+    font-weight: normal !important;
+    font-size: 20px;
+    height: 1em;
+    color: var(--main-text-color);
+  }
+  &.text-visible {
+    &::before {
+      content: '\e8f5';
+    }
+  }
+}
+
+.abs_date_picker {
+  position: relative;
+}
+.calendar_icon {
+  position: absolute;
+  top: 5%;
+  right: 2%;
+  pointer-events: none;
+  color: #c5d1d3;
+  &::before {
+    content: '\ebcc';
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 20px;
+  }
+}

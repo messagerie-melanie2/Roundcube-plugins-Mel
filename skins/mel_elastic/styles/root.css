@@ -203,7 +203,7 @@
   --layout-sidebar-text-color: var(--secondary-text-color);
   --layout-sidebar-header-text-color: var(--layout-sidebar-text-color);
   --layout-list-background-color: var(--tierciary-bckg-color);
-  --layout-list-header-background-color: red;
+  --layout-list-header-background-color: var(--layout-list-background-color);
   --layout-list-text-color: var(--secondary-text-color);
   --layout-list-header-text-color: var(--layout-list-text-color);
   --layout-content-background-color: var(--default-background);
@@ -244,23 +244,24 @@
   --calendar-list-item-switch-tick-stroke: 1px var(--calendar-list-item-switch-tick-stroke-color);
   --calendar-widget-header-background-color: var(--alternate-bckg-color-2);
   --calendar-widget-header-text-color: var(--secondary-text-color);
-  --mail-app-color: #00A95F;
+  --mail-app-color: #00a95f;
   --calendar-app-color: #009081;
   --stockage-app-color: #009099;
-  --addressbook-app-color: #465F9D;
-  --visio-app-color: #417DC4;
-  --parapheur-app-color: #A558A0;
-  --chat-app-color: #E18B76;
-  --workspace-app-color: #CE614A;
-  --sondage-app-color: #C8AA39;
-  --rizomo-app-color: #E4794A;
-  --wekan-app-color: #D1B781;
-  --useful_links-app-color: #BD987A;
-  --bureau-app-color: #A26859;
+  --addressbook-app-color: #465f9d;
+  --visio-app-color: #417dc4;
+  --parapheur-app-color: #a558a0;
+  --chat-app-color: #e18b76;
+  --workspace-app-color: #ce614a;
+  --sondage-app-color: #c8aa39;
+  --rizomo-app-color: #e4794a;
+  --wekan-app-color: #d1b781;
+  --useful_links-app-color: #bd987a;
+  --bureau-app-color: #a26859;
   --settings-app-color: #808080;
   --news-app-color: #466964;
-  --tasks-app-color: #FFC29E;
-  --notes-app-color: #DDB435;
+  --tasks-app-color: #ffc29e;
+  --notes-app-color: #ddb435;
+  --tchap-app-color: #000091;
 }
 @media screen and (min-width: 1578px) {
   :root {

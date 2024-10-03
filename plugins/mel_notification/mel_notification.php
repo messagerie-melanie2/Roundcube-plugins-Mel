@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__.'/lib/Notification.php';
+
 /**
  * Plugin Mél Notifications
  *
@@ -322,20 +324,22 @@ class mel_notification extends rcube_plugin
             }
             
             $this->rc->output->set_env('newmail_notifier_timeout', $this->rc->config->get('newmail_notifier_desktop_timeout'));
-            $this->rc->output->command('plugin.push_notification',
-                [
-                    'uid'       => \LibMelanie\Lib\UUID::v4(),
-                    'category'  => 'mail',
-                    'title'     => $this->gettext('New message'),
-                    'content'   => $content,
-                    'created'   => time(),
-                    'modified'  => time(),
-                    'mailbox'   => $mailbox,
-                    'isread'    => false,
-                    'local'     => true,
-                ]
-            );
-        }
+
+            $action = NotificationActionBase::Create(
+                /*text*/      'Ouvrir le mail', 
+                /*title*/     'Cliquez ici pour ouvrir pour aller voir !', 
+                /*href*/      "./?_task=mail&_mbox=$mbox", 
+                /*iscommand*/ false);
+
+            (new CommandNotification(
+                /*category*/ ENotificationType::Mail(), 
+                /*title*/    $this->gettext('New message'), 
+                /*content*/  $content, 
+                /*action*/   $action
+                )
+            )->add_extra('mailbox', $mailbox)->notify_local();
+            
+         }
         return $args;
     }
 
@@ -622,7 +626,10 @@ class mel_notification extends rcube_plugin
         $notification->title = $title;
         $notification->content = $content;
 
-        if ($action !== null) $notification->action = serialize($action);
+        if ($action !== null) {
+            if (isset($action->title)) $action = $action->get();
+            $notification->action = serialize($action);
+        }
 
         // Ajouter la notification au User
         return $user->addNotification($notification);

@@ -47,6 +47,10 @@ class mel_external_users extends rcube_plugin {
     if (driver_mel::gi()->getUser()->is_external) {
         // Ajout du css
         $this->include_stylesheet('externals.css');
+        
+        if (isset($this->rc->output)) {
+          $this->rc->output->set_env('im_external_user', true);
+        }
     }
   }
 
@@ -54,16 +58,20 @@ class mel_external_users extends rcube_plugin {
    * Les externes ne peuvent pas se connecter a toutes les tasks
    */
   public function startup($args) {
-    if ($this->rc->task == 'bnum') {
-        $task = rcube_utils::get_input_value('_initial_task', rcube_utils::INPUT_GPC);
-    }
-    else {
-        $task = $this->rc->task;
-    }
+    if (driver_mel::gi()->getUser($args['user'])->is_external) {
+      if ($this->rc->task == 'bnum') {
+          $task = rcube_utils::get_input_value('_initial_task', rcube_utils::INPUT_GPC);
+      }
+      else {
+          $task = $this->rc->task;
+      }
 
-    if (in_array($task, array('mail', 'calendar', 'bureau', 'addressbook'))) {
-        header('Location: ' . $this->rc->url(['task' => 'workspace']));
-        exit;
+      if (in_array($task, array('mail', 'calendar', 'bureau', 'addressbook')) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+          header('Location: ' . $this->rc->url(['task' => 'workspace']));
+          exit;
+      }
+
+      $this->add_hook('main-nav-bar', [$this, 'main_nav_manager']);
     }
     return $args;
   }
@@ -76,6 +84,14 @@ class mel_external_users extends rcube_plugin {
     if (driver_mel::gi()->getUser($args['user'])->is_external) {
         $args['return'] = true;
     }
+    return $args;
+  }
+
+  public function main_nav_manager($args) {
+    if (in_array($args['plugin'], array('rizomo', 'wekan'))) {
+      $args['need_button'] = false;
+    }
+
     return $args;
   }
 }

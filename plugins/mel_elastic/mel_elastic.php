@@ -74,7 +74,11 @@ class mel_elastic extends rcube_plugin
             );
             $this->rc->output->set_env('animation_enabled', $this->rc->config->get('mel_metapage_animation_state', null));     
         }
+
+
     }
+
+
 
     function load_css()
     {

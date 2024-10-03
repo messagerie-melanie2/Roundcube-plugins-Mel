@@ -477,8 +477,8 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   margin: 0;
 }
 .task-calendar ul.treelist.iconized li div.treetoggle {
-  top: 0px;
-  left: 0px;
+  top: 10px;
+  left: 10px;
 }
 .cal-space-old.task-calendar ul.treelist.iconized li div.treetoggle {
   top: 0px;

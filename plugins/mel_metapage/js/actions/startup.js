@@ -857,7 +857,9 @@ metapage_frames.addEvent(
       mm_frame +
       '" src="' +
       src +
-      '"></iframe>';
+      '" title= "page:' +
+      eClass +
+      '"></iframe> ';
     let html = frame;
 
     if (eClass === 'discussion') {

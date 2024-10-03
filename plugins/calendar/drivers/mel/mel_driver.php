@@ -617,17 +617,19 @@ class mel_driver extends calendar_driver {
           $color_calendars = $this->rc->config->get('color_calendars', array());
           $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
           $param_change = false;
-          if (! isset($color_calendars[$cal->id]) || $color_calendars[$cal->id] != $prop['color']) {
+          if (isset($prop['color']) && (! isset($color_calendars[$cal->id]) || $color_calendars[$cal->id] != $prop['color'])) {
             $color_calendars[$cal->id] = $prop['color'];
             $param_change = true;
           }
-          if (! isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 1) {
-            $alarm_calendars[$cal->id] = 1;
-            $param_change = true;
-          }
-          elseif (isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 0) {
-            unset($alarm_calendars[$cal->id]);
-            $param_change = true;
+          if (isset($prop['showalarms'])) {
+            if (!isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 1) {
+              $alarm_calendars[$cal->id] = 1;
+              $param_change = true;
+            }
+            elseif (isset($alarm_calendars[$cal->id]) && $prop['showalarms'] == 0) {
+              unset($alarm_calendars[$cal->id]);
+              $param_change = true;
+            }
           }
           if ($param_change) {
             $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'alarm_calendars' => $alarm_calendars));
@@ -1521,6 +1523,10 @@ class mel_driver extends calendar_driver {
           if (isset($event_attendee['delegated-from'])) {
             $attendee->delegated_from = $event_attendee['delegated-from'];
           }
+          // Gestion du type de participant
+          if (isset($event_attendee['cutype'])) {
+            $attendee->type = mel_mapping::rc_to_m2_attendee_cutype($event_attendee);
+          }
           if (isset($event_attendee['delegated-to'])) {
             $attendee->delegated_to = $event_attendee['delegated-to'];
           }
@@ -2384,7 +2390,7 @@ class mel_driver extends calendar_driver {
             $_event_attendee['name'] = $attendee->name;
             $_event_attendee['email'] = strtolower($attendee->email);
             // type
-            $_event_attendee['cutype'] = mel_mapping::m2_to_rc_attendee_type($attendee->type);
+            $_event_attendee = mel_mapping::m2_to_rc_attendee_cutype($_event_attendee, $attendee->type);
             // role
             $_event_attendee['role'] = mel_mapping::m2_to_rc_attendee_role($attendee->role);
             // status

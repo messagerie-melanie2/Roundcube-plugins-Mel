@@ -183,7 +183,7 @@ class mel_portal extends bnum_plugin
      */
     function load_action($current_page)
     {
-      $this->include_css();
+      $this->include_page_css();
       $this->include_js();
       $this->setup_env_js_vars();
       $this->load_modules($current_page);
@@ -240,7 +240,7 @@ class mel_portal extends bnum_plugin
     /**
      * Récupère le css utile pour ce plugin.
      */
-    function include_css()
+    function include_page_css()
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/'.$this->cssName);

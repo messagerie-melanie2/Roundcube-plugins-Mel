@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 #body {
-  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 12px 'Lucida Grande', Helvetica, Arial, sans-serif;
 }
 #mel_mobiles_list_listbox {
   position: absolute;
@@ -26,7 +26,7 @@
   text-overflow: ellipsis;
 }
 #mel_statistics_mobile_frame tbody tr.disabled td {
-  color: #87A3AA;
+  color: #87a3aa;
 }
 #mel_statistics_mobile_frame tbody tr.filtermoveup td {
   border-top: 2px dotted #555;
@@ -43,7 +43,7 @@
   margin-bottom: 5px;
 }
 #mobile_actions a {
-  color: #3B6EBF;
+  color: #3b6ebf;
   text-decoration: none;
 }
 #mobile_actions a:hover {
@@ -52,7 +52,7 @@
 .m2_stats_device_table {
   margin-top: 0px;
   width: 100%;
-  background-color: #FFF;
+  background-color: #fff;
   background-color: var(--table-body-bg-color);
   border: 1px solid #000;
   border-spacing: 0px;
@@ -61,12 +61,12 @@
   font-size: 12px;
 }
 .m2_stats_device_table thead td {
-  background-color: #005D76;
+  background-color: #005d76;
   margin-top: 0px;
   margin-bottom: 0px;
   text-align: center;
   font-weight: bold;
-  color: #FFF;
+  color: #fff;
   height: 20px;
 }
 .m2_stats_device_table td {
@@ -75,25 +75,29 @@
   overflow: visible;
   padding: 6px 12px;
   border-width: 0px 0px 1px;
-  border-bottom: 1px solid #CBCBCB;
+  border-bottom: 1px solid #cbcbcb;
   border-bottom-color: var(--table-body-border-color);
-  background-color: #FAFAFA;
+  background-color: #fafafa;
   background-color: var(--table-body-bg-color);
   text-align: center;
 }
 .m2_stats_device_table tbody td.mel_moncompte\.resync {
-  background-image: url("images/1411751212_refresh.png");
+  background-image: url('images/1411751212_refresh.png');
   background-repeat: no-repeat;
   background-position: center;
 }
-.m2_stats_device_table tbody td.mel_moncompte\.resync:HOVER {
+.m2_stats_device_table tbody td.mel_moncompte\.resync:hover {
   cursor: pointer;
 }
+html.dark-mode .m2_stats_device_table tbody td.mel_moncompte\.resync,
+html.dark-mode-custom .m2_stats_device_table tbody td.mel_moncompte\.resync {
+  background-image: url('images/1411751212_refresh_dark.png');
+}
 .m2_stats_device_table tbody td.mel_moncompte\.remove {
-  background-image: url("images/1411751862_error.png");
+  background-image: url('images/1411751862_error.png');
   background-repeat: no-repeat;
   background-position: center;
 }
-.m2_stats_device_table tbody td.mel_moncompte\.remove:HOVER {
+.m2_stats_device_table tbody td.mel_moncompte\.remove:hover {
   cursor: pointer;
 }

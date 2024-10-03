@@ -1,11 +1,12 @@
 /**
- * @namespace Plugin.MelMetapage
+ * @namespace MelMetapage
  * @property {MainObjects} MainObjects
  * @property {Utilities} Utilities
  * @property {Constants} Constants
  * @property {module:Exceptions} Exceptions
  * @property {module:MainNav} MainNav
  * @property {module:Modal} Modale
+ * @memberof Plugins
  */
 
 /**
@@ -35,6 +36,11 @@
 /**
  * [(!string | !Symbol | !Number)] Représente une clé
  * @typedef {!string | !Symbol | !Number} Key
+ */
+
+/**
+ * Template type
+ * @typedef {Object} Tt
  */
 
 /**

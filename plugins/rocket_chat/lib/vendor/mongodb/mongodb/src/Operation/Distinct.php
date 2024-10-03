@@ -1,12 +1,12 @@
 <?php
 /*
- * Copyright 2015-2017 MongoDB, Inc.
+ * Copyright 2015-present MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,31 +18,40 @@
 namespace MongoDB\Operation;
 
 use MongoDB\Driver\Command;
+use MongoDB\Driver\Exception\RuntimeException as DriverRuntimeException;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\Server;
-use MongoDB\Driver\Exception\RuntimeException as DriverRuntimeException;
+use MongoDB\Driver\Session;
 use MongoDB\Exception\InvalidArgumentException;
 use MongoDB\Exception\UnexpectedValueException;
 use MongoDB\Exception\UnsupportedException;
 
+use function current;
+use function is_array;
+use function is_integer;
+use function is_object;
+use function MongoDB\create_field_path_type_map;
+use function MongoDB\is_document;
+
 /**
  * Operation for the distinct command.
  *
- * @api
  * @see \MongoDB\Collection::distinct()
- * @see http://docs.mongodb.org/manual/reference/command/distinct/
+ * @see https://mongodb.com/docs/manual/reference/command/distinct/
  */
-class Distinct implements Executable
+class Distinct implements Executable, Explainable
 {
-    private static $wireVersionForCollation = 5;
-    private static $wireVersionForReadConcern = 4;
+    private string $databaseName;
 
-    private $databaseName;
-    private $collectionName;
-    private $fieldName;
+    private string $collectionName;
+
+    private string $fieldName;
+
+    /** @var array|object */
     private $filter;
-    private $options;
+
+    private array $options;
 
     /**
      * Constructs a distinct command.
@@ -51,18 +60,20 @@ class Distinct implements Executable
      *
      *  * collation (document): Collation specification.
      *
-     *    This is not supported for server versions < 3.4 and will result in an
-     *    exception at execution time if used.
+     *  * comment (mixed): BSON value to attach as a comment to this command.
+     *
+     *    This is not supported for servers versions < 4.4.
      *
      *  * maxTimeMS (integer): The maximum amount of time to allow the query to
      *    run.
      *
      *  * readConcern (MongoDB\Driver\ReadConcern): Read concern.
      *
-     *    This is not supported for server versions < 3.2 and will result in an
-     *    exception at execution time if used.
-     *
      *  * readPreference (MongoDB\Driver\ReadPreference): Read preference.
+     *
+     *  * session (MongoDB\Driver\Session): Client session.
+     *
+     *  * typeMap (array): Type map for BSON deserialization.
      *
      * @param string       $databaseName   Database name
      * @param string       $collectionName Collection name
@@ -71,14 +82,14 @@ class Distinct implements Executable
      * @param array        $options        Command options
      * @throws InvalidArgumentException for parameter/option parsing errors
      */
-    public function __construct($databaseName, $collectionName, $fieldName, $filter = [], array $options = [])
+    public function __construct(string $databaseName, string $collectionName, string $fieldName, $filter = [], array $options = [])
     {
-        if ( ! is_array($filter) && ! is_object($filter)) {
-            throw InvalidArgumentException::invalidType('$filter', $filter, 'array or object');
+        if (! is_document($filter)) {
+            throw InvalidArgumentException::expectedDocumentType('$filter', $filter);
         }
 
-        if (isset($options['collation']) && ! is_array($options['collation']) && ! is_object($options['collation'])) {
-            throw InvalidArgumentException::invalidType('"collation" option', $options['collation'], 'array or object');
+        if (isset($options['collation']) && ! is_document($options['collation'])) {
+            throw InvalidArgumentException::expectedDocumentType('"collation" option', $options['collation']);
         }
 
         if (isset($options['maxTimeMS']) && ! is_integer($options['maxTimeMS'])) {
@@ -86,16 +97,28 @@ class Distinct implements Executable
         }
 
         if (isset($options['readConcern']) && ! $options['readConcern'] instanceof ReadConcern) {
-            throw InvalidArgumentException::invalidType('"readConcern" option', $options['readConcern'], 'MongoDB\Driver\ReadConcern');
+            throw InvalidArgumentException::invalidType('"readConcern" option', $options['readConcern'], ReadConcern::class);
         }
 
         if (isset($options['readPreference']) && ! $options['readPreference'] instanceof ReadPreference) {
-            throw InvalidArgumentException::invalidType('"readPreference" option', $options['readPreference'], 'MongoDB\Driver\ReadPreference');
+            throw InvalidArgumentException::invalidType('"readPreference" option', $options['readPreference'], ReadPreference::class);
         }
 
-        $this->databaseName = (string) $databaseName;
-        $this->collectionName = (string) $collectionName;
-        $this->fieldName = (string) $fieldName;
+        if (isset($options['session']) && ! $options['session'] instanceof Session) {
+            throw InvalidArgumentException::invalidType('"session" option', $options['session'], Session::class);
+        }
+
+        if (isset($options['typeMap']) && ! is_array($options['typeMap'])) {
+            throw InvalidArgumentException::invalidType('"typeMap" option', $options['typeMap'], 'array');
+        }
+
+        if (isset($options['readConcern']) && $options['readConcern']->isDefault()) {
+            unset($options['readConcern']);
+        }
+
+        $this->databaseName = $databaseName;
+        $this->collectionName = $collectionName;
+        $this->fieldName = $fieldName;
         $this->filter = $filter;
         $this->options = $options;
     }
@@ -104,28 +127,27 @@ class Distinct implements Executable
      * Execute the operation.
      *
      * @see Executable::execute()
-     * @param Server $server
-     * @return mixed[]
+     * @return array
      * @throws UnexpectedValueException if the command response was malformed
-     * @throws UnsupportedException if collation or read concern is used and unsupported
+     * @throws UnsupportedException if read concern is used and unsupported
      * @throws DriverRuntimeException for other driver errors (e.g. connection errors)
      */
     public function execute(Server $server)
     {
-        if (isset($this->options['collation']) && ! \MongoDB\server_supports_feature($server, self::$wireVersionForCollation)) {
-            throw UnsupportedException::collationNotSupported();
+        $inTransaction = isset($this->options['session']) && $this->options['session']->isInTransaction();
+        if ($inTransaction && isset($this->options['readConcern'])) {
+            throw UnsupportedException::readConcernNotSupportedInTransaction();
         }
 
-        if (isset($this->options['readConcern']) && ! \MongoDB\server_supports_feature($server, self::$wireVersionForReadConcern)) {
-            throw UnsupportedException::readConcernNotSupported();
+        $cursor = $server->executeReadCommand($this->databaseName, new Command($this->createCommandDocument()), $this->createOptions());
+
+        if (isset($this->options['typeMap'])) {
+            $cursor->setTypeMap(create_field_path_type_map($this->options['typeMap'], 'values.$'));
         }
 
-        $readPreference = isset($this->options['readPreference']) ? $this->options['readPreference'] : null;
-
-        $cursor = $server->executeCommand($this->databaseName, $this->createCommand(), $readPreference);
         $result = current($cursor->toArray());
 
-        if ( ! isset($result->values) || ! is_array($result->values)) {
+        if (! is_object($result) || ! isset($result->values) || ! is_array($result->values)) {
             throw new UnexpectedValueException('distinct command did not return a "values" array');
         }
 
@@ -133,18 +155,34 @@ class Distinct implements Executable
     }
 
     /**
-     * Create the distinct command.
+     * Returns the command document for this operation.
      *
-     * @return Command
+     * @see Explainable::getCommandDocument()
+     * @return array
      */
-    private function createCommand()
+    public function getCommandDocument()
+    {
+        $cmd = $this->createCommandDocument();
+
+        // Read concern can change the query plan
+        if (isset($this->options['readConcern'])) {
+            $cmd['readConcern'] = $this->options['readConcern'];
+        }
+
+        return $cmd;
+    }
+
+    /**
+     * Create the distinct command document.
+     */
+    private function createCommandDocument(): array
     {
         $cmd = [
             'distinct' => $this->collectionName,
             'key' => $this->fieldName,
         ];
 
-        if ( ! empty($this->filter)) {
+        if ($this->filter !== []) {
             $cmd['query'] = (object) $this->filter;
         }
 
@@ -152,14 +190,36 @@ class Distinct implements Executable
             $cmd['collation'] = (object) $this->options['collation'];
         }
 
-        if (isset($this->options['maxTimeMS'])) {
-            $cmd['maxTimeMS'] = $this->options['maxTimeMS'];
+        foreach (['comment', 'maxTimeMS'] as $option) {
+            if (isset($this->options[$option])) {
+                $cmd[$option] = $this->options[$option];
+            }
         }
+
+        return $cmd;
+    }
+
+    /**
+     * Create options for executing the command.
+     *
+     * @see https://php.net/manual/en/mongodb-driver-server.executereadcommand.php
+     */
+    private function createOptions(): array
+    {
+        $options = [];
 
         if (isset($this->options['readConcern'])) {
-            $cmd['readConcern'] = \MongoDB\read_concern_as_document($this->options['readConcern']);
+            $options['readConcern'] = $this->options['readConcern'];
         }
 
-        return new Command($cmd);
+        if (isset($this->options['readPreference'])) {
+            $options['readPreference'] = $this->options['readPreference'];
+        }
+
+        if (isset($this->options['session'])) {
+            $options['session'] = $this->options['session'];
+        }
+
+        return $options;
     }
 }

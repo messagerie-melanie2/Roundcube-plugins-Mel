@@ -82,18 +82,30 @@ class rizomo extends rcube_plugin
           $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_rizomo') ? $need_button : 'otherappsbar';
         }
 
-        if ($need_button)
-        {
-            $this->add_button(array(
-                'command' => 'rizomo',
-                'class'	=> 'button-rizomo icon-rizomo rizomo',
-                'classsel' => 'button-rizomo button-selected icon-rizomo rizomo',
-                'innerclass' => 'button-inner inner',
-                'label'	=> 'rizomo.rizomo',
-                'title' => 'rizomo.rizomo_title',
-                'type'       => 'link'
-            ), $need_button);
-        }
+        $button_config = array(
+            'command' => 'rizomo',
+            'class'	=> 'button-rizomo icon-rizomo rizomo',
+            'classsel' => 'button-rizomo button-selected icon-rizomo rizomo',
+            'innerclass' => 'button-inner inner',
+            'label'	=> 'rizomo.rizomo',
+            'title' => 'rizomo.rizomo_title',
+            'type'       => 'link'
+        );
+
+        $params = $this->rc->plugins->exec_hook('main-nav-bar', [
+            'plugin' => 'rizomo',
+            'need_button' => $need_button,
+            'button' => $button_config
+        ]);
+
+        if (isset($params) && isset($params->need_button)) $need_button = $params->need_button;
+        if (isset($params) && isset($params->button)) $button_config = $params->button;
+
+        if ($need_button) $this->add_button($button_config, $need_button);
+        
+        unset($button_config);
+        unset($params);
+        unset($need_button);
         
         // Si tache = rizomo, on charge l'onglet
         if ($this->rc->task == 'rizomo') {

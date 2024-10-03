@@ -201,13 +201,6 @@ class mel_metapage extends bnum_plugin
             return;
         }
 
-        //$plugin = $rcmail->plugins->exec_hook('folder_update', ['record' => $folder]);
-
-
-
-
-
-
         $this->add_hook('logout_after', array($this, 'logout_after'));
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
@@ -517,6 +510,7 @@ class mel_metapage extends bnum_plugin
 
             if ($this->rc->task === "rotomecatest")
             {
+                $this->setup_module();
                 $this->register_action('index', array($this, 'debug_and_test'));
             }
 
@@ -524,6 +518,9 @@ class mel_metapage extends bnum_plugin
             {
                 $this->include_script('js/secondary-nav.js');
                 $this->register_action('index', array($this, 'bnum_page'));
+            }
+            else {
+                $this->set_plugin_env_exist();
             }
 
             //$this->rc->output->set_env('navigation_apps', $this->rc->config->get('navigation_apps', null));
@@ -606,6 +603,11 @@ class mel_metapage extends bnum_plugin
 
             $tmp_maint_text = $this->get_maintenance_text();
             if ($tmp_maint_text !== '') $this->rc->output->set_env("maintenance_text", $tmp_maint_text);
+
+            $this->rc->output->add_handlers(array(
+                'login_doc_message'    => [$this,'_login_doc_message'],
+            ));
+            
         }
         else if ($this->rc->action === "create_document_template")
         {
@@ -936,7 +938,7 @@ class mel_metapage extends bnum_plugin
 
         //listcontrols
         $this->include_depedencies();
-        $this->include_css();
+        $this->include_metapage_css();
         $this->include_js();
         $this->setup_env_js_vars();
     }
@@ -952,6 +954,8 @@ class mel_metapage extends bnum_plugin
      */
     function generate_html($args)
     {
+        if ($this->get_current_task() === 'logout' || $this->get_current_task() === 'login') return $args;
+
         if (strpos($args["content"],'<html lang="fr" class="iframe') !== false)
         {
             $args["content"] = $this->from_iframe($args["content"]);
@@ -1164,17 +1168,35 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->send("mel_metapage.contact");
     }
 
+    /**
+     * Vérification si les utilisateurs existent dans l'annuaire
+     * 
+     * @return json ["unexist", "externs", "added"]
+     */
     function check_users()
     {
         $users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
         $unexisting_users = [];
+        $externs_users = [];
         $added_users = [];
         foreach ($users as $key => $value) {
+            $value = trim($value, ',');
             $tmp = driver_mel::gi()->getUser(null, true, false, null, $value);
 
-            if ($tmp->uid === null && !$tmp->is_list)
-                $unexisting_users[] = $value;
-            else{
+            if ($tmp->uid === null && !$tmp->is_list) {
+                if (rcmail::get_instance()->config->get('enable_external_users', false)) {
+                    $externs_users[] = [
+                        "name"  => $this->gettext('external_user_name'),
+                        "uid"   => $value,
+                        "email" => $value,
+                        "title" => $this->gettext('external_user_title'),
+                    ];
+                }
+                else {
+                    $unexisting_users[] = $value;
+                }
+            }
+            else {
                 $added_users[] = [
                     "name" => $tmp->name,
                     "uid" => ($tmp->is_list ? $value : $tmp->uid),
@@ -1182,9 +1204,8 @@ class mel_metapage extends bnum_plugin
                 ];
             }
         }
-        echo json_encode(["unexist" => $unexisting_users, "added" => $added_users]);
+        echo json_encode(["unexist" => $unexisting_users, "externs" => $externs_users, "added" => $added_users]);
         exit;
-        //driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid
     }
 
     function ariane()
@@ -1219,7 +1240,7 @@ class mel_metapage extends bnum_plugin
     /**
      * Récupère le css utile pour ce plugin.
      */
-    function include_css()
+    function include_metapage_css()
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/barup.css');
@@ -3003,6 +3024,22 @@ class mel_metapage extends bnum_plugin
             $this->rc->output->set_env("bnum.init_action", $init_action);
         }
 
+        $this->set_plugin_env_exist();
+
+        $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
+
+        if (empty($_SESSION['user_id']))  
+        {
+            $this->rc->output->redirect([
+                '_task' => 'logout',
+                '_action' => '',
+            ]);
+        } 
+        else $this->rc->output->send('mel_metapage.empty');
+    }
+
+    private function set_plugin_env_exist() {
+        
         if (class_exists('mel_workspace')) {
             $this->rc->output->set_env("plugin_list_workspace", true);
         }
@@ -3039,9 +3076,6 @@ class mel_metapage extends bnum_plugin
         if (class_exists('mel_visio')) {
             $this->rc->output->set_env("plugin_list_visio", true);
         }
-
-        $this->rc->output->add_header('<link rel="manifest" href="manifest.json" />');
-        $this->rc->output->send('mel_metapage.empty');
     }
 
     public function visio_enabled() {
@@ -3640,4 +3674,10 @@ class mel_metapage extends bnum_plugin
         echo json_encode($prefs);
         exit;
     }
+
+    public function _login_doc_message() {
+        $url =  $this->rc->config->get('login_doc_url');
+        $txt = $this->gettext('login_da');
+        return html::div([], $txt.' '.html::a(['href'=>$url], $url).'.');
+    }  
 }

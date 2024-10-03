@@ -417,7 +417,9 @@ class PlanningManager extends MelObject {
     });
 
     for await (const iterator of FreeBusyLoader.Instance.generate_and_save(
-      rcmail.env.wsp_shares,
+      MelEnumerable.from(rcmail.env.wsp_shares).where(
+        (x) => !this.get_env('current_workspace_users')?.[x]?.is_external,
+      ),
       {
         interval: FreeBusyLoader.Instance.interval,
         start: moment(date).startOf('day'),
@@ -465,7 +467,16 @@ class PlanningManager extends MelObject {
       },
     );
 
-    this.rcmail().addEventListener('frame_opened', this._rerender.bind(this));
+    const is_top = true;
+    if (this.rcmail(is_top).add_event_listener_ex) {
+      this.rcmail(is_top).add_event_listener_ex(
+        'frame_opened',
+        'planning',
+        (args) => {
+          if (args.eClass === 'workspace') $(window).resize();
+        },
+      );
+    }
   }
 
   //           BINDS         //
@@ -489,7 +500,11 @@ class PlanningManager extends MelObject {
    * @package
    */
   _rerender_action() {
-    if (this.calendar) this.calendar.rerenderEvents();
+    if (this.calendar) {
+      // this.calendar.rerenderEvents();
+      // this.calendar.render();
+      $(window).resize();
+    }
   }
 
   /**

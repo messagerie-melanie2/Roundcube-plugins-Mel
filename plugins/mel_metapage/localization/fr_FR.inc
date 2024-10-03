@@ -399,6 +399,7 @@ $labels['open_external_link'] = 'Visiter le site';
 
 $labels['informations'] = 'Informations';
 $labels['double_authentication'] = 'Authentification';
+$labels['download_application'] = 'Télécharger l\'application';
 $labels['double_authentication_notification'] = 'Configurez l\'authentification à deux facteurs pour sécuriser votre accès au Bnum';
 $labels['introduction_text'] = 'À partir de %%date%%, un renforcement de la sécurité de votre compte deviendra obligatoire pour accéder au Bnum.';
 $labels['secondary_email_text'] = 'Pour pouvoir récupérer votre code au cas où vous perdez votre téléphone par exemple, veuillez entrer une adresse e-mail de récupération :';
@@ -407,7 +408,9 @@ $labels['verification_email_text'] = 'Saisissez le code de vérification reçu p
 $labels['verification_application_text'] = 'Rentrer le code de validation affiché sur l’application';
 $labels['application_text'] = 'Télécharger une application de l\'authentification à deux facteurs comme <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr&gl=US" target="_blank">Google Authenticator</a> ou <a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr&gl=US" target="_blank">FreeOTP Authenticator</a>.';
 $labels['scan_authentication_code'] = 'Vous pouvez maintenant scanner ce QR Code pour enregistrer le bnum dans votre application.';
+$labels['code_step_after'] = 'Après avoir installé l\'application, vous pourrez scanner le code de l\'étape suivante pour enregistrer le bnum dans votre application.';
 $labels['add_key'] = 'Ou ajouter cette clé dans votre application :';
+$labels['download_app'] = 'Télécharger l\'application';
 $labels['show_me'] = 'Configurer maintenant';
 $labels['later'] = 'Plus tard';
 $labels['close_double_auth'] = 'Fermer';
@@ -482,3 +485,8 @@ $labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vi
 $labels['found_audio_date'] = 'Réserver une audio-conférence';
 $labels['add'] = 'Ajouter';
 $labels['delete'] = 'Supprimer';
+
+$labels['external_user_name'] = "Utilisateur externe au Bnum";
+$labels['external_user_title'] = "Cet utilisateur n'a pas encore été créé dans le Bnum. À la création de l'espace, il recevra un courriel pour initialiser son compte.";
+
+$labels['login_da'] = "Si vous êtes sur internet et n'avez pas activé l'authentification à double facteur vous ne pouvez pas vous connecter.<br/>Vous devez passer par le VPN pour vous connecter et ainsi activer l'authentification à deux facteurs";

@@ -16,7 +16,13 @@ abstract class bnum_plugin extends rcube_plugin
 
         $args = "'$plugin', '$name', '$path', $save_in_memory";
         
-        $this->api->output->add_script("runModule($args)", 'docready');
+        if ($this->api->output !== null) {
+            try {
+                $this->api->output->add_script("runModule($args)", 'docready');
+            } catch (\Throwable $th) {
+                return null;
+            }
+        }
     }
 
     protected function load_js_page($name) {
@@ -34,6 +40,20 @@ abstract class bnum_plugin extends rcube_plugin
         ", 'docready');
 
         return $this;
+    }
+
+    protected function add_script($script, $where = 'head') {
+        if ($this->api->output !== null) {
+            try {
+                $this->api->output->add_script($script, $where);
+            } catch (\Throwable $th) {
+                return null;
+            }
+        }
+    }
+
+    protected function break_initial_fonctionality($key) {
+        $this->add_script("rcmail.addEventListener('$key', function break_fonctionality () {return {break:true}; });");
     }
 
     protected function setup_module() {
@@ -125,6 +145,18 @@ abstract class bnum_plugin extends rcube_plugin
         $this->rc()->output->add_handlers(array(
             $name    => $callback,
         ));
+    }
+
+    protected function is_bnum_task() {
+        return $this->get_current_task() === 'bnum';
+    }
+
+    protected function get_user($uid = null) {
+        return driver_mel::gi()->getUser($uid);
+    }
+
+    protected function get_user_from_email($email) {
+        return  driver_mel::gi()->getUser(null, true, false, null, $email);
     }
 
 }

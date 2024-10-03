@@ -87,6 +87,30 @@ class mtes_driver_mel extends mce_driver_mel
   ];
 
   /**
+   * Liste des valeurs pour un utilisateur externe
+   */
+  const EXTERNAL_USER = [
+    'dn'                => 'uid=%%uid%%,ou=Utilisateurs,ou=BNUM,ou=applications,ou=ressources,dc=equipement,dc=gouv,dc=fr',
+    'fullname'          => '%%lastname%% %%firstname%% - BNUM/Externes',
+    'service'           => 'BNUM/Externes',
+    'name'              => '%%lastname%% %%firstname%%',
+    'lastname'          => '%%lastname%%',
+    'firstname'         => '%%firstname%%',
+    'uid'               => '%%uid%%',
+  ];
+
+  /**
+   * Liste des domaines internes pour ne pas créer d'utilisateur externe
+   */
+  const INTERNAL_DOMAINS = [
+    'developpement-durable.gouv.fr',
+    'i-carre.net',
+    'equipement.gouv.fr',
+    'agriculture.gouv.fr',
+    'educagri.fr',
+  ];
+
+  /**
    * Domaine par défaut à utiliser dans les groupes
    * 
    */
@@ -533,6 +557,24 @@ class mtes_driver_mel extends mce_driver_mel
   }
 
   /**
+   * Méthode pour vérifier si groupe existe déjà 
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return boolean
+   */
+  public function if_group_exist($workspace_id)
+  {
+    $group = $this->group([null, 'webmail.workspace']);
+
+    // On test si le groupe existe déjà
+    $group->dn = str_replace(['%%workspace%%'], [$workspace_id], self::WS_GROUP['dn']);
+
+    return $group->load();
+  }
+
+
+  /**
    * Méthode de récupération d'un groupe associé à un workspace
    * 
    * @param string $workspace_id Identifiant du workspace
@@ -554,6 +596,326 @@ class mtes_driver_mel extends mce_driver_mel
       return $group;
     } else {
       return null;
+    }
+  }
+
+  /**
+   * Création d'un utilisateur externe s'il n'est pas trouvé dans l'annuaire 
+   * et que son domaine n'est pas un domaine interne
+   * 
+   * @param string $email Email de l'utilisateur externe
+   * @param \LibMelanie\Api\Defaut\Workspace $workspace Espace de travail
+   * 
+   * @return boolean true si l'utilisateur a été créé, false sinon
+   */
+  public function create_external_user($email, $workspace) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::create_external_user($email)");
+
+    if (!$this->valid_external_domain($email)) {
+      // Si le domaine est interne on ne fait rien
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Domaine interne");
+      return false;
+    }
+
+    $user = $this->user([null, 'webmail.external.users']);
+
+    $user->email = $email;
+    $user->email_list = [$email];
+
+    if ($user->load()) {
+      // Si l'utilisateur existe on ne fait rien
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Utilisateur déjà existant");
+      return false;
+    }
+    else {
+      // Calcul des nom/prénom à partir de l'adresse email (à confirmer plus tard)
+      list($firstname, $lastname) = array_values($this->get_names_from_email($email));
+
+      // Calcul de l'uid à partir de l'adresse email
+      $uid = $this->get_uid_from_email($email);
+
+      // Ajout des attributs
+      foreach (self::EXTERNAL_USER as $key => $value) {
+        $user->$key = str_replace(
+          ['%%firstname%%', '%%lastname%%', '%%email%%', '%%uid%%'], 
+          [$firstname, $lastname, $email, $uid], $value);
+      }
+
+      // UUIDv4
+      $user->uuid = $this->uuidv4();
+
+      $ret = $user->save();
+
+      if (!is_null($ret)) {
+        // L'utilisateur externe a bien été créé
+        // Générer une clé unique pour l'utilisateur
+        $key = $this->getRandomKey();
+        if ($user->saveDefaultPreference('external_key', $key) && $user->saveDefaultPreference('external_key_validity', time())) {
+          // La clé a bien été enregistrée
+          mel_logs::get_instance()->log(mel_logs::INFO, "[driver_mel] mtes::create_external_user($email) : Utilisateur externe créé avec succès");
+
+          // TODO: Envoyer un mail de bienvenue à l'utilisateur
+          mel_helper::include_mail_body();
+
+          $hash = [
+            'email' => $email,
+            'key'   => $key,
+          ];
+
+          $rcmail = rcmail::get_instance();
+
+          $bodymail = new MailBody('mel.email_external_welcome', [
+            'user.url'              => $this->url('public/welcome/?_h=' . base64_encode(serialize($hash))),
+            'user.name'             => driver_mel::gi()->getUser()->name,
+            'user.email'            => driver_mel::gi()->getUser()->email,
+            'wsp.url'               => $rcmail->url(['task' => 'workspace', 'action' => 'workspace', '_uid' => $workspace->uid], true, true),
+            'wsp.name'              => $workspace->title,
+            'wsp.creator'           => driver_mel::gi()->getUser($workspace->creator)->name,
+            'wsp.last_action.text'  => $workspace->created === $workspace->modified ? 'Crée le' : 'Mise à jour',
+            'wsp.last_action.date'  => DateTime::createFromFormat('Y-m-d H:i:s', $workspace->modified)->format('d/m/Y'),
+            'bnum.base_url'         => 'http://mtes.fr/2',
+            'documentation.url'     => 'https://fabrique-numerique.gitbook.io/bnum/ressources/guide-des-fonctionnalites/espaces-de-travail',
+            'logobnum'              => MailBody::load_image(__DIR__ . '/../../../../mel_workspace/skins/elastic/pictures/logobnum.png', 'png'),
+          ]);
+
+          return \LibMelanie\Mail\Mail::Send('bnum', $email, $bodymail->subject(), $bodymail->body());
+        }
+        else {
+          // Erreur lors de l'enregistrement de la clé
+          mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Erreur lors de l'enregistrement de la clé");
+          $user->delete();
+          return false;
+        }
+      }
+      return !is_null($ret);
+    }
+  }
+
+  /**
+   * Récupérer l'url complète à partir de l'url relative
+   * 
+   * @param string $url Url relative
+   * @param boolean $absolute Est-ce que l'url doit être absolue
+   * 
+   * @return string Url complète
+   */
+  protected function url($url, $absolute = true) {
+    $base_path = '';
+    if (!empty($_SERVER['REDIRECT_SCRIPT_URL'])) {
+        $base_path = $_SERVER['REDIRECT_SCRIPT_URL'];
+    }
+    else if (!empty($_SERVER['SCRIPT_NAME'])) {
+        $base_path = $_SERVER['SCRIPT_NAME'];
+    }
+    $base_path = preg_replace('![^/]+$!', '', $base_path);
+
+    // add base path to this Roundcube installation
+    $prefix = $base_path ?: '/';
+
+    // prepend protocol://hostname:port
+    if ($absolute) {
+      $prefix = rcube_utils::resolve_url($prefix);
+    }
+
+    return $prefix . $url;
+  }
+
+  /**
+   * Générer un UUID v4
+   * 
+   * @return string UUID généré
+   */
+  protected function uuidv4() {
+    $data = random_bytes(16);
+  
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+      
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+  }
+
+  /**
+   * Générer une clé unique pour un utilisateur externe
+   * 
+   * @return string Clé générée
+   */
+  protected function getRandomKey() {
+    return bin2hex(random_bytes(32));
+  }
+
+  /**
+   * Valider si le domaine de l'email est externe
+   * 
+   * @param string $email Email à valider
+   * 
+   * @return boolean true si le domaine est externe, false sinon
+   */
+  protected function valid_external_domain($email) {
+    foreach (self::INTERNAL_DOMAINS as $domain) {
+      if (strpos($email, "@$domain") !== false) {
+        // C'est un domaine interne
+        return false;
+      }
+    }
+    // C'est un domaine externe
+    return true;
+  }
+
+  /**
+   * Récupérer les noms à partir de l'email
+   * 
+   * @param string $email Email à traiter
+   * 
+   * @return array Tableau associatif avec les clés 'firstname' et 'lastname'
+   */
+  protected function get_names_from_email($email) {
+    $names = explode('@', strtolower($email), 2);
+    if (strpos($names[0], '.') === false) {
+      $lastname = strtoupper($names[0]);
+      $fistname = ' ';
+    }
+    else {
+      $names = explode('.', $names[0]);
+      $lastname = strtoupper($names[1]);
+      $fistname = ucfirst($names[0]);
+    }
+    
+    return [
+      'firstname' => $fistname,
+      'lastname'  => $lastname,
+    ];
+  }
+
+  /**
+   * Générer un uid à partir de l'email
+   * 
+   * @param string $email Email à traiter
+   * 
+   * @return string uid généré
+   */
+  protected function get_uid_from_email($email) {
+    $uid = preg_replace("/[^a-z0-9\.-]/", '.', strtolower($email));
+
+    if (strlen($uid) > 34) {
+      $uid = substr($uid, 0, 34);
+    }
+
+    return $uid . ".ext";
+  }
+
+  /**
+   * Lister les localités disponibles pour les ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resources\Locality[] Liste des localités 
+   */
+  public function resources_localities() {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_localities()");
+
+    return (new LibMelanie\Api\Mel\Resources\Locality())->listAllLocalities();
+  }
+
+  /**
+   * Lister les ressources par uid ou email
+   * 
+   * @param string[] $uids Liste des uids des ressources
+   * @param string[] $emails Liste des emails des ressources
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources
+   */
+  public function resources($uids = null, $emails = null) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources()");
+
+    return (new LibMelanie\Api\Mel\Resources\Locality())->listResources(null, $uids, $emails);
+  }
+
+  /**
+   * Lister les ressources Flex Office disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_flex_office($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_flex_office($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_FLEX_OFFICE);
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Lister les ressources Salle disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_salle($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_salle($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_SALLE);
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Lister les ressources Véhicule disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_vehicule($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_vehicule($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_VEHICULE);
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Lister les ressources Matériel disponibles pour une localité
+   * 
+   * @param string $locality_uid Identifiant de la localité
+   * 
+   * @return LibMelanie\Api\Defaut\Resource[] Liste des ressources Flex Office
+   */
+  public function resources_materiel($locality_uid) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::resources_materiel($locality_uid)");
+
+    $locality = new LibMelanie\Api\Mel\Resources\Locality();
+    $locality->uid = $locality_uid;
+
+    if ($locality->load()) {
+      return $locality->listResources(LibMelanie\Api\Mel\Resource::TYPE_MATERIEL);
+    }
+    else {
+      return [];
     }
   }
 }

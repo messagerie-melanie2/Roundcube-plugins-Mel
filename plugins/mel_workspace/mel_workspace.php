@@ -87,6 +87,25 @@ class mel_workspace extends bnum_plugin
 
         $this->rc()->output->send('mel_workspace.index');
     }
+
+    public function action_workspace() {
+        include_once __DIR__.'/lib/NavBar.php';
+        $uid = $this->get_input('uid');
+
+        $navbar = new NavBar($uid);
+        $navbar->add_css($this->local_skin_path().'/navbar.css');
+        // $navbar->add_module('js/lib/navbar.js');
+
+        $this->rc()->output->set_env('navbar', $navbar->get());
+
+        $this->add_handler('navbar', function() use ($navbar) {
+            return $navbar->get();
+        });
+
+        self::IncludeNavBarComponent();
+
+        $this->rc()->output->send('mel_workspace.navbar');
+    }
     #endregion
 
     #region actions
@@ -369,6 +388,7 @@ class mel_workspace extends bnum_plugin
         private function _setup_external_actions() {
             $this->register_actions(
                 [
+                    'navbar' => [$this, 'action_workspace'],
                     'check_uid' => [$this, 'check_uid'],
                     'create' => [$this, 'create'],
                     'search' => [$this, 'workspaces_search'],
@@ -505,6 +525,10 @@ class mel_workspace extends bnum_plugin
 
     public static function IncludeWorkspaceBlockComponent() {
         WebComponnents::Instance()->____METHODS____('_include_component', 'workspace_block_item.js', '/js/lib/WebComponents', 'mel_workspace');
+    }
+
+    public static function IncludeNavBarComponent() {
+        WebComponnents::Instance()->____METHODS____('_include_component', 'navbar.js', '/js/lib/WebComponents', 'mel_workspace');
     }
 
     public static function IncludeWorkspacesBlocks($workspaces, $callback = null) {

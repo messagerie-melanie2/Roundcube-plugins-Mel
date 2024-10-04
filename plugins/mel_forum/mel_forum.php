@@ -1323,6 +1323,91 @@ public function like_comment()
 
 
 
+// public function get_all_comments_bypost()
+// {
+//     // Récupérer l'uid de l'article
+//     $uid = rcube_utils::get_input_value('_post_uid', rcube_utils::INPUT_GPC);
+
+//     // Récupérer le paramètre de tri des commentaires
+//     $sort_order = rcube_utils::get_input_value('_sort_order', rcube_utils::INPUT_GPC, true);
+
+//     // Initialisation des variables de tri
+//     $orderby = 'created';
+//     $asc = false; // Par défaut, tri descendant
+
+//     // Définir l'ordre et le tri en fonction du paramètre choisi
+//     if ($sort_order === 'date_asc') {
+//         $orderby = 'created';
+//         $asc = true; // Tri ascendant
+//     } elseif ($sort_order === 'reactions') {
+//         $orderby = 'likes'; // Tri par nombre de réactions
+//     } elseif ($sort_order === 'replies') {
+//         $orderby = 'children'; // Tri par nombre de réponses
+//     }
+
+//     $post = new LibMelanie\Api\Defaut\Posts\Post();
+//     $post->uid = $uid;
+
+//     $comments_array = [];
+
+//     if ($post->load()) {
+//         // Passer les paramètres de tri à listComments()
+//         $comments = $post->listComments(true, null, $orderby, $asc);
+
+//         if (!empty($comments)) {
+//             foreach ($comments as $comment) {
+//                 // Récupérer l'utilisateur associé au commentaire
+//                 $user = driver_mel::gi()->getUser($comment->user_uid);
+
+//                 // S'il y a un utilisateur et un nom, utiliser le nom ; sinon utiliser une valeur par défaut
+//                 $user_name = ($user !== null && !empty($user->name)) ? $user->name : '? ?';
+
+//                 // Définir la locale en français pour le formatage de la date
+//                 $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+
+//                 // Convertir la date du commentaire en timestamp Unix
+//                 $timestamp = strtotime($comment->created);
+
+//                 // Formater la date
+//                 $formatted_date = $formatter->format($timestamp);
+
+//                 $count = ['like' => 0, 'dislike' => 0];
+
+//                 // Test si l'utilisateur courant a réagi au commentaire
+//                 $comment_reactions = $comment->listLikes();
+//                 $current_user_reacted = '';
+//                 foreach ($comment_reactions as $reaction) {
+//                     if ($reaction->user_uid === driver_mel::gi()->getUser()->uid) {
+//                         $current_user_reacted = $reaction->like_type;
+//                     }
+
+//                     $count[$reaction->like_type]++;
+//                 }
+
+//                 // Ajouter le commentaire au tableau des commentaires
+//                 $comments_array[$comment->uid] = [
+//                     'id' => $comment->id,
+//                     'uid' => $comment->uid,
+//                     'post_id' => $comment->post_id,
+//                     'user_id' => $comment->user_uid,
+//                     'user_name' => $user_name, // Utiliser le nom ou la valeur par défaut
+//                     'content' => $comment->content,
+//                     'created' => $formatted_date,
+//                     'parent' => $comment->parent,
+//                     'children_number' => $comment->countChildren(),
+//                     'likes' => $count['like'],
+//                     'dislikes' => $count['dislike'],
+//                     'current_user_reacted' => $current_user_reacted,
+//                 ];
+//             }
+//         }
+
+//         // Retourner le tableau des commentaires
+//         echo json_encode($comments_array);
+//     }
+//     exit;
+// }
+
 public function get_all_comments_bypost()
 {
     // Récupérer l'uid de l'article
@@ -1330,6 +1415,9 @@ public function get_all_comments_bypost()
 
     // Récupérer le paramètre de tri des commentaires
     $sort_order = rcube_utils::get_input_value('_sort_order', rcube_utils::INPUT_GPC, true);
+
+    // Récupérer l'ID du commentaire pour obtenir ses enfants (réponses)
+    $param_comment_id = rcube_utils::get_input_value('_comment_id', rcube_utils::INPUT_GPC, true);
 
     // Initialisation des variables de tri
     $orderby = 'created';
@@ -1345,15 +1433,25 @@ public function get_all_comments_bypost()
         $orderby = 'children'; // Tri par nombre de réponses
     }
 
+    // Instancier l'objet Post
     $post = new LibMelanie\Api\Defaut\Posts\Post();
     $post->uid = $uid;
 
     $comments_array = [];
 
     if ($post->load()) {
-        // Passer les paramètres de tri à listComments()
-        $comments = $post->listComments(true, null, $orderby, $asc);
+        // Si un ID de commentaire est fourni, récupérer les réponses de ce commentaire
+        if ($param_comment_id) {
+            $comment = new Comment();
+            $comment->id = $param_comment_id;
+            // Récupérer les réponses triées
+            $comments = $comment->listChildren(null, $orderby, $asc);
+        } else {
+            // Sinon, récupérer tous les commentaires du post
+            $comments = $post->listComments(true, null, $orderby, $asc);
+        }
 
+        // Traitement des commentaires récupérés
         if (!empty($comments)) {
             foreach ($comments as $comment) {
                 // Récupérer l'utilisateur associé au commentaire
@@ -1407,6 +1505,7 @@ public function get_all_comments_bypost()
     }
     exit;
 }
+
 
 /**
  * Compte le nombre de commentaires pour un article donné.

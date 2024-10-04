@@ -32,31 +32,91 @@ export class Manager extends MelObject {
   }
 
 
-/**
-   * Affiche les commentaires associés à un post spécifique dans l'interface utilisateur.
-   *
-   * Cette méthode récupère tous les commentaires liés à un post en utilisant une instance de `PostCommentView`.
-   * Les commentaires sont ensuite instanciés en tant qu'objets `PostComment`, leur contenu HTML est généré et ajouté
-   * dynamiquement au DOM. Des événements de clic pour les boutons "like" et "dislike" sont également attachés après
-   * l'affichage des commentaires.
-   *
-   * @async
-   * @function
-   * @name displayComments
-   * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
-   */
-async displayComments(order = 'date_asc') {  // Ajout d'un paramètre de tri avec une valeur par défaut
-  let PostCommentManager = new PostCommentView(this.get_env('post_uid'), this.get_env('post_id'), this.get_env('sort_order'));
+// /**
+//    * Affiche les commentaires associés à un post spécifique dans l'interface utilisateur.
+//    *
+//    * Cette méthode récupère tous les commentaires liés à un post en utilisant une instance de `PostCommentView`.
+//    * Les commentaires sont ensuite instanciés en tant qu'objets `PostComment`, leur contenu HTML est généré et ajouté
+//    * dynamiquement au DOM. Des événements de clic pour les boutons "like" et "dislike" sont également attachés après
+//    * l'affichage des commentaires.
+//    *
+//    * @async
+//    * @function
+//    * @name displayComments
+//    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
+//    */
+// async displayComments(order = 'date_asc') {  // Ajout d'un paramètre de tri avec une valeur par défaut
+//   let PostCommentManager = new PostCommentView(this.get_env('post_uid'), this.get_env('post_id'), this.get_env('sort_order'));
   
+//   // Passer l'option de tri choisie à la fonction getCommentByPost
+//   let allComments = await PostCommentManager.getCommentByPost(order);
+
+//   let comments_array = [];
+
+//   // Ajouter chaque commentaire à un tableau pour traitement
+//   for (const key in allComments) {
+//     if (allComments.hasOwnProperty(key)) {
+//       const comment = allComments[key];
+//       let commentVizualizer = new PostComment(
+//         comment.id,
+//         comment.uid,
+//         comment.post_id,
+//         comment.user_id,
+//         comment.user_name,
+//         comment.content,
+//         comment.created,
+//         comment.likes,
+//         comment.dislikes,
+//         comment.parent,
+//         comment.children_number,
+//         comment.current_user_reacted
+//       );
+
+//       comments_array.push(commentVizualizer);
+//     }
+//   }
+
+//   // Vider la zone des commentaires avant de ré-afficher les commentaires récupérés
+//   $('#comment-area').empty();
+
+//   // Afficher les commentaires
+//   for (const commentVizualizer of comments_array) {
+//     let commentHtml = commentVizualizer.generateHtmlFromTemplate();
+
+//     if (!commentVizualizer.parent) {
+//       $('#comment-area').append(...commentHtml); // Commentaire principal
+//     } else {
+//       let parentResponseContainer = $('#responses-' + commentVizualizer.parent);
+//       if (parentResponseContainer.length === 0) {
+//         parentResponseContainer = $('<div>', {
+//           id: 'responses-' + commentVizualizer.parent,
+//           class: 'responses ml-4'
+//         });
+//         $('#comment-id-' + commentVizualizer.parent).append(parentResponseContainer);
+//       }
+//       parentResponseContainer.append(...commentHtml); // Réponse
+//     }
+//   }
+
+//   console.log($('#comment-area').html());
+// }
+
+
+async displayComments(order = 'date_asc') {  
+  debugger;
+  let PostCommentManager = new PostCommentView(this.get_env('post_uid'), this.get_env('post_id'), this.get_env('sort_order'), this.get_env('parent_comment_id'));
+
   // Passer l'option de tri choisie à la fonction getCommentByPost
   let allComments = await PostCommentManager.getCommentByPost(order);
 
   let comments_array = [];
+  let responses_map = {};
 
   // Ajouter chaque commentaire à un tableau pour traitement
   for (const key in allComments) {
     if (allComments.hasOwnProperty(key)) {
       const comment = allComments[key];
+      
       let commentVizualizer = new PostComment(
         comment.id,
         comment.uid,
@@ -72,36 +132,49 @@ async displayComments(order = 'date_asc') {  // Ajout d'un paramètre de tri ave
         comment.current_user_reacted
       );
 
-      comments_array.push(commentVizualizer);
+      // Si le commentaire est un commentaire principal (sans parent)
+      if (!comment.parent) {
+        comments_array.push(commentVizualizer);
+      } else {
+        // Si le commentaire est une réponse, on l'ajoute à la map des réponses
+        if (!responses_map[comment.parent]) {
+          responses_map[comment.parent] = [];
+        }
+        responses_map[comment.parent].push(commentVizualizer);
+      }
     }
   }
 
   // Vider la zone des commentaires avant de ré-afficher les commentaires récupérés
   $('#comment-area').empty();
 
-  // Afficher les commentaires
+  // Afficher les commentaires principaux
   for (const commentVizualizer of comments_array) {
     let commentHtml = commentVizualizer.generateHtmlFromTemplate();
 
-    if (!commentVizualizer.parent) {
-      $('#comment-area').append(...commentHtml); // Commentaire principal
-    } else {
-      let parentResponseContainer = $('#responses-' + commentVizualizer.parent);
-      if (parentResponseContainer.length === 0) {
-        parentResponseContainer = $('<div>', {
-          id: 'responses-' + commentVizualizer.parent,
-          class: 'responses ml-4'
-        });
-        $('#comment-id-' + commentVizualizer.parent).append(parentResponseContainer);
+    // Ajouter le commentaire principal à la zone des commentaires
+    $('#comment-area').append(...commentHtml);
+
+    // Créer un container pour les réponses s'il y a des enfants (réponses)
+    if (commentVizualizer.children_number > 0) {
+      let parentResponseContainer = $('<div>', {
+        id: 'responses-' + commentVizualizer.id,
+        class: 'responses ml-4 hidden'  // Cacher le conteneur des réponses par défaut
+      });
+      $('#comment-id-' + commentVizualizer.id).append(parentResponseContainer);
+
+      // Si ce commentaire a des réponses, on les ajoute dans le container
+      if (responses_map[commentVizualizer.id]) {
+        for (const responseVizualizer of responses_map[commentVizualizer.id]) {
+          let responseHtml = responseVizualizer.generateHtmlFromTemplate();
+          parentResponseContainer.append(...responseHtml);
+        }
       }
-      parentResponseContainer.append(...commentHtml); // Réponse
     }
   }
 
   console.log($('#comment-area').html());
 }
-
-
 
 
   /**

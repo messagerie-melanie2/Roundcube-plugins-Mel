@@ -149,36 +149,57 @@ class PostComment {
     }
 }
 
-/**
- * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
- *
- * Cette fonction affiche ou masque les réponses d'un commentaire en fonction de leur état actuel,
- * en ajoutant ou supprimant la classe CSS 'hidden'. L'icône de basculement est également mise à jour
- * pour indiquer visuellement l'état (affiché ou masqué) des réponses.
- *
- * @param {string} id - L'identifiant unique du commentaire pour lequel les réponses doivent être basculées.
- * @returns {Promise<void>} Une promesse résolue une fois l'opération terminée.
- */
+// /**
+//  * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
+//  *
+//  * Cette fonction affiche ou masque les réponses d'un commentaire en fonction de leur état actuel,
+//  * en ajoutant ou supprimant la classe CSS 'hidden'. L'icône de basculement est également mise à jour
+//  * pour indiquer visuellement l'état (affiché ou masqué) des réponses.
+//  *
+//  * @param {string} id - L'identifiant unique du commentaire pour lequel les réponses doivent être basculées.
+//  * @returns {Promise<void>} Une promesse résolue une fois l'opération terminée.
+//  */
+// async toggleResponses(id) {
+//   try {
+//       // Correction du sélecteur jQuery
+//       let responseContainer = $('#responses-' + id);
+//       // Sélection de l'icône correspondante
+//       let toggleIcon = $('#toggle-icon-' + id);
+
+//       // Basculer la classe 'hidden' pour afficher ou masquer les réponses
+//       responseContainer.toggleClass('hidden');
+      
+//       // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
+//       if (responseContainer.hasClass('hidden')) {
+//         toggleIcon.attr('data-icon', 'arrow_drop_down');
+//     } else {
+//         toggleIcon.attr('data-icon', 'arrow_drop_up');
+//     }
+// } catch (error) {
+//     console.error("Erreur lors du basculement des réponses:", error);
+// }
+// }
+
 async toggleResponses(id) {
   try {
-      // Correction du sélecteur jQuery
-      let responseContainer = $('#responses-' + id);
-      // Sélection de l'icône correspondante
-      let toggleIcon = $('#toggle-icon-' + id);
+    let responseContainer = $('#responses-' + id);
+    let toggleIcon = $('#toggle-icon-' + id);
 
-      // Basculer la classe 'hidden' pour afficher ou masquer les réponses
-      responseContainer.toggleClass('hidden');
-      
-      // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
-      if (responseContainer.hasClass('hidden')) {
-        toggleIcon.attr('data-icon', 'arrow_drop_down');
+    // Basculer la classe 'hidden' pour afficher ou masquer les réponses
+    responseContainer.toggleClass('hidden');
+    
+    // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
+    if (responseContainer.hasClass('hidden')) {
+      toggleIcon.attr('data-icon', 'arrow_drop_down');
     } else {
-        toggleIcon.attr('data-icon', 'arrow_drop_up');
+      toggleIcon.attr('data-icon', 'arrow_drop_up');
     }
-} catch (error) {
+
+  } catch (error) {
     console.error("Erreur lors du basculement des réponses:", error);
+  }
 }
-}
+
 
 /**
  * Bascule l'affichage du formulaire de réponse et gère l'état des autres formulaires de réponse.
@@ -764,8 +785,8 @@ generateHtmlFromTemplate() {
 }
 
 class PostCommentView {
-  constructor(post_uid, post_id, sort_order = 'date_asc') {
-    this._init()._setup(post_uid, post_id, sort_order);
+  constructor(post_uid, post_id, sort_order = 'date_asc', parent_comment_id = null) {
+    this._init()._setup(post_uid, post_id, sort_order, parent_comment_id);
 
     this._autoResizeTextarea();
     this._setupButtonVisibility();
@@ -785,6 +806,7 @@ class PostCommentView {
     this.post_uid = '';
     this.post_id = '';
     this.sort_order = 'date_asc';
+    this.parent_comment_id = null;
 
     return this;
 
@@ -800,11 +822,12 @@ class PostCommentView {
  * @param {string} post_uid - L'uid du post à configurer.
  * @param {string} post_id - L'identifiant du post à configurer.
  */
-  _setup(post_uid, post_id, sort_order) {
+  _setup(post_uid, post_id, sort_order, parent_comment_id) {
     
           this.post_uid = post_uid;
           this.post_id = post_id;
           this.sort_order = sort_order;
+          this.parent_comment_id = parent_comment_id;
         }
  
   
@@ -919,35 +942,94 @@ async saveComment(content) {
 }
 
 
-  /**
- * Récupère les commentaires associés à un post spécifique.
- *
- * Cette fonction envoie une requête asynchrone pour obtenir tous les commentaires
- * liés à l'identifiant du post spécifié. Elle utilise une fonction `post` pour
- * envoyer la requête et reçoit les données au format JSON. Les données sont ensuite
- * analysées et retournées par la fonction.
- *
- * @returns {Promise<Object>} - Une promesse qui se résout avec les données des commentaires
- *                              obtenues en réponse à la requête.
- */
-  async getCommentByPost(sort_order = 'date_asc') {
+//   /**
+//  * Récupère les commentaires associés à un post spécifique.
+//  *
+//  * Cette fonction envoie une requête asynchrone pour obtenir tous les commentaires
+//  * liés à l'identifiant du post spécifié. Elle utilise une fonction `post` pour
+//  * envoyer la requête et reçoit les données au format JSON. Les données sont ensuite
+//  * analysées et retournées par la fonction.
+//  *
+//  * @returns {Promise<Object>} - Une promesse qui se résout avec les données des commentaires
+//  *                              obtenues en réponse à la requête.
+//  */
+//   async getCommentByPost(sort_order = 'date_asc') {
+//   // BnumMessage.SetBusyLoading();
+//   let return_data;
+//   await mel_metapage.Functions.post(
+//     mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
+//     { 
+//       _post_uid: this.post_uid,
+//       _sort_order: sort_order  // Envoi du paramètre 'sort_order' au serveur
+//     },
+//     (datas) => {
+//       return_data = JSON.parse(datas);
+
+//       // BnumMessage.SetBusyLoading();
+//     }
+//   )
+
+//   return return_data;
+// }
+
+
+// async getCommentByPost(sort_order = 'date_asc', parent_comment_id = null) {
+//   // BnumMessage.SetBusyLoading();
+//   let return_data;
+
+//   // Préparer les données à envoyer
+//   let postData = { 
+//     _post_uid: this.post_uid,
+//     _sort_order: sort_order  // Envoi du paramètre 'sort_order' au serveur
+//   };
+
+//   // Si un ID de commentaire parent est fourni, l'ajouter aux données
+//   if (parent_comment_id) {
+//     postData._comment_id = parent_comment_id;  // Envoi de l'ID du commentaire parent si disponible
+//   }
+
+//   // Effectuer la requête avec les données préparées
+//   await mel_metapage.Functions.post(
+//     mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
+//     postData,  // Les données incluent l'ID du parent si fourni
+//     (datas) => {
+//       return_data = JSON.parse(datas);
+
+//       // BnumMessage.SetBusyLoading();
+//     }
+//   );
+
+//   return return_data;
+// }
+
+async getCommentByPost(sort_order = 'date_asc', parent_comment_id = null) {
   // BnumMessage.SetBusyLoading();
   let return_data;
+
+  // Préparer les données à envoyer
+  debugger;
+  let postData = { 
+    _post_uid: this.post_uid,
+    _sort_order: sort_order  // Envoi du paramètre 'sort_order' au serveur
+  };
+
+  // Si un ID de commentaire parent est fourni, l'ajouter aux données
+  if (parent_comment_id) {
+    postData._comment_id = parent_comment_id;  // Envoi de l'ID du commentaire parent si disponible
+  }
+
+  // Effectuer la requête avec les données préparées
   await mel_metapage.Functions.post(
     mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
-    { 
-      _post_uid: this.post_uid,
-      _sort_order: sort_order  // Envoi du paramètre 'sort_order' au serveur
-    },
+    postData,  // Les données incluent l'ID du parent si fourni
     (datas) => {
       return_data = JSON.parse(datas);
 
       // BnumMessage.SetBusyLoading();
     }
-  )
+  );
 
   return return_data;
 }
-
 
 }

@@ -18,8 +18,11 @@ class Core {
             if ($config['DEV']) {
                 $dir = str_replace(['/public/welcome', '/public/reinit'], ['', ''], dirname($_SERVER['SCRIPT_FILENAME']));
             }
+            else if ($config['DOCKER']) {
+                $dir = __DIR__.'/../../../bnum';
+            }
             else {
-                $dir = __DIR__.'/../../../';
+                $dir = __DIR__.'/../../..';
             }
 
             require_once $dir . '/vendor/autoload.php';
@@ -165,8 +168,11 @@ class Core {
             if ($config['DEV']) {
                 $dir = str_replace('/public/forgotten', '', dirname($_SERVER['SCRIPT_FILENAME']));
             }
+            else if ($config['DOCKER']) {
+                $dir = __DIR__.'/../../../bnum';
+            }
             else {
-                $dir = __DIR__.'/../../../';
+                $dir = __DIR__.'/../../..';
             }
 
             require_once $dir . '/vendor/autoload.php';

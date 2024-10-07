@@ -1,10 +1,13 @@
 import { BnumEvent } from '../../../mel_events.js';
 import { MelHtml } from '../MelHtml.js';
-import { HtmlCustomTag } from './js_html_base_web_elements.js';
+import {
+  EWebComponentMode,
+  HtmlCustomTag,
+} from './js_html_base_web_elements.js';
 
 export class PressedButton extends HtmlCustomTag {
-  constructor() {
-    super();
+  constructor({ mode = EWebComponentMode.inline_block } = {}) {
+    super({ mode });
 
     this.onpressed = new BnumEvent();
     this.onunpressed = new BnumEvent();
@@ -42,6 +45,12 @@ export class PressedButton extends HtmlCustomTag {
           break;
       }
     };
+
+    this.dispatchEvent(
+      new CustomEvent('load', {
+        detail: { button: this, startPressed: this.ariaPressed },
+      }),
+    );
   }
 
   disable() {

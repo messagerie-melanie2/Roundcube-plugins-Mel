@@ -151,7 +151,7 @@ class HtmlCustomTag extends HTMLElement {
    */
   data(key, value = null) {
     if (value !== null && value !== undefined) {
-      this.dataset[key] = value;
+      this.setAttribute(`data-${key}`, value);
       return this;
     } else return this.dataset[key];
   }
@@ -325,8 +325,8 @@ class BnumHtmlSrOnly extends HtmlCustomTag {
 BnumHtmlSrOnly.TAG = 'bnum-screen-reader';
 
 class BnumHtmlSeparate extends HtmlCustomTag {
-  constructor() {
-    super();
+  constructor({ mode = EWebComponentMode.span } = {}) {
+    super(mode);
   }
 }
 BnumHtmlSeparate.TAG = 'bnum-separate';

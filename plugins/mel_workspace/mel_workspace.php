@@ -94,6 +94,7 @@ class mel_workspace extends bnum_plugin
 
         $navbar = new NavBar($uid);
         $navbar->add_css($this->local_skin_path().'/navbar.css');
+        $navbar->add_css('/'.$this->local_skin_path().'/material-symbols.css');
         // $navbar->add_module('js/lib/navbar.js');
 
         $this->rc()->output->set_env('navbar', $navbar->get());

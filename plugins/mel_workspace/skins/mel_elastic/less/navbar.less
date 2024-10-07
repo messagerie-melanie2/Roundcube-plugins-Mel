@@ -1,5 +1,5 @@
 :host {
-  width: 30%;
+  width: 275px;
   height: 100%;
 }
 
@@ -17,7 +17,7 @@
   border-radius: var(--bureau-card-border-radius);
   // box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
   .melv2-card-shadow();
-  padding: 5px;
+  padding: 50px;
   background-color: var(--bureau-card-background-color);
   color: var(--bureau-card-text-color);
 }
@@ -44,5 +44,32 @@
 }
 
 .description {
-  ._multiple-lines();
+  overflow: hidden;
+  margin-bottom: 10px;
+
+  &.threelines {
+    ._multiple-lines();
+  }
+}
+
+bnum-separate {
+  height: 1px;
+  background-color: var(--main-border-color-transparent);
+}
+
+bnum-pressed-button {
+  cursor: pointer;
+  text-align: center;
+  background-color: var(--mel-button-background-color);
+  color: var(--mel-button-text-color);
+  border-radius: 5px;
+  display: flex;
+  vertical-align: baseline;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: var(--mel-button-hover-background-color);
+    color: var(--mel-button-hover-text-color);
+  }
 }

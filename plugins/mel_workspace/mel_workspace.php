@@ -90,7 +90,7 @@ class mel_workspace extends bnum_plugin
 
     public function action_workspace() {
         include_once __DIR__.'/lib/NavBar.php';
-        $uid = $this->get_input('uid');
+        $uid = $this->get_input('_uid');
 
         $navbar = new NavBar($uid);
         $navbar->add_css($this->local_skin_path().'/navbar.css');
@@ -514,8 +514,11 @@ class mel_workspace extends bnum_plugin
     #endregion
 
     #region statics
-    private static function _GetWorkspaceLogo($workspace) {
+    public static function GetWorkspaceLogo($workspace) {
         $logo = $workspace->logo;
+
+        if (strpos($logo ,'/bureau') !== false) $logo = str_replace('/bureau', '', $logo);
+
         if ($logo !== null && strpos($logo, 'mel_elastic') === false && strpos($logo, 'elastic') !== false) {
             $logo = str_replace('elastic', 'mel_elastic', $logo);
         }
@@ -614,7 +617,7 @@ class mel_workspace extends bnum_plugin
         $block = mel_helper::Parse($name);
 
         $block->id = $workspace->uid();
-        $block->picture = self::_GetWorkspaceLogo($workspace->get());
+        $block->picture = self::GetWorkspaceLogo($workspace->get());
         $block->tag = $workspace->hashtag();//isset($hashtags) && count($hashtags) > 0 ? ($hashtags[0] ?? '') : '';
         $block->tag = mel_utils::for_data_html($block->tag);
         $block->title = mel_utils::for_data_html($workspace->title());

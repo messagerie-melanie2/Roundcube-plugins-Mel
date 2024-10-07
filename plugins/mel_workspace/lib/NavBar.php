@@ -3,7 +3,7 @@ class NavBar {
   private $modules;
   private $scripts;
   private $css;
-  private $assets_path;
+  // private $assets_path;
   private $devel_mode;
   private $uid;
   protected $assets_dir   = RCUBE_INSTALL_PATH;
@@ -11,7 +11,7 @@ class NavBar {
   public function __construct($uid) {
     $this->uid = $uid;
     $this->devel_mode = rcmail::get_instance()->config->get('devel_mode');
-    $this->assets_path = $this->set_assets_path($this->rc()->config->get('assets_path'), $this->rc()->config->get('assets_dir'));
+    // $this->assets_path = $this->set_assets_path($this->rc()->config->get('assets_path'), $this->rc()->config->get('assets_dir'));
 
     $this->scripts = null;
     $this->modules = null;
@@ -147,7 +147,12 @@ class NavBar {
   }
 
   public function get() {
-    return "<bnum-wsp-nav data-uid=\"$this->uid\" data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$this->css\"></bnum-wsp-nav>";
+    include_once __DIR__.'/Workspace.php';
+    $workspace = new Workspace($this->uid, true);
+    $picture = mel_workspace::GetWorkspaceLogo($workspace->get());
+    $description = str_replace('"', "''", $workspace->description());
+    $title = $workspace->title();
+    return "<bnum-wsp-nav data-uid=\"$this->uid\" data-title=\"$title\" data-picture=\"$picture\" data-description=\"$description\" data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$this->css\"></bnum-wsp-nav>";
   }
 
 }

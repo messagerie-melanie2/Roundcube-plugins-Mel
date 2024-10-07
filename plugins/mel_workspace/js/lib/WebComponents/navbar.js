@@ -4,6 +4,9 @@ import {
   EWebComponentMode,
   HtmlCustomTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
+import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
+import { WspNavBarDescription } from './NavbarComponents/components.js';
 
 export { WspNavBar };
 
@@ -17,8 +20,65 @@ const EFileType = {
 };
 
 class WspNavBar extends HtmlCustomTag {
+  #data = {};
+
   constructor() {
     super({ mode: EWebComponentMode.div });
+  }
+
+  /**
+   * Id de l'espace
+   * @type {string}
+   * @readonly
+   */
+  get uid() {
+    return this.#_get_data('uid');
+  }
+
+  /**
+   * Image de l'espace
+   * @type {string}
+   * @readonly
+   */
+  get picture() {
+    return this.#_get_data('picture');
+  }
+
+  /**
+   * Description de l'espace
+   * @type {string}
+   * @readonly
+   */
+  get description() {
+    return this.#_get_data('description');
+  }
+
+  /**
+   * Titre de l'espace
+   * @type {string}
+   * @readonly
+   */
+  get title() {
+    return this.#_get_data('title');
+  }
+
+  /**
+   * Div principale du shadow-dom
+   * @type {HTMLDivElement}
+   * @readonly
+   */
+  get mainDiv() {
+    return this.shadowRoot.querySelector(`#${this.id}`);
+  }
+
+  /**
+   * Id de la div principale du shadow-dom
+   * @type {string}
+   * @readonly
+   * @default `wsp-nav-${this.uid}`
+   */
+  get id() {
+    return `wsp-nav-${this.uid}`;
   }
 
   _p_main() {
@@ -26,26 +86,92 @@ class WspNavBar extends HtmlCustomTag {
 
     let shadow = this._p_start_construct();
 
-    let style = document.createElement('style');
-    style.append(
-      this.createText(`
-      :host {
-        width:100%;
-        height:100%;
-      }
-      `),
-    );
-
     this.#_setup_styles().#_setup_scripts().#_setup_modules();
 
     let div = document.createElement('div');
     div.classList.add('nav', 'melv2-card');
+    div.setAttribute('id', this.id);
 
     shadow.append(div);
+
+    this._generate_picture()._generate_title()._generate_description();
+
+    top.history.replaceState(
+      {},
+      document.title,
+      MelObject.Empty()
+        .url('workspace', {
+          action: 'navbar',
+          params: {
+            _uid: 'dev-du-bnum-1',
+            _force_bnum: 1,
+          },
+        })
+        .replace('is_from', 'rotomeca'),
+    );
+
+    div = null;
+    shadow = null;
+  }
+
+  _generate_picture() {
+    let img = document.createElement('img');
+    img.classList.add('picture');
+    img.src = this.picture;
+
+    let div = document.createElement('div');
+    div.classList.add('picture-container');
+    div.append(img);
+
+    this.mainDiv.append(div);
+
+    img = null;
     div = null;
 
-    style = null;
-    shadow = null;
+    return this;
+  }
+
+  _generate_title() {
+    let div = document.createElement('div');
+    let span = document.createElement('h2');
+
+    div.classList.add('wsp-title-container');
+    span.classList.add('wsp-title');
+    span.appendChild(this.createText(this.title));
+    div.appendChild(span);
+
+    this.mainDiv.appendChild(div);
+
+    span = null;
+    div = null;
+
+    return this;
+  }
+
+  _generate_description() {
+    /**
+     * Composant "description" de la barre de navigation
+     * @type {WspNavBarDescription}
+     * @package
+     */
+    let description = new WspNavBarDescription({
+      parent: this,
+    }).setNavBarParent(this);
+
+    this.mainDiv.append(description);
+
+    description = null;
+
+    return this;
+  }
+
+  #_get_data(data) {
+    if (!this.#data[data]) {
+      this.#data[data] = this.dataset[data];
+      this.removeAttribute(`data-${data}`);
+    }
+
+    return this.#data[data];
   }
 
   #_generate_script(file, { module = false } = {}) {
@@ -104,6 +230,8 @@ class WspNavBar extends HtmlCustomTag {
     const data = (this.data(dataset) ?? EMPTY_STRING)
       .replaceAll(' ', EMPTY_STRING)
       .split(',');
+
+    this.removeAttribute(`data-${dataset}`);
 
     if (data.length > 0) {
       let generated;

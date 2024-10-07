@@ -1442,10 +1442,11 @@ public function get_all_comments_bypost()
     if ($post->load()) {
         // Si un ID de commentaire est fourni, récupérer les réponses de ce commentaire
         if ($param_comment_id) {
-            $comment = new Comment();
+            $comment = new LibMelanie\Api\Defaut\Posts\Comment();
             $comment->id = $param_comment_id;
-            // Récupérer les réponses triées
             $comments = $comment->listChildren(null, $orderby, $asc);
+
+            // Récupérer les réponses triées
         } else {
             // Sinon, récupérer tous les commentaires du post
             $comments = $post->listComments(true, null, $orderby, $asc);
@@ -2953,17 +2954,8 @@ public function test_create_post()
 {
     $workspace = 'un-espace-2';
 
-    $title = 'La Nationale 7 : La Mythique Route des Vacances';
-    $content = '<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-Sk2BRt4F5MA9sP3NAlN-BqkchzXkV_kCQ&s"alt="Nationale 7" max-width="500" /></p><br><br>
-    <p>La Nationale 7, souvent surnommée "la route des vacances", est une route emblématique de la France, reliant Paris à Menton sur la Côte d\’Azur. Ce trajet de plus de 990 kilomètres traverse une grande partie du pays, offrant un panorama varié des paysages français, des régions viticoles aux montagnes pittoresques.</p><br><br>
-	<p><img src="https://cdn-s-www.leprogres.fr/images/CD83B948-0E26-471E-971A-8558623750BE/NW_raw/title-1405193035.jpg"alt="Tracé de la Nationale 7 de Paris à Menton" max-width="500" /></p><br><br>
-	<p>Créée en 1959, la Nationale 7 a été, pendant des décennies, la principale artère empruntée par des générations de vacanciers en quête de soleil et de mer Méditerranée. Avant l\’ère des autoroutes, cette route représentait l\’évasion estivale, un symbole de liberté et d\’aventure pour de nombreuses familles françaises. Des voitures surchargées de bagages, des arrêts fréquents dans des auberges et des relais routiers typiques, des pique-niques improvisés au bord de la route : tels étaient les rituels de ceux qui empruntaient cette route légendaire.</p><br><br>
-    <p><img src="https://www.lesbiefs.eu/2020/wp-content/uploads/2020/01/embouteillage-1024x523.jpg"alt="Illustration de la circulation sur la Nationale 7" max-width="500" /></p><br><br>
-    <p>La Nationale 7 est également ancrée dans la culture populaire française. Elle a inspiré des chansons, des films et des livres, devenant un symbole de la dolce vita à la française. Charles Trenet l\’a immortalisée dans sa célèbre chanson "Nationale 7", évoquant le charme et la convivialité de cette route mythique.</p><br><br>
-    <p><img src="https://lavaurinitiatives.fr/wp-content/uploads/2019/02/autobus-fiat500-bouchon-site.jpg"alt="Fiat 500 dans les bouchons" max-width="700" /></p><br><br>
-    <p>Au fil des ans, avec la construction des autoroutes, la Nationale 7 a perdu de son rôle central dans les trajets estivaux. Cependant, elle a conservé son charme et continue d\’attirer les amateurs de rétro et de nostalgie, qui apprécient de parcourir cette route historique à un rythme plus tranquille.</p><br><br>
-    <p><img src="https://pictures.laprovence.com/cdn-cgi/image/width=3840,format=auto,quality=80,trim.left=0,trim.top=188,trim.height=1135,trim.width=2000/media/2024/08/03/1T9A0774.JPG.jyfZsP7lMdsL98tjACEA.-uLA7Qb6Eb.jpg"alt="Voiture historique de nos jours" max-width="700" /></p><br><br>
-    <p>Aujourd\’hui, parcourir la Nationale 7, c\’est faire un voyage dans le temps, redécouvrir les plaisirs simples et authentiques des vacances d\’antan, et se plonger dans l\’histoire et la culture d\’une France en mouvement. Cette route reste une invitation à l\’évasion, un itinéraire empreint de souvenirs et de découvertes, où chaque kilomètre raconte une histoire.</p><br><br>'; // Valeur en dur pour le test
+    $title = 'Dodo';
+    $content = 'Test Dodo';
     $summary = $this->create_summary_from_content($content); // Valeur en dur pour le test
     $settings = 'Modifiable'; // Valeur en dur pour le test
 

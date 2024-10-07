@@ -11,7 +11,7 @@ export class Manager extends MelObject {
     super.main();
     
     // Afficher les commentaires avec le tri par défaut (date ascendant)
-    this.displayComments(); 
+    Manager.displayComments(); 
   
     // Associer l'événement de tri des commentaires au select
     $('#forum-comment-select').change(async (event) => {
@@ -21,7 +21,7 @@ export class Manager extends MelObject {
       console.log("Option sélectionnée:", selectedValue);
   
       // Appeler displayComments avec l'ordre sélectionné
-      await this.displayComments(selectedValue);
+      await Manager.displayComments(selectedValue);
     });
   
     this.export('manager');
@@ -102,15 +102,15 @@ export class Manager extends MelObject {
 // }
 
 
-async displayComments(order = 'date_asc') {  
+static async displayComments(order = 'date_asc', parent_comment_id = null) {  
   debugger;
-  let PostCommentManager = new PostCommentView(this.get_env('post_uid'), this.get_env('post_id'), this.get_env('sort_order'), this.get_env('parent_comment_id'));
+  let PostCommentManager = new PostCommentView(rcmail.env.post_uid, rcmail.env.post_id, order, parent_comment_id);
 
   // Passer l'option de tri choisie à la fonction getCommentByPost
-  let allComments = await PostCommentManager.getCommentByPost(order);
+  let allComments = await PostCommentManager.getCommentByPost();
 
   let comments_array = [];
-  let responses_map = {};
+  let responses_array = [];
 
   // Ajouter chaque commentaire à un tableau pour traitement
   for (const key in allComments) {
@@ -136,44 +136,32 @@ async displayComments(order = 'date_asc') {
       if (!comment.parent) {
         comments_array.push(commentVizualizer);
       } else {
-        // Si le commentaire est une réponse, on l'ajoute à la map des réponses
-        if (!responses_map[comment.parent]) {
-          responses_map[comment.parent] = [];
-        }
-        responses_map[comment.parent].push(commentVizualizer);
+        responses_array.push(commentVizualizer);
       }
     }
   }
+
+  //Si on affiche que les commentaires principaux
+  if (!parent_comment_id) {
 
   // Vider la zone des commentaires avant de ré-afficher les commentaires récupérés
-  $('#comment-area').empty();
+    $('#comment-area').empty();
 
-  // Afficher les commentaires principaux
-  for (const commentVizualizer of comments_array) {
-    let commentHtml = commentVizualizer.generateHtmlFromTemplate();
-
-    // Ajouter le commentaire principal à la zone des commentaires
-    $('#comment-area').append(...commentHtml);
-
-    // Créer un container pour les réponses s'il y a des enfants (réponses)
-    if (commentVizualizer.children_number > 0) {
-      let parentResponseContainer = $('<div>', {
-        id: 'responses-' + commentVizualizer.id,
-        class: 'responses ml-4 hidden'  // Cacher le conteneur des réponses par défaut
-      });
-      $('#comment-id-' + commentVizualizer.id).append(parentResponseContainer);
-
-      // Si ce commentaire a des réponses, on les ajoute dans le container
-      if (responses_map[commentVizualizer.id]) {
-        for (const responseVizualizer of responses_map[commentVizualizer.id]) {
-          let responseHtml = responseVizualizer.generateHtmlFromTemplate();
-          parentResponseContainer.append(...responseHtml);
+    for (const comment of comments_array) {
+      let commentHtml = comment.generateHtmlFromTemplate();
+  
+      // Ajouter le commentaire principal à la zone des commentaires
+      $('#comment-area').append(...commentHtml);
+    }
+  } else {
+    if (responses_array != []) {
+        for (const response of responses_array) {
+          let responseHtml = response.generateHtmlFromTemplate();
+          $(`#responses-${parent_comment_id}`).removeClass('hidden');
+          $(`#responses-${parent_comment_id}`).append(...responseHtml);
         }
       }
-    }
   }
-
-  console.log($('#comment-area').html());
 }
 
 

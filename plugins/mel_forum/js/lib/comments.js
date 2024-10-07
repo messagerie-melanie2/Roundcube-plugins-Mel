@@ -1,5 +1,7 @@
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
+import { Manager } from './manager.js';
+
 
 
 export {PostComment, PostCommentView}
@@ -187,6 +189,8 @@ async toggleResponses(id) {
 
     // Basculer la classe 'hidden' pour afficher ou masquer les réponses
     responseContainer.toggleClass('hidden');
+
+    Manager.displayComments(null, id);
     
     // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
     if (responseContainer.hasClass('hidden')) {
@@ -1002,20 +1006,19 @@ async saveComment(content) {
 //   return return_data;
 // }
 
-async getCommentByPost(sort_order = 'date_asc', parent_comment_id = null) {
+async getCommentByPost() {
   // BnumMessage.SetBusyLoading();
   let return_data;
 
   // Préparer les données à envoyer
-  debugger;
   let postData = { 
     _post_uid: this.post_uid,
-    _sort_order: sort_order  // Envoi du paramètre 'sort_order' au serveur
+    _sort_order: this.sort_order  // Envoi du paramètre 'sort_order' au serveur
   };
 
   // Si un ID de commentaire parent est fourni, l'ajouter aux données
-  if (parent_comment_id) {
-    postData._comment_id = parent_comment_id;  // Envoi de l'ID du commentaire parent si disponible
+  if (this.parent_comment_id) {
+    postData._comment_id = this.parent_comment_id;  // Envoi de l'ID du commentaire parent si disponible
   }
 
   // Effectuer la requête avec les données préparées

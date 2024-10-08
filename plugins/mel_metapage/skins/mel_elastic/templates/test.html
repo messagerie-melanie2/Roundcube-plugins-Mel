@@ -2,23 +2,22 @@
 <roundcube:include file="includes/menu.html" />
 
 <style>
-.visu {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .visu {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.visu  > div {
+  .visu > div {
     display: inline-block;
     width: 3px;
     height: 100px;
     margin: 0 7px;
     background: currentColor;
-    transform: scaleY( .5 );
-    opacity: .25;
+    transform: scaleY(0.5);
+    opacity: 0.25;
   }
-
 
   label {
     position: absolute;
@@ -32,11 +31,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-}
+  }
 </style>
 
-<div id="layout-content" style="overflow: auto;">
-
-
+<div id="layout-content" style="overflow: auto">
+  <bootstrap-loader></bootstrap-loader>
 </div>
 <roundcube:include file="includes/footer.html" />

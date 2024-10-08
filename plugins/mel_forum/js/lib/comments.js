@@ -189,6 +189,9 @@ async toggleResponses(id) {
 
     // Si le conteneur est caché, on veut l'afficher
     if (responseContainer.hasClass('hidden')) {
+
+      // Afficher un message de chargement pendant le chargement des réponses
+      var loadingId = rcmail.display_message(rcmail.gettext('loading'), 'loading');
       
       // Charger les réponses seulement si elles ne sont pas déjà présentes
       if (!responseContainer.hasClass('loaded')) {
@@ -196,6 +199,9 @@ async toggleResponses(id) {
         await Manager.displayComments(null, id);  // Charger les réponses une seule fois
         responseContainer.addClass('loaded'); // Marquer les réponses comme déjà chargées
       }
+
+      // Cacher le message de chargement une fois les réponses chargées
+      rcmail.hide_message(loadingId);
 
       // Afficher les réponses
       responseContainer.removeClass('hidden');
@@ -208,6 +214,8 @@ async toggleResponses(id) {
     }
     
   } catch (error) {
+    // En cas d'erreur, on cache également le message de chargement et affiche l'erreur dans la console
+    rcmail.hide_message(loadingId);
     console.error("Erreur lors du basculement des réponses:", error);
   }
 }
@@ -934,6 +942,7 @@ class PostCommentView {
  */
 async saveComment(content) {
     try {
+        var id = rcmail.display_message('loading', 'loading')
         const response = await mel_metapage.Functions.post(
             mel_metapage.Functions.url('forum', 'create_comment'),
             {
@@ -942,10 +951,12 @@ async saveComment(content) {
             }
         );
         if (response.status === 'success') {
+            rcmail.hide_message(id);
             rcmail.display_message(response.message, 'confirmation');
             $('#new-comment-textarea').val('');  // Réinitialiser le textarea
             this.displayComments();  // Rafraîchir les commentaires après l'ajout
         } else {
+            rcmail.hide_message(id);
             rcmail.display_message(response.message, 'error');
         }
     } catch (error) {

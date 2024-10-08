@@ -187,22 +187,31 @@ async toggleResponses(id) {
     let responseContainer = $('#responses-' + id);
     let toggleIcon = $('#toggle-icon-' + id);
 
-    // Basculer la classe 'hidden' pour afficher ou masquer les réponses
-    responseContainer.toggleClass('hidden');
-
-    Manager.displayComments(null, id);
-    
-    // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
+    // Si le conteneur est caché, on veut l'afficher
     if (responseContainer.hasClass('hidden')) {
-      toggleIcon.attr('data-icon', 'arrow_drop_down');
-    } else {
-      toggleIcon.attr('data-icon', 'arrow_drop_up');
-    }
+      
+      // Charger les réponses seulement si elles ne sont pas déjà présentes
+      if (!responseContainer.hasClass('loaded')) {
+        responseContainer.empty(); // On vide le conteneur avant de charger pour éviter les doublons
+        await Manager.displayComments(null, id);  // Charger les réponses une seule fois
+        responseContainer.addClass('loaded'); // Marquer les réponses comme déjà chargées
+      }
 
+      // Afficher les réponses
+      responseContainer.removeClass('hidden');
+      toggleIcon.attr('data-icon', 'arrow_drop_up'); // Changer l'icône en 'arrow_drop_up'
+
+    } else {
+      // Cacher les réponses
+      responseContainer.addClass('hidden');
+      toggleIcon.attr('data-icon', 'arrow_drop_down'); // Changer l'icône en 'arrow_drop_down'
+    }
+    
   } catch (error) {
     console.error("Erreur lors du basculement des réponses:", error);
   }
 }
+
 
 
 /**

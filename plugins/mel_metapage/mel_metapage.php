@@ -3675,4 +3675,8 @@ class mel_metapage extends bnum_plugin
     public static function IncludeAvatar() {
         rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('avatar.js');
     } 
+
+    public static function IncludeLoader() {
+        rcmail::get_instance()->plugins->get_plugin('mel_metapage')->include_component('bootstrap-loader.js');
+    } 
 }

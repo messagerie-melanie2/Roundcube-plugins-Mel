@@ -1,3 +1,4 @@
+import { BootstrapLoader } from './CustomAttributes/bootstrap-loader.js';
 import {
   BnumHtmlCenteredFlexContainer,
   BnumHtmlFlexContainer,
@@ -111,4 +112,9 @@ JsHtml.update('mel_window', function (self, old, id, attribs = {}) {
 
 JsHtml.create_custom_tag('mel-window-frame', {
   already_existing_class: MelWindowFrame,
+});
+
+JsHtml.create_custom_tag('loader', {
+  prefix_tag: 'bootstrap',
+  already_existing_class: BootstrapLoader,
 });

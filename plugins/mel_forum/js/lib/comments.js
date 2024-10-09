@@ -191,7 +191,7 @@ async toggleResponses(id) {
     if (responseContainer.hasClass('hidden')) {
 
       // Afficher un message de chargement pendant le chargement des réponses
-      var loadingId = rcmail.display_message(rcmail.gettext('loading'), 'loading');
+      const busy = rcmail.set_busy(true, 'loading');
       
       // Charger les réponses seulement si elles ne sont pas déjà présentes
       if (!responseContainer.hasClass('loaded')) {
@@ -201,7 +201,7 @@ async toggleResponses(id) {
       }
 
       // Cacher le message de chargement une fois les réponses chargées
-      rcmail.hide_message(loadingId);
+      rcmail.set_busy(false, 'loading', busy);
 
       // Afficher les réponses
       responseContainer.removeClass('hidden');
@@ -215,7 +215,7 @@ async toggleResponses(id) {
     
   } catch (error) {
     // En cas d'erreur, on cache également le message de chargement et affiche l'erreur dans la console
-    rcmail.hide_message(loadingId);
+    rcmail.set_busy(false, 'loading', busy);
     console.error("Erreur lors du basculement des réponses:", error);
   }
 }
@@ -616,7 +616,7 @@ generateHtmlFromTemplate() {
     DISLIKES: this.dislikes.toString(),
     RESPONSE_SECTION: this.children_number > 0 ? 
     MelHtml.start
-      .div({ class: 'forum-comment-response', 'data-comment-id': this.id })
+      .div({ class: 'forum-comment-response', 'data-comment-id': this.id, tabindex: '0', role: 'button' })
         .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
         .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
       .end('div')

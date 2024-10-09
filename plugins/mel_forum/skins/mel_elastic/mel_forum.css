@@ -620,3 +620,7 @@
 .task-forum .forum-comment-input {
   margin-top: 5px;
 }
+
+[role="button"] {
+  cursor: pointer;
+}

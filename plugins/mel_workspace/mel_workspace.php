@@ -504,6 +504,10 @@ class mel_workspace extends bnum_plugin
         $this->currentWorkspace->uid = $workspace_id;
         $this->currentWorkspace->load();
 
+        if (!class_exists('rocket_chat') && $this->get_object($this->currentWorkspace, self::CHANNEL) !== null) {
+            $this->remove_object($this->currentWorkspace, self::CHANNEL);
+        }
+
         $this->rc->output->set_env('wsp_one_admin', self::is_one_admin($this->currentWorkspace));
 
         $this->rc->output->add_handlers(array(
@@ -2202,48 +2206,50 @@ class mel_workspace extends bnum_plugin
         if (array_search($tasks, $services) === false)
             return $services;
 
-        include_once "../mel_moncompte/ressources/tasks.php";
-        $tasklist = $this->get_object($workspace, $tasks);
+        $wekanActive = $this->create_wekan($workspace, $services, $users, $default_value);
 
-        if ($tasklist !== null) //Si la liste de tâche existe déjà
-        {
-            $mel = new M2taskswsp($tasklist);
-            if ($mel->getTaskslist() !== null)
+        if ($wekanActive) {
+            include_once "../mel_moncompte/ressources/tasks.php";
+            $tasklist = $this->get_object($workspace, $tasks);
+    
+            if ($tasklist !== null) //Si la liste de tâche existe déjà
             {
-                foreach ($users as $s)
+                $mel = new M2taskswsp($tasklist);
+                if ($mel->getTaskslist() !== null)
                 {
-                    $mel->setAcl($s, ["w"]);
+                    foreach ($users as $s)
+                    {
+                        $mel->setAcl($s, ["w"]);
+                    }
+                }
+                else {
+                    $this->remove_object($workspace, $tasks);
+                    return $this->create_tasklist($workspace, $services, $users, $update_wsp, $default_value);
                 }
             }
-            else {
-                $this->remove_object($workspace, $tasks);
-                return $this->create_tasklist($workspace, $services, $users, $update_wsp, $default_value);
+            else {//Sinon
+                $mel = new M2taskswsp($workspace->uid);
+    
+                if (!$update_wsp || $mel->createTaskslist($workspace->title))
+                {
+                    foreach ($users as $s)
+                    {
+                        $mel->setAcl($s, ["w"]);
+                    }
+    
+                    if ($update_wsp)
+                    {
+                        $taskslist = $mel->getTaskslist();
+                        $this->save_object($workspace, $tasks, $taskslist->id);
+                    }
+                }
             }
+    
+            $key = array_search($tasks, $services);
+    
+            if ($key !== false)
+                unset($services[$key]);
         }
-        else {//Sinon
-            $mel = new M2taskswsp($workspace->uid);
-
-            if (!$update_wsp || $mel->createTaskslist($workspace->title))
-            {
-                foreach ($users as $s)
-                {
-                    $mel->setAcl($s, ["w"]);
-                }
-
-                if ($update_wsp)
-                {
-                    $taskslist = $mel->getTaskslist();
-                    $this->save_object($workspace, $tasks, $taskslist->id);
-                }
-            }
-        }
-
-        $key = array_search($tasks, $services);
-
-        $this->create_wekan($workspace, $services, $users, $default_value);
-
-        if ($key !== false)
-            unset($services[$key]);
 
         return $services;
     }
@@ -2292,12 +2298,22 @@ class mel_workspace extends bnum_plugin
                     return;
             } 
 
+            if ($board_id === null) {
+                if ($default_value[$index]['second_try'] !== true) {
+                    $default_value[$index]['second_try'] = true;
+                    return $this->create_wekan($workspace, $services, $users, $default_value);
+                }
+                else return false;
+            }
+
             $object['id'] = $board_id['board_id'];
             $object['title'] = $board_id['board_title'];
 
 
             $this->save_object($workspace, self::WEKAN, $object);
         }
+
+        return true;
     }
 
     function create_agenda(&$workspace, $services, $users, $update_wsp)
@@ -3285,7 +3301,15 @@ class mel_workspace extends bnum_plugin
                         break;
                     
                     default:
-                    $this->create_services($workspace, [$app], null, true, true);
+                        $services = $this->create_services($workspace, [$app], null, true, true);
+
+                        if (array_search(self::TASKS, $services) !== false) {
+                            $services = $this->create_services($workspace, [$app], null, true, true);
+                            if (array_search(self::TASKS, $services) !== false) {
+                                echo "error";
+                                exit;
+                            }
+                        }
                         break;
                 }
             }
@@ -4082,6 +4106,11 @@ class mel_workspace extends bnum_plugin
 
             $return["board_id"] = $board_id;
             $return["board_title"] = null;//$return["board"]["board_title"] !== null ? $return["board"]["board_title"] : json_decode($return["board"]["content"])->title;
+        }
+        else {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->create_workspace_wekan]code : ".$return["board"]["httpCode"]);
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->create_workspace_wekan]json : ". json_encode($return));
+            $return = null;
         }
 
         return $return;

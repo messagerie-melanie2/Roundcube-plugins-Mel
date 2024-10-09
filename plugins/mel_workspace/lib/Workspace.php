@@ -205,6 +205,32 @@ class Workspace {
     }));
   }
 
+  public function isAdmin($username = null) {
+    $user = $this->users()[$username ?? driver_mel::gi()->getUser()->uid];
+    if ($user !== null)
+        return $user->rights === Share::RIGHT_OWNER;
+    else
+        return false;
+  }
+
+  public function serialize($addUsers = false) {
+    $raw = [
+      'uid' => $this->uid(),
+      'title' => $this->title(),
+      'description' => $this->description(),
+      'hashtag' => $this->hashtag(),
+      'logo' => $this->logo(),
+      'users' => ($addUsers ? $this->users() : ''),
+      'isPublic' => $this->isPublic(),
+      'modified' => $this->modified(),
+      'color' => $this->color(),
+      'isJoin' => $this->hasUserFromEmail(driver_mel::gi()->getUser()->email),
+      'isAdmin' => $this->isAdmin()
+    ];
+
+    return json_encode($raw);
+  }
+
   private function _add_users($users) {
     $return_data = [            
       "errored_user" => [],

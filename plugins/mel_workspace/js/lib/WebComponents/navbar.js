@@ -6,6 +6,7 @@ import {
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
+import { WorkspaceData } from '../workspaceData.js';
 import { WspNavBarDescription } from './NavbarComponents/components.js';
 
 export { WspNavBar };
@@ -32,7 +33,7 @@ class WspNavBar extends HtmlCustomTag {
    * @readonly
    */
   get uid() {
-    return this.#_get_data('uid');
+    return this.workspace.uid;
   }
 
   /**
@@ -41,7 +42,7 @@ class WspNavBar extends HtmlCustomTag {
    * @readonly
    */
   get picture() {
-    return this.#_get_data('picture');
+    return this.workspace.logo;
   }
 
   /**
@@ -50,7 +51,7 @@ class WspNavBar extends HtmlCustomTag {
    * @readonly
    */
   get description() {
-    return this.#_get_data('description');
+    return this.workspace.description;
   }
 
   /**
@@ -59,7 +60,7 @@ class WspNavBar extends HtmlCustomTag {
    * @readonly
    */
   get title() {
-    return this.#_get_data('title');
+    return this.workspace.title;
   }
 
   /**
@@ -79,6 +80,21 @@ class WspNavBar extends HtmlCustomTag {
    */
   get id() {
     return `wsp-nav-${this.uid}`;
+  }
+
+  /**
+   * @type {WorkspaceData}
+   */
+  get workspace() {
+    debugger;
+    if (!this.#data.workspace) {
+      const wsp = this.#_get_data('workspace');
+      this.#data.workspace = new WorkspaceData(
+        JSON.parse(wsp.replaceAll("¤'¤'", '"')),
+      );
+    }
+
+    return this.#data.workspace;
   }
 
   _p_main() {
@@ -149,6 +165,7 @@ class WspNavBar extends HtmlCustomTag {
   }
 
   _generate_description() {
+    debugger;
     /**
      * Composant "description" de la barre de navigation
      * @type {WspNavBarDescription}
@@ -164,6 +181,8 @@ class WspNavBar extends HtmlCustomTag {
 
     return this;
   }
+
+  _generate_invitation() {}
 
   #_get_data(data) {
     if (!this.#data[data]) {

@@ -152,7 +152,8 @@ class NavBar {
     $picture = mel_workspace::GetWorkspaceLogo($workspace->get());
     $description = str_replace('"', "''", $workspace->description());
     $title = $workspace->title();
-    return "<bnum-wsp-nav data-uid=\"$this->uid\" data-title=\"$title\" data-picture=\"$picture\" data-description=\"$description\" data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$this->css\"></bnum-wsp-nav>";
+    $serialize = str_replace('"', "¤'¤'", $workspace->serialize());
+    return "<bnum-wsp-nav data-workspace=\"$serialize\" data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$this->css\"></bnum-wsp-nav>";
   }
 
 }

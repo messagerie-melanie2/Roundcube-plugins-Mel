@@ -507,6 +507,10 @@ class MelObject {
     }
   }
 
+  load_without_parsing(key, default_value = null) {
+    return mel_metapage.Storage.get(key) ?? default_value;
+  }
+
   /**
    * Décharge une donnée dans le stockage local
    * @param {string} key clé dans le stockage

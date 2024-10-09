@@ -30,6 +30,12 @@ class tchap extends bnum_plugin
      */
     function init()
     {
+        if ($this->get_current_task() === 'discussion' || $this->get_current_task() === 'tchat') {
+            $this->rc()->output->redirect([
+                '_task' => 'tchap',
+            ]);
+        }
+
         $rcmail = rcmail::get_instance();
 
         // Chargement de la conf

@@ -276,6 +276,33 @@ class PlanningManager extends MelObject {
       //On supprime les loaders
       $(`#${ID_LOADER}`).remove();
       $(`#${ID_BACKGROUND_LOADER}`).remove();
+
+      if (!this._unset_busy._t) {
+        this._unset_busy._t = setTimeout(() => {
+          let frame;
+          const interval = setInterval(() => {
+            $(window).resize();
+
+            frame = MelEnumerable.from(parent.$('iframe'))
+              .where(
+                (x) => x.contentWindow.location.href === window.location.href,
+              )
+              .firstOrDefault();
+
+            if (frame) {
+              if (
+                frame.style.display !== 'none' &&
+                $('.wsp-services').css('display') !== 'none'
+              ) {
+                $(window).resize();
+                frame = null;
+                this._unset_busy._t = null;
+                clearInterval(interval);
+              }
+            }
+          }, 100);
+        }, 1000);
+      }
     }
   }
 

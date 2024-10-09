@@ -217,7 +217,8 @@ function Start(uid, hasAriane, datas) {
     hasAriane,
     datas,
   });
-  top.rcmail.addEventListener('frame_loaded', (args) => {
+
+  top.rcmail.add_event_listener_ex('frame_loaded', 'wsp-tchap', (args) => {
     if (
       top.rcmail.env.current_task === 'workspace' &&
       args.eClass === 'tchap'
@@ -229,11 +230,9 @@ function Start(uid, hasAriane, datas) {
           'src',
           rcmail.env.tchap_url +
             '#/room/' +
-            rcmail.env.current_workspace_tchap_channel.id,
+            top.current_workspace_in_background.get()[0].contentWindow.rcmail
+              .env.current_workspace_tchap_channel.id,
         );
-      // frame = top.$('.tchap-frame')[0].contentWindow.$('#tchap_frame');
-      // frame.location.src =
-      //   rcmail.env.tchap_url + rcmail.env.current_workspace_tchap_channel.id;
     }
   });
 }

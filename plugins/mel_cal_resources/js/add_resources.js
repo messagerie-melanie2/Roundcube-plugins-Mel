@@ -338,6 +338,17 @@ class ResourceDialog extends MelObject {
       ResourceDialog.GetRessourceLocationFormat(current_resource);
     this._location.onchange.call();
 
+    //Changer le status si besoin
+    if (!(EventView.INSTANCE.parts.status._$field.val() || false))
+      EventView.INSTANCE.parts.status._$field.val('FREE').change();
+
+    //Changer la réccurence
+    EventView.INSTANCE.parts.recurrence._$fakeField
+      .val(EMPTY_STRING)
+      .addClass('disabled')
+      .attr('disabled', 'disabled')
+      .change();
+
     if (!EventView.INSTANCE.is_jquery_dialog()) {
       //On remet la modale globale comme avant
       EventView.INSTANCE.get_dialog()
@@ -491,6 +502,14 @@ class ResourceDialog extends MelObject {
         this.dialog._$dialog.find('.input-time-start').show();
         this.dialog._$dialog.find('.input-time-end').show();
       }
+
+      this.get_current_page_resource()._$calendar.fullCalendar(
+        'gotoDate',
+        start,
+      );
+      this.get_current_page_resource()._$calendar.fullCalendar('refetchEvents');
+
+      this.get_current_page_resource().refresh_calendar_date();
     } else
       this._event_on_show.push(this.set_date.bind(this), start, end, all_day);
 

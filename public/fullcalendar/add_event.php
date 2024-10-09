@@ -10,19 +10,13 @@ if (!defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
-
-if ($config['DEV']) {
-  $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
-} else {
-  $dir = __DIR__ . '../..';
-}
-
 // Inclusion de l'ORM M2
 @include_once 'includes/libm2.php';
 
+@include_once '../lib/mel/mel.php';
+
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
-require_once $dir . '/vendor/autoload.php';
 
 $data = utils::check_hash_key();
 $data['user']->load();
@@ -41,8 +35,6 @@ $event = new LibMelanie\Api\Mel\Event($data['user'], $calendar);
 $event->uid = utils::generate_uid($_user);
 $event->load();
 
-$events = $calendar->getAllEvents();
-
 $appointment = json_decode($_POST['appointment'], true);
 $attendee_post = json_decode($_POST['attendee'], true);
 
@@ -51,10 +43,20 @@ $event->title = ($appointment['object'] == "custom" || $appointment['object'] ==
 $event->start = new DateTime($appointment['time_start']);
 $event->end = new DateTime($appointment['time_end']);
 $event->description = $appointment['description'];
+$event->timezone = $event->timezone;
+$event->event_creator_id = $data['user']->uid;
+$event->alarm = 0;
+$event->transparency = "OPAQUE";
+$event->event_private = 0;
+$event->modified = $event->created;
+$event->modified_json = $event->created;
+$event->event_status = 2;
+$event->all_day = 0;
+
 if ($appointment['type'] == "webconf") {
-  $event->location = $appointment['location'] . '(' . $appointment['phone'] . ' | ' . $appointment['pin'] . ')';
+  $event->location = $appointment['location'] ? $appointment['location'] . '(' . $appointment['phone'] . ' | ' . $appointment['pin'] . ')' : "";
 } else {
-  $event->location = $appointment['location'];
+  $event->location = $appointment['location'] ?? "";
 }
 
 $_attendees = array();
@@ -83,8 +85,7 @@ if (!is_null($event_response)) {
 
   if ($user_prefs->notification_type === "mail") {
     Mail::SendOrganizerAppointmentMail($organizer, $attendee_post, $appointment);
-  }
-  else {
+  } else {
     SendOrganizerNotification($data['user'], $attendee_post, $appointment);
   }
   header('Content-Type: application/json; charset=utf-8');

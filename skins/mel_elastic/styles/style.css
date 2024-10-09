@@ -177,6 +177,9 @@ main {
   background-color: var(--layout-list-background-color) !important;
   color: var(--secondary-text-color) !important;
 }
+#layout {
+  overflow: unset;
+}
 #layout > div > .header {
   border: none;
 }
@@ -3154,10 +3157,6 @@ html.dark-mode a.melv2-card-title {
 .melv2-card-contents li:first-child > div {
   margin-top: 0;
 }
-.melv2-card .contents li:last-child > div,
-.melv2-card-contents li:last-child > div {
-  margin-bottom: 0;
-}
 .module_Headlines .melv2-card-contents,
 .module_Mails .melv2-card-contents,
 .module_My_day .melv2-card-contents {
@@ -3437,9 +3436,8 @@ html.dark-mode .module_Links .melv2-card {
 .module_Links .melv2-card-contents {
   display: flex;
   flex-wrap: wrap;
-  overflow: unset;
-  height: 260px;
-  max-height: 260px;
+  height: auto;
+  max-height: none;
   justify-content: center;
 }
 .touch .module_Links .melv2-card-contents {
@@ -4440,6 +4438,9 @@ html.layout-large.hidden-large {
 html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons {
   display: block;
 }
+html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons button.submit {
+  display: inline-block !important;
+}
 html.layout-phone .task-mail .popover .menu .dropbutton a.dropdown {
   background: transparent;
 }
@@ -4475,4 +4476,33 @@ html.dark-mode-custom input[type='date']::-webkit-calendar-picker-indicator {
 .material-symbols-outlined.clock-loader.animate::before {
   content: '';
   animation: materialsymbolclockanimate 1s infinite;
+}
+.menu a.alpha-sort-icon::before {
+  font-size: 26px !important;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-variation-settings: 'wght' 300, 'opsz' 48 !important;
+  font-size: 17px !important;
+  transform: scale(1.5) !important;
+  content: '\e053';
+}
+@media screen and (max-width: 904px) {
+  .ui-dialog {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    top: 0 !important;
+  }
+  .ui-dialog .ui-resizable-handle,
+  .ui-dialog .ui-dialog-titlebar-close {
+    display: block !important;
+  }
+}
+.boxwarning .custom-switch .custom-control-label {
+  color: var(--modal-title-color);
+}
+.task-mel_metapage #eventfreebusy {
+  height: 100% !important;
 }

@@ -12,6 +12,7 @@ $labels["contacts_organization"] = "Gestion des Annuaires";
 $labels["last_frame_opened"] = "Revenir à";
 $labels["nothing"] = "Aucun";
 $labels["empty_nothing"] = "Rien";
+$labels['tchap'] = 'Tchap';
 
 $labels["nextcloud_connection_error"] = "Impossible de récupérer les documents, l'authentification a échoué ou le plugin n'est pas bien configuré.";
 $labels["a_worspace"] = "Un espace de travail";
@@ -488,3 +489,5 @@ $labels['delete'] = 'Supprimer';
 
 $labels['external_user_name'] = "Utilisateur externe au Bnum";
 $labels['external_user_title'] = "Cet utilisateur n'a pas encore été créé dans le Bnum. À la création de l'espace, il recevra un courriel pour initialiser son compte.";
+
+$labels['login_da'] = "Si vous êtes sur internet et n'avez pas activé l'authentification à double facteur vous ne pouvez pas vous connecter.<br/>Vous devez passer par le VPN pour vous connecter et ainsi activer l'authentification à deux facteurs";

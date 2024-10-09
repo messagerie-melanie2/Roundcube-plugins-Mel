@@ -273,14 +273,40 @@ class MelFolderLink extends MelBaseLink {
     }
   }
 
+  toggleMultilink() {
+    if (!this.isOpen)
+      this.openMultilink();
+    else
+      this.closeMultilink();
+  }
+
   /**
-   * Ouvre/Ferme un dossier
+   * Ouvre un dossier
    */
   openMultilink() {
-    $('#link-block-' + this.id).toggleClass('multilink-close');
-    $('#link-block-' + this.id).toggleClass('multilink-open');
-    $(`#link-block-${this.id} li.link-block`).toggleClass('sublink');
-    this.isOpen = !this.isOpen;
+    //Si un autre dossier est déjà ouvert
+    if (MelFolderLink.folderOpen) {
+      this.closeMultilink(MelFolderLink.folderOpen.id);
+      MelFolderLink.folderOpen.isOpen = false;
+    }
+
+    $('#link-block-' + this.id).removeClass('multilink-close');
+    $('#link-block-' + this.id).addClass('multilink-open');
+    $(`#link-block-${this.id} li.link-block`).removeClass('sublink');
+
+    MelFolderLink.folderOpen = this;
+    this.isOpen = true;
+  }
+
+  /**
+   * Ferme un dossier
+   */
+  closeMultilink(id = this.id) {
+    $('#link-block-' + id).addClass('multilink-close');
+    $('#link-block-' + id).removeClass('multilink-open');
+    $(`#link-block-${id} li.link-block`).addClass('sublink');
+
+    this.isOpen = false;
   }
 
   /**
@@ -334,7 +360,7 @@ class MelFolderLink extends MelBaseLink {
       .div({
         id: 'link-id-' + this.id,
         class: 'multilink-icon-container',
-        onclick: this.openMultilink.bind(this),
+        onclick: this.toggleMultilink.bind(this),
       })
       .ul({
         id: 'links-container-' + this.id,
@@ -350,6 +376,14 @@ class MelFolderLink extends MelBaseLink {
       .generate();
   }
 }
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default 'false'
+ */
+MelFolderLink.folderOpen = false;
 
 class MelLinkVisualizer extends MelLink {
   constructor(id, title, link, image, inFolder = false, icon = null) {
@@ -703,23 +737,25 @@ class MelLinkVisualizer extends MelLink {
 }
 
 class MelStoreLink extends MelLinkVisualizer {
-  constructor(id, title, link, icon, description, inLinks = false) {
-    super(id, title, link, null, null, icon);
-    this._setup_vars(description, link, inLinks);
+  constructor(id, title, link, icon, description, inLinks = false, image = null) {
+    super(id, title, link, null, null, icon, image);
+    this._setup_vars(description, link, inLinks, image);
   }
 
   _init() {
     super._init();
     this.description = '';
     this.inLinks = false;
+    this.image = null;
 
     return this;
   }
 
-  _setup_vars(description, link, inLinks) {
+  _setup_vars(description, link, inLinks, image) {
     super._setup_vars(link, false);
     this.description = description;
     this.inLinks = inLinks;
+    this.image = image;
 
     return this;
   }
@@ -728,17 +764,23 @@ class MelStoreLink extends MelLinkVisualizer {
    * Affiche un lien dans la modale de bibliothèque d'application
    */
   displayStoreLink() {
-    return MelHtml.start
+    let html = MelHtml.start
       .li({
         id: 'store-link-block-' + this.id,
         title: this.title,
         class: 'store-link-block',
         'data-id': this.id,
       })
-      .div({ class: 'store-link-icon-container' })
-      .icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' })
-      .end('icon')
-      .end('div')
+      .div({ class: 'store-link-icon-container' });
+
+    if (this.image) {
+      html = html.img({ src: this.image ?? '' });
+    }
+    else if (this.icon) {
+      html = html.icon(this.icon, { id: 'link-icon-' + this.id, class: 'link-with-icon' }).end('icon');
+    }
+
+    html = html.end('div')
       .div({ class: 'store-link-text' })
       .a({
         id: 'store-link-id-' + this.id,
@@ -768,5 +810,7 @@ class MelStoreLink extends MelLinkVisualizer {
       .end('button')
       .end('li')
       .generate();
+
+    return html;
   }
 }

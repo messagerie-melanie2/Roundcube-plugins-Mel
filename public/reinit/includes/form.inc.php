@@ -12,7 +12,7 @@
                     <input type="hidden" name="_h" id="hash" value="<?= $hash; ?>">
                     <input type="hidden" name="_firstname" id="firstname" value="<?= $user->firstname; ?>">
                     <input type="hidden" name="_lastname" id="lastname" value="<?= $user->lastname; ?>">
-                    <label for="firstname" class="active">E-mail</label>
+                    <label for="email" class="active">E-mail</label>
                 </div>
                 <div class="controls">
                     <input type="password" name="_password" id="password" class="floatLabel" required>

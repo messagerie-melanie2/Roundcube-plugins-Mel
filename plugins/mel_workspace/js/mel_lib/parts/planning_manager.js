@@ -467,7 +467,38 @@ class PlanningManager extends MelObject {
       },
     );
 
-    this.rcmail().addEventListener('frame_opened', this._rerender.bind(this));
+    const is_top = true;
+    if (this.rcmail(is_top).add_event_listener_ex) {
+      this.rcmail(is_top).add_event_listener_ex(
+        'frame_opened',
+        'planning',
+        (args) => {
+          if (args.eClass === 'workspace') {
+            const func = () => {
+              $(window).resize();
+              let frame = this.select_frame('workspace');
+              $(frame[0].contentWindow).resize();
+  
+              let wsp = frame[0].contentWindow.find('.side-workspaces');
+  
+              if (wsp.length > 0) {
+                for (const element of wsp.find('iframe')) {
+                  $(element.contentWindow).resize();
+                }
+              }
+
+              frame = null;
+              wsp = null;
+            }
+
+            func();
+            setTimeout(() => {
+              func();
+            }, 100);
+          }
+        },
+      );
+    }
   }
 
   //           BINDS         //
@@ -492,8 +523,9 @@ class PlanningManager extends MelObject {
    */
   _rerender_action() {
     if (this.calendar) {
-      this.calendar.rerenderEvents();
-      this.calendar.render();
+      // this.calendar.rerenderEvents();
+      // this.calendar.render();
+      $(window).resize();
     }
   }
 

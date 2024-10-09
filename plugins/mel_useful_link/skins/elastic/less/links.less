@@ -1,4 +1,4 @@
-//compress:false
+//compress:true
 @import '../../../../../skins/mel_elastic/styles/less/main.less';
 
 .before() {
@@ -166,6 +166,7 @@ button {
 }
 
 .hidden-link {
+
   &.tak,
   .tools & {
     display: none !important;
@@ -241,7 +242,7 @@ button {
       content: '';
       position: absolute;
       top: 0;
-      left: 23px;
+      left: 13px;
       width: 75px;
       height: 75px;
       border-radius: 15px;
@@ -277,8 +278,9 @@ button {
     .multilink-container {
       padding: 5px !important;
       justify-content: start;
+
       .link-block {
-        margin-left: 28px;
+        margin: 0 6px;
         margin-top: 2px;
       }
     }
@@ -294,6 +296,7 @@ button {
         display: none;
       }
     }
+
     .multilink-icon-title {
       max-width: 360px;
     }
@@ -305,6 +308,7 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 12px;
   }
 
   .multilink-title-open {
@@ -320,6 +324,12 @@ button {
 .links-items {
   display: flex;
   flex-wrap: wrap;
+  align-content: baseline;
+}
+
+.mel-portal-ulinks {
+  max-height: 390px;
+  margin-top: 30px;
 }
 
 .link-space-end {
@@ -375,7 +385,7 @@ button {
   // margin: 10px 20px;
   padding: 0;
   position: relative;
-  width: 120px;
+  width: 100px;
   align-items: center;
 
   .link-icon-container {
@@ -396,7 +406,7 @@ button {
       content: '';
       position: absolute;
       top: 0;
-      left: 23px;
+      left: 13px;
       width: 75px;
       height: 75px;
       border-radius: 15px;
@@ -414,7 +424,7 @@ button {
     .link-icon-image {
       width: inherit;
       height: inherit;
-      border-radius: 18px;
+      border-radius: inherit;
     }
 
     .link-icon-no-image {
@@ -441,7 +451,8 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 143px;
+    max-width: 110px;
+    font-size: 12px;
   }
 }
 
@@ -574,6 +585,9 @@ button {
 
     .store-link-icon-container {
       &:extend(.link-block:not(.sublink) .link-icon-container);
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       .link-with-icon {
         display: flex;
@@ -585,6 +599,12 @@ button {
         align-items: center;
         color: var(--main-text-color);
       }
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: inherit;
+      }
     }
 
     .store-link-text {
@@ -592,8 +612,9 @@ button {
       flex-direction: column;
       margin-left: 10px;
       align-items: flex-start;
-      gap: 10px;
+      gap: 2px;
       flex: 1 0 0;
+      height: 63px;
 
       .store-link-icon-title {
         font-weight: bold;
@@ -623,6 +644,8 @@ button {
     display: flex;
     padding: 0;
     gap: 10px;
+    padding: 4px;
+    padding-bottom: 0;
 
     li {
       display: flex;
@@ -637,17 +660,17 @@ button {
         background-color: transparent;
 
         &.active {
-          background-color: var(
-            --message-list-quick-filter-active-background-color
-          );
+          background-color: var(--message-list-quick-filter-active-background-color);
           color: var(--message-list-quick-filter-active-text-color);
+        }
+
+        &:focus {
+          outline: none !important;
         }
 
         &:hover {
           color: var(--message-list-quick-filter-hover-text-color);
-          background-color: var(
-            --message-list-quick-filter-hover-background-color
-          );
+          background-color: var(--message-list-quick-filter-hover-background-color);
         }
 
         &::first-letter {
@@ -712,6 +735,7 @@ button {
         font-size: 33px;
       }
     }
+
     .image-preview {
       width: 45px;
       height: 45px;
@@ -729,4 +753,13 @@ button {
       }
     }
   }
+}
+
+.mul_right_buttons {
+  position: absolute;
+  right: 15px;
+  height: 35px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }

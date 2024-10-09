@@ -1,5 +1,5 @@
-import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum';
-import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants';
+import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 
 export { FavoriteLoader };
@@ -105,6 +105,11 @@ class FavoriteLoader extends MelObject {
     return this.save_favorites(loaded.data);
   }
 
+  clear() {
+    this._cleared = true;
+    return this._set_date(moment().startOf('day').substract(1, 'd'));
+  }
+
   /**
    * Vérifie si les données sont obsolète ou non
    * @param {?FavoriteData} [loaded=null] Données déjà chargés. Si ce n'est pas le cas, les récupère depuis lo stockage local. Evite les chargements multiples.
@@ -133,8 +138,9 @@ class FavoriteLoader extends MelObject {
   async load_favorites() {
     const loaded = this._get_data_saved();
 
-    if (!this.is_same_date(loaded)) {
+    if (this._cleared || !this.is_same_date(loaded)) {
       const busy = rcmail.set_busy(true, 'loading');
+      this._cleared = false;
 
       await this.http_internal_post({
         task: 'mel_cal_resources',
@@ -216,6 +222,29 @@ class FavoriteLoader extends MelObject {
    */
   static IsSameDate(type) {
     return this._Get(type).is_same_date();
+  }
+
+  /**
+   * Le prochain chargement de favoris sera depuis la bdd.
+   * @param {?string} [type=null]
+   * @returns {FavoriteData | typeof FavoriteLoader}
+   */
+  static Clear(type = null) {
+    if (type) return this._Get(type).clear();
+    else {
+      const keys = Object.keys(
+        JSON.parse(
+          localStorage.getItem(mel_metapage.Storage._getDataStore().name),
+        ),
+      );
+
+      for (const iterator of MelEnumerable.from(keys).where((x) =>
+        x.includes('favorite-'),
+      )) {
+        mel_metapage.Storage.remove(iterator);
+      }
+      return this;
+    }
   }
 
   /**

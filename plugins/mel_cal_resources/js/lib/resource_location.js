@@ -154,7 +154,18 @@ class ResourceLocation extends AExternalLocationPart {
       this._update_old_attendees();
       this._load_attendee_data();
     }
+
+    EventView.INSTANCE.parts.recurrence._$fakeField
+      .val(EMPTY_STRING)
+      .attr('disabled', 'disabled')
+      .addClass('disabled')
+      .change();
+
     return this;
+  }
+
+  changed_to_this() {
+    if (!window.start_planify) this.force_click();
   }
 
   /**
@@ -242,6 +253,25 @@ class ResourceLocation extends AExternalLocationPart {
     }
 
     if (this.page) this.page.onclickafter.clear();
+
+    if (
+      MelEnumerable.from(EventView.INSTANCE.parts.location.locations)
+        .select((x) => x.value.option_value())
+        .where((x) => x === 'flex-office')
+        .count() -
+        1 >
+      0
+    ) {
+      EventView.INSTANCE.parts.recurrence._$fakeField
+        .val(EMPTY_STRING)
+        .attr('disabled', 'disabled')
+        .addClass('disabled')
+        .change();
+    } else {
+      EventView.INSTANCE.parts.recurrence._$fakeField
+        .removeAttr('disabled')
+        .removeClass('disabled');
+    }
   }
 
   /**
@@ -402,6 +432,23 @@ if (!window.mel_cal_resource_loaded) {
       last.hide_attendee();
     } else if (new_loc.constructor.name.includes(ResourceLocation.name)) {
       new_loc.show_attendee();
+    }
+
+    if (
+      MelEnumerable.from(EventView.INSTANCE.parts.location.locations)
+        .select((x) => x.value.option_value())
+        .where((x) => x === 'flex-office')
+        .any()
+    ) {
+      EventView.INSTANCE.parts.recurrence._$fakeField
+        .val(EMPTY_STRING)
+        .attr('disabled', 'disabled')
+        .addClass('disabled')
+        .change();
+    } else {
+      EventView.INSTANCE.parts.recurrence._$fakeField
+        .removeAttr('disabled')
+        .removeClass('disabled');
     }
   });
 

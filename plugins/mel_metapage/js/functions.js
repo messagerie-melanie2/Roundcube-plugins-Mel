@@ -77,6 +77,16 @@ function m_mp_Create() {
   FullscreenItem.close_if_exist();
   m_mp_step3_param.datas = null;
 
+  if (
+    ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
+    !$('.wekan-frame').length
+  )
+    m_mp_Create.current_promise = mel_metapage.Functions.change_frame(
+      'wekan',
+      false,
+      true,
+    );
+
   //window.create_popUp = undefined;
   //Si problème de configuration, on gère.
   window.mel_metapage_tmp = rcmail.env.is_stockage_active ? true : null;
@@ -340,7 +350,10 @@ function m_mp_Create() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('create-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('help-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           const element = actions[key];
@@ -353,8 +366,7 @@ function m_mp_Create() {
                     `);
         }
       }
-
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('create-initialized');
     }
     window.create_popUp.close();
 
@@ -496,7 +508,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -645,7 +657,7 @@ function m_mp_step3_param(type) {
         let $param_button = $master_button.parent().find('.under-button');
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -720,7 +732,7 @@ function m_mp_step3_param(type) {
             case 'already_exist':
               $param_button.addClass('selected');
               $select.attr('disabled', 'disabled').addClass('disabled');
-              rcmail.set_busy(true, 'loading');
+              const busy = rcmail.set_busy(true, 'loading');
               $custom_name_div.css('display', 'none');
               mel_metapage.Functions.post(
                 mel_metapage.Functions.url('wekan', 'get_user_board'),
@@ -744,7 +756,16 @@ function m_mp_step3_param(type) {
                     .removeAttr('disabled', 'disabled')
                     .removeClass('disabled');
                 },
-              );
+                (err) => {
+
+                  rcmail.display_message('Erreur lors de la récupération des tableaux', 'error');
+                }
+              ).always(() => {
+                rcmail.set_busy(false, 'loading', busy);
+                $select
+                  .removeAttr('disabled', 'disabled')
+                  .removeClass('disabled');
+              })
 
               break;
 
@@ -787,7 +808,7 @@ function m_mp_step3_param(type) {
         let custom_channel_datas = null;
         const default_custom_value =
           have_datas && m_mp_step3_param.datas[type].mode === 'custom_name'
-            ? m_mp_step3_param?.datas[type]?.value ?? ''
+            ? (m_mp_step3_param?.datas[type]?.value ?? '')
             : null;
 
         const html_title =
@@ -996,12 +1017,13 @@ function m_mp_createworkspace() {
       mel_metapage.Functions.url('mel_metapage', 'get_create_workspace'),
       {},
       (datas) => {
+        // eslint-disable-next-line no-async-promise-executor
         if ($('#globallist').length > 0) return;
 
         create_popUp.contents.html(
           html +
-            datas +
-            `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
+          datas +
+          `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`,
         );
 
         if ($('#tmpavatar').find('a').length === 0)
@@ -1273,7 +1295,7 @@ async function m_mp_check_w(step, next) {
   }
 }
 
-function m_mp_CreateWorkSpace() {
+async function m_mp_CreateWorkSpace() {
   rcmail.set_busy(true);
   rcmail.display_message("Création d'un espace de travail...", 'loading');
   let datas = {
@@ -1281,8 +1303,8 @@ function m_mp_CreateWorkSpace() {
       $('#worspace-avatar-a').find('img').length === 0
         ? false
         : $('#worspace-avatar-a')
-            .find('img')[0]
-            .src.replace(window.location.origin, ''),
+          .find('img')[0]
+          .src.replace(window.location.origin, ''),
     title: $('#workspace-title').val(),
     desc: $('#workspace-desc').val(),
     end_date: $('#workspace-date-end').val(),
@@ -1309,6 +1331,17 @@ function m_mp_CreateWorkSpace() {
   $('#worspace-avatar-a').css('display', 'none').appendTo($('#layout'));
   create_popUp.contents.html('<span class=spinner-border></span>');
   create_popUp.editTitle('<h2 class=""><span>Chargement...</span></h2>');
+
+  if (m_mp_Create.current_promise) {
+    await m_mp_Create.current_promise;
+    m_mp_Create.current_promise = null;
+  } else if (
+    ($('#otherapps a.wekan').length || $('#taskmenu a.wekan').length) &&
+    !$('.wekan-frame').length
+  ) {
+    await mel_metapage.Functions.change_frame('wekan', false, true);
+  }
+
   $.ajax({
     // fonction permettant de faire de l'ajax
     type: 'POST', // methode de transmission des données au fichier php
@@ -1484,7 +1517,7 @@ async function m_mp_get_all_hashtag(
                 `La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`,
               );
             }
-          } catch (error) {}
+          } catch (error) { }
         },
       })
       .always(() => {
@@ -1562,7 +1595,7 @@ function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
       }
       querry.css('display', 'none').parent().attr('data-visible', false);
     }
-  } catch (error) {}
+  } catch (error) { }
 }
 
 function m_mp_autocomplete(element, force = false) {
@@ -1754,60 +1787,63 @@ function m_mp_add_users() {
   });
 
   if (users.length > 0) {
-        $('#mm-wsp-loading').css('display', '');
-        return mel_metapage.Functions.post(
-        mel_metapage.Functions.url('mel_metapage', 'check_users'),
-        {
-            _users: users,
-        },
-        (datas) => {
-            datas = JSON.parse(datas);
-            let html;
-            let querry = $('#mm-cw-participants').css(
-              'height',
-              `${window.innerHeight - 442}`,
-            );
+    $('#mm-wsp-loading').css('display', '');
+    return mel_metapage.Functions.post(
+      mel_metapage.Functions.url('mel_metapage', 'check_users'),
+      {
+        _users: users,
+      },
+      (datas) => {
+        datas = JSON.parse(datas);
+        let html;
+        let querry = $('#mm-cw-participants').css(
+          'height',
+          `${window.innerHeight - 442}`,
+        );
 
-            /**
-             * Ajouter un utilisateur
-             * @param {*} element 
-             */
-            function addUser(element) {
-                html = '<li>';
-                html += '<div class="row" style="margin-top:15px">';
-                html += '<div class="col-2">';
-                html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
-                html += '</div>';
-                html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
-                html += `<span class="name">${element.name}</span><br/>`;
-                html += `<span class="email">${element.email}</span>`;
-                html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>`;
-                html += '</div>';
-                html += '</div></li>';
+        /**
+         * Ajouter un utilisateur
+         * @param {*} element
+         */
+        function addUser(element) {
+          html = '<li>';
+          html += '<div class="row" style="margin-top:15px">';
+          html += '<div class="col-2">';
+          html += `<div class="dwp-round" style="background-color:var(--mel-button-background-color)"><bnum-avatar style="width:100%; height:100%;" data-email="${element.email}" data-forceload="true"></bnum-avatar></div>`;
+          html += '</div>';
+          html += `<div class="col-10 workspace-users-added" ${element.title ? `title="${element.title}"` : ''}>`;
+          html += `<span class="name">${element.name}</span><br/>`;
+          html += `<span class="email">${element.email}</span>`;
+          html +=
+            '<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;background-color:var(--input-mel-background-color);color: var(--input-mel-text-color);">Retirer <span class=icon-mel-minus></span></button>';
+          html += '</div>';
+          html += '</div></li>';
 
-                querry.append(html);
-            }
-
-            // Utilisateurs internes
-            for (let index = 0; index < datas.added.length; ++index) {
-                addUser(datas.added[index]);
-            }
-
-            // Utilisateurs externes
-            for (let index = 0; index < datas.externs.length; ++index) {
-                addUser(datas.externs[index]);
-            }
-
-            // Utilisateurs non trouvés
-            for (let it = 0; it < datas.unexist.length; it++) {
-                const element = datas.unexist[it];
-                rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
-            }
+          querry.append(html);
         }
-        ).always(() => {
-            $('#mm-wsp-loading').css('display', 'none');
-        });
-    }
+
+        // Utilisateurs internes
+        for (let index = 0; index < datas.added.length; ++index) {
+          addUser(datas.added[index]);
+        }
+
+        // Utilisateurs externes
+        for (let index = 0; index < datas.externs.length; ++index) {
+          addUser(datas.externs[index]);
+        }
+
+        // Utilisateurs non trouvés
+        for (let it = 0; it < datas.unexist.length; it++) {
+          const element = datas.unexist[it];
+          rcmail.display_message(
+            "impossible d'ajouter " + element + " à l'espace de travail !",
+          );
+        }
+      },
+    ).always(() => {
+      $('#mm-wsp-loading').css('display', 'none');
+    });
+  }
 }
 
 function m_mp_remove_user(e) {
@@ -2167,7 +2203,10 @@ function m_mp_Help() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('help-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('create-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           //On cache l'onboarding sur mobile
@@ -2184,7 +2223,7 @@ function m_mp_Help() {
         }
       }
 
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('help-initialized');
     }
     window.help_popUp.close();
 
@@ -2511,8 +2550,8 @@ function m_mp_UpdateCreateDoc(json) {
     (json.tags !== undefined && json.tags.includes('f')
       ? rcmail.gettext('mel_metapage.new_f')
       : rcmail.gettext('mel_metapage.new_n')) +
-      ' ' +
-      rcmail.gettext('mel_metapage.' + json.name).toLowerCase(),
+    ' ' +
+    rcmail.gettext('mel_metapage.' + json.name).toLowerCase(),
   );
   $('#' + mel_metapage.Ids.create.doc_input_ext).attr(
     'placeholder',
@@ -2593,8 +2632,8 @@ async function m_mp_CreateDoc() {
       (json.tags !== undefined && json.tags.includes('f')
         ? 'Nouvelle'
         : 'Nouveau') +
-        ' ' +
-        json.name.toLowerCase(),
+      ' ' +
+      json.name.toLowerCase(),
     );
   if ($('#' + mel_metapage.Ids.create.doc_input_ext).val() === '')
     $('#' + mel_metapage.Ids.create.doc_input_ext).val(json.default_ext);
@@ -2785,7 +2824,7 @@ async function m_mp_CreateDocCurrent(val = null, close = true) {
   //console.log("7 change page");
   m_mp_CreateOrOpenFrame(
     'stockage',
-    () => {},
+    () => { },
     () => {
       rcmail.set_busy(false);
       rcmail.clear_messages();
@@ -2804,7 +2843,7 @@ function m_mp_CreateDocNotCurrent() {
   );
   m_mp_CreateOrOpenFrame(
     'stockage',
-    () => {},
+    () => { },
     () => {
       rcmail.set_busy(true, 'loading');
       $('.stockage-frame')[0].src =
@@ -2874,7 +2913,7 @@ function m_mp_DecodeUrl() {
 async function m_mp_CreateOrOpenFrame(
   frameClasse,
   funcBefore,
-  func = () => {},
+  func = () => { },
   changepage = true,
 ) {
   if (funcBefore !== null) funcBefore();
@@ -2927,8 +2966,8 @@ function m_mp_CreateEvent(_action = null) {
   const action =
     _action === null
       ? () => {
-          m_mp_set_storage('calendar_create');
-        }
+        m_mp_set_storage('calendar_create');
+      }
       : _action;
   const calendar = 'calendar';
   //console.log(window.rcube_calendar_ui, rcmail.env.current_frame_name, rcmail.env.task);
@@ -3012,7 +3051,7 @@ function m_mp_OpenTask() {
 function m_mp_close_ariane() {
   try {
     event.preventDefault();
-  } catch (e) {}
+  } catch (e) { }
 
   if (parent.mel_metapage.PopUp.ariane !== undefined)
     parent.mel_metapage.PopUp.ariane.hide();
@@ -3401,9 +3440,9 @@ function external_link_modal(_url, isSuspect = false) {
             class: 'custom-control-label option-switch no-click-focus pl-6',
           },
           rcmail.gettext('mel_metapage.always_authorize') +
-            '<span class="external_domain">' +
-            domain +
-            '</span>',
+          '<span class="external_domain">' +
+          domain +
+          '</span>',
         ),
       ],
     });
@@ -3433,9 +3472,9 @@ function external_link_modal(_url, isSuspect = false) {
             class: 'custom-control-label option-switch no-click-focus pl-6',
           },
           '<span class="external_domain">' +
-            domain +
-            '</span>' +
-            rcmail.gettext('mel_metapage.warning_suspect_url'),
+          domain +
+          '</span>' +
+          rcmail.gettext('mel_metapage.warning_suspect_url'),
         ),
       ],
     });

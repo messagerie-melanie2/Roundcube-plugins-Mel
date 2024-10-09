@@ -25,8 +25,7 @@ aide/config_search.php
 plugins/mel_portail/modules/fluxrss/rss
 plugins/mel_portail/config
 plugins/mel_help/public/*
+plugins/mel_useful_link/config/*
 plugins/mel_news/files/*
 plugins/mel_nextcloud/nextcloud/apps/*.tar.gz
 .vscode/launch.json
-.vscode/launch.json
-.vscode/

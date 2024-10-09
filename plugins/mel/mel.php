@@ -904,7 +904,13 @@ class mel extends rcube_plugin
           'type' => 'submit',
           'value' => $this->rc->gettext('login')
         ), $this->rc->gettext('login')));
-        if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
+        // Mot de passe oublié pour les externes
+        if ($this->rc->config->get('enable_external_users', false)) {
+          $args['content'] .= html::div(array('id' => 'bali-reset-password'), html::a(array(
+            "href" => "./public/forgotten/"
+          ), $this->gettext('password forgotten')));
+        }
+        else if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
           $args['content'] .= html::div(array('id' => 'bali-reset-password'), html::a(array(
             "href" => "./changepassword/index.php"
           ), $this->gettext('no bal')));

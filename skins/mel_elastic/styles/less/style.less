@@ -142,6 +142,8 @@ main {
 }
 
 #layout {
+  overflow: unset;
+
   & > div {
     & > .header {
       .mel-no-border();
@@ -4659,7 +4661,7 @@ button {
     }
 
     &:last-child > div {
-      margin-bottom: 0;
+      // margin-bottom: 0;
     }
   }
 }
@@ -5046,9 +5048,8 @@ button.melv2-sec-nav-correction {
     display: flex;
     // padding: 0 308px;
     flex-wrap: wrap;
-    overflow: unset;
-    height: 260px;
-    max-height: 260px;
+    height: auto;
+    max-height: none;
     justify-content: center;
 
     .touch & {
@@ -6012,6 +6013,10 @@ html.layout-large {
 
 html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons {
   display: block;
+
+  button.submit {
+    display: inline-block !important;
+  }
 }
 
 html.layout-phone .task-mail {
@@ -6071,5 +6076,46 @@ html.dark-mode-custom {
         animation: materialsymbolclockanimate 1s infinite;
       }
     }
+  }
+}
+
+.menu {
+  a {
+    &.alpha-sort-icon {
+      &::before {
+        ._material-icon() !important;
+        content: '\e053';
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 904px) {
+  .ui-dialog {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    top: 0 !important; // for Chrome
+
+    .ui-resizable-handle,
+    .ui-dialog-titlebar-close {
+      display: block !important;
+    }
+  }
+}
+
+.boxwarning {
+  .custom-switch {
+    .custom-control-label {
+      color: var(--modal-title-color);
+    }
+  }
+}
+
+.task-mel_metapage {
+  #eventfreebusy {
+    height: 100% !important;
   }
 }

@@ -47,31 +47,42 @@ class mel_wekan extends rcube_plugin
 
         $need_button = 'taskbar';
         if (class_exists("mel_metapage")) {
-          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban') ? $need_button : 'otherappsbar';
+            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_kanban') ? $need_button : 'otherappsbar';
         }
 
-        if ($need_button)
-        {
-            $this->add_button(array(
-                'command' => 'wekan',
-                'class'	=> 'button-mel-wekan icon-mel-trello wekan',
-                'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
-                'innerclass' => 'button-inner inner',
-                'label'	=> 'mel_wekan.kanban',
-                'title' => 'mel_wekan.kanban',
-                'type'       => 'link'
-            ), $need_button);
-        }
+        $button_config = array(
+            'command' => 'wekan',
+            'class'    => 'button-mel-wekan icon-mel-trello wekan',
+            'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
+            'innerclass' => 'button-inner inner',
+            'label'    => 'mel_wekan.kanban',
+            'title' => 'mel_wekan.kanban',
+            'type'       => 'link'
+        );
+
+        $params = $this->rc->plugins->exec_hook('main-nav-bar', [
+            'plugin' => 'wekan',
+            'need_button' => $need_button,
+            'button' => $button_config
+        ]);
+
+        if (isset($params) && isset($params->need_button)) $need_button = $params->need_button;
+        if (isset($params) && isset($params->button)) $button_config = $params->button;
+
+        if ($need_button) $this->add_button($button_config, $need_button);
+
+        unset($button_config);
+        unset($params);
+        unset($need_button);
 
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->wekan_url(false), 'kanban');
-
     }
 
     function index()
     {
 
-        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC);
         if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("wekan_startup_url", $startupUrl);
 
         $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
@@ -88,12 +99,12 @@ class mel_wekan extends rcube_plugin
     function load_lib()
     {
         mel_helper::load_helper($this->rc)->include_amel_lib();
- 
-        $files = scandir(__DIR__."/lib");
+
+        $files = scandir(__DIR__ . "/lib");
         $size = count($files);
-        for ($i=0; $i < $size; ++$i) { 
+        for ($i = 0; $i < $size; ++$i) {
             if (strpos($files[$i], ".php") !== false)
-                include_once "lib/".$files[$i];
+                include_once "lib/" . $files[$i];
         }
     }
 
@@ -103,13 +114,13 @@ class mel_wekan extends rcube_plugin
      * @return void
      */
     public function login()
-    {        
+    {
         $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
 
         mel_logs::get_instance()->log(mel_logs::INFO, "[wekan/login]Login de wekan... Utilisteur courant ? $currentUser");
         $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->create_token(driver_mel::gi()->getUser()->uid);
 
-        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? '.json_encode($result));
+        mel_logs::get_instance()->log(mel_logs::INFO, '[wekan/login]Résultat ? ' . json_encode($result));
 
         echo json_encode($result);
         exit;
@@ -152,12 +163,10 @@ class mel_wekan extends rcube_plugin
     {
         $board = $this->create_board($title, $isPublic, $color);
 
-        if ($board["httpCode"] == 200)
-        {
+        if ($board["httpCode"] == 200) {
             $content = json_decode($board["content"]);
 
-            if ($content->_id !== null)
-            {
+            if ($content->_id !== null) {
                 $board = [
                     "httpCode" => 200,
                     "board_id" => $content->_id,
@@ -174,7 +183,6 @@ class mel_wekan extends rcube_plugin
                     $b = $this->wekanApi->delete_swimline($content->_id, $content->defaultSwimlaneId);
                 }
             }
-
         }
 
         return $board;
@@ -283,13 +291,13 @@ class mel_wekan extends rcube_plugin
         $board_exist = false;
         $board = $this->check_board($board);
 
-        if($board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"])
-        || $board["httpCode"] !== null && $board["httpCode"] != 200) 
-        {
+        if (
+            $board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"])
+            || $board["httpCode"] !== null && $board["httpCode"] != 200
+        ) {
             $board_exist = true;
-        }
-        else {
-            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist|".driver_mel::gi()->getUser()->uid."]Recréation d'un board ! : ".json_encode($board));
+        } else {
+            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist|" . driver_mel::gi()->getUser()->uid . "]Recréation d'un board ! : " . json_encode($board));
         }
 
         return $board_exist;
@@ -310,7 +318,6 @@ class mel_wekan extends rcube_plugin
             $archived = json_decode($board["content"])->archived;
 
         return $archived;
-
     }
 
     public function add_tag($board, $label)
@@ -355,28 +362,29 @@ class mel_wekan extends rcube_plugin
         $list = mel_helper::Enumerable($list);
 
         switch ($mode) {
-            case 1://public
+            case 1: //public
                 $perm = 'public';
-            case 2://private
+            case 2: //private
                 if ($mode === 2) $perm = 'private';
             case 3:
-                $list = $list->where(function ($k, $v) use($perm) {
+                $list = $list->where(function ($k, $v) use ($perm) {
                     return $v->permission === $perm;
                 });
                 break;
-            
+
             default:
                 break;
         }
 
-        if ($only_title_and_id) $list = $list->select(function ($k, $v){
+        if ($only_title_and_id) $list = $list->select(function ($k, $v) {
             return [
-                'title' => $v->get_value()->title,
-                'id' => $v->get_value()->id
+                'title' => $v->title,
+                'id' => $v->id
             ];
         });
 
-        echo json_encode($list->toArray());
+        echo $list = json_encode($list->toArray());
+
         exit;
     }
 

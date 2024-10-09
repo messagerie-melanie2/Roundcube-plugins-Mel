@@ -119,7 +119,6 @@ class mel_workspace extends bnum_plugin
      */
     function portal()
     {
-        $this->include_css();
         $this->include_js();
 
         $this->register_action('index', array($this, 'index'));
@@ -361,6 +360,7 @@ class mel_workspace extends bnum_plugin
         ));
         $this->include_script('js/workspace_frame_manager.js');
         $this->load_script_module('index', '/js/mel_lib/');
+        mel_metapage::IncludeAvatar();
         $this->rc->output->set_pagetitle("Espaces de travail");
         $this->rc->output->send('mel_workspace.workspaces');
     }
@@ -1568,6 +1568,8 @@ class mel_workspace extends bnum_plugin
 
     function setup_user_page()
     {
+        mel_metapage::IncludeAvatar();
+
         $env = [];
         $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
         $shares = $this->sort_user($this->currentWorkspace->shares); 
@@ -1580,12 +1582,14 @@ class mel_workspace extends bnum_plugin
             $user = driver_mel::gi()->getUser($value->user); 
             $tmp = $user->name;
             
+            if (!isset($user)) continue;
+
             if (isset($tmp) || $tmp !== '')
             {
                 $html .= html::div(["class" => "row"], 
                 html::div(["class" => "col-2"],
-                    html::div(["class" => "dwp-round", "style" => "background-color:transparent"],
-                        html::tag("img", ["src" => $this->rc->config->get('rocket_chat_url')."avatar/".$value->user])
+                    html::div(["class" => "dwp-round", "style" => "background-color:var(--mel-button-background-color);"],
+                        html::tag("bnum-avatar", ["data-email" => $user->email, 'style' => '--avatar-border-loaded: solid 4px '.$this->get_setting($this->currentWorkspace, 'color')])//$this->rc->config->get('rocket_chat_url')."avatar/".$value->user])
                     )
                 ).
                 html::div(["class" => "col-10"],
@@ -1717,7 +1721,7 @@ class mel_workspace extends bnum_plugin
 
         $count = 0;
         foreach ($services as $key => $value) {
-            if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA /*|| ($key === self::CLOUD && $value)*/ || $key === self::WEKAN)
+            if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA || ($key === self::CHANNEL && !$value) || $key === self::WEKAN)
                 continue;
 
             if ($key === self::CLOUD && 
@@ -1785,18 +1789,22 @@ class mel_workspace extends bnum_plugin
 
         $icon_delete = "icon-mel-trash";
         $env = [];
-        $shares = $this->sort_user($this->currentWorkspace->shares); 
+        $shares = $this->sort_user($workspace->shares); 
         $nbuser = count($shares);
+        $s = $nbuser > 1 ? 's' : '';
 
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
         $html .= "<thead>";
-        $html .= "<tr><td>Utilisateur ($nbuser) </td><td class=\"mel-fit-content\">Droits d'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
+        $html .= "<tr><td>Utilisateur$s ($nbuser) </td><td class=\"mel-fit-content\">Droits d'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
         $html .= "</thead>";
         $share = $this->sort_user($workspace->shares);
         $current_user = driver_mel::gi()->getUser();
 
         foreach ($share as $key => $value) {
             $user =driver_mel::gi()->getUser($value->user);
+
+            if (!isset($user)) continue;
+
             $from_list = $this->_check_if_is_in_list($workspace, $value->user);
             $html .= "<tr>";
             $html .= '<td>'.(count($from_list) > 0 ? '<span style="margin-right:5px;vertical-align: bottom;" class="material-symbols-outlined" title="'.$this->_list_to_title($from_list).'">groups</span>' : ''). $user->fullname."</td>";
@@ -1859,14 +1867,6 @@ class mel_workspace extends bnum_plugin
         // }
         // $html .= "</select>";
         // return $html;
-    }
-        /**
-     * Récupère le css utile pour ce plugin.
-     */
-    function include_css()
-    {
-        // Ajout du css
-        //$this->include_stylesheet($this->local_skin_path().'/workspaces.css');
     }
 
     function include_js()
@@ -2393,23 +2393,24 @@ class mel_workspace extends bnum_plugin
         
         if ($this->get_object($workspace,$service) === null && array_search($service, $services) !== false)
         {
-            if (!isset($default_values)) $default_values = ['channel' => ['mode' => 'default']];
-            else if (!isset($default_values['channel'])) $default_values['channel'] = ['mode' => 'default'];
+            $default_values_key = "tchap-channel";
+            if (!isset($default_values)) $default_values = [$default_values_key => ['mode' => 'default']];
+            else if (!isset($default_values[$default_values_key])) $default_values[$default_values_key] = ['mode' => 'default'];
 
             $uid = null;
             $value = null;
             $config = [];
-            switch ($default_values['channel']['mode']) {
+            switch ($default_values[$default_values_key]['mode']) {
                 case 'default':
-                    $uid = $this->generate_channel_id_via_uid($workspace->uid);
+                    $uid = $workspace->uid;
                 case 'custom_name':
-                    if (!isset($uid)) $uid = $this->generate_channel_id_via_uid($default_values['channel']['value']);
+                    if (!isset($uid)) $uid = $default_values[$default_values_key]['value'];
                     if (class_exists('tchap')) $value = tchap::create_tchap_room($uid, $users);
                     
                     break;
 
                 case 'already_exist':
-                    $value = $default_values['channel']['value']['id'];
+                    $value = $default_values[$default_values_key]['value']['id'];
 
                     $config['edited'] = true;
                     break;
@@ -2617,14 +2618,14 @@ class mel_workspace extends bnum_plugin
                     continue;
             }
             
-            $html[] = $this->create_block($value, $only_epingle, $parsed);
+            $html[] = $this->create_block($value, $only_epingle, $parsed, true);
         } 
 
         $html = implode('', $html);
         return $html;
     }
 
-    function create_block($workspace, $epingle = false, $html = null)
+    function create_block($workspace, $epingle = false, $html = null, $force_avatar_loading = false)
     {
         $username = driver_mel::gi()->getUser($workspace->creator)->name;
 
@@ -2672,7 +2673,7 @@ class mel_workspace extends bnum_plugin
                     $html_tmp[] ='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp[] = '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img alt="'.$s->user.'" src="'.$rc_url."avatar/".$s->user.'" /></div>';
+                $html_tmp[] = '<div data-user="'.$s->user.'" class="dwp-circle dwp-user" title="'.driver_mel::gi()->getUser($s->user)->name.'"><bnum-avatar style="width:100%;height:100%;" data-email="'.driver_mel::gi()->getUser($s->user)->email.'"></bnum-avatar></div>';//<img alt="'.$s->user.'" src="'.$rc_url."avatar/".$s->user.'" /></div>';
                 ++$it;
             }
 

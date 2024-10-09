@@ -1,16 +1,34 @@
-@CHARSET "UTF-8";
+@charset "UTF-8";
 
+#button-create,
 #taskmenu .button-home,
 #taskmenu .button-mail,
 #taskmenu .button-calendar,
-#taskmenu .button-contacts {
-	display: none !important;
+#taskmenu .button-contacts,
+#sections-table #rcmrowmailbox,
+#sections-table #rcmrowmailview,
+#sections-table #rcmrowcompose,
+#sections-table #rcmrowaddressbook,
+#sections-table #rcmrowserver,
+#sections-table #rcmrowencryption,
+#sections-table #rcmrowlabels,
+#sections-table #rcmrowcalendar,
+#settingstabfolders,
+#settingstabidentities,
+#settingstabpluginmelsignatures,
+#settingstabresponses,
+#settingstabpluginmanagesieve,
+#settingstabpluginmel_resources,
+#settingstabpluginmel_statistics,
+#rcmrowinformationspersonnelles,
+#rcmrowgestionnaireabsence,
+#rcmrowaccesinternet,
+#rcmrowgestionnairelistes,
+#rcmrowsuspectsurls,
+#settingstabpluginmelroadmap {
+  display: none !important;
 }
 
 #taskmenu .button-wsp {
-	order: 1;
-}
-
-#button-create {
-	display: none !important;
+  order: 1;
 }

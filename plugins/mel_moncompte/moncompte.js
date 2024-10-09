@@ -54,22 +54,28 @@ $(document).on(
 ); // pass the element as an argument to .on
 
 document.addEventListener('DOMContentLoaded', function () {
-  const passwordField = document.getElementById(
-    'rcmfd_changepassword_newpassword',
-  );
-  const togglePasswordButton = document.getElementById('toggle_password_view');
+  let togglePasswordButton = document.getElementById('toggle_password_view');
 
-  togglePasswordButton.addEventListener('click', function () {
-    const type =
-      passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordField.setAttribute('type', type);
+  if (togglePasswordButton) {
+    togglePasswordButton.addEventListener('click', function () {
+      let passwordField = document.getElementById(
+        'rcmfd_changepassword_newpassword',
+      );
+      const type =
+        passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordField.setAttribute('type', type);
 
-    if (type === 'text') {
-      this.classList.add('text-visible');
-    } else {
-      this.classList.remove('text-visible');
-    }
-  });
+      if (type === 'text') {
+        this.classList.add('text-visible');
+      } else {
+        this.classList.remove('text-visible');
+      }
+
+      passwordField = null;
+    });
+  }
+
+  togglePasswordButton = null;
 });
 
 $(document).on(
@@ -1085,21 +1091,24 @@ rcube_webmail.prototype.calendar_edit = function (calId, data) {
     data = JSON.parse(data.replace(/'/g, '"'));
     const url = 'calendar&_action=calendar';
     cal_data = {
-      'action': 'edit',
-      'c': {
-        'id':calId
-      }
+      action: 'edit',
+      c: {
+        id: calId,
+      },
     };
 
     if (data[0] === 'color') data[1] = data[1].replace(/^#/, '');
     cal_data.c[data[0]] = data[1];
 
     const busy = rcmail.set_busy(true, 'loading');
-        
+
     let config = {
       // fonction permettant de faire de l'ajax
-      type:'POST',
-      url: rcmail.get_task_url(url,window.location.origin + window.location.pathname),
+      type: 'POST',
+      url: rcmail.get_task_url(
+        url,
+        window.location.origin + window.location.pathname,
+      ),
       success: function () {
         if (data[0] === 'name') {
           $('.boxtitle').text(data[1]);
@@ -1109,14 +1118,16 @@ rcube_webmail.prototype.calendar_edit = function (calId, data) {
       error: function (jqXHR, textStatus, errorThrown) {
         console.log('Error:', textStatus, errorThrown);
       },
-      data: cal_data
+      data: cal_data,
     };
 
-    
     $.ajax(config).always(() => {
       rcmail.set_busy(false, 'loading', busy);
-      rcmail.display_message(rcmail.gettext('mel_moncompte.success_modification'), 'confirmation');
-     }); 
+      rcmail.display_message(
+        rcmail.gettext('mel_moncompte.success_modification'),
+        'confirmation',
+      );
+    });
   }
 };
 

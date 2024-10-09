@@ -35,9 +35,7 @@ class Mail
   /**
    * Constructeur privé pour ne pas instancier la classe
    */
-  private function __construct()
-  {
-  }
+  private function __construct() {}
 
   /**
    * Méthode d'envoi du message notification à l'organisateur à la création du sondage
@@ -55,10 +53,10 @@ class Mail
     $to = '=?UTF-8?B?' . base64_encode('"' . $organizer->name . '"') . '?=' . "\r\n <" . $organizer->email . ">";
     $body = file_get_contents(__DIR__ . '/templates/organizer_appointment_mail.html');
     // Replace elements
-    $subject = str_replace("%%attendee_name%%", $attendee['name'], $subject);
+    $subject = str_replace("%%attendee_name%%", $attendee['name'] . ' ' . $attendee['firstname'], $subject);
     $subject = str_replace("%%appointment_date_day%%", $appointment['date_day'], $subject);
     $body = str_replace("%%appointment_object%%", $appointment['object'], $body);
-    $body = str_replace("%%attendee_name%%", $attendee['name']. ' ' .$attendee['firstname'], $body);
+    $body = str_replace("%%attendee_name%%", $attendee['name'] . ' ' . $attendee['firstname'], $body);
     $body = str_replace("%%attendee_email%%", $attendee['email'], $body);
     $body = str_replace("%%appointment_date%%", $appointment['date'], $body);
     $body = str_replace("%%appointment_description%%", $appointment['description'], $body);
@@ -122,6 +120,6 @@ class Mail
 
     $body = str_replace("BEGIN:VEVENT", "METHOD:REQUEST\r\nBEGIN:VEVENT", $body);
 
-    return \LibMelanie\Mail\Mail::Send($from, $to, $subject, $body,null, null, null, null, null, null, null, null, $ics);
+    return \LibMelanie\Mail\Mail::Send($from, $to, $subject, $body, null, null, null, null, null, null, null, null, $ics);
   }
 }

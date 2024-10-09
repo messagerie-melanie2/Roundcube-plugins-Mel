@@ -67,6 +67,7 @@ class MelTemplate {
    * @param {TemplateEvent[]}   [destructured.events=[]] Tableau d'événements à injecter dans le template sous la forme [ { target: target, type: type, listener: listener }, { target: target1, type: type1, listener: listener1 } ] avec target = selecteur
    * @param {Object}  [destructured.htmlContents={}] Liste de html à injecter dans le template sous la forme { selector: html, selector1: html1}
    * @param {RegExp}  [destructured.regex=/%%(\w*)%%/g] Regex à utiliser pour remplacer les données dans le template
+   * @frommoduleparam {MelTemplate} events {@linkto TemplateEvent}
    */
   constructor({ templateSelector = '', data = {}, events = [], htmlContents = {}, regex = /%%(\w*)%%/g } = {}) {
     this.#template = templateSelector;
@@ -99,6 +100,7 @@ class MelTemplate {
    * 
    * @param {TemplateEvent[]} events Tableau d'événements à injecter dans le template sous la forme [ { target: target, type: type, listener: listener }, { target: target1, type: type1, listener: listener1 } ] avec target = selecteur
    * @returns {MelTemplate}
+   * @frommoduleparam {MelTemplate} events {@linkto TemplateEvent}
    */
   setEvents(events) {
     this.#events = events;
@@ -120,7 +122,7 @@ class MelTemplate {
   /**
    * Défini une liste de données à remplacer
    * 
-   * @param {*} data Liste de données à injecter dans le template sous la forme { key: value, key1: value1}
+   * @param {Object} data Liste de données à injecter dans le template sous la forme { key: value, key1: value1}
    * @returns {MelTemplate}
    */
   setData(data) {
@@ -143,11 +145,11 @@ class MelTemplate {
    * Ajoute du html dans un élément du template
    * 
    * @param {string} selector Selecteur de l'élément dans lequel ajouter le html
-   * @param {string} html Html à ajouter
+   * @param {*} html Html à ajouter au format String, Node, NodeList, Object ou Array
    * @returns {MelTemplate}
    */
   addHtml(selector, html) {
-    if (html)
+    if (html && html !== null)
       this.#htmlContents[selector] = html;
     return this;
   }
@@ -168,7 +170,15 @@ class MelTemplate {
     div.innerHTML = html;
 
     for (const selector in this.#htmlContents) {
-      div.querySelector(selector).innerHTML = this.#htmlContents[selector];
+      if (typeof this.#htmlContents[selector] === 'string' || this.#htmlContents[selector] instanceof String) {
+        div.querySelector(selector)?.insertAdjacentHTML('beforeend', this.#htmlContents[selector]);
+      }
+      else if (typeof this.#htmlContents[selector][Symbol.iterator] === 'function') {
+        div.querySelector(selector)?.append(...this.#htmlContents[selector]);
+      }
+      else {
+        div.querySelector(selector)?.append(this.#htmlContents[selector]);
+      }
     }
 
     this.#events.forEach(event => {

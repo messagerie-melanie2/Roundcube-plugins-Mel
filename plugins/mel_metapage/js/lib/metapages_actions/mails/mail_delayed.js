@@ -40,11 +40,13 @@ export class MetapageMailDelayedModule extends MetapageModule {
     if (rcmail.submit_messageform) {
       const rcmail_submit_messageform = rcmail.submit_messageform;
       rcmail.submit_messageform = function (...args) {
-        if (this._already) return;
-
-        this._already = true;
-
         const [draft, saveonly] = args;
+        if (this._already && !draft) return;
+
+        if (!draft) {
+          this._already = true;
+        }
+
         const delay = this.env['mail_delay'] ?? 0;
         const have_delay = delay > 0;
 
@@ -154,7 +156,10 @@ export class MetapageMailDelayedModule extends MetapageModule {
               box.minifier.click();
             });
           }
-        } else rcmail_submit_messageform.call(this, ...args);
+        } else {
+          rcmail_submit_messageform.call(this, ...args);
+          this._already = false;
+        }
       };
     }
 

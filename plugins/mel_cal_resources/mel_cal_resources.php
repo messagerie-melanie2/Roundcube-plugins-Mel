@@ -171,6 +171,8 @@ class mel_cal_resources extends bnum_plugin {
 
         $favs[$uid] = $favorite;
         $this->rc()->user->save_prefs([self::CONFIG_KEY_FAVORITE => $favs]);
+
+        echo json_encode($favorite);
         exit;
     }
 

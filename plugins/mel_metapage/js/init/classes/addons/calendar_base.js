@@ -218,6 +218,13 @@ $(document).ready(() => {
       });
   });
 
+  if (!window.rcube_calendar) return;
+  try {
+    if (!rcube_calendar) return;
+  } catch (error) {
+    return;
+  }
+
   rcube_calendar.prototype.create_event_from_somewhere = async function (
     event = null,
   ) {

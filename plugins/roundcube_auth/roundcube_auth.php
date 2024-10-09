@@ -653,6 +653,12 @@ class roundcube_auth extends rcube_plugin
                         $rcmail->config->get('oidc_redirect', '')
                     );
                     
+                    $timezone = rcube_utils::get_input_value('_timezone', rcube_utils::INPUT_GPC);
+                    if (!isset($_SESSION['timezone']) && isset($timezone) && is_string($timezone) && $timezone !== '_default_') {
+                        $_SESSION['timezone'] = $timezone;
+                        rcube_utils::setcookie('_timezone', $timezone);
+                    } 
+
                     // Authenticate
                     $this->oidc_helper->doAuth();
                 }
@@ -713,7 +719,7 @@ class roundcube_auth extends rcube_plugin
             }
         }
 
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Return args : " . implode($args, ','));
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Return args : " . implode(',', $args));
         return $args;
     }
 

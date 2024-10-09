@@ -10,7 +10,7 @@
                 <div class="controls">
                     <input type="email" name="_email" id="email" value="<?= $user->email; ?>" readonly>
                     <input type="hidden" name="_h" id="hash" value="<?= $hash; ?>">
-                    <label for="firstname" class="active">E-mail</label>
+                    <label for="email" class="active">E-mail</label>
                 </div>
                 <div class="controls">
                     <input type="text" name="_firstname" id="firstname" class="floatLabel" value="<?= $user->firstname; ?>" required>

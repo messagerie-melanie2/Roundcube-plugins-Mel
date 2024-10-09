@@ -26,5 +26,4 @@
 	$('#password').blur(function(){
 		$('.password_hint').hide();
 	});
-
 })(jQuery);

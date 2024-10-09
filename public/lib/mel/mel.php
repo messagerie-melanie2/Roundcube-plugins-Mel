@@ -1,10 +1,13 @@
 <?php
 $root = realpath(dirname(dirname(dirname($_SERVER["SCRIPT_FILENAME"]))));
+
+if (file_exists("$root/bnum/index.php")) $root = "$root/bnum";
+
 if (!defined('INSTALL_PATH')) {
     define('INSTALL_PATH', "$root/");
 }
 if (!defined('RCMAIL_CONFIG_DIR')) {
-    define('RCMAIL_CONFIG_DIR', getenv('ROUNDCUBE_CONFIG_DIR') ?: (INSTALL_PATH . 'config'));
+    define('RCMAIL_CONFIG_DIR', getenv('ROUNDCUBE_CONFIG_DIR') ?: (INSTALL_PATH . (strpos($root, '/bnum/') !== false ? '../' : '') . 'config'));
 }
 
 if (!defined('RCUBE_LOCALIZATION_DIR')) {
@@ -15,7 +18,8 @@ define('RCUBE_INSTALL_PATH', INSTALL_PATH);
 define('RCUBE_CONFIG_DIR',  RCMAIL_CONFIG_DIR.'/');
 require_once 'imel.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/bootstrap.php';
-require_once INSTALL_PATH.'program/lib/Roundcube/rcube_utils.php';
+require_once INSTALL_PATH.
+'program/lib/Roundcube/rcube_utils.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube_config.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube_session.php';
@@ -128,5 +132,47 @@ abstract class AMel implements IMel {
         for ($i=0; $i < $count; ++$i) { 
             self::$plugins[$i]->run();
         }
+    } 
+}
+
+class ConfigMel extends AMel {
+    private $loaded_config;
+
+    public function __construct() {
+        parent::__construct();
+        $this->loaded_config = [];
+    }
+
+    public function load_config($plugin_name, $fname = 'config.inc.php')
+    {
+        if (in_array($fname, $this->loaded_config)) {
+            return true;
+        }
+
+        $this->loaded_config[] = $fname;
+
+        $fpath = INSTALL_PATH."plugins/$plugin_name/$fname";
+        $rcube = rcube::get_instance();
+
+        if (($is_local = is_file($fpath)) && !$rcube->config->load_from_file($fpath)) {
+            rcube::raise_error([
+                    'code' => 527, 'file' => __FILE__, 'line' => __LINE__,
+                    'message' => "Failed to load config from $fpath"
+                ], true, false
+            );
+            return false;
+        }
+        else if (!$is_local) {
+            // Search plugin_name.inc.php file in any configured path
+            return $rcube->config->load_from_file($plugin_name . '.inc.php');
+        }
+
+        return true;
+    }
+
+    public function run(...$args) {}
+
+    public function conf($conf, $df = null) {
+        return rcube::get_instance()->config->get($conf, $df);
     }
 }

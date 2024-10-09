@@ -214,6 +214,11 @@ class M2calendar {
         }
         // MANTIS 4978 : l info de partage a ete trouvee, on remplace par uid
         $user = $_user->uid;
+
+        // 0008506: On peut s'autopartager son calendrier ou sa boite en passant par l'adresse email
+        if ($user == $this->mbox) {
+          return false;
+        }
       }
       $share = driver_mel::gi()->share([$this->calendar]);
       $share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;

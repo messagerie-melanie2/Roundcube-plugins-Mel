@@ -4,6 +4,7 @@ import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { DATE_TIME_FORMAT } from '../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { FavoriteLoader } from './favorite_loader.js';
 import { ResourcesBase } from './resource_base.js';
 
 export { ResourceBaseFunctions };
@@ -119,6 +120,18 @@ class ResourceBaseFunctions {
 
         this.rcmail().env.fav_resources[id] = favorite;
         this._on_data_changed();
+
+        data = JSON.parse(data);
+
+        if (data) {
+          const current_favorite = this._p_resources.find(
+            (x) => x.data.email === id,
+          )?.data;
+
+          if (current_favorite)
+            FavoriteLoader.Add(this._name, current_favorite);
+        } else FavoriteLoader.Remove(this._name, id);
+
         return data;
       },
     }).always(BnumMessage.StopBusyLoading.bind(BnumMessage));
@@ -344,7 +357,10 @@ class ResourceBaseFunctions {
       this.end = moment(this.start).add(1, 'h');
     }
 
+    this._$calendar.fullCalendar('gotoDate', this.start);
     this._$calendar.fullCalendar('refetchEvents');
+
+    this.refresh_calendar_date();
   }
 
   /**

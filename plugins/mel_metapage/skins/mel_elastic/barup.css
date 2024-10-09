@@ -13,7 +13,7 @@
   width: 107px;
   height: 32px;
   border-radius: 50px;
-  background-color: #363A5B;
+  background-color: #363a5b;
   color: white;
   /* padding: 5px 10px; */
   padding-top: 5px;
@@ -28,10 +28,10 @@
   border: none;
 }
 .barup > .wrapper > div > .create:hover {
-  background-color: #484D7A;
+  background-color: #484d7a;
 }
 .barup > .wrapper > .user {
-  background-color: #363A5B;
+  background-color: #363a5b;
   margin-top: -15px;
   margin-bottom: -12px;
 }
@@ -88,20 +88,20 @@ html.layout-normal .no-wrap-normal {
   margin-left: 5px;
 }
 html.barup-picture #touchmelmenu {
-  background-color: #363A5B80;
+  background-color: #363a5b80;
   color: white;
 }
 html.barup-picture #touchmelmenu:hover {
   color: white;
-  background-color: #484D7A;
+  background-color: #484d7a;
 }
 html.dark-mode.barup-picture #touchmelmenu {
-  background-color: #323F4B80;
+  background-color: #323f4b80;
   color: white;
 }
 html.dark-mode.barup-picture #touchmelmenu:hover {
-  background-color: #2E2E2E;
-  color: #E1C58F;
+  background-color: #2e2e2e;
+  color: #e1c58f;
 }
 #layout-menu:hover > div > span > a span.inner {
   margin-top: -25px;
@@ -140,7 +140,7 @@ body.task-mail.action-preview #layout-content {
   margin-top: 0px;
 }
 #barup-search {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   position: absolute;
   top: 60px;
   right: 25%;
@@ -167,7 +167,7 @@ body.task-mail.action-preview #layout-content {
   transition: all 0.1s ease-in;
 }
 .search-label:hover {
-  background-color: #484D7A;
+  background-color: #484d7a;
   color: white;
   cursor: pointer;
 }
@@ -181,30 +181,30 @@ v_separate {
   margin: 0 15px;
   border-left-style: solid;
   border-left-width: thin;
-  border-left-color: #A3A7BC;
+  border-left-color: #a3a7bc;
 }
 .tiny-rocket-chat {
   position: absolute;
   width: 64px;
   height: 64px;
-  background-color: #FDCF42;
+  background-color: #fdcf42;
   border-radius: 100%;
   cursor: pointer;
   transition: all 0.1s ease-in;
   display: none;
   border: none;
-  color: #363A5B;
+  color: #363a5b;
 }
 .tiny-rocket-chat:focus {
-  box-shadow: 0 0 0 0.2rem #484D7A69;
+  box-shadow: 0 0 0 0.2rem #484d7a69;
 }
 .tiny-rocket-chat:hover {
-  background-color: #484D7A;
+  background-color: #484d7a;
   color: white;
 }
 .tiny-rocket-chat.disabled {
   pointer-events: none;
-  color: #484D7A;
+  color: #484d7a;
   background-color: #ddb438;
 }
 .tiny-rocket-chat-icon {
@@ -256,7 +256,7 @@ iframe.mm-frame {
 .card-expand:hover,
 .card-anchor:hover {
   text-decoration: none;
-  color: #80D5C6;
+  color: #80d5c6;
 }
 .card-close:hover {
   text-decoration: none;
@@ -270,7 +270,7 @@ iframe.mm-frame {
   border-bottom-left-radius: 15px !important;
   border-top-left-radius: 0px !important;
   box-shadow: -2px 0px 3px #00000030;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   transition: all 0.1s ease-in;
   opacity: 0;
   clip: rect(0, 0, 0, 0);
@@ -309,7 +309,7 @@ html.touch .hide-touch {
 }
 #touchmelmenu:hover {
   color: white;
-  background-color: #484D7A;
+  background-color: #484d7a;
 }
 html.touch .barup > .wrapper {
   white-space: nowrap;
@@ -522,8 +522,8 @@ html.layout-phone #button-search {
 }
 html.dark-mode #button-search.btn.btn-secondary {
   background-color: transparent !important;
-  color: #E1C58F;
-  border: 1px solid #E1C58F;
+  color: #e1c58f;
+  border: 1px solid #e1c58f;
 }
 #barup-right-buttons {
   padding-left: 14px;
@@ -537,6 +537,7 @@ html.dark-mode #button-search.btn.btn-secondary {
 #barup-right-buttons .user,
 #barup-right-buttons #button-search,
 #barup-right-buttons #notification-dropdown,
+#barup-right-buttons #button-tchap-chat,
 #barup-right-buttons #button-chat,
 #barup-right-buttons #button-help,
 #barup-right-buttons #button-settings,
@@ -544,15 +545,16 @@ html.dark-mode #button-search.btn.btn-secondary {
   float: left;
 }
 #barup-right-buttons button {
-  color: #272E58;
+  color: #272e58;
 }
 #barup-right-buttons .dropdown-item:active {
   background-color: #e7e7e7;
-  color: #272E58;
+  color: #272e58;
 }
-#barup-right-buttons #button-chat {
+#barup-right-buttons #button-chat,
+#barup-right-buttons #button-tchap-chat {
   padding-top: 20px;
-  color: #FDCF42 !important;
+  color: #fdcf42 !important;
 }
 #barup-right-buttons .dropdown-menu-scroll {
   max-height: 240px;
@@ -583,7 +585,7 @@ html.dark-mode #button-search.btn.btn-secondary {
 }
 #barup-right-buttons .dropdown-menu::before {
   border-bottom: 9px solid rgba(0, 0, 0, 0.2);
-  content: "";
+  content: '';
   display: inline-block;
   right: 13px;
   /* position */
@@ -591,10 +593,10 @@ html.dark-mode #button-search.btn.btn-secondary {
   top: -8px;
 }
 #barup-right-buttons .dropdown-menu::after {
-  border-bottom: 8px solid #FFFFFF;
+  border-bottom: 8px solid #ffffff;
   border-left: 9px solid rgba(0, 0, 0, 0);
   border-right: 9px solid rgba(0, 0, 0, 0);
-  content: "";
+  content: '';
   display: inline-block;
   right: 13px;
   /* position */
@@ -622,7 +624,7 @@ html.dark-mode #button-search.btn.btn-secondary {
   --barup-buttons-text-color: var(--secondary-text-color);
 }
 html.dark-mode #barup-right-buttons button {
-  color: #E1C58F;
+  color: #e1c58f;
 }
 html.layout-small #barup-right-buttons,
 html.layout-phone #barup-right-buttons {
@@ -632,7 +634,7 @@ html.layout-phone #barup-right-buttons {
   text-overflow: ellipsis;
 }
 .blue-color {
-  color: #272E58;
+  color: #272e58;
 }
 html.dark-mode .blue-color {
   color: #96b9e7;
@@ -642,7 +644,7 @@ html.dark-mode #barup-right-buttons .dropdown-item:focus {
   background-color: #222a31;
 }
 html.dark-mode #barup-right-buttons .dropdown-item:hover {
-  background-color: #323F4B;
+  background-color: #323f4b;
 }
 html.dark-mode #barup-right-buttons .dropdown-menu-scroll {
   scrollbar-color: #3e4c59 #27323a;
@@ -651,8 +653,8 @@ html.dark-mode #barup-right-buttons .notifications-header {
   border-color: #96b9e71c;
 }
 html.dark-mode #barup-right-buttons .dropdown-menu {
-  background-color: #25323E;
-  border: thin #E1C58F;
+  background-color: #25323e;
+  border: thin #e1c58f;
 }
 @media screen and (max-width: 480px) {
   #barup-right-buttons .dropdown-menu {
@@ -663,7 +665,7 @@ html.dark-mode #barup-right-buttons .dropdown-menu {
   }
 }
 html.dark-mode #barup-right-buttons .dropdown-menu::after {
-  border-bottom: 8px solid #25323E;
+  border-bottom: 8px solid #25323e;
 }
 @media screen and (max-width: 480px) {
   #barup-right-buttons .dropdown-menu::before,
@@ -692,10 +694,10 @@ html.dark-mode #barup-right-buttons .dropdown-menu::after {
   outline: none !important;
 }
 html.dark-mode .barup-icons-button {
-  color: #E1C58F;
+  color: #e1c58f;
 }
 html.dark-mode .barup-icons-button:hover {
-  color: #E1C58F;
+  color: #e1c58f;
 }
 .dropdown-menu .dropdown-header-button {
   font-variation-settings: 'FILL' 0, 'wght' 300;
@@ -712,7 +714,7 @@ html.dark-mode .barup-icons-button:hover {
   font-size: 14px;
 }
 #button-notes {
-  --note-bckg-color: #FDCF42;
+  --note-bckg-color: #fdcf42;
   --note-bckg-color-hover: var(--tierciary-bckg-color);
   --note-text-color-hover: var(--secondary-text-color);
   background-color: var(--note-bckg-color);

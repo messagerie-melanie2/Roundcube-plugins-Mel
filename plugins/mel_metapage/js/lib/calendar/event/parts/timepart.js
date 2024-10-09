@@ -174,31 +174,56 @@ export class TimePartManager {
     if (
       ($._data(this.start._$fakeField[0], 'events')?.change?.length ?? 0) <= 1
     ) {
-      this.start._$fakeField.on('change', this._update_date.bind(this));
+      this.start._$fakeField.on('change', () => {
+        //cal.event_times_changed();
+        this._end_date_updated();
+        // GuestsPart.UpdateDispos(
+        //   this.date_start,
+        //   this.date_end,
+        //   this.$allDay.prop('checked'),
+        // );
+        // GuestsPart.UpdateFreeBusy(this);
+      });
     }
 
     if (
       ($._data(this.end._$fakeField[0], 'events')?.change?.length ?? 0) <= 1
     ) {
       this.end._$fakeField.on('change', () => {
+        cal.event_times_changed();
         GuestsPart.UpdateDispos(
           this.date_start,
           this.date_end,
           this.$allDay.prop('checked'),
         );
+        GuestsPart.UpdateFreeBusy(this);
       });
     }
-
+    //debugger;
     if (($._data(this.$allDay[0], 'events')?.change?.length ?? 0) === 0) {
       this.$allDay.on('change', this._on_all_day_changed.bind(this));
     }
 
+    // if ($._data(this._$end_date[0], 'events').change.length > 1) {
+    //   delete $._data(this._$end_date[0], 'events').change[1];
+    // }
+    // if ($._data(this._$start_date[0], 'events').change.length > 1) {
+    //   delete $._data(this._$start_date[0], 'events').change[1];
+    // }
+
+    this._$end_date
+      .off('change')
+      .datepicker('option', 'onSelect', this._end_date_updated.bind(this))
+      .change(this._end_date_updated.bind(this));
+    this._$start_date
+      .off('change')
+      .datepicker('option', 'onSelect', this._start_date_updated.bind(this))
+      .change(this._start_date_updated.bind(this));
     this.$allDay.change();
 
-    rcmail.addEventListener(
-      'calendar.event_times_changed',
-      this._update_date.bind(this),
-    );
+    if (this.date_start >= this.date_end) {
+      this._$end_date.change();
+    }
 
     const _base_diff =
       moment(
@@ -210,11 +235,12 @@ export class TimePartManager {
         DATE_TIME_FORMAT,
       ); ///60/1000;
 
-    Object.defineProperty(this, 'base_diff', {
-      get() {
-        return _base_diff;
-      },
-    });
+    this.base_diff = _base_diff;
+    // Object.defineProperty(this, 'base_diff', {
+    //   get() {
+    //     return _base_diff;
+    //   },
+    // });
   }
 
   /**
@@ -274,6 +300,79 @@ export class TimePartManager {
       this._invalid_action_time(this.end, TimePartManager.WORDS.end);
   }
 
+  _update_diff() {
+    let end = moment(
+      `${this._$end_date.val()} ${this.end._$fakeField.val()}`,
+      DATE_TIME_FORMAT,
+    );
+
+    let start = moment(
+      `${this._$start_date.val()} ${this.start._$fakeField.val()}`,
+      DATE_TIME_FORMAT,
+    );
+
+    const tmp = end - start;
+
+    if (tmp > 0) this.base_diff = tmp < 0 ? -tmp : tmp;
+  }
+
+  _start_date_updated(update_dispos = true) {
+    let start = moment(
+      `${this._$start_date.val()} ${this.start._$fakeField.val()}`,
+      DATE_TIME_FORMAT,
+    );
+
+    let end = moment(start).add(this.base_diff);
+
+    this._$end_date.val(end.format(DATE_FORMAT));
+
+    if (update_dispos) {
+      GuestsPart.UpdateDispos(start, end, this.$allDay.prop('checked'));
+      GuestsPart.UpdateFreeBusy(this);
+      cal.event_times_changed();
+    }
+  }
+
+  _end_date_updated() {
+    let end = null;
+    this._update_diff();
+    if (this.date_end <= this.date_start) {
+      if (
+        moment(
+          `${this.date_end.format(DATE_FORMAT)} ${this.date_start.format(DATE_HOUR_FORMAT)}`,
+          DATE_TIME_FORMAT,
+        ) >= this.date_start
+      ) {
+        end = moment(
+          `${this.date_end.format(DATE_FORMAT)} ${this.date_start.format(DATE_HOUR_FORMAT)}`,
+          DATE_TIME_FORMAT,
+        ).add(TimePart.INTERVAL, 'm');
+      } else this._start_date_updated(false);
+    }
+
+    if (!end) end = this.date_end;
+    this._reinit_end_date(end);
+
+    GuestsPart.UpdateDispos(
+      this.date_start,
+      this.date_end,
+      this.$allDay.prop('checked'),
+    );
+    GuestsPart.UpdateFreeBusy(this);
+    cal.event_times_changed();
+  }
+
+  _reinit_end_date(end) {
+    const is_same_day =
+      this.date_start.startOf('day').format(DATE_FORMAT) ===
+      moment(end).startOf('day').format(DATE_FORMAT);
+    this.end.reinit(
+      end,
+      this.base_diff,
+      is_same_day ? this.date_start.format(DATE_HOUR_FORMAT) : null,
+    );
+  }
+
   /**
    * Lorsque l'un des champs est modifié, mets à jours les champ de sauvegarde et réinitialise les selects si besoin.
    * @package
@@ -293,25 +392,26 @@ export class TimePartManager {
       return;
     }
 
+    let base_diff =
+      /* this.is_all_day &&
+      start.format() === moment(start).startOf('day').format()
+        ? moment(start).endOf('day') - moment(start).startOf('day')
+        :*/ this.base_diff;
+
+    if (base_diff <= 0) base_diff = 3600 * 1000;
+
     let start = moment(
       `${this._$start_date.val()} ${this.start._$fakeField.val()}`,
       DATE_TIME_FORMAT,
     );
-    let end = moment(
-      `${this._$end_date.val()} ${this.end._$fakeField.val()}`,
-      DATE_TIME_FORMAT,
-    );
+    let end = moment(start).add(this.base_diff);
 
-    let base_diff =
-      this.is_all_day &&
-      start.format() === moment(start).startOf('day').format()
-        ? moment(start).endOf('day') - moment(start).startOf('day')
-        : this.base_diff;
+    if (this._$end_date.val() !== end.format(DATE_FORMAT)) {
+      this._$end_date.val(end.format(DATE_FORMAT));
+    }
 
-    if (base_diff <= 0) base_diff = 3600 * 1000;
-
-    //Gestion du cas ou la date de début dépasse la date de fin
     if (start >= end) {
+      //Gestion du cas ou la date de début dépasse la date de fin
       end = moment(start).add(base_diff);
       this.end.reinit(end, base_diff, start.format(DATE_HOUR_FORMAT));
       this._$end_date.val(end.format(DATE_FORMAT)).change();

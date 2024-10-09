@@ -16,6 +16,8 @@ export class LinkManager extends MelObject {
   main() {
     super.main();
 
+    if(rcmail.env.mel_portal_ulink) this.displayButton($('.module_Links .melv2-card-pre'));
+    
     this.displayLinks();
 
     this.bindActions();
@@ -158,7 +160,7 @@ export class LinkManager extends MelObject {
       .text(rcmail.gettext('folder_name', 'mel_useful_link'))
       .end()
       .input({
-        id: 'mulc-title',
+        id: 'folder-mulc-title',
         class: 'form-control input-mel required',
         required: true,
         placeholder: rcmail.gettext('link_title', 'mel_useful_link'),
@@ -213,10 +215,12 @@ export class LinkManager extends MelObject {
       .end('button')
       .end('div')
       .end('row')
-      .row({ class: 'm-2 list-filter-container' })
+      .row({ class: 'm-2' })
       .span({ class: 'font-weight-bold' })
       .text(rcmail.gettext('category_filter', 'mel_useful_link'))
       .end('span')
+      .end('row')
+      .row({class: 'm-2 list-filter-container overflow-auto'})
       .div({ id: 'list-filters-container' })
       .end('div')
       .end('row')
@@ -234,7 +238,7 @@ export class LinkManager extends MelObject {
 
     this.newStoreModal = new RcmailDialog(html, {
       title: rcmail.gettext('app_store_title', 'mel_useful_link'),
-      options: { height: 600, minWidth: 700 },
+      options: { height: 600, minWidth: 711 },
     });
     this.loadStoreDialog();
   }
@@ -308,6 +312,7 @@ export class LinkManager extends MelObject {
               link.icon,
               link.description,
               this.linksIdList.includes(item) ? true : false,
+              link.image ?? null
             );
 
             foundLink.displayStoreLink().appendTo('#list-store-app');
@@ -328,7 +333,8 @@ export class LinkManager extends MelObject {
           });
         }
 
-        if (filterPass) {
+        //!link.feedUr permet de ne pas mettre les anciens liens dans la boucle
+        if (filterPass && !link.feedUrl) {
           let storeLink = new MelStoreLink(
             item,
             link.name,
@@ -336,6 +342,7 @@ export class LinkManager extends MelObject {
             link.icon,
             link.description,
             this.linksIdList.includes(item) ? true : false,
+            link.image ?? null
           );
           storeLink.displayStoreLink().appendTo('#list-store-app');
           isLinks = true;
@@ -345,8 +352,8 @@ export class LinkManager extends MelObject {
 
     !isLinks
       ? $('#not-found-app').text(
-          rcmail.gettext('not_found_link', 'mel_useful_link'),
-        )
+        rcmail.gettext('not_found_link', 'mel_useful_link'),
+      )
       : $('#not-found-app').text('');
   }
 
@@ -452,11 +459,25 @@ export class LinkManager extends MelObject {
         linkVisualizer.displayFolder().appendTo('.links-items');
         for (const key in linkVisualizer.links) {
           let subLink = linkVisualizer.links[key];
+          if (!subLink.icon) {
+            if (!subLink.image) {
+              subLink.image = LinkManager.fetchIcon(subLink.link)
+            }
+          }
+          else {
+            subLink.image = '';
+          }
+
+          //Correction problème icon false
+          if (subLink.icon === "false") {
+            subLink.icon = "";
+          }
+
           linkVisualizer.links[key] = new MelLinkVisualizer(
             subLink.id,
             subLink.title,
             subLink.link,
-            !subLink.icon ? (subLink.image ?? LinkManager.fetchIcon(subLink.link)) : '',
+            subLink.image,
             true,
             subLink.icon,
           );
@@ -467,11 +488,24 @@ export class LinkManager extends MelObject {
           this.linksIdList.push(subLink.id);
         }
       } else {
+        if (!link.icon) {
+          if (!link.image) {
+            link.image = LinkManager.fetchIcon(link.link)
+          }
+        }
+        else {
+          link.image = '';
+        }
+
+        //Correction problème icon false
+        if (link.icon === "false") {
+          link.icon = "";
+        }
+
         linkVisualizer = new MelLinkVisualizer(
           link.id,
           link.title,
           link.link,
-          !link.icon ? (link.image ?? LinkManager.fetchIcon(link.link)) : '',
           link.image,
           false,
           link.icon,
@@ -496,6 +530,27 @@ export class LinkManager extends MelObject {
   displayLink(link) {
     link.displayLink().insertBefore('.link-space-end');
     this.saveLink(link);
+  }
+
+  /**
+   * Affiche le bouton de création sur la page web
+   */
+  displayButton(selector) {
+    let button = MelHtml.start
+      .div({class: 'mul_right_buttons'})
+        .button({
+          class: 'fixed_mulba',
+          id: 'mulba',
+        })
+          .text('Ajouter')
+          .icon('add_circle').end()
+        .end('button')
+        .button({id:'app_store', class:'mel-button-icon'})
+          .text('Bibliothèque d\'applications')
+          .icon('widgets').end()
+        .end('button')
+      .end('div')
+    selector.append(button.generate());
   }
 
   /**
@@ -704,7 +759,7 @@ export class LinkManager extends MelObject {
    * @returns {Boolean}
    */
   isInFolder(link) {
-    if (link.inFolder) return true;
+    if (link.inFolder === true) return true;
 
     return false;
   }
@@ -754,7 +809,7 @@ export class LinkManager extends MelObject {
       return objet.id === id;
     });
 
-    folder.title = $(LinkManager.SELECTOR_MODAL_TITLE).val();
+    folder.title = $(LinkManager.FOLDER_SELECTOR_MODAL_TITLE).val();
 
     folder.callFolderUpdate().then(() => {
       this.newFolderModal.destroy();
@@ -772,6 +827,7 @@ export class LinkManager extends MelObject {
   TakeOutLinkFromFolder(folder, link, id, targetIndex, location = null) {
     folder.removeLink(link);
 
+    //On supprime le dossier s'il n'y a plus aucun lien
     if (Object.keys(folder.links).length === 0) {
       link.callUpdate().then(() => {
         if (!location) {
@@ -796,7 +852,9 @@ export class LinkManager extends MelObject {
           }
           this.saveLink(link);
 
-          this.updateList(id, targetIndex);
+          if (targetIndex !== -1) {
+            this.updateList(id, targetIndex);
+          }
         });
         //Si il ne reste plus qu'un lien dans le dossier, on le sort et supprime le dossier
         // if (Object.keys(folder.links).length === 1) {
@@ -909,8 +967,8 @@ export class LinkManager extends MelObject {
         //Si on déplace un element d'un dossier non ouvert
         if (movedElement.hasClass('sublink')) {
           targetElement.removeClass('multilink-block-hovered');
-          movedElement = movedElement.closest('.multilink-block');
-          data.inFolder = false;
+          targetElement.removeClass('link-space-hovered');
+          return;
         }
         //Si on sort un lien d'un dossier
         if (data.inFolder) {
@@ -1062,7 +1120,6 @@ export class LinkManager extends MelObject {
    */
   bindRightClickActions(id = null) {
     let _id = id ? `#link-block-${id}` : '';
-    let contextMenuOpened = false;
     // Open the context menu on right-click
     $(`${_id}.link-block`).on('contextmenu', function (event) {
       event.preventDefault();
@@ -1072,13 +1129,13 @@ export class LinkManager extends MelObject {
 
       const contextMenu = $('#context-menu-' + $(this).data('id'));
 
-      if (contextMenuOpened) {
-        contextMenuOpened.hide();
+      if (LinkManager.CONTEXTMENUOPENED) {
+        LinkManager.CONTEXTMENUOPENED.hide();
       }
 
       // Show the context menu
       contextMenu.show();
-      contextMenuOpened = contextMenu;
+      LinkManager.CONTEXTMENUOPENED = contextMenu;
 
       $(document).on('click', function () {
         if (
@@ -1086,7 +1143,7 @@ export class LinkManager extends MelObject {
           contextMenu.has(event.target).length === 0
         ) {
           contextMenu.hide();
-          contextMenuOpened = false;
+          LinkManager.CONTEXTMENUOPENED = false;
         }
       });
     });
@@ -1154,7 +1211,7 @@ export class LinkManager extends MelObject {
    */
   static fetchIcon(url) {
     let domain = '';
-    try {
+    try {      
       domain = new URL(url).hostname;
     } catch (error) {
       console.error('Erreur :', error.message);
@@ -1237,6 +1294,14 @@ LinkManager.SELECTOR_MODAL_ID = '#mulc-id';
  * @default '#mulc-title'
  */
 LinkManager.SELECTOR_MODAL_TITLE = '#mulc-title';
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default '#folder-mulc-title'
+ */
+LinkManager.FOLDER_SELECTOR_MODAL_TITLE = '#folder-mulc-title';
 
 /**
  * @static
@@ -1357,6 +1422,14 @@ LinkManager.SELECTEDICON = null;
  * @default 'null'
  */
 LinkManager.DISPLAYIMAGE = null;
+
+/**
+ * @static
+ * @const
+ * @type {string}
+ * @default 'null'
+ */
+LinkManager.CONTEXTMENUOPENED = null;
 
 /**
  * @static

@@ -246,7 +246,7 @@ $labels['acces_internet_button_enable'] = "Activer";
 $labels['acces_internet_button_disable'] = "Désactiver";
 $labels['acces_internet_disable_label_forbidden'] = "Vous ne pouvez accéder au Bnum que depuis le réseau ministériel. Pour accéder au Bnum depuis n'importe où, contactez votre service informatique.";
 $labels['acces_internet_disable_label_allowed'] = "Vous ne pouvez accéder au Bnum que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder au Bnum depuis n'importe où.";
-$labels['acces_internet_enable_label'] = "Vous pouvez accéder au Bnum depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr/bureau";
+$labels['acces_internet_enable_label'] = "Vous pouvez accéder au Bnum depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
 $labels['acces_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accès, vous devez vous connecter à cet écran depuis le réseau ministériel.";
 
 $labels['acces_internet_enable_ok'] = "Votre accès internet a bien été activé";
@@ -409,3 +409,7 @@ $labels['suspectsurls'] = 'Liens suspects';
 $labels['suspects_websites'] = 'Adresses suspicieuses';
 $labels['bloqued'] = 'Est bloqué';
 $labels['text_suspects'] = "Vous trouverez ici la liste des adresses de site web potentiellement dangereux. Les adresses définie par défaut ne peuvent pas être supprimé mais peuvent être bloqué ou débloqué. Si une adresse est bloqué, si celle-ci ce trouve dans le corps d'un des messages, celui-ci ne pourra pas être ouvert. Dans le cas contraire, le message s'affichera correctement, mais vous aurez une alerte indiquant que le message contient un lieu probablement dangereux.";
+$labels['sort'] = 'Tri Alpha.';
+$labels['sort_title'] = 'Trier par ordre alphabétique';
+$labels['sort_warning'] = 'Cela va changer l\'ordre de vos agenda, êtes vous-sûr de votre action ?';
+$labels['cannot_sort'] = 'Vous pouvez trier par ordre alphabétique seulement depuis votre agenda personnel !';

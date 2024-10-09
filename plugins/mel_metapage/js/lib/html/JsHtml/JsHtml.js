@@ -1069,26 +1069,34 @@ class ____JsHtml {
         let id;
         // eslint-disable-next-line no-case-declarations
         let $item;
+        // eslint-disable-next-line no-case-declarations
+        let $node;
         // eslint-disable-next-line no-case-declarations, quotes
         const $nodes = [html, ...html.find("[data-on-id!=''][data-on-id]")];
         for (const iterator of $nodes) {
           $item = $(iterator);
-          id = $item.attr('data-on-id');
 
-          if (id) {
-            for (const key in ____JsHtml.actions[id]) {
-              if (Object.hasOwnProperty.call(____JsHtml.actions[id], key)) {
-                const element = ____JsHtml.actions[id][key];
-                $item.on(
-                  key.replace('on', ''),
-                  element instanceof BnumEvent
-                    ? element.call.bind(element)
-                    : element,
-                );
+          for (const node of $item) {
+            $node = $(node);
+            id = $node.attr('data-on-id');
+
+            if (id) {
+              for (const key in ____JsHtml.actions[id]) {
+                if (Object.hasOwnProperty.call(____JsHtml.actions[id], key)) {
+                  const element = ____JsHtml.actions[id][key];
+                  $node.on(
+                    key.replace('on', ''),
+                    element instanceof BnumEvent
+                      ? element.call.bind(element)
+                      : element,
+                  );
+                }
               }
+              ____JsHtml.remove_id(id);
+              id = null;
             }
-            ____JsHtml.remove_id(id);
-            id = null;
+
+            $node = null;
           }
 
           $item = null;

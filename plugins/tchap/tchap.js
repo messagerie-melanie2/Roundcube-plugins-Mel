@@ -32,6 +32,19 @@ class tchap_manager extends MelObject {
    * @package
    */
   async main() {
+    super.main();
+
+    if ($('#wait_box').length) $('#wait_box').hide();
+
+    /**
+     * Interrupteur local qui défini si tchap à été lancer en mode mobile puis redimensionner.
+     *
+     * La page de "redirection" ne doit pas être afficher en cas de redimensionnement.
+     * @private
+     * @type {boolean}
+     */
+    this._tchap_mobile_mode_removed = false;
+
     const url =
       rcmail.env.tchap_startup_url !== null &&
       rcmail.env.tchap_startup_url !== undefined
@@ -39,16 +52,17 @@ class tchap_manager extends MelObject {
         : rcmail.env.tchap_url;
     let $tchap = $('#tchap_frame').attr('src', url);
 
-    if (navigator.appName == 'Microsoft Internet Explorer')
+    if (navigator.appName === 'Microsoft Internet Explorer')
       $tchap[0].contentWindow.location.reload(true);
+
     //Ne pas afficher tchap en mode mobile
-    if ($('html').hasClass('layout-phone')) {
+    if ((top ?? parent).$('html').hasClass('layout-phone')) {
       $('#tchap_frame').hide();
       $('#tchap_mobile').show();
     } else {
-      const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
-      $('body').append(loader);
-      $('#wait_box').hide();
+      this._tchap_mobile_mode_removed = true;
+      // const loader = MEL_ELASTIC_UI.create_loader('tchaploader', true);
+      // $('body').append(loader);
     }
 
     await Mel_Promise.wait(
@@ -60,17 +74,23 @@ class tchap_manager extends MelObject {
     if (this.tchap_frame().querySelector('.mx_QuickSettingsButton') !== null) {
       this.change_theme();
     }
-    $('#tchaploader').hide();
 
-    window.addEventListener('resize', () => {
-      if ($('html').hasClass('layout-phone')) {
-        $('#tchap_frame').hide();
-        $('#tchap_mobile').show();
-      } else {
-        $('#tchap_frame').show();
-        $('#tchap_mobile').hide();
-      }
-    });
+    //$('#tchaploader').hide();
+
+    if (this._tchap_mobile_mode_removed) {
+      window.addEventListener('resize', () => {
+        if (
+          !this._tchap_mobile_mode_removed &&
+          $('html').hasClass('layout-phone')
+        ) {
+          $('#tchap_frame').hide();
+          $('#tchap_mobile').show();
+        } else {
+          $('#tchap_frame').show();
+          $('#tchap_mobile').hide();
+        }
+      });
+    }
 
     this.rcmail().addEventListener(
       'switched_color_theme',
@@ -89,13 +109,14 @@ class tchap_manager extends MelObject {
       this.tchap_disconnect.bind(this),
     );
     this._notificationhandler();
+
     if (rcmail.env.display_tchap_sidebar === 'false')
       this.tchap_frame().querySelector('.mx_SpacePanel').style.display = 'none';
 
     //Mettre à jours les messages quand on vient sur le frame.
-    const top = true;
+    const is_top = true;
 
-    this.rcmail(top).addEventListener(
+    this.rcmail(is_top).addEventListener(
       'frame_loaded',
       (eClass, changepage, isAriane, querry, id, first_load) => {
         if (eClass === 'tchap') this.update_badge();
@@ -136,7 +157,11 @@ class tchap_manager extends MelObject {
         'tchap_badge',
       );
     } else if (
-      this.tchap_frame().querySelector('.mx_NotificationBadge') !== null
+      this.tchap_frame().querySelector('.mx_NotificationBadge_visible') !==
+        null &&
+      this.tchap_frame()
+        .querySelector('.mx_NotificationBadge_visible')
+        .getAttribute('tabindex') !== '-1'
     ) {
       MainNav.update_badge_text(TCHAT_UNREAD, 'tchap_badge');
     } else {

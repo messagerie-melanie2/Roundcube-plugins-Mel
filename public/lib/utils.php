@@ -351,6 +351,76 @@ class utils
   }
 
   /**
+   * Récupérer l'url complète à partir de l'url relative
+   * 
+   * @param string $url Url relative
+   * @param boolean $absolute Est-ce que l'url doit être absolue
+   * 
+   * @return string Url complète
+   */
+  public static function url($url, $absolute = true) {
+    $base_path = '';
+    if (!empty($_SERVER['REDIRECT_SCRIPT_URL'])) {
+        $base_path = $_SERVER['REDIRECT_SCRIPT_URL'];
+    }
+    else if (!empty($_SERVER['SCRIPT_NAME'])) {
+        $base_path = $_SERVER['SCRIPT_NAME'];
+    }
+    $base_path = preg_replace('![^/]+$!', '', $base_path);
+    $base_path = explode('public/', $base_path, 2);
+    $base_path = $base_path[0];
+
+    // add base path to this Roundcube installation
+    $prefix = $base_path ?: '/';
+
+    // prepend protocol://hostname:port
+    if ($absolute) {
+      $prefix = self::resolve_url($prefix);
+    }
+
+    return $prefix . $url;
+  }
+
+   /**
+     * Resolve relative URL
+     *
+     * @param string $url Relative URL
+     *
+     * @return string Absolute URL
+     */
+    public static function resolve_url($url)
+    {
+      // prepend protocol://hostname:port
+      if (!preg_match('|^https?://|', $url)) {
+        require __DIR__ . '/../config.inc.php';
+
+        $schema       = 'http';
+        $default_port = 80;
+
+        if (self::https_check()) {
+          $schema       = 'https';
+          $default_port = 443;
+        }
+
+        if (isset($config['http_host'])) {
+          $host = $config['http_host'];
+        } else {
+          $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
+        }
+        $port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null;
+
+        $prefix = $schema . '://' . preg_replace('/:\d+$/', '', $host);
+        if ($port != $default_port && $port != 80) {
+          $prefix .= ':' . $port;
+        }
+
+        $url = $prefix . ($url[0] == '/' ? '' : '/') . $url;
+      }
+
+      return $url;
+    }
+
+  /**
    * Check if working in SSL mode
    *
    * @param integer $port      HTTPS port number
@@ -358,7 +428,7 @@ class utils
    *
    * @return boolean
    */
-  public static function https_check($port = null, $use_https = true)
+  public static function https_check($port = null)
   {
     if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') {
       return true;
@@ -366,14 +436,10 @@ class utils
     if (
       !empty($_SERVER['HTTP_X_FORWARDED_PROTO'])
       && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https'
-      && in_array($_SERVER['REMOTE_ADDR'], rcube::get_instance()->config->get('proxy_whitelist', array()))
     ) {
       return true;
     }
     if ($port && $_SERVER['SERVER_PORT'] == $port) {
-      return true;
-    }
-    if ($use_https && rcube::get_instance()->config->get('use_https')) {
       return true;
     }
 

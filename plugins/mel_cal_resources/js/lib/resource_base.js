@@ -220,6 +220,7 @@ class ResourcesBase extends MelObject {
         load_data_on_start: x.load_data,
         input_type: x.type,
         icon: x.icon,
+        number: x.number,
       })
         .push_event(this._on_data_loaded.bind(this))
         .push_event_data_changed(this._on_data_changed.bind(this)),
@@ -401,6 +402,7 @@ class ResourcesBase extends MelObject {
    */
   _on_data_loaded(rcs, filter) {
     let values;
+    let resources;
     for (let index = 0, len = this._p_filters.length; index < len; ++index) {
       if (this._p_filters[index]._name !== filter._name) {
         //Réinitialise le filtre
@@ -421,8 +423,21 @@ class ResourcesBase extends MelObject {
           this._p_filters[index]._$filter.html(EMPTY_STRING);
 
         values = {};
+        resources = rcs;
 
-        for (const iterator of rcs) {
+        if (this._p_filters[index]._input_type !== eInputType.multi_select) {
+          resources = MelEnumerable.from(rcs);
+          if (this._p_filters[index].has_only_number_values()) {
+            resources = resources.orderBy(
+              (x) => +x[this._p_filters[index]._name],
+            );
+          } else
+            resources = resources.orderBy(
+              (x) => x[this._p_filters[index]._name],
+            );
+        }
+
+        for (const iterator of resources) {
           //Si la données éxiste et qu'elle n'a pas déjà été traitée
           if (
             !values[iterator[this._p_filters[index]._name]] &&
@@ -437,11 +452,6 @@ class ResourcesBase extends MelObject {
               )) {
                 if (!values[current_filter]) {
                   values[current_filter] = true;
-                  this._p_filters[index]._$filter.append(
-                    $(
-                      `<option value="${current_filter}">${current_filter}</option>`,
-                    ),
-                  );
                 }
               }
             } else {
@@ -466,9 +476,17 @@ class ResourcesBase extends MelObject {
       }
 
       if (this._p_filters[index]._input_type === eInputType.multi_select) {
-        if (this._p_filters[index]._$filter.children().length)
+        if (Object.keys(values).length) {
+          for (const current_filter of MelEnumerable.from(
+            Object.keys(values),
+          ).orderBy((x) => x)) {
+            this._p_filters[index]._$filter.append(
+              $(`<option value="${current_filter}">${current_filter}</option>`),
+            );
+          }
+
           this._p_filters[index]._$filter.multiselect('enable');
-        else this._p_filters[index]._$filter.multiselect('disable');
+        } else this._p_filters[index]._$filter.multiselect('disable');
 
         this._p_filters[index]._$filter.multiselect('rebuild');
       }
@@ -516,7 +534,7 @@ class ResourcesBase extends MelObject {
     });
     let page = new DialogPage(this._name, {
       title: this._name,
-      buttons: [button_save, button_cancel],
+      buttons: [button_cancel, button_save],
     });
 
     page = template_resource.get_page(

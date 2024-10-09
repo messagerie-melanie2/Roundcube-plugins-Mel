@@ -498,6 +498,18 @@ rcube_webmail.prototype.annuaire_list_fill_list = function(parent_id, elements) 
 	if (parent_id) {
 		$('#rcmrow' + parent_id).find('> ul > li.child').remove();
 	}
+	rcmail.annuaire_list.container.find('div.treetoggle, .object').each((i,e) => {
+		if(!$(e).hasClass('already')) {
+			$(e).attr('tabindex', 0).addClass('already mel-focus');
+			if($(e).hasClass('object')) {
+				$(e).on('keydown', function(node) {
+					if(node.originalEvent.key === 'Enter'){
+						$(node.currentTarget).click();
+					}
+				});
+			}
+		}
+	});
 };
 
 // Filter list with annuaireSelector

@@ -1,6 +1,7 @@
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumModules } from '../../../../mel_metapage/js/lib/helpers/dynamic_load_modules.js';
 import {
+  BnumHtmlIcon,
   EWebComponentMode,
   HtmlCustomTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
@@ -21,6 +22,7 @@ const EFileType = {
 };
 
 class WspNavBar extends HtmlCustomTag {
+  static #actions = [];
   #data = {};
 
   constructor() {
@@ -86,7 +88,6 @@ class WspNavBar extends HtmlCustomTag {
    * @type {WorkspaceData}
    */
   get workspace() {
-    debugger;
     if (!this.#data.workspace) {
       const wsp = this.#_get_data('workspace');
       this.#data.workspace = new WorkspaceData(
@@ -154,18 +155,46 @@ class WspNavBar extends HtmlCustomTag {
     div.classList.add('wsp-title-container');
     span.classList.add('wsp-title');
     span.appendChild(this.createText(this.title));
-    div.appendChild(span);
+
+    let button = document.createElement('button');
+    button.classList.add(
+      'transparent-bckg',
+      'shadow-mel-button',
+      'margin-left-5',
+    );
+    button.setAttribute('title', "Copier l'url de l'espace");
+
+    button.onclick = MelObject.Empty().copy_to_clipboard.bind(
+      MelObject.Empty(),
+      MelObject.Empty()
+        .url('workspace', {
+          action: 'workspace',
+          params: {
+            _uid: this.workspace.uid,
+            _force_bnum: 1,
+          },
+        })
+        .replace('&_is_from=iframe', EMPTY_STRING),
+    );
+
+    let icon = new BnumHtmlIcon('content_copy');
+    button.append(icon);
+
+    span.append(button);
+
+    div.append(span);
 
     this.mainDiv.appendChild(div);
 
     span = null;
     div = null;
+    icon = null;
+    button = null;
 
     return this;
   }
 
   _generate_description() {
-    debugger;
     /**
      * Composant "description" de la barre de navigation
      * @type {WspNavBarDescription}
@@ -284,6 +313,10 @@ class WspNavBar extends HtmlCustomTag {
 
   #_setup_styles() {
     return this.#_setup_files_type(EFileType.style);
+  }
+
+  static AddActions(action) {
+    this.#actions.push(action);
   }
 }
 

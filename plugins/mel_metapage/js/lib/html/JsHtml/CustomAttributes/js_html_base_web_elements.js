@@ -266,6 +266,8 @@ const EWebComponentMode = {
  * @extends HtmlCustomTag
  */
 class BnumHtmlIcon extends HtmlCustomTag {
+  #icon = null;
+
   /**
    * data-icon => icone à afficher.
    * <br/>
@@ -275,8 +277,22 @@ class BnumHtmlIcon extends HtmlCustomTag {
    *
    * Le shadow-dom n'est pas supporté.
    */
-  constructor() {
-    super();
+  constructor(icon = null) {
+    super({ mode: EWebComponentMode.span });
+
+    this.#icon = icon;
+  }
+
+  get icon() {
+    let icon = this.innerText || this.data('icon') || this.#icon;
+
+    if (this.hasAttribute('data-icon')) this.removeAttribute('data-icon');
+
+    return icon;
+  }
+
+  set icon(value) {
+    this.innerText = value;
   }
 
   /**
@@ -293,10 +309,7 @@ class BnumHtmlIcon extends HtmlCustomTag {
     if (!this.classList.contains(BnumHtmlIcon.HTML_CLASS))
       this.classList.add(BnumHtmlIcon.HTML_CLASS);
 
-    if (this.dataset['icon'])
-      this.appendChild(document.createTextNode(this.dataset['icon']));
-
-    this.removeAttribute('data-icon');
+    this.icon = this.icon;
   }
 }
 

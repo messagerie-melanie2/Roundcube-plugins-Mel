@@ -148,10 +148,10 @@ class WspNavBarDescription extends NavBarComponent {
     const pressed = e.detail.startPressed ?? e.detail.newState;
 
     if (pressed) {
-      icon.innerText = icon.data('activeIcon');
+      icon.icon = icon.data('activeIcon');
       this.descriptionNode.classList.remove('threelines');
     } else {
-      icon.innerText = icon.data('inactiveIcon');
+      icon.icon = icon.data('inactiveIcon');
       this.descriptionNode.classList.add('threelines');
     }
   }

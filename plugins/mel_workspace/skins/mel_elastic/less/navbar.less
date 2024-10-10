@@ -33,7 +33,9 @@
 }
 
 .wsp-title {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 ._multiple-lines(@l: 3) {
@@ -57,6 +59,8 @@ bnum-separate {
   background-color: var(--main-border-color-transparent);
 }
 
+.shadow-the-hedghog-mel-button,
+.shadow-mel-button,
 bnum-pressed-button {
   cursor: pointer;
   text-align: center;
@@ -69,6 +73,14 @@ bnum-pressed-button {
   align-items: center;
   justify-content: center;
 
+  &.transparent-bckg {
+    border-color: var(--wsp-nav-button-invisible-border);
+    --wsp-nav-button-background-color: var(
+      --wsp-nav-button-invisible-background-color
+    );
+    --wsp-nav-button-text-color: var(--wsp-nav-button-invisible-text-color);
+  }
+
   &:hover {
     background-color: var(--wsp-nav-button-hover-background-color);
     color: var(--wsp-nav-button-hover-text-color);
@@ -78,6 +90,10 @@ bnum-pressed-button {
 
 .margin-top-5 {
   margin-top: 5px;
+}
+
+.margin-left-5 {
+  margin-left: 5px;
 }
 
 .disabled,

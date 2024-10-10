@@ -1,3 +1,4 @@
+import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { Manager } from './manager.js';
@@ -191,7 +192,8 @@ async toggleResponses(id) {
     if (responseContainer.hasClass('hidden')) {
 
       // Afficher un message de chargement pendant le chargement des réponses
-      const busy = rcmail.set_busy(true, 'loading');
+      BnumMessage.SetBusyLoading();
+
       
       // Charger les réponses seulement si elles ne sont pas déjà présentes
       if (!responseContainer.hasClass('loaded')) {
@@ -200,8 +202,7 @@ async toggleResponses(id) {
         responseContainer.addClass('loaded'); // Marquer les réponses comme déjà chargées
       }
 
-      // Cacher le message de chargement une fois les réponses chargées
-      rcmail.set_busy(false, 'loading', busy);
+      BnumMessage.StopBusyLoading();
 
       // Afficher les réponses
       responseContainer.removeClass('hidden');
@@ -215,7 +216,6 @@ async toggleResponses(id) {
     
   } catch (error) {
     // En cas d'erreur, on cache également le message de chargement et affiche l'erreur dans la console
-    rcmail.set_busy(false, 'loading', busy);
     console.error("Erreur lors du basculement des réponses:", error);
   }
 }
@@ -650,159 +650,159 @@ generateHtmlFromTemplate() {
 }
 
 
-  /**
- * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
- *
- * Cette fonction construit dynamiquement le HTML d'un commentaire, en incluant les informations
- * sur l'auteur, le contenu, la date de création, ainsi que les boutons de réaction (like, dislike, répondre).
- * Le HTML est adapté en fonction des données du commentaire, comme le nombre de likes, dislikes, et réponses.
- *
- * - Les classes CSS sont déterminées pour indiquer si l'utilisateur a déjà réagi (like/dislike).
- * - Le texte des réponses est ajusté pour être au singulier ou au pluriel en fonction du nombre de réponses.
- * - Si le commentaire a des réponses, un élément pour afficher ou masquer les réponses est ajouté.
- *
- * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
- */
+//   /**
+//  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
+//  *
+//  * Cette fonction construit dynamiquement le HTML d'un commentaire, en incluant les informations
+//  * sur l'auteur, le contenu, la date de création, ainsi que les boutons de réaction (like, dislike, répondre).
+//  * Le HTML est adapté en fonction des données du commentaire, comme le nombre de likes, dislikes, et réponses.
+//  *
+//  * - Les classes CSS sont déterminées pour indiquer si l'utilisateur a déjà réagi (like/dislike).
+//  * - Le texte des réponses est ajusté pour être au singulier ou au pluriel en fonction du nombre de réponses.
+//  * - Si le commentaire a des réponses, un élément pour afficher ou masquer les réponses est ajouté.
+//  *
+//  * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
+//  */
 
-  generateHtml() {
-    let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
-    let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
+//   generateHtml() {
+//     let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
+//     let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
-    // Détermination du pluriel ou du singulier pour "réponse(s)"
-    let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
+//     // Détermination du pluriel ou du singulier pour "réponse(s)"
+//     let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
 
-    // Générer les initiales de l'utilisateur pour l'image de profil
-    let getInitials = function(fullName) {
-      const names = fullName.split(' ');
-      if (names.length === 0) return '?'; // Aucun nom donné
-      const firstInitial = names[0][0] || '';
-      const lastInitial = names.length > 1 ? names[names.length - 1][0] : ''; // Garde seulement la dernière partie
-      return (firstInitial + lastInitial).toUpperCase();    
-    };
+//     // Générer les initiales de l'utilisateur pour l'image de profil
+//     let getInitials = function(fullName) {
+//       const names = fullName.split(' ');
+//       if (names.length === 0) return '?'; // Aucun nom donné
+//       const firstInitial = names[0][0] || '';
+//       const lastInitial = names.length > 1 ? names[names.length - 1][0] : ''; // Garde seulement la dernière partie
+//       return (firstInitial + lastInitial).toUpperCase();    
+//     };
 
 
-    // Générer une couleur de fond aléatoire pour l'image de profil
-    let getRandomColor = function() {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    };
+//     // Générer une couleur de fond aléatoire pour l'image de profil
+//     let getRandomColor = function() {
+//         const letters = '0123456789ABCDEF';
+//         let color = '#';
+//         for (let i = 0; i < 6; i++) {
+//             color += letters[Math.floor(Math.random() * 16)];
+//         }
+//         return color;
+//     };
 
-    // Ajout de l'état "en cours d'édition"
-    let isEditing = false;
+//     // Ajout de l'état "en cours d'édition"
+//     let isEditing = false;
 
-    let html = MelHtml.start
-      .div({ id: 'comment-id-' + this.uid, class: 'row comment' })
-        .div({ class: 'col-12' })
-          .div({ class: 'forum-comment flex align-items-center' })
+//     let html = MelHtml.start
+//       .div({ id: 'comment-id-' + this.uid, class: 'row comment' })
+//         .div({ class: 'col-12' })
+//           .div({ class: 'forum-comment flex align-items-center' })
 
-            // Remplacer l'image par un div avec les initiales et la couleur de fond aléatoire
-            .div({
-              class: 'forum-comment-profile-image',
-              style: 'background-color: ' + getRandomColor() + '; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;'
-            })
-            .text(getInitials(this.user_name))
-            .end('div')
+//             // Remplacer l'image par un div avec les initiales et la couleur de fond aléatoire
+//             .div({
+//               class: 'forum-comment-profile-image',
+//               style: 'background-color: ' + getRandomColor() + '; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;'
+//             })
+//             .text(getInitials(this.user_name))
+//             .end('div')
 
-            .span({ class: 'forum-content-author' }).text(this.user_name).end('span')
-          .div({ class: 'forum-comment-date d-flex align-items-end' })
-            .span({ class: 'icon', 'data-icon': 'access_time' }).end('span')
-            .span({ class: 'ml-1' }).text(this.created).end('span')
-          .end('div')
-        .end('div')
+//             .span({ class: 'forum-content-author' }).text(this.user_name).end('span')
+//           .div({ class: 'forum-comment-date d-flex align-items-end' })
+//             .span({ class: 'icon', 'data-icon': 'access_time' }).end('span')
+//             .span({ class: 'ml-1' }).text(this.created).end('span')
+//           .end('div')
+//         .end('div')
 
-        // Texte du commentaire, visible par défaut et masqué par le textarea qui suit, lorsqu'on clique sur modifier un commentaire.
-        .div({ class: 'forum-comment-text', id: 'comment-text-' + this.uid })
-          .p().text(this.content).end('p')
-        .end('div')
+//         // Texte du commentaire, visible par défaut et masqué par le textarea qui suit, lorsqu'on clique sur modifier un commentaire.
+//         .div({ class: 'forum-comment-text', id: 'comment-text-' + this.uid })
+//           .p().text(this.content).end('p')
+//         .end('div')
 
-        // Textarea pour modification d'un commentaire, caché par défaut
-        .div({ class: 'forum-comment-edit hidden', id: 'edit-comment-' + this.uid })
-            .textarea({ id: 'edit-comment-textarea-' + this.uid, class: 'forum-comment-input', rows: '1' })
-            .text(this.content)
-            .end('textarea')
-            .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center' })
-              .button({ id: 'cancel-modify-comment', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.cancelModifyComment.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span')
-              .end('button')
-              .button({ id: 'submit-modify-comment', type: 'button', class:'modal-save-footer btn btn-secondary mel-button', onclick: this.modifyComment.bind(this, this.uid) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span')
-              .end('button')
-            .end('div')  
-        .end('div')
+//         // Textarea pour modification d'un commentaire, caché par défaut
+//         .div({ class: 'forum-comment-edit hidden', id: 'edit-comment-' + this.uid })
+//             .textarea({ id: 'edit-comment-textarea-' + this.uid, class: 'forum-comment-input', rows: '1' })
+//             .text(this.content)
+//             .end('textarea')
+//             .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center' })
+//               .button({ id: 'cancel-modify-comment', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.cancelModifyComment.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span')
+//               .end('button')
+//               .button({ id: 'submit-modify-comment', type: 'button', class:'modal-save-footer btn btn-secondary mel-button', onclick: this.modifyComment.bind(this, this.uid) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span')
+//               .end('button')
+//             .end('div')  
+//         .end('div')
 
-        .div({ class: 'forum-comment-reactions' })
-          .div({ class: likeClass })
-            .span({ class: 'icon material-symbols-outlined', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) }).end('span')
-            .span({ class: 'ml-2' }).text(this.likes).end('span')
-          .end('div')
-          .div({ class: dislikeClass })
-            .span({ class: 'icon material-symbols-outlined', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) }).end('span')
-            .span({ class: 'ml-2' }).text(this.dislikes).end('span')
-          .end('div')
-          .div({ class: 'reaction-item mr-3 response', onclick: this.toggleReplyForm.bind(this, this.uid, this.id) })
-            .span({ class: 'icon', 'data-icon': 'mode_comment' }).end('span')
-            .span({ class: 'ml-2' }).text('répondre').end('span')
-          .end('div')
-          .div({ class: 'reaction-item' })
-            .span({ class: 'icon', 'data-icon': 'more_horiz', onclick: this.toggleMenu.bind(this, this.uid) }).end('span')
-            .div({ id: 'context-menu-' + this.uid, class: 'forum-comment-context-menu hidden' }) 
-              .h3({ id: 'aria-label-groupoptions-smallmenu', class: 'voice' }).text('Menu du commentaire').end('h3')
-                .button({ class: 'comment-options-button edit-comment', title: 'Modifier le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'modify_comment', 'data-id': this.uid, onclick: this.toggleModifyComment.bind(this, this.uid) })
-                .removeClass('mel-button')
-                .removeClass('no-button-margin')
-                .removeClass('no-margin-button')
-                .css({ border: 'none', outline: 'none', display: 'flex', alignItems: 'center' })
-                .icon('edit')
-                .end('icon')
-                .span({ class: 'comment-options-text', style: 'margin-left: 8px;' }) .text('Modifier le commentaire')
-                .end('span')
-                .end('button')
-                .button({ class: 'comment-options-button delete-comment', title: 'Supprimer le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'cancel_comment', 'data-id': this.uid, onclick: this.deleteComment.bind(this, this.uid) })
-                .removeClass('mel-button')
-                .removeClass('no-button-margin')
-                .removeClass('no-margin-button')
-                .css({ border: 'none', outline: 'none', display: 'flex', alignItems: 'center' })
-                .icon('delete')
-                .end('icon')
-                .span({ class: 'comment-options-text', style: 'margin-left: 8px;' }) .text('Supprimer le commentaire')
-                .end('span')
-                .end('button')
-            .end('div')
-          .end('div')
-        .end('div');
+//         .div({ class: 'forum-comment-reactions' })
+//           .div({ class: likeClass })
+//             .span({ class: 'icon material-symbols-outlined', 'data-like-uid': this.uid, 'data-icon': 'thumb_up', onclick: this.saveLikeOrDislike.bind(this, 'like', this.uid) }).end('span')
+//             .span({ class: 'ml-2' }).text(this.likes).end('span')
+//           .end('div')
+//           .div({ class: dislikeClass })
+//             .span({ class: 'icon material-symbols-outlined', 'data-dislike-uid': this.uid, 'data-icon': 'thumb_down', onclick: this.saveLikeOrDislike.bind(this, 'dislike', this.uid) }).end('span')
+//             .span({ class: 'ml-2' }).text(this.dislikes).end('span')
+//           .end('div')
+//           .div({ class: 'reaction-item mr-3 response', onclick: this.toggleReplyForm.bind(this, this.uid, this.id) })
+//             .span({ class: 'icon', 'data-icon': 'mode_comment' }).end('span')
+//             .span({ class: 'ml-2' }).text('répondre').end('span')
+//           .end('div')
+//           .div({ class: 'reaction-item' })
+//             .span({ class: 'icon', 'data-icon': 'more_horiz', onclick: this.toggleMenu.bind(this, this.uid) }).end('span')
+//             .div({ id: 'context-menu-' + this.uid, class: 'forum-comment-context-menu hidden' }) 
+//               .h3({ id: 'aria-label-groupoptions-smallmenu', class: 'voice' }).text('Menu du commentaire').end('h3')
+//                 .button({ class: 'comment-options-button edit-comment', title: 'Modifier le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'modify_comment', 'data-id': this.uid, onclick: this.toggleModifyComment.bind(this, this.uid) })
+//                 .removeClass('mel-button')
+//                 .removeClass('no-button-margin')
+//                 .removeClass('no-margin-button')
+//                 .css({ border: 'none', outline: 'none', display: 'flex', alignItems: 'center' })
+//                 .icon('edit')
+//                 .end('icon')
+//                 .span({ class: 'comment-options-text', style: 'margin-left: 8px;' }) .text('Modifier le commentaire')
+//                 .end('span')
+//                 .end('button')
+//                 .button({ class: 'comment-options-button delete-comment', title: 'Supprimer le commentaire', 'aria-labelledby': 'aria-label-comment-options-menu-' + this.uid, 'data-action': 'cancel_comment', 'data-id': this.uid, onclick: this.deleteComment.bind(this, this.uid) })
+//                 .removeClass('mel-button')
+//                 .removeClass('no-button-margin')
+//                 .removeClass('no-margin-button')
+//                 .css({ border: 'none', outline: 'none', display: 'flex', alignItems: 'center' })
+//                 .icon('delete')
+//                 .end('icon')
+//                 .span({ class: 'comment-options-text', style: 'margin-left: 8px;' }) .text('Supprimer le commentaire')
+//                 .end('span')
+//                 .end('button')
+//             .end('div')
+//           .end('div')
+//         .end('div');
 
-    // Ajout du formulaire de réponse masqué
-    html = html.div({ id: 'reply-form-'+ this.uid, class: 'row my-4 d-flex align-items-center hidden' })
-    .div({ class: 'col-auto pr-0' })
-      .div({ class: 'forum-comment-profile-image', style: 'background-color: ' + getRandomColor() + '; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;' })
-        .text(getInitials(this.user_name))
-      .end('div')
-    .end('div')
-    .div({ class: 'col pl-0', style: 'margin-bottom: 1rem;' })
-      .textarea({ id: 'new-response-textarea-' + this.uid, class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
-    .end('div')
-    .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center'})
-      .button({ id: 'cancel-reply', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.toggleReplyForm.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span').end('button')
-      .button({ id: 'submit-reply', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button', onclick: this.saveReply.bind(this, this.content) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span').end('button')
-    .end('div')
-    .end('div');
+//     // Ajout du formulaire de réponse masqué
+//     html = html.div({ id: 'reply-form-'+ this.uid, class: 'row my-4 d-flex align-items-center hidden' })
+//     .div({ class: 'col-auto pr-0' })
+//       .div({ class: 'forum-comment-profile-image', style: 'background-color: ' + getRandomColor() + '; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;' })
+//         .text(getInitials(this.user_name))
+//       .end('div')
+//     .end('div')
+//     .div({ class: 'col pl-0', style: 'margin-bottom: 1rem;' })
+//       .textarea({ id: 'new-response-textarea-' + this.uid, class: 'forum-comment-input', placeholder: 'Répondre', rows: '1' }).end('textarea')
+//     .end('div')
+//     .div({ id: 'buttons-container', class: 'col-12 d-flex justify-content-end align-items-center'})
+//       .button({ id: 'cancel-reply', type: 'button', class: 'modal-close-footer btn mel-button btn-danger mel-before-remover mr-2', onclick: this.toggleReplyForm.bind(this, this.uid) }).text('Annuler').span({ class: 'plus icon-mel-close' }).end('span').end('button')
+//       .button({ id: 'submit-reply', type: 'button', class: 'modal-save-footer btn btn-secondary mel-button', onclick: this.saveReply.bind(this, this.content) }).text('Sauvegarder').span({ class: 'plus icon-mel-arrow-right' }).end('span').end('button')
+//     .end('div')
+//     .end('div');
 
-    if (this.children_number > 0) {
-      html = html.div({ class: 'forum-comment-response', onclick: this.toggleResponses.bind(this, this.id) })
-        .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
-        .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
-      .end('div');
-    }
+//     if (this.children_number > 0) {
+//       html = html.div({ class: 'forum-comment-response', onclick: this.toggleResponses.bind(this, this.id) })
+//         .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
+//         .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
+//       .end('div');
+//     }
 
-    html = html.div({ id: 'responses-' + this.id, class: 'responses ml-4 hidden' })
-      .end('div')
-    .end('div')
-    .end('div');
+//     html = html.div({ id: 'responses-' + this.id, class: 'responses ml-4 hidden' })
+//       .end('div')
+//     .end('div')
+//     .end('div');
 
-    return html.generate();
-  }
+//     return html.generate();
+//   }
 }
 
 class PostCommentView {

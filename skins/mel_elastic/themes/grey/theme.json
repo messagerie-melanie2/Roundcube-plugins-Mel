@@ -1,0 +1,11 @@
+{
+  "id": "jpsgrey",
+  "parent": "Classique",
+  "display": "white",
+  "description": "desc",
+  "icon": "icon.svg",
+  "style": "style",
+  "class": "jpsgrey",
+  "order": 3,
+  "custom_dark_mode": true
+}

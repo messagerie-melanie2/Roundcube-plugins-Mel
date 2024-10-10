@@ -102,7 +102,7 @@ export class Manager extends MelObject {
 // }
 
 
-static async displayComments(order = 'date_asc', parent_comment_id = null) {  
+static async displayComments(order = 'date_desc', parent_comment_id = null) {  
   let PostCommentManager = new PostCommentView(rcmail.env.post_uid, rcmail.env.post_id, order, parent_comment_id);
 
   // Passer l'option de tri choisie à la fonction getCommentByPost

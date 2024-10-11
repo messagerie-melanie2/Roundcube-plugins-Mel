@@ -63,19 +63,19 @@ class PostComment {
  */
   _setup(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted) {
 
-          this.id = id;
-          this.uid = uid;
-          this.post_id = post_id;
-          this.user_uid = user_uid;
-          this.user_name = user_name;
-          this.content = content;
-          this.created = created;
-          this.likes = likes;
-          this.dislikes = dislikes;
-          this.parent = parent;
-          this.children_number = children_number;
-          this.current_user_reacted = current_user_reacted;
-  }
+    this.id = id;
+    this.uid = uid;
+    this.post_id = post_id;
+    this.user_uid = user_uid;
+    this.user_name = user_name;
+    this.content = content;
+    this.created = created;
+    this.likes = likes !== undefined ? likes : 0;  // Utilisation de 0 par défaut
+    this.dislikes = dislikes !== undefined ? dislikes : 0;  // Utilisation de 0 par défaut
+    this.parent = parent || '';  // Valeur par défaut à une chaîne vide
+    this.children_number = children_number !== undefined ? children_number : 0;  // Valeur par défaut
+    this.current_user_reacted = current_user_reacted || '';  // Valeur par défaut à une chaîne vide
+    }
   
   /**
  * Enregistre ou met à jour une réaction (like ou dislike) sur un commentaire.
@@ -313,103 +313,6 @@ async saveReply() {
       }
   } else {
       rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
-  }
-}
-
-// /**
-//  * Affiche un commentaire dans la section appropriée de l'interface utilisateur.
-//  *
-//  * @param {Object} comment - L'objet commentaire à afficher.
-//  * @param {number} comment.id - L'identifiant unique du commentaire.
-//  * @param {string} comment.uid - L'identifiant unique de l'utilisateur ayant posté le commentaire.
-//  * @param {number} comment.post_id - L'identifiant du post auquel le commentaire appartient.
-//  * @param {number} comment.user_id - L'identifiant de l'utilisateur ayant posté le commentaire.
-//  * @param {string} comment.user_name - Le nom de l'utilisateur ayant posté le commentaire.
-//  * @param {string} comment.content - Le contenu du commentaire.
-//  * @param {string} comment.created - La date de création du commentaire au format 'YYYY-MM-DD HH:mm:ss'.
-//  * @param {number} [comment.likes=0] - Le nombre de likes sur le commentaire (0 par défaut).
-//  * @param {number} [comment.dislikes=0] - Le nombre de dislikes sur le commentaire (0 par défaut).
-//  * @param {number} [comment.parent=null] - L'identifiant du commentaire parent si le commentaire est une réponse, sinon `null`.
-//  * @param {number} [comment.children_number=0] - Le nombre de réponses à ce commentaire (0 par défaut).
-//  * @param {boolean} [comment.current_user_reacted=false] - Indique si l'utilisateur actuel a réagi au commentaire (false par défaut).
-//  *
-//  * Crée une instance de `PostComment` pour le commentaire fourni, génère le HTML associé et l'ajoute à la section appropriée :
-//  * - Si le commentaire n'a pas de parent, il est ajouté directement à la zone de commentaires principale.
-//  * - Si le commentaire est une réponse, il est ajouté au conteneur des réponses du commentaire parent. Si ce conteneur n'existe pas encore, il est créé.
-//  *
-//  */
-// async displaySingleComment(comment) {
-
-//   // Définir le format de la date d'entrée
-//   let inputFormat = 'YYYY-MM-DD HH:mm:ss';
-  
-//   // Créer un objet moment en utilisant le format spécifié
-//   let formattedDate = moment(this.created, inputFormat).format('D MMMM YYYY'); // Format souhaité
-
-//   let commentVizualizer = new PostComment(
-//     comment.id,
-//     comment.uid,
-//     comment.post_id,
-//     comment.user_id,
-//     comment.user_name,
-//     comment.content,
-//     formattedDate,
-//     comment.likes || 0,
-//     comment.dislikes || 0,
-//     comment.parent,
-//     comment.children_number,
-//     comment.current_user_reacted,
-//   );
-
-//   let commentHtml = commentVizualizer.generateHtml();
-
-//   if (!comment.parent) {
-//     commentHtml.appendTo($('#comment-area'));
-//   } else {
-//     let parentResponseContainer = $('#responses-' + comment.parent);
-    
-//     if (parentResponseContainer.length === 0) {
-//       parentResponseContainer = $('<div id="responses-' + comment.parent + '"></div>');
-//       $('#comment-' + comment.parent).append(parentResponseContainer);
-//     }
-    
-//     commentHtml.appendTo(parentResponseContainer);
-//   }
-// }
-
-static async displaySingleComment(comment) {
-  // Créer l'objet PostComment avec les données du commentaire
-  let commentVizualizer = new PostComment(
-    comment.id,
-    comment.uid,
-    comment.post_id,
-    comment.user_id,
-    comment.user_name,
-    comment.content,
-    comment.created,
-    comment.likes,
-    comment.dislikes,
-    comment.parent,
-    comment.children_number,
-    comment.current_user_reacted
-  );
-
-  // Générer le HTML pour le commentaire
-  let commentHtml = commentVizualizer.generateHtmlFromTemplate();
-
-  // Si le commentaire est un commentaire principal (sans parent)
-  if (!comment.parent) {
-    // Ajouter le commentaire en haut de la liste des commentaires principaux
-    $('#comment-area').prepend(...commentHtml);
-  } else {
-    // Si c'est une réponse à un commentaire parent
-    let parent_comment_id = comment.parent;
-
-    // Assurer que la zone des réponses est visible
-    $(`#responses-${parent_comment_id}`).removeClass('hidden');
-
-    // Ajouter la réponse en haut des réponses du commentaire parent
-    $(`#responses-${parent_comment_id}`).prepend(...commentHtml);
   }
 }
 
@@ -998,7 +901,7 @@ async saveComment(content) {
 
           // Afficher le nouveau commentaire en haut de la liste
           debugger;
-          await PostComment.displaySingleComment(newComment); 
+          await Manager.displaySingleComment(newComment); 
       } else {
           rcmail.hide_message(id);
           rcmail.display_message(response.message, 'error');

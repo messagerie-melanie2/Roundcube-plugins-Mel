@@ -2885,7 +2885,7 @@ class mel_workspace extends bnum_plugin
 
                 if ($user_exists) {
                     $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value);
-                    $noNotifUsers[] = $value;
+                    $noNotifUsers[] = $tmp_user->uid;
                 }
                 else {
                     $unexistingUsers[] = $value;

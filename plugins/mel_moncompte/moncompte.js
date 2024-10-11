@@ -1102,32 +1102,14 @@ rcube_webmail.prototype.calendar_edit = function (calId, data) {
 
     const busy = rcmail.set_busy(true, 'loading');
 
-    let config = {
-      // fonction permettant de faire de l'ajax
-      type: 'POST',
-      url: rcmail.get_task_url(
-        url,
-        window.location.origin + window.location.pathname,
-      ),
-      success: function () {
-        if (data[0] === 'name') {
-          $('.boxtitle').text(data[1]);
-          parent.$(`#rcmrow${calId} td.name`).text(data[1]);
-        }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log('Error:', textStatus, errorThrown);
-      },
-      data: cal_data,
-    };
-
-    $.ajax(config).always(() => {
-      rcmail.set_busy(false, 'loading', busy);
-      rcmail.display_message(
-        rcmail.gettext('mel_moncompte.success_modification'),
-        'confirmation',
-      );
-    });
+    rcmail.http_post('calendar/calendar', cal_data, busy).done((a) => {
+      if (data[0] === 'name') {
+        $('.boxtitle').text(data[1]);
+        parent.$(`#rcmrow${calId} td.name`).text(data[1]);
+      }
+    }).fail((...e) => {
+      console.log('Error:', ...e);
+    })
   }
 };
 

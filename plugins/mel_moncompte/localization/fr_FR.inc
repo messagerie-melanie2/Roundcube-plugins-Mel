@@ -395,6 +395,7 @@ $labels['success_DeleteZP1'] = "L'appareil vient d'être supprimé de la base de
 $labels['success_Resync'] = "La requête de ré-initialisation de la synchronisation de l'appareil a bien été envoyée";
 
 $labels['success_modification'] = "Modification enregistrée avec succès";
+$labels['error_modification'] = "Erreur lors de la modification des données";
 
 
 $labels['success_ResyncUserDevice'] = "La requête de ré-initialisation de la synchronisation du compte a bien été envoyée";

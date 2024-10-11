@@ -423,7 +423,8 @@ async modifyComment(uid) {
   const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
   if (updatedContent && updatedContent.trim() !== '') {
     try {
-      const response = await mel_metapage.Functions.post(
+      debugger;
+      let response = await mel_metapage.Functions.post(
         mel_metapage.Functions.url('forum', 'update_comment'),
         {
           _uid: uid, // L'ID du commentaire
@@ -434,14 +435,11 @@ async modifyComment(uid) {
       if (response.status === 'success') {
         rcmail.display_message(response.message, 'confirmation');
 
-        // Mettre à jour l'affichage du commentaire avec le nouveau contenu
-        $('#comment-text-' + uid).text(updatedContent);
-
         // Fermer le formulaire de modification en ajoutant la classe 'hidden'
         $('#edit-comment-' + uid).addClass('hidden');
 
-        // Rafraîchir les commentaires après les modifications
-        this.displayComments();
+        // Mettre à jour l'affichage du commentaire avec le nouveau contenu
+        $('#comment-text-' + uid).text(updatedContent);
 
       } else {
         rcmail.display_message(response.message, 'error');
@@ -474,21 +472,18 @@ async deleteComment(uid) {
   if (!confirmation) return;
 
   try {
-    const response = await mel_metapage.Functions.post(
+    let response = await mel_metapage.Functions.post(
       mel_metapage.Functions.url('forum', 'delete_comment'), // API de suppression
       {
         _uid: uid // L'ID du commentaire à supprimer
       }
     );
-
+    response = JSON.parse(response);
     if (response.status === 'success') {
       rcmail.display_message(response.message, 'confirmation');
 
       // Supprimer le commentaire de l'affichage
       $('#comment-id-' + uid).remove();
-
-      // Rafraîchir les commentaires si nécessaire
-      this.displayComments();
 
     } else {
       rcmail.display_message(response.message, 'error');

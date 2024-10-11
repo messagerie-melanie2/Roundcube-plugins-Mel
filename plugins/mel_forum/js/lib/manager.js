@@ -129,6 +129,14 @@ static async displayComments(order = 'date_desc', parent_comment_id = null) {
  *
  */
 static async displaySingleComment(comment) {
+
+  // Formater la date du commentaire avant de passer les données à PostComment
+  const formattedDate = new Date(comment.created).toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   // Créer l'objet PostComment avec les données du commentaire
   let commentVizualizer = new PostComment(
     comment.id,
@@ -137,7 +145,7 @@ static async displaySingleComment(comment) {
     comment.user_id,
     comment.user_name,
     comment.content,
-    comment.created,
+    formattedDate,
     comment.likes,
     comment.dislikes,
     comment.parent,

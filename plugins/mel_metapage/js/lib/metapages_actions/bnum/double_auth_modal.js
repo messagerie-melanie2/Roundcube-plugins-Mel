@@ -892,7 +892,7 @@ class double_auth_modal extends module_bnum {
   }
 
   isValidEmail(email) {
-    const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{1,5})+$/;
     return emailPattern.test(email);
   }
 

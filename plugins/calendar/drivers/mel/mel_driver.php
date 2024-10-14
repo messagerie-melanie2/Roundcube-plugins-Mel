@@ -602,16 +602,35 @@ class mel_driver extends calendar_driver {
       }
 
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
       if (isset($prop['id'])) {
         $id = driver_mel::gi()->rcToMceId($prop['id']);
-        if (isset($this->calendars[$id])) {
+
+        if (isset($this->calendars[$id]) && $this->calendars[$id]->owner == $this->user->uid) {
           $cal = $this->calendars[$id];
-          if (isset($prop['name']) && $cal->owner != $cal->id && $cal->owner == $this->user->uid && $prop['name'] != "" && $prop['name'] != $cal->name) {
+        }
+        //Si agenda partagé
+        else {
+          $cal = driver_mel::gi()->calendar();
+          $cal->id = $id;
+          if ($cal->load()) {
+            $mailbox = driver_mel::gi()->getUser($cal->owner);
+            //Si l'utilisateur n'à pas les droits d'admin sur l'agenda partagé
+            if (!isset($mailbox->shares[$this->rc->get_user_name()]) || !($mailbox->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
+              $this->rc->output->show_message($this->rc->gettext('calendar.aclnorights'), 'error');
+              return false;
+            }
+          } else {
+            return false;
+          }
+        }
+        if (isset($cal)) {
+          if (isset($prop['name']) && $prop['name'] != "" && $prop['name'] != $cal->name && $cal->owner != $cal->id ) {
             $cal->name = $prop['name'];
             $cal->save();
+            \mel::unsetCache('users');
           }
           // Récupération des préférences de l'utilisateur
           $color_calendars = $this->rc->config->get('color_calendars', array());

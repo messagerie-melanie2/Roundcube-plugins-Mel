@@ -24,6 +24,7 @@ $labels['types'] = 'Types';
 $labels['elements'] = 'Liste des ressources';
 
 $labels['logout'] = 'Se déconnecter';
+$labels['tchap'] = 'Tchap';
 
 
 // Resources

@@ -284,9 +284,16 @@
 .task-forum .return-header .return {
   display: flex;
   align-items: center;
+  padding: 6px; /* Ajout de padding pour garantir un bon espace autour de l'icône */
+  border-radius: 20px; /* Forme arrondie initiale */
+  transition: background-color 0.3s ease, border-radius 0.3s ease; /* Transition fluide pour le hover */
 }
 .task-forum .return-header .return span {
   font-size: 20px;
+}
+/* Effet de survol pour donner un hover circulaire */
+.task-forum .return-header .return:hover {
+  background-color: #f0f0f0; /* Fond plus clair au survol */
 }
 .task-forum .forum-sort {
   display: flex;
@@ -330,6 +337,12 @@
   max-width: 150px;
   background-color: transparent;
   border: transparent;
+  border-radius: 20px; /* Si tu souhaites une forme allongée par défaut */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
+}
+/* Effet de survol pour donner un effet de hover circulaire */
+.task-forum .forum-comment .forum-comment-sort #forum-comment-select:hover {
+  background-color: #f0f0f0; /* Fond plus clair au survol */
 }
 .task-forum .forum-comment .comment {
   margin-bottom: 20px;
@@ -377,9 +390,17 @@
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item {
   display: flex;
   align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px; /* Forme allongée avec extrémités arrondies */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item span {
   font-size: 12px;
+}
+/* Effet de survol pour les boutons like et dislike */
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover {
+  background-color: #f0f0f0; /* Couleur de fond au survol */
+  cursor: pointer;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.active .icon::before {
   font-family: 'Material Symbols Outlined';
@@ -392,14 +413,10 @@
   color: var(--forum-active-text-color);
   font-variation-settings: 'FILL' 1;
 }
-.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response .icon::before {
-  font-family: 'Material Symbols Outlined';
-  content: attr(data-icon);
-  font-size: 19px;
-  font-variation-settings: 'wght' 300;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 5px;
+/* Effet de survol pour les boutons "like" et "dislike" (quand non actifs) */
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1; /* Remplir l'icône lors du survol */
+  color: var(--forum-hover-text-color); /* Optionnel : Changer la couleur au survol */
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response span {
   color: var(--forum-active-text-color);

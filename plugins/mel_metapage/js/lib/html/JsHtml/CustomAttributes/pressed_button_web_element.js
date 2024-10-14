@@ -1,11 +1,13 @@
 import { BnumEvent } from '../../../mel_events.js';
-import { MelHtml } from '../MelHtml.js';
 import {
+  BnumHtmlIcon,
   EWebComponentMode,
-  HtmlCustomTag,
+  HtmlCustomDataTag,
 } from './js_html_base_web_elements.js';
 
-export class PressedButton extends HtmlCustomTag {
+console.info('i[pressed]generate classes');
+
+export class PressedButton extends HtmlCustomDataTag {
   constructor({ mode = EWebComponentMode.inline_block } = {}) {
     super({ mode });
 
@@ -124,11 +126,6 @@ export class FavoriteButton extends PressedButton {
     super();
 
     this._icon = null;
-    this._active_icon = null;
-    this._inactive_icon = null;
-    this._active_class = null;
-    this._inactive_class = null;
-    this._add_default_classes = null;
 
     this.onpressed.push(this._on_pressed.bind(this));
     this.onunpressed.push(this._on_unpressed.bind(this));
@@ -146,41 +143,61 @@ export class FavoriteButton extends PressedButton {
     this._icon.innerText = this._inactive_icon;
   }
 
+  get _active_icon() {
+    return (
+      this._p_get_data('favorite-icon') ??
+      this._p_get_data('favoriteIcon') ??
+      'keep'
+    );
+  }
+
+  get _inactive_icon() {
+    return (
+      this._p_get_data('not-favorite-icon') ??
+      this._p_get_data('notFavoriteIcon') ??
+      'keep_off'
+    );
+  }
+
+  get _active_class() {
+    return (
+      this._p_get_data('favorite-class') ??
+      this._p_get_data('favoriteClass') ??
+      'active'
+    );
+  }
+
+  get _inactive_class() {
+    return (
+      this._p_get_data('not-favorite-class') ??
+      this._p_get_data('notFavoriteClass') ??
+      'not-active'
+    );
+  }
+
+  get #_add_default_classes() {
+    return (
+      this._p_get_data('add-default-classes') ||
+      this._p_get_data('addDefaultClasses')
+    );
+  }
+
+  get _add_default_classes() {
+    return ![false, 'false'].includes(this.#_add_default_classes);
+  }
+
   _p_main() {
     super._p_main();
 
-    Object.defineProperties(this, {
-      _active_icon: {
-        value: this.dataset?.favoriteIcon ?? 'keep',
-        writable: false,
-        configurable: false,
-      },
-      _inactive_icon: {
-        value: this.dataset?.notFavoriteIcon ?? 'keep_off',
-        writable: false,
-        configurable: false,
-      },
-      _active_class: {
-        value: this.dataset?.favoriteClasses ?? 'active',
-        writable: false,
-        configurable: false,
-      },
-      _inactive_class: {
-        value: this.dataset?.notFavoriteClasses ?? 'not-active',
-        writable: false,
-        configurable: false,
-      },
-      _add_default_classes: {
-        value: ![false, 'false'].includes(this.dataset?.addDefaultClasses),
-        writable: false,
-        configurable: false,
-      },
-    });
-
-    let icon = MelHtml.start
-      .icon(this.isPressed() ? this._active_icon : this._inactive_icon)
-      .end()
-      .generate_dom();
+    let icon = document.createElement('bnum-icon');
+    icon.setAttribute(
+      'data-icon',
+      this.isPressed() ? this._active_icon : this._inactive_icon,
+    );
+    // MelHtml.start
+    //   .icon(this.isPressed() ? this._active_icon : this._inactive_icon)
+    //   .end()
+    //   .generate_dom();
 
     if (this._add_default_classes)
       this.classList.add(...FavoriteButton.DEFAULT_CLASSES.split(' '));
@@ -193,18 +210,6 @@ export class FavoriteButton extends PressedButton {
     this._icon = icon;
 
     icon = null;
-
-    const data = [
-      'favorite-icon',
-      'not-favorite-icon',
-      'favorite-classes',
-      'not-favorite-classes',
-      'add-default-classes',
-    ];
-
-    for (const element of data) {
-      this.removeAttribute(`data-${element}`);
-    }
   }
 
   destroy() {

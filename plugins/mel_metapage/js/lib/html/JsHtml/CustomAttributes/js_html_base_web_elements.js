@@ -1,7 +1,9 @@
+import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
 import { MaterialIcon } from '../../../icons.js';
 export {
   HtmlCustomTag,
+  HtmlCustomDataTag,
   BnumHtmlIcon,
   BnumHtmlSrOnly,
   BnumHtmlSeparate,
@@ -52,29 +54,27 @@ class HtmlCustomTag extends HTMLElement {
     super();
 
     this.#mode = mode ?? EWebComponentMode.span;
-    /**
-     * Cet element en jQuery
-     * @readonly
-     * @type {external:jQuery}
-     */
-    this.$ = null;
-    /**
-     * Element sur lequel on doit ajouter des nodes enfants.
-     *
-     * Si le shadow dom est activé, ils seront ajoutés au shadow root, sinon à ce composant.
-     * @readonly
-     * @type {ShadowRoot | this}
-     * @see {@link https://developer.mozilla.org/fr/docs/Web/API/Web_components/Using_shadow_DOM}
-     */
-    this.navigator = null;
+  }
 
-    Object.defineProperty(this, 'navigator', {
-      get: () => (this.shadowEnabled() ? this.shadowRoot : this),
-    });
+  /**
+   * Element sur lequel on doit ajouter des nodes enfants.
+   *
+   * Si le shadow dom est activé, ils seront ajoutés au shadow root, sinon à ce composant.
+   * @readonly
+   * @type {ShadowRoot | this}
+   * @see {@link https://developer.mozilla.org/fr/docs/Web/API/Web_components/Using_shadow_DOM}
+   */
+  get navigator() {
+    return this.shadowEnabled() ? this.shadowRoot : this;
+  }
 
-    Object.defineProperty(this, '$', {
-      get: () => $(this),
-    });
+  /**
+   * Cet element en jQuery
+   * @readonly
+   * @type {external:jQuery}
+   */
+  get $() {
+    return $(this);
   }
 
   /**
@@ -271,6 +271,57 @@ const EWebComponentMode = {
   flex: Symbol('flex'),
 };
 
+class HtmlCustomDataTag extends HtmlCustomTag {
+  #data = new BaseStorage();
+
+  constructor({ mode = EWebComponentMode.span } = {}) {
+    super({ mode });
+  }
+
+  /**
+   * Récupère l'élément ou le shadowroot si le data-shadow est activé. <br/>
+   *
+   * Si le parent est défini, le shaodw dom sera toujours inactif.
+   * @protected
+   * @returns {this | ShadowRoot}
+   */
+  _p_start_construct() {
+    return super._p_start_construct();
+  }
+
+  _p_main() {
+    super._p_main();
+  }
+
+  /**
+   * Récupère une data en mémoire et supprime l'attribut à la première récupération.
+   * @param {string} dataName data. Pas de tirets.
+   * @returns {string} Data en mémoire
+   * @protected
+   */
+  _p_get_data(dataName) {
+    if (!this.#data.has(dataName)) {
+      this.#data.add(dataName, this.data(dataName));
+      this.removeAttribute(`data-${dataName}`);
+    }
+
+    return this.#data.get(dataName);
+  }
+
+  _p_save_into_data(dataName, value) {
+    this.#data.add(dataName, value);
+
+    return this;
+  }
+
+  destroy() {
+    super.destroy();
+
+    this.#data.clear();
+    this.#data = null;
+  }
+}
+
 /**
  * @class
  * @classdesc Représente une icone material symbol. Balise : bnum-icon
@@ -395,6 +446,8 @@ BnumHtmlCenteredFlexContainer.TAG = 'bnum-centered-flex-container';
   ];
 
   for (const TAG of TAGS) {
-    if (!customElements.get(TAG.tag)) customElements.define(TAG.tag, TAG.class);
+    if (!customElements.get(TAG.tag)) {
+      customElements.define(TAG.tag, TAG.class);
+    }
   }
 }

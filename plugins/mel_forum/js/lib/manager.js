@@ -10,26 +10,37 @@ export class Manager extends MelObject {
   main() {
     super.main();
     
-    // Afficher les commentaires avec le tri par défaut (date ascendant)
-    Manager.displayComments(); 
+    // Charger l'ordre de tri depuis le LocalStorage, sinon utiliser 'date_desc' par défaut
+    const savedSortOrder = localStorage.getItem('commentSortOrder') || 'date_asc';
+
+    // Assigner la valeur sauvegardée au select pour afficher la sélection correcte
+    $('#forum-comment-select').val(savedSortOrder);
+
+    // Afficher les commentaires avec l'ordre de tri récupéré (ou par défaut si aucun tri sauvegardé)
+    Manager.displayComments(savedSortOrder); 
   
-    // Associer l'événement de tri des commentaires au select
+    // Associer l'événement de changement de tri au select
     $('#forum-comment-select').change(async (event) => {
       const selectedValue = $(event.target).val(); // Récupérer la valeur sélectionnée
-  
+
       // Vérifier si la valeur sélectionnée est correctement récupérée
       console.log("Option sélectionnée:", selectedValue);
-  
+
+      // Sauvegarder la sélection dans le LocalStorage
+      localStorage.setItem('commentSortOrder', selectedValue);
+
       // Appeler displayComments avec l'ordre sélectionné
       await Manager.displayComments(selectedValue);
     });
   
+    // Exporter 'manager'
     this.export('manager');
   
+    // Redirection à la page d'accueil au clic sur 'return-homepage'
     $('#return-homepage').click(() => {
       window.location.href = this.url('forum', { action: 'index' });
     });
-  }
+}
 
 
 // /**

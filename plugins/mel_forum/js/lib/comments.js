@@ -104,6 +104,28 @@ class PostComment {
 
         let response = await sendRequest(type);
 
+        // Vérification des messages spécifiques renvoyés par le serveur
+        if (response.message === 'Vous ne pouvez pas réagir à votre propre commentaire.') {
+          rcmail.display_message(response.message, 'error');
+          return; // On arrête l'exécution si c'est ce cas spécifique
+        }
+
+        if (response.message === 'Like annulé avec succès.') {
+            rcmail.display_message(response.message, 'confirmation');
+        }
+
+        if (response.message === 'Like annulé, dislike enregistré avec succès.') {
+            rcmail.display_message(response.message, 'confirmation');
+        }
+
+        if (response.message === 'Dislike annulé avec succès.') {
+            rcmail.display_message(response.message, 'confirmation');
+        }
+
+        if (response.message === 'Dislike annulé, like enregistré avec succès.') {
+            rcmail.display_message(response.message, 'confirmation');
+        }
+
         let likeCounterElement = $('[data-like-uid="'+uid+'"]').siblings('span.ml-2');
         let dislikeCounterElement = $('[data-dislike-uid="'+uid+'"]').siblings('span.ml-2');
         let likeActionElement = $('[data-like-uid="'+uid+'"]');

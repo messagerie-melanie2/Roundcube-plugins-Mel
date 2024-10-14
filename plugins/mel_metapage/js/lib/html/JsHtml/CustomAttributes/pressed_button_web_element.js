@@ -194,10 +194,6 @@ export class FavoriteButton extends PressedButton {
       'data-icon',
       this.isPressed() ? this._active_icon : this._inactive_icon,
     );
-    // MelHtml.start
-    //   .icon(this.isPressed() ? this._active_icon : this._inactive_icon)
-    //   .end()
-    //   .generate_dom();
 
     if (this._add_default_classes)
       this.classList.add(...FavoriteButton.DEFAULT_CLASSES.split(' '));

@@ -1,10 +1,12 @@
 import { BnumMessage } from '../../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { FramesManager } from '../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { HtmlCustomTag } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { FavoriteButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
+import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { connectors } from '../connectors.js';
 
 //#region textes
@@ -93,11 +95,6 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
         writable: false,
         configurable: false,
       },
-      // _is_favorite: {
-      //   value: this.dataset.favorite,
-      //   writable: false,
-      //   configurable: false,
-      // },
       _private: {
         value: this.dataset.private,
         writable: false,
@@ -174,8 +171,6 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
   //#region favorite
   _generate_favorite() {
     if (this.data('canBeFavorite') ?? true) {
-      // if (this.hasAttribute('data-old-favorite')) debugger;
-
       /**
        * @type {FavoriteButton}
        */
@@ -291,7 +286,16 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       }
     }
 
-    return bottom;
+    bottom.addEventListener('click', () => {
+      FramesManager.Instance.switch_frame('workspace', {
+        args: {
+          _action: 'workspace',
+          _uid: this._uid,
+        },
+      });
+    });
+
+    return this.toButton(bottom);
   }
 
   //#region title_block

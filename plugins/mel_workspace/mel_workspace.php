@@ -30,6 +30,9 @@ class mel_workspace extends bnum_plugin
                 if ($this->is_index_action()) {
                     $this->_setup_index_action();
                 }
+                else if ($this->get_current_task() === 'workspace') {
+                    $this->_setup_workspace_actions();
+                }
 
                 $this->_setup_external_actions();
                 break;
@@ -86,6 +89,10 @@ class mel_workspace extends bnum_plugin
         $this->rc()->output->set_env('visu-mode', $this->get_config('wsp-visu-mode', 'cards'));
 
         $this->rc()->output->send('mel_workspace.index');
+    }
+
+    public function show_workspace() {
+        $this->rc()->output->send('mel_workspace.workspace');
     }
 
     public function action_workspace() {
@@ -397,6 +404,10 @@ class mel_workspace extends bnum_plugin
                     'set_visu_mode' => [$this, 'set_visu_mode']
                 ]
             );
+        }
+
+        private function _setup_workspace_actions() {
+            $this->register_action('workspace', [$this, 'show_workspace']);
         }
         #endregion
 

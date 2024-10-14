@@ -207,6 +207,28 @@ class HtmlCustomTag extends HTMLElement {
     return document.createTextNode(this.text(text));
   }
 
+  /**
+   *
+   * @param {HTMLElement} node
+   */
+  toButton(node) {
+    node.setAttribute('role', 'button');
+    node.setAttribute('tabindex', 0);
+    node.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case ' ':
+        case 'Enter':
+          e.target.click();
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    return node;
+  }
+
   generateId(namespace = 'htmlcustom') {
     let id;
 

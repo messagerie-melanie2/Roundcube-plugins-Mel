@@ -365,8 +365,16 @@ class MelObject {
    * @returns {string}
    * @protected
    */
-  url(task, { action = EMPTY_STRING, params = null }) {
-    return mel_metapage.Functions.url(task, action, params);
+  url(
+    task,
+    { action = EMPTY_STRING, params = null, removeIsFromIframe = false },
+  ) {
+    let url = mel_metapage.Functions.url(task, action, params);
+
+    if (removeIsFromIframe && url.includes('&_is_from=iframe'))
+      url = url.replace('&_is_from=iframe', EMPTY_STRING);
+
+    return url;
   }
 
   /**

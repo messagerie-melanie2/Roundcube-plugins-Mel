@@ -91,6 +91,7 @@ class PostComment {
  */
   async saveLikeOrDislike(type, uid) {
     try {
+        // Fonction pour envoyer la requête
         const sendRequest = async (reactionType) => {
             return await mel_metapage.Functions.post(
                 mel_metapage.Functions.url('forum', 'like_comment'),
@@ -102,77 +103,92 @@ class PostComment {
             );
         };
 
+        // Envoie la requête avec le type de réaction (like ou dislike)
         let response = await sendRequest(type);
 
-        // Vérification des messages spécifiques renvoyés par le serveur
-        if (response.message === 'Vous ne pouvez pas réagir à votre propre commentaire.') {
-          rcmail.display_message(response.message, 'error');
-          return; // On arrête l'exécution si c'est ce cas spécifique
-        }
-
-        if (response.message === 'Like annulé avec succès.') {
-            rcmail.display_message(response.message, 'confirmation');
-        }
-
-        if (response.message === 'Like annulé, dislike enregistré avec succès.') {
-            rcmail.display_message(response.message, 'confirmation');
-        }
-
-        if (response.message === 'Dislike annulé avec succès.') {
-            rcmail.display_message(response.message, 'confirmation');
-        }
-
-        if (response.message === 'Dislike annulé, like enregistré avec succès.') {
-            rcmail.display_message(response.message, 'confirmation');
-        }
-
-        let likeCounterElement = $('[data-like-uid="'+uid+'"]').siblings('span.ml-2');
-        let dislikeCounterElement = $('[data-dislike-uid="'+uid+'"]').siblings('span.ml-2');
-        let likeActionElement = $('[data-like-uid="'+uid+'"]');
-        let dislikeActionElement = $('[data-dislike-uid="'+uid+'"]');
-
-        if (response.message.includes('annulé')) {
-            if (type === 'like') {
-                likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
-                likeActionElement.parent().removeClass('active');
-                this.current_user_reacted = ''; 
-            } else if (type === 'dislike') {
-                dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
-                dislikeActionElement.parent().removeClass('active');
-                this.current_user_reacted = '';
+        // Vérifier si la réponse contient bien un message
+        if (response && response.message) {
+            // Vérification des messages spécifiques renvoyés par le serveur
+            if (response.message === 'Vous ne pouvez pas réagir à votre propre commentaire.') {
+                rcmail.display_message(response.message, 'error');
+                return; // On arrête l'exécution si c'est ce cas spécifique
             }
-        } else {
-            if (type === 'like') {
-                likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
-                likeActionElement.parent().addClass('active');
-                this.current_user_reacted = 'like';
-                if (dislikeActionElement.parent().hasClass('active')) {
-                    dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
-                    dislikeActionElement.parent().removeClass('active');
-                }
-            } else if (type === 'dislike') {
-                dislikeCounterElement.text(parseInt(dislikeCounterElement.text()) + 1);
-                dislikeActionElement.parent().addClass('active');
-                this.current_user_reacted = 'dislike';
-                if (likeActionElement.parent().hasClass('active')) {
+
+            // Afficher les autres messages spécifiques
+            if (response.message === 'Like annulé avec succès.') {
+                rcmail.display_message(response.message, 'confirmation');
+            }
+
+            if (response.message === 'Like annulé, dislike enregistré avec succès.') {
+                rcmail.display_message(response.message, 'confirmation');
+            }
+
+            if (response.message === 'Dislike annulé avec succès.') {
+                rcmail.display_message(response.message, 'confirmation');
+            }
+
+            if (response.message === 'Dislike annulé, like enregistré avec succès.') {
+                rcmail.display_message(response.message, 'confirmation');
+            }
+
+            // Mise à jour de l'UI en fonction de la réaction (like ou dislike)
+            let likeCounterElement = $('[data-like-uid="'+uid+'"]').siblings('span.ml-2');
+            let dislikeCounterElement = $('[data-dislike-uid="'+uid+'"]').siblings('span.ml-2');
+            let likeActionElement = $('[data-like-uid="'+uid+'"]');
+            let dislikeActionElement = $('[data-dislike-uid="'+uid+'"]');
+
+            // Gestion de l'annulation d'une réaction
+            if (response.message.includes('annulé')) {
+                if (type === 'like') {
                     likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
                     likeActionElement.parent().removeClass('active');
+                    this.current_user_reacted = ''; 
+                } else if (type === 'dislike') {
+                    dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
+                    dislikeActionElement.parent().removeClass('active');
+                    this.current_user_reacted = '';
+                }
+            } else {
+                // Gestion de l'ajout ou du changement de réaction
+                if (type === 'like') {
+                    likeCounterElement.text(parseInt(likeCounterElement.text()) + 1);
+                    likeActionElement.parent().addClass('active');
+                    this.current_user_reacted = 'like';
+                    if (dislikeActionElement.parent().hasClass('active')) {
+                        dislikeCounterElement.text(Math.max(0, parseInt(dislikeCounterElement.text()) - 1));
+                        dislikeActionElement.parent().removeClass('active');
+                    }
+                } else if (type === 'dislike') {
+                    dislikeCounterElement.text(parseInt(dislikeCounterElement.text()) + 1);
+                    dislikeActionElement.parent().addClass('active');
+                    this.current_user_reacted = 'dislike';
+                    if (likeActionElement.parent().hasClass('active')) {
+                        likeCounterElement.text(Math.max(0, parseInt(likeCounterElement.text()) - 1));
+                        likeActionElement.parent().removeClass('active');
+                    }
                 }
             }
-        }
 
-        if (response.status === 'success') {
-            rcmail.display_message(response.message, 'confirmation');
+            // Affichage des messages de succès ou d'erreur selon le statut général
+            if (response.status === 'success') {
+                rcmail.display_message(response.message, 'confirmation'); // message de succès
+            } else {
+                rcmail.display_message(response.message, 'error'); // message d'erreur
+            }
+
         } else {
-            rcmail.display_message(response.message, 'error');
+            // Si la réponse ne contient pas de message, afficher une erreur par défaut
+            rcmail.display_message('Une erreur inattendue est survenue.', 'error');
         }
 
         return response;
     } catch (error) {
+        // En cas d'erreur lors de la requête
         rcmail.display_message('Une erreur est survenue lors de l\'enregistrement de votre réaction.', 'error');
         console.error("Erreur lors de l'enregistrement du like/dislike:", error);
     }
 }
+
 
 // /**
 //  * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.

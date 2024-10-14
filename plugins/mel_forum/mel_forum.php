@@ -1206,6 +1206,9 @@ public function delete_comment()
  */
 public function like_comment()
 {
+    
+    header('Content-Type: application/json');
+
     // Récupérer l'utilisateur
     $user = driver_mel::gi()->getUser();
     $user_uid = $user->uid;

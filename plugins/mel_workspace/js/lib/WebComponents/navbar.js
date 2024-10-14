@@ -2,13 +2,16 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
 import { BnumModules } from '../../../../mel_metapage/js/lib/helpers/dynamic_load_modules.js';
 import {
   BnumHtmlIcon,
+  BnumHtmlSeparate,
   EWebComponentMode,
   HtmlCustomTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
-import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
+// import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { WorkspaceData } from '../workspaceData.js';
+import { WspButton, WspNavigationButton } from './NavbarComponents/button.js';
 import { WspNavBarDescription } from './NavbarComponents/components.js';
+import { WspPageNavigation } from './NavbarComponents/nav.js';
 
 export { WspNavBar };
 
@@ -111,7 +114,14 @@ class WspNavBar extends HtmlCustomTag {
 
     shadow.append(div);
 
-    this._generate_picture()._generate_title()._generate_description();
+    this._generate_picture()
+      ._generate_title()
+      ._generate_description()
+      ._generate_block();
+
+    let tmp = new WspPageNavigation({ parent: this });
+    this.mainDiv.appendChild(tmp);
+    tmp = null;
 
     top.history.replaceState(
       {},
@@ -140,7 +150,17 @@ class WspNavBar extends HtmlCustomTag {
     div.classList.add('picture-container');
     div.append(img);
 
-    this.mainDiv.append(div);
+    const plugin = rcmail.triggerEvent('wsp.navbar.picture', {
+      image: img,
+      container: div,
+      navBar: this,
+      append: true,
+    }) ?? { append: true };
+
+    if (plugin.append) {
+      if (plugin.container) div = plugin.container;
+      this.mainDiv.append(div);
+    }
 
     img = null;
     div = null;
@@ -184,7 +204,18 @@ class WspNavBar extends HtmlCustomTag {
 
     div.append(span);
 
-    this.mainDiv.appendChild(div);
+    const plugin = rcmail.triggerEvent('wsp.navbar.title', {
+      buttonCopy: button,
+      spanTitle: span,
+      container: div,
+      navBar: this,
+      append: true,
+    }) ?? { append: true };
+
+    if (plugin.append) {
+      if (plugin.container) div = plugin.container;
+      this.mainDiv.appendChild(div);
+    }
 
     span = null;
     div = null;
@@ -204,14 +235,133 @@ class WspNavBar extends HtmlCustomTag {
       parent: this,
     }).setNavBarParent(this);
 
-    this.mainDiv.append(description);
+    const plugin = rcmail.triggerEvent('wsp.navbar.description', {
+      description,
+      navBar: this,
+      append: true,
+    }) ?? { append: true };
+
+    if (plugin.append) {
+      if (plugin.description) description = plugin.description;
+      this.mainDiv.appendChild(description);
+    }
 
     description = null;
 
     return this;
   }
 
-  _generate_invitation() {}
+  _generate_block() {
+    let block = document.createElement('div');
+    block.style.display = 'flex';
+    block.style.flexDirection = 'column';
+    block.style.marginTop = '15px';
+
+    const plugin = rcmail.triggerEvent('wsp.navbar.button_block', {
+      block,
+      navBar: this,
+      addSeparateAtEnd: true,
+      break: false,
+    }) ?? { break: false, addSeparateAtEnd: true };
+
+    if (!plugin.break) {
+      const items = [
+        this._generate_invitation,
+        this._generate_join,
+        this._generate_start_visio,
+        this._generate_params,
+        this._generate_members,
+      ];
+
+      for (const callback of items) {
+        this.#_try_add(block, callback.call(this));
+      }
+
+      if (plugin.addSeparateAtEnd) {
+        let separate = new BnumHtmlSeparate({ mode: EWebComponentMode.div });
+        separate.style.display = 'block';
+        separate.style.opacity = 1;
+        separate.style.margin = '20px 30px';
+
+        block.appendChild(separate);
+        separate = null;
+      }
+    }
+
+    if (block) this.mainDiv.appendChild(block);
+
+    block = null;
+  }
+
+  #_try_add(node, nodeToAdd) {
+    if (nodeToAdd) {
+      node.appendChild(nodeToAdd);
+      nodeToAdd = null;
+    }
+
+    return this;
+  }
+
+  _generate_invitation() {
+    if (this.workspace.isJoin) {
+      let button = new WspButton(this, {
+        text: 'Inviter un membre',
+        icon: 'person_add',
+      });
+
+      return button;
+    }
+
+    return null;
+  }
+
+  _generate_join() {
+    if (!this.workspace.isJoin) {
+      let button = new WspButton(this, {
+        style: WspButton.Style.white,
+        text: "Rejoindre l'espace",
+        icon: 'add',
+      });
+
+      return button;
+    }
+  }
+
+  _generate_start_visio() {
+    if (this.workspace.isJoin && rcmail.env.plugin_list_visio === true) {
+      let button = new WspButton(this, {
+        style: WspButton.Style.white,
+        text: 'Commencer une visioconférence',
+        icon: 'videocam',
+      });
+
+      return button;
+    }
+  }
+
+  _generate_params() {
+    if (this.workspace.isJoin && this.workspace.isAdmin) {
+      let button = new WspButton(this, {
+        style: WspButton.Style.white,
+        text: 'Paramètres',
+        icon: 'settings',
+      });
+
+      return button;
+    }
+  }
+
+  _generate_members() {
+    if (this.workspace.isJoin && !this.workspace.isAdmin) {
+      let button = new WspButton(this, {
+        style: WspButton.Style.white,
+        text: 'Voir les membres',
+        icon: 'info',
+      });
+
+      return button;
+    }
+  }
 
   #_get_data(data) {
     if (!this.#data[data]) {

@@ -84,7 +84,7 @@ class WspNavBarDescription extends NavBarComponent {
 
     let button = new PressedButton({ mode: EWebComponentMode.flex });
     button.style.display = 'flex';
-    button.classList.add('margin-top-5', 'disabled');
+    button.classList.add('margin-top-5', 'disabled', 'desc-button');
     button.setAttribute('title', 'Afficher/réduire la description');
     button.setAttribute('disabled', 'disabled');
     button.style.opacity = 0;
@@ -124,20 +124,22 @@ class WspNavBarDescription extends NavBarComponent {
   }
 
   _description_scroll_changed(modified, description) {
-    if (Math.ceil(description.scrollHeight) > description.clientHeight) {
-      let button = description.parentNode.querySelector('bnum-pressed-button');
-      let separator = description.parentNode.querySelector('bnum-separate');
+    let button = description.parentNode.querySelector('bnum-pressed-button');
+    let separator = description.parentNode.querySelector('bnum-separate');
 
+    if (Math.ceil(description.scrollHeight) > description.clientHeight) {
       separator.style.opacity = 1;
 
       button.removeAttribute('disabled');
       button.classList.remove('disabled');
       button.style.opacity = 1;
-
-      button = null;
-      separator = null;
+    } else {
+      button.remove();
+      separator.remove();
     }
 
+    button = null;
+    separator = null;
     this.#observer.destroy();
     this.#observer = null;
   }

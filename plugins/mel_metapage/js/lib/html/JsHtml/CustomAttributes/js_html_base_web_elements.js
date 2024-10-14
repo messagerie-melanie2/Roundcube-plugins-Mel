@@ -1,3 +1,4 @@
+import { Random } from '../../../classes/random.js';
 import { MaterialIcon } from '../../../icons.js';
 export {
   HtmlCustomTag,
@@ -153,7 +154,7 @@ class HtmlCustomTag extends HTMLElement {
     if (value !== null && value !== undefined) {
       this.setAttribute(`data-${key}`, value);
       return this;
-    } else return this.dataset[key];
+    } else return this.dataset[key] || this.getAttribute(`data-${key}`);
   }
 
   /**
@@ -206,6 +207,16 @@ class HtmlCustomTag extends HTMLElement {
     return document.createTextNode(this.text(text));
   }
 
+  generateId(namespace = 'htmlcustom') {
+    let id;
+
+    do {
+      id = `${namespace}-${Random.random_string(Random.intRange(2, 10))}`;
+    } while (document.querySelector(`#${id}`));
+
+    return id;
+  }
+
   /**
    * Libère les données.
    * @returns {this} Chaîne
@@ -242,22 +253,22 @@ const EWebComponentMode = {
    * Le composant sera mis en `display:block`
    * @type {Symbol}
    */
-  div: Symbol(),
+  div: Symbol('div'),
   /**
    * Comportement standard.
    * @type {Symbol}
    */
-  span: Symbol(),
+  span: Symbol('span'),
   /**
    * Le composant sera mis en `display:inline-block`
    * @type {Symbol}
    */
-  inline_block: Symbol(),
+  inline_block: Symbol('inline-block'),
   /**
    * Le composant sera mis en `display:flex`
    * @type {Symbol}
    */
-  flex: Symbol(),
+  flex: Symbol('flex'),
 };
 
 /**

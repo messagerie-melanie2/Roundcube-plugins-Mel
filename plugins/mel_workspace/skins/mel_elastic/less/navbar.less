@@ -1,3 +1,4 @@
+//compress:true
 :host {
   width: 275px;
   height: 100%;
@@ -5,7 +6,7 @@
 
 .nav {
   width: calc(100% - 30px);
-  height: calc(100% - 30px);
+  height: calc(100% - 40px);
   margin: 10px;
 }
 
@@ -17,7 +18,7 @@
   border-radius: var(--bureau-card-border-radius);
   // box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
   .melv2-card-shadow();
-  padding: 50px;
+  padding: 10px;
   background-color: var(--bureau-card-background-color);
   color: var(--bureau-card-text-color);
 }
@@ -36,6 +37,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+bnum-wsp-nav-description,
+.wsp-title-container {
+  margin: 0 30px;
 }
 
 ._multiple-lines(@l: 3) {
@@ -59,6 +65,10 @@ bnum-separate {
   background-color: var(--main-border-color-transparent);
 }
 
+bnum-wsp-button {
+  margin-top: 10px;
+}
+
 .shadow-the-hedghog-mel-button,
 .shadow-mel-button,
 bnum-pressed-button {
@@ -73,6 +83,12 @@ bnum-pressed-button {
   align-items: center;
   justify-content: center;
 
+  &.desc-button {
+    background-color: var(--wsp-nav-desc-button-background-color);
+    color: var(--wsp-nav-desc-button-text-color);
+    border: var(--wsp-nav-desc-button-border);
+  }
+
   &.transparent-bckg {
     border-color: var(--wsp-nav-button-invisible-border);
     --wsp-nav-button-background-color: var(
@@ -81,11 +97,40 @@ bnum-pressed-button {
     --wsp-nav-button-text-color: var(--wsp-nav-button-invisible-text-color);
   }
 
+  &[wspbutton='white'] {
+    &:extend(.shadow-mel-button.transparent-bckg);
+    border-color: var(--wsp-nav-button-border-color);
+  }
+
+  &[wspbutton='navigation'] {
+    &:extend(.shadow-mel-button.transparent-bckg);
+
+    border-radius: 5px !important;
+    flex: 1;
+
+    li & {
+      &::before {
+        content: '•';
+        margin-right: 10px;
+      }
+    }
+  }
+
   &:hover {
     background-color: var(--wsp-nav-button-hover-background-color);
     color: var(--wsp-nav-button-hover-text-color);
     border: var(--wsp-nav-button-hover-border);
   }
+}
+
+bnum-wsp-navigation-button {
+  display: flex;
+  justify-content: space-between;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
 }
 
 .margin-top-5 {

@@ -425,9 +425,9 @@
   font-weight: bold;
 }
 .task-forum .forum-comment-response {
-  display: flex; /* Pour aligner les éléments horizontalement */
-  align-items: center; /* Aligne les éléments verticalement au centre */
-  margin-left: 35px; /* Ajuste la marge pour s'aligner avec les autres éléments */
+  display: flex;/* Pour aligner les éléments horizontalement */
+  align-items: center;/* Aligne les éléments verticalement au centre */
+  margin-left: 35px;/* Ajuste la marge pour s'aligner avec les autres éléments */
   padding: 6px 12px; /* Espace autour du contenu */
   border-radius: 20px; /* Forme allongée */
   max-width: 140px; /* Limite de largeur maximale */
@@ -449,17 +449,11 @@
   vertical-align: middle;
   color: var(--forum-active-text-color);
   transition: color 0.3s ease; /* Transition fluide pour la couleur au hover */
-  
 }
 .task-forum .forum-comment-response .ml-2 {
   font-size: 12px;
   color: var(--forum-active-text-color);
   transition: color 0.3s ease; /* Transition fluide pour la couleur au hover */
-}
-/* Effet de survol pour l'icône et le texte */
-.task-forum .forum-comment-response:hover .icon::before,
-.task-forum .forum-comment-response:hover .ml-2 {
-  color: var(--forum-hover-text-color); /* Changer la couleur au survol */
 }
 .task-forum .hidden {
   display: none;

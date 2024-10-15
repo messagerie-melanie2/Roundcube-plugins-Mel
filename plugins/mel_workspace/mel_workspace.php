@@ -14,6 +14,10 @@ class mel_workspace extends bnum_plugin
     public $task = '.*';
 
     private static $_workspaces;
+    /**
+     * @var WorkspacePageLayout
+     */
+    private $workspacePageLayout;
 
   /**
      * (non-PHPdoc)
@@ -92,6 +96,32 @@ class mel_workspace extends bnum_plugin
     }
 
     public function show_workspace() {
+        include_once __DIR__.'/lib/WorkspacePage.php';
+
+        $uid = $this->get_input('_uid');
+
+        self::IncludeWorkspaceModuleComponent();
+
+        $plugin = $this->exec_hook('wsp.show', [
+            'uid' => $uid,
+            'layout' => new WorkspacePageLayout(),
+            'plugin' => $this
+        ]);
+
+        $plugin ??= [];
+
+        $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
+
+        $this->rc()->output->add_handlers(array(
+            'wsp.row.first'  => [$this, 'handler_get_row'],
+            'wsp.row.second' => [$this, 'handler_get_row'],
+            'wsp.row.third'  => [$this, 'handler_get_row'],
+            'wsp.row.fourth' => [$this, 'handler_get_row'],
+            'wsp.row.other'  => [$this, 'handler_get_row'],
+        ));
+
+        $this->rc()->output->set_env('current_workspace_uid', $uid);
+
         $this->rc()->output->send('mel_workspace.workspace');
     }
 
@@ -265,6 +295,34 @@ class mel_workspace extends bnum_plugin
 
     public function handler_public_count($args) {
         return ceil(count((driver_mel::gi()->workspace())->listPublicsWorkspaces()) / self::PAGE_MAX);
+    }
+
+    public function handler_get_row($args) {
+
+        switch ($args['name']) {
+            case 'wsp.row.first':
+                return $this->workspacePageLayout->firstRow()->get();
+
+            case 'wsp.row.second':
+                return $this->workspacePageLayout->secondRow()->get();
+
+            case 'wsp.row.third':
+                return $this->workspacePageLayout->thirdRow()->get();
+
+            case 'wsp.row.fourth':
+                return $this->workspacePageLayout->fourthRow()->get();
+            
+            default:
+                return $this->workspacePageLayout->otherRow()->get();
+        }
+
+        return '';
+    }
+    #endregion
+
+    #region public_functions
+    public function include_workspace_module($plugin, $name = 'module', $path = bnum_plugin::BASE_MODULE_PATH) {
+        $this->load_script_module_from_plugin($plugin, $name, $path);
     }
     #endregion
 
@@ -544,6 +602,10 @@ class mel_workspace extends bnum_plugin
 
     public static function IncludeNavBarComponent() {
         WebComponnents::Instance()->____METHODS____('_include_component', 'navbar.js', '/js/lib/WebComponents', 'mel_workspace');
+    }
+
+    public static function IncludeWorkspaceModuleComponent() {
+        WebComponnents::Instance()->____METHODS____('_include_component', 'workspace_module_block.js', '/js/lib/WebComponents', 'mel_workspace');
     }
 
     public static function IncludeWorkspacesBlocks($workspaces, $callback = null) {

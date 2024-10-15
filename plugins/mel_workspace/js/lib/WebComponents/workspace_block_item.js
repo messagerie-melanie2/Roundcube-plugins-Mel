@@ -552,10 +552,12 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
   //#endregion
 }
 
+//#region Tag Definition
 {
   const TAG = 'bnum-workspace-block-item';
   if (!customElements.get(TAG)) customElements.define(TAG, WorkspaceBlockItem);
 }
+//#endregion
 
 // window.addEventListener('load', function () {
 //   onLoaded();

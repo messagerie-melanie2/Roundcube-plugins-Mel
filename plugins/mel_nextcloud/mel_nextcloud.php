@@ -138,6 +138,9 @@ class mel_nextcloud extends rcube_plugin {
         'settings'
       ));
     }
+    else if ($rcmail->task === 'workspace') {
+      $this->add_hook('wsp.show', [$this, 'wsp_block']);
+    }
     
 
     $this->add_hook('workspace.services.set', [$this, 'workspace_set_drive']);
@@ -367,6 +370,21 @@ class mel_nextcloud extends rcube_plugin {
       }
 
       $args['services'] = $services;
+    }
+
+    return $args;
+  }
+
+  public function wsp_block($args) {
+    if (class_exists('roundrive')) {
+      $SIZE = 4;
+      $layout = $args['layout'];
+      $html = $layout->htmlModuleBlock(['id' => 'module-nc']);
+      $layout->firstRow()->append($SIZE, $html);
+      $args['layout'] = $layout;
+      unset($layout);
+
+      $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', '/js/workspace/');
     }
 
     return $args;

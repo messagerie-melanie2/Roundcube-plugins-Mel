@@ -345,7 +345,14 @@
   background-color: #f0f0f0; /* Fond plus clair au survol */
 }
 .task-forum .forum-comment .comment {
+  display: flex; /* Aligne les éléments en ligne */
+  align-items: center; /* Aligne les éléments verticalement au centre */
   margin-bottom: 20px;
+}
+/* Assure que l'icône de la date et le texte sont bien centrés */
+.task-forum .forum-comment .forum-comment-date {
+  display: flex;
+  align-items: center; /* Aligne l'icône et le texte de la date au centre */
 }
 .task-forum .forum-comment .comment .forum-comment-author {
   font-weight: bold;
@@ -385,14 +392,14 @@
   font-variation-settings: 'wght' 400;
   display: inline-block;
   vertical-align: middle;
-  margin-right: 5px;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item {
   display: flex;
   align-items: center;
-  padding: 6px 12px;
+  padding: 6px 6px;
   border-radius: 20px; /* Forme allongée avec extrémités arrondies */
   transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
+  margin-right: 3px;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item span {
   font-size: 12px;
@@ -427,7 +434,7 @@
 .task-forum .forum-comment-response {
   display: flex;/* Pour aligner les éléments horizontalement */
   align-items: center;/* Aligne les éléments verticalement au centre */
-  margin-left: 35px;/* Ajuste la marge pour s'aligner avec les autres éléments */
+  margin-left: 29px;/* Ajuste la marge pour s'aligner avec les autres éléments */
   padding: 6px 12px; /* Espace autour du contenu */
   border-radius: 20px; /* Forme allongée */
   max-width: 140px; /* Limite de largeur maximale */

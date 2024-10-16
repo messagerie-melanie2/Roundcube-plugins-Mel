@@ -17,7 +17,10 @@ export class Roundrive {
     this.#folder = folder;
   }
 
-  async load() {
+  /**
+   * @type {AsyncGenerator<RoundriveFolder | RoundriveFile}
+   */
+  async *gload() {
     const busy = rcmail.set_busy(true, 'loading');
 
     let data = null;
@@ -45,6 +48,8 @@ export class Roundrive {
         if (element.type === 'dir') element = new RoundriveFolder(element);
         else element = new RoundriveFile(element);
 
+        yield element;
+
         if (element.data.type === Roundrive.EItemType.directory)
           this.#folders.push(element);
         else this.#files.push(element);
@@ -52,6 +57,26 @@ export class Roundrive {
 
       element = null;
     }
+  }
+
+  async load() {
+    await rcmail
+      .http_get('roundrive/folder_list_all_items', {
+        _folder: this.#folder,
+      })
+      .done((e) => {
+        for (const element of e) {
+          if (element.type === 'dir')
+            this.#folders.push(new RoundriveFolder(element));
+          else this.#files.push(new RoundriveFile(element));
+        }
+      })
+      .fail((...args) => {
+        let error = new Error('Error on loading data');
+        error.args = args;
+
+        throw error;
+      });
   }
 
   get files() {
@@ -66,6 +91,9 @@ export class Roundrive {
     return this.#folder;
   }
 
+  /**
+   * @yield {RoundriveFolder | RoundriveFile}
+   */
   *[Symbol.iterator]() {
     yield* this.folders;
     yield* this.files;
@@ -153,6 +181,13 @@ class FileData extends DirData {
   get size() {
     return this._p_data.size;
   }
+
+  /**
+   * @type {string}
+   */
+  get extension() {
+    return this._p_data.extension;
+  }
 }
 
 class ItemName {
@@ -188,7 +223,7 @@ class ItemName {
   }
 }
 
-class RoundriveFolder extends Roundrive {
+export class RoundriveFolder extends Roundrive {
   #data = null;
   constructor(data) {
     super(data.path);
@@ -203,7 +238,7 @@ class RoundriveFolder extends Roundrive {
   }
 }
 
-class RoundriveFile {
+export class RoundriveFile {
   #data = null;
   constructor(data) {
     this.#data = DirData.From(data);

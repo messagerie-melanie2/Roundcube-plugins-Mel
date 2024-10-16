@@ -1660,7 +1660,7 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   color: var(--secondary-text-color);
 }
 .mel-button.selected-item,
-bnum-pressed-button.mel-button[aria-pressed='true'] {
+bnum-pressed-button.mel-button[aria-pressed='true']bnum-pressed-button.mel-button.cannot-unpress {
   background-color: var(--mel-button-active-background-color);
   color: var(--mel-button-active-text-color);
   pointer-events: none;

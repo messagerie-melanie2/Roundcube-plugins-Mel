@@ -209,6 +209,30 @@ class HtmlCustomTag extends HTMLElement {
 
   /**
    *
+   * @param {Object} [param0={}]
+   * @param {?HTMLElement} [param0.node=null]
+   * @returns
+   */
+  disable({ node = null } = {}) {
+    node ??= this;
+
+    node.setAttribute('disabled', 'disabled');
+    node.classList.add('disabled');
+
+    return node;
+  }
+
+  enable({ node = null } = {}) {
+    node ??= this;
+
+    node.removeAttribute('disabled');
+    node.classList.remove('disabled');
+
+    return node;
+  }
+
+  /**
+   *
    * @param {HTMLElement} node
    */
   toButton(node) {

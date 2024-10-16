@@ -6453,7 +6453,7 @@ iframe {
 
 bnum-pressed-button {
   &.mel-button {
-    &[aria-pressed='true'] {
+    &[aria-pressed='true']&.cannot-unpress {
       &:extend(.mel-button.selected-item);
     }
   }

@@ -1,6 +1,6 @@
 import { EMPTY_STRING } from '../../../constants/constants.js';
-import { HtmlCustomTag } from './classes.js';
-export class BootstrapLoader extends HtmlCustomTag {
+import { HtmlCustomDataTag } from './js_html_base_web_elements.js';
+export class BootstrapLoader extends HtmlCustomDataTag {
   #mode = null;
 
   /**
@@ -24,13 +24,38 @@ export class BootstrapLoader extends HtmlCustomTag {
     this.#mode = mode;
   }
 
-  connectedCallback() {
-    if (this.hasAttribute('data-mode')) {
-      this.#mode = this.dataset.mode;
-      this.removeAttribute('data-mode');
+  get mode() {
+    let mode = this._p_get_data('mode');
+
+    if (mode && typeof mode === 'string') {
+      switch (mode) {
+        case 'block':
+          mode = BootstrapLoader.EMode.block;
+          break;
+
+        case 'inline-block':
+          mode = BootstrapLoader.EMode.inline_block;
+          break;
+
+        case 'flex':
+          mode = BootstrapLoader.EMode.flex;
+          break;
+
+        default:
+          mode = BootstrapLoader.EMode.default;
+          break;
+      }
+
+      this._p_save_into_data('mode', mode);
     }
 
-    switch (this.#mode) {
+    return mode || this.#mode;
+  }
+
+  _p_main() {
+    super._p_main();
+
+    switch (this.mode) {
       case BootstrapLoader.EMode.default:
         this.style.display = 'inline';
         break;
@@ -109,6 +134,22 @@ export class BootstrapLoader extends HtmlCustomTag {
     shadow = null;
     div = null;
     element = null;
+  }
+
+  static Create({
+    mode = null,
+    color = null,
+    spinner = null,
+    center = null,
+  } = {}) {
+    let node = document.createElement('bootstrap-loader');
+
+    if (mode) node.setAttribute('data-mode', mode);
+    if (color) node.setAttribute('data-color', color);
+    if (spinner) node.setAttribute('data-spinner', spinner);
+    if (center) node.setAttribute('data-center', center);
+
+    return node;
   }
 }
 

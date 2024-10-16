@@ -285,7 +285,7 @@
   display: flex;
   align-items: center;
   padding: 6px; /* Ajout de padding pour garantir un bon espace autour de l'icône */
-  border-radius: 20px; /* Forme arrondie initiale */
+  border-radius: 5px; /* Forme arrondie initiale */
   transition: background-color 0.3s ease, border-radius 0.3s ease; /* Transition fluide pour le hover */
 }
 .task-forum .return-header .return span {
@@ -293,7 +293,7 @@
 }
 /* Effet de survol pour donner un hover circulaire */
 .task-forum .return-header .return:hover {
-  background-color: #f0f0f0; /* Fond plus clair au survol */
+  background-color: var(--hover-background-color); /* Fond plus clair au survol */
 }
 .task-forum .forum-sort {
   display: flex;
@@ -337,12 +337,12 @@
   max-width: 150px;
   background-color: transparent;
   border: transparent;
-  border-radius: 20px; /* Si tu souhaites une forme allongée par défaut */
+  border-radius: 5px; /* Si tu souhaites une forme allongée par défaut */
   transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
 }
 /* Effet de survol pour donner un effet de hover circulaire */
 .task-forum .forum-comment .forum-comment-sort #forum-comment-select:hover {
-  background-color: #f0f0f0; /* Fond plus clair au survol */
+  background-color: var(--hover-background-color); /* Fond plus clair au survol */
 }
 .task-forum .forum-comment .comment {
   display: flex; /* Aligne les éléments en ligne */
@@ -397,7 +397,7 @@
   display: flex;
   align-items: center;
   padding: 6px 6px;
-  border-radius: 20px; /* Forme allongée avec extrémités arrondies */
+  border-radius: 5px; /* Forme allongée avec extrémités arrondies */
   transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
   margin-right: 3px;
 }
@@ -406,7 +406,7 @@
 }
 /* Effet de survol pour les boutons like et dislike */
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover {
-  background-color: #f0f0f0; /* Couleur de fond au survol */
+  background-color: var(--hover-background-color); /* Couleur de fond au survol */
   cursor: pointer;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.active .icon::before {
@@ -436,7 +436,7 @@
   align-items: center;/* Aligne les éléments verticalement au centre */
   margin-left: 29px;/* Ajuste la marge pour s'aligner avec les autres éléments */
   padding: 6px 12px; /* Espace autour du contenu */
-  border-radius: 20px; /* Forme allongée */
+  border-radius: 5px; /* Forme allongée */
   max-width: 140px; /* Limite de largeur maximale */
   overflow: hidden; /* Cache tout ce qui dépasse les 100px */
   transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
@@ -445,7 +445,7 @@
 }
 /* Effet de survol pour le conteneur */
 .task-forum .forum-comment-response:hover {
-  background-color: #f0f0f0; /* Fond plus clair au survol */
+  background-color: var(--hover-background-color); /* Fond plus clair au survol */
 }
 .task-forum .forum-comment-response .icon::before {
   font-family: 'Material Symbols Outlined';

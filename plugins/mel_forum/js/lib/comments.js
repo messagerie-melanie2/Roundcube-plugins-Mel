@@ -225,14 +225,27 @@ async toggleResponses(id) {
   try {
     let responseContainer = $('#responses-' + id);
     let toggleIcon = $('#toggle-icon-' + id);
+    let responseDiv = $('#toggle-response-container-' + id);  // Utilisation de l'ID unique pour la div complète
+    let numberOfResponses = this.children_number; // Nombre de réponses
 
+    // Fonction pour mettre à jour le title au survol de la div
+    const updateTitle = () => {
+      let titleText = '';
+      if (numberOfResponses === 1) {
+        titleText = responseContainer.hasClass('hidden') ? 'Voir la réponse' : 'Masquer la réponse';
+      } else {
+        titleText = responseContainer.hasClass('hidden') ? `Voir les ${numberOfResponses} réponses` : `Masquer les ${numberOfResponses} réponses`;
+      }
+      responseDiv.attr('title', titleText);
+    };
+
+    // Ajouter un gestionnaire d'événements au survol de la div
+    responseDiv.on('mouseenter', updateTitle);
+    
     // Si le conteneur est caché, on veut l'afficher
     if (responseContainer.hasClass('hidden')) {
-
-      // Afficher un message de chargement pendant le chargement des réponses
       BnumMessage.SetBusyLoading();
 
-      
       // Charger les réponses seulement si elles ne sont pas déjà présentes
       if (!responseContainer.hasClass('loaded')) {
         responseContainer.empty(); // On vide le conteneur avant de charger pour éviter les doublons
@@ -251,9 +264,8 @@ async toggleResponses(id) {
       responseContainer.addClass('hidden');
       toggleIcon.attr('data-icon', 'arrow_drop_down'); // Changer l'icône en 'arrow_drop_down'
     }
-    
+
   } catch (error) {
-    // En cas d'erreur, on cache également le message de chargement et affiche l'erreur dans la console
     console.error("Erreur lors du basculement des réponses:", error);
   }
 }
@@ -589,7 +601,7 @@ generateHtmlFromTemplate() {
     DISLIKES: this.dislikes.toString(),
     RESPONSE_SECTION: this.children_number > 0 ? 
     MelHtml.start
-      .div({ class: 'forum-comment-response', 'data-comment-id': this.id, tabindex: '0', role: 'button' })
+      .div({ id: 'toggle-response-container-' + this.id, class: 'forum-comment-response', 'data-comment-id': this.id, tabindex: '0', role: 'button', title: this.children_number === 1 ? 'Voir la réponse' : `Voir les ${this.children_number} réponses` })
         .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
         .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
       .end('div')

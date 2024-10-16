@@ -10,8 +10,7 @@ import {
 } from '../../../roundrive/roundrive_module.js';
 import { PressedButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
-import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
-import { Random } from '../../../mel_metapage/js/lib/classes/random.js';
+import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 
 export class NextcloudModule extends WorkspaceObject {
   constructor() {
@@ -30,6 +29,12 @@ export class NextcloudModule extends WorkspaceObject {
   async _main() {
     const folder = `/dossiers-${this.workspace.uid}`;
     let roundrive = new Roundrive(folder);
+    let loader = BootstrapLoader.Create({ mode: 'block', center: true });
+    let contents = this.moduleContainer.querySelector('.module-block-content');
+
+    contents.style.position = 'relative';
+    contents.appendChild(loader);
+
     await roundrive.load();
 
     /**
@@ -40,13 +45,22 @@ export class NextcloudModule extends WorkspaceObject {
         element.data.name.filename !== EMPTY_STRING &&
         element.data.name.filename[0] !== '.'
       ) {
-        this.moduleContainer.appendChild(
-          NextcloudModule.CreateRoundriveTag(element),
-        );
+        if (loader) {
+          loader.remove();
+          loader = null;
+        }
+
+        contents.appendChild(NextcloudModule.CreateRoundriveTag(element));
       }
     }
 
+    if (loader) {
+      loader.remove();
+      loader = null;
+    }
+
     roundrive = null;
+    contents = null;
   }
 
   static CreateRoundriveTag(element) {
@@ -283,9 +297,26 @@ class FolderTag extends ABaseNextcloudTag {
     return li;
   }
 
-  async #_on_pressed() {
-    if (!this.#loaded) await this._on_pressed_unloaded();
-    else this._on_pressed_loaded();
+  async #_on_pressed(state, caller) {
+    if (!this.#loaded) {
+      try {
+        await this._on_pressed_unloaded();
+      } catch (error) {
+        this._p_save_into_data('icon', 'folder_off');
+        this.elementIcon.icon = this.icon;
+        this.rightIcon.remove();
+        /**
+         * background-color: transparent !important;
+color: var(--main-text-color);
+border: none;
+         */
+        $(caller).css('--disabled-mel-button-color', 'transparent');
+        caller.style.color = 'var(--main-text-color)';
+        caller.style.border = 'none';
+        this.disable({ node: caller });
+        return null;
+      }
+    } else this._on_pressed_loaded();
 
     this.#_update_icon();
   }
@@ -307,7 +338,28 @@ class FolderTag extends ABaseNextcloudTag {
 
     let container = document.createElement('ul');
     container.classList.add('ignore-bullet');
-    await this.itemData.load();
+
+    let loader = BootstrapLoader.Create({ mode: 'block', center: false });
+
+    this.appendChild(loader);
+
+    const unload = rcmail.unload;
+    rcmail.unload = true;
+    try {
+      await this.itemData.load();
+    } catch (error) {
+      if (loader) {
+        loader.remove();
+        loader = null;
+      }
+
+      container.remove();
+      container = null;
+      rcmail.unload = unload;
+      this.#state = FolderTag.EState.close;
+      throw error;
+    }
+    rcmail.unload = unload;
 
     let element;
     /**@type {RoundriveFile | RoundriveFolder} */
@@ -327,7 +379,13 @@ class FolderTag extends ABaseNextcloudTag {
       element.classList.add('child-element');
 
       container.appendChild(this.#_li(element));
+
       element = null;
+    }
+
+    if (loader) {
+      loader.remove();
+      loader = null;
     }
 
     this.appendChild(container);

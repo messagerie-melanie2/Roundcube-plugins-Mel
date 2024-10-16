@@ -21,11 +21,12 @@ JsHtml.create_custom_tag = function (
     one_line = false,
     generate_callback = null,
     extend = null,
+    prefix_tag = 'bnum',
   },
 ) {
   let ret = false;
 
-  const tag = `bnum-${name}`;
+  const tag = `${prefix_tag}-${name}`;
   if (!customElements.get(tag)) {
     let config = {};
 

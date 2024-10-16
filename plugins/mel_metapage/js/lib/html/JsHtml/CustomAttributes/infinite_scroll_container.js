@@ -270,6 +270,10 @@ class InfiniteScrollContainer extends HtmlCustomTag {
 
     return this._countMax;
   }
+
+  static Create() {
+    return document.createElement(InfiniteScrollContainer.TAG);
+  }
 }
 
 /**

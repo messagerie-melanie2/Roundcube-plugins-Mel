@@ -1,0 +1,55 @@
+#module-nc {
+  overflow: auto;
+
+  bnum-folder {
+    .nc-container {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 5px;
+
+      > * {
+        align-self: center;
+      }
+
+      .nc-left-container {
+        display: flex;
+
+        > * {
+          align-self: center;
+        }
+      }
+    }
+  }
+
+  .nc-icon {
+    margin-right: 5px;
+  }
+
+  bnum-file {
+    display: flex;
+    justify-content: space-between;
+
+    > * {
+      align-self: center;
+    }
+
+    .nc-container {
+      padding: 5px 10px;
+      justify-content: left;
+      width: unset;
+      display: flex;
+
+      > * {
+        align-self: center;
+      }
+    }
+  }
+
+  ul {
+    li {
+      margin-left: 15px;
+      border-left: solid thin var(--main-text-color);
+    }
+  }
+}

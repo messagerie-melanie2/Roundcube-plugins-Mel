@@ -599,6 +599,10 @@ class AvatarElement extends HtmlCustomTag {
 
     return this;
   }
+
+  static Create() {
+    return document.createElement('bnum-avatar');
+  }
 }
 
 /**

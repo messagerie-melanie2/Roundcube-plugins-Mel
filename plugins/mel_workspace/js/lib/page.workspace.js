@@ -1,6 +1,6 @@
-import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { WorkspaceObject } from './WorkspaceObject.js';
 
-export class WorkspacePage extends MelObject {
+export class WorkspacePage extends WorkspaceObject {
   get firstRow() {
     return this.#_get_row(1);
   }
@@ -27,6 +27,19 @@ export class WorkspacePage extends MelObject {
 
   main() {
     super.main();
+
+    top.history.replaceState(
+      {},
+      document.title,
+      this.url('workspace', {
+        action: 'workspace',
+        params: {
+          _uid: this.workspace.uid,
+          _force_bnum: 1,
+        },
+        removeIsFromIframe: true,
+      }),
+    );
   }
 
   #_get_row(number = 0) {

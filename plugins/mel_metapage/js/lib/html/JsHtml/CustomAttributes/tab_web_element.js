@@ -346,6 +346,10 @@ export class TabsElement extends HtmlCustomElement {
 
     return id;
   }
+
+  static Create() {
+    return document.createElement(TabsElement.TAG);
+  }
 }
 
 /**

@@ -379,12 +379,14 @@ class mel_nextcloud extends rcube_plugin {
     if (class_exists('roundrive')) {
       $SIZE = 4;
       $layout = $args['layout'];
-      $html = $layout->htmlModuleBlock(['id' => 'module-nc']);
+      $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);
       $layout->firstRow()->append($SIZE, $html);
       $args['layout'] = $layout;
       unset($layout);
 
       $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', '/js/workspace/');
+
+      $this->include_stylesheet($this->local_skin_path() . '/workspace/workspace.nextcloud.css');
     }
 
     return $args;

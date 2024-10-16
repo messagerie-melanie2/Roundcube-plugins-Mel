@@ -112,6 +112,10 @@ export class PressedButton extends HtmlCustomDataTag {
 
     return this;
   }
+
+  static Create() {
+    return document.createElement(PressedButton.TAG);
+  }
 }
 
 PressedButton.TAG = 'bnum-pressed-button';
@@ -214,6 +218,10 @@ export class FavoriteButton extends PressedButton {
     this._icon = null;
 
     return this;
+  }
+
+  static Create() {
+    return document.createElement(FavoriteButton.TAG);
   }
 }
 

@@ -54,14 +54,18 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
     if (this.buttonTask !== false) {
       let button = document.createElement('button');
+      button.style.paddingTop = 0;
+      button.style.paddingBottom = 0;
       button.classList.add(
         'mel-button',
         'no-margin-button',
-        'not-button-margin',
+        'no-button-margin',
       );
 
       let text = document.createElement('span');
       text.appendChild(this.createText(this.buttonText));
+      text.style.verticalAlign = 'super';
+      text.style.marginRight = '25px';
 
       let icon = document.createElement('bnum-icon');
       icon.setAttribute('data-icon', this.buttonIcon);

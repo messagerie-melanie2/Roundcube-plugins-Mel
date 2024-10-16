@@ -113,7 +113,7 @@ class DirData {
   #itemName = null;
   constructor(data) {
     this.#data = data;
-    this.#itemName = new ItemName(data);
+    this.#itemName = new EncodedItemName(data);
   }
 
   /**
@@ -124,7 +124,7 @@ class DirData {
   }
 
   /**
-   * @type {ItemName}
+   * @type {EncodedItemName}
    */
   get name() {
     return this.#itemName;
@@ -220,6 +220,39 @@ class ItemName {
    */
   get path() {
     return this.#path;
+  }
+}
+
+class EncodedItemName extends ItemName {
+  #decoded = null;
+  #ext = null;
+  constructor(data) {
+    super(data);
+
+    this.#ext = data.extension;
+  }
+
+  /**
+   * @type {DecodedItemName}
+   */
+  get decoded() {
+    if (!this.#decoded) {
+      const tmp = {
+        filename: decodeURIComponent(this.filename),
+        extension: !this.#ext ? null : decodeURIComponent(this.#ext),
+        path: decodeURIComponent(this.path),
+      };
+
+      this.#decoded = new DecodedItemName(tmp);
+    }
+
+    return this.#decoded;
+  }
+}
+
+class DecodedItemName extends ItemName {
+  constructor(data) {
+    super(data);
   }
 }
 

@@ -419,6 +419,10 @@ class BnumHtmlIcon extends HtmlCustomTag {
 
     this.icon = this.icon;
   }
+
+  static Create() {
+    return document.createElement(BnumHtmlIcon.TAG);
+  }
 }
 
 /**
@@ -442,12 +446,20 @@ class BnumHtmlSrOnly extends HtmlCustomTag {
 
     if (!this.classList.contains(sr_only)) this.classList.add(sr_only);
   }
+
+  static Create() {
+    return document.createElement(BnumHtmlSrOnly.TAG);
+  }
 }
 BnumHtmlSrOnly.TAG = 'bnum-screen-reader';
 
 class BnumHtmlSeparate extends HtmlCustomTag {
   constructor({ mode = EWebComponentMode.span } = {}) {
     super(mode);
+  }
+
+  static Create() {
+    return document.createElement(BnumHtmlSeparate.TAG);
   }
 }
 BnumHtmlSeparate.TAG = 'bnum-separate';

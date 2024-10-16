@@ -123,19 +123,19 @@ class WspNavBar extends HtmlCustomTag {
     this.mainDiv.appendChild(tmp);
     tmp = null;
 
-    top.history.replaceState(
-      {},
-      document.title,
-      MelObject.Empty()
-        .url('workspace', {
-          action: 'navbar',
-          params: {
-            _uid: 'dev-du-bnum-1',
-            _force_bnum: 1,
-          },
-        })
-        .replace('is_from', 'rotomeca'),
-    );
+    // top.history.replaceState(
+    //   {},
+    //   document.title,
+    //   MelObject.Empty()
+    //     .url('workspace', {
+    //       action: 'navbar',
+    //       params: {
+    //         _uid: 'dev-du-bnum-1',
+    //         _force_bnum: 1,
+    //       },
+    //     })
+    //     .replace('is_from', 'rotomeca'),
+    // );
 
     div = null;
     shadow = null;

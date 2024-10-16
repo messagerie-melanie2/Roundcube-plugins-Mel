@@ -76,9 +76,7 @@ class ABaseNextcloudTag extends HtmlCustomDataTag {
   }
 
   get tagId() {
-    if (!this.#id)
-      this.#id =
-        this.#id = `nc-${Random.random_string(Random.intRange(1, 10))}`;
+    if (!this.#id) this.#id = this.generateId('nc');
 
     return this.#id;
   }
@@ -136,7 +134,7 @@ class ABaseNextcloudTag extends HtmlCustomDataTag {
   }
 
   get filename() {
-    return this.itemData.data.name.fullname;
+    return this.itemData.data.name.decoded.fullname;
   }
 
   get elementIcon() {
@@ -150,21 +148,26 @@ class ABaseNextcloudTag extends HtmlCustomDataTag {
     return this.#itemData ?? { data: {} };
   }
 
+  get mainContainer() {
+    return this.querySelector(`#nc-container-${this.tagId}`);
+  }
+
   _p_main() {
     super._p_main();
 
     let icon = document.createElement('bnum-icon');
     icon.setAttribute('data-icon', this.icon);
     icon.setAttribute('id', `icon-${this.tagId}`);
+    icon.classList.add('nc-icon');
 
     let title = document.createElement('span');
     title.appendChild(this.createText(this.filename));
 
     let container =
       this._p_create_container() || document.createElement('span');
-    container.append(icon, title);
-    container.style.width = '100%';
-    container.style.display = 'flex';
+    container.append(...this._p_append_to_container(icon, title));
+    container.classList.add('nc-container');
+    container.setAttribute('id', `nc-container-${this.tagId}`);
 
     this.appendChild(container);
 
@@ -175,6 +178,10 @@ class ABaseNextcloudTag extends HtmlCustomDataTag {
 
   _p_create_container() {
     return null;
+  }
+
+  _p_append_to_container(...items) {
+    return items;
   }
 
   setItemFileData(data) {
@@ -226,8 +233,20 @@ class FolderTag extends ABaseNextcloudTag {
     return this.state === FolderTag.EState.open;
   }
 
+  get rightIcon() {
+    return this.querySelector(`#folder-right-icon-${this.tagId}`);
+  }
+
   _p_main() {
     super._p_main();
+
+    let icon = document.createElement('bnum-icon');
+    icon.setAttribute('data-icon', 'chevron_right');
+    icon.setAttribute('id', `folder-right-icon-${this.tagId}`);
+
+    this.mainContainer.appendChild(icon);
+
+    icon = null;
   }
 
   _p_create_container() {
@@ -244,7 +263,17 @@ class FolderTag extends ABaseNextcloudTag {
     );
 
     container.ontoggle.push(this.#_on_pressed.bind(this));
+
     return container;
+  }
+
+  _p_append_to_container(...args) {
+    let container = document.createElement('div');
+    container.append(...super._p_append_to_container(...args));
+
+    container.classList.add('nc-left-container');
+
+    return [container];
   }
 
   #_li(...nodes) {
@@ -264,8 +293,10 @@ class FolderTag extends ABaseNextcloudTag {
   #_update_icon() {
     if (this.isOpen) {
       this._p_save_into_data('icon', 'folder_open');
+      this.rightIcon.icon = 'keyboard_arrow_down';
     } else {
       this._p_save_into_data('icon', 'folder');
+      this.rightIcon.icon = 'chevron_right';
     }
 
     this.elementIcon.icon = this.icon;
@@ -275,6 +306,7 @@ class FolderTag extends ABaseNextcloudTag {
     this.#state = FolderTag.EState.open;
 
     let container = document.createElement('ul');
+    container.classList.add('ignore-bullet');
     await this.itemData.load();
 
     let element;
@@ -292,6 +324,7 @@ class FolderTag extends ABaseNextcloudTag {
       }
 
       element.setItemFileData(loaded);
+      element.classList.add('child-element');
 
       container.appendChild(this.#_li(element));
       element = null;
@@ -327,6 +360,29 @@ FolderTag.EState = {
 class FileTag extends AActionNextcloudTag {
   constructor() {
     super();
+  }
+
+  _p_create_button(button) {
+    button = super._p_create_button(button);
+
+    button.classList.add(
+      'mel-button',
+      'no-margin-button',
+      'no-button-margin',
+      'bckg',
+      'true',
+    );
+
+    button.setAttribute('title', 'Copier le lien interne du fichier');
+
+    let icon = document.createElement('bnum-icon');
+    icon.icon = 'content_copy';
+
+    button.appendChild(icon);
+
+    button.style.borderRadius = '5px';
+
+    return button;
   }
 }
 

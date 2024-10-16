@@ -100,8 +100,6 @@ class mel_workspace extends bnum_plugin
 
         $uid = $this->get_input('_uid');
 
-        self::IncludeWorkspaceModuleComponent();
-
         $plugin = $this->exec_hook('wsp.show', [
             'uid' => $uid,
             'layout' => new WorkspacePageLayout(),
@@ -120,6 +118,9 @@ class mel_workspace extends bnum_plugin
             'wsp.row.other'  => [$this, 'handler_get_row'],
         ));
 
+        $this->include_css('workspace.css');
+        self::IncludeWorkspaceModuleComponent();
+        $this->load_script_module('page.workspace.js');
         $this->rc()->output->set_env('current_workspace_uid', $uid);
 
         $this->rc()->output->send('mel_workspace.workspace');

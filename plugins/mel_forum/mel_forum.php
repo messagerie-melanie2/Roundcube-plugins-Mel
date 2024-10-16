@@ -1465,7 +1465,7 @@ public function get_all_comments_bypost()
                 $user_name = ($user !== null && !empty($user->name)) ? $user->name : '? ?';
 
                 // Définir la locale en français pour le formatage de la date
-                $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+                $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::SHORT);
 
                 // Convertir la date du commentaire en timestamp Unix
                 $timestamp = strtotime($comment->created);

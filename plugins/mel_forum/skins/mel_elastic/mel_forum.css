@@ -385,6 +385,9 @@
   display: flex;
   align-items: center;
 }
+.task-forum .forum-comment .comment .forum-comment-reactions .icon {
+  color: var(--forum-active-text-color); /* Couleur uniforme pour toutes les icônes */
+}
 .task-forum .forum-comment .comment .forum-comment-reactions .icon::before {
   font-family: 'Material Symbols Outlined';
   content: attr(data-icon);
@@ -392,6 +395,7 @@
   font-variation-settings: 'wght' 400;
   display: inline-block;
   vertical-align: middle;
+  color: inherit; /* L'icône hérite de la couleur */
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item {
   display: flex;
@@ -445,7 +449,8 @@
 }
 /* Effet de survol pour le conteneur */
 .task-forum .forum-comment-response:hover {
-  background-color: var(--hover-background-color); /* Fond plus clair au survol */
+  background-color:  var(--hover-background-color);
+  ; /* Fond plus clair au survol */
 }
 .task-forum .forum-comment-response .icon::before {
   font-family: 'Material Symbols Outlined';

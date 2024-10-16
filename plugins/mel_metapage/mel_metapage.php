@@ -448,9 +448,9 @@ class mel_metapage extends bnum_plugin
 
             $this->mm_include_plugin();
             //$this->rc->get_storage();
-            if ($this->rc->task === "webconf" && $this->visio_enabled())
+            /*if ($this->rc->task === "webconf" && $this->visio_enabled())
                 $this->register_task("webconf");
-            else if ($this->rc->task === 'search')
+            else*/ if ($this->rc->task === 'search')
                 $this->register_task("search");
             else if ($this->rc->task === "chat")
                 $this->register_task("chat");

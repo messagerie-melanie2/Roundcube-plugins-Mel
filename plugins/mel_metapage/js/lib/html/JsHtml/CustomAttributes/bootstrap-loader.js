@@ -136,6 +136,11 @@ export class BootstrapLoader extends HtmlCustomDataTag {
     element = null;
   }
 
+  /**
+   *
+   * @param {*} [param0={}]
+   * @returns {BootstrapLoader}
+   */
   static Create({
     mode = null,
     color = null,

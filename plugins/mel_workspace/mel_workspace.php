@@ -325,8 +325,9 @@ class mel_workspace extends bnum_plugin
     #endregion
 
     #region public_functions
-    public function include_workspace_module($plugin, $name = 'module', $path = bnum_plugin::BASE_MODULE_PATH) {
-        $this->load_script_module_from_plugin($plugin, $name, $path);
+    public function include_workspace_module($plugin, $name = 'module', $path = 'js/lib') {
+        //$this->load_script_module_from_plugin($plugin, $name, $path);
+        $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');//->include_module($plugin, $name, $path);
     }
     #endregion
 

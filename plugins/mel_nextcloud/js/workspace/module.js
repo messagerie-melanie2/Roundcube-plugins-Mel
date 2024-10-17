@@ -13,12 +13,27 @@ import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.j
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 
-export class NextcloudModule extends WorkspaceObject {
+class NextcloudModule extends WorkspaceObject {
   constructor() {
     super();
 
     if (!this.loaded && this.workspace.app_loaded('doc')) {
-      this._main();
+      let loader = BootstrapLoader.Create({ mode: 'block', center: true });
+      let contents = this.moduleContainer.querySelector(
+        '.module-block-content',
+      );
+      contents.style.position = 'relative';
+      contents.appendChild(loader);
+      contents = null;
+
+      window.addEventListener(
+        'load',
+        function (ld) {
+          this._main(ld);
+        }.bind(this, loader),
+      );
+
+      loader = null;
     } else this.moduleContainer.style.display = 'none';
   }
 
@@ -30,10 +45,20 @@ export class NextcloudModule extends WorkspaceObject {
     super.main();
   }
 
-  async _main() {
+  /**
+   *
+   * @param {?BootstrapLoader} loader
+   */
+  async _main(loader = null) {
+    if (loader) {
+      loader.remove();
+      loader = null;
+    }
+
+    loader = BootstrapLoader.Create({ mode: 'block', center: true });
+
     const folder = `/dossiers-${this.workspace.uid}`;
     let roundrive = new Roundrive(folder);
-    let loader = BootstrapLoader.Create({ mode: 'block', center: true });
     let contents = this.moduleContainer.querySelector('.module-block-content');
 
     contents.style.position = 'relative';
@@ -95,6 +120,10 @@ export class NextcloudModule extends WorkspaceObject {
 
   static Workspace() {
     return new WorkspaceObject().workspace;
+  }
+
+  static Start() {
+    return new NextcloudModule();
   }
 }
 
@@ -487,3 +516,5 @@ class FileTag extends AActionNextcloudTag {
   if (!customElements.get(TAG)) customElements.define(TAG, FileTag);
 }
 //https://mel.din.developpement-durable.gouv.fr/recette/?_task=stockage&_action=index&_params=dossiers-dev-du-bnum-1/Comment%20utiliser%20build_mel.sh%20%3f.txt&_is_from=iframe
+
+NextcloudModule.Start();

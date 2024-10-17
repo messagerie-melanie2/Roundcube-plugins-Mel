@@ -18,6 +18,8 @@ export class LinkManager extends MelObject {
   main(displayButtonElement) {
     super.main(displayButtonElement);
 
+    console.log('link, manager');
+
     if (rcmail.env.mel_portal_ulink) this.displayButton(displayButtonElement);
 
     this.displayLinks();
@@ -1309,6 +1311,12 @@ export class LinkManager extends MelObject {
     //   noImage.html(firstLetter);
     // }
     // noImage.css('display', 'flex');
+  }
+
+  static Start({
+    displayButtonElement = $('.module_Links .melv2-card-pre'),
+  } = {}) {
+    return new LinkManager({ displayButtonElement });
   }
 }
 

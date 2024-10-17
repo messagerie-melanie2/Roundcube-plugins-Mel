@@ -384,7 +384,7 @@ class mel_nextcloud extends rcube_plugin {
       $args['layout'] = $layout;
       unset($layout);
 
-      $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', '/js/workspace/');
+      $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', 'js/workspace');
 
       $this->include_stylesheet($this->local_skin_path() . '/workspace/workspace.nextcloud.css');
     }

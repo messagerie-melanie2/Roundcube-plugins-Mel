@@ -116,7 +116,7 @@ class mel_useful_link extends bnum_plugin
    */
   public function include_uLinks()
   {
-    $this->load_script_module('manager');
+    $this->include_module('loader.js');
     $this->include_stylesheet($this->local_skin_path() . '/links.css');
     $this->rc->output->set_env("link_modify_options", $this->rc->config->get('modify_options', []));
   }
@@ -821,7 +821,7 @@ class mel_useful_link extends bnum_plugin
     $links = $this->get_workspace_link($workspace);
 
     $this->load_config();
-    $this->load_script_module('workspace', '/js/lib/workspace/');
+    $this->include_module('workspace.js', 'js/lib/workspace');
     $this->include_css('links.css');//include_stylesheet('../mel_useful_link/skins/elastic/links.css');
     $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
     $this->rc->output->set_env("mul_items", $links);

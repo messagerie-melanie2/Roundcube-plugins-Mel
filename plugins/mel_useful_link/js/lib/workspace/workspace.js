@@ -2,7 +2,7 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
 import { WorkspaceObject } from '../../../../mel_workspace/js/lib/WorkspaceObject.js';
 import { LinkManager } from '../manager.js';
 
-export class ModuleLinks extends WorkspaceObject {
+class ModuleLinks extends WorkspaceObject {
   get mainContainer() {
     return document.querySelector('#module-ul');
   }
@@ -46,4 +46,10 @@ export class ModuleLinks extends WorkspaceObject {
 
     div = null;
   }
+
+  static Start() {
+    return new ModuleLinks();
+  }
 }
+
+ModuleLinks.Start();

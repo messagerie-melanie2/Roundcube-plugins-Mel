@@ -327,7 +327,7 @@ button {
 .mel-portal-ulinks {
   max-height: 390px;
   margin-top: 30px;
-} 
+}
 
 .link-space-end {
   display: inline-flex;
@@ -746,4 +746,15 @@ button {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.link-icon-image {
+  filter: blur(0em);
+  transition: filter 0.5s;
+
+  &[data-src] {
+    filter: blur(0.9em);
+    background-color: grey;
+    object-fit: cover;
+  }
 }

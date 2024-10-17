@@ -379,8 +379,8 @@ class mel_nextcloud extends rcube_plugin {
     if (class_exists('roundrive')) {
       $SIZE = 4;
       $layout = $args['layout'];
-      $html = $layout->htmlSmallModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);
-      $layout->firstRow()->append($SIZE, $html);
+      $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);
+      $layout->secondRow()->append($SIZE, $html);
       $args['layout'] = $layout;
       unset($layout);
 

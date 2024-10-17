@@ -28,6 +28,8 @@ export class WorkspacePage extends WorkspaceObject {
   main() {
     super.main();
 
+    $('#layout-content').css({ overflow: 'auto', height: '100%' });
+
     top.history.replaceState(
       {},
       document.title,

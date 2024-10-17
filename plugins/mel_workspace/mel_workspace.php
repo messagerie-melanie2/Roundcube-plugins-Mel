@@ -8,6 +8,7 @@ class mel_workspace extends bnum_plugin
     public const KEY_AGENDA = 'calendar';
     public const KEY_DRIVE = 'doc';
     public const KEY_TCHAT = 'tchat';
+    
     /**
      * @var string
      */
@@ -99,9 +100,10 @@ class mel_workspace extends bnum_plugin
         include_once __DIR__.'/lib/WorkspacePage.php';
 
         $uid = $this->get_input('_uid');
+        $workspace = new Workspace($uid, true);
 
         $plugin = $this->exec_hook('wsp.show', [
-            'uid' => $uid,
+            'workspace' => $workspace,
             'layout' => new WorkspacePageLayout(),
             'plugin' => $this
         ]);
@@ -122,7 +124,7 @@ class mel_workspace extends bnum_plugin
         self::IncludeWorkspaceModuleComponent();
         $this->load_script_module('page.workspace.js');
         $this->rc()->output->set_env('current_workspace_uid', $uid);
-        $this->rc()->output->set_env('current_workspace_services_actives', (new Workspace($uid, true))->services());
+        $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
 
         $this->rc()->output->send('mel_workspace.workspace');
     }

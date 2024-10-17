@@ -6,7 +6,6 @@ import {
 import { WorkspaceModuleBlock } from './WebComponents/workspace_module_block.js';
 
 export class WorkspaceObject extends MelObject {
-  #loaded = false;
   constructor() {
     super();
   }
@@ -16,11 +15,11 @@ export class WorkspaceObject extends MelObject {
   }
 
   load() {
-    this.#loaded = true;
+    this.main.loaded = true;
   }
 
   get loaded() {
-    return this.#loaded;
+    return this.main.loaded ?? false;
   }
 
   /**

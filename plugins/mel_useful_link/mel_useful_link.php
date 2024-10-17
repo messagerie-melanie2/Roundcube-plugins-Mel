@@ -59,6 +59,13 @@ class mel_useful_link extends bnum_plugin
       mel_metapage::add_widget("all_links", "useful_links");
       mel_metapage::add_widget("not_taked_links", "useful_links", 'joined');
     }
+    else {
+      $this->add_hook('workspace.services.set', [$this, 'workspace_service_set']);
+      $this->add_hook('wsp.show', [$this, 'show_in_workspace']);
+    }
+
+    $this->add_hook('get_external_ulink', array($this, 'get_workspace_ulinks_by_id'));
+    $this->add_hook('save_external_ulinks', array($this, 'save_workspace_ulinks'));
   }
 
   /** 
@@ -372,11 +379,11 @@ class mel_useful_link extends bnum_plugin
     $this->rc->output->redirect(array("_action" => "index", "_task" => "useful_links", "_is_from" => "iframe", "_mel" => "widget", "_arg" => rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC)));
   }
 
-  function get_workspace_link($workspace, $plugin)
+  function get_workspace_link($workspace)
   {
     include_once "lib/link.php";
 
-    $serialized_links = $plugin->get_object($workspace, mel_workspace::LINKS);
+    $serialized_links = $workspace->objects()->get(self::KEY_LINK);//$plugin->get_object($workspace, mel_workspace::LINKS);
 
     $links = [];
     foreach ($serialized_links as $key => $value) {
@@ -780,4 +787,75 @@ class mel_useful_link extends bnum_plugin
     }
     return $filtered_dn;
   }
+
+  #region Workspace
+  public const KEY_LINK = 'useful-links';
+
+  public function workspace_service_set($args) {
+    if (class_exists('mel_workspace')) {
+      $workspace = $args['workspace'];
+      $services = $args['services'];
+
+      $key = array_search(self::KEY_LINK, $services);
+
+      if ($key !== false) unset($services[$key]);
+
+      $workspace->objects()->set(self::KEY_LINK, []);
+
+      $args['workspace'] = $workspace;
+      $args['services'] = $services;
+    }
+
+    return $args;
+  }
+
+  public function show_in_workspace($args) {
+    $SIZE = 12;
+    $layout = $args['layout'];
+    $html = $layout->htmlSmallModuleBlock(['id' => 'module-ul', 'data-title' => 'Liens utiles']);
+    $layout->thirdRow()->append($SIZE, $html);
+    $args['layout'] = $layout;
+    unset($layout);
+
+    $workspace = $args['workspace'];
+    $links = $this->get_workspace_link($workspace);
+
+    $this->load_config();
+    $this->load_script_module('workspace', '/js/lib/workspace/');
+    $this->include_css('links.css');//include_stylesheet('../mel_useful_link/skins/elastic/links.css');
+    $this->rc->output->set_env("external_icon_url", $this->rc->config->get('external_icon_url', []));
+    $this->rc->output->set_env("mul_items", $links);
+    $this->rc->output->set_env("mul_items_key", 'ws#'.$workspace->uid());
+
+    return $args;
+  }
+
+  function get_workspace_ulinks_by_id($args) {
+    if (substr($args['key'], 0, 3) === "ws#") {
+      $workspace_id = substr($args['key'], 3);
+     // $workspace = self::get_workspace($workspace_id);
+      $args['links'] = (new Workspace($workspace_id, true))->objects()->get(self::KEY_LINK);//$this->get_object($workspace, self::LINKS);
+    }
+
+    return $args;
+  }
+
+  function save_workspace_ulinks($args) {
+    if (substr($args['key'], 0, 3) === "ws#") {
+      $workspace_id = substr($args['key'], 3);
+      $workspace = new Workspace($workspace_id, true);
+
+      //$this->save_object($workspace, self::LINKS, $args['links']);
+      $workspace->objects()->set(self::KEY_LINK, $args['links']);
+      $workspace->save();
+      $args['done'] = true;
+
+      return $args;
+    }
+
+    $args['done'] = false;
+    return $args;
+  }
+
+  #endregion
 }

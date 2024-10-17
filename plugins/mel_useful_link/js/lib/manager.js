@@ -9,20 +9,26 @@ import { MelLinkVisualizer, MelFolderLink, MelStoreLink } from './mel_link.js';
 import { MelIconPrevisualiser } from '../../../mel_metapage/skins/mel_elastic/js_templates/blocks/icon_previsualiser.js';
 
 export class LinkManager extends MelObject {
-  constructor() {
-    super();
+  constructor({
+    displayButtonElement = $('.module_Links .melv2-card-pre'),
+  } = {}) {
+    super(displayButtonElement);
   }
 
-  main() {
-    super.main();
+  main(displayButtonElement) {
+    super.main(displayButtonElement);
 
-    if(rcmail.env.mel_portal_ulink) this.displayButton($('.module_Links .melv2-card-pre'));
-    
+    if (rcmail.env.mel_portal_ulink) this.displayButton(displayButtonElement);
+
     this.displayLinks();
 
     this.bindActions();
 
     window.linkManager = this;
+
+    if (window.linksPicturesLoaded) {
+      onLoaded();
+    }
   }
 
   /**
@@ -348,8 +354,8 @@ export class LinkManager extends MelObject {
 
     !isLinks
       ? $('#not-found-app').text(
-        rcmail.gettext('not_found_link', 'mel_useful_link'),
-      )
+          rcmail.gettext('not_found_link', 'mel_useful_link'),
+        )
       : $('#not-found-app').text('');
   }
 
@@ -457,16 +463,15 @@ export class LinkManager extends MelObject {
           let subLink = linkVisualizer.links[key];
           if (!subLink.icon) {
             if (!subLink.image) {
-              subLink.image = LinkManager.fetchIcon(subLink.link)
+              subLink.image = LinkManager.fetchIcon(subLink.link);
             }
-          }
-          else {
+          } else {
             subLink.image = '';
           }
 
           //Correction problème icon false
-          if (subLink.icon === "false") {
-            subLink.icon = "";
+          if (subLink.icon === 'false') {
+            subLink.icon = '';
           }
 
           linkVisualizer.links[key] = new MelLinkVisualizer(
@@ -486,16 +491,15 @@ export class LinkManager extends MelObject {
       } else {
         if (!link.icon) {
           if (!link.image) {
-            link.image = LinkManager.fetchIcon(link.link)
+            link.image = LinkManager.fetchIcon(link.link);
           }
-        }
-        else {
+        } else {
           link.image = '';
         }
 
         //Correction problème icon false
-        if (link.icon === "false") {
-          link.icon = "";
+        if (link.icon === 'false') {
+          link.icon = '';
         }
 
         linkVisualizer = new MelLinkVisualizer(
@@ -533,19 +537,21 @@ export class LinkManager extends MelObject {
    */
   displayButton(selector) {
     let button = MelHtml.start
-      .div({class: 'mul_right_buttons'})
-        .button({
-          class: 'fixed_mulba',
-          id: 'mulba',
-        })
-          .text('Ajouter')
-          .icon('add_circle').end()
-        .end('button')
-        .button({id:'app_store', class:'mel-button-icon'})
-          .text('Bibliothèque d\'applications')
-          .icon('widgets').end()
-        .end('button')
-      .end('div')
+      .div({ class: 'mul_right_buttons' })
+      .button({
+        class: 'fixed_mulba',
+        id: 'mulba',
+      })
+      .text('Ajouter')
+      .icon('add_circle')
+      .end()
+      .end('button')
+      .button({ id: 'app_store', class: 'mel-button-icon' })
+      .text("Bibliothèque d'applications")
+      .icon('widgets')
+      .end()
+      .end('button')
+      .end('div');
     selector.append(button.generate());
   }
 
@@ -1207,7 +1213,7 @@ export class LinkManager extends MelObject {
    */
   static fetchIcon(url) {
     let domain = '';
-    try {      
+    try {
       domain = new URL(url).hostname;
     } catch (error) {
       console.error('Erreur :', error.message);
@@ -1272,6 +1278,37 @@ export class LinkManager extends MelObject {
     }
 
     return true;
+  }
+
+  /**
+   * Affiche la première lettre si l'image n'est pas trouvée
+   * @param {string} iconId Id de l'image
+   * @param {string} iconId Id de l'overlay si l'image n'est pas chargée
+   * @param {string} title Titre du lien
+   */
+  static imgError(e) {
+    let $image = $(e.currentTarget).removeAttr('data-src').parent();
+    const title = $image.parent().attr('title');
+    console.log('error', e, title);
+    $(e.currentTarget).addClass('hidden');
+    $image.find('bnum-icon').addClass('hidden');
+    $image
+      .find('span')
+      .removeClass('hidden')
+      .text(title?.[0] || '?')
+      .css({ display: 'block', 'text-align': 'center' });
+    // let iconImage = $('#' + iconId);
+    // let noImage = $('#' + noImageId);
+    // const firstLetter = title
+    //   ? title[0].toUpperCase()
+    //   : $('#mulc-title').val()
+    //     ? $('#mulc-title').val()[0].toUpperCase()
+    //     : null;
+    // iconImage.hide();
+    // if (noImage.text() === '') {
+    //   noImage.html(firstLetter);
+    // }
+    // noImage.css('display', 'flex');
   }
 }
 
@@ -1582,3 +1619,31 @@ LinkManager.previsualiser.on_save.push((popup, $dialog) => {
 
   $($dialog).dialog('close');
 });
+
+window.addEventListener('load', function () {
+  onLoaded();
+  setTimeout(() => {
+    onLoaded();
+  }, 1000);
+});
+//#region Chargement
+/**
+ * Charge tout les avatars qui ont besoin d'être chargés.
+ * @package
+ */
+function onLoaded() {
+  let imagesToLoad = document.querySelectorAll(
+    '.link-block-container [data-src]',
+  );
+
+  for (const image of imagesToLoad) {
+    image.onload = function (pict) {
+      pict.onload = null;
+      pict.removeAttribute('data-src');
+    }.bind(this, image);
+    image.setAttribute('src', image.dataset.src);
+  }
+
+  window.linksPicturesLoaded = true;
+}
+//#endregion

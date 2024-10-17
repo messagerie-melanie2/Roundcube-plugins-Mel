@@ -16,6 +16,10 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 export class NextcloudModule extends WorkspaceObject {
   constructor() {
     super();
+
+    if (!this.loaded && this.workspace.app_loaded('doc')) {
+      this._main();
+    } else this.moduleContainer.style.display = 'none';
   }
 
   get moduleContainer() {
@@ -24,7 +28,6 @@ export class NextcloudModule extends WorkspaceObject {
 
   main() {
     super.main();
-    this._main();
   }
 
   async _main() {
@@ -35,6 +38,8 @@ export class NextcloudModule extends WorkspaceObject {
 
     contents.style.position = 'relative';
     contents.appendChild(loader);
+
+    this.moduleContainer.style.display = EMPTY_STRING;
 
     await roundrive.load();
 
@@ -60,10 +65,14 @@ export class NextcloudModule extends WorkspaceObject {
       loader = null;
     }
 
-    console.log('rou', roundrive);
-
     roundrive = null;
     contents = null;
+  }
+
+  load() {
+    super.load();
+
+    this._main();
   }
 
   static CreateRoundriveTag(element) {

@@ -122,6 +122,7 @@ class mel_workspace extends bnum_plugin
         self::IncludeWorkspaceModuleComponent();
         $this->load_script_module('page.workspace.js');
         $this->rc()->output->set_env('current_workspace_uid', $uid);
+        $this->rc()->output->set_env('current_workspace_services_actives', (new Workspace($uid, true))->services());
 
         $this->rc()->output->send('mel_workspace.workspace');
     }

@@ -138,6 +138,10 @@ class Workspace {
     return new WorkspaceObject($this->_workspace);
   }
 
+  public function services() {
+    return $this->_workspace->objects;
+  }
+
   public function isPublic($newState = DEFAULT_SYMBOL) {
     return $this->_update_or_get_item('ispublic', $newState);
   }

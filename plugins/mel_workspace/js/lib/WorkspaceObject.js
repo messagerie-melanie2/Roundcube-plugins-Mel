@@ -1,3 +1,4 @@
+import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
 import {
   MelObject,
   WrapperObject,
@@ -5,12 +6,21 @@ import {
 import { WorkspaceModuleBlock } from './WebComponents/workspace_module_block.js';
 
 export class WorkspaceObject extends MelObject {
+  #loaded = false;
   constructor() {
     super();
   }
 
   main() {
     super.main();
+  }
+
+  load() {
+    this.#loaded = true;
+  }
+
+  get loaded() {
+    return this.#loaded;
   }
 
   /**
@@ -103,10 +113,25 @@ export class WorkspaceObject extends MelObject {
 }
 
 class CurrentWorkspaceData {
-  constructor() {}
+  constructor() {
+    if (typeof rcmail.env.current_workspace_services_actives === 'string')
+      rcmail.env.current_workspace_services_actives = JSON.parse(
+        rcmail.env.current_workspace_services_actives,
+      );
+  }
 
   get uid() {
     return rcmail.env.current_workspace_uid;
+  }
+
+  app_loaded(service) {
+    return (
+      rcmail.env.current_workspace_services_actives[service] &&
+      (rcmail.env.current_workspace_services_enabled?.[service] !== false ||
+        isNullOrUndefined(
+          rcmail.env.current_workspace_services_enabled?.[service],
+        ))
+    );
   }
 }
 

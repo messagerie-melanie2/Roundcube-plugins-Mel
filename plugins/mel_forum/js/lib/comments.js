@@ -544,9 +544,6 @@ async deleteComment(uid) {
   }
 }
 
-
-
-
 /**
  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
  *
@@ -586,74 +583,81 @@ generateHtmlFromTemplate() {
       return color;
   };
 
+  // Fonction pour parser une date en français
   function parseFrenchDate(dateString) {
     const moisFrancais = {
-      janvier: 0, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
-      juillet: 6, août: 7, septembre: 8, octobre: 9, novembre: 10, décembre: 11
+        janvier: 0, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
+        juillet: 6, août: 7, septembre: 8, octobre: 9, novembre: 10, décembre: 11
     };
-  
+
     // Séparer la date et l'heure si une heure est incluse
-    const [datePart, timePart] = dateString.split(' à '); // Sépare "5 septembre 2024 à 14:30"
-  
+    const [datePart, timePart] = dateString.split(' à ');
+
     // Séparer la partie date en jour, mois et année
-    const dateParts = datePart.trim().split(' '); // Par exemple, ['5', 'septembre', '2024']
+    const dateParts = datePart.trim().split(' ');
     
     if (dateParts.length !== 3) {
-      console.error('Format de date non valide:', dateString);
-      return null;
+        console.error('Format de date non valide:', dateString);
+        return null;
     }
-  
-    const jour = parseInt(dateParts[0], 10); // 5
-    const mois = dateParts[1].toLowerCase(); // septembre
-    const annee = parseInt(dateParts[2], 10); // 2024
-  
-    const moisIndex = moisFrancais[mois]; // Trouver l'index du mois en français
-  
+
+    const jour = parseInt(dateParts[0], 10);
+    const mois = dateParts[1].toLowerCase();
+    const annee = parseInt(dateParts[2], 10);
+
+    const moisIndex = moisFrancais[mois];
+
     if (moisIndex === undefined) {
-      console.error('Mois non valide dans la date:', mois);
-      return null;
+        console.error('Mois non valide dans la date:', mois);
+        return null;
     }
-  
+
     // Initialiser l'heure et les minutes à 0
     let heures = 0, minutes = 0;
-  
+
     // Si l'heure est présente, extraire l'heure et les minutes
     if (timePart) {
-      const [heuresStr, minutesStr] = timePart.split(':');
-      heures = parseInt(heuresStr, 10) || 0;
-      minutes = parseInt(minutesStr, 10) || 0;
+        const [heuresStr, minutesStr] = timePart.split(':');
+        heures = parseInt(heuresStr, 10) || 0;
+        minutes = parseInt(minutesStr, 10) || 0;
     }
-  
+
     // Créer l'objet Date avec la date et l'heure
     return new Date(annee, moisIndex, jour, heures, minutes);
   }
-  
+
+  // Fonction pour parser une date en français
   function formatCommentDate(createdDate) {
-    // Si la date est déjà sous forme texte (ex: '5 septembre 2024 à 14:30'), on doit la parser
     const commentDate = parseFrenchDate(createdDate);
-  
+
     // Vérifier si la date est valide
     if (!commentDate || isNaN(commentDate.getTime())) {
-      console.error('Date non valide : ', createdDate);
-      return 'Date non valide';
+        console.error('Date non valide : ', createdDate);
+        return 'Date non valide';
     }
-  
+
     const currentDate = new Date();
-    const diffTime = currentDate.getTime() - commentDate.getTime();
+
+    // Ne comparer que les jours, mois, années (ignorer heures, minutes)
+    const commentDateOnly = new Date(commentDate.getFullYear(), commentDate.getMonth(), commentDate.getDate());
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+
+    // Calculer la différence en jours uniquement
+    const diffTime = currentDateOnly.getTime() - commentDateOnly.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
-  
+
     const hours = commentDate.getHours().toString().padStart(2, '0');
     const minutes = commentDate.getMinutes().toString().padStart(2, '0');
     const timeString = `${hours}h${minutes}`;
-  
+
     if (diffDays === 0) {
-      return `aujourd'hui à ${timeString}`;
+        return `aujourd'hui à ${timeString}`;
     } else if (diffDays === 1) {
-      return `hier à ${timeString}`;
+        return `hier à ${timeString}`;
     } else {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      const dateString = commentDate.toLocaleDateString('fr-FR', options);
-      return `${dateString}`;
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const dateString = commentDate.toLocaleDateString('fr-FR', options);
+        return `${dateString}`;
     }
   }
 

@@ -141,11 +141,16 @@ static async displayComments(order = 'date_desc', parent_comment_id = null) {
  */
 static async displaySingleComment(comment) {
 
-  // Formater la date du commentaire avant de passer les données à PostComment
+  // Formater la date et l'heure du commentaire avant de passer les données à PostComment
   const formattedDate = new Date(comment.created).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
+  });
+
+  const formattedTime = new Date(comment.created).toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit'
   });
 
   // Créer l'objet PostComment avec les données du commentaire
@@ -156,7 +161,7 @@ static async displaySingleComment(comment) {
     comment.user_id,
     comment.user_name,
     comment.content,
-    formattedDate,
+    `${formattedDate} à ${formattedTime}`,
     comment.likes,
     comment.dislikes,
     comment.parent,

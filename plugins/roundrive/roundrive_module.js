@@ -1,3 +1,5 @@
+const EMPTY_STRING = '';
+
 export class Roundrive {
   #folder = null;
   #folders = [];
@@ -28,7 +30,7 @@ export class Roundrive {
       .http_get(
         'roundrive/folder_list_all_items',
         {
-          _folder: this.#folder,
+          _folder: decodeURIComponent(this.#folder),
         },
         busy,
       )
@@ -62,7 +64,7 @@ export class Roundrive {
   async load() {
     await rcmail
       .http_get('roundrive/folder_list_all_items', {
-        _folder: this.#folder,
+        _folder: decodeURIComponent(this.#folder),
       })
       .done((e) => {
         for (const element of e) {
@@ -113,7 +115,7 @@ class DirData {
   #itemName = null;
   constructor(data) {
     this.#data = data;
-    this.#itemName = new EncodedItemName(data);
+    this.#itemName = new DecodedItemName(data);
   }
 
   /**
@@ -135,6 +137,14 @@ class DirData {
    */
   get etag() {
     return this.#data.etag;
+  }
+
+  get dirname() {
+    return this.#data.dirname;
+  }
+
+  get uid() {
+    return this.#data.id;
   }
 
   /**
@@ -227,6 +237,9 @@ class EncodedItemName extends ItemName {
   #decoded = null;
   #ext = null;
   constructor(data) {
+    data.filename = encodeURIComponent(data.filename || EMPTY_STRING);
+    data.extension = encodeURIComponent(data.extension || EMPTY_STRING) || null;
+    data.path = encodeURIComponent(data.path || EMPTY_STRING);
     super(data);
 
     this.#ext = data.extension;
@@ -238,9 +251,9 @@ class EncodedItemName extends ItemName {
   get decoded() {
     if (!this.#decoded) {
       const tmp = {
-        filename: decodeURIComponent(this.filename),
-        extension: !this.#ext ? null : decodeURIComponent(this.#ext),
-        path: decodeURIComponent(this.path),
+        filename: this.filename,
+        extension: this.#ext,
+        path: this.path,
       };
 
       this.#decoded = new DecodedItemName(tmp);
@@ -251,8 +264,25 @@ class EncodedItemName extends ItemName {
 }
 
 class DecodedItemName extends ItemName {
+  #ext = null;
+  #encoded = null;
   constructor(data) {
+    data.filename = decodeURIComponent(data.filename || EMPTY_STRING);
+    data.extension = decodeURIComponent(data.extension || EMPTY_STRING) || null;
+    data.path = decodeURIComponent(data.path || EMPTY_STRING);
     super(data);
+
+    this.#ext = data.extension;
+  }
+
+  get encoded() {
+    this.#encoded ??= new EncodedItemName({
+      filename: this.filename,
+      extension: this.#ext,
+      path: this.path,
+    });
+
+    return this.#encoded;
   }
 }
 

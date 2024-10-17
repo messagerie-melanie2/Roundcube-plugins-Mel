@@ -11,6 +11,7 @@ import {
 import { PressedButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
+import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 
 export class NextcloudModule extends WorkspaceObject {
   constructor() {
@@ -59,6 +60,8 @@ export class NextcloudModule extends WorkspaceObject {
       loader = null;
     }
 
+    console.log('rou', roundrive);
+
     roundrive = null;
     contents = null;
   }
@@ -79,6 +82,10 @@ export class NextcloudModule extends WorkspaceObject {
     node.setItemFileData(element);
 
     return node;
+  }
+
+  static Workspace() {
+    return new WorkspaceObject().workspace;
   }
 }
 
@@ -148,7 +155,7 @@ class ABaseNextcloudTag extends HtmlCustomDataTag {
   }
 
   get filename() {
-    return this.itemData.data.name.decoded.fullname;
+    return this.itemData.data.name.fullname;
   }
 
   get elementIcon() {
@@ -361,26 +368,34 @@ border: none;
     }
     rcmail.unload = unload;
 
+    let it = 0;
     let element;
     /**@type {RoundriveFile | RoundriveFolder} */
     let loaded;
     for (loaded of this.itemData) {
-      switch (loaded.data.type) {
-        case Roundrive.EItemType.directory:
-          element = document.createElement('bnum-folder');
-          break;
+      if (
+        loaded.data.name.filename !== EMPTY_STRING &&
+        loaded.data.name.filename?.[0] !== '.'
+      ) {
+        switch (loaded.data.type) {
+          case Roundrive.EItemType.directory:
+            element = document.createElement('bnum-folder');
+            break;
 
-        default:
-          element = document.createElement('bnum-file');
-          break;
+          default:
+            element = document.createElement('bnum-file');
+            break;
+        }
+
+        element.setItemFileData(loaded);
+        element.classList.add('child-element');
+
+        container.appendChild(this.#_li(element));
+
+        element = null;
+
+        ++it;
       }
-
-      element.setItemFileData(loaded);
-      element.classList.add('child-element');
-
-      container.appendChild(this.#_li(element));
-
-      element = null;
     }
 
     if (loader) {
@@ -392,6 +407,8 @@ border: none;
 
     this.#container = container;
     this.#loaded = true;
+
+    if (it === 0) throw new Error('No one was load');
   }
 
   _on_pressed_loaded() {
@@ -421,6 +438,7 @@ class FileTag extends AActionNextcloudTag {
   }
 
   _p_create_button(button) {
+    const helper = MelObject.Empty();
     button = super._p_create_button(button);
 
     button.classList.add(
@@ -432,6 +450,17 @@ class FileTag extends AActionNextcloudTag {
     );
 
     button.setAttribute('title', 'Copier le lien interne du fichier');
+
+    button.onclick = helper.copy_to_clipboard.bind(
+      helper,
+      helper.url('stockage', {
+        action: 'index',
+        params: {
+          _params: `/apps/files?dir=/${this.itemData.data.dirname}&openfile=${this.itemData.data.uid}`,
+        },
+        removeIsFromIframe: true,
+      }),
+    );
 
     let icon = document.createElement('bnum-icon');
     icon.icon = 'content_copy';
@@ -448,3 +477,4 @@ class FileTag extends AActionNextcloudTag {
   const TAG = 'bnum-file';
   if (!customElements.get(TAG)) customElements.define(TAG, FileTag);
 }
+//https://mel.din.developpement-durable.gouv.fr/recette/?_task=stockage&_action=index&_params=dossiers-dev-du-bnum-1/Comment%20utiliser%20build_mel.sh%20%3f.txt&_is_from=iframe

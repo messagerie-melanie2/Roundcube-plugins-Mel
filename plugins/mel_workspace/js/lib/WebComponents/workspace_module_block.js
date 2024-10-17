@@ -26,10 +26,16 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     return this._p_get_data('button-icon') || 'arrow_right_alt';
   }
 
+  get isSmall() {
+    return [true, 'true', 1, '1'].includes(this._p_get_data('small'));
+  }
+
   _p_main() {
     super._p_main();
 
     this.classList.add('melv2-card');
+
+    if (this.isSmall) this.classList.add('mode-small');
 
     let childs = this.childNodes;
 

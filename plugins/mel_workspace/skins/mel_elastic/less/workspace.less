@@ -10,4 +10,19 @@ bnum-workspace-module {
     justify-content: space-between;
     align-items: center;
   }
+
+  .module-block-content {
+    height: 400px;
+    overflow: auto;
+
+    &.mode-small {
+      height: 200px;
+    }
+  }
+
+  &.mode-small {
+    .module-block-content {
+      &:extend(bnum-workspace-module .module-block-content.mode-small);
+    }
+  }
 }

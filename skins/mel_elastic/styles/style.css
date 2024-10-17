@@ -112,17 +112,11 @@ a:hover,
 .falselink:hover {
   color: var(--main-link-hover-color);
 }
-p,
-span,
-div,
-bnum-infinite-scroll-container {
+* {
   scrollbar-width: var(--scrollbar-width-moz) !important;
   scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
 }
-p.more-width,
-span.more-width,
-div.more-width,
-bnum-infinite-scroll-container.more-width {
+*.more-width {
   scrollbar-width: var(--scrollbar-width-hover-moz) !important;
 }
 main {

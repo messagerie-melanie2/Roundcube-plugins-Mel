@@ -37,6 +37,13 @@ class WorkspacePageLayout {
   public function htmlModuleBlock($attribs = [], $content = '') {
     return html::tag('bnum-workspace-module', $attribs, $content);
   }
+
+  public function htmlSmallModuleBlock($attribs = [], $content = '') {
+    $attribs ??= [];
+    $attribs['data-small'] = true;
+
+    return $this->htmlModuleBlock($attribs, $content);
+  }
 }
 
 class WorkspacePageRow {

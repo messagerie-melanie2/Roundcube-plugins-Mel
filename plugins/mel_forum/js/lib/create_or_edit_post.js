@@ -16,26 +16,39 @@ export class create_or_edit_post extends MelObject {
             window.location.href = this.url('forum',{action:'index'});
         });
 
-        this.simplemde = new SimpleMDE({
-        element: $("#MyID")[0],  // Utilisation de jQuery pour sélectionner l'élément
-        toolbar: [
-            "bold", "italic", "heading", "heading-smaller", "heading-bigger", "|",
-            "quote", "code", "unordered-list", "ordered-list", "link", "image", "|",
-            "preview", "side-by-side", "fullscreen",
-            {
-                name: "inserer Image",
-                action: function imageuploader(editor) {
-                    this.addImageDialog();
-                }.bind(this),
-                className: "fa fa-picture-o",
-                title: "Insérer une image"
-            }
-        ],
-        spellChecker: false
-    });
-
-        // let config = rcmail.env.editor_config;
-        // rcmail.editor_init(config, 'forum-content');
+        // this.simplemde = new SimpleMDE({
+        //     element: $("#MyID")[0],  // Utilisation de jQuery pour sélectionner l'élément
+        //     toolbar: [
+        //         "bold", "italic", "heading", "heading-smaller", "heading-bigger", "|",
+        //         "quote", "code", "unordered-list", "ordered-list", "link", "image", "|",
+        //         "preview", "side-by-side", "fullscreen",
+        //         {
+        //             name: "inserer Image",
+        //             action: function imageuploader(editor) {
+        //                 this.addImageDialog();
+        //             }.bind(this),
+        //             className: "fa fa-picture-o",
+        //             title: "Insérer une image"
+        //         }
+        //     ],
+        //     spellChecker: false
+        // });  
+        let post = this.get_env('post');
+        let config = rcmail.env.editor_config;
+        config.mode = 'forum';
+        rcmail.addEventListener('editor-init',(args)=> {
+            args.config.setup_callback = (editor) =>{
+                    editor.on('init', function (e) {
+                      editor.setContent(post.content);
+                    });
+            };
+        })
+        rcmail.editor_init(config, 'forum-content');
+        rcmail.editor.file_picker_callback = (callback, value, meta) => {
+            this.addImageDialog();
+        };
+        $("#edit-title").val(post.title);
+        this.post_uid = post.uid;
         this.tags = [];
         this.displayTags();
         this.addTag();
@@ -98,14 +111,14 @@ export class create_or_edit_post extends MelObject {
     // gestion du bouton sauvegarder
     save() {
         $('#submit-post').click(() => {
-            debugger;
             this.http_internal_post(
                 {
                     task: 'forum',
                     action: 'send_post',
                     params: {
                         _title: $("#edit-title").val(),
-                        _content: this.simplemde.value(),
+                        _content: tinymce.activeEditor.getContent("myTextarea"),
+                        _uid: this.post_uid,
                         _settings: JSON.stringify({extwin: $('#rcmfd_message_extwin')[0].checked}),
                         _tags: this.tags,
                     },
@@ -119,23 +132,10 @@ export class create_or_edit_post extends MelObject {
     }
 
     addImageDialog() {
+        // cacher la pop up de tiny mce le temps de faire le traitement avec notre modale 
+        $('.tox-dialog-wrap').css("display","none");
         let dialog;
         //prettier-ignore
-        let addimagehtml = JsHtml.start 
-        .input({id:"image-link", type:"text", placeholder:"Entrer le liens de l'image à ajouter"})
-        .button({class:"upload-image-button", type:'button'}).attr('onclick', this.switchPageDialog.bind(this, 'upload-image'))
-            .text('upload')
-        .end();
-        
-        let addImage = new DialogPage("add-image", {
-            content: addimagehtml,
-            title: "Ajouter une image",
-            buttons: [new RcmailDialogButton('Fermer', {
-                click: (e) => {
-                    dialog.hide();
-                }
-            })]
-        })
         let uploadimagehtml = JsHtml.start.input({id:"image-uploader", type:"file", accept:"image/png, image/jpeg"})
         let uploadImage = new DialogPage("upload-image", {
             content: uploadimagehtml,
@@ -143,32 +143,55 @@ export class create_or_edit_post extends MelObject {
             buttons: [
                 new RcmailDialogButton('Retour', {
                     click: (e) => {
-                        dialog.switch_page('add-image');
+                        dialog.hide();
+                        $('.tox-dialog-wrap').css("display","flex");
                     }
                 }), 
                 new RcmailDialogButton('Importer', {
                     click: (e) => {
-                        this.http_internal_post(
-                            {
-                                task: 'forum',
-                                action: 'upload_image',
-                                params: {
-                                    _image: $('#image-uploader').get(0).files,
-                                },
-                                on_success: () => {},
+                        const fileInput = $('#image-uploader').get(0);
+                        const files = fileInput.files;
+
+                        if (files.length > 0) {
+
+                            let fileReader = new FileReader();
+                            fileReader.onload = () => {
+                                this.http_internal_post(
+                                    {
+                                        task: 'forum',
+                                        action: 'upload_image',
+                                        params: {_file: fileReader.result, _post_id: 2}, 
+                                        processData: false, // Empêche jQuery de traiter les données
+                                        contentType: false, // Empêche jQuery d'ajouter des headers incorrects
+                                        on_success: (data) => {
+                                            debugger;
+                                            // Gérer la réponse du serveur ici
+                                            let response = JSON.parse(data);
+                                            $('input.tox-textfield').first().val(response.url);
+                                            $('.tox-dialog-wrap').css("display","flex");
+                                            // let uid = response.image_uid;
+                                            dialog.hide();
+                                        },
+                                        on_error: (err) => {
+                                            console.log('Erreur d\'upload', err);
+                                        }
+                                    }
+                                );
                             }
-                        );
+                            fileReader.readAsDataURL(files[0]);
+                            
+                        }
                     }
                 }),
             ]
         })
-
-        debugger;
         dialog = new MelDialog(
-            addImage,
-            {height: 200} 
+            uploadImage,
+            {
+                height: 200,
+                close: () => {$('.tox-dialog-wrap').css("display","flex");},
+            } 
         );
-        dialog.add_page(uploadImage, {});
         dialog.show();
         this.dialog = dialog;
     }

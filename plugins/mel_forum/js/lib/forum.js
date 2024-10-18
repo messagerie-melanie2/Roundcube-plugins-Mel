@@ -16,5 +16,15 @@ export class Forum extends MelObject {
         $('#forum-button-add').click(() => {
             window.location.href = this.url('forum', {action:'create_or_edit_post'});
         });
+        $('.favorite').click(() => {
+            event.stopPropagation();
+            if ($(this).text() === 'star_border') {
+                // Si elle est vide, la remplir
+                $(this).text('star');
+            } else {
+                // Sinon, la remettre en vide
+                $(this).text('star_border');
+            }
+        });
     }
 }

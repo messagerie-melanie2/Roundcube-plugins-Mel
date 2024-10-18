@@ -583,3 +583,8 @@
 .task-forum .editor-toolbar {
   background-color: white;
 }
+.task-forum a.post-card {
+  text-decoration: none;
+  color: inherit;
+  display: contents;
+}

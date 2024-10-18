@@ -1,63 +1,65 @@
 <div class="row post">
-  <div class="col-12">
-    <div class="row">
-      <div class="col-12">
-        <div class="post-header">
-          <div class="post-creator">
-            <img
-              src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
-              alt="Auteur Image"
-              class="author-image"/>
-            <div class="post-creator-name"><post-creator/></div>
-            <div class="post-date">
-              <i class="material-symbols-outlined">access_time</i
-              ><span class="ml-1"><post-date/></span>
+  <post-link/>
+    <div class="col-12">
+      <div class="row">
+        <div class="col-12">
+          <div class="post-header">
+            <div class="post-creator">
+              <img
+                src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
+                alt="Auteur Image"
+                class="author-image"/>
+              <div class="post-creator-name"><post-creator/></div>
+              <div class="post-date">
+                <i class="material-symbols-outlined">access_time</i
+                ><span class="ml-1"><post-date/></span>
+              </div>
             </div>
-          </div>
-          <div class="post-actions">
-            <i class="material-symbols-outlined">more_vert</i>
-            <i class="material-symbols-outlined">star_border</i>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12 col-md-8 col-xl-10">
-        <div class="post-content">
-          <div class="post-tags"><post-tag/></div>
-  
-          <div class="post-title"><post-title/></div>
-  
-          <div class="post-summary"><post-summary/></div>
-        </div>
-      </div>
-      <div class="col-12 col-md-4 col-xl-2">
-        <div class="post-image"><post-image/></div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <div class="post-footer">
-          <div class="post-reaction">
-            <div id="add_reaction" class="reaction">
-              <i class="material-symbols-outlined">add_reaction</i>
-              <span class="ml-2"><post-count-reactions/></span>
-            </div>
-            <div id="add_like" class="like">
-              <i class="material-symbols-outlined">thumb_up</i>
-              <span class="ml-2"><post-count-thumb-up/></span>
-            </div>
-            <div id="add_dislike" class="dislike">
-              <i class="material-symbols-outlined">thumb_down</i>
-              <span class="ml-2"><post-count-thumb_down/></span>
-            </div>
-            <div id="add_comment" class="comment">
-              <i class="material-symbols-outlined">comment</i>
-              <span class="ml-2"><post-count-comments/></span>
+            <div class="post-actions">
+              <i class="more_action material-symbols-outlined">more_vert</i>
+              <i  class="favorite material-symbols-outlined">star_border</i>
             </div>
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col-12 col-md-8 col-xl-10">
+          <div class="post-content">
+            <div class="post-tags"><post-tag/></div>
+    
+            <div class="post-title"><post-title/></div>
+    
+            <div class="post-summary"><post-summary/></div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4 col-xl-2">
+          <div class="post-image"><post-image/></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="post-footer">
+            <div class="post-reaction">
+              <div id="add_reaction" class="reaction">
+                <i class="material-symbols-outlined">add_reaction</i>
+                <span class="ml-2"><post-count-reactions/></span>
+              </div>
+              <div id="add_like" class="like">
+                <i class="material-symbols-outlined">thumb_up</i>
+                <span class="ml-2"><post-count-thumb-up/></span>
+              </div>
+              <div id="add_dislike" class="dislike">
+                <i class="material-symbols-outlined">thumb_down</i>
+                <span class="ml-2"><post-count-thumb_down/></span>
+              </div>
+              <div id="add_comment" class="comment">
+                <i class="material-symbols-outlined">comment</i>
+                <span class="ml-2"><post-count-comments/></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  <post-link-end/>
 </div>

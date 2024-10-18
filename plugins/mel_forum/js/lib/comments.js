@@ -190,37 +190,16 @@ class PostComment {
 }
 
 
-// /**
-//  * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
-//  *
-//  * Cette fonction affiche ou masque les réponses d'un commentaire en fonction de leur état actuel,
-//  * en ajoutant ou supprimant la classe CSS 'hidden'. L'icône de basculement est également mise à jour
-//  * pour indiquer visuellement l'état (affiché ou masqué) des réponses.
-//  *
-//  * @param {string} id - L'identifiant unique du commentaire pour lequel les réponses doivent être basculées.
-//  * @returns {Promise<void>} Une promesse résolue une fois l'opération terminée.
-//  */
-// async toggleResponses(id) {
-//   try {
-//       // Correction du sélecteur jQuery
-//       let responseContainer = $('#responses-' + id);
-//       // Sélection de l'icône correspondante
-//       let toggleIcon = $('#toggle-icon-' + id);
-
-//       // Basculer la classe 'hidden' pour afficher ou masquer les réponses
-//       responseContainer.toggleClass('hidden');
-      
-//       // Basculer entre les icônes 'arrow_drop_down' et 'arrow_drop_up'
-//       if (responseContainer.hasClass('hidden')) {
-//         toggleIcon.attr('data-icon', 'arrow_drop_down');
-//     } else {
-//         toggleIcon.attr('data-icon', 'arrow_drop_up');
-//     }
-// } catch (error) {
-//     console.error("Erreur lors du basculement des réponses:", error);
-// }
-// }
-
+/**
+ * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
+ *
+ * Cette fonction affiche ou masque les réponses d'un commentaire en fonction de leur état actuel,
+ * en ajoutant ou supprimant la classe CSS 'hidden'. L'icône de basculement est également mise à jour
+ * pour indiquer visuellement l'état (affiché ou masqué) des réponses.
+ *
+ * @param {string} id - L'identifiant unique du commentaire pour lequel les réponses doivent être basculées.
+ * @returns {Promise<void>} Une promesse résolue une fois l'opération terminée.
+ */
 async toggleResponses(id) {
   try {
     let responseContainer = $('#responses-' + id);
@@ -489,7 +468,7 @@ async modifyComment(uid) {
         $('#edit-comment-' + uid).addClass('hidden');
 
         // Mettre à jour l'affichage du commentaire avec le nouveau contenu
-        $('#comment-text-' + uid).text(updatedContent);
+        $('#comment-text-' + uid).replaceWith('<div class="forum-comment-text" id="comment-text-' + uid + '"><p>' + updatedContent + '</p></div>');        
 
       } else {
         rcmail.display_message(response.message, 'error');

@@ -376,7 +376,7 @@ class mel_nextcloud extends rcube_plugin {
   }
 
   public function wsp_block($args) {
-    if (class_exists('roundrive')) {
+    if (class_exists('roundrive') && $args['workspace']->objects()->get(mel_workspace::KEY_DRIVE) !== null) {
       $SIZE = 4;
       $layout = $args['layout'];
       $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);

@@ -109,6 +109,10 @@ export class WorkspaceObject extends MelObject {
 
     return node;
   }
+
+  static GetWorkspaceData() {
+    return workspaceData.Instance;
+  }
 }
 
 class CurrentWorkspaceData {
@@ -123,6 +127,10 @@ class CurrentWorkspaceData {
     return rcmail.env.current_workspace_uid;
   }
 
+  get title() {
+    return rcmail.env.current_workspace_title;
+  }
+
   app_loaded(service) {
     return (
       rcmail.env.current_workspace_services_actives[service] &&
@@ -134,4 +142,7 @@ class CurrentWorkspaceData {
   }
 }
 
+/**
+ * @type {WrapperObject<CurrentWorkspaceData>}
+ */
 const workspaceData = new WrapperObject(CurrentWorkspaceData);

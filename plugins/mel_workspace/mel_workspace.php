@@ -112,6 +112,8 @@ class mel_workspace extends bnum_plugin
 
         $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
 
+        $this->workspacePageLayout->fourthRow()->append(12, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda']));
+
         $this->rc()->output->add_handlers(array(
             'wsp.row.first'  => [$this, 'handler_get_row'],
             'wsp.row.second' => [$this, 'handler_get_row'],
@@ -122,9 +124,25 @@ class mel_workspace extends bnum_plugin
 
         $this->include_css('workspace.css');
         self::IncludeWorkspaceModuleComponent();
+        $this->include_module('agenda.js', 'js/lib/Parts');
         $this->load_script_module('page.workspace.js');
         $this->rc()->output->set_env('current_workspace_uid', $uid);
         $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
+        $this->rc()->output->set_env('current_workspace_users', $workspace->users(true)->select(function ($k, $v) {
+            return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
+        })->toDictionnary(function ($k, $v) {
+            return $v['email'];
+        }, function ($k, $v) {
+            return $v;
+        }));
+
+        if (!$workspace->isPublic()) {
+            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
+            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');
+            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
+            $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
+            $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
+        }
 
         $this->rc()->output->send('mel_workspace.workspace');
     }

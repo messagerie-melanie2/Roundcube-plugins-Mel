@@ -190,7 +190,7 @@ class RotomecaEvent {
       }
     }
 
-    const results = await Promise.allSettled(asyncs);
+    const results = (await Promise.allSettled(asyncs)).map((x) => x.value);
 
     switch (results.length) {
       case 0:

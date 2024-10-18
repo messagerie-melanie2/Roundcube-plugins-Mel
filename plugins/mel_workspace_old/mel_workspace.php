@@ -19,7 +19,7 @@ use LibMelanie\Api\Defaut\Workspaces\Share;
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-class mel_workspace extends bnum_plugin
+class mel_workspace_old extends bnum_plugin
 {
     /**
      * @var string

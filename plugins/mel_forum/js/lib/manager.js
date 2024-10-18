@@ -117,82 +117,80 @@ static async displayComments(order = 'date_desc', parent_comment_id = null) {
   }
 }
 
-/**
- * Affiche un commentaire dans la section appropriée de l'interface utilisateur.
- *
- * @param {Object} comment - L'objet commentaire à afficher.
- * @param {number} comment.id - L'identifiant unique du commentaire.
- * @param {string} comment.uid - L'identifiant unique de l'utilisateur ayant posté le commentaire.
- * @param {number} comment.post_id - L'identifiant du post auquel le commentaire appartient.
- * @param {number} comment.user_id - L'identifiant de l'utilisateur ayant posté le commentaire.
- * @param {string} comment.user_name - Le nom de l'utilisateur ayant posté le commentaire.
- * @param {string} comment.content - Le contenu du commentaire.
- * @param {string} comment.created - La date de création du commentaire au format 'YYYY-MM-DD HH:mm:ss'.
- * @param {number} [comment.likes=0] - Le nombre de likes sur le commentaire (0 par défaut).
- * @param {number} [comment.dislikes=0] - Le nombre de dislikes sur le commentaire (0 par défaut).
- * @param {number} [comment.parent=null] - L'identifiant du commentaire parent si le commentaire est une réponse, sinon `null`.
- * @param {number} [comment.children_number=0] - Le nombre de réponses à ce commentaire (0 par défaut).
- * @param {boolean} [comment.current_user_reacted=false] - Indique si l'utilisateur actuel a réagi au commentaire (false par défaut).
- *
- * Crée une instance de `PostComment` pour le commentaire fourni, génère le HTML associé et l'ajoute à la section appropriée :
- * - Si le commentaire n'a pas de parent, il est ajouté directement à la zone de commentaires principale.
- * - Si le commentaire est une réponse, il est ajouté au conteneur des réponses du commentaire parent. Si ce conteneur n'existe pas encore, il est créé.
- *
- */
-static async displaySingleComment(comment) {
-
-  // Formater la date et l'heure du commentaire avant de passer les données à PostComment
-  const formattedDate = new Date(comment.created).toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const formattedTime = new Date(comment.created).toLocaleTimeString('fr-FR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  // Créer l'objet PostComment avec les données du commentaire
-  let commentVizualizer = new PostComment(
-    comment.id,
-    comment.uid,
-    comment.post_id,
-    comment.user_id,
-    comment.user_name,
-    comment.content,
-    `${formattedDate} à ${formattedTime}`,
-    comment.likes,
-    comment.dislikes,
-    comment.parent,
-    comment.children_number,
-    comment.current_user_reacted
-  );
-
-  // Générer le HTML pour le commentaire
-  let commentHtml = $(commentVizualizer.generateHtmlFromTemplate());
-
-  // Si le commentaire est un commentaire principal (sans parent)
-  if (!comment.parent) {
-    // Ajouter le commentaire en haut de la liste des commentaires principaux
-    $('#comment-area').prepend(commentHtml);
-  } else {
-    // Si c'est une réponse à un commentaire parent
-    let parent_comment_id = comment.parent;
-
-    // Assurer que la zone des réponses est visible
-    $(`#responses-${parent_comment_id}`).removeClass('hidden');
-
-    // Ajouter la réponse en haut des réponses du commentaire parent
-    $(`#responses-${parent_comment_id}`).prepend(commentHtml);
-  }
-}
-
-
   /**
-   * Affiche les commentaires sur la page web
+   * Affiche un commentaire dans la section appropriée de l'interface utilisateur.
+   *
+   * @param {Object} comment - L'objet commentaire à afficher.
+   * @param {number} comment.id - L'identifiant unique du commentaire.
+   * @param {string} comment.uid - L'identifiant unique de l'utilisateur ayant posté le commentaire.
+   * @param {number} comment.post_id - L'identifiant du post auquel le commentaire appartient.
+   * @param {number} comment.user_id - L'identifiant de l'utilisateur ayant posté le commentaire.
+   * @param {string} comment.user_name - Le nom de l'utilisateur ayant posté le commentaire.
+   * @param {string} comment.content - Le contenu du commentaire.
+   * @param {string} comment.created - La date de création du commentaire au format 'YYYY-MM-DD HH:mm:ss'.
+   * @param {number} [comment.likes=0] - Le nombre de likes sur le commentaire (0 par défaut).
+   * @param {number} [comment.dislikes=0] - Le nombre de dislikes sur le commentaire (0 par défaut).
+   * @param {number} [comment.parent=null] - L'identifiant du commentaire parent si le commentaire est une réponse, sinon `null`.
+   * @param {number} [comment.children_number=0] - Le nombre de réponses à ce commentaire (0 par défaut).
+   * @param {boolean} [comment.current_user_reacted=false] - Indique si l'utilisateur actuel a réagi au commentaire (false par défaut).
+   *
+   * Crée une instance de `PostComment` pour le commentaire fourni, génère le HTML associé et l'ajoute à la section appropriée :
+   * - Si le commentaire n'a pas de parent, il est ajouté directement à la zone de commentaires principale.
+   * - Si le commentaire est une réponse, il est ajouté au conteneur des réponses du commentaire parent. Si ce conteneur n'existe pas encore, il est créé.
+   *
    */
-  Comments() {
-    const postUid = $('#post-uid').val();
+  static async displaySingleComment(comment) {
+
+    // Formater la date et l'heure du commentaire avant de passer les données à PostComment
+    const formattedDate = new Date(comment.created).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const formattedTime = new Date(comment.created).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    // Créer l'objet PostComment avec les données du commentaire
+    let commentVizualizer = new PostComment(
+      comment.id,
+      comment.uid,
+      comment.post_id,
+      comment.user_id,
+      comment.user_name,
+      comment.content,
+      `${formattedDate} à ${formattedTime}`,
+      comment.likes,
+      comment.dislikes,
+      comment.parent,
+      comment.children_number,
+      comment.current_user_reacted
+    );
+
+    // Générer le HTML pour le commentaire
+    let commentHtml = $(commentVizualizer.generateHtmlFromTemplate());
+
+    // Si le commentaire est un commentaire principal (sans parent)
+    if (!comment.parent) {
+      // Avant de prépendre, vérifie si le commentaire est déjà dans le DOM
+      if (!$('#comment-area').find(`#comment-${comment.id}`).length) {
+          // Ajouter le commentaire en haut de la liste des commentaires principaux
+          $('#comment-area').prepend(commentHtml);
+      }
+    } else {
+      // Si c'est une réponse à un commentaire parent
+      let parent_comment_id = comment.parent;
+
+      // Assurer que la zone des réponses est visible
+      $(`#responses-${parent_comment_id}`).removeClass('hidden');
+
+      // Avant de prépendre, vérifie si la réponse est déjà dans le DOM
+      if (!$(`#responses-${parent_comment_id}`).find(`#comment-${comment.id}`).length) {
+          // Ajouter la réponse en haut des réponses du commentaire parent
+          $(`#responses-${parent_comment_id}`).prepend(commentHtml);
+      }
+    }
   }
 }

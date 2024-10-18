@@ -310,9 +310,15 @@ async toggleResponses(id) {
  * @throws {Error} Si une erreur survient lors de l'envoi de la requête ou de l'enregistrement de la réponse.
  */
 async saveReply() {
+  debugger;
   const $textarea = $('#new-response-textarea-' + this.uid);
   const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
+  const submitButton = $('#submit-reply');  // Sélectionner le bouton de validation
+
   if (replyContent && replyContent.trim() !== '') {     // Vérifier si le commentaire n'est pas vide
+      
+      submitButton.prop('disabled', true);// Désactiver le bouton de validation pour éviter les clics multiples
+
       try {
           const response = await mel_metapage.Functions.post(
               mel_metapage.Functions.url('forum', 'create_comment'),
@@ -331,14 +337,30 @@ async saveReply() {
               // Fermer le formulaire en ajoutant la classe 'hidden'
               $('#reply-form-' + this.uid).addClass('hidden');
 
-              // Insérer le nouveau commentaire
-              this.displaySingleComment(response.comment);  
+              // Insérer la nouvelle réponse en haut de la liste via `displaySingleComment`
+              await Manager.displaySingleComment(response.comment);
+              
+              // Mettre à jour le nombre de réponses dans l'interface
+              const parent_comment_id = this.parent;  // ID du commentaire parent
+              const $responseContainer = $(`#toggle-response-container-${parent_comment_id}`);
+              const currentChildrenNumber = parseInt(this.children_number) + 1; // Incrémenter le nombre de réponses
+              this.children_number = currentChildrenNumber; // Mettre à jour localement le nombre de réponses
+
+              // Mettre à jour le texte du nombre de réponses
+              const reponseText = currentChildrenNumber === 1 ? 'réponse' : 'réponses';
+              $responseContainer.find('span.ml-2').text(currentChildrenNumber + ' ' + reponseText);
+              
+              // Mettre à jour l'attribut `title`
+              $responseContainer.attr('title', currentChildrenNumber === 1 ? 'Voir la réponse' : `Voir les ${currentChildrenNumber} réponses`);
           } else {
               rcmail.display_message(response.message, 'error');
           }
       } catch (error) {
           rcmail.display_message("Une erreur est survenue lors de la sauvegarde de la réponse.", 'error');
           console.error("Erreur lors de la sauvegarde de la réponse:", error);
+      } finally {
+          // Réactiver le bouton de validation une fois la requête terminée
+          submitButton.prop('disabled', false);
       }
   } else {
       rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
@@ -965,7 +987,6 @@ class PostCommentView {
     });
   }
 
-
 /**
  * Enregistre un nouveau commentaire et met à jour l'affichage.
  *
@@ -980,6 +1001,10 @@ class PostCommentView {
  * @throws {Error} En cas d'échec de l'enregistrement ou d'une erreur réseau.
  */
 async saveComment(content) {
+  // Désactiver le bouton de validation pour éviter les clics multiples
+  const submitButton = $('#submit-comment');
+  submitButton.prop('disabled', true);
+  debugger;
   try {
       var id = rcmail.display_message('loading', 'loading');
       const response = await mel_metapage.Functions.post(
@@ -998,9 +1023,7 @@ async saveComment(content) {
           // Récupérer les données du nouveau commentaire créé
           const newComment = response.comment; // On suppose que l'API renvoie le commentaire créé dans `response.comment`
 
-          // Afficher le nouveau commentaire en haut de la liste
-          debugger;
-          await Manager.displaySingleComment(newComment); 
+          // Afficher le nouveau commentaire en haut de la listeawait Manager.displaySingleComment(newComment); 
       } else {
           rcmail.hide_message(id);
           rcmail.display_message(response.message, 'error');
@@ -1008,6 +1031,9 @@ async saveComment(content) {
   } catch (error) {
       rcmail.display_message("Une erreur est survenue lors de la sauvegarde du commentaire.", 'error');
       console.error("Erreur lors de la sauvegarde du commentaire:", error);
+  } finally {
+      // Réactiver le bouton de validation une fois la requête terminée
+      submitButton.prop('disabled', false);
   }
 }
 

@@ -965,7 +965,7 @@ class PostCommentView {
     const $saveButton = $('#submit-comment');
     const $textarea = $('#new-comment-textarea');
 
-    $saveButton.on('click', () => {
+    $saveButton.click(() => {
         const commentContent = $textarea.val();
         if (commentContent.trim() !== '') {
             this.saveComment(commentContent);
@@ -1004,7 +1004,6 @@ async saveComment(content) {
   // Désactiver le bouton de validation pour éviter les clics multiples
   const submitButton = $('#submit-comment');
   submitButton.prop('disabled', true);
-  debugger;
   try {
       var id = rcmail.display_message('loading', 'loading');
       const response = await mel_metapage.Functions.post(

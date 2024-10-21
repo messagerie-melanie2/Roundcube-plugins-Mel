@@ -1,4 +1,5 @@
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
+import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { PostComment, PostCommentView } from './comments.js';
 
@@ -11,6 +12,21 @@ export class Manager extends MelObject {
     this.parent_comment_id = null;        // Parent comment ID (optionnel)
   }
 
+  /**
+  * Initialise la logique de la page des commentaires, y compris le chargement des commentaires,
+  * la gestion de l'ordre de tri, et l'interaction avec les éléments de l'interface utilisateur.
+  *
+  * Cette fonction effectue les opérations suivantes :
+  * - Charge l'ordre de tri des commentaires depuis le LocalStorage ou utilise 'date_asc' par défaut.
+  * - Assigne la valeur d'ordre de tri au select pour afficher la sélection correcte.
+  * - Affiche les commentaires en fonction de l'ordre de tri récupéré.
+  * - Gère le changement de tri des commentaires via un événement de sélection.
+  * - Permet de rediriger l'utilisateur vers la page d'accueil au clic sur un bouton dédié.
+  * - Configure le redimensionnement automatique du textarea pour les nouveaux commentaires.
+  * - Affiche ou masque les boutons de commentaire selon l'état du textarea.
+  *
+  * @returns {void} - Cette fonction n'a pas de valeur de retour.
+  */
   main() {
     super.main();
     
@@ -83,18 +99,18 @@ export class Manager extends MelObject {
   }
 
   /**
-   * Enregistre un nouveau commentaire et met à jour l'affichage.
-   *
-   * Cette fonction envoie le contenu du commentaire à l'API pour le créer, 
-   * puis réinitialise le champ de texte et affiche le nouveau commentaire en haut 
-   * de la liste en cas de succès. En cas d'erreur, un message d'erreur est affiché.
-   *
-   * @async
-   * @function saveComment
-   * @param {string} content - Le contenu du commentaire à enregistrer.
-   * @returns {void}
-   * @throws {Error} En cas d'échec de l'enregistrement ou d'une erreur réseau.
-   */
+  * Enregistre un nouveau commentaire et met à jour l'affichage.
+  *
+  * Cette fonction envoie le contenu du commentaire à l'API pour le créer, 
+  * puis réinitialise le champ de texte et affiche le nouveau commentaire en haut 
+  * de la liste en cas de succès. En cas d'erreur, un message d'erreur est affiché.
+  *
+  * @async
+  * @function saveComment
+  * @param {string} content - Le contenu du commentaire à enregistrer.
+  * @returns {void}
+  * @throws {Error} En cas d'échec de l'enregistrement ou d'une erreur réseau.
+  */
   async saveComment(content) {
     // Désactiver le bouton de validation pour éviter les clics multiples
     const submitButton = $('#submit-comment');
@@ -132,102 +148,118 @@ export class Manager extends MelObject {
     }
   }
 
-// /**
-//    * Affiche les commentaires associés à un post spécifique dans l'interface utilisateur.
-//    *
-//    * Cette méthode récupère tous les commentaires liés à un post en utilisant une instance de `PostCommentView`.
-//    * Les commentaires sont ensuite instanciés en tant qu'objets `PostComment`, leur contenu HTML est généré et ajouté
-//    * dynamiquement au DOM. Des événements de clic pour les boutons "like" et "dislike" sont également attachés après
-//    * l'affichage des commentaires.
-//    *
-//    * @async
-//    * @function
-//    * @name displayComments
-//    * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
-//    */
-static async displayComments(order = 'date_desc', parent_comment_id = null) {  
-  let PostCommentManager = new PostCommentView(rcmail.env.post_uid, rcmail.env.post_id, order, parent_comment_id);
+  /**
+  * Affiche les commentaires associés à un post spécifique dans l'interface utilisateur.
+  *
+  * Cette méthode récupère tous les commentaires liés à un post en utilisant une instance de `PostCommentView`.
+  * Les commentaires sont ensuite instanciés en tant qu'objets `PostComment`, leur contenu HTML est généré et ajouté
+  * dynamiquement au DOM. Des événements de clic pour les boutons "like" et "dislike" sont également attachés après
+  * l'affichage des commentaires.
+  *
+  * @async
+  * @function
+  * @name displayComments
+  * @param {string} [order='date_desc'] - L'ordre dans lequel afficher les commentaires (par défaut 'date_desc').
+  * @param {string|null} [parent_comment_id=null] - L'identifiant du commentaire parent pour filtrer les réponses (s'il y a lieu).
+  * @returns {Promise<void>} Retourne une promesse qui est résolue une fois que tous les commentaires sont affichés et que les événements sont attachés.
+  */
+  static async displayComments(order = 'date_desc', parent_comment_id = null) {  
+    
+    BnumMessage.SetBusyLoading();
 
-  // Passer l'option de tri choisie à la fonction getCommentByPost
-  let allComments = await PostCommentManager.getCommentByPost();
+    let PostCommentManager = new PostCommentView(rcmail.env.post_uid, rcmail.env.post_id, order, parent_comment_id);
 
-  let comments_array = [];
-  let responses_array = [];
+    // Passer l'option de tri choisie à la fonction getCommentByPost
+    let allComments;
 
-  // Ajouter chaque commentaire à un tableau pour traitement
-  for (const key in allComments) {
-    if (allComments.hasOwnProperty(key)) {
-      const comment = allComments[key];
-      
-      let commentVizualizer = new PostComment(
-        comment.id,
-        comment.uid,
-        comment.post_id,
-        comment.user_id,
-        comment.user_name,
-        comment.content,
-        comment.created,
-        comment.likes,
-        comment.dislikes,
-        comment.parent,
-        comment.children_number,
-        comment.current_user_reacted
-      );
-
-      // Si le commentaire est un commentaire principal (sans parent)
-      if (!comment.parent) {
-        comments_array.push(commentVizualizer);
-      } else {
-        responses_array.push(commentVizualizer);
-      }
+    try {
+        allComments = await PostCommentManager.getCommentByPost();
+    } catch (error) {
+        console.error("Erreur lors de la récupération des commentaires:", error);
+        // Vous pouvez afficher un message d'erreur à l'utilisateur ici si nécessaire
+        return;
     }
-  }
 
-  //Si on affiche que les commentaires principaux
-  if (!parent_comment_id) {
+    let comments_array = [];
+    let responses_array = [];
 
-  // Vider la zone des commentaires avant de ré-afficher les commentaires récupérés
-    $('#comment-area').empty();
+    // Ajouter chaque commentaire à un tableau pour traitement
+    for (const key in allComments) {
+      if (allComments.hasOwnProperty(key)) {
+        const comment = allComments[key];
+        
+        let commentVizualizer = new PostComment(
+          comment.id,
+          comment.uid,
+          comment.post_id,
+          comment.user_id,
+          comment.user_name,
+          comment.content,
+          comment.created,
+          comment.likes,
+          comment.dislikes,
+          comment.parent,
+          comment.children_number,
+          comment.current_user_reacted
+        );
 
-    for (const comment of comments_array) {
-      let commentHtml = comment.generateHtmlFromTemplate();
-  
-      // Ajouter le commentaire principal à la zone des commentaires
-      $('#comment-area').append(...commentHtml);
-    }
-  } else {
-    if (responses_array != []) {
-        for (const response of responses_array) {
-          let responseHtml = response.generateHtmlFromTemplate();
-          $(`#responses-${parent_comment_id}`).removeClass('hidden');
-          $(`#responses-${parent_comment_id}`).append(...responseHtml);
+        // Si le commentaire est un commentaire principal (sans parent)
+        if (!comment.parent) {
+          comments_array.push(commentVizualizer);
+        } else {
+          responses_array.push(commentVizualizer);
         }
       }
-  }
-}
+    }
+
+    //Si on affiche que les commentaires principaux
+    if (!parent_comment_id) {
+
+    // Vider la zone des commentaires avant de ré-afficher les commentaires récupérés
+      $('#comment-area').empty();
+
+      for (const comment of comments_array) {
+        let commentHtml = comment.generateHtmlFromTemplate();
+    
+        // Ajouter le commentaire principal à la zone des commentaires
+        $('#comment-area').append(...commentHtml);
+      }
+    } else {
+      if (responses_array != []) {
+          for (const response of responses_array) {
+            let responseHtml = response.generateHtmlFromTemplate();
+            $(`#responses-${parent_comment_id}`).removeClass('hidden');
+            $(`#responses-${parent_comment_id}`).append(...responseHtml);
+          }
+        }
+      }
+      
+      BnumMessage.StopBusyLoading();
+
+    }
 
   /**
-   * Affiche un commentaire dans la section appropriée de l'interface utilisateur.
-   *
-   * @param {Object} comment - L'objet commentaire à afficher.
-   * @param {number} comment.id - L'identifiant unique du commentaire.
-   * @param {string} comment.uid - L'identifiant unique de l'utilisateur ayant posté le commentaire.
-   * @param {number} comment.post_id - L'identifiant du post auquel le commentaire appartient.
-   * @param {number} comment.user_id - L'identifiant de l'utilisateur ayant posté le commentaire.
-   * @param {string} comment.user_name - Le nom de l'utilisateur ayant posté le commentaire.
-   * @param {string} comment.content - Le contenu du commentaire.
-   * @param {string} comment.created - La date de création du commentaire au format 'YYYY-MM-DD HH:mm:ss'.
-   * @param {number} [comment.likes=0] - Le nombre de likes sur le commentaire (0 par défaut).
-   * @param {number} [comment.dislikes=0] - Le nombre de dislikes sur le commentaire (0 par défaut).
-   * @param {number} [comment.parent=null] - L'identifiant du commentaire parent si le commentaire est une réponse, sinon `null`.
-   * @param {number} [comment.children_number=0] - Le nombre de réponses à ce commentaire (0 par défaut).
-   * @param {boolean} [comment.current_user_reacted=false] - Indique si l'utilisateur actuel a réagi au commentaire (false par défaut).
-   *
-   * Crée une instance de `PostComment` pour le commentaire fourni, génère le HTML associé et l'ajoute à la section appropriée :
-   * - Si le commentaire n'a pas de parent, il est ajouté directement à la zone de commentaires principale.
-   * - Si le commentaire est une réponse, il est ajouté au conteneur des réponses du commentaire parent. Si ce conteneur n'existe pas encore, il est créé.
-   *
-   */
+  * Affiche un commentaire dans la section appropriée de l'interface utilisateur.
+  *
+  * @param {Object} comment - L'objet commentaire à afficher.
+  * @param {number} comment.id - L'identifiant unique du commentaire.
+  * @param {string} comment.uid - L'identifiant unique de l'utilisateur ayant posté le commentaire.
+  * @param {number} comment.post_id - L'identifiant du post auquel le commentaire appartient.
+  * @param {number} comment.user_id - L'identifiant de l'utilisateur ayant posté le commentaire.
+  * @param {string} comment.user_name - Le nom de l'utilisateur ayant posté le commentaire.
+  * @param {string} comment.content - Le contenu du commentaire.
+  * @param {string} comment.created - La date de création du commentaire au format 'YYYY-MM-DD HH:mm:ss'.
+  * @param {number} [comment.likes=0] - Le nombre de likes sur le commentaire (0 par défaut).
+  * @param {number} [comment.dislikes=0] - Le nombre de dislikes sur le commentaire (0 par défaut).
+  * @param {number} [comment.parent=null] - L'identifiant du commentaire parent si le commentaire est une réponse, sinon `null`.
+  * @param {number} [comment.children_number=0] - Le nombre de réponses à ce commentaire (0 par défaut).
+  * @param {boolean} [comment.current_user_reacted=false] - Indique si l'utilisateur actuel a réagi au commentaire (false par défaut).
+  *
+  * Crée une instance de `PostComment` pour le commentaire fourni, génère le HTML associé et l'ajoute à la section appropriée :
+  * - Si le commentaire n'a pas de parent, il est ajouté directement à la zone de commentaires principale.
+  * - Si le commentaire est une réponse, il est ajouté au conteneur des réponses du commentaire parent. Si ce conteneur n'existe pas encore, il est créé.
+  *
+  */
   static async displaySingleComment(comment) {
 
     // Formater la date et l'heure du commentaire avant de passer les données à PostComment

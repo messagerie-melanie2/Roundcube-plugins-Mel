@@ -3,8 +3,6 @@ import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { Manager } from './manager.js';
 
-
-
 export {PostComment, PostCommentView}
 
 class PostComment {
@@ -17,7 +15,7 @@ class PostComment {
  *
  * Cette fonction réinitialise toutes les propriétés de l'objet, telles que
  * `uid`, `post_id`, `user_uid`, `user_name`, `content`, `created`, `like`, 
- * `dislike`, `parent` et `children_number` à des chaînes de caractères vides.
+ * `dislike`, `parent`, `children_number` et `current_user_reacted` à des chaînes de caractères vides.
  * Elle retourne l'objet lui-même après l'initialisation.
  *
  * @return {Object} L'objet initialisé avec des valeurs par défaut.
@@ -44,7 +42,7 @@ class PostComment {
  *
  * Cette fonction utilise `Object.defineProperties` pour définir les propriétés
  * `uid`, `post_id`, `user_uid`, `user_name`, `content`, `created`, `like`, 
- * `dislike`, `parent` et `children_number` de l'objet. Chaque propriété a un getter qui 
+ * `dislike`, `parent`, `children_number` et `current_user_reacted` de l'objet. Chaque propriété a un getter qui 
  * retourne la valeur initiale passée en paramètre, et un setter qui permet 
  * de mettre à jour cette valeur.
  *
@@ -78,17 +76,23 @@ class PostComment {
     }
   
   /**
- * Enregistre ou met à jour une réaction (like ou dislike) sur un commentaire.
- *
- * Cette fonction envoie une requête au serveur pour enregistrer ou modifier une réaction 
- * de l'utilisateur sur un commentaire. Si la réaction est annulée, une nouvelle requête 
- * est envoyée pour enregistrer la nouvelle réaction. L'interface utilisateur est mise à jour 
- * en conséquence pour refléter le changement de réaction.
- *
- * @param {string} type - Le type de réaction ('like' ou 'dislike').
- * @param {string} uid - L'identifiant unique du commentaire.
- * @returns {Object} response - La réponse du serveur, incluant le statut et le message.
- */
+  * Enregistre ou met à jour une réaction (like ou dislike) sur un commentaire, et met à jour l'interface utilisateur.
+  *
+  * Cette fonction gère l'ajout ou la modification d'une réaction de l'utilisateur sur un commentaire.
+  * Si une réaction (like ou dislike) est déjà présente, elle peut être annulée ou remplacée par une nouvelle réaction.
+  * L'interface utilisateur est automatiquement mise à jour pour refléter le changement.
+  *
+  * Comportement :
+  * - Envoie une requête au serveur pour enregistrer la réaction de l'utilisateur.
+  * - Si l'utilisateur annule une réaction, la mise à jour visuelle correspondante est effectuée dans l'interface.
+  * - Si l'utilisateur change de réaction (like vers dislike ou vice-versa), l'interface met à jour les compteurs.
+  * - Les messages de confirmation ou d'erreur sont affichés en fonction de la réponse du serveur.
+  *
+  * @param {string} type - Le type de réaction, soit 'like' soit 'dislike'.
+  * @param {string} uid - L'identifiant unique du commentaire sur lequel la réaction est appliquée.
+  * @returns {Promise<Object>} Une promesse contenant la réponse du serveur, y compris le statut et le message.
+  * @throws {Error} En cas d'échec lors de l'envoi de la requête ou de la mise à jour de la réaction.
+  */
   async saveLikeOrDislike(type, uid) {
     try {
         // Fonction pour envoyer la requête
@@ -187,19 +191,26 @@ class PostComment {
         rcmail.display_message('Une erreur est survenue lors de l\'enregistrement de votre réaction.', 'error');
         console.error("Erreur lors de l'enregistrement du like/dislike:", error);
     }
-}
+  }
 
-
-/**
- * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
- *
- * Cette fonction affiche ou masque les réponses d'un commentaire en fonction de leur état actuel,
- * en ajoutant ou supprimant la classe CSS 'hidden'. L'icône de basculement est également mise à jour
- * pour indiquer visuellement l'état (affiché ou masqué) des réponses.
- *
- * @param {string} id - L'identifiant unique du commentaire pour lequel les réponses doivent être basculées.
- * @returns {Promise<void>} Une promesse résolue une fois l'opération terminée.
- */
+  /**
+  * Bascule l'affichage des réponses d'un commentaire et met à jour l'icône de basculement.
+  *
+  * Cette fonction gère l'affichage des réponses d'un commentaire en les affichant ou en les masquant 
+  * selon leur état actuel. Elle met à jour l'icône associée pour indiquer visuellement si les réponses 
+  * sont visibles ou masquées. Si les réponses ne sont pas encore chargées, elles sont récupérées et 
+  * affichées dynamiquement.
+  *
+  * Comportement :
+  * - Si les réponses sont masquées, elles sont chargées puis affichées, et l'icône est changée pour "arrow_drop_up".
+  * - Si les réponses sont visibles, elles sont masquées et l'icône est changée pour "arrow_drop_down".
+  * - Le title de la div de basculement est mis à jour pour indiquer l'action associée (voir/masquer les réponses).
+  * - Les réponses ne sont chargées qu'une seule fois pour éviter les doublons.
+  *
+  * @param {string} id - L'identifiant unique du commentaire pour lequel les réponses doivent être basculées.
+  * @returns {Promise<void>} Une promesse résolue une fois que l'opération de basculement est effectuée.
+  * @throws {Error} En cas d'échec lors du chargement ou de l'affichage des réponses.
+  */
   async toggleResponses(id) {
     try {
       let responseContainer = $('#responses-' + id);
@@ -250,19 +261,19 @@ class PostComment {
   }
 
   /**
-   * Bascule l'affichage du formulaire de réponse et gère l'état des autres formulaires de réponse.
-   *
-   * @param {string|number} uid - L'identifiant unique utilisé pour cibler le formulaire de réponse à afficher/masquer.
-   * @param {string|number} [parentId] - L'identifiant du commentaire parent auquel la réponse sera associée. 
-   *                                      Si non fourni, utilise l'ID du commentaire actuel.
-   *
-   * Cette fonction effectue les opérations suivantes :
-   * - Masque tous les autres formulaires de réponse (en ajoutant la classe 'hidden').
-   * - Affiche ou masque le formulaire de réponse spécifié.
-   * - Stocke l'ID du parent pour l'utiliser lors de l'envoi de la réponse.
-   * - Réinitialise le contenu et les dimensions du textarea lorsque le formulaire devient visible.
-   * - Met le focus sur le textarea lorsque le formulaire est affiché.
-   */
+  * Bascule l'affichage du formulaire de réponse et gère l'état des autres formulaires de réponse.
+  *
+  * Cette fonction masque tous les autres formulaires de réponse et affiche ou masque celui spécifié par `uid`. 
+  * Lorsqu'un formulaire de réponse est affiché, elle réinitialise le contenu du textarea et met le focus dessus.
+  * L'identifiant du commentaire parent est également stocké pour être utilisé lors de l'envoi de la réponse.
+  *
+  * @param {string|number} uid - L'identifiant unique utilisé pour cibler le formulaire de réponse à afficher/masquer.
+  * @param {string|number} [parentId] - L'ID du commentaire parent auquel la réponse sera associée. 
+  *                                      Si non fourni, utilise l'ID du commentaire actuel.
+  * 
+  * @async
+  * @returns {Promise<void>} - Aucune valeur de retour spécifique.
+  */
   async toggleReplyForm(uid, parentId) {
     let form = $('#reply-form-' + uid);
     let isVisible = !form.hasClass('hidden');
@@ -289,24 +300,22 @@ class PostComment {
   }
 
   /**
-   * Enregistre une réponse à un commentaire et met à jour l'interface utilisateur en conséquence.
-   *
-   * @async
-   * @returns {Promise<void>} - Une promesse qui se résout lorsque la réponse est enregistrée et l'interface mise à jour.
-   *
-   * Cette fonction récupère le contenu de la réponse à partir d'une zone de texte spécifique, vérifie que le contenu n'est pas vide,
-   * puis envoie une requête pour enregistrer la réponse. Si l'enregistrement est réussi :
-   * - Affiche un message de confirmation.
-   * - Vide la zone de texte.
-   * - Cache le formulaire de réponse.
-   * - Affiche le nouveau commentaire dans l'interface utilisateur.
-   * 
-   * En cas d'échec ou d'erreur lors de l'enregistrement :
-   * - Affiche un message d'erreur.
-   * - Enregistre l'erreur dans la console.
-   * 
-   * @throws {Error} Si une erreur survient lors de l'envoi de la requête ou de l'enregistrement de la réponse.
-   */
+  * Enregistre une réponse à un commentaire et met à jour l'interface utilisateur en conséquence.
+  *
+  * Cette fonction récupère le contenu de la réponse à partir d'une zone de texte, vérifie qu'il n'est pas vide, 
+  * puis envoie une requête pour enregistrer la réponse. En cas de succès :
+  * - Affiche un message de confirmation.
+  * - Vide la zone de texte et cache le formulaire de réponse.
+  * - Affiche la nouvelle réponse dans l'interface utilisateur et met à jour le nombre de réponses.
+  *
+  * En cas d'échec :
+  * - Affiche un message d'erreur et consigne l'erreur dans la console.
+  *
+  * @async
+  * @function saveReply
+  * @returns {Promise<void>} - Une promesse qui se résout une fois la réponse enregistrée et l'interface mise à jour.
+  * @throws {Error} Si une erreur survient lors de l'envoi de la requête ou de l'enregistrement de la réponse.
+  */
   async saveReply() {
     debugger;
     const $textarea = $('#new-response-textarea-' + this.uid);
@@ -316,6 +325,8 @@ class PostComment {
     if (replyContent && replyContent.trim() !== '') {     // Vérifier si le commentaire n'est pas vide
         
         submitButton.prop('disabled', true);// Désactiver le bouton de validation pour éviter les clics multiples
+
+        BnumMessage.SetBusyLoading();
 
         try {
             const response = await mel_metapage.Functions.post(
@@ -357,6 +368,9 @@ class PostComment {
             rcmail.display_message("Une erreur est survenue lors de la sauvegarde de la réponse.", 'error');
             console.error("Erreur lors de la sauvegarde de la réponse:", error);
         } finally {
+
+            BnumMessage.StopBusyLoading();
+
             // Réactiver le bouton de validation une fois la requête terminée
             submitButton.prop('disabled', false);
         }
@@ -365,18 +379,19 @@ class PostComment {
     }
   }
 
-
   /**
-   * Bascule l'affichage d'un conteneur de sélection et applique des actions spécifiques lorsque le conteneur devient visible.
-   * @param {string|number} uid - L'identifiant unique utilisé pour cibler le conteneur de sélection associé.
-   *
-   * Le conteneur ciblé est supposé avoir un identifiant au format `#select-container-{uid}`.
-   * 
-   * - Si le conteneur est trouvé, la classe 'hidden' est ajoutée ou retirée pour basculer son affichage.
-   * - Si le conteneur devient visible, le premier élément `<select>` qu'il contient reçoit le focus et une taille est forcée 
-   *   pour afficher toutes les options dans certains navigateurs.
-   * - Si le conteneur n'est pas trouvé, un message d'erreur est affiché dans la console.
-   */
+  * Bascule l'affichage d'un menu contextuel et applique des actions spécifiques lorsque le menu devient visible.
+  *
+  * Cette fonction permet d'afficher ou de masquer un conteneur de menu contextuel identifié par `uid`. 
+  * Lorsque le menu est visible, elle ajoute un écouteur d'événements pour détecter les clics extérieurs et fermer 
+  * le menu en conséquence. Elle gère également les événements liés aux options du menu.
+  *
+  * @param {string|number} uid - L'identifiant unique utilisé pour cibler le conteneur de menu.
+  *
+  * - Le conteneur ciblé est supposé avoir un identifiant au format `#context-menu-{uid}`.
+  * - Si le conteneur devient visible, les clics en dehors du menu le referment automatiquement.
+  * - Les événements sur les boutons du menu sont gérés pour fermer le menu après une sélection.
+  */
   toggleMenu(uid) {
     let selectContainer = $('#context-menu-' + uid);
     let triggerButton = $('#trigger-' + uid);  // Bouton more_horiz
@@ -470,8 +485,10 @@ class PostComment {
     const $textarea = $('#edit-comment-textarea-' + uid);
     const updatedContent = $textarea.val(); // Récupère le nouveau contenu du commentaire
     if (updatedContent && updatedContent.trim() !== '') {
+
+      BnumMessage.SetBusyLoading();
+
       try {
-        debugger;
         let response = await mel_metapage.Functions.post(
           mel_metapage.Functions.url('forum', 'update_comment'),
           {
@@ -492,10 +509,17 @@ class PostComment {
         } else {
           rcmail.display_message(response.message, 'error');
         }
+
       } catch (error) {
         rcmail.display_message("Une erreur est survenue lors de la mise à jour du commentaire.", 'error');
         console.error("Erreur lors de la mise à jour du commentaire:", error);
+
+      } finally {
+        
+        BnumMessage.StopBusyLoading();
+
       }
+
     } else {
       rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
     }
@@ -519,6 +543,8 @@ class PostComment {
     
     if (!confirmation) return;
 
+    BnumMessage.SetBusyLoading();
+
     try {
       let response = await mel_metapage.Functions.post(
         mel_metapage.Functions.url('forum', 'delete_comment'), // API de suppression
@@ -539,22 +565,26 @@ class PostComment {
     } catch (error) {
       rcmail.display_message("Une erreur est survenue lors de la suppression du commentaire.", 'error');
       console.error("Erreur lors de la suppression du commentaire:", error);
+    } finally {
+      
+      BnumMessage.StopBusyLoading();
     }
   }
 
   /**
-   * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
-   *
-   * Cette fonction construit dynamiquement le HTML d'un commentaire, en incluant les informations
-   * sur l'auteur, le contenu, la date de création, ainsi que les boutons de réaction (like, dislike, répondre).
-   * Le HTML est adapté en fonction des données du commentaire, comme le nombre de likes, dislikes, et réponses.
-   *
-   * - Les classes CSS sont déterminées pour indiquer si l'utilisateur a déjà réagi (like/dislike).
-   * - Le texte des réponses est ajusté pour être au singulier ou au pluriel en fonction du nombre de réponses.
-   * - Si le commentaire a des réponses, un élément pour afficher ou masquer les réponses est ajouté.
-   *
-   * @returns {Object} Un objet HTML généré, prêt à être inséré dans le DOM.
-   */
+  * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
+  *
+  * Cette fonction crée dynamiquement le HTML pour un commentaire, en intégrant des informations 
+  * comme l'auteur, le contenu, la date de création, ainsi que les boutons d'interaction (like, dislike, répondre). 
+  * Elle adapte le HTML en fonction des données spécifiques du commentaire, notamment le nombre de likes, dislikes, 
+  * et réponses.
+  *
+  * - Les classes CSS sont ajustées en fonction de la réaction de l'utilisateur (like/dislike).
+  * - Le texte des réponses est singularisé ou pluralisé selon leur nombre.
+  * - Un élément interactif pour afficher ou masquer les réponses est ajouté si le commentaire en contient.
+  *
+  * @returns {Object} - Un objet HTML généré, prêt à être inséré dans le DOM.
+  */
   generateHtmlFromTemplate() {
     let likeClass = this.current_user_reacted === 'like' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
     let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
@@ -714,13 +744,15 @@ class PostCommentView {
   }
 
   /**
- * Initialise l'objet avec l'identifiant du post.
- *
- * Cette fonction affecte la valeur de `post_uid` à la propriété `post_uid` de l'objet.
- * Elle retourne ensuite l'objet lui-même après l'initialisation.
- *
- * @returns {Object} - L'objet initialisé avec la valeur de `post_uid`.
- */
+   * Initialise l'objet avec des valeurs par défaut pour les propriétés `post_uid`, `post_id`, 
+   * `sort_order` et `parent_comment_id`.
+   *
+   * Cette fonction réinitialise les propriétés de l'objet avec des valeurs par défaut : 
+   * une chaîne vide pour `post_uid` et `post_id`, un tri par date ascendante pour `sort_order`, 
+   * et `null` pour `parent_comment_id`. Elle retourne l'objet lui-même après initialisation.
+   *
+   * @returns {Object} - L'objet initialisé avec les valeurs par défaut.
+   */
   _init() {
     this.post_uid = '';
     this.post_id = '';
@@ -728,30 +760,43 @@ class PostCommentView {
     this.parent_comment_id = null;
 
     return this;
-
   }
 
   /**
- * Configure les propriétés `post_uid` et `post_id` de l'objet avec les valeurs spécifiées.
- *
- * Cette fonction utilise `Object.defineProperties` pour définir les propriétés
- * `post_uid` `post_id` de l'objet. Les propriétés ont un getter qui retourne la valeur passée 
- * en paramètre, et un setter qui permet de mettre à jour ces valeurs.
- *
- * @param {string} post_uid - L'uid du post à configurer.
- * @param {string} post_id - L'identifiant du post à configurer.
- */
+  * Configure les propriétés `post_uid`, `post_id`, `sort_order` et `parent_comment_id` de l'objet.
+  *
+  * Cette fonction initialise les propriétés de l'objet en définissant l'UID du post,
+  * l'identifiant du post, l'ordre de tri des commentaires, ainsi que l'ID du commentaire parent
+  * si fourni. Ces propriétés peuvent ensuite être utilisées dans d'autres méthodes.
+  *
+  * @param {string} post_uid - L'UID du post à configurer.
+  * @param {string} post_id - L'identifiant du post à configurer.
+  * @param {string} sort_order - L'ordre de tri à appliquer aux commentaires.
+  * @param {string} [parent_comment_id] - L'ID du commentaire parent, si applicable.
+  */
   _setup(post_uid, post_id, sort_order, parent_comment_id) {
     
           this.post_uid = post_uid;
           this.post_id = post_id;
           this.sort_order = sort_order;
           this.parent_comment_id = parent_comment_id;
-        }
+  }
 
-
+  /**
+  * Récupère le commentaire associé à un post spécifique.
+  *
+  * Cette fonction envoie une requête asynchrone pour récupérer le commentaire 
+  * d'un post donné, en tenant compte de l'ordre de tri et éventuellement d'un 
+  * commentaire parent si fourni. Les données de réponse sont analysées et renvoyées.
+  *
+  * @async
+  * @function getCommentByPost
+  * @returns {Promise<Object>} - Les données du commentaire du post, après analyse de la réponse.
+  */
   async getCommentByPost() {
-    // BnumMessage.SetBusyLoading();
+
+    BnumMessage.SetBusyLoading();
+
     let return_data;
 
     // Préparer les données à envoyer
@@ -765,16 +810,22 @@ class PostCommentView {
       postData._comment_id = this.parent_comment_id;  // Envoi de l'ID du commentaire parent si disponible
     }
 
-    // Effectuer la requête avec les données préparées
-    await mel_metapage.Functions.post(
-      mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
-      postData,  // Les données incluent l'ID du parent si fourni
-      (datas) => {
-        return_data = JSON.parse(datas);
+    try {
+      // Effectuer la requête avec les données préparées
+      const datas = await mel_metapage.Functions.post(
+          mel_metapage.Functions.url('forum', 'get_all_comments_bypost'),
+          postData  // Les données incluent l'ID du parent si fourni
+      );
 
-        // BnumMessage.SetBusyLoading();
-      }
-    );
+      return_data = JSON.parse(datas);
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des commentaires:", error);
+        
+    } finally {
+        
+        BnumMessage.StopBusyLoading();
+    }
 
     return return_data;
   }

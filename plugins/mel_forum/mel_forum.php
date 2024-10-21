@@ -59,15 +59,6 @@ function init()
         $this->register_action('test_delete_post', array($this, 'test_delete_post'));
         $this->register_action('test_get_post', array($this, 'test_get_post'));
         $this->register_action('test_get_all_posts_byworkspace', array($this, 'test_get_all_posts_byworkspace'));
-        $this->register_action('test_create_comment', array($this, 'test_create_comment'));
-        $this->register_action('test_reply_comment', array($this, 'test_reply_comment'));
-        $this->register_action('test_update_comment', array($this, 'test_update_comment'));
-        $this->register_action('test_delete_comment', array($this, 'test_delete_comment'));
-        $this->register_action('test_like_comment', array($this, 'test_like_comment'));
-        $this->register_action('test_get_all_comments_bypost', array($this, 'test_get_all_comments_bypost'));
-        $this->register_action('test_count_comments', array($this, 'test_count_comments'));
-        $this->register_action('test_delete_like', array($this, 'test_delete_like'));
-        $this->register_action('test_count_likes', array($this, 'test_count_likes'));
         $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
         $this->register_action('test_delete_reaction', array($this, 'test_delete_reaction'));
         $this->register_action('test_get_all_reactions_bypost', array($this, 'test_get_all_reactions_bypost'));
@@ -1031,7 +1022,6 @@ public function create_comment()
     exit;
 }
 
-
 /**
  * Répond à un commentaire ou à une réponse à un commentaire.
  *
@@ -1325,92 +1315,20 @@ public function like_comment()
 }
 
 
-
-// public function get_all_comments_bypost()
-// {
-//     // Récupérer l'uid de l'article
-//     $uid = rcube_utils::get_input_value('_post_uid', rcube_utils::INPUT_GPC);
-
-//     // Récupérer le paramètre de tri des commentaires
-//     $sort_order = rcube_utils::get_input_value('_sort_order', rcube_utils::INPUT_GPC, true);
-
-//     // Initialisation des variables de tri
-//     $orderby = 'created';
-//     $asc = false; // Par défaut, tri descendant
-
-//     // Définir l'ordre et le tri en fonction du paramètre choisi
-//     if ($sort_order === 'date_asc') {
-//         $orderby = 'created';
-//         $asc = true; // Tri ascendant
-//     } elseif ($sort_order === 'reactions') {
-//         $orderby = 'likes'; // Tri par nombre de réactions
-//     } elseif ($sort_order === 'replies') {
-//         $orderby = 'children'; // Tri par nombre de réponses
-//     }
-
-//     $post = new LibMelanie\Api\Defaut\Posts\Post();
-//     $post->uid = $uid;
-
-//     $comments_array = [];
-
-//     if ($post->load()) {
-//         // Passer les paramètres de tri à listComments()
-//         $comments = $post->listComments(true, null, $orderby, $asc);
-
-//         if (!empty($comments)) {
-//             foreach ($comments as $comment) {
-//                 // Récupérer l'utilisateur associé au commentaire
-//                 $user = driver_mel::gi()->getUser($comment->user_uid);
-
-//                 // S'il y a un utilisateur et un nom, utiliser le nom ; sinon utiliser une valeur par défaut
-//                 $user_name = ($user !== null && !empty($user->name)) ? $user->name : '? ?';
-
-//                 // Définir la locale en français pour le formatage de la date
-//                 $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
-//                 // Convertir la date du commentaire en timestamp Unix
-//                 $timestamp = strtotime($comment->created);
-
-//                 // Formater la date
-//                 $formatted_date = $formatter->format($timestamp);
-
-//                 $count = ['like' => 0, 'dislike' => 0];
-
-//                 // Test si l'utilisateur courant a réagi au commentaire
-//                 $comment_reactions = $comment->listLikes();
-//                 $current_user_reacted = '';
-//                 foreach ($comment_reactions as $reaction) {
-//                     if ($reaction->user_uid === driver_mel::gi()->getUser()->uid) {
-//                         $current_user_reacted = $reaction->like_type;
-//                     }
-
-//                     $count[$reaction->like_type]++;
-//                 }
-
-//                 // Ajouter le commentaire au tableau des commentaires
-//                 $comments_array[$comment->uid] = [
-//                     'id' => $comment->id,
-//                     'uid' => $comment->uid,
-//                     'post_id' => $comment->post_id,
-//                     'user_id' => $comment->user_uid,
-//                     'user_name' => $user_name, // Utiliser le nom ou la valeur par défaut
-//                     'content' => $comment->content,
-//                     'created' => $formatted_date,
-//                     'parent' => $comment->parent,
-//                     'children_number' => $comment->countChildren(),
-//                     'likes' => $count['like'],
-//                     'dislikes' => $count['dislike'],
-//                     'current_user_reacted' => $current_user_reacted,
-//                 ];
-//             }
-//         }
-
-//         // Retourner le tableau des commentaires
-//         echo json_encode($comments_array);
-//     }
-//     exit;
-// }
-
+/**
+ * Récupère tous les commentaires associés à un article spécifique ou les réponses d'un commentaire.
+ *
+ * Cette méthode récupère les paramètres d'entrée pour l'UID de l'article, l'ordre de tri des commentaires,
+ * et l'ID d'un commentaire spécifique si les réponses sont requises. Elle instancie l'objet `Post` pour 
+ * charger les commentaires associés. Les commentaires sont triés selon le paramètre spécifié et retournés 
+ * au format JSON.
+ *
+ * Les commentaires sont également enrichis d'informations sur l'utilisateur, le formatage de la date, 
+ * ainsi que le nombre de réactions (likes et dislikes) et les interactions de l'utilisateur courant.
+ *
+ * @return void Affiche un tableau JSON contenant les commentaires associés à l'article, 
+ *               ou les réponses à un commentaire spécifique, et termine le script.
+ */
 public function get_all_comments_bypost()
 {
     // Récupérer l'uid de l'article
@@ -1509,7 +1427,6 @@ public function get_all_comments_bypost()
     }
     exit;
 }
-
 
 /**
  * Compte le nombre de commentaires pour un article donné.
@@ -1852,7 +1769,6 @@ public function get_images($post_id) {
         return []; // Retourner un tableau vide si aucune image n'est trouvée
     }
 }
-
 
 /**
  * Affiche une liste de publications avec leurs détails formatés en HTML.
@@ -2408,339 +2324,6 @@ public function test_unassociate_tag_from_post()
         // Arrêt de l'exécution du script
     exit;
     }
-}
-
-public function test_create_comment()
-{
-    // Récupérer l'utilisateur
-    $user = 'damien.test1';
-
-    $content = 'Commentaire test à supprimer';
-
-    // Validation des données saisies
-    if (empty($user) || empty($content)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
-
-    // Créer un nouveau commentaire
-    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
-    $comment->content = $content;
-    $comment->uid = $this->generateRandomString(24);
-    $comment->created = date('Y-m-d H:i:s');
-    $comment->modified = date('Y-m-d H:i:s');
-    $comment->creator = $user;
-    $comment->post = '56';
-
-    // Sauvegarde du commentaire
-    $ret = $comment->save();
-    if (!is_null($ret)) {
-
-        header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Commentaire créé avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création du commentaire.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
-
-public function test_reply_comment()
-{
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
-    $content = 'Je suis comme vous, j\'adore ce roman.';
-
-    // Validation des données saisies
-    if (empty($user->uid) || empty($content)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
-
-    // Créer un nouveau commentaire
-    $reply = new LibMelanie\Api\Defaut\Posts\Comment();
-    $reply->content = $content;
-    $reply->uid = $this->generateRandomString(24);
-    $reply->created = date('Y-m-d H:i:s');
-    $reply->modified = date('Y-m-d H:i:s');
-    $reply->creator = $user->uid;
-    $reply->post = '6';
-    $reply->parent = '10';
-
-    // Sauvegarde du commentaire
-    $ret = $reply->save();
-    if (!is_null($ret)) {
-
-        header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Réponse créée avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création de la réponse.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
-
-public function test_update_comment()
-{
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
-    // Récupérer les valeurs des champs POST
-    $uid ='P4Akl07laJ7he6ewafyKEqPD';
-    $content = 'Ce roman est génial, je ne me lasse pas de le lire et de le relire ! Modification OK';
-
-    // Récupérer le commentaire existant
-    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
-    $comment->uid = $uid;
-    if (!$comment->load()) {
-
-        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
-        exit;
-    }
-
-    // Vérifier si le commentaire existe
-    if (!$comment) {
-        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
-        exit;
-    }
-
-    // Définir les nouvelles données
-    $comment->content = $content;
-    $comment->modified = date('Y-m-d H:i:s');
-
-    // Sauvegarde du commentaire
-    $ret = $comment->save();
-    if (!is_null($ret)) {
-        echo json_encode(['status' => 'success', 'message' => 'Commentaire mis à jour avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour du commentaire.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-
-}
-
-public function test_delete_comment()
-{
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
-    // Récupérer la valeur du champ POST
-    $uid = 'OkusCpTW36IOcDlzudEQosCR';
-
-    // Validation de la donnée saisie
-    if (empty($uid)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'uid du commentaire est requis.']);
-        exit;
-    }
-
-    // Récupérer le tag existant
-    $comment = new LibMelanie\Api\Defaut\Posts\Comment();
-    $comment->uid = $uid;
-
-    // Vérifier si le commentaire existe
-    if (!$comment->load()) {
-        echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
-        exit;
-    }
-
-    // Supprimer le commentaire
-    $ret = $comment->delete();
-    if (!is_null($ret)) {
-        echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit; 
-}
-
-public function test_like_comment()
-{
-    // Récupérer l'utilisateur
-    $user = driver_mel::gi()->getUser();
-
-    // Récupérer les valeurs
-    $creator = 'DamienTest4';
-    $type = 'like';
-    $comment_id = '10';
-
-    // Validation des données saisies
-    if (empty($creator) || empty($type) || empty($comment_id)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
-
-    // Vérifier si le créateur du like est le même que le créateur du commentaire
-    if ($creator === $user->uid) {
-        echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas liker votre propre commentaire.']);
-        exit;
-    }
-
-    // Vérifier si le like existe déjà
-    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
-    $like->comment = $comment_id;
-    $like->creator = $creator;
-    $like->type = $type;
-
-    if ($like->load()) {
-        echo json_encode(['status' => 'error', 'message' => 'Vous avez déjà liké ce commentaire.']);
-        exit;
-    }
-
-    // Création d'un Like
-    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
-    $like->comment = $comment_id;
-    $like->creator = $creator;
-    $like->type = $type;
-
-    // Sauvegarde du Like
-    $ret = $like->save();
-    if (!is_null($ret)) {
-
-        header('Content-Type: application/json');
-
-        echo json_encode(['status' => 'success', 'message' => 'Like créé avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de création du Like.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-
-}
-
-public function test_get_all_comments_bypost()
-{
-    // Définir la valeur uid d'un post
-    $uid = 'ndWtChyQ4IwabbWjWwlM7Qo9';
-
-    $post = new LibMelanie\Api\Defaut\Posts\Post();
-    $post->uid = $uid;
-
-    if ($post->load()) {
-    $comments = $post->listComments();
-
-    if (!empty($comments)) {
-        header('Content-Type: application/json');
-        // Préparer les données des réactions pour la réponse JSON
-        $comments_array = [];
-        foreach ($comments as $comment) {
-            $comments_array[] = [
-                'content' => $comment->content,
-                'uid' => $comment->uid,
-                'date de création' => $comment->created,
-            ];
-        }
-        echo json_encode([
-            'status' => 'success',
-            'reactions' => $comments_array
-        ]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Aucun commentaire trouvé.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-    }
-}
-
-public function test_count_comments()
-{
-    // Récupérer la valeur du champ POST
-    $uid = 'ndWtChyQ4IwabbWjWwlM7Qo9';
-
-    // Validation de la donnée saisie
-    if (empty($uid)) {
-        echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
-        exit;
-    }
-
-    // Récupérer l'article existant
-    $post = new LibMelanie\Api\Defaut\Posts\Post();
-    $post->uid = $uid;
-
-    // Vérifier si l'article existe
-    if (!$post->load()) {
-        echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
-        exit;
-    }
-
-    // Obtenir le nombre de commentaires
-    $commentCount = $post->countComments();
-
-    // Vérifier si la méthode retourne un résultat valide
-    if ($commentCount !== false) {
-        echo json_encode(['status' => 'success', 'message' => "Nombre de commentaires : $commentCount"]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Impossible de récupérer le nombre de commentaires.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit;
-}
-
-public function test_delete_like()
-{
-    // Récupérer les valeurs
-    $creator = 'damien.cotton.i';
-    $type = 'remove_dislike';
-    $comment_id = '1';
-    
-    // Validation des données saisies
-    if (empty($creator) || empty($type) || empty($comment_id)) {
-        echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-        exit;
-    }
-
-    // Récupérer le like existant
-    $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
-    $like->comment = $comment_id;
-    $like->creator = $creator;
-    $like->type = $type;
-
-    // Supprimer le Like
-    $ret = $like->delete();
-    if (!is_null($ret)) {
-        echo json_encode(['status' => 'success', 'message' => 'Le like a été supprimé avec succès.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du like.']);
-    }
-
-    // Arrêt de l'exécution du script
-    exit; 
-}
-
-public function test_count_likes()
-{
-    $uid = 'iDaeXxkems6Ize9DH8TrZMDh';
-
-    // Récupérer l'article existant par son ID
-    $post = new LibMelanie\Api\Defaut\Posts\Post();
-    $post->uid = $uid;
-
-    // Récupérer les commentaires de l'article
-    $comments = $post->get_all_comments_bypost(); // Méthode qui récupère les commentaires liés à l'article
-
-    $totalLikes = 0;
-
-    // Compter les likes pour chaque commentaire
-    foreach ($comments as $comment) {
-        $totalLikes += $comment->getList(); // Méthode getList() pour compter ses likes
-    }
-
-    // Retourner ou afficher le nombre total de likes pour l'article
-    echo json_encode(['status' => 'success', 'likes' => $totalLikes]);
-
-    // Arrêt de l'exécution du script
-    exit;
 }
 
 public function test_create_reaction()

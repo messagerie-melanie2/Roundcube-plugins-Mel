@@ -14,7 +14,7 @@ export class WorkspaceObject extends MelObject {
     super.main();
   }
 
-  load() {
+  loadModule() {
     this.main.loaded = true;
   }
 

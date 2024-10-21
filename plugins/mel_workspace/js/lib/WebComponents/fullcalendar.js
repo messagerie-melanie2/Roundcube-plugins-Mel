@@ -22,6 +22,9 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.oneventrender = new BnumEvent();
     this.onresourcerender = new BnumEvent();
     this.ondatechanged = new BnumEvent();
+    this.onallloaded = new BnumEvent();
+
+    this._loaded = [];
 
     // this.onsourcerequested.push(async (args) => {
     //   const event = new SourceEvent(args);
@@ -93,13 +96,17 @@ export class FullCalendarElement extends HtmlCustomDataTag {
   }
 
   get firstHour() {
-    return this._p_get_data('first-hour');
+    const tmp = +this._p_get_data('first-hour');
+
+    return isNaN(tmp) ? null : tmp;
   }
 
   get scrollTime() {
     return (
       this._p_get_data('scroll-time') ||
-      (!isNullOrUndefined(this.firstHour) ? `${this.firstHour}:00` : null)
+      (!isNullOrUndefined(this.firstHour)
+        ? `${this.firstHour < 10 ? `0${this.firstHour}` : this.firstHour}:00`
+        : null)
     );
   }
 
@@ -167,7 +174,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
 
     if (this.scrollTime) config.scrollTime = this.scrollTime;
 
-    if (this.slotDuration) config.slotDuration = this.slotDuration.get();
+    if (this.slotDuration) config.slotLabelInterval = this.slotDuration.get();
 
     if (this.locale) config.locale = this.locale;
 
@@ -179,24 +186,50 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       config.eventSources = [];
       for (const source of this.eventsSource) {
         config.eventSources.push({
-          events: async function (id, start, end, timezone, callback) {
-            let events = [];
-            const array = await this.onsourcerequested.asyncCall({
-              caller: this,
-              id,
-              start,
-              end,
-              timezone,
-            });
+          events: async function (
+            id,
+            getCallback,
+            start,
+            end,
+            timezone,
+            callback,
+          ) {
+            try {
+              let events = [];
 
-            if (array) {
-              let flat = MelEnumerable.from([array]).flat();
+              const array = await getCallback({
+                caller: this,
+                id,
+                start,
+                end,
+                timezone,
+              });
 
-              if (flat.any()) events.push(...flat);
+              if (array) {
+                let flat = MelEnumerable.from([array]).flat();
+
+                if (flat.any()) events.push(...flat);
+              }
+              console.log(id, events);
+              callback(events);
+
+              this._loaded.push(true);
+
+              if (this._loaded.length >= this.eventsSource.length) {
+                this.onallloaded.call({
+                  caller: this,
+                });
+
+                this._loaded.length = 0;
+              }
+            } catch (error) {
+              debugger;
             }
-
-            callback(events);
-          }.bind(this, source),
+          }.bind(
+            this,
+            source,
+            this.onsourcerequested.call.bind(this.onsourcerequested),
+          ),
           id: source,
         });
       }
@@ -346,7 +379,7 @@ class SlotDuration {
     }
 
     let config = {};
-    config[type] = this.#time;
+    config[type] = +this.#time;
 
     return config;
   }

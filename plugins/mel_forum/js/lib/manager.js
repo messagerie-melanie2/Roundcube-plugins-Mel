@@ -5,6 +5,10 @@ import { PostComment, PostCommentView } from './comments.js';
 export class Manager extends MelObject {
   constructor() {
     super();
+    this.post_uid = rcmail.env.post_uid;  // Initialisation de `post_uid` depuis l'environnement
+    this.post_id = rcmail.env.post_id;    // Initialisation de `post_id` depuis l'environnement
+    this.sort_order = 'date_asc';         // Valeur par défaut ou à définir dynamiquement
+    this.parent_comment_id = null;        // Parent comment ID (optionnel)
   }
 
   main() {
@@ -40,8 +44,93 @@ export class Manager extends MelObject {
     $('#return-homepage').click(() => {
       window.location.href = this.url('forum', { action: 'index' });
     });
-}
 
+    // Fonction de redimensionnement automatique du textarea
+    $(document).on('input', '.forum-comment-input', function () {
+      this.style.height = 'auto'; // Réinitialise la hauteur
+      this.style.height = (this.scrollHeight) + 'px'; // Ajuste la hauteur
+    });
+
+    // Configuration de la visibilité des boutons
+    const $textarea = $('#new-comment-textarea');
+    const $buttonsContainer = $('#buttons-container');
+    const $cancelButton = $('#cancel-comment');
+
+    // Initialement masqué
+    $buttonsContainer.addClass('hidden');
+
+    // Afficher les boutons lorsque le textarea reçoit le focus
+    $textarea.on('focus', function() {
+      $buttonsContainer.removeClass('hidden');
+    });
+
+    // Gestion du bouton "Annuler"
+    $cancelButton.on('click', function() {
+      $textarea.val('');  // Réinitialiser le contenu du textarea
+      $textarea.height('auto');  // Revenir à la taille d'origine
+      $buttonsContainer.addClass('hidden');  // Cacher les boutons "Annuler" et "Sauvegarder"
+    });
+
+    // Configuration du bouton "Sauvegarder"
+    const $saveButton = $('#submit-comment');
+    $saveButton.click(() => {
+      const commentContent = $textarea.val();
+      if (commentContent.trim() !== '') {
+        // Appeler la fonction de sauvegarde
+        this.saveComment(commentContent);
+      }
+    });
+  }
+
+  /**
+   * Enregistre un nouveau commentaire et met à jour l'affichage.
+   *
+   * Cette fonction envoie le contenu du commentaire à l'API pour le créer, 
+   * puis réinitialise le champ de texte et affiche le nouveau commentaire en haut 
+   * de la liste en cas de succès. En cas d'erreur, un message d'erreur est affiché.
+   *
+   * @async
+   * @function saveComment
+   * @param {string} content - Le contenu du commentaire à enregistrer.
+   * @returns {void}
+   * @throws {Error} En cas d'échec de l'enregistrement ou d'une erreur réseau.
+   */
+  async saveComment(content) {
+    // Désactiver le bouton de validation pour éviter les clics multiples
+    const submitButton = $('#submit-comment');
+    submitButton.prop('disabled', true);
+    try {
+        var id = rcmail.display_message('loading', 'loading');
+        const response = await mel_metapage.Functions.post(
+            mel_metapage.Functions.url('forum', 'create_comment'),
+            {
+                _post_id: this.post_id,
+                _content: content
+            }
+        );
+        
+        if (response.status === 'success') {
+            rcmail.hide_message(id);
+            rcmail.display_message(response.message, 'confirmation');
+            $('#new-comment-textarea').val('');  // Réinitialiser le textarea
+            
+            // Récupérer les données du nouveau commentaire créé
+            const newComment = response.comment; // On suppose que l'API renvoie le commentaire créé dans `response.comment`
+
+            // Afficher le nouveau commentaire dans l'interface sans recharger la page
+            Manager.displaySingleComment(newComment); 
+        } else {
+            rcmail.hide_message(id);
+            rcmail.display_message(response.message, 'error');
+        }
+    } catch (error) {
+        rcmail.display_message("Une erreur est survenue lors de la sauvegarde du commentaire.", 'error');
+        console.error("Erreur lors de la sauvegarde du commentaire:", error);
+    } finally {
+        // Réactiver le bouton de validation une fois la requête terminée
+        submitButton.prop('disabled', false);
+    }
+  }
 
 // /**
 //    * Affiche les commentaires associés à un post spécifique dans l'interface utilisateur.

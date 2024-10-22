@@ -420,8 +420,16 @@ class BnumHtmlIcon extends HtmlCustomTag {
     this.icon = this.icon;
   }
 
-  static Create() {
-    return document.createElement(BnumHtmlIcon.TAG);
+  static Create({ icon = null } = {}) {
+    let node = document.createElement(BnumHtmlIcon.TAG);
+
+    if (icon) node.setAttribute('data-icon', icon);
+
+    return node;
+  }
+
+  static get CalendarMonth() {
+    return this.Create({ icon: 'calendar_month' });
   }
 }
 

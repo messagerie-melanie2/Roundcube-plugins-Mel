@@ -40,3 +40,38 @@ export class RenderEvent extends ABaseMelEvent {
     this.itemNode = node;
   }
 }
+
+export class ViewRender extends ABaseMelEvent {
+  #view = null;
+  #element = null;
+  constructor(view, element, caller) {
+    super('view.render', caller);
+
+    this.#view = view;
+    this.#element = element;
+  }
+
+  get view() {
+    return this.#view;
+  }
+
+  get viewNode() {
+    return this.#element;
+  }
+
+  get viewTitle() {
+    return this.view.title;
+  }
+
+  get start() {
+    return this.view.start;
+  }
+
+  get end() {
+    return this.view.end;
+  }
+
+  static get EventType() {
+    return 'api:view.render';
+  }
+}

@@ -5,7 +5,7 @@ import {
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
-import { RenderEvent } from './events.js';
+import { RenderEvent, ViewRender } from './events.js';
 
 /**
  * @typedef ResourceConfigObject
@@ -23,6 +23,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.onresourcerender = new BnumEvent();
     this.ondatechanged = new BnumEvent();
     this.onallloaded = new BnumEvent();
+    this.onviewchanged = new BnumEvent();
 
     this._loaded = [];
 
@@ -34,6 +35,10 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.onresourcerender.push((...args) => {
       const [obj, node] = args;
       this.dispatchEvent(new RenderEvent('resource', this, obj, node));
+    });
+
+    this.onviewchanged.push((view, node) => {
+      this.dispatchEvent(new ViewRender(view, node, this));
     });
 
     this.licenseKey = LICENSE_KEY;
@@ -230,6 +235,10 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     }
 
     let calendar = new FullCalendar.Calendar($(this), config);
+
+    calendar.on('viewRender', (...args) => {
+      this.onviewchanged.call(...args);
+    });
 
     if (this.startRendering) calendar.render();
 

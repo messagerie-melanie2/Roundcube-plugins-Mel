@@ -30,6 +30,13 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     return [true, 'true', 1, '1'].includes(this._p_get_data('small'));
   }
 
+  /**
+   * @type {HTMLDivElement}
+   */
+  get header() {
+    return this.querySelector('.module-block-header');
+  }
+
   _p_main() {
     super._p_main();
 

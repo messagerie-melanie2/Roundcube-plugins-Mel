@@ -7,6 +7,7 @@ import {
   DATE_HOUR_FORMAT,
 } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
 import {
+  BnumHtmlIcon,
   EWebComponentMode,
   HtmlCustomDataTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
@@ -17,8 +18,9 @@ import {
   ID_RESOURCES_WSP,
 } from '../Parts/planning_manager.constants.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
-import { RenderEvent } from './events.js';
+import { RenderEvent, ViewRender } from './events.js';
 import { FullCalendarElement } from './fullcalendar.js';
+import { WorkspaceModuleBlock } from './workspace_module_block.js';
 
 export class Planning extends HtmlCustomDataTag {
   /**
@@ -60,6 +62,10 @@ export class Planning extends HtmlCustomDataTag {
     return this.calendarNode.calendar;
   }
 
+  get headerDate() {
+    return this.querySelector('#planning-date');
+  }
+
   get calSettings() {
     return window.cal?.settings || top.cal.settings;
   }
@@ -68,13 +74,37 @@ export class Planning extends HtmlCustomDataTag {
     return 60 / this.calSettings.timeslots;
   }
 
+  /**
+   * @type {WorkspaceModuleBlock}
+   */
+  get parentContainer() {
+    return document.querySelector('#module-agenda');
+  }
+
   _p_main() {
     super._p_main();
 
-    this._generate_calendar();
+    this._generate_date()._generate_calendar();
   }
 
-  _generate_date() {}
+  _generate_date() {
+    let container = document.createElement('div');
+    container.setAttribute('id', 'planning-date-container');
+
+    let icon = BnumHtmlIcon.CalendarMonth;
+    icon.style.marginRight = '5px';
+    let text = document.createElement('span');
+    text.setAttribute('id', 'planning-date');
+
+    container.append(icon, text);
+    this.appendChild(container);
+
+    container = null;
+    icon = null;
+    text = null;
+
+    return this;
+  }
 
   _generate_search() {}
 
@@ -120,7 +150,22 @@ export class Planning extends HtmlCustomDataTag {
       this.#resourceSource.render(e);
     });
 
+    /**
+     *
+     * @param {ViewRender} e
+     */
+    const ef = (e) => {
+      console.log('¤event', e);
+      $('.fc-header-toolbar').css('display', 'none');
+      $(this.headerDate).text(e.viewTitle);
+      console.log('¤event', $(this.headerDate));
+    };
+
+    calendar.addEventListener(ViewRender.EventType, ef.bind(this));
+
     this.appendChild(calendar);
+
+    return this;
   }
 
   async _resource_loading_callback(args) {
@@ -445,7 +490,6 @@ class ResourcesSourceLoader extends SourceLoader {
     } catch (error) {
       debugger;
     }
-    console.log('rcs', resources);
     return resources.toArray();
   }
 

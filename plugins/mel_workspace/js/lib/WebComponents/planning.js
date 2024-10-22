@@ -17,6 +17,7 @@ import {
   ID_RESOURCES_WSP,
 } from '../Parts/planning_manager.constants.js';
 import { WorkspaceObject } from '../WorkspaceObject.js';
+import { RenderEvent } from './events.js';
 import { FullCalendarElement } from './fullcalendar.js';
 
 export class Planning extends HtmlCustomDataTag {
@@ -111,6 +112,14 @@ export class Planning extends HtmlCustomDataTag {
       }
     });
 
+    calendar.addEventListener('api:fc.render.event', (e) => {
+      this.#eventsSource.render(e);
+    });
+
+    calendar.addEventListener('api:fc.render.resource', (e) => {
+      this.#resourceSource.render(e);
+    });
+
     this.appendChild(calendar);
   }
 
@@ -134,11 +143,8 @@ export class Planning extends HtmlCustomDataTag {
     return data;
   }
 
-  _event_source_callback(start, end) {}
-
-  _free_busy_source_callback() {}
-
   _generate_resources() {
+    // debugger;
     return MelEnumerable.from([
       {
         id: ID_RESOURCES_WSP,
@@ -146,15 +152,14 @@ export class Planning extends HtmlCustomDataTag {
       },
     ])
       .aggregate(
-        MelEnumerable.from(rcmail.env.wsp_shares)
+        MelEnumerable.from(this.workspace.users)
           .where(
-            (x) =>
-              rcmail.env.current_workspace_users?.[x]?.is_external === false,
+            (x) => x?.external === false, //rcmail.env.current_workspace_users?.[x]?.is_external === false,
           )
           .select((x) => {
             return {
-              id: x,
-              title: rcmail.env.current_workspace_users?.[x]?.name || x,
+              id: x.email,
+              title: x?.name || x.email,
             };
           }),
       )
@@ -305,6 +310,12 @@ class SourceLoader extends WorkspaceObject {
     if (!this.#_try_load(start, end, { unload: false }))
       await this.get(start, end, { force: true });
   }
+
+  /**
+   *
+   * @param {RenderEvent} e
+   */
+  render(e) {}
 }
 
 class EventSourceLoader extends SourceLoader {
@@ -356,6 +367,40 @@ class EventSourceLoader extends SourceLoader {
 
     return events;
   }
+
+  /**
+   *
+   * @param {RenderEvent} e
+   */
+  render(e) {
+    let $el = e.itemNode;
+    let eventObj = e.itemData;
+
+    if (eventObj.initial_data) {
+      $el
+        .click(this._event_on_click.bind(this, eventObj))
+        .css('cursor', 'pointer')
+        .attr('title', eventObj.initial_data.title);
+      if (WebconfLink.create(eventObj.initial_data)?.key) {
+        $el
+          .tooltip()
+          .find('.fc-content')
+          .prepend(
+            MelHtml.start
+              .icon('videocam')
+              .css({
+                display: 'inline-block',
+                'vertical-align': 'middle',
+                'font-size': '18px',
+              })
+              .end()
+              .generate(),
+          );
+      }
+    } else {
+      $el.attr('title', eventObj.title).tooltip();
+    }
+  }
 }
 
 class ResourcesSourceLoader extends SourceLoader {
@@ -376,9 +421,9 @@ class ResourcesSourceLoader extends SourceLoader {
     });
 
     for await (const iterator of FreeBusyLoader.Instance.generate_and_save(
-      MelEnumerable.from(rcmail.env.wsp_shares).where(
-        (x) => !this.get_env('current_workspace_users')?.[x]?.is_external,
-      ),
+      MelEnumerable.from(this.workspace.users)
+        .where((x) => !x?.external)
+        .select((x) => x.email),
       {
         interval: this.#timeslot,
         start: moment(date).startOf('day'),
@@ -388,9 +433,7 @@ class ResourcesSourceLoader extends SourceLoader {
     )) {
       resources.push({
         id: iterator.email,
-        title:
-          this.get_env('current_workspace_users')?.[iterator.email]?.name ||
-          iterator.email,
+        title: this.workspace.users.get(iterator.email)?.name || iterator.email,
         slot: iterator,
       });
     }
@@ -420,6 +463,24 @@ class ResourcesSourceLoader extends SourceLoader {
           };
         }
       }
+    }
+  }
+
+  /**
+   *
+   * @param {RenderEvent} e
+   */
+  render(e) {
+    let labelTds = e.itemNode;
+    let resourceObj = e.itemData;
+    if (resourceObj.id !== ID_RESOURCES_WSP) {
+      labelTds
+        .attr(
+          'title',
+          this.workspace.users.get(resourceObj.id)?.fullname ||
+            resourceObj.title,
+        )
+        .tooltip();
     }
   }
 }

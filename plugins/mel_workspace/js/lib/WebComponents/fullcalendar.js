@@ -26,12 +26,6 @@ export class FullCalendarElement extends HtmlCustomDataTag {
 
     this._loaded = [];
 
-    // this.onsourcerequested.push(async (args) => {
-    //   const event = new SourceEvent(args);
-    //   this.dispatchEvent(event);
-    //   return event.events;
-    // });
-
     this.oneventrender.push((...args) => {
       const [obj, node] = args;
       this.dispatchEvent(new RenderEvent('event', this, obj, node));

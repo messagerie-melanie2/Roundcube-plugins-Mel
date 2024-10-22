@@ -31,7 +31,8 @@ export class SourceEvent extends ABaseMelEvent {
     return this.#events;
   }
 }
-
+//api:fc.render.event
+//api:fc.render.resource
 export class RenderEvent extends ABaseMelEvent {
   constructor(type, caller, obj, node) {
     super(`fc.render.${type}`, caller);

@@ -1,3 +1,4 @@
+import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
 import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
 import {
   MelObject,
@@ -115,7 +116,82 @@ export class WorkspaceObject extends MelObject {
   }
 }
 
+class WorkspaceUser {
+  #email = null;
+  #name = null;
+  #fullname = null;
+  #external = false;
+
+  constructor(user) {
+    this.#email = user.email;
+    this.#name = user.name;
+    this.#fullname = user.fullname;
+    this.#external = user.is_external;
+  }
+
+  get email() {
+    return this.#email;
+  }
+
+  get name() {
+    return this.#name;
+  }
+
+  get fullname() {
+    return this.#fullname;
+  }
+
+  get external() {
+    return this.#external;
+  }
+}
+
+class WorkspaceUsers {
+  #users = {};
+  /**
+   *
+   * @param  {...WorkspaceUser} users
+   */
+  constructor(...users) {
+    for (const element of users) {
+      this.#users[element.email] = element;
+    }
+  }
+
+  get emails() {
+    return Object.keys(this.#users);
+  }
+
+  toArray() {
+    return [...this];
+  }
+
+  toEnumerable() {
+    return new MelEnumerable(this.generator.bind(this));
+  }
+
+  /**
+   *
+   * @param {*} email
+   * @returns {WorkspaceUser}
+   */
+  get(email) {
+    return this.#users[email];
+  }
+
+  *generator() {
+    for (const key of Object.keys(this.#users)) {
+      yield this.#users[key];
+    }
+  }
+
+  *[Symbol.iterator]() {
+    yield* this.generator();
+  }
+}
+
 class CurrentWorkspaceData {
+  #users = null;
   constructor() {
     if (typeof rcmail.env.current_workspace_services_actives === 'string')
       rcmail.env.current_workspace_services_actives = JSON.parse(
@@ -129,6 +205,20 @@ class CurrentWorkspaceData {
 
   get title() {
     return rcmail.env.current_workspace_title;
+  }
+
+  /**
+   * @type {WorkspaceUsers}
+   */
+  get users() {
+    if (!this.#users) {
+      this.#users = new WorkspaceUsers(
+        ...MelEnumerable.from(rcmail.env.current_workspace_users).select(
+          (x) => new WorkspaceUser(x.value),
+        ),
+      );
+    }
+    return this.#users;
   }
 
   app_loaded(service) {

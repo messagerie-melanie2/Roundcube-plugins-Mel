@@ -505,7 +505,7 @@ class PostComment {
           // Mettre à jour l'affichage du commentaire avec le nouveau contenu
           $('#comment-text-' + uid).replaceWith('<div class="forum-comment-text" id="comment-text-' + uid + '"><p>' + updatedContent + '</p></div>');        
 
-        } else {
+        } else if (response.status === 'error') {
           rcmail.display_message(response.message, 'error');
         }
 

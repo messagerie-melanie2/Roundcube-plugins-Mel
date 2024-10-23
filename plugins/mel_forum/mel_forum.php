@@ -1100,6 +1100,7 @@ public function update_comment()
 
     // Vérifier si l'utilisateur est bien l'auteur du commentaire
     if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
+        header('Content-Type: application/json');
         echo json_encode(['status' => 'error', 'message' => 'Vous n\'êtes pas autorisé à modifier ce commentaire.']);
         exit;
     }

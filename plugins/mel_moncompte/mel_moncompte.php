@@ -473,7 +473,7 @@ class mel_moncompte extends rcube_plugin {
     $calendars = $user->getSharedCalendars();
 
     $calendars = mel_helper::Enumerable($calendars)->orderBy(function ($key, $value) {
-      return ord($value->name);
+      return strtoupper($value->name);
     });
 
     $sort = [];

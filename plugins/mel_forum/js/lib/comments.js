@@ -536,39 +536,102 @@ class PostComment {
    * @returns {void}
    * @throws {Error} En cas d'échec de la suppression ou d'une erreur réseau.
    */
+  // async deleteComment(uid) {
+  //   // Demander confirmation à l'utilisateur avant de supprimer
+  //   const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
+    
+  //   if (!confirmation) return;
+
+  //   BnumMessage.SetBusyLoading();
+
+  //   try {
+  //     let response = await mel_metapage.Functions.post(
+  //       mel_metapage.Functions.url('forum', 'delete_comment'), // API de suppression
+  //       {
+  //         _uid: uid // L'ID du commentaire à supprimer
+  //       }
+  //     );
+  //     response = JSON.parse(response);
+  //     if (response.status === 'success') {
+  //       rcmail.display_message(response.message, 'confirmation');
+
+  //       // Supprimer le commentaire de l'affichage
+  //       $('#comment-id-' + uid).remove();
+
+  //     } else {
+  //       rcmail.display_message(response.message, 'error');
+  //     }
+  //   } catch (error) {
+  //     rcmail.display_message("Une erreur est survenue lors de la suppression du commentaire.", 'error');
+  //     console.error("Erreur lors de la suppression du commentaire:", error);
+  //   } finally {
+      
+  //     BnumMessage.StopBusyLoading();
+  //   }
+  // }
+
   async deleteComment(uid) {
     // Demander confirmation à l'utilisateur avant de supprimer
     const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
     
     if (!confirmation) return;
-
+  
     BnumMessage.SetBusyLoading();
-
+  
     try {
-      let response = await mel_metapage.Functions.post(
+      const response = await mel_metapage.Functions.post(
         mel_metapage.Functions.url('forum', 'delete_comment'), // API de suppression
         {
           _uid: uid // L'ID du commentaire à supprimer
         }
       );
-      response = JSON.parse(response);
-      if (response.status === 'success') {
-        rcmail.display_message(response.message, 'confirmation');
-
+      const parsedResponse = JSON.parse(response);
+  
+      if (parsedResponse.status === 'success') {
+        rcmail.display_message(parsedResponse.message, 'confirmation');
+  
         // Supprimer le commentaire de l'affichage
-        $('#comment-id-' + uid).remove();
-
+        const commentElement = $('#comment-id-' + uid);
+        
+        if (commentElement.length > 0) {
+          commentElement.remove(); // Supprimer le commentaire du DOM
+        }
+  
+        // Identifier le conteneur parent des réponses à partir de l'élément supprimé
+        const parentCommentId = commentElement.data('parent-id'); // Récupérer l'ID du commentaire parent
+        const $responseContainer = $(`#toggle-response-container-${parentCommentId}`);
+        
+        // Récupérer le nombre actuel de réponses du commentaire parent
+        let currentChildrenNumber = parseInt($responseContainer.find('.ml-2').text()) - 1; // Décrémenter le nombre de réponses
+        currentChildrenNumber = currentChildrenNumber < 0 ? 0 : currentChildrenNumber; // S'assurer que le nombre de réponses ne soit pas négatif
+  
+        // Mettre à jour l'affichage en fonction du nouveau nombre de réponses
+        if (currentChildrenNumber > 0) {
+          const reponseText = currentChildrenNumber === 1 ? 'réponse' : 'réponses';
+          $responseContainer.find('.ml-2').text(currentChildrenNumber + ' ' + reponseText);
+  
+          // Mettre à jour l'attribut `title`
+          $responseContainer.attr('title', currentChildrenNumber === 1 ? 'Voir la réponse' : `Voir les ${currentChildrenNumber} réponses`);
+        } else {
+          // S'il n'y a plus de réponses, masquer la section des réponses et l'icône
+          $responseContainer.addClass('hidden'); // Masquer la section "Voir X réponses"
+          $(`#responses-${parentCommentId}`).addClass('hidden'); // Masquer le conteneur des réponses
+        }
+  
       } else {
-        rcmail.display_message(response.message, 'error');
+        rcmail.display_message(parsedResponse.message, 'error');
       }
     } catch (error) {
       rcmail.display_message("Une erreur est survenue lors de la suppression du commentaire.", 'error');
       console.error("Erreur lors de la suppression du commentaire:", error);
     } finally {
-      
       BnumMessage.StopBusyLoading();
     }
   }
+  
+  
+  
+  
 
   /**
   * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
@@ -612,6 +675,13 @@ class PostComment {
 
     // Fonction pour parser une date en français
     function parseFrenchDate(dateString) {
+      // Vérifiez si la date est au format ISO (ex: "2024-10-23 12:55:47")
+      const isoFormatRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+      
+      if (isoFormatRegex.test(dateString)) {
+          // Convertir directement la chaîne ISO en objet Date
+          return new Date(dateString.replace(' ', 'T')); // Remplacer l'espace par 'T' pour le format ISO
+      }
       const moisFrancais = {
           janvier: 0, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
           juillet: 6, août: 7, septembre: 8, octobre: 9, novembre: 10, décembre: 11

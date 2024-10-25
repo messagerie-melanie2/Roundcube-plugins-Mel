@@ -306,8 +306,6 @@ class mel_forum extends bnum_plugin
         $this->rc()->html_editor();
         // $this->rc()->output->set_env($workspace_uid);
         $this->load_script_module('create_or_edit_post');
-        // $this->include_css('../../lib/simpleMDE/simplemde.min.css');
-        // $this->load_script_module('simplemde.min.js', '/lib/simpleMDE/');
         // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
         //Créer un nouvel Article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -338,11 +336,6 @@ class mel_forum extends bnum_plugin
         $this->rc()->output->send('mel_forum.create-post');
     }
 
-    public function get_upload_form()
-    {
-        //ajouter le
-    }
-
     /**
      * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
      *
@@ -364,34 +357,6 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Extrait les liens des images d'un contenu HTML.
-     *
-     * Cette fonction analyse le contenu HTML fourni, extrait tous les liens 
-     * des balises <img> et les retourne sous forme de tableau.
-     *
-     * @param string $content Le contenu HTML à analyser.
-     * @return array Un tableau contenant les liens des images trouvées dans le contenu HTML.
-     */
-    private function extractImageLinks($content)
-    {
-        $imageLinks = [];
-        $dom = new DOMDocument();
-
-        // Supprimer les erreurs HTML malformées
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($content);
-        libxml_clear_errors();
-
-        $images = $dom->getElementsByTagName('img');
-
-        foreach ($images as $img) {
-            $imageLinks[] = $img->getAttribute('src');
-        }
-
-        return $imageLinks;
-    }
-
-    /**
      * Crée un résumé à partir du contenu fourni.
      *
      * Cette fonction supprime les balises HTML du contenu, extrait les phrases 
@@ -410,36 +375,6 @@ class mel_forum extends bnum_plugin
         // Prend les deux premières phrases
         $summary = implode('. ', array_slice($sentences, 0, 2));
         return $summary;
-    }
-
-    /**
-     * Crée une nouvelle image associée à une publication.
-     *
-     * Cette fonction valide les données saisies, crée une nouvelle image avec les
-     * propriétés définies, et la sauvegarde. Elle retourne un booléen indiquant
-     * si l'image a été sauvegardée avec succès.
-     *
-     * @param string $post_id L'identifiant de la publication à laquelle l'image est associée.
-     * @param string $data Les données de l'image à enregistrer.
-     * @return bool True si l'image a été sauvegardée avec succès, sinon false.
-     */
-    public function save_image($post_id, $data)
-    {
-        // Validation des données saisies
-        if (empty($post_id) || empty($data)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
-            return false;
-        }
-
-        // Créer une nouvelle image
-        $image = new LibMelanie\Api\Defaut\Posts\Image();
-        $image->uid = $this->generateRandomString(24);
-        $image->post = $post_id;
-        $image->data = $data;
-
-        // Sauvegarde de l'image
-        $ret = $image->save();
-        return !is_null($ret);
     }
 
     /**
@@ -762,18 +697,21 @@ class mel_forum extends bnum_plugin
     public function send_post()
     {
         $post = $this->_add_post();
-        if ($post !== false) {
+        if ($post !== null) {
             // le post est créé on passe aux tags
             $tags = rcube_utils::get_input_value('_tags', rcube_utils::INPUT_POST);
-            $post_tags = $this->_get_tags_bypost($post->uid);
+            if (is_null($tags)) $tags = [];
+            $post_tags = $this->_get_tags_bypost(rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST));
             if (empty(array_diff($tags, $post_tags))) {
                 if (!empty(array_diff($post_tags, $tags))) {
                     //il y a moins de tags suite à la modifs décorellé les tags
                     $unlink_tags = array_diff($post_tags, $tags);
-                    $this->_unsassociate_tags_from_post();
-                    // si le tag est associé à aucun post le supprimer
-                    if (!$this->_tag_is_associated_to_any_post()) {
-                        $this->_delete_tag();
+                    foreach ($unlink_tags as $tag) {
+                        $this->_unsassociate_tags_from_post($tag);
+                        // si le tag est associé à aucun post le supprimer
+                        if (!$this->_tag_is_associated_to_any_post($tag)) {
+                            $this->_delete_tag($tag);
+                        }
                     }
                 }
             } else {
@@ -803,13 +741,12 @@ class mel_forum extends bnum_plugin
      */
     private function _add_post()
     {
-        //récupérer le Workspace
-        $workspace = driver_mel::gi()->workspace();
-
         // récupérer les valeurs des champs POST
-        $uid = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
-        $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+        $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST, true);
+        $content = mel_helper::wash_html($content);
+        $workspace = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
         // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
         $summary = $this->create_summary_from_content($content);
         $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
@@ -837,29 +774,7 @@ class mel_forum extends bnum_plugin
         $post->workspace = 'un-espace-2';
 
         // Sauvegarde de l'article
-        $post_id = $post->save();
-        if ($post_id) {
-            $post->load();
-            // Extraire les liens d'image et les enregistrer
-            $imageLinks = $this->extractImageLinks($content);
-            $imageSaved = true;
-            foreach ($imageLinks as $link) {
-                if (!$this->save_image($post->id, $link)) {
-                    $imageSaved = false;
-                    break; // On arrête si une image échoue à être enregistrée
-                }
-            }
-
-            // Réponse JSON en fonction de la sauvegarde des images
-            if ($imageSaved) {
-                return $post;
-            } else {
-                return $post;
-                //problème d'enregistrement de l'image
-            }
-        } else {
-            return false;
-        }
+        return $post->save();
     }
 
     /**
@@ -870,7 +785,7 @@ class mel_forum extends bnum_plugin
     private function _create_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = driver_mel::gi()->workspace();
+        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
 
         //Créer un tag
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -892,7 +807,7 @@ class mel_forum extends bnum_plugin
     private function _delete_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = driver_mel::gi()->workspace();
+        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -914,7 +829,7 @@ class mel_forum extends bnum_plugin
      */
     private function _associate_tag_with_post($name)
     {
-        $workspace_uid = driver_mel::gi()->workspace();
+        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
@@ -942,7 +857,7 @@ class mel_forum extends bnum_plugin
      */
     private function _unsassociate_tags_from_post($name)
     {
-        $workspace_uid = driver_mel::gi()->workspace();
+        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
@@ -950,11 +865,11 @@ class mel_forum extends bnum_plugin
         $tag->name = $name;
         $tag->workspace = $workspace_uid;
 
-        if ($tag->load()) {
+        if ($tag->load() !== null) {
             $post = new LibMelanie\Api\Defaut\Posts\Post();
             $post->uid = $uid;
 
-            if ($post->load()) {
+            if ($post->load() !== null) {
                 if ($post->removeTag($tag)) {
                     return true;
                 } else {
@@ -973,12 +888,15 @@ class mel_forum extends bnum_plugin
         // Récupérer l'article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
+        $tags = [];
 
         if ($post->load()) {
-            $tags = $post->listTags();
-
-            return $tags;
+            $tags_objects = $post->listTags();
+            foreach ($tags_objects as $tag) {
+                $tags[] = $tag->name;
+            }
         }
+        return $tags;
     }
 
     /**
@@ -989,7 +907,7 @@ class mel_forum extends bnum_plugin
     private function _exist_tag($exist_tag)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-        $tag->workspace = driver_mel::gi()->workspace();
+        $tag->workspace = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
         $tags = $tag->listTags();
         foreach ($tags as $tag) {
             if ($tag->name === $exist_tag) {
@@ -1007,11 +925,13 @@ class mel_forum extends bnum_plugin
     private function _tag_is_associated_to_any_post($tag_name)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-        $tag->workspace = driver_mel::gi()->workspace();
+        $tag->workspace = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
         $tag->name = $tag_name;
         $tag->load();
         return (!($tag->countPosts() === 0));
     }
+
+
     /**
      * Crée un nouveau tag sous forme de réponse JSON.
      *
@@ -1962,12 +1882,13 @@ class mel_forum extends bnum_plugin
     public function get_image_url($uid)
     {
         $rcmail = rcmail::get_instance();
-        // $url = $rcmail->url(array(
-        //     "_task" => "forum",
-        //     "_action" => "load_image",
-        // ));
-        $url = 'https://' . $_SERVER['PLUGIN_MEL_HTTP_HOST'] . '?_task=forum&_action=load_image';
-        $url = $url . '&_image_uid=' . $uid;
+        $url = $rcmail->url(array(
+            "_task" => "forum",
+            "_action" => "load_image",
+            "_image_uid" => $uid,
+        ), true, true, true);
+        // $url = 'https://' . $_SERVER['PLUGIN_MEL_HTTP_HOST'] . '?_task=forum&_action=load_image';
+        // $url = $url . '&_image_uid=' . $uid;
         return $url;
     }
 
@@ -1978,7 +1899,7 @@ class mel_forum extends bnum_plugin
         $ret = $image->load();
         if (!is_null($ret)) {
             $img = $image->data;
-            $this->rc()->output->sendExit($img, ['Content-Type: ' . rcube_mime::image_content_type($img)]);
+            $this->rc()->output->sendExit(base64_decode(explode(',', $img)[1]), ['Content-Type: ' . rcube_mime::image_content_type($img)]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Echec du chargement de l\'image.']);
             exit;
@@ -2065,7 +1986,13 @@ class mel_forum extends bnum_plugin
             //Ajoute le nombre de commentaire au HTML du post
             $html_post_copy = str_replace("<post-count-comments/>", $comment_count, $html_post_copy);
 
-            $link = '<a class= "post-card" href="https://' . $_SERVER['PLUGIN_MEL_HTTP_HOST'] . '?_task=forum&_action=post&_uid=' . $post->uid . '" >';
+            // $link = '<a class= "post-card" href="https://' . $_SERVER['PLUGIN_MEL_HTTP_HOST'] . '?_task=forum&_action=post&_uid=' . $post->uid . '" >';
+            $link = '<a class= "post-card" href="' .
+                $this->rc()->url(array(
+                    "_task" => "forum",
+                    "_action" => "post",
+                    "_uid" => $post->uid,
+                ), true, true, true) . '" >';
             $html_post_copy = str_replace("<post-link/>", $link, $html_post_copy);
             $html_post_copy = str_replace("<post-link-end/>", "<a/>", $html_post_copy);
 
@@ -2314,7 +2241,7 @@ class mel_forum extends bnum_plugin
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
         //Définition des propriétés du tag
-        $tag->name = 'Survie';
+        $tag->name = 'Monster hunter';
         $tag->workspace = 'un-espace-2';
 
         // Sauvegarde du tag
@@ -2518,9 +2445,9 @@ class mel_forum extends bnum_plugin
     public function test_unassociate_tag_from_post()
     {
         // Récupérer la valeur du champ POST
-        $name = 'Livre';
-        $workspace_uid = 'un-espace-2';
-        $uid = 'BQasb31PcxMzC4TyroeHkwHZ';
+        $name = 'boss final';
+        $workspace_uid = 'workspace-test';
+        $uid = 'tWe6cwuXpg1JoTRuQO3IpbfE';
 
         // Validation des données saisies
         if (empty($name) || empty($workspace_uid) || empty($uid)) {
@@ -3071,26 +2998,6 @@ class mel_forum extends bnum_plugin
 
             exit;
         }
-    }
-
-
-    private function test_extractImageLinks($content)
-    {
-        $imageLinks = [];
-        $dom = new DOMDocument();
-
-        // Supprimer les erreurs HTML malformées
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($content);
-        libxml_clear_errors();
-
-        $images = $dom->getElementsByTagName('img');
-
-        foreach ($images as $img) {
-            $imageLinks[] = $img->getAttribute('src');
-        }
-
-        return $imageLinks;
     }
 
     public function test_create_post()

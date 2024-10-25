@@ -15,24 +15,7 @@ export class create_or_edit_post extends MelObject {
         $('#go-back-to-articles').click(() => {
             window.location.href = this.url('forum',{action:'index'});
         });
-
-        // this.simplemde = new SimpleMDE({
-        //     element: $("#MyID")[0],  // Utilisation de jQuery pour sélectionner l'élément
-        //     toolbar: [
-        //         "bold", "italic", "heading", "heading-smaller", "heading-bigger", "|",
-        //         "quote", "code", "unordered-list", "ordered-list", "link", "image", "|",
-        //         "preview", "side-by-side", "fullscreen",
-        //         {
-        //             name: "inserer Image",
-        //             action: function imageuploader(editor) {
-        //                 this.addImageDialog();
-        //             }.bind(this),
-        //             className: "fa fa-picture-o",
-        //             title: "Insérer une image"
-        //         }
-        //     ],
-        //     spellChecker: false
-        // });  
+ 
         let post = this.get_env('post');
         let config = rcmail.env.editor_config;
         config.mode = 'forum';
@@ -50,10 +33,12 @@ export class create_or_edit_post extends MelObject {
         $("#edit-title").val(post.title);
         this.post_uid = post.uid;
         this.tags = [];
+        this.workspace = 'workspace-test';
         this.displayTags();
         this.addTag();
         this.removeTag();
-        this.save();
+        this.saveButton();
+        this.cancelButton();
     }
 
     //affiche les tags
@@ -106,27 +91,57 @@ export class create_or_edit_post extends MelObject {
                     this.tags.splice(index,1);
                 }
             }
-        })
+        });
     }
     // gestion du bouton sauvegarder
-    save() {
+    saveButton() {
         $('#submit-post').click(() => {
             this.http_internal_post(
                 {
                     task: 'forum',
                     action: 'send_post',
                     params: {
+                        _workspace: this.workspace,
                         _title: $("#edit-title").val(),
-                        _content: tinymce.activeEditor.getContent("myTextarea"),
+                        _content: tinymce.activeEditor.getContent(),
                         _uid: this.post_uid,
-                        _settings: JSON.stringify({extwin: $('#rcmfd_message_extwin')[0].checked}),
+                        _settings: JSON.stringify({extwin: $('#rcmfd_message_extwin')[0].checked, comments: $('#enable_comment')[0].checked}),
                         _tags: this.tags,
                     },
-                    on_success: () => {},
+                    processData: false,
+                    contentType: false,
+                    on_success: () => {
+                        console.log('succès');
+                    },
+                    on_error: (err) => {
+                        console.log('Erreur d\'enregistrement');
+                    }
                 }
             );
         });
     }
+    cancelButton() {
+        $('#cancel-post').click(() => {
+            this.http_internal_post(
+                {
+                    task: 'forum',
+                    action: 'delete_post',
+                    params: {
+                        _uid: this.post_uid,
+                    },
+                    processData: false,
+                    contentType: false,
+                    on_success: () => {
+                        window.location.href = this.url('forum', {action:'index'});
+                    },
+                    on_error: (err) => {
+                        console.log('Erreur d\'enregistrement');
+                    }
+                }
+            );
+        });
+    }
+
     switchPageDialog(dialog_page) {
         this.dialog.switch_page(dialog_page);
     }
@@ -164,7 +179,6 @@ export class create_or_edit_post extends MelObject {
                                         processData: false, // Empêche jQuery de traiter les données
                                         contentType: false, // Empêche jQuery d'ajouter des headers incorrects
                                         on_success: (data) => {
-                                            debugger;
                                             // Gérer la réponse du serveur ici
                                             let response = JSON.parse(data);
                                             $('input.tox-textfield').first().val(response.url);

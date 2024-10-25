@@ -1,3 +1,4 @@
+// import { publish } from 'tui-jsdoc-template';
 import { CalendarLoader } from '../../../../mel_metapage/js/lib/calendar/calendar_loader.js';
 import { Slot } from '../../../../mel_metapage/js/lib/calendar/event/parts/guestspart.free_busy.js';
 import { FreeBusyLoader } from '../../../../mel_metapage/js/lib/calendar/free_busy_loader.js';
@@ -46,11 +47,9 @@ export class Planning extends HtmlCustomDataTag {
 
     this.#id = this.generateId('planning');
     this.#eventsSource = new EventSourceLoader('planning-events');
-    this.#resourceSource = new ResourcesSourceLoader(
-      'planning-resources',
-      this.slotDurationTime,
-      this,
-    );
+    this.#resourceSource = new (
+      this.workspace.isPublic ? PublicResourceLoader : ResourcesSourceLoader
+    )('planning-resources', this.slotDurationTime, this);
 
     this._nextLoad = false;
   }
@@ -167,7 +166,7 @@ export class Planning extends HtmlCustomDataTag {
       }
     }
 
-    this.refresh({ background: true });
+    this.refresh({ background: !this.workspace.isPublic });
   }
 
   _generate_navigation() {}
@@ -202,23 +201,6 @@ export class Planning extends HtmlCustomDataTag {
         }, 100);
       }
     });
-
-    // calendar.onallloaded.push(() => {
-    //   if (!this._generate_calendar.ok) {
-    //     setTimeout(async () => {
-    //       if (!this.#eventsSource.nextGetFinished)
-    //         await Mel_Promise.wait(() => this.#eventsSource.nextGetFinished);
-    //       if (!this.#resourceSource.nextGetFinished)
-    //         await Mel_Promise.wait(() => this.#resourceSource.nextGetFinished);
-
-    //       this._generate_calendar.ok = true;
-
-    //       this.querySelector('.bnum-loader')?.remove?.();
-
-    //       this.refresh();
-    //     }, 1000);
-    //   }
-    //});
 
     calendar.addEventListener('api:fc.render.event', (e) => {
       this.#eventsSource.render(e);
@@ -342,11 +324,38 @@ window.addEventListener('load', () => {
   }
 });
 
-class DataSource {
-  #data = {};
+class IDataSource {
   constructor() {}
 
   add(date, data) {
+    return this;
+  }
+
+  has({ date = null } = {}) {}
+
+  *get(date) {}
+
+  toArray(date) {
+    return [...this.get(date)];
+  }
+
+  serialize() {
+    return EMPTY_STRING;
+  }
+
+  unserialize(data) {
+    return this;
+  }
+}
+
+class DataSource extends IDataSource {
+  #data = {};
+  constructor() {
+    super();
+  }
+
+  add(date, data) {
+    super.add(date, data);
     date = moment(date).format('DD/MM/YYYY');
     this.#data[date] = data;
 
@@ -354,16 +363,18 @@ class DataSource {
   }
 
   *get(date) {
-    if (this.has(date) && this.#data[date].length > 0) {
+    super.get(date);
+    if (this.has({ date }) && this.#data[date].length > 0) {
       yield* this.#data[date];
     }
   }
 
-  toArray(date) {
-    return [...this.get(date)];
-  }
+  // toArray(date) {
+  //   return [...this.get(date)];
+  // }
 
   has({ date = null } = {}) {
+    super.has({ date });
     if (date) {
       if (typeof date !== 'string') date = date.format('DD/MM/YYYY');
 
@@ -373,11 +384,15 @@ class DataSource {
   }
 
   serialize() {
+    super.serialize();
     return JSON.stringify(this.#data);
   }
 
   unserialize(data) {
+    super.unserialize(data);
     data = JSON.parse(data);
+
+    this.#data = data;
 
     return this;
   }
@@ -387,20 +402,92 @@ class DataSource {
   }
 }
 
+class PublicDataSource extends IDataSource {
+  #data = {};
+  constructor() {
+    super();
+  }
+
+  add(date, data) {
+    super.add(date, data);
+    date = moment(date).format('DD/MM/YYYY');
+    if (!this.#data[date]) this.#data[date] = {};
+
+    for (const rcs of MelEnumerable.from(data).groupBy(
+      (x) => x.resourceId,
+      (x) => x,
+    )) {
+      console.log('public', rcs);
+      if (!this.#data[date][rcs.key])
+        this.#data[date][rcs.key] = rcs.iterable.toArray();
+    }
+
+    return this;
+  }
+
+  *get(date) {
+    super.get(date);
+    if (this.has({ date })) {
+      for (const user of Object.keys(this.#data[date])) {
+        if (this.has({ date, user })) {
+          yield* this.#data[date][user];
+        }
+      }
+    }
+  }
+
+  has({ date = null, user = null } = {}) {
+    super.has({ date });
+    if (user) {
+      return this.has({ date }) && this.#data[date]?.[user];
+    } else if (date) {
+      if (typeof date !== 'string') date = date.format('DD/MM/YYYY');
+
+      return this.has() && this.#data[date];
+    } else return Object.keys(this.#data).length > 0;
+  }
+
+  serialize() {
+    super.serialize();
+    return JSON.stringify(this.#data);
+  }
+
+  unserialize(data) {
+    super.unserialize(data);
+    data = JSON.parse(data);
+
+    this.#data = data;
+
+    return this;
+  }
+}
+
 class SourceLoader extends WorkspaceObject {
   #key = null;
   #url = null;
   #type = null;
   #loadCallback = null;
   #nextGet = false;
-  #data = new DataSource();
+  #data = null;
 
   get data() {
     return this.#data.obj;
   }
 
-  constructor(key, url, type, loadCallback) {
+  get dataSource() {
+    return this.#data;
+  }
+
+  constructor(
+    key,
+    url,
+    type,
+    loadCallback,
+    { dataSourceType = DataSource } = {},
+  ) {
     super();
+
+    this.#data = new dataSourceType();
 
     this.#key = key;
     this.#url = url;
@@ -441,7 +528,7 @@ class SourceLoader extends WorkspaceObject {
     console.log('src', data, data?.has?.());
 
     if (!data || !data?.has?.(key)) {
-      data = force ? null : this.#_load(); //this._p_try_load(start, end);
+      data = force ? null : this._load(); //this._p_try_load(start, end);
 
       if (!data || !data?.has?.(key)) {
         if (this.#loadCallback) {
@@ -467,7 +554,7 @@ class SourceLoader extends WorkspaceObject {
         }
 
         this.#data.add(start, data);
-        this.#_save(data);
+        this._save(data);
         // if (this.#data[key]) this.#data[key] = {};
         // this.#data[key] = data;
       } else data = data.toArray(key);
@@ -476,7 +563,7 @@ class SourceLoader extends WorkspaceObject {
     return data;
   }
 
-  #_save() {
+  _save() {
     //this.save('planning-' + this.#key, this.#data.serialize());
     let saved = this.load(this.#key, {});
     saved[this.workspace.uid] = this.#data.serialize();
@@ -484,7 +571,7 @@ class SourceLoader extends WorkspaceObject {
     return this;
   }
 
-  #_load() {
+  _load() {
     let data = this.load(this.#key, {});
 
     if (data[this.workspace.uid]) {
@@ -576,18 +663,25 @@ class EventSourceLoader extends SourceLoader {
             ? 'white'
             : 'black',
         };
-      })
-      .select((x) => {
-        x.dates = {
-          start: moment(x.start).format(DATE_SERVER_FORMAT),
-          end: moment(x.end).format(DATE_SERVER_FORMAT),
-        };
+      });
+    //.toArray();
 
-        return x;
-      })
-      .toArray();
+    if (this.workspace.isPublic) {
+      events = events.aggregate([
+        {
+          title: 'tmp',
+          start: moment(start).startOf('day'),
+          end,
+          resourceId: ID_RESOURCES_WSP,
+          color: 'transparent',
+          textColor: 'transparent',
+          hide: true,
+        },
+      ]);
+    }
+
     console.log('event', events);
-    return events;
+    return events.toArray();
   }
 
   /**
@@ -622,6 +716,10 @@ class EventSourceLoader extends SourceLoader {
     } else {
       $el.attr('title', eventObj.title).tooltip();
     }
+
+    if (eventObj.hide === true) {
+      $el.css('display', 'none');
+    }
   }
 }
 
@@ -631,8 +729,8 @@ class ResourcesSourceLoader extends SourceLoader {
    * @type {Planning}
    */
   #planning = null;
-  constructor(key, timeslot, planning) {
-    super(key, null, null, null);
+  constructor(key, timeslot, planning, { dataSourceType = DataSource } = {}) {
+    super(key, null, null, null, { dataSourceType });
 
     this.#timeslot = timeslot;
     this.#planning = planning;
@@ -649,7 +747,6 @@ class ResourcesSourceLoader extends SourceLoader {
     let result = null;
 
     if (search && !force) {
-      // debugger;
       result = await super.get(start, end, {
         force: this.workspace.isPublic,
       });
@@ -699,6 +796,9 @@ class ResourcesSourceLoader extends SourceLoader {
           : this.workspace.users,
       )
         .where((x) => !x?.external)
+        .where((x) =>
+          this.workspace.isPublic ? !this._p_has(date, x.email) : true,
+        )
         .select((x) => x.email),
       {
         interval: this.#timeslot,
@@ -722,6 +822,10 @@ class ResourcesSourceLoader extends SourceLoader {
       debugger;
     }
     return resources.toArray();
+  }
+
+  _p_has(date, user) {
+    return true;
   }
 
   *#_generate_events(resources) {
@@ -766,5 +870,36 @@ class ResourcesSourceLoader extends SourceLoader {
         )
         .tooltip();
     }
+  }
+}
+
+class PublicResourceLoader extends ResourcesSourceLoader {
+  constructor(key, timeslot, planning) {
+    super(key, timeslot, planning, { dataSourceType: PublicDataSource });
+  }
+
+  async get(...args) {
+    let results = await super.get(...args);
+
+    if (this.searchValue) {
+      results = MelEnumerable.from(
+        this.dataSource.get(args[0].format('DD/MM/YYYY')),
+      )
+        .where((x) =>
+          this.workspace.users
+            .get(x.resourceId)
+            .name.toUpperCase()
+            .includes(this.searchValue.toUpperCase()),
+        )
+        .toArray();
+    }
+
+    return results;
+  }
+
+  _p_has(date, user) {
+    if (typeof date !== 'string') date = date.format('DD/MM/YYYY');
+
+    return super._p_has(date, user) && this.dataSource.has({ date, user });
   }
 }

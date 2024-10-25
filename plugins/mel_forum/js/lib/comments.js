@@ -216,6 +216,7 @@ class PostComment {
       let responseContainer = $('#responses-' + id);
       let toggleIcon = $('#toggle-icon-' + id);
       let responseDiv = $('#toggle-response-container-' + id);  // Utilisation de l'ID unique pour la div complète
+      this.children_number = $('#comment-id-' + this.uid).data("number-children");
       let numberOfResponses = this.children_number; // Nombre de réponses
 
       // Fonction pour mettre à jour le title au survol de la div
@@ -317,9 +318,11 @@ class PostComment {
   * @throws {Error} Si une erreur survient lors de l'envoi de la requête ou de l'enregistrement de la réponse.
   */
   async saveReply() {
+    debugger;
     const $textarea = $('#new-response-textarea-' + this.uid);
     const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
     const submitButton = $('#submit-reply');  // Sélectionner le bouton de validation
+    this.children_number = $('#comment-id-' + this.uid).data("number-children");
 
     if (replyContent && replyContent.trim() !== '') {     // Vérifier si le commentaire n'est pas vide
         
@@ -353,6 +356,7 @@ class PostComment {
                 const $responseContainer = $(`#toggle-response-container-${parent_comment_id}`);
                 const currentChildrenNumber = parseInt(this.children_number) + 1; // Incrémenter le nombre de réponses
                 this.children_number = currentChildrenNumber; // Mettre à jour localement le nombre de réponses
+                $('#comment-id-' + this.uid).data("number-children", this.children_number);
 
                 // Mettre à jour le texte du nombre de réponses
                 const reponseText = currentChildrenNumber === 1 ? 'réponse' : 'réponses';
@@ -571,6 +575,7 @@ class PostComment {
   // }
 
   async deleteComment(uid) {
+    debugger;
     // Demander confirmation à l'utilisateur avant de supprimer
     const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
     
@@ -582,7 +587,8 @@ class PostComment {
       const response = await mel_metapage.Functions.post(
         mel_metapage.Functions.url('forum', 'delete_comment'), // API de suppression
         {
-          _uid: uid // L'ID du commentaire à supprimer
+          _uid: uid, // L'ID du commentaire à supprimer
+          _parent: this.parent, // ID du commentaire parent
         }
       );
       const parsedResponse = JSON.parse(response);
@@ -598,24 +604,31 @@ class PostComment {
         }
   
         // Identifier le conteneur parent des réponses à partir de l'élément supprimé
-        const parentCommentId = commentElement.data('parent-id'); // Récupérer l'ID du commentaire parent
-        const $responseContainer = $(`#toggle-response-container-${parentCommentId}`);
-        
+        const parent_comment_id = this.parent; // ID du commentaire parent
+        const $responseContainer = $(`#toggle-response-container-${parent_comment_id}`);
+        const $parentContainer = $responseContainer.parent().parent().parent();
+
         // Récupérer le nombre actuel de réponses du commentaire parent
-        let currentChildrenNumber = parseInt($responseContainer.find('.ml-2').text()) - 1; // Décrémenter le nombre de réponses
-        currentChildrenNumber = currentChildrenNumber < 0 ? 0 : currentChildrenNumber; // S'assurer que le nombre de réponses ne soit pas négatif
+        let currentChildrenNumber = $parentContainer.data("number-children");
+        currentChildrenNumber = parseInt(currentChildrenNumber) - 1;
+        $parentContainer.data("number-children", currentChildrenNumber);
+        // const currentChildrenNumber = parseInt(this.children_number) - 1; // Décrémenter le nombre de réponses
+        // this.children_number = currentChildrenNumber; // Mettre à jour localement le nombre de réponses
   
         // Mettre à jour l'affichage en fonction du nouveau nombre de réponses
         if (currentChildrenNumber > 0) {
           const reponseText = currentChildrenNumber === 1 ? 'réponse' : 'réponses';
-          $responseContainer.find('.ml-2').text(currentChildrenNumber + ' ' + reponseText);
+          $responseContainer.find('span.ml-2').text(currentChildrenNumber + ' ' + reponseText);
   
           // Mettre à jour l'attribut `title`
           $responseContainer.attr('title', currentChildrenNumber === 1 ? 'Voir la réponse' : `Voir les ${currentChildrenNumber} réponses`);
+          // on s'assure que le conteneur des réponses est visible
+          $responseContainer.removeClass('hidden'); 
+          $(`#responses-${parent_comment_id}`).removeClass('hidden'); // Afficher le conteneur des réponses
         } else {
           // S'il n'y a plus de réponses, masquer la section des réponses et l'icône
           $responseContainer.addClass('hidden'); // Masquer la section "Voir X réponses"
-          $(`#responses-${parentCommentId}`).addClass('hidden'); // Masquer le conteneur des réponses
+          $(`#responses-${parent_comment_id}`).addClass('hidden'); // Masquer le conteneur des réponses
         }
   
       } else {
@@ -771,6 +784,7 @@ class PostComment {
       DISLIKE_CLASS: dislikeClass,
       LIKES: this.likes.toString(),
       DISLIKES: this.dislikes.toString(),
+      NUMBER_CHILDREN: this.children_number,
       RESPONSE_SECTION: this.children_number > 0 ? 
       MelHtml.start
         .div({ id: 'toggle-response-container-' + this.id, class: 'forum-comment-response', 'data-comment-id': this.id, tabindex: '0', role: 'button', title: this.children_number === 1 ? 'Voir la réponse' : `Voir les ${this.children_number} réponses` })

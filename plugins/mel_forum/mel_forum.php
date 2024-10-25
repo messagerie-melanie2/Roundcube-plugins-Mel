@@ -1151,6 +1151,9 @@ public function delete_comment()
     // Récupérer la valeur du champ POST
     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
 
+    // Récupérer l'ID du commentaire parent s'il s'agit d'une réponse
+    $parent = rcube_utils::get_input_value('_parent', rcube_utils::INPUT_POST, true);
+
     // Validation de la donnée saisie
     if (empty($uid)) {
         echo json_encode(['status' => 'error', 'message' => 'L\'uid du commentaire est requis.']);
@@ -1160,6 +1163,11 @@ public function delete_comment()
     // Récupérer le commentaire existant
     $comment = new LibMelanie\Api\Defaut\Posts\Comment();
     $comment->uid = $uid;
+
+    // Si c'est une réponse, on associe le commentaire parent
+    if (!empty($parent)) {
+        $comment->parent = $parent;
+    }
 
     // Vérifier si le commentaire existe
     if (!$comment->load()) {

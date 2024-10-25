@@ -114,7 +114,10 @@ export class Planning extends HtmlCustomDataTag {
     this.appendChild(header);
     header = null;
 
-    this._generate_date()._generate_search()._generate_calendar();
+    this._generate_date()
+      ._generate_search()
+      ._generate_navigation()
+      ._generate_calendar();
   }
 
   _generate_date() {
@@ -169,7 +172,49 @@ export class Planning extends HtmlCustomDataTag {
     this.refresh({ background: !this.workspace.isPublic });
   }
 
-  _generate_navigation() {}
+  _generate_navigation() {
+    let container = document.createElement('div');
+
+    let prev = document.createElement('button');
+    prev.onclick = () => this._load() || this.calendarNode.prev();
+
+    let next = document.createElement('button');
+    next.onclick = () => this._load() || this.calendarNode.next();
+
+    let today = document.createElement('button');
+    today.onclick = () => this._load() || this.calendarNode.today();
+
+    let day = document.createElement('button');
+    day.onclick = () => this.querySelector(`#date-${this.internalId}`).click();
+
+    for (const element of [prev, today, next, today, day]) {
+      element.classList.add(
+        'mel-button',
+        'no-button-margin',
+        'no-margin-button',
+      );
+
+      element.addEventListener('click', () => this._load());
+    }
+
+    container.append(prev, today, day, next);
+
+    let input = document.createElement('input');
+    input.type = 'datetime-local';
+    input.style.display = 'none';
+    input.setAttribute('id', `date-${this.internalId}`);
+
+    this.append(input, container);
+
+    container = null;
+    prev = null;
+    next = null;
+    today = null;
+    day = null;
+    input = null;
+
+    return this;
+  }
 
   _generate_calendar() {
     const settings = this.calSettings;
@@ -282,11 +327,13 @@ export class Planning extends HtmlCustomDataTag {
   }
 
   _load() {
-    this.appendChild(
-      MelObject.Empty()
-        .generate_loader(`loader-${this.internalId}`, true)
-        .generate()[0],
-    );
+    if (!$(`#loader-${this.internalId}`).length) {
+      this.appendChild(
+        MelObject.Empty()
+          .generate_loader(`loader-${this.internalId}`, true)
+          .generate()[0],
+      );
+    }
     this.style.backgroundColor = 'black';
     this.style.opacity = '0.6';
   }
@@ -525,12 +572,12 @@ class SourceLoader extends WorkspaceObject {
      * @type {?DataSource}
      */
     let data = force ? null : this.#data;
-    console.log('src', data, data?.has?.());
+    console.log('src', data, data?.has?.({ date: key }), key);
 
-    if (!data || !data?.has?.(key)) {
+    if (!data || !data?.has?.({ date: key })) {
       data = force ? null : this._load(); //this._p_try_load(start, end);
 
-      if (!data || !data?.has?.(key)) {
+      if (!data || !data?.has?.({ date: key })) {
         if (this.#loadCallback) {
           data = await this.#loadCallback(start, end, this, force);
         } else {

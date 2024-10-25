@@ -133,6 +133,9 @@ class WorkspaceUser {
     return this.#email;
   }
 
+  /**
+   * @type {string}
+   */
   get name() {
     return this.#name;
   }
@@ -162,6 +165,10 @@ class WorkspaceUsers {
     return Object.keys(this.#users);
   }
 
+  /**
+   *
+   * @returns {WorkspaceUser[]}
+   */
   toArray() {
     return [...this];
   }
@@ -219,6 +226,10 @@ class CurrentWorkspaceData {
       );
     }
     return this.#users;
+  }
+
+  get isPublic() {
+    return rcmail.env.current_workspace_is_public;
   }
 
   app_loaded(service) {

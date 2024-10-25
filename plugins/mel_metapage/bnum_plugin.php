@@ -253,6 +253,10 @@ class WebComponnents {
         $this->_include_component('avatar.js');
     }
 
+    public function SearchBar() {
+        $this->_include_component('searchbar.js');
+    }
+
     public function ____METHODS____($what, ...$args) {
         switch ($what) {
             case '_include_component':

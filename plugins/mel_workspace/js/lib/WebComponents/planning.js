@@ -2,16 +2,22 @@ import { CalendarLoader } from '../../../../mel_metapage/js/lib/calendar/calenda
 import { Slot } from '../../../../mel_metapage/js/lib/calendar/event/parts/guestspart.free_busy.js';
 import { FreeBusyLoader } from '../../../../mel_metapage/js/lib/calendar/free_busy_loader.js';
 import { MelEnumerable } from '../../../../mel_metapage/js/lib/classes/enum.js';
+import { MelCurrentUser } from '../../../../mel_metapage/js/lib/classes/user.js';
 import {
   DATE_FORMAT,
   DATE_HOUR_FORMAT,
+  DATE_SERVER_FORMAT,
 } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
+import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { BootstrapLoader } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import {
   BnumHtmlIcon,
   EWebComponentMode,
   HtmlCustomDataTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { SearchBar } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/searchbar.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
+import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../../mel_metapage/js/lib/mel_promise.js';
 import {
   CONFIG_FIRST_LETTER,
@@ -40,7 +46,20 @@ export class Planning extends HtmlCustomDataTag {
 
     this.#id = this.generateId('planning');
     this.#eventsSource = new EventSourceLoader('planning-events');
-    this.#resourceSource = new ResourcesSourceLoader('planning-resources');
+    this.#resourceSource = new ResourcesSourceLoader(
+      'planning-resources',
+      this.slotDurationTime,
+      this,
+    );
+
+    this._nextLoad = false;
+  }
+
+  get loaders() {
+    return {
+      e: this.#eventsSource,
+      r: this.#resourceSource,
+    };
   }
 
   get internalId() {
@@ -81,10 +100,22 @@ export class Planning extends HtmlCustomDataTag {
     return document.querySelector('#module-agenda');
   }
 
+  get header() {
+    return document.querySelector(`#header-planning-${this.internalId}`);
+  }
+
   _p_main() {
     super._p_main();
 
-    this._generate_date()._generate_calendar();
+    let header = document.createElement('div');
+    header.classList.add('planning-element', 'planning-header');
+    header.setAttribute('id', `header-planning-${this.internalId}`);
+    header.style.display = 'flex';
+
+    this.appendChild(header);
+    header = null;
+
+    this._generate_date()._generate_search()._generate_calendar();
   }
 
   _generate_date() {
@@ -97,7 +128,7 @@ export class Planning extends HtmlCustomDataTag {
     text.setAttribute('id', 'planning-date');
 
     container.append(icon, text);
-    this.appendChild(container);
+    this.header.appendChild(container);
 
     container = null;
     icon = null;
@@ -106,7 +137,38 @@ export class Planning extends HtmlCustomDataTag {
     return this;
   }
 
-  _generate_search() {}
+  _generate_search() {
+    let src = SearchBar.CreateNode({
+      iconPos: 'left',
+      label: 'Recherche du planning',
+    });
+
+    if (!this.workspace.isPublic)
+      src.addEventListener(
+        'api:search.input.input',
+        this._on_search.bind(this),
+      );
+
+    src.addEventListener('api:search.input.change', this._on_search.bind(this));
+
+    this.header.appendChild(src);
+
+    return this;
+  }
+
+  _on_search(e) {
+    const value = e.detail.caller.value;
+
+    if (!this.workspace.isPublic) {
+      if (value) {
+        this.fullcalendar.option('filterResourcesWithEvents', true);
+      } else {
+        this.fullcalendar.option('filterResourcesWithEvents', false);
+      }
+    }
+
+    this.refresh({ background: true });
+  }
 
   _generate_navigation() {}
 
@@ -125,22 +187,38 @@ export class Planning extends HtmlCustomDataTag {
       sourcesCallback: this._resource_loading_callback.bind(this),
     });
 
+    if (this.workspace.isPublic)
+      calendar.addConfig('filterResourcesWithEvents', true);
+
     calendar.setAttribute('id', `${this.internalId}-calendar`);
 
     calendar.onallloaded.push(() => {
-      if (!this._generate_calendar.ok) {
-        setTimeout(async () => {
-          if (!this.#eventsSource.nextGetFinished)
-            await Mel_Promise.wait(() => this.#eventsSource.nextGetFinished);
-          if (!this.#resourceSource.nextGetFinished)
-            await Mel_Promise.wait(() => this.#resourceSource.nextGetFinished);
+      this._unload();
 
-          this._generate_calendar.ok = true;
-
-          this.refresh();
-        }, 1000);
+      if (!this._nextLoad) {
+        this._nextLoad = true;
+        setTimeout(() => {
+          this.refresh({ background: true });
+        }, 100);
       }
     });
+
+    // calendar.onallloaded.push(() => {
+    //   if (!this._generate_calendar.ok) {
+    //     setTimeout(async () => {
+    //       if (!this.#eventsSource.nextGetFinished)
+    //         await Mel_Promise.wait(() => this.#eventsSource.nextGetFinished);
+    //       if (!this.#resourceSource.nextGetFinished)
+    //         await Mel_Promise.wait(() => this.#resourceSource.nextGetFinished);
+
+    //       this._generate_calendar.ok = true;
+
+    //       this.querySelector('.bnum-loader')?.remove?.();
+
+    //       this.refresh();
+    //     }, 1000);
+    //   }
+    //});
 
     calendar.addEventListener('api:fc.render.event', (e) => {
       this.#eventsSource.render(e);
@@ -221,7 +299,30 @@ export class Planning extends HtmlCustomDataTag {
     return x.id === ID_RESOURCES_WSP ? CONFIG_FIRST_LETTER : x.title;
   }
 
-  refresh() {
+  _load() {
+    this.appendChild(
+      MelObject.Empty()
+        .generate_loader(`loader-${this.internalId}`, true)
+        .generate()[0],
+    );
+    this.style.backgroundColor = 'black';
+    this.style.opacity = '0.6';
+  }
+
+  _unload() {
+    $(`#loader-${this.internalId}`).remove();
+    this.style.backgroundColor = null;
+    this.style.opacity = null;
+  }
+
+  render() {
+    this._load();
+    this.fullcalendar.render();
+  }
+
+  refresh({ background = false } = {}) {
+    if (!background) this._load();
+
     this.calendarNode.fetch();
   }
 
@@ -237,17 +338,66 @@ export class Planning extends HtmlCustomDataTag {
 
 window.addEventListener('load', () => {
   for (const element of document.querySelectorAll('bnum-planning')) {
-    element.calendarNode.render();
+    element.render();
   }
 });
+
+class DataSource {
+  #data = {};
+  constructor() {}
+
+  add(date, data) {
+    date = moment(date).format('DD/MM/YYYY');
+    this.#data[date] = data;
+
+    return this;
+  }
+
+  *get(date) {
+    if (this.has(date) && this.#data[date].length > 0) {
+      yield* this.#data[date];
+    }
+  }
+
+  toArray(date) {
+    return [...this.get(date)];
+  }
+
+  has({ date = null } = {}) {
+    if (date) {
+      if (typeof date !== 'string') date = date.format('DD/MM/YYYY');
+
+      return this.has() && this.#data[date];
+    }
+    return Object.keys(this.#data).length > 0;
+  }
+
+  serialize() {
+    return JSON.stringify(this.#data);
+  }
+
+  unserialize(data) {
+    data = JSON.parse(data);
+
+    return this;
+  }
+
+  get obj() {
+    return this.#data;
+  }
+}
 
 class SourceLoader extends WorkspaceObject {
   #key = null;
   #url = null;
   #type = null;
   #loadCallback = null;
-  #firstLoad = true;
   #nextGet = false;
+  #data = new DataSource();
+
+  get data() {
+    return this.#data.obj;
+  }
 
   constructor(key, url, type, loadCallback) {
     super();
@@ -259,75 +409,93 @@ class SourceLoader extends WorkspaceObject {
 
     this.onfirstdataloaded = new BnumEvent();
     this.ondataloaded = new BnumEvent();
+
+    //const start = moment().startOf('day');
+    // this.#data.add(
+    //   moment(),
+    //   this._p_try_load(start, moment(start).add(1, 'd')),
+    //   { unload: false },
+    // );
   }
 
   key(start, end) {
     if (!start.format) start = moment(start);
     if (!end.format) end = moment(end);
 
-    return `${this.#key}-${this.workspace.uid}-${start.format()}-${end.format()}`;
+    return `${this.#key}-${start.format()}-${end.format()}`;
   }
 
   get nextGetFinished() {
     return this.#nextGet;
   }
 
-  async get(start, end, { force = false } = {}) {
-    let data = null;
-    this.#nextGet = false;
-    try {
-      const firstLoad = this.#firstLoad;
+  async get(start, end, { force = false, ignore = false } = {}) {
+    if (ignore) return;
+    // debugger;
 
-      if (this.#firstLoad) this.#firstLoad = false;
+    const key = start.format('DD/MM/YYYY');
+    /**
+     * @type {?DataSource}
+     */
+    let data = force ? null : this.#data;
+    console.log('src', data, data?.has?.());
 
-      if (!force) {
-        data = this.#_try_load(start, end);
+    if (!data || !data?.has?.(key)) {
+      data = force ? null : this.#_load(); //this._p_try_load(start, end);
 
-        if (data) {
-          this.get(start, end, { force: true }).then(() => {
-            if (firstLoad) this.onfirstdataloaded.call(start, end, this);
-            this.#nextGet = true;
+      if (!data || !data?.has?.(key)) {
+        if (this.#loadCallback) {
+          data = await this.#loadCallback(start, end, this, force);
+        } else {
+          await this.http_call({
+            url: this.#url,
+            on_success: (result) => {
+              try {
+                result = JSON.parse(result);
+              } catch (error) {}
+
+              result = this.ondataloaded.call(result, this) || result;
+
+              data = result;
+            },
+            params: {
+              _start: start,
+              _end: end,
+            },
+            type: this.#type,
           });
-          return MelEnumerable.from(data)
-            .select((x) => {
-              x.start = moment(x.start);
-              x.end = moment(x.end);
-              return x;
-            })
-            .toArray();
         }
-      }
 
-      if (this.#loadCallback) {
-        data = await this.#loadCallback(start, end, this, force);
-      } else {
-        await this.http_call({
-          url: this.#url,
-          on_success: (result) => {
-            try {
-              result = JSON.parse(result);
-            } catch (error) {}
-
-            result = this.ondataloaded.call(result, this) || result;
-
-            data = result;
-          },
-          params: {
-            _start: start,
-            _end: end,
-          },
-          type: this.#type,
-        });
-      }
-
-      this.save(this.key(start, end), data);
-
-      this.#_loadNextDay(start, end);
-    } catch (error) {
-      debugger;
-    }
+        this.#data.add(start, data);
+        this.#_save(data);
+        // if (this.#data[key]) this.#data[key] = {};
+        // this.#data[key] = data;
+      } else data = data.toArray(key);
+    } else data = data.toArray(key); //.toArray(key); //MelEnumerable.from(data.get.bind(data, key));
 
     return data;
+  }
+
+  #_save() {
+    //this.save('planning-' + this.#key, this.#data.serialize());
+    let saved = this.load(this.#key, {});
+    saved[this.workspace.uid] = this.#data.serialize();
+    this.save(this.#key, saved);
+    return this;
+  }
+
+  #_load() {
+    let data = this.load(this.#key, {});
+
+    if (data[this.workspace.uid]) {
+      this.#data.unserialize(data[this.workspace.uid]);
+
+      delete data[this.workspace.uid];
+
+      this.save(this.#key, data);
+    }
+
+    return this.#data;
   }
 
   /**
@@ -340,7 +508,7 @@ class SourceLoader extends WorkspaceObject {
     return this;
   }
 
-  #_try_load(start, end, { unload = true } = {}) {
+  _p_try_load(start, end, { unload = true } = {}) {
     const key = this.key(start, end);
     let data = this.load(key, null);
 
@@ -352,7 +520,7 @@ class SourceLoader extends WorkspaceObject {
   async #_loadNextDay(start, end) {
     start = moment(start).add(1, 'd');
 
-    if (!this.#_try_load(start, end, { unload: false }))
+    if (!this._p_try_load(start, end, { unload: false }))
       await this.get(start, end, { force: true });
   }
 
@@ -392,6 +560,7 @@ class EventSourceLoader extends SourceLoader {
       )
       .select((x) => {
         return {
+          internalId: x.id,
           initial_data: x,
           title: x.title,
           start: x.allDay ? moment(x.start).startOf('day') : x.start,
@@ -408,8 +577,16 @@ class EventSourceLoader extends SourceLoader {
             : 'black',
         };
       })
-      .toArray();
+      .select((x) => {
+        x.dates = {
+          start: moment(x.start).format(DATE_SERVER_FORMAT),
+          end: moment(x.end).format(DATE_SERVER_FORMAT),
+        };
 
+        return x;
+      })
+      .toArray();
+    console.log('event', events);
     return events;
   }
 
@@ -450,14 +627,60 @@ class EventSourceLoader extends SourceLoader {
 
 class ResourcesSourceLoader extends SourceLoader {
   #timeslot = null;
-  constructor(key, timeslot) {
+  /**
+   * @type {Planning}
+   */
+  #planning = null;
+  constructor(key, timeslot, planning) {
     super(key, null, null, null);
 
     this.#timeslot = timeslot;
+    this.#planning = planning;
     this._p_setLoadCallback(this._sourceLoad.bind(this));
   }
 
+  get searchValue() {
+    return this.#planning.querySelector(SearchBar.TAG)?.value || false;
+  }
+
+  async get(start, end, { force = false } = {}) {
+    await super.get(null, null, { ignore: true });
+    const search = this.searchValue?.toUpperCase?.();
+    let result = null;
+
+    if (search && !force) {
+      // debugger;
+      result = await super.get(start, end, {
+        force: this.workspace.isPublic,
+      });
+
+      result = MelEnumerable.from(result)
+        .where((x) =>
+          this.workspace.users
+            .get(x.resourceId)
+            .name.toUpperCase()
+            .includes(search),
+        )
+        .aggregate(
+          MelEnumerable.from(this.workspace.users)
+            .where((x) => x.name.toUpperCase().includes(search))
+            .select((x) => {
+              return {
+                title: 'tmp',
+                start: moment(start).startOf('day'),
+                end: moment(start).startOf('day').add('1', 'm'),
+                resourceId: x.email,
+                color: 'transparent',
+              };
+            }),
+        );
+    } else result = (await super.get(start, end, { force })) || [];
+
+    return result.toArray ? result.toArray() : result;
+  }
+
   async _sourceLoad(date) {
+    console.log('loading....', date);
     let resources = [];
 
     resources.push({
@@ -466,7 +689,15 @@ class ResourcesSourceLoader extends SourceLoader {
     });
 
     for await (const iterator of FreeBusyLoader.Instance.generate_and_save(
-      MelEnumerable.from(this.workspace.users)
+      MelEnumerable.from(
+        this.workspace.isPublic
+          ? this.searchValue
+            ? MelEnumerable.from(this.workspace.users).where((x) =>
+                x.name.toUpperCase().includes(this.searchValue.toUpperCase()),
+              )
+            : [this.workspace.users.get(MelCurrentUser.main_email)]
+          : this.workspace.users,
+      )
         .where((x) => !x?.external)
         .select((x) => x.email),
       {
@@ -502,8 +733,16 @@ class ResourcesSourceLoader extends SourceLoader {
             title: Slot.TEXTES[slot.state],
             start: slot.start,
             end: slot.end,
+            dates: {
+              start: slot.start.format(DATE_SERVER_FORMAT),
+              end: slot.end.format(DATE_SERVER_FORMAT),
+            },
             color: Slot.COLORS[slot.state],
             resourceId: iterator.id,
+            internalId:
+              slot.start.format('YYYY-MM-DDTHH:mm:ss') +
+              slot.end.format('YYYY-MM-DDTHH:mm:ss') +
+              iterator.id,
           };
         }
       }
@@ -518,6 +757,7 @@ class ResourcesSourceLoader extends SourceLoader {
     let labelTds = e.itemNode;
     let resourceObj = e.itemData;
     if (resourceObj.id !== ID_RESOURCES_WSP) {
+      console.log('label', labelTds);
       labelTds
         .attr(
           'title',

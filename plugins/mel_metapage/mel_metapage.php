@@ -2830,11 +2830,12 @@ class mel_metapage extends bnum_plugin
 
     public function debug_and_test()
     {
-        $block = mel_helper::Parse('mel_visio.block/input_room');
-        $block->value = "5458RJKHZJK";
-        $block->set_other_variable('data test', 'yolo');
-        $block = $block->parse();
-        $this->include_script('js/actions/test.js');
+        // $block = mel_helper::Parse('mel_visio.block/input_room');
+        // $block->value = "5458RJKHZJK";
+        // $block->set_other_variable('data test', 'yolo');
+        // $block = $block->parse();
+        //$this->include_script('js/actions/test.js');
+        $this->include_web_component()->SearchBar();
         $this->rc->output->send('mel_metapage.test');
     }
 

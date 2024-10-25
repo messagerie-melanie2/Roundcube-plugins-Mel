@@ -26,6 +26,7 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     this.onviewchanged = new BnumEvent();
 
     this._loaded = [];
+    this._config = {};
 
     this.oneventrender.push((...args) => {
       const [obj, node] = args;
@@ -209,20 +210,21 @@ export class FullCalendarElement extends HtmlCustomDataTag {
 
                 if (flat.any()) events.push(...flat);
               }
-              console.log(id, events);
+              //              console.log(id, events);
               callback(events);
 
-              this._loaded.push(true);
+              // this._loaded.push(true);
 
-              if (this._loaded.length >= this.eventsSource.length) {
-                this.onallloaded.call({
-                  caller: this,
-                });
+              // if (this._loaded.length >= this.eventsSource.length) {
+              //   this.onallloaded.call({
+              //     caller: this,
+              //   });
 
-                this._loaded.length = 0;
-              }
+              //   this._loaded.length = 0;
+              //}
             } catch (error) {
               debugger;
+              console.error(error);
             }
           }.bind(
             this,
@@ -234,7 +236,17 @@ export class FullCalendarElement extends HtmlCustomDataTag {
       }
     }
 
+    if (Object.keys(this._config).length > 0) {
+      for (const key of Object.keys(this._config)) {
+        config[key] = this._config[key];
+      }
+    }
+
     let calendar = new FullCalendar.Calendar($(this), config);
+
+    calendar.on('eventAfterAllRender', (...args) => {
+      this.onallloaded.call(this, ...args);
+    });
 
     calendar.on('viewRender', (...args) => {
       this.onviewchanged.call(...args);
@@ -243,6 +255,11 @@ export class FullCalendarElement extends HtmlCustomDataTag {
     if (this.startRendering) calendar.render();
 
     this.calendar = calendar;
+  }
+
+  addConfig(name, value) {
+    this._config[name] = value;
+    return this;
   }
 
   prev() {

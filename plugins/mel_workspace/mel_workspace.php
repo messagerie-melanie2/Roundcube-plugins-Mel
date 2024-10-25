@@ -136,13 +136,14 @@ class mel_workspace extends bnum_plugin
             return $v;
         }));
 
-        if (!$workspace->isPublic()) {
-            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
-            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');
-            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
-            $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
-            $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
-        }
+        $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
+
+        $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
+        $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');
+        $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
+        $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
+        $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
+        
 
         $this->rc()->output->send('mel_workspace.workspace');
     }

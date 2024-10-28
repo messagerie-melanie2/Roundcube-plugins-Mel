@@ -340,7 +340,6 @@ export class html_events extends mel_html2 {
   }
 
   static async _action_click(source, date, event) {
-    debugger;
     const FRAME = 'calendar';
     //const page_manager = MelObject.Empty();
 

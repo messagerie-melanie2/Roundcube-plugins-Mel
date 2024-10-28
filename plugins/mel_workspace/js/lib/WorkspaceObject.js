@@ -232,6 +232,10 @@ class CurrentWorkspaceData {
     return rcmail.env.current_workspace_is_public;
   }
 
+  get color() {
+    return rcmail.env.current_workspace_color;
+  }
+
   app_loaded(service) {
     return (
       rcmail.env.current_workspace_services_actives[service] &&

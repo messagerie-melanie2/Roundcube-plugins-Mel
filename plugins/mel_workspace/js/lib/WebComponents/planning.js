@@ -10,8 +10,10 @@ import {
   DATE_SERVER_FORMAT,
 } from '../../../../mel_metapage/js/lib/constants/constants.dates.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
+import { html_events } from '../../../../mel_metapage/js/lib/html/html_events.js';
 import { BootstrapLoader } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import {
+  BnumHtmlFlexContainer,
   BnumHtmlIcon,
   EWebComponentMode,
   HtmlCustomDataTag,
@@ -44,7 +46,6 @@ export class Planning extends HtmlCustomDataTag {
   #resourceSource = null;
   constructor() {
     super({ mode: EWebComponentMode.div });
-
     this.#id = this.generateId('planning');
     this.#eventsSource = new EventSourceLoader('planning-events');
     this.#resourceSource = new (
@@ -52,6 +53,7 @@ export class Planning extends HtmlCustomDataTag {
     )('planning-resources', this.slotDurationTime, this);
 
     this._nextLoad = false;
+    this._dateHeader = null;
   }
 
   get loaders() {
@@ -81,7 +83,7 @@ export class Planning extends HtmlCustomDataTag {
   }
 
   get headerDate() {
-    return this.querySelector('#planning-date');
+    return this._dateHeader || this.querySelector('#planning-date');
   }
 
   get calSettings() {
@@ -106,7 +108,9 @@ export class Planning extends HtmlCustomDataTag {
   _p_main() {
     super._p_main();
 
-    let header = document.createElement('div');
+    this.style.position = 'relative';
+
+    let header = BnumHtmlFlexContainer.Create(); //document.createElement('div');
     header.classList.add('planning-element', 'planning-header');
     header.setAttribute('id', `header-planning-${this.internalId}`);
     header.style.display = 'flex';
@@ -118,6 +122,18 @@ export class Planning extends HtmlCustomDataTag {
       ._generate_search()
       ._generate_navigation()
       ._generate_calendar();
+
+    if (this.parentContainer.querySelector('.module-block-header')) {
+      this.parentContainer
+        .querySelector('.module-block-header')
+        .appendChild(this.header);
+    }
+  }
+
+  destroy() {
+    super.destroy();
+
+    this._dateHeader = null;
   }
 
   _generate_date() {
@@ -128,6 +144,8 @@ export class Planning extends HtmlCustomDataTag {
     icon.style.marginRight = '5px';
     let text = document.createElement('span');
     text.setAttribute('id', 'planning-date');
+
+    this._dateHeader = text;
 
     container.append(icon, text);
     this.header.appendChild(container);
@@ -173,19 +191,41 @@ export class Planning extends HtmlCustomDataTag {
   }
 
   _generate_navigation() {
-    let container = document.createElement('div');
+    let container = BnumHtmlFlexContainer.Create(); //document.createElement('div');
 
     let prev = document.createElement('button');
     prev.onclick = () => this._load() || this.calendarNode.prev();
+    prev.appendChild(BnumHtmlIcon.Arrow.left);
+    prev.classList.add('bckg', 'true');
 
     let next = document.createElement('button');
     next.onclick = () => this._load() || this.calendarNode.next();
+    next.appendChild(BnumHtmlIcon.Arrow.right);
+    next.classList.add('bckg', 'true');
 
     let today = document.createElement('button');
     today.onclick = () => this._load() || this.calendarNode.today();
+    today.appendChild(this.createText("Aujourd'hui"));
 
     let day = document.createElement('button');
-    day.onclick = () => this.querySelector(`#date-${this.internalId}`).click();
+    day.setAttribute('id', `btn-day-${this.internalId}`);
+    day.onclick = () => {
+      const fnc = function _accept_calendar(tmp) {
+        this._load();
+        //this.calendar.gotoDate(moment(tmp.val(), DATE_FORMAT));
+        this.calendarNode.date = moment(tmp.val(), DATE_FORMAT);
+        tmp.remove();
+        tmp = null;
+      };
+
+      let tmp = $('<input>')
+        .css({ position: 'absolute', opacity: 0, top: 0 })
+        .appendTo('body')
+        .datepicker();
+
+      tmp.on('change', fnc.bind(this, tmp)).click();
+    };
+    day.appendChild(BnumHtmlIcon.Chevron.down);
 
     for (const element of [prev, today, next, today, day]) {
       element.classList.add(
@@ -193,25 +233,33 @@ export class Planning extends HtmlCustomDataTag {
         'no-button-margin',
         'no-margin-button',
       );
+      element.style.maxHeight = '35px';
+      element.setAttribute('type', 'button');
 
-      element.addEventListener('click', () => this._load());
+      if (element.id !== `btn-day-${this.internalId}`)
+        element.addEventListener('click', () => this._load());
     }
+    let group = document.createElement('div');
+    group.classList.add('btn-group');
+    group.append(today, day);
+    group.style.margin = '0 10px';
 
-    container.append(prev, today, day, next);
+    container.append(prev, group, next);
 
-    let input = document.createElement('input');
-    input.type = 'datetime-local';
-    input.style.display = 'none';
-    input.setAttribute('id', `date-${this.internalId}`);
+    // let input = document.createElement('input');
+    // input.type = 'datetime-local';
+    // // input.style.display = 'none';
+    // input.setAttribute('id', `date-${this.internalId}`);
 
-    this.append(input, container);
+    this.header.append(/*input, */ container);
 
     container = null;
     prev = null;
     next = null;
     today = null;
     day = null;
-    input = null;
+    group = null;
+    // input = null;
 
     return this;
   }
@@ -328,20 +376,44 @@ export class Planning extends HtmlCustomDataTag {
 
   _load() {
     if (!$(`#loader-${this.internalId}`).length) {
-      this.appendChild(
-        MelObject.Empty()
-          .generate_loader(`loader-${this.internalId}`, true)
-          .generate()[0],
-      );
+      let loader = document.createElement('div');
+      loader.style.position = 'absolute';
+      loader.style.top = 0;
+      loader.style.left = 0;
+      loader.style.height = '100%';
+      loader.style.width = '100%';
+      loader.appendChild(BootstrapLoader.Create({ center: true }));
+      loader.setAttribute('id', `loader-${this.internalId}`);
+      loader.style.backgroundColor = '#00000070';
+      loader.style.zIndex = 1;
+      // loader.style.opacity = '0.6';
+
+      const nodes = this.parentContainer
+        .querySelector('.module-block-header')
+        .querySelectorAll('button,input');
+
+      for (const node of nodes) {
+        node.classList.add('disabled');
+        node.setAttribute('disabled', 'disabled');
+      }
+
+      this.appendChild(loader);
     }
-    this.style.backgroundColor = 'black';
-    this.style.opacity = '0.6';
   }
 
   _unload() {
+    const nodes = this.parentContainer
+      .querySelector('.module-block-header')
+      .querySelectorAll('button,input');
+
+    for (const node of nodes) {
+      node.classList.remove('disabled');
+      node.removeAttribute('disabled');
+    }
+
     $(`#loader-${this.internalId}`).remove();
-    this.style.backgroundColor = null;
-    this.style.opacity = null;
+    // this.style.backgroundColor = null;
+    // this.style.opacity = null;
   }
 
   render() {
@@ -371,6 +443,8 @@ window.addEventListener('load', () => {
   }
 });
 
+//#region Autres Classes
+//#region DataSources
 class IDataSource {
   constructor() {}
 
@@ -508,6 +582,8 @@ class PublicDataSource extends IDataSource {
     return this;
   }
 }
+//#endregion
+//#region Sources Loaders
 
 class SourceLoader extends WorkspaceObject {
   #key = null;
@@ -673,8 +749,10 @@ class EventSourceLoader extends SourceLoader {
 
   async _eventLoad(start, end) {
     const DEFAULT_COLOR = '#FF0000';
-    rcmail.env.current_settings ??= { color: DEFAULT_COLOR };
-    rcmail.env.current_settings.color ??= DEFAULT_COLOR;
+    rcmail.env.current_settings ??= {
+      color: this.workspace.color || DEFAULT_COLOR,
+    };
+    rcmail.env.current_settings.color ??= this.workspace.color || DEFAULT_COLOR;
 
     let events;
     if (start.format(DATE_FORMAT) === moment().format(DATE_FORMAT)) {
@@ -768,6 +846,18 @@ class EventSourceLoader extends SourceLoader {
       $el.css('display', 'none');
     }
   }
+
+  _event_on_click(eventObj) {
+    const start = eventObj.initial_data.start.toDate
+      ? eventObj.initial_data.start
+      : moment(eventObj.initial_data.start);
+    const date = start.toDate().getTime() / 1000.0;
+    html_events._action_click(
+      eventObj.initial_data.calendar,
+      date,
+      eventObj.initial_data,
+    );
+  }
 }
 
 class ResourcesSourceLoader extends SourceLoader {
@@ -785,7 +875,10 @@ class ResourcesSourceLoader extends SourceLoader {
   }
 
   get searchValue() {
-    return this.#planning.querySelector(SearchBar.TAG)?.value || false;
+    return (
+      this.#planning.parentContainer.querySelector(SearchBar.TAG)?.value ||
+      false
+    );
   }
 
   async get(start, end, { force = false } = {}) {
@@ -794,6 +887,7 @@ class ResourcesSourceLoader extends SourceLoader {
     let result = null;
 
     if (search && !force) {
+      // debugger;
       result = await super.get(start, end, {
         force: this.workspace.isPublic,
       });
@@ -824,6 +918,7 @@ class ResourcesSourceLoader extends SourceLoader {
   }
 
   async _sourceLoad(date) {
+    // debugger;
     console.log('loading....', date);
     let resources = [];
 
@@ -950,3 +1045,5 @@ class PublicResourceLoader extends ResourcesSourceLoader {
     return super._p_has(date, user) && this.dataSource.has({ date, user });
   }
 }
+//#endregion
+//#endregion

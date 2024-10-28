@@ -1,5 +1,6 @@
 import { BaseStorage } from '../../../classes/base_storage.js';
 import { Random } from '../../../classes/random.js';
+import { EMPTY_STRING } from '../../../constants/constants.js';
 import { MaterialIcon } from '../../../icons.js';
 export {
   HtmlCustomTag,
@@ -346,6 +347,8 @@ class HtmlCustomDataTag extends HtmlCustomTag {
    * @protected
    */
   _p_get_data(dataName) {
+    if (!this.#data) this.#data = new BaseStorage();
+
     if (!this.#data.has(dataName)) {
       this.#data.add(dataName, this.data(dataName));
       this.removeAttribute(`data-${dataName}`);
@@ -362,6 +365,11 @@ class HtmlCustomDataTag extends HtmlCustomTag {
 
   destroy() {
     super.destroy();
+
+    for (const key of this.#data.keys) {
+      if (['string', 'number'].includes(typeof this.#data.get(key)))
+        this.setAttribute(`data-${key}`, this.#data.get(key));
+    }
 
     this.#data.clear();
     this.#data = null;
@@ -431,6 +439,45 @@ class BnumHtmlIcon extends HtmlCustomTag {
   static get CalendarMonth() {
     return this.Create({ icon: 'calendar_month' });
   }
+
+  /**
+   * @type {{right:BnumHtmlIcon, left:BnumHtmlIcon, down:BnumHtmlIcon}}
+   */
+  static get Chevron() {
+    let obj = {};
+
+    Object.defineProperties(obj, {
+      right: {
+        get: () => this.Create({ icon: 'chevron-right' }),
+      },
+      left: {
+        get: () => this.Create({ icon: 'chevron-left' }),
+      },
+      down: {
+        get: () => this.Create({ icon: 'keyboard_arrow_down' }),
+      },
+    });
+
+    return obj;
+  }
+
+  static get Arrow() {
+    let obj = {};
+
+    Object.defineProperties(obj, {
+      right: {
+        get: () => this.Create({ icon: 'arrow_right_alt' }),
+      },
+      left: {
+        get: () => this.Create({ icon: 'arrow_left_alt' }),
+      },
+      down: {
+        get: () => this.Create({ icon: 'keyboard_arrow_down' }),
+      },
+    });
+
+    return obj;
+  }
 }
 
 /**
@@ -474,13 +521,21 @@ BnumHtmlSeparate.TAG = 'bnum-separate';
 
 class BnumHtmlFlexContainer extends HtmlCustomTag {
   constructor() {
-    super();
+    super({ mode: EWebComponentMode.flex });
   }
 
   _p_main() {
     super._p_main();
 
-    this.style.display = 'flex';
+    // this.style.display = 'flex';
+  }
+
+  /**
+   *
+   * @returns {BnumHtmlFlexContainer}
+   */
+  static Create() {
+    return document.createElement('bnum-flex-container');
   }
 }
 BnumHtmlFlexContainer.TAG = 'bnum-flex-container';

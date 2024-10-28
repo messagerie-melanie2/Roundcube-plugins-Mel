@@ -57,6 +57,10 @@ export class SearchBar extends HtmlCustomDataTag {
   _p_main() {
     super._p_main();
 
+    console.log('this', this, this.querySelector('form'));
+    if (this.querySelector('form')) return;
+    console.log('here', this);
+
     let form = document.createElement('form');
     form.setAttribute('role', 'search');
     form.setAttribute('id', `form-${this.internalId}`);

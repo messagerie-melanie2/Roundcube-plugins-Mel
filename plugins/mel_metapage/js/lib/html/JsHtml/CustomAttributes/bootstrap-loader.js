@@ -136,6 +136,10 @@ export class BootstrapLoader extends HtmlCustomDataTag {
     element = null;
   }
 
+  destroy() {
+    super.destroy();
+  }
+
   /**
    *
    * @param {*} [param0={}]

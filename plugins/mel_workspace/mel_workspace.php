@@ -136,6 +136,7 @@ class mel_workspace extends bnum_plugin
             return $v;
         }));
 
+        $this->rc()->output->set_env('current_workspace_color', $workspace->color());
         $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
 
         $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');

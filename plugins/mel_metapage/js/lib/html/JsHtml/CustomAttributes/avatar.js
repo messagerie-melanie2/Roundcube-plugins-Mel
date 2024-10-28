@@ -307,6 +307,7 @@ class AvatarElement extends HtmlCustomTag {
      * @type {string}
      */
     this._email = null;
+    this._id = null;
     /**
      * Taille (de 0 à 100) de la balise.
      *
@@ -353,7 +354,12 @@ class AvatarElement extends HtmlCustomTag {
       value: this.dataset.email || rcmail?.env?.current_user?.email || '?',
     });
 
+    Object.defineProperty(this, '_id', {
+      value: this.dataset.id,
+    });
+
     this.removeAttribute('data-email');
+    this.removeAttribute('data-id');
 
     if (this.dataset.f100) {
       this.setAttribute('data-force-size', '100');
@@ -413,14 +419,18 @@ class AvatarElement extends HtmlCustomTag {
    * Change la source de l'image par le bonne source et gère en cas d'erreur ou non.
    */
   update_img() {
+    const params = {};
+
+    if (this._email) config._email = this._email;
+
+    if (this._id) config._id = this._id;
+
     let img = this.shadowRoot.querySelector('img');
     img.onload = this._on_load.bind(this);
     img.onerror = this._on_error.bind(this);
     img.src = MelObject.Empty().url('mel_metapage', {
       action: 'avatar',
-      params: {
-        _email: this._email,
-      },
+      params,
     });
 
     img = null;

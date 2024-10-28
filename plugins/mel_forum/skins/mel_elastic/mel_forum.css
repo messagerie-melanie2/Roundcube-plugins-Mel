@@ -356,7 +356,7 @@
 }
 .task-forum .forum-comment .comment .forum-comment-author {
   font-weight: bold;
-  margin-right: 10px;
+  margin-right: 5px;
 }
 .task-forum .forum-comment .comment .forum-comment-date span {
   font-size: 12px;
@@ -371,8 +371,6 @@
   /* Poids de l'icône */
   display: inline-block;
   vertical-align: middle;
-  margin-right: 5px;
-  /* Espacement à droite de l'icône */
   margin-left: 5px;
 }
 .task-forum .forum-comment .comment .forum-comment-text {

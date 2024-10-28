@@ -667,25 +667,6 @@ class PostComment {
     // Détermination du pluriel ou du singulier pour "réponse(s)"
     let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
 
-    // Générer les initiales de l'utilisateur pour l'image de profil
-    let getInitials = function(fullName) {
-      const names = fullName.split(' ');
-      if (names.length === 0) return '?'; // Aucun nom donné
-      const firstInitial = names[0][0] || '';
-      const lastInitial = names.length > 1 ? names[names.length - 1][0] : ''; // Garde seulement la dernière partie
-      return (firstInitial + lastInitial).toUpperCase();    
-    };
-
-    // Générer une couleur de fond aléatoire pour l'image de profil
-    let getRandomColor = function() {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    };
-
     // Fonction pour parser une date en français
     function parseFrenchDate(dateString) {
       // Vérifiez si la date est au format ISO (ex: "2024-10-23 12:55:47")
@@ -774,8 +755,7 @@ class PostComment {
     // Préparez les données à insérer dans le template
     const data = {
       UID: this.uid,
-      PROFILE_COLOR: getRandomColor(),
-      USER_INITIALS: getInitials(this.user_name),
+      USER_ID: this.user_name,
       USER_NAME: this.user_name,
       COMMENT_DATE: formatCommentDate(this.created),
       COMMENT_CONTENT: this.content,

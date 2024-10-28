@@ -168,6 +168,7 @@ public function index(){
  * @return void
  */
 public function post(){
+    mel_metapage::IncludeAvatar();
     //Récupérér uid avec GET
     $this->load_script_module('manager');
     $uid = 'VOszRaUI1dQRuQGs2NzKiKZ0';

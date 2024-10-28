@@ -70,8 +70,9 @@
 
         <div class="row my-4 d-flex align-items-center">
           <div class="col-auto pr-0">
-            <img src="https://img.freepik.com/photos-premium/lettre-alphabet-vue-dessus-fond-colore_680303-5663.jpg"
-              alt="Image de Profil" class="forum-comment-profile-image">
+            <!-- <img src="https://img.freepik.com/photos-premium/lettre-alphabet-vue-dessus-fond-colore_680303-5663.jpg"
+              alt="Image de Profil" class="forum-comment-profile-image"> -->
+              <bnum-avatar  class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color);"></bnum-avatar>
           </div>
           <div class="col pl-0">
             <textarea id="new-comment-textarea" class="forum-comment-input" placeholder="Ajouter un commentaire" rows="1"></textarea>
@@ -104,9 +105,10 @@
             <div id="comment-id-%%UID%%" data-number-children="%%NUMBER_CHILDREN%%" class="row comment">
               <div class="col-12">
                 <div class="forum-comment flex align-items-center">
-                  <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                  <bnum-avatar class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" data-id="%%USER_ID%%" data-forceload="true"></bnum-avatar>
+                  <!-- <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                     %%USER_INITIALS%%
-                  </div>
+                  </div> -->
                   <span class="forum-content-author">%%USER_NAME%%</span>
                   <div class="forum-comment-date d-flex">
                     <span class="icon" data-icon="access_time"></span>

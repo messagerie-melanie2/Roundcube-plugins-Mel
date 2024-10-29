@@ -8,8 +8,6 @@
   <div class="content">
     <div class="row return-header d-flex justify-content-between mb-3">
       <div class="return">
-        <i class="material-symbols-outlined">keyboard_backspace</i>
-        <span class="ml-2">Articles</span>
       </div>
       <div>
         <button id="forum-button-add" class="mel-button btn btn-secondary">
@@ -54,166 +52,82 @@
     </div>
     <div class="row forum-content">
       <div class="col-12">
-        <roundcube:object name="forum_post" />
+        <div id="post-area"></div>
       </div>
     </div>
   </div>
 </div>
 
-<roundcube:include file="/includes/footer.html" />
-
-
-
-<!-- <div class="row custom-row-spacing">
-        <div class="posts">
-          <div class="contents rounded-none height-250" tabindex="0">
-            <div class="square-contents d-flex flex-column full-height">
-              <div class="details-row flex justify-content-between align-items-center">
-                <div class="details-left d-flex align-items-center ml-2 font-size-14">
-                  <div class="headlines-by">Duveau Dorian</div>
-                  <i class="material-symbols-outlined">access_time</i>
-                  <span class="ml-2">2 juin 2024</span>
-                </div>
-                <div class="details-right flex align-items-center ml-2 cursor-pointer">
-                  <i class="material-symbols-outlined">more_vert</i>
-                  <i class="material-symbols-outlined">star_border</i>
+<template id="post_template">
+  <div class="row post">
+    <a class="post-card" href="%%POST_LINK%%">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12">
+            <div class="post-header">
+              <div class="post-creator">
+                <img
+                  src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
+                  alt="Auteur Image"
+                  class="author-image"/>
+                <div class="post-creator-name">%%POST_CREATOR%%</div>
+                <div class="post-date">
+                  <i class="material-symbols-outlined">access_time</i
+                  ><span class="ml-1">%%POST_DATE%%</span>
                 </div>
               </div>
-              <div class="tags flex-wrap">
-                <span class="tag">#Chat</span>
-                <span class="tag">#Actualités</span>
+              <div class="post-actions">
+                <i class="more_action material-symbols-outlined" id="more-%%UID%%">more_vert</i>
+                %%FAVORITE%%
+                <i class="favorite material-symbols-outlined" id="favorite-%%UID%%">star_border</i>
               </div>
-              <h3 class="headlines-title bold">Un Chat Filou Dérobe un poisson au Marché : Scène Insolite</h3>
-              <div class="headlines-contents">
-                <p>
-                  <span>
-                    Les témoins de l'incident rapportent que le chat, visiblement habitué aux lieux, s'est faufilé discrètement parmi les étals de poissons frais. Profitant d'un moment d'inattention du marchand, il a sauté sur un étal et a attrapé un poisson avec ses griffes avant de s'enfuir rapidement.
-                  </span>
-                </p>
-              </div>
-              <div class="reactions flex align-items-center mt-2">
-                <div class="reaction-item flex align-items-center mr-3">
-                  <i class="material-symbols-outlined">mood</i>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-8 col-xl-10">
+            <div class="post-content">
+              <div class="post-tags" id="tag-area-%%UID%%"></div>
+      
+              <div class="post-title">%%POST_TITLE%%</div>
+      
+              <div class="post-summary">%%POST_SUMMARY%%</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4 col-xl-2">
+            <div class="post-image">%%POST_IMAGE%%</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="post-footer">
+              <div class="post-reaction">
+                <div id="add_reaction" class="reaction">
+                  <i class="material-symbols-outlined">add_reaction</i>
+                  <span class="ml-2">%%POST_COUNT_REACTION%%</span>
                 </div>
-                <div class="reaction-item d-flex align-items-center mr-3">
+                <div id="add_like" class="like">
                   <i class="material-symbols-outlined">thumb_up</i>
-                  <span class="ml-2">2</span>
+                  <span class="ml-2">%%POST_THUMB_UP%%</span>
                 </div>
-                <div class="reaction-item d-flex align-items-center mr-3">
+                <div id="add_dislike" class="dislike">
                   <i class="material-symbols-outlined">thumb_down</i>
-                  <span class="ml-2">0</span>
+                  <span class="ml-2">%%POST_THUMB_DOWN%%</span>
                 </div>
-                <div class="reaction-item d-flex align-items-center">
+                <div id="add_comment" class="comment">
                   <i class="material-symbols-outlined">comment</i>
-                  <span class="ml-2">4</span>
+                  <span class="ml-2">%%POST_COMMENTS%%</span>
                 </div>
-              </div>
-              <div class="separator"></div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-<!-- <div>
-        <div class="row custom-row-spacing">
-          <div class="posts">
-            <div class="contents rounded-none height-250" tabindex="0">
-              <div class="square-contents d-flex flex-column full-height">
-                <div class="details-row d-flex justify-content-between align-items-center">
-                  <div class="details-left d-flex align-items-center ml-2 font-size-14">
-                    <div class="headlines-by">Payen Thomas</div>
-                    <i class="material-symbols-outlined">access_time</i>
-                    <span class="ml-2">14 mai 2024</span>
-                  </div>
-                  <div class="details-right d-flex align-items-center ml-2 cursor-pointer">
-                    <i class="material-symbols-outlined">more_vert</i>
-                    <i class="material-symbols-outlined">star</i>
-                  </div>
-                </div>
-                <div class="tags flex-wrap">
-                  <span class="tag">#Code</span>
-                </div>
-                <h3 class="headlines-title bold">Utilisation de Jquery</h3>
-                <div class="headlines-contents">
-                  <p>
-                    <span>
-                      En jQuery, les méthodes before() et insertBefore() permettent toutes deux d'insérer du contenu avant un élément cible dans le DOM, mais elles s'utilisent de manière légèrement différente. Voici les différences entre les deux :
-                      Les deux méthodes réalisent la même tâche, mais la différence réside dans l'élément sur lequel vous appelez la méthode et la syntaxe utilisée pour spécifier le contenu et la cible.
-                    </span>
-                  </p>
-                </div>
-                <div class="reactions d-flex align-items-center mt-2">
-                  <div class="reaction-item d-flex align-items-center mr-3">
-                    <i class="material-symbols-outlined">mood</i>
-                  </div>
-                  <div class="reaction-item d-flex align-items-center mr-3">
-                    <i class="material-symbols-outlined">thumb_up</i>
-                    <span class="ml-2">8</span>
-                  </div>
-                  <div class="reaction-item d-flex align-items-center">
-                    <i class="material-symbols-outlined">thumb_down</i>
-                    <span class="ml-2">0</span>
-                  </div>
-                  <div class="reaction-item d-flex align-items-center">
-                    <i class="material-symbols-outlined">comment</i>
-                    <span class="ml-2">12</span>
-                  </div>
-                </div>
-                <div class="separator"></div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </a>
+  </div>
+</template>
+<template id="tag_template">
+  <span class="tag">%%TAG_NAME%%</span>
+</template>
 
-        <div>
-          <div class="row custom-row-spacing">
-            <div class="posts">
-              <div class="contents rounded-none height-250" tabindex="0">
-                <div class="square-contents d-flex flex-column full-height">
-                  <div class="details-row d-flex justify-content-between align-items-center">
-                    <div class="details-left d-flex align-items-center ml-2 font-size-14">
-                      <div class="headlines-by">Cotton Damien</div>
-                      <i class="material-symbols-outlined">access_time</i>
-                      <span class="ml-2">05 mai 2024</span>
-                    </div>
-                    <div class="details-right d-flex align-items-center ml-2 cursor-pointer">
-                      <i class="material-symbols-outlined">more_vert</i>
-                      <i class="material-symbols-outlined">star</i>
-                    </div>
-                  </div>
-                  <div class="tags flex-wrap">
-                    <span class="tag">#Code</span>
-                    <span class="tag">#Suggestion</span>
-                  </div>
-                  <h3 class="headlines-title bold">Outil de Suggestion : Boostez Votre Productivité avec des Recommandations Personnalisées</h3>
-                  <div class="headlines-contents">
-                    <p>
-                      <span>
-                        Dans un monde où l'information abonde et où le temps est précieux, les outils de suggestion jouent un rôle crucial pour améliorer la productivité et l'efficacité des utilisateurs. Ces outils, souvent basés sur des algorithmes de machine learning et d'intelligence artificielle, analysent les données des utilisateurs pour fournir des recommandations personnalisées et pertinentes.
-                      </span>
-                    </p>
-                  </div>
-                  <div class="reactions d-flex align-items-center mt-2">
-                    <div class="reaction-item d-flex align-items-center mr-3">
-                      <i class="material-symbols-outlined">mood</i>
-                    </div>
-                    <div class="reaction-item d-flex align-items-center mr-3">
-                      <i class="material-symbols-outlined">thumb_up</i>
-                      <span class="ml-2">8</span>
-                    </div>
-                    <div class="reaction-item d-flex align-items-center mr-3">
-                      <i class="material-symbols-outlined">thumb_down</i>
-                      <span class="ml-2">0</span>
-                    </div>
-                    <div class="reaction-item d-flex align-items-center">
-                      <i class="material-symbols-outlined">comment</i>
-                      <span class="ml-2">27</span>
-                    </div>
-                  </div>
-                  <div class="separator"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div> -->
+<roundcube:include file="/includes/footer.html" />

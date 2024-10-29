@@ -7,8 +7,8 @@
 <div id="layout-content" role="main">
   <div class="content">
     <div class="row return-header">
-      <div class="return">
-        <i class="material-symbols-outlined">keyboard_backspace</i>
+      <div class="return" id="go-back-to-articles">
+        <i class="material-symbols-outlined">arrow_back</i>
         <span class="ml-2">Articles</span>
       </div>
     </div>
@@ -40,43 +40,39 @@
           </div>
         </div>
         <div class="row my-4">
-          <roundcube:object name="show_tag_manager" />
-          <span class="tag">#Chat</span>
-          <span class="tag">#Actualités</span>
-          <span id="new-tag" class="tag">+ Ajouter un tag</span>
-          <input
-            id="new-tag"
-            type="text"
-            class="tag"
-            placeholder="+ Ajouter un tag"
-          />
+          <div class="tag-list">
+
+          </div>
+          <input type="text" placeholder="+ Ajouter un tag" name="add-tag" id="add-tag">
         </div>
-        <div class="row mt-4 d-flex justify-content-center">
+        <div class="mt-4 ">
           <div id="forum-content" class="forum-content mce_editor"></div>
+          <!-- <textarea id="MyID"></textarea> -->
         </div>
         <div class="row my-2">
-          <div
-            class="custom-control custom-switch no-click-focus d-flex align-items-center"
-          >
-            <input
-              name="message_extwin"
-              id="rcmfd_message_extwin"
-              type="checkbox"
-              class="form-check-input custom-control-input no-click-focus"
-            />
-            <label
-              for="rcmfd_message_extwin"
-              class="custom-control-label option-switch no-click-focus"
-            >
+          <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
+            <input name="message_extwin" id="rcmfd_message_extwin" type="checkbox"
+              class="form-check-input custom-control-input no-click-focus"/>
+            <label for="rcmfd_message_extwin" class="custom-control-label option-switch no-click-focus">
             </label>
+            <div class="d-flex justify-content-center align-items-center ml-2">
+              Autoriser uniquement les administrateurs de l’espace à modifier l’article
+              <!-- <span class="material-symbols-outlined options-help ml-2"
+                title="Ouvre les courriel dans une nouvelle fenêtre">
+                help
+              </span> -->
+            </div>
           </div>
-          <div class="d-flex justify-content-center align-items-center ml-2">
-            Autoriser uniquement les administrateurs de l’espace à modifier
-            l’article
-            <!-- <span class="material-symbols-outlined options-help ml-2"
-              title="Ouvre les courriel dans une nouvelle fenêtre">
-              help
-            </span> -->
+        </div>
+        <div class="row my-2">
+          <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
+            <input name="enable-comment" id="enable_comment" type="checkbox" checked
+              class="form-check-input custom-control-input no-click-focus"/>
+            <label for="enable_comment" class="custom-control-label option-switch no-click-focus">
+            </label>
+            <div class="d-flex justify-content-center align-items-center ml-2">
+              Autoriser la publication de commentaires
+            </div>
           </div>
         </div>
         <div class="row d-flex justify-content-end align-items-center">

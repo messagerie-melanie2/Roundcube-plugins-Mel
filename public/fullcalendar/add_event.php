@@ -65,7 +65,7 @@ $event->event_status = 2;
 $event->all_day = 0;
 
 if ($appointment['type'] == "webconf") {
-  $event->location = $appointment['location'] ? $appointment['location'] . '(' . $appointment['phone'] . ' | ' . $appointment['pin'] . ')' : "";
+  $event->location = $appointment['location'] ? $appointment['location'] . ' (' . $appointment['phone'] . ' | ' . $appointment['pin'] . ')' : "";
 } else {
   $event->location = $appointment['location'] ?? "";
 }

@@ -121,7 +121,9 @@ class PlanningManager extends MelObject {
   _start() {
     this._generate_visuals();
     //Gagner de la place
-    let $body = $(SELECTOR_BLOCK_BODY).html(EMPTY_STRING);
+    let $body = $(SELECTOR_BLOCK_BODY)
+      .html(EMPTY_STRING)
+      .css('height', '200px');
     //Calendrier
     const settings = window.cal?.settings || top.cal.settings;
     const resources = this.calendar_resources();
@@ -274,6 +276,33 @@ class PlanningManager extends MelObject {
       //On supprime les loaders
       $(`#${ID_LOADER}`).remove();
       $(`#${ID_BACKGROUND_LOADER}`).remove();
+
+      if (!this._unset_busy._t) {
+        this._unset_busy._t = setTimeout(() => {
+          let frame;
+          const interval = setInterval(() => {
+            $(window).resize();
+
+            frame = MelEnumerable.from(parent.$('iframe'))
+              .where(
+                (x) => x.contentWindow.location.href === window.location.href,
+              )
+              .firstOrDefault();
+
+            if (frame) {
+              if (
+                frame.style.display !== 'none' &&
+                $('.wsp-services').css('display') !== 'none'
+              ) {
+                $(window).resize();
+                frame = null;
+                this._unset_busy._t = null;
+                clearInterval(interval);
+              }
+            }
+          }, 100);
+        }, 1000);
+      }
     }
   }
 
@@ -478,9 +507,9 @@ class PlanningManager extends MelObject {
               $(window).resize();
               let frame = this.select_frame('workspace');
               $(frame[0].contentWindow).resize();
-  
+
               let wsp = frame[0].contentWindow.find('.side-workspaces');
-  
+
               if (wsp.length > 0) {
                 for (const element of wsp.find('iframe')) {
                   $(element.contentWindow).resize();
@@ -489,7 +518,7 @@ class PlanningManager extends MelObject {
 
               frame = null;
               wsp = null;
-            }
+            };
 
             func();
             setTimeout(() => {

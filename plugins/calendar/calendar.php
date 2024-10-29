@@ -2835,6 +2835,11 @@ $("#rcmfd_new_category").keypress(function(event) {
         $orga = null;
         $array_attendees = [];
         foreach ((array) $event['attendees'] as $attendee) {
+            // PAMELA - Pas de notification pour l'organisateur ?
+            if ($attendee['role'] == 'ORGANIZER') {
+                continue;
+            }
+
             // 0007053: MAJ Occurrence: Ajout d'un participant à une occurrence entraine la réception d'une notif d'annulation aux participants
             $current[] = strtolower($attendee['email']);
 

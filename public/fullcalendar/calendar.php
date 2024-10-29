@@ -11,7 +11,11 @@ if (!defined('CONFIGURATION_APP_LIBM2')) {
 
 if ($config['DEV']) {
   $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
-} else {
+} 
+else if ($config['DOCKER']) {
+  $dir = __DIR__ . '/../../bnum';
+}
+else {
   $dir = __DIR__ . '/../..';
 }
 

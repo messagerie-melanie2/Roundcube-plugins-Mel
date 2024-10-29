@@ -223,10 +223,12 @@ export class LinkManager extends MelObject {
       .end('button')
       .end('div')
       .end('row')
-      .row({ class: 'm-2 list-filter-container' })
+      .row({ class: 'm-2' })
       .span({ class: 'font-weight-bold' })
       .text(rcmail.gettext('category_filter', 'mel_useful_link'))
       .end('span')
+      .end('row')
+      .row({class: 'm-2 list-filter-container overflow-auto'})
       .div({ id: 'list-filters-container' })
       .end('div')
       .end('row')
@@ -244,7 +246,7 @@ export class LinkManager extends MelObject {
 
     this.newStoreModal = new RcmailDialog(html, {
       title: rcmail.gettext('app_store_title', 'mel_useful_link'),
-      options: { height: 600, minWidth: 700 },
+      options: { height: 600, minWidth: 711 },
     });
     this.loadStoreDialog();
   }
@@ -318,6 +320,7 @@ export class LinkManager extends MelObject {
               link.icon,
               link.description,
               this.linksIdList.includes(item) ? true : false,
+              link.image ?? null
             );
 
             foundLink.displayStoreLink().appendTo('#list-store-app');
@@ -347,6 +350,7 @@ export class LinkManager extends MelObject {
             link.icon,
             link.description,
             this.linksIdList.includes(item) ? true : false,
+            link.image ?? null
           );
           storeLink.displayStoreLink().appendTo('#list-store-app');
           isLinks = true;

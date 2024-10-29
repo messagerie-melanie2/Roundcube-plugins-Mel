@@ -26,8 +26,11 @@ if (! defined('CONFIGURATION_APP_LIBM2')) {
 if ($config['DEV']) {
   $dir = str_replace('/public/freebusy', '', dirname($_SERVER['SCRIPT_FILENAME']));
 }
+else if ($config['DOCKER']) {
+  $dir = __DIR__ . '/../../bnum';
+}
 else {
-  $dir = __DIR__.'/../..';
+  $dir = __DIR__ . '/../..';
 }
 
 // Inclusion de l'ORM M2

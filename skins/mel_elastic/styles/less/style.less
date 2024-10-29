@@ -140,6 +140,8 @@ main {
 }
 
 #layout {
+  overflow: unset;
+
   & > div {
     & > .header {
       .mel-no-border();
@@ -6065,6 +6067,10 @@ html.layout-large {
 
 html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons {
   display: block;
+
+  button.submit {
+    display: inline-block !important;
+  }
 }
 
 html.layout-phone .task-mail {

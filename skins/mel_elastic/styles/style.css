@@ -173,6 +173,9 @@ main {
   background-color: var(--layout-list-background-color) !important;
   color: var(--secondary-text-color) !important;
 }
+#layout {
+  overflow: unset;
+}
 #layout > div > .header {
   border: none;
 }
@@ -4469,6 +4472,9 @@ html.layout-large.hidden-large {
 }
 html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons {
   display: block;
+}
+html.layout-phone .task-settings.action-edit-folder.formcontainer .formbuttons button.submit {
+  display: inline-block !important;
 }
 html.layout-phone .task-mail .popover .menu .dropbutton a.dropdown {
   background: transparent;

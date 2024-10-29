@@ -350,7 +350,10 @@ function m_mp_Create() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('create-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('help-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           const element = actions[key];
@@ -363,8 +366,7 @@ function m_mp_Create() {
                     `);
         }
       }
-
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('create-initialized');
     }
     window.create_popUp.close();
 
@@ -730,7 +732,7 @@ function m_mp_step3_param(type) {
             case 'already_exist':
               $param_button.addClass('selected');
               $select.attr('disabled', 'disabled').addClass('disabled');
-              rcmail.set_busy(true, 'loading');
+              const busy = rcmail.set_busy(true, 'loading');
               $custom_name_div.css('display', 'none');
               mel_metapage.Functions.post(
                 mel_metapage.Functions.url('wekan', 'get_user_board'),
@@ -754,7 +756,18 @@ function m_mp_step3_param(type) {
                     .removeAttr('disabled', 'disabled')
                     .removeClass('disabled');
                 },
-              );
+                (err) => {
+                  rcmail.display_message(
+                    'Erreur lors de la récupération des tableaux',
+                    'error',
+                  );
+                },
+              ).always(() => {
+                rcmail.set_busy(false, 'loading', busy);
+                $select
+                  .removeAttr('disabled', 'disabled')
+                  .removeClass('disabled');
+              });
 
               break;
 
@@ -1348,6 +1361,16 @@ async function m_mp_CreateWorkSpace() {
         rcmail.display_message(
           "impossible d'ajouter " + element + " à l'espace de travail !",
         );
+      }
+
+      for (const element of data.uncreated_services) {
+        if (element === 'tasks') {
+          parent.rcmail.display_message(
+            'La création du service "Kanban" n\'a pas été possible, le service des tâche a donc été désactivé et doit être activé manuellement.',
+            'error',
+          );
+          break;
+        }
       }
 
       const action = {
@@ -2202,7 +2225,10 @@ function m_mp_Help() {
   }
 
   if (isSmall) {
-    if (!$('#groupoptions-createthings').hasClass('initialized')) {
+    if (!$('#groupoptions-createthings').hasClass('help-initialized')) {
+      $('#ul-createthings').empty();
+      $('#groupoptions-createthings').removeClass('create-initialized');
+
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
           //On cache l'onboarding sur mobile
@@ -2219,7 +2245,7 @@ function m_mp_Help() {
         }
       }
 
-      $('#groupoptions-createthings').addClass('initialized');
+      $('#groupoptions-createthings').addClass('help-initialized');
     }
     window.help_popUp.close();
 

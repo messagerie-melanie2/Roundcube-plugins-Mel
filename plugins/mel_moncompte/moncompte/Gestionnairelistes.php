@@ -152,11 +152,11 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'members_email', 'is_dynamic']) 
+				if ($group->load(['owners', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user)) {
 					$list_emails = array_map('strtolower', $group->members_email);
 					sort($list_emails);
-					$islistdyn = $group->is_dynamic;
+					$islistdyn = $group->is_dynamic || !empty($group->liens_import);
 				}
 			}
 		}
@@ -182,9 +182,9 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user)) {
-					if (!$group->is_dynamic) {
+					if (!$group->is_dynamic && empty($group->liens_import)) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
 						$list_members = is_array($group->members) ? $group->members : [];
 						if ($group->authentification(null, true)) {
@@ -235,9 +235,9 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user)) {
-					if (!$group->is_dynamic) {
+					if (!$group->is_dynamic && empty($group->liens_import)) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
 						$list_members = is_array($group->members) ? $group->members : [];
 						if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, var_export($list_members, true));
@@ -289,9 +289,10 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic', 'liens_import']) 
 						&& $group->isOwner($user) 
-						&& !$group->is_dynamic 
+						&& !$group->is_dynamic
+						&& empty($group->liens_import)
 						&& $group->authentification(null, true)) {
 					$group->members = [];
 					$group->members_email = [];
@@ -320,8 +321,8 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
-						&& $group->isOwner($user) && !$group->is_dynamic) {
+				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic', 'liens_import']) 
+						&& $group->isOwner($user) && !$group->is_dynamic && empty($group->liens_import)) {
 					$members = implode("\r\n", $group->members_email);
 
 					$export = '# Export le ' . date('d/m/y') . "\r\n"
@@ -352,8 +353,8 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
-						&& $group->isOwner($user) && !$group->is_dynamic) {
+				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic', 'liens_import']) 
+						&& $group->isOwner($user) && !$group->is_dynamic && empty($group->liens_import)) {
 					if ($filepath = $_FILES['_listes_csv']['tmp_name']) {
 						$lines = file($filepath);
 						$members = [];

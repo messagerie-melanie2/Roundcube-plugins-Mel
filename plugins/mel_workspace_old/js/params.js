@@ -695,6 +695,10 @@
       return this.ajax(this.url('PARAMS_update_app'), {
         _uid: this.uid,
         _app: app,
+      }, (d) => {
+        if (d === 'error') {
+          parent.rcmail.display_message('Impossible de créer le service pour le moment.', 'error');
+        }
       })
         .always(() => {
           return this.update_app_table(() => {

@@ -1,7 +1,6 @@
 .task-forum {
   /* Styles pour le conteneur avec une barre de défilement */
   /* Assure que le contenu n'est pas coupé et qu'une barre de défilement est visible si nécessaire */
-  /* Modifier l'apparence au survol des boutons */
 }
 .task-forum .scrollable-container {
   overflow-y: auto;
@@ -156,7 +155,6 @@
   max-width: 100px;
 }
 .task-forum .post-header-custom {
-  /* Ajustez le padding selon vos besoins */
   position: relative;
   /* Permet la position absolue des enfants */
 }
@@ -192,6 +190,9 @@
   display: flex;
   align-items: center;
 }
+.task-forum .author-info-custom > div {
+  text-align: center;
+}
 .task-forum .author-image {
   width: 50px;
   height: 50px;
@@ -203,9 +204,6 @@
 }
 .task-forum .mt-2 {
   margin-top: 4px;
-}
-.task-forum .author-info-custom > div {
-  text-align: center;
 }
 .task-forum .separator-custom {
   max-width: 900px;
@@ -284,9 +282,15 @@
 .task-forum .return-header .return {
   display: flex;
   align-items: center;
+  padding: 6px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
 }
 .task-forum .return-header .return span {
   font-size: 20px;
+}
+.task-forum .return-header .return:hover {
+  background-color: var(--hover-background-color);
 }
 .task-forum .forum-sort {
   display: flex;
@@ -305,8 +309,8 @@
   margin-top: 15px;
 }
 .task-forum .forum-comment .forum-comment-profile-image {
-  width: 30px;
-  height: 30px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 10px;
@@ -330,13 +334,27 @@
   max-width: 150px;
   background-color: transparent;
   border: transparent;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.task-forum .forum-comment .forum-comment-sort #forum-comment-select:hover {
+  background-color: var(--hover-background-color);
 }
 .task-forum .forum-comment .comment {
+  display: flex;
+  /* Aligne les éléments en ligne */
+  align-items: center;
+  /* Aligne les éléments verticalement au centre */
   margin-bottom: 20px;
+}
+.task-forum .forum-comment .comment .forum-comment-date {
+  display: flex;
+  align-items: center;
+  /* Aligne l'icône et le texte de la date au centre */
 }
 .task-forum .forum-comment .comment .forum-comment-author {
   font-weight: bold;
-  margin-right: 10px;
+  margin-right: 5px;
 }
 .task-forum .forum-comment .comment .forum-comment-date span {
   font-size: 12px;
@@ -351,8 +369,6 @@
   /* Poids de l'icône */
   display: inline-block;
   vertical-align: middle;
-  margin-right: 5px;
-  /* Espacement à droite de l'icône */
   margin-left: 5px;
 }
 .task-forum .forum-comment .comment .forum-comment-text {
@@ -365,6 +381,10 @@
   display: flex;
   align-items: center;
 }
+.task-forum .forum-comment .comment .forum-comment-reactions .icon {
+  color: var(--forum-active-text-color);
+  /* Couleur uniforme pour toutes les icônes */
+}
 .task-forum .forum-comment .comment .forum-comment-reactions .icon::before {
   font-family: 'Material Symbols Outlined';
   content: attr(data-icon);
@@ -372,14 +392,32 @@
   font-variation-settings: 'wght' 400;
   display: inline-block;
   vertical-align: middle;
-  margin-right: 5px;
+  color: inherit;
+  /* L'icône hérite de la couleur */
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item {
   display: flex;
   align-items: center;
+  padding: 6px 6px;
+  border-radius: 5px;
+  /* Forme allongée avec extrémités arrondies */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Transition fluide pour le hover */
+  margin-right: 3px;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item span {
   font-size: 12px;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover {
+  background-color: var(--hover-background-color);
+  /* Couleur de fond au survol */
+  cursor: pointer;
+}
+.task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1;
+  /* Remplir l'icône lors du survol */
+  color: var(--forum-hover-text-color);
+  /* Optionnel : Changer la couleur au survol */
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.active .icon::before {
   font-family: 'Material Symbols Outlined';
@@ -412,8 +450,26 @@
   /* Pour aligner les éléments horizontalement */
   align-items: center;
   /* Aligne les éléments verticalement au centre */
-  margin-left: 40px;
+  margin-left: 29px;
   /* Ajuste la marge pour s'aligner avec les autres éléments */
+  padding: 6px 12px;
+  /* Espace autour du contenu */
+  border-radius: 5px;
+  /* Forme allongée */
+  max-width: 140px;
+  /* Limite de largeur maximale */
+  overflow: hidden;
+  /* Cache tout ce qui dépasse les 100px */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Transition fluide pour le hover */
+  background-color: transparent;
+  /* Fond transparent par défaut */
+  white-space: nowrap;
+  /* Empêche le retour à la ligne */
+}
+.task-forum .forum-comment-response:hover {
+  background-color: var(--hover-background-color);
+  /* Fond plus clair au survol */
 }
 .task-forum .forum-comment-response .icon::before {
   font-family: 'Material Symbols Outlined';
@@ -423,14 +479,16 @@
   display: inline-block;
   vertical-align: middle;
   color: var(--forum-active-text-color);
-  margin-right: 5px;
-  /* Espace à droite de l'icône */
+  transition: color 0.3s ease;
+  /* Transition fluide pour la couleur au hover */
 }
 .task-forum .forum-comment-response .ml-2 {
   font-size: 12px;
   /* Ajuste la taille du texte pour correspondre au design */
   color: var(--forum-active-text-color);
   /* Applique la couleur de texte souhaitée */
+  transition: color 0.3s ease;
+  /* Transition fluide pour la couleur au hover */
 }
 .task-forum .hidden {
   display: none;
@@ -625,10 +683,17 @@
   color: inherit;
   /* Conserver la couleur de texte définie par parent */
   border-radius: 5px;
+  /* Modifier l'apparence au survol des boutons */
 }
 .task-forum .comment-options-button:hover {
   background-color: rgba(0, 0, 0, 0.05);
   /* Légère modification au survol */
+}
+.task-forum .forum-comment-input {
+  margin-top: 5px;
+}
+.task-forum [role="button"] {
+  cursor: pointer;
 }
 .task-forum #go-back-to-articles:hover {
   color: var(--input-mel-text-color);

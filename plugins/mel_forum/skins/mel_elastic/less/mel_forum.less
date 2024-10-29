@@ -99,16 +99,6 @@
     justify-content: center;
   }
 
-  // .form-control {
-  //   display: block;
-  //   height: calc(1.5em + .75rem + 2px);
-  //   padding: .375rem + .75rem;
-  //   font-size: 1rem;
-  //   font-weight: 400;
-  //   line-height: 1.5;
-  //   background-clip: padding-box;
-  // }
-
   .forum-max-width-500 {
     max-width: 500px;
   }
@@ -195,16 +185,14 @@
     align-items: center;
     margin-left: auto;
     margin-right: 10px;
-  }
-
-  .image-container img {
+    
+    img {
     max-height: 100px;
     max-width: 100px;
-  }
+    }
+  } 
 
   .post-header-custom {
-    // padding: 10px;
-    /* Ajustez le padding selon vos besoins */
     position: relative;
     /* Permet la position absolue des enfants */
   }
@@ -242,10 +230,16 @@
     /* Center the text within the h2 */
   }
 
-  .author-info-custom .d-flex {
-    display: flex;
-    align-items: center;
-  }
+  .author-info-custom {
+    .d-flex {
+      display: flex;
+      align-items: center;
+    }
+
+    > div {
+      text-align: center;
+    }
+  }  
 
   .author-image {
     width: 50px;
@@ -260,10 +254,6 @@
 
   .mt-2 {
     margin-top: 4px;
-  }
-
-  .author-info-custom > div {
-    text-align: center;
   }
 
   .separator-custom {
@@ -359,9 +349,16 @@
     .return {
       display: flex;
       align-items: center;
+      padding: 6px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, border-radius 0.3s ease;
 
       span {
         font-size: 20px;
+      }
+
+      &:hover {
+        background-color: var(--hover-background-color);
       }
     }
   }
@@ -385,8 +382,8 @@
     margin-top: 15px;
 
     .forum-comment-profile-image {
-      width: 30px;
-      height: 30px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       object-fit: cover;
       margin-right: 10px;
@@ -412,15 +409,28 @@
         max-width: 150px;
         background-color: transparent;
         border: transparent;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        &:hover {
+          background-color: var(--hover-background-color);
+        }
       }
     }
 
     .comment {
+      display: flex; /* Aligne les éléments en ligne */
+      align-items: center; /* Aligne les éléments verticalement au centre */
       margin-bottom: 20px;
+
+      .forum-comment-date {
+        display: flex;
+        align-items: center; /* Aligne l'icône et le texte de la date au centre */
+      }
 
       .forum-comment-author {
         font-weight: bold;
-        margin-right: 10px;
+        margin-right: 5px;
       }
 
       .forum-comment-date {
@@ -436,7 +446,6 @@
           font-variation-settings: 'wght' 300; /* Poids de l'icône */
           display: inline-block;
           vertical-align: middle;
-          margin-right: 5px; /* Espacement à droite de l'icône */
           margin-left: 5px;
         }
       }
@@ -449,26 +458,44 @@
       .forum-comment-reactions {
         margin-left: 40px;
         position: relative;
-
         display: flex;
         align-items: center;
 
-        .icon::before {
-          font-family: 'Material Symbols Outlined';
-          content: attr(data-icon);
-          font-size: 19px;
-          font-variation-settings: 'wght' 400;
-          display: inline-block;
-          vertical-align: middle;
-          margin-right: 5px;
-        }
+        .icon {
+          color: var(--forum-active-text-color); /* Couleur uniforme pour toutes les icônes */
 
+          &::before {
+            font-family: 'Material Symbols Outlined';
+            content: attr(data-icon);
+            font-size: 19px;
+            font-variation-settings: 'wght' 400;
+            display: inline-block;
+            vertical-align: middle;
+            color: inherit; /* L'icône hérite de la couleur */
+          }
+        }  
         .reaction-item {
           display: flex;
           align-items: center;
+          padding: 6px 6px;
+          border-radius: 5px; /* Forme allongée avec extrémités arrondies */
+          transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
+          margin-right: 3px;
+
           span {
             font-size: 12px;
           }
+
+          &:hover {
+            background-color: var(--hover-background-color); /* Couleur de fond au survol */
+            cursor: pointer;
+
+            .icon::before {
+              font-variation-settings: 'wght' 400, 'FILL' 1; /* Remplir l'icône lors du survol */
+              color: var(--forum-hover-text-color); /* Optionnel : Changer la couleur au survol */
+            }
+          }
+
           &.active {
             .icon::before {
               font-family: 'Material Symbols Outlined';
@@ -479,7 +506,7 @@
               vertical-align: middle;
               margin-right: 5px;
               color: var(--forum-active-text-color);
-            font-variation-settings: 'FILL' 1,
+              font-variation-settings: 'FILL' 1,
             }
             
           }
@@ -510,7 +537,18 @@
   .forum-comment-response {
     display: flex; /* Pour aligner les éléments horizontalement */
     align-items: center; /* Aligne les éléments verticalement au centre */
-    margin-left: 40px; /* Ajuste la marge pour s'aligner avec les autres éléments */
+    margin-left: 29px; /* Ajuste la marge pour s'aligner avec les autres éléments */
+    padding: 6px 12px; /* Espace autour du contenu */
+    border-radius: 5px; /* Forme allongée */
+    max-width: 140px; /* Limite de largeur maximale */
+    overflow: hidden; /* Cache tout ce qui dépasse les 100px */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
+    background-color: transparent; /* Fond transparent par défaut */
+    white-space: nowrap; /* Empêche le retour à la ligne */
+
+    &:hover {
+      background-color: var(--hover-background-color); /* Fond plus clair au survol */
+    }
 
     .icon::before {
       font-family: 'Material Symbols Outlined';
@@ -520,13 +558,13 @@
       display: inline-block;
       vertical-align: middle;
       color: var(--forum-active-text-color);
-      margin-right: 5px; /* Espace à droite de l'icône */
+      transition: color 0.3s ease; /* Transition fluide pour la couleur au hover */
     }
 
     .ml-2 {
       font-size: 12px; /* Ajuste la taille du texte pour correspondre au design */
       color: var(--forum-active-text-color); /* Applique la couleur de texte souhaitée */
-      //font-weight: bold;
+      transition: color 0.3s ease; /* Transition fluide pour la couleur au hover */
     }
   }
 
@@ -761,15 +799,21 @@
     cursor: pointer;
     color: inherit; /* Conserver la couleur de texte définie par parent */
     border-radius: 5px;
+  
+
+    /* Modifier l'apparence au survol des boutons */
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05); /* Légère modification au survol */
+    }
+  }  
+
+  .forum-comment-input {
+    margin-top: 5px;
   }
 
-  /* Modifier l'apparence au survol des boutons */
-  .comment-options-button:hover {
-    background-color: rgba(0, 0, 0, 0.05); /* Légère modification au survol */
+  [role="button"] {
+    cursor: pointer;
   }
-
-
-
 
 
   #go-back-to-articles {

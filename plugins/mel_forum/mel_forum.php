@@ -185,7 +185,7 @@ class mel_forum extends bnum_plugin
         mel_metapage::IncludeAvatar();
         //Récupérér uid avec GET
         $this->load_script_module('manager');
-        $uid = 'VOszRaUI1dQRuQGs2NzKiKZ0';
+        $uid = $this->get_input('_uid');
         $this->current_post = $this->get_post($uid);
 
         $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));

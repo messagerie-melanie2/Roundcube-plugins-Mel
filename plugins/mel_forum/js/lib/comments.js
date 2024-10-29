@@ -318,7 +318,6 @@ class PostComment {
   * @throws {Error} Si une erreur survient lors de l'envoi de la requête ou de l'enregistrement de la réponse.
   */
   async saveReply() {
-    debugger;
     const $textarea = $('#new-response-textarea-' + this.uid);
     const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
     const submitButton = $('#submit-reply');  // Sélectionner le bouton de validation
@@ -540,42 +539,7 @@ class PostComment {
    * @returns {void}
    * @throws {Error} En cas d'échec de la suppression ou d'une erreur réseau.
    */
-  // async deleteComment(uid) {
-  //   // Demander confirmation à l'utilisateur avant de supprimer
-  //   const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
-    
-  //   if (!confirmation) return;
-
-  //   BnumMessage.SetBusyLoading();
-
-  //   try {
-  //     let response = await mel_metapage.Functions.post(
-  //       mel_metapage.Functions.url('forum', 'delete_comment'), // API de suppression
-  //       {
-  //         _uid: uid // L'ID du commentaire à supprimer
-  //       }
-  //     );
-  //     response = JSON.parse(response);
-  //     if (response.status === 'success') {
-  //       rcmail.display_message(response.message, 'confirmation');
-
-  //       // Supprimer le commentaire de l'affichage
-  //       $('#comment-id-' + uid).remove();
-
-  //     } else {
-  //       rcmail.display_message(response.message, 'error');
-  //     }
-  //   } catch (error) {
-  //     rcmail.display_message("Une erreur est survenue lors de la suppression du commentaire.", 'error');
-  //     console.error("Erreur lors de la suppression du commentaire:", error);
-  //   } finally {
-      
-  //     BnumMessage.StopBusyLoading();
-  //   }
-  // }
-
-  async deleteComment(uid) {
-    debugger;
+    async deleteComment(uid) {
     // Demander confirmation à l'utilisateur avant de supprimer
     const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
     
@@ -642,10 +606,6 @@ class PostComment {
     }
   }
   
-  
-  
-  
-
   /**
   * Génère le code HTML pour afficher un commentaire avec ses réactions et options associées.
   *

@@ -1288,7 +1288,7 @@ class FrameManager {
    */
   async switch_frame(
     task,
-    { changepage = true, args = null, actions = [], wind = null },
+    { changepage = true, args = null, actions = [], wind = null } = {},
   ) {
     //Action à faire avant le changement de frame
     let quit =

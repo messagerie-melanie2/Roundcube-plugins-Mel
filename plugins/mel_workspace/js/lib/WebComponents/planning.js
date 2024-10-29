@@ -19,6 +19,7 @@ import {
   HtmlCustomDataTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { SearchBar } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/searchbar.js';
+import { MelHtml } from '../../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../../mel_metapage/js/lib/mel_promise.js';

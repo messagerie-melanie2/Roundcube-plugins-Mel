@@ -1,4 +1,6 @@
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { WspNavBar } from './WebComponents/navbar.js';
 // import { WspNavBar } from './WebComponents/navbar.js';
 import { CurrentWorkspaceData } from './WorkspaceObject.js';
 
@@ -27,25 +29,31 @@ export class NavBarManager {
     let nav = this.nav;
 
     if (!nav.document.querySelector(`#navbar-${workspace.uid}`)) {
-      // if (nav !== window)
-      // await nav.loadJsModule(
-      //   'mel_workspace',
-      //   'navbar',
-      //   '/js/lib/WebComponents/',
-      // );
-      // let navbar = WspNavBar.CreateElementFromData(
-      //   workspace.uid,
-      //   workspace.title,
-      //   EMPTY_STRING,
-      //   EMPTY_STRING,
-      //   { nav: nav.document },
-      // );
+      /**
+       * @type {WspNavBar}
+       */
       let navbar = nav.$(rcmail.env.navbar)[0];
 
       navbar.setAttribute('id', `navbar-${workspace.uid}`);
       navbar.style.marginTop = '60px';
       navbar.style.marginLeft = '60px';
       navbar.style.marginRight = '5px';
+      navbar.onbuttonclicked.push((task, event) => {
+        switch (task) {
+          case 'home':
+            FramesManager.Instance.switch_frame('workspace');
+            break;
+
+          default:
+            FramesManager.Instance.switch_frame(task).then(() => {
+              rcmail.env.triggerEvent('workspace.navbar.onclick', {
+                task,
+                caller: event,
+              });
+            });
+            break;
+        }
+      });
 
       nav.$('#layout-frames').before(navbar).css('margin-left', '5px');
       navbar = null;

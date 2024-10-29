@@ -2,6 +2,7 @@ import {
   BnumHtmlSrOnly,
   EWebComponentMode,
 } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events.js';
 import { NavBarComponent } from './base.js';
 import { WspNavigationButton } from './button.js';
 
@@ -23,6 +24,7 @@ export class WspPageNavigation extends NavBarComponent {
       'tchap',
     ];
     this.#id = this.generateId(NAMESPACE);
+    this.onbuttonclicked = new BnumEvent();
   }
 
   get applications() {
@@ -81,6 +83,10 @@ export class WspPageNavigation extends NavBarComponent {
     let button = new WspNavigationButton(this, {
       text: `mel_metapage.${task}`,
     });
+    button.onbuttonclick.push(
+      this.onbuttonclicked.call.bind(this.onbuttonclicked),
+      task,
+    );
     button.setAttribute('role', 'menuitem');
 
     li.appendChild(button);

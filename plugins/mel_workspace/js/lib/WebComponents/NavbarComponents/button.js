@@ -225,7 +225,10 @@ export class WspNavigationButton extends NavBarComponent {
 
     button.data('custom-style', 'navigation').style.marginTop = 0;
     button.setAttribute('id', this.taskButtonId);
-    button.addEventListener('click', this.onbuttonclick.call.bind(this));
+    button.addEventListener(
+      'click',
+      this.onbuttonclick.call.bind(this.onbuttonclick),
+    );
     button.afterstyle.push(() => {
       button.style.justifyContent = 'left';
     });

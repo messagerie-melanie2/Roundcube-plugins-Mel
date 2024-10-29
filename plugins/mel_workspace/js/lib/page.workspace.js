@@ -44,6 +44,8 @@ export class WorkspacePage extends WorkspaceObject {
       }),
     );
     // debugger;
+    this.save('current_wsp', this.workspace.uid);
+
     NavBarManager.Generate(this.workspace);
   }
 

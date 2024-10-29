@@ -6,6 +6,7 @@ import {
   EWebComponentMode,
   HtmlCustomTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 // import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { WorkspaceData } from '../workspaceData.js';
@@ -30,6 +31,8 @@ class WspNavBar extends HtmlCustomTag {
 
   constructor() {
     super({ mode: EWebComponentMode.div });
+
+    this.onbuttonclicked = new BnumEvent();
   }
 
   /**
@@ -131,6 +134,9 @@ class WspNavBar extends HtmlCustomTag {
 
     let tmp = new WspPageNavigation({ parent: this });
     this.mainDiv.appendChild(tmp);
+    tmp.onbuttonclicked.push(
+      this.onbuttonclicked.call.bind(this.onbuttonclicked),
+    );
     tmp = null;
 
     // top.history.replaceState(

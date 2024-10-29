@@ -119,6 +119,16 @@ class WspNavBar extends HtmlCustomTag {
       ._generate_description()
       ._generate_block();
 
+    let style = document.createElement('link');
+    style.setAttribute('rel', 'stylesheet');
+    style.setAttribute('type', 'text/css');
+    style.setAttribute(
+      'href',
+      `plugins/mel_workspace/skins/mel_elastic/navbar.css?v=${BnumModules.VERSION}`,
+    );
+
+    shadow.appendChild(style);
+
     let tmp = new WspPageNavigation({ parent: this });
     this.mainDiv.appendChild(tmp);
     tmp = null;
@@ -138,6 +148,7 @@ class WspNavBar extends HtmlCustomTag {
     // );
 
     div = null;
+    style = null;
     shadow = null;
   }
 
@@ -174,7 +185,11 @@ class WspNavBar extends HtmlCustomTag {
 
     div.classList.add('wsp-title-container');
     span.classList.add('wsp-title');
-    span.appendChild(this.createText(this.title));
+
+    let titleText = document.createElement('span');
+    titleText.appendChild(this.createText(this.title));
+
+    span.appendChild(titleText);
 
     let button = document.createElement('button');
     button.classList.add(
@@ -221,6 +236,7 @@ class WspNavBar extends HtmlCustomTag {
     div = null;
     icon = null;
     button = null;
+    titleText = null;
 
     return this;
   }
@@ -467,6 +483,32 @@ class WspNavBar extends HtmlCustomTag {
 
   static AddActions(action) {
     this.#actions.push(action);
+  }
+
+  static CreateElement({ nav = document, workspace = null } = {}) {
+    let node = nav.createElement('bnum-wsp-nav');
+
+    if (workspace) {
+      if (typeof workspace !== 'string')
+        workspace = JSON.stringify(workspace).replaceAll('"', "¤'¤'");
+
+      node.setAttribute('data-workspace', workspace);
+    }
+
+    return node;
+  }
+
+  static CreateElementFromData(
+    uid,
+    title,
+    description,
+    picture,
+    { nav = document } = {},
+  ) {
+    return this.CreateElement({
+      nav,
+      workspace: { uid, title, description, picture },
+    });
   }
 }
 

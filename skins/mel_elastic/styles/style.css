@@ -112,17 +112,17 @@ a:hover,
 .falselink:hover {
   color: var(--main-link-hover-color);
 }
+main {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
 * {
   scrollbar-width: var(--scrollbar-width-moz) !important;
   scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
 }
 *.more-width {
   scrollbar-width: var(--scrollbar-width-hover-moz) !important;
-}
-main {
-  display: flex;
-  height: 100%;
-  width: 100%;
 }
 /* width */
 ::-webkit-scrollbar {

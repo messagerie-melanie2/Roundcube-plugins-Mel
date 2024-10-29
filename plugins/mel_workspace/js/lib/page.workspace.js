@@ -1,3 +1,4 @@
+import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceObject } from './WorkspaceObject.js';
 
 export class WorkspacePage extends WorkspaceObject {
@@ -28,7 +29,7 @@ export class WorkspacePage extends WorkspaceObject {
   main() {
     super.main();
 
-    $('#layout-content').css({ overflow: 'auto', height: '100%' });
+    $('#layout-content').css({ overflow: 'hidden auto', height: '100%' });
 
     top.history.replaceState(
       {},
@@ -42,6 +43,8 @@ export class WorkspacePage extends WorkspaceObject {
         removeIsFromIframe: true,
       }),
     );
+    // debugger;
+    NavBarManager.Generate(this.workspace);
   }
 
   #_get_row(number = 0) {

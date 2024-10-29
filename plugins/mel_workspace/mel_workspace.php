@@ -63,6 +63,8 @@ class mel_workspace extends bnum_plugin
                             'domain' => "mel_workspace"
                         ], $need_button);
                     }
+
+                    self::IncludeNavBarComponent();
                 break;
             
             default:
@@ -145,6 +147,20 @@ class mel_workspace extends bnum_plugin
         $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
         $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
         
+        include_once __DIR__.'/lib/NavBar.php';
+
+        $navbar = new NavBar($uid);
+        $navbar->add_css($this->local_skin_path().'/navbar.css');
+        $navbar->add_css('/'.$this->local_skin_path().'/material-symbols.css');
+        // $navbar->add_module('js/lib/navbar.js');
+
+        $this->rc()->output->set_env('navbar', $navbar->get());
+
+        // $this->add_handler('navbar', function() use ($navbar) {
+        //     return $navbar->get();
+        // });
+
+        self::IncludeNavBarComponent();
 
         $this->rc()->output->send('mel_workspace.workspace');
     }

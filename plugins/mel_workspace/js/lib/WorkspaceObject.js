@@ -6,6 +6,10 @@ import {
 } from '../../../mel_metapage/js/lib/mel_object.js';
 import { WorkspaceModuleBlock } from './WebComponents/workspace_module_block.js';
 
+/**
+ * @module Workspace/Object
+ */
+
 export class WorkspaceObject extends MelObject {
   constructor() {
     super();
@@ -197,7 +201,7 @@ class WorkspaceUsers {
   }
 }
 
-class CurrentWorkspaceData {
+export class CurrentWorkspaceData {
   #users = null;
   constructor() {
     if (typeof rcmail.env.current_workspace_services_actives === 'string')

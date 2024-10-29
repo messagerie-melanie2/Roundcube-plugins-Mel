@@ -42,6 +42,7 @@ class HtmlCustomTag extends HTMLElement {
    * @default eMode.span
    */
   #mode = EWebComponentMode.span;
+  #loaded = false;
   /**
    * Le shadow-dom est complètement optionnel et doit être voulu par "data-shadow=true".
    *
@@ -85,24 +86,28 @@ class HtmlCustomTag extends HTMLElement {
    * @see {@link _p_main}
    */
   connectedCallback() {
-    switch (this.#mode) {
-      case EWebComponentMode.div:
-        this.setAttribute('component-mode', 'div');
-        break;
+    if (!this.#loaded) {
+      switch (this.#mode) {
+        case EWebComponentMode.div:
+          this.setAttribute('component-mode', 'div');
+          break;
 
-      case EWebComponentMode.flex:
-        this.setAttribute('component-mode', 'flex');
-        break;
+        case EWebComponentMode.flex:
+          this.setAttribute('component-mode', 'flex');
+          break;
 
-      case EWebComponentMode.inline_block:
-        this.setAttribute('component-mode', 'inline-block');
-        break;
+        case EWebComponentMode.inline_block:
+          this.setAttribute('component-mode', 'inline-block');
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
+
+      this._p_main();
+
+      this.#loaded = true;
     }
-
-    this._p_main();
   }
 
   /**
@@ -366,13 +371,13 @@ class HtmlCustomDataTag extends HtmlCustomTag {
   destroy() {
     super.destroy();
 
-    for (const key of this.#data.keys) {
-      if (['string', 'number'].includes(typeof this.#data.get(key)))
-        this.setAttribute(`data-${key}`, this.#data.get(key));
-    }
+    // for (const key of this.#data.keys) {
+    //   if (['string', 'number'].includes(typeof this.#data.get(key)))
+    //     this.setAttribute(`data-${key}`, this.#data.get(key));
+    // }
 
-    this.#data.clear();
-    this.#data = null;
+    // this.#data.clear();
+    // this.#data = null;
   }
 }
 

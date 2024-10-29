@@ -588,3 +588,6 @@
   color: inherit;
   display: contents;
 }
+.task-forum .filled {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}

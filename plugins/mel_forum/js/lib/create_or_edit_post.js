@@ -33,6 +33,7 @@ export class create_or_edit_post extends MelObject {
         $("#edit-title").val(post.title);
         this.post_uid = post.uid;
         this.tags = [];
+        //TODO récupérer le workspaces via l'url ou le post
         this.workspace = 'workspace-test';
         this.displayTags();
         this.addTag();

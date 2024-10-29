@@ -151,6 +151,8 @@ class mel_forum extends bnum_plugin
             $this->register_action('upload_image', array($this, 'upload_image'));
             // affiche une image chargé sur le serveur
             $this->register_action('load_image', array($this, 'load_image'));
+            // ajoute un article aux favoris de l'utilisateur courant
+            $this->register_action('add_to_favorite', array($this, 'add_to_favorite'));
         }
     }
 
@@ -165,7 +167,7 @@ class mel_forum extends bnum_plugin
     public function index()
     {
         $this->load_script_module('forum');
-        $this->rc()->output->add_handlers(array('forum_post' => array($this, 'show_posts')));
+        $this->show_posts();
         $workspace = rcube_utils::get_input_value('_worskpace_uid', rcube_utils::INPUT_POST);
 
 
@@ -674,7 +676,7 @@ class mel_forum extends bnum_plugin
     public function get_all_posts_byworkspace()
     {
         //récupérer le Workspace
-        $workspace_uid = driver_mel::gi()->workspace();
+        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
 
         // Charger tous les posts en utilisant la méthode listPosts
         $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -1035,11 +1037,17 @@ class mel_forum extends bnum_plugin
         // Récupérer l'article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
+        $rettags = [];
 
         if ($post->load()) {
             $tags = $post->listTags();
 
-            return $tags;
+            foreach ($tags as $tag) {
+                $rettags[] = $tag->tag_name;
+            }
+
+
+            return $rettags;
 
             // Arrêt de l'exécution du script
             exit;
@@ -1918,96 +1926,62 @@ class mel_forum extends bnum_plugin
      * formate chaque publication avec ses détails (créateur, date, titre, résumé, image, tags, 
      * et nombre de réactions et commentaires) et génère le HTML correspondant.
      *
-     * @param array $posts Liste des publications à afficher.
      * @return string Le HTML formaté contenant toutes les publications.
      */
-    public function show_posts($posts)
+    public function show_posts()
     {
-        $html = "";
-        $html_post = $this->rc()->output->parse("mel_forum.model-post", false, false);
-
         // Supposons que la fonction get_all_posts_byworkspace() retourne les posts sans les images
         $posts = $this->get_all_posts_byworkspace();
 
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
-        foreach ($posts as $post) {
-            $html_post_copy = $html_post;
+        $posts_data = [];
 
+        foreach ($posts as $post) {
             // Convertit la date du post en un timestamp Unix
             $timestamp = strtotime($post->created);
             // Formate la date du post
             $formatted_date = $formatter->format($timestamp);
 
-            // Remplacer les placeholders par les valeurs des posts
-            $html_post_copy = str_replace("<post-creator/>", htmlspecialchars(driver_mel::gi()->getUser($post->creator)->name), $html_post_copy);
-            $html_post_copy = str_replace("<post-date/>", htmlspecialchars($formatted_date), $html_post_copy);
-            $html_post_copy = str_replace("<post-title/>", htmlspecialchars($post->title), $html_post_copy);
-            $html_post_copy = str_replace("<post-summary/>", htmlspecialchars($post->summary), $html_post_copy);
-
-            // Récupérer la première image associée au post
-            $images = $this->get_images($post->post_id);
-
-            // Ajouter uniquement la première image au HTML, s'il y en a
-            $image_html = '';
-            if (!empty($images)) {
-                $image_html = '<img src="' . htmlspecialchars($images[0]) . '" alt="Image illustrant l\'article" />';
-            }
-            $html_post_copy = str_replace("<post-image/>", $image_html, $html_post_copy);
-
-            // Récupérer les tags associés au post
+            $post_creator = driver_mel::gi()->getUser($post->creator)->name;
             $tags = $this->get_all_tags_bypost($post->uid);
-
-            // Création des éléments HTML pour les tags
-            $tags_html = '';
-            foreach ($tags as $tag) {
-                $tags_html .= '<span class="tag">#' . htmlspecialchars($tag->tag_name) . '</span>';
-            }
-
-            // Ajoute les tags au HTML du post
-            $html_post_copy = str_replace("<post-tag/>", $tags_html, $html_post_copy);
-
             // Récupérer le nombre de réaction
             $reaction_count = $this->count_reactions($post->uid);
-
-            // Ajoute le nombre de réaction au HTML du post
-            $html_post_copy = str_replace("<post-count-reactions/>", $reaction_count, $html_post_copy);
-
             // Récupérer le nombre de likes
             $like_count = $this->count_likes($post->uid);
-
-            // Ajoute le nombre de likes au HTML du post
-            $html_post_copy = str_replace("<post-count-thumb-up/>", $like_count, $html_post_copy);
-
             // Récupérer le nombre de commentaire
             $comment_count = $this->count_comments($post->id);
+            $is_fav = $this->rc()->config->get('favorite_article', null); //TODO faire une fonction pour vérifier si un article est en favori
+            $post_link = $this->rc()->url(array(
+                "_task" => "forum",
+                "_action" => "post",
+                "_uid" => $post->uid,
+            ), true, true, true);
 
-            //Ajoute le nombre de commentaire au HTML du post
-            $html_post_copy = str_replace("<post-count-comments/>", $comment_count, $html_post_copy);
-
-            // $link = '<a class= "post-card" href="https://' . $_SERVER['PLUGIN_MEL_HTTP_HOST'] . '?_task=forum&_action=post&_uid=' . $post->uid . '" >';
-            $link = '<a class= "post-card" href="' .
-                $this->rc()->url(array(
-                    "_task" => "forum",
-                    "_action" => "post",
-                    "_uid" => $post->uid,
-                ), true, true, true) . '" >';
-            $html_post_copy = str_replace("<post-link/>", $link, $html_post_copy);
-            $html_post_copy = str_replace("<post-link-end/>", "<a/>", $html_post_copy);
-
-            $html .= $html_post_copy;
+            $posts_data[$post->uid] = [
+                'uid' => $post->uid,
+                'title' => $post->title,
+                'creation_date' => $formatted_date,
+                'post_creator' => $post_creator,
+                'tags' => $tags,
+                'summary' => $post->summary,
+                'reaction' => $reaction_count,
+                'like_count' => $like_count,
+                'comment_count' => $comment_count,
+                'favorite' => $is_fav,
+                'post_link' => $post_link,
+            ];
         }
-
-        return $html;
+        $this->rc()->output->set_env('posts_data', $posts_data);
     }
 
-
-
-
-
-
-
+    function add_to_favorite()
+    {
+        $fav_articles = $this->rc()->config->get('favorite_article', []);
+        $fav_articles[] = rcube_utils::get_input_value('_article_uid', rcube_utils::INPUT_POST);
+        $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
+    }
 
     // TESTS
 

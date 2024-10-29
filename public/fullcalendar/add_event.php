@@ -10,6 +10,16 @@ if (!defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
+if ($config['DEV']) {
+  $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
+} 
+else if ($config['DOCKER']) {
+  $dir = __DIR__ . '/../../bnum';
+}
+else {
+  $dir = __DIR__ . '/../..';
+}
+
 // Inclusion de l'ORM M2
 @include_once 'includes/libm2.php';
 
@@ -17,6 +27,7 @@ if (!defined('CONFIGURATION_APP_LIBM2')) {
 
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
+require_once $dir . '/vendor/autoload.php';
 
 $data = utils::check_hash_key();
 $data['user']->load();

@@ -2114,7 +2114,7 @@ class mel_forum extends bnum_plugin
             $like_count = $this->count_likes($post->uid);
             // Récupérer le nombre de commentaire
             $comment_count = $this->count_comments($post->id);
-            $is_fav = $this->rc()->config->get('favorite_article', null); //TODO faire une fonction pour vérifier si un article est en favori
+            $is_fav = $this->is_fav($post->uid);
             $post_link = $this->rc()->url(array(
                 "_task" => "forum",
                 "_action" => "post",
@@ -2138,11 +2138,45 @@ class mel_forum extends bnum_plugin
         $this->rc()->output->set_env('posts_data', $posts_data);
     }
 
+    /**
+     * vérifie si un article est en favori
+     */
+    function is_fav($post_uid)
+    {
+        $fav_articles = $this->rc()->config->get('favorite_article', null);
+        if (array_search($post_uid, $fav_articles) !== false)
+            return true;
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * ajoute un article aux favoris dans les user pref
+     */
     function add_to_favorite()
     {
         $fav_articles = $this->rc()->config->get('favorite_article', []);
-        $fav_articles[] = rcube_utils::get_input_value('_article_uid', rcube_utils::INPUT_POST);
-        $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
+        $new_fav = rcube_utils::get_input_value('_article_uid', rcube_utils::INPUT_POST);
+        if (!in_array($new_fav, $fav_articles)) {
+            $fav_articles[] = $new_fav;
+            $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
+        } else {
+            $this->_remove_from_favorite($new_fav, $fav_articles);
+        }
+    }
+
+    /**
+     * retire un article des favoris dans les user pref
+     * @param string $article_uid uid de l'article à retirer des favori
+     * @param array $fav_articles tableau des favoris
+     */
+    private function _remove_from_favorite($article_uid, $fav_articles)
+    {
+        if (($key = array_search($article_uid, $fav_articles)) !== false) {
+            unset($fav_articles[$key]);
+            $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
+        }
     }
 
     // TESTS

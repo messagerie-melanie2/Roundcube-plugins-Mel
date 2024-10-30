@@ -1,7 +1,8 @@
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
-// import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 // import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 
 export class Forum extends MelObject {
     constructor() {
@@ -34,6 +35,7 @@ export class Forum extends MelObject {
 
     add_to_favorite(post_uid, event) {
         event.preventDefault();
+        event.stopPropagation();
         //TODO récupérer le workspaces via l'url ou le post
         let workspace = 'workspace-test';
         this.http_internal_post(
@@ -47,13 +49,22 @@ export class Forum extends MelObject {
                 processData: false,
                 contentType: false,
                 on_success: () => {
-                    $('.more-post_uid').addClass('filled');
+                    let div = $('#favorite-'+post_uid);
+                    if (div.hasClass('filled')){
+                        div.removeClass('filled');
+                    }else{
+                        div.addClass('filled');
+                    }
+                    BnumMessage.DisplayMessage(
+                        'Vos articles favoris ont été mis à jour',
+                        eMessageType.Confirmation,
+                    );
                 },
                 on_error: (err) => {
                     BnumMessage.DisplayMessage(
-                        'Erreur lors de l\'ajout aux favoris',
+                        'Erreur lors de la modification',
                         eMessageType.Error,
-                      );
+                    );
                 }
             }
         );
@@ -63,7 +74,6 @@ export class Forum extends MelObject {
         const posts = this.get_env('posts_data');
         let post;
         let data;
-        debugger;
         for (let postId in posts) {
             post = posts[postId];
             data = {
@@ -78,6 +88,8 @@ export class Forum extends MelObject {
                 POST_THUMB_UP: post.like_count,
                 POST_THUMB_DOWN: post.like_count,
                 POST_COMMENTS: post.comment_count,
+                POST_FAVORITE: 
+                    MelHtml.start.tag('i',{id: 'favorite-'+post.uid, class:`favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
             };
 
             let template = new MelTemplate()

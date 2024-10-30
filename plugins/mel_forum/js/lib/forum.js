@@ -90,7 +90,7 @@ export class Forum extends MelObject {
 
             for (let tag in post.tags) {
                 let tag_data = {
-                    TAG_NAME: post.tags[tag],
+                    TAG_NAME: '#' + post.tags[tag],
                 }
             let tag_template = new MelTemplate()
             .setTemplateSelector('#tag_template')

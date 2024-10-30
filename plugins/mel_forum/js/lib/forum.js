@@ -31,9 +31,24 @@ export class Forum extends MelObject {
                 $(this).text('star_border');
             }
         });
+        $('#display-fav-only').on('change', function() {
+            if ($(this).is(':checked')) {
+              // Affiche seulement les cartes qui ont la classe 'filled' sur l'icône étoile
+              $('.post-card').each(function() {
+                if ($(this).find('.favorite').hasClass('filled')) {
+                  $(this).show();  // Affiche les favoris
+                } else {
+                  $(this).hide();  // Masque les non-favoris
+                }
+              });
+            } else {
+              // Affiche toutes les cartes si la checkbox est décochée
+              $('.post-card').show();
+            }
+        });
     }
 
-    add_to_favorite(post_uid, event) {
+    addToFavorite(post_uid, event) {
         event.preventDefault();
         event.stopPropagation();
         //TODO récupérer le workspaces via l'url ou le post
@@ -95,7 +110,7 @@ export class Forum extends MelObject {
             let template = new MelTemplate()
             .setTemplateSelector('#post_template')
             .setData(data)
-            .addEvent('#favorite-'+post.uid, 'click', this.add_to_favorite.bind(this, post.uid));
+            .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid));
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());

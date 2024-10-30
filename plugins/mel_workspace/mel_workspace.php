@@ -60,7 +60,8 @@ class mel_workspace extends bnum_plugin
                             'label'	=> 'my_workspaces',
                             'title' => 'my_workspaces',
                             'type'       => 'link',
-                            'domain' => "mel_workspace"
+                            'domain' => "mel_workspace",
+                            'data-task' => 'workspace'
                         ], $need_button);
                     }
 
@@ -140,6 +141,7 @@ class mel_workspace extends bnum_plugin
 
         $this->rc()->output->set_env('current_workspace_color', $workspace->color());
         $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
+        
 
         $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
         $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');

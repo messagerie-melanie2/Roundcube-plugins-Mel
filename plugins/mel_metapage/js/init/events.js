@@ -667,11 +667,11 @@ if (rcmail && window.mel_metapage) {
 
   if (rcmail.env.task === 'calendar') {
     rcmail.addEventListener('calendar.renderEvent', (args) => {
-      if ($('html').hasClass('mwsp'))
+      if (top.$('html').hasClass('mwsp'))
         return (
           args.eventDatas.categories !== undefined &&
           args.eventDatas.categories[0] ===
-            `ws#${mel_metapage.Storage.get('current_wsp')}`
+            `ws#${JSON.parse(mel_metapage.Storage.get('current_wsp'))}`
         );
 
       if (args.eventDatas.allDay === true) {

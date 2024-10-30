@@ -28,6 +28,7 @@ const EFileType = {
 class WspNavBar extends HtmlCustomTag {
   static #actions = [];
   #data = {};
+  #pageNavigation = null;
 
   constructor() {
     super({ mode: EWebComponentMode.div });
@@ -91,6 +92,13 @@ class WspNavBar extends HtmlCustomTag {
   }
 
   /**
+   * @type {WspPageNavigation}
+   */
+  get pageNavigation() {
+    return this.#pageNavigation || this.querySelector('bnum-wsp-navigation');
+  }
+
+  /**
    * @type {WorkspaceData}
    */
   get workspace() {
@@ -137,6 +145,7 @@ class WspNavBar extends HtmlCustomTag {
     tmp.onbuttonclicked.push(
       this.onbuttonclicked.call.bind(this.onbuttonclicked),
     );
+    this.#pageNavigation = tmp;
     tmp = null;
 
     // top.history.replaceState(
@@ -485,6 +494,24 @@ class WspNavBar extends HtmlCustomTag {
 
   #_setup_styles() {
     return this.#_setup_files_type(EFileType.style);
+  }
+
+  hide() {
+    this.style.display = 'none';
+  }
+
+  show() {
+    this.style.display = EMPTY_STRING;
+  }
+
+  select(task, { background = true } = {}) {
+    this.pageNavigation.select(task, { background });
+    return this;
+  }
+
+  unselect({ task = 'all', background = true } = {}) {
+    this.pageNavigation.unselect({ task, background });
+    return this;
   }
 
   static AddActions(action) {

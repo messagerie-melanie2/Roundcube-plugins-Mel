@@ -216,22 +216,27 @@ export class WspNavigationButton extends NavBarComponent {
   _p_main() {
     super._p_main();
 
-    let button = new WspButton(this.parent, {
-      style: WspButton.Style.custom,
-      text: this.#text,
-    });
-    let visibilityButton = new PressedButton();
-    let icon = new BnumHtmlIcon(this.#startingIcon);
+    // let button = new WspButton(this.parent, {
+    //   style: WspButton.Style.custom,
+    //   text: this.#text,
+    // });
+    let button = PressedButton.Create();
+    let visibilityButton = PressedButton.Create(); //new PressedButton();
+    let icon = BnumHtmlIcon.Create({ icon: this.#startingIcon }); //new BnumHtmlIcon(this.#startingIcon);
 
     button.data('custom-style', 'navigation').style.marginTop = 0;
+    button.classList.add('left-button');
     button.setAttribute('id', this.taskButtonId);
     button.addEventListener(
       'click',
       this.onbuttonclick.call.bind(this.onbuttonclick),
     );
-    button.afterstyle.push(() => {
-      button.style.justifyContent = 'left';
-    });
+    button.appendChild(this.createText(this.#text));
+    button.setAttribute('wspbutton', 'navigation');
+    button.style.justifyContent = 'left';
+    // button.afterstyle.push(() => {
+    //   button.style.justifyContent = 'left';
+    // });
     visibilityButton
       .data('data-start-pressed', this.#startingState)
       .appendChild(icon);
@@ -240,6 +245,30 @@ export class WspNavigationButton extends NavBarComponent {
     visibilityButton.ontoggle.push(
       this.oniconclicked.call.bind(this.oniconclicked),
     );
+    visibilityButton.onmouseenter = () => {
+      /**
+       * @type {PressedButton}
+       */
+      let button = this.querySelector(`#${this.taskButtonId}`);
+
+      $(button).css({
+        '--navigation-border-radius-top-right': 0,
+        '--navigation-border-radius-bottom-right': 0,
+      }); //['--navigation-border-radius-top-right'] = '0px';
+      // button.style['--navigation-border-radius-bottom-right'] = '0px';
+      button = null;
+    };
+    visibilityButton.onmouseleave = () => {
+      /**
+       * @type {PressedButton}
+       */
+      let button = this.querySelector(`#${this.taskButtonId}`);
+      $(button).css({
+        '--navigation-border-radius-top-right': EMPTY_STRING,
+        '--navigation-border-radius-bottom-right': EMPTY_STRING,
+      });
+      button = null;
+    };
 
     this.append(button, visibilityButton);
 

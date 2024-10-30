@@ -71,6 +71,16 @@ export class PressedButton extends HtmlCustomDataTag {
     return this;
   }
 
+  select() {
+    this.ariaPressed = true;
+    this.setAttribute('aria-pressed', true);
+  }
+
+  unselect() {
+    this.ariaPressed = false;
+    this.setAttribute('aria-pressed', false);
+  }
+
   press() {
     this.ariaPressed = true;
     this.setAttribute('aria-pressed', true);

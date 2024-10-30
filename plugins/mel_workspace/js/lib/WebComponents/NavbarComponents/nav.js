@@ -2,6 +2,7 @@ import {
   BnumHtmlSrOnly,
   EWebComponentMode,
 } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { PressedButton } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { BnumEvent } from '../../../../../mel_metapage/js/lib/mel_events.js';
 import { NavBarComponent } from './base.js';
 import { WspNavigationButton } from './button.js';
@@ -72,7 +73,7 @@ export class WspPageNavigation extends NavBarComponent {
     }) ?? { apps: this.applications, break: false };
 
     for (const app of plugins.apps) {
-      this.#_generate_element(app);
+      if (app) this.#_generate_element(app);
     }
   }
 
@@ -88,12 +89,54 @@ export class WspPageNavigation extends NavBarComponent {
       task,
     );
     button.setAttribute('role', 'menuitem');
+    button.setAttribute('data-task', task);
 
     li.appendChild(button);
     this.nav.appendChild(li);
 
     li = null;
     button = null;
+  }
+
+  select(task, { background = true } = {}) {
+    this.unselect();
+    /**
+     * @type {PressedButton}
+     */
+    let button = this.querySelector(
+      `[data-task="${task}"] ${PressedButton.TAG}.left-button`,
+    );
+    if (background) button.select();
+    else button.press();
+
+    button = null;
+
+    return this;
+  }
+
+  unselect({ task = 'all', background = true } = {}) {
+    if (!task || task === 'all') {
+      let selected = this.querySelectorAll('[data-task]');
+
+      for (const element of selected) {
+        this.unselect({ task: element.dataset.task, background });
+      }
+
+      selected = null;
+    } else {
+      /**
+       * @type {PressedButton}
+       */
+      let button = this.querySelector(
+        `[data-task="${task}"] ${PressedButton.TAG}.left-button`,
+      );
+      if (background) button.unselect();
+      else button.unpress();
+
+      button = null;
+    }
+
+    return this;
   }
 }
 

@@ -1,3 +1,4 @@
+import { MelEnumerable } from '../../../../mel_metapage/js/lib/classes/enum.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { WorkspaceObject } from '../../../../mel_workspace/js/lib/WorkspaceObject.js';
 import { LinkManager } from '../manager.js';
@@ -51,5 +52,15 @@ class ModuleLinks extends WorkspaceObject {
     return new ModuleLinks();
   }
 }
+
+top.rcmail.add_event_listener_ex(
+  'wsp.navbar.navigation',
+  'module_link',
+  (args) => {
+    args.apps = MelEnumerable.from(args.apps).where((x) => x !== 'useful_link');
+
+    return args;
+  },
+);
 
 ModuleLinks.Start();

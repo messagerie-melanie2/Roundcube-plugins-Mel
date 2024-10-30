@@ -1,3 +1,4 @@
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceObject } from './WorkspaceObject.js';
 
@@ -45,8 +46,32 @@ export class WorkspacePage extends WorkspaceObject {
     );
     // debugger;
     this.save('current_wsp', this.workspace.uid);
+    NavBarManager.nav.$('html').addClass('mwsp');
+    // debugger;
+    NavBarManager.Generate(this.workspace).currentNavBar.select(
+      this.get_env('start_app') || 'home',
+      { background: !this.get_env('start_app') },
+    );
 
-    NavBarManager.Generate(this.workspace);
+    top.rcmail.add_event_listener_ex('switch_frame', 'workspace', (args) => {
+      const { actions, task } = args;
+      // debugger;
+      if (!actions.includes('workspace')) {
+        if (task !== 'workspace') {
+          NavBarManager.Hide()
+            .nav.$('#layout-frames')
+            .css('margin-left', '60px');
+          NavBarManager.nav.$('html').removeClass('mwsp');
+
+          WorkspacePage.OnQuit();
+        } else {
+          NavBarManager.Show()
+            .nav.$('#layout-frames')
+            .css('margin-left', '5px');
+          NavBarManager.nav.$('html').addClass('mwsp');
+        }
+      }
+    });
   }
 
   #_get_row(number = 0) {
@@ -73,5 +98,22 @@ export class WorkspacePage extends WorkspaceObject {
     }
 
     return this.select(`#${number}-row`);
+  }
+
+  static OnQuit() {
+    var context = null;
+    if (FramesManager.Instance.has_frame('calendar')) {
+      FramesManager.Instance.get_frame('calendar')[0]
+        .contentWindow.$('#calendar')
+        .fullCalendar('rerenderEvents');
+      // context = FramesManager.Instance.get_frame('calendar')[0].contentWindow;
+      // for (const key in context.cal.calendars) {
+      //   if (Object.prototype.hasOwnProperty.call(context.cal.calendars, key)) {
+      //     const element = context.cal.calendars[key];
+
+      //     if (element.active) context.cal.calendar_refresh_source(element.id);
+      //   }
+      // }
+    }
   }
 }

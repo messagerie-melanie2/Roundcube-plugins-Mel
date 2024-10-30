@@ -131,10 +131,11 @@ class MainNav {
     return this;
   }
 
-  static select(task) {
-    this.unselect_all();
+  static select(task, { context = window } = {}) {
+    this.unselect_all({ context });
+    const _$ = context.$ || $;
 
-    let $task = $(
+    let $task = _$(
       `#taskmenu a[data-task="${task}"], #otherapps a[data-task="${task}"]`,
     );
 
@@ -145,29 +146,31 @@ class MainNav {
         .attr('tabIndex', '-1')
         .attr('aria-current', true);
 
-      if ($('#otherapps a.selected').length)
-        $('#taskmenu a.more-options').addClass('selected');
+      if (_$('#otherapps a.selected').length)
+        _$('#taskmenu a.more-options').addClass('selected');
     }
   }
 
-  static unselect_all() {
-    for (const e of $('#taskmenu').find('a')) {
-      $(e)
+  static unselect_all({ context = window } = {}) {
+    const _$ = context.$ || $;
+
+    for (const e of _$('#taskmenu').find('a')) {
+      _$(e)
         .removeClass('selected')
         .attr('aria-disabled', false)
         .attr('tabIndex', '0')
         .attr('aria-current', false);
     }
 
-    for (const e of $('#otherapps').find('a')) {
-      $(e)
+    for (const e of _$('#otherapps').find('a')) {
+      _$(e)
         .removeClass('selected')
         .attr('aria-disabled', false)
         .attr('tabIndex', '0');
     }
-    $('#taskmenu a.more-options').removeClass('selected');
+    _$('#taskmenu a.more-options').removeClass('selected');
 
-    $('#otherapps').css('display', 'none');
+    _$('#otherapps').css('display', 'none');
   }
 }
 

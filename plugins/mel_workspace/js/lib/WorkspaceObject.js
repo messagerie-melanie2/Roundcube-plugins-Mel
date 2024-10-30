@@ -240,9 +240,13 @@ export class CurrentWorkspaceData {
     return rcmail.env.current_workspace_color;
   }
 
+  get services() {
+    return rcmail.env.current_workspace_services_actives;
+  }
+
   app_loaded(service) {
     return (
-      rcmail.env.current_workspace_services_actives[service] &&
+      this.services[service] &&
       (rcmail.env.current_workspace_services_enabled?.[service] !== false ||
         isNullOrUndefined(
           rcmail.env.current_workspace_services_enabled?.[service],

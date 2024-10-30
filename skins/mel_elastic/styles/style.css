@@ -2362,22 +2362,12 @@ html .menu a.selection::before {
   -webkit-line-clamp: 3;
 }
 /** MSWP **/
-html.mwsp {
-  border-style: solid;
-  border-width: thick;
-  border-color: var(--default-workspace-side-color);
-}
 html.mwsp .task-workspace.action-workspace {
   margin-bottom: 75px;
   transition: all 0.1s ease-in;
 }
 html.mwsp.moved .task-workspace.action-workspace {
   margin-bottom: 15px;
-}
-#layout-content.mwsp {
-  border-style: solid;
-  border-width: thick;
-  border-color: var(--default-workspace-side-color);
 }
 .task-workspace.action-workspace #layout-content.mwsp {
   margin-bottom: 75px;
@@ -2394,9 +2384,6 @@ iframe.discussion-frame.mwsp.moved {
   margin-bottom: 15px;
 }
 iframe.discussion-frame.mwsp {
-  border-style: solid !important;
-  border-width: thick !important;
-  border-color: var(--default-workspace-side-color) !important;
   background-color: var(--default-workspace-side-color);
 }
 iframe.mwsp {

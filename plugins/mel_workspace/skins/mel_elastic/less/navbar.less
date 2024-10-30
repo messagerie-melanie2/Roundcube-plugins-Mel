@@ -141,22 +141,61 @@
     }
 
     &[wspbutton='white'] {
-      &:extend(.shadow-mel-button.transparent-bckg);
+      &:extend(:host .shadow-mel-button.transparent-bckg);
       border-color: var(--wsp-nav-button-border-color);
     }
 
     &[wspbutton='navigation'] {
-      &:extend(.shadow-mel-button.transparent-bckg);
+      &:extend(:host .shadow-mel-button.transparent-bckg);
 
-      border-radius: 5px !important;
+      --navigation-border-radius-base: 5px;
+      --navigation-border-radius-top-left: var(--navigation-border-radius-base);
+      --navigation-border-radius-top-right: var(
+        --navigation-border-radius-base
+      );
+      --navigation-border-radius-bottom-left: var(
+        --navigation-border-radius-base
+      );
+      --navigation-border-radius-bottom-right: var(
+        --navigation-border-radius-base
+      );
+
+      padding: 5px;
+      border-top-left-radius: var(
+        --navigation-border-radius-top-left
+      ) !important;
+      border-top-right-radius: var(
+        --navigation-border-radius-top-right
+      ) !important;
+      border-bottom-left-radius: var(
+        --navigation-border-radius-bottom-left
+      ) !important;
+      border-bottom-right-radius: var(
+        --navigation-border-radius-bottom-right
+      ) !important;
       flex: 1;
 
-      li & {
-        &::before {
-          content: '•';
-          margin-right: 10px;
+      &[aria-pressed='true'] {
+        border-color: var(--mel-button-active-background-color);
+        --wsp-nav-button-background-color: var(
+          --mel-button-active-background-color
+        );
+        --wsp-nav-button-text-color: var(--mel-button-active-text-color);
+
+        + bnum-pressed-button {
+          &:hover {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
         }
       }
+
+      //li & {
+      &::before {
+        content: '•';
+        margin-right: 10px;
+      }
+      //}
     }
 
     &:hover {

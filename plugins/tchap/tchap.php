@@ -18,7 +18,7 @@
 
 class tchap extends bnum_plugin
 {
-    public const KEY_FOR_WORKSPACE = 'tchap'; 
+    public const KEY_FOR_WORKSPACE = 'tchap-channel'; 
 
     /**
      *
@@ -93,6 +93,7 @@ class tchap extends bnum_plugin
         }
 
         $this->add_hook('workspace.services.set', [$this, 'workspace_set_tchap']);
+        $this->add_hook('wsp.show', [$this, 'on_show_workspace']);
     }
 
     function action()
@@ -202,6 +203,14 @@ class tchap extends bnum_plugin
 
                 $args['services'] = $services;
             }
+        }
+
+        return $args;
+    }
+
+    public function on_show_workspace($args) {
+        if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
+            $this->include_module('workspace.js', 'js/lib/workspace');
         }
 
         return $args;

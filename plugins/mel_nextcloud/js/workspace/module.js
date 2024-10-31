@@ -12,6 +12,8 @@ import { PressedButton } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAt
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { NavBarManager } from '../../../mel_workspace/js/lib/navbar.generator.js';
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 
 class NextcloudModule extends WorkspaceObject {
   constructor() {
@@ -43,6 +45,17 @@ class NextcloudModule extends WorkspaceObject {
 
   main() {
     super.main();
+
+    NavBarManager.AddEventListener().OnAfterSwitch((args) => {
+      const { task } = args;
+
+      if (task === 'stockage') {
+        FramesManager.Instance.get_frame('stockage')[0].contentWindow.$(
+          '#mel_nextcloud_frame',
+        )[0].src =
+          `${Nextcloud.index_url}/apps/files?dir=/dossiers-${this.workspace.uid}`;
+      }
+    }, 'stockage');
   }
 
   /**

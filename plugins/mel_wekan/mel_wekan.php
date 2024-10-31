@@ -1,6 +1,7 @@
 <?php
 class mel_wekan extends rcube_plugin
 {
+    public const KEY_FOR_WORKSPACE = 'wekan';
     /**
      * @var string
      */
@@ -77,6 +78,10 @@ class mel_wekan extends rcube_plugin
 
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->wekan_url(false), 'kanban');
+
+        if ($this->rc->task === 'workspace') {
+            $this->add_hook('wsp.show', [$this, 'wsp_block']);
+        }
     }
 
     function index()
@@ -386,6 +391,14 @@ class mel_wekan extends rcube_plugin
         echo $list = json_encode($list->toArray());
 
         exit;
+    }
+
+    public function wsp_block($args) {
+        if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
+            $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
+        }
+
+        return $args;
     }
 
     public function __api()

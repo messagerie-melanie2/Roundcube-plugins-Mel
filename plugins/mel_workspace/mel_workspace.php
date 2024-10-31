@@ -367,6 +367,11 @@ class mel_workspace extends bnum_plugin
         //$this->load_script_module_from_plugin($plugin, $name, $path);
         $this->include_script_from_plugin($plugin, "$path/$name/scriptType:module", 'head');//->include_module($plugin, $name, $path);
     }
+
+    public function include_workspace_object() {
+        include_once __DIR__.'/lib/WorkspacePage.php';
+        return $this;
+    }
     #endregion
 
     #region private_functions

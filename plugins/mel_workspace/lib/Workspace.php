@@ -370,6 +370,12 @@ class Workspace {
     return $wsp;
   }
 
+  public static function Workspaces() {
+    yield from mel_helper::Enumerable(driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false))->select(function ($key,$value) {
+      return Workspace::FromWorkspace($value);
+    });
+  }
+
 }
 
 class FavoriteData {

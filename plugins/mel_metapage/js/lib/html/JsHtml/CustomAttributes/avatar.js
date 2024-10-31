@@ -421,9 +421,9 @@ class AvatarElement extends HtmlCustomTag {
   update_img() {
     const params = {};
 
-    if (this._email) config._email = this._email;
+    if (this._email) params._email = this._email;
 
-    if (this._id) config._id = this._id;
+    if (this._id) params._id = this._id;
 
     let img = this.shadowRoot.querySelector('img');
     img.onload = this._on_load.bind(this);

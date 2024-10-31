@@ -2142,7 +2142,7 @@ class mel_forum extends bnum_plugin
      */
     function is_fav($post_uid)
     {
-        $fav_articles = $this->rc()->config->get('favorite_article', null);
+        $fav_articles = $this->rc()->config->get('favorite_article', []);
         if (array_search($post_uid, $fav_articles) !== false)
             return true;
         else {

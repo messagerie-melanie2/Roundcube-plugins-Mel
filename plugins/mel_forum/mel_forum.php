@@ -196,6 +196,7 @@ class mel_forum extends bnum_plugin
 
         $this->rc()->output->set_env('post_uid', $this->current_post->uid);
         $this->rc()->output->set_env('post_id', $this->current_post->id);
+        $this->rc()->output->set_env('show_comments', $this->current_post->settings["comments"]);
 
         $this->rc()->output->send('mel_forum.post');
     }

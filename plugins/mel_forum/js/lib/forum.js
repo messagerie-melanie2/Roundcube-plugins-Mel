@@ -12,7 +12,7 @@ export class Forum extends MelObject {
     main() {
         super.main();
         this.initButtons();
-        this.displayPost();
+        this.displayPosts();
 
     }
 
@@ -85,7 +85,51 @@ export class Forum extends MelObject {
         );
     }
 
-    displayPost() {
+    toggleMenuPost(post_uid, event) {
+        debugger;
+        event.preventDefault();
+        event.stopPropagation();
+
+        let selectContainer = $('#post-context-menu-' + post_uid);
+        let triggerButton = $('#trigger-' + post_uid); // Bouton more_vert
+
+        // Vérifier si le conteneur du menu existe
+    if (selectContainer.length) {
+        // Basculer l'affichage du conteneur
+        selectContainer.toggleClass('hidden');
+  
+        // Si le menu est visible, ajouter un écouteur pour détecter les clics extérieurs
+        if (!selectContainer.hasClass('hidden')) {
+          // Ajouter un écouteur de clic sur tout le document après un léger délai
+          setTimeout(() => {
+            $(document).on('click.menuOutside', function(event) {
+              // Vérifier si le clic est en dehors du menu et du bouton trigger
+              if (!$(event.target).closest(selectContainer).length && !$(event.target).closest(triggerButton).length) {
+                selectContainer.addClass('hidden');  // Masquer le menu
+                $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+              }
+            });
+  
+            // Ajouter un écouteur d'événements pour chaque bouton du menu
+            selectContainer.find('.post-options-button').on('click', function() {
+              selectContainer.addClass('hidden'); // Fermer le menu
+              $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+            });
+          }, 0);  // Délai de 0 pour que l'événement de clic sur le bouton soit géré en premier
+  
+          // Empêcher la propagation du clic sur le bouton trigger pour éviter la fermeture immédiate
+          triggerButton.off('click').on('click', function(event) {
+            event.stopPropagation(); // Empêche la propagation du clic vers l'écouteur du document
+          });
+  
+        } else {
+          // Si le menu est caché, retirer l'écouteur du document
+          $(document).off('click.menuOutside');
+        }
+      }
+    }
+
+    displayPosts() {
         const posts = this.get_env('posts_data');
         let post;
         let data;
@@ -110,7 +154,8 @@ export class Forum extends MelObject {
             let template = new MelTemplate()
             .setTemplateSelector('#post_template')
             .setData(data)
-            .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid));
+            .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid))
+            .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());
@@ -127,4 +172,6 @@ export class Forum extends MelObject {
 
         }
     }
+
+    
 }

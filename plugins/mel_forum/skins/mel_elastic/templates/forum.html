@@ -20,7 +20,7 @@
     </div>
     <div class="row forum-header">
       <div class="input-group mel-search-group mel-centered">
-        <input id="wsp-search-input" type="text" onmousedown="" class="form-control mel-max-width-500">
+        <input id="forum-search-input" type="text" onmousedown="" class="form-control mel-max-width-500">
         <div class="input-group-append">
           <span class="icon-mel-search input-group-text"></span>
         </div>
@@ -77,7 +77,18 @@
                 </div>
               </div>
               <div class="post-actions">
-                <i class="more_action material-symbols-outlined" id="more-%%UID%%">more_vert</i>
+                <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button" title="Plus d'options"></span>
+                <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden">
+                  <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
+                  <button class="post-options-button edit-post" title="Modifier le post" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%">
+                    <span class="icon material-symbols-outlined" data-icon="border_color"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">Modifier le post</span>
+                  </button>
+                  <button class="post-options-button delete-post" title="Supprimer le post" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%">
+                    <span class="icon material-symbols-outlined" data-icon="delete"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">Supprimer le post</span>
+                  </button>
+                </div>
                 %%POST_FAVORITE%%
               </div>
             </div>

@@ -582,9 +582,74 @@
   align-items: center;
   margin-left: 5px;
 }
-.task-forum .post .post-header .post-actions i {
+.task-forum .post .post-header .post-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.task-forum .post .post-header .post-actions .icon {
+  color: var(--forum-active-text-color);
+}
+.task-forum .post .post-header .post-actions .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
   font-size: 24px;
   font-variation-settings: 'wght' 300;
+  display: inline-block;
+  vertical-align: middle;
+  color: inherit;
+}
+.task-forum .post .post-header .post-actions .more_action {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-right: 3px;
+}
+.task-forum .post .post-header .post-actions .more_action:hover {
+  background-color: var(--hover-background-color);
+  cursor: pointer;
+}
+.task-forum .post .post-header .post-actions .more_action:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1;
+  color: var(--forum-hover-text-color);
+}
+.task-forum .post .post-header .post-actions .more_action.active .icon::before {
+  font-variation-settings: 'FILL' 1;
+}
+.task-forum .post .post-header .post-actions .post-comment-context-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 10px;
+  display: none;
+  /* Cache le menu contextuel par défaut */
+}
+.task-forum .post .post-header .post-actions .post-comment-context-menu.hidden {
+  display: none;
+}
+.task-forum .post .post-header .post-actions .post-comment-context-menu button {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.task-forum .post .post-header .post-actions .post-comment-context-menu button:hover {
+  background-color: var(--hover-background-color);
+}
+.task-forum .post .post-header .post-actions .post-comment-context-menu button .icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+.task-forum .post .post-header .post-actions .post-comment-context-menu button .post-options-text {
+  font-size: 14px;
+  color: var(--forum-active-text-color);
 }
 .task-forum .post .post-content .post-title {
   font-weight: 600;

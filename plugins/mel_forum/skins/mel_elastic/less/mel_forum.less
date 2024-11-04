@@ -674,9 +674,83 @@
       }
 
       .post-actions {
-        i {
-          font-size: 24px;
-          font-variation-settings: 'wght' 300;
+        position: relative;
+        display: flex;
+        align-items: center;
+        
+        .icon {
+          color: var(--forum-active-text-color);
+          
+          &::before {
+            font-family: 'Material Symbols Outlined';
+            content: attr(data-icon);
+            font-size: 24px;
+            font-variation-settings: 'wght' 300;
+            display: inline-block;
+            vertical-align: middle;
+            color: inherit;
+          }
+        }
+      
+        .more_action {
+          display: flex;
+          align-items: center;
+          padding: 6px;
+          border-radius: 5px;
+          transition: background-color 0.3s ease, color 0.3s ease;
+          margin-right: 3px;
+      
+          &:hover {
+            background-color: var(--hover-background-color);
+            cursor: pointer;
+            
+            .icon::before {
+              font-variation-settings: 'wght' 400, 'FILL' 1;
+              color: var(--forum-hover-text-color);
+            }
+          }
+      
+          &.active .icon::before {
+            font-variation-settings: 'FILL' 1;
+          }
+        }
+      
+        .post-comment-context-menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background-color: white;
+          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+          border-radius: 5px;
+          padding: 10px;
+          display: none; /* Cache le menu contextuel par défaut */
+      
+          &.hidden {
+            display: none;
+          }
+      
+          button {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            
+            &:hover {
+              background-color: var(--hover-background-color);
+            }
+      
+            .icon {
+              margin-right: 8px;
+              font-size: 18px;
+            }
+      
+            .post-options-text {
+              font-size: 14px;
+              color: var(--forum-active-text-color);
+            }
+          }
         }
       }
     }

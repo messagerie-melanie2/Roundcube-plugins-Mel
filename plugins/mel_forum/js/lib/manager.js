@@ -30,13 +30,6 @@ export class Manager extends MelObject {
   main() {
     super.main();
 
-    // // Vérifier si les commentaires doivent être affichés
-    // debugger;
-    // if (!this.show_comments) {
-    //   $('.forum-comment').hide(); // Masquer la div des commentaires si show_comments est false
-    //   return; // Sortir de la fonction si les commentaires ne doivent pas être affichés
-    // }
-    
     // Charger l'ordre de tri depuis le LocalStorage, sinon utiliser 'date_desc' par défaut
     const savedSortOrder = localStorage.getItem('commentSortOrder') || 'date_asc';
 

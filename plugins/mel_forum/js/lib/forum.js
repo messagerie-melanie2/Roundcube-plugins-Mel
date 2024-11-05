@@ -86,7 +86,6 @@ export class Forum extends MelObject {
     }
 
     toggleMenuPost(post_uid, event) {
-        debugger;
         event.preventDefault();
         event.stopPropagation();
 
@@ -129,6 +128,14 @@ export class Forum extends MelObject {
       }
     }
 
+    editPost(post_uid, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      // Rediriger vers la page d'édition avec l'UID du post
+      window.location.href = this.url('forum', { action: 'create_or_edit_post', uid: post_uid });
+    }
+  
+
     displayPosts() {
         const posts = this.get_env('posts_data');
         let post;
@@ -156,6 +163,7 @@ export class Forum extends MelObject {
             .setData(data)
             .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid))
             .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
+            .addEvent('.post-options-button.edit-post', 'click', this.editPost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());

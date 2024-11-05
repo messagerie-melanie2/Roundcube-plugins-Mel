@@ -618,38 +618,34 @@
 .task-forum .post .post-header .post-actions .more_action.active .icon::before {
   font-variation-settings: 'FILL' 1;
 }
-.task-forum .post .post-header .post-actions .post-comment-context-menu {
+.task-forum .post .post-header .post-actions .forum-post-context-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
   position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: white;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  padding: 10px;
-  display: none;
-  /* Cache le menu contextuel par défaut */
+  bottom: -50px;
+  left: -171px;
+  transform: translateX(-10px);
+  width: 198px;
+  height: 60px;
+  border-radius: 10px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 200;
 }
-.task-forum .post .post-header .post-actions .post-comment-context-menu.hidden {
-  display: none;
-}
-.task-forum .post .post-header .post-actions .post-comment-context-menu button {
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button {
   display: flex;
   align-items: center;
-  padding: 5px;
   border: none;
-  background: none;
+  outline: none;
+  background-color: var(--bureau-card-background-color);
   cursor: pointer;
+  color: inherit;
+  border-radius: 5px;
 }
-.task-forum .post .post-header .post-actions .post-comment-context-menu button:hover {
-  background-color: var(--hover-background-color);
-}
-.task-forum .post .post-header .post-actions .post-comment-context-menu button .icon {
-  margin-right: 8px;
-  font-size: 18px;
-}
-.task-forum .post .post-header .post-actions .post-comment-context-menu button .post-options-text {
-  font-size: 14px;
-  color: var(--forum-active-text-color);
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 .task-forum .post .post-content .post-title {
   font-weight: 600;

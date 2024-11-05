@@ -295,40 +295,114 @@ class mel_forum extends bnum_plugin
         return $content;
     }
 
+    // public function create_or_edit_post()
+    // {
+    //     $this->rc()->html_editor();
+    //     // $this->rc()->output->set_env($workspace_uid);
+    //     $this->load_script_module('create_or_edit_post');
+    //     // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
+    //     //Créer un nouvel Article
+    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
+
+    //     //Définition des propriétés de l'article
+    //     $post->title = '';
+    //     $post->summary = '';
+    //     $post->content = '';
+    //     $post->uid = $this->generateRandomString(24);
+    //     $post->created = date('Y-m-d H:i:s');
+    //     $post->modified = date('Y-m-d H:i:s');
+    //     $post->creator = driver_mel::gi()->getUser()->uid;
+    //     $post->settings = '';
+    //     $post->workspace = $this->get_input('_wsp_uid');
+    //     //TODO supprimer 
+    //     $post->workspace = 'un-espace-2';
+
+    //     // Sauvegarde de l'article
+    //     $ret = $post->save();
+    //     if (!is_null($ret)) {
+    //         $post->load();
+    //         $post_data = ['title' => $post->title, 'content' => $post->content, 'uid' => $post->uid, 'creator' => $post->creator, 'settings' => $post->settings, 'workspace' => $post->workspace, 'id' => $post->id];
+    //         $this->rc()->output->set_env('post', $post_data);
+    //     } else {
+    //         return false;
+    //     }
+
+    //     $this->rc()->output->send('mel_forum.create-post');
+    // }
+
     public function create_or_edit_post()
     {
         $this->rc()->html_editor();
-        // $this->rc()->output->set_env($workspace_uid);
         $this->load_script_module('create_or_edit_post');
-        // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
-        //Créer un nouvel Article
-        $post = new LibMelanie\Api\Defaut\Posts\Post();
 
-        //Définition des propriétés de l'article
-        $post->title = '';
-        $post->summary = '';
-        $post->content = '';
-        $post->uid = $this->generateRandomString(24);
-        $post->created = date('Y-m-d H:i:s');
-        $post->modified = date('Y-m-d H:i:s');
-        $post->creator = driver_mel::gi()->getUser()->uid;
-        $post->settings = '';
-        $post->workspace = $this->get_input('_wsp_uid');
-        //TODO supprimer 
-        $post->workspace = 'un-espace-2';
+        // Récupérer l'UID de l'article si disponible
+        $post_uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+        // Initialiser la variable de l'article
+        $post = null;
+        $is_editing = false; // Indique si nous sommes en mode édition
+
+        // Vérifier si un UID a été fourni pour charger l'article existant
+        if ($post_uid) {
+            // Charger l'article existant
+            $post = LibMelanie\Api\Defaut\Posts\Post::find($post_uid);
+            if ($post) {
+                $is_editing = true; // Passer en mode édition si l'article existe
+            }
+        }
+
+        // Si aucun article existant n'est trouvé, créer un nouvel article
+        if (!$is_editing) {
+            //Créer un nouvel Article
+            $post = new LibMelanie\Api\Defaut\Posts\Post();
+
+            //Définition des propriétés de l'article pour un nouvel article
+            $post->title = ''; // Titre par défaut
+            $post->summary = $this->create_summary_from_content($content); // Résumé par défaut
+            $post->content = ''; // Contenu par défaut
+            $post->uid = $this->generateRandomString(24); // UID unique généré
+            $post->created = date('Y-m-d H:i:s'); // Date de création
+            $post->modified = date('Y-m-d H:i:s'); // Date de modification initiale
+            $post->creator = driver_mel::gi()->getUser()->uid; // UID de l'auteur
+            $post->settings = ''; // Paramètres par défaut
+            $post->workspace = $this->get_input('_wsp_uid', 'un-espace-2'); // Identifiant de l'espace
+        } else {
+            // Mise à jour des propriétés uniquement pour l'édition
+            $post->title = $title;
+            $post->summary = $this->create_summary_from_content($content);
+            $post->content = $content;
+            $post->settings = $settings;
+
+            // La date de modification est mise à jour pour chaque modification
+            $post->modified = date('Y-m-d H:i:s');
+        }
 
         // Sauvegarde de l'article
         $ret = $post->save();
         if (!is_null($ret)) {
-            $post->load();
-            $post_data = ['title' => $post->title, 'content' => $post->content, 'uid' => $post->uid, 'creator' => $post->creator, 'settings' => $post->settings, 'workspace' => $post->workspace, 'id' => $post->id];
+            $post->load(); // Charger l'article après la sauvegarde
+            $post_data = [
+                'title' => $post->title,
+                'summary' => $post->summary,
+                'content' => $post->content,
+                'uid' => $post->uid,
+                'creator' => $post->creator,
+                'settings' => $post->settings,
+                'workspace' => $post->workspace,
+                'id' => $post->id
+            ];
             $this->rc()->output->set_env('post', $post_data);
-        } else {
-            return false;
-        }
 
-        $this->rc()->output->send('mel_forum.create-post');
+            // Indiquer le mode dans l'environnement de sortie
+            $this->rc()->output->set_env('is_editing', $is_editing);
+            
+            // Envoyer le template unique pour la création et la modification
+            $this->rc()->output->send('mel_forum.create-or-edit-post');
+        } else {
+            return false; // Gérer le cas où la sauvegarde échoue
+        }
     }
+
 
     /**
      * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.

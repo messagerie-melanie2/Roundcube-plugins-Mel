@@ -714,41 +714,35 @@
             font-variation-settings: 'FILL' 1;
           }
         }
-      
-        .post-comment-context-menu {
+
+        .forum-post-context-menu {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 5px;
           position: absolute;
-          top: 100%;
-          left: 0;
-          background-color: white;
-          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-          border-radius: 5px;
-          padding: 10px;
-          display: none; /* Cache le menu contextuel par défaut */
-      
-          &.hidden {
-            display: none;
-          }
-      
-          button {
+          bottom: -50px;
+          left: -171px; // Ajustement de la position vers la gauche
+          transform: translateX(-10px); // Ajustement supplémentaire vers la gauche
+          width: 198px;
+          height: 60px;
+          border-radius: 10px;
+          background-color: var(--bureau-card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          z-index: 200;
+        
+          .post-options-button {
             display: flex;
             align-items: center;
-            padding: 5px;
             border: none;
-            background: none;
+            outline: none;
+            background-color: var(--bureau-card-background-color); // même couleur de fond
             cursor: pointer;
-            
+            color: inherit; // conserver la couleur du texte du parent
+            border-radius: 5px;
+        
             &:hover {
-              background-color: var(--hover-background-color);
-            }
-      
-            .icon {
-              margin-right: 8px;
-              font-size: 18px;
-            }
-      
-            .post-options-text {
-              font-size: 14px;
-              color: var(--forum-active-text-color);
+              background-color: rgba(0, 0, 0, 0.05); // légère modification au survol
             }
           }
         }

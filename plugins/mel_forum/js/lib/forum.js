@@ -11,8 +11,16 @@ export class Forum extends MelObject {
 
     main() {
         super.main();
+        //TODO récupéerer le workspace via l'url
+        this.workspace = 'workspace-test';
+        this.offset = 0;
+        this.locked = false;
+        this.handleScroll = this.checkScroll.bind(this);
         this.initButtons();
-        this.displayPost();
+        this.initSortSelect();
+        this.initPostDisplay();
+
+
 
     }
 
@@ -46,6 +54,144 @@ export class Forum extends MelObject {
               $('.post-card').show();
             }
         });
+        document.querySelector('.content').addEventListener("scroll", this.handleScroll);
+    }
+
+    /*
+     * Initialise les actions du select de tri
+     */
+    initSortSelect() {
+        $("#forum-sort-select").on("change", (event) => {
+            // Initialiser les deux variables en fonction de la valeur choisie
+            let sortBy;
+            let asc;
+        
+            // Vérifier la valeur sélectionnée et définir les variables
+            switch (event.target.value) {
+                case "date_asc":
+                    sortBy = "created";
+                    asc = true;
+                    break;
+                case "date_desc":
+                    sortBy = "created";
+                    asc = false;
+                    break;
+                case "comment_desc":
+                    sortBy = "comments";
+                    asc = false;
+                    break;
+                case "comment_asc":
+                    sortBy = "comments";
+                    asc = true;
+                    break;
+                case "reaction_desc":
+                    sortBy = "reactions";
+                    asc = false;
+                    break;
+                case "reaction_asc":
+                    sortBy = "reactions";
+                    asc = true;
+                    break;
+                default:
+                    console.log("Option non reconnue");
+            }
+            //appeler le back avec le nouveau tri puis render les posts
+            $('#post-area').empty();
+            this.offset = 0;
+            BnumMessage.SetBusyLoading();
+            this.http_internal_post(
+                {
+                    task: 'forum',
+                    action: 'get_posts_data',
+                    params: {
+                        _workspace: this.workspace,
+                        _offset: this.offset,
+                        _order: sortBy,
+                        _asc: asc,
+                    },
+                    processData: false,
+                    contentType: false,
+                    on_success: (datas) => {
+                        let posts = JSON.parse(datas);
+                        this.displayPost(posts);
+                        BnumMessage.StopBusyLoading();
+                        //on reset l'event listenner du scroll
+                        document.querySelector('.content').removeEventListener("scroll", this.handleScroll);
+                        document.querySelector('.content').addEventListener("scroll", this.handleScroll);
+                    },
+                    on_error: (err) => {
+
+                    }
+                }
+            );
+        });
+    }
+
+    checkScroll() {
+        const scrollHeight = document.querySelector('.content').scrollHeight;
+        const scrollPos = document.querySelector('.content').scrollTop;
+
+        if (scrollPos / scrollHeight >= 0.7 && !this.lock ) {
+            this.lock = true;
+            //On récupère le mode d'affichage
+            let sortBy;
+            let asc;
+            // Vérifier la valeur sélectionnée et définir les variables
+            switch ($("#forum-sort-select")[0].value) {
+                case "date_asc":
+                    sortBy = "created";
+                    asc = true;
+                    break;
+                case "date_desc":
+                    sortBy = "created";
+                    asc = false;
+                    break;
+                case "comment_desc":
+                    sortBy = "comments";
+                    asc = false;
+                    break;
+                case "comment_asc":
+                    sortBy = "comments";
+                    asc = true;
+                    break;
+                case "reaction_desc":
+                    sortBy = "reactions";
+                    asc = false;
+                    break;
+                case "reaction_asc":
+                    sortBy = "reactions";
+                    asc = true;
+                    break;
+                default:
+                    console.log("Option non reconnue");
+            }
+            //On appelle le chargement de la suite des posts
+            this.http_internal_post(
+                {
+                    task: 'forum',
+                    action: 'get_posts_data',
+                    params: {
+                        _workspace: this.workspace,
+                        _offset: this.offset,
+                        _order: sortBy,
+                        _asc: asc,
+                    },
+                    processData: false,
+                    contentType: false,
+                    on_success: (datas) => {
+                        if (datas == "[]"){
+                            document.querySelector('.content').removeEventListener("scroll", this.handleScroll);
+                        }
+                        let posts = JSON.parse(datas);
+                        this.displayPost(posts);
+                        this.lock = false;
+                    },
+                    on_error: (err) => {
+                        this.lock = false;
+                    }
+                }
+            );
+        }
     }
 
     addToFavorite(post_uid, event) {
@@ -84,9 +230,12 @@ export class Forum extends MelObject {
             }
         );
     }
-
-    displayPost() {
+    initPostDisplay () {
         const posts = this.get_env('posts_data');
+        this.displayPost(posts);
+    }
+
+    displayPost(posts) {
         let post;
         let data;
         for (let postId in posts) {
@@ -124,7 +273,8 @@ export class Forum extends MelObject {
             .setData(tag_data);
             $('#tag-area-'+post.uid).append(...tag_template.render());
             }
-
+            this.offset ++;
+            console.log(this.offset);
         }
     }
 }

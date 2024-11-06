@@ -60,7 +60,6 @@ class mel_forum extends bnum_plugin
             $this->register_action('test_update_post', array($this, 'test_update_post'));
             $this->register_action('test_delete_post', array($this, 'test_delete_post'));
             $this->register_action('test_get_post', array($this, 'test_get_post'));
-            $this->register_action('test_get_all_posts_byworkspace', array($this, 'test_get_all_posts_byworkspace'));
             $this->register_action('test_create_reaction', array($this, 'test_create_reaction'));
             $this->register_action('test_delete_reaction', array($this, 'test_delete_reaction'));
             $this->register_action('test_get_all_reactions_bypost', array($this, 'test_get_all_reactions_bypost'));
@@ -98,7 +97,7 @@ class mel_forum extends bnum_plugin
             // récupérer un  article
             $this->register_action('get_post', array($this, 'get_post'));
             // récupérer tous les articles
-            $this->register_action('get_all_posts_byworkspace', array($this, 'get_all_posts_byworkspace'));
+            $this->register_action('get_posts_byworkspace', array($this, 'get_posts_byworkspace'));
             // Ajouter un commentaire ou une réponse
             $this->register_action('create_comment', array($this, 'create_comment'));
             // Répondre à un commentaire ou une réponse
@@ -145,6 +144,8 @@ class mel_forum extends bnum_plugin
             $this->register_action('load_image', array($this, 'load_image'));
             // ajoute un article aux favoris de l'utilisateur courant
             $this->register_action('add_to_favorite', array($this, 'add_to_favorite'));
+            // récupérer des posts au format Json
+            $this->register_action('get_posts_data', array($this, 'get_posts_data'));
         }
     }
 
@@ -657,26 +658,31 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Affiche tous les posts d'un workspace au format JSON.
+     * Retourne les posts en fonction des paramètres passés en POST.
      *
-     * Cette fonction récupère le groupe de workspace en cours d'utilisation
-     * et charge tous les posts associés en utilisant la méthode listPosts.
-     * Les posts sont ensuite renvoyés en réponse au format JSON.
-     *
-     * @return void
+     * @return array post tablau d'objet posts
      */
-    public function get_all_posts_byworkspace()
+    public function get_posts_byworkspace()
     {
-        //récupérer le Workspace
+        //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
         $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        $offset = (rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST) !== null) ? intval(rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST)) : 0;
+        // valeur possible: created, comments, reactions
+        $orderby = (rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) !== null) ? rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) : "created";
+        //on récupère un string si il y a une valeur donc on la convertie
+        $asc = (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) === 'true' ? true : false) : false;
+
+
 
         // Charger tous les posts en utilisant la méthode listPosts
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         // $post->workspace = $workspace_uid;
         $post->workspace = "un-espace-2";
 
+
+        $limit = 20;
         // Appel de la méthode listPosts
-        $posts = $post->listPosts();
+        $posts = $post->listPosts(null, null, $orderby, $asc, $limit, $offset);
 
         return $posts;
 
@@ -2081,19 +2087,37 @@ class mel_forum extends bnum_plugin
 
 
     /**
-     * Affiche une liste de publications avec leurs détails formatés en HTML.
+     * Met dans l'env roundcube une liste de post.
      *
      * Cette fonction récupère toutes les publications d'un espace de travail, 
      * formate chaque publication avec ses détails (créateur, date, titre, résumé, image, tags, 
      * et nombre de réactions et commentaires) et génère le HTML correspondant.
-     *
-     * @return string Le HTML formaté contenant toutes les publications.
      */
     public function show_posts()
     {
-        // Supposons que la fonction get_all_posts_byworkspace() retourne les posts sans les images
-        $posts = $this->get_all_posts_byworkspace();
+        $posts = $this->get_posts_byworkspace();
+        $posts_data = $this->post_object_to_JSON($posts);
 
+        $this->rc()->output->set_env('posts_data', $posts_data);
+    }
+
+    /**
+     * Retourne les données des posts sous forme de JSON
+     */
+    function get_posts_data()
+    {
+        $posts = $this->get_posts_byworkspace();
+        $posts_data = $this->post_object_to_JSON($posts);
+
+        echo json_encode($posts_data);
+        exit;
+    }
+
+    /**
+     * Prend en paramètre un tableau d'objet post et retourne un tableau au format JSON
+     */
+    function post_object_to_JSON($posts)
+    {
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
@@ -2134,7 +2158,7 @@ class mel_forum extends bnum_plugin
                 'post_link' => $post_link,
             ];
         }
-        $this->rc()->output->set_env('posts_data', $posts_data);
+        return $posts_data;
     }
 
     /**
@@ -2364,39 +2388,6 @@ class mel_forum extends bnum_plugin
         } else {
             header('Content-Type : application/json');
             echo json_encode(['status' => 'error', 'message' => 'Echec de chargement de l\'article.']);
-        }
-
-        // Arrêt de l'exécution du script
-        exit;
-    }
-
-    public function test_get_all_posts_byworkspace()
-    {
-        // Charger tous les posts en utilisant la méthode listPosts
-        $post = new LibMelanie\Api\Defaut\Posts\Post();
-        $post->workspace = 'un-espace-2';
-
-        // Appel de la méthode listPosts
-        $posts = $post->listPosts();
-
-        if (!empty($posts)) {
-            header('Content-Type: application/json');
-            // Préparer les données des tags pour la réponse JSON
-            $posts_array = [];
-            foreach ($posts as $post) {
-                $posts_array[] = [
-                    'id' => $post->id,
-                    'title' => $post->title,
-                    'content' => $post->content,
-                    'workspace' => $post->workspace
-                ];
-            }
-            echo json_encode([
-                'status' => 'success',
-                'tags' => $posts_array
-            ]);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Aucun post trouvé.']);
         }
 
         // Arrêt de l'exécution du script

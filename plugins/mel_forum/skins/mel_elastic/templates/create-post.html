@@ -14,8 +14,14 @@
     </div>
     <div class="row forum-header">
       <div class="text-header">
-        <!-- <h2 class="title">|</h2> -->
-        <h2 class="title">Créer un nouvel article</h2>
+        <h2 class="title">
+          <roundcube:if condition="env:is_editing === true">
+            Modifier l'article
+          <roundcube:endif />
+          <roundcube:if condition="env:is_editing === false">
+            Créer un nouvel article
+          <roundcube:endif />
+        </h2>
       </div>
     </div>
     <div class="row forum-content">

@@ -132,7 +132,7 @@ export class Forum extends MelObject {
       event.preventDefault();
       event.stopPropagation();
       // Rediriger vers la page d'édition avec l'UID du post
-      window.location.href = this.url('forum', { action: 'create_or_edit_post', uid: post_uid });
+      window.location.href = this.url('forum', { action: 'create_or_edit_post'}) + "&_uid=" + post_uid ;
     }
   
 

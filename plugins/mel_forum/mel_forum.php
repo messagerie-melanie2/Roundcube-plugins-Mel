@@ -335,73 +335,87 @@ class mel_forum extends bnum_plugin
         $this->rc()->html_editor();
         $this->load_script_module('create_or_edit_post');
 
-        // Récupérer l'UID de l'article si disponible
-        $post_uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+        // Récupérer l'UID pour déterminer s'il s'agit d'une création ou d'une modification
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET);
 
-        // Initialiser la variable de l'article
-        $post = null;
-        $is_editing = false; // Indique si nous sommes en mode édition
+        // Initialisation de la variable de post et du mode édition
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $is_editing = false;
 
-        // Vérifier si un UID a été fourni pour charger l'article existant
-        if ($post_uid) {
-            // Charger l'article existant
-            $post = LibMelanie\Api\Defaut\Posts\Post::find($post_uid);
-            if ($post) {
-                $is_editing = true; // Passer en mode édition si l'article existe
+        if ($uid) {
+            // Mode édition : assigner l'UID et charger l'article existant
+            $post->uid = $uid;
+            if ($post->load()) {  // Charger les données de l'article existant
+                $is_editing = true;
+                // Récupérer les Tags liés au post
+                $tags = $this->get_all_tags_bypost($post->uid);
+            } else {
+                // Si l'UID est fourni mais l'article n'existe pas, renvoyer une erreur
+                return false;
             }
         }
 
-        // Si aucun article existant n'est trouvé, créer un nouvel article
         if (!$is_editing) {
-            //Créer un nouvel Article
-            $post = new LibMelanie\Api\Defaut\Posts\Post();
+            // Mode création : initialiser un nouvel article avec des valeurs par défaut
+            $post->title = '';
+            $post->summary = $this->create_summary_from_content($content);
+            $post->content = '';
+            $post->uid = $this->generateRandomString(24);
+            $post->modified = date('Y-m-d H:i:s');
+            $post->creator = driver_mel::gi()->getUser()->uid;
+            $post->settings = '';
+            $post->workspace = $this->get_input('_wsp_uid');
+            // TODO : supprimer cette ligne de test si besoin
+            $post->workspace = 'un-espace-2';
 
-            //Définition des propriétés de l'article pour un nouvel article
-            $post->title = ''; // Titre par défaut
-            $post->summary = $this->create_summary_from_content($content); // Résumé par défaut
-            $post->content = ''; // Contenu par défaut
-            $post->uid = $this->generateRandomString(24); // UID unique généré
-            $post->created = date('Y-m-d H:i:s'); // Date de création
-            $post->modified = date('Y-m-d H:i:s'); // Date de modification initiale
-            $post->creator = driver_mel::gi()->getUser()->uid; // UID de l'auteur
-            $post->settings = ''; // Paramètres par défaut
-            $post->workspace = $this->get_input('_wsp_uid', 'un-espace-2'); // Identifiant de l'espace
+            // Sauvegarde initiale du nouvel article
+            $ret = $post->save();
+            if (is_null($ret)) {
+                return false; // Retourner false si la sauvegarde échoue
+            }
+            $post->load(); // Charger les données de l'article créé
         } else {
-            // Mise à jour des propriétés uniquement pour l'édition
+            // Mode édition : mettre à jour les propriétés de l'article existant
+            $title = $post->title;
+            $content = $post->content;
+            $summary = $post->summary;
+            $settings = $post->settings;
+
+            // Définir les nouvelles propriétés de l'article
             $post->title = $title;
             $post->summary = $this->create_summary_from_content($content);
             $post->content = $content;
             $post->settings = $settings;
-
-            // La date de modification est mise à jour pour chaque modification
             $post->modified = date('Y-m-d H:i:s');
+            $post->user_uid = driver_mel::gi()->getUser()->uid;
+
+            // Sauvegarde de l'article modifié
+            $ret = $post->save();
+            if (is_null($ret)) {
+                return false; // Retourner false si la sauvegarde échoue
+            }
+            $post->load(); // Recharger les données mises à jour de l'article
         }
 
-        // Sauvegarde de l'article
-        $ret = $post->save();
-        if (!is_null($ret)) {
-            $post->load(); // Charger l'article après la sauvegarde
-            $post_data = [
-                'title' => $post->title,
-                'summary' => $post->summary,
-                'content' => $post->content,
-                'uid' => $post->uid,
-                'creator' => $post->creator,
-                'settings' => $post->settings,
-                'workspace' => $post->workspace,
-                'id' => $post->id
-            ];
-            $this->rc()->output->set_env('post', $post_data);
+        // Préparer les données de l'article pour le frontend
+        $post_data = [
+            'title' => $post->title,
+            'summary' => $post->summary,
+            'content' => $post->content,
+            'uid' => $post->uid,
+            'creator' => $post->creator,
+            'tags' => $tags,
+            'settings' => $post->settings,
+            'workspace' => $post->workspace,
+            'id' => $post->id
+        ];
+        $this->rc()->output->set_env('post', $post_data);
+        $this->rc()->output->set_env('is_editing', $is_editing);
 
-            // Indiquer le mode dans l'environnement de sortie
-            $this->rc()->output->set_env('is_editing', $is_editing);
-            
-            // Envoyer le template unique pour la création et la modification
-            $this->rc()->output->send('mel_forum.create-or-edit-post');
-        } else {
-            return false; // Gérer le cas où la sauvegarde échoue
-        }
+        // Envoyer le template approprié
+        $this->rc()->output->send('mel_forum.create-post');
     }
+
 
 
     /**
@@ -670,6 +684,7 @@ class mel_forum extends bnum_plugin
 
         // Enregistrer l'historique mis à jour dans le champ `history`
         $post->history = json_encode($history);
+        $post->save();
     }
 
     /**
@@ -828,6 +843,16 @@ class mel_forum extends bnum_plugin
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
         $post->load();
+
+        // Préparer les nouvelles données pour l'historique
+        $new_data = [
+            'title' => $title,
+            'content' => $content,
+            'settings' => $settings
+        ];
+
+        // Enregistrer les modifications dans l'historique
+        $this->save_post_history($post, $post->user_uid, $new_data);
 
         //Définition des propriétés de l'article
         $post->title = $title;

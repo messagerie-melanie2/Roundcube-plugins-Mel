@@ -33,7 +33,7 @@ export class create_or_edit_post extends MelObject {
         };
         $("#edit-title").val(post.title);
         this.post_uid = post.uid;
-        this.tags = [];
+        this.tags = post.tags || [];
         //TODO récupérer le workspaces via l'url ou le post
         this.workspace = 'workspace-test';
         this.displayTags();
@@ -45,6 +45,7 @@ export class create_or_edit_post extends MelObject {
 
     //affiche les tags
     displayTags() {
+        $('.tag-list').empty(); // Vide la liste de tags existante avant d'ajouter les nouveaux tags
         for(var tag of this.tags) {
             let html = JsHtml.start
                     .span({class: 'tag', tabindex: 0}).text(`#${tag}`).span({class: 'icon-remove-tag'}).end().end();
@@ -210,25 +211,6 @@ export class create_or_edit_post extends MelObject {
         );
         dialog.show();
         this.dialog = dialog;
-    }
-
-    loadPostData(post_uid) {
-        this.http_internal_post({
-            task: 'forum',
-            action: 'get_post_data', // Appelle `get_post_data()`
-            params: { uid: post_uid },
-            on_success: (data) => {
-                const post = JSON.parse(data);
-                $("#edit-title").val(post.title);
-                tinymce.activeEditor.setContent(post.content);
-                this.tags = post.tags || [];
-                this.post_uid = post.uid;
-                this.displayTags();
-            },
-            on_error: (err) => {
-                console.log("Erreur lors de la récupération des données de l'article :", err);
-            }
-        });
     }
     
 }

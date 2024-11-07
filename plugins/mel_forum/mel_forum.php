@@ -668,6 +668,13 @@ class mel_forum extends bnum_plugin
         $modified_fields = [];
         foreach ($new_data as $field => $new_value) {
             $old_value = $post->$field;
+
+            // Vérifier si le champ est `settings` et normaliser pour comparaison
+            if ($field === 'settings') {
+                // Encoder l'ancien tableau en JSON pour le comparer à la nouvelle chaîne
+                $old_value = json_encode($old_value);
+            }
+
             if ($old_value !== $new_value) {
                 $modified_fields[] = $field;
             }
@@ -858,7 +865,6 @@ class mel_forum extends bnum_plugin
         $post->title = $title;
         $post->summary = $summary;
         $post->content = $content;
-        $post->created = date('Y-m-d H:i:s');
         $post->modified = date('Y-m-d H:i:s');
         $post->creator = driver_mel::gi()->getUser()->uid;
         $post->settings = $settings;

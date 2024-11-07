@@ -342,11 +342,23 @@ class mel_forum extends bnum_plugin
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $is_editing = false;
 
+        // Récupérer l'utilisateur
+        $user = driver_mel::gi()->getUser();
+        $current_user_uid = $user->uid;
+
         if ($uid) {
             // Mode édition : assigner l'UID et charger l'article existant
             $post->uid = $uid;
             if ($post->load()) {  // Charger les données de l'article existant
                 $is_editing = true;
+
+                // Vérifier si l'utilisateur connecté est bien le créateur de l'article
+                $creator = $post->creator;
+
+                if ($creator !== $current_user_uid) {
+                    echo json_encode(['status' => 'error', 'message' => 'Seul le créateur de cet article peut le modifier.']);
+                    exit;
+                }
                 // Récupérer les Tags liés au post
                 $tags = $this->get_all_tags_bypost($post->uid);
             } else {

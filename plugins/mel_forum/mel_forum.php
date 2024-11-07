@@ -353,12 +353,11 @@ class mel_forum extends bnum_plugin
                 $is_editing = true;
 
                 // Vérifier si l'utilisateur connecté est bien le créateur de l'article
-                $creator = $post->creator;
-
-                if ($creator !== $current_user_uid) {
+                if ($post->creator !== $current_user_uid) {
                     echo json_encode(['status' => 'error', 'message' => 'Seul le créateur de cet article peut le modifier.']);
-                    exit;
+                    exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
                 }
+
                 // Récupérer les Tags liés au post
                 $tags = $this->get_all_tags_bypost($post->uid);
             } else {
@@ -671,7 +670,7 @@ class mel_forum extends bnum_plugin
     private function save_post_history($post, $user_uid, $new_data)
     {
         // Charger l'historique actuel
-        $history = json_decode($post->history, true);
+        $history = $post->history;
         if (!is_array($history)) {
             $history = [];
         }
@@ -694,6 +693,7 @@ class mel_forum extends bnum_plugin
 
         // Si des champs ont été modifiés, ajouter une seule entrée à l'historique
         if (!empty($modified_fields)) {
+            // Ajouter l'entrée à l'historique
             $history[] = [
                 'field' => $modified_fields,
                 'user_id' => $user_uid,
@@ -701,10 +701,19 @@ class mel_forum extends bnum_plugin
             ];
         }
 
+        // Supprimer les éléments `null` dans l'historique
+        $history = array_filter($history, function ($entry) {
+            return !is_null($entry);
+        });
+
+        // Réindexer l'historique (supprime les indices vides)
+        $history = array_values($history);
+
         // Enregistrer l'historique mis à jour dans le champ `history`
         $post->history = json_encode($history);
         $post->save();
     }
+
 
     /**
      * Supprime un article existant en fonction de l'UID fourni.

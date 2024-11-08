@@ -98,7 +98,6 @@ export class create_or_edit_post extends MelObject {
     }
     // gestion du bouton sauvegarder
     saveButton() {
-        debugger;
         $('#submit-post').click(() => {
             this.http_internal_post(
                 {
@@ -117,6 +116,7 @@ export class create_or_edit_post extends MelObject {
                     on_success: () => {
                         console.log('succès');
                         let postUid = this.post_uid;
+                        // TODO Voir autre solution pour obtenir l'url
                         window.location.href = this.url('forum', {action:'post'}) + `&_uid=${postUid}` ;
                     },
                     on_error: (err) => {

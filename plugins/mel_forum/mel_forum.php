@@ -295,41 +295,6 @@ class mel_forum extends bnum_plugin
         return $content;
     }
 
-    // public function create_or_edit_post()
-    // {
-    //     $this->rc()->html_editor();
-    //     // $this->rc()->output->set_env($workspace_uid);
-    //     $this->load_script_module('create_or_edit_post');
-    //     // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
-    //     //Créer un nouvel Article
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-
-    //     //Définition des propriétés de l'article
-    //     $post->title = '';
-    //     $post->summary = '';
-    //     $post->content = '';
-    //     $post->uid = $this->generateRandomString(24);
-    //     $post->created = date('Y-m-d H:i:s');
-    //     $post->modified = date('Y-m-d H:i:s');
-    //     $post->creator = driver_mel::gi()->getUser()->uid;
-    //     $post->settings = '';
-    //     $post->workspace = $this->get_input('_wsp_uid');
-    //     //TODO supprimer 
-    //     $post->workspace = 'un-espace-2';
-
-    //     // Sauvegarde de l'article
-    //     $ret = $post->save();
-    //     if (!is_null($ret)) {
-    //         $post->load();
-    //         $post_data = ['title' => $post->title, 'content' => $post->content, 'uid' => $post->uid, 'creator' => $post->creator, 'settings' => $post->settings, 'workspace' => $post->workspace, 'id' => $post->id];
-    //         $this->rc()->output->set_env('post', $post_data);
-    //     } else {
-    //         return false;
-    //     }
-
-    //     $this->rc()->output->send('mel_forum.create-post');
-    // }
-
     public function create_or_edit_post()
     {
         $this->rc()->html_editor();
@@ -722,6 +687,7 @@ class mel_forum extends bnum_plugin
     {
         // Récupérer l'utilisateur
         $user = driver_mel::gi()->getUser();
+        $current_user_uid = $user->uid;
 
         // Récupérer la valeur du champ POST
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
@@ -740,6 +706,12 @@ class mel_forum extends bnum_plugin
         if (!$post->load()) {
             echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
             exit;
+        }
+
+        // Vérifier si l'utilisateur connecté est bien le créateur de l'article
+        if ($post->creator !== $current_user_uid) {
+            echo json_encode(['status' => 'error', 'message' => 'Seul le créateur de cet article peut le supprimer.']);
+            exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
         }
 
         // Supprimer l'article

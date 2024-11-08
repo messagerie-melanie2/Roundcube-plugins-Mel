@@ -132,9 +132,60 @@ export class Forum extends MelObject {
       event.preventDefault();
       event.stopPropagation();
       // Rediriger vers la page d'édition avec l'UID du post
-      window.location.href = this.url('forum', { action: 'create_or_edit_post'}) + "&_uid=" + post_uid ;
+      window.location.href = this.url('forum', { action: 'create_or_edit_post'}) + "&_uid=" + post_uid;
     }
+
+    deletePost(post_uid, event) {
+      debugger;
+      event.preventDefault();
+      event.stopPropagation();
   
+      // Demander confirmation à l'utilisateur avant de supprimer
+      const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
+      if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
+  
+      // Envoi d'une requête HTTP pour supprimer le post
+      this.http_internal_post({
+          task: 'forum',
+          action: 'delete_post',
+          params: {
+              _uid: post_uid,
+          },
+          processData: false,
+          contentType: false,
+          on_success: (response) => {
+            debugger;
+              const parsedResponse = JSON.parse(response);
+  
+              if (parsedResponse.status === 'success') {
+                  // Affichage du message de succès
+                  BnumMessage.DisplayMessage(
+                      parsedResponse.message || 'Le post a été supprimé avec succès.',
+                      eMessageType.Confirmation
+                  );
+  
+                  // Supprimer l'article de l'affichage
+                  const postElement = $('#post-' + post_uid);
+                  if (postElement.length > 0) {
+                      postElement.remove(); // Supprimer l'article du DOM
+                  }
+              } else {
+                  // Affichage du message d'erreur en cas d'échec
+                  BnumMessage.DisplayMessage(
+                      parsedResponse.message || 'Erreur lors de la suppression du post.',
+                      eMessageType.Error
+                  );
+              }
+          },
+          on_error: (err) => {
+              // Affichage du message d'erreur en cas de problème avec la requête
+              BnumMessage.DisplayMessage(
+                  'Erreur lors de la tentative de suppression du post.',
+                  eMessageType.Error
+              );
+          }
+      });
+    }
 
     displayPosts() {
         const posts = this.get_env('posts_data');
@@ -164,6 +215,7 @@ export class Forum extends MelObject {
             .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid))
             .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
             .addEvent('.post-options-button.edit-post', 'click', this.editPost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
+            .addEvent('.post-options-button.delete-post', 'click', this.deletePost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());

@@ -608,30 +608,6 @@ class mel extends rcube_plugin
           'content' => $input->show($value),
         );
       }
-    } else if ($args['section'] == 'mailbox') {
-      // Load localization and configuration
-      $this->add_texts('localization/');
-
-      // Check that configuration is not disabled
-      $dont_override = (array)$this->rc->config->get('dont_override', array());
-
-      $key = 'mel_use_infinite_scroll';
-      if (!in_array($key, $dont_override)) {
-        $config_key = 'use_infinite_scroll';
-        $field_id = "_" . $key;
-        $is_checked = $this->rc->config->get($config_key, true);
-        $input = new html_checkbox(array(
-          'name' => $field_id,
-          'id' => $field_id,
-          'value' => 1
-        ));
-        $content = $input->show($is_checked);
-
-        $args['blocks']['main']['options'][$key] = array(
-          'title' => html::label($field_id, rcube::Q($this->gettext($key))),
-          'content' => $content
-        );
-      }
     }
     return $args;
   }

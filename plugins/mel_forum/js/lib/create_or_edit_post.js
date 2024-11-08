@@ -98,6 +98,7 @@ export class create_or_edit_post extends MelObject {
     }
     // gestion du bouton sauvegarder
     saveButton() {
+        debugger;
         $('#submit-post').click(() => {
             this.http_internal_post(
                 {
@@ -115,9 +116,12 @@ export class create_or_edit_post extends MelObject {
                     contentType: false,
                     on_success: () => {
                         console.log('succès');
+                        let postUid = this.post_uid;
+                        window.location.href = this.url('forum', {action:'post'}) + `&_uid=${postUid}` ;
                     },
                     on_error: (err) => {
                         console.log('Erreur d\'enregistrement');
+                        window.location.href = this.url('forum', {action:'index'});
                     }
                 }
             );

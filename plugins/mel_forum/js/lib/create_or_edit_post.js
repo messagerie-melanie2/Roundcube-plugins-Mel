@@ -182,7 +182,7 @@ export class create_or_edit_post extends MelObject {
                                     {
                                         task: 'forum',
                                         action: 'upload_image',
-                                        params: {_file: fileReader.result, _post_id: 2}, 
+                                        params: {_file: fileReader.result, _post_id: 10}, 
                                         processData: false, // Empêche jQuery de traiter les données
                                         contentType: false, // Empêche jQuery d'ajouter des headers incorrects
                                         on_success: (data) => {

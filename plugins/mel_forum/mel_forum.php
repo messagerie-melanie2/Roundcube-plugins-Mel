@@ -2218,6 +2218,10 @@ class mel_forum extends bnum_plugin
                 "_uid" => $post->uid,
             ), true, true, true);
 
+            // Récupérer la première image du post et son URL
+            $first_image = $post->firstImage();
+            $image_url = $first_image ? $this->get_image_url($first_image->uid) : 'default_image_path.jpg';
+
             $posts_data[$post->uid] = [
                 'uid' => $post->uid,
                 'title' => $post->title,
@@ -2230,6 +2234,7 @@ class mel_forum extends bnum_plugin
                 'comment_count' => $comment_count,
                 'favorite' => $is_fav,
                 'post_link' => $post_link,
+                'image_url' => $image_url,
             ];
         }
         $this->rc()->output->set_env('posts_data', $posts_data);

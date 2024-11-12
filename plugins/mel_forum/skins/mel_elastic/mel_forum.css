@@ -655,7 +655,7 @@
 .task-forum .post .post-content .post-summary {
   margin-top: 5px;
 }
-.task-forum .post .post-image img {
+.task-forum .post .post-image {
   max-width: 150px;
   max-height: 150px;
   border-radius: 5px;

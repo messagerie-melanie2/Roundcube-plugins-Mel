@@ -5,6 +5,7 @@ class WorkspacePageLayout {
   private $third;
   private $fourth;
   private $other;
+  private $navActions;
 
   public function __construct() {
     $this->first = new WorkspacePageRow();
@@ -12,6 +13,7 @@ class WorkspacePageLayout {
     $this->third = new WorkspacePageRow();
     $this->fourth = new WorkspacePageRow();
     $this->other = new WorkspacePageRow();
+    $this->navActions = [];
   }
 
   public function firstRow() {
@@ -32,6 +34,15 @@ class WorkspacePageLayout {
 
   public function otherRow() {
     return $this->other;
+  }
+
+  public function setNavBarSetting($task, $canBeHidden = true, $order = 999) {
+    $this->navActions[] = ['task' => $task, 'canBeHidden' => $canBeHidden, 'order' => $order];
+    return $this;
+  }
+
+  public function getNavBarSettings() {
+    return count($this->navActions) > 0 ? $this->navActions : null;
   }
 
   public function htmlModuleBlock($attribs = [], $content = '') {

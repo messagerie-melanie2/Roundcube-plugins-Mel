@@ -211,6 +211,7 @@ class tchap extends bnum_plugin
     public function on_show_workspace($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $this->include_module('workspace.js', 'js/lib/workspace');
+            $args['layout']->setNavBarSetting('tchap', false, 6);
         }
 
         return $args;

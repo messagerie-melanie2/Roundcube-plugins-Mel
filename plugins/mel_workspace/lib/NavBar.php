@@ -6,6 +6,7 @@ class NavBar {
   // private $assets_path;
   private $devel_mode;
   private $uid;
+  private $settings; 
   protected $assets_dir   = RCUBE_INSTALL_PATH;
 
   public function __construct($uid) {
@@ -16,10 +17,16 @@ class NavBar {
     $this->scripts = null;
     $this->modules = null;
     $this->css = null;
+    $this->settings = null;
   }
 
   public function rc() {
     return rcmail::get_instance();
+  }
+
+  public function set_settings($settings) {
+    $this->settings = $settings;
+    return $this;
   }
 
     /**
@@ -149,11 +156,13 @@ class NavBar {
   public function get() {
     include_once __DIR__.'/Workspace.php';
     $workspace = new Workspace($this->uid, true);
-    $picture = mel_workspace::GetWorkspaceLogo($workspace->get());
-    $description = str_replace('"', "''", $workspace->description());
-    $title = $workspace->title();
+    // $picture = mel_workspace::GetWorkspaceLogo($workspace->get());
+    // $description = str_replace('"', "''", $workspace->description());
+    // $title = $workspace->title();
     $serialize = str_replace('"', "¤'¤'", $workspace->serialize());
-    return "<bnum-wsp-nav data-workspace=\"$serialize\" data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$this->css\"></bnum-wsp-nav>";
+    $raw = str_replace('"', "¤'¤'", json_encode($this->settings));
+    $settings = isset($this->settings) ? "data-apps-settings=\"$raw\"" : '';
+    return "<bnum-wsp-nav data-workspace=\"$serialize\" $settings data-modules=\"$this->modules\" data-scripts=\"$this->scripts\" data-css=\"$this->css\"></bnum-wsp-nav>";
   }
 
 }

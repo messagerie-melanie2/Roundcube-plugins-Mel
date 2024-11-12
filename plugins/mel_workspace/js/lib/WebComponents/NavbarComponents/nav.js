@@ -1,3 +1,4 @@
+import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.js';
 import {
   BnumHtmlSrOnly,
   EWebComponentMode,
@@ -14,8 +15,8 @@ export class WspPageNavigation extends NavBarComponent {
 
   constructor({ parent = null, apps = null } = {}) {
     super({ mode: EWebComponentMode.div, parent });
-
-    this.#apps = apps ?? [
+    console.log('APPS', apps);
+    this.#apps = apps; /* ?? [
       'home',
       'calendar',
       'stockage',
@@ -23,9 +24,10 @@ export class WspPageNavigation extends NavBarComponent {
       'wekan',
       'useful_link',
       'tchap',
-    ];
+    ];*/
     this.#id = this.generateId(NAMESPACE);
     this.onbuttonclicked = new BnumEvent();
+    this.oniconclicked = new BnumEvent();
   }
 
   get applications() {
@@ -72,12 +74,16 @@ export class WspPageNavigation extends NavBarComponent {
       break: false,
     }) ?? { apps: this.applications, break: false };
 
-    for (const app of plugins.apps) {
+    for (const app of MelEnumerable.from(plugins.apps).orderBy(
+      (x) => x.order ?? Infinity,
+    )) {
       if (app) this.#_generate_element(app);
     }
   }
 
-  #_generate_element(task) {
+  #_generate_element(obj) {
+    // debugger;
+    const { task, canBeHidden } = obj;
     let li = document.createElement('li');
     li.setAttribute('role', 'presentation');
 
@@ -88,8 +94,14 @@ export class WspPageNavigation extends NavBarComponent {
       this.onbuttonclicked.call.bind(this.onbuttonclicked),
       task,
     );
+    button.oniconclicked.push(
+      this.oniconclicked.call.bind(this.oniconclicked),
+      task,
+    );
     button.setAttribute('role', 'menuitem');
     button.setAttribute('data-task', task);
+
+    button.setAttribute('data-can-be-hidden', canBeHidden);
 
     li.appendChild(button);
     this.nav.appendChild(li);

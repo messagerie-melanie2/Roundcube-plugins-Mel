@@ -229,7 +229,8 @@ class Workspace {
       'modified' => $this->modified(),
       'color' => $this->color(),
       'isJoin' => $this->hasUserFromEmail(driver_mel::gi()->getUser()->email),
-      'isAdmin' => $this->isAdmin()
+      'isAdmin' => $this->isAdmin(),
+      'services' => $this->objects()->serialize()
     ];
 
     return json_encode($raw);
@@ -481,5 +482,9 @@ class WorkspaceObject {
     }
 
     return $this;
-}
+  }
+
+  public function serialize() {
+    return json_decode($this->_workspace->objects);
+  }
 }

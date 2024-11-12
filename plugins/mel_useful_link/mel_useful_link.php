@@ -826,6 +826,7 @@ class mel_useful_link extends bnum_plugin
     $layout = $args['layout'];
     $html = $layout->htmlSmallModuleBlock(['id' => 'module-ul', 'data-title' => 'Liens utiles']);
     $layout->thirdRow()->append($SIZE, $html);
+    // $layout->setNavBarSetting('useful_links', true, 5);
     $args['layout'] = $layout;
     unset($layout);
 

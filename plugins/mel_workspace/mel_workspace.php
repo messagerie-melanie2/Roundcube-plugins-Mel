@@ -116,6 +116,8 @@ class mel_workspace extends bnum_plugin
         $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
 
         $this->workspacePageLayout->fourthRow()->append(12, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda']));
+        $this->workspacePageLayout->setNavBarSetting('home', false, 0);
+        $this->workspacePageLayout->setNavBarSetting('calendar', true, 1);
 
         $this->rc()->output->add_handlers(array(
             'wsp.row.first'  => [$this, 'handler_get_row'],
@@ -152,6 +154,7 @@ class mel_workspace extends bnum_plugin
         include_once __DIR__.'/lib/NavBar.php';
 
         $navbar = new NavBar($uid);
+        $navbar->set_settings($this->workspacePageLayout->getNavBarSettings());
         $navbar->add_css($this->local_skin_path().'/navbar.css');
         $navbar->add_css('/'.$this->local_skin_path().'/material-symbols.css');
         // $navbar->add_module('js/lib/navbar.js');

@@ -34,6 +34,7 @@ class WspNavBar extends HtmlCustomTag {
     super({ mode: EWebComponentMode.div });
 
     this.onbuttonclicked = new BnumEvent();
+    this.onstatetoggle = new BnumEvent();
   }
 
   /**
@@ -112,6 +113,13 @@ class WspNavBar extends HtmlCustomTag {
     return this.#data.workspace;
   }
 
+  /**
+   * @type {{task:string, canBeHidden:boolean}[]}
+   */
+  get settings() {
+    return JSON.parse(this.#_get_data('apps-settings').replaceAll("¤'¤'", '"'));
+  }
+
   _p_main() {
     this.data('shadow', true);
 
@@ -140,11 +148,14 @@ class WspNavBar extends HtmlCustomTag {
 
     shadow.appendChild(style);
 
-    let tmp = new WspPageNavigation({ parent: this });
+    let tmp = new WspPageNavigation({ parent: this, apps: this.settings });
     this.mainDiv.appendChild(tmp);
     tmp.onbuttonclicked.push(
       this.onbuttonclicked.call.bind(this.onbuttonclicked),
     );
+    tmp.oniconclicked.push((...args) => {
+      this.onstatetoggle.call(...args);
+    });
     this.#pageNavigation = tmp;
     tmp = null;
 
@@ -396,7 +407,8 @@ class WspNavBar extends HtmlCustomTag {
 
   #_get_data(data) {
     if (!this.#data[data]) {
-      this.#data[data] = this.dataset[data];
+      this.#data[data] =
+        this.dataset[data] ?? this.getAttribute(`data-${data}`);
       this.removeAttribute(`data-${data}`);
     }
 

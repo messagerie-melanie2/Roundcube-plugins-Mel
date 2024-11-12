@@ -213,6 +213,10 @@ export class WspNavigationButton extends NavBarComponent {
     return this.visibilityButton.querySelector('bnum-icon');
   }
 
+  get canBeHidden() {
+    return this._p_get_data('can-be-hidden') !== 'false';
+  }
+
   _p_main() {
     super._p_main();
 
@@ -234,47 +238,49 @@ export class WspNavigationButton extends NavBarComponent {
     button.appendChild(this.createText(this.#text));
     button.setAttribute('wspbutton', 'navigation');
     button.style.justifyContent = 'left';
-    // button.afterstyle.push(() => {
-    //   button.style.justifyContent = 'left';
-    // });
-    visibilityButton
-      .data('data-start-pressed', this.#startingState)
-      .appendChild(icon);
-    visibilityButton.classList.add('transparent-bckg');
-    visibilityButton.setAttribute('id', this.visibilityButtonId);
-    visibilityButton.ontoggle.push(
-      this.oniconclicked.call.bind(this.oniconclicked),
-    );
-    visibilityButton.onmouseenter = () => {
-      /**
-       * @type {PressedButton}
-       */
-      let button = this.querySelector(`#${this.taskButtonId}`);
 
-      $(button).css({
-        '--navigation-border-radius-top-right': 0,
-        '--navigation-border-radius-bottom-right': 0,
-      }); //['--navigation-border-radius-top-right'] = '0px';
-      // button.style['--navigation-border-radius-bottom-right'] = '0px';
-      button = null;
-    };
-    visibilityButton.onmouseleave = () => {
-      /**
-       * @type {PressedButton}
-       */
-      let button = this.querySelector(`#${this.taskButtonId}`);
-      $(button).css({
-        '--navigation-border-radius-top-right': EMPTY_STRING,
-        '--navigation-border-radius-bottom-right': EMPTY_STRING,
-      });
-      button = null;
-    };
+    this.appendChild(button);
+    // debugger;
+    if (this.canBeHidden) {
+      visibilityButton
+        .data('data-start-pressed', this.#startingState)
+        .appendChild(icon);
+      visibilityButton.classList.add('transparent-bckg');
+      visibilityButton.setAttribute('id', this.visibilityButtonId);
+      visibilityButton.ontoggle.push(
+        this.oniconclicked.call.bind(this.oniconclicked),
+      );
+      visibilityButton.onmouseenter = () => {
+        /**
+         * @type {PressedButton}
+         */
+        let button = this.querySelector(`#${this.taskButtonId}`);
 
-    this.append(button, visibilityButton);
+        $(button).css({
+          '--navigation-border-radius-top-right': 0,
+          '--navigation-border-radius-bottom-right': 0,
+        }); //['--navigation-border-radius-top-right'] = '0px';
+        // button.style['--navigation-border-radius-bottom-right'] = '0px';
+        button = null;
+      };
+      visibilityButton.onmouseleave = () => {
+        /**
+         * @type {PressedButton}
+         */
+        let button = this.querySelector(`#${this.taskButtonId}`);
+        $(button).css({
+          '--navigation-border-radius-top-right': EMPTY_STRING,
+          '--navigation-border-radius-bottom-right': EMPTY_STRING,
+        });
+        button = null;
+      };
 
-    button = null;
-    visibilityButton = null;
+      this.appendChild(visibilityButton);
+      visibilityButton = null;
+    }
+
     icon = null;
+    button = null;
   }
 }
 

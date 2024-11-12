@@ -381,6 +381,7 @@ class mel_nextcloud extends rcube_plugin {
       $layout = $args['layout'];
       $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);
       $layout->secondRow()->append($SIZE, $html);
+      $layout->setNavBarSetting('stockage', true, 2);
       $args['layout'] = $layout;
       unset($layout);
 

@@ -53,14 +53,14 @@ class ModuleLinks extends WorkspaceObject {
   }
 }
 
-top.rcmail.add_event_listener_ex(
-  'wsp.navbar.navigation',
-  'module_link',
-  (args) => {
-    args.apps = MelEnumerable.from(args.apps).where((x) => x !== 'useful_link');
+// top.rcmail.add_event_listener_ex(
+//   'wsp.navbar.navigation',
+//   'module_link',
+//   (args) => {
+//     args.apps = MelEnumerable.from(args.apps).where((x) => x !== 'useful_link');
 
-    return args;
-  },
-);
+//     return args;
+//   },
+// );
 
 ModuleLinks.Start();

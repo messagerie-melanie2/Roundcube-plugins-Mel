@@ -23,7 +23,7 @@
 // Configuration des logs
 define('LOG_PATH', '/var/log/roundcube');
 define('LOG_FILE', 'attachment.log');
-define('SESSION_PATH', '/m2/sessions');
+define('SESSION_PATH', '/m2-new-nfs/sessions');
 
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
@@ -44,7 +44,7 @@ else {
   $username = rcube_utils::get_input_string("horde_user", rcube_utils::INPUT_GPC);
   $password = rcube_utils::get_input_string("horde_pass", rcube_utils::INPUT_GPC);
 
-  // Positionner le path de la sesion
+  // Positionner le path de la session
   session_save_path(SESSION_PATH);
 
   // Démarrage de session

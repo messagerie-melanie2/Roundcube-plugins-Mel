@@ -89,9 +89,11 @@ class mel_doubleauth extends bnum_plugin {
         if ($user) {
           $user->load(['double_authentification_forcee', 'double_authentification_date_butoir']);
           if ($user->double_authentification_forcee) {
-            if (!$this->__isActivated()) {
-            $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
-            $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
+            $config_2FA = $this->__get2FAconfig();
+        
+            if (!$config_2FA['activate']) {
+                $this->rc->output->set_env("double_authentification_forcee", $user->double_authentification_forcee);
+                $this->rc->output->set_env("double_authentification_date_butoir", $user->double_authentification_date_butoir);
             }
           }
         }
@@ -205,7 +207,14 @@ class mel_doubleauth extends bnum_plugin {
         return $return;
     }
 
-    private function _date_grace_enabled($user = null) {
+    /**
+     * Vérifie si une date de grace est activé pour l'utilisateur
+     * 
+     * @param User $user
+     * 
+     * @return bool
+     */
+    public static function date_grace_enabled($user = null) {
         $return = false;
         $user = $user ?? driver_mel::gi()->getUser();
 
@@ -885,7 +894,7 @@ class mel_doubleauth extends bnum_plugin {
      */
     private function __isActivated()
     {
-        mel_logs::get_instance()->log(mel_logs::INFO, "mel_doubleauth::__isActivated()");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__isActivated()");
         // Gérer le mode bouchon
         if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
             return $this->rc->config->get('dynalogin_bouchon_isActivated', true);
@@ -1123,7 +1132,7 @@ class mel_doubleauth extends bnum_plugin {
      */
     private function is_auth_strong() 
     {
-      return $this->_date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
+      return self::date_grace_enabled() || (mel::is_auth_strong() && $this->rc->config->get('is_auth_strong', true));
     }
     
     /**

@@ -469,11 +469,12 @@ class mel_moncompte extends rcube_plugin {
   }
 
   public function ressources_calendar_agendas_tri_alpha() {
+    mel_helper::load_helper($this->rc)->include_utilities();
     $user = driver_mel::gi()->getUser();
     $calendars = $user->getSharedCalendars();
 
     $calendars = mel_helper::Enumerable($calendars)->orderBy(function ($key, $value) {
-      return ord($value->name);
+      return strtoupper(mel_utils::remove_accents($value->name));
     });
 
     $sort = [];

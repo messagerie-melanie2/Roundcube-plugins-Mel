@@ -30,7 +30,7 @@ class tchap extends bnum_plugin
      */
     function init()
     {
-        if ($this->get_current_task() === 'discussion' || $this->get_current_task() === 'tchat') {
+        if ($this->get_current_task() === 'bnum' && $this->get_input('_initial_task', rcube_utils::INPUT_GET) === 'chat') {
             $this->rc()->output->redirect([
                 '_task' => 'tchap',
             ]);

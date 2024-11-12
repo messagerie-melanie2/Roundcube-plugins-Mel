@@ -262,6 +262,7 @@ class mtes_driver_mel extends mce_driver_mel
       && !mel::is_auth_strong()
       && class_exists('mel_doubleauth')
       && !mel_doubleauth::is_double_auth_enable()
+      && !mel_doubleauth::date_grace_enabled()
     ) {
       $hasAccess = false;
     }

@@ -84,7 +84,7 @@ class NextcloudModule extends WorkspaceObject {
           }
         }
         $(caller).removeClass('disabled').removeAttr('disabled');
-        rcmail.clear_message(loading);
+        rcmail.hide_message(loading);
       });
       ok();
     });

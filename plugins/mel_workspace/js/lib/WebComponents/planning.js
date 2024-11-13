@@ -442,6 +442,7 @@ window.addEventListener('load', () => {
   for (const element of document.querySelectorAll('bnum-planning')) {
     element.render();
   }
+  window.planning_rendered = true;
 });
 
 //#region Autres Classes

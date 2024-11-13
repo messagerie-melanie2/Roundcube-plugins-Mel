@@ -564,9 +564,6 @@ html.dark-mode #button-search.btn.btn-secondary {
 #barup-right-buttons .dropdown-menu-scroll .dropdown-item:last-child {
   margin-bottom: 0 !important;
 }
-#barup-right-buttons .notifications-header {
-  border-bottom: 1px solid #0000000c;
-}
 #barup-right-buttons .dropdown-menu {
   border: none;
   box-shadow: 0 24px 54px rgba(0, 0, 0, 0.15), 0 4.5px 13.5px rgba(0, 0, 0, 0.08);

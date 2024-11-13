@@ -1,1 +1,23 @@
-:root{--mel-button-border:solid thin var(--mel-button-border-color);--secondary-mel-button-border:solid thin var(--secondary-mel-button-border-color);--secondary-mel-button-hover-border:solid thin var(--secondary-mel-button-hover-border-color);--option-menu-button-border:solid thin var(--option-menu-button-border-color);--custom-switch-border:solid thin var(--custom-switch-border-color);--layout-menu-border-radius:var(--main-border-radius) 0 0 var(--main-border-radius);--main-separator-border:1px solid var(--main-separator-border-color);--calendar-sidebar-header-bottom-separator:solid thin var(--calendar-sidebar-header-bottom-separator-color);--popover-box-shadow:3px 3px 5px var(--popover-box-shadow-color);--popover-border:solid thin var(--popover-border-color);--layout-sidebar-border-radius:0;--groupotions-box-shadow:rgba(17,17,26,0.1) 0 1px 0, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;--message-list-border-bottom:1px solid var(--message-list-content-border-color);--message-list-hover-shadow:0 2px 2px var(--message-list-content-hover-shadow);--layout-content-header-right-border:solid thin var(--layout-content-header-right-border-color);--layout-content-partheaders-top-border:1px solid var(--layout-content-message-partheaders-top-border-color);--layout-sidebar-selected-item-border-radius:var(--secondary-border-radius);--message-list-quick-filter-background-color:var(--default-bckg-color);--searchbar-border:solid thin var(--searchbar-border-color);--nav-tabs-border-bottom:solid thin var(--nav-tabs-border-bottom-color)}
+:root {
+  --mel-button-border: solid thin var(--mel-button-border-color);
+  --secondary-mel-button-border: solid thin var(--secondary-mel-button-border-color);
+  --secondary-mel-button-hover-border: solid thin var(--secondary-mel-button-hover-border-color);
+  --option-menu-button-border: solid thin var(--option-menu-button-border-color);
+  --custom-switch-border: solid thin var(--custom-switch-border-color);
+  --layout-menu-border-radius: var(--main-border-radius) 0 0 var(--main-border-radius);
+  --main-separator-border: 1px solid var(--main-separator-border-color);
+  --user-menu-separator-border: 1px solid var(--user-menu-separator-border-color);
+  --calendar-sidebar-header-bottom-separator: solid thin var(--calendar-sidebar-header-bottom-separator-color);
+  --popover-box-shadow: 3px 3px 5px var(--popover-box-shadow-color);
+  --popover-border: solid thin var(--popover-border-color);
+  --layout-sidebar-border-radius: 0px;
+  --groupotions-box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
+  --message-list-border-bottom: 1px solid var(--message-list-content-border-color);
+  --message-list-hover-shadow: 0px 2px 2px var(--message-list-content-hover-shadow);
+  --layout-content-header-right-border: solid thin var(--layout-content-header-right-border-color);
+  --layout-content-partheaders-top-border: 1px solid var(--layout-content-message-partheaders-top-border-color);
+  --layout-sidebar-selected-item-border-radius: var(--secondary-border-radius);
+  --message-list-quick-filter-background-color: var(--default-bckg-color);
+  --searchbar-border: solid thin var(--searchbar-border-color);
+  --nav-tabs-border-bottom: solid thin var(--nav-tabs-border-bottom-color);
+}

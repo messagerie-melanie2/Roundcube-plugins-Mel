@@ -242,6 +242,9 @@ ul.treelist li.selected > div > a,
 #barup-right-buttons .dropdown-menu .notification-icon {
   color: var(--dropdown-menu-icon-color);
 }
+#barup-right-buttons .dropdown-menu .user-menu-controls-group {
+  border-bottom: var(--main-separator-border);
+}
 #barup-right-buttons .dropdown-menu .dropdown-item:focus,
 #barup-right-buttons .dropdown-menu .dropdown-item:hover,
 #barup-right-buttons .dropdown-menu .dropdown-item.unread {

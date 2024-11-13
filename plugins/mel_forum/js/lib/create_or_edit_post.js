@@ -10,6 +10,10 @@ export class create_or_edit_post extends MelObject {
     main() {
         super.main();
 
+        let post = this.get_env('post');
+
+        this.post_id = post.id;
+
         $("#reset-title-button").click(() => {
             $("#edit-title").val('');
         });
@@ -17,7 +21,7 @@ export class create_or_edit_post extends MelObject {
             window.location.href = this.url('forum',{action:'index'});
         });
  
-        let post = this.get_env('post');
+        
         let config = rcmail.env.editor_config;
         config.mode = 'forum';
         rcmail.addEventListener('editor-init',(args)=> {
@@ -154,6 +158,7 @@ export class create_or_edit_post extends MelObject {
     }
 
     addImageDialog() {
+        debugger;
         // cacher la pop up de tiny mce le temps de faire le traitement avec notre modale 
         $('.tox-dialog-wrap').css("display","none");
         let dialog;
@@ -182,7 +187,7 @@ export class create_or_edit_post extends MelObject {
                                     {
                                         task: 'forum',
                                         action: 'upload_image',
-                                        params: {_file: fileReader.result, _post_id: 10}, 
+                                        params: {_file: fileReader.result, _post_id: this.post_id}, 
                                         processData: false, // Empêche jQuery de traiter les données
                                         contentType: false, // Empêche jQuery d'ajouter des headers incorrects
                                         on_success: (data) => {

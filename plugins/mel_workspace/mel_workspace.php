@@ -343,6 +343,26 @@ class mel_workspace extends bnum_plugin
         echo true;
         exit;
     }
+
+    function get_email_from_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = new Workspace($uid, true);//self::get_workspace($uid);
+        $shares = $workspace->users(true);
+        $array = [];
+        $user = driver_mel::gi()->getUser()->uid;
+        foreach ($shares as $key => $value) {
+            if ($value->uid !== $user)
+            {
+                // $tmp = driver_mel::gi()->getUser($value->user);
+
+                if (isset($value)) $array[] = "$value->fullname<$value->email>";
+            }
+                
+        }
+        echo json_encode($array);
+        exit;
+    }
     #endregion
 
     #region handlers
@@ -537,7 +557,8 @@ class mel_workspace extends bnum_plugin
                     'search' => [$this, 'workspaces_search'],
                     'toggle_favorite' => [$this, 'toggle_favorite'],
                     'set_visu_mode' => [$this, 'set_visu_mode'],
-                    'update_module_visibility' => [$this, 'update_module_visibility']
+                    'update_module_visibility' => [$this, 'update_module_visibility'],
+                    'get_email_from_ws' => [$this, 'get_email_from_workspace']
                 ]
             );
         }

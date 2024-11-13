@@ -1023,9 +1023,9 @@ class mel_metapage extends bnum_plugin
                 $w = function () {
                     // Metapage sans workspace
                     if (class_exists("mel_workspace")) {
-                        $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-                        $wsp->load_workspaces();
-                        $workspaces = mel_helper::Enumerable($wsp->workspaces)->orderBy(function ($k, $v) {
+                        // $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                        // $wsp->load_workspaces();
+                        $workspaces = mel_helper::Enumerable(mel_workspace::LoadWorkspaces())->orderBy(function ($k, $v) {
                             return $v->title;
                         });
                     } else {
@@ -1332,9 +1332,9 @@ class mel_metapage extends bnum_plugin
     {
         // Metapage sans workspace
         if (class_exists("mel_workspace")) {
-            $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-            $wsp->load_workspaces();
-            $workspaces = $wsp->workspaces;
+            // $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+            // $wsp->load_workspaces();
+            $workspaces = mel_workspace::LoadWorkspaces();//$wsp->workspaces;
         } else {
             $workspaces = [];
         }
@@ -1601,9 +1601,9 @@ class mel_metapage extends bnum_plugin
         $w = function () {
             // Metapage sans workspace
             if (class_exists("mel_workspace")) {
-                $wsp = $this->rc->plugins->get_plugin("mel_workspace");
-                $wsp->load_workspaces();
-                $workspaces = $wsp->workspaces;
+                // $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                // $wsp->load_workspaces();
+                $workspaces = mel_workspace::LoadWorkspaces();//$wsp->workspaces;
             } else {
                 $workspaces = [];
             }

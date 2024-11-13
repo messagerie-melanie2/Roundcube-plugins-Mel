@@ -713,11 +713,15 @@ class mel_workspace extends bnum_plugin
 
     public static function GetWorkspaceBlocks($workspaces) {
         $favorites = rcmail::get_instance()->config->get('workspaces_personal_datas', null);
+        $call = function ($date) {
+            if ($date[0] === '-') $date = ltrim($date, '-');
+            return $date;
+        };
 
         $html = '';
 
-        if (isset($favorites)) $workspaces = mel_helper::Enumerable($workspaces)->orderBy(function ($k, $v) use($favorites) {
-            return isset($favorites) && isset($favorites[$v->uid]) && $favorites[$v->uid]['tak'] ? new DateTime(date('Y-m-d H:i:s', PHP_INT_MAX)) : new DateTime($v->modified);
+        if (isset($favorites)) $workspaces = mel_helper::Enumerable($workspaces)->orderBy(function ($k, $v) use($favorites, $call) {
+            return isset($favorites) && isset($favorites[$v->uid]) && $favorites[$v->uid]['tak'] ? new DateTime(call_user_func($call, date('Y-m-d H:i:s', PHP_INT_MAX))) : new DateTime($v->modified);
         }, true);
 
         foreach (self::GetWorkspaceBlocksGenerator($workspaces) as $block) {

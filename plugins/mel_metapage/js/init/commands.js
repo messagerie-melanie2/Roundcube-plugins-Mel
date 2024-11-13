@@ -305,7 +305,7 @@ if (rcmail)
 
                     let input_start = new mel_label_input('abs-ponc-start', 'date', 'Démarre le : ');
                     let input_end = new mel_label_input('abs-ponc-end', 'date', 'Termine le : ');
-                    let button = new mel_button({class:'abs-btn-save'}, 'Enregistrer');
+                    let button = new mel_button({}, 'Enregistrer').addClass('abs-btn-save');
                     button.onclick.push(() => {
                         mel_metapage.Functions.post(
                             mel_metapage.Functions.url('bnum', 'plugin.abs.set_dates'),
@@ -322,7 +322,7 @@ if (rcmail)
                         reset();
                     });
 
-                    let button_back = new mel_button({class:'abs-btn-back'}, 'Annuler');
+                    let button_back = new mel_button({}, 'Annuler').addClass('abs-btn-back');
                     button_back.onclick.push(() => {
                         reset();
                         open();

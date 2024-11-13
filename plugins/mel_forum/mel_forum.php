@@ -334,8 +334,8 @@ class mel_forum extends bnum_plugin
         if (!$is_editing) {
             // Mode création : initialiser un nouvel article avec des valeurs par défaut
             $post->title = '';
-            $post->summary = $this->create_summary_from_content($content);
             $post->content = '';
+            $post->summary = $this->create_summary_from_content($post->content);
             $post->uid = $this->generateRandomString(24);
             $post->modified = date('Y-m-d H:i:s');
             $post->creator = driver_mel::gi()->getUser()->uid;
@@ -391,7 +391,6 @@ class mel_forum extends bnum_plugin
         // Envoyer le template approprié
         $this->rc()->output->send('mel_forum.create-post');
     }
-
 
 
     /**

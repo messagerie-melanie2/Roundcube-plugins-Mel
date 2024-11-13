@@ -44,6 +44,7 @@ class WorkspaceAgenda extends WorkspaceObject {
         $(caller).removeClass('disabled').removeAttr('disabled');
         rcmail.hide_message(loading);
       });
+
       ok();
     });
   }

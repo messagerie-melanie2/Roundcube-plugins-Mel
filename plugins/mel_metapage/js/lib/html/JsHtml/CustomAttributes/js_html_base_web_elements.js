@@ -423,7 +423,6 @@ class BnumHtmlIcon extends HtmlCustomTag {
    * @protected
    */
   _p_main() {
-    super._p_main();
     if (!this.getAttribute('class'))
       this.setAttribute('class', BnumHtmlIcon.HTML_CLASS);
 
@@ -574,6 +573,7 @@ BnumHtmlCenteredFlexContainer.TAG = 'bnum-centered-flex-container';
   for (const TAG of TAGS) {
     if (!customElements.get(TAG.tag)) {
       customElements.define(TAG.tag, TAG.class);
+      console.log('TAG DEFINED :', TAG.tag);
     }
   }
 }

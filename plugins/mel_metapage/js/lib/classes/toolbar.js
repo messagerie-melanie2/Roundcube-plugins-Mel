@@ -1,5 +1,5 @@
 import { EMPTY_STRING } from '../constants/constants.js';
-import { ____JsHtml } from '../html/JsHtml/JsHtml.js';
+// import { ____JsHtml } from '../html/JsHtml/JsHtml.js';
 import { MelHtml } from '../html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../mel_events.js';
 import { Point, Rectangle } from '../mel_maths.js';
@@ -374,7 +374,7 @@ class Toolbar {
     return this;
   }
 
-  generate($parent, $additionnal_attribs = {}) {
+  generate($parent, $additionnal_attribs = {}, context = window) {
     //prettier-ignore
     let nav = MelHtml.start
       .nav({ id: this.id, class: 'mel-nav-toolbar' })
@@ -408,7 +408,7 @@ class Toolbar {
       }
     }
 
-    this._$toolbar = nav.generate().appendTo($parent);
+    this._$toolbar = nav.generate({ context }).appendTo($parent);
 
     this._update_toolbar();
 

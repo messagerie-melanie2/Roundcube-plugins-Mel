@@ -176,6 +176,12 @@ class Visio extends MelObject {
         user = `${rcmail.env.current_user.name} ${rcmail.env.current_user.lastname}`;
       else user = rcmail.env.mel_metapage_user_emails[0];
 
+      await top.loadJsModule(
+        'mel_metapage',
+        'js_html_base_web_elements',
+        '/js/lib/html/JsHtml/CustomAttributes/',
+      );
+
       const options = {
         jwt: token.datas.jwt, //Récupère le token jwt pour pouvoir lancer la visio
         roomName: this.data.room,
@@ -328,7 +334,7 @@ class Visio extends MelObject {
         );
     }
 
-    toolbar.generate(top.$('body'));
+    toolbar.generate(top.$('body'), {}, top);
 
     toolbar
       .toolbar()
@@ -343,7 +349,7 @@ class Visio extends MelObject {
             })
             .icon('visibility_off', { class:'absolute-center' }).end()
           .end()
-          .generate(),
+          .generate({ context:top }),
       );
 
     // toolbar
@@ -392,7 +398,7 @@ class Visio extends MelObject {
     this.popover = new MelPopover(
       toolbar.get_button('more').$item,
       pop_actions,
-      { config: { placement: 'top' }, container: top.$('body') },
+      { config: { placement: 'top' }, container: top.$('body'), context: top },
     );
 
     // $(this.popover._pop.element.popper)
@@ -421,7 +427,7 @@ class Visio extends MelObject {
           }
         })
           .icon('fullscreen_exit').end()
-        .end().generate(),
+        .end().generate({ context:top }),
     );
   }
 

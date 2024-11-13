@@ -26,14 +26,15 @@ export class MelPopover {
       arrow = default_arrow,
       config = {},
       container = 'body',
-    },
+      context = window,
+    } = {},
   ) {
     let $tmp = template
-      .generate()
+      .generate({ context })
       .appendTo(typeof container === 'string' ? $(container) : container)
       .css({ 'min-width': '30px', 'min-height': '1px' });
     const width = tooltip
-      .generate()
+      .generate({ context })
       .appendTo($tmp.find('.bnum-popover-content'))
       .css('width');
 
@@ -66,7 +67,7 @@ export class MelPopover {
             $(this._pop.state.elements.popper),
           );
 
-          if ($element){
+          if ($element) {
             $element[0].focus();
           }
         }
@@ -120,7 +121,9 @@ export class MelPopover {
   }
 
   _find_first_focusable($element) {
-    return this._find_focusable(MelEnumerable.from(this._flat_jquery($element)));
+    return this._find_focusable(
+      MelEnumerable.from(this._flat_jquery($element)),
+    );
   }
 
   _find_focusable(elements) {
@@ -128,7 +131,9 @@ export class MelPopover {
     //   if (aria.Utils.isFocusable(element)) return $(element);
     // }
 
-    return elements.where(x => aria.Utils.isFocusable(x?.[0] ? x[0] : x)).firstOrDefault();
+    return elements
+      .where((x) => aria.Utils.isFocusable(x?.[0] ? x[0] : x))
+      .firstOrDefault();
   }
 
   *_flat_jquery($element) {

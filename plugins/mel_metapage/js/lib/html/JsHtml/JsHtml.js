@@ -964,8 +964,8 @@ class ____JsHtml {
    * Génère en jQuery
    * @returns {external:jQuery}
    */
-  generate() {
-    return this._generate({ mode: 1 });
+  generate({ context = window } = {}) {
+    return this._generate({ mode: 1, context });
   }
 
   generate_dom() {
@@ -1066,7 +1066,7 @@ class ____JsHtml {
    * @returns {(string | external:jQuery)}
    * @private
    */
-  _generate({ i = -1, mode = 0, joli_html = false }) {
+  _generate({ i = -1, mode = 0, joli_html = false, context = window }) {
     let html = [];
 
     if (this.balise !== 'start')
@@ -1075,7 +1075,7 @@ class ____JsHtml {
       );
 
     for (const iterator of this.childs) {
-      html.push(iterator._generate({ i: i + 1, joli_html }));
+      html.push(iterator._generate({ i: i + 1, joli_html, context }));
     }
 
     html = html.join(joli_html ? '\r\n' : '');
@@ -1084,7 +1084,7 @@ class ____JsHtml {
       case 0:
         break;
       case 1:
-        html = $(html);
+        html = context.$(html);
 
         // eslint-disable-next-line no-case-declarations
         let id;
@@ -1095,10 +1095,10 @@ class ____JsHtml {
         // eslint-disable-next-line no-case-declarations, quotes
         const $nodes = [html, ...html.find("[data-on-id!=''][data-on-id]")];
         for (const iterator of $nodes) {
-          $item = $(iterator);
+          $item = context.$(iterator);
 
           for (const node of $item) {
-            $node = $(node);
+            $node = context.$(node);
             id = $node.attr('data-on-id');
 
             if (id) {

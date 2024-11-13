@@ -20,8 +20,8 @@
     </div>
     <div class="row forum-header">
       <div class="input-group mel-search-group mel-centered">
-        <input id="wsp-search-input" type="text" onmousedown="" class="form-control mel-max-width-500 input-mel">
-        <div class="input-group-append">
+        <input id="post-search-input" type="text" class="form-control mel-max-width-500 input-mel">
+        <div class="input-group-append" role="button" id="post-search-button">
           <span class="icon-mel-search input-group-text"></span>
         </div>
       </div>
@@ -129,7 +129,7 @@
   </div>
 </template>
 <template id="tag_template">
-  <span class="tag">%%TAG_NAME%%</span>
+  <span class="tag tag-clickable tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%">%%TAG_NAME%%</span>
 </template>
 
 <roundcube:include file="includes/footer.html" />

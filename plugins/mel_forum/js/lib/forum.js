@@ -15,12 +15,17 @@ export class Forum extends MelObject {
         this.workspace = 'workspace-test';
         this.offset = 0;
         this.locked = false;
+        this.limit = 20;
+        this.sortBy = 'created';
+        this.asc = false;
+        this.tags = [];
+        this.scrollPercentage = 0.7;
         this.handleScroll = this.checkScroll.bind(this);
+        this.search = null
+        this.display_fav = false;
         this.initButtons();
         this.initSortSelect();
         this.initPostDisplay();
-
-
 
     }
 
@@ -39,22 +44,101 @@ export class Forum extends MelObject {
                 $(this).text('star_border');
             }
         });
-        $('#display-fav-only').on('change', function() {
-            if ($(this).is(':checked')) {
-              // Affiche seulement les cartes qui ont la classe 'filled' sur l'icône étoile
-              $('.post-card').each(function() {
-                if ($(this).find('.favorite').hasClass('filled')) {
-                  $(this).show();  // Affiche les favoris
-                } else {
-                  $(this).hide();  // Masque les non-favoris
-                }
-              });
+        $('#display-fav-only').on('change', () => {
+            this.offset = 0;
+            if ($('#display-fav-only').is(':checked')) {
+                this.display_fav = true;
             } else {
-              // Affiche toutes les cartes si la checkbox est décochée
-              $('.post-card').show();
+                this.display_fav = false;
+            }
+            this.updateSort();
+            $('#post-area').empty();
+            this.loadPosts();
+        });
+
+        document.querySelector('.content').addEventListener("scroll", this.handleScroll);
+        $('#post-search-input').on("keydown", (event) => {
+            if(event.keyCode === 13) {
+                this.searchPosts();
             }
         });
-        document.querySelector('.content').addEventListener("scroll", this.handleScroll);
+        $('#post-search-button').on('click',() => {
+            this.searchPosts();
+        });
+    }
+
+    /**
+     * met à jour les valeur de tri d'articles
+     */
+    updateSort() {
+        switch ($("#forum-sort-select")[0].value){
+            case "date_asc":
+                this.sortBy = "created";
+                this.asc = true;
+                break;
+            case "date_desc":
+                this.sortBy = "created";
+                this.asc = false;
+                break;
+            case "comment_desc":
+                this.sortBy = "comments";
+                this.asc = false;
+                break;
+            case "comment_asc":
+                this.sortBy = "comments";
+                this.asc = true;
+                break;
+            case "reaction_desc":
+                this.sortBy = "reactions";
+                this.asc = false;
+                break;
+            case "reaction_asc":
+                this.sortBy = "reactions";
+                this.asc = true;
+                break;
+            default:
+                console.log("Option non reconnue");
+        }
+    }
+
+    /**
+     * Charge les posts en fonction du mode de tri de l'ordre et de l'offset
+     */
+    loadPosts() {
+        //On empêche de faire un appel tant que le précédent n'est pas finit
+        this.lock = true;
+        BnumMessage.SetBusyLoading();
+        this.http_internal_post(
+            {
+                task: 'forum',
+                action: 'get_posts_data',
+                params: {
+                    _workspace: this.workspace,
+                    _offset: this.offset,
+                    _order: this.sortBy,
+                    _asc: this.asc,
+                    _search: this.searchString,
+                    _tags: this.tags,
+                    _fav_only: this.display_fav,
+                },
+                processData: false,
+                contentType: false,
+                on_success: (datas) => {
+                    if (datas == "[]"){
+                        document.querySelector('.content').removeEventListener("scroll", this.handleScroll);
+                    }
+                    let posts = JSON.parse(datas);
+                    this.displayPost(posts);
+                    BnumMessage.StopBusyLoading();
+                    this.lock = false;
+                    this.search = null;
+                    this.tags = [];
+                },
+                on_error: (err) => {
+                    this.lock = false;
+                }
+            }
+        );
     }
 
     /*
@@ -62,138 +146,50 @@ export class Forum extends MelObject {
      */
     initSortSelect() {
         $("#forum-sort-select").on("change", (event) => {
-            // Initialiser les deux variables en fonction de la valeur choisie
-            let sortBy;
-            let asc;
+            //on reset l'event listenner du scroll
+            document.querySelector('.content').removeEventListener("scroll", this.handleScroll);
+            document.querySelector('.content').addEventListener("scroll", this.handleScroll);
         
-            // Vérifier la valeur sélectionnée et définir les variables
-            switch (event.target.value) {
-                case "date_asc":
-                    sortBy = "created";
-                    asc = true;
-                    break;
-                case "date_desc":
-                    sortBy = "created";
-                    asc = false;
-                    break;
-                case "comment_desc":
-                    sortBy = "comments";
-                    asc = false;
-                    break;
-                case "comment_asc":
-                    sortBy = "comments";
-                    asc = true;
-                    break;
-                case "reaction_desc":
-                    sortBy = "reactions";
-                    asc = false;
-                    break;
-                case "reaction_asc":
-                    sortBy = "reactions";
-                    asc = true;
-                    break;
-                default:
-                    console.log("Option non reconnue");
-            }
-            //appeler le back avec le nouveau tri puis render les posts
+           this.updateSort();
+            //vide l'affichage de posts actuel
             $('#post-area').empty();
+            //on reset le offset car on recharge les posts du début
             this.offset = 0;
-            BnumMessage.SetBusyLoading();
-            this.http_internal_post(
-                {
-                    task: 'forum',
-                    action: 'get_posts_data',
-                    params: {
-                        _workspace: this.workspace,
-                        _offset: this.offset,
-                        _order: sortBy,
-                        _asc: asc,
-                    },
-                    processData: false,
-                    contentType: false,
-                    on_success: (datas) => {
-                        let posts = JSON.parse(datas);
-                        this.displayPost(posts);
-                        BnumMessage.StopBusyLoading();
-                        //on reset l'event listenner du scroll
-                        document.querySelector('.content').removeEventListener("scroll", this.handleScroll);
-                        document.querySelector('.content').addEventListener("scroll", this.handleScroll);
-                    },
-                    on_error: (err) => {
-
-                    }
-                }
-            );
+            this.loadPosts();
         });
     }
 
+    /**
+     * cherche les articles suivants au scroll
+     */
     checkScroll() {
         const scrollHeight = document.querySelector('.content').scrollHeight;
         const scrollPos = document.querySelector('.content').scrollTop;
 
-        if (scrollPos / scrollHeight >= 0.7 && !this.lock ) {
-            this.lock = true;
-            //On récupère le mode d'affichage
-            let sortBy;
-            let asc;
-            // Vérifier la valeur sélectionnée et définir les variables
-            switch ($("#forum-sort-select")[0].value) {
-                case "date_asc":
-                    sortBy = "created";
-                    asc = true;
-                    break;
-                case "date_desc":
-                    sortBy = "created";
-                    asc = false;
-                    break;
-                case "comment_desc":
-                    sortBy = "comments";
-                    asc = false;
-                    break;
-                case "comment_asc":
-                    sortBy = "comments";
-                    asc = true;
-                    break;
-                case "reaction_desc":
-                    sortBy = "reactions";
-                    asc = false;
-                    break;
-                case "reaction_asc":
-                    sortBy = "reactions";
-                    asc = true;
-                    break;
-                default:
-                    console.log("Option non reconnue");
-            }
-            //On appelle le chargement de la suite des posts
-            this.http_internal_post(
-                {
-                    task: 'forum',
-                    action: 'get_posts_data',
-                    params: {
-                        _workspace: this.workspace,
-                        _offset: this.offset,
-                        _order: sortBy,
-                        _asc: asc,
-                    },
-                    processData: false,
-                    contentType: false,
-                    on_success: (datas) => {
-                        if (datas == "[]"){
-                            document.querySelector('.content').removeEventListener("scroll", this.handleScroll);
-                        }
-                        let posts = JSON.parse(datas);
-                        this.displayPost(posts);
-                        this.lock = false;
-                    },
-                    on_error: (err) => {
-                        this.lock = false;
-                    }
-                }
-            );
+        if (scrollPos / scrollHeight >= this.scrollPercentage && !this.lock ) {
+            this.updateSort();
+            this.loadPosts();
         }
     }
+    
+    /**
+     * Affiche les posts correspondant au champ recherche
+     */
+    searchPosts() {
+        this.searchString = $('#post-search-input').val();
+        this.offset = 0;
+        $('#post-area').empty();
+        this.updateSort();
+        this.loadPosts();
+    }
 
+    /**
+     * Ajoute un article aux favoris
+     * 
+     * fais un appel ajax pour ajouter aux user prefs le favori
+     * @param {*} post_uid 
+     * @param {*} event 
+     */
     addToFavorite(post_uid, event) {
         event.preventDefault();
         event.stopPropagation();
@@ -204,7 +200,7 @@ export class Forum extends MelObject {
                 task: 'forum',
                 action: 'add_to_favorite',
                 params: {
-                    _workspace: workspace,
+                    _workspace_uid: workspace,
                     _article_uid: post_uid,
                 },
                 processData: false,
@@ -233,6 +229,16 @@ export class Forum extends MelObject {
     initPostDisplay () {
         const posts = this.get_env('posts_data');
         this.displayPost(posts);
+    }
+    searchTag (tag_id, tag_name, event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.offset = 0;
+        this.tags.push(tag_id);
+        $('#post-area').empty();
+        this.updateSort();
+        this.loadPosts();
+        $('#post-search-input').val('#' + tag_name);
     }
 
     displayPost(posts) {
@@ -266,15 +272,16 @@ export class Forum extends MelObject {
 
             for (let tag in post.tags) {
                 let tag_data = {
-                    TAG_NAME: '#' + post.tags[tag],
+                    TAG_NAME: '#' + post.tags[tag].name,
+                    TAG_ID: post.tags[tag].id,
                 }
             let tag_template = new MelTemplate()
             .setTemplateSelector('#tag_template')
-            .setData(tag_data);
+            .setData(tag_data)
+            .addEvent('.tag-' + post.tags[tag].id, 'click', this.searchTag.bind(this, post.tags[tag].id, post.tags[tag].name));
             $('#tag-area-'+post.uid).append(...tag_template.render());
             }
             this.offset ++;
-            console.log(this.offset);
         }
     }
 }

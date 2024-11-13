@@ -67,7 +67,6 @@ export class create_or_edit_post extends MelObject {
                 }
             }
         });
-
     }
 
     //enlève un tag

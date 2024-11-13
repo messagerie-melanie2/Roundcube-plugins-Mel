@@ -509,6 +509,10 @@
 .task-forum .forum-content .tox-tinymce {
   width: 100%;
 }
+.task-forum .tag-clickable:hover,
+.task-forum .tag-clickable:focus {
+  text-decoration: underline;
+}
 .task-forum .tag {
   background-color: var(--forum-tag-background-color);
   color: var(--forum-tag-text-color);

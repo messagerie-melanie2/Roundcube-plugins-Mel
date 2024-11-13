@@ -25,6 +25,9 @@ class mel_forum extends bnum_plugin
      */
     public $task = '.*';
 
+    const DEFAULTSORTBY = 'created';
+    const DEFAULTASC = false;
+
     public $current_post;
 
     /**
@@ -228,7 +231,7 @@ class mel_forum extends bnum_plugin
     public function show_post_tags()
     {
         // Récupérer les tags associés au post actuel
-        $tags = $this->get_all_tags_bypost($this->current_post->uid);
+        $tags = $this->_get_tags_name_bypost($this->current_post->uid);
 
         // Création des éléments HTML pour les tags
         $tags_html = '';
@@ -666,12 +669,29 @@ class mel_forum extends bnum_plugin
     {
         //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
         $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        $search = (rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_search', rcube_utils::INPUT_POST) === '' ? null : rcube_utils::get_input_value('_search', rcube_utils::INPUT_POST)) : null;
         $offset = (rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST) !== null) ? intval(rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST)) : 0;
         // valeur possible: created, comments, reactions
-        $orderby = (rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) !== null) ? rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) : "created";
+        $orderby = (rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) !== null) ? rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) : self::DEFAULTSORTBY;
         //on récupère un string si il y a une valeur donc on la convertie
-        $asc = (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) === 'true' ? true : false) : false;
-
+        $asc = (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) === 'true' ? true : false) : self::DEFAULTASC;
+        $tags_uids = rcube_utils::get_input_value('_tags', rcube_utils::INPUT_POST);
+        $tags = null;
+        if ($tags_uids !== null) {
+            foreach ($tags_uids as $tag_id) {
+                $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+                $tag->id = $tag_id;
+                $tag->workspace = $workspace_uid;
+                $tag->load();
+                $tags[] = $tag;
+            }
+        }
+        $fav_posts_uid = null;
+        $get_favorite = (rcube_utils::get_input_value('_fav_only', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_fav_only', rcube_utils::INPUT_POST) === 'true' ? true : false) : false;
+        if ($get_favorite) {
+            $fav_posts = $this->rc()->config->get('favorite_article', []);
+            $fav_posts_uid = $fav_posts[$workspace_uid];
+        }
 
 
         // Charger tous les posts en utilisant la méthode listPosts
@@ -682,7 +702,7 @@ class mel_forum extends bnum_plugin
 
         $limit = 20;
         // Appel de la méthode listPosts
-        $posts = $post->listPosts(null, null, $orderby, $asc, $limit, $offset);
+        $posts = $post->listPosts($search, $tags, $orderby, $asc, $limit, $offset, $fav_posts_uid);
 
         return $posts;
 
@@ -701,7 +721,7 @@ class mel_forum extends bnum_plugin
             // le post est créé on passe aux tags
             $tags = rcube_utils::get_input_value('_tags', rcube_utils::INPUT_POST);
             if (is_null($tags)) $tags = [];
-            $post_tags = $this->_get_tags_bypost(rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST));
+            $post_tags = $this->_get_tags_name_bypost(rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST));
             if (empty(array_diff($tags, $post_tags))) {
                 if (!empty(array_diff($post_tags, $tags))) {
                     //il y a moins de tags suite à la modifs décorellé les tags
@@ -791,7 +811,7 @@ class mel_forum extends bnum_plugin
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
 
         //Définition des propriétés du tag
-        $tag->name = $name;
+        $tag->name = str_replace(' ', '', $name);
         $tag->workspace = $workspace_uid;
 
         // Sauvegarde du tag
@@ -882,8 +902,10 @@ class mel_forum extends bnum_plugin
     /**
      * récupère tout les tags associé à un post
      * @param string $uid uid du post
+     * 
+     * @return string[] $tags tableau des noms des tags du post
      */
-    private function _get_tags_bypost($uid)
+    private function _get_tags_name_bypost($uid)
     {
         // Récupérer l'article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -1022,9 +1044,6 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * Affiche tous les tags associés à un post au format JSON.
-     *
-     * Cette fonction récupère l'UID du post envoyé via un formulaire POST,
      * charge le post correspondant, et liste tous les tags associés à ce post.
      * Les tags sont ensuite renvoyés en réponse au format JSON.
      *
@@ -1041,12 +1060,10 @@ class mel_forum extends bnum_plugin
             $tags = $post->listTags();
 
             foreach ($tags as $tag) {
-                $rettags[] = $tag->tag_name;
+                $rettags[] = ["name" => $tag->tag_name, "id" => $tag->id];
             }
 
-
             return $rettags;
-
             // Arrêt de l'exécution du script
             exit;
         }
@@ -2121,6 +2138,8 @@ class mel_forum extends bnum_plugin
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
+        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+
         $posts_data = [];
 
         foreach ($posts as $post) {
@@ -2137,7 +2156,7 @@ class mel_forum extends bnum_plugin
             $like_count = $this->count_likes($post->uid);
             // Récupérer le nombre de commentaire
             $comment_count = $this->count_comments($post->id);
-            $is_fav = $this->is_fav($post->uid);
+            $is_fav = $this->is_fav($post->uid, $workspace_uid);
             $post_link = $this->rc()->url(array(
                 "_task" => "forum",
                 "_action" => "post",
@@ -2164,14 +2183,10 @@ class mel_forum extends bnum_plugin
     /**
      * vérifie si un article est en favori
      */
-    function is_fav($post_uid)
+    function is_fav($post_uid, $workspace_uid)
     {
         $fav_articles = $this->rc()->config->get('favorite_article', []);
-        if (array_search($post_uid, $fav_articles) !== false)
-            return true;
-        else {
-            return false;
-        }
+        return isset($fav_articles[$workspace_uid]) && in_array($post_uid, $fav_articles[$workspace_uid]);
     }
 
     /**
@@ -2179,26 +2194,37 @@ class mel_forum extends bnum_plugin
      */
     function add_to_favorite()
     {
+        $new_fav_post_workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_POST);
+        $new_fav_post_uid = rcube_utils::get_input_value('_article_uid', rcube_utils::INPUT_POST);
         $fav_articles = $this->rc()->config->get('favorite_article', []);
-        $new_fav = rcube_utils::get_input_value('_article_uid', rcube_utils::INPUT_POST);
-        if (!in_array($new_fav, $fav_articles)) {
-            $fav_articles[] = $new_fav;
+        if (!in_array($new_fav_post_uid, $fav_articles[$new_fav_post_workspace_uid])) {
+            if (!isset($fav_articles[$new_fav_post_workspace_uid])) {
+                $fav_articles[$new_fav_post_workspace_uid] = [];
+            }
+            $fav_articles[$new_fav_post_workspace_uid][] = $new_fav_post_uid;
             $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
         } else {
-            $this->_remove_from_favorite($new_fav, $fav_articles);
+            $this->_remove_from_favorite($new_fav_post_uid, $fav_articles, $new_fav_post_workspace_uid);
         }
     }
+
 
     /**
      * retire un article des favoris dans les user pref
      * @param string $article_uid uid de l'article à retirer des favori
      * @param array $fav_articles tableau des favoris
+     * @param string $workspace_uid uid du workspace
      */
-    private function _remove_from_favorite($article_uid, $fav_articles)
+    private function _remove_from_favorite($article_uid, $fav_articles, $workspace_uid)
     {
-        if (($key = array_search($article_uid, $fav_articles)) !== false) {
-            unset($fav_articles[$key]);
-            $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
+        if (isset($fav_articles[$workspace_uid])) {
+            $index = array_search($article_uid, $fav_articles[$workspace_uid]);
+            if ($index !== false) {
+                unset($fav_articles[$workspace_uid][$index]);
+                // Ré-indexe le tableau pour éviter les trous dans les indices
+                $fav_articles[$workspace_uid] = array_values($fav_articles[$workspace_uid]);
+                $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
+            }
         }
     }
 
@@ -2293,7 +2319,6 @@ class mel_forum extends bnum_plugin
         $post->creator = $user;
 
         // Sauvegarde de l'article
-        // TODO demander a thomas si comportement normal (this->hasChanged ne garde pas la valeur donc ->save() return null)
         $post_id = $post->save();
         if (!$post_id) {
             $post->load();

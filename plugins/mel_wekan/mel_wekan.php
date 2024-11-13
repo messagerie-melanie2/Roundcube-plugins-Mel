@@ -81,6 +81,7 @@ class mel_wekan extends rcube_plugin
 
         if ($this->rc->task === 'workspace') {
             $this->add_hook('wsp.show', [$this, 'wsp_block']);
+            $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
         }
     }
 
@@ -393,9 +394,122 @@ class mel_wekan extends rcube_plugin
         exit;
     }
 
+    function add_users_to_wekan_board($workspace, $users, $board_id = null, $wekan = null, $current_user = null)
+    {
+        if (!isset($current_user)) $current_user = driver_mel::gi()->getUser()->uid;
+        if (!isset($wekan)) $wekan = $this;
+
+        if (!isset($board_id)) $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+
+        $return = ['users' => []];
+
+        foreach ($users as $key => $value) {
+            $value = $key;
+            if (!$wekan->check_if_user_exist($board_id, $value))
+            {
+                try {
+                    $return['users'][$value] = $wekan->add_member($board_id, $value, $workspace->isAdmin($value));
+                    $wekan->update_user_status($board_id, $value, $workspace->isAdmin($value));
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+            }
+        }
+
+        return $return;
+    }
+
+
+    function create_workspace_wekan($workspace, $title, $isPublic, $color, $list, $users)
+    {
+        $wekan = $this;
+        $return = [
+            "board" => $wekan->create_board_with_inital_lists($title, $isPublic, $color, $list),
+            "users" => []
+        ];
+
+        if ($return["board"]["httpCode"] == 200)
+        {
+            $current_user = driver_mel::gi()->getUser()->uid;
+            $board_id = $return["board"]["board_id"] !== null ? $return["board"]["board_id"] : json_decode($return["board"]["content"])->_id;
+
+            $return['users'] = $this->add_users_to_wekan_board($workspace, $users, $board_id, $wekan, $current_user)['users'];
+
+            $return["board_id"] = $board_id;
+            $return["board_title"] = null;//$return["board"]["board_title"] !== null ? $return["board"]["board_title"] : json_decode($return["board"]["content"])->title;
+        }
+
+        return $return;
+    }
+
+    public function workspace_services_set($args) {
+        $key = array_search(mel_workspace::KEY_TASK, $args['services']);
+
+        if ($key) {
+            /**
+             * @var Workspace
+             */
+            $workspace = $args['workspace'];
+            $default_value = $args['default_values'];
+            //Verifier si le wekan existe
+            $board_id = $workspace->objects()->get(self::KEY_FOR_WORKSPACE);//$this->get_object($workspace, self::WEKAN);
+            
+            if ($board_id === null)
+            {
+                $object = ["id" => '', "title" => ''];
+                $index = 'tasks';
+
+                if (!isset($default_value) || !isset($default_value[$index]))
+                {
+                    if (!isset($default_value) || $default_value === '') $default_value = [];
+
+                    $default_value[$index] = [
+                        'mode' => 'default'
+                    ];
+                }
+
+                switch ($default_value[$index]['mode']) {
+                    case 'default':
+                        $title = $workspace->title();
+                    case 'custom_name':
+                        if ($default_value[$index]['mode'] === 'custom_name') $title = $default_value[$index]['value'];
+                    case 'create':
+                        $board_id = $this->create_workspace_wekan($workspace, $title ?? $workspace->title(), $workspace->isPublic() === false ? false: true, null, [
+                            $this->rc->gettext("wekan_todo", "mel_workspace"),
+                            $this->rc->gettext("wekan_in_progress", "mel_workspace"),
+                            $this->rc->gettext("wekan_do", "mel_workspace")
+                        ], $workspace->users());
+                        break;
+                    case 'already_exist':
+                        $board_id = [
+                            'board_id' => $default_value[$index]['value'],
+                            'board_title' => $this->wekanApi->get_board($default_value[$index]['value']),
+                        ];
+                        $board_id["board_title"] = ($board_id["board_title"]['httpCode'] === 200 ? json_decode($board_id["board_title"]['content'])->title : null) ?? '';
+                        $object['updated'] = true;
+                        break;
+                    
+                    default:
+                        return;
+                } 
+
+                $object['id'] = $board_id['board_id'];
+                $object['title'] = $board_id['board_title'];
+
+                $workspace->objects()->set(self::KEY_FOR_WORKSPACE, $object);
+                //$this->save_object($workspace, self::WEKAN, $object);
+                $args['default_values'] = $default_value;
+                $args['workspace'] = $workspace;
+            }
+        }
+
+        return $args;
+    }
+
     public function wsp_block($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
+            $args['layout']->setNavBarSetting('wekan', false, 4);
         }
 
         return $args;

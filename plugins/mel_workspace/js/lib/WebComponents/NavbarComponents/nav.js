@@ -89,6 +89,9 @@ export class WspPageNavigation extends NavBarComponent {
 
     let button = new WspNavigationButton(this, {
       text: `mel_metapage.${task}`,
+      startingPressedState: ['true', true].includes(
+        this.parent.startingStates[task],
+      ),
     });
     button.onbuttonclick.push(
       this.onbuttonclicked.call.bind(this.onbuttonclicked),

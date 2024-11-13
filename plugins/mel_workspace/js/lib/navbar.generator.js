@@ -80,7 +80,7 @@ export class NavBarManager {
        * @type {WspNavBar}
        */
       let navbar = nav.$(rcmail.env.navbar)[0];
-
+      navbar.startingStates = rcmail.env['workspace_modules_visibility'] ?? {};
       navbar.setAttribute('id', `navbar-${workspace.uid}`);
       navbar.style.marginTop = '60px';
       navbar.style.marginLeft = '60px';

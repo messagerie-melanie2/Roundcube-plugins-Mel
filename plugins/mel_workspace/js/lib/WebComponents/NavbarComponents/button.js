@@ -240,10 +240,10 @@ export class WspNavigationButton extends NavBarComponent {
     button.style.justifyContent = 'left';
 
     this.appendChild(button);
-    // debugger;
+
     if (this.canBeHidden) {
       visibilityButton
-        .data('data-start-pressed', this.#startingState)
+        .data('start-pressed', this.#startingState)
         .appendChild(icon);
       visibilityButton.classList.add('transparent-bckg');
       visibilityButton.setAttribute('id', this.visibilityButtonId);

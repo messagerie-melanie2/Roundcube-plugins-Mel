@@ -14,12 +14,17 @@ import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/Custom
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/navbar.generator.js';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 
 class NextcloudModule extends WorkspaceObject {
   constructor() {
     super();
 
-    if (!this.loaded && this.workspace.app_loaded('doc')) {
+    if (!this.loaded && !this.isDisabled('stockage')) {
       let loader = BootstrapLoader.Create({ mode: 'block', center: true });
       let contents = this.moduleContainer.querySelector(
         '.module-block-content',
@@ -56,6 +61,33 @@ class NextcloudModule extends WorkspaceObject {
           `${Nextcloud.index_url}/apps/files?dir=/dossiers-${this.workspace.uid}`;
       }
     }, 'stockage');
+
+    new Promise(async (ok, nok) => {
+      await Mel_Promise.wait(() => !!NavBarManager.currentNavBar);
+      NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
+        const [task, state, caller] = args;
+        const loading = BnumMessage.DisplayMessage(
+          this.gettext('loading'),
+          'loading',
+        );
+        $(caller).addClass('disabled').attr('disabled', 'disabled');
+        if (task === 'stockage') {
+          await this.switchState(task, state.newState, this.moduleContainer);
+
+          if (!state.newState && !this.loaded) {
+            let contents = this.moduleContainer.querySelector(
+              '.module-block-content',
+            );
+            contents.style.position = 'relative';
+            contents = null;
+            await this._main();
+          }
+        }
+        $(caller).removeClass('disabled').removeAttr('disabled');
+        rcmail.clear_message(loading);
+      });
+      ok();
+    });
   }
 
   /**
@@ -63,6 +95,8 @@ class NextcloudModule extends WorkspaceObject {
    * @param {?BootstrapLoader} loader
    */
   async _main(loader = null) {
+    this.loadModule();
+
     if (loader) {
       loader.remove();
       loader = null;

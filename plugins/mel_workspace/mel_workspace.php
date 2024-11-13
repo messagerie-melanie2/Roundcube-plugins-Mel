@@ -141,6 +141,8 @@ class mel_workspace extends bnum_plugin
             return $v;
         }));
 
+        $visibility = $this->get_config('workspace_modules_visibility', [])[$uid];
+        $this->rc()->output->set_env('workspace_modules_visibility', $visibility);
         $this->rc()->output->set_env('current_workspace_color', $workspace->color());
         $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
         
@@ -316,6 +318,30 @@ class mel_workspace extends bnum_plugin
         $this->rc()->user->save_prefs(array('wsp-visu-mode' => $mode));
 
         $this->sendEncodedExit('ok');
+    }
+
+    public function update_module_visibility() {
+        $uid = $this->get_input_post('_uid');
+        $task = $this->get_input_post('_key');
+        $state = $this->get_input_post('_state');
+        
+        $visibility = $this->get_config('workspace_modules_visibility', []);
+
+        if ($state) {
+            if ($visibility[$uid] === null) $visibility[$uid] = [];
+
+            $visibility[$uid][$task] = $state;
+        }
+        else if ($visibility[$uid] !== null) {
+            unset($visibility[$uid][$task]);
+            
+            if (count($visibility[$uid]) === 0) unset($visibility[$uid]);
+        } 
+        
+        $this->rc()->user->save_prefs(array('workspace_modules_visibility' => $visibility));
+
+        echo true;
+        exit;
     }
     #endregion
 
@@ -510,7 +536,8 @@ class mel_workspace extends bnum_plugin
                     'create' => [$this, 'create'],
                     'search' => [$this, 'workspaces_search'],
                     'toggle_favorite' => [$this, 'toggle_favorite'],
-                    'set_visu_mode' => [$this, 'set_visu_mode']
+                    'set_visu_mode' => [$this, 'set_visu_mode'],
+                    'update_module_visibility' => [$this, 'update_module_visibility']
                 ]
             );
         }

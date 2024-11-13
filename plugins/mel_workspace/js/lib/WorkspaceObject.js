@@ -1,4 +1,9 @@
+import {
+  BnumMessage,
+  eMessageType,
+} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
 import {
   MelObject,
@@ -45,7 +50,7 @@ export class WorkspaceObject extends MelObject {
    */
   async http_workspace_call(action, params = {}, type = 'GET') {
     params ??= {};
-    params._uid = this.uid;
+    params._uid = this.workspace.uid;
 
     let data = null;
     let errored = false;
@@ -113,6 +118,23 @@ export class WorkspaceObject extends MelObject {
     }
 
     return node;
+  }
+
+  async switchState(task, state, container) {
+    container.style.display = state ? 'none' : EMPTY_STRING;
+
+    await this.http_workspace_post('update_module_visibility', {
+      _key: task,
+      _state: state,
+    });
+
+    BnumMessage.DisplayMessage('Visibilitée changée avec succès', eMessageType.Confirmation);
+  }
+
+  isDisabled(task) {
+    return [true, 'true'].includes(
+      this.get_env('workspace_modules_visibility')?.[task],
+    );
   }
 
   static GetWorkspaceData() {

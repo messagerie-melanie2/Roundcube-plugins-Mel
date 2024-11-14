@@ -10,6 +10,7 @@ html.dark-mode-custom:root {
   --body-background-color: var(--default-bckg-color);
   --secondary-nav-background-color: #181c28;
   --background-color-dialog-message: #d7bd8a;
+  --box-information-background-color: var(--tierciary-bckg-color);
   --main-text-color: #96b9e7;
   --secondary-text-color: #c7dfff;
   --tierciary-text-color: #323f4b;
@@ -20,6 +21,8 @@ html.dark-mode-custom:root {
   --default-placeholder-text-color: #96845f;
   --hint-text-color: #8ba3a7;
   --active-button-text-color: var(--tierciary-text-color);
+  --box-information-text-color: var(--main-text-color);
+  --invitebox-label-text-color: var(--box-information-text-color);
   --main-border-color: var(--default-text-color);
   --secondary-border-color: #4d6066;
   --main-separator-border-color: #96b9e71c;

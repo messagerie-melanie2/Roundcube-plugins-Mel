@@ -11,6 +11,7 @@
   --body-background-color: var(--default-bckg-color);
   --background-color-dialog-message: rgba(255, 255, 102, 0.25);
   --disabled-background-color: #828282;
+  --box-information-background-color: rgba(55, 190, 255, 0.2);
   --main-text-color: #363A5B;
   --secondary-text-color: #FFFFFF;
   --tierciary-text-color: #484D7A;
@@ -21,6 +22,8 @@
   --default-placeholder-text-color: #a8a9b8;
   --hint-text-color: #737677;
   --active-button-text-color: var(--secondary-text-color);
+  --box-information-text-color: #2c363a;
+  --invitebox-label-text-color: #666;
   --modal-da-title-text-color: #5C5CFF;
   --main-border-radius: 0px;
   --secondary-border-radius: 0px;

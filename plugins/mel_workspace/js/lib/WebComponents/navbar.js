@@ -6,6 +6,7 @@ import {
   EWebComponentMode,
   HtmlCustomTag,
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { PressedButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
 // import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
@@ -35,6 +36,7 @@ class WspNavBar extends HtmlCustomTag {
 
     this.onbuttonclicked = new BnumEvent();
     this.onstatetoggle = new BnumEvent();
+    this.onquitbuttonclick = new BnumEvent();
   }
 
   /**
@@ -133,7 +135,8 @@ class WspNavBar extends HtmlCustomTag {
 
     shadow.append(div);
 
-    this._generate_picture()
+    this._generate_back_button()
+      ._generate_picture()
       ._generate_title()
       ._generate_description()
       ._generate_block();
@@ -159,6 +162,7 @@ class WspNavBar extends HtmlCustomTag {
     this.#pageNavigation = tmp;
     tmp = null;
 
+    this._generate_minify_button();
     // top.history.replaceState(
     //   {},
     //   document.title,
@@ -176,6 +180,36 @@ class WspNavBar extends HtmlCustomTag {
     div = null;
     style = null;
     shadow = null;
+  }
+
+  _generate_back_button() {
+    let button = new WspButton(this, {
+      text: 'Retour',
+      icon: 'arrow_left_alt',
+    });
+    button.setAttribute('data-position', 'left');
+    button.style.maxWidth = '80px';
+    button.style.marginBottom = '15px';
+    button.onclick = this.onquitbuttonclick.call.bind(this.onquitbuttonclick);
+
+    this.mainDiv.prepend(button);
+
+    button = null;
+    return this;
+  }
+
+  _generate_minify_button() {
+    let button = PressedButton.Create();
+    button.setAttribute('id', 'wsp-nav-minify-expand');
+    button.classList.add('transparent-bckg');
+    let icon = BnumHtmlIcon.Create({ icon: 'keyboard_double_arrow_left' });
+    button.appendChild(icon);
+
+    this.mainDiv.style.position = 'relative';
+    this.mainDiv.appendChild(button);
+    icon = null;
+    button = null;
+    return this;
   }
 
   _generate_picture() {

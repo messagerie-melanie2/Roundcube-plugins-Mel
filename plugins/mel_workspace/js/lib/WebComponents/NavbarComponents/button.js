@@ -42,6 +42,10 @@ export class WspButton extends NavBarComponent {
       : 'custom';
   }
 
+  get pos() {
+    return this._p_get_data('position') || 'right';
+  }
+
   _p_main() {
     super._p_main();
 
@@ -90,7 +94,15 @@ export class WspButton extends NavBarComponent {
 
     if (!!(this.#icon || false)) {
       let icon = new BnumHtmlIcon(this.#icon);
-      this.appendChild(icon);
+      switch (this.pos) {
+        case 'left':
+          this.prepend(icon);
+          break;
+
+        default:
+          this.appendChild(icon);
+          break;
+      }
       icon = null;
     }
 

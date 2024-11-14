@@ -465,6 +465,9 @@ class BnumHtmlIcon extends HtmlCustomTag {
     return obj;
   }
 
+  /**
+   * @type {{right:BnumHtmlIcon, left:BnumHtmlIcon, down:BnumHtmlIcon}}
+   */
   static get Arrow() {
     let obj = {};
 

@@ -85,6 +85,27 @@ export class NavBarManager {
       navbar.style.marginTop = '60px';
       navbar.style.marginLeft = '60px';
       navbar.style.marginRight = '5px';
+      navbar.onquitbuttonclick.push(() => {
+        // this.currentNavBar.remove();
+        // nav.$('#layout-frames').css('margin-left', EMPTY_STRING);
+        top.history.replaceState(
+          {},
+          document.title,
+          MelObject.Empty()
+            .url('workspace', {})
+            .replace('&_is_from=iframe', EMPTY_STRING),
+        );
+
+        MelObject.Empty()
+          .generate_loader('deleting', true)
+          .generate()
+          .appendTo($('body').html(EMPTY_STRING));
+        // window.location.href = MelObject.Empty().url('workspace', {});
+        this.Kill(workspace.uid);
+        FramesManager.Instance.switch_frame('workspace', {
+          args: { _action: 'index' },
+        });
+      });
       navbar.onbuttonclicked.push((task, event) => {
         const config =
           rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) ||
@@ -160,16 +181,18 @@ export class NavBarManager {
     let navbar = nav.document.querySelector(`#navbar-${uid}`);
 
     for (const key of Object.keys(
-      rcmail._handlers_ex['workspace.nav.beforeswitch'],
+      rcmail._handlers_ex?.['workspace.nav.beforeswitch'] || {},
     )) {
       rcmail.remove_handler_ex('workspace.nav.beforeswitch', key);
     }
 
     for (const key of Object.keys(
-      rcmail._handlers_ex['workspace.navbar.onclick'],
+      rcmail._handlers_ex?.['workspace.navbar.onclick'] || {},
     )) {
       rcmail.remove_handler_ex('workspace.navbar.onclick', key);
     }
+
+    top.rcmail.add_event_listener_ex('switch_frame', 'workspace', () => {});
 
     if (navbar) {
       navbar.remove();

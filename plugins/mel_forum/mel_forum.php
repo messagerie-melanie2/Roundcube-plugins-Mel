@@ -838,6 +838,9 @@ class mel_forum extends bnum_plugin
             return false;
         }
 
+        // Détecter et sauvegarder les images en base64 dans le contenu
+        $content = $this->process_base64_images($content, $uid);
+
         //Créer un nouvel Article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
@@ -2063,6 +2066,55 @@ class mel_forum extends bnum_plugin
 
         // Arrêt de l'exécution du script
         exit;
+    }
+
+    // Fonction pour traiter les images base64 et les convertir en URL
+    private function process_base64_images($content, $post_id)
+    {
+        // Expression régulière pour trouver toutes les balises <img src="data:image/">
+        preg_match_all('/<img src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/i', $content, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $img) {
+            $imageType = $img[1]; // Type de l'image (jpeg, png, etc.)
+            $base64Data = $img[2]; // Données en base64
+
+            // Reconstruire le préfixe de l'image
+            $fullBase64Data = "data:image/{$imageType};base64,{$base64Data}";
+
+            // Enregistrer l'image dans la base de données
+            $imageSaved = $this->save_image($post_id, $fullBase64Data);  // Passer les données complètes à la fonction
+
+            if ($imageSaved) {
+                // Remplacer le src base64 par une URL dynamique de l'image basée sur l'ID
+                $imageUrl = $this->url('forum', ['action' => 'view_image', 'id' => $imageSaved]);
+                $content = str_replace($img[0], '<img src="' . $imageUrl . '"', $content);
+            }
+        }
+
+        return $content;
+    }
+
+
+    public function save_image($post_id, $data)
+    {
+        // Validation des données saisies
+        if (empty($post_id) || empty($data)) {
+            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            return false;
+        }
+
+        // Créer une nouvelle image
+        $image = new LibMelanie\Api\Defaut\Posts\Image();
+        $image->uid = $this->generateRandomString(24);
+        $image->post = $post_id;
+        $image->data = $data;
+
+        // Sauvegarde de l'image
+        if ($image->save()) {
+            return $image->uid;  // Retourner l'UID de l'image pour créer une URL
+        }
+
+        return false;
     }
 
     /**

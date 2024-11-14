@@ -133,23 +133,8 @@ export class create_or_edit_post extends MelObject {
     }
     cancelButton() {
         $('#cancel-post').click(() => {
-            this.http_internal_post(
-                {
-                    task: 'forum',
-                    action: 'delete_post',
-                    params: {
-                        _uid: this.post_uid,
-                    },
-                    processData: false,
-                    contentType: false,
-                    on_success: () => {
-                        window.location.href = this.url('forum', {action:'index'});
-                    },
-                    on_error: (err) => {
-                        console.log('Erreur d\'enregistrement');
-                    }
-                }
-            );
+            // Redirige directement vers la page d'accueil sans suppression
+            window.location.href = this.url('forum', {action: 'index'});
         });
     }
 

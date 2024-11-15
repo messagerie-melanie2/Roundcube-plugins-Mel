@@ -179,6 +179,17 @@ class Workspace {
     });
   }
 
+  public function share($userId = null, $to_melanie_user = false){
+    $userId ??= driver_mel::gi()->getUser()->uid;
+
+    if ($to_melanie_user) { 
+      return $this->users($to_melanie_user)->where(function ($k, $v) use($userId) {
+        return $v->uid === $userId;
+      })->firstOrDefaut();
+    }
+    else return $this->users()[$userId];
+  } 
+
   public function users($to_melanie_user = false) {
     if (!isset($this->_users)) $this->_users = $this->_workspace->shares;
     return $to_melanie_user ? mel_helper::Enumerable($this->_users)->select(function ($k, $v) {

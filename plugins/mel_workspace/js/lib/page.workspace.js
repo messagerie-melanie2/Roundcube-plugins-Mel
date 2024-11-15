@@ -1,4 +1,5 @@
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceObject } from './WorkspaceObject.js';
 
@@ -52,6 +53,18 @@ export class WorkspacePage extends WorkspaceObject {
       this.get_env('start_app') || 'home',
       { background: !this.get_env('start_app') },
     );
+
+    NavBarManager.currentNavBar.onactionclicked.push((type) => {
+      switch (type) {
+        case 'settings':
+          $('.wsp-params').css('display', EMPTY_STRING);
+          $('.wsp-row').css('display', 'none');
+          break;
+
+        default:
+          break;
+      }
+    });
 
     top.rcmail.add_event_listener_ex('switch_frame', 'workspace', (args) => {
       const { actions, task } = args;

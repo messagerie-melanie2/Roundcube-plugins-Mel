@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__.'/lib/Workspace.php';
+use LibMelanie\Api\Defaut\Workspaces\Share;
 
 class mel_workspace extends bnum_plugin
 {
@@ -19,6 +20,10 @@ class mel_workspace extends bnum_plugin
      * @var WorkspacePageLayout
      */
     private $workspacePageLayout;
+    /**
+     * @var Workspace
+     */
+    private $workspace;
 
   /**
      * (non-PHPdoc)
@@ -126,6 +131,11 @@ class mel_workspace extends bnum_plugin
             'wsp.row.fourth' => [$this, 'handler_get_row'],
             'wsp.row.other'  => [$this, 'handler_get_row'],
         ));
+
+        $this->workspace = $workspace;
+        $this->rc()->output->add_handlers([
+            'settings_or_member' => [$this, 'handler_settings_or_member']
+        ]);
 
         $this->include_css('workspace.css');
         self::IncludeWorkspaceModuleComponent();
@@ -408,6 +418,213 @@ class mel_workspace extends bnum_plugin
         }
 
         return '';
+    }
+
+    public function handler_settings_or_member($args) {
+        $workspace = $this->workspace;
+
+        if ($workspace->isAdmin()) {
+            return $this->setup_params_page();
+        }
+    }
+
+    function setup_params_page()
+    {
+        $workspace = $this->workspace;
+        $uid = $workspace->uid();
+        $user_rights = $workspace->share()->rights;
+        
+        $html = mel_helper::Parse('mel_workspace.params');
+
+        if ($user_rights === "l") $html->set_other_variable('users-right', '');
+        else  $html->set_other_variable('users-rights', $this->setup_params_rights());
+
+        //JJ/MM/YYYY HH:mm 
+        $endDate = $workspace->settings()->get('end_date') ?? 'JJ/MM/YYYY HH:mm ';
+
+        if ($endDate === '')
+            $endDate = "JJ/MM/YYYY HH:mm ";
+
+        $html->end_date = $endDate;
+        $html->color = $workspace->color();
+        $html->applications = 'IN PROGRESS....';//$this->setup_params_apps();
+
+        $html->title = $user_rights === Share::RIGHT_OWNER ? $workspace->title() : '';
+        $html->desc = ($user_rights === Share::RIGHT_OWNER ? ($workspace->description() === '' ? 'Nouvelle description...' : ($workspace->description() ?? 'Nouvelle description...')) : '');
+
+        if ($user_rights === Share::RIGHT_OWNER) {
+            $hashtag = $workspace->hashtag();
+
+            if (($hashtag ?? '') === '') $hashtag = "Nouvelle thématique...";
+
+            $html->current_hashtag = $hashtag;
+        }
+        else $html->current_hashtag = '';
+
+        if ($user_rights === Share::RIGHT_OWNER) $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>');
+        else $html->set_other_variable('button-delete', '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>');
+        
+        if (!$workspace->isArchived())  $html->set_other_variable('button-archive', '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.archive`)">Archiver</button>');
+        else $html->set_other_variable('button-archive', '<button class="btn btn-success mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>');
+        
+        if ($user_rights === Share::RIGHT_OWNER)
+        {
+            $logo = $workspace->logo();//self::get_workspace_logo($this->currentWorkspace);
+            $html->logo = (($logo ?? "false") == "false" ? '<span>'.substr($workspace->title(), 0, 3)."</span>" : '<img src="'.$logo.'" />');
+            $html->visibility = $workspace->isPublic() ? 'privé' : 'public';
+        }
+        else
+        {
+            $html->logo = '';
+            $html->visibility = '???';
+        }
+
+        // if ($this->rc->config->get('workspace_bar_color_force', "default") === 'default')
+        // {
+        //     $activeColor = $this->is_color_custom($this->currentWorkspace);
+        //     $html = str_replace("<bar_color_text/>", ($activeColor ? $this->gettext('unactive_bar_color', 'mel_workspace').'<span class="plus icon-mel-minus"></span>' : $this->gettext('active_bar_color', 'mel_workspace').'<span class="plus icon-mel-plus"></span>'), $html);
+        //     $html = str_replace("<bar_color_title/>", ($activeColor ? $this->gettext('unactive_bar_color_title', 'mel_workspace') : $this->gettext('active_bar_color_title', 'mel_workspace')), $html);
+        //     $html = str_replace("<bar_color_visibility/>", "", $html);
+        // }
+        // else
+        //     $html = str_replace("<bar_color_visibility/>", "display:none;", $html);
+
+        return $html->parse();
+    }
+
+    function sort_user($users)
+    {
+        usort($users, function($a, $b)
+        {
+            if ($a->rights == $b->rights)
+                return driver_mel::gi()->getUser($a->user)->name <=> driver_mel::gi()->getUser($b->user)->name;
+            
+            return $a->rights == Share::RIGHT_OWNER && $b->rights != $a->rights ? -1 : 1;
+
+
+        });
+        return $users;
+    }
+
+    private function _check_if_is_in_list($wsp, $user_id) {
+        $array = [];
+        $lists = $wsp->settings()->get('lists') ?? [];//$this->get_setting($wsp, 'lists') ?? [];
+
+        foreach ($lists as $key => $value) {
+            if (in_array($user_id, $value)) $array[] = $key;
+        }
+
+        return $array;
+    }
+
+    private function _list_to_title($lists) {
+        $txt = '';
+        foreach ($lists as $key => $value) {
+            $value = driver_mel::gi()->getUser(null, true, false, null, $value);
+            $txt .= $value->fullname . "\n";
+        }
+
+        return $txt;
+    }
+
+
+    function setup_params_rights()
+    {
+        $workspace = $this->workspace;
+        $icons_rights = [
+            Share::RIGHT_OWNER => "icofont-crown",
+            Share::RIGHT_WRITE => "icofont-pencil-alt-2"
+        ];
+
+        $options_title = [
+            Share::RIGHT_OWNER => "Passer en administrateur",
+            Share::RIGHT_WRITE => "Passer en utilisateur"
+        ];
+
+        $current_title = [
+            Share::RIGHT_OWNER => "Administrateur",
+            Share::RIGHT_WRITE => "Utilisateur"
+        ];
+
+        $icon_delete = "icon-mel-trash";
+        $env = [];
+        $shares = $this->sort_user($workspace->users()); 
+        $nbuser = count($shares);
+
+        $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
+        $html .= "<thead>";
+        $html .= "<tr><td>Utilisateur ($nbuser) </td><td class=\"mel-fit-content\">Droits d'accès</td><td class=\"mel-fit-content\">Supprimer</td></tr>";
+        $html .= "</thead>";
+        $share = $this->sort_user($workspace->users());
+        $current_user = driver_mel::gi()->getUser();
+
+        foreach ($share as $key => $value) {
+            $user =driver_mel::gi()->getUser($value->user);
+
+            if (!isset($user)) continue;
+
+            $from_list = $this->_check_if_is_in_list($workspace, $value->user);
+            $html .= "<tr>";
+            $html .= '<td>'.(count($from_list) > 0 ? '<span style="margin-right:5px;vertical-align: bottom;" class="material-symbols-outlined" title="'.$this->_list_to_title($from_list).'">groups</span>' : ''). $user->fullname."</td>";
+            
+            $html .= "<td>".$this->setup_params_value($icons_rights, $options_title, $current_title, $value->rights,$value->user)."</td>";
+            if ($value->user === $current_user)
+                $html += '<td></td>';
+            else
+                $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger mel-button no-button-margin"><span class='.$icon_delete.'></span></button></td>';
+            
+            $html .= "</tr>";
+            $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname, 'is_external' => $user->is_external];
+        }
+
+        // $this->rc()->output->set_env('current_workspace_users', $env);
+        unset($env);
+        unset($from_list);
+
+        $lists = $workspace->settings()->get('lists') ?? [];//$this->get_setting($workspace, "lists") ?? [];
+
+        if (!is_array($lists)) $lists = get_object_vars($lists);
+
+        if (count($lists) > 0) {
+            $html .= "<thead>";
+            $html .= '<tr><td>Listes</td><td class="mel-fit-content">Synchroniser</td><td class="mel-fit-content">Supprimer</td></tr>';
+            $html .= "</thead>";
+
+            foreach ($lists as $key => $value) {
+                $html .= "<tr>";
+                $html .= "<td>". driver_mel::gi()->getUser(null, true, false, null, $key)->fullname."</td>";
+                $html .= "<td><button style=\"float:right\" onclick=\"rcmail.command(`workspace.sync_list`, `".$key."`);\" class=\"btn btn-primary mel-button no-button-margin without-text px45\"><span class=\"material-symbols-outlined\">sync</span></button></td>";
+                $html .= "<td><button style=\"float:right\" onclick=\"rcmail.command(`workspace.remove_list`, `".$key."`);\" class=\"btn btn-danger mel-button no-button-margin without-text px45\"><span class=\"material-symbols-outlined\">delete</span></button></td>";
+                $html .= "</tr>";
+            }
+        }
+
+
+
+        $html .= "</table>";
+
+        return $html;
+    }
+
+    function setup_params_value($icons, $titles, $current_titles, $rights, $user)
+    {
+        $options = json_encode($icons);
+        $options = str_replace('"', "¤¤¤", $options);
+        $classes = [];
+
+        foreach ($icons as $key => $value) {
+            $classes[$key] = $key;
+        }
+
+        $classes = str_replace('"', "¤¤¤", json_encode($classes));
+
+        return '<button style="float:right" title="'.$current_titles[$rights].'"  type="button" data-option-title-current="'.str_replace('"', "¤¤¤", json_encode($current_titles)).'" data-option-title="'.str_replace('"', "¤¤¤", json_encode($titles)).'" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel mel-button no-button-margin  btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
+        // $html = '<select class=" pretty-select" >';
+        // foreach ($icons as $key => $value) {
+        //     $html .= '<option class=icofont-home value="'.$key.'" '.($key === $rights ? "selected" : "")." ></option>";
+        // }
+        // $html .= "</select>";
+        // return $html;
     }
     #endregion
 

@@ -34,6 +34,7 @@ class WspNavBar extends HtmlCustomTag {
   constructor() {
     super({ mode: EWebComponentMode.div });
 
+    this.onactionclicked = new BnumEvent();
     this.onbuttonclicked = new BnumEvent();
     this.onstatetoggle = new BnumEvent();
     this.onquitbuttonclick = new BnumEvent();
@@ -381,8 +382,25 @@ class WspNavBar extends HtmlCustomTag {
         this._generate_members,
       ];
 
+      /**
+       * @type {?WspButton}
+       */
+      let generated;
       for (const callback of items) {
-        this.#_try_add(block, callback.call(this));
+        generated = callback.call(this);
+
+        if (generated) {
+          generated.addEventListener(
+            'click',
+            this.onactionclicked.call.bind(
+              this.onactionclicked,
+              generated.getAttribute('data-up-nav'),
+            ),
+          );
+
+          this.#_try_add(block, generated);
+          generated = null;
+        }
       }
 
       if (plugin.addSeparateAtEnd) {
@@ -417,6 +435,8 @@ class WspNavBar extends HtmlCustomTag {
         icon: 'person_add',
       });
 
+      button.setAttribute('data-up-nav', 'invitation');
+
       return button;
     }
 
@@ -431,17 +451,26 @@ class WspNavBar extends HtmlCustomTag {
         icon: 'add',
       });
 
+      button.setAttribute('data-up-nav', 'join');
+
       return button;
     }
   }
 
   _generate_start_visio() {
-    if (this.workspace.isJoin && rcmail.env.plugin_list_visio === true) {
+    if (
+      this.workspace.isJoin &&
+      ((this.workspace.isPublic && this.workspace.isAdmin) ||
+        !this.workspace.isPublic) &&
+      rcmail.env.plugin_list_visio === true
+    ) {
       let button = new WspButton(this, {
         style: WspButton.Style.white,
         text: 'Commencer une visioconférence',
         icon: 'videocam',
       });
+
+      button.setAttribute('data-up-nav', 'visio');
 
       return button;
     }
@@ -454,6 +483,8 @@ class WspNavBar extends HtmlCustomTag {
         text: 'Paramètres',
         icon: 'settings',
       });
+
+      button.setAttribute('data-up-nav', 'settings');
 
       return button;
     }

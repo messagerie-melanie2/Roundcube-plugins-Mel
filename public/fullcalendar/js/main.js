@@ -200,7 +200,7 @@ function display_calendar(response) {
     },
     businessHours: generateBusinessHours(response),
   });
-  calendar.render();
+  calendar.render();  
 }
 
 
@@ -428,10 +428,44 @@ function generateAllowTimes(start = new Date()) {
   return times;
 }
 
+function getSelectedDayOccupiedTimeSlot(date) {
+  let occupiedTimeSlot = [];
+  datetimepicker_fullcalendar.getEvents().forEach((value) => {    
+    if (moment(value.start).startOf('day').toString() == moment(date).startOf('day').toString()) {
+      let start = moment(value.start).subtract(appointment_duration, 'minute').format('HH:mm')
+      let end = moment(value.end).format('HH:mm')
+      occupiedTimeSlot.push([start, end]);
+    }
+  });
+  return occupiedTimeSlot;
+}
 
+function isEventInRange(start, end, ranges) {
+  return ranges.some(([rangeStart, rangeEnd]) => {
+    const rangeStartTime = moment(start.format("YYYY/MM/DD") + " " + rangeStart, "YYYY/MM/DD HH:mm");
+    const rangeEndTime = moment(end.format("YYYY/MM/DD") + " " + rangeEnd, "YYYY/MM/DD HH:mm");      
+
+      return start.isBetween(rangeStartTime, rangeEndTime, null, '[)') ||
+             end.isBetween(rangeStartTime, rangeEndTime, null, '(]') ||
+             (start.isSameOrBefore(rangeStartTime) && end.isSameOrAfter(rangeEndTime));
+  });
+};
 
 function event_form_submit(e) {
   e.preventDefault();
+
+  let occupiedTimeSlot = getSelectedDayOccupiedTimeSlot($('#event-time-start').val());
+  
+  let start = moment($('#event-time-start').val(), "YYYY/MM/DD HH:mm");
+  let end = moment($('#event-time-end').val(), "YYYY/MM/DD HH:mm");
+
+  const isOccupied = isEventInRange(start, end, occupiedTimeSlot);
+
+  if (isOccupied) {
+    $('#error-message').show(0).delay(5000).hide(0);
+    return;
+  }
+
   $("#eventModal").modal('hide');
 
   $('#phone_field').hide();
@@ -441,7 +475,7 @@ function event_form_submit(e) {
     $('#phone_field').show();
     $('#user-phone').prop('required', true);
   }
-
+  
   $("#userModal").modal('show');
 }
 

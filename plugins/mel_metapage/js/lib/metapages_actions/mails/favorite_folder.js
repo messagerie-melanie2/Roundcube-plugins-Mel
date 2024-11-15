@@ -510,7 +510,7 @@ export class MailFavoriteFolder extends MailModule {
         if ($current.hasClass('treetoggle')) $current = $current.parent();
 
         if ($current.find('.treetoggle').first().hasClass('collapsed')) {
-            let count = 0;
+            let count = parseInt($current.find('.unreadcount').first().text()) || 0;
 
             var $it;
             for (const iterator of $current.find('.unreadcount')) {

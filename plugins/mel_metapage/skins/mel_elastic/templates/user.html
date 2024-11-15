@@ -18,7 +18,7 @@
   </div>
   </button>
   <div id="user-dropdown" class="dropdown-menu user-dropdown-menu dropdown-menu-right p-2" aria-labelledby="button-notifications">
-    <div class="notifications-header border-radius-md px-2 mb-2">
+    <div class="notifications-header border-radius-md px-2">
       
       <roundcube:if condition="env:plugin_list_chat===true"/>
         <div class="d-flex pt-1 pb-2 align-items-center">
@@ -78,8 +78,10 @@
     <div class="user-menu-separator"></div>
     <roundcube:endif/>
     <div class="user-menu-controls">
+     <div class="user-menu-controls-group mb-1 pb-1">
       <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="dropdown-item d-flex align-items-center dropdown-color icon-button icon-account" />
       <roundcube:button type="link" command="set_custom_abs" title="mel_moncompte.gestionnaireabsence" label="mel_moncompte.gestionnaireabsence" class="dropdown-item d-flex align-items-center dropdown-color icon-button icon-account" />
+     </div>
       <roundcube:button type="link" command="logout" title="logout" label="logout" class="dropdown-item d-flex align-items-center dropdown-color icon-button icon-logout" />
     </div>
     </div>

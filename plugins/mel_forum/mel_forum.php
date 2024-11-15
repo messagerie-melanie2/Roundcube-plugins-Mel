@@ -427,21 +427,32 @@ class mel_forum extends bnum_plugin
     /**
      * Crée un résumé à partir du contenu fourni.
      *
-     * Cette fonction supprime les balises HTML du contenu, extrait les phrases 
-     * en utilisant des délimiteurs de phrase, et retourne les deux premières phrases 
-     * sous forme de résumé.
+     * Cette fonction extrait les deux premières phrases du contenu, en ignorant
+     * les balises images et en supprimant les espaces inutiles avant le texte.
      *
-     * @param string $content Le contenu à partir duquel le résumé est créé.
+     * @param string $content Le contenu HTML complet.
      * @return string Le résumé généré à partir des deux premières phrases du contenu.
      */
     private function create_summary_from_content($content)
     {
-        // Suppression des balises HTML pour éviter des erreurs d'extraction
+        // Suppression des balises <img> pour ne pas les prendre en compte
+        $content = preg_replace('/<img[^>]*>/i', '', $content);
+
+        // Suppression des balises HTML restantes pour ne garder que le texte brut
         $content = strip_tags($content);
+
+        // Suppression des espaces inutiles (espaces multiples, tabulations, retours à la ligne)
+        $content = preg_replace('/\s+/', ' ', $content);
+
+        // Supprimer les espaces en début et fin de chaîne
+        $content = trim($content);
+
         // Extraction des phrases en utilisant un délimiteur de phrase
-        $sentences = preg_split('/(\. |\? |\! )/', $content);
-        // Prend les deux premières phrases
+        $sentences = preg_split('/(\. |\? |\! )/', $content, -1, PREG_SPLIT_NO_EMPTY);
+
+        // Prendre les deux premières phrases
         $summary = implode('. ', array_slice($sentences, 0, 2));
+
         return $summary;
     }
 

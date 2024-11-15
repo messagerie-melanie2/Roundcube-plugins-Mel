@@ -2813,7 +2813,7 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         // compose multipart message using PEAR:Mail_Mime
-        $method  = $action == 'remove' ? 'CANCEL' : 'REQUEST';
+        $method  = $is_cancelled ? 'CANCEL' : 'REQUEST';
         $message = $itip->compose_itip_message($event, $method, $rsvp);
 
         // PAMELA 

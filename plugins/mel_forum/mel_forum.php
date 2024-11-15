@@ -149,6 +149,8 @@ class mel_forum extends bnum_plugin
             $this->register_action('add_to_favorite', array($this, 'add_to_favorite'));
             // récupérer des posts au format Json
             $this->register_action('get_posts_data', array($this, 'get_posts_data'));
+            //gestion des réaction aux posts
+            $this->register_action('manage_reaction', array($this, 'manage_reaction'));
         }
     }
 
@@ -2138,7 +2140,12 @@ class mel_forum extends bnum_plugin
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 
+        //TODO récupérer le workspace_uid au premier chargment
         $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        //TODO supprimer
+        if ($workspace_uid === null) {
+            $workspace_uid = "workspace-test";
+        }
 
         $posts_data = [];
 
@@ -2150,10 +2157,11 @@ class mel_forum extends bnum_plugin
 
             $post_creator = driver_mel::gi()->getUser($post->creator)->name;
             $tags = $this->get_all_tags_bypost($post->uid);
-            // Récupérer le nombre de réaction
-            $reaction_count = $this->count_reactions($post->uid);
+            // Récupérer le nombre de réaction pas pris en compte dans la v1
+            //$reaction_count = $this->count_reactions($post->uid);
             // Récupérer le nombre de likes
-            $like_count = $this->count_likes($post->uid);
+            $isliked = $this->hasReaction('like', $post->id);
+            $isdisliked = $this->hasReaction('dislike', $post->id);
             // Récupérer le nombre de commentaire
             $comment_count = $this->count_comments($post->id);
             $is_fav = $this->is_fav($post->uid, $workspace_uid);
@@ -2165,15 +2173,19 @@ class mel_forum extends bnum_plugin
 
             $posts_data[$post->uid] = [
                 'uid' => $post->uid,
+                'id' => $post->id,
                 'title' => $post->title,
                 'creation_date' => $formatted_date,
                 'post_creator' => $post_creator,
                 'tags' => $tags,
                 'summary' => $post->summary,
-                'reaction' => $reaction_count,
-                'like_count' => $like_count,
+                // 'reaction' => $reaction_count,
+                'like_count' => $post->likes,
+                'dislike_count' => $post->dislikes,
                 'comment_count' => $comment_count,
                 'favorite' => $is_fav,
+                'isliked' => $isliked,
+                'isdisliked' => $isdisliked,
                 'post_link' => $post_link,
             ];
         }
@@ -2225,6 +2237,70 @@ class mel_forum extends bnum_plugin
                 $fav_articles[$workspace_uid] = array_values($fav_articles[$workspace_uid]);
                 $this->rc()->user->save_prefs(array('favorite_article' => $fav_articles));
             }
+        }
+    }
+
+    function manage_reaction()
+    {
+        // Récupérer l'utilisateur
+        $user = driver_mel::gi()->getUser();
+        $user_uid = $user->uid;
+
+        $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
+        $post_id = intval(rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST));
+
+        $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
+        $reaction->post = $post_id;
+        $reaction->creator = $user_uid;
+        $reaction->type = $type;
+        switch ($type) {
+            case "like":
+                $opposite_type = "dislike";
+                break;
+            case "dislike":
+                $opposite_type = "like";
+                break;
+            default:
+                $opposite_type = null;
+        }
+
+        //on vérifie si la réaction existe déjà
+        if ($reaction->load()) {
+            //la réaction existe déjà on la supprime
+            $reaction->delete();
+        } else {
+            //elle n'existe pas on la créé
+            $reaction->save();
+            //on vérifie qu'une réaction contraire n'éxiste pas déjà pour cette utilisateur
+            if (!is_null($opposite_type)) {
+                $opposite_reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
+                $opposite_reaction->post = $post_id;
+                $opposite_reaction->creator = $user_uid;
+                $opposite_reaction->type = $opposite_type;
+                if ($opposite_reaction->load()) {
+                    //on supprime la réaction opposée
+                    $opposite_reaction->delete();
+                }
+            }
+        }
+        echo json_encode(["status" => "success"]);
+        exit;
+    }
+
+    private function hasReaction($type, $post_id)
+    {
+        // Récupérer l'utilisateur
+        $user = driver_mel::gi()->getUser();
+        $user_uid = $user->uid;
+
+        $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
+        $reaction->post = $post_id;
+        $reaction->creator = $user_uid;
+        $reaction->type = $type;
+        if ($reaction->load()) {
+            return true;
+        } else {
+            return false;
         }
     }
 

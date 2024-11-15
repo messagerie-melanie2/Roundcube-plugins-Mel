@@ -29,7 +29,9 @@ export class Forum extends MelObject {
 
     }
 
-
+    /**
+     * Initialise les actions de la page
+     */
     initButtons() {
         $('#forum-button-add').click(() => {
             window.location.href = this.url('forum', {action:'create_or_edit_post'});
@@ -226,10 +228,21 @@ export class Forum extends MelObject {
             }
         );
     }
+
+    /**
+     * Récupère les articles dans l'env et les affiche (utilisé pour le premier affichage du post)
+     */
     initPostDisplay () {
         const posts = this.get_env('posts_data');
         this.displayPost(posts);
     }
+
+    /**
+     * Affiche les posts comportant un tag
+     * @param {*} tag_id 
+     * @param {*} tag_name 
+     * @param {*} event 
+     */
     searchTag (tag_id, tag_name, event) {
         event.preventDefault();
         event.stopPropagation();
@@ -241,6 +254,92 @@ export class Forum extends MelObject {
         $('#post-search-input').val('#' + tag_name);
     }
 
+    /**
+     * Met à jour le compteur de like , si on est à 0 n'affiche rien
+     * @param {*} span élément html à mettre à jour
+     * @param {*} value modification apportée au compteur
+     */
+    updateCounter(span, value) {
+        let currentValue = parseInt(span.text()) || 0; // Récupérer la valeur actuelle
+        let newValue = currentValue + value;
+
+        if (newValue <= 0) {
+            span.text(''); // Si la valeur est 0 ou moins, on masque le compteur
+        } else {
+            span.text(newValue); // Sinon, on met à jour la valeur
+        }
+    }
+
+    /**
+     * Gestion des likes et dislike des posts
+     * @param {*} type type de la reaction
+     * @param {*} post_id 
+     * @param {*} post_uid 
+     * @param {*} event 
+     */
+    addLikeOrDislike(type, post_id, post_uid,event){
+        event.preventDefault();
+        event.stopPropagation();
+        this.http_internal_post({
+            task: 'forum',
+            action: 'manage_reaction',
+            params: {
+                _post_id: post_id,
+                _type: type,
+            },
+            processData:false,
+            contentType:false,
+            on_success: (response) => {
+                BnumMessage.DisplayMessage(
+                    response.status,
+                    eMessageType.Confirmation,
+                );
+                let like_div = $('#add_like-'+post_uid);
+                let like_counter = like_div.find('span.ml-2');
+                let dislike_div = $('#add_dislike-'+post_uid);
+                let dislike_counter = dislike_div.find('span.ml-2');
+
+                if (type ==='like'){
+                    if (like_div.hasClass('filled')){
+                        like_div.removeClass('filled');
+                        this.updateCounter(like_counter, -1);
+                    }else{
+                        like_div.addClass('filled');
+                        this.updateCounter(like_counter, 1);
+
+                        if(dislike_div.hasClass('filled')) {
+                            dislike_div.removeClass('filled');
+                            this.updateCounter(dislike_counter, -1);
+                        }
+                    }
+                } else if (type === 'dislike'){
+                    if (dislike_div.hasClass('filled')){
+                        dislike_div.removeClass('filled');
+                        this.updateCounter(dislike_counter, -1);
+                    }else{
+                        dislike_div.addClass('filled');
+                        this.updateCounter(dislike_counter, 1);
+
+                        if(like_div.hasClass('filled')){
+                            like_div.removeClass('filled');
+                            this.updateCounter(like_counter, -1);
+                        }
+                    }
+                }
+            },
+            on_error: (err) => {
+                BnumMessage.DisplayMessage(
+                    'Erreur lors de la modification',
+                    eMessageType.Error,
+                );
+            },
+        });
+    }
+
+    /**
+     * affiche les posts passés en paramètres dans la div post-area
+     * @param {*} posts 
+     */
     displayPost(posts) {
         let post;
         let data;
@@ -254,18 +353,22 @@ export class Forum extends MelObject {
                 POST_TITLE: post.title,
                 POST_SUMMARY: post.summary,
                 POST_IMAGE: "lentilles",
-                POST_COUNT_REACTION: post.reaction,
+                // POST_COUNT_REACTION: post.reaction,
                 POST_THUMB_UP: post.like_count,
-                POST_THUMB_DOWN: post.like_count,
+                POST_THUMB_DOWN: post.dislike_count,
                 POST_COMMENTS: post.comment_count,
                 POST_FAVORITE: 
-                    MelHtml.start.tag('i',{id: 'favorite-'+post.uid, class:`favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
-            };
+                    MelHtml.start.tag('i',{id: 'favorite-'+post.uid, class:`hoverable favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
+                POST_IS_LIKED: post.isliked ? "filled" : "",
+                POST_IS_DISLIKED: post.isdisliked ? "filled" : "",
+                };
 
             let template = new MelTemplate()
             .setTemplateSelector('#post_template')
             .setData(data)
-            .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid));
+            .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid))
+            .addEvent('#add_like-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'like', post.id, post.uid))
+            .addEvent('#add_dislike-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid));
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());

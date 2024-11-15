@@ -683,6 +683,9 @@
         i {
           font-size: 24px;
           font-variation-settings: 'wght' 300;
+          &:hover {
+            font-variation-settings: 'wght' 300, 'FILL' 1;
+          }
         }
       }
     }
@@ -840,10 +843,22 @@
     display: contents;
   }
   .filled {
-  font-variation-settings:
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 300,
+      !important;
+    &:hover {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 300,
+        !important;
+    }
+  }
+
+  .hoverable:hover{
+    font-variation-settings:
     'FILL' 1,
-    'wght' 300,
-    !important
+    'wght' 300;
   }
 
 }

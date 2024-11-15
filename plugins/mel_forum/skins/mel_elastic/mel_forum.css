@@ -590,6 +590,9 @@
   font-size: 24px;
   font-variation-settings: 'wght' 300;
 }
+.task-forum .post .post-header .post-actions i:hover {
+  font-variation-settings: 'wght' 300, 'FILL' 1;
+}
 .task-forum .post .post-content .post-title {
   font-weight: 600;
   font-size: 20px;
@@ -716,4 +719,10 @@
 }
 .task-forum .filled {
   font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .filled:hover {
+  font-variation-settings: 'FILL' 0, 'wght' 300 !important;
+}
+.task-forum .hoverable:hover {
+  font-variation-settings: 'FILL' 1, 'wght' 300;
 }

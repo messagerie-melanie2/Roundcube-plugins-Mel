@@ -509,7 +509,7 @@ class mel_wekan extends rcube_plugin
     public function wsp_block($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
-            $args['layout']->setNavBarSetting('wekan', false, 4);
+            $args['layout']->setNavBarSetting('wekan', 'view_kanban', false, 4);
         }
 
         return $args;

@@ -36,8 +36,8 @@ class WorkspacePageLayout {
     return $this->other;
   }
 
-  public function setNavBarSetting($task, $canBeHidden = true, $order = 999) {
-    $this->navActions[] = ['task' => $task, 'canBeHidden' => $canBeHidden, 'order' => $order];
+  public function setNavBarSetting($task, $icon, $canBeHidden = true, $order = 999) {
+    $this->navActions[] = ['task' => $task, 'canBeHidden' => $canBeHidden, 'order' => $order, 'icon' => $icon];
     return $this;
   }
 

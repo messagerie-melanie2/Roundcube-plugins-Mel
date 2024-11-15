@@ -191,6 +191,7 @@ class WspNavBar extends HtmlCustomTag {
     button.style.maxWidth = '80px';
     button.style.marginBottom = '15px';
     button.onclick = this.onquitbuttonclick.call.bind(this.onquitbuttonclick);
+    button.classList.add('quit-wsp-button');
 
     this.mainDiv.prepend(button);
 
@@ -202,6 +203,36 @@ class WspNavBar extends HtmlCustomTag {
     let button = PressedButton.Create();
     button.setAttribute('id', 'wsp-nav-minify-expand');
     button.classList.add('transparent-bckg');
+
+    button.ontoggle.push((args, caller_any) => {
+      const { newState } = args;
+      /**
+       * @type {PressedButton}
+       */
+      let caller = caller_any;
+
+      //Si on minifie
+      if (newState) {
+        this.addClass('minified');
+        caller.querySelector(BnumHtmlIcon.TAG).icon =
+          'keyboard_double_arrow_right';
+        caller.setAttribute(
+          'title',
+          "Maximiser la barre de navigation de l'espace.",
+        );
+      } else {
+        this.removeClass('minified');
+        caller.querySelector(BnumHtmlIcon.TAG).icon =
+          'keyboard_double_arrow_left';
+        caller.setAttribute(
+          'title',
+          "Minimiser la barre de navigation de l'espace.",
+        );
+      }
+
+      caller = null;
+    });
+
     let icon = BnumHtmlIcon.Create({ icon: 'keyboard_double_arrow_left' });
     button.appendChild(icon);
 
@@ -332,6 +363,7 @@ class WspNavBar extends HtmlCustomTag {
     block.style.display = 'flex';
     block.style.flexDirection = 'column';
     block.style.marginTop = '15px';
+    block.classList.add('options-containers');
 
     const plugin = rcmail.triggerEvent('wsp.navbar.button_block', {
       block,

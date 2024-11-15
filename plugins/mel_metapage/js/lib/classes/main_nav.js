@@ -172,6 +172,44 @@ class MainNav {
 
     _$('#otherapps').css('display', 'none');
   }
+
+  /**
+   *
+   * @param {string} task
+   * @returns {{content:string, font:string}}
+   */
+  static get_icon_data(task) {
+    let content;
+    let font;
+
+    try {
+      content = top
+        .getComputedStyle(
+          top.document.querySelector(
+            `#taskmenu [data-task="${task}"], #otherapps [data-task="${task}"]`,
+          ),
+          ':before',
+        )
+        .getPropertyValue('content')
+        .replace(/"/g, '')
+        .charCodeAt(0)
+        .toString(16);
+
+      font = top
+        .getComputedStyle(
+          top.document.querySelector(
+            `#taskmenu [data-task="${task}"], #otherapps [data-task="${task}"]`,
+          ),
+          ':before',
+        )
+        .getPropertyValue('font-family');
+    } catch (error) {
+      content = EMPTY_STRING;
+      font = 'DWP';
+    }
+
+    return { content, font };
+  }
 }
 
 /**

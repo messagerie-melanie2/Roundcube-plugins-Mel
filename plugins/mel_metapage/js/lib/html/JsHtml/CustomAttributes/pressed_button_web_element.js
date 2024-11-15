@@ -123,6 +123,10 @@ export class PressedButton extends HtmlCustomDataTag {
     return this;
   }
 
+  /**
+   *
+   * @returns {PressedButton}
+   */
   static Create() {
     return document.createElement(PressedButton.TAG);
   }

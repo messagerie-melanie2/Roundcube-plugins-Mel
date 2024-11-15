@@ -1,5 +1,7 @@
 import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.js';
+import { MainNav } from '../../../../../mel_metapage/js/lib/classes/main_nav.js';
 import {
+  BnumHtmlIcon,
   BnumHtmlSrOnly,
   EWebComponentMode,
 } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
@@ -83,7 +85,7 @@ export class WspPageNavigation extends NavBarComponent {
 
   #_generate_element(obj) {
     // debugger;
-    const { task, canBeHidden } = obj;
+    const { task, canBeHidden, icon } = obj;
     let li = document.createElement('li');
     li.setAttribute('role', 'presentation');
 
@@ -106,11 +108,44 @@ export class WspPageNavigation extends NavBarComponent {
 
     button.setAttribute('data-can-be-hidden', canBeHidden);
 
+    let hiddenIcon = null;
+    if (icon !== ':nav:') {
+      hiddenIcon = BnumHtmlIcon.Create({ icon });
+    } else {
+      hiddenIcon = document.createElement('span');
+      hiddenIcon.classList.add(`${task}-computed-icon`, 'computed-icon');
+      const { content: taskIcon, font } = MainNav.get_icon_data(task);
+      let style = this.parent.querySelector('style');
+
+      if (!style) {
+        style = document.createElement('style');
+        this.parent.navigator.appendChild(style);
+      }
+
+      style.appendChild(
+        this.createText(`
+        .${task}-computed-icon::before {
+          content: "\\${taskIcon}";
+          font-family:${font};
+        }
+        `),
+      );
+
+      style = null;
+    }
+
+    hiddenIcon.classList.add('maximised-hidden');
+    //button.querySelector(PressedButton.TAG).prepend(hiddenIcon);
+    button.afterstyle.push((icon, button) => {
+      button.prepend(icon);
+    }, hiddenIcon);
+
     li.appendChild(button);
     this.nav.appendChild(li);
 
     li = null;
     button = null;
+    hiddenIcon = null;
   }
 
   select(task, { background = true } = {}) {

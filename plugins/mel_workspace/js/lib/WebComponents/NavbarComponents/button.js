@@ -182,6 +182,7 @@ export class WspNavigationButton extends NavBarComponent {
 
     this.onbuttonclick = new BnumEvent();
     this.oniconclicked = new BnumEvent();
+    this.afterstyle = new BnumEvent();
 
     this.onbuttonclick.push((e) => {
       this.dispatchEvent(
@@ -247,7 +248,9 @@ export class WspNavigationButton extends NavBarComponent {
       'click',
       this.onbuttonclick.call.bind(this.onbuttonclick),
     );
-    button.appendChild(this.createText(this.#text));
+    let span = document.createElement('span');
+    span.appendChild(this.createText(this.#text));
+    button.appendChild(span);
     button.setAttribute('wspbutton', 'navigation');
     button.style.justifyContent = 'left';
 
@@ -257,7 +260,7 @@ export class WspNavigationButton extends NavBarComponent {
       visibilityButton
         .data('start-pressed', this.#startingState)
         .appendChild(icon);
-      visibilityButton.classList.add('transparent-bckg');
+      visibilityButton.classList.add('transparent-bckg', 'visibility-icon');
       visibilityButton.setAttribute('id', this.visibilityButtonId);
       visibilityButton.ontoggle.push(
         this.oniconclicked.call.bind(this.oniconclicked),
@@ -291,8 +294,11 @@ export class WspNavigationButton extends NavBarComponent {
       visibilityButton = null;
     }
 
+    this.afterstyle.call(button, this);
+
     icon = null;
     button = null;
+    span = null;
   }
 }
 

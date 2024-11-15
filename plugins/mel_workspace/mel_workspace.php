@@ -116,8 +116,8 @@ class mel_workspace extends bnum_plugin
         $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
 
         $this->workspacePageLayout->fourthRow()->append(12, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda']));
-        $this->workspacePageLayout->setNavBarSetting('home', false, 0);
-        $this->workspacePageLayout->setNavBarSetting('calendar', true, 1);
+        $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
+        $this->workspacePageLayout->setNavBarSetting('calendar', 'calendar_month', true, 1);
 
         $this->rc()->output->add_handlers(array(
             'wsp.row.first'  => [$this, 'handler_get_row'],

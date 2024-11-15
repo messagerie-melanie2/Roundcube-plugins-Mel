@@ -480,7 +480,7 @@ $labels['req_guest'] = 'Participants obligatoires';
 $labels['error_empty_event_visio_room'] = 'Le nom de la visioconférence ne doit être vide !';
 $labels['error_too_small_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 10 charactères !';
 $labels['error_less_number_event_visio_room'] = 'Le nom de la visioconférence doit avoir au moins 3 chiffres !';
-$labels['unknown_error'] = 'Erruer inconnue !';
+$labels['unknown_error'] = 'Erreur inconnue !';
 $labels['error_empty_event_audio'] = 'Le numéro de téléphone ne doit être vide !';
 
 $labels['found_audio_date'] = 'Réserver une audio-conférence';

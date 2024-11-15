@@ -58,6 +58,9 @@ class Horde_Date_Recurrence
     /** Recurs monthly on the same date. */
     const RECUR_MONTHLY_DATE = 3;
 
+    /** Recurs monthly by the last day of month. */
+    const RECUR_MONTHLY_BYLASTDATE = 8;
+
     /** Recurs monthly on the same week day. */
     const RECUR_MONTHLY_WEEKDAY = 4;
 
@@ -119,6 +122,13 @@ class Horde_Date_Recurrence
      * @var integer
      */
     public $recurNthDay = null;
+
+    /**
+     * BYMONTHDAY recurrence number
+     *
+     * @var integer
+     */
+    public $recurNthMonthday = null;
 
     /**
      * BYMONTH recurrence data
@@ -215,6 +225,26 @@ class Horde_Date_Recurrence
     }
 
     /**
+     * PAMELA
+     * 
+     * @param integer $nthDay The nth monthday to repeat events on
+     */
+    public function setRecurNthMonthday($nth)
+    {
+        $this->recurNthMonthday = (int)$nth;
+    }
+
+    /**
+     * PAMELA
+     * 
+     * @return integer  The nth monthday to repeat events.
+     */
+    public function getRecurNthMonthday()
+    {
+        return isset($this->recurNthMonthday) ? $this->recurNthMonthday : $this->start->mday;
+    }
+
+    /**
      * Specifies the months for yearly (weekday) recurrence
      *
      * @param array $months  List of months (integers) this event recurs on.
@@ -293,6 +323,7 @@ class Horde_Date_Recurrence
         case self::RECUR_WEEKLY:
             return Horde_Date_Translation::t("Weekly");
         case self::RECUR_MONTHLY_DATE:
+        case self::RECUR_MONTHLY_BYLASTDATE:
         case self::RECUR_MONTHLY_WEEKDAY:
             return Horde_Date_Translation::t("Monthly");
         case self::RECUR_YEARLY_DATE:
@@ -570,8 +601,15 @@ class Horde_Date_Recurrence
             }
             break;
 
+        case self::RECUR_MONTHLY_BYLASTDATE:
         case self::RECUR_MONTHLY_DATE:
             $start = clone $this->start;
+
+             // PAMELA - 	0007815: Rajouter la possibilté de créer des évènements pour le dernier jour du mois
+            if (self::RECUR_MONTHLY_BYLASTDATE == $this->getRecurType() 
+                || isset($this->recurNthMonthday)) {
+              $start->mday = '1';
+            }
             if ($after->compareDateTime($start) < 0) {
                 $after = clone $start;
             } else {
@@ -581,8 +619,9 @@ class Horde_Date_Recurrence
             // If we're starting past this month's recurrence of the event,
             // look in the next month on the day the event recurs.
             if ($after->mday > $start->mday) {
-                ++$after->month;
+                // PAMELA - Fix 0007820: Les évènements récurrents ne s'affichent pas pour le dernier jour du mois
                 $after->mday = $start->mday;
+                ++$after->month;
             }
 
             // Adjust $start to be the first match.
@@ -608,6 +647,38 @@ class Horde_Date_Recurrence
                     return false;
                 }
                 if ($start->isValid()) {
+                    // PAMELA - 	0007815: Rajouter la possibilté de créer des évènements pour le dernier jour du mois 
+                    if (self::RECUR_MONTHLY_BYLASTDATE == $this->getRecurType()) {
+                        $nthDay = $this->getRecurNthWeekday();
+                        if ($nthDay !== -1) {
+                            $start->mday = $nthDay;
+                        }
+                        else {
+                            $start->mday = Horde_Date_Utils::daysInMonth($start->month, $start->year);
+                        }
+                    }
+                    // PAMELA - Gestion du jour de récurrence mensuel
+                    else if (isset($this->recurNthMonthday)) {
+                        $last_day = Horde_Date_Utils::daysInMonth($start->month, $start->year);
+                        if ($this->recurNthMonthday < 0) {
+                            $start->mday = $last_day;
+                            $start->mday += $this->recurNthMonthday + 1;
+                        }
+                        else if ($this->recurNthMonthday > $last_day) {
+                            $start->mday = $this->recurNthMonthday;
+                            $start->mday = $this->recurNthMonthday;
+                        }
+                        else {
+                            $start->mday = $this->recurNthMonthday;
+                        }
+                    }
+
+                    // Bail if we've gone past the end of recurrence.
+                    if ($this->hasRecurEnd() &&
+                            $this->recurEnd->compareDateTime($start) < 0) {
+                        return false;
+                    }
+
                     return $start;
                 }
 
@@ -706,7 +777,7 @@ class Horde_Date_Recurrence
 
             // We've gone past the end of recurrence; give up.
             if ($this->recurCount &&
-                $offset >= $this->recurCount) {
+                $offset >= $this->recurCount * /* PAMELA */ $this->recurInterval) {
                 return false;
             }
             if ($this->hasRecurEnd() &&
@@ -1214,11 +1285,22 @@ class Horde_Date_Recurrence
                 if (isset($rdata['BYDAY'])) {
                     $this->setRecurType(self::RECUR_MONTHLY_WEEKDAY);
                     if (preg_match('/(-?[1-4])([A-Z]+)/', $rdata['BYDAY'], $m)) {
+                       // PAMELA - 	0007815: Rajouter la possibilté de créer des évènements pour le dernier jour du mois
+                      if ($m[2] === 'LD') {
+                        $this->setRecurType(self::RECUR_MONTHLY_BYLASTDATE);
+                        $this->setRecurNthWeekday($m[1]);
+                      } else {                        
                         $this->setRecurOnDay($maskdays[$m[2]]);
                         $this->setRecurNthWeekday($m[1]);
+                      }
                     }
                 } else {
                     $this->setRecurType(self::RECUR_MONTHLY_DATE);
+
+                    // PAMELA - BYMONTHDAY
+                    if (isset($rdata['BYMONTHDAY'])) {
+                        $this->setRecurNthMonthday(intval($rdata['BYMONTHDAY']));
+                    }
                 }
                 break;
 

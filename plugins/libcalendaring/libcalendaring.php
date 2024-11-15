@@ -920,6 +920,9 @@ class libcalendaring extends rcube_plugin
                     $monthdays .= $d % 7 ? ' ' : html::br();
                 }
 
+                // PAMELA
+                $monthdays .= html::label(array('class' => 'monthday'), $checkbox->show('', array('value' => -1)) . $this->rc->gettext('last'));
+
                 // rule selectors
                 $radio = new html_radiobutton(array('name' => 'repeatmode', 'class' => 'edit-recurrence-monthly-mode'));
                 $table = new html_table(array('cols' => 2, 'border' => 0, 'cellpadding' => 0, 'class' => 'formtable'));

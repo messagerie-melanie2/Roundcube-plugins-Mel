@@ -136,7 +136,6 @@ export class Forum extends MelObject {
     }
 
     deletePost(post_uid, event) {
-      debugger;
       event.preventDefault();
       event.stopPropagation();
   
@@ -154,7 +153,6 @@ export class Forum extends MelObject {
           processData: false,
           contentType: false,
           on_success: (response) => {
-            debugger;
               const parsedResponse = JSON.parse(response);
   
               if (parsedResponse.status === 'success') {

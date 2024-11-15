@@ -105,7 +105,7 @@ export class create_or_edit_post extends MelObject {
     // gestion du bouton sauvegarder
     saveButton() {
         $('#submit-post').click(() => {
-            this.post_id = this.get_env('post').id
+            this.post_id = this.get_env('post').id;
             this.http_internal_post(
                 {
                     task: 'forum',

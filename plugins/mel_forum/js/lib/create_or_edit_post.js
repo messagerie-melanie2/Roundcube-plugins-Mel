@@ -5,6 +5,8 @@ import { MelDialog, DialogPage, RcmailDialogButton } from "../../../mel_metapage
 export class create_or_edit_post extends MelObject {
     constructor() {
         super();
+
+        this.post_id = rcmail.env.post_id;    // Initialisation de `post_id` depuis l'environnement
     }
 
     main() {
@@ -103,6 +105,7 @@ export class create_or_edit_post extends MelObject {
     // gestion du bouton sauvegarder
     saveButton() {
         $('#submit-post').click(() => {
+            this.post_id = this.get_env('post').id
             this.http_internal_post(
                 {
                     task: 'forum',
@@ -114,6 +117,7 @@ export class create_or_edit_post extends MelObject {
                         _uid: this.post_uid,
                         _settings: JSON.stringify({extwin: $('#rcmfd_message_extwin')[0].checked, comments: $('#enable_comment')[0].checked}),
                         _tags: this.tags,
+                        _post_id: this.post_id,
                     },
                     processData: false,
                     contentType: false,
@@ -143,7 +147,7 @@ export class create_or_edit_post extends MelObject {
     }
 
     addImageDialog() {
-        debugger;
+        this.post_id = this.get_env('post').id;
         // cacher la pop up de tiny mce le temps de faire le traitement avec notre modale 
         $('.tox-dialog-wrap').css("display","none");
         let dialog;

@@ -295,6 +295,17 @@ class mel_forum extends bnum_plugin
         return $content;
     }
 
+    /**
+     * Gère la création ou la modification d'un article.
+     *
+     * Cette fonction initialise l'éditeur HTML et détermine si un nouvel article 
+     * doit être créé ou si un article existant doit être modifié, en fonction de 
+     * l'UID fourni. Elle assure également la validation des permissions, 
+     * le chargement ou la sauvegarde des données de l'article, et prépare 
+     * les données pour le frontend.
+     *
+     * @return void
+     */
     public function create_or_edit_post()
     {
         $this->rc()->html_editor();
@@ -824,6 +835,7 @@ class mel_forum extends bnum_plugin
     private function _add_post()
     {
         // récupérer les valeurs des champs POST
+        $post_id = intval(rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST));
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
         $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST, true);
@@ -839,7 +851,7 @@ class mel_forum extends bnum_plugin
         }
 
         // Détecter et sauvegarder les images en base64 dans le contenu
-        $content = $this->process_base64_images($content, $uid);
+        $content = $this->process_base64_images($content, $post_id);
 
         //Créer un nouvel Article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
@@ -2068,7 +2080,20 @@ class mel_forum extends bnum_plugin
         exit;
     }
 
-    // Fonction pour traiter les images base64 et les convertir en URL
+    /**
+     * Traite les images encodées en base64 dans le contenu, les enregistre, 
+     * et remplace les données base64 par les URL correspondantes.
+     *
+     * Cette fonction parcourt le contenu fourni pour détecter les images 
+     * intégrées sous forme de données base64, les enregistre à un emplacement 
+     * associé à l'ID du post donné, et remplace les balises `<img>` contenant 
+     * des données base64 par des balises `<img>` avec les URLs des images sauvegardées.
+     *
+     * @param string $content Le contenu HTML contenant des images encodées en base64.
+     * @param int    $post_id L'ID du post auquel associer les images sauvegardées.
+     * 
+     * @return string Le contenu mis à jour avec les images base64 remplacées par des URLs.
+     */
     private function process_base64_images($content, $post_id)
     {
         // Expression régulière pour trouver toutes les balises <img src="data:image/">
@@ -2085,8 +2110,8 @@ class mel_forum extends bnum_plugin
             $imageSaved = $this->save_image($post_id, $fullBase64Data);  // Passer les données complètes à la fonction
 
             if ($imageSaved) {
-                // Remplacer le src base64 par une URL dynamique de l'image basée sur l'ID
-                $imageUrl = $this->url('forum', ['action' => 'view_image', 'id' => $imageSaved]);
+                // Utiliser la fonction get_image_url pour générer l'URL de l'image
+                $imageUrl = $this->get_image_url($imageSaved);
                 $content = str_replace($img[0], '<img src="' . $imageUrl . '"', $content);
             }
         }
@@ -2094,7 +2119,19 @@ class mel_forum extends bnum_plugin
         return $content;
     }
 
-
+    /**
+     * Enregistre une image associée à un post, avec ses données encodées.
+     *
+     * Cette fonction valide les données fournies, crée une nouvelle image 
+     * associée à l'ID du post donné, et tente de la sauvegarder. 
+     * Si la sauvegarde réussit, l'UID de l'image est retourné pour permettre 
+     * la génération d'une URL associée.
+     *
+     * @param int    $post_id L'ID du post auquel associer l'image.
+     * @param string $data    Les données de l'image encodées en base64.
+     * 
+     * @return string|false L'UID de l'image en cas de succès, ou false en cas d'échec.
+     */
     public function save_image($post_id, $data)
     {
         // Validation des données saisies
@@ -2106,7 +2143,7 @@ class mel_forum extends bnum_plugin
         // Créer une nouvelle image
         $image = new LibMelanie\Api\Defaut\Posts\Image();
         $image->uid = $this->generateRandomString(24);
-        $image->post = $post_id;
+        $image->post_id = $post_id;
         $image->data = $data;
 
         // Sauvegarde de l'image

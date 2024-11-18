@@ -5,10 +5,17 @@ import { MelDialog, DialogPage, RcmailDialogButton } from "../../../mel_metapage
 export class create_or_edit_post extends MelObject {
     constructor() {
         super();
+
+        this.post_id = rcmail.env.post_id;    // Initialisation de `post_id` depuis l'environnement
     }
 
     main() {
         super.main();
+
+        let post = this.get_env('post');
+
+        this.post_id = post.id;
+
         $("#reset-title-button").click(() => {
             $("#edit-title").val('');
         });
@@ -16,7 +23,7 @@ export class create_or_edit_post extends MelObject {
             window.location.href = this.url('forum',{action:'index'});
         });
  
-        let post = this.get_env('post');
+        
         let config = rcmail.env.editor_config;
         config.mode = 'forum';
         rcmail.addEventListener('editor-init',(args)=> {
@@ -32,7 +39,7 @@ export class create_or_edit_post extends MelObject {
         };
         $("#edit-title").val(post.title);
         this.post_uid = post.uid;
-        this.tags = [];
+        this.tags = post.tags || [];
         //TODO récupérer le workspaces via l'url ou le post
         this.workspace = 'workspace-test';
         this.displayTags();
@@ -44,6 +51,7 @@ export class create_or_edit_post extends MelObject {
 
     //affiche les tags
     displayTags() {
+        $('.tag-list').empty(); // Vide la liste de tags existante avant d'ajouter les nouveaux tags
         for(var tag of this.tags) {
             let html = JsHtml.start
                     .span({class: 'tag', tabindex: 0}).text(`#${tag}`).span({class: 'icon-remove-tag'}).end().end();
@@ -96,6 +104,7 @@ export class create_or_edit_post extends MelObject {
     // gestion du bouton sauvegarder
     saveButton() {
         $('#submit-post').click(() => {
+            this.post_id = this.get_env('post').id;
             this.http_internal_post(
                 {
                     task: 'forum',
@@ -107,14 +116,19 @@ export class create_or_edit_post extends MelObject {
                         _uid: this.post_uid,
                         _settings: JSON.stringify({extwin: $('#rcmfd_message_extwin')[0].checked, comments: $('#enable_comment')[0].checked}),
                         _tags: this.tags,
+                        _post_id: this.post_id,
                     },
                     processData: false,
                     contentType: false,
                     on_success: () => {
                         console.log('succès');
+                        let postUid = this.post_uid;
+                        // TODO Voir autre solution pour obtenir l'url
+                        window.location.href = this.url('forum', {action:'post'}) + `&_uid=${postUid}` ;
                     },
                     on_error: (err) => {
                         console.log('Erreur d\'enregistrement');
+                        window.location.href = this.url('forum', {action:'index'});
                     }
                 }
             );
@@ -122,23 +136,8 @@ export class create_or_edit_post extends MelObject {
     }
     cancelButton() {
         $('#cancel-post').click(() => {
-            this.http_internal_post(
-                {
-                    task: 'forum',
-                    action: 'delete_post',
-                    params: {
-                        _uid: this.post_uid,
-                    },
-                    processData: false,
-                    contentType: false,
-                    on_success: () => {
-                        window.location.href = this.url('forum', {action:'index'});
-                    },
-                    on_error: (err) => {
-                        console.log('Erreur d\'enregistrement');
-                    }
-                }
-            );
+            // Redirige directement vers la page d'accueil sans suppression
+            window.location.href = this.url('forum', {action: 'index'});
         });
     }
 
@@ -147,6 +146,7 @@ export class create_or_edit_post extends MelObject {
     }
 
     addImageDialog() {
+        this.post_id = this.get_env('post').id;
         // cacher la pop up de tiny mce le temps de faire le traitement avec notre modale 
         $('.tox-dialog-wrap').css("display","none");
         let dialog;
@@ -175,7 +175,7 @@ export class create_or_edit_post extends MelObject {
                                     {
                                         task: 'forum',
                                         action: 'upload_image',
-                                        params: {_file: fileReader.result, _post_id: 2}, 
+                                        params: {_file: fileReader.result, _post_id: this.post_id}, 
                                         processData: false, // Empêche jQuery de traiter les données
                                         contentType: false, // Empêche jQuery d'ajouter des headers incorrects
                                         on_success: (data) => {
@@ -209,4 +209,5 @@ export class create_or_edit_post extends MelObject {
         dialog.show();
         this.dialog = dialog;
     }
+    
 }

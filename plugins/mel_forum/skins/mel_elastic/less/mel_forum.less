@@ -45,11 +45,6 @@
     align-items: center;
   }
 
-  .post-header {
-    // padding: 10px;
-    /* Ajustez le padding selon vos besoins */
-  }
-
   .header-content {
     display: flex;
     align-items: center;
@@ -680,11 +675,82 @@
       }
 
       .post-actions {
+        position: relative;
+        display: flex;
+        align-items: center;
         i {
           font-size: 24px;
           font-variation-settings: 'wght' 300;
           &:hover {
             font-variation-settings: 'wght' 300, 'FILL' 1;
+          }
+        }
+        .icon {
+          color: var(--forum-active-text-color);
+          
+          &::before {
+            font-family: 'Material Symbols Outlined';
+            content: attr(data-icon);
+            font-size: 24px;
+            font-variation-settings: 'wght' 300;
+            display: inline-block;
+            vertical-align: middle;
+            color: inherit;
+          }
+        }
+      
+        .more_action {
+          display: flex;
+          align-items: center;
+          padding: 6px;
+          border-radius: 5px;
+          transition: background-color 0.3s ease, color 0.3s ease;
+          margin-right: 3px;
+      
+          &:hover {
+            background-color: var(--hover-background-color);
+            cursor: pointer;
+            
+            .icon::before {
+              font-variation-settings: 'wght' 400, 'FILL' 1;
+              color: var(--forum-hover-text-color);
+            }
+          }
+      
+          &.active .icon::before {
+            font-variation-settings: 'FILL' 1;
+          }
+        }
+
+        .forum-post-context-menu {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 5px;
+          position: absolute;
+          bottom: -50px;
+          left: -171px; // Ajustement de la position vers la gauche
+          transform: translateX(-10px); // Ajustement supplémentaire vers la gauche
+          width: 198px;
+          height: 60px;
+          border-radius: 10px;
+          background-color: var(--bureau-card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          z-index: 200;
+        
+          .post-options-button {
+            display: flex;
+            align-items: center;
+            border: none;
+            outline: none;
+            background-color: var(--bureau-card-background-color); // même couleur de fond
+            cursor: pointer;
+            color: inherit; // conserver la couleur du texte du parent
+            border-radius: 5px;
+        
+            &:hover {
+              background-color: rgba(0, 0, 0, 0.05); // légère modification au survol
+            }
           }
         }
       }
@@ -702,7 +768,7 @@
       }
     }
 
-    .post-image img {
+    .post-image {
       max-width: 150px;
       max-height: 150px;
       border-radius: 5px;

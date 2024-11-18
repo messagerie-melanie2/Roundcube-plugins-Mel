@@ -301,40 +301,114 @@ class mel_forum extends bnum_plugin
         return $content;
     }
 
+    /**
+     * Gère la création ou la modification d'un article.
+     *
+     * Cette fonction initialise l'éditeur HTML et détermine si un nouvel article 
+     * doit être créé ou si un article existant doit être modifié, en fonction de 
+     * l'UID fourni. Elle assure également la validation des permissions, 
+     * le chargement ou la sauvegarde des données de l'article, et prépare 
+     * les données pour le frontend.
+     *
+     * @return void
+     */
     public function create_or_edit_post()
     {
         $this->rc()->html_editor();
-        // $this->rc()->output->set_env($workspace_uid);
         $this->load_script_module('create_or_edit_post');
-        // $this->rc()->output->add_handlers(array('create_or_edit_post' => array($this, 'create_or_edit_post')));
-        //Créer un nouvel Article
+
+        // Récupérer l'UID pour déterminer s'il s'agit d'une création ou d'une modification
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET);
+
+        // Initialisation de la variable de post et du mode édition
         $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $is_editing = false;
 
-        //Définition des propriétés de l'article
-        $post->title = '';
-        $post->summary = '';
-        $post->content = '';
-        $post->uid = $this->generateRandomString(24);
-        $post->created = date('Y-m-d H:i:s');
-        $post->modified = date('Y-m-d H:i:s');
-        $post->creator = driver_mel::gi()->getUser()->uid;
-        $post->settings = '';
-        $post->workspace = $this->get_input('_wsp_uid');
-        //TODO supprimer 
-        $post->workspace = 'un-espace-2';
+        // Récupérer l'utilisateur
+        $user = driver_mel::gi()->getUser();
+        $current_user_uid = $user->uid;
 
-        // Sauvegarde de l'article
-        $ret = $post->save();
-        if (!is_null($ret)) {
-            $post->load();
-            $post_data = ['title' => $post->title, 'content' => $post->content, 'uid' => $post->uid, 'creator' => $post->creator, 'settings' => $post->settings, 'workspace' => $post->workspace, 'id' => $post->id];
-            $this->rc()->output->set_env('post', $post_data);
-        } else {
-            return false;
+        if ($uid) {
+            // Mode édition : assigner l'UID et charger l'article existant
+            $post->uid = $uid;
+            if ($post->load()) {  // Charger les données de l'article existant
+                $is_editing = true;
+
+                // Vérifier si l'utilisateur connecté est bien le créateur de l'article
+                if ($post->creator !== $current_user_uid) {
+                    echo json_encode(['status' => 'error', 'message' => 'Seul le créateur de cet article peut le modifier.']);
+                    exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
+                }
+
+                // Récupérer les Tags liés au post
+                $tags = $this->get_all_tags_bypost($post->uid);
+            } else {
+                // Si l'UID est fourni mais l'article n'existe pas, renvoyer une erreur
+                return false;
+            }
         }
 
+        if (!$is_editing) {
+            // Mode création : initialiser un nouvel article avec des valeurs par défaut
+            $post->title = '';
+            $post->content = '';
+            $post->summary = $this->create_summary_from_content($post->content);
+            $post->uid = $this->generateRandomString(24);
+            $post->modified = date('Y-m-d H:i:s');
+            $post->creator = driver_mel::gi()->getUser()->uid;
+            $post->settings = '';
+            $post->workspace = $this->get_input('_wsp_uid');
+            // TODO : supprimer cette ligne de test si besoin
+            $post->workspace = 'un-espace-2';
+
+            // Sauvegarde initiale du nouvel article
+            $ret = $post->save();
+            if (is_null($ret)) {
+                return false; // Retourner false si la sauvegarde échoue
+            }
+            $post->load(); // Charger les données de l'article créé
+        } else {
+            // Mode édition : mettre à jour les propriétés de l'article existant
+            $title = $post->title;
+            $content = $post->content;
+            $summary = $post->summary;
+            $settings = $post->settings;
+
+            // Définir les nouvelles propriétés de l'article
+            $post->title = $title;
+            $post->summary = $this->create_summary_from_content($content);
+            $post->content = $content;
+            $post->settings = $settings;
+            $post->modified = date('Y-m-d H:i:s');
+            $post->user_uid = driver_mel::gi()->getUser()->uid;
+
+            // Sauvegarde de l'article modifié
+            $ret = $post->save();
+            if (is_null($ret)) {
+                return false; // Retourner false si la sauvegarde échoue
+            }
+            $post->load(); // Recharger les données mises à jour de l'article
+        }
+
+        // Préparer les données de l'article pour le frontend
+        $post_data = [
+            'title' => $post->title,
+            'summary' => $post->summary,
+            'content' => $post->content,
+            'uid' => $post->uid,
+            'creator' => $post->creator,
+            'tags' => $tags,
+            'settings' => $post->settings,
+            'workspace' => $post->workspace,
+            'id' => $post->id
+        ];
+        $this->rc()->output->set_env('post', $post_data);
+        $this->rc()->output->set_env('is_editing', $is_editing);
+
+        // Envoyer le template approprié
         $this->rc()->output->send('mel_forum.create-post');
     }
+
 
     /**
      * Génère une chaîne de caractères aléatoire d'une longueur spécifiée.
@@ -359,21 +433,32 @@ class mel_forum extends bnum_plugin
     /**
      * Crée un résumé à partir du contenu fourni.
      *
-     * Cette fonction supprime les balises HTML du contenu, extrait les phrases 
-     * en utilisant des délimiteurs de phrase, et retourne les deux premières phrases 
-     * sous forme de résumé.
+     * Cette fonction extrait les deux premières phrases du contenu, en ignorant
+     * les balises images et en supprimant les espaces inutiles avant le texte.
      *
-     * @param string $content Le contenu à partir duquel le résumé est créé.
+     * @param string $content Le contenu HTML complet.
      * @return string Le résumé généré à partir des deux premières phrases du contenu.
      */
     private function create_summary_from_content($content)
     {
-        // Suppression des balises HTML pour éviter des erreurs d'extraction
+        // Suppression des balises <img> pour ne pas les prendre en compte
+        $content = preg_replace('/<img[^>]*>/i', '', $content);
+
+        // Suppression des balises HTML restantes pour ne garder que le texte brut
         $content = strip_tags($content);
+
+        // Suppression des espaces inutiles (espaces multiples, tabulations, retours à la ligne)
+        $content = preg_replace('/\s+/', ' ', $content);
+
+        // Supprimer les espaces en début et fin de chaîne
+        $content = trim($content);
+
         // Extraction des phrases en utilisant un délimiteur de phrase
-        $sentences = preg_split('/(\. |\? |\! )/', $content);
-        // Prend les deux premières phrases
+        $sentences = preg_split('/(\. |\? |\! )/', $content, -1, PREG_SPLIT_NO_EMPTY);
+
+        // Prendre les deux premières phrases
         $summary = implode('. ', array_slice($sentences, 0, 2));
+
         return $summary;
     }
 
@@ -577,7 +662,7 @@ class mel_forum extends bnum_plugin
     private function save_post_history($post, $user_uid, $new_data)
     {
         // Charger l'historique actuel
-        $history = json_decode($post->history, true);
+        $history = $post->history;
         if (!is_array($history)) {
             $history = [];
         }
@@ -586,6 +671,13 @@ class mel_forum extends bnum_plugin
         $modified_fields = [];
         foreach ($new_data as $field => $new_value) {
             $old_value = $post->$field;
+
+            // Vérifier si le champ est `settings` et normaliser pour comparaison
+            if ($field === 'settings') {
+                // Encoder l'ancien tableau en JSON pour le comparer à la nouvelle chaîne
+                $old_value = json_encode($old_value);
+            }
+
             if ($old_value !== $new_value) {
                 $modified_fields[] = $field;
             }
@@ -593,6 +685,7 @@ class mel_forum extends bnum_plugin
 
         // Si des champs ont été modifiés, ajouter une seule entrée à l'historique
         if (!empty($modified_fields)) {
+            // Ajouter l'entrée à l'historique
             $history[] = [
                 'field' => $modified_fields,
                 'user_id' => $user_uid,
@@ -600,9 +693,19 @@ class mel_forum extends bnum_plugin
             ];
         }
 
+        // Supprimer les éléments `null` dans l'historique
+        $history = array_filter($history, function ($entry) {
+            return !is_null($entry);
+        });
+
+        // Réindexer l'historique (supprime les indices vides)
+        $history = array_values($history);
+
         // Enregistrer l'historique mis à jour dans le champ `history`
         $post->history = json_encode($history);
+        $post->save();
     }
+
 
     /**
      * Supprime un article existant en fonction de l'UID fourni.
@@ -611,6 +714,7 @@ class mel_forum extends bnum_plugin
     {
         // Récupérer l'utilisateur
         $user = driver_mel::gi()->getUser();
+        $current_user_uid = $user->uid;
 
         // Récupérer la valeur du champ POST
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
@@ -629,6 +733,12 @@ class mel_forum extends bnum_plugin
         if (!$post->load()) {
             echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
             exit;
+        }
+
+        // Vérifier si l'utilisateur connecté est bien le créateur de l'article
+        if ($post->creator !== $current_user_uid) {
+            echo json_encode(['status' => 'error', 'message' => 'Seul le créateur de cet article peut le supprimer.']);
+            exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
         }
 
         // Supprimer l'article
@@ -764,6 +874,7 @@ class mel_forum extends bnum_plugin
     private function _add_post()
     {
         // récupérer les valeurs des champs POST
+        $post_id = intval(rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST));
         $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
         $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
         $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST, true);
@@ -778,16 +889,28 @@ class mel_forum extends bnum_plugin
             return false;
         }
 
+        // Détecter et sauvegarder les images en base64 dans le contenu
+        $content = $this->process_base64_images($content, $post_id);
+
         //Créer un nouvel Article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
         $post->load();
 
+        // Préparer les nouvelles données pour l'historique
+        $new_data = [
+            'title' => $title,
+            'content' => $content,
+            'settings' => $settings
+        ];
+
+        // Enregistrer les modifications dans l'historique
+        $this->save_post_history($post, $post->user_uid, $new_data);
+
         //Définition des propriétés de l'article
         $post->title = $title;
         $post->summary = $summary;
         $post->content = $content;
-        $post->created = date('Y-m-d H:i:s');
         $post->modified = date('Y-m-d H:i:s');
         $post->creator = driver_mel::gi()->getUser()->uid;
         $post->settings = $settings;
@@ -1994,6 +2117,80 @@ class mel_forum extends bnum_plugin
     }
 
     /**
+     * Traite les images encodées en base64 dans le contenu, les enregistre, 
+     * et remplace les données base64 par les URL correspondantes.
+     *
+     * Cette fonction parcourt le contenu fourni pour détecter les images 
+     * intégrées sous forme de données base64, les enregistre à un emplacement 
+     * associé à l'ID du post donné, et remplace les balises `<img>` contenant 
+     * des données base64 par des balises `<img>` avec les URLs des images sauvegardées.
+     *
+     * @param string $content Le contenu HTML contenant des images encodées en base64.
+     * @param int    $post_id L'ID du post auquel associer les images sauvegardées.
+     * 
+     * @return string Le contenu mis à jour avec les images base64 remplacées par des URLs.
+     */
+    private function process_base64_images($content, $post_id)
+    {
+        // Expression régulière pour trouver toutes les balises <img src="data:image/">
+        preg_match_all('/<img src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/i', $content, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $img) {
+            $imageType = $img[1]; // Type de l'image (jpeg, png, etc.)
+            $base64Data = $img[2]; // Données en base64
+
+            // Reconstruire le préfixe de l'image
+            $fullBase64Data = "data:image/{$imageType};base64,{$base64Data}";
+
+            // Enregistrer l'image dans la base de données
+            $imageSaved = $this->save_image($post_id, $fullBase64Data);  // Passer les données complètes à la fonction
+
+            if ($imageSaved) {
+                // Utiliser la fonction get_image_url pour générer l'URL de l'image
+                $imageUrl = $this->get_image_url($imageSaved);
+                $content = str_replace($img[0], '<img src="' . $imageUrl . '"', $content);
+            }
+        }
+
+        return $content;
+    }
+
+    /**
+     * Enregistre une image associée à un post, avec ses données encodées.
+     *
+     * Cette fonction valide les données fournies, crée une nouvelle image 
+     * associée à l'ID du post donné, et tente de la sauvegarder. 
+     * Si la sauvegarde réussit, l'UID de l'image est retourné pour permettre 
+     * la génération d'une URL associée.
+     *
+     * @param int    $post_id L'ID du post auquel associer l'image.
+     * @param string $data    Les données de l'image encodées en base64.
+     * 
+     * @return string|false L'UID de l'image en cas de succès, ou false en cas d'échec.
+     */
+    public function save_image($post_id, $data)
+    {
+        // Validation des données saisies
+        if (empty($post_id) || empty($data)) {
+            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            return false;
+        }
+
+        // Créer une nouvelle image
+        $image = new LibMelanie\Api\Defaut\Posts\Image();
+        $image->uid = $this->generateRandomString(24);
+        $image->post_id = $post_id;
+        $image->data = $data;
+
+        // Sauvegarde de l'image
+        if ($image->save()) {
+            return $image->uid;  // Retourner l'UID de l'image pour créer une URL
+        }
+
+        return false;
+    }
+
+    /**
      * Récupère l'image associée à une publication spécifique.
      *
      * Cette fonction simule un appel à une API interne ou utilise une autre méthode 
@@ -2171,6 +2368,10 @@ class mel_forum extends bnum_plugin
                 "_uid" => $post->uid,
             ), true, true, true);
 
+            // Récupérer la première image du post et son URL
+            $first_image = $post->firstImage();
+            $image_url = $first_image ? $this->get_image_url($first_image->uid) : 'default_image_path.jpg';
+
             $posts_data[$post->uid] = [
                 'uid' => $post->uid,
                 'id' => $post->id,
@@ -2187,6 +2388,7 @@ class mel_forum extends bnum_plugin
                 'isliked' => $isliked,
                 'isdisliked' => $isdisliked,
                 'post_link' => $post_link,
+                'image_url' => $image_url,
             ];
         }
         return $posts_data;

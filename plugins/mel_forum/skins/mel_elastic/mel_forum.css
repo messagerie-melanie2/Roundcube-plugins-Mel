@@ -38,9 +38,6 @@
 .task-forum .align-items-center {
   align-items: center;
 }
-.task-forum .post-header {
-  /* Ajustez le padding selon vos besoins */
-}
 .task-forum .header-content {
   display: flex;
   align-items: center;
@@ -586,12 +583,77 @@
   align-items: center;
   margin-left: 5px;
 }
+.task-forum .post .post-header .post-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 .task-forum .post .post-header .post-actions i {
   font-size: 24px;
   font-variation-settings: 'wght' 300;
 }
 .task-forum .post .post-header .post-actions i:hover {
   font-variation-settings: 'wght' 300, 'FILL' 1;
+}
+.task-forum .post .post-header .post-actions .icon {
+  color: var(--forum-active-text-color);
+}
+.task-forum .post .post-header .post-actions .icon::before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-size: 24px;
+  font-variation-settings: 'wght' 300;
+  display: inline-block;
+  vertical-align: middle;
+  color: inherit;
+}
+.task-forum .post .post-header .post-actions .more_action {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-right: 3px;
+}
+.task-forum .post .post-header .post-actions .more_action:hover {
+  background-color: var(--hover-background-color);
+  cursor: pointer;
+}
+.task-forum .post .post-header .post-actions .more_action:hover .icon::before {
+  font-variation-settings: 'wght' 400, 'FILL' 1;
+  color: var(--forum-hover-text-color);
+}
+.task-forum .post .post-header .post-actions .more_action.active .icon::before {
+  font-variation-settings: 'FILL' 1;
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
+  position: absolute;
+  bottom: -50px;
+  left: -171px;
+  transform: translateX(-10px);
+  width: 198px;
+  height: 60px;
+  border-radius: 10px;
+  background-color: var(--bureau-card-background-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 200;
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background-color: var(--bureau-card-background-color);
+  cursor: pointer;
+  color: inherit;
+  border-radius: 5px;
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 .task-forum .post .post-content .post-title {
   font-weight: 600;
@@ -601,7 +663,7 @@
 .task-forum .post .post-content .post-summary {
   margin-top: 5px;
 }
-.task-forum .post .post-image img {
+.task-forum .post .post-image {
   max-width: 150px;
   max-height: 150px;
   border-radius: 5px;

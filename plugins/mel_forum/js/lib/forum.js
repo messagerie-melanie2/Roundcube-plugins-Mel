@@ -229,9 +229,106 @@ export class Forum extends MelObject {
         );
     }
 
-    /**
-     * Récupère les articles dans l'env et les affiche (utilisé pour le premier affichage du post)
-     */
+    toggleMenuPost(post_uid, event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        let selectContainer = $('#post-context-menu-' + post_uid);
+        let triggerButton = $('#trigger-' + post_uid); // Bouton more_vert
+
+        // Vérifier si le conteneur du menu existe
+    if (selectContainer.length) {
+        // Basculer l'affichage du conteneur
+        selectContainer.toggleClass('hidden');
+  
+        // Si le menu est visible, ajouter un écouteur pour détecter les clics extérieurs
+        if (!selectContainer.hasClass('hidden')) {
+          // Ajouter un écouteur de clic sur tout le document après un léger délai
+          setTimeout(() => {
+            $(document).on('click.menuOutside', function(event) {
+              // Vérifier si le clic est en dehors du menu et du bouton trigger
+              if (!$(event.target).closest(selectContainer).length && !$(event.target).closest(triggerButton).length) {
+                selectContainer.addClass('hidden');  // Masquer le menu
+                $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+              }
+            });
+  
+            // Ajouter un écouteur d'événements pour chaque bouton du menu
+            selectContainer.find('.post-options-button').on('click', function() {
+              selectContainer.addClass('hidden'); // Fermer le menu
+              $(document).off('click.menuOutside'); // Retirer l'écouteur après fermeture
+            });
+          }, 0);  // Délai de 0 pour que l'événement de clic sur le bouton soit géré en premier
+  
+          // Empêcher la propagation du clic sur le bouton trigger pour éviter la fermeture immédiate
+          triggerButton.off('click').on('click', function(event) {
+            event.stopPropagation(); // Empêche la propagation du clic vers l'écouteur du document
+          });
+  
+        } else {
+          // Si le menu est caché, retirer l'écouteur du document
+          $(document).off('click.menuOutside');
+        }
+      }
+    }
+
+    editPost(post_uid, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      // Rediriger vers la page d'édition avec l'UID du post
+      window.location.href = this.url('forum', { action: 'create_or_edit_post'}) + "&_uid=" + post_uid;
+    }
+
+    deletePost(post_uid, event) {
+      event.preventDefault();
+      event.stopPropagation();
+  
+      // Demander confirmation à l'utilisateur avant de supprimer
+      const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
+      if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
+  
+      // Envoi d'une requête HTTP pour supprimer le post
+      this.http_internal_post({
+          task: 'forum',
+          action: 'delete_post',
+          params: {
+              _uid: post_uid,
+          },
+          processData: false,
+          contentType: false,
+          on_success: (response) => {
+              const parsedResponse = JSON.parse(response);
+  
+              if (parsedResponse.status === 'success') {
+                  // Affichage du message de succès
+                  BnumMessage.DisplayMessage(
+                      parsedResponse.message || 'Le post a été supprimé avec succès.',
+                      eMessageType.Confirmation
+                  );
+  
+                  // Supprimer l'article de l'affichage
+                  const postElement = $('#post-' + post_uid);
+                  if (postElement.length > 0) {
+                      postElement.remove(); // Supprimer l'article du DOM
+                  }
+              } else {
+                  // Affichage du message d'erreur en cas d'échec
+                  BnumMessage.DisplayMessage(
+                      parsedResponse.message || 'Erreur lors de la suppression du post.',
+                      eMessageType.Error
+                  );
+              }
+          },
+          on_error: (err) => {
+              // Affichage du message d'erreur en cas de problème avec la requête
+              BnumMessage.DisplayMessage(
+                  'Erreur lors de la tentative de suppression du post.',
+                  eMessageType.Error
+              );
+          }
+      });
+    }
+
     initPostDisplay () {
         const posts = this.get_env('posts_data');
         this.displayPost(posts);
@@ -352,8 +449,8 @@ export class Forum extends MelObject {
                 UID: post.uid,
                 POST_TITLE: post.title,
                 POST_SUMMARY: post.summary,
-                POST_IMAGE: "lentilles",
-                // POST_COUNT_REACTION: post.reaction,
+                POST_IMAGE: post.image_url,
+                //POST_COUNT_REACTION: post.reaction,
                 POST_THUMB_UP: post.like_count,
                 POST_THUMB_DOWN: post.dislike_count,
                 POST_COMMENTS: post.comment_count,
@@ -368,7 +465,10 @@ export class Forum extends MelObject {
             .setData(data)
             .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid))
             .addEvent('#add_like-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'like', post.id, post.uid))
-            .addEvent('#add_dislike-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid));
+            .addEvent('#add_dislike-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid))
+            .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
+            .addEvent('.post-options-button.edit-post', 'click', this.editPost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
+            .addEvent('.post-options-button.delete-post', 'click', this.deletePost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());
@@ -387,4 +487,6 @@ export class Forum extends MelObject {
             this.offset ++;
         }
     }
+
+    
 }

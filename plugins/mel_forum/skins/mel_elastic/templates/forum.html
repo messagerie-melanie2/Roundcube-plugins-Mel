@@ -62,7 +62,7 @@
 </div>
 
 <template id="post_template">
-  <div class="row post">
+  <div class="row post" id="post-%%UID%%">
     <a class="post-card" href="%%POST_LINK%%">
       <div class="col-12">
         <div class="row">
@@ -80,7 +80,18 @@
                 </div>
               </div>
               <div class="post-actions">
-                <i class="more_action material-symbols-outlined" id="more-%%UID%%">more_vert</i>
+                <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button" title="Plus d'options"></span>
+                <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden">
+                  <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
+                  <button class="post-options-button edit-post" title="Modifier l'article" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%">
+                    <span class="icon material-symbols-outlined" data-icon="border_color"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">Modifier l'article</span>
+                  </button>
+                  <button class="post-options-button delete-post" title="Supprimer l'article" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%">
+                    <span class="icon material-symbols-outlined" data-icon="delete"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">Supprimer l'article</span>
+                  </button>
+                </div>
                 %%POST_FAVORITE%%
               </div>
             </div>
@@ -97,7 +108,7 @@
             </div>
           </div>
           <div class="col-12 col-md-4 col-xl-2">
-            <div class="post-image">%%POST_IMAGE%%</div>
+            <img src="%%POST_IMAGE%%" alt="Image de l'article" class="post-image">
           </div>
         </div>
         <div class="row">

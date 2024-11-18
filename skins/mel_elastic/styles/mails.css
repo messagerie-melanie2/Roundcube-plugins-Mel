@@ -53,6 +53,17 @@ html.layout-large .task-mail #layout-sidebar > .header {
 .task-mail.action-compose #layout #layout-content > .header span {
   color: var(--layout-content-header-text-color);
 }
+.task-mail.action-preview .ui.alert.boxinformation {
+  color: var(--box-information-text-color);
+  background-color: var(--box-information-background-color);
+}
+.task-mail.action-preview .calendar-agenda-preview .event-row.current {
+  color: var(--box-information-text-color);
+}
+.task-mail.action-preview .invitebox td.label,
+.task-mail.action-preview .invitebox .rsvp-status.hint {
+  color: var(--invitebox-label-text-color);
+}
 .task-mail #messagelist-content {
   background-color: var(--layout-content-background-color) !important;
 }

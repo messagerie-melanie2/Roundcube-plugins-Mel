@@ -231,6 +231,10 @@ class mel_addressbook extends rcube_addressbook
             
             $searchfields = array("name","firstname","lastname","email","email1","email2","id","birthday");
 
+            if(in_array('name', $fields)) {
+                $fields[] = 'nickname';
+            }
+
             if ($this->rc->action === 'export') $searchfields = '*';
 
             foreach($fields as $key => $field) {

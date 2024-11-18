@@ -215,6 +215,10 @@ ul.treelist li.selected > div > a,
 #barup-right-buttons button {
   color: var(--barup-icon-color) !important;
 }
+#barup-right-buttons button.abs-btn-save,
+#barup-right-buttons button.abs-btn-back {
+  color: var(--default-text-color) !important;
+}
 .barup-picture #barup-right-buttons button {
   --barup-icon-color: var(--barup-icon-color-picture);
 }

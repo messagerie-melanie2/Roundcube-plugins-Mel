@@ -63,6 +63,21 @@
 .task-forum .margin-right-15 {
   margin-right: 15px;
 }
+.task-forum .mel-search-group > input {
+  border-color: var(--searchbar-alternate-border-color);
+}
+.task-forum .mel-search-group .input-group-append > .input-group-text {
+  border-color: var(--searchbar-alternate-border-color);
+}
+.task-forum .mel-search-group .icon-mel-search {
+  border: 1px solid var(--searchbar-alternate-border-color);
+  border-bottom-right-radius: 15px;
+  border-top-right-radius: 15px;
+}
+.task-forum .mel-search-group .icon-mel-search:hover {
+  border-color: var(--popover-focus-border-color);
+  box-shadow: 0 0 0 0.2rem var(--secondary-focus);
+}
 .task-forum .forum-search-group {
   border-color: #363a5b;
   border-bottom-left-radius: 15px;

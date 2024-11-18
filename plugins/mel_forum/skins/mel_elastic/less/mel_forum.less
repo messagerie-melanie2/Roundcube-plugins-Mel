@@ -77,6 +77,26 @@
     margin-right: 15px;
   }
 
+  .mel-search-group {
+    &> input {
+      border-color: var(--searchbar-alternate-border-color);
+    }
+    .input-group-append {
+      &> .input-group-text {
+        border-color: var(--searchbar-alternate-border-color);
+      }
+    }
+    .icon-mel-search{
+      border: 1px solid var(--searchbar-alternate-border-color);
+      border-bottom-right-radius: 15px;
+      border-top-right-radius: 15px;
+      &:hover {
+        border-color: var(--popover-focus-border-color);
+        box-shadow: 0 0 0 0.2rem var(--secondary-focus);
+      }
+    }
+  }
+
   .forum-search-group {
     border-color: #363a5b;
     border-bottom-left-radius: 15px;

@@ -32,7 +32,6 @@ JsHtml.create_custom_tag = function (
 
     if (extend) config.extends = extend;
 
-    console.log('JSHTML TAG DEFINED :', tag, config);
     customElements.define(tag, already_existing_class ?? HtmlCustomTag, config);
 
     ret = true;

@@ -1,0 +1,184 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <div class="row return-header">
+      <div id="return-homepage" class="return" tabindex="0" role="button" title="Retour à la page des articles">
+        <i class="material-symbols-outlined">arrow_back</i>
+        <span class="ml-2">Articles</span>
+      </div>
+    </div>
+    <div class="row forum-header">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 text-center">
+            <h2 class="title">
+              <roundcube:object name="show_post_title" />
+            </h2>
+          </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center mt-3">
+          <div class="d-flex justify-content-center align-items-center">
+            <bnum-avatar  class="author-image" style="background-color: var(--mel-button-background-color);"></bnum-avatar>  
+            <div class="ml-2 author-infos">
+              <div class="author-name-custom ml-1">
+                <roundcube:object name="show_post_creator" />
+              </div>
+              <div class="d-flex justify-content-center align-items-center">
+                <i class="material-symbols-outlined">access_time</i>
+                <span class="ml-2">
+                  <roundcube:object name="show_post_date" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row forum-content">
+      <div class="col-12 col-md-10">
+        <div class="row custom-border-bottom my-4">
+          <roundcube:object name="show_post_tags" />
+        </div>
+        <div class="row">
+          <div id="post-content" class="post-content">
+            <roundcube:object name="show_post_content" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <roundcube:if condition="env:show_comments === true"/>
+    <div class="row forum-comment d-flex justify-content-center">
+      <div class="col-12 col-md-10">
+        <div class="row forum-comment-sort">
+          <div class="input-group mel-group">
+            <select title="Trier par : " id="forum-comment-select" class="form-control input-mel mel-input custom-select"
+              data-original-title="Trier par : ">
+              <option value="Plus récents">Plus récents</option>
+              <option value="date_asc">Plus anciens</option>
+              <option value="reactions">Plus de réactions</option>
+              <option value="replies">Plus de réponses</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row my-4 d-flex align-items-center">
+          <div class="col-auto pr-0">
+            <bnum-avatar  class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color);"></bnum-avatar>
+          </div>
+          <div class="col pl-0">
+            <textarea id="new-comment-textarea" class="forum-comment-input" placeholder="Ajouter un commentaire" rows="1"></textarea>
+          </div>
+          <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center" hidden>
+            <button
+              id="cancel-comment"
+              type="button"
+              class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"
+              data-dismiss="modal"
+            >
+              Annuler<span class="plus icon-mel-close"></span>
+            </button>
+            <button
+              id="submit-comment"
+              type="button"
+              class="modal-save-footer btn btn-secondary mel-button"
+            >
+              Sauvegarder<span class="plus icon-mel-arrow-right"></span>
+            </button>
+          </div>
+        </div>
+
+        <div id="comment-area"></div>
+
+
+        <template id="comment-template">
+          <div class="comment-container">
+
+            <div id="comment-id-%%UID%%" data-number-children="%%NUMBER_CHILDREN%%" class="row comment">
+              <div class="col-12">
+                <div class="forum-comment flex align-items-center">
+                  <bnum-avatar class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white" data-id="%%USER_ID%%" data-forceload="true"></bnum-avatar>
+                  <span class="forum-content-author">%%USER_NAME%%</span>
+                  <div class="forum-comment-date d-flex">
+                    <span class="icon" data-icon="access_time"></span>
+                    <span class="ml-1">%%COMMENT_DATE%%</span>
+                  </div>
+                </div>
+          
+                <div class="forum-comment-text" id="comment-text-%%UID%%">
+                  <p>%%COMMENT_CONTENT%%</p>
+                </div>
+          
+                <div class="forum-comment-edit hidden" id="edit-comment-%%UID%%">
+                  <textarea id="edit-comment-textarea-%%UID%%" class="forum-comment-input" rows="1">%%COMMENT_CONTENT%%</textarea>
+                  <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+                    <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler<span class="plus icon-mel-close"></span></button>
+                    <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder<span class="plus icon-mel-arrow-right"></span></button>
+                  </div>
+                </div>
+          
+                <div class="forum-comment-reactions">
+                  <div class="%%LIKE_CLASS%%" tabindex="0" role="button"  title="J'aime">
+                    <span class="icon material-symbols-outlined" data-like-uid="%%UID%%" data-icon="thumb_up"></span>
+                    <span class="ml-2">%%LIKES%%</span>
+                  </div>
+                  <div class="%%DISLIKE_CLASS%%" tabindex="0" role="button"  title="Je n'aime pas">
+                    <span class="icon material-symbols-outlined" data-dislike-uid="%%UID%%" data-icon="thumb_down"></span>
+                    <span class="ml-2">%%DISLIKES%%</span>
+                  </div>
+                  <div class="reaction-item mr-3 response" tabindex="0" role="button" title="Répondre au commentaire">
+                    <span class="icon" data-icon="mode_comment"></span>
+                    <span class="ml-2">répondre</span>
+                  </div>
+                  <div class="reaction-item">
+                    <span class="icon" data-icon="more_horiz" tabindex="0" role="button" title="Plus d'options"></span>
+                    <div id="context-menu-%%UID%%" class="forum-comment-context-menu hidden">
+                      <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du commentaire</h3>
+                      <button class="comment-options-button edit-comment" title="Modifier le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="modify_comment" data-id="%%UID%%">
+                        <span class="icon material-symbols-outlined" data-icon="border_color"></span>
+                        <span class="comment-options-text" style="margin-left: 8px;">Modifier le commentaire</span>
+                      </button>
+                      <button class="comment-options-button delete-comment" title="Supprimer le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="cancel_comment" data-id="%%UID%%">
+                        <span class="icon material-symbols-outlined" data-icon="delete"></span>
+                        <span class="comment-options-text" style="margin-left: 8px;">Supprimer le commentaire</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            
+          
+                <div id="reply-form-%%UID%%" class="row my-4 d-flex align-items-center hidden">
+                  <div class="col-auto pr-0">
+                    <div class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                      %%USER_INITIALS%%
+                    </div>
+                  </div>
+                  <div class="col pl-0" style="margin-bottom: 1rem;">
+                    <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>
+                  </div>
+                  <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
+                    <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler<span class="plus icon-mel-close"></span></button>
+                    <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder<span class="plus icon-mel-arrow-right"></span></button>
+                  </div>
+                </div>
+            
+                <div class="forum-comment-responses">
+                  %%RESPONSE_SECTION%%
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>      
+      </div>
+    </div>
+    <roundcube:endif/>
+  </div>
+</div>
+
+<roundcube:include file="includes/footer.html" />
+

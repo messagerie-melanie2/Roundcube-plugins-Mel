@@ -3640,6 +3640,7 @@ class mel_metapage extends bnum_plugin
         $data = null;
         $redirect = false;
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
+        $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
 
         if (rcube_utils::get_input_value('_no_data', rcube_utils::INPUT_GET)) {
             $img = $this->_generate_no_picture();
@@ -3649,7 +3650,7 @@ class mel_metapage extends bnum_plugin
             exit;
         }
 
-        if (!isset($email)) $email = driver_mel::gi()->getUser()->email;
+        if (!isset($email)) $email = driver_mel::gi()->getUser($id)->email;
         
         $plugin = $this->exec_hook('app.avatar', [
             'email' => $email,

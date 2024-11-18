@@ -1,0 +1,150 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <div class="row return-header d-flex justify-content-between mb-3">
+      <div class="return">
+      </div>
+      <div>
+        <button id="forum-button-add" class="mel-button btn btn-secondary">
+          <span class="add">Ajouter</span>
+          <span class="material-symbols-outlined">
+            add_circle
+          </span>
+        </button>
+      </div>
+    </div>
+    <div class="row forum-header">
+      <div class="input-group mel-search-group mel-centered">
+        <input id="post-search-input" type="text" class="form-control mel-max-width-500 input-mel">
+        <div class="input-group-append" role="button" id="post-search-button">
+          <span class="icon-mel-search input-group-text"></span>
+        </div>
+      </div>
+    </div>
+    <div class="row forum-sort">
+      <div>
+        <div class="input-group mel-group">
+          <select title="" id="forum-sort-select" class="form-control input-mel mel-input custom-select pretty-select"
+            data-original-title="Trier par : ">
+            <!-- A dynamiser en js -->
+            <option value="date_desc">Plus récents</option>
+            <option value="date_asc">Plus anciens</option>
+            <option value="comment_desc">Plus de commentaires</option>
+            <option value="comment_asc">Moins de commentaires</option>
+            <option value="reaction_desc">Plus de réactions</option>
+            <option value="reaction_asc">Moins de réactions</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-flex align-items-center">
+        <div class="d-flex justify-content-center align-items-center mr-2">
+          Afficher uniquement les favoris
+        </div>
+        <div class="custom-control custom-switch no-click-focus d-flex align-items-center">
+          <input name="favoris" id="display-fav-only" type="checkbox"
+            class="form-check-input custom-control-input no-click-focus">
+          <label for="display-fav-only" class="custom-control-label option-switch no-click-focus">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="row forum-content">
+      <div class="col-12">
+        <div id="post-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<template id="post_template">
+  <div class="row post" id="post-%%UID%%">
+    <a class="post-card" href="%%POST_LINK%%">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12">
+            <div class="post-header">
+              <div class="post-creator">
+                <img
+                  src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
+                  alt="Auteur Image"
+                  class="author-image"/>
+                <div class="post-creator-name">%%POST_CREATOR%%</div>
+                <div class="post-date">
+                  <i class="material-symbols-outlined">access_time</i
+                  ><span class="ml-1">%%POST_DATE%%</span>
+                </div>
+              </div>
+              <div class="post-actions">
+                <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button" title="Plus d'options"></span>
+                <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden">
+                  <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
+                  <button class="post-options-button edit-post" title="Modifier l'article" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%">
+                    <span class="icon material-symbols-outlined" data-icon="border_color"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">Modifier l'article</span>
+                  </button>
+                  <button class="post-options-button delete-post" title="Supprimer l'article" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%">
+                    <span class="icon material-symbols-outlined" data-icon="delete"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">Supprimer l'article</span>
+                  </button>
+                  <button class="post-options-button copy-post" title="Copier le lien de l'article" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link" data-id="%%UID%%">
+                    <span class="icon material-symbols-outlined" data-icon="content_copy"></span>
+                    <span class="post-options-text" style="margin-left: 8px;">Copier le lien de l'article</span>
+                  </button>
+                </div>
+                %%POST_FAVORITE%%
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-8 col-xl-10">
+            <div class="post-content">
+              <div class="post-tags" id="tag-area-%%UID%%"></div>
+      
+              <div class="post-title">%%POST_TITLE%%</div>
+      
+              <div class="post-summary">%%POST_SUMMARY%%</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4 col-xl-2">
+            <img src="%%POST_IMAGE%%" alt="Image de l'article" class="post-image">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="post-footer">
+              <div class="post-reaction">
+                <!-- <div id="add_reaction" class="reaction">
+                  <i class="material-symbols-outlined">add_reaction</i>
+                  <span class="ml-2">%%POST_COUNT_REACTION%%</span>
+                </div> -->
+                <div id="add_like-%%UID%%" class="like hoverable %%POST_IS_LIKED%%">
+                  <i class="material-symbols-outlined">thumb_up</i>
+                  <span class="ml-2">%%POST_THUMB_UP%%</span>
+                </div>
+                <div id="add_dislike-%%UID%%" class="dislike hoverable %%POST_IS_DISLIKED%%">
+                  <i class="material-symbols-outlined">thumb_down</i>
+                  <span class="ml-2">%%POST_THUMB_DOWN%%</span>
+                </div>
+                <div id="add_comment" class="comment">
+                  <i class="material-symbols-outlined">comment</i>
+                  <span class="ml-2">%%POST_COMMENTS%%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</template>
+<template id="tag_template">
+  <span class="tag tag-clickable tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%">%%TAG_NAME%%</span>
+</template>
+
+<roundcube:include file="includes/footer.html" />

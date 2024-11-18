@@ -1,6 +1,6 @@
 import { Cookie } from '../../../classes/cookies.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
-import { BnumEvent } from '../../../mel_events.js';
+import { BnumEvent, MelConditionnalEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
 import {
   EWebComponentMode,
@@ -335,6 +335,7 @@ class AvatarElement extends HtmlCustomTag {
      * @type {string}
      */
     this._email = null;
+    this._id = null;
     /**
      * Taille (de 0 à 100) de la balise.
      *
@@ -389,6 +390,7 @@ class AvatarElement extends HtmlCustomTag {
     });
 
     this.removeAttribute('data-email');
+    this.removeAttribute('data-id');
 
     if (this.dataset.f100) {
       this.setAttribute('data-force-size', '100');
@@ -600,8 +602,21 @@ class AvatarElement extends HtmlCustomTag {
     return this;
   }
 
-  static Create() {
-    return document.createElement('bnum-avatar');
+  /**
+   *
+   * @param {*} param0
+   * @returns {AvatarElement}
+   */
+  static Create({ id = null, email = null, force = null } = {}) {
+    let node = document.createElement('bnum-avatar');
+
+    if (email) node.setAttribute('data-email', email);
+
+    if (id) node.setAttribute('data-id', id);
+
+    if (force) node.setAttribute('data-forceload', true);
+
+    return node;
   }
 }
 

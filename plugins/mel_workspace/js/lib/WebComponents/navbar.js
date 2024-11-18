@@ -237,7 +237,7 @@ class WspNavBar extends HtmlCustomTag {
     let icon = BnumHtmlIcon.Create({ icon: 'keyboard_double_arrow_left' });
     button.appendChild(icon);
 
-    this.mainDiv.style.position = 'relative';
+    this.style.position = 'relative';
     this.mainDiv.appendChild(button);
     icon = null;
     button = null;

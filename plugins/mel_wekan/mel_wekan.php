@@ -445,7 +445,7 @@ class mel_wekan extends rcube_plugin
     public function workspace_services_set($args) {
         $key = array_search(mel_workspace::KEY_TASK, $args['services']);
 
-        if ($key) {
+        if (isset($key)) {
             /**
              * @var Workspace
              */
@@ -499,6 +499,20 @@ class mel_wekan extends rcube_plugin
                 $workspace->objects()->set(self::KEY_FOR_WORKSPACE, $object);
                 //$this->save_object($workspace, self::WEKAN, $object);
                 $args['default_values'] = $default_value;
+                $args['workspace'] = $workspace;
+            }
+            else {
+                foreach ($workspace->users() as $key => $value) {
+                    if (!$this->check_if_user_exist($board_id, $key))
+                    {
+                        try {
+                            $this->add_member($board_id, $value);
+                        } catch (\Throwable $th) {
+                            throw $th;
+                        }
+                    }
+                }
+
                 $args['workspace'] = $workspace;
             }
         }

@@ -812,7 +812,7 @@ class mel_useful_link extends bnum_plugin
 
       if ($key !== false) unset($services[$key]);
 
-      $workspace->objects()->set(self::KEY_LINK, []);
+      if ($workspace->objects()->get(self::KEY_LINK) === null) $workspace->objects()->set(self::KEY_LINK, []);
 
       $args['workspace'] = $workspace;
       $args['services'] = $services;

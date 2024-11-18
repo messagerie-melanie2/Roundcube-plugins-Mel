@@ -138,8 +138,11 @@ class Workspace {
     return new WorkspaceObject($this->_workspace);
   }
 
-  public function services() {
-    return $this->_workspace->objects;
+  public function services($toHave = false, $includeOnlyHave = false) {
+    if (!$toHave) return $this->_workspace->objects;
+    else {
+      return $this->objects()->convertToEnabled($includeOnlyHave);
+    }
   }
 
   public function isPublic($newState = DEFAULT_SYMBOL) {
@@ -258,6 +261,8 @@ class Workspace {
     foreach ($users as $userData) {
       $right = $userData['right'];
       $id = $userData['user'];
+
+      if (is_array($id)) $id = $id[0];
 
       $share = driver_mel::gi()->workspace_share([$this->_workspace]);
       $tmp_user = null;
@@ -493,6 +498,26 @@ class WorkspaceObject {
     }
 
     return $this;
+  }
+
+  public function convertToEnabledGenerator($includeOnlyHave = false) {
+    $objects = json_decode($this->_workspace->objects);
+
+    foreach ($objects as $key => $value) {
+      if (!$includeOnlyHave || ($includeOnlyHave && isset($value))) yield $key => isset($value);
+    }
+  }
+
+  public function convertToEnabled($includeOnlyHave = false) {
+    $return = [];
+    $objects = json_decode($this->_workspace->objects);
+
+    foreach ($objects as $key => $value) {
+      if ($includeOnlyHave && isset($value)) $return[] = $key;
+      else if (!$includeOnlyHave ) $return[$key] = isset($value);
+    }
+
+    return $return;
   }
 
   public function serialize() {

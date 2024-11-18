@@ -354,12 +354,13 @@ class mel_nextcloud extends rcube_plugin {
       $workspace = $args['workspace'];
       $services = $args['services'];
   
-      $search = array_search(mel_workspace::KEY_DRIVE, $services);
+      $search = array_search(mel_workspace::KEY_DRIVE, $services, true);
       $create_nc = $search !== false || ($workspace->objects()->get(mel_workspace::KEY_DRIVE) ?? false);
   
       driver_mel::gi()->workspace_group($workspace->uid(), $workspace->users_mail(), $create_nc);
   
-      $workspace->objects()->set(mel_workspace::KEY_DRIVE, $create_nc);
+      if ($create_nc) $workspace->objects()->set(mel_workspace::KEY_DRIVE, true);
+      else if ($workspace->objects()->get(mel_workspace::KEY_DRIVE) === true) $workspace->objects()->remove(mel_workspace::KEY_DRIVE);
 
       $args['workspace'] = $workspace;
 
@@ -377,17 +378,24 @@ class mel_nextcloud extends rcube_plugin {
 
   public function wsp_block($args) {
     if (class_exists('roundrive') && $args['workspace']->objects()->get(mel_workspace::KEY_DRIVE) !== null) {
-      $SIZE = 4;
-      $layout = $args['layout'];
-      $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);
-      $layout->secondRow()->append($SIZE, $html);
-      $layout->setNavBarSetting('stockage', 'folder_open', true, 2);
-      $args['layout'] = $layout;
-      unset($layout);
-
-      $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', 'js/workspace');
-
-      $this->include_stylesheet($this->local_skin_path() . '/workspace/workspace.nextcloud.css');
+      if ($args['workspace']->objects()->get(mel_workspace::KEY_DRIVE) === false)
+      {
+        $args['workspace']->objects()->remove(mel_workspace::KEY_DRIVE);
+        $args['workspace']->save();
+      }
+      else {
+        $SIZE = 4;
+        $layout = $args['layout'];
+        $html = $layout->htmlModuleBlock(['id' => 'module-nc', 'data-title' => 'Documents', 'data-button' => 'stockage']);
+        $layout->secondRow()->append($SIZE, $html);
+        $layout->setNavBarSetting('stockage', 'folder_open', true, 2);
+        $args['layout'] = $layout;
+        unset($layout);
+  
+        $args['plugin']->include_workspace_module('mel_nextcloud', 'module.js', 'js/workspace');
+  
+        $this->include_stylesheet($this->local_skin_path() . '/workspace/workspace.nextcloud.css');
+      }
     }
 
     return $args;

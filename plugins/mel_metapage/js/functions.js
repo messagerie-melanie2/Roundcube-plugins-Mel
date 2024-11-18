@@ -1363,7 +1363,7 @@ async function m_mp_CreateWorkSpace() {
         );
       }
 
-      for (const element of data.uncreated_services) {
+      for (const element of data?.uncreated_services ?? []) {
         if (element === 'tasks') {
           parent.rcmail.display_message(
             'La création du service "Kanban" n\'a pas été possible, le service des tâche a donc été désactivé et doit être activé manuellement.',

@@ -177,6 +177,22 @@ abstract class bnum_plugin extends rcube_plugin
         ));
     }
 
+    protected function redirect($task, $action = null, $params = null) {
+        $args = [
+            '_task' => $task
+        ];
+
+        if (isset($action)) $args['_action'] = $action;
+
+        if (isset($params) && count($params) > 0) {
+            foreach ($params as $key => $value) {
+                $args[$key] = $value;
+            }
+        }
+ 
+        $this->rc()->output->redirect($args);
+    }
+
     protected function is_bnum_task() {
         return $this->get_current_task() === 'bnum';
     }

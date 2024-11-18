@@ -152,6 +152,10 @@ class mel_forum extends bnum_plugin
             //gestion des réaction aux posts
             $this->register_action('manage_reaction', array($this, 'manage_reaction'));
         }
+        else if ($this->get_current_task() === 'workspace') {
+            $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
+            $this->add_hook('wsp.show', [$this, 'wsp_show']);
+        }
     }
 
     /**
@@ -3576,4 +3580,33 @@ class mel_forum extends bnum_plugin
         $data = $this->get_input_post('_showsidebar');
         $this->rc()->user->save_prefs(['display_tchap_sidebar' => $data]);
     }
+
+    #region Espaces des travail
+    public function workspace_services_set($args) {
+        $services = $args['services'];
+
+        if (array_search('forum', $services) !== null) {
+            $workspace = $args['workspace'];
+
+            if ($workspace->objects()->get('forum') === null) {
+                $workspace->objects()->set('forum', true);
+                $args['workspace'] = $workspace;
+            }
+        }
+
+        return $args;
+    } 
+
+    public function wsp_show($args) {
+        if ($args['workspace']->objects()->get('forum') !== null) {
+            $args['layout']->setNavBarSetting('forum', 'newspaper', true, 4);
+            $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news']));
+            $args['layout']->secondRow()->append(8, $args['layout']->htmlModuleBlock(['id' => 'module-forum-last']));
+
+            //$this->include_module('module_forum.js', 'js/workspaces');
+        }
+
+        return $args;
+    }
+    #endregion
 }

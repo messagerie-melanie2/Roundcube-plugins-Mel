@@ -2246,7 +2246,7 @@ $(document).ready(() => {
     return retour;
   }
 
-  function intercept_click(event) {
+  async function intercept_click(event) {
     var Enumerable = Enumerable || top.Enumerable;
 
     try {
@@ -2492,14 +2492,25 @@ $(document).ready(() => {
         } while (reloop);
 
         if (task !== null) {
-          top.mel_metapage.Functions.change_page(
-            task,
-            action,
-            othersParams === null ? {} : othersParams,
-            update,
-          ).then(() => {
-            if (after !== null) after();
-          });
+          // top.mel_metapage.Functions.change_page(
+          //   task,
+          //   action,
+          //   othersParams === null ? {} : othersParams,
+          //   update,
+          // ).then(() => {
+          //   if (after !== null) after();
+          // });
+          const {FramesManager} = await loadJsModule('mel_metapage', 'frame_manager', '/js/lib/classes/');
+
+          if (!!action && !othersParams?._action) {
+            othersParams ??= {};
+            othersParams._action = action;
+          }
+
+          await FramesManager.Instance.switch_frame(task, {args: othersParams});
+
+          if (after !== null) after();
+          
           rcmail.triggerEvent('intercept.click.ok', {
             task,
             action,

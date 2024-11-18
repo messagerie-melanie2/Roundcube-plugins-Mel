@@ -332,7 +332,8 @@ export class Forum extends MelObject {
     copyPostLink(event){
         event.preventDefault();
         event.stopPropagation();
-        navigator.clipboard.writeText(event.currentTarget.closest("a").getAttribute('href')).then(() => {
+        let url = event.currentTarget.closest("a").getAttribute('href').replaceAll("&_is_from=iframe", "&_force_bnum=1");
+        navigator.clipboard.writeText(url).then(() => {
             BnumMessage.DisplayMessage(
                 "Lien copié !",
                 eMessageType.Confirmation,

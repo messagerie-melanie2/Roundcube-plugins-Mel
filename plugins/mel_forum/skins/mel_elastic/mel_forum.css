@@ -632,14 +632,12 @@
   justify-content: center;
   padding: 5px;
   position: absolute;
-  bottom: -50px;
+  bottom: -75px;
   left: -171px;
   transform: translateX(-10px);
-  width: 198px;
-  height: 60px;
   border-radius: 10px;
   background-color: var(--bureau-card-background-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
   z-index: 200;
 }
 .task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button {
@@ -653,7 +651,7 @@
   border-radius: 5px;
 }
 .task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--hover-background-color);
 }
 .task-forum .post .post-content .post-title {
   font-weight: 600;

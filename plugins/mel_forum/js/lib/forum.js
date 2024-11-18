@@ -329,6 +329,17 @@ export class Forum extends MelObject {
       });
     }
 
+    copyPostLink(event){
+        event.preventDefault();
+        event.stopPropagation();
+        navigator.clipboard.writeText(event.currentTarget.closest("a").getAttribute('href')).then(() => {
+            BnumMessage.DisplayMessage(
+                "Lien copié !",
+                eMessageType.Confirmation,
+            );
+        });
+    }
+
     initPostDisplay () {
         const posts = this.get_env('posts_data');
         this.displayPost(posts);
@@ -455,7 +466,7 @@ export class Forum extends MelObject {
                 POST_THUMB_DOWN: post.dislike_count,
                 POST_COMMENTS: post.comment_count,
                 POST_FAVORITE: 
-                    MelHtml.start.tag('i',{id: 'favorite-'+post.uid, class:`hoverable favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
+                    MelHtml.start.tag('i',{id: 'favorite-'+post.uid, class:`hoverable icon favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
                 POST_IS_LIKED: post.isliked ? "filled" : "",
                 POST_IS_DISLIKED: post.isdisliked ? "filled" : "",
                 };
@@ -469,6 +480,7 @@ export class Forum extends MelObject {
             .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
             .addEvent('.post-options-button.edit-post', 'click', this.editPost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
             .addEvent('.post-options-button.delete-post', 'click', this.deletePost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
+            .addEvent('.post-options-button.copy-post', 'click', this.copyPostLink.bind(this))
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());

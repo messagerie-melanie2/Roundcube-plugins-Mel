@@ -54,7 +54,7 @@ class NextcloudModule extends WorkspaceObject {
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
       const { task } = args;
 
-      if (task === 'stockage') {
+      if (task === 'stockage' && !FramesManager.Instance.get_frame('stockage')[0].contentWindow.location.href.includes(`dossiers-${this.workspace.uid}`)) {
         FramesManager.Instance.get_frame('stockage')[0].contentWindow.$(
           '#mel_nextcloud_frame',
         )[0].src =

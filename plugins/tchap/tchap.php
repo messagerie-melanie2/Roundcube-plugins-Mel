@@ -146,6 +146,7 @@ class tchap extends bnum_plugin
         exit;
     }
 
+    #region workspaces
     public function workspace_set_tchap($args) {
         if (class_exists('mel_workspace')) {
             $workspace = $args['workspace'];
@@ -211,11 +212,12 @@ class tchap extends bnum_plugin
     public function on_show_workspace($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $this->include_module('workspace.js', 'js/lib/workspace');
-            $args['layout']->setNavBarSetting('tchap', ':nav:', false, 6);
+            $args['layout']->setNavBarSetting('tchap', ':nav:', false, 7);
         }
 
         return $args;
     }
+    #endregion
 
     /**
      * Bloquer les refresh

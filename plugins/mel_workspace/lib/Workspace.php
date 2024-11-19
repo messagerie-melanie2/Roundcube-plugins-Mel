@@ -520,6 +520,10 @@ class WorkspaceObject {
     return $return;
   }
 
+  public function has($key) {
+    return $this->get($key) !== null;
+  }
+
   public function serialize() {
     return json_decode($this->_workspace->objects);
   }

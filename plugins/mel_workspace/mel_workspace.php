@@ -135,6 +135,8 @@ class mel_workspace extends bnum_plugin
         $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
         $this->workspacePageLayout->setNavBarSetting('calendar', 'calendar_month', true, 1);
 
+        if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasklist', 'check_box', false, 6);
+
         $this->rc()->output->add_handlers(array(
             'wsp.row.first'  => [$this, 'handler_get_row'],
             'wsp.row.second' => [$this, 'handler_get_row'],
@@ -938,7 +940,7 @@ class mel_workspace extends bnum_plugin
             mel_helper::send_mail($subject, $message, $email, ['email' => driver_mel::gi()->getUser($userid)->email, 'name' => driver_mel::gi()->getUser($userid)->name], $is_html);
         }
     }
-        #region register_actions
+        #region private/register_actions
         private function _setup_index_action() {
             $this->register_action('index', [$this, 'show_workspaces']);
         }
@@ -978,7 +980,7 @@ class mel_workspace extends bnum_plugin
         }
         #endregion
 
-        #region hook_actions
+        #region private/hook_actions
         private function _hook_actions() {
             $this->add_hook('webcomponents.scroll.count', [$this, 'webcomponentScrollCount']);
             $this->add_hook('webcomponents.scroll.data', [$this, 'webcomponentScrollData']);
@@ -1018,7 +1020,7 @@ class mel_workspace extends bnum_plugin
         }
         #endregion
 
-        #region services
+        #region private/services
         private function _set_services(&$workspace, $services, $default_value = null) {
             $plugins = $this->rc()->plugins->exec_hook('workspace.services.set', ['workspace' => $workspace, 'services' => $services, 'default_values' => $default_value]);
 

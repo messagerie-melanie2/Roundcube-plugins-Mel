@@ -1691,8 +1691,11 @@ class FrameManager {
    * @param {?string} task
    * @returns {external:jQuery}
    */
-  get_frame(task = null) {
-    return this._selected_window.get_frame(task);
+  get_frame(task = null, { jquery = true } = {}) {
+    const frame = this._selected_window.get_frame(task);
+
+    if (frame) return jquery ? frame : frame[0];
+    else return frame;
   }
 
   /**

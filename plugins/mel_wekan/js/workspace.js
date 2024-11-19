@@ -13,9 +13,16 @@ export class ModuleWekan extends WorkspaceObject {
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
       const { task } = args;
 
-      if (!!this.workspace.services.wekan?.id && task === 'wekan' && !FramesManager.Instance.get_frame('wekan')[0].contentWindow.$(
-        '#wekan-iframe',
-      )[0].contentWindow.location.href.includes(this.workspace.services.wekan?.id)) {
+      if (
+        !!this.workspace.services.wekan?.id &&
+        task === 'wekan' &&
+        (!FramesManager.Instance.has_frame('wekan') ||
+          !FramesManager.Instance.get_frame('wekan')[0]
+            .contentWindow.$('#wekan-iframe')[0]
+            .contentWindow.location.href.includes(
+              this.workspace.services.wekan?.id,
+            ))
+      ) {
         FramesManager.Instance.get_frame('wekan')[0].contentWindow.$(
           '#wekan-iframe',
         )[0].src =

@@ -15,8 +15,16 @@ class TchapWorkspace extends WorkspaceObject {
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
       const { task } = args;
 
-      if (!!this.workspace.services['tchap-channel']?.id && task === 'tchap' && !FramesManager.Instance.get_frame('tchap')[0]
-      .contentWindow.$('#tchap_frame')[0].contentWindow.location.href.includes(!this.workspace.services['tchap-channel']?.id)) {
+      if (
+        !!this.workspace.services['tchap-channel']?.id &&
+        task === 'tchap' &&
+        (!FramesManager.Instance.has_frame('tchap') ||
+          !FramesManager.Instance.get_frame('tchap')[0]
+            .contentWindow.$('#tchap_frame')[0]
+            .contentWindow.location.href.includes(
+              !this.workspace.services['tchap-channel']?.id,
+            ))
+      ) {
         FramesManager.Instance.get_frame('tchap')[0]
           .contentWindow.$('#tchap_frame')
           .attr(

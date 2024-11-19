@@ -3602,9 +3602,6 @@ class mel_forum extends bnum_plugin
             $args['layout']->setNavBarSetting('forum', 'newspaper', true, 4);
             $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news']));
             $args['layout']->secondRow()->append(8, $args['layout']->htmlModuleBlock(['id' => 'module-forum-last']));
-
-            mel_helper::Parse('')
-            //$this->include_module('module_forum.js', 'js/workspaces');
         }
 
         return $args;

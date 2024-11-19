@@ -3,6 +3,7 @@ import { MainNav } from '../../../mel_metapage/js/lib/classes/main_nav.js';
 import { Random } from '../../../mel_metapage/js/lib/classes/random.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
+import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { WspNavBar } from './WebComponents/navbar.js';
 // import { WspNavBar } from './WebComponents/navbar.js';
 import { CurrentWorkspaceData } from './WorkspaceObject.js';
@@ -234,5 +235,19 @@ export class NavBarManager {
   static Show() {
     this.currentNavBar.show();
     return this;
+  }
+
+  /**
+   * Attend que la barre de navigation soit chargée
+   * @param {Object} [param0={}] Paramètre optionnel
+   * @param {number} [param0.waiting_time=5] Temps d'attente en seconde. Mettez `Infinity` pour un temps d'attente infinie
+   * @returns {Promise<boolean>} Si la barre de navigation est chargée ou non
+   * @async
+   */
+  static async WaitLoading({ waiting_time = 5 } = {}) {
+    if (!NavBarManager.currentNavBar)
+      await Mel_Promise.wait(() => !!NavBarManager.currentNavBar, waiting_time);
+
+    return !!NavBarManager.currentNavBar;
   }
 }

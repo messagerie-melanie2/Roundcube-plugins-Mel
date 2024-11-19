@@ -54,7 +54,16 @@ class NextcloudModule extends WorkspaceObject {
     NavBarManager.AddEventListener().OnAfterSwitch((args) => {
       const { task } = args;
 
-      if (task === 'stockage' && !FramesManager.Instance.get_frame('stockage')[0].contentWindow.location.href.includes(`dossiers-${this.workspace.uid}`)) {
+      if (
+        task === 'stockage' && // Si il s'agit de la tâche de stockage
+        (!FramesManager.Instance.has_frame('stockage') || // Si la frame n'éxiste pas ou
+          // Si l'id dans l'url n'est pas le bon
+          !FramesManager.Instance.get_frame(
+            'stockage',
+          )[0].contentWindow.location.href.includes(
+            `dossiers-${this.workspace.uid}`,
+          ))
+      ) {
         FramesManager.Instance.get_frame('stockage')[0].contentWindow.$(
           '#mel_nextcloud_frame',
         )[0].src =
@@ -63,7 +72,7 @@ class NextcloudModule extends WorkspaceObject {
     }, 'stockage');
 
     new Promise(async (ok, nok) => {
-      await Mel_Promise.wait(() => !!NavBarManager.currentNavBar);
+      await NavBarManager.WaitLoading();
       NavBarManager.currentNavBar.onstatetoggle.push(async (...args) => {
         const [task, state, caller] = args;
         const loading = BnumMessage.DisplayMessage(

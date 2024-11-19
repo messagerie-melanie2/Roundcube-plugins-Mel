@@ -54,6 +54,23 @@ export class WorkspacePage extends WorkspaceObject {
       { background: !this.get_env('start_app') },
     );
 
+    //Tâche
+    NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
+      const { task } = args;
+
+      if (
+        task === 'tasks' &&
+        (!FramesManager.Instance.has_frame('tasks') ||
+          !FramesManager.Instance.get_frame('tasks', {
+            jquery: false,
+          }).contentWindow.location.href.includes(this.workspace.uid))
+      ) {
+        return {
+          source: this.workspace.uid,
+        };
+      }
+    }, 'tasks');
+
     NavBarManager.currentNavBar.onactionclicked.push((type) => {
       switch (type) {
         case 'settings':

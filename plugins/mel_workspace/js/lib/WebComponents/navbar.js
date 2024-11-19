@@ -378,7 +378,7 @@ class WspNavBar extends HtmlCustomTag {
         this._generate_invitation,
         this._generate_join,
         this._generate_start_visio,
-        this._generate_params,
+        //this._generate_params,
         this._generate_members,
       ];
 

@@ -136,6 +136,7 @@ class mel_workspace extends bnum_plugin
         $this->workspacePageLayout->setNavBarSetting('calendar', 'calendar_month', true, 1);
 
         if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
+        $this->workspacePageLayout->setNavBarSetting('workspace_params', 'settings', false, 999);
 
         $this->rc()->output->add_handlers(array(
             'wsp.row.first'  => [$this, 'handler_get_row'],

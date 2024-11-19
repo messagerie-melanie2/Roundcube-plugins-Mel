@@ -114,6 +114,8 @@ export class NavBarManager {
         this.currentNavBar.unselect();
         switch (task) {
           case 'home':
+            $('.wsp-params').css('display', 'none');
+            $('.wsp-row').css('display', EMPTY_STRING);
             FramesManager.Instance.switch_frame('workspace', {
               args: config,
               actions: ['workspace'],
@@ -130,6 +132,29 @@ export class NavBarManager {
                 removeIsFromIframe: true,
               }),
             );
+            break;
+
+          case 'settings':
+          case 'workspace_params':
+            top.history.replaceState(
+              {},
+              document.title,
+              MelObject.Empty().url('workspace', {
+                action: 'workspace',
+                params: {
+                  _uid: workspace.uid,
+                  _page: 'settings',
+                  _force_bnum: 1,
+                },
+                removeIsFromIframe: true,
+              }),
+            );
+
+            this.currentNavBar.onactionclicked.call('settings');
+            FramesManager.Instance.switch_frame('workspace', {
+              args: config,
+              actions: ['workspace'],
+            });
             break;
 
           default:

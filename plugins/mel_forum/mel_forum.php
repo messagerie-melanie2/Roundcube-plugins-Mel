@@ -151,8 +151,9 @@ class mel_forum extends bnum_plugin
             $this->register_action('get_posts_data', array($this, 'get_posts_data'));
             //gestion des réaction aux posts
             $this->register_action('manage_reaction', array($this, 'manage_reaction'));
-        }
-        else if ($this->get_current_task() === 'workspace') {
+            //Affichage des nouveaux posts
+            $this->register_action('new_posts', array($this, 'new_posts'));
+        } else if ($this->get_current_task() === 'workspace') {
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('wsp.show', [$this, 'wsp_show']);
         }
@@ -779,7 +780,7 @@ class mel_forum extends bnum_plugin
     /**
      * Retourne les posts en fonction des paramètres passés en POST.
      *
-     * @return array post tablau d'objet posts
+     * @return array post tableau d'objet posts
      */
     public function get_posts_byworkspace()
     {
@@ -2510,6 +2511,104 @@ class mel_forum extends bnum_plugin
         }
     }
 
+
+
+    /**
+     * Affiche la page des 3 posts du workspace.
+     *
+     * Cette fonction enregistre un template pour afficher les publications du forum
+     * et envoie le modèle 'mel_forum.forum' à la page qui affiche les articles.
+     *
+     * @return void
+     */
+    public function new_posts()
+    {
+        $this->load_script_module('new_posts');
+        $this->show_new_posts();
+        $workspace = rcube_utils::get_input_value('_worskpace_uid', rcube_utils::INPUT_POST);
+
+        // Envoyer le template approprié
+        $this->rc()->output->send('mel_forum.new-posts');
+    }
+
+
+    public function show_new_posts()
+    {
+        $posts = $this->get_new_posts_byworkspace();
+        $posts_data = $this->new_posts_object_to_Json($posts);
+
+        $this->rc()->output->set_env('posts_data', $posts_data);
+    }
+
+
+    function new_posts_object_to_Json($posts)
+    {
+
+        $posts = $this->get_new_posts_byworkspace();
+
+        // Définir la locale en français pour le formatage de la date
+        $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+
+        $posts_data = [];
+
+        foreach ($posts as $post) {
+            // Convertit la date du post en un timestamp Unix
+            $timestamp = strtotime($post->created);
+            // Formate la date du post
+            $formatted_date = $formatter->format($timestamp);
+
+            $post_creator = driver_mel::gi()->getUser($post->creator)->name;
+            $tags = $this->get_all_tags_bypost($post->uid);
+            // Récupérer le nombre de réaction
+            //$reaction_count = $this->count_reactions($post->uid);
+            // Récupérer le nombre de likes
+            $count = ['like' => 0, 'dislike' => 0];
+            // Récupérer le nombre de commentaire
+            $comment_count = $this->count_comments($post->id);
+
+            $posts_data[$post->uid] = [
+                'uid' => $post->uid,
+                'title' => $post->title,
+                'creation_date' => $formatted_date,
+                'post_creator' => $post_creator,
+                'tags' => $tags,
+                'summary' => $post->summary,
+                // 'reaction' => $reaction_count,
+                'like_count' => $count['like'],
+                'dislike_count' => $count['dislike'],
+                'comment_count' => $comment_count,
+            ];
+        }
+        return $posts_data;
+    }
+
+
+    public function get_new_posts_byworkspace()
+    {
+
+        // Charger tous les posts en utilisant la méthode listPosts
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        // $post->workspace = $workspace_uid;
+        $post->workspace = "un-espace-2";
+
+        // Appel de la méthode listPosts
+        $posts = $post->listPosts(
+            null,         // Pas de recherche spécifique
+            [],           // Pas de filtres par tags
+            'created',    // Trier par date de création
+            false,        // Ordre décroissant (du plus récent au plus ancien)
+            3,            // Limiter à 3 articles
+            null          // Pas de décalage (offset)
+        );
+
+        return $posts;
+
+        // Arrêt de l'exécution du script
+        exit;
+    }
+
+
+
     // TESTS
 
     function test()
@@ -3582,7 +3681,8 @@ class mel_forum extends bnum_plugin
     }
 
     #region Espaces des travail
-    public function workspace_services_set($args) {
+    public function workspace_services_set($args)
+    {
         $services = $args['services'];
 
         if (array_search('forum', $services) !== null) {
@@ -3595,9 +3695,10 @@ class mel_forum extends bnum_plugin
         }
 
         return $args;
-    } 
+    }
 
-    public function wsp_show($args) {
+    public function wsp_show($args)
+    {
         if ($args['workspace']->objects()->get('forum') !== null) {
             $args['layout']->setNavBarSetting('forum', 'newspaper', true, 4);
             $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news']));

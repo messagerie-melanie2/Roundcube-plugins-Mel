@@ -1,0 +1,93 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <div class="row return-header d-flex justify-content-between mb-3">
+      <div class="return">
+      </div>
+      <div>
+        <button id="forum-button-add" class="mel-button btn btn-secondary">
+          <span class="add">Voir tout</span>
+          <span class="material-symbols-outlined">
+            arrow_forward
+          </span>
+        </button>
+      </div>
+    </div>
+    <div class="row forum-content">
+      <div class="col-12">
+        <div id="new_post-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<template id="new_post_template">
+  <div class="row post" id="post-%%UID%%">
+    <a class="post-card" href="%%POST_LINK%%">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12">
+            <div class="post-header">
+              <div class="post-creator">
+                <img
+                  src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
+                  alt="Auteur Image"
+                  class="author-image"/>
+                <div class="post-creator-name">%%POST_CREATOR%%</div>
+                <div class="post-date">
+                  <i class="material-symbols-outlined">access_time</i
+                  ><span class="ml-1">%%POST_DATE%%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-8 col-xl-10">
+            <div class="post-content">
+      
+              <div class="post-title">%%POST_TITLE%%</div>
+      
+              <div class="post-summary">%%POST_SUMMARY%%</div>
+            </div>
+          </div>
+          <div class="post-tags" id="new-tag-area-%%UID%%"></div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="post-footer">
+              <div class="post-reaction">
+                <!-- <div id="add_reaction" class="reaction">
+                  <i class="material-symbols-outlined">add_reaction</i>
+                  <span class="ml-2">%%POST_COUNT_REACTION%%</span>
+                </div> -->
+                <div id="add_like-%%UID%%" class="like hoverable %%POST_IS_LIKED%%">
+                  <i class="material-symbols-outlined">thumb_up</i>
+                  <span class="ml-2">%%POST_THUMB_UP%%</span>
+                </div>
+                <div id="add_dislike-%%UID%%" class="dislike hoverable %%POST_IS_DISLIKED%%">
+                  <i class="material-symbols-outlined">thumb_down</i>
+                  <span class="ml-2">%%POST_THUMB_DOWN%%</span>
+                </div>
+                <div id="add_comment" class="comment">
+                  <i class="material-symbols-outlined">comment</i>
+                  <span class="ml-2">%%POST_COMMENTS%%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</template>
+<template id="new_tag_template">
+  <span class="tag tag-clickable tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%">%%TAG_NAME%%</span>
+</template>
+
+<roundcube:include file="includes/footer.html" />

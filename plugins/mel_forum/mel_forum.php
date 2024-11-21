@@ -2562,9 +2562,15 @@ class mel_forum extends bnum_plugin
             // Récupérer le nombre de réaction
             //$reaction_count = $this->count_reactions($post->uid);
             // Récupérer le nombre de likes
-            $count = ['like' => 0, 'dislike' => 0];
+            $isliked = $this->hasReaction('like', $post->id);
+            $isdisliked = $this->hasReaction('dislike', $post->id);
             // Récupérer le nombre de commentaire
             $comment_count = $this->count_comments($post->id);
+            $post_link = $this->rc()->url(array(
+                "_task" => "forum",
+                "_action" => "post",
+                "_uid" => $post->uid,
+            ), true, true, true);
 
             $posts_data[$post->uid] = [
                 'uid' => $post->uid,
@@ -2574,9 +2580,12 @@ class mel_forum extends bnum_plugin
                 'tags' => $tags,
                 'summary' => $post->summary,
                 // 'reaction' => $reaction_count,
-                'like_count' => $count['like'],
-                'dislike_count' => $count['dislike'],
+                'like_count' => $post->likes,
+                'dislike_count' => $post->dislikes,
                 'comment_count' => $comment_count,
+                'isliked' => $isliked,
+                'isdisliked' => $isdisliked,
+                'post_link' => $post_link,
             ];
         }
         return $posts_data;

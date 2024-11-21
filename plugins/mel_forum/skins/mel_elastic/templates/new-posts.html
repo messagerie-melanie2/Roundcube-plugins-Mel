@@ -10,7 +10,7 @@
       <div class="return">
       </div>
       <div>
-        <button id="forum-button-add" class="mel-button btn btn-secondary">
+        <button id="forum-button-view" class="mel-button btn btn-secondary" aria-label="Voir tous les articles">
           <span class="add">Voir tout</span>
           <span class="material-symbols-outlined">
             arrow_forward
@@ -27,8 +27,8 @@
 </div>
 
 <template id="new_post_template">
-  <div class="row post" id="post-%%UID%%">
-    <a class="post-card" href="%%POST_LINK%%">
+  <div class="row post" tabindex="0" id="post-%%UID%%">
+    <a class="post-card" href="%%POST_LINK%%" aria-label="Lire le post intitulé %%POST_TITLE%% par %%POST_CREATOR%%">
       <div class="col-12">
         <div class="row">
           <div class="col-12">
@@ -36,7 +36,7 @@
               <div class="post-creator">
                 <img
                   src="https://matrix.agent.dev-durable.tchap.gouv.fr/_matrix/media/v3/thumbnail/matrix.agent.dev-durable.tchap.gouv.fr/15955a806f8d4af60b6b59f9a2e19fff0cca432f1796469365843951616?width=80&height=80&method=crop"
-                  alt="Auteur Image"
+                  alt="Photo de l'auteur"
                   class="author-image"/>
                 <div class="post-creator-name">%%POST_CREATOR%%</div>
                 <div class="post-date">
@@ -66,11 +66,11 @@
                   <i class="material-symbols-outlined">add_reaction</i>
                   <span class="ml-2">%%POST_COUNT_REACTION%%</span>
                 </div> -->
-                <div id="add_like-%%UID%%" class="like hoverable %%POST_IS_LIKED%%">
+                <div id="add_like-%%UID%%" class="like %%POST_IS_LIKED%%">
                   <i class="material-symbols-outlined">thumb_up</i>
                   <span class="ml-2">%%POST_THUMB_UP%%</span>
                 </div>
-                <div id="add_dislike-%%UID%%" class="dislike hoverable %%POST_IS_DISLIKED%%">
+                <div id="add_dislike-%%UID%%" class="dislike %%POST_IS_DISLIKED%%">
                   <i class="material-symbols-outlined">thumb_down</i>
                   <span class="ml-2">%%POST_THUMB_DOWN%%</span>
                 </div>

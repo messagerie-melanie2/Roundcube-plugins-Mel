@@ -20,6 +20,12 @@
   gap: 30px;
   align-items: center;
 }
+.task-forum #forum-button-view {
+  margin-top: 0;
+  display: inline-flex;
+  gap: 30px;
+  align-items: center;
+}
 .task-forum .forum-button {
   background-color: #363a5b;
   color: #ffffff;

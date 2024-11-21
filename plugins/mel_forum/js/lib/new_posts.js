@@ -10,7 +10,14 @@ export class New_posts extends MelObject {
     super.main();
 
     this.tags = [];
+    this.initButtons();
     this.initNewPostsDisplay();
+  }
+
+  initButtons() {
+    $('#forum-button-view').click(() => {
+      window.location.href = this.url('forum', {action: 'index'});
+    })
   }
 
   initNewPostsDisplay () {

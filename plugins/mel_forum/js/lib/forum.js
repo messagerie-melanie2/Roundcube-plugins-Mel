@@ -467,7 +467,7 @@ export class Forum extends MelObject {
                 POST_THUMB_DOWN: post.dislike_count,
                 POST_COMMENTS: post.comment_count,
                 POST_FAVORITE: 
-                    MelHtml.start.tag('i',{id: 'favorite-'+post.uid, class:`hoverable icon favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
+                    MelHtml.start.tag('i',{id: 'favorite-'+post.uid, tabindex:'0', class:`hoverable icon favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
                 POST_IS_LIKED: post.isliked ? "filled" : "",
                 POST_IS_DISLIKED: post.isdisliked ? "filled" : "",
                 };

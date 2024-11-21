@@ -1,4 +1,5 @@
 import { JsHtml } from "../../../mel_metapage/js/lib/html/JsHtml/JsHtml.js";
+import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelDialog, DialogPage, RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal.js";
 
@@ -105,6 +106,10 @@ export class create_or_edit_post extends MelObject {
     saveButton() {
         $('#submit-post').click(() => {
             this.post_id = this.get_env('post').id;
+
+            // Vérifier s'il s'agit d'une création ou d'une modification
+        const isModification = !!this.post_id; // true si post_id est défini (modification)
+
             this.http_internal_post(
                 {
                     task: 'forum',
@@ -121,13 +126,25 @@ export class create_or_edit_post extends MelObject {
                     processData: false,
                     contentType: false,
                     on_success: () => {
-                        console.log('succès');
+                        // Message différent selon le type d'action
+                        const message = isModification
+                        ? 'Modification enregistrée avec succès !'
+                        : 'Article créé avec succès !';
+                    
+                        BnumMessage.DisplayMessage(
+                            message,
+                            eMessageType.Success,
+                        );
+
                         let postUid = this.post_uid;
                         // TODO Voir autre solution pour obtenir l'url
                         window.location.href = this.url('forum', {action:'post'}) + `&_uid=${postUid}` ;
                     },
                     on_error: (err) => {
-                        console.log('Erreur d\'enregistrement');
+                        BnumMessage.DisplayMessage(
+                        'Erreur lors de l\'enregistrement de l\'article. Veuillez réessayer.',
+                        eMessageType.Error,
+                        );
                         window.location.href = this.url('forum', {action:'index'});
                     }
                 }

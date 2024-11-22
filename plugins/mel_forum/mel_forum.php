@@ -462,10 +462,17 @@ class mel_forum extends bnum_plugin
         $sentences = preg_split('/(\. |\? |\! )/', $content, -1, PREG_SPLIT_NO_EMPTY);
 
         // Prendre les deux premières phrases
-        $summary = implode('. ', array_slice($sentences, 0, 2));
+        $summary_sentences = array_slice($sentences, 0, 2);
+        $summary = implode('. ', $summary_sentences);
+
+        // Vérifier si le dernier caractère est un point final ou équivalent
+        if (!preg_match('/[.!?]$/', $summary)) {
+            $summary .= '.';
+        }
 
         return $summary;
     }
+
 
     /**
      * Envoie une réponse de type forum.

@@ -243,7 +243,7 @@ class mel_forum extends bnum_plugin
         // Création des éléments HTML pour les tags
         $tags_html = '';
         foreach ($tags as $tag) {
-            $tags_html .= '<span class="tag">#' . htmlspecialchars($tag) . '</span>';
+            $tags_html .= '<span class="tag" tabindex="0" role="button">#' . htmlspecialchars($tag) . '</span>';
         }
 
         return $tags_html;

@@ -456,7 +456,6 @@ export class Forum extends MelObject {
             post = posts[postId];
             data = {
                 POST_LINK: post.post_link,
-                USER_ID: post.post_creator,
                 POST_CREATOR: post.post_creator,
                 POST_DATE: post.creation_date,
                 UID: post.uid,

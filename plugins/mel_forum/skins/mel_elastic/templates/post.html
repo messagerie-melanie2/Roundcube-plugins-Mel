@@ -23,7 +23,7 @@
         </div>
         <div class="row d-flex justify-content-center align-items-center mt-3">
           <div class="d-flex justify-content-center align-items-center">
-            <bnum-avatar  class="author-image" style="background-color: var(--mel-button-background-color);"></bnum-avatar>  
+            <bnum-avatar  class="author-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-id="%%POST_CREATOR%%" data-forceload="true"></bnum-avatar>  
             <div class="ml-2 author-infos">
               <div class="author-name-custom ml-1">
                 <roundcube:object name="show_post_creator" />
@@ -69,7 +69,7 @@
 
         <div class="row my-4 d-flex align-items-center">
           <div class="col-auto pr-0">
-            <bnum-avatar  class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color);"></bnum-avatar>
+            <bnum-avatar  class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-id="%%POST_CREATOR%%" data-forceload="true"></bnum-avatar>
           </div>
           <div class="col pl-0">
             <textarea id="new-comment-textarea" class="forum-comment-input" placeholder="Ajouter un commentaire" rows="1"></textarea>
@@ -154,7 +154,7 @@
           
                 <div id="reply-form-%%UID%%" class="row my-4 d-flex align-items-center hidden">
                   <div class="col-auto pr-0">
-                    <bnum-avatar class="forum-comment-profile-image" style="background-color: %%PROFILE_COLOR%%; display: flex; align-items: center; justify-content: center; color: white" data-id="%%USER_ID%%" data-forceload="true"></bnum-avatar>
+                    <bnum-avatar class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-id="%%USER_ID%%" data-forceload="true"></bnum-avatar>
                   </div>
                   <div class="col pl-0" style="margin-bottom: 1rem;">
                     <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>

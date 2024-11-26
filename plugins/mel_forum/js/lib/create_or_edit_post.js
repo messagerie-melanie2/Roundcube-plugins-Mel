@@ -151,10 +151,40 @@ export class create_or_edit_post extends MelObject {
             );
         });
     }
-    cancelButton() {
+    cancelButton(post_uid) {
         $('#cancel-post').click(() => {
-            // Redirige directement vers la page d'accueil sans suppression
-            window.location.href = this.url('forum', {action: 'index'});
+            debugger;
+            // Récupérer les valeurs des champs
+            const _title = $("#edit-title").val();
+            const _content = tinymce.activeEditor.getContent();
+            const _uid = this.post_uid
+            
+            if (!_title.trim() && !_content.trim()) {
+                // Les champs sont vides, suppression du post
+                
+                this.http_internal_post({
+                    task: 'forum',
+                    action: 'delete_post',
+                    params: {
+                        _uid: _uid
+                    },
+                    processData: false,
+                    contentType: false,
+                }).then(() => {
+                    // Supprimer l'article de l'affichage
+                    const postElement = $('#post-' + post_uid);
+                    if (postElement.length > 0) {
+                        postElement.remove(); // Supprimer l'article du DOM
+                    }
+                    // Redirection vers la page d'accueil après la suppression
+                    window.location.href = this.url('forum', {action: 'index'});
+                }).catch(error => {
+                    console.error("Erreur lors de la suppression du post :", error);
+                });
+            } else {
+                // Redirige directement vers la page d'accueil sans suppression
+                window.location.href = this.url('forum', {action: 'index'});
+            }
         });
     }
 

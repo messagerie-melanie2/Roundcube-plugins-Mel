@@ -52,10 +52,18 @@ class WspNavBar extends HtmlCustomTag {
   /**
    * Image de l'espace
    * @type {string}
-   * @readonly
    */
   get picture() {
     return this.workspace.logo;
+  }
+
+  set picture(value) {
+    this.workspace.logo = value;
+
+    let src = this.navigator.querySelector('.picture-container img');
+    src.setAttribute('src', value);
+
+    src = null;
   }
 
   /**
@@ -247,6 +255,53 @@ class WspNavBar extends HtmlCustomTag {
   _generate_picture() {
     let img = document.createElement('img');
     img.classList.add('picture');
+    img.onload = () => {
+      let picture = this.navigator.querySelector('.picture-container img');
+      let text = this.navigator.querySelector('.picture-container div');
+
+      if (text) text.remove();
+
+      picture.style.display = null;
+
+      picture = null;
+      text = null;
+    };
+    img.onerror = () => {
+      let picture = this.navigator.querySelector('.picture-container img');
+      let text = this.navigator.querySelector('.picture-container div');
+
+      picture.style.display = 'none';
+
+      if (!text) {
+        text = this.navigator.querySelector('.picture-container');
+        let span = document.createElement('div');
+        span.classList.add('no-picture', 'colored');
+        span.style.backgroundColor = this.workspace.color;
+
+        //Génération de la couleur du texte
+        {
+          const rgb_1 = mel_metapage.Functions.colors.kMel_extractRGB(
+            this.workspace.color,
+          );
+          const rgb_2 =
+            mel_metapage.Functions.colors.kMel_extractRGB('#000000');
+
+          if (
+            mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(rgb_1, rgb_2)
+          )
+            span.style.color = '#000000';
+          else span.style.color = '#FFFFFF';
+        }
+
+        span.appendChild(this.createText(this.title.slice(0, 3)));
+
+        text.appendChild(span);
+        span = null;
+      }
+
+      picture = null;
+      text = null;
+    };
     img.src = this.picture;
 
     let div = document.createElement('div');

@@ -16,6 +16,18 @@
       this.init_params_buttons();
     }
 
+    /**
+     * @return {Promise<NavBarManager>}
+     */
+    async NavBarManager() {
+      const { NavBarManager } = await loadJsModule(
+        'mel_workspace',
+        'navbar.generator',
+      );
+
+      return NavBarManager;
+    }
+
     init_params_buttons() {
       if ($('#update-channel-button').length > 0)
         $('#update-channel-button').on('click', () => {
@@ -512,23 +524,26 @@
               'error',
             );
           } else {
-            if (new_logo === 'false') {
-              $('#worspace-avatar-b').html(
-                `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
-              );
-              $('.dwp-round.wsp-picture').html(
-                `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
-              );
-            } else {
-              $('#worspace-avatar-b').html(`<img src="${new_logo}" />`);
-              $('.dwp-round.wsp-picture').html(`<img src="${new_logo}" />`);
-            }
+            // if (new_logo === 'false') {
+            //   $('#worspace-avatar-b').html(
+            //     `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
+            //   );
+            //   $('.dwp-round.wsp-picture').html(
+            //     `<span>${$('.wsp-head h1.header-wsp').html().slice(0, 3)}</span>`,
+            //   );
+            // } else {
+            //   $('#worspace-avatar-b').html(`<img src="${new_logo}" />`);
+            //   $('.dwp-round.wsp-picture').html(`<img src="${new_logo}" />`);
+            // }
 
             $('#wsp-param-chg-button-plz')
               .attr('disabled', 'disabled')
               .addClass('disabled');
 
-            this.update_home();
+            //this.update_home();
+            this.NavBarManager().then((manager) => {
+              manager.currentNavBar.picture = new_logo;
+            });
           }
         },
       ).always(() => {
@@ -1500,7 +1515,65 @@
     value: Symbol('null'),
   });
 
+  async function setup_avatars() {
+    const tmp = (img) => {
+      img = img.split('.');
+
+      if (img.length > 1) img[img.length - 1] = '';
+
+      img = img.join('.');
+      img = img.slice(0, img.length - 1);
+
+      return img;
+    };
+
+    let html = EMPTY_STRING;
+    if (rcmail.env.mel_metapage_workspace_logos.length > 0) {
+      html +=
+        '<li role=menuitem><a title="" aria-disabled=true href=# tabindex=-1 class="active" id="" href="#" onclick="m_wp_change_picture(null)"><img src="' +
+        rcmail.env.mel_metapage_workspace_logos[0].path +
+        '" class="menu-image invisible">Aucune image</a></li>';
+
+      for (
+        let index = 0;
+        index < rcmail.env.mel_metapage_workspace_logos.length;
+        index++
+      ) {
+        const element = rcmail.env.mel_metapage_workspace_logos[index];
+        html +=
+          `<li role=menuitem><a aria-disabled=true href=# alt="${Enumerable.from(element.path.replace('.png', '').replace('.jpg', '').replace('.PNG', '').split('/')).last()}" title="" class="active" id="" tabindex=-1 href="#" onclick="m_wp_change_picture('` +
+          element.path +
+          '\')"><img src="' +
+          element.path +
+          '" class=menu-image>' +
+          tmp(element.name) +
+          '</a></li>';
+      }
+    }
+    $('#ul-wsp-params').html(html);
+  }
+
+  async function m_wp_change_picture(img) {
+    if (img === null) {
+      const manager = await rcmail.env.WSP_Param.NavBarManager();
+      $('#spaceLogo').html(
+        `<span>${manager.currentNavBar.workspace.title.slice(0, 3)}</span>`,
+      );
+    } else
+      $('#spaceLogo').html(
+        `<img alt="${Enumerable.from(img.replace('.png', '').replace('.PNG', '').split('/')).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`,
+      );
+
+    $('#wsp-param-chg-button-plz')
+      .removeAttr('disabled')
+      .removeClass('disabled');
+  }
+
+  window.m_wp_change_picture = m_wp_change_picture;
+
   $(document).ready(() => {
+    setup_avatars();
+
     rcmail.env.WSP_Param = new Workspace_Param(
       rcmail.env.current_workspace_uid,
     );

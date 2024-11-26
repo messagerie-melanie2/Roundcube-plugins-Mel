@@ -136,6 +136,11 @@ export class NavBarManager {
 
           case 'settings':
           case 'workspace_params':
+            this.currentNavBar.onactionclicked.call('settings');
+            FramesManager.Instance.switch_frame('workspace', {
+              args: config,
+              actions: ['workspace'],
+            });
             top.history.replaceState(
               {},
               document.title,
@@ -149,12 +154,6 @@ export class NavBarManager {
                 removeIsFromIframe: true,
               }),
             );
-
-            this.currentNavBar.onactionclicked.call('settings');
-            FramesManager.Instance.switch_frame('workspace', {
-              args: config,
-              actions: ['workspace'],
-            });
             break;
 
           default:

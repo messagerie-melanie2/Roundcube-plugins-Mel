@@ -39,6 +39,16 @@ export class WorkspaceObject extends MelObject {
     return workspaceData.Instance;
   }
 
+  /**
+   * Récupère le module d'un espace via son id.
+   * @param {string} id Id du module à récupérer
+   * @returns {WorkspaceModuleBlock}
+   * @protected
+   */
+  _p_module_block(id) {
+    return document.querySelector(`#${id}`);
+  }
+
   switch_workspace_page(page) {}
 
   /**
@@ -128,7 +138,10 @@ export class WorkspaceObject extends MelObject {
       _state: state,
     });
 
-    BnumMessage.DisplayMessage('Visibilitée changée avec succès', eMessageType.Confirmation);
+    BnumMessage.DisplayMessage(
+      'Visibilitée changée avec succès',
+      eMessageType.Confirmation,
+    );
   }
 
   isDisabled(task) {

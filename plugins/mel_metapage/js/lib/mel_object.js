@@ -369,12 +369,34 @@ class MelObject {
     task,
     { action = EMPTY_STRING, params = null, removeIsFromIframe = false },
   ) {
-    let url = mel_metapage.Functions.url(task, action, params);
+    const IFRAME = Object.freeze({ KEY: '_is_from', VALUE: 'iframe' });
+    let url = task;
 
-    if (removeIsFromIframe && url.includes('&_is_from=iframe'))
-      url = url.replace('&_is_from=iframe', EMPTY_STRING);
+    if (!!action && action !== EMPTY_STRING) url += `&_action=${action}`;
 
-    return url;
+    if (
+      !removeIsFromIframe &&
+      (window !== parent ||
+        window.location.href.includes(`${IFRAME.KEY}=${IFRAME.VALUE}`))
+    ) {
+      if (!params || !Object.keys(params).length) params = {};
+
+      params[IFRAME.KEY] = IFRAME.VALUE;
+    }
+
+    if (!!params && Object.keys(params).length) {
+      for (const key of Object.keys(params)) {
+        url += `&${key}=${params[key]}`;
+      }
+    }
+
+    // if (removeIsFromIframe && url.includes('&_is_from=iframe'))
+    //   url = url.replace('&_is_from=iframe', EMPTY_STRING);
+
+    return this.rcmail().get_task_url(
+      url,
+      window.location.origin + window.location.pathname,
+    );
   }
 
   /**
@@ -673,7 +695,26 @@ class MelObject {
    * @static
    */
   static Empty() {
-    return new MelObject();
+    if (!this.Empty.obj) this.Empty.obj = Object.freeze(new MelObject());
+
+    return this.Empty.obj;
+  }
+
+  /**
+   * Récupère une url à partir d'une tâche et d'une action
+   * @param {string} task Nom de la tâche
+   * @param {Object} [param1={}] action => Nom de l'action ('index' si non renseigné), params => Autres paramètres
+   * @param {!string} [param1.action=''] => Nom de l'action (index si non renseigné)
+   * @param {?Object<string, string>} [param1.params=null] Autres paramètres
+   * @param {boolean} [removeIsFromIframe=false] Si on supprime `is_from=iframe` qui correspond à l'url à l'intérieur des frames
+   * @returns {string}
+   * @static
+   */
+  static Url(
+    task,
+    { action = EMPTY_STRING, params = null, removeIsFromIframe = false } = {},
+  ) {
+    return this.Empty().url(task, { action, params, removeIsFromIframe });
   }
 }
 

@@ -153,7 +153,6 @@ export class create_or_edit_post extends MelObject {
     }
     cancelButton(post_uid) {
         $('#cancel-post').click(() => {
-            debugger;
             // Récupérer les valeurs des champs
             const _title = $("#edit-title").val();
             const _content = tinymce.activeEditor.getContent();

@@ -1516,7 +1516,9 @@ async function m_mp_get_all_hashtag(
 
     await mel_promise
       .create_ajax_get_request({
-        url: mel_metapage.Functions.url('workspace', 'hashtag'),
+        url: mel_metapage.Functions.url('workspace', 'hashtag', {
+          _hashtag: val,
+        }),
         success: (datas) => {
           try {
             if (mel_promise.isCancelled()) return;
@@ -1540,6 +1542,14 @@ async function m_mp_get_all_hashtag(
               );
             }
           } catch (error) {}
+        },
+        failed: (...args) => {
+          if (mel_promise.isCancelled()) return;
+
+          querry.html(
+            'Une erreur est survenue !<br/>Veuillez contacter un administrateur !',
+          );
+          console.error('###[m_mp_get_all_hashtag]', ...args);
         },
       })
       .always(() => {

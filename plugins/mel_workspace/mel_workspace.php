@@ -106,6 +106,7 @@ class mel_workspace extends bnum_plugin
 
     public function show_workspace() {
         include_once __DIR__.'/lib/WorkspacePage.php';
+        $this->add_texts('localization/workspace', true);
 
         $uid = $this->get_input('_uid');
 
@@ -388,6 +389,23 @@ class mel_workspace extends bnum_plugin
         echo json_encode($array);
         exit;
     }
+
+    function get_hashtags()
+    {
+        $hashtag_label = rcube_utils::get_input_value("_hashtag", rcube_utils::INPUT_GPC);
+        $hashtag = driver_mel::gi()->workspace_hashtag();
+        $hashtag->label = "$hashtag_label%";
+        $operators = ["label" => \LibMelanie\Config\MappingMce::like];
+        $hashtags_raw = $hashtag->getList(null, null, $operators, "label", true);
+        $hashtags = [];
+
+        foreach ($hashtags_raw as $key => $value) {
+            $hashtags[] = $value->hashtag;
+        }
+
+        $this->sendEncodedExit($hashtags);
+    }
+
     #region actions/params
     public function change_color()
     {
@@ -460,6 +478,46 @@ class mel_workspace extends bnum_plugin
             echo "denied";
         
         exit;
+    }
+
+    function update_primary_parameters()
+    {
+        $echoed = 'denied';
+
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $type = rcube_utils::get_input_value("_type", rcube_utils::INPUT_POST);
+        $val = rcube_utils::get_input_value("_val", rcube_utils::INPUT_POST);
+
+        $wsp = new Workspace($uid, true);//self::get_workspace($uid);
+
+        if ($wsp->isAdmin($this->get_user()->uid))
+        {
+
+            switch ($type) {
+                case 'title':
+                    //$wsp->title = $val;
+                    $wsp->title($val);
+                    break;
+                case 'desc':
+                    //$wsp->description = $val;
+                    $wsp->description($val);
+                    break;
+                case 'hashtag':
+                    //$wsp->hashtags = [$val];
+                    $wsp->hashtag($val);
+                    break;
+                    
+                default:
+                    # code...
+                    break;
+            } 
+
+            $wsp->save();
+            $echoed = true;
+        }
+    
+        $this->sendEncodedExit($echoed);
+        //exit;
     }
 
         /**
@@ -974,6 +1032,7 @@ class mel_workspace extends bnum_plugin
             $this->register_action('PARAMS_update_services', array($this, 'update_services'));
             $this->register_action('PARAMS_update_end_date', array($this, 'update_end_date_setting'));
             $this->register_action('PARAMS_change_primary', array($this, 'update_primary_parameters'));
+            $this->register_action('hashtag', array($this, 'get_hashtags'));
         }
 
         private function _setup_workspace_actions() {

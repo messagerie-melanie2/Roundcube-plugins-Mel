@@ -5,6 +5,7 @@ import {
 } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
+import { NavBarManager } from '../navbar.generator.js';
 
 /**
  * @class
@@ -25,7 +26,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
    *
    * data-button-icon => Icon du bouton à gauche. "arrow_right_alt" par défaut.
    *
+   * data-button-ignore => "default-actions" => Ignore les actions par défaut
+   *
    * data-small => 1 ou true. Réduit la taille du block si vrai.
+   *
    */
   constructor() {
     super({ mode: EWebComponentMode.div });
@@ -45,6 +49,10 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
 
   get buttonIcon() {
     return this._p_get_data('button-icon') || 'arrow_right_alt';
+  }
+
+  get buttonIgnore() {
+    return this._p_get_data('button-ignore');
   }
 
   get isSmall() {
@@ -104,6 +112,14 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
         'no-margin-button',
         'no-button-margin',
       );
+
+      if (this.buttonIgnore !== 'default-actions') {
+        button.onclick = () => {
+          NavBarManager.currentNavBar.select(this.buttonTask, {
+            background: false,
+          });
+        };
+      }
 
       let text = document.createElement('span');
       text.appendChild(this.createText(this.buttonText));

@@ -512,8 +512,8 @@ class mel_workspace extends bnum_plugin
                     break;
             } 
 
-            $wsp->save();
-            $echoed = true;
+
+            $echoed = $wsp->save();
         }
     
         $this->sendEncodedExit($echoed);

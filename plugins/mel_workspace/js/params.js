@@ -476,14 +476,29 @@
           } else {
             switch (config.type) {
               case 'title':
-                $('.wsp-head .header-wsp').html(val);
+                // $('.wsp-head .header-wsp').html(val);
                 config.input.attr('placeholder', val);
                 this.titleUpdated(empty);
+                this.NavBarManager().then((manager) => {
+                  manager.currentNavBar.title = val;
+                });
                 break;
 
               default:
-                if (config.action !== null)
+                if (config.action !== null) {
                   config.action(datas, config, val, empty);
+
+                  switch (config.type) {
+                    case 'desc':
+                      this.NavBarManager().then((manager) => {
+                        manager.currentNavBar.description = val;
+                      });
+                      break;
+
+                    default:
+                      break;
+                  }
+                }
                 break;
             }
 

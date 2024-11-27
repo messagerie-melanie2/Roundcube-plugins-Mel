@@ -116,7 +116,7 @@ class Workspace {
     }
     else if(isset($this->_hashtag)) $ret = $this->_hashtag;
     else {
-      $this->_hashtag = isset($this->_workspace->hashtags) && isset($this->_workspace->hashtags[0]) ? $this->_workspace->hashtags[0] : null;
+      $this->_hashtag = $this->_workspace->hashtags !== null && $this->_workspace->hashtags[0] != null ? $this->_workspace->hashtags[0] : null;
       $ret = $this->_hashtag;
     }
 

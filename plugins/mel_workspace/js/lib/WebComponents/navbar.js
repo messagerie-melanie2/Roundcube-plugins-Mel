@@ -69,19 +69,61 @@ class WspNavBar extends HtmlCustomTag {
   /**
    * Description de l'espace
    * @type {string}
-   * @readonly
    */
   get description() {
     return this.workspace.description;
   }
 
+  set description(value) {
+    this.workspace.description = value;
+
+    let newDesc = new WspNavBarDescription({
+      description: value,
+      parent: this,
+    });
+
+    let desc = this.navigator.querySelector('bnum-wsp-nav-description');
+    desc.replaceWith(newDesc);
+
+    desc = null;
+    newDesc = null;
+  }
+
   /**
    * Titre de l'espace
    * @type {string}
-   * @readonly
    */
   get title() {
     return this.workspace.title;
+  }
+
+  set title(value) {
+    this.workspace.title = value;
+
+    let title = this.navigator.querySelector('.wsp-title');
+    title.textContent = value;
+    title = null;
+
+    title = this.navigator.querySelector('.picture-container div');
+
+    if (title) {
+      title.textContent = value.slice(0, 3).toUpperCase();
+      title = null;
+    }
+  }
+
+  get hashtag() {
+    return this.workspace.hashtag;
+  }
+
+  set hashtag(value) {
+    this.workspace.hashtag = value;
+
+    let hashtag = this.navigator.querySelector('.hashtag');
+    hashtag.textContent = `#${value}`;
+    hashtag.setAttribute('title', `#${value} - Thématique de l'espace`);
+
+    hashtag = null;
   }
 
   /**
@@ -171,20 +213,7 @@ class WspNavBar extends HtmlCustomTag {
     this.#pageNavigation = tmp;
     tmp = null;
 
-    this._generate_minify_button();
-    // top.history.replaceState(
-    //   {},
-    //   document.title,
-    //   MelObject.Empty()
-    //     .url('workspace', {
-    //       action: 'navbar',
-    //       params: {
-    //         _uid: 'dev-du-bnum-1',
-    //         _force_bnum: 1,
-    //       },
-    //     })
-    //     .replace('is_from', 'rotomeca'),
-    // );
+    this._generate_hashtag()._generate_minify_button();
 
     div = null;
     style = null;
@@ -293,7 +322,7 @@ class WspNavBar extends HtmlCustomTag {
           else span.style.color = '#FFFFFF';
         }
 
-        span.appendChild(this.createText(this.title.slice(0, 3)));
+        span.appendChild(this.createText(this.title.slice(0, 3).toUpperCase()));
 
         text.appendChild(span);
         span = null;
@@ -410,6 +439,25 @@ class WspNavBar extends HtmlCustomTag {
     }
 
     description = null;
+
+    return this;
+  }
+
+  _generate_hashtag() {
+    if (this.workspace.hashtag || false) {
+      let hashtag = document.createElement('span');
+      hashtag.classList.add('hashtag');
+      hashtag.setAttribute(
+        'title',
+        `#${this.workspace.hashtag} - Thématique de l'espace`,
+      );
+
+      hashtag.appendChild(this.createText(`#${this.workspace.hashtag}`));
+
+      this.shadowRoot.appendChild(hashtag);
+
+      hashtag = null;
+    }
 
     return this;
   }

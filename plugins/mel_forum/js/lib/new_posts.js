@@ -59,6 +59,18 @@ export class New_posts extends MelObject {
 
         $('#new_post-area').append(...template.render());
 
+        // Rendre chaque post cliquable au clavier
+        const postElement = document.getElementById(`post-${post.uid}`);
+        postElement.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const link = postElement.querySelector('.post-card');
+                if (link) {
+                    link.click(); // Simule un clic sur le lien
+                }
+            }
+        });
+
         for (let tag in post.tags) {
             let tag_data = {
                 TAG_NAME: '#' + post.tags[tag].name,

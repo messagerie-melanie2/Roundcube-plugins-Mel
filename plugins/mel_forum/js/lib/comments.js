@@ -6,8 +6,8 @@ import { Manager } from './manager.js';
 export {PostComment, PostCommentView}
 
 class PostComment {
-  constructor(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted) {
-    this._init()._setup(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted)
+  constructor(id, uid, post_id, user_email, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted) {
+    this._init()._setup(id, uid, post_id, user_email, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted)
   }
 
   /**
@@ -24,7 +24,7 @@ class PostComment {
     this.id = '';
     this.uid = '';
     this.post_id = '';
-    this.user_uid = '';
+    this.user_email = '';
     this.user_name = '';
     this.content = '';
     this.created = '';
@@ -49,7 +49,7 @@ class PostComment {
  * @param {string} id - L'identifiant de l'objet.
  * @param {string} uid - L'identifiant unique de l'objet.
  * @param {string} post_id - L'identifiant du post associé.
- * @param {string} user_uid - L'identifiant de l'utilisateur.
+ * @param {string} user_email - L'email de l'utilisateur.
  * @param {string} user_name - Le nom de l'utilisateur.
  * @param {string} content - Le contenu du commentaire ou du post.
  * @param {string} created - La date de création.
@@ -59,12 +59,12 @@ class PostComment {
  * @param {integer} children_number - Le nombre de réponse au commentaire parent
  * @param {string} current_user_reacted - reaction de l'utilisateur courant au commentaire
  */
-  _setup(id, uid, post_id, user_uid, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted) {
+  _setup(id, uid, post_id, user_email, user_name, content, created, likes, dislikes, parent, children_number, current_user_reacted) {
 
     this.id = id;
     this.uid = uid;
     this.post_id = post_id;
-    this.user_uid = user_uid;
+    this.user_email = user_email;
     this.user_name = user_name;
     this.content = content;
     this.created = created;
@@ -715,7 +715,7 @@ class PostComment {
     // Préparez les données à insérer dans le template
     const data = {
       UID: this.uid,
-      USER_ID: this.user_name,
+      USER_EMAIL: this.user_email,
       USER_NAME: this.user_name,
       COMMENT_DATE: formatCommentDate(this.created),
       COMMENT_CONTENT: this.content,

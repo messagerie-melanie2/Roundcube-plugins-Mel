@@ -192,7 +192,7 @@ export class Manager extends MelObject {
           comment.id,
           comment.uid,
           comment.post_id,
-          comment.user_id,
+          comment.user_email,
           comment.user_name,
           comment.content,
           comment.created,
@@ -245,7 +245,7 @@ export class Manager extends MelObject {
   * @param {number} comment.id - L'identifiant unique du commentaire.
   * @param {string} comment.uid - L'identifiant unique de l'utilisateur ayant posté le commentaire.
   * @param {number} comment.post_id - L'identifiant du post auquel le commentaire appartient.
-  * @param {number} comment.user_id - L'identifiant de l'utilisateur ayant posté le commentaire.
+  * @param {number} comment.user_email - L'email de l'utilisateur ayant posté le commentaire.
   * @param {string} comment.user_name - Le nom de l'utilisateur ayant posté le commentaire.
   * @param {string} comment.content - Le contenu du commentaire.
   * @param {string} comment.created - La date de création du commentaire au format 'YYYY-MM-DD HH:mm:ss'.
@@ -279,7 +279,7 @@ export class Manager extends MelObject {
       comment.id,
       comment.uid,
       comment.post_id,
-      comment.user_id,
+      comment.user_email,
       comment.user_name,
       comment.content,
       `${formattedDate} à ${formattedTime}`,

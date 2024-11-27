@@ -30,7 +30,6 @@ export class New_posts extends MelObject {
      * @param {*} posts 
      */
   displayNewPosts(posts) {
-    debugger;
     let post;
     let data;
     for (let postId in posts) {
@@ -38,6 +37,7 @@ export class New_posts extends MelObject {
         data = {
             POST_LINK: post.post_link,
             POST_CREATOR: post.post_creator,
+            CREATOR_EMAIL: post.creator_email,
             POST_DATE: post.creation_date,
             UID: post.uid,
             POST_TITLE: post.title,

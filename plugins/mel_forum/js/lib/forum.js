@@ -215,13 +215,13 @@ export class Forum extends MelObject {
                         div.addClass('filled');
                     }
                     BnumMessage.DisplayMessage(
-                        'Vos articles favoris ont été mis à jour',
+                        rcmail.gettext('mel_forum.fav_updated'),
                         eMessageType.Confirmation,
                     );
                 },
                 on_error: (err) => {
                     BnumMessage.DisplayMessage(
-                        'Erreur lors de la modification',
+                        rcmail.gettext('mel_forum.error_editing'),
                         eMessageType.Error,
                     );
                 }
@@ -284,7 +284,7 @@ export class Forum extends MelObject {
       event.stopPropagation();
   
       // Demander confirmation à l'utilisateur avant de supprimer
-      const confirmation = confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');
+      const confirmation = confirm(rcmail.gettext('mel_forum.delete_comment_confirm'));
       if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
   
       // Envoi d'une requête HTTP pour supprimer le post
@@ -302,7 +302,7 @@ export class Forum extends MelObject {
               if (parsedResponse.status === 'success') {
                   // Affichage du message de succès
                   BnumMessage.DisplayMessage(
-                      parsedResponse.message || 'Le post a été supprimé avec succès.',
+                      parsedResponse.message || rcmail.gettext('mel_forum.delete_post_success'),
                       eMessageType.Confirmation
                   );
   
@@ -314,16 +314,16 @@ export class Forum extends MelObject {
               } else {
                   // Affichage du message d'erreur en cas d'échec
                   BnumMessage.DisplayMessage(
-                      parsedResponse.message || 'Erreur lors de la suppression du post.',
-                      eMessageType.Error
+                        parsedResponse.message || rcmail.gettext('mel_forum.delete_post_post'),
+                        eMessageType.Error
                   );
               }
           },
           on_error: (err) => {
               // Affichage du message d'erreur en cas de problème avec la requête
               BnumMessage.DisplayMessage(
-                  'Erreur lors de la tentative de suppression du post.',
-                  eMessageType.Error
+                    rcmail.gettext('mel_forum.delete_post_post'),
+                    eMessageType.Error
               );
           }
       });
@@ -438,7 +438,7 @@ export class Forum extends MelObject {
             },
             on_error: (err) => {
                 BnumMessage.DisplayMessage(
-                    'Erreur lors de la modification',
+                    rcmail.gettext('mel_forum.error_editing'),
                     eMessageType.Error,
                 );
             },
@@ -457,6 +457,7 @@ export class Forum extends MelObject {
             data = {
                 POST_LINK: post.post_link,
                 POST_CREATOR: post.post_creator,
+                CREATOR_EMAIL: post.creator_email,
                 POST_DATE: post.creation_date,
                 UID: post.uid,
                 POST_TITLE: post.title,

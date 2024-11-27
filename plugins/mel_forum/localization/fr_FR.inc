@@ -160,3 +160,10 @@ $labels['comment_menu'] = 'Menu du commentaire';
 $labels['edit_comment'] = 'Modifier le commentaire';
 $labels['delete_comment'] = 'Supprimer le commentaire';
 $labels['more_options'] = 'Plus d\'options';
+
+// Message
+$labels['fav_updated'] = 'Vos articles favoris ont été mis à jour';
+$labels['error_editing'] = 'Erreur lors de la modification';
+$labels['delete_comment_confirm'] = 'Êtes-vous sûr de vouloir supprimer ce commentaire ?';
+$labels['delete_post_success'] = 'Le post a été supprimé avec succès.';
+$labels['delete_post_failure'] = 'Erreur lors de la suppression du post.';

@@ -3717,8 +3717,10 @@ class mel_forum extends bnum_plugin
     {
         if ($args['workspace']->objects()->get('forum') !== null) {
             $args['layout']->setNavBarSetting('forum', 'newspaper', true, 4);
-            $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news']));
-            $args['layout']->secondRow()->append(8, $args['layout']->htmlModuleBlock(['id' => 'module-forum-last']));
+            // $args['layout']->firstRow()->append(12, $args['layout']->htmlSmallModuleBlock(['id' => 'module-forum-news']));
+            $args['layout']->secondRow()->append(8, $args['layout']->htmlModuleBlock(['id' => 'module-forum-last', 'data-title' => 'Derniers articles', 'data-button' => '']));
+
+            $this->include_module('workspace.js');
         }
 
         return $args;

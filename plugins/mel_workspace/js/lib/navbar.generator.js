@@ -108,9 +108,11 @@ export class NavBarManager {
         });
       });
       navbar.onbuttonclicked.push((task, event) => {
-        const config =
+        const raw_config =
           rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) ||
           {};
+
+        const config = Array.isArray(raw_config) ? raw_config[0] : raw_config;
         this.currentNavBar.unselect();
         switch (task) {
           case 'home':
@@ -157,6 +159,7 @@ export class NavBarManager {
             break;
 
           default:
+            debugger;
             FramesManager.Instance.switch_frame(task, {
               args: config,
               actions: ['workspace'],

@@ -73,6 +73,7 @@ export class WorkspacePage extends WorkspaceObject {
 
     NavBarManager.currentNavBar.onactionclicked.push((type) => {
       switch (type) {
+        case 'more':
         case 'settings':
           $('.wsp-params').css('display', EMPTY_STRING);
           $('.wsp-row').css('display', 'none');

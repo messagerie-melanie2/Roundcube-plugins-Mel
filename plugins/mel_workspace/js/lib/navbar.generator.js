@@ -158,6 +158,28 @@ export class NavBarManager {
             );
             break;
 
+          case 'more':
+          case 'workspace_user':
+            this.currentNavBar.onactionclicked.call('more');
+            FramesManager.Instance.switch_frame('workspace', {
+              args: config,
+              actions: ['workspace'],
+            });
+            top.history.replaceState(
+              {},
+              document.title,
+              MelObject.Empty().url('workspace', {
+                action: 'workspace',
+                params: {
+                  _uid: workspace.uid,
+                  _page: 'more',
+                  _force_bnum: 1,
+                },
+                removeIsFromIframe: true,
+              }),
+            );
+            break;
+
           default:
             debugger;
             FramesManager.Instance.switch_frame(task, {

@@ -1,5 +1,6 @@
 import { Cookie } from '../../../classes/cookies.js';
 import { EMPTY_STRING } from '../../../constants/constants.js';
+import { REG_NUMBERS } from '../../../constants/regexp.js';
 import { BnumEvent, MelConditionnalEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
 import {
@@ -79,8 +80,8 @@ const STYLE_LOADED = `
  */
 const STYLE_HOST = `
         :host {
-          width:%0%;
-          height:%0%;
+          width:%0%1;
+          height:%0%1;
         }
       `;
 /**
@@ -468,7 +469,12 @@ class AvatarElement extends HtmlCustomTag {
    * @returns {string}
    */
   _get_style_force() {
-    return STYLE_HOST.replaceAll('%0', this._force);
+    const unit = this._force.replace(REG_NUMBERS, EMPTY_STRING) || '%';
+
+    return STYLE_HOST.replaceAll(
+      '%0',
+      this._force.replaceAll(unit, EMPTY_STRING),
+    ).replaceAll('%1', unit);
   }
 
   /**

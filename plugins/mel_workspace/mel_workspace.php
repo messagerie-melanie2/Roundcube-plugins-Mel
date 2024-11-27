@@ -137,7 +137,13 @@ class mel_workspace extends bnum_plugin
         $this->workspacePageLayout->setNavBarSetting('calendar', 'calendar_month', true, 1);
 
         if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
-        $this->workspacePageLayout->setNavBarSetting('workspace_params', 'settings', false, 999);
+        
+        if ($workspace->isAdmin()) $this->workspacePageLayout->setNavBarSetting('workspace_params', 'settings', false, 999);
+        else {
+            $this->workspacePageLayout->setNavBarSetting('workspace_user', 'more', false, 999);
+            $this->include_web_component()->Avatar();
+        }
+        
 
         $this->rc()->output->add_handlers(array(
             'wsp.row.first'  => [$this, 'handler_get_row'],
@@ -662,9 +668,52 @@ class mel_workspace extends bnum_plugin
     public function handler_settings_or_member($args) {
         $workspace = $this->workspace;
 
-        if ($workspace->isAdmin()) {
-            return $this->setup_params_page();
+        if ($workspace->isAdmin()) return $this->setup_params_page();
+        else return $this->setup_user_page();
+    
+    }
+
+    function setup_user_page()
+    {
+        $env = [];
+        $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
+        $shares = $this->sort_user($this->workspace->users()); 
+        $nbuser = count($shares);
+
+        $html .= "<h2>Liste des membres ($nbuser)</h2>";
+        $html .= '<div class="wsp-block">';
+
+        foreach ($shares as $key => $value) {
+            $user = driver_mel::gi()->getUser($value->user); 
+            $tmp = $user->name;
+            
+            if (!isset($user)) continue;
+
+            if (isset($tmp) || $tmp !== '')
+            {
+                $html .= html::div(["class" => "row member"], 
+                html::div(["class" => "col-2 avatar-wsp"],
+                    html::tag('bnum-avatar', ['data-email' => $user->email, 'data-force-size' => '42px', 'style' => 'background-color:'.$this->workspace->color()])
+                    // html::div(["class" => "dwp-round", "style" => "background-color:transparent"],
+                    //     html::tag("img", ["src" => $this->rc()->config->get('rocket_chat_url')."avatar/".$value->user])
+                    // )
+                ).
+                html::div(["class" => "col-10"],
+                    html::tag("span", ["class" => "name"], driver_mel::gi()->getUser($value->user)->name.($this->workspace->isAdmin($value->user) ? html::tag("span", ["class" => "plus icofont-crown"]) : "")).
+                    "<br/>".
+                    html::tag("span", ["class" => "email"], driver_mel::gi()->getUser($value->user)->email ?? 'Adresse inconnue')
+                )
+                );
+                $env[$user->email] = ['email' => $user->email, 'name' => $user->name, 'fullname' => $user->fullname, 'is_external' => $user->is_external];
+            }
         }
+
+        $html .= "</div></div>";
+
+        // $this->rc->output->set_env('current_workspace_users', $env);
+
+        return $html;
+
     }
 
     function setup_params_page()

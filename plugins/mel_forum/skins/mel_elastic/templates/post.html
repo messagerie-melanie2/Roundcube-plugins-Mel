@@ -9,7 +9,7 @@
     <div class="row return-header">
       <div id="return-homepage" class="return" tabindex="0" role="button" title="Retour à la page des articles">
         <i class="material-symbols-outlined">arrow_back</i>
-        <span class="ml-2">Articles</span>
+        <span class="ml-2"><roundcube:label name="mel_forum.articles" /></span>
       </div>
     </div>
     <div class="row forum-header">
@@ -59,10 +59,10 @@
           <div class="input-group mel-group">
             <select title="Trier par : " id="forum-comment-select" class="form-control input-mel mel-input custom-select"
               data-original-title="Trier par : ">
-              <option value="Plus récents">Plus récents</option>
-              <option value="date_asc">Plus anciens</option>
-              <option value="reactions">Plus de réactions</option>
-              <option value="replies">Plus de réponses</option>
+              <option value="Plus récents"><roundcube:label name="mel_forum.newest" /></option>
+              <option value="date_asc"><roundcube:label name="mel_forum.oldest" /></option>
+              <option value="reactions"><roundcube:label name="mel_forum.more_reactions" /></option>
+              <option value="replies"><roundcube:label name="mel_forum.more_responses" /></option>
             </select>
           </div>
         </div>
@@ -81,14 +81,14 @@
               class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"
               data-dismiss="modal"
             >
-              Annuler<span class="plus icon-mel-close"></span>
+            <roundcube:label name="mel_forum.cancel" /><span class="plus icon-mel-close"></span>
             </button>
             <button
               id="submit-comment"
               type="button"
               class="modal-save-footer btn btn-secondary mel-button"
             >
-              Sauvegarder<span class="plus icon-mel-arrow-right"></span>
+            <roundcube:label name="mel_forum.save" /><span class="plus icon-mel-arrow-right"></span>
             </button>
           </div>
         </div>
@@ -117,35 +117,35 @@
                 <div class="forum-comment-edit hidden" id="edit-comment-%%UID%%">
                   <textarea id="edit-comment-textarea-%%UID%%" class="forum-comment-input" rows="1">%%COMMENT_CONTENT%%</textarea>
                   <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
-                    <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler<span class="plus icon-mel-close"></span></button>
-                    <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder<span class="plus icon-mel-arrow-right"></span></button>
+                    <button id="cancel-modify-comment" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"><roundcube:label name="mel_forum.cancel" /><span class="plus icon-mel-close"></span></button>
+                    <button id="submit-modify-comment" type="button" class="modal-save-footer btn btn-secondary mel-button"><roundcube:label name="mel_forum.save" /><span class="plus icon-mel-arrow-right"></span></button>
                   </div>
                 </div>
           
                 <div class="forum-comment-reactions">
-                  <div class="%%LIKE_CLASS%%" tabindex="0" role="button"  title="J'aime">
+                  <div class="%%LIKE_CLASS%%" tabindex="0" role="button"  title="<roundcube:label name="mel_forum.like_action" />">
                     <span class="icon material-symbols-outlined" data-like-uid="%%UID%%" data-icon="thumb_up"></span>
                     <span class="ml-2">%%LIKES%%</span>
                   </div>
-                  <div class="%%DISLIKE_CLASS%%" tabindex="0" role="button"  title="Je n'aime pas">
+                  <div class="%%DISLIKE_CLASS%%" tabindex="0" role="button"  title="<roundcube:label name="mel_forum.dislike_action" />">
                     <span class="icon material-symbols-outlined" data-dislike-uid="%%UID%%" data-icon="thumb_down"></span>
                     <span class="ml-2">%%DISLIKES%%</span>
                   </div>
-                  <div class="reaction-item mr-3 response" tabindex="0" role="button" title="Répondre au commentaire">
+                  <div class="reaction-item mr-3 response" tabindex="0" role="button" title="<roundcube:label name="mel_forum.respond" />">
                     <span class="icon" data-icon="mode_comment"></span>
-                    <span class="ml-2">répondre</span>
+                    <span class="ml-2"><roundcube:label name="mel_forum.respond" /></span>
                   </div>
                   <div class="reaction-item">
-                    <span class="icon" data-icon="more_horiz" tabindex="0" role="button" title="Plus d'options"></span>
+                    <span class="icon" data-icon="more_horiz" tabindex="0" role="button" title="<roundcube:label name="mel_forum.more_options" />"></span>
                     <div id="context-menu-%%UID%%" class="forum-comment-context-menu hidden">
-                      <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du commentaire</h3>
-                      <button class="comment-options-button edit-comment" title="Modifier le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="modify_comment" data-id="%%UID%%">
+                      <h3 id="aria-label-groupoptions-smallmenu" class="voice"><roundcube:label name="mel_forum.comment_menu" /></h3>
+                      <button class="comment-options-button edit-comment" title="<roundcube:label name="mel_forum.edit_comment" />" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="modify_comment" data-id="%%UID%%">
                         <span class="icon material-symbols-outlined" data-icon="border_color"></span>
-                        <span class="comment-options-text" style="margin-left: 8px;">Modifier le commentaire</span>
+                        <span class="comment-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.edit_comment" /></span>
                       </button>
-                      <button class="comment-options-button delete-comment" title="Supprimer le commentaire" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="cancel_comment" data-id="%%UID%%">
+                      <button class="comment-options-button delete-comment" title="<roundcube:label name="mel_forum.delete_comment" />" aria-labelledby="aria-label-comment-options-menu-%%UID%%" data-action="cancel_comment" data-id="%%UID%%">
                         <span class="icon material-symbols-outlined" data-icon="delete"></span>
-                        <span class="comment-options-text" style="margin-left: 8px;">Supprimer le commentaire</span>
+                        <span class="comment-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.delete_comment" /></span>
                       </button>
                     </div>
                   </div>
@@ -157,11 +157,11 @@
                     <bnum-avatar class="forum-comment-profile-image" style="background-color: var(--mel-button-background-color); display: flex; align-items: center; justify-content: center; color: white" data-id="%%USER_ID%%" data-forceload="true"></bnum-avatar>
                   </div>
                   <div class="col pl-0" style="margin-bottom: 1rem;">
-                    <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="Répondre" rows="1"></textarea>
+                    <textarea id="new-response-textarea-%%UID%%" class="forum-comment-input" placeholder="<roundcube:label name="mel_forum.respond" />" rows="1"></textarea>
                   </div>
                   <div id="buttons-container" class="col-12 d-flex justify-content-end align-items-center">
-                    <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2">Annuler<span class="plus icon-mel-close"></span></button>
-                    <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button">Sauvegarder<span class="plus icon-mel-arrow-right"></span></button>
+                    <button id="cancel-reply" type="button" class="modal-close-footer btn mel-button btn-danger mel-before-remover mr-2"><roundcube:label name="mel_forum.cancel" /><span class="plus icon-mel-close"></span></button>
+                    <button id="submit-reply" type="button" class="modal-save-footer btn btn-secondary mel-button"><roundcube:label name="mel_forum.save" /><span class="plus icon-mel-arrow-right"></span></button>
                   </div>
                 </div>
             

@@ -145,6 +145,10 @@ class Workspace {
     }
   }
 
+  public function hasService($service) {
+    return $this->services(true, true)[$service] ?? false;
+  }
+
   public function isPublic($newState = DEFAULT_SYMBOL) {
     return $this->_update_or_get_item('ispublic', $newState);
   }
@@ -180,6 +184,12 @@ class Workspace {
     return $this->users(true)->any(function ($k, $v) use($email) {
       return $v->email === $email;
     });
+  }
+
+  public function updateUsers($newUsers) {
+    $this->_users = $newUsers;
+    $this->_workspace->shares = $this->_users;
+    return $this;
   }
 
   public function share($userId = null, $to_melanie_user = false){
@@ -229,6 +239,12 @@ class Workspace {
         return $user->rights === Share::RIGHT_OWNER;
     else
         return false;
+  }
+
+  public function getAdmins() {
+    return mel_helper::Enumerable($this->users())->where(function ($k, $v) {
+      return $v->rights === Share::RIGHT_OWNER;
+    });
   }
 
   public function serialize($addUsers = false) {
@@ -336,6 +352,10 @@ class Workspace {
         $this->settings()->set('lists', $lists);//$this->add_setting($workspace, 'lists', $lists);
     } 
     else yield $user->uid;
+  }
+
+  public static function GetLoad($uid) {
+    return new Workspace($uid, true);
   }
 
   public static function FromWorkspace($workspace) {

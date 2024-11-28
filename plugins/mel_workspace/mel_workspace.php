@@ -616,9 +616,127 @@ class mel_workspace extends bnum_plugin
 
         $this->_set_services($workspace, $workspace->services(true, true), null);
     }
-    #endregion
 
-    #endregion
+    function update_user_rights()
+    {
+        $return = 'Unknown error';
+
+        try {
+            $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+            $user = rcube_utils::get_input_value("_id", rcube_utils::INPUT_POST);
+            $new_right = rcube_utils::get_input_value("_right", rcube_utils::INPUT_POST);
+            $workspace = new Workspace($uid, true);//self::get_workspace($uid);
+            if ($workspace->isAdmin())
+            {
+             
+                if ($workspace->getAdmins()->count() === 1 && $new_right === "w")
+                {
+                    $return = "you are the alone";
+                }
+                else {
+                    //$workspace->shares[$user]->rights = $new_right;
+                    $workspace->share($user)->rights = $new_right;
+                    //self::edit_modified_date($workspace, false);
+                    $workspace->save();
+    
+                    //$services = $this->get_worskpace_services($workspace);
+    
+                    // if ($services[self::CHANNEL])
+                    //     $this->get_ariane()->update_owner($user, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false, $new_right === Share::RIGHT_WRITE);
+    
+                    // if ($services[self::WEKAN])
+                    //     $this->wekan()->update_user_status($this->get_object($workspace, self::WEKAN)->id, $user, !($new_right === Share::RIGHT_WRITE));
+    
+                    $plugin = $this->exec_hook('workspace.services.set.role', [
+                        'workspace' => $workspace,
+                        'user' => $user,
+                        'new_right' => $new_right,
+                        'reload' => false,
+                        'rights' => ['owner' => Share::RIGHT_OWNER, 'user' => Share::RIGHT_WRITE],
+                        'plugin' => $this
+                    ]) ?? ['reload' => false];
+
+                    if ($plugin['reload'] || $user === driver_mel::gi()->getUser()->uid) $return = "reload";
+                }
+            }
+            else $return = "denied";
+        } catch (\Throwable $th) {
+            $return = "error";
+            mel_logs::gi()->log(mel_logs::ERROR, '###[update_user_rights]'.$th->getMessage());
+        }
+        
+        $this->sendEncodedExit($return);
+    }
+
+    function delete_user($uid = null, $user_to_delete = null, $exit = true, $forceDelete = false)
+    {
+        $return = 'Unknown return';
+
+        if ($uid === null)
+            $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        if ($user_to_delete === null)
+            $user_to_delete = rcube_utils::get_input_value("_user_to_delete", rcube_utils::INPUT_POST);
+
+        
+        $workspace = Workspace::GetLoad($uid);//self::get_workspace($uid);
+        $currentUserIsAdmin = $workspace->isAdmin();
+
+        if($currentUserIsAdmin || $user_to_delete === driver_mel::gi()->getUser()->uid )
+        {
+            //Si il n'y a qu'un seul admin
+            if ($currentUserIsAdmin && $workspace->getAdmins()->count() === 1 && !$forceDelete)
+            {
+                //Et que l'on veut se supprimer
+                if ($user_to_delete === driver_mel::gi()->getUser()->uid)
+                {
+                    $return = "you are the alone";
+
+                    if ($exit) $this->sendEncodedExit($return);
+                    else return $return;
+                }
+            }
+
+            $user_find = false;
+            foreach ($workspace->users() as $key => $value) {
+                if ($value->user === $user_to_delete)
+                {                
+                    $shares = $workspace->users();
+                    unset($shares[$key]);
+                    $workspace->updateUsers($shares);
+                    //$this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true, true));
+
+                    $this->exec_hook('workspace.users.services.delete', [
+                        'workspace' => $workspace,
+                        'user' => $user_to_delete,
+                        'plugin' => $this
+                    ]);
+
+                    $user_find = true;
+                    break;
+                }
+            }
+
+            //self::edit_modified_date($workspace, false);
+
+            if ($user_find)
+            {
+                $workspace->save();
+
+                if ($exit === true) mel_notification::notify("workspace", 'Vous avez été supprimé de l\'espace de travail "'.$workspace->title().'"', '', null, $user_to_delete);
+            }
+
+            $return = "";
+        }
+        else
+            $return = "denied";
+
+        if ($exit) $this->sendEncodedExit($return);
+        else return $return;
+    }
+
+    #endregion action/params
+
+    #endregion params
 
     #region handlers
     public function handler_subscribed($args) {
@@ -1093,6 +1211,7 @@ class mel_workspace extends bnum_plugin
         private function _hook_actions() {
             $this->add_hook('webcomponents.scroll.count', [$this, 'webcomponentScrollCount']);
             $this->add_hook('webcomponents.scroll.data', [$this, 'webcomponentScrollData']);
+            $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
         }
 
         public function webcomponentScrollCount($args) {
@@ -1126,6 +1245,53 @@ class mel_workspace extends bnum_plugin
             }
 
             return $args;
+        }
+
+        public function workspace_users_services_delete($args) {
+            $user = $args['user'];
+
+            if ($args['workspace']->hasService(self::KEY_TASK)) {
+                include_once "../mel_moncompte/ressources/tasks.php";
+
+                $tasklist = $args['workspace']->objects()->get(self::KEY_TASK);
+
+                if ($tasklist !== null)
+                {
+                    $mel = new M2taskswsp($tasklist);
+                    $mel->deleteAcl($user);
+                }
+            }
+            
+            if ($args['workspace']->hasService(self::KEY_AGENDA)) {
+                $now = date(LibMelanie\Api\Defaut\Event::DB_DATE_FORMAT);
+                $time = strtotime($now);
+                $calendar = driver_mel::gi()->calendar([$user]);
+                $events = $calendar->getRangeEvents($now);
+        
+                foreach ($events as $e) {
+                    if ($e->category === 'ws#'.$workspace->uid()) 
+                    {
+                        if ($e->recurrence->type !== LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR)
+                        {
+                            $e->recurrence->enddate = $now;
+                            
+                            if (isset($e->exceptions))
+                            {
+                                foreach ($e->exceptions as $exception) {
+                                    if (strtotime($exception->start) > $time)
+                                    {
+                                        $exception->delete();
+                                    }
+                                }
+                            }
+                            $e->save();
+                        }
+                        else $e->delete();
+                    }
+                }
+                
+                $calendar->save();    
+            }
         }
         #endregion
 

@@ -93,6 +93,7 @@ class tchap extends bnum_plugin
 
         $this->add_hook('workspace.services.set', [$this, 'workspace_set_tchap']);
         $this->add_hook('wsp.show', [$this, 'on_show_workspace']);
+        $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
     }
 
     function action()
@@ -204,6 +205,14 @@ class tchap extends bnum_plugin
 
                 $args['services'] = $services;
             }
+        }
+
+        return $args;
+    }
+
+    public function workspace_users_services_delete($args) {
+        if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
+            self::kick_member($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id, $args['user']);
         }
 
         return $args;

@@ -82,6 +82,8 @@ class mel_wekan extends rcube_plugin
         if ($this->rc->task === 'workspace') {
             $this->add_hook('wsp.show', [$this, 'wsp_block']);
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
+            $this->add_hook('workspace.services.set.role', [$this, 'workspace_services_set_role']);
+            $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
         }
     }
 
@@ -419,7 +421,7 @@ class mel_wekan extends rcube_plugin
         return $return;
     }
 
-
+    #region Workspace
     function create_workspace_wekan($workspace, $title, $isPublic, $color, $list, $users)
     {
         $wekan = $this;
@@ -520,6 +522,32 @@ class mel_wekan extends rcube_plugin
         return $args;
     }
 
+    public function workspace_services_set_role($args) {
+        if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
+            $new_right = $args['new_right'];
+            $this->update_user_status($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id, $args['user'], !($new_right === $args['rights']['user']));
+        }
+
+        return $args;
+    }
+
+    public function workspace_users_services_delete($args) {
+        if ($args['workspace']->hasService(self::KEY_FOR_WORKSPACE)) {
+            $board_id = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id; 
+
+            if ($this->check_if_user_exist($board_id, $args['user']))
+            {
+                try {
+                    $this->remove_user($board_id, $args['user']);
+                } catch (\Throwable $th) {
+                    throw $th;
+                }
+            }   
+        }
+
+        return $args;
+    }
+
     public function wsp_block($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
@@ -528,6 +556,8 @@ class mel_wekan extends rcube_plugin
 
         return $args;
     }
+
+    #endregion
 
     public function __api()
     {

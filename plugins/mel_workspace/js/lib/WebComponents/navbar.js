@@ -126,6 +126,22 @@ class WspNavBar extends HtmlCustomTag {
     hashtag = null;
   }
 
+  get color() {
+    return this.workspace.color;
+  }
+
+  set color(value) {
+    this.workspace.color = value;
+
+    const querry = this.mainDiv.querySelectorAll('.colored');
+
+    if (querry && querry.length) {
+      for (const element of querry) {
+        element.style.backgroundColor = value;
+      }
+    }
+  }
+
   /**
    * Div principale du shadow-dom
    * @type {HTMLDivElement}

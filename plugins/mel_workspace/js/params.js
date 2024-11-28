@@ -155,8 +155,11 @@
           _uid: this.uid,
         },
         () => {
-          $('.dwp-round').css('background-color', color);
-          this.update_home();
+          this.NavBarManager().then((manager) => {
+            manager.currentNavBar.color = color;
+          });
+          // $('.dwp-round').css('background-color', color);
+          // this.update_home();
         },
       ).always(() => {
         this.busy(false);
@@ -492,6 +495,12 @@
                     case 'desc':
                       this.NavBarManager().then((manager) => {
                         manager.currentNavBar.description = val;
+                      });
+                      break;
+
+                    case 'hashtag':
+                      this.NavBarManager().then((manager) => {
+                        manager.currentNavBar.hashtag = val;
                       });
                       break;
 
@@ -1790,7 +1799,7 @@
             let $querry = $('.wsp-head .col-10');
             let $span = $querry.children()[0];
 
-            if ($span.nodeName === 'SPAN') $span = $($span);
+            if (false && $span?.nodeName === 'SPAN') $span = $($span);
             else $span = false;
 
             const hashtag =

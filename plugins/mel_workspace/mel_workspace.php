@@ -140,7 +140,7 @@ class mel_workspace extends bnum_plugin
         
         if ($workspace->isAdmin()) $this->workspacePageLayout->setNavBarSetting('workspace_params', 'settings', false, 999);
         else {
-            $this->workspacePageLayout->setNavBarSetting('workspace_user', 'more', false, 999);
+            $this->workspacePageLayout->setNavBarSetting('workspace_user', 'group', false, 999);
             $this->include_web_component()->Avatar();
         }
         

@@ -6,7 +6,7 @@ import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
 import { WspNavBar } from './WebComponents/navbar.js';
 // import { WspNavBar } from './WebComponents/navbar.js';
-import { CurrentWorkspaceData } from './WorkspaceObject.js';
+import { CurrentWorkspaceData, WorkspaceObject } from './WorkspaceObject.js';
 
 /**
  * @callback OnBeforeSwitchCallback
@@ -108,113 +108,7 @@ export class NavBarManager {
         });
       });
       navbar.onbuttonclicked.push((task, event) => {
-        const raw_config =
-          rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) ||
-          {};
-
-        const config = Array.isArray(raw_config) ? raw_config[0] : raw_config;
-        this.currentNavBar.unselect();
-        switch (task) {
-          case 'home':
-            $('.wsp-params').css('display', 'none');
-            $('.wsp-row').css('display', EMPTY_STRING);
-            FramesManager.Instance.switch_frame('workspace', {
-              args: config,
-              actions: ['workspace'],
-            });
-            top.history.replaceState(
-              {},
-              document.title,
-              MelObject.Empty().url('workspace', {
-                action: 'workspace',
-                params: {
-                  _uid: workspace.uid,
-                  _force_bnum: 1,
-                },
-                removeIsFromIframe: true,
-              }),
-            );
-            break;
-
-          case 'settings':
-          case 'workspace_params':
-            this.currentNavBar.onactionclicked.call('settings');
-            FramesManager.Instance.switch_frame('workspace', {
-              args: config,
-              actions: ['workspace'],
-            });
-            top.history.replaceState(
-              {},
-              document.title,
-              MelObject.Empty().url('workspace', {
-                action: 'workspace',
-                params: {
-                  _uid: workspace.uid,
-                  _page: 'settings',
-                  _force_bnum: 1,
-                },
-                removeIsFromIframe: true,
-              }),
-            );
-            break;
-
-          case 'more':
-          case 'workspace_user':
-            this.currentNavBar.onactionclicked.call('more');
-            FramesManager.Instance.switch_frame('workspace', {
-              args: config,
-              actions: ['workspace'],
-            });
-            top.history.replaceState(
-              {},
-              document.title,
-              MelObject.Empty().url('workspace', {
-                action: 'workspace',
-                params: {
-                  _uid: workspace.uid,
-                  _page: 'more',
-                  _force_bnum: 1,
-                },
-                removeIsFromIframe: true,
-              }),
-            );
-            break;
-
-          default:
-            debugger;
-            FramesManager.Instance.switch_frame(task, {
-              args: config,
-              actions: ['workspace'],
-            }).then(() => {
-              // debugger;
-              rcmail.triggerEvent('workspace.navbar.onclick', {
-                task,
-                caller: event,
-              });
-
-              if (task === 'calendar') {
-                FramesManager.Instance.get_frame('calendar')[0]
-                  .contentWindow.$('#calendar')
-                  .fullCalendar('rerenderEvents');
-              }
-
-              MainNav.select('workspace', { context: this.nav });
-              top.history.replaceState(
-                {},
-                document.title,
-                MelObject.Empty().url('workspace', {
-                  action: 'workspace',
-                  params: {
-                    _uid: workspace.uid,
-                    _force_bnum: 1,
-                    _page: task,
-                  },
-                  removeIsFromIframe: true,
-                }),
-              );
-            });
-            break;
-        }
+        this.SwitchPage(task, { event, workspace });
       });
 
       nav.$('#layout-frames').before(navbar).css('margin-left', '5px');
@@ -222,6 +116,121 @@ export class NavBarManager {
     }
 
     return this;
+  }
+
+  static async SwitchPage(
+    task,
+    { event = null, workspace = null, manualConfig = null } = {},
+  ) {
+    const raw_config =
+      rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) || {};
+
+    const config =
+      manualConfig || Array.isArray(raw_config) ? raw_config[0] : raw_config;
+    this.currentNavBar.unselect();
+
+    workspace ??= WorkspaceObject.GetWorkspaceData();
+
+    switch (task) {
+      case 'home':
+        $('.wsp-params').css('display', 'none');
+        $('.wsp-row').css('display', EMPTY_STRING);
+        await FramesManager.Instance.switch_frame('workspace', {
+          args: config,
+          actions: ['workspace'],
+        });
+        top.history.replaceState(
+          {},
+          document.title,
+          MelObject.Empty().url('workspace', {
+            action: 'workspace',
+            params: {
+              _uid: workspace.uid,
+              _force_bnum: 1,
+            },
+            removeIsFromIframe: true,
+          }),
+        );
+        break;
+
+      case 'settings':
+      case 'workspace_params':
+        this.currentNavBar.onactionclicked.call('settings');
+        await FramesManager.Instance.switch_frame('workspace', {
+          args: config,
+          actions: ['workspace'],
+        });
+        top.history.replaceState(
+          {},
+          document.title,
+          MelObject.Empty().url('workspace', {
+            action: 'workspace',
+            params: {
+              _uid: workspace.uid,
+              _page: 'settings',
+              _force_bnum: 1,
+            },
+            removeIsFromIframe: true,
+          }),
+        );
+        break;
+
+      case 'more':
+      case 'workspace_user':
+        this.currentNavBar.onactionclicked.call('more');
+        await FramesManager.Instance.switch_frame('workspace', {
+          args: config,
+          actions: ['workspace'],
+        });
+        top.history.replaceState(
+          {},
+          document.title,
+          MelObject.Empty().url('workspace', {
+            action: 'workspace',
+            params: {
+              _uid: workspace.uid,
+              _page: 'more',
+              _force_bnum: 1,
+            },
+            removeIsFromIframe: true,
+          }),
+        );
+        break;
+
+      default:
+        await FramesManager.Instance.switch_frame(task, {
+          args: config,
+          actions: ['workspace'],
+        }).then(() => {
+          // debugger;
+          rcmail.triggerEvent('workspace.navbar.onclick', {
+            task,
+            caller: event,
+          });
+
+          if (task === 'calendar') {
+            FramesManager.Instance.get_frame('calendar')[0]
+              .contentWindow.$('#calendar')
+              .fullCalendar('rerenderEvents');
+          }
+
+          MainNav.select('workspace', { context: this.nav });
+          top.history.replaceState(
+            {},
+            document.title,
+            MelObject.Empty().url('workspace', {
+              action: 'workspace',
+              params: {
+                _uid: workspace.uid,
+                _force_bnum: 1,
+                _page: task,
+              },
+              removeIsFromIframe: true,
+            }),
+          );
+        });
+        break;
+    }
   }
 
   static Kill(uid) {

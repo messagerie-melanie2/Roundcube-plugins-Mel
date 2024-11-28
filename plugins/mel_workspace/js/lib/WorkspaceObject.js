@@ -3,16 +3,25 @@ import {
   eMessageType,
 } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
+import { BnumEvent } from '../../../mel_metapage/js/lib/mel_events.js';
 import {
   MelObject,
   WrapperObject,
 } from '../../../mel_metapage/js/lib/mel_object.js';
+import { NavBarManager } from './navbar.generator.js';
 import { WorkspaceModuleBlock } from './WebComponents/workspace_module_block.js';
 
 /**
  * @module Workspace/Object
+ */
+
+/**
+ * @callback OnActionReceivedCallback
+ * @param {WorkspaceObjectData} data
+ * @returns {void}
  */
 
 export class WorkspaceObject extends MelObject {
@@ -22,6 +31,16 @@ export class WorkspaceObject extends MelObject {
 
   main() {
     super.main();
+
+    /**
+     * @type {BnumEvent<OnActionReceivedCallback>}
+     */
+    this.onactionreceived = new BnumEvent();
+
+    this.rcmail().addEventListener(
+      'workspace.object.call',
+      this.onactionreceived.call.bind(this.onactionreceived),
+    );
   }
 
   loadModule() {
@@ -49,7 +68,29 @@ export class WorkspaceObject extends MelObject {
     return document.querySelector(`#${id}`);
   }
 
-  switch_workspace_page(page) {}
+  /**
+   * Permet un changement de frame de l'espace de travail
+   * @param {string} page Tâche
+   * @param {Object} [param1={}] Arguments qui permettra à la frame de changer de page au besoin
+   * @param {?string} [param1.action=null] Action de la nouvelle frame. `null` par défaut
+   * @param {Object<string, *>} [param1.newArgs={}] Arguments de l'url. Object vide par défaut.
+   * @returns {Promise<void>}
+   * @async
+   */
+  async switch_workspace_page(page, { action = null, newArgs = {} } = {}) {
+    NavBarManager.currentNavBar.select(page, { background: true });
+
+    if (!newArgs) newArgs = {};
+
+    if (action) newArgs['_action'] = action;
+
+    if (!Object.keys(newArgs).length) newArgs = null;
+
+    await NavBarManager.SwitchPage(page, {
+      workspace: this.workspace,
+      manualConfig: newArgs,
+    });
+  }
 
   /**
    *
@@ -152,6 +193,50 @@ export class WorkspaceObject extends MelObject {
 
   static GetWorkspaceData() {
     return workspaceData.Instance;
+  }
+
+  static SendToParent(key, data, { task = null } = {}) {
+    let rtn = false;
+
+    if (parent !== window && !!parent) {
+      parent.postMessage({ key, data, task });
+      rtn = true;
+    }
+
+    return rtn;
+  }
+}
+
+class WorkspaceObjectData {
+  #workspace = null;
+  #data = null;
+  #context = null;
+  #key = null;
+  constructor(workspace, key, { data = null, context = window } = {}) {
+    this.#workspace = workspace;
+    this.#data = data;
+    this.#context = context;
+    this.#key = key;
+  }
+
+  get key() {
+    return this.#key;
+  }
+
+  get workspace() {
+    return this.#workspace;
+  }
+
+  get data() {
+    return this.#data;
+  }
+
+  get context() {
+    return this.#context;
+  }
+
+  get helper() {
+    return MelObject.Empty();
   }
 }
 
@@ -294,3 +379,32 @@ export class CurrentWorkspaceData {
  * @type {WrapperObject<CurrentWorkspaceData>}
  */
 const workspaceData = new WrapperObject(CurrentWorkspaceData);
+
+const window_prop_data = 'wspobjlsn';
+if (!window[window_prop_data]) {
+  window.addEventListener(
+    'message',
+    (event) => {
+      if (
+        event.origin.includes(window.location.host + window.location.pathname)
+      ) {
+        rcmail.triggerEvent(
+          'workspace.object.call',
+          new WorkspaceObjectData(
+            WorkspaceObject.GetWorkspaceData(),
+            event.data.key,
+            {
+              data: event.data.data,
+              context: event.data.task
+                ? FramesManager.Instance.get_frame(event.data.task, {
+                    jquery: false,
+                  })?.contentWindow
+                : undefined,
+            },
+          ),
+        );
+      }
+    },
+    false,
+  );
+}

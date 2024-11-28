@@ -1539,6 +1539,10 @@ class mel_workspace extends bnum_plugin
         return $workspace;
     }
 
+    public static function Workspace($uid) {
+        return Workspace::GetLoad($uid);
+    }
+
     private static function _CurrentUser()  {
         return driver_mel::gi()->getUser();
     }

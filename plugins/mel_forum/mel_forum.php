@@ -335,7 +335,7 @@ class mel_forum extends bnum_plugin
 
                 // Vérifier si l'utilisateur connecté est bien le créateur de l'article
                 if ($post->creator !== $current_user_uid) {
-                    echo json_encode(['status' => 'error', 'message' => 'Seul le créateur de cet article peut le modifier.']);
+                    echo json_encode(['status' => 'error', 'message' => $this->gettext("creator_edit_only", "mel_forum")]);
                     exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
                 }
 
@@ -518,7 +518,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -554,13 +554,13 @@ class mel_forum extends bnum_plugin
             // Réponse JSON en fonction de la sauvegarde des images
             if ($imageSaved) {
                 header('Content-Type: application/json');
-                echo json_encode(['status' => 'success', 'message' => 'Article créé avec succès.']);
+                echo json_encode(['status' => 'success', 'message' => $this->gettext("article_created", "mel_forum")]);
             } else {
                 header('Content-Type: application/json');
-                echo json_encode(['status' => 'error', 'message' => 'Article créé, mais échec de l\'enregistrement de certaines images.']);
+                echo json_encode(['status' => 'error', 'message' => $this->gettext("article_created_image_error", "mel_forum")]);
             }
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Échec de création de l\'article.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("article_creation_error", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -593,7 +593,7 @@ class mel_forum extends bnum_plugin
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->uid = $uid;
         if (!$post->load()) {
-            echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("article_unfindable", "mel_forum")]);
             exit;
         }
 
@@ -601,7 +601,7 @@ class mel_forum extends bnum_plugin
         $images = $post->listImages();
         foreach ($images as $image) {
             if (!$image->delete()) {
-                echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de l\'image existante.']);
+                echo json_encode(['status' => 'error', 'message' => $this->gettext("image_delete_failure", "mel_forum")]);
                 exit;
             }
         }
@@ -638,20 +638,20 @@ class mel_forum extends bnum_plugin
             foreach ($imageLinks as $link) {
                 if (!$this->save_image($post->id, $link)) {
                     $imageSaved = false;
-                    $errors[] = "Echec de l'enregistrement de l'image: $link";
+                    $errors[] = $this->gettext("image_save_failure", "mel_forum") . $link;
                 }
             }
 
             // Réponse JSON en fonction de la sauvegarde des images
             if ($imageSaved) {
                 header('Content-Type: application/json');
-                echo json_encode(['status' => 'success', 'message' => 'Article mis à jour avec succès.']);
+                echo json_encode(['status' => 'success', 'message' => $this->gettext("article_updated", "mel_forum")]);
             } else {
                 header('Content-Type: application/json');
-                echo json_encode(['status' => 'error', 'message' => 'Article mis à jour, mais échec de l\'enregistrement de certaines images.', 'errors' => $errors]);
+                echo json_encode(['status' => 'error', 'message' => $this->gettext("article_updated_image_error", "mel_forum"), 'errors' => $errors]);
             }
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Échec de mise à jour de l\'article.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("article_updated_error", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -727,7 +727,7 @@ class mel_forum extends bnum_plugin
 
         // Validation de la donnée saisie
         if (empty($uid)) {
-            echo json_encode(['status' => 'error', 'message' => 'L\'identifiant de l\'article est requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("article_id_required", "mel_forum")]);
             exit;
         }
 
@@ -737,22 +737,22 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si l'article existe
         if (!$post->load()) {
-            echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("article_unfindable", "mel_forum")]);
             exit;
         }
 
         // Vérifier si l'utilisateur connecté est bien le créateur de l'article
         if ($post->creator !== $current_user_uid) {
-            echo json_encode(['status' => 'error', 'message' => 'Seul le créateur de cet article peut le supprimer.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("creator_delete_only", "mel_forum")]);
             exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
         }
 
         // Supprimer l'article
         $ret = $post->delete();
         if (!is_null($ret)) {
-            echo json_encode(['status' => 'success', 'message' => "L'article " . $post->title . " a été supprimé avec succès."]);
+            echo json_encode(['status' => 'success', 'message' => $this->gettext("the_article", "mel_forum") . $post->title . $this->gettext("has_been_deleted", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => "Echec de suppression de l'article " . $post->title . "."]);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("delete_post_failure", "mel_forum") . $post->title . "."]);
         }
 
         // Arrêt de l'exécution du script
@@ -1117,9 +1117,9 @@ class mel_forum extends bnum_plugin
 
             header('Content-Type: application/json');
 
-            echo json_encode(['status' => 'success', 'message' => 'Tag créé avec succès.']);
+            echo json_encode(['status' => 'success', 'message' => $this->gettext("tag_created", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec de création du Tag.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_creation_failure", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -1167,7 +1167,7 @@ class mel_forum extends bnum_plugin
                 'tags' => $tags_array
             ]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Aucun tag trouvé.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("no_tag_found", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -1222,7 +1222,7 @@ class mel_forum extends bnum_plugin
 
         // Validation de la donnée saisie
         if (empty($name)) {
-            echo json_encode(['status' => 'error', 'message' => 'Le nom du tag est requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_name_required", "mel_forum")]);
             exit;
         }
 
@@ -1233,16 +1233,16 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si le tag existe
         if (!$tag->load()) {
-            echo json_encode(['status' => 'error', 'message' => 'Tag introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_unfindable", "mel_forum")]);
             exit;
         }
 
         // Supprimer le tag
         $ret = $tag->delete();
         if (!is_null($ret)) {
-            echo json_encode(['status' => 'success', 'message' => "Le Tag " . $tag->name . " a été supprimé avec succès."]);
+            echo json_encode(['status' => 'success', 'message' => $this->gettext("the_tag", "mel_forum") . $tag->name . $this->gettext("has_been_deleted", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => "Echec de suppression du Tag " . $tag->name . "."]);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_delete_error", "mel_forum") . $tag->name . "."]);
         }
 
         // Arrêt de l'exécution du script
@@ -1268,7 +1268,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($name) || empty($workspace_uid) || empty($uid)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -1283,9 +1283,9 @@ class mel_forum extends bnum_plugin
 
             if ($post->load()) {
                 if ($post->addTag($tag)) {
-                    echo json_encode(['status' => 'success', 'message' => 'Tag associé au post avec succès.']);
+                    echo json_encode(['status' => 'success', 'message' => $this->gettext("tag_associated_success", "mel_forum")]);
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Echec de l\'association du tag avec le post.']);
+                    echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_associated_failure", "mel_forum")]);
                 }
             }
 
@@ -1313,7 +1313,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($name) || empty($workspace_uid) || empty($uid)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -1328,9 +1328,9 @@ class mel_forum extends bnum_plugin
 
             if ($post->load()) {
                 if ($post->removeTag($tag)) {
-                    echo json_encode(['status' => 'success', 'message' => 'Tag dissocié du post avec succès.']);
+                    echo json_encode(['status' => 'success', 'message' => $this->gettext("tag_unassociated", "mel_forum")]);
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Echec de la suppression du tag lié au post.']);
+                    echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_delete_failure", "mel_forum")]);
                 }
             }
 
@@ -1363,7 +1363,7 @@ class mel_forum extends bnum_plugin
         // Validation des données saisies
         if (empty($content)) {
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Le champ commentaire est requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_field_required", "mel_forum")]);
             exit;
         }
 
@@ -1399,12 +1399,12 @@ class mel_forum extends bnum_plugin
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Commentaire créé avec succès.',
+                'message' => $this->gettext("comment_creation", "mel_forum"),
                 'comment' => $commentData
             ]);
         } else {
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Echec de création du commentaire.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_creation_failed", "mel_forum")]);
         }
 
         exit;
@@ -1430,7 +1430,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($user->uid) || empty($content)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -1450,9 +1450,9 @@ class mel_forum extends bnum_plugin
 
             header('Content-Type: application/json');
 
-            echo json_encode(['status' => 'success', 'message' => 'Réponse créée avec succès.']);
+            echo json_encode(['status' => 'success', 'message' => $this->gettext("response_creation", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec de création de la réponse.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("response_creation_failed", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -1482,19 +1482,19 @@ class mel_forum extends bnum_plugin
         $comment->uid = $uid;
         if (!$comment->load()) {
 
-            echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
             exit;
         }
 
         // Vérifier si le commentaire existe
         if (!$comment) {
-            echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
             exit;
         }
         // Vérifier si l'utilisateur est bien l'auteur du commentaire
         if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Vous n\'êtes pas autorisé à modifier ce commentaire.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("cannot_edit_comment", "mel_forum")]);
             exit;
         }
 
@@ -1515,11 +1515,11 @@ class mel_forum extends bnum_plugin
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Commentaire mis à jour avec succès.',
+                'message' => $this->gettext("comment_updated", "mel_forum"),
                 'modify' => $modifyData
             ]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec de mise à jour du commentaire.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_updated_failure", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -1548,7 +1548,7 @@ class mel_forum extends bnum_plugin
 
         // Validation de la donnée saisie
         if (empty($uid)) {
-            echo json_encode(['status' => 'error', 'message' => 'L\'uid du commentaire est requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_uid_required", "mel_forum")]);
             exit;
         }
 
@@ -1563,22 +1563,22 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si le commentaire existe
         if (!$comment->load()) {
-            echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
             exit;
         }
 
         // Vérifier si l'utilisateur est bien l'auteur du commentaire
         if ($comment->user_uid !== $user->uid) { // Vérification si l'utilisateur est l'auteur
-            echo json_encode(['status' => 'error', 'message' => 'Vous n\'êtes pas autorisé à supprimer ce commentaire.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("cannot_delete_comment", "mel_forum")]);
             exit;
         }
 
         // Supprimer le commentaire
         $ret = $comment->delete();
         if (!is_null($ret)) {
-            echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
+            echo json_encode(['status' => 'success', 'message' => $this->gettext("comment_deleted", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_deleted_failure", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -1611,7 +1611,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($type) || empty($comment_id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -1620,7 +1620,7 @@ class mel_forum extends bnum_plugin
         $comment->uid = $comment_uid;
 
         if (!$comment->load()) {
-            echo json_encode(['status' => 'error', 'message' => 'Commentaire introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("comment_unfindable", "mel_forum")]);
             exit;
         }
 
@@ -1628,7 +1628,7 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si le créateur du like/dislike est le même que le créateur du commentaire
         if ($creator === $user_uid) {
-            echo json_encode(['status' => 'error', 'message' => 'Vous ne pouvez pas réagir à votre propre commentaire.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("react_to_own_comment", "mel_forum")]);
             exit;
         }
 
@@ -1647,11 +1647,11 @@ class mel_forum extends bnum_plugin
             // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
             if ($type === 'like') {
                 $existing_reaction->delete();
-                $message = 'Like annulé avec succès.';
+                $message = $this->gettext("unlike", "mel_forum");
             } else {
                 // Sinon, l'utilisateur change de réaction (like -> dislike)
                 $existing_reaction->delete();
-                $message = 'Like annulé, dislike enregistré avec succès.';
+                $message = $this->gettext("like_to_dislike", "mel_forum");
 
                 $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
                 $reaction->comment = $comment_id;
@@ -1661,10 +1661,10 @@ class mel_forum extends bnum_plugin
                 // Sauvegarde de la nouvelle réaction
                 $ret = $reaction->save();
                 if (is_null($ret)) {
-                    echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
+                    echo json_encode(['status' => 'error', 'message' => gettext("failed_to_save...", "mel_forum") . $type . '.']);
                     exit;
                 }
-                $message = ucfirst($type) . ' enregistré avec succès.';
+                $message = ucfirst($type) . gettext("...saved", "mel_forum");
             }
         } else {
             // Si aucun like n'existe, tester pour le dislike
@@ -1673,11 +1673,11 @@ class mel_forum extends bnum_plugin
                 // Si le type est le même, l'utilisateur essaie d'annuler sa réaction
                 if ($type === 'dislike') {
                     $existing_reaction->delete();
-                    $message = 'Dislike annulé avec succès.';
+                    $message = gettext("undislike", "mel_forum");
                 } else {
                     // Sinon, l'utilisateur change de réaction (dislike -> like)
                     $existing_reaction->delete();
-                    $message = 'Dislike annulé, like enregistré avec succès.';
+                    $message = gettext("dislike_to_like", "mel_forum");
 
                     $reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
                     $reaction->comment = $comment_id;
@@ -1687,10 +1687,10 @@ class mel_forum extends bnum_plugin
                     // Sauvegarde de la nouvelle réaction
                     $ret = $reaction->save();
                     if (is_null($ret)) {
-                        echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
+                        echo json_encode(['status' => 'error', 'message' => gettext("faild_to_save...", "mel_forum") . $type . '.']);
                         exit;
                     }
-                    $message = ucfirst($type) . ' enregistré avec succès.';
+                    $message = ucfirst($type) . gettext("...saved", "mel_forum");
                 }
             } else {
                 // Si aucune réaction n'existe, on va créer une nouvelle réaction
@@ -1702,10 +1702,10 @@ class mel_forum extends bnum_plugin
                 // Sauvegarde de la nouvelle réaction
                 $ret = $reaction->save();
                 if (is_null($ret)) {
-                    echo json_encode(['status' => 'error', 'message' => 'Échec de l\'enregistrement du ' . $type . '.']);
+                    echo json_encode(['status' => 'error', 'message' => gettext("faild_to_save...", "mel_forum") . $type . '.']);
                     exit;
                 }
-                $message = ucfirst($type) . ' enregistré avec succès.';
+                $message = ucfirst($type) . gettext("...saved", "mel_forum");
             }
         }
 
@@ -1878,7 +1878,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($creator) || empty($type) || empty($comment)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -1891,9 +1891,9 @@ class mel_forum extends bnum_plugin
         // Supprimer le Like
         $ret = $like->delete();
         if (!is_null($ret)) {
-            echo json_encode(['status' => 'success', 'message' => 'Le commentaire a été supprimé avec succès.']);
+            echo json_encode(['status' => 'success', 'message' => gettext("comment_deleted", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec de suppression du commentaire.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("comment_deleted_failure", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -1919,7 +1919,7 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si l'article existe
         if (!$post->load()) {
-            echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("article_unfindable", "mel_forum")]);
             exit;
         }
 
@@ -1948,7 +1948,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($post_id) || empty($creator) || empty($type)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -1964,9 +1964,9 @@ class mel_forum extends bnum_plugin
 
             header('Content-Type: application/json');
 
-            echo json_encode(['status' => 'success', 'message' => 'Réaction créée avec succès.']);
+            echo json_encode(['status' => 'success', 'message' => gettext("reaction_creation", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec de création de la réaction.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("reaction_creation_failure", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -1989,7 +1989,7 @@ class mel_forum extends bnum_plugin
 
         // Validation des données saisies
         if (empty($creator) || empty($type) || empty($post_id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("every_field_required", "mel_forum")]);
             exit;
         }
 
@@ -2002,9 +2002,9 @@ class mel_forum extends bnum_plugin
         // Supprimer la réaction
         $ret = $reaction->delete();
         if (!is_null($ret)) {
-            echo json_encode(['status' => 'success', 'message' => 'La réaction a été supprimée avec succès.']);
+            echo json_encode(['status' => 'success', 'message' => gettext("reaction_deleted", "mel_forum")]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de la réaction.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("reaction_deleted_failure", "mel_forum")]);
         }
 
         // Arrêt de l'exécution du script
@@ -2047,7 +2047,7 @@ class mel_forum extends bnum_plugin
                     'reactions' => $reactions_array
                 ]);
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Aucune réaction trouvée.']);
+                echo json_encode(['status' => 'error', 'message' => gettext("no_reaction_found", "mel_forum")]);
             }
 
             // Arrêt de l'exécution du script
@@ -2074,7 +2074,7 @@ class mel_forum extends bnum_plugin
 
         // Vérifier si l'article existe
         if (!$post->load()) {
-            echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("article_unfindable", "mel_forum")]);
             exit;
         }
 
@@ -2299,7 +2299,7 @@ class mel_forum extends bnum_plugin
             $img = $image->data;
             $this->rc()->output->sendExit(base64_decode(explode(',', $img)[1]), ['Content-Type: ' . rcube_mime::image_content_type($img)]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Echec du chargement de l\'image.']);
+            echo json_encode(['status' => 'error', 'message' => $this->gettext("failed_to_load_image", "mel_forum")]);
             exit;
         }
         if (!empty($_GET['_error'])) {

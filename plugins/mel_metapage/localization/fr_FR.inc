@@ -201,6 +201,9 @@ $labels["yes"] = "Oui";
 $labels["no"] = "Non";
 $labels["up"] = "En haut";
 $labels["down"] = "En bas";
+$labels["full"] = "Complet";
+$labels["service"] = "Nom et service";
+$labels["name"] = "Nom";
 
 $labels["mel-icon-size"] = "Mail - Taille des icônes en tête";
 $labels["mel-icon-size-nomail"] = "Taille des icônes en tête";
@@ -211,6 +214,7 @@ $labels["mel-message-space-nomail"] = "Espacement des messages";
 $labels["mel-chat-placement"] = "Placement de la bulle";
 $labels["mel-calendar-space"] = "Espacement des agendas";
 $labels["mel-folder-grouping"] = "Regroupement des dossiers";
+$labels["mel-clear-headers"] = "Affichage du nom d'expéditeur";
 
 $labels["hide_bubble"] = "Cacher la bulle de discussion";
 $labels["show_bubble"] = "Afficher la bulle de discussion";

@@ -155,6 +155,46 @@
   </div>
   <div class="row row-options">
     <div class="col-12">
+      <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-clear-headers' /></div>
+      <div class="option_radio_wrapper">
+        <div class="col-4 text-center px-1">
+          <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-full" data-value="full"
+            onclick="save_option('mel_messages_list_clear_headers', 'full', this)">
+          <label for="mel-clear-headers-full" class="option">
+            <span class="material-symbols-outlined icon-large color-icon">
+              subject
+            </span>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.full' />
+        </div>
+        <div class="col-4 text-center px-1">
+          <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-service" data-value="service"
+            onclick="save_option('mel_messages_list_clear_headers', 'service', this)">
+          <label for="mel-clear-headers-service" class="option">
+            <span class="material-symbols-outlined icon-large color-icon">
+              notes
+            </span>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.service' />
+        </div>
+        <div class="col-4 text-center px-1">
+          <input type="radio" data-command="refresh_messages_list" name="mel_messages_list_clear_headers" id="mel-clear-headers-name" data-value="name"
+            onclick="save_option('mel_messages_list_clear_headers', 'name', this)">
+          <label for="mel-clear-headers-name" class="option">
+            <span class="material-symbols-outlined icon-large color-icon">
+              short_text
+            </span>
+          </label>
+          <div class="switch-overlay"></div>
+          <roundcube:label name='mel_metapage.name' />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row row-options">
+    <div class="col-12">
       <div class="options-custom-title"><roundcube:label name='mel_metapage.mel-icon-size-nomail' /></div>
       <div class="option_radio_wrapper">
         <div class="col-6 text-center px-1">

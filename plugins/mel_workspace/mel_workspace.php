@@ -522,7 +522,7 @@ class mel_workspace extends bnum_plugin
             $echoed = $wsp->save();
         }
     
-        $this->sendEncodedExit($echoed);
+        $this->sendExit($echoed);
         //exit;
     }
 
@@ -665,7 +665,7 @@ class mel_workspace extends bnum_plugin
             mel_logs::gi()->log(mel_logs::ERROR, '###[update_user_rights]'.$th->getMessage());
         }
         
-        $this->sendEncodedExit($return);
+        $this->sendExit($return);
     }
 
     function delete_user($uid = null, $user_to_delete = null, $exit = true, $forceDelete = false)
@@ -691,7 +691,7 @@ class mel_workspace extends bnum_plugin
                 {
                     $return = "you are the alone";
 
-                    if ($exit) $this->sendEncodedExit($return);
+                    if ($exit) $this->sendExit($return);
                     else return $return;
                 }
             }
@@ -730,9 +730,41 @@ class mel_workspace extends bnum_plugin
         else
             $return = "denied";
 
-        if ($exit) $this->sendEncodedExit($return);
+        if ($exit) $this->sendExit($return);
         else return $return;
     }
+
+    function update_user_table_rights()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $this->workspace = self::Workspace($uid);
+        $this->sendExit($this->setup_params_rights());
+    }
+
+    function update_app() {
+        $return = '';
+
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $app = rcube_utils::get_input_value("_app", rcube_utils::INPUT_POST);
+
+        $workspace = self::Workspace($uid);
+
+        if ($workspace->isAdmin() && !$workspace->hasService($app)) {
+            $this->_set_services($workspace, array_merge($workspace->services(true, true), [$app]), null);
+            $workspace->save();
+        }
+        else $return = 'denied';
+
+        $this->sendExit($return);
+    }
+
+    function update_app_table()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+
+        $this->sendExit($this->setup_params_apps(self::Workspace($uid)));
+    }
+
 
     #endregion action/params
 
@@ -853,7 +885,7 @@ class mel_workspace extends bnum_plugin
 
         $html->end_date = $endDate;
         $html->color = $workspace->color();
-        $html->applications = 'IN PROGRESS....';//$this->setup_params_apps();
+        $html->applications = $this->setup_params_apps();
 
         $html->title = $user_rights === Share::RIGHT_OWNER ? $workspace->title() : '';
         $html->desc = ($user_rights === Share::RIGHT_OWNER ? ($workspace->description() === '' ? 'Nouvelle description...' : ($workspace->description() ?? 'Nouvelle description...')) : '');
@@ -897,6 +929,98 @@ class mel_workspace extends bnum_plugin
 
         return $html->parse();
     }
+
+    /**
+     * @param Workspace | null $workspace
+     */
+    function setup_params_apps($workspace = null)
+    {
+        $workspace ??= $this->workspace;
+
+        $icons=["minus" => "icon-mel-minus", "plus" => "icon-mel-plus"];
+        $services = $workspace->services(true);//$this->get_worskpace_services($workspace);
+        $config = $this->rc()->config->get("workspace_services");
+        $html = '<table id=table-apps class="table table-striped table-bordered">';
+        $html .= "<thead><tr><td>Applications</td></tr></thead>";
+
+        $count = 0;
+        foreach ($services as $key => $value) {
+            if ($key === self::KEY_TCHAT || $key === self::KEY_AGENDA)// || $key === self::AGENDA || ($key === self::CHANNEL && !$value))
+                continue;
+
+            $plugin = $this->exec_hook('workspace.params.services.show', [
+                'workspace' => $workspace,
+                'plugin' => $this,
+                'app' => $key,
+                'enabled' => $value,
+                'continue' => true
+            ]) ?? ['continue' => true];
+
+            if ($plugin !== null && $plugin['continue'] === true) continue;
+            // if ($key === self::CLOUD && 
+            //     (!mel_helper::stockage_active() || 
+            //         (mel_metapage::have_0_quota() && mel_helper::stockage_active())
+            //     )) continue;
+
+            $info = $this->get_type_config($config, $key);
+            $html.= '<tr><td>';
+            $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
+
+            if ($value)
+            {
+
+                // if ($key === self::CHANNEL)
+                //     $html.= html::tag("button", ["title" => ($this->channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-channel-button","class" => "mel-button param-button ".($this->channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+                // else if ($key === self::TASKS)
+                //     $html.= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button","class" => "mel-button param-button " ], "Changer de tableau".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+                // else if ($key === self::TCHAP_CHANNEL) {
+                //     $html.= '<span class="mel-message"> ('. tchap::get_room_name($this->get_object($this->currentWorkspace, self::TCHAP_CHANNEL)->id) .')</span>';
+                //     $html.= html::tag("button", ["title" => ($this->tchap_channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-tchap-channel-button","class" => "mel-button param-button ".($this->tchap_channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal tchap".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+                // }
+                $plugin = $this->exec_hook('workspace.params.services.show.update', [
+                    'workspace' => $workspace,
+                    'plugin' => $this,
+                    'app' => $key,
+                    'enabled' => $value,
+                    'html' => $html
+                ]) ?? ['html' => $html];
+
+                $html = $plugin['html'];
+
+                $class = "btn btn-danger hidden mel-button no-button-margin";
+                $span = $icons["minus"];    
+                $func = '';           
+            }
+            else {
+                $class = "btn btn-success mel-button no-button-margin";
+                $span = $icons["plus"];   
+                $func = "rcmail.command('workspace.update_app','$key')"; 
+                ++$count;
+            }
+
+            
+
+            if ($info === null)
+                $class.= " disabled";
+
+            $html.= "<button onclick=$func style=float:right; class=\"$class\" ><span class=$span></span></button>";
+            $html .= "</td></tr>";
+        }
+
+        $html .= "</table>";
+
+        return $html;
+
+    }
+
+    function get_type_config($config, $type)
+    {
+        foreach ($config as $key => $value) {
+            if ($value["type"] === $type)
+                return $value;
+        }
+    }
+
 
     function sort_user($users)
     {
@@ -1191,8 +1315,6 @@ class mel_workspace extends bnum_plugin
             $this->register_action('PARAMS_update_user_table_rights', array($this, 'update_user_table_rights'));
             $this->register_action('PARAMS_update_user_rights', array($this, 'update_user_rights'));
             $this->register_action('PARAMS_delete_user', array($this, 'delete_user'));
-            $this->register_action('PARAMS_get_arianes_rooms', array($this, 'get_arianes_rooms'));
-            $this->register_action('PARAMS_change_ariane_room', array($this, 'change_ariane_room'));
             $this->register_action('PARAMS_update_app', array($this, 'update_app'));
             $this->register_action('PARAMS_update_app_table', array($this, 'update_app_table'));
             $this->register_action('PARAMS_update_toolbar', array($this, 'update_toolbar'));
@@ -1212,6 +1334,8 @@ class mel_workspace extends bnum_plugin
             $this->add_hook('webcomponents.scroll.count', [$this, 'webcomponentScrollCount']);
             $this->add_hook('webcomponents.scroll.data', [$this, 'webcomponentScrollData']);
             $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
+            $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
+            $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
         }
 
         public function webcomponentScrollCount($args) {
@@ -1243,6 +1367,14 @@ class mel_workspace extends bnum_plugin
                     # code...
                     break;
             }
+
+            return $args;
+        }
+
+        public function workspace_service_get($args) {
+            if ($args['services'][self::KEY_AGENDA] === null) $args['services'][self::KEY_AGENDA] = false;
+
+            if ($args['services'][self::KEY_TASK] === null) $args['services'][self::KEY_TASK] = false;
 
             return $args;
         }
@@ -1292,6 +1424,12 @@ class mel_workspace extends bnum_plugin
                 
                 $calendar->save();    
             }
+        }
+
+        public function workspace_params_services_show($args) {
+            if ($args['app'] === self::KEY_TASK) $args['continue'] = false;
+
+            return $args;
         }
         #endregion
 
@@ -1539,7 +1677,7 @@ class mel_workspace extends bnum_plugin
         return $workspace;
     }
 
-    public static function Workspace($uid) {
+    public static function Workspace($uid) : Workspace {
         return Workspace::GetLoad($uid);
     }
 

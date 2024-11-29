@@ -84,6 +84,8 @@ class mel_wekan extends rcube_plugin
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('workspace.services.set.role', [$this, 'workspace_services_set_role']);
             $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
+            $this->add_hook('workspace.params.services.show.update', [$this, 'workspace_params_services_show_update']);
+            $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
         }
     }
 
@@ -447,7 +449,7 @@ class mel_wekan extends rcube_plugin
     public function workspace_services_set($args) {
         $key = array_search(mel_workspace::KEY_TASK, $args['services']);
 
-        if (isset($key)) {
+        if (isset($key) && $key !== false) {
             /**
              * @var Workspace
              */
@@ -548,11 +550,25 @@ class mel_wekan extends rcube_plugin
         return $args;
     }
 
+    public function workspace_params_services_show_update($args) {
+        if ($args['app'] === mel_workspace::KEY_TASK) {
+            $args['html'] .= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button","class" => "mel-button param-button " ], "Changer de tableau".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+        }
+
+        return $args;
+    }
+
     public function wsp_block($args) {
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $args['plugin']->include_workspace_module('mel_wekan', 'workspace.js', 'js');
             $args['layout']->setNavBarSetting('wekan', 'view_kanban', false, 4);
         }
+
+        return $args;
+    }
+
+    public function workspace_service_get($args) {
+        if ($args['services'][self::KEY_FOR_WORKSPACE]) $args['services'][self::KEY_FOR_WORKSPACE] = $args['services'][mel_workspace::KEY_TASK] ?? false;
 
         return $args;
     }

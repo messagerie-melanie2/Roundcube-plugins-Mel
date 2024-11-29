@@ -537,6 +537,15 @@ class WorkspaceObject {
       else if (!$includeOnlyHave ) $return[$key] = isset($value);
     }
 
+    if (!$includeOnlyHave) {
+      $plugin = rcmail::get_instance()->plugins->exec_hook('workspace.service.get', [
+        'workspace' => $this->_workspace,
+        'services' => $return
+      ]) ?? ['services' => $return];
+
+      $return = $plugin['services'];
+    }
+
     return $return;
   }
 

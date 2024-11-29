@@ -62,6 +62,7 @@ class mel_useful_link extends bnum_plugin
     else {
       $this->add_hook('workspace.services.set', [$this, 'workspace_service_set']);
       $this->add_hook('wsp.show', [$this, 'show_in_workspace']);
+      $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
     }
 
     $this->add_hook('get_external_ulink', array($this, 'get_workspace_ulinks_by_id'));
@@ -867,5 +868,10 @@ class mel_useful_link extends bnum_plugin
     return $args;
   }
 
+  public function workspace_service_get($args) {
+    if ($args['services'][self::KEY_LINK] === null) $args['services'][self::KEY_LINK] = false;
+
+    return $args;
+  }
   #endregion
 }

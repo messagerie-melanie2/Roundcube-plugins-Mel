@@ -241,6 +241,7 @@ class WspNavBar extends HtmlCustomTag {
       text: 'Retour',
       icon: 'arrow_left_alt',
     });
+    button.setAttribute('id', 'wsp-quit-button');
     button.setAttribute('data-position', 'left');
     button.style.maxWidth = '80px';
     button.style.marginBottom = '15px';
@@ -740,6 +741,10 @@ class WspNavBar extends HtmlCustomTag {
   unselect({ task = 'all', background = true } = {}) {
     this.pageNavigation.unselect({ task, background });
     return this;
+  }
+
+  quit() {
+    this.mainDiv.querySelector('#wsp-quit-button').click();
   }
 
   static AddActions(action) {

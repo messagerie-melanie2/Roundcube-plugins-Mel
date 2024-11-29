@@ -145,6 +145,8 @@ class mel_nextcloud extends rcube_plugin {
 
     $this->add_hook('workspace.services.set', [$this, 'workspace_set_drive']);
     $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
+    $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
+    $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
   }
 
   /**
@@ -350,6 +352,7 @@ class mel_nextcloud extends rcube_plugin {
     return $iv;
   }
 
+  #region Workspace
   public function workspace_set_drive($args) {
     if (class_exists('mel_workspace')) {
       $workspace = $args['workspace'];
@@ -383,6 +386,17 @@ class mel_nextcloud extends rcube_plugin {
     driver_mel::gi()->workspace_group($workspace->uid(), $workspace->users_mail(true), $workspace->hasService(mel_workspace::KEY_DRIVE));
   }
 
+  public function workspace_params_services_show($args) {
+    $cond =  
+    (!mel_helper::stockage_active() || 
+        (mel_metapage::have_0_quota() && mel_helper::stockage_active())
+    );
+
+    if ($args['app'] === mel_workspace::KEY_DRIVE && !$cond) $args['continue'] = false;
+
+    return $args;
+  }
+
   public function wsp_block($args) {
     if (class_exists('roundrive') && $args['workspace']->objects()->get(mel_workspace::KEY_DRIVE) !== null) {
       if ($args['workspace']->objects()->get(mel_workspace::KEY_DRIVE) === false)
@@ -407,4 +421,12 @@ class mel_nextcloud extends rcube_plugin {
 
     return $args;
   }
+
+  public function workspace_service_get($args) {
+    if ($args['services'][mel_workspace::KEY_DRIVE] === null) $args['services'][mel_workspace::KEY_DRIVE] = false;
+
+    return $args;
+  }
+
+  #endregion
 }

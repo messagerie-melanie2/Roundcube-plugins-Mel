@@ -28,6 +28,16 @@
       return NavBarManager;
     }
 
+    async reload_page() {
+      const NavBarManager = await this.NavBarManager();
+
+      if (NavBarManager.currentNavBar) {
+        NavBarManager.Kill(NavBarManager.currentNavBar.uid);
+      }
+
+      window.location.reload();
+    }
+
     init_params_buttons() {
       if ($('#update-channel-button').length > 0)
         $('#update-channel-button').on('click', () => {
@@ -254,7 +264,7 @@
         top.rcmail
           .triggerEvent(mel_metapage.EventListeners.workspaces_updated.get)
           .then(() => {
-            window.location.reload();
+            this.reload_page();
           });
       });
     }
@@ -327,7 +337,7 @@
           $('.btn-u-r').removeClass('disabled').removeAttr('disabled');
           switch (datas) {
             case 'reload':
-              window.location.reload();
+              this.reload_page();
               return;
             case 'error':
               $('.btn-u-r').each((i, e) => {
@@ -1022,7 +1032,7 @@
                       _uid: this.uid,
                     },
                     (datas) => {
-                      window.location.reload();
+                      this.reload_page();
                     },
                     (a, b, c) => {
                       console.error(
@@ -1194,7 +1204,7 @@
                       _wsp: this.uid,
                     },
                     (datas) => {
-                      window.location.reload();
+                      this.reload_page();
                     },
                     (a, b, c) => {
                       console.error(
@@ -1470,7 +1480,7 @@
           },
           (datas) => {
             if (archive) this.quit();
-            else window.location.reload();
+            else this.reload_page();
           },
           (a, b, c) => {
             this.busy(false);
@@ -1487,11 +1497,7 @@
     quit() {
       this.busy();
       this.set_body_loading();
-      window.location.href =
-        rcmail.env.current_workspace_back === undefined ||
-        rcmail.env.current_workspace_back === null
-          ? this.url()
-          : rcmail.env.current_workspace_back;
+      this.NavBarManager().then((manager) => manager.currentNavBar.quit());
     }
 
     endDateChanged() {

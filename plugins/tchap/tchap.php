@@ -94,6 +94,9 @@ class tchap extends bnum_plugin
         $this->add_hook('workspace.services.set', [$this, 'workspace_set_tchap']);
         $this->add_hook('wsp.show', [$this, 'on_show_workspace']);
         $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
+        $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
+        $this->add_hook('workspace.params.services.show.update', [$this, 'workspace_params_services_show_update']);
+        $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
     }
 
     function action()
@@ -148,6 +151,12 @@ class tchap extends bnum_plugin
     }
 
     #region workspaces
+    public function workspace_params_services_show($args) {
+        if ($args['app'] === self::KEY_FOR_WORKSPACE) $args['continue'] = false;
+
+        return $args;
+    }
+
     public function workspace_set_tchap($args) {
         if (class_exists('mel_workspace')) {
             $workspace = $args['workspace'];
@@ -222,6 +231,23 @@ class tchap extends bnum_plugin
         if ($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE) !== null) {
             $this->include_module('workspace.js', 'js/lib/workspace');
             $args['layout']->setNavBarSetting('tchap', ':nav:', false, 7);
+        }
+
+        return $args;
+    }
+
+    public function workspace_service_get($args) {
+        if ($args['services'][self::KEY_FOR_WORKSPACE] === null) $args['services'][self::KEY_FOR_WORKSPACE] = false;
+
+        return $args;
+    }
+
+    public function workspace_params_services_show_update($args) {
+        if ($args['app'] === self::KEY_FOR_WORKSPACE) {
+            $room_id = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id;
+            $tchap_enabled = self::check_if_room_exist($room_id);
+            $args['html'].= '<span class="mel-message"> ('. self::get_room_name($room_id) .')</span>';
+            $args['html'].= html::tag("button", ["title" => ($tchap_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-tchap-channel-button","class" => "mel-button param-button ".($tchap_enabled === false ? "btn-danger btn" : "") ], "Changer de canal tchap".html::tag("span", ["class" => "plus icon-mel-pencil"]));
         }
 
         return $args;

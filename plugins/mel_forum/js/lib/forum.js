@@ -193,8 +193,19 @@ export class Forum extends MelObject {
      * @param {*} event 
      */
     addToFavorite(post_uid, event) {
-        event.preventDefault();
-        event.stopPropagation();
+        if (event) {
+            // Gestion des interactions clavier
+            if (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault(); // Empêche le défilement ou autre comportement par défaut
+                event.stopPropagation();
+            } else if (event.type === 'click') {
+                event.preventDefault(); // Empêche l'action par défaut des clics
+                event.stopPropagation();
+            } else {
+                // Si ce n'est ni un clic ni un clavier, ne pas continuer
+                return;
+            }
+        }
         //TODO récupérer le workspaces via l'url ou le post
         let workspace = 'workspace-test';
         this.http_internal_post(
@@ -230,8 +241,20 @@ export class Forum extends MelObject {
     }
 
     toggleMenuPost(post_uid, event) {
-        event.preventDefault();
-        event.stopPropagation();
+        // Vérification si un événement est fourni
+        if (event) {
+            // Gestion des interactions clavier
+            if (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault(); // Empêche le défilement ou autre comportement par défaut
+                event.stopPropagation();
+            } else if (event.type === 'click') {
+                event.preventDefault(); // Empêche l'action par défaut des clics
+                event.stopPropagation();
+            } else {
+                // Si ce n'est ni un clic ni une interaction clavier valide, ne pas continuer
+                return;
+            }
+        }
 
         let selectContainer = $('#post-context-menu-' + post_uid);
         let triggerButton = $('#trigger-' + post_uid); // Bouton more_vert
@@ -387,8 +410,20 @@ export class Forum extends MelObject {
      * @param {*} event 
      */
     addLikeOrDislike(type, post_id, post_uid,event){
-        event.preventDefault();
-        event.stopPropagation();
+        // Vérification si un événement est fourni
+        if (event) {
+            // Gestion des interactions clavier
+            if (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault(); // Empêche le défilement ou autre comportement par défaut
+                event.stopPropagation();
+            } else if (event.type === 'click') {
+                event.preventDefault(); // Empêche l'action par défaut des clics
+                event.stopPropagation();
+            } else {
+                // Si ce n'est ni un clic ni une interaction clavier, ne pas continuer
+                return;
+            }
+        }
         this.http_internal_post({
             task: 'forum',
             action: 'manage_reaction',
@@ -477,9 +512,13 @@ export class Forum extends MelObject {
             .setTemplateSelector('#post_template')
             .setData(data)
             .addEvent('#favorite-'+post.uid, 'click', this.addToFavorite.bind(this, post.uid))
+            .addEvent('#favorite-'+post.uid, 'keydown', this.addToFavorite.bind(this, post.uid)) // Gestion au Clavier
             .addEvent('#add_like-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'like', post.id, post.uid))
+            .addEvent('#add_like-'+post.uid, 'keydown', this.addLikeOrDislike.bind(this, 'like', post.id, post.uid)) // Gestion au clavier
             .addEvent('#add_dislike-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid))
+            .addEvent('#add_dislike-'+post.uid, 'keydown', this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid)) // Gestion au clavier
             .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
+            .addEvent('#more-'+post.uid, 'keydown', this.toggleMenuPost.bind(this, post.uid)) // Gestion clavier
             .addEvent('.post-options-button.edit-post', 'click', this.editPost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
             .addEvent('.post-options-button.delete-post', 'click', this.deletePost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
             .addEvent('.post-options-button.copy-post', 'click', this.copyPostLink.bind(this))

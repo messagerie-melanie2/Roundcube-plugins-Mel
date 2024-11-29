@@ -240,6 +240,12 @@ export class Forum extends MelObject {
         );
     }
 
+    /**
+     * TODO Docblock
+     * @param {*} post_uid 
+     * @param {*} event 
+     * @returns 
+     */
     toggleMenuPost(post_uid, event) {
         // Vérification si un événement est fourni
         if (event) {
@@ -295,6 +301,11 @@ export class Forum extends MelObject {
       }
     }
 
+    /**
+     * TODO docblock
+     * @param {*} post_uid 
+     * @param {*} event 
+     */
     editPost(post_uid, event) {
       event.preventDefault();
       event.stopPropagation();
@@ -302,6 +313,11 @@ export class Forum extends MelObject {
       window.location.href = this.url('forum', { action: 'create_or_edit_post'}) + "&_uid=" + post_uid;
     }
 
+    /**
+     * TODO docblock
+     * @param {*} post_uid 
+     * @param {*} event 
+     */
     deletePost(post_uid, event) {
       event.preventDefault();
       event.stopPropagation();
@@ -352,6 +368,10 @@ export class Forum extends MelObject {
       });
     }
 
+    /**
+     * TODO Docblock
+     * @param {*} event 
+     */
     copyPostLink(event){
         event.preventDefault();
         event.stopPropagation();
@@ -364,6 +384,9 @@ export class Forum extends MelObject {
         });
     }
 
+    /**
+     * TODO Docblock
+     */
     initPostDisplay () {
         const posts = this.get_env('posts_data');
         this.displayPost(posts);

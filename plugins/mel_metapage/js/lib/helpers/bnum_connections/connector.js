@@ -115,9 +115,10 @@ class Connector {
         }
       }
 
+      let promise;
       switch (this.type) {
         case Connector.enums.type.get:
-          await new Mel_Promise(() => {}).create_ajax_get_request({
+          promise = new Mel_Promise(() => {}).create_ajax_get_request({
             url: MelObject.Empty().url(this.task, {
               action: this.action,
               params: url_parameters,
@@ -146,7 +147,7 @@ class Connector {
           });
           break;
         case Connector.enums.type.post:
-          await new Mel_Promise(() => {}).create_ajax_post_request({
+          promise = new Mel_Promise(() => {}).create_ajax_post_request({
             url: MelObject.Empty().url(this.task, { action: this.action }),
             datas: url_parameters,
             success: (datas) => {
@@ -174,6 +175,8 @@ class Connector {
         default:
           throw new Error('Unknown connector type');
       }
+
+      await promise;
     }
 
     return_datas = {

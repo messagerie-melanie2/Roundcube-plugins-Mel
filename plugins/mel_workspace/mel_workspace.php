@@ -122,87 +122,93 @@ class mel_workspace extends bnum_plugin
             return;
         }
 
-        $plugin = $this->exec_hook('wsp.show', [
-            'workspace' => $workspace,
-            'layout' => new WorkspacePageLayout(),
-            'plugin' => $this
-        ]);
+        if ($workspace->hasUser($this->get_user()->uid)) {
+            $plugin = $this->exec_hook('wsp.show', [
+                'workspace' => $workspace,
+                'layout' => new WorkspacePageLayout(),
+                'plugin' => $this
+            ]);
+    
+            $plugin ??= [];
+    
+            $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
+    
+            $this->workspacePageLayout->fourthRow()->append(12, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda']));
+            $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
+            $this->workspacePageLayout->setNavBarSetting('calendar', 'calendar_month', true, 1);
+    
+            if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
+            
+            if ($workspace->isAdmin()) $this->workspacePageLayout->setNavBarSetting('workspace_params', 'settings', false, 999);
+            else {
+                $this->workspacePageLayout->setNavBarSetting('workspace_user', 'group', false, 999);
+                $this->include_web_component()->Avatar();
+            }
+            
+    
+            $this->rc()->output->add_handlers(array(
+                'wsp.row.first'  => [$this, 'handler_get_row'],
+                'wsp.row.second' => [$this, 'handler_get_row'],
+                'wsp.row.third'  => [$this, 'handler_get_row'],
+                'wsp.row.fourth' => [$this, 'handler_get_row'],
+                'wsp.row.other'  => [$this, 'handler_get_row'],
+            ));
+    
+            $this->workspace = $workspace;
+            $this->rc()->output->add_handlers([
+                'settings_or_member' => [$this, 'handler_settings_or_member']
+            ]);
+    
+            $this->include_css('workspace.css');
+            self::IncludeWorkspaceModuleComponent();
+            $this->include_module('agenda.js', 'js/lib/Parts');
+            $this->load_script_module('page.workspace.js');
+            $this->include_script('js/params.js');
+    
+            if (!$workspace->isAdmin()) $this->include_module('page.user.js');
+    
+            $this->rc()->output->set_env('current_workspace_uid', $uid);
+            $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
+            $this->rc()->output->set_env('current_workspace_users', $workspace->users(true)->select(function ($k, $v) {
+                return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
+            })->toDictionnary(function ($k, $v) {
+                return $v['email'];
+            }, function ($k, $v) {
+                return $v;
+            }));
+    
+            $visibility = $this->get_config('workspace_modules_visibility', [])[$uid];
+            $this->rc()->output->set_env('workspace_modules_visibility', $visibility);
+            $this->rc()->output->set_env('current_workspace_color', $workspace->color());
+            $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
+            
+    
+            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
+            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');
+            $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
+            $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
+            $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
 
-        $plugin ??= [];
+            include_once __DIR__.'/lib/NavBar.php';
 
-        $this->workspacePageLayout = $plugin['layout'] ?? new WorkspacePageLayout();
-
-        $this->workspacePageLayout->fourthRow()->append(12, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda']));
-        $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
-        $this->workspacePageLayout->setNavBarSetting('calendar', 'calendar_month', true, 1);
-
-        if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
-        
-        if ($workspace->isAdmin()) $this->workspacePageLayout->setNavBarSetting('workspace_params', 'settings', false, 999);
-        else {
-            $this->workspacePageLayout->setNavBarSetting('workspace_user', 'group', false, 999);
-            $this->include_web_component()->Avatar();
+            $navbar = new NavBar($uid);
+            $navbar->set_settings($this->workspacePageLayout->getNavBarSettings());
+            $navbar->add_css($this->local_skin_path().'/navbar.css');
+            $navbar->add_css('/'.$this->local_skin_path().'/material-symbols.css');
+            // $navbar->add_module('js/lib/navbar.js');
+    
+            $this->rc()->output->set_env('navbar', $navbar->get());
+    
+            // $this->add_handler('navbar', function() use ($navbar) {
+            //     return $navbar->get();
+            // });
+    
+            self::IncludeNavBarComponent();
+        } else {
+            $this->load_script_module('page.not_in_workspace.js');
+            $this->rc()->output->set_env('current_workspace_uid', $uid);
+            $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
         }
-        
-
-        $this->rc()->output->add_handlers(array(
-            'wsp.row.first'  => [$this, 'handler_get_row'],
-            'wsp.row.second' => [$this, 'handler_get_row'],
-            'wsp.row.third'  => [$this, 'handler_get_row'],
-            'wsp.row.fourth' => [$this, 'handler_get_row'],
-            'wsp.row.other'  => [$this, 'handler_get_row'],
-        ));
-
-        $this->workspace = $workspace;
-        $this->rc()->output->add_handlers([
-            'settings_or_member' => [$this, 'handler_settings_or_member']
-        ]);
-
-        $this->include_css('workspace.css');
-        self::IncludeWorkspaceModuleComponent();
-        $this->include_module('agenda.js', 'js/lib/Parts');
-        $this->load_script_module('page.workspace.js');
-        $this->include_script('js/params.js');
-
-        if (!$workspace->isAdmin()) $this->include_module('page.user.js');
-
-        $this->rc()->output->set_env('current_workspace_uid', $uid);
-        $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
-        $this->rc()->output->set_env('current_workspace_users', $workspace->users(true)->select(function ($k, $v) {
-            return ['email' => $v->email, 'name' => $v->name, 'fullname' => $v->fullname, 'is_external' => $v->is_external];
-        })->toDictionnary(function ($k, $v) {
-            return $v['email'];
-        }, function ($k, $v) {
-            return $v;
-        }));
-
-        $visibility = $this->get_config('workspace_modules_visibility', [])[$uid];
-        $this->rc()->output->set_env('workspace_modules_visibility', $visibility);
-        $this->rc()->output->set_env('current_workspace_color', $workspace->color());
-        $this->rc()->output->set_env('current_workspace_is_public', $workspace->isPublic());
-        
-
-        $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/fullcalendar.js');
-        $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/scheduler.js');
-        $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
-        $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
-        $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
-        
-        include_once __DIR__.'/lib/NavBar.php';
-
-        $navbar = new NavBar($uid);
-        $navbar->set_settings($this->workspacePageLayout->getNavBarSettings());
-        $navbar->add_css($this->local_skin_path().'/navbar.css');
-        $navbar->add_css('/'.$this->local_skin_path().'/material-symbols.css');
-        // $navbar->add_module('js/lib/navbar.js');
-
-        $this->rc()->output->set_env('navbar', $navbar->get());
-
-        // $this->add_handler('navbar', function() use ($navbar) {
-        //     return $navbar->get();
-        // });
-
-        self::IncludeNavBarComponent();
 
         $this->rc()->output->send('mel_workspace.workspace');
     }
@@ -416,6 +422,32 @@ class mel_workspace extends bnum_plugin
     }
 
     #region actions/params
+
+    public function join_user()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::Workspace($uid);//self::get_workspace($uid);
+        if ($workspace->isPublic() === 1)
+        {
+            $workspace->add_users(driver_mel::gi()->getUser()->uid);
+            $this->_add_users($workspace);
+            $workspace->save();
+            $admins = $workspace->getAdmins();//self::get_admins($workspace);
+            foreach($admins as $admin)
+            {
+                if (class_exists("mel_notification"))
+                {
+                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.' vient de rejoindre l\'espace "'.$workspace->title().'" !','',null,$admin);
+                }
+            }
+            //récupérer tout les admins du workspaces
+            //for each notif
+        }
+        else
+            echo "denied";
+        exit;
+    }
+
     public function change_color()
     {
         // include_once "lib/mel_utils.php";
@@ -596,7 +628,7 @@ class mel_workspace extends bnum_plugin
         }
     }
 
-        /**
+    /**
      * Add users to workspace
      * 
      * @param Workspace $workspace
@@ -1404,6 +1436,7 @@ class mel_workspace extends bnum_plugin
             $this->register_action('archive_workspace', array($this, 'archive_workspace'));
             $this->register_action('delete_workspace', array($this, 'delete_workspace'));
             $this->register_action('hashtag', array($this, 'get_hashtags'));
+            $this->register_action('join_user', array($this, 'join_user'));
         }
 
         private function _setup_workspace_actions() {

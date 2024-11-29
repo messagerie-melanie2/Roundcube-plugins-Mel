@@ -36,4 +36,11 @@ export const connectors = {
       _mode: EMPTY_STRING,
     },
   }),
+  ////////////////////////////////////////////////////////////////
+  join_workspace: Connector.Create('workspace', 'join_user', {
+    type: Connector.enums.type.post,
+    needed: {
+      _uid: EMPTY_STRING,
+    },
+  }),
 };

@@ -147,6 +147,7 @@ class mel_nextcloud extends rcube_plugin {
     $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
     $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
     $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
+    $this->add_hook('workspace.service.delete', [$this, 'workspace_service_delete']);
   }
 
   /**
@@ -394,6 +395,12 @@ class mel_nextcloud extends rcube_plugin {
 
     if ($args['app'] === mel_workspace::KEY_DRIVE && !$cond) $args['continue'] = false;
 
+    return $args;
+  }
+
+  public function workspace_service_delete($args) {
+    driver_mel::gi()->workspace_group($args['workspace']->uid(), [], false);
+    
     return $args;
   }
 

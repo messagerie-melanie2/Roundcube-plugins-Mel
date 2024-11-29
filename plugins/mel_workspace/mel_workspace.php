@@ -768,7 +768,86 @@ class mel_workspace extends bnum_plugin
         $this->sendExit($this->setup_params_apps(self::Workspace($uid)));
     }
 
+    function archive_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::Workspace($uid);
+        if ($workspace->isAdmin())
+        {
+            $workspace->isArchived(!$workspace->isArchived());
+            $workspace->save();
+            echo "";
+        }
+        else
+            echo "denied";
+        exit;
+    }
 
+    function delete_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::Workspace($uid);//self::get_workspace($uid);
+        if ($workspace->isAdmin())
+        {
+            $shares = $workspace->users();
+            foreach ($shares as $key => $value) {
+                $this->delete_user($uid, $value->user, false, true);
+            }
+            $workspace->hashtag(null);
+            $workspace->save();
+            $workspace->load();
+
+            $services = $workspace->services(true, true);//$this->get_worskpace_services($workspace, false, true);
+
+            try {
+                // if ($services[self::EMAIL] || $services[self::CLOUD])
+                //     driver_mel::gi()->workspace_group($workspace->uid, [], false);  
+
+                // if ($services[self::WEKAN])
+                // {
+                //     $wekan = $this->get_object($workspace, self::WEKAN);
+                //     if ($wekan->updated !== true) $this->wekan()->delete_board($wekan->id);
+                // }
+
+                if (array_search(self::KEY_TASK, $services, true) !== false) {
+                    $mel = new M2taskswsp($workspace->uid());
+                    $mel->getTaskslist();
+                    $mel->deleteTaskslist();
+
+                }
+
+                $this->exec_hook('workspace.service.delete', [
+                    'services' => $services,
+                    'workspace' => $workspace,
+                    'plugin' => $this
+                ]);
+
+                // if ($services[self::TCHAP_CHANNEL])
+                // {
+                //     $can =true;
+                //     try {
+                //         $can = !($this->get_object($workspace, self::TCHAP_CHANNEL)->edited ?? false);
+                //     } catch (\Throwable $th) {
+                //         //throw $th;
+                //     }
+                //     if ($can)
+                //     {
+                //         if (class_exists('tchap')) $value = tchap::delete_tchap_room($this->get_object($workspace, self::TCHAP_CHANNEL)->id);
+                //     }
+                // }
+
+            } catch (\Throwable $th) {
+                throw $th;
+            }
+
+            $workspace->get()->delete();
+            unset($workspace);
+
+        }
+        else
+            echo "denied";
+        exit;
+    }
     #endregion action/params
 
     #endregion params
@@ -1322,6 +1401,8 @@ class mel_workspace extends bnum_plugin
             $this->register_action('PARAMS_update_services', array($this, 'update_services'));
             $this->register_action('PARAMS_update_end_date', array($this, 'update_end_date_setting'));
             $this->register_action('PARAMS_change_primary', array($this, 'update_primary_parameters'));
+            $this->register_action('archive_workspace', array($this, 'archive_workspace'));
+            $this->register_action('delete_workspace', array($this, 'delete_workspace'));
             $this->register_action('hashtag', array($this, 'get_hashtags'));
         }
 

@@ -97,6 +97,7 @@ class tchap extends bnum_plugin
         $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
         $this->add_hook('workspace.params.services.show.update', [$this, 'workspace_params_services_show_update']);
         $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
+        $this->add_hook('workspace.service.delete', [$this, 'workspace_service_delete']);
     }
 
     function action()
@@ -157,6 +158,24 @@ class tchap extends bnum_plugin
         return $args;
     }
 
+    public function workspace_service_delete($args) {
+        if (class_exists('mel_workspace') && array_search(self::KEY_FOR_WORKSPACE, $args['services']) !== false) {
+             $can = true;
+
+            try {
+                $can = !($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->edited ?? false);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+            if ($can)
+            {
+                if (class_exists('tchap'))tchap::delete_tchap_room($args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE)->id);
+            }
+        }
+
+        return $args;
+    }
+    
     public function workspace_set_tchap($args) {
         if (class_exists('mel_workspace')) {
             $workspace = $args['workspace'];

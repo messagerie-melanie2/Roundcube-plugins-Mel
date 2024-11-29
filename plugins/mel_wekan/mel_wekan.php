@@ -86,6 +86,7 @@ class mel_wekan extends rcube_plugin
             $this->add_hook('workspace.users.services.delete', [$this, 'workspace_users_services_delete']);
             $this->add_hook('workspace.params.services.show.update', [$this, 'workspace_params_services_show_update']);
             $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
+            $this->add_hook('workspace.service.delete', [$this, 'workspace_service_delete']);
         }
     }
 
@@ -444,6 +445,17 @@ class mel_wekan extends rcube_plugin
         }
 
         return $return;
+    }
+
+    public function workspace_service_delete($args) {
+        $key = array_search(mel_workspace::KEY_TASK, $args['services']);
+
+        if (isset($key) && $key !== false) {
+            $wekan = $args['workspace']->objects()->get(self::KEY_FOR_WORKSPACE);//$this->get_object($workspace, self::WEKAN);
+            if ($wekan->updated !== true) $this->delete_board($wekan->id);
+        }
+
+        return $args;
     }
 
     public function workspace_services_set($args) {

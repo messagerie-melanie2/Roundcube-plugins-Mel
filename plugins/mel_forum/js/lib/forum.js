@@ -386,6 +386,7 @@ export class Forum extends MelObject {
 
     /**
      * TODO Docblock
+     * @param {*} event 
      */
     initPostDisplay () {
         const posts = this.get_env('posts_data');
@@ -541,10 +542,13 @@ export class Forum extends MelObject {
             .addEvent('#add_dislike-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid))
             .addEvent('#add_dislike-'+post.uid, 'keydown', this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid)) // Gestion au clavier
             .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
-            .addEvent('#more-'+post.uid, 'keydown', this.toggleMenuPost.bind(this, post.uid)) // Gestion clavier
+            .addEvent('#more-'+post.uid, 'keydown', this.toggleMenuPost.bind(this, post.uid)) // Gestion au clavier
             .addEvent('.post-options-button.edit-post', 'click', this.editPost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
+            .addEvent('.post-options-button.edit-post', 'keydown', this.editPost.bind(this, post.uid)) // Gestion au clavier
             .addEvent('.post-options-button.delete-post', 'click', this.deletePost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"
+            .addEvent('.post-options-button.delete-post', 'keydown', this.deletePost.bind(this, post.uid)) // Gestion au clavier
             .addEvent('.post-options-button.copy-post', 'click', this.copyPostLink.bind(this))
+            .addEvent('.post-options-button.copy-post', 'Keydown', this.copyPostLink.bind(this)) // Gestion au clavier
             //.addEvent(balise, action, fonction)
 
             $('#post-area').append(...template.render());

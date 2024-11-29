@@ -1,24 +1,52 @@
-import { FramesManager } from "../../../mel_metapage/js/lib/classes/frame_manager.js";
-import { NavBarManager } from "../../../mel_workspace/js/lib/navbar.generator.js";
-import { WorkspaceModuleBlock } from "../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js";
-import { WorkspaceObject } from "../../../mel_workspace/js/lib/WorkspaceObject.js";
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
+import { NavBarManager } from '../../../mel_workspace/js/lib/navbar.generator.js';
+import { WorkspaceModuleBlock } from '../../../mel_workspace/js/lib/WebComponents/workspace_module_block.js';
+import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
-import { EMPTY_STRING } from "../../../mel_metapage/js/lib/constants/constants.js";
+import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
+import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/bootstrap-loader.js';
 
 export class ModuleForum extends WorkspaceObject {
   constructor() {
     super();
   }
 
+  /**
+   * Id du block qui affiche le module
+   * @type {string}
+   * @default 'module-forum-last'
+   * @readonly
+   */
   get moduleId() {
     return 'module-forum-last';
   }
 
   /**
+   * Id du loader
+   * @type {string}
+   * @default 'forum-news-spinner-loader'
+   * @readonly
+   */
+  get loaderId() {
+    return 'forum-news-spinner-loader';
+  }
+
+  /**
+   * Block qui affiche le module
    * @type {WorkspaceModuleBlock}
+   * @readonly
    */
   get block() {
     return document.querySelector(`#${this.moduleId}`);
+  }
+
+  /**
+   * Loader qui est affiché lorsque la frame des forum se charge
+   * @type {?BootstrapLoader}
+   * @readonly
+   */
+  get loader() {
+    return document.querySelector(`#${this.loaderId}`);
   }
 
   main() {
@@ -26,7 +54,7 @@ export class ModuleForum extends WorkspaceObject {
 
     // Vérifiez si le module est chargé ou désactivé
     if (!this.loaded && !this.isDisabled('forum')) {
-      this._main();
+      this._start();
     } else if (this.isDisabled('forum')) {
       this.block.style.display = 'none';
     }
@@ -66,7 +94,55 @@ export class ModuleForum extends WorkspaceObject {
     });
   }
 
+  /**
+   * Affiche un loader si il n'existe pas
+   * @returns {BootstrapLoader} Loader créé ou éxistant
+   * @private
+   */
+  _show_loader() {
+    let loader = this.loader;
+
+    if (!loader) {
+      loader = BootstrapLoader.Create({ center: true });
+
+      loader.setAttribute('id', this.loaderId);
+
+      this.block.appendContent(loader);
+    } else loader.style.display = EMPTY_STRING;
+
+    return loader;
+  }
+
+  /**
+   * Supprime le loader si il existe.
+   * @returns {ModuleForum} Chaîne
+   * @private
+   */
+  _remove_loader() {
+    let loader = this.loader;
+
+    if (loader) {
+      this.loader.remove();
+      loader = null;
+    }
+
+    return this;
+  }
+
+  /**
+   * Appeler dans `main`, charge la frame seulement lorsque la page sera chargée.
+   * @private
+   */
+  _start() {
+    this._show_loader();
+    window.addEventListener('load', () => {
+      this._main();
+    });
+  }
+
   _main() {
+    if (!this.loader) this._show_loader();
+
     this.block.style.display = EMPTY_STRING;
     this.block.content.style.overflow = 'hidden';
     this.block.content.style.position = 'relative';
@@ -78,14 +154,19 @@ export class ModuleForum extends WorkspaceObject {
       },
     });
 
-    //TODO : Faire + propre
-    this.block.appendContentJQuery($('<div id="last-spinner" class="absolute-center"><span class="spinner-border"></span></div>'));
-    iframe.onload = () => {
-      $('#last-spinner').remove();
-    };
+    iframe.onload = this._remove_loader.bind(this);
 
     this.loadModule();
   }
+
+  /**
+   * Lance le module
+   * @returns {ModuleForum}
+   * @static
+   */
+  static Start() {
+    return new ModuleForum();
+  }
 }
 
-new ModuleForum();
+ModuleForum.Start();

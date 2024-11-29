@@ -640,6 +640,10 @@ if (rcmail)
 
             }, true);
 
+            rcmail.register_command('refresh_messages_list', (args) => {
+                $("iframe.mail-frame")[0].contentWindow.rcmail.command('list');
+            }, true);
+
             rcmail.register_command('refresh_extwin', async args => {
                 const {key, value} = args;
                 const helper = await load_helper();

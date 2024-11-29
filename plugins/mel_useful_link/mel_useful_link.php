@@ -93,10 +93,7 @@ class mel_useful_link extends bnum_plugin
     $new_personal_useful_links = $this->rc->config->get('new_personal_useful_links', []);
 
     if (empty($personal_useful_links)) {
-      if (empty($new_personal_useful_links)) {
-        //Si aucun lien, on met les liens par défaut
-        $this->rc->user->save_prefs(array('new_personal_useful_links' => $new_personal_useful_links));
-      } else {
+      if (!empty($new_personal_useful_links)) {
         //On converti les images qui contenait une icone
         $this->convert_image_icon($new_personal_useful_links);
       }

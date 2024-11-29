@@ -2571,6 +2571,96 @@ class mel_metapage extends bnum_plugin
         //     }
         // }
 
+        if ($this->rc->config->get('mel_messages_list_clear_headers', "full") == "full") {
+            return $args;
+        }
+
+        // Traitement des entêtes pour améliorer la lisibilité des boites
+        foreach ($args['messages'] as $message) {
+
+            $a_parts = rcube_mime::decode_address_list($message->from, null, true, $message->charset);
+            $service = '';
+            $sender = '';
+
+            if (!count($a_parts)) {
+                return null;
+            }
+
+            $part = array_pop($a_parts);
+
+            // Gestion du emis par
+            if (strpos($part['name'], ' emis par ') !== false) {
+                $tmp = explode(' emis par ', $part['name'], 2);
+                $sender = $tmp[1];
+                $part['name'] = $tmp[0];
+
+                // Service pour le emis par
+                if (strpos($sender, ' - ') !== false) {
+                    $tmp = explode(' - ', $sender, 2);
+                    $service = $tmp[1];
+                    $sender = $tmp[0];
+                }
+
+                // Description pour le emis par
+                if (strpos($sender, '(') !== false) {
+                    $sender = explode('(', $sender, 2)[0];
+                }
+            }
+
+
+            // Gestion du service
+            if (strpos($part['name'], ' - ') !== false) {
+                $tmp = explode(' - ', $part['name'], 2);
+                $part['name'] = $tmp[0];
+
+                if (strpos($part['name'], '/') === false) {
+                    $service = $tmp[1];
+                }
+            }
+
+            // Gestion de la description
+            if (strpos($part['name'], '(') !== false) {
+                $part['name'] = explode('(', $part['name'], 2)[0];
+            }
+
+            // Gestion des externes
+            $name = trim($part['name']);
+            $extern = false;
+
+            if (strpos($name, '> ') === 0) {
+                $name = substr($name, 2);
+                $extern = true;
+            }
+
+            if (in_array($name, $this->rc->config->get('mel_use_domain_list', [
+                'no-reply',
+                'noreply',
+                'support',
+                'notifications'
+            ]))) {
+                $part['name'] = ($extern ? '> ' : '') . ucwords(explode('@', $part['mailto'])[1]);
+            }
+            else if (strpos($part['mailto'], $name . '@') === 0) {
+                $part['name'] = ucwords(str_replace('.', ' ', $part['name']));
+            }
+
+            $message->title = $part['string'];
+
+            // Gestion du emis par
+            if (!empty($sender)) {
+                $part['name'] .= ' emis par ' . trim($sender);
+            }
+
+            if ($this->rc->config->get('mel_messages_list_clear_headers', "full") == "service" 
+                    && !empty($service)) {
+                $message->from = $part['name'] . ' - ' . $service . " <" . $part['mailto'] . ">";
+            }
+            else {
+                $message->from = $part['name'] . " <" . $part['mailto'] . ">";
+            }
+            
+        }
+
         return $args;
     }
 

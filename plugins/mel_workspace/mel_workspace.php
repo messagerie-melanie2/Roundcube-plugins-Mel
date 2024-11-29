@@ -163,6 +163,9 @@ class mel_workspace extends bnum_plugin
         $this->include_module('agenda.js', 'js/lib/Parts');
         $this->load_script_module('page.workspace.js');
         $this->include_script('js/params.js');
+
+        if (!$workspace->isAdmin()) $this->include_module('page.user.js');
+
         $this->rc()->output->set_env('current_workspace_uid', $uid);
         $this->rc()->output->set_env('current_workspace_services_actives', $workspace->services());
         $this->rc()->output->set_env('current_workspace_users', $workspace->users(true)->select(function ($k, $v) {
@@ -843,7 +846,7 @@ class mel_workspace extends bnum_plugin
             {
                 $html .= html::div(["class" => "row member"], 
                 html::div(["class" => "col-2 avatar-wsp"],
-                    html::tag('bnum-avatar', ['data-email' => $user->email, 'data-force-size' => '42px', 'style' => 'background-color:'.$this->workspace->color()])
+                    html::tag('bnum-avatar', ['class' => 'avatar-member', 'data-email' => $user->email, 'data-force-size' => '42px', 'style' => 'background-color:'.$this->workspace->color()])
                     // html::div(["class" => "dwp-round", "style" => "background-color:transparent"],
                     //     html::tag("img", ["src" => $this->rc()->config->get('rocket_chat_url')."avatar/".$value->user])
                     // )
@@ -859,8 +862,6 @@ class mel_workspace extends bnum_plugin
         }
 
         $html .= "</div></div>";
-
-        // $this->rc->output->set_env('current_workspace_users', $env);
 
         return $html;
 

@@ -67,7 +67,7 @@ class mtes_driver_mel extends mce_driver_mel
   /**
    * Dossier pour l'utilisation des fichiers pour le unexpunge
    */
-  protected static $_unexpungeFolder = '/var/pamela/unexpunge/';
+  protected static $_unexpungeFolder = '/m2-new-nfs/pamela/unexpunge/';
 
   /**
    * Liste des valeurs pour un groupe de workspace

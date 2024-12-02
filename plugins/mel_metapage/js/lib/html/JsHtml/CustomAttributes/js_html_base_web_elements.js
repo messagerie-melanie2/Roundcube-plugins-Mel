@@ -104,7 +104,7 @@ class HtmlCustomTag extends HTMLElement {
           break;
       }
 
-      this._p_main();
+      if (this._p_main) this._p_main();
 
       this.#loaded = true;
     }
@@ -117,7 +117,7 @@ class HtmlCustomTag extends HTMLElement {
    * @see {@link destroy}
    */
   disconnectedCallback() {
-    this.destroy();
+    if (this.destroy) this.destroy();
   }
 
   /**
@@ -432,12 +432,16 @@ class BnumHtmlIcon extends HtmlCustomTag {
     this.icon = this.icon;
   }
 
-  static Create({ icon = null } = {}) {
-    let node = document.createElement(BnumHtmlIcon.TAG);
+  static Create({ icon = null, context = document } = {}) {
+    let node = context.createElement(BnumHtmlIcon.TAG);
 
     if (icon) node.setAttribute('data-icon', icon);
 
     return node;
+  }
+
+  static get Close() {
+    return this.Create({ icon: 'close' });
   }
 
   static get CalendarMonth() {

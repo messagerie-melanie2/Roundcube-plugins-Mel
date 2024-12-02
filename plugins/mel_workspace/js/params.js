@@ -176,46 +176,115 @@
       });
     }
 
-    async add_user() {
-      if (this.is_busy()) return;
-
-      if (Workspace_Param.PopUp !== undefined) delete Workspace_Param.PopUp;
-
-      const config = new GlobalModalConfig(
-        'Ajouter un utilisateur',
-        'default',
-        MEL_ELASTIC_UI.get_input_mail_search('tmp-id-wsp'),
-        null,
-        'default',
-        'default',
-        () => {
-          let tmp = new Workspace_Param(rcmail.env.current_workspace_uid);
-          tmp.save_users();
-        },
+    async modal() {
+      const { MelDialog, DialogPage, RcmailDialogButton } = await loadJsModule(
+        'mel_metapage',
+        'modal',
+        '/js/lib/classes/',
       );
 
-      if ($('#globalModal .modal-close-footer').length == 0)
-        await GlobalModal.resetModal();
-
-      Workspace_Param.PopUp = new GlobalModal('globalModal', config, true);
-      Workspace_Param.PopUp.input = $('#tmp-id-wsp');
-      rcmail.init_address_input_events($('#tmp-id-wsp'));
+      return { MelDialog, DialogPage, RcmailDialogButton };
     }
 
-    save_users() {
+    async add_user({ context = window } = {}) {
+      if (this.is_busy()) return;
+
+      if (Workspace_Param.PopUp !== undefined) {
+        try {
+          Workspace_Param.PopUp?.destroy?.();
+        } catch (error) {
+          //TODO : Avoid try/catch
+        }
+        delete Workspace_Param.PopUp;
+      }
+
+      const { MelDialog, RcmailDialogButton } = await this.modal();
+      const { HTMLWrapperElement } = await context.loadJsModule(
+        'mel_metapage',
+        'wrapper',
+        '/js/lib/html/JsHtml/CustomAttributes/',
+      );
+
+      const { BnumHtmlIcon } = await context.loadJsModule(
+        'mel_metapage',
+        'js_html_base_web_elements',
+        '/js/lib/html/JsHtml/CustomAttributes/',
+      );
+
+      let save = RcmailDialogButton.ButtonSave({
+        classes: 'param-save-button',
+        text: 'Ajouter',
+        click: function (calledWindow) {
+          this.save_users({ context: calledWindow });
+        }.bind(this, context),
+        options: {
+          icon: 'ui-icon-arrow-1-e',
+          iconPosition: 'end',
+        },
+      });
+
+      let modal = MelDialog.Create(
+        'index',
+        HTMLWrapperElement.CreateNode({
+          contents: MEL_ELASTIC_UI.get_input_mail_search('tmp-id-wsp'),
+          context: context.document,
+        }).$,
+        {
+          title: 'Ajouter un utilisateur',
+          options: { height: 150 },
+          buttons: [
+            RcmailDialogButton.ButtonCancel({
+              click: () => {
+                Workspace_Param.PopUp.destroy();
+              },
+              classes: 'param-cancel-button',
+              options: {
+                icon: 'ui-icon-close',
+                iconPosition: 'end',
+              },
+            }),
+            save,
+          ],
+        },
+      );
+      modal.show({ context });
+      modal.dialogContainer
+        .find('.param-save-button')
+        .css({ display: 'flex', 'align-items': 'center' })
+        .append(
+          BnumHtmlIcon.Create({
+            icon: 'arrow_right_alt',
+            context: context.document,
+          }).addClass('plus'),
+        );
+      modal.dialogContainer
+        .find('.param-cancel-button')
+        .css({ display: 'flex', 'align-items': 'center' })
+        .append(
+          BnumHtmlIcon.Create({
+            icon: 'close',
+            context: context.document,
+          }).addClass('plus'),
+        );
+      Workspace_Param.PopUp = modal;
+      Workspace_Param.PopUp.input = context.$('#tmp-id-wsp');
+      context.rcmail.init_address_input_events(Workspace_Param.PopUp.input);
+    }
+
+    save_users({ context = window } = {}) {
       this.busy();
       let users = [];
       let input = Workspace_Param.PopUp.input;
 
       if (input.val() !== '') {
         input.val(input.val() + ',');
-        m_mp_autocoplete(input[0]);
+        context.m_mp_autocoplete(input[0]);
       }
-      $('.workspace-recipient').each((i, e) => {
-        users.push($(e).find('.email').html());
+      context.$('.workspace-recipient').each((i, e) => {
+        users.push(context.$(e).find('.email').html());
       });
 
-      Workspace_Param.PopUp.close();
+      Workspace_Param.PopUp.destroy();
       delete Workspace_Param.PopUp;
 
       return this.ajax(

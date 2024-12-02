@@ -79,6 +79,18 @@ export class WorkspacePage extends WorkspaceObject {
           $('.wsp-row').css('display', 'none');
           break;
 
+        case 'invitation':
+          NavBarManager.nav
+            .loadJsModule(
+              'mel_metapage',
+              'wrapper',
+              '/js/lib/html/JsHtml/CustomAttributes/',
+            )
+            .then(() => {
+              rcmail.env.WSP_Param.add_user({ context: NavBarManager.nav });
+            });
+          break;
+
         default:
           break;
       }

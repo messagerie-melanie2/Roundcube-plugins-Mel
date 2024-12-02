@@ -115,6 +115,8 @@ class mel_forum extends bnum_plugin
             $this->register_action('get_all_tags_bypost', array($this, 'get_all_tags_bypost'));
             // afficher les articles par tag
             $this->register_action('all_posts_by_tag', array($this, 'all_posts_by_tag'));
+            // Récupérer toutes les images associés à un Post
+            $this->register_action('get_all_images_by_post', array($this, 'get_all_images_by_post'));
             // Créer une image
             $this->register_action('create_image', array($this, 'create_image'));
             // Supprimer une image
@@ -1353,23 +1355,61 @@ class mel_forum extends bnum_plugin
         exit;
     }
 
-    /**
-     * Traite les images encodées en base64 dans le contenu, les enregistre, 
-     * et remplace les données base64 par les URL correspondantes.
-     *
-     * Cette fonction parcourt le contenu fourni pour détecter les images 
-     * intégrées sous forme de données base64, les enregistre à un emplacement 
-     * associé à l'ID du post donné, et remplace les balises `<img>` contenant 
-     * des données base64 par des balises `<img>` avec les URLs des images sauvegardées.
-     *
-     * @param string $content Le contenu HTML contenant des images encodées en base64.
-     * @param int    $post_id L'ID du post auquel associer les images sauvegardées.
-     * 
-     * @return string Le contenu mis à jour avec les images base64 remplacées par des URLs.
-     */
+    // /**
+    //  * Traite les images encodées en base64 dans le contenu, les enregistre, 
+    //  * et remplace les données base64 par les URL correspondantes.
+    //  *
+    //  * Cette fonction parcourt le contenu fourni pour détecter les images 
+    //  * intégrées sous forme de données base64, les enregistre à un emplacement 
+    //  * associé à l'ID du post donné, et remplace les balises `<img>` contenant 
+    //  * des données base64 par des balises `<img>` avec les URLs des images sauvegardées.
+    //  *
+    //  * @param string $content Le contenu HTML contenant des images encodées en base64.
+    //  * @param int    $post_id L'ID du post auquel associer les images sauvegardées.
+    //  * 
+    //  * @return string Le contenu mis à jour avec les images base64 remplacées par des URLs.
+    //  */
+    // protected function process_base64_images($content, $post_id)
+    // {
+    //     // Tableau pour collecter les URLs des images réellement utilisées
+    //     $usedImageUrls = [];
+
+    //     // Expression régulière pour trouver toutes les balises <img src="data:image/">
+    //     preg_match_all('/<img src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/i', $content, $matches, PREG_SET_ORDER);
+
+    //     foreach ($matches as $img) {
+    //         $imageType = $img[1]; // Type de l'image (jpeg, png, etc.)
+    //         $base64Data = $img[2]; // Données en base64
+
+    //         // Reconstruire le préfixe de l'image
+    //         $fullBase64Data = "data:image/{$imageType};base64,{$base64Data}";
+
+    //         // Enregistrer l'image dans la base de données
+    //         $imageSaved = $this->save_image($post_id, $fullBase64Data);  // Passer les données complètes à la fonction
+
+    //         if ($imageSaved) {
+    //             // Utiliser la fonction get_image_url pour générer l'URL de l'image
+    //             $imageUrl = $this->get_image_url($imageSaved);
+
+    //             // Collecter les URLs des images utilisées
+    //             $usedImageUrls[] = $imageUrl;
+
+    //             // Remplacer la balise <img> par la version avec URL
+    //             $content = str_replace($img[0], '<img src="' . $imageUrl . '"', $content);
+    //         }
+    //     }
+
+    //     return $content;
+    // }
+
     protected function process_base64_images($content, $post_id)
     {
-        // TODO: supprimer les images qui ne sont plus utilisées
+        // Récupérer les images existantes associées au post
+        $existingImageUids = $this->get_all_images_by_post($post_id);
+
+        // Tableau pour collecter les URLs des images réellement utilisées
+        $usedImageUrls = [];
+        $usedImageUids = []; // Collecter les UIDs des images utilisées
 
         // Expression régulière pour trouver toutes les balises <img src="data:image/">
         preg_match_all('/<img src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/i', $content, $matches, PREG_SET_ORDER);
@@ -1382,17 +1422,32 @@ class mel_forum extends bnum_plugin
             $fullBase64Data = "data:image/{$imageType};base64,{$base64Data}";
 
             // Enregistrer l'image dans la base de données
-            $imageSaved = $this->save_image($post_id, $fullBase64Data);  // Passer les données complètes à la fonction
+            $imageSaved = $this->save_image($post_id, $fullBase64Data); // Passer les données complètes à la fonction
 
             if ($imageSaved) {
                 // Utiliser la fonction get_image_url pour générer l'URL de l'image
                 $imageUrl = $this->get_image_url($imageSaved);
+
+                // Collecter les URLs et les UIDs des images utilisées
+                $usedImageUrls[] = $imageUrl;
+                $usedImageUids[] = $imageSaved->uid; // Supposons que save_image retourne un objet avec un UID
+
+                // Remplacer la balise <img> par la version avec URL
                 $content = str_replace($img[0], '<img src="' . $imageUrl . '"', $content);
             }
         }
 
+        // Identifier les images obsolètes (non utilisées dans le contenu)
+        $obsoleteImageUids = array_diff($existingImageUids, $usedImageUids);
+
+        // Supprimer les images obsolètes de la BDD
+        foreach ($obsoleteImageUids as $uid) {
+            $this->delete_image($uid);
+        }
+
         return $content;
     }
+
 
     /**
      * Enregistre une image associée à un post, avec ses données encodées.
@@ -1427,6 +1482,65 @@ class mel_forum extends bnum_plugin
         }
 
         return false;
+    }
+
+    /**
+     * Récupère toutes les images associées à une publication.
+     *
+     * Cette fonction instancie un objet Post et utilise la méthode `listImages()`
+     * pour récupérer les images associées au post identifié par `$post_id`.
+     * Elle retourne un tableau contenant les données de toutes les images ou un
+     * tableau vide si aucune image n'est trouvée.
+     *
+     * @param string $post_id L'identifiant de la publication pour laquelle les images doivent être récupérées.
+     * @return array Un tableau contenant les données des images associées à la publication, ou un tableau vide si aucune image n'est trouvée.
+     */
+    public function get_all_images_by_post($post_id)
+    {
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->post_id = $post_id;
+
+        $images = $post->listImages();
+        if (empty($images)) {
+            error_log("Aucune image trouvée pour le post_id: $post_id");
+            return [];
+        }
+
+        $uids = [];
+        foreach ($images as $image) {
+            if (isset($image->uid)) {
+                $uids[] = $image->uid;
+            } else {
+                error_log("Image sans 'uid' pour le post_id: $post_id");
+            }
+        }
+
+        return $uids; // Retourner les UIDs des images
+    }
+
+    /**
+     * Supprime une image associée à un post.
+     *
+     * Cette fonction charge l'image en fonction de son UID et, si elle existe,
+     * la supprime. Elle retourne un booléen indiquant si l'opération a réussi.
+     *
+     * @param string $image_uid L'UID de l'image à supprimer.
+     * @return bool True si l'image a été supprimée, false sinon.
+     */
+    protected function delete_image($uid)
+    {
+        // Récupérer l'image existante
+        $image = new LibMelanie\Api\Defaut\Posts\Image();
+        $image->uid = $uid;
+
+        // Vérifier si l'image existe
+        if (!$image->load()) {
+            return false; // Image non trouvée
+        }
+
+        // Supprimer l'image
+        $ret = $image->delete();
+        return (!is_null($ret)); // Retourne true si l'image a été supprimée, false sinon
     }
 
     /**

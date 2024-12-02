@@ -10,7 +10,7 @@ export class NotInWorkspacePage extends WorkspaceObject {
 
   main() {
     super.main();
-    debugger;
+
     top.history.replaceState(
       {},
       document.title,

@@ -56,6 +56,7 @@ class mel_visio extends bnum_plugin
                 ), 'taskbar');
 
                 $this->include_css("main-nav.css");
+                $this->include_module('helper.js', 'js');
                 break;
             
             default:

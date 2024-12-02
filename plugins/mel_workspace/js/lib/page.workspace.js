@@ -91,6 +91,13 @@ export class WorkspacePage extends WorkspaceObject {
             });
           break;
 
+        case 'visio':
+          this.rcmail(true).triggerEvent('visio.start', {
+            workspace: this.workspace.uid,
+            room: '¤random¤',
+          });
+          break;
+
         default:
           break;
       }

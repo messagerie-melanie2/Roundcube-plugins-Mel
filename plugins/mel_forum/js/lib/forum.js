@@ -369,7 +369,7 @@ export class Forum extends MelObject {
     }
 
     /**
-     * TODO Docblock
+     * Récupère le lien a href le plus proche et le copie dans le presse papier
      * @param {*} event 
      */
     copyPostLink(event){
@@ -385,7 +385,7 @@ export class Forum extends MelObject {
     }
 
     /**
-     * TODO Docblock
+     * initialise l'affichage des posts au chargement de la page
      * @param {*} event 
      */
     initPostDisplay () {

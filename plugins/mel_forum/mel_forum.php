@@ -371,27 +371,6 @@ class mel_forum extends bnum_plugin
             }
             $post->load(); // Charger les données de l'article créé
         }
-        // TODO a tester 
-        // else {
-        //     // Mode édition : mettre à jour les propriétés de l'article existant
-        //     $title = $post->title;
-        //     $content = $post->content;
-        //     $settings = $post->settings;
-
-        //     // Définir les nouvelles propriétés de l'article
-        //     $post->title = $title;
-        //     $post->summary = $this->create_summary_from_content($content);
-        //     $post->content = $content;
-        //     $post->settings = $settings;
-        //     $post->modified = date('Y-m-d H:i:s');
-
-        //     // Sauvegarde de l'article modifié
-        //     $ret = $post->save();
-        //     if (is_null($ret)) {
-        //         return false; // Retourner false si la sauvegarde échoue
-        //     }
-        //     $post->load(); // Recharger les données mises à jour de l'article
-        // }
 
         // Préparer les données de l'article pour le frontend
         $post_data = [
@@ -470,197 +449,6 @@ class mel_forum extends bnum_plugin
 
         return $summary;
     }
-
-
-    // /**
-    //  * Envoie une réponse de type forum.
-    //  */
-    // function action()
-    // {
-    //     $rcmail = rcmail::get_instance();
-
-    //     $rcmail->output->send('mel_forum.forum');
-    // }
-
-    // /**
-    //  * Vérifie l'utilisateur en fonction de l'UID fourni.
-    //  */
-    // function check_user()
-    // {
-    //     $user;
-    //     $val = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GPC);
-    //     $user = driver_mel::gi()->getUser($val);
-
-    //     echo $user === null ? 'false' : json_encode(['uid' => $user->uid, 'html' => $user->fullname]);
-
-    //     exit;
-    // }
-
-    // Fonctions qui sont nécessaires à la création d'un article.
-
-    // /**
-    //  * Crée un nouvel article dans l'espace de travail.
-    //  *
-    //  * Cette fonction récupère les valeurs des champs POST, valide les données saisies,
-    //  * crée une nouvelle publication avec les propriétés définies, et sauvegarde l'article.
-    //  * Elle extrait également les liens d'image du contenu et les enregistre.
-    //  * La fonction retourne une réponse JSON indiquant le statut de la création de l'article.
-    //  *
-    //  * @return void
-    //  */
-    // public function add_post()
-    // {
-    //     //récupérer le Workspace
-    //     $workspace = driver_mel::gi()->workspace();
-
-    //     // récupérer les valeurs des champs POST
-    //     $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
-    //     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-    //     // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
-    //     $summary = $this->create_summary_from_content($content);
-    //     $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
-
-    //     // Validation des données saisies
-    //     if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     //Créer un nouvel Article
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-
-    //     //Définition des propriétés de l'article
-    //     $post->title = $title;
-    //     $post->summary = $summary;
-    //     $post->content = $content;
-    //     $post->uid = $this->generateRandomString(24);
-    //     $post->modified = date('Y-m-d H:i:s');
-    //     $post->creator = driver_mel::gi()->getUser()->uid;
-    //     $post->settings = $settings;
-    //     $post->workspace = $workspace;
-    //     //TODO supprimé 
-    //     $post->workspace = 'un-espace-2';
-
-    //     // Sauvegarde de l'article
-    //     $post_id = $post->save();
-    //     if ($post_id) {
-    //         $post->load();
-    //         // Extraire les liens d'image et les enregistrer
-    //         $imageLinks = $this->extractImageLinks($content);
-    //         $imageSaved = true;
-    //         foreach ($imageLinks as $link) {
-    //             if (!$this->save_image($post->id, $link)) {
-    //                 $imageSaved = false;
-    //                 break; // On arrête si une image échoue à être enregistrée
-    //             }
-    //         }
-
-    //         // Réponse JSON en fonction de la sauvegarde des images
-    //         if ($imageSaved) {
-    //             header('Content-Type: application/json');
-    //             echo json_encode(['status' => 'success', 'message' => $this->gettext("article_created", "mel_forum")]);
-    //         } else {
-    //             header('Content-Type: application/json');
-    //             echo json_encode(['status' => 'error', 'message' => $this->gettext("article_created_image_error", "mel_forum")]);
-    //         }
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("article_creation_error", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Met à jour un article existant avec de nouvelles données.
-    //  *
-    //  * Cette fonction récupère les valeurs des champs POST, charge la publication existante,
-    //  * génère un résumé à partir du contenu, et met à jour les propriétés de la publication.
-    //  * Elle supprime les images existantes liées à la publication, enregistre les nouvelles images,
-    //  * et sauvegarde les modifications. La fonction retourne une réponse JSON indiquant 
-    //  * le statut de la mise à jour de l'article.
-    //  *
-    //  * @return void
-    //  */
-    // public function update_post()
-    // {
-    //     // Récupérer les valeurs
-    //     $uid = '';
-    //     $this->current_post = $this->get_post($uid);
-    //     $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
-    //     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-    //     $summary = $this->create_summary_from_content($content);
-    //     // TODO Paramétrage du bouton settings
-    //     $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
-
-    //     // Récupérer l'article existant
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //     $post->uid = $uid;
-    //     if (!$post->load()) {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("article_unfindable", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Récupérer les images existantes liées au post
-    //     $images = $post->listImages();
-    //     foreach ($images as $image) {
-    //         if (!$image->delete()) {
-    //             echo json_encode(['status' => 'error', 'message' => $this->gettext("image_delete_failure", "mel_forum")]);
-    //             exit;
-    //         }
-    //     }
-
-    //     // Préparer les nouvelles données
-    //     $new_data = [
-    //         'title' => $title,
-    //         'content' => $content,
-    //         'summary' => $summary,
-    //         'settings' => $settings
-    //     ];
-
-    //     // Enregistrer les modifications dans l'historique
-    //     $this->save_post_history($post, $post->user_uid, $new_data);
-
-    //     // Définir les nouvelles propriétés de l'article
-    //     $post->post_title = $title;
-    //     $post->post_content = $content;
-    //     $post->post_summary = $summary;
-    //     $post->post_settings = $settings;
-    //     $post->updated = date('Y-m-d H:i:s');
-    //     $post->user_uid = driver_mel::gi()->getUser()->uid;
-
-    //     // Sauvegarde de l'article
-    //     // TODO demander a thomas si comportement normal (this->hasChanged ne garde pas la valeur donc ->save() return null)
-    //     $post_id = $post->save();
-    //     if (!$post_id) {
-    //         $post->load();
-    //         // Extraire les liens d'image et les enregistrer
-    //         $imageLinks = $this->extractImageLinks($content);
-    //         $imageSaved = true;
-    //         $errors = [];
-
-    //         foreach ($imageLinks as $link) {
-    //             if (!$this->save_image($post->id, $link)) {
-    //                 $imageSaved = false;
-    //                 $errors[] = $this->gettext("image_save_failure", "mel_forum") . $link;
-    //             }
-    //         }
-
-    //         // Réponse JSON en fonction de la sauvegarde des images
-    //         if ($imageSaved) {
-    //             header('Content-Type: application/json');
-    //             echo json_encode(['status' => 'success', 'message' => $this->gettext("article_updated", "mel_forum")]);
-    //         } else {
-    //             header('Content-Type: application/json');
-    //             echo json_encode(['status' => 'error', 'message' => $this->gettext("article_updated_image_error", "mel_forum"), 'errors' => $errors]);
-    //         }
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("article_updated_error", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
 
     /**
      * Enregistre l'historique des modifications d'un article.
@@ -843,8 +631,8 @@ class mel_forum extends bnum_plugin
      */
     public function send_post()
     {
-        $post = $this->_add_post();
-        if ($post !== null) {
+        $result = $this->_add_post();
+        if ($result !== null) {
             // le post est créé on passe aux tags
             $tags = rcube_utils::get_input_value('_tags', rcube_utils::INPUT_POST);
             if (is_null($tags)) $tags = [];
@@ -1003,12 +791,7 @@ class mel_forum extends bnum_plugin
             $post->uid = $uid;
 
             if ($post->load()) {
-                // TODO return le addTag
-                if ($post->addTag($tag)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return $post->addTag($tag);
             }
         }
     }
@@ -1100,96 +883,6 @@ class mel_forum extends bnum_plugin
         return (!($tag->countPosts() === 0));
     }
 
-
-    // /**
-    //  * Crée un nouveau tag sous forme de réponse JSON.
-    //  *
-    //  * Cette fonction récupère le groupe de workspace, le nom du tag depuis une requête POST,
-    //  * crée un nouveau tag en utilisant la classe `LibMelanie\Api\Defaut\Posts\Tag`,
-    //  * et renvoie le résultat de l'opération sous forme de réponse JSON.
-    //  * Si la création du tag est réussie, elle renvoie un message de succès en JSON.
-    //  * En cas d'échec, elle renvoie un message d'erreur en JSON.
-    //  *
-    //  * @return void
-    //  */
-    // public function create_tag()
-    // {
-    //     // Récupérer le Workspace
-    //     $workspace_uid = driver_mel::gi()->workspace();
-
-    //     // Récupérer le nom du champ POST
-    //     $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
-
-    //     //Créer un tag
-    //     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-
-    //     //Définition des propriétés du tag
-    //     $tag->name = $name;
-    //     $tag->workspace = $workspace_uid;
-
-    //     // Sauvegarde du tag
-    //     $ret = $tag->save();
-    //     if (!is_null($ret)) {
-
-    //         header('Content-Type: application/json');
-
-    //         echo json_encode(['status' => 'success', 'message' => $this->gettext("tag_created", "mel_forum")]);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_creation_failure", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Affiche tous les tags sous forme de réponse JSON.
-    //  *
-    //  * Cette fonction récupère le groupe de workspace, charge tous les tags
-    //  * disponibles en utilisant la méthode `listTags` de la classe `LibMelanie\Api\Defaut\Posts\Tag`,
-    //  * et renvoie les tags sous forme de réponse JSON. Si aucun tag n'est trouvé,
-    //  * elle renvoie un message d'erreur en JSON.
-    //  *
-    //  * @return void
-    //  */
-    // public function get_all_tags_byworkspace()
-    // {
-    //     // Récupérer le Workspace
-    //     $workspace_uid = driver_mel::gi()->workspace();
-
-    //     // Charger tous les tags en utilisant la méthode listTags
-    //     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-    //     $tag->workspace_uid = $workspace;
-
-    //     // Pour ajouter une recherche, définir une variable $search ici
-    //     $search = null; // ou une valeur de recherche comme 'exemple'
-
-    //     // Appeler la méthode listTags avec le paramètre de recherche
-    //     $tags = $tag->listTags($search);
-
-    //     if (!empty($tags)) {
-    //         header('Content-Type: application/json');
-    //         // Préparer les données des tags pour la réponse JSON
-    //         $tags_array = [];
-    //         foreach ($tags as $tag) {
-    //             $tags_array[] = [
-    //                 'tag_name' => $tag->name,
-    //                 'workspace_uid' => $tag->workspace,
-    //                 'tag_id' => $tag->id
-    //             ];
-    //         }
-    //         echo json_encode([
-    //             'status' => 'success',
-    //             'tags' => $tags_array
-    //         ]);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("no_tag_found", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
     /**
      * charge le post correspondant, et liste tous les tags associés à ce post.
      * Les tags sont ensuite renvoyés en réponse au format JSON.
@@ -1216,145 +909,6 @@ class mel_forum extends bnum_plugin
             // exit;
         }
     }
-
-    // /**
-    //  * Supprime un tag spécifique.
-    //  *
-    //  * Cette fonction récupère l'utilisateur courant, le workspace associé, 
-    //  * et le nom du tag à supprimer à partir des données POST. 
-    //  * Elle valide ensuite les données, vérifie si le tag existe, et le supprime si c'est le cas.
-    //  *
-    //  * @return void
-    //  */
-    // public function delete_tag()
-    // {
-    //     // Récupérer l'utilisateur
-    //     $user = driver_mel::gi()->getUser();
-
-    //     // Récupérer le Workspace
-    //     $workspace = driver_mel::gi()->get_workspace_group();
-
-    //     // Récupérer la valeur du champ POST
-    //     $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
-
-    //     // Validation de la donnée saisie
-    //     if (empty($name)) {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_name_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Récupérer le tag existant
-    //     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-    //     $tag->name = $name;
-    //     $tag->workspace = $workspace;
-
-    //     // Vérifier si le tag existe
-    //     if (!$tag->load()) {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_unfindable", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Supprimer le tag
-    //     $ret = $tag->delete();
-    //     if (!is_null($ret)) {
-    //         echo json_encode(['status' => 'success', 'message' => $this->gettext("the_tag", "mel_forum") . $tag->name . $this->gettext("has_been_deleted", "mel_forum")]);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_delete_error", "mel_forum") . $tag->name . "."]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Associe un tag à un post et renvoie le résultat au format JSON.
-    //  *
-    //  * Cette fonction récupère les valeurs des champs POST pour le nom du tag,
-    //  * l'UID du workspace et l'UID du post, valide ces données, charge le tag
-    //  * et le post correspondants, puis associe le tag au post.
-    //  * Le résultat de l'opération est renvoyé au format JSON.
-    //  *
-    //  * @return void
-    //  */
-    // public function associate_tag_at_post()
-    // {
-    //     // Récupérer la valeur des champs POST
-    //     $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
-    //     $workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_POST);
-    //     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-
-    //     // Validation des données saisies
-    //     if (empty($name) || empty($workspace_uid) || empty($uid)) {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Récupérer le tag existant
-    //     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-    //     $tag->name = $name;
-    //     $tag->workspace = $workspace_uid;
-
-    //     if ($tag->load()) {
-    //         $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //         $post->uid = $uid;
-
-    //         if ($post->load()) {
-    //             if ($post->addTag($tag)) {
-    //                 echo json_encode(['status' => 'success', 'message' => $this->gettext("tag_associated_success", "mel_forum")]);
-    //             } else {
-    //                 echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_associated_failure", "mel_forum")]);
-    //             }
-    //         }
-
-    //         // Arrêt de l'exécution du script
-    //         exit;
-    //     }
-    // }
-
-    // /**
-    //  * Dissocie un tag d'un post et renvoie le résultat au format JSON.
-    //  *
-    //  * Cette fonction récupère les valeurs des champs POST pour le nom du tag,
-    //  * l'UID du workspace et l'UID du post, valide ces données, charge le tag
-    //  * et le post correspondants, puis dissocie le tag du post.
-    //  * Le résultat de l'opération est renvoyé au format JSON.
-    //  *
-    //  * @return void
-    //  */
-    // public function unassociate_tag_from_post()
-    // {
-    //     // Récupérer la valeur des champs POST
-    //     $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
-    //     $workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_POST);
-    //     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-
-    //     // Validation des données saisies
-    //     if (empty($name) || empty($workspace_uid) || empty($uid)) {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Récupérer le tag existant
-    //     $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-    //     $tag->name = $name;
-    //     $tag->workspace = $workspace_uid;
-
-    //     if ($tag->load()) {
-    //         $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //         $post->uid = $uid;
-
-    //         if ($post->load()) {
-    //             if ($post->removeTag($tag)) {
-    //                 echo json_encode(['status' => 'success', 'message' => $this->gettext("tag_unassociated", "mel_forum")]);
-    //             } else {
-    //                 echo json_encode(['status' => 'error', 'message' => $this->gettext("tag_delete_failure", "mel_forum")]);
-    //             }
-    //         }
-
-    //         // Arrêt de l'exécution du script
-    //         exit;
-    //     }
-    // }
 
     /**
      * Crée un commentaire.
@@ -1426,55 +980,6 @@ class mel_forum extends bnum_plugin
 
         exit;
     }
-
-    // /**
-    //  * Répond à un commentaire ou à une réponse à un commentaire.
-    //  *
-    //  * Cette fonction récupère l'utilisateur actuel, le contenu de la réponse et l'ID du commentaire parent
-    //  * depuis la requête POST, valide le contenu, et crée une nouvelle réponse.
-    //  * Elle retourne un message JSON indiquant le succès ou l'échec de l'opération.
-    //  *
-    //  * @return void
-    //  */
-    // public function reply_comment()
-    // {
-    //     // Récupérer l'utilisateur
-    //     $user = driver_mel::gi()->getUser();
-
-    //     // Récupérer les valeurs post
-    //     $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-    //     $post = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
-
-    //     // Validation des données saisies
-    //     if (empty($user->uid) || empty($content)) {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("every_field_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Créer un nouveau commentaire
-    //     $reply = new LibMelanie\Api\Defaut\Posts\Comment();
-    //     $reply->content = $content;
-    //     $reply->uid = $this->generateRandomString(24);
-    //     $reply->created = date('Y-m-d H:i:s');
-    //     $reply->modified = date('Y-m-d H:i:s');
-    //     $reply->creator = $user->uid;
-    //     $reply->post = $post;
-    //     $reply->parent = $comment_parent->id;
-
-    //     // Sauvegarde du commentaire
-    //     $ret = $reply->save();
-    //     if (!is_null($ret)) {
-
-    //         header('Content-Type: application/json');
-
-    //         echo json_encode(['status' => 'success', 'message' => $this->gettext("response_creation", "mel_forum")]);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => $this->gettext("response_creation_failed", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
 
     /**
      * Met à jour un commentaire existant.
@@ -1848,299 +1353,6 @@ class mel_forum extends bnum_plugin
         exit;
     }
 
-    // /**
-    //  * Compte le nombre de commentaires pour un article donné.
-    //  *
-    //  * Cette fonction récupère l'identifiant de l'article
-    //  * charge l'article correspondant, et obtient le nombre
-    //  * de commentaires pour cet article. Le résultat est retourné.
-    //  *
-    //  * @return void
-    //  *
-    //  * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
-    //  */
-    // public function count_comments($id)
-    // {
-    //     // Récupérer l'article existant
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //     $post->id = $id;
-
-    //     // // Vérifier si l'article existe
-    //     // if (!$post->load()) {
-    //     //     echo json_encode(['status' => 'error', 'message' => 'Article introuvable.']);
-    //     //     exit;
-    //     // }
-
-    //     // Obtenir le nombre de commentaires
-    //     $commentCount = $post->countComments();
-
-    //     return $commentCount;
-
-    //     // Arrêt de l'exécution du script
-    //     // exit;
-    // }
-
-    // /**
-    //  * Supprime un "like" d'un commentaire.
-    //  *
-    //  * Cette fonction récupère les informations nécessaires depuis les variables POST,
-    //  * valide les données reçues, et supprime le "like" associé au commentaire spécifié.
-    //  *
-    //  * @return void
-    //  */
-    // public function delete_like()
-    // {
-    //     // Récupérer la valeur du champ POST
-    //     $comment = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
-    //     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
-
-    //     // Validation des données saisies
-    //     if (empty($creator) || empty($type) || empty($comment)) {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("every_field_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Récupérer le like existant
-    //     $like = new LibMelanie\Api\Defaut\Posts\Comments\Like();
-    //     $like->comment = $comment->id;
-    //     $like->creator = driver_mel::gi()->getUser()->name;
-    //     $like->type = $type;
-
-    //     // Supprimer le Like
-    //     $ret = $like->delete();
-    //     if (!is_null($ret)) {
-    //         echo json_encode(['status' => 'success', 'message' => gettext("comment_deleted", "mel_forum")]);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("comment_deleted_failure", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Compte le nombre de likes pour un article donné.
-    //  *
-    //  * Cette fonction récupère l'uid de l'article,
-    //  * charge l'article correspondant, et obtient le nombre
-    //  * de likes pour cet article. Le résultat est retourné.
-    //  *
-    //  * @return void
-    //  *
-    //  * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
-    //  */
-    // public function count_Likes($uid)
-    // {
-    //     // Récupérer l'article existant
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //     $post->uid = $uid;
-
-    //     // Vérifier si l'article existe
-    //     if (!$post->load()) {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("article_unfindable", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Obtenir le nombre de commentaires
-    //     $likeCount = $post->countLikes();
-
-    //     return $likeCount;
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Crée une réaction à un post.
-    //  *
-    //  * Cette fonction récupère les informations nécessaires depuis les variables POST,
-    //  * valide les données reçues, et crée une nouvelle réaction associée au post spécifié.
-    //  *
-    //  * @return void
-    //  */
-    // public function add_reaction()
-    // {
-    //     // Récupérer les valeurs
-    //     $post_id = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
-    //     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
-
-    //     // Validation des données saisies
-    //     if (empty($post_id) || empty($creator) || empty($type)) {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("every_field_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Créer un nouveau commentaire
-    //     $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
-    //     $reaction->post = $post_id;
-    //     $reaction->creator = driver_mel::gi()->getUser()->name;
-    //     $reaction->type = $type;
-
-    //     // Sauvegarde du commentaire
-    //     $ret = $reaction->save();
-    //     if (!is_null($ret)) {
-
-    //         header('Content-Type: application/json');
-
-    //         echo json_encode(['status' => 'success', 'message' => gettext("reaction_creation", "mel_forum")]);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("reaction_creation_failure", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Supprime une réaction d'un post.
-    //  *
-    //  * Cette fonction récupère les informations nécessaires depuis les variables POST,
-    //  * valide les données reçues, et supprime la réaction associée au post spécifié.
-    //  *
-    //  * @return void
-    //  */
-    // public function delete_reaction()
-    // {
-    //     // Récupérer la valeur du champ POST
-    //     $post = rcube_utils::get_input_value('_post', rcube_utils::INPUT_POST);
-    //     $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
-
-    //     // Validation des données saisies
-    //     if (empty($creator) || empty($type) || empty($post_id)) {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("every_field_required", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Récupérer la réaction existante
-    //     $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
-    //     $reaction->post = $post->id;
-    //     $reaction->creator = driver_mel::gi()->getUser()->name;
-    //     $reaction->type = $type;
-
-    //     // Supprimer la réaction
-    //     $ret = $reaction->delete();
-    //     if (!is_null($ret)) {
-    //         echo json_encode(['status' => 'success', 'message' => gettext("reaction_deleted", "mel_forum")]);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("reaction_deleted_failure", "mel_forum")]);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Affiche toutes les réactions associées à un post au format JSON.
-    //  *
-    //  * Cette fonction récupère l'UID du post envoyé via un formulaire POST,
-    //  * charge le post correspondant, et liste toutes les réactions associées à ce post.
-    //  * Les réactions sont ensuite renvoyées en réponse au format JSON.
-    //  *
-    //  * @return void
-    //  */
-    // public function get_all_reactions_bypost()
-    // {
-    //     // Récupérer l'uid de l'article du champ POST
-    //     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //     $post->uid = $uid;
-
-    //     if ($post->load()) {
-    //         $reactions = $post->listReactions();
-
-    //         if (!empty($reactions)) {
-    //             header('Content-Type: application/json');
-    //             // Préparer les données des réactions pour la réponse JSON
-    //             $reactions_array = [];
-    //             foreach ($reactions as $reaction) {
-    //                 $reactions_array[] = [
-    //                     'reaction_type' => $reaction->type,
-    //                     'reaction_post_id' => $reaction->post,
-    //                     'reaction_creator' => $reaction->creator
-    //                 ];
-    //             }
-    //             echo json_encode([
-    //                 'status' => 'success',
-    //                 'reactions' => $reactions_array
-    //             ]);
-    //         } else {
-    //             echo json_encode(['status' => 'error', 'message' => gettext("no_reaction_found", "mel_forum")]);
-    //         }
-
-    //         // Arrêt de l'exécution du script
-    //         exit;
-    //     }
-    // }
-
-    // /**
-    //  * Compte le nombre de réactions pour un article donné.
-    //  *
-    //  * Cette fonction récupère l'uid de l'article,
-    //  * charge l'article correspondant, et obtient le nombre
-    //  * de réactions pour cet article. Le résultat est retourné.
-    //  *
-    //  * @return void
-    //  *
-    //  * @throws Exception Si l'identifiant de l'article n'est pas fourni ou si l'article n'existe pas.
-    //  */
-    // public function count_reactions($uid)
-    // {
-    //     // Récupérer l'article existant
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //     $post->uid = $uid;
-
-    //     // Vérifier si l'article existe
-    //     if (!$post->load()) {
-    //         echo json_encode(['status' => 'error', 'message' => gettext("article_unfindable", "mel_forum")]);
-    //         exit;
-    //     }
-
-    //     // Obtenir le nombre de commentaires
-    //     $reactionCount = $post->countReactions();
-
-    //     return $reactionCount;
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Supprime une image et renvoie le résultat au format JSON.
-    //  *
-    //  * Cette fonction récupère l'UID de l'image à supprimer envoyé via un formulaire POST,
-    //  * valide l'UID, récupère l'image correspondante et la supprime.
-    //  * Le résultat de l'opération est renvoyé au format JSON.
-    //  *
-    //  * @return void
-    //  */
-    // public function delete_image()
-    // {
-    //     // Récuperer l'Uid de l'image
-    //     $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-
-    //     // Validation de la donnée saisie
-    //     if (empty($uid)) {
-    //         echo json_encode(['status' => 'error', 'message' => 'L\'UID est requis.']);
-    //         exit;
-    //     }
-
-    //     // Récupérer l'image existante
-    //     $image = new LibMelanie\Api\Defaut\Posts\Image();
-    //     $image->uid = $uid;
-
-    //     // Supprimer l'image
-    //     $ret = $image->delete();
-    //     if (!is_null($ret)) {
-    //         echo json_encode(['status' => 'success', 'message' => 'L\'image a été supprimée avec succès.']);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => 'Echec de suppression de l\'image.']);
-    //     }
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
     /**
      * Traite les images encodées en base64 dans le contenu, les enregistre, 
      * et remplace les données base64 par les URL correspondantes.
@@ -2217,65 +1429,8 @@ class mel_forum extends bnum_plugin
         return false;
     }
 
-    // /**
-    //  * Récupère l'image associée à une publication spécifique.
-    //  *
-    //  * Cette fonction simule un appel à une API interne ou utilise une autre méthode 
-    //  * pour obtenir l'image associée à l'identifiant de la publication fourni. 
-    //  * Si une image est trouvée, elle retourne les données de l'image, sinon elle retourne null.
-    //  *
-    //  * @param string $post_id L'identifiant de la publication pour laquelle récupérer l'image.
-    //  * @return string|null Les données de l'image si elle est trouvée, sinon null.
-    //  */
-    // public function get_image($post_id)
-    // {
-    //     // Appeler la fonction get_image pour récupérer l'image
-    //     // Simuler un appel à une API interne ou une autre méthode pour obtenir l'image
-    //     $image = new LibMelanie\Api\Defaut\Posts\Image();
-    //     $image->post_id = $post_id; // Associer l'image au post par son ID
-
-    //     $ret = $image->load();
-    //     if (!is_null($ret)) {
-    //         return $image->image_data; // Retourner le lien de l'image
-    //     } else {
-    //         return null;
-    //     }
-    // }
-
-    // /**
-    //  * Récupère toutes les images associées à une publication.
-    //  *
-    //  * Cette fonction instancie un objet Post et utilise la méthode `listImages()`
-    //  * pour récupérer les images associées au post identifié par `$post_id`.
-    //  * Elle retourne un tableau contenant les données de toutes les images ou un
-    //  * tableau vide si aucune image n'est trouvée.
-    //  *
-    //  * @param string $post_id L'identifiant de la publication pour laquelle les images doivent être récupérées.
-    //  * @return array Un tableau contenant les données des images associées à la publication, ou un tableau vide si aucune image n'est trouvée.
-    //  */
-    // public function get_images($post_id)
-    // {
-    //     // Instancier un objet Post pour utiliser la méthode listImages()
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //     $post->post_id = $post_id; // Associer le post_id à l'objet Post
-
-    //     // Récupérer toutes les images associées à ce post
-    //     $images = $post->listImages(); // Utiliser listImages() pour récupérer la liste des images
-
-    //     // Vérifier si des images ont été trouvées
-    //     if (!empty($images)) {
-    //         $image_data_list = [];
-    //         foreach ($images as $image) {
-    //             $image_data_list[] = $image->image_data; // Ajouter les données de chaque image à la liste
-    //         }
-    //         return $image_data_list; // Retourner un tableau contenant les données de toutes les images
-    //     } else {
-    //         return []; // Retourner un tableau vide si aucune image n'est trouvée
-    //     }
-    // }
-
     /**
-     * TODO: Docblock
+     * Upload une image dont les paramètre sont passé dans le post
      */
     public function upload_image()
     {
@@ -2314,7 +1469,7 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * TODO: Docblock
+     * Affiche l'image dont l'uid est passé dans les paramètres (POST)
      */
     public function load_image()
     {
@@ -2390,8 +1545,6 @@ class mel_forum extends bnum_plugin
             $isliked = $this->hasReaction('like', $post->id);
             $isdisliked = $this->hasReaction('dislike', $post->id);
             // Récupérer le nombre de commentaire
-            // TODO: a tester
-            //$comment_count = $this->count_comments($post->id);
             $comment_count = $post->countComments();
             $is_fav = $this->is_fav($post->uid, $workspace_uid);
             $post_link = $this->rc()->url(array(
@@ -2477,7 +1630,7 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * TODO: Docblock
+     * Gestion des réactions aux posts
      */
     public function manage_reaction()
     {
@@ -2529,7 +1682,11 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * TODO: Docblock
+     * Vérifie si l'utilisateur courant à mit la réaction passée en paramètre au post passé en paramètre
+     * @param string $type type de la reaction
+     * @param string $post_id uid de l'article
+     * 
+     * @return boolean 
      */
     protected function hasReaction($type, $post_id)
     {
@@ -2541,12 +1698,7 @@ class mel_forum extends bnum_plugin
         $reaction->post = $post_id;
         $reaction->creator = $user_uid;
         $reaction->type = $type;
-        // TODO return load()
-        if ($reaction->load()) {
-            return true;
-        } else {
-            return false;
-        }
+        return $reaction->load();
     }
 
 
@@ -2586,107 +1738,6 @@ class mel_forum extends bnum_plugin
         $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON($workspace_uid, 3));
     }
 
-
-    // function new_posts_object_to_Json($posts)
-    // {
-
-    //     $posts = $this->get_new_posts_byworkspace();
-
-    //     // Définir la locale en français pour le formatage de la date
-    //     $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
-    //     $posts_data = [];
-
-    //     foreach ($posts as $post) {
-    //         // Convertit la date du post en un timestamp Unix
-    //         $timestamp = strtotime($post->created);
-    //         // Formate la date du post
-    //         $formatted_date = $formatter->format($timestamp);
-
-    //         $post_creator = driver_mel::gi()->getUser($post->creator);
-    //         $tags = $this->get_all_tags_bypost($post->uid);
-    //         // Récupérer le nombre de réaction
-    //         //$reaction_count = $this->count_reactions($post->uid);
-    //         // Récupérer le nombre de likes
-    //         $isliked = $this->hasReaction('like', $post->id);
-    //         $isdisliked = $this->hasReaction('dislike', $post->id);
-    //         // Récupérer le nombre de commentaire
-    //         // TODO: a tester
-    //         //$comment_count = $this->count_comments($post->id);
-    //         $comment_count = $post->countComments();
-    //         $post_link = $this->rc()->url(array(
-    //             "_task" => "forum",
-    //             "_action" => "post",
-    //             "_uid" => $post->uid,
-    //         ), true, true, true);
-
-    //         $posts_data[$post->uid] = [
-    //             'uid' => $post->uid,
-    //             'title' => $post->title,
-    //             'creation_date' => $formatted_date,
-    //             'post_creator' => $post_creator->name,
-    //             'creator_email' => $post_creator->email,
-    //             'tags' => $tags,
-    //             'summary' => $post->summary,
-    //             // 'reaction' => $reaction_count,
-    //             'like_count' => $post->likes,
-    //             'dislike_count' => $post->dislikes,
-    //             'comment_count' => $comment_count,
-    //             'isliked' => $isliked,
-    //             'isdisliked' => $isdisliked,
-    //             'post_link' => $post_link,
-    //         ];
-    //     }
-    //     return $posts_data;
-    // }
-
-
-    // public function get_new_posts_byworkspace()
-    // {
-
-    //     // Charger tous les posts en utilisant la méthode listPosts
-    //     $post = new LibMelanie\Api\Defaut\Posts\Post();
-    //     // $post->workspace = $workspace_uid;
-    //     $post->workspace = "un-espace-2";
-
-    //     // Appel de la méthode listPosts
-    //     $posts = $post->listPosts(
-    //         null,         // Pas de recherche spécifique
-    //         [],           // Pas de filtres par tags
-    //         'created',    // Trier par date de création
-    //         false,        // Ordre décroissant (du plus récent au plus ancien)
-    //         3,            // Limiter à 3 articles
-    //         null          // Pas de décalage (offset)
-    //     );
-
-    //     return $posts;
-
-    //     // Arrêt de l'exécution du script
-    //     exit;
-    // }
-
-    // /**
-    //  * Gestion de la frame
-    //  * @param array $attrib
-    //  * @return string
-    //  */
-    // function tchap_frame($attrib)
-    // {
-    //     if (!$attrib['id'])
-    //         $attrib['id'] = 'rcmtchapframe';
-
-    //     $rcmail = rcmail::get_instance();
-
-    //     $attrib['name'] = $attrib['id'];
-
-    //     $rcmail->output->set_env('contentframe', $attrib['name']);
-    //     $rcmail->output->set_env('blankpage', $attrib['src'] ?
-    //         $rcmail->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
-    //     $rcmail->output->set_env('display_tchap_sidebar', $rcmail->config->get('display_tchap_sidebar', null));
-
-    //     return $rcmail->output->frame($attrib);
-    // }
-
     /**
      * Bloquer les refresh
      * @param array $args
@@ -2695,12 +1746,6 @@ class mel_forum extends bnum_plugin
     {
         return array('abort' => true);
     }
-
-    // function sidebar()
-    // {
-    //     $data = $this->get_input_post('_showsidebar');
-    //     $this->rc()->user->save_prefs(['display_tchap_sidebar' => $data]);
-    // }
 
     #region Espaces des travail
     /**

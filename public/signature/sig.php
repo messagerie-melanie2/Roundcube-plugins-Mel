@@ -32,10 +32,16 @@ if (APPLICATION_LOCALE) {
 else {
   // PAMELA - Application name configuration for ORM Mél
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
+  if ($config['DOCKER']) {
+    $dir = __DIR__ . '/../../bnum';
+  }
+  else {
+    $dir = __DIR__ . '/../..';
+  }
 
   @include_once 'includes/libm2.php';
-  include_once __DIR__ . '/../../vendor/autoload.php';
-  include_once __DIR__ . '/../../plugins/mel_signatures/config.inc.php';
+  include_once $dir . '/vendor/autoload.php';
+  include_once $dir . '/plugins/mel_signatures/config.inc.php';
 }
 
 if(!empty($_GET['email'])){

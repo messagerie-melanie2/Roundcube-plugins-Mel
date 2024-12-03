@@ -244,10 +244,11 @@ export class WspNavigationButton extends NavBarComponent {
     button.data('custom-style', 'navigation').style.marginTop = 0;
     button.classList.add('left-button');
     button.setAttribute('id', this.taskButtonId);
-    button.addEventListener(
-      'click',
-      this.onbuttonclick.call.bind(this.onbuttonclick),
-    );
+    // button.addEventListener(
+    //   'api:pressed',
+    //   this.onbuttonclick.call.bind(this.onbuttonclick),
+    // );
+    button.onpressed.push(this.onbuttonclick.call.bind(this.onbuttonclick));
     let span = document.createElement('span');
     span.appendChild(this.createText(this.#text));
     button.appendChild(span);

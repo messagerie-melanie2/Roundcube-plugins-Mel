@@ -127,7 +127,7 @@ export class NavBarManager {
 
     const config =
       manualConfig || Array.isArray(raw_config) ? raw_config[0] : raw_config;
-    this.currentNavBar.unselect();
+    this.currentNavBar.select(task, { background: true });
 
     workspace ??= WorkspaceObject.GetWorkspaceData();
 

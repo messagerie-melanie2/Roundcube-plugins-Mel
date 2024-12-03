@@ -273,6 +273,10 @@ class WebComponnents {
         $this->_include_component('searchbar.js');
     }
 
+    public function MelButton() {
+        $this->_include_component('HTMLMelButton.js');
+    }
+
     public function ____METHODS____($what, ...$args) {
         switch ($what) {
             case '_include_component':

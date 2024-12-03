@@ -436,6 +436,10 @@ function m_mp_createworskpace_steps() {
         }
 
         html += '<div class="col-md-4" style="position:relative;">';
+        //debugger;
+        let icon = element.material
+          ? null
+          : m_mp_CreateDocumentIconContract(element.icon);
         html +=
           '<button type=button aria-pressed=false data-type="' +
           element.type +
@@ -444,8 +448,10 @@ function m_mp_createworskpace_steps() {
           ' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `' +
           JSON.stringify(element).replace(/"/g, '¤¤¤') +
           '`)"><span style="display:block;margin-right:0px" class="' +
-          m_mp_CreateDocumentIconContract(element.icon) +
-          '"></span>' +
+          (icon ?? 'material-symbols-outlined') +
+          '">' +
+          (icon ? '' : element.icon) +
+          '</span>' +
           rcmail.gettext(element.name) +
           '</button>';
 

@@ -3812,7 +3812,7 @@ class mel_metapage extends bnum_plugin
 
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
 
-        $color = rcube_utils::get_input_value('_background', rcube_utils::INPUT_GET);
+        $color = rcube_utils::get_input_value('_background', rcube_utils::INPUT_GET) ?? $this->rc->config->get('avatar_error_color', null);
 
         if ($color) {
             if (strpos($color, '#') !== 0) $color = "#$color";

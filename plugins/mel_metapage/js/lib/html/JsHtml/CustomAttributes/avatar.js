@@ -155,7 +155,7 @@ const COOKIE_LENGTH_MAX = 20;
  * @package
  * @default true
  */
-const ENABLE_COOKIE = true;
+const ENABLE_COOKIE = false;
 /**
  * Url de l'avatar. Remplacez %0 par l'email.
  * @constant
@@ -406,7 +406,13 @@ class AvatarElement extends HtmlCustomTag {
       this.removeAttribute('data-f100');
     }
 
-    if (AvatarElement.IsLoaded) {
+    let imgInMemory = this._canBeSaveInMemory()
+      ? MelObject.Empty().load(`avatar_${this._errorBackgroundColor}`)
+      : null;
+
+    if (imgInMemory) this.saved = true;
+
+    if (AvatarElement.IsLoaded || imgInMemory) {
       this.setAttribute('data-forceload', true);
     }
 
@@ -415,7 +421,7 @@ class AvatarElement extends HtmlCustomTag {
     let shadow = this._p_start_construct();
 
     let img = document.createElement('img');
-    img.src = 'skins/elastic/images/contactpic.svg';
+    img.src = imgInMemory ?? 'skins/elastic/images/contactpic.svg';
 
     if (this.shadowEnabled()) {
       let style = document.createElement('style');
@@ -462,6 +468,8 @@ class AvatarElement extends HtmlCustomTag {
    * Met la bonne url à l'image.
    */
   update_img() {
+    if (this.saved) return this._on_load();
+
     let url = AVATAR_URL.replace('%0', this._email);
 
     if (this._errorBackgroundColor)
@@ -556,7 +564,42 @@ class AvatarElement extends HtmlCustomTag {
 
     this.onimgload.call(img, this);
 
+    //save
+    if (this._canBeSaveInMemory()) {
+      const data = this._toData(img);
+      MelObject.Empty().save(`avatar_${this._errorBackgroundColor}`, data);
+    }
+
     return this;
+  }
+
+  _canBeSaveInMemory() {
+    return (
+      this._email === rcmail?.env?.mel_metapage_user_emails?.[0] &&
+      this._email &&
+      !this.saved &&
+      (this._errorBackgroundColor === null ||
+        this._errorBackgroundColor === rcmail.env.avatar_background_color)
+    );
+  }
+
+  _toData(img) {
+    img = img.cloneNode();
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    context.drawImage(img, 0, 0);
+    const data = canvas.toDataURL();
+    canvas.remove();
+    canvas = null;
+    img.remove();
+    img = null;
+    return data;
+  }
+
+  getData() {
+    return this._toData(this.navigator.querySelector('img'));
   }
 
   /**

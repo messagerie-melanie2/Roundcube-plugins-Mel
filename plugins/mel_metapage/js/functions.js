@@ -1333,7 +1333,6 @@ async function m_mp_CreateWorkSpace() {
   $('#worspace-avatar-a').css('display', 'none').appendTo($('#layout'));
   create_popUp.contents.html('<span class=spinner-border></span>');
   create_popUp.editTitle('<h2 class=""><span>Chargement...</span></h2>');
-  debugger;
   if (m_mp_Create.current_promise) {
     await m_mp_Create.current_promise;
     m_mp_Create.current_promise = null;
@@ -1350,7 +1349,6 @@ async function m_mp_CreateWorkSpace() {
     data: datas,
     url: mel_metapage.Functions.url('workspace', 'create'), //"/?_task=workspace&_action=create",
     success: function (data) {
-      debugger;
       data = JSON.parse(data);
 
       rcmail.set_busy(false);

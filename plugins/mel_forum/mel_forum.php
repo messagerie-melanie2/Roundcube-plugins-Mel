@@ -306,7 +306,7 @@ class mel_forum extends bnum_plugin
                 }
 
                 // Récupérer les Tags liés au post
-                $tags = $this->get_all_tags_bypost($post->uid);
+                $tags = $this->get_all_tags_bypost($post);
             } else {
                 // Si l'UID est fourni mais l'article n'existe pas, renvoyer une erreur
                 return false;
@@ -781,7 +781,6 @@ class mel_forum extends bnum_plugin
      * 
      * @return string[] $tags tableau des noms des tags du post
      */
-    // TODO: ajouter post en parametre
     protected function _get_tags_name_bypost($post)
     {
         $tags = [];
@@ -835,25 +834,17 @@ class mel_forum extends bnum_plugin
      *
      * @return void
      */
-    // TODO: passer le post en parametre a la place de l'uid
-    public function get_all_tags_bypost($uid)
+    public function get_all_tags_bypost($post)
     {
-        // Récupérer l'article
-        $post = new LibMelanie\Api\Defaut\Posts\Post();
-        $post->uid = $uid;
         $rettags = [];
 
-        if ($post->load()) {
-            $tags = $post->listTags();
+        $tags = $post->listTags();
 
-            foreach ($tags as $tag) {
-                $rettags[] = ["name" => $tag->tag_name, "id" => $tag->id];
-            }
-
-            return $rettags;
-            // Arrêt de l'exécution du script
-            // exit;
+        foreach ($tags as $tag) {
+            $rettags[] = ["name" => $tag->tag_name, "id" => $tag->id];
         }
+
+        return $rettags;
     }
 
     /**
@@ -1596,7 +1587,7 @@ class mel_forum extends bnum_plugin
             $formatted_date = $formatter->format($timestamp);
 
             $post_creator = driver_mel::gi()->getUser($post->creator);
-            $tags = $this->get_all_tags_bypost($post->uid);
+            $tags = $this->get_all_tags_bypost($post);
             // Récupérer le nombre de réaction pas pris en compte dans la v1
             //$reaction_count = $this->count_reactions($post->uid);
             // Récupérer le nombre de likes

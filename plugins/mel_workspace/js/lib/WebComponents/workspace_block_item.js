@@ -160,11 +160,11 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     div.classList.add('workspace-block-item-main', 'mel-focus', 'important');
 
     if (this.isJoin) {
-      div.setAttribute('tabindex', 0);
-      div.setAttribute('title', `Ouvrir l'espace ${this._title}`);
-      div.setAttribute('role', 'button');
+      this.addClass('hoverable')
+        .toButton(this)
+        .setAttribute('title', `Ouvrir l'espace ${this._title}`);
 
-      div.onkeydown = (e) => {
+      this.onkeydown = (e) => {
         switch (e.key) {
           case ' ':
           case 'Enter':
@@ -175,6 +175,26 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
             break;
         }
       };
+
+      this.addEventListener('click', (e) => {
+        let parent = e.target;
+
+        while (
+          !parent.classList.contains('workspace-block-item-favorite') &&
+          parent.nodeName !== 'BODY'
+        ) {
+          parent = parent.parentElement;
+        }
+
+        if (parent.nodeName === 'BODY') {
+          FramesManager.Instance.switch_frame('workspace', {
+            args: {
+              _action: 'workspace',
+              _uid: this._uid,
+            },
+          });
+        }
+      });
     }
 
     div.style.borderRadius = '5px';
@@ -201,12 +221,20 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       favorite.setAttribute('data-start-pressed', this._is_favorite);
       favorite.classList.add('workspace-block-item-favorite');
 
+      if (this.isJoin) {
+        favorite.onmouseenter = () => {
+          this.removeClass('hoverable');
+        };
+
+        favorite.onmouseleave = () => {
+          this.addClass('hoverable');
+        };
+      }
+
       this._set_favorite_texts(favorite, this._is_favorite);
 
       favorite.ontoggle.push(async (...data) => {
-        if (rcmail.busy) {
-          $(node).click();
-        } else {
+        if (!rcmail.busy) {
           let [event, node] = data;
 
           $('bnum-favorite-button')
@@ -307,17 +335,10 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       }
     }
 
-    if (this.isJoin) {
-      bottom.addEventListener('click', () => {
-        FramesManager.Instance.switch_frame('workspace', {
-          args: {
-            _action: 'workspace',
-            _uid: this._uid,
-          },
-        });
-      });
-    }
-    return this.isJoin ? this.toButton(bottom) : bottom;
+    // if (this.isJoin) {
+
+    // }
+    return bottom; //this.isJoin ? this.toButton(bottom) : bottom;
   }
 
   //#region title_block

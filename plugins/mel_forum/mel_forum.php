@@ -466,7 +466,7 @@ class mel_forum extends bnum_plugin
         $post->history = json_encode($history);
 
         // TODO a tester
-        //$post->save();
+        $post->save();
     }
 
 
@@ -1781,7 +1781,13 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * TODO: Docblock
+     * Affiche les 3 derniers posts dans le Workspace.
+     *
+     * - Récupère les nouveaux posts pour un espace de travail donné.
+     * - Convertit les objets de post en format JSON.
+     * - Définit les données des posts dans l'environnement de sortie pour les utiliser dans la vue.
+     *
+     * @returns {void}
      */
     public function show_new_posts()
     {
@@ -1807,7 +1813,14 @@ class mel_forum extends bnum_plugin
 
     #region Espaces des travail
     /**
-     * TODO: Docblock
+     * Définit les services disponibles pour un espace de travail, y compris le service "forum".
+     *
+     * - Vérifie si le service "forum" est inclus dans les services fournis.
+     * - Si le service "forum" n'est pas déjà défini dans l'espace de travail, il est ajouté.
+     * - Retourne les arguments modifiés, y compris l'espace de travail mis à jour.
+     *
+     * @param array $args - Les arguments contenant les services et l'espace de travail.
+     * @returns array - Les arguments modifiés avec l'espace de travail mis à jour si nécessaire.
      */
     public function workspace_services_set($args)
     {
@@ -1826,7 +1839,14 @@ class mel_forum extends bnum_plugin
     }
 
     /**
-     * TODO: Docblock
+     * Affiche le module de forum dans la vue de l'espace de travail si le service est activé.
+     *
+     * - Vérifie si l'espace de travail dispose du service "forum".
+     * - Si le service est présent, configure la barre de navigation et ajoute le bloc de module "Derniers articles" à la mise en page.
+     * - Inclut le fichier JavaScript nécessaire pour le module de l'espace de travail.
+     *
+     * @param array $args - Les arguments contenant l'espace de travail et la mise en page.
+     * @returns array - Les arguments modifiés avec la mise en page mise à jour.
      */
     public function wsp_show($args)
     {

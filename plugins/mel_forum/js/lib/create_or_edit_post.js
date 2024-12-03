@@ -50,7 +50,15 @@ export class create_or_edit_post extends MelObject {
         this.cancelButton();
     }
 
-    //affiche les tags
+    /**
+     * Affiche la liste des tags dans l'élément HTML avec la classe "tag-list".
+     *
+     * - Vide d'abord la liste existante de tags.
+     * - Ajoute chaque tag de la liste `this.tags` sous forme d'élément HTML.
+     * - Chaque tag est affiché avec un symbole de suppression.
+     *
+     * @returns {void}
+     */
     displayTags() {
         $('.tag-list').empty(); // Vide la liste de tags existante avant d'ajouter les nouveaux tags
         for(var tag of this.tags) {
@@ -60,7 +68,16 @@ export class create_or_edit_post extends MelObject {
         }
     }
 
-    //ajoute un tag
+    /**
+     * Ajoute un nouveau tag à la liste lorsque la touche "Entrée" est pressée.
+     *
+     * - Surveille l'événement `keydown` sur le champ d'ajout de tag (`#add-tag`).
+     * - Si le tag n'existe pas déjà, il est ajouté à la liste et affiché.
+     * - Le champ de saisie est réinitialisé après l'ajout du tag.
+     * - Permet la suppression de tags via la fonction `removeTag`.
+     *
+     * @returns {void}
+     */
     addTag() {
         $('#add-tag').on("keydown", (event) => {
             if(event.keyCode === 13) {
@@ -78,7 +95,14 @@ export class create_or_edit_post extends MelObject {
         });
     }
 
-    //enlève un tag
+    /**
+     * Supprimer un tag de la liste, soit en cliquant sur l'icône de suppression, soit en appuyant sur la touche "Entrée".
+     *
+     * - Surveille l'événement `click` sur les icônes de suppression des tags et les supprime de l'affichage et de la liste `this.tags`.
+     * - Permet également de supprimer un tag en appuyant sur la touche "Entrée" tout en étant sur un tag.
+     *
+     * @returns {void}
+     */
     removeTag() {
         $('.icon-remove-tag').click((e) => {
             e = $(e.currentTarget);
@@ -102,7 +126,17 @@ export class create_or_edit_post extends MelObject {
             }
         });
     }
-    // gestion du bouton sauvegarder
+
+    /**
+     * Gère l'envoi du post, soit pour la création, soit pour la modification.
+     *
+     * - Récupère les données du post (titre, contenu, tags, etc.) et vérifie si c'est une création ou une modification.
+     * - Envoie les données du post via une requête HTTP interne.
+     * - Affiche un message de succès ou d'erreur en fonction du résultat.
+     * - Redirige l'utilisateur vers la page appropriée en fonction de l'action effectuée (création ou modification).
+     *
+     * @returns {void}
+     */
     saveButton() {
         $('#submit-post').click(() => {
             this.post_id = this.get_env('post').id;
@@ -151,6 +185,17 @@ export class create_or_edit_post extends MelObject {
             );
         });
     }
+
+    /**
+     * Gère l'annulation de la création ou modification d'un post.
+     *
+     * - Vérifie si les champs titre et contenu sont vides.
+     * - Si les champs sont vides, le post est supprimé via une requête HTTP interne et l'utilisateur est redirigé vers la page d'accueil.
+     * - Si les champs ne sont pas vides, l'utilisateur est simplement redirigé vers la page d'accueil sans suppression du post.
+     *
+     * @param {string} post_uid - Identifiant unique du post à supprimer en cas de suppression.
+     * @returns {void}
+     */
     cancelButton(post_uid) {
         $('#cancel-post').click(() => {
             // Récupérer les valeurs des champs
@@ -187,10 +232,29 @@ export class create_or_edit_post extends MelObject {
         });
     }
 
+    /**
+     * Bascule vers une nouvelle page de dialogue.
+     *
+     * - Utilise la méthode `switch_page` pour changer la page du dialogue actuel.
+     *
+     * @param {string} dialog_page - Identifiant de la page du dialogue à afficher.
+     * @returns {void}
+     */
     switchPageDialog(dialog_page) {
         this.dialog.switch_page(dialog_page);
     }
 
+    /**
+     * Ouvre une boîte de dialogue pour importer une image dans un post.
+     *
+     * - Cache la pop-up de TinyMCE pendant l'importation de l'image.
+     * - Permet à l'utilisateur de sélectionner une image à importer.
+     * - Envoie l'image au serveur via une requête HTTP interne.
+     * - En cas de succès, insère l'URL de l'image dans le champ de texte et affiche la pop-up TinyMCE.
+     * - Fournit des boutons pour annuler ou importer l'image.
+     *
+     * @returns {void}
+     */
     addImageDialog() {
         this.post_id = this.get_env('post').id;
         // cacher la pop up de tiny mce le temps de faire le traitement avec notre modale 

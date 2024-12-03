@@ -241,10 +241,15 @@ export class Forum extends MelObject {
     }
 
     /**
-     * TODO Docblock
-     * @param {*} post_uid 
-     * @param {*} event 
-     * @returns 
+     * Affiche le menu d'un article.
+     *
+     * - Gère les événements clavier et souris pour assurer l'accessibilité.
+     * - Empêche les comportements par défaut et la propagation de certains événements.
+     * - Gère les écouteurs d'événements pour détecter les clics à l'extérieur et fermer le menu.
+     *
+     * @param {string} post_uid - Identifiant unique du post.
+     * @param {Event} [event] - L'événement déclencheur du basculement, optionnel.
+     * @returns {void}
      */
     toggleMenuPost(post_uid, event) {
         // Vérification si un événement est fourni
@@ -302,9 +307,14 @@ export class Forum extends MelObject {
     }
 
     /**
-     * TODO docblock
-     * @param {*} post_uid 
-     * @param {*} event 
+     * Permet d'éditer un post.
+     *
+     * - Empêche les comportements par défaut et la propagation de l'événement.
+     * - Construit l'URL d'édition en utilisant l'uid du post.
+     *
+     * @param {string} post_uid - Identifiant unique du post.
+     * @param {Event} event - L'événement déclencheur de l'action.
+     * @returns {void}
      */
     editPost(post_uid, event) {
       event.preventDefault();
@@ -314,9 +324,16 @@ export class Forum extends MelObject {
     }
 
     /**
-     * TODO docblock
-     * @param {*} post_uid 
-     * @param {*} event 
+     * Supprime un post spécifique après confirmation de l'utilisateur.
+     *
+     * - Empêche les comportements par défaut et la propagation de l'événement.
+     * - Affiche une boîte de dialogue de confirmation avant de procéder.
+     * - Envoie une requête HTTP pour supprimer le post.
+     * - Gère les retours de succès ou d'erreur et met à jour l'affichage en conséquence.
+     *
+     * @param {string} post_uid - Identifiant unique du post à supprimer.
+     * @param {Event} event - L'événement déclencheur de l'action.
+     * @returns {void}
      */
     deletePost(post_uid, event) {
       event.preventDefault();

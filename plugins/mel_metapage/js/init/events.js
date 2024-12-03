@@ -386,6 +386,26 @@ if (rcmail && window.mel_metapage) {
 
     if (rcmail.env.task === 'settings') {
       if (
+        top.rcmail.env.avatar_background_color !==
+        rcmail.env.avatar_background_color
+      ) {
+        top.rcmail.env.avatar_background_color =
+          rcmail.env.avatar_background_color;
+
+        for (const key of Object.keys(
+          mel_metapage.Storage._getDataStore().store,
+        )) {
+          if (key.includes('avatar_')) {
+            mel_metapage.Storage.remove(key);
+          }
+        }
+
+        let avatar = top.document.querySelector('#user-picture');
+        avatar.outerHTML = `<bnum-avatar id="user-picture"></bnum-avatar>`;
+        avatar = null;
+      }
+
+      if (
         rcmail.env.mel_metapage_mail_configs['mel-chat-placement'] !==
         parent.parent.rcmail.env.mel_metapage_mail_configs['mel-chat-placement']
       ) {
@@ -2500,17 +2520,23 @@ $(document).ready(() => {
           // ).then(() => {
           //   if (after !== null) after();
           // });
-          const {FramesManager} = await loadJsModule('mel_metapage', 'frame_manager', '/js/lib/classes/');
+          const { FramesManager } = await loadJsModule(
+            'mel_metapage',
+            'frame_manager',
+            '/js/lib/classes/',
+          );
 
           if (!!action && !othersParams?._action) {
             othersParams ??= {};
             othersParams._action = action;
           }
 
-          await FramesManager.Instance.switch_frame(task, {args: othersParams});
+          await FramesManager.Instance.switch_frame(task, {
+            args: othersParams,
+          });
 
           if (after !== null) after();
-          
+
           rcmail.triggerEvent('intercept.click.ok', {
             task,
             action,

@@ -392,12 +392,15 @@ class AvatarElement extends HtmlCustomTag {
     });
 
     Object.defineProperty(this, '_errorBackgroundColor', {
-      value: this.data('error-background-color'),
+      value:
+        this.data('error-background-color') ??
+        rcmail.env.avatar_background_color ??
+        null,
       writable: false,
       configurable: false,
     });
 
-    //this.removeAttribute('data-error-background-color');
+    this.removeAttribute('data-error-background-color');
     this.removeAttribute('data-email');
     this.removeAttribute('data-id');
 

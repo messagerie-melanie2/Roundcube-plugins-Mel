@@ -318,6 +318,7 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env('mel_metapage.tab.notification_style', $this->rc->config->get('tab_title_style', 'page'));
         $this->rc->output->set_env('mel_metapage.webconf_voxify_indicatif', $this->rc->config->get('webconf_voxify_indicatif', 'FR'));
         $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
+        $this->rc->output->set_env("avatar_background_color", $this->rc->config->get('avatar_error_color', null));
 
         $icon = "mel-icon-size";
         $folder_space = "mel-folder-space";
@@ -2049,6 +2050,14 @@ class mel_metapage extends bnum_plugin
                 if ($key === $chat_placement) continue;
                 $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
             }
+
+            $avatar_color_key =  'avatar_error_color';
+            $config = $this->rc->config->get($avatar_color_key, $this->getRandomColorWithContrast($this->get_user()->email, true)['background']);
+            $args['blocks']['main']['options'][$avatar_color_key] =  [
+                'title'   => html::label($avatar_color_key, rcube::Q($this->gettext($avatar_color_key))),
+                'content' => "<input name=$avatar_color_key type=\"color\" value=\"$config\"/>",
+            ];
+
         } else if ($args['section'] == 'calendar') {
             $this->add_texts('localization/');
 
@@ -2294,6 +2303,12 @@ class mel_metapage extends bnum_plugin
             $args['prefs']["mel_mail_configuration"] = $config;
 
             $this->rc->output->set_env("mel_metapage_mail_configs", $config);
+
+            $avatar_color_key =  'avatar_error_color';
+            $config = rcube_utils::get_input_value($avatar_color_key, rcube_utils::INPUT_POST);
+
+            if ($avatar_color_key)  $args['prefs'][$avatar_color_key] = $config;
+            $this->rc->output->set_env("avatar_background_color", $config);
         } else if ($args['section'] == 'calendar') {
             $this->add_texts('localization/');
 
@@ -2310,6 +2325,7 @@ class mel_metapage extends bnum_plugin
             $args['prefs']["mel_calendar_configuration"] = $config;
 
             $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
+            
         } else if ($args['section'] == 'globalsearch') {
             $op_search_mail_max = 'search_mail_max';
             $op_search_on_all_bal = 'search_on_all_bal';
@@ -3835,11 +3851,15 @@ class mel_metapage extends bnum_plugin
         return $luminance > 186 ? '#000000' : '#FFFFFF'; // Texte noir pour fond clair, blanc pour fond sombre
     }
     
-    function getRandomColorWithContrast($name) {
+    function getRandomColorWithContrast($name, $toHexa = false) {
         $bgColor = $this->stringToColorCode($name);
         $textColor = $this->getContrastingColor($bgColor);
         
-        return $this->getColor($bgColor, $textColor);
+        if (!$toHexa) return $this->getColor($bgColor, $textColor);
+        else return [
+            'background' => $bgColor,
+            'text' => $textColor,
+        ];
     }
 
     function getColor($bgColor, $textColor) {

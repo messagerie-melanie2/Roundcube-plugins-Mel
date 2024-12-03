@@ -38,6 +38,7 @@ export class WorkspaceData {
     this.color = null;
     this.isAdmin = null;
     this.isJoin = null;
+    this.isAdminAlone = null;
     /**
      * @type {WorkspaceDataService}
      */

@@ -2,7 +2,11 @@ import { BnumMessage } from '../../../../mel_metapage/js/lib/classes/bnum_messag
 import { FramesManager } from '../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
-import { HtmlCustomTag } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
+import {
+  BnumHtmlIcon,
+  HtmlCustomTag,
+} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { FavoriteButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
@@ -33,6 +37,19 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     this._private = null;
 
     this.onfavoritechanged = new BnumEvent();
+  }
+
+  get isPrivate() {
+    return [true, 'true', 1, '1'].includes(this.dataset.private);
+  }
+
+  get isJoin() {
+    if (!this.join) {
+      this.join = this.dataset.join;
+      this.removeAttribute('data-join');
+    }
+
+    return [true, 'true', 1, '1'].includes(this.join);
   }
 
   _init() {
@@ -112,6 +129,8 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
     this.classList.add('workspace-block-item', 'mv2-card');
 
+    if (!this.isJoin) this.style.cursor = 'unset';
+
     this._generate();
   }
 
@@ -140,23 +159,25 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     let div = document.createElement('div');
     div.classList.add('workspace-block-item-main', 'mel-focus', 'important');
 
-    div.setAttribute('tabindex', 0);
-    div.setAttribute('title', `Ouvrir l'espace ${this._title}`);
-    div.setAttribute('role', 'button');
+    if (this.isJoin) {
+      div.setAttribute('tabindex', 0);
+      div.setAttribute('title', `Ouvrir l'espace ${this._title}`);
+      div.setAttribute('role', 'button');
+
+      div.onkeydown = (e) => {
+        switch (e.key) {
+          case ' ':
+          case 'Enter':
+            this.$.click();
+            break;
+
+          default:
+            break;
+        }
+      };
+    }
 
     div.style.borderRadius = '5px';
-
-    div.onkeydown = (e) => {
-      switch (e.key) {
-        case ' ':
-        case 'Enter':
-          this.$.click();
-          break;
-
-        default:
-          break;
-      }
-    };
 
     div.appendChild(this._generate_picture());
     div.appendChild(this._generate_bottom());
@@ -286,16 +307,17 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       }
     }
 
-    bottom.addEventListener('click', () => {
-      FramesManager.Instance.switch_frame('workspace', {
-        args: {
-          _action: 'workspace',
-          _uid: this._uid,
-        },
+    if (this.isJoin) {
+      bottom.addEventListener('click', () => {
+        FramesManager.Instance.switch_frame('workspace', {
+          args: {
+            _action: 'workspace',
+            _uid: this._uid,
+          },
+        });
       });
-    });
-
-    return this.toButton(bottom);
+    }
+    return this.isJoin ? this.toButton(bottom) : bottom;
   }
 
   //#region title_block
@@ -359,7 +381,42 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     div.classList.add('workspace-block-item-data');
 
     div.appendChild(this._generate_users());
-    div.appendChild(this._generate_edited());
+
+    console.log(this._title, this.isJoin, this.isPrivate);
+    let edited = this._generate_edited();
+    if (edited) div.appendChild(edited);
+    else {
+      let btn = HTMLIconMelButton.CreateNode('add', {
+        content: this.createText('Rejoindre'),
+      });
+      btn.setAttribute('title', `${this._title} - Rejoindre`);
+      // btn.classList.add('mel-button', 'no-buttom-margin', 'no-margin-button');
+      btn.onclick = () => {
+        let params = connectors.join_workspace.needed;
+        params._uid = this._uid;
+
+        BnumConnector.connect(connectors.join_workspace, { params }).then(
+          () => {
+            FramesManager.Instance.switch_frame('workspace', {
+              args: { _uid: this._uid, _action: 'workspace' },
+            });
+          },
+        );
+      };
+
+      btn.style.marginTop = '10px';
+
+      // let span = document.createElement('span');
+      // span.appendChild(this.createText('Rejoindre'));
+      // span.appendChild(BnumHtmlIcon.Create({ icon: 'add' }).addClass('plus'));
+      // btn.appendChild(span);
+
+      div.appendChild(btn);
+      // span = null;
+      btn = null;
+    }
+
+    edited = null;
 
     return div;
   }
@@ -429,6 +486,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
   //#region date
   _generate_edited() {
+    if (!this.isPrivate && !this.isJoin) return null;
     return this._generate_text_item(
       this._edited,
       'last-edited',

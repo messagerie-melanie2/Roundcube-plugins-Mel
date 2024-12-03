@@ -98,6 +98,10 @@ export class WorkspacePage extends WorkspaceObject {
           });
           break;
 
+        case 'leave':
+          rcmail.env.WSP_Param.leave();
+          break;
+
         default:
           break;
       }

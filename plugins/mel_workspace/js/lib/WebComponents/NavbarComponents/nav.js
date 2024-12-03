@@ -1,4 +1,5 @@
 import { MelEnumerable } from '../../../../../mel_metapage/js/lib/classes/enum.js';
+import { FramesManager } from '../../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { MainNav } from '../../../../../mel_metapage/js/lib/classes/main_nav.js';
 import {
   BnumHtmlIcon,
@@ -85,12 +86,20 @@ export class WspPageNavigation extends NavBarComponent {
 
   #_generate_element(obj) {
     // debugger;
-    const { task, canBeHidden, icon } = obj;
+    const { task: taskData, canBeHidden, icon } = obj;
+    const [plugin, task] = taskData.includes('.')
+      ? taskData.split('.')
+      : ['mel_workspace', taskData];
+
     let li = document.createElement('li');
     li.setAttribute('role', 'presentation');
 
+    const text = FramesManager.Instance.get_frame('workspace', {
+      jquery: false,
+    }).contentWindow.rcmail.gettext(`${plugin}.${task}`);
+
     let button = new WspNavigationButton(this, {
-      text: `mel_metapage.${task}`,
+      text,
       startingPressedState: ['true', true].includes(
         this.parent.startingStates[task],
       ),

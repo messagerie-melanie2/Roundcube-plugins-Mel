@@ -393,16 +393,12 @@ class WspNavBar extends HtmlCustomTag {
     button.setAttribute('title', "Copier l'url de l'espace");
 
     button.onclick = MelObject.Empty().copy_to_clipboard.bind(
-      MelObject.Empty(),
-      MelObject.Empty()
-        .url('workspace', {
-          action: 'workspace',
-          params: {
-            _uid: this.workspace.uid,
-            _force_bnum: 1,
-          },
-        })
-        .replace('&_is_from=iframe', EMPTY_STRING),
+      MelObject,
+      MelObject.Url('workspace', {
+        params: {
+          _uid: this.workspace.uid,
+        },
+      }).replace('&_is_from=iframe', EMPTY_STRING),
     );
 
     let icon = new BnumHtmlIcon('content_copy');
@@ -498,6 +494,7 @@ class WspNavBar extends HtmlCustomTag {
         this._generate_invitation,
         this._generate_join,
         this._generate_start_visio,
+        this._generate_leave,
         //this._generate_params,
         //this._generate_members,
       ];
@@ -549,13 +546,31 @@ class WspNavBar extends HtmlCustomTag {
   }
 
   _generate_invitation() {
-    if (this.workspace.isJoin) {
+    if (this.workspace.isJoin && this.workspace.isAdmin) {
       let button = new WspButton(this, {
         text: 'Inviter un membre',
         icon: 'person_add',
       });
 
       button.setAttribute('data-up-nav', 'invitation');
+
+      return button;
+    }
+
+    return null;
+  }
+
+  _generate_leave() {
+    if (
+      this.workspace.isJoin &&
+      !(this.workspace.isAdmin && this.workspace.isAdminAlone)
+    ) {
+      let button = new WspButton(this, {
+        text: "Quitter l'espace",
+        icon: 'logout',
+      });
+
+      button.setAttribute('data-up-nav', 'leave');
 
       return button;
     }

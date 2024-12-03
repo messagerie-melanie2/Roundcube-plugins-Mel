@@ -174,7 +174,8 @@ class Workspace {
     return $ret;
   }
 
-  public function hasUser($user_id) {
+  public function hasUser($user_id = null) {
+    $user_id ??= driver_mel::gi()->getUser()->uid;
     return mel_helper::Enumerable($this->users())->any(function ($k, $v) use($user_id) {
       return $v->user_uid === $user_id;
     });
@@ -260,8 +261,10 @@ class Workspace {
       'color' => $this->color(),
       'isJoin' => $this->hasUserFromEmail(driver_mel::gi()->getUser()->email),
       'isAdmin' => $this->isAdmin(),
-      'services' => $this->objects()->serialize()
+      'services' => $this->objects()->serialize(), 
     ];
+
+    $raw['isAdminAlone'] = $raw['isAdmin'] && $this->getAdmins()->count() === 1;
 
     return json_encode($raw);
   }

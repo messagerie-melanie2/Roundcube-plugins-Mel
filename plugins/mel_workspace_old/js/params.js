@@ -625,6 +625,14 @@
           (msg) => {
             this.busy(false);
             switch (msg) {
+              case 'yourealoneupgrade':
+                alert(
+                  "Vous êtes la seul personne dans cet espace et vous n'êtes pas administrateur. Vos privilège ont été modifié !\r\nLa page va être rechargée...",
+                );
+
+                this.reload();
+
+                break;
               case 'yourealone':
                 rcmail.display_message(
                   'Vous êtes la seule personne de cet espace, si vous souhaitez le quitter, supprimer le.',
@@ -692,14 +700,21 @@
 
     update_app(app) {
       this.busy();
-      return this.ajax(this.url('PARAMS_update_app'), {
-        _uid: this.uid,
-        _app: app,
-      }, (d) => {
-        if (d === 'error') {
-          parent.rcmail.display_message('Impossible de créer le service pour le moment.', 'error');
-        }
-      })
+      return this.ajax(
+        this.url('PARAMS_update_app'),
+        {
+          _uid: this.uid,
+          _app: app,
+        },
+        (d) => {
+          if (d === 'error') {
+            parent.rcmail.display_message(
+              'Impossible de créer le service pour le moment.',
+              'error',
+            );
+          }
+        },
+      )
         .always(() => {
           return this.update_app_table(() => {
             this.change_icons();
@@ -862,7 +877,7 @@
           true,
           [1],
           null,
-          'need_config'
+          'need_config',
         );
     }
 

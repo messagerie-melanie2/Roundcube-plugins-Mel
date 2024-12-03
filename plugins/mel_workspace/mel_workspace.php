@@ -38,6 +38,16 @@ class mel_workspace extends bnum_plugin
                 $this->register_task('workspace');
 
                 if ($this->is_index_action()) {
+
+                    $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
+                    if ($uid !== null){
+                        $this->redirect('workspace', 'workspace', [
+                            '_uid' => $uid,
+                            '_force_bnum' => 1
+                        ]);
+                        return;
+                    }
+
                     $this->_setup_index_action();
                 }
                 else if ($this->get_current_task() === 'workspace') {
@@ -135,7 +145,7 @@ class mel_workspace extends bnum_plugin
     
             $this->workspacePageLayout->fourthRow()->append(12, $this->workspacePageLayout->htmlModuleBlock(['id' => 'module-agenda']));
             $this->workspacePageLayout->setNavBarSetting('home', 'home', false, 0);
-            $this->workspacePageLayout->setNavBarSetting('calendar', 'calendar_month', true, 1);
+            $this->workspacePageLayout->setNavBarSetting('mel_metapage.calendar', 'calendar_month', true, 1);
     
             if ($workspace->objects()->has(self::KEY_TASK)) $this->workspacePageLayout->setNavBarSetting('tasks', 'check_box', false, 6);
             
@@ -700,7 +710,7 @@ class mel_workspace extends bnum_plugin
             mel_logs::gi()->log(mel_logs::ERROR, '###[update_user_rights]'.$th->getMessage());
         }
         
-        $this->sendExit($return);
+        if (rcube_utils::get_input_value("_noexit", rcube_utils::INPUT_POST) !== 'ok') $this->sendExit($return);
     }
 
     function delete_user($uid = null, $user_to_delete = null, $exit = true, $forceDelete = false)
@@ -880,9 +890,45 @@ class mel_workspace extends bnum_plugin
             echo "denied";
         exit;
     }
+
+    function leave_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::Workspace($uid);//self::get_workspace($uid);
+        $shares = $workspace->users();
+        if (count($shares) === 1)
+        {
+            if (!$workspace->isAdmin()) {
+                $_POST['_id'] = $this->get_user()->uid;
+                $_POST['_right'] = Share::RIGHT_OWNER;
+                $_POST['_noexit'] = 'ok';
+                $workspace->share($_POST['_id'])->rights = $_POST['_right'];
+                $workspace->save();
+                $this->update_user_rights();
+                echo 'yourealoneupgrade';
+            }
+            else echo "yourealone";
+        }
+        else
+        {
+            $nb_admin = 0;
+            foreach ($shares as $key => $value) {
+                if ($workspace->isAdmin($value->user))
+                    ++$nb_admin;
+            }
+            if ($nb_admin === 1 && $workspace->isAdmin())
+                echo 'youretheone';
+            else {
+                $this->delete_user($uid, driver_mel::gi()->getUser()->uid, false);
+                echo '';
+            }
+        }
+        exit;
+    }
+
     #endregion action/params
 
-    #endregion params
+    #endregion actions
 
     #region handlers
     public function handler_subscribed($args) {
@@ -1436,6 +1482,7 @@ class mel_workspace extends bnum_plugin
             $this->register_action('archive_workspace', array($this, 'archive_workspace'));
             $this->register_action('delete_workspace', array($this, 'delete_workspace'));
             $this->register_action('hashtag', array($this, 'get_hashtags'));
+            $this->register_action('leave_workspace', array($this, 'leave_workspace'));
             $this->register_action('join_user', array($this, 'join_user'));
         }
 
@@ -1739,6 +1786,7 @@ class mel_workspace extends bnum_plugin
         $block->color = $workspace->color();//self::_GetWorkspaceSetting($workspace, 'color');
         $block->favorite = $workspace->isFavorite();//isset($favorites) && isset($favorites[$workspace->uid]) && $favorites[$workspace->uid] && $favorites[$workspace->uid]['tak'] ? $favorites[$workspace->uid]['tak'] : false;
         $block->private = !$workspace->isPublic();
+        $block->join = $workspace->hasUser();
         //$block->canBeFavorite = !($workspace->isArchived() || ($workspace->isPublic() && !$workspace->hasUser(driver_mel::gi()->getUser()->uid)));
 
         return $block->parse();

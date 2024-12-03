@@ -743,6 +743,16 @@
           (msg) => {
             this.busy(false);
             switch (msg) {
+              case 'yourealoneupgrade':
+                if (
+                  confirm(
+                    "Vous êtes la seul personne dans cet espace et vous n'êtes pas administrateur. Si vous quittez l'espace, celui-ci sera supprimé, cliquez sur ''ok'' si vous souhaitez continuer.",
+                  )
+                ) {
+                  this.delete();
+                }
+
+                break;
               case 'yourealone':
                 rcmail.display_message(
                   'Vous êtes la seule personne de cet espace, si vous souhaitez le quitter, supprimer le.',

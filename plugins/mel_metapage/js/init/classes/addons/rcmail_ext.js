@@ -16,13 +16,17 @@
         let index = 0,
           len = keys.length,
           key = keys[index],
-          callback = this._handlers_ex[main_key][key];
+          callback = this._handlers_ex[main_key][key],
+          value = null;
         index < len;
         ++index
       ) {
-        return_data.push(callback(...args));
         key = keys[index];
         callback = this._handlers_ex[main_key][key];
+        value = callback(...args);
+        if (value !== undefined) {
+          return_data.push(value);
+        }
       }
     }
 

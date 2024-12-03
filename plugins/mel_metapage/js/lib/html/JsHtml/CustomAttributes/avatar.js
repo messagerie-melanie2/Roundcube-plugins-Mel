@@ -337,6 +337,7 @@ class AvatarElement extends HtmlCustomTag {
      */
     this._email = null;
     this._id = null;
+    this._errorBackgroundColor = null;
     /**
      * Taille (de 0 à 100) de la balise.
      *
@@ -390,6 +391,13 @@ class AvatarElement extends HtmlCustomTag {
         this.dataset.email || rcmail?.env?.mel_metapage_user_emails?.[0] || '?',
     });
 
+    Object.defineProperty(this, '_errorBackgroundColor', {
+      value: this.data('error-background-color'),
+      writable: false,
+      configurable: false,
+    });
+
+    //this.removeAttribute('data-error-background-color');
     this.removeAttribute('data-email');
     this.removeAttribute('data-id');
 
@@ -454,11 +462,16 @@ class AvatarElement extends HtmlCustomTag {
    * Met la bonne url à l'image.
    */
   update_img() {
+    let url = AVATAR_URL.replace('%0', this._email);
+
+    if (this._errorBackgroundColor)
+      url += `&_background=${this._errorBackgroundColor.replaceAll('#', EMPTY_STRING)}`;
+
     this.setAttribute('data-state', 'loading');
     let img = this.navigator.querySelector('img');
     img.onload = this._on_load.bind(this);
     img.onerror = this._on_error.bind(this);
-    img.src = AVATAR_URL.replace('%0', this._email);
+    img.src = url.replaceAll('_is_from=iframe', EMPTY_STRING);
 
     img = null;
   }
@@ -613,7 +626,12 @@ class AvatarElement extends HtmlCustomTag {
    * @param {*} param0
    * @returns {AvatarElement}
    */
-  static Create({ id = null, email = null, force = null } = {}) {
+  static Create({
+    id = null,
+    email = null,
+    force = null,
+    error_background_color = null,
+  } = {}) {
     let node = document.createElement('bnum-avatar');
 
     if (email) node.setAttribute('data-email', email);
@@ -621,6 +639,9 @@ class AvatarElement extends HtmlCustomTag {
     if (id) node.setAttribute('data-id', id);
 
     if (force) node.setAttribute('data-forceload', true);
+
+    if (error_background_color)
+      node.setAttribute('data-error-background-color', error_background_color);
 
     return node;
   }

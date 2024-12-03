@@ -60,7 +60,9 @@ export class ModuleForum extends WorkspaceObject {
     }
 
     // Ajout de l'écouteur via addListener()
-    this.addListener();
+    this.addListener(
+
+    );
   }
 
   /**
@@ -102,7 +104,14 @@ export class ModuleForum extends WorkspaceObject {
       $(caller).removeClass('disabled').removeAttr('disabled');
       rcmail.hide_message(loading);
     });
+    NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
+      if (args.task === 'forum'){
+        return {'_workspace_uid': this.workspace.uid};
+      }
+    },'forum');
+
   }
+
 
   /**
    * Affiche un loader si il n'existe pas
@@ -160,7 +169,7 @@ export class ModuleForum extends WorkspaceObject {
     let iframe = this.block.setIframeFromTask('forum', {
       action: 'new_posts',
       args: {
-        _uid: this.workspace.uid,
+        _workspace_uid: this.workspace.uid,
       },
     });
 

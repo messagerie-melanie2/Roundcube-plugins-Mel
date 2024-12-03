@@ -30,6 +30,8 @@ if (APPLICATION_LOCALE) {
   include_once __DIR__ . '/config.inc.php';
 }
 else {
+  require_once __DIR__ . '/../config.inc.php';
+  
   // PAMELA - Application name configuration for ORM Mél
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
   if ($config['DOCKER']) {

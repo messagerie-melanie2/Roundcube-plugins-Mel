@@ -2,6 +2,7 @@ import { BnumMessage } from '../../../../mel_metapage/js/lib/classes/bnum_messag
 import { FramesManager } from '../../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
+import { AvatarElement } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
   BnumHtmlIcon,
@@ -474,10 +475,14 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
         span = null;
       } else {
-        img = document.createElement('bnum-avatar');
-        img.setAttribute('data-email', url);
+        img = AvatarElement.Create({
+          email: url,
+          error_background_color: this._color,
+        });
+        // img.setAttribute('data-email', url);
         img.setAttribute('data-shadow', false);
         img.setAttribute('title', user);
+        img.style.backgroundColor = this._color;
         img.addEventListener('api:imgload', (customEvent) => {
           let image = customEvent.image();
           image.style.borderColor = this._color;

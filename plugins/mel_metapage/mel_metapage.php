@@ -201,7 +201,7 @@ class mel_metapage extends bnum_plugin
         $this->add_hook("message_part_structure", [$this, 'hook_message_part_structure']);
         $this->add_hook("message_part_before", [$this, 'hook_message_part_before']);
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
-        //$this->add_hook('contact_photo', [$this, 'no_contact_found']);
+        $this->add_hook('contact_photo', [$this, 'no_contact_found']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs") {
             if (rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch') $this->include_script('js/actions/settings_gs.js');
@@ -318,6 +318,13 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env('mel_metapage.tab.notification_style', $this->rc->config->get('tab_title_style', 'page'));
         $this->rc->output->set_env('mel_metapage.webconf_voxify_indicatif', $this->rc->config->get('webconf_voxify_indicatif', 'FR'));
         $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
+        $this->rc->output->set_env("avatar_background_color", $this->rc->config->get('avatar_error_color', null));
+
+        
+        $this->rc->output->set_env('mel_metapage_const', [
+            "key" => self::FROM_KEY,
+            "value" => self::FROM_VALUE
+        ]);
 
         $icon = "mel-icon-size";
         $folder_space = "mel-folder-space";
@@ -351,10 +358,6 @@ class mel_metapage extends bnum_plugin
         ]);
         $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
 
-        $this->rc->output->set_env('mel_metapage_const', [
-            "key" => self::FROM_KEY,
-            "value" => self::FROM_VALUE
-        ]);
 
 
         $showBackIcon = 'param-show-back-icon';
@@ -2049,6 +2052,14 @@ class mel_metapage extends bnum_plugin
                 if ($key === $chat_placement) continue;
                 $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
             }
+
+            $avatar_color_key =  'avatar_error_color';
+            $config = $this->rc->config->get($avatar_color_key, $this->getRandomColorWithContrast($this->get_user()->email, true)['background']);
+            $args['blocks']['main']['options'][$avatar_color_key] =  [
+                'title'   => html::label($avatar_color_key, rcube::Q($this->gettext($avatar_color_key))),
+                'content' => "<input name=$avatar_color_key type=\"color\" value=\"$config\"/>",
+            ];
+
         } else if ($args['section'] == 'calendar') {
             $this->add_texts('localization/');
 
@@ -2294,6 +2305,12 @@ class mel_metapage extends bnum_plugin
             $args['prefs']["mel_mail_configuration"] = $config;
 
             $this->rc->output->set_env("mel_metapage_mail_configs", $config);
+
+            $avatar_color_key =  'avatar_error_color';
+            $config = rcube_utils::get_input_value($avatar_color_key, rcube_utils::INPUT_POST);
+
+            if ($avatar_color_key)  $args['prefs'][$avatar_color_key] = $config;
+            $this->rc->output->set_env("avatar_background_color", $config);
         } else if ($args['section'] == 'calendar') {
             $this->add_texts('localization/');
 
@@ -2310,6 +2327,7 @@ class mel_metapage extends bnum_plugin
             $args['prefs']["mel_calendar_configuration"] = $config;
 
             $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
+            
         } else if ($args['section'] == 'globalsearch') {
             $op_search_mail_max = 'search_mail_max';
             $op_search_on_all_bal = 'search_on_all_bal';
@@ -3732,15 +3750,29 @@ class mel_metapage extends bnum_plugin
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
         $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
 
-        if (rcube_utils::get_input_value('_no_data', rcube_utils::INPUT_GET)) {
+        if (!isset($email)){
+            $email = driver_mel::gi()->getUser($id)->email;
+            $_GET['_email'] = $email;
+        }
+
+        $img = $this->storage()->get_cache("no_avatar_$email");
+
+        if ($img && (new DateTime($img))->add(DateInterval::createFromDateString('30 day')) <= new DateTime()) {
+            $img = null;
+            $this->storage()->clear_cache("no_avatar_$email");
+        }
+
+        if ($img || rcube_utils::get_input_value('_no_data', rcube_utils::INPUT_GET)) {
+            
+            if (!$img) $this->storage()->update_cache("no_avatar_$email", date("Y-m-d H:i:s"));
             $img = $this->_generate_no_picture();
+            
+            $this->rc->output->future_expire_header(86400*30);
             header("Content-Type: image/png"); 
   
             imagepng($img); 
             exit;
         }
-
-        if (!isset($email)) $email = driver_mel::gi()->getUser($id)->email;
         
         $plugin = $this->exec_hook('app.avatar', [
             'email' => $email,
@@ -3754,18 +3786,21 @@ class mel_metapage extends bnum_plugin
         }
         else if (!isset($plugin) && !isset($plugin['data'])) $data = $plugin['data'];
         else {
-            $data = [
-            '_task' => 'addressbook',
-            '_action' => 'photo',
-            '_email' => $email,
-            '_error' => 1
-            ];
-            $redirect = true;
+            // $data = [
+            // '_task' => 'addressbook',
+            // '_action' => 'photo',
+            // '_email' => $email,
+            // '_error' => 1
+            // ];
+            // $redirect = true;
+            $action = new rcmail_action_contacts_photo;
+            return $action->run();
         }
 
         if ($redirect) $this->rc()->output->redirect($data);
         else {
             if ($data) {
+                $this->rc->output->future_expire_header(86400*30);
                 $this->rc()->output->sendExit($data, ['Content-Type: ' . rcube_mime::image_content_type($data)]);
             }
     
@@ -3778,20 +3813,31 @@ class mel_metapage extends bnum_plugin
     }
 
     public function _generate_no_picture() {
-        $image = imagecreate(100, 100);
+        $image = imagecreate(200, 200);
 
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
 
-        $colors = $this->getRandomColorWithContrast($email);
+        $color = rcube_utils::get_input_value('_background', rcube_utils::INPUT_GET) ?? $this->rc->config->get('avatar_error_color', null);
+
+        if ($color) {
+            if (strpos($color, '#') !== 0) $color = "#$color";
+
+            $text = $this->getContrastingColor($color);
+        }
+
+        $colors = $color ? $this->getColor($color, $text) : $this->getRandomColorWithContrast($email);
+
+        unset($color);
+        unset($text);
 
         // Set the background color of image 
         $background_color = imagecolorallocate($image, $colors['background'][0], $colors['background'][1], $colors['background'][2]); 
-        imagefill($image, 100, 100, $background_color);
+        imagefill($image, 200, 200, $background_color);
 
         // Set the text color of image 
         $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]); 
 
-        $tmp=imagefttext($image, 60, 0, 25, 80, $text_color, __DIR__.'/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
+        $tmp=imagefttext($image, 120, 0, 50, 160, $text_color, __DIR__.'/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
         //imagestring($image, 2, 20, 20, substr($email, 0, 1), $text_color);
 
         return $image;
@@ -3810,10 +3856,18 @@ class mel_metapage extends bnum_plugin
         return $luminance > 186 ? '#000000' : '#FFFFFF'; // Texte noir pour fond clair, blanc pour fond sombre
     }
     
-    function getRandomColorWithContrast($name) {
+    function getRandomColorWithContrast($name, $toHexa = false) {
         $bgColor = $this->stringToColorCode($name);
         $textColor = $this->getContrastingColor($bgColor);
         
+        if (!$toHexa) return $this->getColor($bgColor, $textColor);
+        else return [
+            'background' => $bgColor,
+            'text' => $textColor,
+        ];
+    }
+
+    function getColor($bgColor, $textColor) {
         $r = hexdec(substr($bgColor, 1, 2));
         $g = hexdec(substr($bgColor, 3, 2));
         $b = hexdec(substr($bgColor, 5, 2));
@@ -3830,17 +3884,33 @@ class mel_metapage extends bnum_plugin
 
     function stringToColorCode($str) {
         return "#".substr(md5($str), 0, 6);
+        // $val = 0;
+        // foreach (str_split($str) as $value) {
+        //     $value = ord(strtolower($value));
+
+        //     if ($value < 0) $value = -$value;
+        //     $val += $value;
+        // }
+
+        // $val = dechex($val * 11);
+
+        // if (strlen($val) < 6) $val .= ((10**(6-strlen($val)))/10);
+
+        // return "#$val";
       }
       
     
     public function no_contact_found($args) {
-        if (is_null($args['record']) || is_null($args['data'])) {
-            $args['url'] = [
-                '_task' => 'mel_metapage',
-                '_action' => 'avatar',
-                '_email' => $args['email'],
-                '_no_data' => true
-                ];
+        if ((is_null($args['record']) || is_null($args['data'])) && $this->get_current_action() === 'avatar') {
+            // $args['url'] = [
+            //     '_task' => 'mel_metapage',
+            //     '_action' => 'avatar',
+            //     '_email' => $args['email'],
+            //     '_no_data' => true
+            //     ];
+            $_GET['_no_data'] = true;
+            $this->avatar_url();
+
         }
 
         return $args;

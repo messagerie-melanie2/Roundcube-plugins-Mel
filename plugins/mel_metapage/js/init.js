@@ -1012,6 +1012,9 @@
    */
   function update_badge(size, idBadge) {
     let querry = $('#' + idBadge);
+
+    if (isNaN(+size)) size = 0;
+
     if (size == 0) {
       //console.log("heeeeere", querry);
       querry.css('display', 'none');
@@ -1020,7 +1023,7 @@
         size = '999+';
         querry.css('font-size', '6px');
       } else querry.css('font-size', '');
-      querry.html(size);
+      querry.text(size);
       querry.css('display', '');
     }
   }

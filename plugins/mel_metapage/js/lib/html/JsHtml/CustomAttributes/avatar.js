@@ -3,6 +3,7 @@ import { EMPTY_STRING } from '../../../constants/constants.js';
 import { REG_NUMBERS } from '../../../constants/regexp.js';
 import { BnumEvent, MelConditionnalEvent } from '../../../mel_events.js';
 import { MelObject } from '../../../mel_object.js';
+import { Mel_Promise } from '../../../mel_promise.js';
 import {
   EWebComponentMode,
   HtmlCustomTag,
@@ -373,6 +374,8 @@ class AvatarElement extends HtmlCustomTag {
 
       return customEvent.getReturnData();
     });
+
+    this.state = false;
   }
 
   /**
@@ -392,10 +395,7 @@ class AvatarElement extends HtmlCustomTag {
     });
 
     Object.defineProperty(this, '_errorBackgroundColor', {
-      value:
-        this.data('error-background-color') ??
-        rcmail.env.avatar_background_color ??
-        null,
+      value: this.data('error-background-color') ?? null,
       writable: false,
       configurable: false,
     });
@@ -573,6 +573,8 @@ class AvatarElement extends HtmlCustomTag {
       MelObject.Empty().save(`avatar_${this._errorBackgroundColor}`, data);
     }
 
+    this.state = true;
+
     return this;
   }
 
@@ -580,13 +582,19 @@ class AvatarElement extends HtmlCustomTag {
     return (
       this._email === rcmail?.env?.mel_metapage_user_emails?.[0] &&
       this._email &&
-      !this.saved &&
-      (this._errorBackgroundColor === null ||
-        this._errorBackgroundColor === rcmail.env.avatar_background_color)
+      !this.saved
     );
   }
 
   _toData(img) {
+    return AvatarElement.ImgToData(img);
+  }
+
+  getData() {
+    return this._toData(this.navigator.querySelector('img'));
+  }
+
+  static ImgToData(img) {
     img = img.cloneNode();
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
@@ -598,11 +606,8 @@ class AvatarElement extends HtmlCustomTag {
     canvas = null;
     img.remove();
     img = null;
-    return data;
-  }
 
-  getData() {
-    return this._toData(this.navigator.querySelector('img'));
+    return data;
   }
 
   /**
@@ -664,7 +669,13 @@ class AvatarElement extends HtmlCustomTag {
     element = null;
     span = null;
 
+    this.state = true;
+
     return this;
+  }
+
+  async waitLoading() {
+    return Mel_Promise.wait(() => this.state);
   }
 
   /**

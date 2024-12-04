@@ -9,6 +9,7 @@ import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/InternetNavigator.js';
+import { AvatarElement } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { capitalize } from '../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
@@ -188,14 +189,21 @@ class Visio extends MelObject {
         width: '100%',
         height: '100%',
         parentNode: document.querySelector('#mm-webconf'),
-        onload: () => {
+        onload: async () => {
           let avatar_url = null;
           if (this.get_env('avatar_url'))
             avatar_url = this.get_env('avatar_url');
           else {
-            avatar_url = this.url('mel_metapage', {
-              action: 'avatar',
-            });
+            avatar_url = top.document.querySelector('#user-picture');
+            if (avatar_url) {
+              if (!avatar_url.state) await avatar_url.waitLoading();
+              avatar_url = avatar_url.getData();
+            } else {
+              avatar_url = this.url('mel_metapage', {
+                action: 'avatar',
+                params: { _email: rcmail.env.current_user.email },
+              });
+            }
           }
 
           if (avatar_url) {
@@ -248,6 +256,8 @@ class Visio extends MelObject {
       this.loader.update_text('Chargement de la visioconférence...');
 
       this.jitsii = new JitsiAdaptor(new JitsiMeetExternalAPI(domain, options));
+
+      window.visio = this;
     }
   }
 

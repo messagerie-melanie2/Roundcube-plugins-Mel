@@ -159,6 +159,20 @@ export class WspPageNavigation extends NavBarComponent {
 
   select(task, { background = true } = {}) {
     this.unselect();
+
+    switch (task) {
+      case 'settings':
+        task = 'workspace_params';
+        break;
+
+      case 'more':
+        task = 'workspace_user';
+        break;
+
+      default:
+        break;
+    }
+
     /**
      * @type {PressedButton}
      */

@@ -208,15 +208,15 @@ class WspNavBar extends HtmlCustomTag {
       ._generate_description()
       ._generate_block();
 
-    let style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('type', 'text/css');
-    style.setAttribute(
-      'href',
-      `plugins/mel_workspace/skins/mel_elastic/navbar.css?v=${BnumModules.VERSION}`,
-    );
+    // let style = document.createElement('link');
+    // style.setAttribute('rel', 'stylesheet');
+    // style.setAttribute('type', 'text/css');
+    // style.setAttribute(
+    //   'href',
+    //   `plugins/mel_workspace/skins/mel_elastic/navbar.css?v=${BnumModules.VERSION}`,
+    // );
 
-    shadow.appendChild(style);
+    // shadow.appendChild(style);
 
     let tmp = new WspPageNavigation({ parent: this, apps: this.settings });
     this.mainDiv.appendChild(tmp);

@@ -126,6 +126,14 @@ export class WorkspacePage extends WorkspaceObject {
         }
       }
     });
+
+    if (this.get_env('start_page')) {
+      NavBarManager.WaitLoading().then(() => {
+        NavBarManager.currentNavBar.select(this.get_env('start_page'), {
+          background: false,
+        });
+      });
+    }
   }
 
   #_get_row(number = 0) {

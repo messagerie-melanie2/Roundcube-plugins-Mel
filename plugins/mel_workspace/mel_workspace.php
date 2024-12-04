@@ -214,6 +214,8 @@ class mel_workspace extends bnum_plugin
             // });
     
             self::IncludeNavBarComponent();
+
+            if ($this->get_input('_page')) $this->rc()->output->set_env('start_page', $this->get_input('_page'));
         } else {
             $this->load_script_module('page.not_in_workspace.js');
             $this->rc()->output->set_env('current_workspace_uid', $uid);

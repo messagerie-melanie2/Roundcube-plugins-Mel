@@ -728,25 +728,34 @@
       
         .more_action {
           display: flex;
-          align-items: center;
-          padding: 6px;
-          border-radius: 5px;
+          align-items: center; /* Centre l'icône verticalement */
+          justify-content: center; /* Centre l'icône horizontalement */
+          width: 35px; /* Taille fixe pour le carré */
+          height: 35px; /* Hauteur fixe pour le carré */
+          padding: 0; /* Évitez le padding qui pourrait décaler l'icône */
+          border-radius: 5px; /* Coins arrondis */
           transition: background-color 0.3s ease, color 0.3s ease;
           margin-right: 3px;
-      
-          &:hover {
-            background-color: var(--hover-background-color);
-            cursor: pointer;
-            
-            .icon::before {
-              font-variation-settings: 'wght' 400, 'FILL' 1;
-              color: var(--forum-hover-text-color);
-            }
-          }
-      
-          &.active .icon::before {
-            font-variation-settings: 'FILL' 1;
-          }
+        }
+        
+        .more_action .icon {
+          font-size: 24px; /* Ajustez la taille de l'icône si nécessaire */
+          line-height: 1; /* Empêche les décalages verticaux */
+          color: inherit; /* Assure que la couleur s’adapte */
+        }
+        
+        .more_action:hover {
+          background-color: var(--hover-background-color);
+          cursor: pointer;
+        }
+        
+        .more_action:hover .icon::before {
+          font-variation-settings: 'wght' 400, 'FILL' 1;
+          color: var(--forum-hover-text-color);
+        }
+        
+        .more_action.active .icon::before {
+          font-variation-settings: 'FILL' 1;
         }
 
         .forum-post-context-menu {
@@ -947,16 +956,22 @@
         !important;
     }
   }
-
-  .hoverable:hover{
-    font-variation-settings:
-    'FILL' 1,
-    'wght' 300;
-    background-color: var(--hover-background-color);
-    padding: 6px;
+  .hoverable {
+    display: inline-flex; /* Défini dès le départ */
+    justify-content: center;
+    align-items: center;
+    width: 35px; /* Dimensions fixes dès le départ */
+    height: 35px;
+    padding: 0; /* Éviter tout changement de padding */
+    margin: 0; /* Éviter tout changement de margin */
+    font-variation-settings: 'FILL' 0, 'wght' 300; /* État par défaut */
     border-radius: 5px;
+    background-color: transparent; /* Pas de couleur de fond par défaut */
     transition: background-color 0.3s ease, color 0.3s ease;
-    margin-right: 3px;
+  }
+  .hoverable:hover {
+    background-color: var(--hover-background-color); /* Couleur de fond au survol */
+    font-variation-settings: 'FILL' 1, 'wght' 300; /* Remplir l'icône au survol */
   }
 
 }

@@ -724,6 +724,7 @@ class mel_forum extends bnum_plugin
         return $post->save();
     }
 
+    #region TAGS
     /**
      * créer un tag dans l'espace de travail courant
      * @param string $name Nom du tag
@@ -899,7 +900,8 @@ class mel_forum extends bnum_plugin
 
         return $rettags;
     }
-
+    #endregion
+    #region COMMENTS
     /**
      * Crée un commentaire.
      *
@@ -1342,6 +1344,7 @@ class mel_forum extends bnum_plugin
         }
         exit;
     }
+    #endregion
 
     // /**
     //  * Traite les images encodées en base64 dans le contenu, les enregistre, 
@@ -1389,6 +1392,8 @@ class mel_forum extends bnum_plugin
 
     //     return $content;
     // }
+
+    #region Images
 
     protected function process_base64_images($content, $post_id)
     {
@@ -1592,6 +1597,7 @@ class mel_forum extends bnum_plugin
         $this->rc()->output->sendExit(base64_decode(rcmail_output::BLANK_GIF), ['Content-Type: image/gif']);
     }
 
+    #endregion
 
     /**
      * Met dans l'env roundcube une liste de post.
@@ -1678,6 +1684,7 @@ class mel_forum extends bnum_plugin
         return $posts_data;
     }
 
+    #region Favorites
     /**
      * vérifie si un article est en favori
      */
@@ -1725,6 +1732,8 @@ class mel_forum extends bnum_plugin
             }
         }
     }
+    #endregion
+    #region Posts Reactions 
 
     /**
      * Gestion des réactions aux posts
@@ -1798,7 +1807,7 @@ class mel_forum extends bnum_plugin
         return $reaction->load();
     }
 
-
+    #endregion
 
     /**
      * Affiche la page des 3 posts du workspace.

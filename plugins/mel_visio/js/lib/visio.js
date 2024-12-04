@@ -190,18 +190,16 @@ class Visio extends MelObject {
         parentNode: document.querySelector('#mm-webconf'),
         onload: () => {
           let avatar_url = null;
-          if (this.get_env('cid')) {
-            avatar_url = this.url('addressbook', {
-              action: 'photo',
-              params: {
-                _cid: this.get_env('cid'),
-                _source: this.get_env('annuaire_source'),
-              },
+          if (this.get_env('avatar_url'))
+            avatar_url = this.get_env('avatar_url');
+          else {
+            avatar_url = this.url('mel_metapage', {
+              action: 'avatar',
             });
-          } else avatar_url = this.get_env('avatar_url');
+          }
 
           if (avatar_url) {
-            this.jitsii.executeCommand('avatarUrl', avatar_url);
+            this.jitsii.change_avatar(avatar_url); //.executeCommand('avatarUrl', avatar_url);
           }
 
           if (this.loader) {

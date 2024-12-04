@@ -320,6 +320,12 @@ class mel_metapage extends bnum_plugin
         $this->rc->output->set_env("main_nav_can_deploy", $this->rc->config->get('main_nav_can_deploy', true));
         $this->rc->output->set_env("avatar_background_color", $this->rc->config->get('avatar_error_color', null));
 
+        
+        $this->rc->output->set_env('mel_metapage_const', [
+            "key" => self::FROM_KEY,
+            "value" => self::FROM_VALUE
+        ]);
+
         $icon = "mel-icon-size";
         $folder_space = "mel-folder-space";
         $message_space = "mel-message-space";
@@ -352,10 +358,6 @@ class mel_metapage extends bnum_plugin
         ]);
         $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
 
-        $this->rc->output->set_env('mel_metapage_const', [
-            "key" => self::FROM_KEY,
-            "value" => self::FROM_VALUE
-        ]);
 
 
         $showBackIcon = 'param-show-back-icon';
@@ -3748,6 +3750,11 @@ class mel_metapage extends bnum_plugin
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
         $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
 
+        if (!isset($email)){
+            $email = driver_mel::gi()->getUser($id)->email;
+            $_GET['_email'] = $email;
+        }
+
         $img = $this->storage()->get_cache("no_avatar_$email");
 
         if ($img && (new DateTime($img))->add(DateInterval::createFromDateString('30 day')) <= new DateTime()) {
@@ -3766,8 +3773,6 @@ class mel_metapage extends bnum_plugin
             imagepng($img); 
             exit;
         }
-
-        if (!isset($email)) $email = driver_mel::gi()->getUser($id)->email;
         
         $plugin = $this->exec_hook('app.avatar', [
             'email' => $email,
@@ -3808,7 +3813,7 @@ class mel_metapage extends bnum_plugin
     }
 
     public function _generate_no_picture() {
-        $image = imagecreate(100, 100);
+        $image = imagecreate(200, 200);
 
         $email = rcube_utils::get_input_value('_email', rcube_utils::INPUT_GET);
 
@@ -3827,12 +3832,12 @@ class mel_metapage extends bnum_plugin
 
         // Set the background color of image 
         $background_color = imagecolorallocate($image, $colors['background'][0], $colors['background'][1], $colors['background'][2]); 
-        imagefill($image, 100, 100, $background_color);
+        imagefill($image, 200, 200, $background_color);
 
         // Set the text color of image 
         $text_color = imagecolorallocate($image, $colors['text'][0], $colors['text'][1], $colors['text'][2]); 
 
-        $tmp=imagefttext($image, 60, 0, 25, 80, $text_color, __DIR__.'/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
+        $tmp=imagefttext($image, 120, 0, 50, 160, $text_color, __DIR__.'/skins/mel_elastic/roboto.ttf', strtoupper(substr($email, 0, 1)));
         //imagestring($image, 2, 20, 20, substr($email, 0, 1), $text_color);
 
         return $image;

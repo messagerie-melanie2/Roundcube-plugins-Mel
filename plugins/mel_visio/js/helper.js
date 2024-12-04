@@ -162,4 +162,4 @@ class BnumVisio extends MelObject {
 
 export const VisioHelper = new WrapperObject(BnumVisio);
 
-VisioHelper.Instance.start();
+VisioHelper.Instance.startInstance();

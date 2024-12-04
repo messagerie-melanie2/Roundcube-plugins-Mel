@@ -409,9 +409,9 @@ class AvatarElement extends HtmlCustomTag {
       this.removeAttribute('data-f100');
     }
 
-    let imgInMemory = this._canBeSaveInMemory()
+    let imgInMemory = null; /*this._canBeSaveInMemory()
       ? MelObject.Empty().load(`avatar_${this._errorBackgroundColor}`)
-      : null;
+      : null;*/
 
     if (imgInMemory) this.saved = true;
 

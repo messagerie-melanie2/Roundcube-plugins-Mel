@@ -5,10 +5,19 @@
     "color": "var:bureau-card-background-color",
     "icon_type": "material-symbol",
     "buttons": {
-      "documents": {
-        "icon": "folder_open",
-        "text": "mel_metapage.app_documents"
-      },
+      "documents": [
+        {
+          "icon": "folder_open",
+          "text": "mel_metapage.app_documents"
+        },
+        {
+          "icon": "description",
+          "text": "mel_metapage.pad",
+          "data": {
+            "mef": true
+          }
+        }
+      ],
       "chat": {
         "icon": "chat",
         "text": "mel_metapage.chat",

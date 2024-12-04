@@ -14,6 +14,8 @@ export class create_or_edit_post extends MelObject {
         super.main();
 
         let post = this.get_env('post');
+        
+        this.workspace = post.workspace;
 
         this.post_id = post.id;
 
@@ -21,7 +23,7 @@ export class create_or_edit_post extends MelObject {
             $("#edit-title").val('');
         });
         $('#go-back-to-articles').click(() => {
-            window.location.href = this.url('forum',{action:'index'});
+            window.location.href = this.url('forum',{action:'index', params:{'workspace_uid': this.workspace}});
         });
  
         
@@ -41,8 +43,6 @@ export class create_or_edit_post extends MelObject {
         $("#edit-title").val(post.title);
         this.post_uid = post.uid;
         this.tags = post.tags || [];
-        //TODO récupérer le workspaces via l'url ou le post
-        this.workspace = 'workspace-test';
         this.displayTags();
         this.addTag();
         this.removeTag();
@@ -171,15 +171,14 @@ export class create_or_edit_post extends MelObject {
                         );
 
                         let postUid = this.post_uid;
-                        // TODO Voir autre solution pour obtenir l'url
-                        window.location.href = this.url('forum', {action:'post'}) + `&_uid=${postUid}` ;
+                        window.location.href = this.url('forum', {action:'post',params:{'_uid' : postUid, '_workspace_uid' : this.workspace}});
                     },
                     on_error: (err) => {
                         BnumMessage.DisplayMessage(
                         'Erreur lors de l\'enregistrement de l\'article. Veuillez réessayer.',
                         eMessageType.Error,
                         );
-                        window.location.href = this.url('forum', {action:'index'});
+                        window.location.href = this.url('forum', {action:'post',params:{'_uid' : postUid, '_workspace_uid' : this.workspace}});
                     }
                 }
             );
@@ -227,7 +226,7 @@ export class create_or_edit_post extends MelObject {
                 });
             } else {
                 // Redirige directement vers la page d'accueil sans suppression
-                window.location.href = this.url('forum', {action: 'index'});
+                window.location.href = this.url('forum', {action: 'index',params: {'_workspace_uid': this.workspace}});
             }
         });
     }

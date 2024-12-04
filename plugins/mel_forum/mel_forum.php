@@ -152,7 +152,8 @@ class mel_forum extends bnum_plugin
         $this->include_web_component()->Avatar();
         $this->load_script_module('forum');
         $this->show_posts();
-        $workspace = rcube_utils::get_input_value('_worskpace_uid', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
 
 
         $this->rc()->output->send('mel_forum.forum');
@@ -175,7 +176,7 @@ class mel_forum extends bnum_plugin
     public function post()
     {
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
-        //TODO récupérer le Workspace
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
 
         mel_metapage::IncludeAvatar();
         //Récupérér uid avec GET
@@ -192,6 +193,7 @@ class mel_forum extends bnum_plugin
 
         $this->rc()->output->set_env('post_uid', $this->current_post->uid);
         $this->rc()->output->set_env('post_id', $this->current_post->id);
+        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
         $this->rc()->output->set_env('show_comments', $this->current_post->settings["comments"]);
 
         $this->rc()->output->send('mel_forum.post');
@@ -362,9 +364,7 @@ class mel_forum extends bnum_plugin
             $post->modified = date('Y-m-d H:i:s');
             $post->creator = driver_mel::gi()->getUser()->uid;
             $post->settings = '';
-            $post->workspace = $this->get_input('_wsp_uid');
-            // TODO : supprimer cette ligne de test si besoin
-            $post->workspace = 'un-espace-2';
+            $post->workspace = $this->get_input('_workspace_uid');
 
             // Sauvegarde initiale du nouvel article
             $ret = $post->save();
@@ -520,7 +520,7 @@ class mel_forum extends bnum_plugin
         $current_user_uid = $user->uid;
 
         // Récupérer la valeur du champ POST
-        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Validation de la donnée saisie
         if (empty($uid)) {
@@ -585,14 +585,14 @@ class mel_forum extends bnum_plugin
     protected function get_posts_byworkspace($workspace_uid = null, $limit = 20)
     {
         //récupérer les infos de chargement d'articles si aucune n'est fournie on met des valeurs par defaut
-        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST) ?? $workspace_uid;
-        $search = (rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_search', rcube_utils::INPUT_POST) === '' ? null : rcube_utils::get_input_value('_search', rcube_utils::INPUT_POST)) : null;
-        $offset = (rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST) !== null) ? intval(rcube_utils::get_input_value('_offset', rcube_utils::INPUT_POST)) : 0;
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET) ?? $workspace_uid;
+        $search = ($this->get_input('_offset', rcube_utils::INPUT_GET) !== null) ? ($this->get_input('_search', rcube_utils::INPUT_GET) === 'null' ? null : $this->get_input('_search', rcube_utils::INPUT_GET)) : null;
+        $offset = ($this->get_input('_offset', rcube_utils::INPUT_GET) !== null) ? intval($this->get_input('_offset', rcube_utils::INPUT_GET)) : 0;
         // valeur possible: created, comments, reactions
-        $orderby = (rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) !== null) ? rcube_utils::get_input_value('_order', rcube_utils::INPUT_POST) : self::DEFAULTSORTBY;
+        $orderby = ($this->get_input('_order', rcube_utils::INPUT_GET) !== null) ? $this->get_input('_order', rcube_utils::INPUT_GET) : self::DEFAULTSORTBY;
         //on récupère un string si il y a une valeur donc on la convertie
-        $asc = (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_asc', rcube_utils::INPUT_POST) === 'true' ? true : false) : self::DEFAULTASC;
-        $tags_uids = rcube_utils::get_input_value('_tags', rcube_utils::INPUT_POST);
+        $asc = ($this->get_input('_asc', rcube_utils::INPUT_GET) !== null) ? ($this->get_input('_asc', rcube_utils::INPUT_GET) === 'true' ? true : false) : self::DEFAULTASC;
+        $tags_uids = $this->get_input('_tags', rcube_utils::INPUT_GET);
         $tags = null;
         if ($tags_uids !== null) {
             foreach ($tags_uids as $tag_id) {
@@ -604,7 +604,7 @@ class mel_forum extends bnum_plugin
             }
         }
         $fav_posts_uid = null;
-        $get_favorite = (rcube_utils::get_input_value('_fav_only', rcube_utils::INPUT_POST) !== null) ? (rcube_utils::get_input_value('_fav_only', rcube_utils::INPUT_POST) === 'true' ? true : false) : false;
+        $get_favorite = ($this->get_input('_fav_only', rcube_utils::INPUT_GET) !== null) ? ($this->get_input('_fav_only', rcube_utils::INPUT_GET) === 'true' ? true : false) : false;
         if ($get_favorite) {
             $fav_posts = $this->rc()->config->get('favorite_article', []);
             $fav_posts_uid = $fav_posts[$workspace_uid];
@@ -613,8 +613,7 @@ class mel_forum extends bnum_plugin
 
         // Charger tous les posts en utilisant la méthode listPosts
         $post = new LibMelanie\Api\Defaut\Posts\Post();
-        // $post->workspace = $workspace_uid;
-        $post->workspace = "un-espace-2";
+        $post->workspace = $workspace_uid;
 
 
         // $limit = 20;
@@ -636,9 +635,9 @@ class mel_forum extends bnum_plugin
         $result = $this->_add_post();
         if ($result !== null) {
             // le post est créé on passe aux tags
-            $tags = rcube_utils::get_input_value('_tags', rcube_utils::INPUT_POST);
+            $tags = $this->get_input('_tags', rcube_utils::INPUT_POST);
             if (is_null($tags)) $tags = [];
-            $post_tags = $this->_get_tags_name_bypost(rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST));
+            $post_tags = $this->_get_tags_name_bypost($this->get_input('_uid', rcube_utils::INPUT_POST));
             if (empty(array_diff($tags, $post_tags))) {
                 if (!empty(array_diff($post_tags, $tags))) {
                     //il y a moins de tags suite à la modifs décorellé les tags
@@ -679,15 +678,15 @@ class mel_forum extends bnum_plugin
     protected function _add_post()
     {
         // récupérer les valeurs des champs POST
-        $post_id = intval(rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST));
-        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-        $title = rcube_utils::get_input_value('_title', rcube_utils::INPUT_POST);
-        $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST, true);
+        $post_id = intval($this->get_input('_post_id', rcube_utils::INPUT_POST));
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
+        $title = $this->get_input('_title', rcube_utils::INPUT_POST);
+        $content = $this->get_input('_content', rcube_utils::INPUT_POST, true);
         $content = mel_helper::wash_html($content);
-        $workspace = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
         // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content
         $summary = $this->create_summary_from_content($content);
-        $settings = rcube_utils::get_input_value('_settings', rcube_utils::INPUT_POST);
+        $settings = $this->get_input('_settings', rcube_utils::INPUT_POST);
 
         // Validation des données saisies
         if (empty($title) || empty($content) || empty($summary) || empty($settings)) {
@@ -719,9 +718,7 @@ class mel_forum extends bnum_plugin
         $post->modified = date('Y-m-d H:i:s');
         $post->creator = driver_mel::gi()->getUser()->uid;
         $post->settings = $settings;
-        $post->workspace = $workspace;
-        //TODO supprimé 
-        $post->workspace = 'un-espace-2';
+        $post->workspace = $workspace_uid;
 
         // Sauvegarde de l'article
         return $post->save();
@@ -735,7 +732,7 @@ class mel_forum extends bnum_plugin
     protected function _create_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
 
         //Créer un tag
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -757,7 +754,7 @@ class mel_forum extends bnum_plugin
     private function _delete_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -780,8 +777,8 @@ class mel_forum extends bnum_plugin
     // TODO: ajouter post en parametre
     protected function _associate_tag_with_post($name)
     {
-        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
-        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -805,8 +802,8 @@ class mel_forum extends bnum_plugin
     // TODO: ajouter post en parametre
     protected function _unsassociate_tags_from_post($name)
     {
-        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
-        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -859,7 +856,7 @@ class mel_forum extends bnum_plugin
     protected function _exist_tag($exist_tag)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-        $tag->workspace = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        $tag->workspace = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
         $tags = $tag->listTags();
         foreach ($tags as $tag) {
             if ($tag->name === $exist_tag) {
@@ -878,7 +875,7 @@ class mel_forum extends bnum_plugin
     protected function _tag_is_associated_to_any_post($tag_name)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-        $tag->workspace = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
+        $tag->workspace = $this->get_input('_workspace', rcube_utils::INPUT_POST);
         $tag->name = $tag_name;
         $tag->load();
         return (!($tag->countPosts() === 0));
@@ -918,11 +915,11 @@ class mel_forum extends bnum_plugin
         $user = driver_mel::gi()->getUser();
 
         // Récupérer le contenu du commentaire et le post ID
-        $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
-        $post = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
+        $content = $this->get_input('_content', rcube_utils::INPUT_POST);
+        $post = $this->get_input('_post_id', rcube_utils::INPUT_POST);
 
         // Récupérer l'ID du commentaire parent s'il s'agit d'une réponse
-        $parent = rcube_utils::get_input_value('_parent', rcube_utils::INPUT_POST, true);
+        $parent = $this->get_input('_parent', rcube_utils::INPUT_POST, true);
 
         // Validation des données saisies
         if (empty($content)) {
@@ -989,8 +986,8 @@ class mel_forum extends bnum_plugin
         $user = driver_mel::gi()->getUser();
 
         // Récupérer les valeurs des champs POST
-        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-        $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST);
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
+        $content = $this->get_input('_content', rcube_utils::INPUT_POST);
 
         // Récupérer le commentaire existant
         $comment = new LibMelanie\Api\Defaut\Posts\Comment();
@@ -1056,10 +1053,10 @@ class mel_forum extends bnum_plugin
         $user = driver_mel::gi()->getUser();
 
         // Récupérer la valeur du champ POST
-        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+        $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer l'ID du commentaire parent s'il s'agit d'une réponse
-        $parent = rcube_utils::get_input_value('_parent', rcube_utils::INPUT_POST, true);
+        $parent = $this->get_input('_parent', rcube_utils::INPUT_POST, true);
 
         // Validation de la donnée saisie
         if (empty($uid)) {
@@ -1121,9 +1118,9 @@ class mel_forum extends bnum_plugin
         $user_uid = $user->uid;
 
         // Récupérer les valeurs
-        $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
-        $comment_id = rcube_utils::get_input_value('_comment_id', rcube_utils::INPUT_POST);
-        $comment_uid = rcube_utils::get_input_value('_comment_uid', rcube_utils::INPUT_POST);
+        $type = $this->get_input('_type', rcube_utils::INPUT_POST);
+        $comment_id = $this->get_input('_comment_id', rcube_utils::INPUT_POST);
+        $comment_uid = $this->get_input('_comment_uid', rcube_utils::INPUT_POST);
 
         // Validation des données saisies
         if (empty($type) || empty($comment_id)) {
@@ -1249,13 +1246,13 @@ class mel_forum extends bnum_plugin
     public function get_all_comments_bypost()
     {
         // Récupérer l'uid de l'article
-        $uid = rcube_utils::get_input_value('_post_uid', rcube_utils::INPUT_GPC);
+        $uid = $this->get_input('_post_uid', rcube_utils::INPUT_GPC);
 
         // Récupérer le paramètre de tri des commentaires
-        $sort_order = rcube_utils::get_input_value('_sort_order', rcube_utils::INPUT_GPC, true);
+        $sort_order = $this->get_input('_sort_order', rcube_utils::INPUT_GPC, true);
 
         // Récupérer l'ID du commentaire pour obtenir ses enfants (réponses)
-        $param_comment_id = rcube_utils::get_input_value('_comment_id', rcube_utils::INPUT_GPC, true);
+        $param_comment_id = $this->get_input('_comment_id', rcube_utils::INPUT_GPC, true);
 
         // Initialisation des variables de tri
         $orderby = 'created';
@@ -1539,12 +1536,12 @@ class mel_forum extends bnum_plugin
      */
     public function upload_image()
     {
-        $post_id = rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST);
+        $post_id = $this->get_input('_post_id', rcube_utils::INPUT_POST);
         // $post = new LibMelanie\Api\Defaut\Posts\Post();
         // $post->post = $post_id;
         $image = new LibMelanie\Api\Defaut\Posts\Image();
         $image->post = $post_id;
-        $image->data = rcube_utils::get_input_value('_file', rcube_utils::INPUT_POST);
+        $image->data = $this->get_input('_file', rcube_utils::INPUT_POST);
         $image->uid = $this->generateRandomString(24);
         // Sauvegarde de l'image
         $ret = $image->save();
@@ -1579,7 +1576,7 @@ class mel_forum extends bnum_plugin
     public function load_image()
     {
         $image = new LibMelanie\Api\Defaut\Posts\Image();
-        $image->uid = rcube_utils::get_input_value('_image_uid', rcube_utils::INPUT_GET);
+        $image->uid = $this->get_input('_image_uid', rcube_utils::INPUT_GET);
         $ret = $image->load();
         if (!is_null($ret)) {
             $img = $image->data;
@@ -1622,17 +1619,11 @@ class mel_forum extends bnum_plugin
      */
     protected function post_object_to_JSON($workspace_uid = null, $limit = 20)
     {
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
         $posts = $this->get_posts_byworkspace($workspace_uid, $limit);
 
         // Définir la locale en français pour le formatage de la date
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
-        //TODO récupérer le workspace_uid au premier chargment
-        $workspace_uid = rcube_utils::get_input_value('_workspace', rcube_utils::INPUT_POST);
-        //TODO supprimer
-        if ($workspace_uid === null) {
-            $workspace_uid = "workspace-test";
-        }
 
         $posts_data = [];
 
@@ -1656,6 +1647,7 @@ class mel_forum extends bnum_plugin
                 "_task" => "forum",
                 "_action" => "post",
                 "_uid" => $post->uid,
+                "workspace_uid" => $workspace_uid,
             ), true, true, true);
 
             // Récupérer la première image du post et son URL
@@ -1700,8 +1692,8 @@ class mel_forum extends bnum_plugin
      */
     public function add_to_favorite()
     {
-        $new_fav_post_workspace_uid = rcube_utils::get_input_value('_workspace_uid', rcube_utils::INPUT_POST);
-        $new_fav_post_uid = rcube_utils::get_input_value('_article_uid', rcube_utils::INPUT_POST);
+        $new_fav_post_workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $new_fav_post_uid = $this->get_input('_article_uid', rcube_utils::INPUT_POST);
         $fav_articles = $this->rc()->config->get('favorite_article', []);
         if (!in_array($new_fav_post_uid, $fav_articles[$new_fav_post_workspace_uid])) {
             if (!isset($fav_articles[$new_fav_post_workspace_uid])) {
@@ -1743,8 +1735,8 @@ class mel_forum extends bnum_plugin
         $user = driver_mel::gi()->getUser();
         $user_uid = $user->uid;
 
-        $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
-        $post_id = intval(rcube_utils::get_input_value('_post_id', rcube_utils::INPUT_POST));
+        $type = $this->get_input('_type', rcube_utils::INPUT_POST);
+        $post_id = intval($this->get_input('_post_id', rcube_utils::INPUT_POST));
 
         // TODO liker son propre commentaire ou post ?
 
@@ -1821,7 +1813,7 @@ class mel_forum extends bnum_plugin
         $this->include_web_component()->Avatar();
         $this->load_script_module('new_posts');
         $this->show_new_posts();
-        $workspace = rcube_utils::get_input_value('_worskpace_uid', rcube_utils::INPUT_POST);
+        $workspace = $this->get_input('_worskpace_uid', rcube_utils::INPUT_POST);
 
         // Envoyer le template approprié
         $this->rc()->output->send('mel_forum.new-posts');

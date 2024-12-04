@@ -58,7 +58,7 @@ export class Manager extends MelObject {
   
     // Redirection à la page d'accueil au clic sur 'return-homepage'
     $('#return-homepage').click(() => {
-      window.location.href = this.url('forum', { action: 'index' });
+      window.location.href = this.url('forum', { action: 'index', params:{'_workspace_uid': this.get_env('workspace_uid')}});
     });
 
     // Fonction de redimensionnement automatique du textarea

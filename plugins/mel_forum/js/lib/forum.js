@@ -11,8 +11,7 @@ export class Forum extends MelObject {
 
     main() {
         super.main();
-        //TODO récupéerer le workspace via l'url
-        this.workspace = 'workspace-test';
+        this.workspace = this.get_env('workspace_uid');
         this.offset = 0;
         this.locked = false;
         this.limit = 20;
@@ -21,7 +20,7 @@ export class Forum extends MelObject {
         this.tags = [];
         this.scrollPercentage = 0.7;
         this.handleScroll = this.checkScroll.bind(this);
-        this.search = null
+        this.searchString = null
         this.display_fav = false;
         this.initButtons();
         this.initSortSelect();
@@ -34,7 +33,7 @@ export class Forum extends MelObject {
      */
     initButtons() {
         $('#forum-button-add').click(() => {
-            window.location.href = this.url('forum', {action:'create_or_edit_post'});
+            window.location.href = this.url('forum', {action:'create_or_edit_post', params:{'_workspace_uid':this.workspace}});
         });
         $('.favorite').click(() => {
             event.stopPropagation();
@@ -110,12 +109,12 @@ export class Forum extends MelObject {
         //On empêche de faire un appel tant que le précédent n'est pas finit
         this.lock = true;
         BnumMessage.SetBusyLoading();
-        this.http_internal_post(
+        this.http_internal_get(
             {
                 task: 'forum',
                 action: 'get_posts_data',
                 params: {
-                    _workspace: this.workspace,
+                    _workspace_uid: this.workspace,
                     _offset: this.offset,
                     _order: this.sortBy,
                     _asc: this.asc,
@@ -133,7 +132,7 @@ export class Forum extends MelObject {
                     this.displayPost(posts);
                     BnumMessage.StopBusyLoading();
                     this.lock = false;
-                    this.search = null;
+                    this.searchString = null;
                     this.tags = [];
                 },
                 on_error: (err) => {
@@ -207,7 +206,7 @@ export class Forum extends MelObject {
             }
         }
         //TODO récupérer le workspaces via l'url ou le post
-        let workspace = 'workspace-test';
+        let workspace = this.get_env('workspace_uid');
         this.http_internal_post(
             {
                 task: 'forum',
@@ -320,7 +319,7 @@ export class Forum extends MelObject {
       event.preventDefault();
       event.stopPropagation();
       // Rediriger vers la page d'édition avec l'UID du post
-      window.location.href = this.url('forum', { action: 'create_or_edit_post'}) + "&_uid=" + post_uid;
+      window.location.href = this.url('forum', { action: 'create_or_edit_post', params:{'_uid': post_uid, '_workspace_uid': this.workspace}});
     }
 
     /**

@@ -681,7 +681,7 @@ class mel_forum extends bnum_plugin
         $post_id = intval($this->get_input('_post_id', rcube_utils::INPUT_POST));
         $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
         $title = $this->get_input('_title', rcube_utils::INPUT_POST);
-        $content = $this->get_input('_content', rcube_utils::INPUT_POST, true);
+        $content = rcube_utils::get_input_value('_content', rcube_utils::INPUT_POST, true);
         $content = mel_helper::wash_html($content);
         $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
         // création du summary à l'aide d'une fonction qui récupère les 2 premières phrases du content

@@ -232,7 +232,7 @@ class WspNavBar extends HtmlCustomTag {
     this._generate_hashtag()._generate_minify_button();
 
     div = null;
-    style = null;
+    //style = null;
     shadow = null;
   }
 

@@ -106,18 +106,18 @@ export class PressedButton extends HtmlCustomDataTag {
   }
 
   isPressed() {
-    return this.ariaPressed;
+    return [1, true, '1', 'true'].includes(this.ariaPressed);
   }
 
   toggleState() {
-    this.ontoggle.call({ newState: !this.ariaPressed }, this);
+    this.ontoggle.call({ newState: !this.isPressed() }, this);
     this.dispatchEvent(
       new CustomEvent('api:toggle', {
-        detail: { newState: !this.ariaPressed },
+        detail: { newState: !this.isPressed() },
       }),
     );
 
-    if (this.ariaPressed) this.unpress();
+    if (this.isPressed()) this.unpress();
     else this.press();
 
     return this;

@@ -72,6 +72,7 @@ export class TabsElement extends HtmlCustomElement {
 
     let tablist = document.createElement('div');
     tablist.setAttribute('role', 'tablist');
+    tablist.classList.add('mel-ui-tab-system');
 
     let elements = [];
     for (let index = 0; index < this.children.length; ++index) {
@@ -226,7 +227,8 @@ export class TabsElement extends HtmlCustomElement {
    * @param {Event} e
    */
   _click(e) {
-    const namespace = e.originalTarget.dataset.buttonNamespace;
+    console.trace('[]', e);
+    const namespace = e.currentTarget.dataset.buttonNamespace;
     this._click_button_action(namespace);
 
     this.ontabswitched.call(namespace);
@@ -250,29 +252,28 @@ export class TabsElement extends HtmlCustomElement {
    */
   _keypress_action(e) {
     let item;
+
     switch (e.code) {
       case 'ArrowRight':
-        item = e.originalTarget.nextElementSibling;
+        item = e.currentTarget.nextElementSibling;
         break;
 
       case 'ArrowLeft':
-        item = e.originalTarget.previousElementSibling;
-        break;
-
-      case 'Home':
-        while (item.nextElementSibling !== null) {
-          item = item.nextElementSibling;
-        }
-
-        item = item.previousElementSibling;
+        item = e.currentTarget.previousElementSibling;
         break;
 
       case 'End':
+        item = e.currentTarget;
+        while (item.nextElementSibling !== null) {
+          item = item.nextElementSibling;
+        }
+        break;
+
+      case 'Home':
+        item = e.currentTarget;
         while (item.previousElementSibling !== null) {
           item = item.previousElementSibling;
         }
-
-        item = item.nextElementSibling;
         break;
 
       default:

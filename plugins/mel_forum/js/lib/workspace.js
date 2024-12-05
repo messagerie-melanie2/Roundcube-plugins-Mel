@@ -60,9 +60,7 @@ export class ModuleForum extends WorkspaceObject {
     }
 
     // Ajout de l'écouteur via addListener()
-    this.addListener(
-
-    );
+    this.addListener();
   }
 
   /**
@@ -107,11 +105,11 @@ export class ModuleForum extends WorkspaceObject {
 
     this.onactionreceived.push((received) => {
       switch (received.key) {
-        case 'postClicked' :
+        case 'postClicked':
           this.switch_workspace_page('forum', {
-            action:'post',
+            action: 'post',
             newArgs: {
-              _uid: received.data.uid,
+              _uid: received.data._uid,
               _workspace_uid: this.workspace.uid,
             },
           });
@@ -120,13 +118,11 @@ export class ModuleForum extends WorkspaceObject {
     });
 
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
-      if (args.task === 'forum'){
-        return {'_workspace_uid': this.workspace.uid};
+      if (args.task === 'forum') {
+        return { _workspace_uid: this.workspace.uid };
       }
-    },'forum');
-
+    }, 'forum');
   }
-
 
   /**
    * Affiche un loader si il n'existe pas

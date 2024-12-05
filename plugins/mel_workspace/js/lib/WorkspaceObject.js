@@ -37,10 +37,9 @@ export class WorkspaceObject extends MelObject {
      */
     this.onactionreceived = new BnumEvent();
 
-    this.rcmail().addEventListener(
-      'workspace.object.call',
-      this.onactionreceived.call.bind(this.onactionreceived),
-    );
+    this.rcmail().addEventListener('workspace.object.call', (obj) => {
+      this.onactionreceived.call(obj);
+    });
   }
 
   loadModule() {
@@ -385,9 +384,7 @@ if (!window[window_prop_data]) {
   window.addEventListener(
     'message',
     (event) => {
-      if (
-        true
-      ) {
+      if (true) {
         rcmail.triggerEvent(
           'workspace.object.call',
           new WorkspaceObjectData(

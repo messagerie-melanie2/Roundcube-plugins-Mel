@@ -126,7 +126,7 @@ export class NavBarManager {
       rcmail.triggerEvent('workspace.nav.beforeswitch', { task, event }) || {};
 
     const config =
-      manualConfig || Array.isArray(raw_config) ? raw_config[0] : raw_config;
+      manualConfig || (Array.isArray(raw_config) ? raw_config[0] : raw_config);
     this.currentNavBar.select(task, { background: true });
 
     workspace ??= WorkspaceObject.GetWorkspaceData();

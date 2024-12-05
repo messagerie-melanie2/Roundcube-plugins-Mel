@@ -1338,6 +1338,14 @@ class FrameManager {
 
       if (changepage) BnumMessage.StopBusyLoading();
 
+      rcmail.triggerEvent('switch_frame.after', {
+        task,
+        changepage,
+        args,
+        actions,
+        wind,
+      });
+
       return this._selected_window;
     } else
       return await this.switch_frame(task, {

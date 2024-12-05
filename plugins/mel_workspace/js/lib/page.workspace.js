@@ -127,6 +127,26 @@ export class WorkspacePage extends WorkspaceObject {
       }
     });
 
+    top.rcmail.add_event_listener_ex(
+      'switch_frame.after',
+      'workspace',
+      (args) => {
+        const { actions, task } = args;
+        if (!actions.includes('workspace')) {
+          if (task === 'workspace' && NavBarManager.currentNavBar) {
+            NavBarManager.currentNavBar.select(
+              NavBarManager.currentNavBar.mainDiv
+                .querySelector(
+                  'bnum-wsp-navigation bnum-pressed-button[aria-pressed="true"]',
+                )
+                .parentElement.getAttribute('data-task'),
+              { background: false },
+            );
+          }
+        }
+      },
+    );
+
     if (this.get_env('start_page')) {
       NavBarManager.WaitLoading().then(() => {
         NavBarManager.currentNavBar.select(this.get_env('start_page'), {

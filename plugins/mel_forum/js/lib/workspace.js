@@ -104,6 +104,21 @@ export class ModuleForum extends WorkspaceObject {
       $(caller).removeClass('disabled').removeAttr('disabled');
       rcmail.hide_message(loading);
     });
+
+    this.onactionreceived.push((received) => {
+      switch (received.key) {
+        case 'postClicked' :
+          this.switch_workspace_page('forum', {
+            action:'post',
+            newArgs: {
+              _uid: received.data.uid,
+              _workspace_uid: this.workspace.uid,
+            },
+          });
+          break;
+      }
+    });
+
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
       if (args.task === 'forum'){
         return {'_workspace_uid': this.workspace.uid};

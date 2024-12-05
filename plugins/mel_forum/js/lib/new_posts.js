@@ -1,5 +1,6 @@
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
+import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
 
 export class New_posts extends MelObject {
   constructor() {
@@ -70,6 +71,19 @@ export class New_posts extends MelObject {
                 }
             }
         });
+
+        // Ajout du gestionnaire de clic pour envoyer l'événement "postClicked"
+        const postLink = document.querySelector(`#post-${post.uid} a.post-card`);
+        if (postLink) {
+            postLink.setAttribute('data-spied', false);
+            postLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                // Envoi des données au parent avec les informations du post
+                WorkspaceObject.SendToParent('postClicked', {
+                    _uid: post.uid
+                });
+            });
+        }
 
         for (let tag in post.tags) {
             let tag_data = {

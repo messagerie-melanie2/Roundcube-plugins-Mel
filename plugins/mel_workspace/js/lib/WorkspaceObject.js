@@ -386,7 +386,7 @@ if (!window[window_prop_data]) {
     'message',
     (event) => {
       if (
-        event.origin.includes(window.location.host + window.location.pathname)
+        true
       ) {
         rcmail.triggerEvent(
           'workspace.object.call',

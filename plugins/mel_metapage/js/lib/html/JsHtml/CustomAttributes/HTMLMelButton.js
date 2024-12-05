@@ -263,7 +263,7 @@ class HTMLIconMelButton extends HTMLMelButton {
   }
 
   static CreateClickableIcon(icon) {
-    return this.CreateNode(icon, { iconMarginRight: 0 });
+    return this.CreateNode(icon, { iconMarginLeft: '0px' });
   }
 
   static get TAG() {

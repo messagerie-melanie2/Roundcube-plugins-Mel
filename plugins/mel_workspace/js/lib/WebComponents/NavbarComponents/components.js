@@ -1,5 +1,7 @@
 import { BnumLog } from '../../../../../mel_metapage/js/lib/classes/bnum_log.js';
+import { MelDialog } from '../../../../../mel_metapage/js/lib/classes/modal.js';
 import { EMPTY_STRING } from '../../../../../mel_metapage/js/lib/constants/constants.js';
+import { HTMLIconMelButton } from '../../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
 import {
   BnumHtmlIcon,
   BnumHtmlSeparate,
@@ -18,10 +20,10 @@ export { WspNavBarDescription };
  * @package
  */
 class WspNavBarDescription extends NavBarComponent {
-  /**
-   * @type {AttributeObserver}
-   */
-  #observer = null;
+  // /**
+  //  * @type {AttributeObserver}
+  //  */
+  // #observer = null;
 
   /**
    * Permet d'assigner la description et/ou d'assigner le parent.
@@ -37,13 +39,13 @@ class WspNavBarDescription extends NavBarComponent {
     if (description !== EMPTY_STRING && !isNullOrUndefined(description))
       this._p_save_into_data('description', description);
 
-    this.#observer = new AttributeObserver(
-      this._description_scroll_changed.bind(this),
-      {
-        itMax: 10,
-        loopWhenCallback: this._description_scroll_changed.bind(this),
-      },
-    );
+    // this.#observer = new AttributeObserver(
+    //   this._description_scroll_changed.bind(this),
+    //   {
+    //     itMax: 10,
+    //     loopWhenCallback: this._description_scroll_changed.bind(this),
+    //   },
+    // );
   }
 
   /**
@@ -78,49 +80,83 @@ class WspNavBarDescription extends NavBarComponent {
     descriptionContainer.classList.add('description-container');
     descriptionContainer.appendChild(description);
 
-    let separator = new BnumHtmlSeparate({ mode: EWebComponentMode.div });
-    separator.style.display = 'block';
-    separator.style.opacity = 0;
+    // let separator = new BnumHtmlSeparate({ mode: EWebComponentMode.div });
+    // separator.style.display = 'block';
+    // separator.style.opacity = 0;
 
-    let button = new PressedButton({ mode: EWebComponentMode.flex });
-    button.style.display = 'flex';
-    button.classList.add('margin-top-5', 'disabled', 'desc-button');
-    button.setAttribute('title', 'Afficher/réduire la description');
-    button.setAttribute('disabled', 'disabled');
-    button.style.opacity = 0;
+    // let button = new PressedButton({ mode: EWebComponentMode.flex });
+    // button.style.display = 'flex';
+    // button.classList.add('margin-top-5', 'disabled', 'desc-button');
+    // button.setAttribute('title', 'Afficher/réduire la description');
+    // button.setAttribute('disabled', 'disabled');
+    // button.style.opacity = 0;
 
-    let icon = new BnumHtmlIcon();
-    icon.setAttribute('tabindex', -1);
-    icon
-      .data('inactive-icon', 'keyboard_arrow_down')
-      .data('active-icon', 'keyboard_arrow_up');
+    // let icon = new BnumHtmlIcon();
+    // icon.setAttribute('tabindex', -1);
+    // icon
+    //   .data('inactive-icon', 'keyboard_arrow_down')
+    //   .data('active-icon', 'keyboard_arrow_up');
 
-    button.append(icon);
-    button.addEventListener(
-      'api:toggle',
-      this._button_state_changed.bind(this),
-    );
+    // button.append(icon);
+    // button.addEventListener(
+    //   'api:toggle',
+    //   this._button_state_changed.bind(this),
+    // );
 
-    button.onload = this._button_state_changed.bind(this);
+    // button.onload = this._button_state_changed.bind(this);
 
-    descriptionContainer.append(separator, button);
+    // descriptionContainer.append(separator, button);
 
     mainDiv.appendChild(descriptionContainer);
     element.appendChild(mainDiv);
 
-    this.#observer.observe(description, 'scrollHeight');
+    setTimeout(() => {
+      let range = document.createRange();
+
+      range.selectNodeContents(this.descriptionNode);
+      if (
+        range.getBoundingClientRect().height > this.descriptionNode.clientHeight
+      ) {
+        let separator = new BnumHtmlSeparate({ mode: EWebComponentMode.div });
+        separator.style.display = 'block';
+        // separator.style.opacity = 0;
+
+        let button = new PressedButton({ mode: EWebComponentMode.flex });
+        button.style.display = 'flex';
+        button.classList.add('margin-top-5', 'desc-button');
+        button.setAttribute('title', 'Afficher/réduire la description');
+        // button.setAttribute('disabled', 'disabled');
+        // button.style.opacity = 0;
+
+        let icon = BnumHtmlIcon.Create({ icon: 'open_in_full' });
+        // icon.setAttribute('tabindex', -1);
+
+        button.append(icon);
+
+        button.addEventListener('click', () => {
+          MelDialog.Create('index', $(this.descriptionNode).clone(), {
+            title: "Description de l'espace",
+          }).show();
+        });
+
+        this.descriptionNode.parentElement.append(separator, button);
+      }
+    }, 100);
+    //this.#observer.observe(description, 'scrollHeight');
+    // this.descriptionNode.classList.add('threelines');
 
     element = null;
     mainDiv = null;
     description = null;
-    separator = null;
-    button = null;
+    // separator = null;
+    // button = null;
+    descriptionContainer = null;
   }
 
   destroy() {
     super.destroy();
 
-    this.#observer?.destroy?.();
+    // this.#observer?.destroy?.();
   }
 
   _description_scroll_changed(modified, description) {
@@ -140,8 +176,8 @@ class WspNavBarDescription extends NavBarComponent {
 
     button = null;
     separator = null;
-    this.#observer.destroy();
-    this.#observer = null;
+    // this.#observer.destroy();
+    // this.#observer = null;
   }
 
   _button_state_changed(e) {

@@ -111,36 +111,7 @@ class WspNavBarDescription extends NavBarComponent {
     element.appendChild(mainDiv);
 
     setTimeout(() => {
-      let range = document.createRange();
-
-      range.selectNodeContents(this.descriptionNode);
-      if (
-        range.getBoundingClientRect().height > this.descriptionNode.clientHeight
-      ) {
-        let separator = new BnumHtmlSeparate({ mode: EWebComponentMode.div });
-        separator.style.display = 'block';
-        // separator.style.opacity = 0;
-
-        let button = new PressedButton({ mode: EWebComponentMode.flex });
-        button.style.display = 'flex';
-        button.classList.add('margin-top-5', 'desc-button');
-        button.setAttribute('title', 'Afficher/réduire la description');
-        // button.setAttribute('disabled', 'disabled');
-        // button.style.opacity = 0;
-
-        let icon = BnumHtmlIcon.Create({ icon: 'open_in_full' });
-        // icon.setAttribute('tabindex', -1);
-
-        button.append(icon);
-
-        button.addEventListener('click', () => {
-          MelDialog.Create('index', $(this.descriptionNode).clone(), {
-            title: "Description de l'espace",
-          }).show();
-        });
-
-        this.descriptionNode.parentElement.append(separator, button);
-      }
+      this._description_setup();
     }, 100);
     //this.#observer.observe(description, 'scrollHeight');
     // this.descriptionNode.classList.add('threelines');
@@ -157,6 +128,59 @@ class WspNavBarDescription extends NavBarComponent {
     super.destroy();
 
     // this.#observer?.destroy?.();
+  }
+
+  _description_setup(cont = true) {
+    let range = document.createRange();
+
+    range.selectNodeContents(this.descriptionNode);
+    if (
+      range.getBoundingClientRect().height > this.descriptionNode.clientHeight
+    ) {
+      let separator = new BnumHtmlSeparate({ mode: EWebComponentMode.div });
+      separator.style.display = 'block';
+      // separator.style.opacity = 0;
+
+      let button = new PressedButton({ mode: EWebComponentMode.flex });
+      button.style.display = 'flex';
+      button.classList.add('margin-top-5', 'desc-button');
+      button.setAttribute('title', 'Afficher/réduire la description');
+      // button.setAttribute('disabled', 'disabled');
+      // button.style.opacity = 0;
+
+      let icon = BnumHtmlIcon.Create({ icon: 'open_in_full' });
+      // icon.setAttribute('tabindex', -1);
+
+      button.append(icon);
+
+      button.addEventListener('click', () => {
+        let dialog = MelDialog.Create(
+          'index',
+          $(this.descriptionNode).clone(),
+          {
+            title: "Description de l'espace",
+          },
+        );
+        dialog.show();
+
+        dialog.update_option(
+          'close',
+          function (modal) {
+            modal.destroy();
+            modal = null;
+          }.bind(null, dialog),
+        );
+      });
+
+      this.descriptionNode.parentElement.append(separator, button);
+
+      separator = null;
+      button = null;
+    } else if (cont) {
+      setTimeout(() => {
+        this._description_setup(false);
+      }, 100);
+    }
   }
 
   _description_scroll_changed(modified, description) {

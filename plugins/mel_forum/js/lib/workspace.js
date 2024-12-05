@@ -118,7 +118,13 @@ export class ModuleForum extends WorkspaceObject {
     });
 
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
-      if (args.task === 'forum') {
+      if (
+        args.task === 'forum' &&
+        (!FramesManager.Instance.has_frame('forum') ||
+          !FramesManager.Instance.get_frame('forum', {
+            jquery: false,
+          }).contentWindow.location.href.includes(this.workspace.uid))
+      ) {
         return { _workspace_uid: this.workspace.uid };
       }
     }, 'forum');

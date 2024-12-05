@@ -18,7 +18,6 @@ export class WspPageNavigation extends NavBarComponent {
 
   constructor({ parent = null, apps = null } = {}) {
     super({ mode: EWebComponentMode.div, parent });
-    console.log('APPS', apps);
     this.#apps = apps; /* ?? [
       'home',
       'calendar',

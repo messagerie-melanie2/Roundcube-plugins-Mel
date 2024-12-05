@@ -309,10 +309,8 @@ export class Planning extends HtmlCustomDataTag {
      * @param {ViewRender} e
      */
     const ef = (e) => {
-      console.log('¤event', e);
       $('.fc-header-toolbar').css('display', 'none');
       $(this.headerDate).text(e.viewTitle);
-      console.log('¤event', $(this.headerDate));
     };
 
     calendar.addEventListener(ViewRender.EventType, ef.bind(this));
@@ -540,7 +538,6 @@ class PublicDataSource extends IDataSource {
       (x) => x.resourceId,
       (x) => x,
     )) {
-      console.log('public', rcs);
       if (!this.#data[date][rcs.key])
         this.#data[date][rcs.key] = rcs.iterable.toArray();
     }
@@ -650,7 +647,6 @@ class SourceLoader extends WorkspaceObject {
      * @type {?DataSource}
      */
     let data = force ? null : this.#data;
-    console.log('src', data, data?.has?.({ date: key }), key);
 
     if (!data || !data?.has?.({ date: key })) {
       data = force ? null : this._load(); //this._p_try_load(start, end);
@@ -807,7 +803,6 @@ class EventSourceLoader extends SourceLoader {
       ]);
     }
 
-    console.log('event', events);
     return events.toArray();
   }
 
@@ -920,8 +915,6 @@ class ResourcesSourceLoader extends SourceLoader {
   }
 
   async _sourceLoad(date) {
-    // debugger;
-    console.log('loading....', date);
     let resources = [];
 
     resources.push({

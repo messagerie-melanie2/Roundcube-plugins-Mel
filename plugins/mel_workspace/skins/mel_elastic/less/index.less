@@ -1,12 +1,38 @@
+// Body
+@body-padding: {
+  LEFT: 50px;
+  RIGHT: 50px;
+};
+
+//Header
+@header-margin: {
+  TOP: 10px;
+  BOTTOM: 5px;
+};
+
+@header-padding: 0 5px;
+
 .body {
-  padding-left: 50px;
-  padding-right: 50px;
+  padding-left: var(
+    --workspace-page-index-body-padding-left,
+    @body-padding[LEFT]
+  );
+  padding-right: var(
+    --workspace-page-index-body-padding-right,
+    @body-padding[RIGHT]
+  );
 }
 
 .header-pannel {
-  margin-top: 10px;
-  margin-bottom: 5px;
-  padding: 0 5px;
+  margin-top: var(
+    --workspace-page-index-header-margin-top,
+    @header-margin[TOP]
+  );
+  margin-bottom: var(
+    --workspace-page-index-header-margin-bottom,
+    @header-margin[BOTTOM]
+  );
+  padding: var(--workspace-page-index-header-padding, @header-padding);
   display: flex;
   justify-content: space-between;
   align-items: center;

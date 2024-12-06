@@ -140,3 +140,4 @@ $labels['reaction_deleted_failure'] = 'Echec de suppression de la réaction.';
 $labels['no_reaction_found'] = 'Aucune réaction trouvée.';
 //IMAGES
 $labels['failed_to_load_image'] = 'Echec du chargement de l\'image.';
+$labels['image_field_required'] = 'Tous les champs sont requis.';

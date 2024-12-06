@@ -1466,7 +1466,7 @@ class mel_forum extends bnum_plugin
     {
         // Validation des données saisies
         if (empty($post_id) || empty($data)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tous les champs sont requis.']);
+            echo json_encode(['status' => 'error', 'message' => gettext("image_field_required", "mel_forum")]);
             return false;
         }
 
@@ -1665,7 +1665,7 @@ class mel_forum extends bnum_plugin
 
             // Récupérer la première image du post et son URL
             $first_image = $post->firstImage();
-            // TODO: checker le default_image_path ?
+            // TODO: checker le default_image_path ? (condition pour éviter l'affichage de "Image de l'article lorsqu'il n'y a pas d'image")
             $image_url = $first_image ? $this->get_image_url($first_image->uid) : 'default_image_path.jpg';
 
             $posts_data[$post->uid] = [
@@ -1917,13 +1917,15 @@ class mel_forum extends bnum_plugin
         return $args;
     }
 
-    public function workspace_params_services_show($args) {
+    public function workspace_params_services_show($args)
+    {
         if ($args['app'] === 'forum') $args['continue'] = false;
 
         return $args;
     }
 
-    public function workspace_service_get($args) {
+    public function workspace_service_get($args)
+    {
         if ($args['services']['forum'] === null) $args['services']['forum'] = false;
 
         return $args;

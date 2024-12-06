@@ -743,5 +743,9 @@ function onLoaded() {
   }
 
   window.avatarPageLoaded = true;
+
+  setTimeout(() => {
+    onLoaded();
+  }, 1000);
 }
 //#endregion

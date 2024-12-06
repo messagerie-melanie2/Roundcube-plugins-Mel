@@ -151,14 +151,14 @@ class mel_forum extends bnum_plugin
      */
     public function index()
     {
-        $this->include_web_component()->Avatar();
-        $this->load_script_module('forum');
-        $this->show_posts();
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
-        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
-
-
-        $this->rc()->output->send('mel_forum.forum');
+        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+            $this->include_web_component()->Avatar();
+            $this->load_script_module('forum');
+            $this->show_posts();
+            $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+            $this->rc()->output->send('mel_forum.forum');
+        }
     }
 
 
@@ -179,26 +179,28 @@ class mel_forum extends bnum_plugin
     {
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
         $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+            mel_metapage::IncludeAvatar();
+            //Récupérér uid avec GET
+            $this->load_script_module('manager');
 
-        mel_metapage::IncludeAvatar();
-        //Récupérér uid avec GET
-        $this->load_script_module('manager');
+            $this->current_post = $this->get_post($uid);
 
-        $this->current_post = $this->get_post($uid);
 
-        $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
-        $this->rc()->output->add_handlers(array('show_post_tags' => array($this, 'show_post_tags')));
-        $this->rc()->output->add_handlers(array('show_post_creator_name' => array($this, 'show_post_creator_name')));
-        $this->rc()->output->add_handlers(array('show_post_creator_email' => array($this, 'show_post_creator_email')));
-        $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
-        $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
+            $this->rc()->output->add_handlers(array('show_post_title' => array($this, 'show_post_title')));
+            $this->rc()->output->add_handlers(array('show_post_tags' => array($this, 'show_post_tags')));
+            $this->rc()->output->add_handlers(array('show_post_creator_name' => array($this, 'show_post_creator_name')));
+            $this->rc()->output->add_handlers(array('show_post_creator_email' => array($this, 'show_post_creator_email')));
+            $this->rc()->output->add_handlers(array('show_post_date' => array($this, 'show_post_date')));
+            $this->rc()->output->add_handlers(array('show_post_content' => array($this, 'show_post_content')));
 
-        $this->rc()->output->set_env('post_uid', $this->current_post->uid);
-        $this->rc()->output->set_env('post_id', $this->current_post->id);
-        $this->rc()->output->set_env('workspace_uid', $workspace_uid);
-        $this->rc()->output->set_env('show_comments', $this->current_post->settings["comments"]);
+            $this->rc()->output->set_env('post_uid', $this->current_post->uid);
+            $this->rc()->output->set_env('post_id', $this->current_post->id);
+            $this->rc()->output->set_env('workspace_uid', $workspace_uid);
+            $this->rc()->output->set_env('show_comments', $this->current_post->settings["comments"]);
 
-        $this->rc()->output->send('mel_forum.post');
+            $this->rc()->output->send('mel_forum.post');
+        }
     }
 
     /**
@@ -324,75 +326,77 @@ class mel_forum extends bnum_plugin
     {
         // Récupérer l'UID pour déterminer s'il s'agit d'une création ou d'une modification
         $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
-        // TODO WORKSPACE
-
-        $this->rc()->html_editor();
-        $this->load_script_module('create_or_edit_post');
-
-        // Initialisation de la variable de post et du mode édition
-        $post = new LibMelanie\Api\Defaut\Posts\Post();
-        $is_editing = false;
-
         // Récupérer l'utilisateur
         $user = driver_mel::gi()->getUser();
         $current_user_uid = $user->uid;
 
-        if ($uid) {
-            // Mode édition : assigner l'UID et charger l'article existant
-            $post->uid = $uid;
-            if ($post->load()) {  // Charger les données de l'article existant
-                $is_editing = true;
+        //vérification des droits d'accès
+        if ($user->isWorkspaceMember($this->get_input('_workspace_uid'))) {
+            $this->rc()->html_editor();
+            $this->load_script_module('create_or_edit_post');
 
-                // Vérifier si l'utilisateur connecté est bien le créateur de l'article
-                if ($post->creator !== $current_user_uid) {
-                    echo json_encode(['status' => 'error', 'message' => $this->gettext("creator_edit_only", "mel_forum")]);
-                    exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
+            // Initialisation de la variable de post et du mode édition
+            $post = new LibMelanie\Api\Defaut\Posts\Post();
+            $is_editing = false;
+
+            if ($uid) {
+                // Mode édition : assigner l'UID et charger l'article existant
+                $post->uid = $uid;
+                if ($post->load()) {  // Charger les données de l'article existant
+                    $is_editing = true;
+
+                    // Vérifier si l'utilisateur connecté est bien le créateur de l'article
+                    if ($post->creator !== $current_user_uid) {
+                        //TODO afficher une page d'erreur
+                        echo json_encode(['status' => 'error', 'message' => $this->gettext("creator_edit_only", "mel_forum")]);
+                        exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
+                    }
+
+                    // Récupérer les Tags liés au post
+                    $tags = $this->get_all_tags_bypost($post);
+                } else {
+                    // Si l'UID est fourni mais l'article n'existe pas, renvoyer une erreur
+                    return false;
                 }
-
-                // Récupérer les Tags liés au post
-                $tags = $this->get_all_tags_bypost($post);
-            } else {
-                // Si l'UID est fourni mais l'article n'existe pas, renvoyer une erreur
-                return false;
             }
-        }
 
-        if (!$is_editing) {
-            // Mode création : initialiser un nouvel article avec des valeurs par défaut
-            $post->title = '';
-            $post->content = '';
-            $post->summary = $this->create_summary_from_content($post->content);
-            $post->uid = $this->generateRandomString(24);
-            $post->modified = date('Y-m-d H:i:s');
-            $post->creator = driver_mel::gi()->getUser()->uid;
-            $post->settings = '';
-            $post->workspace = $this->get_input('_workspace_uid');
+            if (!$is_editing) {
+                // Mode création : initialiser un nouvel article avec des valeurs par défaut
+                $post->title = '';
+                $post->content = '';
+                $post->summary = $this->create_summary_from_content($post->content);
+                $post->uid = $this->generateRandomString(24);
+                $post->modified = date('Y-m-d H:i:s');
+                $post->creator = driver_mel::gi()->getUser()->uid;
+                $post->settings = '';
+                $post->workspace = $this->get_input('_workspace_uid');
 
-            // Sauvegarde initiale du nouvel article
-            $ret = $post->save();
-            if (is_null($ret)) {
-                return false; // Retourner false si la sauvegarde échoue
+                // Sauvegarde initiale du nouvel article
+                $ret = $post->save();
+                if (is_null($ret)) {
+                    return false; // Retourner false si la sauvegarde échoue
+                }
+                $post->load(); // Charger les données de l'article créé
             }
-            $post->load(); // Charger les données de l'article créé
+
+            // Préparer les données de l'article pour le frontend
+            $post_data = [
+                'title' => $post->title,
+                'summary' => $post->summary,
+                'content' => $post->content,
+                'uid' => $post->uid,
+                'creator' => $post->creator,
+                'tags' => $tags,
+                'settings' => $post->settings,
+                'workspace' => $post->workspace,
+                'id' => $post->id
+            ];
+            $this->rc()->output->set_env('post', $post_data);
+            $this->rc()->output->set_env('is_editing', $is_editing);
+
+            // Envoyer le template approprié
+            $this->rc()->output->send('mel_forum.create-post');
         }
-
-        // Préparer les données de l'article pour le frontend
-        $post_data = [
-            'title' => $post->title,
-            'summary' => $post->summary,
-            'content' => $post->content,
-            'uid' => $post->uid,
-            'creator' => $post->creator,
-            'tags' => $tags,
-            'settings' => $post->settings,
-            'workspace' => $post->workspace,
-            'id' => $post->id
-        ];
-        $this->rc()->output->set_env('post', $post_data);
-        $this->rc()->output->set_env('is_editing', $is_editing);
-
-        // Envoyer le template approprié
-        $this->rc()->output->send('mel_forum.create-post');
     }
 
 

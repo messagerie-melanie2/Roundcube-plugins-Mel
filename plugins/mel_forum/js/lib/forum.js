@@ -406,6 +406,9 @@ export class Forum extends MelObject {
      */
     initPostDisplay () {
         const posts = this.get_env('posts_data');
+        if(posts.length === 0){
+            this.displayNoPost();
+        }
         this.displayPost(posts);
     }
 
@@ -594,6 +597,14 @@ export class Forum extends MelObject {
             }
             this.offset ++;
         }
+    }
+
+    /**
+     * Affiche un message indiquant qu'il n'y a aucun post dans l'espace de travail
+     */
+    displayNoPost() {
+        let noPostDiv = MelHtml.start.span({class: 'ml-2'}).text(rcmail.gettext('mel_forum.no_post')).end();
+        $('#post-area').append(noPostDiv.generate());
     }
 
     

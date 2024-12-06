@@ -83,7 +83,7 @@ export class create_or_edit_post extends MelObject {
         $('#add-tag').on("keydown", (event) => {
             if(event.keyCode === 13) {
                 let tagname = $('#add-tag').val();
-                //si le tag éxiste déjà
+                // vérifie si le tag éxiste déjà
                 if (!this.tags.includes(tagname)) {
                     let html = JsHtml.start
                     .span({class: 'tag', tabindex: 0}).text(`#${tagname}`).span({class: 'icon-remove-tag'}).end().end();

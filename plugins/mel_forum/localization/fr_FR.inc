@@ -75,6 +75,7 @@ $labels['comment_menu'] = 'Menu du commentaire';
 $labels['edit_comment'] = 'Modifier le commentaire';
 $labels['delete_comment'] = 'Supprimer le commentaire';
 $labels['more_options'] = 'Plus d\'options';
+$labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
 
 // Message
 $labels['fav_updated'] = 'Vos articles favoris ont été mis à jour';

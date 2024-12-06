@@ -549,6 +549,7 @@ export class Forum extends MelObject {
                     MelHtml.start.tag('i',{id: 'favorite-'+post.uid, tabindex:'0', title: post.favorite ? "Supprimer de mes favoris" : "Ajouter à mes favoris", class:`hoverable icon favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
                 POST_IS_LIKED: post.isliked ? "filled" : "",
                 POST_IS_DISLIKED: post.isdisliked ? "filled" : "",
+                HAS_OWNER_RIGHTS: post.has_owner_rights ? "" : "hidden",
                 };
 
             let template = new MelTemplate()

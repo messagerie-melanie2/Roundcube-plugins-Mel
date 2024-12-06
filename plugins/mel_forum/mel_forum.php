@@ -1686,6 +1686,7 @@ class mel_forum extends bnum_plugin
                 'isdisliked' => $isdisliked,
                 'post_link' => $post_link,
                 'image_url' => $image_url,
+                'has_owner_rights' => $this->has_owner_rights($post, $workspace_uid),
             ];
         }
         return $posts_data;

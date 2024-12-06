@@ -5,6 +5,7 @@ $labels['tasks'] = 'Tâches';
 $labels['forum'] = 'Forum';
 $labels['workspace_params'] = 'Paramètres';
 $labels['workspace_user'] = 'Membres'; 
+$labels['tchap'] = 'Tchap';
 $labels['home'] = 'Accueil'; 
 $labels['wekan'] = 'Kanban';
 $labels['stockage'] = 'Documents';

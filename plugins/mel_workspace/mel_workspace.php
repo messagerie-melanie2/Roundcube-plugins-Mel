@@ -38,7 +38,6 @@ class mel_workspace extends bnum_plugin
                 $this->register_task('workspace');
 
                 if ($this->is_index_action()) {
-
                     $uid = $this->get_input('_uid', rcube_utils::INPUT_GET);
                     if ($uid !== null){
                         $this->redirect('workspace', 'workspace', [
@@ -58,29 +57,30 @@ class mel_workspace extends bnum_plugin
                 break;
 
             case 'bnum':
-                    // Ajoute le bouton en fonction de la skin
-                    $need_button = 'taskbar';
+                $this->add_texts('localization', true);
+                // Ajoute le bouton en fonction de la skin
+                $need_button = 'taskbar';
 
-                    if (class_exists("mel_metapage")) {
-                        $need_button = $this->rc()->plugins->get_plugin('mel_metapage')->is_app_enabled('app_workspace') ? $need_button : 'otherappsbar';
-                    }
-                
-                    if ($need_button)
-                    {
-                        $this->add_button([
-                            'command' => "workspace",
-                            'class'	=> 'wsp button-wsp icon-mel-workplace',
-                            'classsel' => 'wsp button-wsp button-selected icon-mel-workplace',
-                            'innerclass' => 'wsp button-inner',
-                            'label'	=> 'my_workspaces',
-                            'title' => 'my_workspaces',
-                            'type'       => 'link',
-                            'domain' => "mel_workspace",
-                            'data-task' => 'workspace'
-                        ], $need_button);
-                    }
+                if (class_exists("mel_metapage")) {
+                    $need_button = $this->rc()->plugins->get_plugin('mel_metapage')->is_app_enabled('app_workspace') ? $need_button : 'otherappsbar';
+                }
+            
+                if ($need_button)
+                {
+                    $this->add_button([
+                        'command' => "workspace",
+                        'class'	=> 'wsp button-wsp icon-mel-workplace',
+                        'classsel' => 'wsp button-wsp button-selected icon-mel-workplace',
+                        'innerclass' => 'wsp button-inner',
+                        'label'	=> 'my_workspaces',
+                        'title' => 'my_workspaces',
+                        'type'       => 'link',
+                        'domain' => "mel_workspace",
+                        'data-task' => 'workspace'
+                    ], $need_button);
+                }
 
-                    self::IncludeNavBarComponent();
+                self::IncludeNavBarComponent();
                 break;
             
             default:

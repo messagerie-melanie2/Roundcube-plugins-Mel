@@ -35,6 +35,9 @@
         NavBarManager.Kill(NavBarManager.currentNavBar.uid);
       }
 
+      $('#layout-content').remove();
+      rcmail.set_busy(true, 'loading');
+
       window.location.reload();
     }
 
@@ -841,7 +844,7 @@
           });
         })
         .always(async () => {
-          if (true || app === 'doc') this.reload();
+          if (true || app === 'doc') this.reload_page();
           else {
             await this.ajax(
               this.url('PARAMS_update_services'),

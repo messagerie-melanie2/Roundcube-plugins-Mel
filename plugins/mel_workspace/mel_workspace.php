@@ -49,6 +49,9 @@ use LibMelanie\Api\Defaut\Workspaces\Share;
                    services, services actifs ou non
                    default_values, valeurs par défauts
 
+- workspace.service.get => Récupère le service
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   services, liste des services, à ajouter le votre
 */
 
 class mel_workspace extends bnum_plugin
@@ -1173,7 +1176,8 @@ class mel_workspace extends bnum_plugin
 
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';
-            $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
+            if ($info['material']) $html.= '<bnum-icon style="font-size: 14px;" class="'.($value ? "text-success" : "text-secondary").'">'.$info["icon"].'</bnum-icon> '.$info["name"];
+            else $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
 
             if ($value)
             {

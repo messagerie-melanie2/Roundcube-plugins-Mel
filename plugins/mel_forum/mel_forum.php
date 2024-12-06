@@ -136,6 +136,8 @@ class mel_forum extends bnum_plugin
         } else if ($this->get_current_task() === 'workspace') {
             $this->add_hook('workspace.services.set', [$this, 'workspace_services_set']);
             $this->add_hook('wsp.show', [$this, 'wsp_show']);
+            $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
+            $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
         }
     }
 
@@ -1906,6 +1908,18 @@ class mel_forum extends bnum_plugin
 
             $this->include_module('workspace.js');
         }
+
+        return $args;
+    }
+
+    public function workspace_params_services_show($args) {
+        if ($args['app'] === 'forum') $args['continue'] = false;
+
+        return $args;
+    }
+
+    public function workspace_service_get($args) {
+        if ($args['services']['forum'] === null) $args['services']['forum'] = false;
 
         return $args;
     }

@@ -471,6 +471,8 @@ class AvatarElement extends HtmlCustomTag {
    * Met la bonne url à l'image.
    */
   update_img() {
+    this.removeAttribute('data-needcreation');
+
     if (this.saved) return this._on_load();
 
     let url = AVATAR_URL.replace('%0', this._email);
@@ -551,6 +553,7 @@ class AvatarElement extends HtmlCustomTag {
     }
 
     this.removeAttribute('data-needcreation');
+
     this.setAttribute('data-state', 'loaded');
 
     if (this.shadowEnabled()) {
@@ -733,7 +736,7 @@ window.addEventListener('load', function () {
  * Charge tout les avatars qui ont besoin d'être chargés.
  * @package
  */
-function onLoaded() {
+function onLoaded(timeout = true) {
   let imagesToLoad = document.querySelectorAll(
     'bnum-avatar[data-needcreation]',
   );
@@ -744,8 +747,10 @@ function onLoaded() {
 
   window.avatarPageLoaded = true;
 
-  setTimeout(() => {
-    onLoaded();
-  }, 1000);
+  if (timeout) {
+    setTimeout(() => {
+      onLoaded(false);
+    }, 1000);
+  }
 }
 //#endregion

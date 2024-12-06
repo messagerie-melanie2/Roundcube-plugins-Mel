@@ -2,6 +2,55 @@
 include_once __DIR__.'/lib/Workspace.php';
 use LibMelanie\Api\Defaut\Workspaces\Share;
 
+/* Liste de hooks disponibles : 
+- wsp.show => Est appelé lorsque l'espace doit s'afficher. On attend des plugins les données de la barre de navigations, le javascripts, css etc....
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   layout, objet de type WorkspacePageLayout, c'est ici qu'on va ajouter du html ou indiquer les données de la barre de navigation
+                   plugin, plugin mel_workspace
+
+- wsp.services.user.add => Est appelé lorsque un utilisateur est ajouté à l'espace
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   plugin, plugin mel_workspace
+    
+- workspace.services.set.role => Est appelé lorsqu'un utilisateur change de rôle
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   plugin, plugin mel_workspace
+                   user, id de l'utilisateur qui a changer de rôle
+                   new_right, Nouveau rôle
+                   reload, true si la page doit être rechargée
+                   rights, droits disponibles
+
+- workspace.users.services.delete => Est appelé lorsqu'un utilisateur est supprimé d'un espace
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   plugin, plugin mel_workspace
+                   user, id de l'utilisateur supprimée
+
+- workspace.service.delete => Est appelé lorsque l'espace est supprimée
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   plugin, plugin mel_workspace
+                   services, Services qui vont être supprimée
+
+- workspace.params.services.show => Est appelé lorsque l'on affiche la liste des applications disponible pour un espace. Doit gérer le paramètre "continuer" pour savoir si on doit l'afficher ou non
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   plugin, plugin mel_workspace 
+                   app, application en cours
+                   enabled, si l'application est activé ou non dans l'espace
+                   continue, à changer, si retourné à vrai, l'application ne sera pas affichée
+
+- workspace.params.services.show.update => Est appelé lorsque l'on affiche la liste des applications disponible pour un espace. Permet d'afficher ou non un système pour modifier le fonctionnement du service
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   plugin, plugin mel_workspace                     
+                   app, application en cours
+                   enabled, si l'application est activé ou non dans l'espace
+                   html, données à mettre dedans ou non
+
+- workspace.services.set => Est appelé lorsqu'un espace est crée ou un utilisateur ajouté. Permet de créer ou non le service
+    - arguments => workspace, objet de type Workspace. Contient tout les données de l'espace
+                   services, services actifs ou non
+                   default_values, valeurs par défauts
+
+*/
+
 class mel_workspace extends bnum_plugin
 {
     public const PAGE_MAX = 16;

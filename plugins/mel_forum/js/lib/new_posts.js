@@ -1,6 +1,7 @@
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelTemplate } from '../../../mel_metapage/js/lib/html/JsHtml/MelTemplate.js';
 import { WorkspaceObject } from '../../../mel_workspace/js/lib/WorkspaceObject.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 
 export class New_posts extends MelObject {
   constructor() {
@@ -23,6 +24,9 @@ export class New_posts extends MelObject {
 
   initNewPostsDisplay() {
     const posts = this.get_env('posts_data');
+    if(posts.length === 0) {
+      this.displayNoPost();
+    }
     this.displayNewPosts(posts);
   }
 
@@ -102,4 +106,12 @@ export class New_posts extends MelObject {
       this.offset++;
     }
   }
+
+  /**
+     * Affiche un message indiquant qu'il n'y a aucun post dans l'espace de travail
+     */
+  displayNoPost() {
+    let noPostDiv = MelHtml.start.span({class: 'ml-2'}).text(rcmail.gettext('mel_forum.no_post')).end();
+    $('#new_post-area').append(noPostDiv.generate());
+}
 }

@@ -4,14 +4,10 @@ import { EMPTY_STRING } from '../../../../mel_metapage/js/lib/constants/constant
 import { BnumConnector } from '../../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { AvatarElement } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import { HTMLIconMelButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/HTMLMelButton.js';
-import {
-  BnumHtmlIcon,
-  HtmlCustomTag,
-} from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
+import { HtmlCustomTag } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/js_html_base_web_elements.js';
 import { FavoriteButton } from '../../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/pressed_button_web_element.js';
 import { isNullOrUndefined } from '../../../../mel_metapage/js/lib/mel.js';
 import { BnumEvent } from '../../../../mel_metapage/js/lib/mel_events.js';
-import { MelObject } from '../../../../mel_metapage/js/lib/mel_object.js';
 import { connectors } from '../connectors.js';
 
 //#region textes
@@ -336,10 +332,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       }
     }
 
-    // if (this.isJoin) {
-
-    // }
-    return bottom; //this.isJoin ? this.toButton(bottom) : bottom;
+    return bottom;
   }
 
   //#region title_block
@@ -378,11 +371,21 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
   //#region title
   _generate_title() {
-    return this._generate_text_item(
+    let title = this._generate_text_item(
       this._title,
       'title',
       'workspace-block-item-title',
     );
+
+    if (title) {
+      title = title.children[0];
+      title.style.maxWidth = '100%';
+      title.style.overflow = 'hidden';
+      title.style.textOverflow = 'ellipsis';
+      title = title.parentElement;
+    }
+
+    return title;
   }
   //#endregion
 
@@ -524,6 +527,14 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
   //#endregion
 
   //#region private_functions
+  /**
+   * Génère un élément de texte à partie de données
+   * @param {string} text Texte à mettre dans la node
+   * @param {string} data Type de donnée
+   * @param  {...string} classes Classes à ajouter à l'élément
+   * @returns {boolean | HTMLSpanElement | HTMLHeadingElement}
+   * @prvate
+   */
   _generate_text_item(text, data, ...classes) {
     let return_data = false;
 

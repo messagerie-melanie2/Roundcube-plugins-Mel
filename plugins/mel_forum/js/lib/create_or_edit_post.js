@@ -172,6 +172,7 @@ export class create_or_edit_post extends MelObject {
                         );
 
                         let postUid = this.post_uid;
+                        rcmail.triggerEvent('forum.post.updated');
                         window.location.href = this.url('forum', {action:'post',params:{'_uid' : postUid, '_workspace_uid' : this.workspace}});
                     },
                     on_error: (err) => {

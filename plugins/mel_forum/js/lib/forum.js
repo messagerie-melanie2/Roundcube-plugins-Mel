@@ -364,6 +364,7 @@ export class Forum extends MelObject {
                   const postElement = $('#post-' + post_uid);
                   if (postElement.length > 0) {
                       postElement.remove(); // Supprimer l'article du DOM
+                      rcmail.triggerEvent('forum.post.delete');
                   }
               } else {
                   // Affichage du message d'erreur en cas d'échec

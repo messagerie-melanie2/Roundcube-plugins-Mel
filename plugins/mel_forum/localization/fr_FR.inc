@@ -80,6 +80,7 @@ $labels['more_options'] = 'Plus d\'options';
 $labels['fav_updated'] = 'Vos articles favoris ont été mis à jour';
 $labels['error_editing'] = 'Erreur lors de la modification';
 $labels['delete_comment_confirm'] = 'Êtes-vous sûr de vouloir supprimer ce commentaire ?';
+$labels['delete_post_confirm'] = 'Êtes-vous sûr de vouloir supprimer cet article ?';
 $labels['delete_post_success'] = 'Le post a été supprimé avec succès.';
 $labels['delete_post_failure'] = 'Erreur lors de la suppression du post.';
 $labels['creator_edit_only'] = 'Seul le créateur de cet article peut le modifier.';

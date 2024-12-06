@@ -339,7 +339,7 @@ export class Forum extends MelObject {
       event.stopPropagation();
   
       // Demander confirmation à l'utilisateur avant de supprimer
-      const confirmation = confirm(rcmail.gettext('mel_forum.delete_comment_confirm'));
+      const confirmation = confirm(rcmail.gettext('mel_forum.delete_post_confirm'));
       if (!confirmation) return; // Arrêter la fonction si l'utilisateur annule
   
       // Envoi d'une requête HTTP pour supprimer le post

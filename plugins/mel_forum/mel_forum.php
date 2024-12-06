@@ -538,8 +538,8 @@ class mel_forum extends bnum_plugin
             exit;
         }
 
-        // Vérifier si l'utilisateur connecté est bien le créateur de l'article
-        if ($post->creator !== $current_user_uid) {
+        // Vérifier si l'utilisateur connecté a les droits
+        if (!$this->has_owner_rights($post, $post->workspace)) {
             echo json_encode(['status' => 'error', 'message' => $this->gettext("creator_delete_only", "mel_forum")]);
             exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
         }
@@ -716,7 +716,8 @@ class mel_forum extends bnum_plugin
         $post->summary = $summary;
         $post->content = $content;
         $post->modified = date('Y-m-d H:i:s');
-        $post->creator = driver_mel::gi()->getUser()->uid;
+        // //TODO ne pas modifier le créateur
+        // $post->creator = driver_mel::gi()->getUser()->uid;
         $post->settings = $settings;
         $post->workspace = $workspace_uid;
 
@@ -1894,7 +1895,7 @@ class mel_forum extends bnum_plugin
      * - Inclut le fichier JavaScript nécessaire pour le module de l'espace de travail.
      *
      * @param array $args - Les arguments contenant l'espace de travail et la mise en page.
-     * @returns array - Les arguments modifiés avec la mise en page mise à jour.
+     * @return array - Les arguments modifiés avec la mise en page mise à jour.
      */
     public function wsp_show($args)
     {
@@ -1909,4 +1910,26 @@ class mel_forum extends bnum_plugin
         return $args;
     }
     #endregion
+
+    /**
+     * Retourne si l'utilisateur a le droit de modifier/effacer un article
+     * (propriétaire ou admin)
+     * 
+     * @param \LibMelanie\Api\Defaut\Posts\Post $post post à vérifier
+     * @param string|WorkspaceMelanie $workspace Workspace
+     * 
+     * @return boolean
+     */
+    public function has_owner_rights($post, $workspace)
+    {
+        $current_user = driver_mel::gi()->getUser();
+        $return = false;
+
+        if ($current_user->isWorkspaceOwner($workspace))
+            $return = true;
+        if ($current_user->uid === $post->creator)
+            $return = true;
+
+        return $return;
+    }
 }

@@ -110,7 +110,7 @@ function m_mp_Create() {
     visio: get_action(
       'mel_metapage.a_web_conf',
       'icon-mel-videoconference',
-      'window.webconf_helper.go()',
+      '(window?.create_popUp?.close?.(), window.webconf_helper.go())',
     ),
     tache: get_action(
       'mel_metapage.a_task',

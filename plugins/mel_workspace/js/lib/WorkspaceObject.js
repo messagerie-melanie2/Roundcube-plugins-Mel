@@ -204,6 +204,19 @@ export class WorkspaceObject extends MelObject {
 
     return rtn;
   }
+
+  static SendToWorkspace(key, data, { task = null } = {}) {
+    const frame = FramesManager.Instance.get_frame('workspace', {
+      jquery: false,
+    });
+
+    if (frame) {
+      frame.contentWindow.postMessage({ key, data, task });
+      return true;
+    }
+
+    return false;
+  }
 }
 
 class WorkspaceObjectData {
@@ -404,4 +417,6 @@ if (!window[window_prop_data]) {
     },
     false,
   );
+
+  window[window_prop_data] = true;
 }

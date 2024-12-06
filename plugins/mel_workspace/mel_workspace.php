@@ -135,9 +135,21 @@ class mel_workspace extends bnum_plugin
                 self::IncludeNavBarComponent();
                 break;
             
-            default:
-                # code...
+            case 'forum':
+                if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                    try {
+                        if ($this->rc()->output !== null) {
+                            $this->include_module('forum_additions.js', 'js/lib/forums');
+                        }
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                }
                 break;
+
+            default:
+            # code...
+            break;
         }
 
         $this->_hook_actions();
@@ -250,6 +262,8 @@ class mel_workspace extends bnum_plugin
             $this->rc()->plugins->get_plugin('calendar')->include_script('lib/js/moment_fr.js');
             $this->rc()->plugins->get_plugin('calendar')->include_stylesheet('lib/js/scheduler.css');
             $this->rc()->output->set_env("wsp_shares",             $workspace->users_mail(true));
+
+            if (class_exists('mel_forum')) $this->include_module('forum_additions.js', 'js/lib/forums');
 
             include_once __DIR__.'/lib/NavBar.php';
 

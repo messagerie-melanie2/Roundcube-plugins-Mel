@@ -8,6 +8,14 @@ export class New_posts extends MelObject {
     super();
   }
 
+  /**
+ * Point d'entrée principal de l'application.
+ * Appelle la méthode principale de la classe parente,
+ * initialise les propriétés et configure les éléments de l'interface utilisateur.
+ *
+ * @method main
+ * @returns {void}
+ */
   main() {
     super.main();
 
@@ -16,12 +24,27 @@ export class New_posts extends MelObject {
     this.initNewPostsDisplay();
   }
 
+  /**
+ * Initialise les gestionnaires d'événements pour les boutons.
+ * Configure l'action du bouton de vue du forum pour rediriger vers la page du forum.
+ *
+ * @method initButtons
+ * @returns {void}
+ */
   initButtons() {
     $('#forum-button-view').click(() => {
       window.location.href = this.url('forum', { action: 'index' });
     });
   }
 
+  /**
+ * Initialise l'affichage des nouveaux posts.
+ * Récupère les données des posts depuis l'environnement et détermine
+ * s'il faut afficher un message d'absence de posts ou les nouveaux posts.
+ *
+ * @method initNewPostsDisplay
+ * @returns {void}
+ */
   initNewPostsDisplay() {
     const posts = this.get_env('posts_data');
     if(posts.length === 0) {
@@ -31,9 +54,15 @@ export class New_posts extends MelObject {
   }
 
   /**
-   * affiche les posts passés en paramètres dans la div post-area
-   * @param {*} posts
-   */
+ * Affiche les nouveaux posts en utilisant les données fournies.
+ * Génère dynamiquement le contenu des posts à partir des modèles,
+ * rend les posts accessibles via le clavier, et ajoute des gestionnaires d'événements
+ * pour les clics et interactions associées.
+ *
+ * @method displayNewPosts
+ * @param {Object} posts - Objet contenant les données des posts, indexé par ID de post.
+ * @returns {void}
+ */
   displayNewPosts(posts) {
     let post;
     let data;

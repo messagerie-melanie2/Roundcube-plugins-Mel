@@ -83,7 +83,7 @@ class WorkspacePageRow {
       $size = $this->row[$i]['size'];
       $currentRowSize += $size;
 
-      if ($i+1 >= $len && ($sizeTotal - $currentRowSize) > 0) $size = ($sizeTotal - $currentRowSize);
+      if ($i+1 >= $len && ($sizeTotal - $currentRowSize) > 0) $size += ($sizeTotal - $currentRowSize);
 
       $html .= html::div(['class' => "col-$size"], $this->row[$i]['html']);
     }

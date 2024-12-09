@@ -408,7 +408,6 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
     div.appendChild(this._generate_users());
 
-    console.log(this._title, this.isJoin, this.isPrivate);
     let edited = this._generate_edited();
     if (edited) div.appendChild(edited);
     else {

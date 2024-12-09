@@ -1765,6 +1765,9 @@ class mel_workspace extends bnum_plugin
 
     public static function IncludeWorkspacesBlocks($workspaces, $callback = null) {
         self::IncludeWorkspaceBlockComponent();
+        $plugin = rcmail::get_instance()->plugins->get_plugin('mel_workspace');
+        $plugin->include_stylesheet($plugin->local_skin_path().'/workspace_list.css');
+        unset($plugin);
 
         $html = '';
 

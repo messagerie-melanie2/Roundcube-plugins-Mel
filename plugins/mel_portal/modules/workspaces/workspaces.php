@@ -67,6 +67,20 @@ class Workspaces extends Module
 
   function generate_html()
   {
+    $workspaces = mel_workspace::LoadWorkspaces(1, 5);
+    $html = mel_workspace::IncludeWorkspacesBlocks($workspaces);
+
+    $title = html::div(
+      [],
+      html::tag("h2", ["style" => "float:left;margin-top:15px;margin-bottom: -5px;"], $this->text("workspaces")) .
+        html::tag("button", ["id" => "wsp-see-all", "title" => "Afficher la liste des espaces de travail", "class" => "mel-button", "style" => "float:right;"], html::tag("span", [], "Voir tout") . html::tag("span", ["class" => "icon-mel-arrow-right plus"]))
+    );
+
+    return $title . html::div(["class" => '--row workspace-list'], $html);
+  }
+
+  function _generate_html()
+  {
     // return '';
     $html = "";
     $it = 0;

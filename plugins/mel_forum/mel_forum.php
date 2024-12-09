@@ -1146,14 +1146,6 @@ class mel_forum extends bnum_plugin
             exit;
         }
 
-        $creator = $comment->creator;
-
-        // Vérifier si le créateur du like/dislike est le même que le créateur du commentaire
-        if ($creator === $user_uid) {
-            echo json_encode(['status' => 'error', 'message' => $this->gettext("react_to_own_comment", "mel_forum")]);
-            exit;
-        }
-
         // Vérifier si un like ou dislike existe déjà
         $existing_reaction = new LibMelanie\Api\Defaut\Posts\Comments\Like();
         $existing_reaction->comment = $comment_id;
@@ -1212,7 +1204,7 @@ class mel_forum extends bnum_plugin
                         echo json_encode(['status' => 'error', 'message' => gettext("faild_to_save...", "mel_forum") . $type . '.']);
                         exit;
                     }
-                    $message = ucfirst($type) . gettext("...saved", "mel_forum");
+                    $message = ucfirst($type) . $this->gettext("...saved", "mel_forum");
                 }
             } else {
                 // Si aucune réaction n'existe, on va créer une nouvelle réaction
@@ -1227,7 +1219,7 @@ class mel_forum extends bnum_plugin
                     echo json_encode(['status' => 'error', 'message' => gettext("faild_to_save...", "mel_forum") . $type . '.']);
                     exit;
                 }
-                $message = ucfirst($type) . gettext("...saved", "mel_forum");
+                $message = ucfirst($type) . $this->gettext("...saved", "mel_forum");
             }
         }
 

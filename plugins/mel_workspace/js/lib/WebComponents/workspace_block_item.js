@@ -395,6 +395,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       this._description,
       'description',
       'workspace-block-item-description',
+      'three-lines',
     );
   }
   //#endregion

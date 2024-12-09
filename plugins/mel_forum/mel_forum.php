@@ -601,13 +601,11 @@ class mel_forum extends bnum_plugin
         $tags_uids = $this->get_input('_tags', rcube_utils::INPUT_GET);
         $tags = null;
         if ($tags_uids !== null) {
-            foreach ($tags_uids as $tag_id) {
-                $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-                $tag->id = $tag_id;
-                $tag->workspace = $workspace_uid;
-                $tag->load();
-                $tags[] = $tag;
-            }
+            $tag = new LibMelanie\Api\Defaut\Posts\Tag();
+            $tag->id = $tags_uids;
+            $tag->workspace = $workspace_uid;
+            $tag->load();
+            $tags[] = $tag;
         }
         $fav_posts_uid = null;
         $get_favorite = ($this->get_input('_fav_only', rcube_utils::INPUT_GET) !== null) ? ($this->get_input('_fav_only', rcube_utils::INPUT_GET) === 'true' ? true : false) : false;
@@ -621,8 +619,6 @@ class mel_forum extends bnum_plugin
         $post = new LibMelanie\Api\Defaut\Posts\Post();
         $post->workspace = $workspace_uid;
 
-
-        // $limit = 20;
         // Appel de la méthode listPosts
         $posts = $post->listPosts($search, $tags, $orderby, $asc, $limit, $offset, $fav_posts_uid);
 
@@ -722,8 +718,6 @@ class mel_forum extends bnum_plugin
         $post->summary = $summary;
         $post->content = $content;
         $post->modified = date('Y-m-d H:i:s');
-        // //TODO ne pas modifier le créateur
-        // $post->creator = driver_mel::gi()->getUser()->uid;
         $post->settings = $settings;
         $post->workspace = $workspace_uid;
 
@@ -823,12 +817,7 @@ class mel_forum extends bnum_plugin
             $post->uid = $uid;
 
             if ($post->load() !== null) {
-                // TODO return le removeTag
-                if ($post->removeTag($tag)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return $post->removeTag($tag);
             }
         }
     }

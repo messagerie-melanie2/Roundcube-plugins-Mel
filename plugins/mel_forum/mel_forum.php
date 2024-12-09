@@ -353,7 +353,7 @@ class mel_forum extends bnum_plugin
                     }
 
                     // Récupérer les Tags liés au post
-                    $tags = $this->get_all_tags_bypost($post);
+                    $tags = $this->_get_tags_name_bypost($post->uid);
                 } else {
                     // Si l'UID est fourni mais l'article n'existe pas, renvoyer une erreur
                     return false;
@@ -740,7 +740,7 @@ class mel_forum extends bnum_plugin
     protected function _create_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
 
         //Créer un tag
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -762,7 +762,7 @@ class mel_forum extends bnum_plugin
     private function _delete_tag($name)
     {
         // Récupérer le Workspace
-        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
@@ -785,7 +785,7 @@ class mel_forum extends bnum_plugin
     // TODO: ajouter post en parametre
     protected function _associate_tag_with_post($name)
     {
-        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
         $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
@@ -810,7 +810,7 @@ class mel_forum extends bnum_plugin
     // TODO: ajouter post en parametre
     protected function _unsassociate_tags_from_post($name)
     {
-        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $workspace_uid = $this->get_input('_workspace', rcube_utils::INPUT_POST);
         $uid = $this->get_input('_uid', rcube_utils::INPUT_POST);
 
         // Récupérer le tag existant
@@ -839,11 +839,11 @@ class mel_forum extends bnum_plugin
      * 
      * @return string[] $tags tableau des noms des tags du post
      */
-    protected function _get_tags_name_bypost($post)
+    protected function _get_tags_name_bypost($post_uid)
     {
         // Récupérer l'article
         $post = new LibMelanie\Api\Defaut\Posts\Post();
-        $post->uid = $uid;
+        $post->uid = $post_uid;
         $tags = [];
 
         if ($post->load()) {
@@ -864,7 +864,7 @@ class mel_forum extends bnum_plugin
     protected function _exist_tag($exist_tag)
     {
         $tag = new LibMelanie\Api\Defaut\Posts\Tag();
-        $tag->workspace = $this->get_input('_workspace_uid', rcube_utils::INPUT_POST);
+        $tag->workspace = $this->get_input('_workspace', rcube_utils::INPUT_POST);
         $tags = $tag->listTags();
         foreach ($tags as $tag) {
             if ($tag->name === $exist_tag) {

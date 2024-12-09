@@ -64,7 +64,7 @@ export class create_or_edit_post extends MelObject {
         $('.tag-list').empty(); // Vide la liste de tags existante avant d'ajouter les nouveaux tags
         for(var tag of this.tags) {
             let html = JsHtml.start
-                    .span({class: 'tag', tabindex: 0}).text(`#${tag.name}`).span({class: 'icon-remove-tag'}).end().end();
+                    .span({class: 'tag', tabindex: 0}).text(`#${tag}`).span({class: 'icon-remove-tag'}).end().end();
                     $('.tag-list').append(html.generate());
         }
     }

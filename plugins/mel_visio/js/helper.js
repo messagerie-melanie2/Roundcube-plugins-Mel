@@ -141,7 +141,8 @@ class BnumVisio extends MelObject {
     pass = null,
     extra = null,
   } = {}) {
-    let config = {};
+    let config = {
+    };
 
     if (key) {
       if (key === '¤random¤') key = VisioFunctions.generateWebconfRoomName();
@@ -152,7 +153,7 @@ class BnumVisio extends MelObject {
     if (pass) config._pass = pass;
     if (extra) config._need_config = extra === 'need_config';
 
-    FramesManager.Instance.start_mode('visio', null, config);
+    FramesManager.Instance.start_mode('visio', 'visio', config);
   }
 
   startInstance() {

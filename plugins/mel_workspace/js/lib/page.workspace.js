@@ -104,9 +104,18 @@ export class WorkspacePage extends WorkspaceObject {
       }
     });
 
+    top.rcmail.add_event_listener_ex('visio.back', 'workspace', () => {
+      if (NavBarManager.currentNavBar) {
+        NavBarManager.Hide()
+          .nav.$('#layout-frames')
+          .css('margin-left', '60px');
+          
+        NavBarManager.nav.$('html').removeClass('mwsp');
+      }
+    });
+
     top.rcmail.add_event_listener_ex('switch_frame', 'workspace', (args) => {
       const { actions, task } = args;
-      // debugger;
       if (!actions.includes('workspace')) {
         if (task !== 'workspace') {
           NavBarManager.Hide()

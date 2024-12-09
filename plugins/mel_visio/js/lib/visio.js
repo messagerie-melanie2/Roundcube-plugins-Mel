@@ -57,14 +57,17 @@ class Visio extends MelObject {
           FramesManager.Instance.get_window()._current_frame.task,
         );
 
-        FramesManager.Instance.get_window().hide()._current_frame =
-          MelEnumerable.from(FramesManager.Instance.get_window()._frames)
-            .where((x) => x.key === 'webconf')
-            .firstOrDefault(
-              FramesManager.Instance.get_window()._current_frame,
-            ).value;
+        FramesManager.Instance.get_window().hide();
+        // FramesManager.Instance.get_window().hide()._current_frame =
+        //   MelEnumerable.from(FramesManager.Instance.get_window()._frames)
+        //     .where((x) => x.key === 'webconf')
+        //     .firstOrDefault(
+        //       FramesManager.Instance.get_window()._current_frame,
+        //     ).value;
 
         this.toolbar.toolbar().find('button').first().focus();
+
+        top.rcmail.triggerEvent('visio.back');
 
         return 'break';
       } else
@@ -522,13 +525,14 @@ class Visio extends MelObject {
       MelHtml.start
         .button( { id:'visio-back-button', class:'visio-back-button', title:'Minimiser la visioconférence' } )
         .attr('onclick', () => {
-          if (FramesManager.Instance.get_window()._current_frame.task === 'webconf') {
+          if (top.$('#visio-back-button').find('bnum-icon').text() === 'fullscreen_exit') {
             if (FramesManager.Instance.get_window()._history._history.length) FramesManager.Instance.get_window()._history.back();
             else FramesManager.Instance.switch_frame('bureau', {});
 
             top.$('#visio-back-button').attr('title', 'Maximiser la visioconférence').find('bnum-icon').text('fullscreen');
           }
           else { 
+            // if (FramesManager.Instance.get_window()) FramesManager.Instance.get_window()._current_frame = null;
             FramesManager.Instance.switch_frame('webconf', {});
             top.$('#visio-back-button').attr('title', 'Minimiser la visioconférence').find('bnum-icon').text('fullscreen_exit');
           }

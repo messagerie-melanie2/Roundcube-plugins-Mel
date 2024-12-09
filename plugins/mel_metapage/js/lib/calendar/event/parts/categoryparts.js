@@ -62,11 +62,11 @@ export class CategoryPart extends FakePart {
     this._generateCategories()._$wspButton.css('display', 'none');
 
     if (
-      $('html').hasClass('mwsp') &&
+      (top ?? parent ?? window).$('html').hasClass('mwsp') &&
       (!event.categories || !event.categories.length)
     ) {
       event.categories = [
-        `ws#${MelObject.Empty().load_without_parsing('current_wsp')}`,
+        `ws#${MelObject.Empty().load('current_wsp')}`,
       ];
       event.calendar_blocked = 'true';
     }

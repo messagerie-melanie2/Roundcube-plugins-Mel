@@ -147,6 +147,12 @@ class mel_workspace extends bnum_plugin
                 }
                 break;
 
+            case 'tasks':
+                if ($this->is_index_action()) {
+                    $this->include_module('page.tasks.js');
+                }
+                break;
+
             default:
             # code...
             break;

@@ -58,16 +58,13 @@ export class WorkspacePage extends WorkspaceObject {
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
       const { task } = args;
 
-      if (
-        task === 'tasks' &&
-        (!FramesManager.Instance.has_frame('tasks') ||
-          !FramesManager.Instance.get_frame('tasks', {
-            jquery: false,
-          }).contentWindow.location.href.includes(this.workspace.uid))
-      ) {
+      if (task === 'tasks' && !FramesManager.Instance.has_frame('tasks')) {
         return {
           source: this.workspace.uid,
         };
+      }
+      else if (task === 'tasks') {
+        FramesManager.Instance.get_frame('tasks', { jquery:false })?.contentWindow?.rcmail?.triggerEvent?.('wsp.on.task.showed');
       }
     }, 'tasks');
 

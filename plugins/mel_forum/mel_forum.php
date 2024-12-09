@@ -600,7 +600,7 @@ class mel_forum extends bnum_plugin
         $asc = ($this->get_input('_asc', rcube_utils::INPUT_GET) !== null) ? ($this->get_input('_asc', rcube_utils::INPUT_GET) === 'true' ? true : false) : self::DEFAULTASC;
         $tags_uids = $this->get_input('_tags', rcube_utils::INPUT_GET);
         $tags = null;
-        if ($tags_uids !== null) {
+        if ($tags_uids !== null && $tags_uids !== "") {
             $tag = new LibMelanie\Api\Defaut\Posts\Tag();
             $tag->id = $tags_uids;
             $tag->workspace = $workspace_uid;

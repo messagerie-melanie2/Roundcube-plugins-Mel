@@ -1,4 +1,5 @@
 import { MelEnumerable } from '../../../mel_metapage/js/lib/classes/enum.js';
+import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { isNullOrUndefined } from '../../../mel_metapage/js/lib/mel.js';
@@ -222,6 +223,10 @@ class IndexWorkspace extends MelObject {
     $('bnum-workspace-block-item').on('api:favorite', () => {
       this._reorder();
       this._set_blocks_listeners();
+
+      if (FramesManager.Instance.has_frame('bureau')) {
+        FramesManager.Instance.get_frame('bureau', {jquery:false}).contentWindow.location.reload();
+      }
     });
   }
 
@@ -285,7 +290,7 @@ class IndexWorkspace extends MelObject {
     );
 
     const html = MelEnumerable.from(data)
-      .orderBy((x) => (x.isFavorite ? -1 : x.date.valueOf()))
+      .orderByDescending((x) => (x.isFavorite ? Infinity : x.date.valueOf()))
       .then((x) => x.title)
       .select((x) => x.html)
       .join(EMPTY_STRING);

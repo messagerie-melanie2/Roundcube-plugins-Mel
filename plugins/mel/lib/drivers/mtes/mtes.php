@@ -619,6 +619,12 @@ class mtes_driver_mel extends mce_driver_mel
       return false;
     }
 
+    // 0008651: Externes - Valider l'adresse email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Email invalide");
+      return false;
+    }
+
     $user = $this->user([null, 'webmail.external.users']);
 
     $user->email = $email;

@@ -116,7 +116,7 @@ export class ModuleForum extends WorkspaceObject {
           break;
       }
     });
-
+    
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
       if (
         args.task === 'forum' &&

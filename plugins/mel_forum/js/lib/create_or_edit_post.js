@@ -154,7 +154,7 @@ export class create_or_edit_post extends MelObject {
                         _title: $("#edit-title").val(),
                         _content: tinymce.activeEditor.getContent(),
                         _uid: this.post_uid,
-                        _settings: JSON.stringify({extwin: $('#rcmfd_message_extwin')[0].checked, comments: $('#enable_comment')[0].checked}),
+                        _settings: JSON.stringify({extwin: true, comments: $('#enable_comment')[0].checked}),
                         _tags: this.tags,
                         _post_id: this.post_id,
                     },

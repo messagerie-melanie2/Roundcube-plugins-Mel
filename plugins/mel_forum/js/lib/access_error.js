@@ -15,7 +15,6 @@ export class New_posts extends MelObject {
  */
   main() {
     super.main();
-    debugger;
     $('#return_to_workspaces_list').attr('href', this.url('workspace', {}));
   }
 }

@@ -869,7 +869,7 @@ class mel_workspace extends bnum_plugin
         $workspace = self::Workspace($uid);
 
         if ($workspace->isAdmin() && !$workspace->hasService($app)) {
-            $this->_set_services($workspace, array_merge($workspace->services(true, true), [$app]), null);
+            $this->_set_services($workspace, [$app], null);
             $workspace->save();
         }
         else $return = 'denied';

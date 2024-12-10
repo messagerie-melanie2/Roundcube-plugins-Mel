@@ -1,0 +1,27 @@
+<roundcube:include file="includes/layout.html" />
+
+<h1 class="voice">
+  <roundcube:label name="mel_forum" />
+</h1>
+
+<div id="layout-content" role="main">
+  <div class="content">
+    <div class="row forum-header">
+      <div class="text-header">
+        <h1 class="title">
+            <roundcube:label name="mel_forum.error" />
+        </h1>
+      </div>
+    </div>
+    <div class="error-message">
+        <span>
+            <roundcube:label name="mel_forum.error-access" />
+        </span>
+        <a href= "" id="return_to_workspaces_list" class="mel-button">
+            <roundcube:label name="mel_forum.return_to_workspaces_list"/>
+        </a>
+    </div>
+  </div>
+</div>
+
+<roundcube:include file="/includes/footer.html" />

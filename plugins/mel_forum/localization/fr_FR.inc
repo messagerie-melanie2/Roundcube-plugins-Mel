@@ -47,6 +47,8 @@ $labels["right_p"] = "Publieur";
 
 $labels['create_new_comment'] = 'Création d\'un nouveau commentaire';
 
+#region FORUM LABELS
+
 $labels['workspace_news'] = 'Derniers articles';
 $labels['edit_article'] = 'Modifier l\'article';
 $labels['delete_article'] = 'Supprimer l\'article';
@@ -77,7 +79,8 @@ $labels['delete_comment'] = 'Supprimer le commentaire';
 $labels['more_options'] = 'Plus d\'options';
 $labels['no_post'] = 'Cet espace ne contient aucun article pour le moment.';
 
-// Message
+#region Message
+
 $labels['fav_updated'] = 'Vos articles favoris ont été mis à jour';
 $labels['error_editing'] = 'Erreur lors de la modification';
 $labels['delete_comment_confirm'] = 'Êtes-vous sûr de vouloir supprimer ce commentaire ?';
@@ -99,7 +102,9 @@ $labels['article_updated_error'] = 'Échec de mise à jour de l\'article.';
 $labels['article_id_required'] = 'L\'identifiant de l\'article est requis.';
 $labels['the_article'] = 'L\'article ';
 $labels['has_been_deleted'] = ' a été supprimé avec succès.';
-// TAG
+
+#region TAG
+
 $labels['tag_created'] = 'Tag créé avec succès.';
 $labels['tag_creation_failure'] = 'Echec de création du tag.';
 $labels['no_tag_found'] = 'Aucun tag trouvé.';
@@ -111,7 +116,9 @@ $labels['tag_associated_success'] = 'Tag associé au post avec succès.';
 $labels['tag_associated_failure'] = 'Echec de l\'association du tag avec le post.';
 $labels['tag_unassociated'] = 'Tag dissocié du post avec succès.';
 $labels['tag_delete_failure'] = 'Echec de la suppression du tag lié au post.';
-// COMMENTS
+
+#region COMMENTS
+
 $labels['comment_field_required'] = 'Le champ commentaire est requis.';
 $labels['comment_creation_failed'] = 'Echec de création du commentaire.';
 $labels['comment_creation'] = 'Commentaire créé avec succès.';
@@ -132,12 +139,22 @@ $labels['failed_to_save...'] = 'Échec de l\'enregistrement du ';
 $labels['...saved'] = ' enregistré avec succès.';
 $labels['undislike'] = 'Dislike annulé avec succès.';
 $labels['dislike_to_like'] = 'Dislike annulé, like enregistré avec succès.';
-//REACTIONS
+
+#region REACTIONS
+
 $labels['reaction_creation'] = 'Réaction créée avec succès.';
 $labels['reaction_creation_failure'] = 'Echec de création de la réaction.';
 $labels['reaction_deleted'] = 'La réaction a été supprimée avec succès.';
 $labels['reaction_deleted_failure'] = 'Echec de suppression de la réaction.';
 $labels['no_reaction_found'] = 'Aucune réaction trouvée.';
-//IMAGES
+
+#region IMAGES
+
 $labels['failed_to_load_image'] = 'Echec du chargement de l\'image.';
 $labels['image_field_required'] = 'Tous les champs sont requis.';
+
+#region ERREUR
+
+$labels['error'] = 'ERREUR';
+$labels['error-access'] = 'Vous n\'avez pas accès à la ressource demandée';
+$labels['return_to_workspaces_list'] = 'Retourner à la liste des espaces de travail';

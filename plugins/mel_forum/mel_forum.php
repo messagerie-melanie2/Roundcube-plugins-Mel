@@ -158,6 +158,8 @@ class mel_forum extends bnum_plugin
             $this->show_posts();
             $this->rc()->output->set_env('workspace_uid', $workspace_uid);
             $this->rc()->output->send('mel_forum.forum');
+        } else {
+            $this->_display_error_page();
         }
     }
 
@@ -200,6 +202,8 @@ class mel_forum extends bnum_plugin
             $this->rc()->output->set_env('show_comments', $this->current_post->settings["comments"]);
 
             $this->rc()->output->send('mel_forum.post');
+        } else {
+            $this->_display_error_page();
         }
     }
 
@@ -396,6 +400,8 @@ class mel_forum extends bnum_plugin
 
             // Envoyer le template approprié
             $this->rc()->output->send('mel_forum.create-post');
+        } else {
+            $this->_display_error_page();
         }
     }
 
@@ -545,9 +551,8 @@ class mel_forum extends bnum_plugin
         }
 
         // Vérifier si l'utilisateur connecté a les droits
-        if (!$this->has_owner_rights($post, $post->workspace)) {
-            echo json_encode(['status' => 'error', 'message' => $this->gettext("creator_delete_only", "mel_forum")]);
-            exit; // Arrêter l'exécution si l'utilisateur n'est pas le créateur
+        if (!$this->_has_owner_rights($post, $post->workspace)) {
+            $this->_display_error_page();
         }
 
         // Supprimer l'article
@@ -1667,7 +1672,7 @@ class mel_forum extends bnum_plugin
                 'isdisliked' => $isdisliked,
                 'post_link' => $post_link,
                 'image_url' => $image_url,
-                'has_owner_rights' => $this->has_owner_rights($post, $workspace_uid),
+                'has_owner_rights' => $this->_has_owner_rights($post, $workspace_uid),
             ];
         }
         return $posts_data;
@@ -1922,7 +1927,7 @@ class mel_forum extends bnum_plugin
      * 
      * @return boolean
      */
-    public function has_owner_rights($post, $workspace)
+    public function _has_owner_rights($post, $workspace)
     {
         $current_user = driver_mel::gi()->getUser();
         $return = false;
@@ -1933,5 +1938,11 @@ class mel_forum extends bnum_plugin
             $return = true;
 
         return $return;
+    }
+
+    protected function _display_error_page()
+    {
+        $this->load_script_module('access_error');
+        $this->rc()->output->send('mel_forum.access-error');
     }
 }

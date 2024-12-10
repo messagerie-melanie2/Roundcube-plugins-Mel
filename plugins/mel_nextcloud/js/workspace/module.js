@@ -104,6 +104,7 @@ class NextcloudModule extends WorkspaceObject {
    * @param {?BootstrapLoader} loader
    */
   async _main(loader = null) {
+    var continueExec = true;
     this.loadModule();
 
     if (loader) {
@@ -122,24 +123,40 @@ class NextcloudModule extends WorkspaceObject {
 
     this.moduleContainer.style.display = EMPTY_STRING;
 
-    await roundrive.load();
+    try {
+      await roundrive.load();
+    } catch (error) {
+      contents.appendChild($('<p>Impossible de charger les documents pour le moment...</p>')[0])
+      continueExec = false;
+    }
 
-    /**
-     * @type {RoundriveFile | RoundriveFolder}
-     */
-    for (const element of roundrive) {
-      if (
-        element.data.name.filename !== EMPTY_STRING &&
-        element.data.name.filename[0] !== '.'
-      ) {
-        if (loader) {
-          loader.remove();
-          loader = null;
+    if (continueExec) {
+      continueExec = false;
+      /**
+       * @type {RoundriveFile | RoundriveFolder}
+       */
+      for (const element of roundrive) {
+        if (
+          element.data.name.filename !== EMPTY_STRING &&
+          element.data.name.filename[0] !== '.'
+        ) {
+          if (loader) {
+            loader.remove();
+            loader = null;
+          }
+
+          contents.appendChild(NextcloudModule.CreateRoundriveTag(element));
+
+          if (!continueExec) continueExec = true;
         }
+      } 
 
-        contents.appendChild(NextcloudModule.CreateRoundriveTag(element));
+      if (!continueExec) {
+        contents.appendChild($('<p>Aucun documents....</p>').css({'text-align':'center', 'margin-top':'5px'})[0]);
       }
     }
+
+    continueExec = null;
 
     if (loader) {
       loader.remove();

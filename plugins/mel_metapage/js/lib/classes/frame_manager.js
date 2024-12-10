@@ -1453,9 +1453,9 @@ class FrameManager {
         $it.click(this.button_action.bind(this));
       }
 
-      $it.click(() => {
-        $('#popoverback').remove();
-      })
+      // $it.click(() => {
+      //   $('#popoverback').remove();
+      // })
 
       if (!$it.hasClass('menu-last-frame') && !$it.attr('data-command'))
       {
@@ -1486,13 +1486,13 @@ class FrameManager {
 
     }
 
-    if (!window.fmbodyoptionsa) {
-      $('.barup, #layout-menu').click(() => {
-        $('#popoverback').remove();
-      });
+    // if (!window.fmbodyoptionsa) {
+    //   $('.barup, #layout-menu').click(() => {
+    //     $('#popoverback').remove();
+    //   });
 
-      window.fmbodyoptionsa = true;
-    }
+    //   window.fmbodyoptionsa = true;
+    // }
   }
 
   /**

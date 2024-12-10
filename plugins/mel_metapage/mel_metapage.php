@@ -857,6 +857,7 @@ class mel_metapage extends bnum_plugin
             'classsel'   => 'icon-mel-custom_taskbar button-selected',
             'innerclass' => 'button-inner',
             'label'      => 'mel_metapage.custom_taskbar',
+            'data-command' => 'custom_taskbar',
             'type'       => 'link'
         ), "settingsotherappsbar");
 

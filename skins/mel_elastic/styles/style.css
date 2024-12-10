@@ -1663,8 +1663,16 @@ bnum-pressed-button.mel-button[aria-pressed='true']bnum-pressed-button.mel-butto
   pointer-events: none;
 }
 .btn-group-vertical .mel-button {
-  border-radius: 5px;
+  border-radius: 0px;
   width: 100%;
+}
+.btn-group-vertical .mel-button:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.btn-group-vertical .mel-button:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 .popover .btn-group-vertical {
   width: 100%;

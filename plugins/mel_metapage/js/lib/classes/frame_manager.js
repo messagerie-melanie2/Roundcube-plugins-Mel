@@ -4,6 +4,7 @@
  */
 
 import { EMPTY_STRING } from '../constants/constants.js';
+import { HTMLButtonGroup } from '../html/JsHtml/CustomAttributes/HTMLButtonGroup.js';
 import { MelHtml } from '../html/JsHtml/MelHtml.js';
 import { BnumEvent } from '../mel_events.js';
 import { MelObject } from '../mel_object.js';
@@ -1229,33 +1230,70 @@ class FrameManager {
     const task = $element.data('task');
     const max_frame_goal = this._windows.length >= MAX_FRAME;
     const button_disabled = !this._manual_multi_frame_enabled || max_frame_goal;
-    return MelHtml.start
-      .div({
-        class: 'btn-group-vertical',
-        role: 'group',
-        'aria-label': 'Actions supplémentaires',
-      })
-      .button({ class: 'btn btn-secondary' })
-      .attr(
-        'onclick',
-        function onclick(task_to_open) {
-          open(FrameManager.Helper.url(task_to_open, {}));
-        }.bind(this, task),
-      )
-      .text('Ouvrir dans un nouvel onglet')
-      .end()
-      .button({ class: 'btn btn-secondary' })
-      .attr('onclick', this.open_another_window.bind(this, task))
-      .addClass(button_disabled ? 'disabled' : 'not-disabled')
-      .attr(
-        button_disabled ? 'disabled' : 'not-disabled',
-        button_disabled ? 'disabled' : true,
-      )
-      .text('Ouvrir dans une nouvelle colonne')
-      .end()
-      .end()
-      .generate()
-      .get(0);
+    let buttons = ['open', 'new'];
+
+    if (MULTI_FRAME_FROM_NAV_BAR) {
+      buttons.push('column');
+    }
+
+    let node = HTMLButtonGroup.CreateNode(buttons, {
+      texts: ['Ouvrir', 'Ouvrir dans un nouvel onglet', 'Ouvrir dans une nouvelle colonne'],
+      voice: 'Actions supplémentaires'
+    });
+
+    if (MULTI_FRAME_FROM_NAV_BAR && button_disabled) {
+      node.getButton(2).addClass('disabled').setAttribute('disabled', 'disabled');
+    }
+
+    node.addEventListener('api:button.clicked', function (args, event) {
+      $('#popoverback').remove();
+
+      switch (event.id) {
+        case 'open':
+          $(`[data-task="${args.task}"]`).click();
+          break;
+          
+        case 'new':
+          open(FrameManager.Helper.url(args.task, {}));
+          break;
+
+        case 'column':
+          this.open_another_window(args.task, {});
+          break;
+
+        default:
+          break;
+      }
+    }.bind(this, {task, max_frame_goal, button_disabled}));
+
+    return node;
+    // return MelHtml.start
+    //   .div({
+    //     class: 'btn-group-vertical',
+    //     role: 'group',
+    //     'aria-label': 'Actions supplémentaires',
+    //   })
+    //   .button({ class: 'btn btn-secondary' })
+    //   .attr(
+    //     'onclick',
+    //     function onclick(task_to_open) {
+    //       open(FrameManager.Helper.url(task_to_open, {}));
+    //     }.bind(this, task),
+    //   )
+    //   .text('Ouvrir dans un nouvel onglet')
+    //   .end()
+    //   .button({ class: 'btn btn-secondary' })
+    //   .attr('onclick', this.open_another_window.bind(this, task))
+    //   .addClass(button_disabled ? 'disabled' : 'not-disabled')
+    //   .attr(
+    //     button_disabled ? 'disabled' : 'not-disabled',
+    //     button_disabled ? 'disabled' : true,
+    //   )
+    //   .text('Ouvrir dans une nouvelle colonne')
+    //   .end()
+    //   .end()
+    //   .generate()
+    //   .get(0);
   }
 
   /**
@@ -1405,22 +1443,55 @@ class FrameManager {
         $it.click(() => {
           rcmail.command('more_options');
         });
-      } else {
-        $it.click(this.button_action.bind(this));
-
-        if (MULTI_FRAME_FROM_NAV_BAR) {
-          $it
-            .popover({
-              trigger: 'manual',
-              content: this._generate_menu.bind(this, $it),
-              html: true,
-            })
-            .on('contextmenu', (e) => {
-              e.preventDefault();
-              $(e.currentTarget).popover('show');
-            });
-        }
       }
+      else if ($it.attr('data-command')) {
+        $it.click((e) => {
+          rcmail.command($(e.currentTarget).attr('data-command'));
+        });
+      }
+      else {
+        $it.click(this.button_action.bind(this));
+      }
+
+      $it.click(() => {
+        $('#popoverback').remove();
+      })
+
+      if (!$it.hasClass('menu-last-frame') && !$it.attr('data-command'))
+      {
+        $it.on('auxclick', function(args, e) {
+          e.preventDefault();
+          open(FrameManager.Helper.url(args.task, {}));
+       }.bind(this, {task:$it.attr('data-task')}));
+        // $it
+        // .popover({
+        //   trigger: 'manual',
+        //   content: this._generate_menu.bind(this, $it),
+        //   html: true,
+        // })
+        // // .on('hide.bs.popover', () => {
+        // //   $('#popoverback').remove();
+        // // })
+        // .on('contextmenu', (e) => {
+        //   e.preventDefault();
+        //   $('#layout-menu [aria-describedby], #otherapps [aria-describedby]').each((i, e) => {
+        //     $(e).popover('hide');
+        //   });
+        //    $('#popoverback').remove();
+        //   $(e.currentTarget).popover('show');
+        //   //console.log('$(e.currentTarget)', $(e.currentTarget));
+        //   $('body').prepend($('<div>').click(() => $('#popoverback').remove()).attr('id', 'popoverback').css({width:'100%', height:'100%', position:'absolute', top:0, left:0, 'z-index':1, 'background-color':'var(--ui-widget-overlay)'}));
+        // });
+      }
+
+    }
+
+    if (!window.fmbodyoptionsa) {
+      $('.barup, #layout-menu').click(() => {
+        $('#popoverback').remove();
+      });
+
+      window.fmbodyoptionsa = true;
     }
   }
 

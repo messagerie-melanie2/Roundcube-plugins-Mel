@@ -2611,8 +2611,18 @@ body {
   }
 
   .btn-group-vertical & {
-    border-radius: 5px;
+    border-radius: 0px;
     width: 100%;
+
+    &:first-child {
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;   
+    }
   }
 }
 

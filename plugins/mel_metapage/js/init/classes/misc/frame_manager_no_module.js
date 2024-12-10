@@ -10,11 +10,23 @@
  */
 
 /**
+ * @callback SwitchFrameCallback
+ * @param {string} task
+ * @param {Object} [options={}]
+ * @param {boolean} [options.changepage=true]
+ * @param {?Object<string, string | number>} [options.args=null]
+ * @param {string[]} [options.actions=[]]
+ * @async
+ * @return {Promise<void>}
+ */
+
+/**
  * @typedef FrameManagerNoModuleHelper
  * @property {FrameManager} Instance
  * @property {FrameManagerWrapperHelper} Helper
  * @property {HasCallback} Has
  * @property {LoadFrameManagerCallback} Load
+ * @property {SwitchFrameCallback} SwitchFrame
  */
 
 /**

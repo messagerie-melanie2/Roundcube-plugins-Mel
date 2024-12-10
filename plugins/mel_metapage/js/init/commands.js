@@ -76,6 +76,15 @@ if (rcmail)
             
         }, true);
 
+        rcmail.register_command('custom_taskbar', () => {
+            PageManager.SwitchFrame('settings', {
+                args: {
+                    _action:'preferences',
+                    _open_section:'navigation'
+                }
+            });
+        });
+
         rcmail.register_command("manage_mailbox_folders",
             () => {
 

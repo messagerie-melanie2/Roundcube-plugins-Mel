@@ -1,4 +1,5 @@
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { PostComment, PostCommentView } from './comments.js';
 
@@ -129,12 +130,9 @@ export class Manager extends MelObject {
             rcmail.hide_message(id);
             rcmail.display_message(response.message, 'confirmation');
             $('#new-comment-textarea').val('');  // Réinitialiser le textarea
-            
-            // Récupérer les données du nouveau commentaire créé
-            const newComment = response.comment; // On suppose que l'API renvoie le commentaire créé dans `response.comment`
 
             // Afficher le nouveau commentaire dans l'interface sans recharger la page
-            Manager.displaySingleComment(newComment); 
+            await Manager.displaySingleComment(response.comment); 
         } else {
             rcmail.hide_message(id);
             rcmail.display_message(response.message, 'error');
@@ -260,59 +258,145 @@ export class Manager extends MelObject {
   * - Si le commentaire est une réponse, il est ajouté au conteneur des réponses du commentaire parent. Si ce conteneur n'existe pas encore, il est créé.
   *
   */
-  static async displaySingleComment(comment) {
+  // static async displaySingleComment(comment) {
 
-    // Formater la date et l'heure du commentaire avant de passer les données à PostComment
-    const formattedDate = new Date(comment.created).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  //   // Formater la date et l'heure du commentaire avant de passer les données à PostComment
+  //   const formattedDate = new Date(comment.created).toLocaleDateString('fr-FR', {
+  //     year: 'numeric',
+  //     month: 'long',
+  //     day: 'numeric'
+  //   });
 
-    const formattedTime = new Date(comment.created).toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  //   const formattedTime = new Date(comment.created).toLocaleTimeString('fr-FR', {
+  //     hour: '2-digit',
+  //     minute: '2-digit'
+  //   });
 
-    // Créer l'objet PostComment avec les données du commentaire
-    let commentVizualizer = new PostComment(
-      comment.id,
-      comment.uid,
-      comment.post_id,
-      comment.user_email,
-      comment.user_name,
-      comment.content,
-      `${formattedDate} à ${formattedTime}`,
-      comment.likes,
-      comment.dislikes,
-      comment.parent,
-      comment.children_number,
-      comment.current_user_reacted
-    );
+  //   // Créer l'objet PostComment avec les données du commentaire
+  //   let commentVizualizer = new PostComment(
+  //     comment.id,
+  //     comment.uid,
+  //     comment.post_id,
+  //     comment.user_email,
+  //     comment.user_name,
+  //     comment.content,
+  //     `${formattedDate} à ${formattedTime}`,
+  //     comment.likes,
+  //     comment.dislikes,
+  //     comment.parent,
+  //     comment.children_number,
+  //     comment.current_user_reacted
+  //   );
 
-    // Générer le HTML pour le commentaire
-    let commentHtml = $(commentVizualizer.generateHtmlFromTemplate());
+  //   // Générer le HTML pour le commentaire
+  //   let commentHtml = $(commentVizualizer.generateHtmlFromTemplate());
 
-    // Si le commentaire est un commentaire principal (sans parent)
-    if (!comment.parent) {
-      // Avant de prépendre, vérifie si le commentaire est déjà dans le DOM
-      if (!$('#comment-area').find(`#comment-${comment.id}`).length) {
-          // Ajouter le commentaire en haut de la liste des commentaires principaux
-          $('#comment-area').prepend(commentHtml);
+  //   // Si le commentaire est un commentaire principal (sans parent)
+  //   if (!comment.parent) {
+  //     // Avant de prépendre, vérifie si le commentaire est déjà dans le DOM
+  //     if (!$('#comment-area').find(`#comment-${comment.id}`).length) {
+  //         // Ajouter le commentaire en haut de la liste des commentaires principaux
+  //         $('#comment-area').prepend(commentHtml);
+  //     }
+  //   } else {
+  //     // Si c'est une réponse à un commentaire parent
+  //     let parent_comment_id = comment.parent;
+
+  //     // Assurer que la zone des réponses est visible
+  //     $(`#responses-${parent_comment_id}`).removeClass('hidden');
+
+  //     // Avant de prépendre, vérifie si la réponse est déjà dans le DOM
+  //     if (!$(`#responses-${parent_comment_id}`).find(`#comment-${comment.id}`).length) {
+  //         // Ajouter la réponse en haut des réponses du commentaire parent
+  //         $(`#responses-${parent_comment_id}`).prepend(commentHtml);
+  //     }
+  //   }
+  // }
+
+    static async displaySingleComment(comment) {
+      const formattedDate = new Date(comment.created).toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+      });
+
+      const formattedTime = new Date(comment.created).toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+      });
+
+      let commentVizualizer = new PostComment(
+          comment.id,
+          comment.uid,
+          comment.post_id,
+          comment.user_email,
+          comment.user_name,
+          comment.content,
+          `${formattedDate} à ${formattedTime}`,
+          comment.likes,
+          comment.dislikes,
+          comment.parent,
+          comment.children_number,
+          comment.current_user_reacted
+      );
+
+      let commentHtml = $(commentVizualizer.generateHtmlFromTemplate());
+
+      if (!comment.parent) {
+          // Commentaire principal
+          if (!$('#comment-area').find(`#comment-${comment.id}`).length) {
+              $('#comment-area').prepend(commentHtml);
+          }
+      } else {
+          // Réponse à un commentaire parent
+          let parent_comment_id = comment.parent;
+
+          // Vérifier si le container de réponses existe
+          let responsesContainer = $(`#responses-${parent_comment_id}`);
+          if (!responsesContainer.length) {
+              // Créer dynamiquement le container de réponses et le bouton de basculement avec MelHtml.start
+              let toggleResponseHtml = MelHtml.start
+                  .div({
+                      id: `toggle-response-container-${parent_comment_id}`,
+                      class: 'forum-comment-response',
+                      'data-comment-id': parent_comment_id,
+                      tabindex: '0',
+                      role: 'button',
+                      title: 'Voir 1 réponse',
+                  })
+                  .span({ id: `toggle-icon-${parent_comment_id}`, class: 'icon', 'data-icon': 'arrow_drop_down' })
+                  .end('span')
+                  .span({ class: 'ml-2' })
+                  .text('1 réponse')
+                  .end('span')
+                  .end('div')
+                  .div({ id: `responses-${parent_comment_id}`, class: 'responses ml-4' })
+                  .end('div')
+                  .generate_html(true);
+
+              // Ajouter après le parent
+              $(`#comment-${parent_comment_id}`).append(toggleResponseHtml);
+
+              // Récupérer le nouveau container
+              responsesContainer = $(`#responses-${parent_comment_id}`);
+          }
+
+          // Assurer que la zone des réponses est visible
+          responsesContainer.removeClass('hidden');
+
+          // Mettre à jour le texte et le titre du bouton de basculement
+          let toggleContainer = $(`#toggle-response-container-${parent_comment_id}`);
+          let currentResponseCount = responsesContainer.children().length + 1; // Ajouter la réponse actuelle
+          toggleContainer.find('span.ml-2').text(`${currentResponseCount} réponse${currentResponseCount > 1 ? 's' : ''}`);
+          toggleContainer.attr('title', `Voir ${currentResponseCount} réponse${currentResponseCount > 1 ? 's' : ''}`);
+
+          // Vérifier si la réponse existe déjà dans le DOM
+          if (!responsesContainer.find(`#comment-${comment.id}`).length) {
+              responsesContainer.prepend(commentHtml);
+          }
       }
-    } else {
-      // Si c'est une réponse à un commentaire parent
-      let parent_comment_id = comment.parent;
-
-      // Assurer que la zone des réponses est visible
-      $(`#responses-${parent_comment_id}`).removeClass('hidden');
-
-      // Avant de prépendre, vérifie si la réponse est déjà dans le DOM
-      if (!$(`#responses-${parent_comment_id}`).find(`#comment-${comment.id}`).length) {
-          // Ajouter la réponse en haut des réponses du commentaire parent
-          $(`#responses-${parent_comment_id}`).prepend(commentHtml);
-      }
-    }
   }
+
+
 
 }

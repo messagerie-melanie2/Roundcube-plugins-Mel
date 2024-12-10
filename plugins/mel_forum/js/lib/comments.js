@@ -318,6 +318,7 @@ class PostComment {
   * @throws {Error} Si une erreur survient lors de l'envoi de la requête ou de l'enregistrement de la réponse.
   */
   async saveReply() {
+    debugger;
     const $textarea = $('#new-response-textarea-' + this.uid);
     const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
     const submitButton = $('#submit-reply');  // Sélectionner le bouton de validation

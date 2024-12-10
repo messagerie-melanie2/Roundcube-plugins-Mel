@@ -369,7 +369,7 @@ export class Forum extends MelObject {
               } else {
                   // Affichage du message d'erreur en cas d'échec
                   BnumMessage.DisplayMessage(
-                        parsedResponse.message || rcmail.gettext('mel_forum.delete_post_post'),
+                        parsedResponse.message || rcmail.gettext('mel_forum.delete_post_failure'),
                         eMessageType.Error
                   );
               }

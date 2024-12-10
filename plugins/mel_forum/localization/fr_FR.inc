@@ -139,6 +139,10 @@ $labels['failed_to_save...'] = 'Échec de l\'enregistrement du ';
 $labels['...saved'] = ' enregistré avec succès.';
 $labels['undislike'] = 'Dislike annulé avec succès.';
 $labels['dislike_to_like'] = 'Dislike annulé, like enregistré avec succès.';
+$labels['response_singular'] = 'réponse';
+$labels['response_plural'] = 'réponses';
+$labels['see_the'] = 'Voir les';
+$labels['see_response_singular'] = 'Voir la réponse';
 
 #region REACTIONS
 

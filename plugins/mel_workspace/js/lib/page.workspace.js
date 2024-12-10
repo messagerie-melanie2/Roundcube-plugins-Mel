@@ -154,9 +154,11 @@ export class WorkspacePage extends WorkspaceObject {
     );
 
     if (this.get_env('start_page')) {
-      NavBarManager.WaitLoading().then(() => {
-        NavBarManager.currentNavBar.select(this.get_env('start_page'), {
-          background: false,
+      window.addEventListener('load', () => {
+        NavBarManager.WaitLoading().then(() => {
+          NavBarManager.currentNavBar.select(this.get_env('start_page'), {
+            background: false,
+          });
         });
       });
     }

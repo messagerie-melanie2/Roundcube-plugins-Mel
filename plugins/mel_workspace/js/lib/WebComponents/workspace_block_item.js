@@ -304,7 +304,7 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
       element.style.borderColor = this._color;
       element.src = this._picture;
       pict.appendChild(element);
-    } else this._generate_no_picture(pict), this._title;
+    } else this._generate_no_picture(pict, this._title);
 
     //this.appendChild(pict);
 

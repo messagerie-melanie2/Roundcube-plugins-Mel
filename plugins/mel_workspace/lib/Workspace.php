@@ -449,6 +449,16 @@ class FavoriteData {
     return new FavoriteData($uid);
   } 
 
+  public static function UIds() {
+    $config = self::_Config() ?? [];
+
+    return mel_helper::Enumerable($config)->where(function ($k, $v) {
+      return $v && isset($v['tak']) && $v['tak'] === true;
+    })->select(function ($k, $v) {
+      return $k;
+    })->toArray();
+  }
+
   public static function ToggleWsp($uid, $save = true) {
     $data = self::From($uid);
     $data->toggle();

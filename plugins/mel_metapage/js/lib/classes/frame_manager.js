@@ -832,15 +832,18 @@ class Window {
       this._current_frame.$frame.focus();
 
       if (
-        this._current_frame.$frame[0].contentWindow.$(
+        this._current_frame.$frame?.[0]?.contentWindow?.$?.(
           '#sr-document-title-focusable',
-        ).length
+        )?.length
       ) {
         this._current_frame.$frame[0].contentWindow
           .$('#sr-document-title-focusable')
           .focus();
       } else {
-        this._current_frame.$frame[0].contentWindow
+        await Mel_Promise.wait(() => this._current_frame.$frame?.[0]?.contentWindow?.$);
+
+        if (this._current_frame.$frame?.[0]?.contentWindow?.$) {
+          this._current_frame.$frame[0].contentWindow
           .$('body')
           .prepend(
             $('<div>')
@@ -851,6 +854,10 @@ class Window {
           )
           .find('.sr-document-title-focusable')
           .focus();
+        }
+        else {
+          this._current_frame.$frame.focus();
+        }
       }
 
       //Gestion du multi-fenêtre

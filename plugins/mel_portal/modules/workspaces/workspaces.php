@@ -67,8 +67,15 @@ class Workspaces extends Module
 
   function generate_html()
   {
-    $workspaces = mel_workspace::LoadWorkspaces(1, 5);
+    $workspaces = mel_workspace::LoadFavoriteWorkspaces(5, null, true);//mel_workspace::LoadWorkspaces(1, 5);
+    // $nb = $workspaces->count();
+
+    // if ($nb < 4) $workspaces = mel_helper::Enumerable($workspaces)->aggregate(mel_workspace::LoadWorkspaces(1, 5 - $nb));
+
+    // unset($nb);
+
     $html = mel_workspace::IncludeWorkspacesBlocks($workspaces);
+    unset($workspaces);
 
     $title = html::div(
       [],

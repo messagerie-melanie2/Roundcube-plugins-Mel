@@ -47,6 +47,7 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
     function firstOrDefault($default = null, $selector = null);
     function toArray() : array;
     function toDictionnary($key_selector, $value_selector) : array;
+    function take($number, $where = null, $selector = null) : IMel_Enumerable; 
 }
 
 abstract class AMel_Enumerable implements IMel_Enumerable
@@ -126,6 +127,11 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         return $this->any(function ($k, $v) use($item) {
             return $v === $item;
         });
+    }
+
+    public function take($number, $where = null, $selector = null) : IMel_Enumerable 
+    {
+        return new Mel_Take($this, $number, $where, $selector);
     }
 
     public function toArray() : array
@@ -312,6 +318,55 @@ class Mel_Select extends Mel_Where{
     }
 }
 
+class Mel_Take extends Mel_Where{
+    private $selectSelector;
+    private $max;
+
+    public function __construct($iterable, $max, $where = null, $selector = null)
+    {
+        parent::__construct($iterable, $where);
+        $this->selectSelector = $selector;
+        $this->max = $max ?? 1;
+
+        if ($this->max < 1) $this->max = 1;
+    }
+
+    public function getIterator() : Traversable {
+        $it = 0;
+        foreach ($this->array_like as $key => $value) {     
+            $yKey = null;
+            $yValue = null;
+
+            if ($this->selector) {  
+                if (is_subclass_of($value, 'IKeyValue')) 
+                {
+                    if (call_user_func($this->selector, $value->get_key(), $value->get_value())) {
+                        $yKey = $value->get_key();
+                        $yValue = $value->get_value();
+                    }
+                }
+                else if (call_user_func($this->selector, $key, $value)) {
+                    $yKey = $key;
+                    $yValue = $value;
+                };
+            }
+
+            if ($this->selectSelector) {
+                $yValue = call_user_func($this->selectSelector, $yKey, $yValue);
+
+                if(is_subclass_of($yValue, 'IKeyValue')) {
+                    $yKey = $yValue->get_key();
+                    $yValue = $yValue->get_value();
+                }
+            }
+
+            yield ($yKey ?? $key) => ($yValue ?? $value);
+
+            if (++$it >= $this->max) break;
+        }
+    }
+}
+
 class Mel_GroupBy extends Mel_Where
 {
     protected $value_selector;
@@ -335,6 +390,8 @@ class Mel_GroupBy extends Mel_Where
         }
     }
 }
+
+
 
 class Mel_Aggregate extends Mel_Enumerable
 {

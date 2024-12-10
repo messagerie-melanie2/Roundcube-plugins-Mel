@@ -1814,7 +1814,7 @@ class mel_workspace extends bnum_plugin
 
     public static function GetWorkspaceBlocksGenerator($workspaces) {
         foreach ($workspaces as $workspace) {
-            yield self::GetWorkspacesBlock($workspace);
+            yield self::GetWorkspacesBlock(get_class($workspace) === 'Mel_KeyValue' ? $workspace->get_value() : $workspace);
         }
     }
 
@@ -1889,6 +1889,10 @@ class mel_workspace extends bnum_plugin
 
         $data = self::$_workspaces;
 
+        if (count($data) !== $limit) {
+            $data = array_slice($data, 0, $limit);
+        }
+
         switch ($mode) {
             case 1:
                 $data = mel_helper::Enumerable($data)->where(function ($k, $v) {
@@ -1908,6 +1912,37 @@ class mel_workspace extends bnum_plugin
         }
 
         return $data;
+    }
+
+    public static function LoadFavoriteWorkspaces($limit = null, $offset = null, $complete = false) {
+        $uids = FavoriteData::UIds();
+
+        if (count($uids) > 0) {
+            $arr = mel_helper::Enumerable(self::LoadWorkspaces(1))->where(function ($k, $v) use($uids) {
+                return isset($v) && array_search($v->uid, $uids) !== false;
+            })->orderBy(function ($k, $v) {
+                return  (new DateTime($v->modified))->getTimestamp();
+            }, true);
+
+            if ($offset) $arr = $arr->where(function ($k, $v) use($offset) {
+                return $k >= $offset;
+            });
+
+            if ($limit) $arr = $arr->take($limit);
+        } 
+        else $arr = mel_helper::Enumerable([]);
+
+        if ($complete) {
+            $otherArr = $arr->select(function($k,$v) {return $v->uid;});
+            
+            $arr = $arr->aggregate(mel_helper::Enumerable(self::LoadWorkspaces(1))->where(function ($k, $v) use($otherArr) {
+                return !$otherArr->contains($v->uid);
+            })->orderBy(function ($k, $v) {
+                return  (new DateTime($v->modified))->getTimestamp();
+            }, true)->take($limit ? (($limit - $otherArr->count()) - 1) : PHP_INT_MAX));
+        }
+
+        return $arr;
     }
 
     public static function GetWorkspace($uid)

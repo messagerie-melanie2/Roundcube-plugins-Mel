@@ -112,26 +112,21 @@ class PostComment {
 
         // Vérifier si la réponse contient bien un message
         if (response && response.message) {
-            // Vérification des messages spécifiques renvoyés par le serveur
-            if (response.message === 'Vous ne pouvez pas réagir à votre propre commentaire.') {
-                rcmail.display_message(response.message, 'error');
-                return; // On arrête l'exécution si c'est ce cas spécifique
-            }
-
+          
             // Afficher les autres messages spécifiques
-            if (response.message === 'Like annulé avec succès.') {
+            if (response.message === rcmail.gettext('mel_forum.like_cancelled')) {
                 rcmail.display_message(response.message, 'confirmation');
             }
 
-            if (response.message === 'Like annulé, dislike enregistré avec succès.') {
+            if (response.message === rcmail.gettext('mel_forum.like_cancelled_dislike_registered')) {
                 rcmail.display_message(response.message, 'confirmation');
             }
 
-            if (response.message === 'Dislike annulé avec succès.') {
+            if (response.message === rcmail.gettext('mel_forum.dislike_cancelled')) {
                 rcmail.display_message(response.message, 'confirmation');
             }
 
-            if (response.message === 'Dislike annulé, like enregistré avec succès.') {
+            if (response.message === rcmail.gettext('mel_forum.dislike_cancelled_like_registered')) {
                 rcmail.display_message(response.message, 'confirmation');
             }
 
@@ -182,14 +177,14 @@ class PostComment {
 
         } else {
             // Si la réponse ne contient pas de message, afficher une erreur par défaut
-            rcmail.display_message('Une erreur inattendue est survenue.', 'error');
+            rcmail.display_message(rcmail.gettext('mel_forum.unexpected_error'), 'error');
         }
 
         return response;
     } catch (error) {
         // En cas d'erreur lors de la requête
-        rcmail.display_message('Une erreur est survenue lors de l\'enregistrement de votre réaction.', 'error');
-        console.error("Erreur lors de l'enregistrement du like/dislike:", error);
+        rcmail.display_message(rcmail.gettext('mel_forum.reaction_save_error'), 'error');
+        console.error(rcmail.gettext('mel_forum.like_dislike_save_failure'), error);
     }
   }
 
@@ -223,9 +218,9 @@ class PostComment {
       const updateTitle = () => {
         let titleText = '';
         if (numberOfResponses === 1) {
-          titleText = responseContainer.hasClass('hidden') ? 'Voir la réponse' : 'Masquer la réponse';
+          titleText = responseContainer.hasClass('hidden') ? rcmail.gettext('mel_forum.see_response_singular') : rcmail.gettext('mel_forum.hide_reply');
         } else {
-          titleText = responseContainer.hasClass('hidden') ? `Voir les ${numberOfResponses} réponses` : `Masquer les ${numberOfResponses} réponses`;
+          titleText = responseContainer.hasClass('hidden') ? `${rcmail.gettext('mel_forum.see_the')} ${numberOfResponses} ${rcmail.gettext('mel_forum.response_plural')}` : `${rcmail.gettext('mel_forum.hide_items')} ${numberOfResponses} ${rcmail.gettext('mel_forum.response_plural')}`;
         }
         responseDiv.attr('title', titleText);
       };
@@ -257,7 +252,7 @@ class PostComment {
       }
 
     } catch (error) {
-      console.error("Erreur lors du basculement des réponses:", error);
+      console.error(rcmail.gettext('mel_forum.toggle_replies_error'), error);
     }
   }
 
@@ -321,7 +316,7 @@ class PostComment {
       const $textarea = $('#new-response-textarea-' + this.uid);
       const replyContent = $textarea.val(); // Récupérer le contenu du commentaire
       const submitButton = $('#submit-reply');  // Sélectionner le bouton de validation
-      // TODO mettre une valeur par defaut à 0 si y'a rien
+
       this.children_number = $('#comment-id-' + this.uid).data("number-children");
 
       if (replyContent && replyContent.trim() !== '') {     // Vérifier si le commentaire n'est pas vide
@@ -357,7 +352,8 @@ class PostComment {
                       this.children_number = 0;
                       const reponseText = 'réponse';
                       const newContainerHtml = MelHtml.start
-                          .div({ id: 'toggle-response-container-' + parent_comment_id, class: 'forum-comment-response', 'data-comment-id': parent_comment_id, tabindex: '0', role: 'button', title: this.children_number === 1 ? rcmail.gettext('mel_forum.see_response_singular') : `Voir les ${this.children_number} réponses` })
+                          .div({ id: 'toggle-response-container-' + parent_comment_id, class: 'forum-comment-response', 'data-comment-id': parent_comment_id, tabindex: '0', role: 'button', title: this.children_number === 1 ? rcmail.gettext('mel_forum.see_response_singular') : `${rcmail.gettext('mel_forum.see_the')} ${this.children_number} ${rcmail.gettext('mel_forum.response_plural')}`
+                        })
                             .span({ id: 'toggle-icon-' + parent_comment_id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
                             .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
                           .end('div')
@@ -386,13 +382,13 @@ class PostComment {
                   $responseContainer.find('span.ml-2').text(currentChildrenNumber + ' ' + reponseText);
 
                   // Mettre à jour l'attribut `title`
-                  $responseContainer.attr('title', currentChildrenNumber === 1 ? 'Voir la réponse' : `Voir les ${currentChildrenNumber} réponses`);
+                  $responseContainer.attr('title', currentChildrenNumber === 1 ? rcmail.gettext('mel_forum.see_response_singular') : `${rcmail.gettext('mel_forum.see_the')} ${currentChildrenNumber} ${rcmail.gettext('mel_forum.response_plural')}`);
               } else {
                   rcmail.display_message(response.message, 'error');
               }
           } catch (error) {
-              rcmail.display_message("Une erreur est survenue lors de la sauvegarde de la réponse.", 'error');
-              console.error("Erreur lors de la sauvegarde de la réponse:", error);
+              rcmail.display_message(rcmail.gettext('mel_forum.reply_save_error'), 'error');
+              console.error(rcmail.gettext('mel_forum.reply_save_failure'), error);
           } finally {
               BnumMessage.StopBusyLoading();
 
@@ -400,7 +396,7 @@ class PostComment {
               submitButton.prop('disabled', false);
           }
       } else {
-          rcmail.display_message("Le contenu du commentaire ne peut pas être vide.", 'error');
+          rcmail.display_message(rcmail.gettext('mel_forum.comment_content_empty', 'error');
       }
   }
 
@@ -604,11 +600,11 @@ class PostComment {
   
         // Mettre à jour l'affichage en fonction du nouveau nombre de réponses
         if (currentChildrenNumber > 0) {
-          const reponseText = currentChildrenNumber === 1 ? 'réponse' : 'réponses';
+          const reponseText = currentChildrenNumber === 1 ? rcmail.gettext('mel_forum.response_singular') : rcmail.gettext('mel_forum.response_plural');
           $responseContainer.find('span.ml-2').text(currentChildrenNumber + ' ' + reponseText);
   
           // Mettre à jour l'attribut `title`
-          $responseContainer.attr('title', currentChildrenNumber === 1 ? 'Voir la réponse' : `Voir les ${currentChildrenNumber} réponses`);
+          $responseContainer.attr('title', currentChildrenNumber === 1 ? rcmail.gettext('mel_forum.see_response_singular') : `${rcmail.gettext('mel_forum.see_the')} ${currentChildrenNumber} ${rcmail.gettext('mel_forum.response_plural')}`);
           // on s'assure que le conteneur des réponses est visible
           $responseContainer.removeClass('hidden'); 
           $(`#responses-${parent_comment_id}`).removeClass('hidden'); // Afficher le conteneur des réponses
@@ -622,8 +618,8 @@ class PostComment {
         rcmail.display_message(parsedResponse.message, 'error');
       }
     } catch (error) {
-      rcmail.display_message("Une erreur est survenue lors de la suppression du commentaire.", 'error');
-      console.error("Erreur lors de la suppression du commentaire:", error);
+      rcmail.display_message(rcmail.gettext('mel_forum.comment_delete_error'), 'error');
+      console.error(rcmail.gettext('mel_forum.comment_delete_failure'), error);
     } finally {
       BnumMessage.StopBusyLoading();
     }
@@ -648,7 +644,7 @@ class PostComment {
     let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
     // Détermination du pluriel ou du singulier pour "réponse(s)"
-    let reponseText = this.children_number > 1 ? 'réponses' : 'réponse';
+    let reponseText = this.children_number > 1 ? rcmail.gettext('mel_forum.response_plural') : cmail.gettext('mel_forum.response_singular');
 
     // Fonction pour parser une date en français
     function parseFrenchDate(dateString) {
@@ -671,7 +667,7 @@ class PostComment {
       const dateParts = datePart.trim().split(' ');
       
       if (dateParts.length !== 3) {
-          console.error('Format de date non valide:', dateString);
+          console.error(rcmail.gettext('mel_forum.invalid_date_format'), dateString);
           return null;
       }
 
@@ -682,7 +678,7 @@ class PostComment {
       const moisIndex = moisFrancais[mois];
 
       if (moisIndex === undefined) {
-          console.error('Mois non valide dans la date:', mois);
+          console.error(rcmail.gettext('mel_forum.invalid_date_month'), mois);
           return null;
       }
 
@@ -706,8 +702,8 @@ class PostComment {
 
       // Vérifier si la date est valide
       if (!commentDate || isNaN(commentDate.getTime())) {
-          console.error('Date non valide : ', createdDate);
-          return 'Date non valide';
+          console.error(rcmail.gettext('mel_forum.invalid_date'), createdDate);
+          return rcmail.gettext('mel_forum.invalid_date_simple');
       }
 
       const currentDate = new Date();
@@ -725,9 +721,9 @@ class PostComment {
       const timeString = `${hours}h${minutes}`;
 
       if (diffDays === 0) {
-          return `aujourd'hui à ${timeString}`;
+          return `${rcmail.gettext('mel_forum.today_at')} ${timeString}`;
       } else if (diffDays === 1) {
-          return `hier à ${timeString}`;
+        return `${rcmail.gettext('mel_forum.yesterday_at')} ${timeString}`;
       } else {
           const options = { year: 'numeric', month: 'long', day: 'numeric' };
           const dateString = commentDate.toLocaleDateString('fr-FR', options);

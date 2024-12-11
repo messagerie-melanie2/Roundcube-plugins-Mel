@@ -377,7 +377,7 @@ export class Forum extends MelObject {
           on_error: (err) => {
               // Affichage du message d'erreur en cas de problème avec la requête
               BnumMessage.DisplayMessage(
-                    rcmail.gettext('mel_forum.delete_post_post'),
+                    rcmail.gettext('mel_forum.delete_post_failure'),
                     eMessageType.Error
               );
           }
@@ -394,7 +394,7 @@ export class Forum extends MelObject {
         let url = event.currentTarget.closest("a").getAttribute('href').replaceAll("&_is_from=iframe", "&_force_bnum=1");
         navigator.clipboard.writeText(url).then(() => {
             BnumMessage.DisplayMessage(
-                "Lien copié !",
+                rcmail.gettext('mel_forum.link_copied'),
                 eMessageType.Confirmation,
             );
         });

@@ -102,6 +102,21 @@ $labels['article_updated_error'] = 'Échec de mise à jour de l\'article.';
 $labels['article_id_required'] = 'L\'identifiant de l\'article est requis.';
 $labels['the_article'] = 'L\'article ';
 $labels['has_been_deleted'] = ' a été supprimé avec succès.';
+$labels['link_copied'] = 'Lien copié !';
+$labels['success'] = 'success';
+$labels['unexpected_error'] = 'Une erreur inattendue est survenue.';
+$labels['reaction_save_error'] = 'Une erreur est survenue lors de l\'enregistrement de votre réaction.';
+$labels['like_dislike_save_error'] = 'Erreur lors de l\'enregistrement du like/dislike.';
+$labels['reply_save_error'] = 'Une erreur est survenue lors de la sauvegarde de la réponse.';
+$labels['reply_save_failure'] = 'Erreur lors de la sauvegarde de la réponse.';
+$labels['comment_content_empty'] = 'Le contenu du commentaire ne peut pas être vide.';
+$labels['invalid_date_format'] = 'Format de date non valide :';
+$labels['invalid_date_month'] = 'Mois non valide dans la date :';
+$labels['invalid_date'] = 'Date non valide :';
+$labels['invalid_date_simple'] = 'Date non valide';
+$labels['today_at'] = 'Aujourd\'hui à';
+$labels['yesterday_at'] = 'Hier à';
+
 
 #region TAG
 
@@ -127,11 +142,13 @@ $labels['response_creation_failed'] = 'Echec de création de la réponse.';
 $labels['comment_unfindable'] = 'Commentaire introuvable.';
 $labels['cannot_edit_comment'] = 'Vous n\'êtes pas autorisé à modifier ce commentaire.';
 $labels['cannot_delete_comment'] = 'Vous n\'êtes pas autorisé à supprimer ce commentaire.';
+$labels['comment_delete_error'] = 'Une erreur est survenue lors de la suppression du commentaire.';
+$labels['comment_delete_failure'] = 'Echec de suppression du commentaire.';
 $labels['comment_updated'] = 'Commentaire mis à jour avec succès.';
+$labels['comment_update_error'] = 'Une erreur est survenue lors de la mise à jour du commentaire.';
 $labels['comment_updated_failure'] = 'Echec de mise à jour du commentaire.';
 $labels['comment_uid_required'] = 'L\'uid du commentaire est requis.';
 $labels['comment_deleted'] = 'Le commentaire a été supprimé avec succès.';
-$labels['comment_deleted_failure'] = 'Echec de suppression du commentaire.';
 $labels['react_to_own_comment'] = 'Vous ne pouvez pas réagir à votre propre commentaire.';
 $labels['unlike'] = 'Like annulé avec succès.';
 $labels['like_to_dislike'] = 'Like annulé, dislike enregistré avec succès.';
@@ -143,6 +160,9 @@ $labels['response_singular'] = 'réponse';
 $labels['response_plural'] = 'réponses';
 $labels['see_the'] = 'Voir les';
 $labels['see_response_singular'] = 'Voir la réponse';
+$labels['hide_items'] = 'Masquer les';
+$labels['hide_reply'] = 'Masquer la réponse';
+$labels['toggle_replies_error'] = 'Erreur lors du basculement des réponses.';
 
 #region REACTIONS
 
@@ -151,6 +171,11 @@ $labels['reaction_creation_failure'] = 'Echec de création de la réaction.';
 $labels['reaction_deleted'] = 'La réaction a été supprimée avec succès.';
 $labels['reaction_deleted_failure'] = 'Echec de suppression de la réaction.';
 $labels['no_reaction_found'] = 'Aucune réaction trouvée.';
+$labels['like_cancelled'] = 'Like annulé avec succès.';
+$labels['like_cancelled_dislike_registered'] = 'Like annulé, dislike enregistré avec succès.';
+$labels['dislike_cancelled'] = 'Dislike annulé avec succès.';
+$labels['dislike_cancelled_like_registered'] = 'Dislike annulé, like enregistré avec succès.';
+$labels['like_dislike_save_failure'] = 'Erreur lors de l\'enregistrement du like/dislike.';
 
 #region IMAGES
 

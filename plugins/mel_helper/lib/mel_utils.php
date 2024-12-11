@@ -793,6 +793,7 @@ class mel_utils
 
   public static function cal_add_category($username, $name, $color)
   {
+    mel_logs::gi()->log(mel_logs::ERROR, "###[cal_add_category]$username");
     try {
       // Récupère la liste des catégories
       $value = driver_mel::gi()->getUser($username)->getDefaultPreference("categories");

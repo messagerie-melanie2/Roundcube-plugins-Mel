@@ -14,11 +14,7 @@ import { BootstrapLoader } from '../../../mel_metapage/js/lib/html/JsHtml/Custom
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { NavBarManager } from '../../../mel_workspace/js/lib/navbar.generator.js';
 import { FramesManager } from '../../../mel_metapage/js/lib/classes/frame_manager.js';
-import { Mel_Promise } from '../../../mel_metapage/js/lib/mel_promise.js';
-import {
-  BnumMessage,
-  eMessageType,
-} from '../../../mel_metapage/js/lib/classes/bnum_message.js';
+import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
 
 class NextcloudModule extends WorkspaceObject {
   constructor() {
@@ -126,7 +122,9 @@ class NextcloudModule extends WorkspaceObject {
     try {
       await roundrive.load();
     } catch (error) {
-      contents.appendChild($('<p>Impossible de charger les documents pour le moment...</p>')[0])
+      contents.appendChild(
+        $('<p>Impossible de charger les documents pour le moment...</p>')[0],
+      );
       continueExec = false;
     }
 
@@ -149,10 +147,15 @@ class NextcloudModule extends WorkspaceObject {
 
           if (!continueExec) continueExec = true;
         }
-      } 
+      }
 
       if (!continueExec) {
-        contents.appendChild($('<p>Aucun documents....</p>').css({'text-align':'center', 'margin-top':'5px'})[0]);
+        contents.appendChild(
+          $('<p>Aucun document...</p>').css({
+            'text-align': 'center',
+            'margin-top': '5px',
+          })[0],
+        );
       }
     }
 

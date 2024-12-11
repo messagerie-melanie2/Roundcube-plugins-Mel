@@ -1868,7 +1868,7 @@ class mel_forum extends bnum_plugin
     {
         $services = $args['services'];
 
-        if (array_search('forum', $services) !== null) {
+        if (array_search('forum', $services) !== null && array_search('forum', $services) !== false) {
             $workspace = $args['workspace'];
 
             if ($workspace->objects()->get('forum') === null) {

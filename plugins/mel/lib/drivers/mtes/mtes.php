@@ -67,7 +67,7 @@ class mtes_driver_mel extends mce_driver_mel
   /**
    * Dossier pour l'utilisation des fichiers pour le unexpunge
    */
-  protected static $_unexpungeFolder = '/var/pamela/unexpunge/';
+  protected static $_unexpungeFolder = '/m2-new-nfs/pamela/unexpunge/';
 
   /**
    * Liste des valeurs pour un groupe de workspace
@@ -616,6 +616,12 @@ class mtes_driver_mel extends mce_driver_mel
     if (!$this->valid_external_domain($email)) {
       // Si le domaine est interne on ne fait rien
       mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Domaine interne");
+      return false;
+    }
+
+    // 0008651: Externes - Valider l'adresse email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::create_external_user($email) : Email invalide");
       return false;
     }
 

@@ -1812,7 +1812,8 @@ class mel_workspace extends bnum_plugin
 
         if (isset($favorites)) $workspaces = mel_helper::Enumerable($workspaces)->orderBy(function ($k, $v) use($favorites) {
             if ($v === 'blank') return 0;
-            else return isset($favorites) && isset($favorites[$v->uid]) && $favorites[$v->uid]['tak'] ? PHP_INT_MAX : (new DateTime($v->modified))->getTimestamp();
+            else if (isset($favorites) && isset($favorites[$v->uid]) && $favorites[$v->uid]['tak']) return PHP_INT_MAX;
+            else return (new DateTime($v->modified))->getTimestamp();
         }, true);
 
         foreach (self::GetWorkspaceBlocksGenerator($workspaces) as $block) {

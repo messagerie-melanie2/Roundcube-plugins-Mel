@@ -767,7 +767,7 @@ class mel_utils
     {
       $value = 0;
       foreach ($string as $key => $value) {
-        $value += char_to_number($value);
+        $value += self::char_to_number($value);
       }
       return $value;
     }
@@ -775,7 +775,7 @@ class mel_utils
       return 0;
   }
 
-  public static function char_to_number($char)
+  public static function char_to_number($dest)
   {
     if ($dest)
         return ord(strtolower($dest)) - 96;
@@ -848,7 +848,7 @@ class mel_utils
     return true;
   }
 
-  public static function cal_check_category($category)
+  public static function cal_check_category($category, $username = null)
   {
     try {
       

@@ -1,24 +1,5 @@
-// Body
-@body-padding: {
-  LEFT: 50px;
-  RIGHT: 50px;
-};
-
-//Header
-@header-margin: {
-  TOP: 10px;
-  BOTTOM: 5px;
-};
-
-@header-padding: 0 5px;
-
-// Header/Create Button
-@header-create-margin-left: 15px;
-@header-create-padding-base: 5px;
-@header-create-padding: {
-  TOP: @header-create-padding-base;
-  BOTTOM: @header-create-padding-base;
-};
+//compress:false
+@import 'variables/index.less';
 
 .body {
   padding-left: var(
@@ -46,91 +27,154 @@
   align-items: center;
 
   .create-wsp-button {
-    margin-left: 15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    margin-left: var(
+      --workspace-page-index-create-button-margin-left,
+      @header-create-margin-left
+    );
+    padding: var(
+      --workspace-page-index-create-button-padding,
+      @header-create-padding[TOP] @header-create-padding[RIGHT]
+        @header-create-padding[BOTTOM] @header-create-padding[LEFT]
+    );
     height: min-content;
     display: flex;
 
     bnum-icon {
-      font-size: 1.5rem;
+      font-size: var(
+        --workspace-page-index-create-button-icon-font-size,
+        @header-create-icon-font-size
+      );
     }
   }
 }
 
 .pressed-list {
-  background-color: #f8f8f8;
-  border-radius: 10px;
-  padding: 3px 5px 3px 8px;
+  background-color: var(
+    --pressed-list-background-color,
+    @pressed-list-background-color
+  );
+  border-radius: var(--pressed-list-border-radius, @pressed-list-border-radius);
+  padding: var(--pressed-list-padding, @pressed-list-padding);
 
   .mel-button {
-    color: black;
-    background-color: transparent;
-    border-radius: 5px !important;
-    border: none;
-    margin-left: 2.5px;
-    margin-right: 2.5px;
+    color: var(--pressed-list-button-color, @pressed-list-button-color);
+    background-color: var(
+      --pressed-list-button-background-color,
+      @pressed-list-button-background-color
+    );
+    border-radius: var(
+      --pressed-list-button-border-radius,
+      @pressed-list-button-border-radius
+    ) !important;
+    border: var(
+      --pressed-list-button-border,
+      @pressed-list-button-border-radius
+    );
+    // margin-left: 2.5px;
+    // margin-right: 2.5px;
+    margin: var(--pressed-list-button-margin, @pressed-list-button-margin);
     display: flex;
     align-items: center;
 
     &:hover {
-      background-color: white;
+      background-color: var(
+        --pressed-list-button-hover-background-color,
+        @pressed-list-button-hover-background-color
+      );
+      color: var(
+        --pressed-list-button-hover-color,
+        @pressed-list-button-hover-color
+      );
     }
 
     &[aria-pressed='true'] {
       &:extend(.pressed-list .mel-button:hover);
 
       pointer-events: none;
-      color: black;
+      color: var(
+        --pressed-list-button-pressed-color,
+        @pressed-list-button-pressed-color
+      );
+      background-color: var(
+        --pressed-list-button-pressed-background-color,
+        @pressed-list-button-pressed-background-color
+      );
     }
 
     &:first-child {
-      margin-left: 5px;
+      margin: var(
+        --pressed-list-button-pressed-first-margin,
+        @pressed-list-button-first-child-margin
+      );
     }
 
     &:last-child {
-      &:extend(.pressed-list .mel-button:first-child);
+      margin: var(
+        --pressed-list-button-pressed-last-margin,
+        @pressed-list-button-last-child-margin
+      );
     }
   }
 }
 
 bnum-tabs {
   display: block;
-  height: 100%;
+  height: var(--workspace-tab-height, @tab-height);
 }
 
 .workspace-list {
   overflow: auto;
-  padding-top: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: var(--workspace-list-padding, @workspace-list-padding);
 }
 
 .header-wsp {
-  align-items: center;
+  justify-content: var(
+    --workspace-head-text-align,
+    @head-text-align
+  ) !important;
+
+  margin: var(--workspace-head-margin, @head-main-margin);
 
   & > h1 {
-    font-size: xxx-large;
+    font-size: var(--workspace-head-title-font-size, @head-title-font-size);
     display: inline-block;
+    margin: var(--workspace-head-title-margin, @head-title-margin);
   }
   & > .roundbadge {
-    font-size: xx-large;
+    font-size: var(--workspace-head-icon-font-size, @head-icon-font-size);
     display: inline-block;
-    height: 60px;
-    width: 60px;
-    line-height: 63px;
-    border-radius: 100%;
-    color: white;
-    background-color: #2c3054;
+    height: var(--workspace-head-icon-size, @head-icon-size);
+    width: var(--workspace-head-icon-size, @head-icon-size);
+    line-height: var(--workspace-head-icon-line-height, @head-icon-line-height);
+    border-radius: var(
+      --workspace-head-icon-border-radius,
+      @head-icon-border-radius
+    );
+    color: var(--workspace-head-icon-color, @head-icon-color);
+    background-color: var(
+      --workspace-head-icon-background-color,
+      @head-icon-background-color
+    );
+    margin: var(--workspace-head-main-icon-margin, @head-icon-margin);
   }
 }
 
 .wsp-header {
-  padding-bottom: 20px !important;
-  margin-top: 30px !important;
+  padding: var(
+    --workspace-page-header-padding,
+    @page-header-padding
+  ) !important;
+  margin: var(--workspace-page-header-margin, @page-header-margin) !important;
 }
 
 .wsp-search-wsp {
+  label {
+    display: block;
+    text-align: var(--workspace-head-text-align, @head-text-align);
+  }
+  .mel-search-group {
+    justify-content: var(--workspace-head-text-align, @head-text-align);
+  }
   button {
     &.mel-button {
       &.reset-search {

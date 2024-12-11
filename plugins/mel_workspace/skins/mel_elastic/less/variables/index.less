@@ -1,0 +1,186 @@
+// out: false
+@import './base.less';
+
+// #region MARK: Head
+@head-text-align: center;
+//page header
+@page-header-margins: {
+  TOP: 30px;
+  BOTTOM: 0;
+  LEFT: 0;
+  RIGHT: 0;
+};
+@page-header-paddings: {
+  TOP: 0;
+  BOTTOM: 20px;
+  LEFT: 0;
+  RIGHT: 0;
+};
+//head
+@head-main-margins: {
+  TOP: 0;
+  BOTTOM: 0;
+  LEFT: 0;
+  RIGHT: 0;
+};
+//icon
+@head-icon-margins: {
+  TOP: 0;
+  BOTTOM: 0;
+  LEFT: 0;
+  RIGHT: 0;
+};
+@head-icon-font-size: var(--page-title-icon-font-size, xx-large);
+@head-icon-size: var(--page-title-icon-size, 60px);
+@head-icon-line-height: var(--page-title-icon-line-height, 63px);
+@head-icon-border-radius: var(
+  --page-title-icon-border-radius,
+  var(--round-border-radius, 100%)
+);
+@head-icon-background-color: var(
+  --page-title-icon-background-color,
+  var(--secondary-bckg-color, #2c3054)
+);
+@head-icon-color: var(
+  --page-title-icon-color,
+  var(--secondary-text-color, white)
+);
+//title
+@head-title-margins: {
+  TOP: 0;
+  BOTTOM: 0;
+  LEFT: 0;
+  RIGHT: 0;
+};
+@head-title-font-size: var(
+  --page-title-font-size,
+  var(--h1-font-size, xxx-large)
+);
+// #endregion
+// #region MARK: Body
+@body-padding: {
+  LEFT: 50px;
+  RIGHT: 50px;
+};
+// #endregion
+
+// #region MARK: Header
+@header-margin: {
+  TOP: 10px;
+  BOTTOM: 5px;
+};
+
+@header-padding: 0 5px;
+
+// Header/Create Button
+@header-create-margin-left: 15px;
+@header-create-padding-base: 5px;
+@header-create-padding: {
+  TOP: @header-create-padding-base;
+  BOTTOM: @header-create-padding-base;
+  LEFT: 10px; //Initial mel-button
+  RIGHT: 10px; //Initial mel-button
+};
+
+// Header/Create Button/Icon
+@header-create-icon-font-size: 1.5rem;
+// #endregion
+
+// #region MARK: Pressed list
+@pressed-list-background-color: var(--card-background-color, #f8f8f8);
+@pressed-list-border-radius: 10px;
+@pressed-list-paddings: {
+  TOP: 3px;
+  BOTTOM: 3px;
+  LEFT: 5px;
+  RIGHT: 5px;
+};
+
+//Pressed list/Buttons
+@pressed-list-button-color: var(
+  --secondary-mel-button-text-color,
+  var(--main-text-color, black)
+);
+@pressed-list-button-background-color: var(--invisible, transparent);
+@pressed-list-button-border-radius: @button-border-radius; //base.less
+@pressed-list-button-border: none;
+@pressed-list-button-margins: {
+  TOP: 5px; //Initial
+  RIGHT: 2.5px;
+  BOTTOM: 5px; //Initial
+  LEFT: 2.5px;
+};
+@pressed-list-button-hover-background-color: var(--default-bckg-color, white);
+@pressed-list-button-hover-color: var(
+  --pressed-list-button-color,
+  @pressed-list-button-color
+);
+@pressed-list-button-pressed-color: var(
+  --pressed-list-button-hover-color,
+  @pressed-list-button-hover-color
+);
+@pressed-list-button-pressed-background-color: var(
+  --pressed-list-button-hover-background-color,
+  @pressed-list-button-hover-background-color
+);
+
+//Pressed list/Buttons/childs
+@pressed-list-button-first-child-margins: {
+  TOP: @pressed-list-button-margins[TOP];
+  RIGHT: @pressed-list-button-margins[RIGHT];
+  BOTTOM: @pressed-list-button-margins[BOTTOM];
+  LEFT: 5px;
+};
+
+@pressed-list-button-last-child-margins: {
+  TOP: @pressed-list-button-margins[TOP];
+  RIGHT: 5px;
+  BOTTOM: @pressed-list-button-margins[BOTTOM];
+  LEFT: @pressed-list-button-margins[LEFT];
+};
+// #endregion
+
+// #region MARK: Tabs
+@tab-height: 100%;
+// #endregion
+
+// #region MARK: Workspaces List
+// Div qui contient la liste de tout les espaces (Abonnés, publics et archivés)
+@workspace-list-paddings: {
+  TOP: 10px;
+  LEFT: 20px;
+  RIGHT: 20px;
+  BOTTOM: 0;
+};
+// #endregion
+
+// #region MARK: Margins
+@page-header-margin: @page-header-margins[TOP] @page-header-margins[RIGHT]
+  @page-header-margins[BOTTOM] @page-header-margins[LEFT];
+@head-icon-margin: @head-icon-margins[TOP] @head-icon-margins[RIGHT]
+  @head-icon-margins[BOTTOM] @head-icon-margins[LEFT];
+@head-title-margin: @head-title-margins[TOP] @head-title-margins[RIGHT]
+  @head-title-margins[BOTTOM] @head-title-margins[LEFT];
+@head-main-margin: @head-main-margins[TOP] @head-main-margins[RIGHT]
+  @head-main-margins[BOTTOM] @head-main-margins[LEFT];
+@pressed-list-button-margin: @pressed-list-button-margins[TOP]
+  @pressed-list-button-margins[RIGHT] @pressed-list-button-margins[BOTTOM]
+  @pressed-list-button-margins[LEFT];
+@pressed-list-button-first-child-margin: @pressed-list-button-first-child-margins[TOP]
+  @pressed-list-button-first-child-margins[RIGHT]
+  @pressed-list-button-first-child-margins[BOTTOM]
+  @pressed-list-button-first-child-margins[LEFT];
+@pressed-list-button-last-child-margin: @pressed-list-button-last-child-margins[TOP]
+  @pressed-list-button-last-child-margins[RIGHT]
+  @pressed-list-button-last-child-margins[BOTTOM]
+  @pressed-list-button-last-child-margins[LEFT];
+// #endregion
+// #region MARK: Paddings
+@page-header-padding: @page-header-paddings[TOP] @page-header-paddings[RIGHT]
+  @page-header-paddings[BOTTOM] @page-header-paddings[LEFT];
+@pressed-list-padding: @pressed-list-paddings[TOP] @pressed-list-paddings[RIGHT]
+  @pressed-list-paddings[BOTTOM] @pressed-list-paddings[LEFT];
+@workspace-list-padding: @workspace-list-paddings[TOP]
+  @workspace-list-paddings[RIGHT] @workspace-list-paddings[BOTTOM]
+  @workspace-list-paddings[LEFT];
+// #endregion;;

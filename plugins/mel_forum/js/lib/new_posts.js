@@ -9,28 +9,29 @@ export class New_posts extends MelObject {
   }
 
   /**
- * Point d'entrée principal de l'application.
- * Appelle la méthode principale de la classe parente,
- * initialise les propriétés et configure les éléments de l'interface utilisateur.
- *
- * @method main
- * @returns {void}
- */
+   * Point d'entrée principal de l'application.
+   * Appelle la méthode principale de la classe parente,
+   * initialise les propriétés et configure les éléments de l'interface utilisateur.
+   *
+   * @method main
+   * @returns {void}
+   */
   main() {
     super.main();
 
     this.tags = [];
     this.initButtons();
     this.initNewPostsDisplay();
+    WorkspaceObject.SendToParent('loaded', true);
   }
 
   /**
- * Initialise les gestionnaires d'événements pour les boutons.
- * Configure l'action du bouton de vue du forum pour rediriger vers la page du forum.
- *
- * @method initButtons
- * @returns {void}
- */
+   * Initialise les gestionnaires d'événements pour les boutons.
+   * Configure l'action du bouton de vue du forum pour rediriger vers la page du forum.
+   *
+   * @method initButtons
+   * @returns {void}
+   */
   initButtons() {
     $('#forum-button-view').click(() => {
       window.location.href = this.url('forum', { action: 'index' });
@@ -38,31 +39,31 @@ export class New_posts extends MelObject {
   }
 
   /**
- * Initialise l'affichage des nouveaux posts.
- * Récupère les données des posts depuis l'environnement et détermine
- * s'il faut afficher un message d'absence de posts ou les nouveaux posts.
- *
- * @method initNewPostsDisplay
- * @returns {void}
- */
+   * Initialise l'affichage des nouveaux posts.
+   * Récupère les données des posts depuis l'environnement et détermine
+   * s'il faut afficher un message d'absence de posts ou les nouveaux posts.
+   *
+   * @method initNewPostsDisplay
+   * @returns {void}
+   */
   initNewPostsDisplay() {
     const posts = this.get_env('posts_data');
-    if(posts.length === 0) {
+    if (posts.length === 0) {
       this.displayNoPost();
     }
     this.displayNewPosts(posts);
   }
 
   /**
- * Affiche les nouveaux posts en utilisant les données fournies.
- * Génère dynamiquement le contenu des posts à partir des modèles,
- * rend les posts accessibles via le clavier, et ajoute des gestionnaires d'événements
- * pour les clics et interactions associées.
- *
- * @method displayNewPosts
- * @param {Object} posts - Objet contenant les données des posts, indexé par ID de post.
- * @returns {void}
- */
+   * Affiche les nouveaux posts en utilisant les données fournies.
+   * Génère dynamiquement le contenu des posts à partir des modèles,
+   * rend les posts accessibles via le clavier, et ajoute des gestionnaires d'événements
+   * pour les clics et interactions associées.
+   *
+   * @method displayNewPosts
+   * @param {Object} posts - Objet contenant les données des posts, indexé par ID de post.
+   * @returns {void}
+   */
   displayNewPosts(posts) {
     let post;
     let data;
@@ -137,10 +138,13 @@ export class New_posts extends MelObject {
   }
 
   /**
-     * Affiche un message indiquant qu'il n'y a aucun post dans l'espace de travail
-     */
+   * Affiche un message indiquant qu'il n'y a aucun post dans l'espace de travail
+   */
   displayNoPost() {
-    let noPostDiv = MelHtml.start.span({class: 'ml-2'}).text(rcmail.gettext('mel_forum.no_post')).end();
+    let noPostDiv = MelHtml.start
+      .span({ class: 'ml-2' })
+      .text(rcmail.gettext('mel_forum.no_post'))
+      .end();
     $('#new_post-area').append(noPostDiv.generate());
-}
+  }
 }

@@ -63,6 +63,7 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   /**
    * Récupère le header du block
    * @type {HTMLDivElement}
+   * @readonly
    */
   get header() {
     return this.querySelector('.module-block-header');
@@ -71,9 +72,37 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
   /**
    * Récupère le contenu du block
    * @type {HTMLDivElement}
+   * @readonly
    */
   get content() {
     return this.querySelector('.module-block-content');
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   * @static
+   */
+  static get maxHeight() {
+    return '400px';
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   * @static
+   */
+  static get maxHeightSmall() {
+    return '200px';
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   * @static
+   */
+  static get minHeight() {
+    return '100px';
   }
 
   _p_main() {
@@ -224,6 +253,29 @@ export class WorkspaceModuleBlock extends HtmlCustomDataTag {
     { action = null, args = {}, width = '100%', height = '100%' } = {},
   ) {
     return this.setIframe(MelObject.Url(task, { action, params: args }), {
+      width,
+      height,
+    });
+  }
+
+  appendIframe(url, { width = '100%', height = '100%' } = {}) {
+    let iframe = document.createElement('iframe');
+    iframe.setAttribute('src', url);
+
+    if (!isNullOrUndefined(width)) iframe.style.width = width;
+
+    if (!isNullOrUndefined(height)) iframe.style.height = height;
+
+    this.appendContent(iframe);
+
+    return iframe;
+  }
+
+  appendIframeFromTask(
+    task,
+    { action = null, args = {}, width = '100%', height = '100%' } = {},
+  ) {
+    return this.appendIframe(MelObject.Url(task, { action, params: args }), {
       width,
       height,
     });

@@ -49,6 +49,14 @@ export class ModuleForum extends WorkspaceObject {
     return document.querySelector(`#${this.loaderId}`);
   }
 
+  get frameContent() {
+    return this.block.querySelector('iframe').contentWindow;
+  }
+
+  get hasPosts() {
+    return this.frameContent.document.querySelectorAll('.post').length > 0;
+  }
+
   main() {
     super.main();
 
@@ -87,7 +95,7 @@ export class ModuleForum extends WorkspaceObject {
       );
 
       // Désactiver l'élément déclencheur pendant le traitement
-      $(caller).addClass('disabled').attr('disabled', 'disabled');
+      this.select(caller).addClass('disabled').attr('disabled', 'disabled');
 
       if (task === 'forum') {
         // Gestion des états
@@ -99,8 +107,8 @@ export class ModuleForum extends WorkspaceObject {
       }
 
       // Réactiver l'élément déclencheur
-      $(caller).removeClass('disabled').removeAttr('disabled');
-      rcmail.hide_message(loading);
+      this.select(caller).removeClass('disabled').removeAttr('disabled');
+      this.rcmail().hide_message(loading);
     });
 
     this.onactionreceived.push((received) => {
@@ -114,9 +122,16 @@ export class ModuleForum extends WorkspaceObject {
             },
           });
           break;
+
+        case 'loaded':
+          this._remove_loader();
+          if (this.hasPosts) {
+            this.block.content.style.height = WorkspaceModuleBlock.maxHeight;
+          }
+          break;
       }
     });
-    
+
     NavBarManager.AddEventListener().OnBeforeSwitch((args) => {
       if (
         args.task === 'forum' &&
@@ -183,14 +198,12 @@ export class ModuleForum extends WorkspaceObject {
     this.block.content.style.overflow = 'hidden';
     this.block.content.style.position = 'relative';
 
-    let iframe = this.block.setIframeFromTask('forum', {
+    this.block.appendIframeFromTask('forum', {
       action: 'new_posts',
       args: {
         _workspace_uid: this.workspace.uid,
       },
     });
-
-    iframe.onload = this._remove_loader.bind(this);
 
     this.loadModule();
   }

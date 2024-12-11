@@ -1435,6 +1435,15 @@ class mel_workspace extends bnum_plugin
         }
 
         if (isset($workspaces)) {
+            if (count($workspaces) % 4 !== 0) {
+                $arr = [];
+
+                for ($i=0, $len = 4 - count($workspaces) % 4; $i < $len; ++$i) { 
+                    $arr[] = 'blank';
+                }
+
+                $workspaces = mel_helper::Enumerable($workspaces)->aggregate($arr);
+            } 
             $html = self::GetWorkspaceBlocks($workspaces);
         }
 
@@ -1802,7 +1811,8 @@ class mel_workspace extends bnum_plugin
         $html = '';
 
         if (isset($favorites)) $workspaces = mel_helper::Enumerable($workspaces)->orderBy(function ($k, $v) use($favorites) {
-            return isset($favorites) && isset($favorites[$v->uid]) && $favorites[$v->uid]['tak'] ? PHP_INT_MAX : (new DateTime($v->modified))->getTimestamp();
+            if ($v === 'blank') return 0;
+            else return isset($favorites) && isset($favorites[$v->uid]) && $favorites[$v->uid]['tak'] ? PHP_INT_MAX : (new DateTime($v->modified))->getTimestamp();
         }, true);
 
         foreach (self::GetWorkspaceBlocksGenerator($workspaces) as $block) {
@@ -1819,6 +1829,7 @@ class mel_workspace extends bnum_plugin
     }
 
     public static function GetWorkspacesBlock($workspace) {
+        $isblank = $workspace === 'blank';
         $workspace = Workspace::FromWorkspace($workspace);
 
         mel_helper::load_helper()->include_utilities();
@@ -1865,6 +1876,7 @@ class mel_workspace extends bnum_plugin
         $block->favorite = $workspace->isFavorite();//isset($favorites) && isset($favorites[$workspace->uid]) && $favorites[$workspace->uid] && $favorites[$workspace->uid]['tak'] ? $favorites[$workspace->uid]['tak'] : false;
         $block->private = !$workspace->isPublic();
         $block->join = $workspace->hasUser();
+        $block->blank = $isblank;
         //$block->canBeFavorite = !($workspace->isArchived() || ($workspace->isPublic() && !$workspace->hasUser(driver_mel::gi()->getUser()->uid)));
 
         return $block->parse();

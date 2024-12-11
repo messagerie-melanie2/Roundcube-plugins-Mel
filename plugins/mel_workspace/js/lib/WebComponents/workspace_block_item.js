@@ -49,6 +49,14 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
     return [true, 'true', 1, '1'].includes(this.join);
   }
 
+  get isBlank() {
+    if (!this.blank) {
+      this.blank = this.dataset.blank;
+      this.removeAttribute('data-blank');
+    }
+    return [true, 1, 'true', '1'].includes(this.blank);
+  }
+
   _init() {
     this.onfavoritechanged.push((state, node, self) => {
       this.dispatchEvent(
@@ -128,7 +136,9 @@ export class WorkspaceBlockItem extends HtmlCustomTag {
 
     if (!this.isJoin) this.style.cursor = 'unset';
 
-    this._generate();
+    if (this.isBlank) {
+      this.style.opacity = 0;
+    } else this._generate();
   }
 
   title() {

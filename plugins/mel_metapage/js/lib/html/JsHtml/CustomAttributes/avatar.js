@@ -471,7 +471,7 @@ class AvatarElement extends HtmlCustomTag {
    * Met la bonne url à l'image.
    */
   update_img() {
-    this.removeAttribute('data-needcreation');
+    this.setAttribute('data-loading', true);
 
     if (this.saved) return this._on_load();
 
@@ -552,6 +552,7 @@ class AvatarElement extends HtmlCustomTag {
       this.#timeout = null;
     }
 
+    this.removeAttribute('data-loading');
     this.removeAttribute('data-needcreation');
 
     this.setAttribute('data-state', 'loaded');
@@ -624,6 +625,7 @@ class AvatarElement extends HtmlCustomTag {
       this.#timeout = null;
     }
 
+    this.removeAttribute('data-loading');
     this.removeAttribute('data-needcreation');
     this.setAttribute('data-state', 'error');
 
@@ -728,9 +730,12 @@ Object.defineProperty(AvatarElement, 'IsLoaded', {
   if (!customElements.get(TAG)) customElements.define(TAG, AvatarElement);
 }
 //#endregion
-window.addEventListener('load', function () {
-  onLoaded();
-});
+if (!window.avatarloadedthings) {
+  window.addEventListener('load', function () {
+    onLoaded();
+  });
+  window.avatarloadedthings = true;
+}
 //#region Chargement
 /**
  * Charge tout les avatars qui ont besoin d'être chargés.
@@ -738,7 +743,7 @@ window.addEventListener('load', function () {
  */
 function onLoaded(timeout = true) {
   let imagesToLoad = document.querySelectorAll(
-    'bnum-avatar[data-needcreation]',
+    'bnum-avatar[data-needcreation]:not([data-loading])',
   );
 
   for (const image of imagesToLoad) {

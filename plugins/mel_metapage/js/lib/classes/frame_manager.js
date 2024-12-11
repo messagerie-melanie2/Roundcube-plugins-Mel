@@ -841,22 +841,23 @@ class Window {
           .$('#sr-document-title-focusable')
           .focus();
       } else {
-        await Mel_Promise.wait(() => this._current_frame.$frame?.[0]?.contentWindow?.$);
+        await Mel_Promise.wait(
+          () => this._current_frame.$frame?.[0]?.contentWindow?.$,
+        );
 
         if (this._current_frame.$frame?.[0]?.contentWindow?.$) {
           this._current_frame.$frame[0].contentWindow
-          .$('body')
-          .prepend(
-            $('<div>')
-              .attr('id', 'sr-document-title-focusable')
-              .addClass('sr-only')
-              .attr('tabindex', '-1')
-              .text(document.title),
-          )
-          .find('.sr-document-title-focusable')
-          .focus();
-        }
-        else {
+            .$('body')
+            .prepend(
+              $('<div>')
+                .attr('id', 'sr-document-title-focusable')
+                .addClass('sr-only')
+                .attr('tabindex', '-1')
+                .text(document.title),
+            )
+            .find('.sr-document-title-focusable')
+            .focus();
+        } else {
           this._current_frame.$frame.focus();
         }
       }
@@ -1237,34 +1238,44 @@ class FrameManager {
     }
 
     let node = HTMLButtonGroup.CreateNode(buttons, {
-      texts: ['Ouvrir', 'Ouvrir dans un nouvel onglet', 'Ouvrir dans une nouvelle colonne'],
-      voice: 'Actions supplémentaires'
+      texts: [
+        'Ouvrir',
+        'Ouvrir dans un nouvel onglet',
+        'Ouvrir dans une nouvelle colonne',
+      ],
+      voice: 'Actions supplémentaires',
     });
 
     if (MULTI_FRAME_FROM_NAV_BAR && button_disabled) {
-      node.getButton(2).addClass('disabled').setAttribute('disabled', 'disabled');
+      node
+        .getButton(2)
+        .addClass('disabled')
+        .setAttribute('disabled', 'disabled');
     }
 
-    node.addEventListener('api:button.clicked', function (args, event) {
-      $('#popoverback').remove();
+    node.addEventListener(
+      'api:button.clicked',
+      function (args, event) {
+        $('#popoverback').remove();
 
-      switch (event.id) {
-        case 'open':
-          $(`[data-task="${args.task}"]`).click();
-          break;
-          
-        case 'new':
-          open(FrameManager.Helper.url(args.task, {}));
-          break;
+        switch (event.id) {
+          case 'open':
+            $(`[data-task="${args.task}"]`).click();
+            break;
 
-        case 'column':
-          this.open_another_window(args.task, {});
-          break;
+          case 'new':
+            open(FrameManager.Helper.url(args.task, {}));
+            break;
 
-        default:
-          break;
-      }
-    }.bind(this, {task, max_frame_goal, button_disabled}));
+          case 'column':
+            this.open_another_window(args.task, {});
+            break;
+
+          default:
+            break;
+        }
+      }.bind(this, { task, max_frame_goal, button_disabled }),
+    );
 
     return node;
     // return MelHtml.start
@@ -1415,7 +1426,7 @@ class FrameManager {
   add_buttons_actions() {
     let $it;
 
-    $('#otherapps').css('z-index', 1);
+    $('#otherapps').css('z-index', 80);
 
     for (const iterator of $('#taskmenu a, #otherapps a')) {
       $it = $(iterator);
@@ -1443,13 +1454,11 @@ class FrameManager {
         $it.click(() => {
           rcmail.command('more_options');
         });
-      }
-      else if ($it.attr('data-command')) {
+      } else if ($it.attr('data-command')) {
         $it.click((e) => {
           rcmail.command($(e.currentTarget).attr('data-command'));
         });
-      }
-      else {
+      } else {
         $it.click(this.button_action.bind(this));
       }
 
@@ -1457,12 +1466,17 @@ class FrameManager {
       //   $('#popoverback').remove();
       // })
 
-      if (!$it.hasClass('menu-last-frame') && !$it.attr('data-command'))
-      {
-        $it.on('auxclick', function(args, e) {
-          e.preventDefault();
-          open(FrameManager.Helper.url(args.task, {}));
-       }.bind(this, {task:$it.attr('data-task')}));
+      if (!$it.hasClass('menu-last-frame') && !$it.attr('data-command')) {
+        $it.on(
+          'auxclick',
+          function (args, e) {
+            if (e.originalEvent.button === 1) {
+              e.preventDefault();
+
+              open(FrameManager.Helper.url(args.task, {}));
+            }
+          }.bind(this, { task: $it.attr('data-task') }),
+        );
         // $it
         // .popover({
         //   trigger: 'manual',
@@ -1483,7 +1497,6 @@ class FrameManager {
         //   $('body').prepend($('<div>').click(() => $('#popoverback').remove()).attr('id', 'popoverback').css({width:'100%', height:'100%', position:'absolute', top:0, left:0, 'z-index':1, 'background-color':'var(--ui-widget-overlay)'}));
         // });
       }
-
     }
 
     // if (!window.fmbodyoptionsa) {

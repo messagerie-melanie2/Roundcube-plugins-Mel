@@ -1086,7 +1086,6 @@ class mel_forum extends bnum_plugin
             exit;
         }
 
-        // TODO: Suppression des enfants ?
         // Supprimer le commentaire
         $ret = $comment->delete();
         if (!is_null($ret)) {
@@ -1326,6 +1325,7 @@ class mel_forum extends bnum_plugin
                         'likes' => $count['like'],
                         'dislikes' => $count['dislike'],
                         'current_user_reacted' => $current_user_reacted,
+                        'current_user_email' => $current_user_email,
                     ];
                 }
             }
@@ -1337,55 +1337,22 @@ class mel_forum extends bnum_plugin
     }
     #endregion
 
-    // /**
-    //  * Traite les images encodées en base64 dans le contenu, les enregistre, 
-    //  * et remplace les données base64 par les URL correspondantes.
-    //  *
-    //  * Cette fonction parcourt le contenu fourni pour détecter les images 
-    //  * intégrées sous forme de données base64, les enregistre à un emplacement 
-    //  * associé à l'ID du post donné, et remplace les balises `<img>` contenant 
-    //  * des données base64 par des balises `<img>` avec les URLs des images sauvegardées.
-    //  *
-    //  * @param string $content Le contenu HTML contenant des images encodées en base64.
-    //  * @param int    $post_id L'ID du post auquel associer les images sauvegardées.
-    //  * 
-    //  * @return string Le contenu mis à jour avec les images base64 remplacées par des URLs.
-    //  */
-    // protected function process_base64_images($content, $post_id)
-    // {
-    //     // Tableau pour collecter les URLs des images réellement utilisées
-    //     $usedImageUrls = [];
-
-    //     // Expression régulière pour trouver toutes les balises <img src="data:image/">
-    //     preg_match_all('/<img src="data:image\/([^;]+);base64,([^"]+)"[^>]*>/i', $content, $matches, PREG_SET_ORDER);
-
-    //     foreach ($matches as $img) {
-    //         $imageType = $img[1]; // Type de l'image (jpeg, png, etc.)
-    //         $base64Data = $img[2]; // Données en base64
-
-    //         // Reconstruire le préfixe de l'image
-    //         $fullBase64Data = "data:image/{$imageType};base64,{$base64Data}";
-
-    //         // Enregistrer l'image dans la base de données
-    //         $imageSaved = $this->save_image($post_id, $fullBase64Data);  // Passer les données complètes à la fonction
-
-    //         if ($imageSaved) {
-    //             // Utiliser la fonction get_image_url pour générer l'URL de l'image
-    //             $imageUrl = $this->get_image_url($imageSaved);
-
-    //             // Collecter les URLs des images utilisées
-    //             $usedImageUrls[] = $imageUrl;
-
-    //             // Remplacer la balise <img> par la version avec URL
-    //             $content = str_replace($img[0], '<img src="' . $imageUrl . '"', $content);
-    //         }
-    //     }
-
-    //     return $content;
-    // }
-
     #region Images
 
+    /**
+     * Traite les images encodées en base64 dans le contenu, les enregistre, 
+     * et remplace les données base64 par les URL correspondantes.
+     *
+     * Cette fonction parcourt le contenu fourni pour détecter les images 
+     * intégrées sous forme de données base64, les enregistre à un emplacement 
+     * associé à l'ID du post donné, et remplace les balises `<img>` contenant 
+     * des données base64 par des balises `<img>` avec les URLs des images sauvegardées.
+     *
+     * @param string $content Le contenu HTML contenant des images encodées en base64.
+     * @param int    $post_id L'ID du post auquel associer les images sauvegardées.
+     * 
+     * @return string Le contenu mis à jour avec les images base64 remplacées par des URLs.
+     */
     protected function process_base64_images($content, $post_id)
     {
         // Récupérer les images existantes associées au post
@@ -1738,8 +1705,6 @@ class mel_forum extends bnum_plugin
 
         $type = $this->get_input('_type', rcube_utils::INPUT_POST);
         $post_id = intval($this->get_input('_post_id', rcube_utils::INPUT_POST));
-
-        // TODO liker son propre commentaire ou post ?
 
         $reaction = new LibMelanie\Api\Defaut\Posts\Reaction();
         $reaction->post = $post_id;

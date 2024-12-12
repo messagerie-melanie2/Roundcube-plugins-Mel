@@ -3,7 +3,6 @@ import { BnumMessage, eMessageType } from '../../../mel_metapage/js/lib/classes/
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { MelDialog, DialogPage, RcmailDialogButton } from "../../../mel_metapage/js/lib/classes/modal.js";
 
-//TODO localization
 export class create_or_edit_post extends MelObject {
     constructor() {
         super();

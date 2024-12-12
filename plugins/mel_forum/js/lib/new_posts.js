@@ -76,8 +76,6 @@ export class New_posts extends MelObject {
         POST_DATE: post.creation_date,
         UID: post.uid,
         POST_TITLE: post.title,
-        POST_SUMMARY: post.summary,
-        POST_IMAGE: post.image_url,
         //POST_COUNT_REACTION: post.reaction,
         POST_THUMB_UP: post.like_count,
         POST_THUMB_DOWN: post.dislike_count,

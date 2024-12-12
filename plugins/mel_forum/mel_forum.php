@@ -1813,13 +1813,16 @@ class mel_forum extends bnum_plugin
      */
     public function new_posts()
     {
-        $this->include_web_component()->Avatar();
-        $this->load_script_module('new_posts');
-        $this->show_new_posts();
-        $workspace = $this->get_input('_worskpace_uid', rcube_utils::INPUT_POST);
-
-        // Envoyer le template approprié
-        $this->rc()->output->send('mel_forum.new-posts');
+        $workspace_uid = $this->get_input('_workspace_uid', rcube_utils::INPUT_GET);
+        if (driver_mel::gi()->getUser()->isWorkspaceMember($workspace_uid)) {
+            $this->include_web_component()->Avatar();
+            $this->load_script_module('new_posts');
+            $this->show_new_posts();
+            // Envoyer le template approprié
+            $this->rc()->output->send('mel_forum.new-posts');
+        } else {
+            $this->_display_error_page();
+        }
     }
 
     /**
@@ -1838,10 +1841,7 @@ class mel_forum extends bnum_plugin
 
         // $this->rc()->output->set_env('posts_data', $posts_data);
 
-        // TODO a changer
-        $workspace_uid = "un-espace-2";
-
-        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON($workspace_uid, 3));
+        $this->rc()->output->set_env('posts_data', $this->post_object_to_JSON(null, 3));
     }
 
     /**

@@ -4,7 +4,7 @@
   <roundcube:label name="mel_forum" />
 </h1>
 
-<div id="layout-content" role="main">
+<div class="new_posts" id="layout-content" role="main">
   <div class="content">
     <div class="row forum-content">
       <div class="col-12">
@@ -33,15 +33,12 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12 col-md-8 col-xl-10">
+          <div class="col-12 col-md-8">
             <div class="post-content">
-      
               <div class="post-title">%%POST_TITLE%%</div>
-      
-              <div class="post-summary">%%POST_SUMMARY%%</div>
             </div>
           </div>
-          <div class="post-tags" id="new-tag-area-%%UID%%"></div>
+          <div class="post-tags col-6 col-md-4" id="new-tag-area-%%UID%%"></div>
         </div>
         <div class="row">
           <div class="col-12">
@@ -51,15 +48,15 @@
                   <i class="material-symbols-outlined">add_reaction</i>
                   <span class="ml-2">%%POST_COUNT_REACTION%%</span>
                 </div> -->
-                <div id="add_like-%%UID%%" class="like %%POST_IS_LIKED%%">
+                <div id="add_like-%%UID%%" class="post-reaction-info  %%POST_IS_LIKED%%">
                   <i class="material-symbols-outlined">thumb_up</i>
                   <span class="ml-2">%%POST_THUMB_UP%%</span>
                 </div>
-                <div id="add_dislike-%%UID%%" class="dislike %%POST_IS_DISLIKED%%">
+                <div id="add_dislike-%%UID%%" class="post-reaction-info  %%POST_IS_DISLIKED%%">
                   <i class="material-symbols-outlined">thumb_down</i>
                   <span class="ml-2">%%POST_THUMB_DOWN%%</span>
                 </div>
-                <div id="add_comment" class="comment">
+                <div id="add_comment" class="post-reaction-info">
                   <i class="material-symbols-outlined">comment</i>
                   <span class="ml-2">%%POST_COMMENTS%%</span>
                 </div>
@@ -72,7 +69,7 @@
   </div>
 </template>
 <template id="new_tag_template">
-  <span class="tag tag-clickable tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%">%%TAG_NAME%%</span>
+  <span class="tag tag-%%TAG_ID%%" data-tag-id="%%TAG_ID%%">%%TAG_NAME%%</span>
 </template>
 
 <roundcube:include file="includes/footer.html" />

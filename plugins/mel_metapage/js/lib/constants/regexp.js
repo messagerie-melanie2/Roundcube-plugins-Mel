@@ -8,7 +8,8 @@
  * @type {RegExp}
  * @default /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi
  */
-export const REG_URL = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+export const REG_URL =
+  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
 /**
  * RegEx qui permet de récupérer les textes entre parenthèses
  * @constant
@@ -37,3 +38,4 @@ export const REG_NUMBERS = /\d/g;
  * @default /^[0-9a-zA-Z]+$/
  */
 export const REG_ALPHANUM = /^[0-9a-zA-Z]+$/;
+export const ISO_FORMAT_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;

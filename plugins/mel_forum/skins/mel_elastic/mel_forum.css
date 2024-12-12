@@ -863,7 +863,8 @@
   overflow-x: hidden !important;
 }
 .task-forum .new_posts .post {
-  margin: 15px;
+  margin-top: 12px;
+  padding-bottom: 10px;
   box-shadow: none;
   border-bottom: solid 1px var(--scrollbar-background-color);
   border-radius: 0;

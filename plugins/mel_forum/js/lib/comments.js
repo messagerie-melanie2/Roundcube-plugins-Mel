@@ -746,7 +746,7 @@ class PostComment {
       NUMBER_CHILDREN: this.children_number,
       RESPONSE_SECTION: this.children_number > 0 ? 
       MelHtml.start
-        .div({ id: 'toggle-response-container-' + this.id, class: 'forum-comment-response', 'data-comment-id': this.id, tabindex: '0', role: 'button', title: this.children_number === 1 ? 'Voir la réponse' : `Voir les ${this.children_number} réponses` })
+        .div({ id: 'toggle-response-container-' + this.id, class: 'forum-comment-response', 'data-comment-id': this.id, tabindex: '0', role: 'button', title: this.children_number === 1 ? rcmail.gettext('mel_forum.see_response_singular') : `${rcmail.gettext('mel_forum.see_the')} ${this.children_number} ${rcmail.gettext('mel_forum.response_plural')}` })
           .span({ id: 'toggle-icon-' + this.id, class: 'icon', 'data-icon': 'arrow_drop_down' }).end('span')
           .span({ class: 'ml-2' }).text(this.children_number + ' ' + reponseText).end('span')
         .end('div')
@@ -862,7 +862,7 @@ class PostCommentView {
       return_data = JSON.parse(datas);
 
     } catch (error) {
-        console.error("Erreur lors de la récupération des commentaires:", error);
+        console.error(rcmail.gettext('mel_forum.comments_fetch_error'), error);
         
     } finally {
         

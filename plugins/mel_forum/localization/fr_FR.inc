@@ -116,7 +116,9 @@ $labels['invalid_date'] = 'Date non valide :';
 $labels['invalid_date_simple'] = 'Date non valide';
 $labels['today_at'] = 'Aujourd\'hui à';
 $labels['yesterday_at'] = 'Hier à';
-
+$labels['edit_saved_success'] = 'Modification enregistrée avec succès !';
+$labels['article_created_success'] = 'Article créé avec succès !';
+$labels['article_save_error'] = 'Erreur lors de l\'enregistrement de l\'article. Veuillez réessayer.';
 
 #region TAG
 
@@ -144,11 +146,14 @@ $labels['cannot_edit_comment'] = 'Vous n\'êtes pas autorisé à modifier ce com
 $labels['cannot_delete_comment'] = 'Vous n\'êtes pas autorisé à supprimer ce commentaire.';
 $labels['comment_delete_error'] = 'Une erreur est survenue lors de la suppression du commentaire.';
 $labels['comment_delete_failure'] = 'Echec de suppression du commentaire.';
+$labels['comments_fetch_error'] = 'Erreur lors de la récupération des commentaires :';
 $labels['comment_updated'] = 'Commentaire mis à jour avec succès.';
 $labels['comment_update_error'] = 'Une erreur est survenue lors de la mise à jour du commentaire.';
 $labels['comment_updated_failure'] = 'Echec de mise à jour du commentaire.';
 $labels['comment_uid_required'] = 'L\'uid du commentaire est requis.';
 $labels['comment_deleted'] = 'Le commentaire a été supprimé avec succès.';
+$labels['comment_save_error'] = 'Une erreur est survenue lors de la sauvegarde du commentaire.';
+$labels['comment_save_failure'] = 'Erreur lors de la sauvegarde du commentaire :';
 $labels['react_to_own_comment'] = 'Vous ne pouvez pas réagir à votre propre commentaire.';
 $labels['unlike'] = 'Like annulé avec succès.';
 $labels['like_to_dislike'] = 'Like annulé, dislike enregistré avec succès.';

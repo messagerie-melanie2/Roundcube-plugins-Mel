@@ -163,8 +163,8 @@ export class create_or_edit_post extends MelObject {
                     on_success: () => {
                         // Message différent selon le type d'action
                         const message = isModification
-                        ? 'Modification enregistrée avec succès !'
-                        : 'Article créé avec succès !';
+                        ? rcmail.gettext('mel_forum.edit_saved_success')
+                        : rcmail.gettext('mel_forum.article_created_success');
                     
                         BnumMessage.DisplayMessage(
                             message,
@@ -177,7 +177,7 @@ export class create_or_edit_post extends MelObject {
                     },
                     on_error: (err) => {
                         BnumMessage.DisplayMessage(
-                        'Erreur lors de l\'enregistrement de l\'article. Veuillez réessayer.',
+                            rcmail.gettext('mel_forum.article_save_error'),
                         eMessageType.Error,
                         );
                         window.location.href = this.url('forum', {action:'post',params:{'_uid' : postUid, '_workspace_uid' : this.workspace}});
@@ -224,7 +224,7 @@ export class create_or_edit_post extends MelObject {
                     // Redirection vers la page d'accueil après la suppression
                     window.location.href = this.url('forum', {action: 'index'});
                 }).catch(error => {
-                    console.error("Erreur lors de la suppression du post :", error);
+                    console.error(rcmail.gettext('mel_forum.delete_post_failure'), error);
                 });
             } else {
                 // Redirige directement vers la page d'accueil sans suppression

@@ -1,5 +1,4 @@
 import { BnumMessage } from '../../../mel_metapage/js/lib/classes/bnum_message.js';
-import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { PostComment, PostCommentView } from './comments.js';
 
@@ -138,8 +137,8 @@ export class Manager extends MelObject {
             rcmail.display_message(response.message, 'error');
         }
     } catch (error) {
-        rcmail.display_message("Une erreur est survenue lors de la sauvegarde du commentaire.", 'error');
-        console.error("Erreur lors de la sauvegarde du commentaire:", error);
+        rcmail.display_message(rcmail.gettext('mel_forum.comment_save_error', 'error');
+        console.error(rcmail.gettext('mel_forum.comment_save_failure', error);
     } finally {
         // Réactiver le bouton de validation une fois la requête terminée
         submitButton.prop('disabled', false);
@@ -173,7 +172,7 @@ export class Manager extends MelObject {
     try {
         allComments = await PostCommentManager.getCommentByPost();
     } catch (error) {
-        console.error("Erreur lors de la récupération des commentaires:", error);
+        console.error(rcmail.gettext('mel_forum.comments_fetch_error', error);
         // Vous pouvez afficher un message d'erreur à l'utilisateur ici si nécessaire
         return;
     }

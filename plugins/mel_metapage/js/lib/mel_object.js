@@ -691,11 +691,11 @@ class MelObject {
 
   /**
    * Envoie un MelObject vide.
-   * @returns {MelObject}
+   * @returns {EmptyMelObject}
    * @static
    */
   static Empty() {
-    if (!this.Empty.obj) this.Empty.obj = Object.freeze(new MelObject());
+    if (!this.Empty.obj) this.Empty.obj = Object.freeze(new EmptyMelObject());
 
     return this.Empty.obj;
   }
@@ -761,5 +761,473 @@ class WrapperObject {
    */
   static Create(typeofitem, ...args) {
     return new WrapperObject(typeofitem, ...args);
+  }
+}
+
+/**
+ * @class
+ * @classdesc Donne divers fonction d'aide pour programmer.
+ * @extends MelObject
+ */
+class EmptyMelObject extends MelObject {
+  /**
+   * Constructeur de la classe
+   */
+  constructor() {
+    super();
+  }
+
+  /**
+   * Récupère "rcmail" | les fonctions utiles à roundcube
+   * @param {boolean} top Si on doit récupérer rcmail sur frame principale ou non
+   * @returns {rcube_webmail}
+   * @public
+   */
+  rcmail(top = false) {
+    return super.rcmail(top);
+  }
+
+  /**
+   * Récupère une clé sous forme de texte.
+   * @param {string} key_text Clé
+   * @param {!string} plugin Plugin d'où provient le texte traduit
+   * @returns {string}
+   * @public
+   */
+  gettext(key_text, plugin = '') {
+    return super.gettext(key_text, plugin);
+  }
+
+  /**
+   * Ajoute un écouteur qui pourra être appelé plus tard.
+   * @param {string} key Clé qui permettra d'appeller l'écouteur
+   * @param {function} callback Fonction qui sera appelée
+   * @param {Object} param2 Si on doit récupérer rcmail sur frame principale ou non
+   * @param {?string} param2.callback_key Clé du callback
+   * @param {!boolean} param2.condition Si on doit éxécuter ou non le listener
+   * @public
+   */
+  add_event_listener(
+    key,
+    callback,
+    { callback_key = null, condition = true } = {},
+  ) {
+    return super.add_event_listener(key, callback, { callback_key, condition });
+  }
+
+  /**
+   * Trigger un écouteur
+   * @param {string} key Clé qui appelera tout les écouteurs lié à cette clé
+   * @param {any} args  Arguments qui sera donnée aux écouteurs
+   * @returns {MelEventManager}
+   * @public
+   */
+  trigger_event(key, args) {
+    return super.trigger_event(key, args);
+  }
+
+  /**
+   * Action à faire lorsqu'une frame est chargée
+   * @param {function} callback Function à éffectuer
+   * @param {Object} options Options de la fonction
+   * @param {?string} options.frame any pour toute n'importe quelle frame, sinon mettre le nom de la frame
+   * @param {?function} options.condition Condition custom pour charger la frame
+   * @public
+   */
+  on_frame_loaded(
+    callback,
+    { callback_key = null, frame = 'any', condition = null } = {},
+  ) {
+    return super.on_frame_loaded(callback, { callback_key, frame, condition });
+  }
+
+  /**
+   * Ajoute une action à faire lors du refresh du bnum
+   * @param {Function} callback Fonction à appeller
+   * @param {Object} options Options de la fonction
+   * @param {?string} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
+   * @public
+   */
+  on_refresh(callback, { callback_key = null } = {}) {
+    return super.on_refresh(callback, { callback_key });
+  }
+
+  /**
+   * Ajoute une action à faire lorsqu'une frame est mise à jours
+   * @param {function} callback Callback a=à appelé au refresh
+   * @param {string} frame Nom de la frame
+   * @param {Object} param2
+   * @param {?string} options.callback_key clé qui permet de supprimer/remettre la fonction au refresh d'une frame
+   * @public
+   */
+  on_frame_refresh(callback, frame, { callback_key = null } = {}) {
+    super.on_frame_refresh(callback, frame, { callback_key });
+  }
+
+  /**
+   * Récupère une variable d'environnement de roundcube
+   * @param {string} key Nom de la variable
+   * @returns {?any}
+   * @public
+   */
+  get_env(key) {
+    return super.get_env(key);
+  }
+
+  /**
+   * Change de page
+   * @param {string} frame Nom de la page
+   * @param {Object} param1
+   * @param {?string} param1.action Action de la page
+   * @param {Object<string, string>} param1.params Paramètres additionnels de la page
+   * @param {!boolean} param1.update {@deprecated}
+   * @param {!boolean} param1.force_update {@deprecated}
+   * @async
+   * @public
+   * @return {Promise<void>}
+   * @deprecated Utilisez plutôt {@link switch_frame}
+   */
+  async change_frame(
+    frame,
+    { action = null, params = {}, update = true, force_update = false } = {},
+  ) {
+    return await super.change_frame(frame, {
+      action,
+      params,
+      update,
+      force_update,
+    });
+  }
+
+  /**
+   * Change de frame
+   * @param {string} task Nom de la tâche
+   * @param {Object} options
+   * @param {boolean} [options.changepage=true] Si l'on change de page ou si la frame reste caché pendant le chargement.
+   * @param {?Object<string, *>} [options.args=null] Options du changement de frame. Si la frame est déjà ouverte, force le changement d'url.
+   * @async
+   * @returns {Promise}
+   */
+  async switch_frame(task, { changepage = true, args = null } = {}) {
+    await super.switch_frame(task, { changepage, args });
+  }
+
+  /**
+   * Vérifie si une frame est déjà chargée ou non
+   * @param {string} frame Nom de la frame
+   * @returns {boolean}
+   * @public
+   */
+  have_frame(frame) {
+    return super.have_frame(frame);
+  }
+
+  /**
+   * Selectionne une frame
+   * @param {string} frame Nom de la frame
+   * @returns {external:jQuery}
+   * @public
+   */
+  select_frame(frame) {
+    return super.select_frame(frame);
+  }
+
+  /**
+   * Selectionne toutes les frames qui ne sont pas parmis les frames définie en arguments
+   * @param  {...string} frames Frames à écarter
+   * @generator
+   * @yield {Node}
+   * @return {Generator<Node>}
+   * @public
+   */
+  *select_frame_except(...frames) {
+    yield* super.select_frame_except(...frames);
+  }
+
+  /**
+   * Récupère une url à partir d'une tâche et d'une action
+   * @param {string} task Nom de la tâche
+   * @param {Object} param1 action => Nom de l'action ('index' si non renseigné), params => Autres paramètres
+   * @param {!string} param1.action => Nom de l'action (index si non renseigné)
+   * @param {?Object<string, string>} Autres paramètres
+   * @returns {string}
+   * @public
+   */
+  url(
+    task,
+    { action = EMPTY_STRING, params = null, removeIsFromIframe = false } = {},
+  ) {
+    return super.url(task, { action, params, removeIsFromIframe });
+  }
+
+  /**
+   * Effectue un appel ajax avec les options spécifiées.
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.url - L'URL à appeler.
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_call({
+    url,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_call]', ...args);
+    },
+    params = null,
+    type = 'POST',
+  }) {
+    return super.http_call({ url, on_success, on_error, params, type });
+  }
+
+  /**
+   * Effectue un appel ajax vers les serveurs de l'application
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.task - Tache
+   * @param {string} options.action - Action
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @param {string} [options.type='POST'] - Le type de requête HTTP à effectuer.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_internal_call({
+    task,
+    action,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_internal_call]', ...args);
+    },
+    params = null,
+    type = 'POST',
+  }) {
+    return super.http_internal_call({
+      task,
+      action,
+      on_success,
+      on_error,
+      params,
+      type,
+    });
+  }
+
+  /**
+   * Effectue un appel ajax POST vers les serveurs de l'application
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.task - Tache
+   * @param {string} options.action - Action
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_internal_post({
+    task,
+    action,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_internal_post]', ...args);
+    },
+    params = null,
+  }) {
+    return super.http_internal_post({
+      task,
+      action,
+      on_success,
+      on_error,
+      params,
+    });
+  }
+
+  /**
+   * Effectue un appel ajax GET vers les serveurs de l'application
+   * @param {Object} options - Les options pour l'appel HTTP.
+   * @param {string} options.task - Tache
+   * @param {string} options.action - Action
+   * @param {function} [options.on_success=() => {}] - La fonction à appeler en cas de succès.
+   * @param {function} [options.on_error=(...args) => {console.error('###[http_call]', ...args)}] - La fonction à appeler en cas d'erreur.
+   * @param {Object} [options.params=null] - Les paramètres à envoyer dans la requête.
+   * @returns {Mel_Ajax}
+   * @public
+   */
+  http_internal_get({
+    task,
+    action,
+    on_success = () => {},
+    on_error = (...args) => {
+      console.error('###[http_internal_post]', ...args);
+    },
+    params = null,
+  }) {
+    return super.http_internal_get({
+      task,
+      action,
+      on_success,
+      on_error,
+      params,
+    });
+  }
+
+  /**
+   * Sauvegarde des données dans le stockage local
+   * @param {string} key Clé qui permettra de retrouver les données sauvegarder
+   * @param {*} contents Données qui seront sauvegarder
+   * @returns {MelObject} Chaînage
+   * @public
+   */
+  save(key, contents) {
+    return super.save(key, contents);
+  }
+
+  /**
+   * Charge des données dans le stockage local
+   * @param {string} key Clé qui permet de retrouver les données
+   * @param {?any} default_value Valeur par défaut si la donnée n'éxiste pas
+   * @returns {?any}
+   * @public
+   */
+  load(key, default_value = null) {
+    return super.load(key, default_value);
+  }
+
+  load_without_parsing(key, default_value = null) {
+    return super.load_without_parsing(key, default_value);
+  }
+
+  /**
+   * Décharge une donnée dans le stockage local
+   * @param {string} key clé dans le stockage
+   * @public
+   */
+  unload(key) {
+    return super.unload(key);
+  }
+
+  /**
+   * Récupère l'objet UI de la skin elastic
+   * @returns {Mel_Elastic}
+   * @public
+   */
+  get_skin() {
+    return super.get_skin();
+  }
+
+  /**
+   * Récupère un objet Mel_CSS_Style_Sheet pour ajouter du css custom
+   * @returns {Mel_CSS_Style_Sheet}
+   * @public
+   */
+  get_custom_rules() {
+    return super.get_custom_rules();
+  }
+
+  /**
+   * Génère un loader du bnum
+   * @param {string} id id du loader
+   * @param {!boolean} absoluteCentered Centrer verticalement et horizontalement ?
+   * @returns {mel_html}
+   * @public
+   */
+  generate_loader(id, absoluteCentered = true) {
+    return super.generate_loader(id, absoluteCentered);
+  }
+
+  /**
+   * Séléctionne un document dom au format jquery
+   * @param {string} selector Selecteur au format jquery
+   * @returns {external:jQuery}
+   * @public
+   */
+  select(selector) {
+    return super.select(selector);
+  }
+
+  /**
+   * Copy un texte dans le press(papier)
+   * @param {!string} text Texte à mettre dans le presse papier
+   * @returns {MelObject} Chaînage
+   * @public
+   */
+  copy_to_clipboard(text) {
+    return super.copy_to_clipboard(text);
+  }
+
+  /**
+   * Insert un cookie
+   * @param {string} key Clé qui permet d'identifier la données mise en cookie
+   * @param {string} name Donnée à mettre en cookie
+   * @param {Date | false} expire Date d'expiration, false pour aucune
+   * @returns {Cookie} Cookie créer
+   * @frommodulereturn Cookies {@membertype .}
+   * @public
+   */
+  cookie_set(key, name, expire = false) {
+    return super.cookie_set(key, name, expire);
+  }
+
+  /**
+   * Récupère un cookie
+   * @param {string} key Indentifiant de la donnée
+   * @returns {Cookie}
+   * @frommodulereturn Cookies {@membertype .}
+   * @public
+   */
+  cookie_get(key) {
+    return super.cookie_get(key);
+  }
+
+  /**
+   * Supprime un cookie
+   * @param {string} key Indentifiant du cookie à supprimer
+   * @returns {Cookie} Cookie supprimer
+   * @frommodulereturn Cookies {@membertype .}
+   * @public
+   */
+  cookie_remove(key) {
+    return super.cookie_remove(key);
+  }
+
+  /**
+   * Renvoie vrai si la variable vaut `null` ou `undefined`.
+   * @param {?any} item Variable à tester
+   * @returns {boolean}
+   * @public
+   */
+  isNullOrUndefined(item) {
+    return super.isNullOrUndefined(item);
+  }
+
+  /**
+   * Envoie une notification BNUM
+   * @param {*} notification
+   * @public
+   */
+  send_notification(notification) {
+    return super.send_notification(notification);
+  }
+
+  switch_url(url) {
+    return super.switch_url(url);
+  }
+
+  switch_task(task, { action = null, params = {} } = {}) {
+    return super.switch_task(task, { action, params });
+  }
+
+  export(name = null) {
+    return super.export(name);
+  }
+
+  delete_export(name = null) {
+    return super.delete_export(name);
+  }
+
+  get_class_name() {
+    return this.constructor.name;
   }
 }

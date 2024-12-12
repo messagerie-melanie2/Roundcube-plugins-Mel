@@ -139,6 +139,7 @@ class mel_forum extends bnum_plugin
             $this->add_hook('workspace.params.services.show', [$this, 'workspace_params_services_show']);
             $this->add_hook('workspace.service.get', [$this, 'workspace_service_get']);
         }
+        $this->add_hook('workspace.service.delete', [$this, 'workspace_deleted']);
     }
 
     /**
@@ -628,9 +629,6 @@ class mel_forum extends bnum_plugin
         $posts = $post->listPosts($search, $tags, $orderby, $asc, $limit, $offset, $fav_posts_uid);
 
         return $posts;
-
-        // Arrêt de l'exécution du script
-        exit;
     }
 
     /**
@@ -1916,6 +1914,21 @@ class mel_forum extends bnum_plugin
 
         return $args;
     }
+
+    /**
+     * Supprime tout les articles suites à la supression d'un espace de travail
+     */
+    public function workspace_deleted($args)
+    {
+        $workspace = $args['workspace'];
+        $post = new LibMelanie\Api\Defaut\Posts\Post();
+        $post->workspace = $workspace->uid;
+        $posts = $post->listPosts();
+        foreach ($posts as $post) {
+            $post->delete();
+        }
+    }
+
     #endregion
 
     /**

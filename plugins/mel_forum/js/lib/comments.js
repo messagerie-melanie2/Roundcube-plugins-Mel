@@ -732,6 +732,7 @@ class PostComment {
     }
 
     // Préparez les données à insérer dans le template
+    debugger;
     const data = {
       UID: this.uid,
       USER_EMAIL: this.user_email,

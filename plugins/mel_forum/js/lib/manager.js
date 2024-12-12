@@ -137,8 +137,8 @@ export class Manager extends MelObject {
             rcmail.display_message(response.message, 'error');
         }
     } catch (error) {
-        rcmail.display_message(rcmail.gettext('mel_forum.comment_save_error', 'error');
-        console.error(rcmail.gettext('mel_forum.comment_save_failure', error);
+        rcmail.display_message(rcmail.gettext('mel_forum.comment_save_error'), 'error');
+        console.error(rcmail.gettext('mel_forum.comment_save_failure'), error);
     } finally {
         // Réactiver le bouton de validation une fois la requête terminée
         submitButton.prop('disabled', false);
@@ -172,7 +172,7 @@ export class Manager extends MelObject {
     try {
         allComments = await PostCommentManager.getCommentByPost();
     } catch (error) {
-        console.error(rcmail.gettext('mel_forum.comments_fetch_error', error);
+        console.error(rcmail.gettext('mel_forum.comments_fetch_error'), error);
         // Vous pouvez afficher un message d'erreur à l'utilisateur ici si nécessaire
         return;
     }

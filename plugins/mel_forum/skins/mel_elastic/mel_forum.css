@@ -797,7 +797,7 @@
 .task-forum .forum-comment-input {
   margin-top: 5px;
 }
-.task-forum [role="button"] {
+.task-forum [role='button'] {
   cursor: pointer;
 }
 .task-forum #go-back-to-articles:hover {
@@ -867,6 +867,11 @@
   box-shadow: none;
   border-bottom: solid 1px var(--scrollbar-background-color);
   border-radius: 0;
+  transition: var(--transition-all, none);
+}
+.task-forum .new_posts .post:hover {
+  box-shadow: 0px 0px 5px black;
+  border-radius: 5px;
 }
 .task-forum .new_posts .post:last-child {
   border-bottom: none;

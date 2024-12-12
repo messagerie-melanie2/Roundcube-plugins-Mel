@@ -68,6 +68,7 @@
   --settings-mail-subfolder-margin-left: 0;
   --settings-mail-subfolder-margin-right: 0;
   --custom-button-icon-margin: 40px;
+  --transition-all: all 0.1s ease-in;
   /** TEXT COLOR **/
   --main-text-color: #363A5B;
   --secondary-text-color: #FFFFFF;

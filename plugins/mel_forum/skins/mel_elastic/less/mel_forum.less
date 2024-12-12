@@ -85,15 +85,15 @@
   }
 
   .mel-search-group {
-    &> input {
+    & > input {
       border-color: var(--searchbar-alternate-border-color);
     }
     .input-group-append {
-      &> .input-group-text {
+      & > .input-group-text {
         border-color: var(--searchbar-alternate-border-color);
       }
     }
-    .icon-mel-search{
+    .icon-mel-search {
       border: 1px solid var(--searchbar-alternate-border-color);
       border-bottom-right-radius: 15px;
       border-top-right-radius: 15px;
@@ -207,12 +207,12 @@
     align-items: center;
     margin-left: auto;
     margin-right: 10px;
-    
+
     img {
-    max-height: 100px;
-    max-width: 100px;
+      max-height: 100px;
+      max-width: 100px;
     }
-  } 
+  }
 
   .post-header-custom {
     position: relative;
@@ -261,7 +261,7 @@
     > div {
       text-align: center;
     }
-  }  
+  }
 
   .author-image {
     width: 50px;
@@ -373,7 +373,9 @@
       align-items: center;
       padding: 6px;
       border-radius: 5px;
-      transition: background-color 0.3s ease, border-radius 0.3s ease;
+      transition:
+        background-color 0.3s ease,
+        border-radius 0.3s ease;
 
       span {
         font-size: 20px;
@@ -432,7 +434,9 @@
         background-color: transparent;
         border: transparent;
         border-radius: 5px;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
 
         &:hover {
           background-color: var(--hover-background-color);
@@ -484,7 +488,9 @@
         align-items: center;
 
         .icon {
-          color: var(--forum-active-text-color); /* Couleur uniforme pour toutes les icônes */
+          color: var(
+            --forum-active-text-color
+          ); /* Couleur uniforme pour toutes les icônes */
 
           &::before {
             font-family: 'Material Symbols Outlined';
@@ -495,13 +501,15 @@
             vertical-align: middle;
             color: inherit; /* L'icône hérite de la couleur */
           }
-        }  
+        }
         .reaction-item {
           display: flex;
           align-items: center;
           padding: 6px 6px;
           border-radius: 5px; /* Forme allongée avec extrémités arrondies */
-          transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
+          transition:
+            background-color 0.3s ease,
+            color 0.3s ease; /* Transition fluide pour le hover */
           margin-right: 3px;
 
           span {
@@ -509,12 +517,18 @@
           }
 
           &:hover {
-            background-color: var(--hover-background-color); /* Couleur de fond au survol */
+            background-color: var(
+              --hover-background-color
+            ); /* Couleur de fond au survol */
             cursor: pointer;
 
             .icon::before {
-              font-variation-settings: 'wght' 400, 'FILL' 1; /* Remplir l'icône lors du survol */
-              color: var(--forum-hover-text-color); /* Optionnel : Changer la couleur au survol */
+              font-variation-settings:
+                'wght' 400,
+                'FILL' 1; /* Remplir l'icône lors du survol */
+              color: var(
+                --forum-hover-text-color
+              ); /* Optionnel : Changer la couleur au survol */
             }
           }
 
@@ -528,9 +542,8 @@
               vertical-align: middle;
               margin-right: 5px;
               color: var(--forum-active-text-color);
-              font-variation-settings: 'FILL' 1,
+              font-variation-settings: 'FILL' 1;
             }
-            
           }
 
           &.response {
@@ -564,12 +577,16 @@
     border-radius: 5px; /* Forme allongée */
     max-width: 140px; /* Limite de largeur maximale */
     overflow: hidden; /* Cache tout ce qui dépasse les 100px */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide pour le hover */
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease; /* Transition fluide pour le hover */
     background-color: transparent; /* Fond transparent par défaut */
     white-space: nowrap; /* Empêche le retour à la ligne */
 
     &:hover {
-      background-color: var(--hover-background-color); /* Fond plus clair au survol */
+      background-color: var(
+        --hover-background-color
+      ); /* Fond plus clair au survol */
     }
 
     .icon::before {
@@ -585,26 +602,27 @@
 
     .ml-2 {
       font-size: 12px; /* Ajuste la taille du texte pour correspondre au design */
-      color: var(--forum-active-text-color); /* Applique la couleur de texte souhaitée */
+      color: var(
+        --forum-active-text-color
+      ); /* Applique la couleur de texte souhaitée */
       transition: color 0.3s ease; /* Transition fluide pour la couleur au hover */
     }
   }
 
   .hidden {
     display: none;
-}
+  }
 
-.responses {
-  margin-left: 20px; /* Ajustez cette valeur selon vos besoins */
-  padding-left: 10px; /* Ajustez pour un espacement intérieur si nécessaire */
-  border-left: 1px solid #ddd; /* Optionnel : ligne verticale pour indiquer les réponses */
-}
+  .responses {
+    margin-left: 20px; /* Ajustez cette valeur selon vos besoins */
+    padding-left: 10px; /* Ajustez pour un espacement intérieur si nécessaire */
+    border-left: 1px solid #ddd; /* Optionnel : ligne verticale pour indiquer les réponses */
+  }
 
   .forum-content {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-
 
     .tox-tinymce {
       width: 100%;
@@ -612,7 +630,8 @@
   }
 
   .tag-clickable {
-    &:hover, &:focus{
+    &:hover,
+    &:focus {
       text-decoration: underline;
     }
   }
@@ -625,15 +644,16 @@
     margin-right: 5px;
     font-size: 14px;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       .icon-remove-tag {
-      display:inline-block;
+        display: inline-block;
       }
     }
 
     .icon-remove-tag {
       display: none;
-      &::before{
+      &::before {
         font-family: 'Material Symbols Outlined';
         content: '\e5cd';
         font-size: 19px;
@@ -709,12 +729,14 @@
           font-size: 24px;
           font-variation-settings: 'wght' 300;
           &:hover {
-            font-variation-settings: 'wght' 300, 'FILL' 1;
+            font-variation-settings:
+              'wght' 300,
+              'FILL' 1;
           }
         }
         .icon {
           color: var(--forum-active-text-color);
-          
+
           &::before {
             font-family: 'Material Symbols Outlined';
             content: attr(data-icon);
@@ -725,7 +747,7 @@
             color: inherit;
           }
         }
-      
+
         .more_action {
           display: flex;
           align-items: center; /* Centre l'icône verticalement */
@@ -734,26 +756,30 @@
           height: 35px; /* Hauteur fixe pour le carré */
           padding: 0; /* Évitez le padding qui pourrait décaler l'icône */
           border-radius: 5px; /* Coins arrondis */
-          transition: background-color 0.3s ease, color 0.3s ease;
+          transition:
+            background-color 0.3s ease,
+            color 0.3s ease;
           margin-right: 3px;
         }
-        
+
         .more_action .icon {
           font-size: 24px; /* Ajustez la taille de l'icône si nécessaire */
           line-height: 1; /* Empêche les décalages verticaux */
           color: inherit; /* Assure que la couleur s’adapte */
         }
-        
+
         .more_action:hover {
           background-color: var(--hover-background-color);
           cursor: pointer;
         }
-        
+
         .more_action:hover .icon::before {
-          font-variation-settings: 'wght' 400, 'FILL' 1;
+          font-variation-settings:
+            'wght' 400,
+            'FILL' 1;
           color: var(--forum-hover-text-color);
         }
-        
+
         .more_action.active .icon::before {
           font-variation-settings: 'FILL' 1;
         }
@@ -766,26 +792,32 @@
           position: absolute;
           bottom: -75px;
           left: -171px; // Ajustement de la position vers la gauche
-          transform: translateX(-10px); // Ajustement supplémentaire vers la gauche
+          transform: translateX(
+            -10px
+          ); // Ajustement supplémentaire vers la gauche
           // width: 198px;
           // height: 100px;
           border-radius: 10px;
           background-color: var(--bureau-card-background-color);
           box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
           z-index: 200;
-        
+
           .post-options-button {
             display: flex;
             align-items: center;
             border: none;
             outline: none;
-            background-color: var(--bureau-card-background-color); // même couleur de fond
+            background-color: var(
+              --bureau-card-background-color
+            ); // même couleur de fond
             cursor: pointer;
             color: inherit; // conserver la couleur du texte du parent
             border-radius: 5px;
-        
+
             &:hover {
-              background-color: var(--hover-background-color); // légère modification au survol
+              background-color: var(
+                --hover-background-color
+              ); // légère modification au survol
             }
           }
         }
@@ -890,14 +922,14 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding : 5px;
+    padding: 5px;
     position: absolute;
     bottom: -50px;
     width: 198px;
     height: 60px;
     border-radius: 10px;
     background-color: var(--bureau-card-background-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 200;
   }
 
@@ -906,35 +938,35 @@
     align-items: center;
     border: none;
     outline: none;
-    background-color: var(--bureau-card-background-color); /* Appliquer la même couleur de fond */
+    background-color: var(
+      --bureau-card-background-color
+    ); /* Appliquer la même couleur de fond */
     cursor: pointer;
     color: inherit; /* Conserver la couleur de texte définie par parent */
     border-radius: 5px;
-  
 
     /* Modifier l'apparence au survol des boutons */
     &:hover {
       background-color: rgba(0, 0, 0, 0.05); /* Légère modification au survol */
     }
-  }  
+  }
 
   .forum-comment-input {
     margin-top: 5px;
   }
 
-  [role="button"] {
+  [role='button'] {
     cursor: pointer;
   }
-
 
   #go-back-to-articles {
     &:hover {
       color: var(--input-mel-text-color);
-      cursor:pointer;
+      cursor: pointer;
     }
   }
   .close-button:focus {
-    color: red!important
+    color: red !important;
   }
   .editor-toolbar {
     background-color: white;
@@ -947,22 +979,24 @@
   .filled {
     font-variation-settings:
       'FILL' 1,
-      'wght' 300,
-      !important;
+      'wght' 300 !important;
     &:hover {
       font-variation-settings:
         'FILL' 0,
-        'wght' 300,
-        !important;
+        'wght' 300 !important;
     }
   }
   .hoverable {
     &:hover {
-      background-color: var(--hover-background-color); /* Couleur de fond au survol */
-      font-variation-settings: 'FILL' 1, 'wght' 300; /* Remplir l'icône au survol */
+      background-color: var(
+        --hover-background-color
+      ); /* Couleur de fond au survol */
+      font-variation-settings:
+        'FILL' 1,
+        'wght' 300; /* Remplir l'icône au survol */
     }
   }
-  .favorite{
+  .favorite {
     display: inline-flex; /* Défini dès le départ */
     justify-content: center;
     align-items: center;
@@ -970,13 +1004,17 @@
     height: 35px;
     padding: 0; /* Éviter tout changement de padding */
     margin: 0; /* Éviter tout changement de margin */
-    font-variation-settings: 'FILL' 0, 'wght' 300; /* État par défaut */
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 300; /* État par défaut */
     border-radius: 5px;
     background-color: transparent; /* Pas de couleur de fond par défaut */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
-  
-  .error-message{
+
+  .error-message {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -984,7 +1022,7 @@
     margin-top: 18%;
   }
 
-  .new_posts{
+  .new_posts {
     .forum-content {
       display: flex;
       justify-content: center;
@@ -1000,6 +1038,13 @@
       box-shadow: none;
       border-bottom: solid 1px var(--scrollbar-background-color);
       border-radius: 0;
+      transition: var(--transition-all, none);
+
+      &:hover {
+        box-shadow: 0px 0px 5px black;
+        border-radius: 5px;
+      }
+
       &:last-child {
         border-bottom: none;
       }
@@ -1018,21 +1063,19 @@
         align-items: baseline;
       }
       .post-footer {
-        .post-reaction{
+        .post-reaction {
           margin: 5px 0 5px;
           .filled {
             font-variation-settings:
               'FILL' 1,
-              'wght' 300,
-              !important;
+              'wght' 300 !important;
             &:hover {
               font-variation-settings:
                 'FILL' 1,
-                'wght' 300,
-                !important;
+                'wght' 300 !important;
             }
           }
-          .post-reaction-info{
+          .post-reaction-info {
             background-color: none;
             padding: 0 8px;
             margin-right: 5px;

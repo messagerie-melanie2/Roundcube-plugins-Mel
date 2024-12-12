@@ -396,7 +396,7 @@ class PostComment {
               submitButton.prop('disabled', false);
           }
       } else {
-          rcmail.display_message(rcmail.gettext('mel_forum.comment_content_empty', 'error');
+          rcmail.display_message(rcmail.gettext('mel_forum.comment_content_empty'), 'error');
       }
   }
 

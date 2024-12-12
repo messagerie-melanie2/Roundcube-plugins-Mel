@@ -344,7 +344,6 @@ class PostComment {
    * @returns {Promise<void>} - Aucune valeur de retour spécifique.
    */
   async toggleReplyForm(uid, parentId) {
-    debugger;
     let form = $('#reply-form-' + uid);
     let isVisible = !form.hasClass('hidden');
 

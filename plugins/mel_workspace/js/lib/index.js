@@ -91,6 +91,31 @@ const archived = MelObject.Empty().gettext(EMode.archived, 'mel_workspace');
  * @package
  */
 const publics = MelObject.Empty().gettext(EMode.publics, 'mel_workspace');
+/**
+ * Si le système d'overflow est actif ou non pour les paneaux
+ * @default true
+ * @type {boolean}
+ * @constant
+ * @package
+ */
+const OVERFLOW_ENABLED = true;
+/**
+ * Valeur du display de la div qui contient le panel
+ * @default 'var(--workspace-panel-overflow-system-display, block)'
+ * @type {string}
+ * @constant
+ * @package
+ */
+const OVERFLOW_CSS_DISPLAY =
+  'var(--workspace-panel-overflow-system-display, block)';
+/**
+ * Valeur de la prop' overflow de la div qui contient le panel
+ * @default 'var(--workspace-panel-overflow-system, auto)'
+ * @type {string}
+ * @constant
+ * @package
+ */
+const OVERFLOW_CSS_PROP = 'var(--workspace-panel-overflow-system, auto)';
 //#endregion
 
 /**
@@ -165,14 +190,16 @@ class IndexWorkspace extends MelObject {
     this._set_blocks_listeners();
 
     //Gestion de l'overflow
-    $('.workspace-list')
-      .parent()
-      .css('display', 'block')
-      .css('overflow', 'auto');
+    if (OVERFLOW_ENABLED) {
+      $('.workspace-list')
+        .parent()
+        .css('display', OVERFLOW_CSS_DISPLAY)
+        .css('overflow', OVERFLOW_CSS_PROP);
 
-    $(window).resize(this._on_resize.bind(this));
+      $(window).resize(this._on_resize.bind(this));
 
-    this._on_resize();
+      this._on_resize();
+    }
   }
 
   /**
@@ -225,7 +252,9 @@ class IndexWorkspace extends MelObject {
       this._set_blocks_listeners();
 
       if (FramesManager.Instance.has_frame('bureau')) {
-        FramesManager.Instance.get_frame('bureau', {jquery:false}).contentWindow.location.reload();
+        FramesManager.Instance.get_frame('bureau', {
+          jquery: false,
+        }).contentWindow.location.reload();
       }
     });
   }

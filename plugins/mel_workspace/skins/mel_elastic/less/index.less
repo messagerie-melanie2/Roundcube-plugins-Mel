@@ -1,5 +1,9 @@
-//compress:false
 @import 'variables/index.less';
+
+:root {
+  --workspace-panel-overflow-system-display: @root-overflow-system-display;
+  --workspace-panel-overflow-system: @root-overflow-sytem;
+}
 
 .body {
   padding-left: var(
@@ -35,6 +39,10 @@
       --workspace-page-index-create-button-padding,
       @header-create-padding[TOP] @header-create-padding[RIGHT]
         @header-create-padding[BOTTOM] @header-create-padding[LEFT]
+    );
+    border-radius: var(
+      --workspace-page-index-create-button-border-radius,
+      var(--primary-button-border-radius, @header-create-button-border-radius)
     );
     height: min-content;
     display: flex;
@@ -168,12 +176,22 @@ bnum-tabs {
 }
 
 .wsp-search-wsp {
+  margin: var(--workspace-head-search-margin, @head-search-margin);
+
   label {
     display: block;
     text-align: var(--workspace-head-text-align, @head-text-align);
+    margin: var(
+      --workspace-head-search-label-margin,
+      @head-search-label-margin
+    );
   }
   .mel-search-group {
     justify-content: var(--workspace-head-text-align, @head-text-align);
+    margin: var(
+      --workspace-head-search-input-margin,
+      @head-search-input-margin
+    );
   }
   button {
     &.mel-button {

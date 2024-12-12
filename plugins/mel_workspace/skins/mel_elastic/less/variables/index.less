@@ -1,9 +1,17 @@
 // out: false
 @import './base.less';
 
+// #region MARK: Root
+// ### Overflow System ###
+// Gérer l'overflow des panneaux des espaces
+@root-overflow-system-display: block;
+@root-overflow-sytem: auto;
+// #endregion
 // #region MARK: Head
+//Alignement du titre et de la recherche
 @head-text-align: center;
-//page header
+//### Page Header ###
+//Margin et padding de la div qui contient le titre et la recherche
 @page-header-margins: {
   TOP: 30px;
   BOTTOM: 0;
@@ -16,14 +24,16 @@
   LEFT: 0;
   RIGHT: 0;
 };
-//head
+// ### Head ###
+//Margin de la div qui contient l'icône et le titre de la page
 @head-main-margins: {
   TOP: 0;
   BOTTOM: 0;
   LEFT: 0;
   RIGHT: 0;
 };
-//icon
+// ### Icon ###
+//Icône du titre de la page
 @head-icon-margins: {
   TOP: 0;
   BOTTOM: 0;
@@ -45,7 +55,8 @@
   --page-title-icon-color,
   var(--secondary-text-color, white)
 );
-//title
+// ### Title ###
+// Titre de la page
 @head-title-margins: {
   TOP: 0;
   BOTTOM: 0;
@@ -56,15 +67,41 @@
   --page-title-font-size,
   var(--h1-font-size, xxx-large)
 );
+// #region MARK: Head/Search
+// Recherche de la page
+// Div qui contient le label et l'input de recherche
+@head-search-margins: {
+  TOP: 0;
+  BOTTOM: 0;
+  LEFT: 0;
+  RIGHT: 0;
+};
+// Label "Rechercher un espace de travail" avant l'input
+@head-search-label-margins: {
+  TOP: 0;
+  BOTTOM: 0;
+  LEFT: 0;
+  RIGHT: 0;
+};
+// Input de la recherche
+@head-search-input-margins: {
+  TOP: 0;
+  BOTTOM: 0;
+  LEFT: 0;
+  RIGHT: 0;
+};
+// #endregion
 // #endregion
 // #region MARK: Body
+// Zone en dessous de la zone de titre
 @body-padding: {
   LEFT: 50px;
   RIGHT: 50px;
 };
 // #endregion
 
-// #region MARK: Header
+// #region MARK: Header Panel
+// Zone après les onglets, mais avant la liste des espaces (Actuellement, la où se trouve le bouton "Créer un espace"
 @header-margin: {
   TOP: 10px;
   BOTTOM: 5px;
@@ -73,6 +110,7 @@
 @header-padding: 0 5px;
 
 // Header/Create Button
+// Bouton de création d'un espace qui se trouve après les onglets, mais avant la liste des espaces
 @header-create-margin-left: 15px;
 @header-create-padding-base: 5px;
 @header-create-padding: {
@@ -81,12 +119,17 @@
   LEFT: 10px; //Initial mel-button
   RIGHT: 10px; //Initial mel-button
 };
+@header-create-button-border-radius: 50px;
 
 // Header/Create Button/Icon
+// Icône "plus" après "créer un espace"
 @header-create-icon-font-size: 1.5rem;
 // #endregion
 
 // #region MARK: Pressed list
+// Se trouve à droite du bouton créer dans la zone du header panel (Mode lite ou card)
+// Fonctionnement visuel de la liste de boutons à états
+// Ici, visuel de la div qui contient les boutons
 @pressed-list-background-color: var(--card-background-color, #f8f8f8);
 @pressed-list-border-radius: 10px;
 @pressed-list-paddings: {
@@ -96,7 +139,8 @@
   RIGHT: 5px;
 };
 
-//Pressed list/Buttons
+// Pressed list/Buttons
+// Visuels des boutons de la liste
 @pressed-list-button-color: var(
   --secondary-mel-button-text-color,
   var(--main-text-color, black)
@@ -110,11 +154,13 @@
   BOTTOM: 5px; //Initial
   LEFT: 2.5px;
 };
+// Boutons au survol
 @pressed-list-button-hover-background-color: var(--default-bckg-color, white);
 @pressed-list-button-hover-color: var(
   --pressed-list-button-color,
   @pressed-list-button-color
 );
+// Boutons actifs
 @pressed-list-button-pressed-color: var(
   --pressed-list-button-hover-color,
   @pressed-list-button-hover-color
@@ -124,7 +170,8 @@
   @pressed-list-button-hover-background-color
 );
 
-//Pressed list/Buttons/childs
+// Pressed list/Buttons/childs
+// Affichage du premier bouton de la liste
 @pressed-list-button-first-child-margins: {
   TOP: @pressed-list-button-margins[TOP];
   RIGHT: @pressed-list-button-margins[RIGHT];
@@ -132,6 +179,7 @@
   LEFT: 5px;
 };
 
+// Affichage du dernier bouton de la liste
 @pressed-list-button-last-child-margins: {
   TOP: @pressed-list-button-margins[TOP];
   RIGHT: 5px;
@@ -141,6 +189,7 @@
 // #endregion
 
 // #region MARK: Tabs
+//Div qui contient les onglets
 @tab-height: 100%;
 // #endregion
 
@@ -174,6 +223,14 @@
   @pressed-list-button-last-child-margins[RIGHT]
   @pressed-list-button-last-child-margins[BOTTOM]
   @pressed-list-button-last-child-margins[LEFT];
+@head-search-margin: @head-search-margins[TOP] @head-search-margins[RIGHT]
+  @head-search-margins[BOTTOM] @head-search-margins[LEFT];
+@head-search-label-margin: @head-search-label-margins[TOP]
+  @head-search-label-margins[RIGHT] @head-search-label-margins[BOTTOM]
+  @head-search-label-margins[LEFT];
+@head-search-input-margin: @head-search-input-margins[TOP]
+  @head-search-input-margins[RIGHT] @head-search-input-margins[BOTTOM]
+  @head-search-input-margins[LEFT];
 // #endregion
 // #region MARK: Paddings
 @page-header-padding: @page-header-paddings[TOP] @page-header-paddings[RIGHT]

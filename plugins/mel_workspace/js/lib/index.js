@@ -193,7 +193,7 @@ class IndexWorkspace extends MelObject {
     if (OVERFLOW_ENABLED) {
       $('.workspace-list')
         .parent()
-        .css('display', OVERFLOW_CSS_DISPLAY)
+        // .css('display', OVERFLOW_CSS_DISPLAY)
         .css('overflow', OVERFLOW_CSS_PROP);
 
       $(window).resize(this._on_resize.bind(this));

@@ -77,9 +77,9 @@ export class New_posts extends MelObject {
         UID: post.uid,
         POST_TITLE: post.title,
         //POST_COUNT_REACTION: post.reaction,
-        POST_THUMB_UP: post.like_count,
-        POST_THUMB_DOWN: post.dislike_count,
-        POST_COMMENTS: post.comment_count,
+        POST_THUMB_UP: post.like_count.toString(),
+        POST_THUMB_DOWN: post.dislike_count.toString(),
+        POST_COMMENTS: post.comment_count.toString(),
         POST_IS_LIKED: post.isliked ? 'filled' : '',
         POST_IS_DISLIKED: post.isdisliked ? 'filled' : '',
       };

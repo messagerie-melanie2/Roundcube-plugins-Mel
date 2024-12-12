@@ -542,9 +542,9 @@ export class Forum extends MelObject {
                 POST_SUMMARY: post.summary,
                 POST_IMAGE: post.image_url,
                 //POST_COUNT_REACTION: post.reaction,
-                POST_THUMB_UP: post.like_count,
-                POST_THUMB_DOWN: post.dislike_count,
-                POST_COMMENTS: post.comment_count,
+                POST_THUMB_UP: post.like_count.toString(),
+                POST_THUMB_DOWN: post.dislike_count.toString(),
+                POST_COMMENTS: post.comment_count.toString(),
                 POST_FAVORITE: 
                     MelHtml.start.tag('i',{id: 'favorite-'+post.uid, tabindex:'0', title: post.favorite ? "Supprimer de mes favoris" : "Ajouter à mes favoris", class:`hoverable icon favorite material-symbols-outlined ${post.favorite ? 'filled' : ''}`}).text('star_border').end().generate_html({}),
                 POST_IS_LIKED: post.isliked ? "filled" : "",

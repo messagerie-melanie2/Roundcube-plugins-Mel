@@ -863,16 +863,36 @@
   overflow-x: hidden !important;
 }
 .task-forum .new_posts .post {
-  margin: 20px;
+  margin: 15px;
   box-shadow: none;
   border-bottom: solid 1px var(--scrollbar-background-color);
   border-radius: 0;
 }
+.task-forum .new_posts .post:last-child {
+  border-bottom: none;
+}
 .task-forum .new_posts .post .post-header {
   margin: 5px 0;
 }
+.task-forum .new_posts .post .post-header .post-date {
+  font-size: 13px;
+}
+.task-forum .new_posts .post .post-header .post-date i {
+  font-size: 17px !important;
+}
+.task-forum .new_posts .post .post-tags {
+  display: flex;
+  justify-content: end;
+  align-items: baseline;
+}
 .task-forum .new_posts .post .post-footer .post-reaction {
-  margin: 0 0 5px;
+  margin: 5px 0 5px;
+}
+.task-forum .new_posts .post .post-footer .post-reaction .filled {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
+}
+.task-forum .new_posts .post .post-footer .post-reaction .filled:hover {
+  font-variation-settings: 'FILL' 1, 'wght' 300 !important;
 }
 .task-forum .new_posts .post .post-footer .post-reaction .post-reaction-info {
   background-color: none;

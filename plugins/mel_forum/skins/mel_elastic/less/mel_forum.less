@@ -995,17 +995,43 @@
       overflow-x: hidden !important;
     }
     .post {
-      margin: 20px;
+      margin: 15px;
       box-shadow: none;
       box-shadow: none;
       border-bottom: solid 1px var(--scrollbar-background-color);
       border-radius: 0;
+      &:last-child {
+        border-bottom: none;
+      }
       .post-header {
         margin: 5px 0;
+        .post-date {
+          font-size: 13px;
+          i {
+            font-size: 17px !important;
+          }
+        }
+      }
+      .post-tags {
+        display: flex;
+        justify-content: end;
+        align-items: baseline;
       }
       .post-footer {
         .post-reaction{
-          margin: 0 0 5px;
+          margin: 5px 0 5px;
+          .filled {
+            font-variation-settings:
+              'FILL' 1,
+              'wght' 300,
+              !important;
+            &:hover {
+              font-variation-settings:
+                'FILL' 1,
+                'wght' 300,
+                !important;
+            }
+          }
           .post-reaction-info{
             background-color: none;
             padding: 0 8px;

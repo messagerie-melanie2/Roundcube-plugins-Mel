@@ -271,6 +271,7 @@ class PostComment {
   * @returns {Promise<void>} - Aucune valeur de retour spécifique.
   */
   async toggleReplyForm(uid, parentId) {
+    debugger;
     let form = $('#reply-form-' + uid);
     let isVisible = !form.hasClass('hidden');
     
@@ -644,7 +645,7 @@ class PostComment {
     let dislikeClass = this.current_user_reacted === 'dislike' ? 'reaction-item active mr-3' : 'reaction-item mr-3';
 
     // Détermination du pluriel ou du singulier pour "réponse(s)"
-    let reponseText = this.children_number > 1 ? rcmail.gettext('mel_forum.response_plural') : cmail.gettext('mel_forum.response_singular');
+    let reponseText = this.children_number > 1 ? rcmail.gettext('mel_forum.response_plural') : rcmail.gettext('mel_forum.response_singular');
 
     // Fonction pour parser une date en français
     function parseFrenchDate(dateString) {

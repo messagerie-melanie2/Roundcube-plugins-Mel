@@ -264,16 +264,22 @@ class IndexWorkspace extends MelObject {
    * @package
    */
   _container_resize() {
-    const constant = 50;
+    const bar_pixel_correction = 30;
+    const header_panel = 15;
+    const constant = bar_pixel_correction;
 
     let tab = null;
     for (tab of $('bnum-tabs')) {
       tab = $(tab);
       const tabs = tab.find('[role="tablist"]').height(); //$('bnum-tabs [role="tablist"]').height();
       const baseHeaderPannel = tab.find('.header-pannel').height(); //$('bnum-tabs .header-pannel').height();
-      const headerPannel = isNaN(baseHeaderPannel) ? 0 : baseHeaderPannel + 15;
+      const headerPannel = isNaN(baseHeaderPannel)
+        ? 0
+        : baseHeaderPannel - header_panel;
+      // const headerHeight = $('.wsp-header').height();
       const total = tab.height();
 
+      console.log('$$$', total, tabs, headerPannel, constant);
       const result = total - tabs - headerPannel - constant;
 
       if (this._container === true)
@@ -555,7 +561,7 @@ class IndexWorkspace extends MelObject {
   _on_resize() {
     $('.body').css(
       'height',
-      `${$('#layout-content').height() - $('.wsp-header').height()}px`,
+      `${$('#layout-content').height() - ($('.wsp-header').height() + 50)}px`,
     );
 
     this._container_resize();

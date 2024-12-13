@@ -4767,3 +4767,8 @@ bnum-infinite-scroll-container {
 bnum-button-icon {
   align-items: center;
 }
+.fullscreen-visio #refresh-current-window-frame {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.65;
+}

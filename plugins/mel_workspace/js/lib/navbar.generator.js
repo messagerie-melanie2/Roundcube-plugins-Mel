@@ -76,6 +76,8 @@ export class NavBarManager {
   static Generate(workspace) {
     let nav = this.nav;
 
+    if (this.currentNavBar) this.currentNavBar.remove();
+
     if (!nav.document.querySelector(`#navbar-${workspace.uid}`)) {
       /**
        * @type {WspNavBar}

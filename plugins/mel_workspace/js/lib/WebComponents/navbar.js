@@ -190,6 +190,7 @@ class WspNavBar extends HtmlCustomTag {
   }
 
   _p_main() {
+    this.style.display = 'none';
     this.data('shadow', true);
 
     let shadow = this._p_start_construct();
@@ -234,6 +235,10 @@ class WspNavBar extends HtmlCustomTag {
     div = null;
     //style = null;
     shadow = null;
+
+    setTimeout(() => {
+      this.style.display = EMPTY_STRING;
+    }, 10);
   }
 
   _generate_back_button() {

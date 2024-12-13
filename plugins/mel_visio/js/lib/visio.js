@@ -9,7 +9,6 @@ import { Toolbar } from '../../../mel_metapage/js/lib/classes/toolbar.js';
 import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.js';
 import { BnumConnector } from '../../../mel_metapage/js/lib/helpers/bnum_connections/bnum_connections.js';
 import { InternetNavigator } from '../../../mel_metapage/js/lib/helpers/InternetNavigator.js';
-import { AvatarElement } from '../../../mel_metapage/js/lib/html/JsHtml/CustomAttributes/avatar.js';
 import { MelHtml } from '../../../mel_metapage/js/lib/html/JsHtml/MelHtml.js';
 import { capitalize } from '../../../mel_metapage/js/lib/mel.js';
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
@@ -28,6 +27,8 @@ class Visio extends MelObject {
 
   main() {
     super.main();
+
+    (top ?? parent ?? window).$('html').addClass('fullscreen-visio');
 
     FramesManager.Instance.attach('url', () => {
       const use_top = true;
@@ -69,6 +70,8 @@ class Visio extends MelObject {
 
         top.rcmail.triggerEvent('visio.back');
 
+        (top ?? parent ?? window).$('html').addClass('fullscreen-visio');
+
         return 'break';
       } else
         top
@@ -76,6 +79,8 @@ class Visio extends MelObject {
           .attr('title', 'Maximiser la visioconférence')
           .find('bnum-icon')
           .text('fullscreen');
+
+      (top ?? parent ?? window).$('html').removeClass('fullscreen-visio');
     });
 
     this._init()._setup().start();

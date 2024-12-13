@@ -6,6 +6,7 @@
 import { EMPTY_STRING } from '../constants/constants.js';
 import { HTMLButtonGroup } from '../html/JsHtml/CustomAttributes/HTMLButtonGroup.js';
 import { MelHtml } from '../html/JsHtml/MelHtml.js';
+import { isNullOrUndefined } from '../mel.js';
 import { BnumEvent } from '../mel_events.js';
 import { MelObject } from '../mel_object.js';
 import { Mel_Promise } from '../mel_promise.js';
@@ -1000,7 +1001,38 @@ class Window {
     let frame = this._frames.get(task);
     this._frames.remove(task);
 
-    frame.$frame.remove();
+    frame.$frame.parent().remove();
+    return this;
+  }
+
+  async refresh() {
+    const plugin = rcmail.triggerEvent('frame.refresh.manual', {
+      stop: false,
+      caller: this,
+    }) ?? { stop: false };
+
+    if (plugin.stop) return this;
+
+    const url = this.get_frame()[0].contentWindow.location.href;
+    if (!url) this.get_frame()[0].contentWindow.location.reload();
+    else {
+      const task = this._current_frame.task;
+      let args = {};
+
+      for (const element of url.split('?_task=')[1].split('&')) {
+        const [key, value] = element.split('=');
+
+        if (!isNullOrUndefined(value) && !!key && !key.includes('_task'))
+          args[key] = value;
+      }
+
+      this.remove_frame(task);
+
+      await this.switch_frame(task, {
+        args,
+      });
+    }
+
     return this;
   }
 

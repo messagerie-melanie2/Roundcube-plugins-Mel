@@ -488,9 +488,7 @@
         align-items: center;
 
         .icon {
-          color: var(
-            --forum-active-text-color
-          ); /* Couleur uniforme pour toutes les icônes */
+          color: var(--main-text-color); /* Couleur uniforme pour toutes les icônes */
 
           &::before {
             font-family: 'Material Symbols Outlined';
@@ -526,9 +524,7 @@
               font-variation-settings:
                 'wght' 400,
                 'FILL' 1; /* Remplir l'icône lors du survol */
-              color: var(
-                --forum-hover-text-color
-              ); /* Optionnel : Changer la couleur au survol */
+              color: var(--main-text-color);
             }
           }
 
@@ -736,6 +732,7 @@
         position: relative;
         display: flex;
         align-items: center;
+        color: var(--main-text-color);
         i {
           font-size: 24px;
           font-variation-settings: 'wght' 300;
@@ -746,7 +743,7 @@
           }
         }
         .icon {
-          color: var(--forum-active-text-color);
+          color: var(--main-text-color);
 
           &::before {
             font-family: 'Material Symbols Outlined';
@@ -811,6 +808,7 @@
           border-radius: 10px;
           background-color: var(--bureau-card-background-color);
           box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+          color: var(--main-text-color);
           z-index: 200;
 
           .post-options-button {
@@ -818,17 +816,17 @@
             align-items: center;
             border: none;
             outline: none;
-            background-color: var(
-              --bureau-card-background-color
-            ); // même couleur de fond
+            background-color: var(--bureau-card-background-color); // même couleur de fond
             cursor: pointer;
             color: inherit; // conserver la couleur du texte du parent
             border-radius: 5px;
-
             &:hover {
               background-color: var(
                 --hover-background-color
               ); // légère modification au survol
+            }
+            .post-options-icon {
+              font-size: 17px !important;
             }
           }
         }

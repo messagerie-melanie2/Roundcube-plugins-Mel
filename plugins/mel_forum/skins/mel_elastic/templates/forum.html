@@ -80,17 +80,17 @@
                 <span class="more_action icon" id="more-%%UID%%" data-icon="more_vert" tabindex="0" role="button" title="Plus d'options" aria-label="Options supplémentaires pour l'article intitulé %%POST_TITLE%%" aria-haspopup="true" aria-expanded="false"></span>
                 <div id="post-context-menu-%%UID%%" class="forum-post-context-menu hidden" role="menu" aria-labelledby="trigger-%%UID%%" aria-hidden="true">
                   <h3 id="aria-label-groupoptions-smallmenu" class="voice">Menu du post</h3>
+                  <button class="post-options-button copy-post" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link" data-id="%%UID%%" title="<roundcube:label name="mel_forum.copy_article" />" >
+                    <span class="icon material-symbols-outlined post-options-icon" data-icon="content_copy"></span>
+                    <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.copy_article" /></span>
+                  </button>
                   <button class="post-options-button edit-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="modify_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.edit_article" />" >
-                    <span class="icon material-symbols-outlined" data-icon="border_color"></span>
+                    <span class="icon material-symbols-outlined post-options-icon" data-icon="border_color"></span>
                     <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.edit_article" /></span>
                   </button>
                   <button class="post-options-button delete-post %%HAS_OWNER_RIGHTS%%" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="delete_post" data-id="%%UID%%" title="<roundcube:label name="mel_forum.delete_article" />" >
-                    <span class="icon material-symbols-outlined" data-icon="delete"></span>
+                    <span class="icon material-symbols-outlined post-options-icon" data-icon="delete"></span>
                     <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.delete_article" /></span>
-                  </button>
-                  <button class="post-options-button copy-post" tabindex="0" role="menuitem" aria-labelledby="aria-label-post-options-menu-%%UID%%" data-action="copy_post_link" data-id="%%UID%%" title="<roundcube:label name="mel_forum.copy_article" />" >
-                    <span class="icon material-symbols-outlined" data-icon="content_copy"></span>
-                    <span class="post-options-text" style="margin-left: 8px;"><roundcube:label name="mel_forum.copy_article" /></span>
                   </button>
                 </div>
                 %%POST_FAVORITE%%

@@ -400,7 +400,7 @@
   align-items: center;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .icon {
-  color: var(--forum-active-text-color);
+  color: var(--main-text-color);
   /* Couleur uniforme pour toutes les icônes */
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .icon::before {
@@ -434,8 +434,7 @@
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item:hover .icon::before {
   font-variation-settings: 'wght' 400, 'FILL' 1;
   /* Remplir l'icône lors du survol */
-  color: var(--forum-hover-text-color);
-  /* Optionnel : Changer la couleur au survol */
+  color: var(--main-text-color);
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.active .icon::before {
   font-family: 'Material Symbols Outlined';
@@ -618,6 +617,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  color: var(--main-text-color);
 }
 .task-forum .post .post-header .post-actions i {
   font-size: 24px;
@@ -627,7 +627,7 @@
   font-variation-settings: 'wght' 300, 'FILL' 1;
 }
 .task-forum .post .post-header .post-actions .icon {
-  color: var(--forum-active-text-color);
+  color: var(--main-text-color);
 }
 .task-forum .post .post-header .post-actions .icon::before {
   font-family: 'Material Symbols Outlined';
@@ -686,6 +686,7 @@
   border-radius: 10px;
   background-color: var(--bureau-card-background-color);
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+  color: var(--main-text-color);
   z-index: 200;
 }
 .task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button {
@@ -700,6 +701,9 @@
 }
 .task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button:hover {
   background-color: var(--hover-background-color);
+}
+.task-forum .post .post-header .post-actions .forum-post-context-menu .post-options-button .post-options-icon {
+  font-size: 17px !important;
 }
 .task-forum .post .post-content .post-title {
   font-weight: 600;

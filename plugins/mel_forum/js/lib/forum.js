@@ -523,6 +523,24 @@ export class Forum extends MelObject {
         });
     }
 
+    openComments(post_link, event)
+    {
+        if (event) {
+            // Gestion des interactions clavier
+            if (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault(); // Empêche le défilement ou autre comportement par défaut
+                event.stopPropagation();
+            } else if (event.type === 'click') {
+                event.preventDefault(); // Empêche l'action par défaut des clics
+                event.stopPropagation();
+            } else {
+                // Si ce n'est ni un clic ni une interaction clavier, ne pas continuer
+                return;
+            }
+        }
+        window.location.href = post_link + "#comment-section";
+    }
+
     /**
      * affiche les posts passés en paramètres dans la div post-area
      * @param {*} posts 
@@ -561,6 +579,8 @@ export class Forum extends MelObject {
             .addEvent('#add_like-'+post.uid, 'keydown', this.addLikeOrDislike.bind(this, 'like', post.id, post.uid)) // Gestion au clavier
             .addEvent('#add_dislike-'+post.uid,'click',this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid))
             .addEvent('#add_dislike-'+post.uid, 'keydown', this.addLikeOrDislike.bind(this, 'dislike', post.id, post.uid)) // Gestion au clavier
+            .addEvent('#add_comment-'+post.uid,'click',this.openComments.bind(this, post.post_link))
+            .addEvent('#add_comment-'+post.uid, 'keydown', this.openComments.bind(this, post.post_link)) // Gestion au clavier
             .addEvent('#more-'+post.uid, 'click', this.toggleMenuPost.bind(this, post.uid))
             .addEvent('#more-'+post.uid, 'keydown', this.toggleMenuPost.bind(this, post.uid)) // Gestion au clavier
             .addEvent('.post-options-button.edit-post', 'click', this.editPost.bind(this, post.uid)) // Ajout du gestionnaire pour "Modifier l'article"

@@ -1,5 +1,6 @@
 // Selectors
 export const SELECTOR_BUTTON_START = '#webconf-enter';
+export const SELECTOR_BUTTON_QUIT = '#quit-modal';
 export const SELECTOR_CHECKBOX_CHANNEL = '#wsp-yes';
 export const SELECTOR_DIV_WSP = '.webconf-wsp';
 export const SELECTOR_DIV_CHANNEL = '.webconf-ariane';

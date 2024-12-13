@@ -9,7 +9,7 @@ import { EMPTY_STRING } from '../../../mel_metapage/js/lib/constants/constants.j
 import { MelObject } from '../../../mel_metapage/js/lib/mel_object.js';
 import { Locks } from './classes/locks.js';
 import { VisioView } from './classes/view.js';
-import { SELECTOR_BUTTON_START, SELECTOR_DIV_WSP } from './consts.js';
+import { SELECTOR_BUTTON_QUIT, SELECTOR_BUTTON_START } from './consts.js';
 import { VisioFunctions } from './helpers.js';
 export { VisioCreator };
 
@@ -77,6 +77,11 @@ class VisioCreator extends MelObject {
     //$(SELECTOR_DIV_WSP).find('select').val('test-9');
 
     $(SELECTOR_BUTTON_START).click(this._on_button_click.bind(this)); //.click();
+    $(SELECTOR_BUTTON_QUIT).click(() => {
+      FramesManager.Instance.get_window()._history.back({
+        defaultFrame: 'bureau',
+      });
+    });
   }
 
   /**

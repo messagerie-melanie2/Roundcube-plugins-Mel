@@ -437,9 +437,9 @@ class HistoryManager {
     return !!this.$back;
   }
 
-  back() {
+  back({ defaultFrame = null } = {}) {
     return FramesManager.Helper.current.switch_frame(
-      this._history[this._history.length - 1],
+      this._history?.[this._history.length - 1] ?? defaultFrame,
       {},
     );
   }

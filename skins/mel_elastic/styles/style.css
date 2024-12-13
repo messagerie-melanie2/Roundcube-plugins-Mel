@@ -4772,3 +4772,8 @@ bnum-button-icon {
   cursor: default;
   opacity: 0.65;
 }
+html.app-busy .not-busy-only {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.6;
+}

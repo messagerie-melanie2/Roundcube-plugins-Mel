@@ -1464,6 +1464,7 @@ class FrameManager {
       $it = $(iterator);
 
       $it
+        .addClass('not-busy-only')
         .attr('data-task', $it.attr('href').split('=')[1])
         .attr('href', '#')
         .attr('onclick', EMPTY_STRING);

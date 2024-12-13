@@ -51,6 +51,8 @@ export class WspButton extends NavBarComponent {
 
     this._p_beforeMain();
 
+    this.classList.add('not-busy-only');
+
     this.setAttribute('role', 'button');
     this.setAttribute('tabindex', 0);
 

@@ -103,6 +103,7 @@ export class WspPageNavigation extends NavBarComponent {
         this.parent.startingStates[task],
       ),
     });
+    button.classList.add('not-busy-only');
     button.onbuttonclick.push(
       this.onbuttonclicked.call.bind(this.onbuttonclicked),
       task,

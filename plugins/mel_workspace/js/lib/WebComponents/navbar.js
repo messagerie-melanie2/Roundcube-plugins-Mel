@@ -190,6 +190,8 @@ class WspNavBar extends HtmlCustomTag {
   }
 
   _p_main() {
+    // this.attachInternals().states.add('can-be-busy');
+    this.classList.add('can-be-busy');
     this.style.display = 'none';
     this.data('shadow', true);
 

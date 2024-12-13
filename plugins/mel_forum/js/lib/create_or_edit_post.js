@@ -26,7 +26,6 @@ export class create_or_edit_post extends MelObject {
             window.location.href = this.url('forum',{action:'index', params:{'workspace_uid': this.workspace}});
         });
  
-        
         let config = rcmail.env.editor_config;
         config.mode = 'forum';
         rcmail.addEventListener('editor-init',(args)=> {
@@ -41,6 +40,7 @@ export class create_or_edit_post extends MelObject {
             this.addImageDialog();
         };
         $("#edit-title").val(post.title);
+        $('#enable_comment').prop('checked', post.settings.comments);
         this.post_uid = post.uid;
         this.tags = post.tags || [];
         this.displayTags();

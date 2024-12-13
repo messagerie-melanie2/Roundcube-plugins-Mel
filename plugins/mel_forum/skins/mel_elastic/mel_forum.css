@@ -609,6 +609,10 @@
   display: flex;
   align-items: center;
   margin-left: 5px;
+  font-size: 13px;
+}
+.task-forum .post .post-header .post-creator .post-date i {
+  font-size: 17px !important;
 }
 .task-forum .post .post-header .post-actions {
   position: relative;

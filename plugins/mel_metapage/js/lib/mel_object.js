@@ -310,7 +310,7 @@ class MelObject {
    * @async
    * @returns {Promise}
    */
-  async switch_frame(task, { changepage = true, args = null }) {
+  async switch_frame(task, { changepage = true, args = null } = {}) {
     await FramesManager.Instance.switch_frame(task, {
       changepage,
       args,

@@ -48,6 +48,8 @@ class ToolbarFunctions {
         else FramesManager.Instance.switch_frame('bureau', {});
       });
 
+    (top ?? parent ?? window).$('html').removeClass('fullscreen-visio');
+
     FramesManager.Instance.attach('switch_frame', (task, changeframe) => {
       if (changeframe) {
         top.$('#visio-back-button').remove();

@@ -158,20 +158,16 @@ class InfiniteScrollContainer extends HtmlCustomTag {
    * @package
    */
   async _on_scroll() {
+    const max = this.scrollHeight - this.clientHeight;
     let nav = this.$.find('.contents');
 
     if (!nav.length) nav = this.$;
 
-    if (
-      this.$.scrollTop() > 1 &&
-      this.$.scrollTop() >= (this.scrollTopMax * 95) / 100
-    ) {
+    if (this.scrollTop > 1 && this.scrollTop >= max) {
       // Affichage de la page suivante au bas de la page
       let page = this._current_page_scroll;
       if (!rcmail.busy)
-        console.log(
-          'Fin de la liste des mails, recherche de mails plus ancien....',
-        );
+        console.log('Fin de la liste, recherche de données plus anciennes....');
       if (
         page > 0 &&
         page <= (await this._get_count_max()) &&
@@ -194,7 +190,8 @@ class InfiniteScrollContainer extends HtmlCustomTag {
             console.log('Recherche terminée !');
             rcmail.set_busy(false, 'loading', lock);
           });
-      } else if (!rcmail.busy) console.log("Il n'y a pas de nouveaux mails");
+      } else if (!rcmail.busy)
+        console.log("Il n'y a pas de nouvelles données...");
     }
   }
 

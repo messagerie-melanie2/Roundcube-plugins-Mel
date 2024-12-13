@@ -350,12 +350,6 @@ class PostComment {
     // Masquer tous les autres formulaires de réponse
     $('#reply-form').not(form).addClass('hidden');
 
-    // Récupération de l'email de l'utilisateur courant
-    let currentUserEmail = rcmail.env.current_user.email;
-
-    // Mettre à jour l'attribut data-email avec l'email de l'utilisateur courant
-    form.find('bnum-avatar').attr('data-email', currentUserEmail);
-
     // Afficher ou masquer le formulaire actuel
     form.toggleClass('hidden');
 

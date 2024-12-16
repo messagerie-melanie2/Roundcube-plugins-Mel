@@ -400,7 +400,7 @@
   align-items: center;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .icon {
-  color: var(--main-text-color);
+  color: inherit;
   /* Couleur uniforme pour toutes les icônes */
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .icon::before {
@@ -410,8 +410,7 @@
   font-variation-settings: 'wght' 400;
   display: inline-block;
   vertical-align: middle;
-  color: inherit;
-  /* L'icône hérite de la couleur */
+  color: var(--main-text-color);
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item {
   display: flex;
@@ -444,7 +443,7 @@
   display: inline-block;
   vertical-align: middle;
   margin-right: 5px;
-  color: var(--forum-active-text-color);
+  color: var(--main-text-color);
   font-variation-settings: 'FILL' 1;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response .icon::before {
@@ -457,7 +456,7 @@
   margin-right: 5px;
 }
 .task-forum .forum-comment .comment .forum-comment-reactions .reaction-item.response span {
-  color: var(--forum-active-text-color);
+  color: var(--main-text-color);
 }
 .task-forum .forum-content-author {
   font-weight: bold;
@@ -495,15 +494,14 @@
   font-variation-settings: 'wght' 400;
   display: inline-block;
   vertical-align: middle;
-  color: var(--forum-active-text-color);
+  color: var(--main-text-color);
   transition: color 0.3s ease;
   /* Transition fluide pour la couleur au hover */
 }
 .task-forum .forum-comment-response .ml-2 {
   font-size: 12px;
   /* Ajuste la taille du texte pour correspondre au design */
-  color: var(--forum-active-text-color);
-  /* Applique la couleur de texte souhaitée */
+  color: var(--main-text-color);
   transition: color 0.3s ease;
   /* Transition fluide pour la couleur au hover */
 }
@@ -637,6 +635,14 @@
   display: inline-block;
   vertical-align: middle;
   color: inherit;
+}
+.task-forum .post .post-header .post-actions .icon.favorite {
+  color: var(--main-text-color);
+  /* Couleur par défaut */
+}
+.task-forum .post .post-header .post-actions .icon.favorite.filled {
+  color: #FFDD67;
+  /* Couleur jaune pour l'état filled */
 }
 .task-forum .post .post-header .post-actions .more_action {
   display: flex;

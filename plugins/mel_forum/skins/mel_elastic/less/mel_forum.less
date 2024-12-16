@@ -488,7 +488,7 @@
         align-items: center;
 
         .icon {
-          color: var(--main-text-color); /* Couleur uniforme pour toutes les icônes */
+          color: inherit; /* Couleur uniforme pour toutes les icônes */
 
           &::before {
             font-family: 'Material Symbols Outlined';
@@ -497,7 +497,7 @@
             font-variation-settings: 'wght' 400;
             display: inline-block;
             vertical-align: middle;
-            color: inherit; /* L'icône hérite de la couleur */
+            color: var(--main-text-color);
           }
         }
         .reaction-item {
@@ -537,7 +537,7 @@
               display: inline-block;
               vertical-align: middle;
               margin-right: 5px;
-              color: var(--forum-active-text-color);
+              color: var(--main-text-color);
               font-variation-settings: 'FILL' 1;
             }
           }
@@ -553,7 +553,7 @@
               margin-right: 5px;
             }
             span {
-              color: var(--forum-active-text-color);
+              color: var(--main-text-color);
             }
           }
         }
@@ -592,15 +592,13 @@
       font-variation-settings: 'wght' 400;
       display: inline-block;
       vertical-align: middle;
-      color: var(--forum-active-text-color);
+      color: var(--main-text-color);
       transition: color 0.3s ease; /* Transition fluide pour la couleur au hover */
     }
 
     .ml-2 {
       font-size: 12px; /* Ajuste la taille du texte pour correspondre au design */
-      color: var(
-        --forum-active-text-color
-      ); /* Applique la couleur de texte souhaitée */
+      color: var(--main-text-color);
       transition: color 0.3s ease; /* Transition fluide pour la couleur au hover */
     }
   }
@@ -754,6 +752,14 @@
             vertical-align: middle;
             color: inherit;
           }
+        }
+
+        .icon.favorite {
+          color: var(--main-text-color); /* Couleur par défaut */
+        }
+      
+        .icon.favorite.filled {
+          color: #FFDD67; /* Couleur jaune pour l'état filled */
         }
 
         .more_action {

@@ -474,14 +474,19 @@
       );
 
       parent.rcmail.enable_command('my_account', true);
-      parent.rcmail.register_command('my_account', () => {
-        mel_metapage.Functions.change_page(
-          'settings',
-          'plugin.mel_moncompte',
-          {},
-          true,
-          true,
-        );
+      parent.rcmail.register_command('my_account', async () => {
+        await PageManager.SwitchFrame('settings', {
+          args: {
+            _action: 'plugin.mel_moncompte',
+          },
+        });
+        // mel_metapage.Functions.change_page(
+        //   'settings',
+        //   'plugin.mel_moncompte',
+        //   {},
+        //   true,
+        //   true,
+        // );
       });
 
       parent.rcmail.enable_command('change_avatar', true);
